@@ -170,11 +170,13 @@ AC_DEFUN(AC_CHECK_X86_FLOAT_INT,
 AC_MSG_CHECKING([for x86 float to int conversions])
 AC_CACHE_VAL(ac_cv_x86_float_int,
 [
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
 AC_TRY_LINK([
 static inline long QRound (float inval)
 {
   long ret;
-  asm ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
+  __asm__ ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
   return ret;
 }
 ],
@@ -183,6 +185,7 @@ long i = QRound(41.93);  /* should be 42 */
 ],
 ac_cv_x86_float_int=yes,
 ac_cv_x86_float_int=no)
+AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ac_cv_x86_float_int)
 if eval "test \"`echo `$ac_cv_x86_float_int\" = yes"; then

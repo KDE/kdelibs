@@ -34,7 +34,7 @@ static inline long QRound (float inval)
 #warning "workaround for gcc-3.0 bug c++/2733 enabled"
 #endif
   long ret;
-  asm ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
+  __asm__ ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
   return ret;
 }
 #else
