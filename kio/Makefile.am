@@ -66,11 +66,12 @@ libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kssl/libkssl.la 
 
 libkio_la_SOURCES = \
 	kshred.cpp \
-	kprotocolmanager.cpp scheduler.cpp \
+	kprotocolmanager.cpp \
+	slave.cpp slaveinterface.cpp \
+	sessiondata.cpp	scheduler.cpp \
 	connection.cpp \
-	slaveinterface.cpp job.cpp  \
-	global.cpp \
-	slave.cpp slaveconfig.cpp \
+	job.cpp global.cpp \
+	slaveconfig.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
@@ -94,12 +95,13 @@ METASOURCES = AUTO
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h \
-        slaveinterface.h slaveconfig.h \
-        global.h passdlg.h netaccess.h job.h scheduler.h \
+        slaveinterface.h slave.h slaveconfig.h \
+        sessiondata.h global.h passdlg.h \
+	netaccess.h job.h scheduler.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
-	renamedlg.h skipdlg.h slave.h \
+	renamedlg.h skipdlg.h \
 	observer.h chmodjob.h \
         kpac.h kmdbase.h authinfo.h \
 	ioslave_defaults.h http_slave_defaults.h previewjob.h
