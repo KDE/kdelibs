@@ -45,7 +45,7 @@ private:
 };
 
 KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char *name )
-    : KVideoWidget( parent, name, WType_TopLevel | WStyle_Customize | WStyle_NoBorder )
+    : KVideoWidget( 0, name )
 {
     this->videoWidget = parent;
     setEraseColor( black );
@@ -132,10 +132,7 @@ KVideoWidget::~KVideoWidget()
 	poVideo = Arts::VideoPlayObject::null();
     }
 
-    if (fullscreenWidget)
-    {
 	delete fullscreenWidget;
-    }
 }
 
 void KVideoWidget::embed( Arts::VideoPlayObject vpo )
@@ -397,8 +394,8 @@ void KVideoWidget::fullscreenActivated()
 	a->connectItem( a->insertItem( Key_Escape ),
 			this, SLOT(setWindowed()) );
 
-	fullscreenWidget->showFullScreen();
 	fullscreenWidget->setFocus();
+	fullscreenWidget->showFullScreen();
 
 	if (isEmbedded())
 	{
