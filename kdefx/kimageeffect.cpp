@@ -35,6 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <iostream>
 
+#include <config.h>
+
 #include "kimageeffect.h"
 
 #define MaxRGB 255L
