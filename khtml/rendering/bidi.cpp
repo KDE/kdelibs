@@ -158,7 +158,11 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
 
 // -------------------------------------------------------------------------------------------------
 
+#if QT_VERSION < 300
+void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
+#else
 void RenderFlow::appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
+#endif
                            BidiContext *context, QChar::Direction dir)
 {
 #if BIDI_DEBUG > 1
@@ -188,7 +192,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
     //kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 
+#if QT_VERSION < 300
+    QList<BidiRun> runs;
+#else
     QPtrList<BidiRun> runs;
+#endif
     runs.setAutoDelete(true);
 
     BidiContext *context = startEmbed;
@@ -637,7 +645,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "reorderLine: lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
     kdDebug(6041) << "logical order is:" << endl;
+#if QT_VERSION < 300
+    QListIterator<BidiRun> it2(runs);
+#else
     QPtrListIterator<BidiRun> it2(runs);
+#endif
     BidiRun *r2;
     for ( ; (r2 = it2.current()); ++it2 )
         kdDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
@@ -676,7 +688,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
+#if QT_VERSION < 300
+    QListIterator<BidiRun> it3(runs);
+#else
     QPtrListIterator<BidiRun> it3(runs);
+#endif
     BidiRun *r3;
     for ( ; (r3 = it3.current()); ++it3 )
     {

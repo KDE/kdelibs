@@ -124,7 +124,11 @@ public:
     void addOverHangingFloats( RenderFlow *flow, int xoffset, int yoffset, bool child = false );
 
     // implementation of the following functions is in bidi.cpp
+#if QT_VERSION < 300
+    void appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
+#else
     void appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
+#endif
                    BidiContext *context, QChar::Direction dir);
     BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
     BidiIterator findNextLineBreak(const BidiIterator &start);

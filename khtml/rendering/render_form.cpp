@@ -915,7 +915,11 @@ void RenderSelect::layout( )
 
     // update contents listbox/combobox based on options in m_element
     if ( m_optionsChanged ) {
+#if QT_VERSION < 300
+        QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+#else
         QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+#endif
         int listIndex;
 
         if(m_useListBox)
@@ -959,15 +963,13 @@ void RenderSelect::layout( )
 #if QT_VERSION < 300
                     static_cast<KListBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-#else
-                    static_cast<KListBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-#endif
                 else
-#if QT_VERSION < 300
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
 #else
+                    static_cast<KListBox*>(m_widget)
+                        ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                else
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
 #endif
@@ -1022,7 +1024,12 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
+#if QT_VERSION < 300
+    QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+#endif
+
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
 	foundOption = (listItems[i]->id() == ID_OPTION);
@@ -1054,7 +1061,11 @@ void RenderSelect::slotSelected(int index)
 
     assert( !m_useListBox );
 
+#if QT_VERSION < 300
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#endif
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1100,7 +1111,11 @@ void RenderSelect::slotSelectionChanged()
 {
     if ( m_ignoreSelectEvents ) return;
 
+#if QT_VERSION < 300
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#endif
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1141,7 +1156,11 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
+#if QT_VERSION < 300
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+#endif
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index

@@ -34,7 +34,11 @@
 
 #include <qcolor.h>
 #include <qfont.h>
+#if QT_VERSION < 300
+#include <qlist.h>
+#else
 #include <qptrlist.h>
+#endif
 #include <qpalette.h>
 #include <qapplication.h>
 #include "dom/dom_misc.h"

@@ -197,7 +197,11 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     if(specialObjects)
     {
         SpecialObject* r;
+#if QT_VERSION < 300
+        QListIterator<SpecialObject> it(*specialObjects);
+#else
         QPtrListIterator<SpecialObject> it(*specialObjects);
+#endif
         for ( ; (r = it.current()); ++it )
         {
             if (r->node->containingBlock()==this)

@@ -32,7 +32,12 @@
 
 #include "render_table.h"
 
+#if QT_VERSION < 300
+#include <qlist.h>
+#else
 #include <qptrlist.h>
+#endif
+
 #include <qstack.h>
 #include <qbrush.h>
 #include <qpainter.h>
@@ -50,7 +55,11 @@
 
 using namespace khtml;
 
+#if QT_VERSION < 300
+template class QArray<LengthType>;
+#else
 template class QMemArray<LengthType>;
+#endif
 
 #define FOR_EACH_CELL(r,c,cell) \
     for ( unsigned int r = 0; r < totalRows; r++ )                    \

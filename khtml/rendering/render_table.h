@@ -28,7 +28,11 @@
 #define RENDER_TABLE_H
 
 #include <qcolor.h>
+#if QT_VERSION < 300
+#include <qvector.h>
+#else
 #include <qptrvector.h>
+#endif
 #include <qdatetime.h>
 
 #include "render_box.h"
@@ -192,6 +196,20 @@ protected:
 
     RenderTableCell ***cells;
 
+#if QT_VERSION < 300
+    class ColInfoLine : public QVector<ColInfo>
+    {
+    public:
+        ColInfoLine() : QVector<ColInfo>()
+        { setAutoDelete(true); }
+        ColInfoLine(int i) : QVector<ColInfo>(i)
+        { setAutoDelete(true); }
+        ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
+        { setAutoDelete(true); }
+    };
+
+    QVector<ColInfoLine> colInfos;
+#else
     class ColInfoLine : public QPtrVector<ColInfo>
     {
     public:
@@ -204,6 +222,7 @@ protected:
     };
 
     QPtrVector<ColInfoLine> colInfos;
+#endif
 
     void calcColMinMax();
     void calcSingleColMinMax(int c, ColInfo* col);
@@ -218,6 +237,16 @@ protected:
 
     int maxColSpan;
 
+#if QT_VERSION < 300
+    QArray<int> columnPos;
+    QArray<int> colMaxWidth;
+    QArray<int> colMinWidth;
+    QArray<khtml::LengthType> colType;
+    QArray<int> colValue;
+    QArray<int> rowHeights;
+    QArray<int> rowBaselines;
+    QArray<int> actColWidth;
+#else
     QMemArray<int> columnPos;
     QMemArray<int> colMaxWidth;
     QMemArray<int> colMinWidth;
@@ -226,7 +255,7 @@ protected:
     QMemArray<int> rowHeights;
     QMemArray<int> rowBaselines;
     QMemArray<int> actColWidth;
-
+#endif
     unsigned int totalColInfos;
     unsigned int col;
     unsigned int totalCols;
