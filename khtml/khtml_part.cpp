@@ -225,7 +225,7 @@ public:
     bool caseSensitive;
     bool direction;
   };
-  
+
   findState m_lastFindState;
 };
 
@@ -1125,8 +1125,16 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 		int x = 0, y = 0;
 		d->m_findNode->renderer()->absolutePosition(x, y);
 		d->m_view->setContentsPos(x-50, y-50);
-		d->m_doc->setSelection( d->m_findNode, d->m_findPos,
-					d->m_findNode, d->m_findPos+str.length() );
+		
+		d->m_selectionStart = d->m_findNode;
+		d->m_startOffset = d->m_findPos;
+		d->m_selectionEnd = d->m_findNode;
+		d->m_endOffset = d->m_findPos + str.length();
+		d->m_startBeforeEnd = true;
+				 
+		d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+					d->m_selectionEnd.handle(), d->m_endOffset );
+		emitSelectionChanged();
 		return true;
 	    }
 	}
@@ -2572,7 +2580,16 @@ void KHTMLPart::selectAll()
   if ( !first || !last )
     return;
 
-  d->m_doc->setSelection( first, 0, last, static_cast<TextImpl *>( last )->string()->l );
+  d->m_selectionStart = first;
+  d->m_startOffset = 0;
+  d->m_selectionEnd = last;
+  d->m_endOffset = static_cast<TextImpl *>( last )->string()->l;
+  d->m_startBeforeEnd = true;
+  
+  d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+			  d->m_selectionEnd.handle(), d->m_endOffset );
+
+  emitSelectionChanged();
 }
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
