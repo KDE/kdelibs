@@ -24,21 +24,25 @@
 #define MCOP_CONNECT_H
 
 #include <string>
-class Component;
-
+class SmartWrapper;
 //namespace MCOP {
 
 // Connect function overloaded for components with default port
-void connect(Component* src, const std::string& output, Component* dest, const std::string& input);
-void connect(Component* src, const string& output, Component* dest);
-void connect(Component* src, Component* dest, const string& input);
-void connect(Component* src, Component* dest);
+void connect(const SmartWrapper& src, const std::string& output, const SmartWrapper& dest, const std::string& input);
+void connect(const SmartWrapper& src, const string& output, const SmartWrapper& dest);
+void connect(const SmartWrapper& src, const SmartWrapper& dest, const string& input);
+void connect(const SmartWrapper& src, const SmartWrapper& dest);
+// Same for disconnect function
+void disconnect(const SmartWrapper& src, const std::string& output, const SmartWrapper& dest, const std::string& input);
+void disconnect(const SmartWrapper& src, const string& output, const SmartWrapper& dest);
+void disconnect(const SmartWrapper& src, const SmartWrapper& dest, const string& input);
+void disconnect(const SmartWrapper& src, const SmartWrapper& dest);
 
 // setValue function overloaded for components with default port
-void setValue(Component* c, const std::string& port, const float fvalue);
-void setValue(Component* c, const string& port, const string& svalue);
-void setValue(Component* c, const float fvalue);
-void setValue(Component* c, const string& svalue);
+void setValue(const SmartWrapper& c, const std::string& port, const float fvalue);
+void setValue(const SmartWrapper& c, const float fvalue);
+//void setValue(const SmartWrapper& c, const string& port, const string& svalue);
+//void setValue(const SmartWrapper& c, const string& svalue);
 
 //}
 

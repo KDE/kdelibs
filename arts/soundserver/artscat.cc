@@ -165,8 +165,8 @@ int main(int argc, char **argv)
 	}
 
 	ByteSoundProducer_var sender = new Sender(stdin);
-	server.attach(sender);
+	server.attach((ByteSoundProducer_base*)sender);
 	sender->start();
 	dispatcher.run();
-	server.detach(sender);
+	server.detach((ByteSoundProducer_base*)sender);
 }

@@ -198,6 +198,18 @@ void Object::_sendCustomMessage(Buffer *buffer)
 	delete buffer;
 }
 
+// Default I/O: nothing at this level, use child virtuals
+vector<std::string> Object::_defaultPortsIn() const
+{
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> Object::_defaultPortsOut() const
+{
+	vector<std::string> ret;
+	return ret;
+}
+
 /*
  * Stuff for object skeletons
  */
@@ -827,3 +839,4 @@ void Object_stub::_sendCustomMessage(Buffer *buffer)
 	buffer->patchLength();
 	_connection->qSendBuffer(buffer);
 }
+

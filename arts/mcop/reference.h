@@ -22,6 +22,8 @@
 #define MCOP_COMPONENT_REFERENCE_H
 
 #include "common.h"
+#include <string>
+#include <vector>
 
 // Acts as a string or ObjectReference, but enables a different constructor
 class Reference {
@@ -68,11 +70,79 @@ public:
 	inline const std::string& string() const {return mys;}
 };
 
+class ScheduleNode;
+
+// SmartWrapper has _no_ virtual, and must not have. That way, all the
+// wrappers can be passed as argument or return type, and there is also
+// no virtual table bloat.
+// Moreover, the virtual mechanism still works correctly thanks to the
+// _pool->base redirection.
+// No check is done here, only what's necessary in the child classes
+// To inforce this, the constructors are protected
 class SmartWrapper {
 protected:
-	bool _autoCreate;
+	
+	// Pool of common variables for a bunch a wrappers
+	class Pool {
+		int count;
+		void* (*creator)();
+		void* (*caster)(void*,const char*);
+		bool created;
+	public:
+		void* base;
+		inline void* cast(const char* c) {return caster(base, c);}
+		inline Pool(void* b, void* (*cst)(void*,const char*))
+			: creator(0), caster(cst), base(b), created(true), count(1) {}
+		inline Pool(void* (*cor)(), void* (*cst)(void*,const char*))
+			: creator(cor), caster(cst), base(0), created(false), count(1) {}
+		inline void Inc() {count++;}
+		inline bool Dec() {
+			if (--count==0) {delete this; return true;}
+			return false;
+		}
+		inline void checkcreate() {
+			if (!created) {base = creator(); created=true;}
+		}
+	} *_pool;
+
+	inline SmartWrapper(void* (*cor)(), void* (*cst)(void*,const char*)) {
+		_pool = new Pool(cor, cst);
+	}
+	inline SmartWrapper(void* b, void* (*cst)(void*,const char*)) {
+		_pool = new Pool(b, cst);
+	}
+	inline SmartWrapper(Pool* p) : _pool(p) {
+		_pool->Inc();
+	}
 public:
-	SmartWrapper() { _autoCreate = true; }
+	// null, error?
+	inline bool isNull() const {
+		_pool->checkcreate();
+		return !(_pool->base);
+	}
+	inline bool error() const {
+		_pool->checkcreate();
+    	return _pool->base && ((Object_base*)_pool->cast("Object"))->_error();
+	}
+	
+	// Default I/O info
+	inline vector<std::string> defaultPortsIn() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return ((Object_base*)_pool->cast("Object"))->_defaultPortsIn();
+	}
+	inline vector<std::string> defaultPortsOut() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return ((Object_base*)_pool->cast("Object"))->_defaultPortsOut();
+	}
+	// Node info
+	inline ScheduleNode *node() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return ((Object_base*)_pool->cast("Object"))->_node();
+	}
+	inline std::string toString() const {return ((Object_base*)_pool->cast("Object"))->_toString();}
 };
 
 #endif

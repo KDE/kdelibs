@@ -19,7 +19,7 @@ Header::Header(Buffer& stream)
 	readType(stream);
 }
 
-Header::Header(const Header& copyType) :Type()
+Header::Header(const Header& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -68,7 +68,7 @@ Invocation::Invocation(Buffer& stream)
 	readType(stream);
 }
 
-Invocation::Invocation(const Invocation& copyType) :Type()
+Invocation::Invocation(const Invocation& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -116,7 +116,7 @@ OnewayInvocation::OnewayInvocation(Buffer& stream)
 	readType(stream);
 }
 
-OnewayInvocation::OnewayInvocation(const OnewayInvocation& copyType) :Type()
+OnewayInvocation::OnewayInvocation(const OnewayInvocation& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -163,7 +163,7 @@ ServerHello::ServerHello(Buffer& stream)
 	readType(stream);
 }
 
-ServerHello::ServerHello(const ServerHello& copyType) :Type()
+ServerHello::ServerHello(const ServerHello& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -212,7 +212,7 @@ ClientHello::ClientHello(Buffer& stream)
 	readType(stream);
 }
 
-ClientHello::ClientHello(const ClientHello& copyType) :Type()
+ClientHello::ClientHello(const ClientHello& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -261,7 +261,7 @@ ObjectReference::ObjectReference(Buffer& stream)
 	readType(stream);
 }
 
-ObjectReference::ObjectReference(const ObjectReference& copyType) :Type()
+ObjectReference::ObjectReference(const ObjectReference& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -309,7 +309,7 @@ ParamDef::ParamDef(Buffer& stream)
 	readType(stream);
 }
 
-ParamDef::ParamDef(const ParamDef& copyType) :Type()
+ParamDef::ParamDef(const ParamDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -357,7 +357,7 @@ MethodDef::MethodDef(Buffer& stream)
 	readType(stream);
 }
 
-MethodDef::MethodDef(const MethodDef& copyType) :Type()
+MethodDef::MethodDef(const MethodDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -409,7 +409,7 @@ AttributeDef::AttributeDef(Buffer& stream)
 	readType(stream);
 }
 
-AttributeDef::AttributeDef(const AttributeDef& copyType) :Type()
+AttributeDef::AttributeDef(const AttributeDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -460,7 +460,7 @@ InterfaceDef::InterfaceDef(Buffer& stream)
 	readType(stream);
 }
 
-InterfaceDef::InterfaceDef(const InterfaceDef& copyType) :Type()
+InterfaceDef::InterfaceDef(const InterfaceDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -514,7 +514,7 @@ TypeComponent::TypeComponent(Buffer& stream)
 	readType(stream);
 }
 
-TypeComponent::TypeComponent(const TypeComponent& copyType) :Type()
+TypeComponent::TypeComponent(const TypeComponent& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -560,7 +560,7 @@ TypeDef::TypeDef(Buffer& stream)
 	readType(stream);
 }
 
-TypeDef::TypeDef(const TypeDef& copyType) :Type()
+TypeDef::TypeDef(const TypeDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -607,7 +607,7 @@ EnumComponent::EnumComponent(Buffer& stream)
 	readType(stream);
 }
 
-EnumComponent::EnumComponent(const EnumComponent& copyType) :Type()
+EnumComponent::EnumComponent(const EnumComponent& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -653,7 +653,7 @@ EnumDef::EnumDef(Buffer& stream)
 	readType(stream);
 }
 
-EnumDef::EnumDef(const EnumDef& copyType) :Type()
+EnumDef::EnumDef(const EnumDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -703,7 +703,7 @@ ModuleDef::ModuleDef(Buffer& stream)
 	readType(stream);
 }
 
-ModuleDef::ModuleDef(const ModuleDef& copyType) :Type()
+ModuleDef::ModuleDef(const ModuleDef& copyType) : ::Type(copyType)
 {
 	Buffer buffer;
 	copyType.writeType(buffer);
@@ -777,6 +777,15 @@ InterfaceRepo_base *InterfaceRepo_base::_fromReference(ObjectReference r, bool n
 		}
 	}
 	return result;
+}
+
+vector<std::string> InterfaceRepo_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> InterfaceRepo_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 InterfaceRepo_stub::InterfaceRepo_stub()
@@ -930,20 +939,18 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
-void InterfaceRepo::_create() {
-	_assign_InterfaceRepo_base(InterfaceRepo_base::_create());
-}
-InterfaceRepo::~InterfaceRepo() { _assign_InterfaceRepo_base(0); }
-vector<std::string> InterfaceRepo::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* InterfaceRepo::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	InterfaceRepo_base* b = (InterfaceRepo_base*)p;
+	if (!strcmp(c,"InterfaceRepo")) return b;
+	return (Object_base*)b;
 }
 
-vector<std::string> InterfaceRepo::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* InterfaceRepo::_Creator() {
+	return InterfaceRepo_base::_create();
 }
-
 
 FlowSystemSender_base *FlowSystemSender_base::_create(const std::string& subClass)
 {
@@ -978,6 +985,15 @@ FlowSystemSender_base *FlowSystemSender_base::_fromReference(ObjectReference r, 
 		}
 	}
 	return result;
+}
+
+vector<std::string> FlowSystemSender_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> FlowSystemSender_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 FlowSystemSender_stub::FlowSystemSender_stub()
@@ -1038,20 +1054,18 @@ FlowSystemSender_skel::FlowSystemSender_skel()
 {
 }
 
-void FlowSystemSender::_create() {
-	_assign_FlowSystemSender_base(FlowSystemSender_base::_create());
-}
-FlowSystemSender::~FlowSystemSender() { _assign_FlowSystemSender_base(0); }
-vector<std::string> FlowSystemSender::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* FlowSystemSender::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	FlowSystemSender_base* b = (FlowSystemSender_base*)p;
+	if (!strcmp(c,"FlowSystemSender")) return b;
+	return (Object_base*)b;
 }
 
-vector<std::string> FlowSystemSender::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* FlowSystemSender::_Creator() {
+	return FlowSystemSender_base::_create();
 }
-
 
 FlowSystemReceiver_base *FlowSystemReceiver_base::_create(const std::string& subClass)
 {
@@ -1086,6 +1100,15 @@ FlowSystemReceiver_base *FlowSystemReceiver_base::_fromReference(ObjectReference
 		}
 	}
 	return result;
+}
+
+vector<std::string> FlowSystemReceiver_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> FlowSystemReceiver_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 FlowSystemReceiver_stub::FlowSystemReceiver_stub()
@@ -1153,20 +1176,18 @@ FlowSystemReceiver_skel::FlowSystemReceiver_skel()
 {
 }
 
-void FlowSystemReceiver::_create() {
-	_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create());
-}
-FlowSystemReceiver::~FlowSystemReceiver() { _assign_FlowSystemReceiver_base(0); }
-vector<std::string> FlowSystemReceiver::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* FlowSystemReceiver::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	FlowSystemReceiver_base* b = (FlowSystemReceiver_base*)p;
+	if (!strcmp(c,"FlowSystemReceiver")) return b;
+	return (Object_base*)b;
 }
 
-vector<std::string> FlowSystemReceiver::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* FlowSystemReceiver::_Creator() {
+	return FlowSystemReceiver_base::_create();
 }
-
 
 FlowSystem_base *FlowSystem_base::_create(const std::string& subClass)
 {
@@ -1201,6 +1222,15 @@ FlowSystem_base *FlowSystem_base::_fromReference(ObjectReference r, bool needcop
 		}
 	}
 	return result;
+}
+
+vector<std::string> FlowSystem_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> FlowSystem_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 FlowSystem_stub::FlowSystem_stub()
@@ -1445,20 +1475,18 @@ FlowSystem_skel::FlowSystem_skel()
 {
 }
 
-void FlowSystem::_create() {
-	_assign_FlowSystem_base(FlowSystem_base::_create());
-}
-FlowSystem::~FlowSystem() { _assign_FlowSystem_base(0); }
-vector<std::string> FlowSystem::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* FlowSystem::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	FlowSystem_base* b = (FlowSystem_base*)p;
+	if (!strcmp(c,"FlowSystem")) return b;
+	return (Object_base*)b;
 }
 
-vector<std::string> FlowSystem::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* FlowSystem::_Creator() {
+	return FlowSystem_base::_create();
 }
-
 
 GlobalComm_base *GlobalComm_base::_create(const std::string& subClass)
 {
@@ -1493,6 +1521,15 @@ GlobalComm_base *GlobalComm_base::_fromReference(ObjectReference r, bool needcop
 		}
 	}
 	return result;
+}
+
+vector<std::string> GlobalComm_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> GlobalComm_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 GlobalComm_stub::GlobalComm_stub()
@@ -1620,20 +1657,18 @@ GlobalComm_skel::GlobalComm_skel()
 {
 }
 
-void GlobalComm::_create() {
-	_assign_GlobalComm_base(GlobalComm_base::_create());
-}
-GlobalComm::~GlobalComm() { _assign_GlobalComm_base(0); }
-vector<std::string> GlobalComm::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* GlobalComm::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	GlobalComm_base* b = (GlobalComm_base*)p;
+	if (!strcmp(c,"GlobalComm")) return b;
+	return (Object_base*)b;
 }
 
-vector<std::string> GlobalComm::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* GlobalComm::_Creator() {
+	return GlobalComm_base::_create();
 }
-
 
 TmpGlobalComm_base *TmpGlobalComm_base::_create(const std::string& subClass)
 {
@@ -1668,6 +1703,15 @@ TmpGlobalComm_base *TmpGlobalComm_base::_fromReference(ObjectReference r, bool n
 		}
 	}
 	return result;
+}
+
+vector<std::string> TmpGlobalComm_base::_defaultPortsIn() const {
+	vector<std::string> ret;
+	return ret;
+}
+vector<std::string> TmpGlobalComm_base::_defaultPortsOut() const {
+	vector<std::string> ret;
+	return ret;
 }
 
 TmpGlobalComm_stub::TmpGlobalComm_stub()
@@ -1716,20 +1760,19 @@ TmpGlobalComm_skel::TmpGlobalComm_skel()
 {
 }
 
-void TmpGlobalComm::_create() {
-	_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create());
-}
-TmpGlobalComm::~TmpGlobalComm() { _assign_TmpGlobalComm_base(0); }
-vector<std::string> TmpGlobalComm::defaultPortsIn() {
-	vector<std::string> ret;
-	return ret;
+#include <string.h>
+
+void* TmpGlobalComm::_Caster(void *p, const char* c) {
+	if (!p) return 0;
+	TmpGlobalComm_base* b = (TmpGlobalComm_base*)p;
+	if (!strcmp(c,"TmpGlobalComm")) return b;
+	if (!strcmp(c,"GlobalComm")) return (GlobalComm_base*)b;
+	return (Object_base*)b;
 }
 
-vector<std::string> TmpGlobalComm::defaultPortsOut() {
-	vector<std::string> ret;
-	return ret;
+void* TmpGlobalComm::_Creator() {
+	return TmpGlobalComm_base::_create();
 }
-
 
 static IDLFileReg IDLFileReg_core("core",
     "IDLFile:010000000000000000040000000c0000004865616465724d61676963000100"

@@ -38,12 +38,12 @@ int main()
 	Synth_PLAY      play;
 
 	// object initialization
-	setValue(&freq, 440.0);
+	setValue(freq, 440.0);
 
 	// object connection
-	connect(&freq, &sin);
-	connect(&sin, &play, "invalue_left");
-	connect(&sin, &play, "invalue_right");
+	connect(freq, sin);
+	connect(sin, play, "invalue_left");
+	connect(sin, play, "invalue_right");
 
 	// start all objects (maybe we should group objects like with QWidget
 	// parents and such?)

@@ -290,6 +290,9 @@ public:
 		return this;
 	}
 
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
+
 	virtual long insertModule(const ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
 	virtual InterfaceDef* queryInterface(const std::string& name) = 0;
@@ -325,62 +328,41 @@ public:
 #include "reference.h"
 
 class InterfaceRepo : virtual public SmartWrapper {
-protected:
-	InterfaceRepo_base *_InterfaceRepo_redirect;
-
-	inline void _assign_InterfaceRepo_base(InterfaceRepo_base *base) {
-		if(_InterfaceRepo_redirect != 0) _InterfaceRepo_redirect->_release();
-		_InterfaceRepo_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline InterfaceRepo_base *_InterfaceRepo_base() {
-		if(_InterfaceRepo_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _InterfaceRepo_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline InterfaceRepo_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
 	}
 
 public:
-	inline InterfaceRepo() : _InterfaceRepo_redirect(0) { /* nothing to be done*/ }
-	virtual ~InterfaceRepo();
-	inline InterfaceRepo(const SubClass &s) : _InterfaceRepo_redirect(0) {
-		_assign_InterfaceRepo_base(InterfaceRepo_base::_create(s.string()));
+	inline InterfaceRepo() : SmartWrapper(_Creator, _Caster) {}
+	inline InterfaceRepo(const SubClass& s) :
+		SmartWrapper(InterfaceRepo_base::_create(s.string()), _Caster) {}
+	inline InterfaceRepo(const Reference &r) :
+		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b, _Caster) {}
+	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool) {}
+	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
+		InterfaceRepo_base *sav = (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline InterfaceRepo(const Reference &r) : _InterfaceRepo_redirect(0) {
-		_assign_InterfaceRepo_base(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true)));
+	inline ~InterfaceRepo() {
+	if (!_pool) return;
+		InterfaceRepo_base *sav = (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline InterfaceRepo(InterfaceRepo& target) : _InterfaceRepo_redirect(0) {
-		if (target._InterfaceRepo_redirect)
-			_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
-	}
-	inline InterfaceRepo& operator=(InterfaceRepo& target) {		if (target._InterfaceRepo_redirect)
-			_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
-		return *this;
-	}
-	inline InterfaceRepo(InterfaceRepo_base *target) : _InterfaceRepo_redirect(0) {
-		if (target) _assign_InterfaceRepo_base(target->_copy());
-	}
-	inline InterfaceRepo& operator=(InterfaceRepo_base *target) {
-		if (target) _assign_InterfaceRepo_base(target->_copy());
-		return *this;
-	}
-	inline InterfaceRepo(InterfaceRepo_var target) : _InterfaceRepo_redirect(0) {
-		if ((InterfaceRepo_base *)target) _assign_InterfaceRepo_base(target->_copy());
-	}
-	inline InterfaceRepo& operator=(InterfaceRepo_var target) {
-		if ((InterfaceRepo_base *)target) _assign_InterfaceRepo_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _InterfaceRepo_base()->_toString();}
-	inline operator InterfaceRepo_base*() {return _InterfaceRepo_base();}
-	inline bool isNull() {return _InterfaceRepo_base()==0;}
+	inline operator InterfaceRepo_base*() const {return _method_call();}
 
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
-
-	inline long insertModule(const ModuleDef& newModule) {return _InterfaceRepo_base()->insertModule(newModule);}
-	inline void removeModule(long moduleID) {return _InterfaceRepo_base()->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) {return _InterfaceRepo_base()->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) {return _InterfaceRepo_base()->queryType(name);}
+	inline long insertModule(const ModuleDef& newModule) const {return _method_call()->insertModule(newModule);}
+	inline void removeModule(long moduleID) const {return _method_call()->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) const {return _method_call()->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) const {return _method_call()->queryType(name);}
 };
 
 class FlowSystemSender_base : virtual public Object {
@@ -394,6 +376,9 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 	virtual void processed() = 0;
 };
@@ -424,59 +409,38 @@ public:
 #include "reference.h"
 
 class FlowSystemSender : virtual public SmartWrapper {
-protected:
-	FlowSystemSender_base *_FlowSystemSender_redirect;
-
-	inline void _assign_FlowSystemSender_base(FlowSystemSender_base *base) {
-		if(_FlowSystemSender_redirect != 0) _FlowSystemSender_redirect->_release();
-		_FlowSystemSender_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline FlowSystemSender_base *_FlowSystemSender_base() {
-		if(_FlowSystemSender_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystemSender_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline FlowSystemSender_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
 	}
 
 public:
-	inline FlowSystemSender() : _FlowSystemSender_redirect(0) { /* nothing to be done*/ }
-	virtual ~FlowSystemSender();
-	inline FlowSystemSender(const SubClass &s) : _FlowSystemSender_redirect(0) {
-		_assign_FlowSystemSender_base(FlowSystemSender_base::_create(s.string()));
+	inline FlowSystemSender() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystemSender(const SubClass& s) :
+		SmartWrapper(FlowSystemSender_base::_create(s.string()), _Caster) {}
+	inline FlowSystemSender(const Reference &r) :
+		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b, _Caster) {}
+	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool) {}
+	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
+		FlowSystemSender_base *sav = (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline FlowSystemSender(const Reference &r) : _FlowSystemSender_redirect(0) {
-		_assign_FlowSystemSender_base(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true)));
+	inline ~FlowSystemSender() {
+	if (!_pool) return;
+		FlowSystemSender_base *sav = (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline FlowSystemSender(FlowSystemSender& target) : _FlowSystemSender_redirect(0) {
-		if (target._FlowSystemSender_redirect)
-			_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
-	}
-	inline FlowSystemSender& operator=(FlowSystemSender& target) {		if (target._FlowSystemSender_redirect)
-			_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
-		return *this;
-	}
-	inline FlowSystemSender(FlowSystemSender_base *target) : _FlowSystemSender_redirect(0) {
-		if (target) _assign_FlowSystemSender_base(target->_copy());
-	}
-	inline FlowSystemSender& operator=(FlowSystemSender_base *target) {
-		if (target) _assign_FlowSystemSender_base(target->_copy());
-		return *this;
-	}
-	inline FlowSystemSender(FlowSystemSender_var target) : _FlowSystemSender_redirect(0) {
-		if ((FlowSystemSender_base *)target) _assign_FlowSystemSender_base(target->_copy());
-	}
-	inline FlowSystemSender& operator=(FlowSystemSender_var target) {
-		if ((FlowSystemSender_base *)target) _assign_FlowSystemSender_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _FlowSystemSender_base()->_toString();}
-	inline operator FlowSystemSender_base*() {return _FlowSystemSender_base();}
-	inline bool isNull() {return _FlowSystemSender_base()==0;}
+	inline operator FlowSystemSender_base*() const {return _method_call();}
 
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
-
-	inline void processed() {return _FlowSystemSender_base()->processed();}
+	inline void processed() const {return _method_call()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Object {
@@ -490,6 +454,9 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 	virtual long receiveHandlerID() = 0;
 };
@@ -520,59 +487,38 @@ public:
 #include "reference.h"
 
 class FlowSystemReceiver : virtual public SmartWrapper {
-protected:
-	FlowSystemReceiver_base *_FlowSystemReceiver_redirect;
-
-	inline void _assign_FlowSystemReceiver_base(FlowSystemReceiver_base *base) {
-		if(_FlowSystemReceiver_redirect != 0) _FlowSystemReceiver_redirect->_release();
-		_FlowSystemReceiver_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline FlowSystemReceiver_base *_FlowSystemReceiver_base() {
-		if(_FlowSystemReceiver_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystemReceiver_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline FlowSystemReceiver_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
 	}
 
 public:
-	inline FlowSystemReceiver() : _FlowSystemReceiver_redirect(0) { /* nothing to be done*/ }
-	virtual ~FlowSystemReceiver();
-	inline FlowSystemReceiver(const SubClass &s) : _FlowSystemReceiver_redirect(0) {
-		_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create(s.string()));
+	inline FlowSystemReceiver() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystemReceiver(const SubClass& s) :
+		SmartWrapper(FlowSystemReceiver_base::_create(s.string()), _Caster) {}
+	inline FlowSystemReceiver(const Reference &r) :
+		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b, _Caster) {}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool) {}
+	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
+		FlowSystemReceiver_base *sav = (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline FlowSystemReceiver(const Reference &r) : _FlowSystemReceiver_redirect(0) {
-		_assign_FlowSystemReceiver_base(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true)));
+	inline ~FlowSystemReceiver() {
+	if (!_pool) return;
+		FlowSystemReceiver_base *sav = (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline FlowSystemReceiver(FlowSystemReceiver& target) : _FlowSystemReceiver_redirect(0) {
-		if (target._FlowSystemReceiver_redirect)
-			_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
-	}
-	inline FlowSystemReceiver& operator=(FlowSystemReceiver& target) {		if (target._FlowSystemReceiver_redirect)
-			_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
-		return *this;
-	}
-	inline FlowSystemReceiver(FlowSystemReceiver_base *target) : _FlowSystemReceiver_redirect(0) {
-		if (target) _assign_FlowSystemReceiver_base(target->_copy());
-	}
-	inline FlowSystemReceiver& operator=(FlowSystemReceiver_base *target) {
-		if (target) _assign_FlowSystemReceiver_base(target->_copy());
-		return *this;
-	}
-	inline FlowSystemReceiver(FlowSystemReceiver_var target) : _FlowSystemReceiver_redirect(0) {
-		if ((FlowSystemReceiver_base *)target) _assign_FlowSystemReceiver_base(target->_copy());
-	}
-	inline FlowSystemReceiver& operator=(FlowSystemReceiver_var target) {
-		if ((FlowSystemReceiver_base *)target) _assign_FlowSystemReceiver_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _FlowSystemReceiver_base()->_toString();}
-	inline operator FlowSystemReceiver_base*() {return _FlowSystemReceiver_base();}
-	inline bool isNull() {return _FlowSystemReceiver_base()==0;}
+	inline operator FlowSystemReceiver_base*() const {return _method_call();}
 
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
-
-	long receiveHandlerID() {return _FlowSystemReceiver_base()->receiveHandlerID();}
+	inline long receiveHandlerID() const {return _method_call()->receiveHandlerID();}
 };
 
 class FlowSystem_base : virtual public Object {
@@ -586,6 +532,9 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 	virtual void startObject(Object_base * node) = 0;
 	virtual void stopObject(Object_base * node) = 0;
@@ -626,65 +575,43 @@ public:
 #include "reference.h"
 
 class FlowSystem : virtual public SmartWrapper {
-protected:
-	FlowSystem_base *_FlowSystem_redirect;
-
-	inline void _assign_FlowSystem_base(FlowSystem_base *base) {
-		if(_FlowSystem_redirect != 0) _FlowSystem_redirect->_release();
-		_FlowSystem_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline FlowSystem_base *_FlowSystem_base() {
-		if(_FlowSystem_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystem_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline FlowSystem_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (FlowSystem_base *)_pool->cast("FlowSystem");
 	}
 
 public:
-	inline FlowSystem() : _FlowSystem_redirect(0) { /* nothing to be done*/ }
-	virtual ~FlowSystem();
-	inline FlowSystem(const SubClass &s) : _FlowSystem_redirect(0) {
-		_assign_FlowSystem_base(FlowSystem_base::_create(s.string()));
+	inline FlowSystem() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystem(const SubClass& s) :
+		SmartWrapper(FlowSystem_base::_create(s.string()), _Caster) {}
+	inline FlowSystem(const Reference &r) :
+		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b, _Caster) {}
+	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool) {}
+	inline FlowSystem& operator=(const FlowSystem& target) {
+		FlowSystem_base *sav = (FlowSystem_base *)_pool->cast("FlowSystem");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline FlowSystem(const Reference &r) : _FlowSystem_redirect(0) {
-		_assign_FlowSystem_base(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true)));
+	inline ~FlowSystem() {
+	if (!_pool) return;
+		FlowSystem_base *sav = (FlowSystem_base *)_pool->cast("FlowSystem");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline FlowSystem(FlowSystem& target) : _FlowSystem_redirect(0) {
-		if (target._FlowSystem_redirect)
-			_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
-	}
-	inline FlowSystem& operator=(FlowSystem& target) {		if (target._FlowSystem_redirect)
-			_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
-		return *this;
-	}
-	inline FlowSystem(FlowSystem_base *target) : _FlowSystem_redirect(0) {
-		if (target) _assign_FlowSystem_base(target->_copy());
-	}
-	inline FlowSystem& operator=(FlowSystem_base *target) {
-		if (target) _assign_FlowSystem_base(target->_copy());
-		return *this;
-	}
-	inline FlowSystem(FlowSystem_var target) : _FlowSystem_redirect(0) {
-		if ((FlowSystem_base *)target) _assign_FlowSystem_base(target->_copy());
-	}
-	inline FlowSystem& operator=(FlowSystem_var target) {
-		if ((FlowSystem_base *)target) _assign_FlowSystem_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _FlowSystem_base()->_toString();}
-	inline operator FlowSystem_base*() {return _FlowSystem_base();}
-	inline bool isNull() {return _FlowSystem_base()==0;}
+	inline operator FlowSystem_base*() const {return _method_call();}
 
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
-
-	inline void startObject(Object_base * node) {return _FlowSystem_base()->startObject(node);}
-	inline void stopObject(Object_base * node) {return _FlowSystem_base()->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _FlowSystem_base()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender& sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_var sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object_base * node) const {return _method_call()->startObject(node);}
+	inline void stopObject(Object_base * node) const {return _method_call()->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) const {return _method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) const {return _method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) const {return _method_call()->queryFlags(node, port);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) const {return _method_call()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -698,6 +625,9 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 	virtual bool put(const std::string& variable, const std::string& value) = 0;
 	virtual std::string get(const std::string& variable) = 0;
@@ -732,61 +662,40 @@ public:
 #include "reference.h"
 
 class GlobalComm : virtual public SmartWrapper {
-protected:
-	GlobalComm_base *_GlobalComm_redirect;
-
-	inline void _assign_GlobalComm_base(GlobalComm_base *base) {
-		if(_GlobalComm_redirect != 0) _GlobalComm_redirect->_release();
-		_GlobalComm_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline GlobalComm_base *_GlobalComm_base() {
-		if(_GlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _GlobalComm_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline GlobalComm_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (GlobalComm_base *)_pool->cast("GlobalComm");
 	}
 
 public:
-	inline GlobalComm() : _GlobalComm_redirect(0) { /* nothing to be done*/ }
-	virtual ~GlobalComm();
-	inline GlobalComm(const SubClass &s) : _GlobalComm_redirect(0) {
-		_assign_GlobalComm_base(GlobalComm_base::_create(s.string()));
+	inline GlobalComm() : SmartWrapper(_Creator, _Caster) {}
+	inline GlobalComm(const SubClass& s) :
+		SmartWrapper(GlobalComm_base::_create(s.string()), _Caster) {}
+	inline GlobalComm(const Reference &r) :
+		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b, _Caster) {}
+	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool) {}
+	inline GlobalComm& operator=(const GlobalComm& target) {
+		GlobalComm_base *sav = (GlobalComm_base *)_pool->cast("GlobalComm");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline GlobalComm(const Reference &r) : _GlobalComm_redirect(0) {
-		_assign_GlobalComm_base(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true)));
+	inline ~GlobalComm() {
+	if (!_pool) return;
+		GlobalComm_base *sav = (GlobalComm_base *)_pool->cast("GlobalComm");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline GlobalComm(GlobalComm& target) : _GlobalComm_redirect(0) {
-		if (target._GlobalComm_redirect)
-			_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
-	}
-	inline GlobalComm& operator=(GlobalComm& target) {		if (target._GlobalComm_redirect)
-			_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
-		return *this;
-	}
-	inline GlobalComm(GlobalComm_base *target) : _GlobalComm_redirect(0) {
-		if (target) _assign_GlobalComm_base(target->_copy());
-	}
-	inline GlobalComm& operator=(GlobalComm_base *target) {
-		if (target) _assign_GlobalComm_base(target->_copy());
-		return *this;
-	}
-	inline GlobalComm(GlobalComm_var target) : _GlobalComm_redirect(0) {
-		if ((GlobalComm_base *)target) _assign_GlobalComm_base(target->_copy());
-	}
-	inline GlobalComm& operator=(GlobalComm_var target) {
-		if ((GlobalComm_base *)target) _assign_GlobalComm_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _GlobalComm_base()->_toString();}
-	inline operator GlobalComm_base*() {return _GlobalComm_base();}
-	inline bool isNull() {return _GlobalComm_base()==0;}
+	inline operator GlobalComm_base*() const {return _method_call();}
 
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
-
-	inline bool put(const std::string& variable, const std::string& value) {return _GlobalComm_base()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return _GlobalComm_base()->get(variable);}
-	inline void erase(const std::string& variable) {return _GlobalComm_base()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) const {return _method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) const {return _method_call()->get(variable);}
+	inline void erase(const std::string& variable) const {return _method_call()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
@@ -800,6 +709,9 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 };
 
@@ -828,58 +740,36 @@ public:
 #include "reference.h"
 
 class TmpGlobalComm : virtual public GlobalComm {
-protected:
-	TmpGlobalComm_base *_TmpGlobalComm_redirect;
-
-	inline void _assign_TmpGlobalComm_base(TmpGlobalComm_base *base) {
-		if(_TmpGlobalComm_redirect != 0) _TmpGlobalComm_redirect->_release();
-		_TmpGlobalComm_redirect = base;
-		_GlobalComm_redirect = base;
-		_autoCreate = false;
-	}
-	virtual void _create();
-	inline TmpGlobalComm_base *_TmpGlobalComm_base() {
-		if(_TmpGlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _TmpGlobalComm_redirect;
+private:
+	static void* _Caster(void *p, const char* c);
+	static void* _Creator();
+	inline TmpGlobalComm_base *_method_call() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
 	}
 
 public:
-	inline TmpGlobalComm() : GlobalComm(), _TmpGlobalComm_redirect(0) { /* nothing to be done*/ }
-	virtual ~TmpGlobalComm();
-	inline TmpGlobalComm(const SubClass &s) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create(s.string()));
+	inline TmpGlobalComm() : SmartWrapper(_Creator, _Caster) {}
+	inline TmpGlobalComm(const SubClass& s) :
+		SmartWrapper(TmpGlobalComm_base::_create(s.string()), _Caster) {}
+	inline TmpGlobalComm(const Reference &r) :
+		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true)), _Caster) {}
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b, _Caster) {}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool) {}
+	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
+		TmpGlobalComm_base *sav = (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = target._pool;
+		_pool->Inc();
 	}
-	inline TmpGlobalComm(const Reference &r) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		_assign_TmpGlobalComm_base(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true)));
+	inline ~TmpGlobalComm() {
+	if (!_pool) return;
+		TmpGlobalComm_base *sav = (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
+		if (_pool->Dec() && sav) sav->_release();
+		_pool = 0;
 	}
-	inline TmpGlobalComm(TmpGlobalComm& target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		if (target._TmpGlobalComm_redirect)
-			_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
-	}
-	inline TmpGlobalComm& operator=(TmpGlobalComm& target) {		if (target._TmpGlobalComm_redirect)
-			_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
-		return *this;
-	}
-	inline TmpGlobalComm(TmpGlobalComm_base *target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		if (target) _assign_TmpGlobalComm_base(target->_copy());
-	}
-	inline TmpGlobalComm& operator=(TmpGlobalComm_base *target) {
-		if (target) _assign_TmpGlobalComm_base(target->_copy());
-		return *this;
-	}
-	inline TmpGlobalComm(TmpGlobalComm_var target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		if ((TmpGlobalComm_base *)target) _assign_TmpGlobalComm_base(target->_copy());
-	}
-	inline TmpGlobalComm& operator=(TmpGlobalComm_var target) {
-		if ((TmpGlobalComm_base *)target) _assign_TmpGlobalComm_base(target->_copy());
-		return *this;
-	}
-	inline std::string toString() {return _TmpGlobalComm_base()->_toString();}
-	inline operator TmpGlobalComm_base*() {return _TmpGlobalComm_base();}
-	inline bool isNull() {return _TmpGlobalComm_base()==0;}
-
-	virtual vector<std::string> defaultPortsIn();
-	virtual vector<std::string> defaultPortsOut();
+	inline operator TmpGlobalComm_base*() const {return _method_call();}
 
 };
 

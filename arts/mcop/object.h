@@ -114,6 +114,10 @@ public:
 		_refCnt++;
 		return this;
 	}
+	
+	// Default I/O info
+	virtual vector<std::string> _defaultPortsIn() const;
+	virtual vector<std::string> _defaultPortsOut() const;
 
 	/*
 	 * when this is true, a fatal communication error has occured (of course

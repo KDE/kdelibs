@@ -494,13 +494,13 @@ string createTypeCode(string type, const string& name, long model,
 		// the "object class" is called Object
 		if(type == "object") {
 			type = "Object";
-			wrapperMode = false;
+			wrapperMode = 0;
 		}
 
 		if(model==MODEL_MEMBER)		result = type+"_var";
 		//if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
 		if(model==MODEL_ARG) switch (wrapperMode) {
-			case 1: result = type + "&"; break;
+			case 1: result = type + ""; break;
 			case 2: result = type + "_var"; break;
 			default: result = type + "_base *";
 		}
@@ -1008,6 +1008,11 @@ void doInterfacesHeader(FILE *header)
 				       "\t\t_refCnt++;\n"
 					   "\t\treturn this;\n"
 					   "\t}\n\n",d->name.c_str());
+				
+		// Default I/O info
+		fprintf(header,"\tvirtual vector<std::string> _defaultPortsIn() const;\n");
+		fprintf(header,"\tvirtual vector<std::string> _defaultPortsOut() const;\n");
+		fprintf(header,"\n");
 
 		/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
@@ -1201,27 +1206,20 @@ void doInterfacesHeader(FILE *header)
 		// Allow connect facility only if there is something to connect to!
 		if (haveStreams(d)) {
 			fprintf(header,"#include \"flowsystem.h\"\n");
-			fprintf(header,"#include \"component.h\"\n");
 		}
 		fprintf(header,"\n");
 		
 		inherits = buildInheritanceList(*d,"");
 		bool hasParent = (inherits != "");
 
-		if (haveStreams(d)) {
-			if (hasParent) inherits = ", " + inherits;
-			else inherits = ", virtual public SmartWrapper";
-			inherits = ": virtual public Component" + inherits;
-		} else {
-			if (hasParent) inherits = ": " + inherits;
-			else inherits = ": virtual public SmartWrapper";
-		}
-		// Now create the constructor init list
+		if (hasParent) inherits = ": " + inherits;
+		else inherits = ": virtual public SmartWrapper";
+
+/*		// Now create the constructor init list
 		string parentConstructorsInit = "";
 		string parentAssignBase = "";
 		if (hasParent) {
 			vector<string>::const_iterator ii;
-			/*bool first = true;*/
 			for (ii = d->inheritedInterfaces.begin();
 				ii != d->inheritedInterfaces.end(); ii++)
 			{
@@ -1232,150 +1230,70 @@ void doInterfacesHeader(FILE *header)
 		}
 		parentConstructorsInit = " : " + parentConstructorsInit;
 		parentConstructorsInit += "_"+d->name+"_redirect(0)";
+*/
 
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
-		fprintf(header,"protected:\n");
-		/*
-		   redirection
-		 */
-		fprintf(header,"\t%s_base *_%s_redirect;\n\n",d->name.c_str(),
-		                                             d->name.c_str());
-		/*
-		   internal assignment operator -> this assigns recursively the
-		   redirect thingy to the "smart wrapper"
-		 */
-		fprintf(header,"\tinline void _assign_%s_base(%s_base *base) {\n",
-			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\tif(_%s_redirect != 0) _%s_redirect->_release();\n",
-			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\t_%s_redirect = base;\n%s",
-			d->name.c_str(),parentAssignBase.c_str());
-		fprintf(header,"\t	_autoCreate = false;\n");
-		fprintf(header,"\t}\n");
-
-		/*
-		   create operation for auto create. virtual => in the .cc
-		*/
-		fprintf(header,"\tvirtual void _create();\n");
-
-		/*
-		   access to the _redirect_%s var, which also dynamically creates
-		   the thing if it was not assigned already
-		 */
-		fprintf(header,"\tinline %s_base *_%s_base() {\n",
-								d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t\tif(_%s_redirect == 0 && _autoCreate) _create();"
-					"  // lazy on-demand creation\n", d->name.c_str());
-		fprintf(header,"\t\treturn _%s_redirect;\n",
-								d->name.c_str());
+		fprintf(header,"private:\n");
+		fprintf(header,"\tstatic void* _Caster(void *p, const char* c);\n");
+		fprintf(header,"\tstatic void* _Creator();\n");
+		fprintf(header,"\tinline %s_base *_method_call() const {\n",d->name.c_str());
+		fprintf(header,"\t\t_pool->checkcreate();\n");
+		fprintf(header,"\t\tassert(_pool->base);\n");
+		fprintf(header,"\t\treturn (%s_base *)_pool->cast(\"%s\");\n",d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t}\n");
 
 		fprintf(header,"\npublic:\n");
 
-		/* empty constructor: do nothing */
-
-		fprintf(header,"\tinline %s()%s { /* nothing to be done*/ }\n",
-			d->name.c_str(), parentConstructorsInit.c_str());
-
-		// Virtual destructor moved in the .cc
-		/* destructor - take care of reference counting */
-		fprintf(header,"\tvirtual ~%s();\n", d->name.c_str());
-
-		/* constructor from subclass - create here */
-		fprintf(header,"\tinline %s(const SubClass &s)%s {\n",
-			d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\t_assign_%s_base(%s_base::_create(s.string()));\n",
-								d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t}\n");
-
-		/* constructor from reference - convert here */
-		fprintf(header,"\tinline %s(const Reference &r)%s {\n",
-			d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\t_assign_%s_base("
-			"r.isString()?(%s_base::_fromString(r.string())):"
-			"(%s_base::_fromReference(r.reference(),true)));\n",
-			d->name.c_str(),d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t}\n");
-
-		/* constructor from other "smartwrapper" */
-		fprintf(header,"\tinline %s(%s& target)%s {\n",
-			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\tif (target._%s_redirect)\n", d->name.c_str());
-		fprintf(header,"\t\t\t_assign_%s_base(target._%s_base()->_copy());\n",
-			d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t}\n");
-
-		/* assignment from other "smartwrapper" */
-		fprintf(header,"\tinline %s& operator=(%s& target) {",
-			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\tif (target._%s_redirect)\n", d->name.c_str());
-		fprintf(header,"\t\t\t_assign_%s_base(target._%s_base()->_copy());\n",
-			d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t\treturn *this;\n");
-		fprintf(header,"\t}\n");
-
-		/* constructor from base object */
-		fprintf(header,"\tinline %s(%s_base *target)%s {\n",
-			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\tif (target)"); // NB: Watch that potential segfault!
-		fprintf(header," _assign_%s_base(target->_copy());\n",
-			d->name.c_str());
-		fprintf(header,"\t}\n");
-
-		/* assigment from base object */
-		fprintf(header,"\tinline %s& operator=(%s_base *target) {\n",
-			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\tif (target)"); // NB: Watch that potential segfault!
-		fprintf(header," _assign_%s_base(target->_copy());\n",
-			d->name.c_str());
-		fprintf(header,"\t\treturn *this;\n");
-		fprintf(header,"\t}\n");
-
-		/* constructor from var object */
-		fprintf(header,"\tinline %s(%s_var target)%s {\n",
-			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\tif ((%s_base *)target)", // NB: Watch that potential segfault!
-			d->name.c_str());
-		fprintf(header," _assign_%s_base(target->_copy());\n",
-			d->name.c_str());
-		fprintf(header,"\t}\n");
-
-		/* assigment from var object */
-		fprintf(header,"\tinline %s& operator=(%s_var target) {\n",
-			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\tif ((%s_base *)target)", // NB: Watch that potential segfault!
-			d->name.c_str());
-		fprintf(header," _assign_%s_base(target->_copy());\n",
-			d->name.c_str());
-		fprintf(header,"\t\treturn *this;\n");
-		fprintf(header,"\t}\n");
-
-		/* conversion to string */
-		fprintf(header,"\tinline std::string toString() "
-						"{return _%s_base()->_toString();}\n",d->name.c_str());
-
-		/* conversion to base* object */
-		fprintf(header,"\tinline operator %s_base*()"
-						" {return _%s_base();}\n",
-						d->name.c_str(),d->name.c_str());
-
-		/* is null reference? */
-		fprintf(header,"\tinline bool isNull() {return _%s_base()==0;}\n",
-			d->name.c_str());
-
-		if (haveStreams(d)) {
-			fprintf(header,"\n");
-			fprintf(header,"\tinline void start() {_%s_base()->_node()->start();}\n",
-						d->name.c_str());
-			// Component virtual has to be coded in the cc
-			fprintf(header,"\tScheduleNode *node();\n");
-		}
-		fprintf(header,"\n");
+		// empty constructor: specify creator for create-on-demand
+		fprintf(header,"\tinline %s() : SmartWrapper(_Creator, _Caster) {}\n",d->name.c_str());
 		
-		// Default I/O info
-		fprintf(header,"\tvirtual vector<std::string> defaultPortsIn();\n");
-		fprintf(header,"\tvirtual vector<std::string> defaultPortsOut();\n");
+		// constructors from reference and for subclass
+		fprintf(header,"\tinline %s(const SubClass& s) :\n"
+			"\t\tSmartWrapper(%s_base::_create(s.string()), _Caster) {}\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\tinline %s(const Reference &r) :\n"
+			"\t\tSmartWrapper("
+			"r.isString()?(%s_base::_fromString(r.string())):"
+			"(%s_base::_fromReference(r.reference(),true)), _Caster) {}\n",
+			d->name.c_str(),d->name.c_str(), d->name.c_str());
+
+		// copy constructors
+		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b, _Caster) {}\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool) {}\n",
+			d->name.c_str(),d->name.c_str());
+		// copy operator. copy from _base* extraneous (uses implicit const object)
+		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\t%s_base *sav = (%s_base *)_pool->cast(\"%s\");\n",
+			d->name.c_str(),d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
+		fprintf(header,"\t\t_pool = target._pool;\n");
+		fprintf(header,"\t\t_pool->Inc();\n");
+		fprintf(header,"\t}\n");
+		
+		// destructor - take care of reference counting
+		fprintf(header,"\tinline ~%s() {\n", d->name.c_str());
+		fprintf(header,"\tif (!_pool) return;\n");
+		fprintf(header,"\t\t%s_base *sav = (%s_base *)_pool->cast(\"%s\");\n",
+			d->name.c_str(),d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
+		fprintf(header,"\t\t_pool = 0;\n");
+		fprintf(header,"\t}\n");
+		
+		// conversion to string
+//		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
+		// conversion to _base* object
+		fprintf(header,"\tinline operator %s_base*() const {return _method_call();}\n",d->name.c_str());
 		fprintf(header,"\n");
+
+
+		// start, stop
+		if (haveStreams(d)) {
+			fprintf(header,"\tinline void start() const {return _method_call()->_node()->start();}\n");
+			fprintf(header,"\tinline void stop() const {return _method_call()->_node()->stop();}\n");
+			fprintf(header,"\n");
+		}
 
 		/* attributes */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
@@ -1388,15 +1306,13 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					fprintf(header,"\t%s %s() {return _%s_base()->%s();}\n",
-						rc.c_str(), ad->name.c_str(), d->name.c_str(),
-						ad->name.c_str());
+					fprintf(header,"\tinline %s %s() const {return _method_call()->%s();}\n",
+						rc.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
-					fprintf(header,"\tvoid %s(%s) {_%s_base()->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), d->name.c_str(),
-						ad->name.c_str());
+					fprintf(header,"\tinline void %s(%s) const {_method_call()->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), ad->name.c_str());
 				}
 			}
 		}
@@ -1407,36 +1323,20 @@ void doInterfacesHeader(FILE *header)
 			MethodDef *md = *mi;
 			string rc = createReturnCode(md, 1);
 			string params = createParamList(md, 1);
-			string paramsVar = createParamList(md, 2);
 			string callparams = createCallParamList(md);
 
 			// map constructor methods to the real things
 			if (md->name == "constructor") {
-				fprintf(header,"\tinline %s(%s)%s {"
-					"_assign_%s_base(%s_base::_create()); "
-					"_%s_base()->constructor(%s);}\n",d->name.c_str(),
-					params.c_str(),	parentConstructorsInit.c_str(),
-					d->name.c_str(),d->name.c_str(),d->name.c_str(),
-					callparams.c_str());
-				// Generate _var overloads if necessary
-				if (params != paramsVar) {
-					fprintf(header,"\tinline %s(%s)%s {"
-						"_assign_%s_base(%s_base::_create()); "
-						"_%s_base()->constructor(%s);}\n",d->name.c_str(),
-						paramsVar.c_str(),	parentConstructorsInit.c_str(),
-						d->name.c_str(),d->name.c_str(),d->name.c_str(),
-						callparams.c_str());
-				}
+				fprintf(header,"\tinline %s(%s) : "
+					"SmartWrapper(%s_base::_create(), _Caster) {\n"
+					"\t\tassert(_pool->base);\n"
+					"\t\t((%s_base *)_pool->cast(\"%s\"))->constructor(%s);\n\t}\n",
+					d->name.c_str(), params.c_str(), d->name.c_str(),
+					d->name.c_str(), d->name.c_str(), callparams.c_str());
 			} else {
-				fprintf(header,"\tinline %s %s(%s) {return _%s_base()->%s(%s);}\n",
+				fprintf(header,"\tinline %s %s(%s) const {return _method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
-					d->name.c_str(),md->name.c_str(), callparams.c_str());
-				// Generate _var overloads if necessary
-				if (params != paramsVar) {
-					fprintf(header,"\tinline %s %s(%s) {return _%s_base()->%s(%s);}\n",
-						rc.c_str(),	md->name.c_str(), paramsVar.c_str(),
-						d->name.c_str(),md->name.c_str(), callparams.c_str());
-				}
+					md->name.c_str(), callparams.c_str());
 			}
 		}
 		fprintf(header,"};\n\n");
@@ -1559,6 +1459,30 @@ bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& por
 	return false;
 }
 
+// generate a list of all parents. There can be repetitions
+vector<std::string> allParents(InterfaceDef& iface)
+{
+	vector<std::string> ret;
+	list<InterfaceDef *>::iterator interIt;
+	vector<std::string>::iterator si;
+	// For all inherited interfaces
+	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
+	{
+		ret.push_back(*si);
+		// Find the corresponding interface definition
+		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
+			InterfaceDef *parent = *interIt;
+			if (parent->name == (*si)) {
+				// Now add this parent's parents
+				vector<std::string> ppar = allParents(*parent);
+				ret.insert(ret.end(), ppar.begin(), ppar.end());
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
 void doInterfacesSource(FILE *source)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -1619,7 +1543,47 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t}\n");
 		fprintf(source,"\treturn result;\n");
 		fprintf(source,"}\n\n");
-	
+		
+		
+		// Default I/O info
+		vector<std::string> portsIn, portsOut;
+		vector<std::string>::iterator si, di;
+		addDefaults(*d, portsIn, defaultIn);
+		addDefaults(*d, portsOut, defaultOut);
+		
+		vector<std::string> done; // don't repeat values
+		fprintf(source,"vector<std::string> %s_base::_defaultPortsIn() const {\n",d->name.c_str());
+		fprintf(source,"\tvector<std::string> ret;\n");
+		// Loop through all the values
+		for (si = portsIn.begin(); si != portsIn.end(); si++)
+		{
+			// repeated value? (virtual public like merging...)
+			bool skipIt = false;
+			for (di = done.begin(); di != done.end(); di++) {
+				if ((*di)==(*si)) {skipIt = true; break;}
+			}
+			if (skipIt) continue;
+			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+			done.push_back(*si);
+		}
+		fprintf(source,"\treturn ret;\n}\n");
+		done.clear();
+		fprintf(source,"vector<std::string> %s_base::_defaultPortsOut() const {\n",d->name.c_str());
+		fprintf(source,"\tvector<std::string> ret;\n");
+		// Loop through all the values
+		for (si = portsOut.begin(); si != portsOut.end(); si++)
+		{
+			// repeated value? (virtual public like merging...)
+			bool skipIt = false;
+			for (di = done.begin(); di != done.end(); di++) {
+				if ((*di)==(*si)) {skipIt = true; break;}
+			}
+			if (skipIt) continue;
+			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+			done.push_back(*si);
+		}
+		fprintf(source,"\treturn ret;\n}\n\n");
+
 		// create stub
 
 		/** constructors **/
@@ -1849,65 +1813,39 @@ void doInterfacesSource(FILE *source)
 				}
 			}
 		}
+		
+		// Smartwrapper statics
+		fprintf(source,"#include <string.h>\n\n");
+		// _Caster
+		fprintf(source,"void* %s::_Caster(void *p, const char* c) {\n",d->name.c_str());
+		fprintf(source,"\tif (!p) return 0;\n");
+		fprintf(source,"\t%s_base* b = (%s_base*)p;\n",d->name.c_str(),d->name.c_str());
+		// Can cast to ourselve
+		fprintf(source,"\tif (!strcmp(c,\"%s\")) return b;\n",d->name.c_str());
+		// Can cast to any parent
+		vector<std::string> parents = allParents(*d); // don't repeat values
+		done.clear(); // don't repeat values
+		// Loop through all the values
+		for (si = parents.begin(); si != parents.end(); si++)
+		{
+			// repeated value? (virtual public like merging...)
+			bool skipIt = false;
+			for (di = done.begin(); di != done.end(); di++) {
+				if ((*di)==(*si)) {skipIt = true; break;}
+			}
+			if (skipIt) continue;
+			fprintf(source,"\tif (!strcmp(c,\"%s\")) return (%s_base*)b;\n",(*si).c_str(),(*si).c_str());
+			done.push_back(*si);
+		}
+		// Or to Object
+		fprintf(source,"\treturn (Object_base*)b;\n");
+		fprintf(source,"}\n\n");
 
-		// SmartWrapper stuff
-		/*
-		   create operation for auto create
-		*/
-		fprintf(source,"void %s::_create() {\n", d->name.c_str());
-		fprintf(source,"\t_assign_%s_base(%s_base::_create());\n",
-			d->name.c_str(),d->name.c_str());
-		fprintf(source,"}\n");
-		/* destructor - take care of reference counting */
-		fprintf(source,"%s::~%s() { _assign_%s_base(0); }\n",
-			d->name.c_str(), d->name.c_str(), d->name.c_str());
+		// _Creator
+		fprintf(source,"void* %s::_Creator() {\n",d->name.c_str());
+		fprintf(source,"\treturn %s_base::_create();\n",d->name.c_str());
+		fprintf(source,"}\n\n");
 		
-		// Default I/O info
-		vector<std::string> portsIn, portsOut;
-		vector<std::string>::iterator si, di;
-		addDefaults(*d, portsIn, defaultIn);
-		addDefaults(*d, portsOut, defaultOut);
-		
-		vector<std::string> done; // don't repeat values
-		fprintf(source,"vector<std::string> %s::defaultPortsIn() {\n",d->name.c_str());
-		fprintf(source,"\tvector<std::string> ret;\n");
-		// Loop through all the values
-		for (si = portsIn.begin(); si != portsIn.end(); si++)
-		{
-			// repeated value? (virtual public like merging...)
-			bool skipIt = false;
-			for (di = done.begin(); di != done.end(); di++) {
-				if ((*di)==(*si)) {skipIt = true; break;}
-			}
-			if (skipIt) continue;
-			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
-			done.push_back(*si);
-		}
-		fprintf(source,"\treturn ret;\n}\n\n");
-		
-		done.clear();
-		fprintf(source,"vector<std::string> %s::defaultPortsOut() {\n",d->name.c_str());
-		fprintf(source,"\tvector<std::string> ret;\n");
-		// Loop through all the values
-		for (si = portsOut.begin(); si != portsOut.end(); si++)
-		{
-			// repeated value? (virtual public like merging...)
-			bool skipIt = false;
-			for (di = done.begin(); di != done.end(); di++) {
-				if ((*di)==(*si)) {skipIt = true; break;}
-			}
-			if (skipIt) continue;
-			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
-			done.push_back(*si);
-		}
-		fprintf(source,"\treturn ret;\n}\n\n");
-		
-		if (haveStreams(d)) {
-			// Component virtual
-			fprintf(source,"ScheduleNode *%s::node() {return _%s_base()->_node();}\n\n",
-					d->name.c_str(),d->name.c_str());
-		}
-		fprintf(source,"\n");
 	}
 }
 

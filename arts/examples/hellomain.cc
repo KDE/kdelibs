@@ -45,10 +45,11 @@ int main()
 	// check result => should be null
 	if (xclient.isNull()) cout << "passed invalid reference test" << endl;
 	else cout << "fatal: an invalid reference can be decoded" << endl;
-
+	
 	// using a constructor	
 	Hello hint(3);
 	cout << hint.myValue() << endl;
+
 
 	Hello castsrc;
 	HelloBase casthint = castsrc;
@@ -60,7 +61,7 @@ int main()
 	Hello hcopy = hint;
 	hcopy.sum(5);
 	hcopy.total();
-	
+
 	// dynamic creation is OK
 	Hello* dyn = new Hello;
 	cout << dyn->concat("I am"," a dynamic hello") << endl;
