@@ -80,6 +80,9 @@ bool KStandardDirs::addResourceDir( const QString& type,
 QString KStandardDirs::findResource( const QString& type, 
 		      const QString& filename ) const
 {
+    if (filename.at(0) == '/')
+	return filename; // absolute dirs are absolute dirs, right? :-/
+
     QString dir = findResourceDir(type, filename);
     if (dir.isNull())
 	return dir;
