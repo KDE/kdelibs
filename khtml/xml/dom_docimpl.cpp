@@ -1870,6 +1870,8 @@ void DocumentImpl::recalcStyleSelector()
 
 void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
+    // don't process focus changes while detaching
+    if( !m_render ) return;
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->getDocument() != this))
         return;
