@@ -123,6 +123,7 @@ namespace KNotify
             m_tips[COL_SOUND]   = i18n("Play a sound");
             m_tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
         }
+        virtual ~KNotifyToolTip() {}
 
     protected:
         virtual void maybeTip ( const QPoint& p )
