@@ -234,14 +234,14 @@ void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLObjectElementImpl::attach(KHTMLView *w)
 {
-  if ( url.isEmpty() )
-    return; //ooops (-:
-
   khtml::RenderObject *r = _parent->renderer();
   if ( !r )
     return;
 
   m_style = document->styleSelector()->styleForElement( this );
+
+  if ( url.isEmpty() )
+    return; //ooops (-:
 
   RenderPartObject *p = new RenderPartObject( m_style, w );
   m_render = p;
@@ -266,8 +266,8 @@ HTMLParamElementImpl::HTMLParamElementImpl(DocumentImpl *doc) : HTMLElementImpl(
 
 HTMLParamElementImpl::~HTMLParamElementImpl()
 {
-    if(m_name) delete m_name;
-    if(m_value) delete m_value;
+    if(m_name) m_name->deref();
+    if(m_value) m_value->deref();
 }
 
 const DOMString HTMLParamElementImpl::nodeName() const
