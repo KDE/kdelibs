@@ -27,6 +27,46 @@ extern HelpProtocol *slave;
 #define INFO( x )
 #endif
 
+extern "C" void warningsFunc(void *ctx, const char *msg, ...);
+
+bool warnings_exist = false;
+
+void warningsFunc(void *ctx, const char *msg, ...)
+{
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+    xmlParserInputPtr input;
+    xmlParserInputPtr cur = NULL;
+
+    input = ctxt->input;
+    if ((input != NULL) && (input->filename == NULL) &&
+        (ctxt->inputNr > 1))
+    {
+        cur = input;
+        input = ctxt->inputTab[ctxt->inputNr - 2];
+    }
+
+    va_list args;
+
+    char buffer[50000];
+    buffer[0] = 0;
+
+    if (input->filename) {
+        sprintf(&buffer[strlen(buffer)], "%s:%d: ", input->filename,
+                input->line);
+    } else {
+        sprintf(&buffer[strlen(buffer)], "Entity: line %d: ", input->line);
+    }
+
+    va_start(args, msg);
+    vsprintf(&buffer[strlen(buffer)], msg, args);
+    va_end(args);
+
+    fprintf( stderr, "%s", buffer );
+    xmlParserPrintFileContext(input);
+
+    warnings_exist = true;
+}
+
 int writeToQString(void * context, const char * buffer, int len)
 {
     QString *t = (QString*)context;
@@ -68,7 +108,9 @@ QString transform( const QString &pat, const QString& tss)
     INFO(i18n("Parsing document"));
     xmlParserCtxtPtr ctxt = xmlCreateMemoryParserCtxt
                             (contents.data(),
-                                                      contents.length());
+                             contents.length());
+    ctxt->sax->warning = warningsFunc;
+
     int directory = pat.findRev('/');
     if (directory != -1)
         ctxt->directory = (char *)xmlStrdup((const xmlChar *)pat.
@@ -80,6 +122,8 @@ QString transform( const QString &pat, const QString& tss)
 QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
 {
     QString parsed;
+
+    warnings_exist = false;
 
     INFO(i18n("Parsing stylesheet"));
 
@@ -97,6 +141,7 @@ QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
 
     xmlParseDocument(ctxt);
     xmlDocPtr doc;
+
     if (ctxt->wellFormed)
         doc = ctxt->myDoc;
     else {

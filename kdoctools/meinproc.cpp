@@ -81,9 +81,11 @@ static KCmdLineOptions options[] =
 };
 
 
+
+
 int main(int argc, char **argv) {
 
-    //    xsltSetGenericDebugFunc(stderr, NULL);
+    // xsltSetGenericDebugFunc(stderr, NULL);
 
     KAboutData aboutData( "meinproc", I18N_NOOP("XML-Translator" ),
 	"$Id$",
@@ -127,11 +129,20 @@ int main(int argc, char **argv) {
                 exe = locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
-            int ret = system( QString( exe + " --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
-            chdir( pwd_buffer );
-            if ( ret ) {
-                exit( 1 );
+            FILE *xmllint = popen( QString( exe + " --catalogs --valid --nowarning --noout %1 2>&1" ).arg( file.fileName() ).local8Bit().data(), "r");
+            bool noout = true;
+            while ( !feof( xmllint ) ) {
+                int c;
+                c = fgetc( xmllint );
+                if ( c != EOF ) {
+                    fputc( c, stderr );
+                    noout = false;
+                }
             }
+            pclose( xmllint );
+            chdir( pwd_buffer );
+            if ( !noout )
+                return 1;
         } else {
             kdWarning() << "couldn't find xmllint" << endl;
         }
@@ -194,6 +205,9 @@ int main(int argc, char **argv) {
             fprintf(stderr, "unable to parse %s\n", args->arg( 0 ));
             return(1);
         }
+
+        if ( warnings_exist )
+            return( 1 );
 
         QString cache = args->getOption( "cache" );
         if ( !cache.isEmpty() ) {
