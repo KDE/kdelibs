@@ -24,10 +24,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.90 Beta >= 20000531"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000608"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 2
+#define KDE_VERSION_RELEASE 3
 
 class KConfig;
 class KCharsets;
@@ -743,6 +743,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.160  2000/06/06 22:53:35  gehrmab
+// Beauty and wellness for the API documentation
+//
 // Revision 1.159  2000/06/03 23:19:28  gehrmab
 // For consistency, moved contrast() from KApplication to KGlobalSettings, like the colors. Also, some Qt settings like the double click interval are propagated to QApplication now
 //
