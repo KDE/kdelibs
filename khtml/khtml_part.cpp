@@ -509,6 +509,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_redirectionTimer.stop();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
+
   if ( d->m_frames.count() == 0 && (url.htmlRef() != m_url.htmlRef()) && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
@@ -1754,6 +1755,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
     if ( frame )
     {
+	args.metaData()["referrer"]=m_url.url();
       requestObject( frame, cURL, args );
       return;
     }
@@ -1773,6 +1775,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   else
   {
     // New URL.
+    if (!m_url.url().isEmpty())
+	args.metaData()["referrer"]=m_url.url();
     emit d->m_extension->openURLRequest( cURL, args );
   }
 }
