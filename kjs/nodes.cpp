@@ -750,16 +750,6 @@ Value FunctionCallNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Expression does not allow calls.");
   }
 
-#if KJS_MAX_STACK > 0
-  static int depth = 0; // sum of all concurrent interpreters
-  if (++depth > KJS_MAX_STACK) {
-#ifndef NDEBUG
-    printInfo(exec, "Exceeded maximum function call depth", v, line);
-#endif
-    return throwError(exec, RangeError, "Exceeded maximum call stack size.");
-  }
-#endif
-
   Value thisVal;
   if (e.type() == ReferenceType)
     thisVal = e.getBase(exec);
@@ -783,10 +773,6 @@ Value FunctionCallNode::evaluate(ExecState *exec)
 
   Object thisObj = Object::dynamicCast(thisVal);
   Value result = func.call(exec,thisObj, argList);
-
-#if KJS_MAX_STACK > 0
-  --depth;
-#endif
 
   return result;
 }
