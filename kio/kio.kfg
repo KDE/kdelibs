@@ -1,9 +1,10 @@
 kioslave 'common' 
 {
-	connectTimeout<long> = 60;
 	readTimeout<long> = 5;
 	readTimeoutNoResume<long> = 15;
 	markPartial<bool> = true;
+	automaticResume<bool> = false;
+	minimumKeepSize<long> = 5000;
 };
 
 kioslave 'file' 
