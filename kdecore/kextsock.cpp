@@ -1208,7 +1208,7 @@ int KExtendedSocket::connect()
 	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
 	      // this could be EWOULDBLOCK
-	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
+	      if (errno != EWOULDBLOCK && errno != EINPROGRESS && error != ENOENT && errno != 0)
 		{
 		  kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 		  setError(IO_ConnectError, errno);
