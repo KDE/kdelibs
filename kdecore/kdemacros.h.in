@@ -20,6 +20,9 @@
 #ifndef _KDE_MACROS_H_
 #define _KDE_MACROS_H_
 
+/* Set by configure */
+#undef __KDE_HAVE_GCC_VISIBILITY
+
 /**
  * The KDE_NO_EXPORT macro marks the symbol of the given variable 
  * to be hidden. A hidden symbol is stripped during the linking step, 
@@ -34,7 +37,7 @@
  * \end
  */
 
-#if @HAVE_GCC_VISIBILITY@
+#ifdef __KDE_HAVE_GCC_VISIBILITY
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #define KDE_EXPORT __attribute__ ((visibility("default")))
 #elif defined(Q_WS_WIN)
