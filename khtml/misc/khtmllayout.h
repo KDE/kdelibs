@@ -65,7 +65,9 @@ namespace khtml
         
         bool operator!=(const Length& o) const
 	{
-	    return type!=o.type || value!=o.value;
+	    // rikkus: work around bug in gcc 2.95.3
+	    // type!=o.type || value!=o.value;
+	    return ! operator == (o);
 	}
 	
 	/*
