@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.2  1999/11/02 08:50:00  ssk
+// More internal flags.
+//
 // Revision 1.1  1999/09/21 11:03:54  waba
 // WABA: Clean up interface
 //
@@ -30,6 +33,7 @@
 #define _KTOOLBARITEM_H
 
 #include <qwidget.h>
+#include <qlist.h>
 
 class KToolBar;
 
