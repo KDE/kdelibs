@@ -21,15 +21,55 @@ class Shell : public KTMainWindow
 public:
     enum SelectionPolicy { Direct, TriState };
 
+    /**
+     *  Constructor.
+     *
+     *  Initailizes the shell with menubar, toolbars, statusbar and view.
+     *
+     *  @param parent Parent widget of the shell.
+     *  @param name   Name of the shell widget.
+     *
+     *  @ref initShell
+     */
     Shell( QWidget* parent = 0, const char* name = 0 );
+
+    /**
+     *  Destructor.
+     */
     ~Shell();
 
+    /**
+     *  Initializes the shell.
+     *
+     *  Initailizes the shell with menubar, toolbars, statusbar and view. 
+     */
     virtual void initShell();
 
+    /**
+     *  Retrieves the action collection of the shell.
+     *
+     *  @ref action
+     */
     QActionCollection* actionCollection();
 
+    /**
+     *  Sets the main part of this shell.
+     */
     virtual void setRootPart( Part* );
+    
+    /**
+     *  Retrieves the main part of this shell
+     *
+     *  @ref setRootPart
+     *  @ref rootView
+     */
     Part* rootPart();
+
+    /**
+     *  Retrieves the main view of this shell.
+     *
+     *  @ref rootPart
+     */
     View* rootView();
 
     /**
@@ -51,6 +91,9 @@ public:
     void setSelectionPolicy( SelectionPolicy );
     SelectionPolicy selectionPolicy();
 
+    /**
+     *  Creates a new statusbar, activates it and returns the pointer to it.
+     */
     KStatusBar *createStatusBar();
 
     KToolBar *viewToolBar( const char *name );
@@ -83,8 +126,25 @@ protected:
     bool eventFilter( QObject*, QEvent* );
 
     QString readConfigFile( const QString& filename ) const;
+
+    /**
+     *  Retrieves the resource file of this shell.
+     *
+     *  You have to overload it to retrieve your special resource file.
+     *
+     *  @return Name of the resource file.
+     */
     virtual QString configFile() const = 0;
 
+    /**
+     *  Retrieves an actioen given by its name.
+     *
+     *  @param name Name of the action.
+     *
+     *  @return The action or NULL if no action with given name found.
+     *
+     *  @ref actionCollection
+     */
     QAction* action( const char* name, bool shell = FALSE );
 
 private:
