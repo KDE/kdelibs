@@ -336,11 +336,16 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 		     i18n("Cannot save the file, will close it now."),
 		     i18n("File error"));
 		  closeFile(false);
+		  state=NoFile;
 		  rc=PermDenied;
+		} else {
+		  state=NoError;
+		  rc=NoError;
 		}
 	      break; // no error if we could save the file
 	    default: // close
 	      closeFile(false);
+	      state=NoFile;
 	      rc=NoSuchFile;
 	      break;
 	    }
@@ -381,6 +386,7 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
   // -----
   if(rc==NoError)
     {
+      data->watch(true);
       updateMirrorMap();
     }
   // -----
@@ -553,6 +559,7 @@ void
 AddressBook::dataFileChanged()
 {
   // ###########################################################################
+  data->watch(false); // will be restarted after successful load
   load();
   // ###########################################################################
 }
