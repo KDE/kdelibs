@@ -654,6 +654,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         // Double click mode ?
         if ( !d->bUseSingle )
         {
+            viewport()->unsetCursor();
             emit executed( item );
             emit executed( item, pos, c );
         }
@@ -668,6 +669,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 
             //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
             if( !( ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
+                viewport()->unsetCursor();
                 emit executed( item );
                 emit executed( item, pos, c );
             }
