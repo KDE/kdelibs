@@ -1,6 +1,13 @@
-// $Id$
-//
-/* $Log$
+/* $Id$
+ *
+ * $Log$
+ * Revision 1.29  1997/09/13 05:51:39  kalle
+ * new features in KDebug
+ * - asserts
+ * - varargs
+ * - output to syslog
+ * - areas implemented
+ *
  * Revision 1.28  1997/09/12 10:27:58  kulow
  * corrected some problems (noinstall <=> noinst and removed some / * in commentars)
  *
