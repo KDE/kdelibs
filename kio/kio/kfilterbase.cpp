@@ -41,10 +41,7 @@ void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
 
 KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
-    KURL url;
-    url.setPath( fileName );
-    kdDebug(7005) << "KFilterBase::findFilterByFileName url=" << url.url() << endl;
-    KMimeType::Ptr mime = KMimeType::findByURL( url );
+    KMimeType::Ptr mime = KMimeType::findByPath( fileName );
     kdDebug(7005) << "KFilterBase::findFilterByFileName mime=" << mime->name() << endl;
     return findFilterByMimeType(mime->name());
 }
