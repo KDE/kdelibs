@@ -1292,7 +1292,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
 
-  l = new QLabel(i18n("Sticky"), gb);
+  l = new QLabel(i18n("File permission, sets user or group ID on execution", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
 
   bool enablePage = (isMyFile || IamRoot) && (!isLink);
