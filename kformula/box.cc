@@ -1,6 +1,7 @@
 #include "box.h"
 #include "kformula.h"
 #include <stdio.h>
+#include <ctype.h>
 
 //----------------------CONSTRUCTORS AND DESTRUCTORS------------
 //most things they initialize get changed before they are used anyway.
@@ -145,7 +146,19 @@ void box::calculate(QPainter &p, int setFontsize)
 	break;
       }
       //if the box is not empty:
-      rect = fm.boundingRect(text);
+      if(isspace((char)text[text.length() - 1])) {
+	// we have a space at the end so count it!
+	QString temptext = text;
+
+	temptext.append(".");
+
+	rect = fm.boundingRect(temptext);
+
+	rect.setRight(rect.right() - fm.boundingRect(".").width() - 1);
+      }
+      else {
+	rect = fm.boundingRect(text);
+      }
       rect.moveBy(0, -fm.boundingRect("+").center().y());
       break;
 
@@ -552,7 +565,7 @@ QRect box::getCursorPos(charinfo i, int x, int y)
 	      fm.height() * 3 / 4);
 
   switch(type) {
-  case TEXT: //just the position in the text.
+  case TEXT: {//just the position in the text.
     //The assert should be returned when the posinstr bug is fixed.
     //ASSERT(i.posinbox <= (int)text.length());
     if(i.posinbox > (int)text.length()) i.posinbox = (int)text.length();
@@ -560,10 +573,21 @@ QRect box::getCursorPos(charinfo i, int x, int y)
       tmp.setX(rect.center().x() + x - 1);
       break;
     }
+    
+    //to make sure the spaces at the end are computed, we append a . and
+    //then subtract off its width (also tweak it a few pixels since
+    //there is a space between the last char and the dot).
+    QString temptext(text, i.posinbox + 1);
+    temptext.append(".");
+
     if(i.posinbox == 0) tmp.setX(rect.left() + x - 1); 
-    else tmp.setX(fm.boundingRect(text, i.posinbox).right() + x + 1);
+    else tmp.setX(fm.boundingRect(temptext).right() + x - 1 -
+		  fm.boundingRect(".").width());
+
 
     break;
+
+  }
 
   case PLUS:
   case SLASH:

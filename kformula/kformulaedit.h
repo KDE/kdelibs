@@ -22,15 +22,22 @@ class KFormulaEdit : public QWidget
 {
   Q_OBJECT
 public:
-  KFormulaEdit(QWidget * parent=0, const char *name=0, WFlags f=0);
+  KFormulaEdit(QWidget * parent=0, const char *name=0, WFlags f=0, bool r = 0);
+  KFormulaEdit(bool r) {
+    KFormulaEdit(0, 0, 0, r);
+  }
   virtual ~KFormulaEdit();
   void setText(QString text);
   QString text() { return formText; }
   void redraw(int all = 1);
   KFormula *getFormula() { return form; }
 
+  QSize sizeHint();
+  QSizePolicy sizePolicy();
+
 protected:
   QArray<_cursorInfo> cursorCache;
+  bool restricted;  //whether for typesetting or evaluation
   int cacheState;
   QPixmap pm;       //double buffering
   KFormula *form;

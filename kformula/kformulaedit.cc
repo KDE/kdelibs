@@ -3,7 +3,9 @@
 #include "box.h"
 #include "MatrixDialog.h"
 #include <qkeycode.h>
+#include <qdrawutil.h>
 #include <stdio.h>
+#include <ctype.h>
 
 //initialize the static clipboard
 QString KFormulaEdit::clipText;
@@ -33,10 +35,12 @@ QString KFormulaEdit::clipText;
 //-----------------------CONSTRUCTOR--------------------
 //Plain vanilla constructor--just initialization
 
-KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name, WFlags f) :
+KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
+			   WFlags f, bool r) :
   QWidget(parent, name, f)
 {
-  form = new KFormula;
+  restricted = r;
+  form = new KFormula(r);
   pm.resize(width(), height());
   setBackgroundMode(PaletteBase);
   setFocusPolicy(StrongFocus);
@@ -91,6 +95,21 @@ KFormulaEdit::~KFormulaEdit()
   form = NULL;
 }
 
+//---------------------------SIZE HINT--------------------------
+QSize KFormulaEdit::sizeHint()
+{
+  return QSize(
+	       QMAX(form->size().width(), 350),
+	       QMAX(form->size().height(), 200)
+	       );
+}
+
+//---------------------------SIZE POLICY--------------------------
+QSizePolicy KFormulaEdit::sizePolicy()
+{ // the widget is willing to grow.
+  return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+}
+
 //-------------------------SET TEXT (slot)----------------------
 //reset the text for the formula--clear all undo and redo as well
 void KFormulaEdit::setText(QString text)
@@ -135,7 +154,7 @@ void KFormulaEdit::redraw(int all)
 
   temp.insert(cursorPos, '$');
 
-  fprintf(stderr, "\r%s       ", temp.ascii());*/
+  printf("\r%s       ", temp.ascii());*/
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -189,7 +208,11 @@ void KFormulaEdit::redraw(int all)
     }
 
     p.fillRect(tmp, QBrush(backgroundColor()));
+
+    p.setRasterOp(CopyROP);
   }
+
+  qDrawPlainRect(&p, 0, 0, width(), height(), Qt::black);
 
   p.end();
 
@@ -1159,6 +1182,12 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
 void KFormulaEdit::insertChar(QChar c)
 {
+
+  if(restricted) { // we need to limit to only those things
+                   // which can be evaluated.
+    if(!isalnum((char)c) && !isspace((char)c) && (char)c != '.' &&
+       !(KFormula::eval()).contains(c)) return;
+  }
 
   if(!(KFormula::loc() + KFormula::delim() + QChar(DIVIDE) +
        QChar(SQRT) + QChar(MATRIX) + KFormula::bigop()).contains(c)) {

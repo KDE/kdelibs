@@ -5,6 +5,7 @@
 #include <qpainter.h>
 #include <qcstring.h>
 #include <qrect.h>
+#include <qstrlist.h>
 #include "box.h"
 
 struct charinfo { // used to determine where each character gets
@@ -24,6 +25,15 @@ int operator==(struct charinfo a, struct charinfo b);
 #define L_BRACE_UNSEEN QChar(129)
 #define R_BRACE_UNSEEN QChar(130)
 
+enum ErrorType {
+  NO_ERROR = 0,
+  DIVISION_BY_ZERO,
+  ROOT_OF_NEGATIVE,
+  UNDEFINED_VARIABLE,
+  EMPTY_BOX,
+  PARSE_ERROR
+};
+
 class KFormula {
 private:
 
@@ -32,12 +42,15 @@ private:
   static QString *LOC;     //powers, subscripts, above, below
   static QString *DELIM;   //parentheses, absolute value, etc
   static QString *BIGOP;   //sums, products, integrals
+  static QString *EVAL;    //things we can evaluate
 
   static void initStrings(void);
 
+  bool restricted; // if will be evaluated
+
 public:
-  KFormula();
-  KFormula(int x, int y);
+  KFormula(bool r = FALSE);
+  KFormula(int x, int y, bool r = FALSE);
   virtual ~KFormula();
 
   void redraw(QPainter &p);
@@ -47,6 +60,9 @@ public:
   void parse(QString text, QArray<charinfo> *info = NULL);
   QString unparse(box *b = NULL);
   QRect getCursorPos(charinfo i);
+  double evaluate(QStrList vars, QArray<double> vals,
+		  int *error = NULL, box *b = NULL);
+  QSize size();
 
 protected:
   QArray<box *> boxes;
@@ -62,6 +78,7 @@ public:
   static QString loc() { initStrings(); return *LOC; }
   static QString delim() { initStrings(); return *DELIM; }
   static QString bigop() { initStrings(); return *BIGOP; }
+  static QString eval() { initStrings(); return *EVAL; }
 };
 
 

@@ -1,7 +1,9 @@
 #include "kformula.h"
 #include "box.h"
 #include "matrixbox.h"
+#include "math.h"
 #include <stdio.h>
+#include <ctype.h>
 
 //initialize the static members:
 QString *KFormula::SPECIAL = NULL;
@@ -9,6 +11,7 @@ QString *KFormula::DELIM = NULL;
 QString *KFormula::INTEXT = NULL;
 QString *KFormula::LOC = NULL;
 QString *KFormula::BIGOP = NULL;
+QString *KFormula::EVAL = NULL;
 
 void KFormula::initStrings(void)
 {
@@ -18,6 +21,7 @@ void KFormula::initStrings(void)
   LOC = new QString();
   INTEXT = new QString();
   BIGOP = new QString();
+  EVAL = new QString();
   
   *SPECIAL += (QChar('{'));
   *SPECIAL += (QChar('}'));
@@ -61,20 +65,32 @@ void KFormula::initStrings(void)
   *BIGOP += (QChar(INTEGRAL));
   *BIGOP += (QChar(SUM));
   *BIGOP += (QChar(PRODUCT));
+
+  *EVAL += (QChar(PLUS));
+  *EVAL += (QChar(MINUS));
+  *EVAL += (QChar(TIMES));
+  *EVAL += (QChar(DIVIDE));
+  *EVAL += (QChar(SLASH));
+  *EVAL += (QChar(POWER));
+  *EVAL += (QChar(PAREN));
+  *EVAL += (QChar(ABS));
+  *EVAL += (QChar(SQRT));
 }
 
 //This class stores and displays the formula
 
 //---------------------CONSTRUCTORS AND DESTRUCTORS-----------------
-KFormula::KFormula()
+KFormula::KFormula(bool r)
 {
   posx = posy = 0;
+  restricted = r;
 }
 
-KFormula::KFormula(int x, int y)
+KFormula::KFormula(int x, int y, bool r)
 {
   posx = x;
   posy = y;
+  restricted = r;
 }
 
 KFormula::~KFormula()
@@ -92,6 +108,15 @@ QRect KFormula::getCursorPos(charinfo i)
   QRect tmp = boxes[boxes.size() - 1]->getRect();
   return boxes[boxes.size() - 1]->getCursorPos(i, posx - tmp.center().x(),
 				 posy - tmp.center().y());
+}
+
+//--------------------------------SIZE------------------------------
+QSize KFormula::size()
+{
+  if(boxes.size() == 0) return QSize(0, 0);
+
+  return QSize(boxes[boxes.size() - 1]->getRect().width(),
+	       boxes[boxes.size() - 1]->getRect().height());
 }
 
 //--------------------------------REDRAW----------------------------
@@ -170,6 +195,161 @@ QString KFormula::unparse(box *b)
   return x;
 }
 
+//------------------------------EVALUATE--------------------------------
+//default value of b is NULL
+//if it's a text box, looks up variables vars and their values
+//in vals and returns them.  otherwise, evaluates the children and
+//does whatever is necessary to them.
+double KFormula::evaluate(QStrList vars, QArray<double> vals,
+			  int *error, box *b)
+{
+  if(!restricted) return 0; // evaluate only if restricted
+
+  int alloced_error = 0;
+
+  if(error == NULL) {
+    error = new int;
+    alloced_error = 1;
+  }
+
+  *error = NO_ERROR;
+
+  //instead of return to deallocate error if necessary:
+#define RET(x) { if(alloced_error) delete error; return (x); }
+
+  if(b == NULL) b = boxes[boxes.size() - 1];
+
+  if(b->type == TEXT) {
+    QString temptext = b->text.stripWhiteSpace();
+
+    if(temptext.length() > 0) { //is it empty?
+      double x;
+      bool ok;
+      char varname[1024];
+
+      x = temptext.toDouble(&ok);
+      if(ok) return x; // we have a number
+
+      strcpy(varname, temptext.ascii());
+
+      int i = vars.find(varname);
+      if(i != -1) RET(vals[i])
+      else { // variable not found
+	*error = UNDEFINED_VARIABLE;
+	RET(0);
+      }
+    }
+    if(b->parent == NULL) {
+      *error = EMPTY_BOX;
+      RET(0)
+    }
+    if(b->parent->type == SQRT && b->parent->b1 == b) RET(2);
+    if(b->parent->type == MINUS && b->parent->b1 == b) RET(0);
+    if(b->parent->type == PLUS && b->parent->b1 == b) RET(0);
+    if(delim().contains(QChar(b->parent->type)) && b->parent->b1 == b) RET(0);
+
+    if(b->parent->type == CAT) RET(1); // cat is multiplication
+    
+    *error = EMPTY_BOX;
+    RET(0)
+  }
+
+  double b1 = 0, b2 = 0;
+  int undefined_in_b1 = 0; // whether b1 had an undefined variable
+
+  if(b->b1 != NULL) b1 = evaluate(vars, vals, error, b->b1);
+
+  if(*error == UNDEFINED_VARIABLE && b->type == CAT) {
+    *error = 0; // it may be a function!
+    undefined_in_b1 = 1;
+  }
+  
+  if(*error) RET(0)
+
+  if(b->b2 != NULL) b2 = evaluate(vars, vals, error, b->b2);
+
+  if(*error) RET(0)
+
+  switch(b->type) {
+  case PLUS:
+    RET(b1 + b2)
+    break;
+  case MINUS:
+    RET(b1 - b2)
+    break;
+  case TIMES:
+    RET(b1 * b2)
+    break;
+  case SLASH:
+  case DIVIDE: {
+    if(b2 != 0)
+      RET(b1 / b2)
+    else {
+      *error = DIVISION_BY_ZERO;
+      RET(0)
+    }
+    break;
+  }
+  case POWER:
+    RET(pow(b1, b2))
+    break;
+  case SQRT:
+    if(b1 == 0) {
+      *error = DIVISION_BY_ZERO;
+      RET(0)
+    }
+
+    if(b2 < 0) {
+      *error = ROOT_OF_NEGATIVE;
+      RET(0)
+    }
+
+    RET(pow(b2, 1 / b1))
+
+    break;
+  case PAREN:
+    RET(b2)
+    break;
+  case ABS:
+    RET(fabs(b2))
+    break;
+  case CAT: // multiply variables or evaluate functions
+    if(!undefined_in_b1) RET(b1 * b2)
+
+      if(b->b1->type != TEXT) {
+	*error = PARSE_ERROR;
+	RET(0);
+      }
+
+    QString fun = b->b1->text.stripWhiteSpace();
+
+    if(!strcmp(fun.ascii(), "sqrt")) RET(sqrt(b2))
+    if(!strcmp(fun.ascii(), "log")) RET(log(b2))
+    if(!strcmp(fun.ascii(), "exp")) RET(exp(b2))
+    if(!strcmp(fun.ascii(), "floor")) RET(floor(b2))
+    if(!strcmp(fun.ascii(), "ceil")) RET(ceil(b2))
+    if(!strcmp(fun.ascii(), "abs")) RET(fabs(b2))
+
+    if(!strcmp(fun.ascii(), "sin")) RET(sin(b2))
+    if(!strcmp(fun.ascii(), "cos")) RET(cos(b2))
+    if(!strcmp(fun.ascii(), "tan")) RET(tan(b2))
+    if(!strcmp(fun.ascii(), "sinh")) RET(sinh(b2))
+    if(!strcmp(fun.ascii(), "cosh")) RET(cosh(b2))
+    if(!strcmp(fun.ascii(), "tanh")) RET(tanh(b2))
+
+    if(!strcmp(fun.ascii(), "asin")) RET(asin(b2))
+    if(!strcmp(fun.ascii(), "acos")) RET(acos(b2))
+    if(!strcmp(fun.ascii(), "atan")) RET(atan(b2))
+    if(!strcmp(fun.ascii(), "asinh")) RET(asinh(b2))
+    if(!strcmp(fun.ascii(), "acosh")) RET(acosh(b2))
+    if(!strcmp(fun.ascii(), "atanh")) RET(atanh(b2))
+    
+    break;
+  }
+  
+  RET(0)
+}
+
 //INSERTED goes through the charinfo array and increments posinstr
 //for all the characters after the one that was inserted.
 
@@ -213,6 +393,24 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     if(text[i] == QChar(R_BRACE_UNSEEN)) text[i] = QChar(R_GROUP);
   }
 
+  if(restricted) {
+    //isolate numbers from letters for evaluation:
+    //and insert cats after spaces
+    for(i = 0; i < (int)text.length() - 1; i++)
+      {
+	if(isdigit((char)text[i]) &&
+	   isalpha((char)text[i + 1])) {
+	  text.insert(i + 1, QChar(CAT));
+	  INSERTED(i + 1);
+	  i++;
+	}
+	else if((char)text[i] == ' ' && (char)text[i + 1] != ' ') {
+	  text.insert(i + 1, QChar(CAT));
+	  INSERTED(i + 1);
+	  i++;
+	}
+      }
+  }
 
   //isolate all symbols from text:
   for(i = 0; i < (int)text.length(); i++)
@@ -269,18 +467,18 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     i++;
   }
 
-  //concatenation
+  //slash and multiplication
   for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(CAT)) continue;
+    if(text[i] != QChar(SLASH) && text[i] != QChar(TIMES)) continue;
     parenthesize(text, i, info);
     i++;
   }
 
-  //multiplication and slash
-  for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(TIMES) && text[i] != QChar(SLASH)) continue;
+  //concatenation--backwards for evaluation
+  for(i = 0; i < (int)text.length(); i++) {
+    if(text[i] != QChar(CAT)) continue;
     parenthesize(text, i, info);
-    i++;
+    i += 3;
   }
 
   //locational things: should not be reversed despite order of ops.
