@@ -145,7 +145,7 @@ void KApplication::init()
   QString configPath = KApplication::localkdedir();
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   // But we'll check at least for access permissions (for SUID case)
-  if ( checkAccess(configPath, W_OK) ) {
+  if ( (QDir::home() != QDir::root()) && checkAccess(configPath, W_OK) ) { 
     if ( mkdir (configPath.data(), 0755) == 0) {  // make it public(?)
       chown(configPath.data(), getuid(), getgid());
       configPath += "/share";
@@ -837,22 +837,18 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         if(!dlregistered){
             dlregistered = true;
             lt_dlinit();
-            lt_dladdsearchdir((localkdedir() + "/share/apps/kstyle/modules").ascii());
-            lt_dladdsearchdir(locate("bin", "../lib").ascii());
         }
 
-        QDir dir(localkdedir() + "/share/apps/kstyle/modules/", styleStr);
-        if(!dir.count()){
-            dir.setPath(locate("bin", "../lib/"));
-            if(!dir.count()){
-                warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
-                pKStyle = 0;
-                setStyle(new QPlatinumStyle);
-                return;
-            }
+        if(locate("lib", styleStr)) {
+          styleStr = locate("lib", styleStr);
+          styleHandle = lt_dlopen(styleStr.ascii());
         }
-        styleStr = dir.path() + "/" + styleStr;
-        styleHandle = lt_dlopen(styleStr.ascii());
+        else {
+          warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
+          pKStyle = 0;
+          setStyle(new QPlatinumStyle);
+          return;
+        }
 
         if(!styleHandle){
             warning("KApp: Unable to open style plugin %s (%s).", 
@@ -877,7 +873,6 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
                 alloc_ptr = (KStyle* (*)(void))alloc_func;
                 pKStyle = alloc_ptr();
                 if(pKStyle){
-                    warning("KApp: Style plugin successfully allocated.");
                     setStyle(pKStyle);
                 }
                 else{
