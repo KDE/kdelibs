@@ -255,7 +255,7 @@ if test -z "$show_help"; then
       $run $mv $obj $libobj || exit 1
     fi
 
-    if test "build_old_libs" = yes; then
+    if test "$build_old_libs" = yes; then
     # Compile the position-dependent object.
     $show "$base_compile $srcfile"
     if eval "$run $base_compile $srcfile"; then :
