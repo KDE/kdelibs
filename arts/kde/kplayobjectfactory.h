@@ -76,8 +76,6 @@ class POFHelper;
 	 */
 class PlayObjectFactory// : public QObject ### for KDE4 make it a QObject to be able to receive signals
 {
-	//Q_OBJECT
-
 public:
 	/**
 	 * Creates a KDE::PlayObjectFactory. @p server is an 

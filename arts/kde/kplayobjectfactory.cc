@@ -237,8 +237,6 @@ void KDE::POFHelper::connectAmanPlay()
 	Arts::connect( po->object(), "right", ap->amanPlay(), "right" );
 }
 
-#include "kplayobjectfactory.moc"
-
 #include "kplayobjectfactory_p.moc"
 
 // vim: sw=4 ts=4 noet
