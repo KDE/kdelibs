@@ -75,7 +75,7 @@
 #include <kprotocolinfo.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> 
+#include <kstartupinfo.h>
 #endif
 
 #include <dcopclient.h>
@@ -100,7 +100,7 @@
 #include <netdb.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
-#include <netwm.h> 
+#include <netwm.h>
 #endif
 
 #include "kprocctrl.h"
@@ -126,7 +126,7 @@
 #endif
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> 
+#include <kipc.h>
 #endif
 
 #include "kappdcopiface.h"
@@ -754,7 +754,7 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &kde_net_wm_user_time;
       names[n++] = (char *) "_NET_WM_USER_TIME";
-      
+
       atoms[n] = &kde_xdnd_drop;
       names[n++] = (char *) "XdndDrop";
 
@@ -1612,7 +1612,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                     && _event->xclient.data.l[ 4 ] == 0
                     && _event->xclient.data.l[ 3 ] != 0 )
                     {
-                    if( qt_x_user_time == 0 
+                    if( qt_x_user_time == 0
                         || ( _event->xclient.data.l[ 3 ] - qt_x_user_time ) < 100000U )
                         { // and the timestamp looks reasonable
                         qt_x_user_time = _event->xclient.data.l[ 3 ]; // update our qt_x_user_time from it
@@ -2786,7 +2786,7 @@ void KApplication::allowURLAction(const QString &action, const KURL &_baseURL, c
 {
   if (authorizeURLAction(action, _baseURL, _destURL))
      return;
-     
+
   d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
         ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
                   _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
