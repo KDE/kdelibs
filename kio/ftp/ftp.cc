@@ -358,9 +358,9 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  *
  * @return true on success.
  */
-bool Ftp::ftpLogin( const QString & user )
+bool Ftp::ftpLogin( const QString & )
 {
-  kdDebug(7102) << "ftpLogin " << user << endl;
+  kdDebug(7102) << "ftpLogin " << m_user << endl;
   infoMessage( i18n("Sending login information") );
 
   assert( !m_bLoggedOn );
@@ -370,8 +370,12 @@ bool Ftp::ftpLogin( const QString & user )
     QString msg;
     QCString tempbuf;
     int failedAuth = 0;
-    KURL url( QString::fromLatin1("ftp://%1:%2").arg(m_host).arg(m_port) );
 
+    // Construct the URL to be used as key for caching.
+    KURL url;
+    url.setProtocol( QString::fromLatin1("ftp") );
+    url.setHost( m_host );
+    url.setPort( m_port );
 
     while( ++failedAuth )
     {
@@ -392,10 +396,11 @@ bool Ftp::ftpLogin( const QString & user )
       // but no password.
       if( failedAuth > 1 || (!m_user.isEmpty() && m_pass.isEmpty()) )
       {
-        QString user = (m_user == FTP_LOGIN && m_pass == FTP_PASSWD) ? QString::null : m_user;
-        if( checkCachedAuthentication( url, user , m_pass ) )
+        QString usr = (m_user == FTP_LOGIN &&
+                       m_pass == FTP_PASSWD) ? QString::null : m_user;
+        if ( checkCachedAuthentication( url, usr , m_pass ) )
         {
-          m_user = user;
+          m_user = usr;
         }
         else
         {
@@ -403,14 +408,14 @@ bool Ftp::ftpLogin( const QString & user )
                      "<center><b>%1</b></center>"
                      "Enter login information:").arg(m_host);
 
-          if ( !openPassDlg( msg, user, m_pass ) )
+          if ( !openPassDlg( msg, usr, m_pass ) )
           {
             error( ERR_USER_CANCELED, m_host );
             return false;
           }
           else
           {
-            m_user = user;
+            m_user = usr;
           }
         }
       }
@@ -438,7 +443,6 @@ bool Ftp::ftpLogin( const QString & user )
 
       if( loggedIn )
       {
-        kdDebug(7102) << "Logged in successfully!" << endl;
         // Do not cache the default login!!
         if( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
           cacheAuthentication(url, m_user, m_pass);
@@ -487,16 +491,17 @@ bool Ftp::ftpLogin( const QString & user )
 
   kdDebug(7102) << "2> " << rspbuf << endl;
 
-  char *p = rspbuf;
-  while ( isdigit( *p ) ) p++; // skip return code
-  while ( *p == ' ' || *p == '\t' ) p++; // and leading spaces
-  if ( *p != '"' ) // Look for first "
-    return true;
-  char *p2 = (char*)strchr( p + 1, '"' ); // Look for second "
-  if ( p2 == 0L )
-    return true;
-  *p2 = 0;
-  m_initialPath = p + 1; // Extract path
+  char *p = strchr( rspbuf+3, '"' ); // Look for first "
+  if ( p != 0 )
+  {
+    char *p2 = strchr( p + 1, '"' ); // Look for second "
+    if ( p2 != 0 )
+    {
+        *p2 = '\0';
+        m_initialPath = p + 1;
+        kdDebug(7102) << "Initial path set to: " << m_initialPath << endl;
+    }
+  }
   return true;
 }
 
@@ -1155,7 +1160,8 @@ void Ftp::listDir( const KURL &url )
   // No path specified ?
   if ( path.isEmpty() )
   {
-    KURL realURL( QString::fromLatin1("ftp:/") );
+    KURL realURL;
+    realURL.setProtocol( QString::fromLatin1("ftp") );
     if ( m_user != FTP_LOGIN )
       realURL.setUser( m_user );
     // Setting the passw is probably a bad idea...
