@@ -210,7 +210,7 @@ bool KMainWindow::restore( int number, bool show )
 KXMLGUIFactory *KMainWindow::guiFactory()
 {
     if ( !factory_ )
-        factory_ = new KXMLGUIFactory( this );
+        factory_ = new KXMLGUIFactory( this, this, "guifactory" );
     return factory_;
 }
 
