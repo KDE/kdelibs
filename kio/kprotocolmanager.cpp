@@ -21,17 +21,17 @@
 #include <string.h>
 #include <sys/utsname.h>
 
-#include <kstaticdeleter.h>
-#include <kstringhandler.h>
-#include <klibloader.h>
-#include <kstddirs.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kio/kpac.h>
+#include <kstddirs.h>
+#include <klibloader.h>
+#include <kstringhandler.h>
+#include <kstaticdeleter.h>
+#include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
-#include <kio/slaveconfig.h>
 
 #include "kprotocolmanager.h"
 
@@ -42,7 +42,7 @@ public:
    KProtocolManagerPrivate();
 
    ~KProtocolManagerPrivate();
-   
+
    KConfig *config;
    KConfig *http_config;
    KPAC *pac;
@@ -57,17 +57,17 @@ public:
 static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
- : config(0), http_config(0), pac(0), init_busy(false) 
-{ 
-   kpmpksd.setObject(this);        
+                        :config(0), http_config(0), pac(0), init_busy(false)
+{
+   kpmpksd.setObject(this);
 }
 
-KProtocolManagerPrivate::~KProtocolManagerPrivate() 
-{ 
-   delete config; 
-   delete http_config; 
+KProtocolManagerPrivate::~KProtocolManagerPrivate()
+{
+   delete config;
+   delete http_config;
    delete pac;
-   kpmpksd.setObject(0);   
+   kpmpksd.setObject(0);
 }
 
 static KProtocolManagerPrivate* d = 0;
@@ -78,7 +78,8 @@ QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(
 
 void KProtocolManager::reparseConfiguration()
 {
-  delete d; d = 0;
+  delete d;
+  d = 0;
 }
 
 KConfig *KProtocolManager::config()
@@ -110,7 +111,7 @@ KPAC *KProtocolManager::pac()
   ProxyType type = proxyType();
   if (type < PACProxy)
     return 0;
- 
+
   if (!d->pac)
   {
     if (d->init_busy) return 0;
@@ -141,33 +142,7 @@ KPAC *KProtocolManager::pac()
   return d->pac;
 }
 
-bool KProtocolManager::markPartial()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "MarkPartial", true );
-}
-
-int KProtocolManager::minimumKeepSize()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readNumEntry( "MinimumKeepSize", 5000 ); // 5000 byte
-}
-
-bool KProtocolManager::autoResume()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "AutoResume", false );
-}
-
-bool KProtocolManager::persistentConnections()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "PersistentConnections", true );
-}
+/*=============================== TIMEOUT SETTINGS ==========================*/
 
 int KProtocolManager::readTimeout()
 {
@@ -201,30 +176,7 @@ int KProtocolManager::responseTimeout()
   return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
-int KProtocolManager::defaultConnectTimeout()
-{
-  return DEFAULT_CONNECT_TIMEOUT;
-}
-
-int KProtocolManager::defaultProxyConnectTimeout()
-{
-  return DEFAULT_PROXY_CONNECT_TIMEOUT;
-}
-
-int KProtocolManager::defaultResponseTimeout()
-{
-  return DEFAULT_RESPONSE_TIMEOUT;
-}
-
-int KProtocolManager::defaultReadTimeout()
-{
-  return DEFAULT_READ_TIMEOUT;
-}
-
-int KProtocolManager::minimumTimeoutThreshold()
-{
-  return MIN_TIMEOUT_VALUE;
-}
+/*========================== PROXY SETTINGS =================================*/
 
 bool KProtocolManager::useProxy()
 {
@@ -252,6 +204,8 @@ KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
   return static_cast<ProxyAuthMode>(cfg->readNumEntry( "AuthMode" ));
 }
 
+/*========================== CACHING =====================================*/
+
 bool KProtocolManager::useCache()
 {
   KConfig *cfg = http_config();
@@ -260,19 +214,17 @@ bool KProtocolManager::useCache()
 
 KIO::CacheControl KProtocolManager::cacheControl()
 {
-    KConfig *cfg = http_config();
-    QString tmp = cfg->readEntry("cache");
-    if (tmp.isEmpty())
-       return DEFAULT_CACHE_CONTROL;
-    return KIO::parseCacheControl(tmp);
+  KConfig *cfg = http_config();
+  QString tmp = cfg->readEntry("cache");
+  if (tmp.isEmpty())
+    return DEFAULT_CACHE_CONTROL;
+  return KIO::parseCacheControl(tmp);
 }
 
-void KProtocolManager::setCacheControl(KIO::CacheControl policy)
+QString KProtocolManager::cacheDir()
 {
-    KConfig *cfg = http_config();
-    QString tmp = KIO::getCacheControlString(policy);
-    cfg->writeEntry("cache", tmp);
-    cfg->sync();
+  KConfig *cfg = http_config();
+  return cfg->readEntry("CacheDir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
 }
 
 int KProtocolManager::maxCacheAge()
@@ -285,16 +237,6 @@ int KProtocolManager::maxCacheSize()
 {
   KConfig *cfg = http_config();
   return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
-}
-
-QString KProtocolManager::ftpProxy()
-{
-  return proxyFor( "ftp" );
-}
-
-QString KProtocolManager::httpProxy()
-{
-  return proxyFor( "http" );
 }
 
 QString KProtocolManager::noProxyFor()
@@ -447,135 +389,36 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
   return d->protocol;
 }
 
-void KProtocolManager::setReadTimeout( int _timeout )
+
+/*==================================== OTHERS ===============================*/
+
+bool KProtocolManager::markPartial()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  cfg->writeEntry("ReadTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
-  cfg->sync();
+  return cfg->readBoolEntry( "MarkPartial", true );
 }
 
-void KProtocolManager::setConnectTimeout( int _timeout )
+int KProtocolManager::minimumKeepSize()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  cfg->writeEntry("ConnectTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
-  cfg->sync();
+  return cfg->readNumEntry( "MinimumKeepSize",
+                            DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
 }
 
-void KProtocolManager::setProxyConnectTimeout( int _timeout )
+bool KProtocolManager::autoResume()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  cfg->writeEntry("ProxyConnectTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
-  cfg->sync();
+  return cfg->readBoolEntry( "AutoResume", false );
 }
 
-void KProtocolManager::setResponseTimeout( int _timeout )
+bool KProtocolManager::persistentConnections()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  cfg->writeEntry("ResponseTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
-  cfg->sync();
-}
-
-void KProtocolManager::setMarkPartial( bool _mode )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  cfg->writeEntry( "MarkPartial", _mode );
-  cfg->sync();
-}
-
-void KProtocolManager::setMinimumKeepSize( int _size )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  cfg->writeEntry( "MinimumKeepSize", _size );
-  cfg->sync();
-}
-
-void KProtocolManager::setAutoResume( bool _mode )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  cfg->writeEntry( "AutoResume", _mode );
-  cfg->sync();
-}
-
-void KProtocolManager::setPersistentConnections( bool _mode )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  cfg->writeEntry( "PersistentConnections", _mode );
-  cfg->sync();
-}
-
-void KProtocolManager::setUseCache( bool _mode )
-{
-  KConfig *cfg = http_config();
-  cfg->writeEntry( "UseCache", _mode );
-  cfg->sync();
-}
-
-void KProtocolManager::setMaxCacheSize( int cache_size )
-{
-  KConfig *cfg = http_config();
-  cfg->writeEntry( "MaxCacheSize", cache_size );
-  cfg->sync();
-}
-
-void KProtocolManager::setMaxCacheAge( int cache_age )
-{
-  KConfig *cfg = http_config();
-  cfg->writeEntry( "MaxCacheAge", cache_age );
-  cfg->sync();
-}
-
-void KProtocolManager::setUseProxy( bool _mode )
-{
-  setProxyType( _mode ? ManualProxy : NoProxy );
-}
-
-void KProtocolManager::setUseReverseProxy( bool mode )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry("ReversedException", mode);
-}
-
-void KProtocolManager::setProxyType(ProxyType type)
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( "ProxyType", static_cast<int>(type) );
-  cfg->sync();
-}
-
-void KProtocolManager::setProxyAuthMode(ProxyAuthMode mode)
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( "AuthMode", static_cast<int>(mode) );
-  cfg->sync();
-}
-
-void KProtocolManager::setFtpProxy( const QString& _proxy )
-{
-  setProxyFor( "ftp", _proxy );
-}
-
-void KProtocolManager::setHttpProxy( const QString& _proxy )
-{
-  setProxyFor( "http", _proxy );
-}
-
-void KProtocolManager::setNoProxyFor( const QString& _noproxy )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( "NoProxyFor", _noproxy );
-  cfg->sync();
+  return cfg->readBoolEntry( "PersistentConnections", true );
 }
 
 QString KProtocolManager::proxyConfigScript()
@@ -583,35 +426,6 @@ QString KProtocolManager::proxyConfigScript()
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
   return cfg->readEntry( "Proxy Config Script" );
-}
-
-void KProtocolManager::setProxyConfigScript( const QString& _url )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( "Proxy Config Script", _url );
-  cfg->sync();
-  // TODO: download it
-  if (d->pac)
-  {
-    if (_url.isEmpty())
-    {
-       delete d->pac;
-       d->pac = 0;
-    }
-    else 
-    {
-       d->pac->init( _url );
-    }
-  }
-}
-
-void KProtocolManager::setProxyFor( const QString& protocol, const QString& _proxy )
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( protocol.lower() + "Proxy", _proxy );
-  cfg->sync();
 }
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
@@ -624,11 +438,7 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
   return user_agent;
 }
 
-QString KProtocolManager::cacheDir()
-{
-    KConfig *cfg = http_config();
-    return cfg->readEntry("CacheDir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
-}
+/*================================= USER-AGENT SETTINGS =====================*/
 
 QString KProtocolManager::defaultUserAgent( )
 {
@@ -647,7 +457,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
   if (d->modifiers == modifiers)
      return d->useragent;
-     
+
   QString supp;
   struct utsname nam;
   if( uname(&nam) >= 0 )
@@ -686,12 +496,73 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   return d->useragent;
 }
 
-// obsolete, remove me in KDE 3.0
-void 
-KProtocolManager::setUserAgentList( const QStringList& /*agentlist*/ )
-{ }
+/*================================ !!DEPRECATED!! ===========================*/
 
 // obsolete, remove me in KDE 3.0
-QStringList 
-KProtocolManager::userAgentList()
+void KProtocolManager::setReadTimeout( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setConnectTimeout( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setProxyConnectTimeout( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setResponseTimeout( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setMarkPartial( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setMinimumKeepSize( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setAutoResume( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setPersistentConnections( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setUseCache( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setMaxCacheSize( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setMaxCacheAge( int ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setUseProxy( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setUseReverseProxy( bool ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setProxyType( ProxyType ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setProxyAuthMode( ProxyAuthMode ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setFtpProxy( const QString& ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setHttpProxy( const QString& ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setNoProxyFor( const QString& ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setProxyFor( const QString&, const QString& ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setCacheControl( KIO::CacheControl ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setUserAgentList( const QStringList& ){}
+// obsolete, remove me in KDE 3.0
+void KProtocolManager::setProxyConfigScript( const QString& ){}
+// obsolete, remove me in KDE 3.0
+QStringList KProtocolManager::userAgentList()
 { return QStringList(); }
+// obsolete, remove me in KDE 3.0
+int KProtocolManager::defaultConnectTimeout()
+{ return DEFAULT_CONNECT_TIMEOUT; }
+// obsolete, remove me in KDE 3.0
+int KProtocolManager::defaultProxyConnectTimeout()
+{ return DEFAULT_PROXY_CONNECT_TIMEOUT; }
+// obsolete, remove me in KDE 3.0
+int KProtocolManager::defaultResponseTimeout()
+{ return DEFAULT_RESPONSE_TIMEOUT; }
+// obsolete, remove me in KDE 3.0
+int KProtocolManager::defaultReadTimeout()
+{ return DEFAULT_READ_TIMEOUT; }
+// obsolete, remove me in KDE 3.0
+int KProtocolManager::minimumTimeoutThreshold()
+{ return MIN_TIMEOUT_VALUE; }
+// obsolete, remove me in KDE 3.0
+QString KProtocolManager::ftpProxy()
+{ return proxyFor( "ftp" ); }
+// obsolete, remove me in KDE 3.0
+QString KProtocolManager::httpProxy()
+{ return proxyFor( "http" ); }

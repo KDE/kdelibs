@@ -25,7 +25,8 @@
 #include <kapp.h>
 #include <kio/global.h>
 
-// This value has been deprecated!! Use KProtocolManager::defaultUserAgent() instead.
+// This value has been deprecated!! Use
+// KProtocolManager::defaultUserAgent() instead.
 #define DEFAULT_USERAGENT_STRING \
 QString("Mozilla/5.0 (Konqueror/%1; compatible MSIE 5.5; X11)").arg(KDE_VERSION_STRING)
 
@@ -33,15 +34,17 @@ class KConfig;
 class KPAC;
 
 /**
- * Information about I/O (Internet, etc.) settings.
+ * Provides information about I/O (Internet, etc.) settings chosen/set
+ * by the end user.
  *
- * KProtocolManager has a heap of static functions that allows you to read
- * and write IO related KDE settings. These include proxy settings,
- * file transfer resuming, and general timeout settings.
+ * KProtocolManager has a heap of static functions that allows only read
+ * access to KDE's IO related settings. These include proxy, cache, file
+ * transfer resumption, timeout and user-agent related settings.
  *
- * Note however that these settings apply to all applications.  This means that
- * the proxy, timeouts etc. are saved in the users config file and @em not in the
- * config file of the application.
+ * The information provided by this class is generic enough to be applicable
+ * to any application that makes use of KDE's IO sub-system.  Note that this
+ * mean the proxy, timeout etc. settings are saved in a separate user-specific
+ * config file and not in the config file of the application.
  *
  * @p Original author:
  * @author Torben Weis <weis@kde.org>
@@ -54,10 +57,15 @@ class KProtocolManager
 {
 public:
 
+
+/*=========================== USER-AGENT SETTINGS ===========================*/
+
+
   /**
-   * Returns the default user-agent value.
+   * Returns the default user-agent string.
    *
-   * This function returns the default user-agent value
+   * This function returns the default user-agent string
+   *
    */
   static QString defaultUserAgent();
 
@@ -90,29 +98,13 @@ public:
    */
   static QString userAgentForHost( const QString& );
 
-  /**
-   * @deprecated
-   * TODO KDE 3.0: remove me
-   */
-  static void setUserAgentList( const QStringList& /*agentlist*/ );
 
-  /**
-   * @deprecated
-   * TODO KDE 3.0: remove me
-   */
-  static QStringList userAgentList();
+/*=========================== TIMEOUT CONFIG ================================*/
 
-
-  /**************************************** TIMEOUT CONFIG ***************************************/
 
   /**
    * Returns the preferred timeout value for reading from
-   * remote connections in secs.
-   *
-   * The minimum value that is accept
-   * is set above or below the threshold limit, this
-   * function will return the default value given by
-   * @ref defaultConnectTimeout().
+   * remote connections in seconds.
    *
    * @return timeout value for remote connection in secs.
    */
@@ -120,13 +112,7 @@ public:
 
   /**
    * Returns the preferred timeout value for remote connections
-   * in secs.
-   *
-   * The maximum value that can be set by the user is 6
-   * minutes while the minimum is 3 seconds.  If the value
-   * is set above or below the threshold limit, this
-   * function will return the default value given by
-   * @ref defaultConnectTimeout().
+   * in seconds.
    *
    * @return timeout value for remote connection in secs.
    */
@@ -134,13 +120,7 @@ public:
 
   /**
    * Returns the preferred timeout value for proxy connections
-   * in secs.
-   *
-   * The maximum value that can be set by the user is 2
-   * minutes while the minimum is 3 seconds.  If the value
-   * is set above or below the threshold limit, this
-   * function will return the default value given by
-   * @ref defaultProxyConnectTimeout()
+   * in seconds.
    *
    * @return timeout value for proxy connection in secs.
    */
@@ -148,13 +128,7 @@ public:
 
   /**
    * Returns the preferred response timeout value for
-   * remote connecting in secs.
-   *
-   * The maximum value that can be set by the user is 6
-   * minutes while the minimum is 3 seconds.  If the value
-   * is set above or below the threshold limit, this
-   * function will return the default value given by
-   * @ref defaultResponseTimeout()
+   * remote connecting in seconds.
    *
    * @return timeout value for remote connection in seconds.
    */
@@ -168,64 +142,9 @@ public:
    */
   static int defaultConnectTimeout();
 
-  /**
-   * @deprecated  Use DEFAULT_READ_TIMEOUT instead.
-   * TODO KDE 3.0: Remove
-   */
-  static int defaultReadTimeout();
 
-  /**
-   * @deprecated  Use DEFAULT_PROXY_CONNECT_TIMEOUT instead.
-   * TODO KDE 3.0: Remove
-   */
-  static int defaultProxyConnectTimeout();
+/*=============================== PROXY CONFIG ==============================*/
 
-  /**
-   * @deprecated  Use DEFAULT_RESPONSE_TIMEOUT instead.
-   * TODO KDE 3.0: Remove
-   */
-  static int defaultResponseTimeout();
-
-  /**
-   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
-   * TODO KDE 3.0: Remove
-   */
-  static int minimumTimeoutThreshold();
-
-  /**
-   * Sets the amount of time to wait for a response from
-   * the socket
-   *
-   * @param timeout, the timeout value in seconds.
-   */
-  static void setReadTimeout( int timeout );
-
-  /**
-   * Sets the amount of time to wait for data arrival
-   * from the remote/peer machine.
-   *
-   * @param timeout, the timeout value in seconds.
-   */
-  static void setConnectTimeout( int timeout );
-
-  /**
-   * Sets the amount of time to wait for data arrival
-   * from the remote/peer machine.
-   *
-   * @param timeout, the timeout value in seconds.
-   */
-  static void setProxyConnectTimeout( int timeout );
-
-  /**
-   * Sets the amount of time to wait for data arrival
-   * from the remote/peer machine.
-   *
-   * @param timeout, the timeout value in seconds.
-   */
-  static void setResponseTimeout( int timeout );
-
-
-  /**************************************** PROXY CONFIG *****************************************/
 
   /**
    * Returns whether or not the user specified the
@@ -280,22 +199,6 @@ public:
    */
   static ProxyAuthMode proxyAuthMode();
 
-  /*
-   * This method has been deprecated, please
-   * use @ref proxyFor.
-   *
-   * @deprecated
-   */
-  static QString ftpProxy();
-
-  /*
-   * This method has been deprecated, please
-   * use @ref proxyFor.
-   *
-   * @deprecated
-   */
-  static QString httpProxy();
-
   /**
    * Returns the strings for hosts that should contacted
    * DIRECT bypassing any proxy settings.
@@ -331,118 +234,41 @@ public:
   static void badProxy( const QString & /* proxy */ );
 
   /**
-   * This method has been deprecated. Use
-   * @ref setProxyType instead.
-   *
-   * @deprecated
-   */
-  static void setUseProxy( bool _mode );
-
-  /**
-   * Sets the proxy exception lookup to be reversed
-   * and only URLs matching addresses in that list
-   * use proxy servers.
-   *
-   * Note that this flag only applies if the chosen
-   * proxy configuration type is either ManualProxy
-   * or EnvVarProxy. See @ref ProxyType.
-   *
-   * @param if true do a reverse proxy lookup.
-   */
-  static void setUseReverseProxy( bool _mode );
-
-  /**
-   * Set the type of proxy configuration to use.
-   *
-   * @param type the @ref ProxyType to use.
-   */
-  static void setProxyType( ProxyType type );
-
-  /**
-   * Sets the proxy authorization mode to use.
-   *
-   * @param mode @ref ProxyAuthMode
-   */
-  static void setProxyAuthMode( ProxyAuthMode mode );
-
-  /**
-   * Set the proxy for FTP transfer.
-   *
-   * This method has been deprecated, please
-   * use @ref setProxyFor.
-   *
-   * @deprecated
-   */
-  static void setFtpProxy( const QString& _proxy );
-
-  /**
-   * Set the proxy for HTTP transfer
-   *
-   * This method has been deprecated, please
-   * use @ref setProxyFor.
-   *
-   * @deprecated
-   */
-  static void setHttpProxy( const QString& _proxy );
-
-  /*
-   * Sets the proxy for the protocol given by @p protocol.
-   *
-   * When setting the proxy for a given protocol, do not
-   * include any separator characters.  For example, to
-   * set the proxy info for the "ftp" protocol , simply
-   * use "ftp" and not "ftp://". However, the case does
-   * not matter as it is always converted to lower
-   * characters.
-   *
-   * @param protocol type of protocol to set proxy for
-   * @param _proxy the proxy server address
-   */
-  static void setProxyFor( const QString& /* protocol */, const QString& /* _proxy */ );
-
-  /**
-   * Set the URLs for which we should or should not use
-   * a proxy server.
-   *
-   * In reverse lookup mode only the URL matching addresses
-   * in this list are allowed to use proxy servers.
-   */
-  static void setNoProxyFor( const QString& _noproxy );
-
-  /**
    * @return the URL of the script for automatic proxy configuration
    */
   static QString proxyConfigScript();
 
-  /**
-   * Set the URL of the script for automatic proxy configuration
-   */
-  static void setProxyConfigScript( const QString & /* url */ );
 
+/*========================== CACHE CONFIG ===================================*/
 
-  /**************************************** CACHE CONFIG *****************************************/
 
   /**
    * Returns true/false to indicate whether a cache
    * should be used
+   *
+   * @return
    */
   static bool useCache();
 
-  static void setUseCache( bool _mode );
-
   /**
-   * Returns the maximum age (in seconds) cached files
-   * should be kept before they are deleted.
+   * Returns the maximum age in seconds cached files should be
+   * kept before they are deleted as necessary.
+   *
+   * @return
    */
-  static int maxCacheAge();  // Maximum cache age in seconds.
-  static void setMaxCacheAge( int cache_age );
+  static int maxCacheAge();
 
   /**
-   * Returns the maximum age (in seconds) cached files
-   * should be kept before they are deleted.
+   * Returns the maximum size that can be used for caching.
+   *
+   * By default this function returns the DEFAULT_MAX_CACHE_SIZE
+   * value as defined in http_slave_defaults.h.  Not that the
+   * value returned is in bytes, hence a value of 5120 would mean
+   * 5 Kb.
+   *
+   * @return the maximum cache size to
    */
   static int maxCacheSize(); // Maximum cache size in Kb.
-  static void setMaxCacheSize( int cache_size );
 
   /**
    * The directory which contains the cache files
@@ -454,61 +280,41 @@ public:
    */
   static KIO::CacheControl cacheControl();
 
+
+/*============================ DOWNLOAD CONFIG ==============================*/
+
   /**
-   * Sets the Cache control directive.
+   * Returns true if partial downloads should be
+   * automatically resumed.
    */
-  static void setCacheControl(KIO::CacheControl);
-
-
-  /**************************************** DOWNLOAD CONFIG ***************************************/
-
   static bool autoResume();
 
+  /**
+   * Returns true if partial downloads should be marked
+   * with a ".part" extension.
+   */
   static bool markPartial();
 
+  /**
+   * Returns the minimum file size for keeping aborted
+   * downloads.
+   *
+   * Any data downloaded that does not meet this minimum
+   * requirement will simply be discarded. The default size
+   * is 5 KB.
+   *
+   * @ return the minimum keep size for aborted downloads in bytes.
+   */
   static int minimumKeepSize();
 
+  /**
+   * Returns true if connections should be persistent
+   */
   static bool persistentConnections();
 
-  /**
-   * Set this flag if you want slaves to add the extension .PART to all
-   * files during transfer.  This extension will be removed when file is
-   * fully transferred.
-   *
-   * This is a better way to discern finished transfers in case
-   * of transfer errors.
-   *
-   * @param _mode Default value is @p false: Don't add the extension .PART.
-   */
-  static void setMarkPartial( bool _mode );
 
-  /**
-   * Set the minimum size for keeping an interrupted transfer.
-   *
-   * A downloaded file whose transfer was interrupted will only be kept if
-   * its size is bigger than @ _size, otherwise it will be deleted.
-   *
-   * Default value is 5000 bytes
-   */
-  static void setMinimumKeepSize( int _size );
+/*=============================== OTHERS ====================================*/
 
-  /**
-   * Set this flag if you want slaves to automatically resume
-   * downloading files without asking the user in the "rename" dialog.
-   *
-   * @param _mode Default value is @p false: Don't resume automatically.
-   */
-  static void setAutoResume( bool _mode );
-
-  /**
-   * Set this flag if you want slaves to have persistent connections (FTP).
-   *
-   * @param _mode Default value is true: Keep persistent connections.
-   */
-  static void setPersistentConnections( bool _mode );
-
-
-  /**************************************** OTHERS *****************************************/
 
   /**
    * Force a reload of the general config file of
@@ -525,13 +331,192 @@ public:
    */
   static QString slaveProtocol(const KURL &url, QString &proxy);
 
-  // FIXME KDE 3.0: remove me.
-  static QString slaveProtocol( const QString & protocol );
+
+/*======================== !!DEPRECATED!! ===================================*/
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static QString ftpProxy();
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static QString httpProxy();
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static QString slaveProtocol( const QString& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setUserAgentList( const QStringList& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static QStringList userAgentList();
+
+  /**
+   * @deprecated  Use DEFAULT_READ_TIMEOUT instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static int defaultReadTimeout();
+
+  /**
+   * @deprecated  Use DEFAULT_PROXY_CONNECT_TIMEOUT instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static int defaultProxyConnectTimeout();
+
+  /**
+   * @deprecated  Use DEFAULT_RESPONSE_TIMEOUT instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static int defaultResponseTimeout();
+
+  /**
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static int minimumTimeoutThreshold();
+
+  /**
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static void setReadTimeout( int );
+
+  /**
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static void setConnectTimeout( int );
+
+  /**
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static void setProxyConnectTimeout( int );
+
+  /**
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * BIC: KDE 3.0: Remove
+   */
+  static void setResponseTimeout( int );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setMarkPartial( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setMinimumKeepSize( int );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setAutoResume( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setPersistentConnections( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setMaxCacheAge( int );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setUseCache( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setMaxCacheSize( int );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setCacheControl( KIO::CacheControl );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setUseProxy( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setUseReverseProxy( bool );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setProxyType( ProxyType );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setProxyAuthMode( ProxyAuthMode );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setFtpProxy( const QString& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setHttpProxy( const QString& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setProxyFor( const QString&, const QString& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setNoProxyFor( const QString& );
+
+  /**
+   * @deprecated
+   * BIC: KDE 3.0: Remove
+   */
+  static void setProxyConfigScript( const QString&  );
 
 private:
   static KConfig *config();
   static KConfig *http_config();
   static KPAC *pac();
 };
-
 #endif
