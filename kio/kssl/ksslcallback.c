@@ -21,6 +21,8 @@
 // DON'T INCLUDE ANYTHING IN HERE.  THIS FILE IS NOT COMPILED AS IT IS.
 
 #ifdef HAVE_SSL
+#ifndef _kde_ksslcallback_c
+#define _kde_ksslcallback_c
 
 extern "C" {
 static int X509Callback(int ok, X509_STORE_CTX *ctx) {
@@ -72,5 +74,6 @@ static int X509Callback(int ok, X509_STORE_CTX *ctx) {
 }
 };
 
+#endif
 #endif
 

@@ -22,7 +22,6 @@
 
 class QString;
 class KSSLCertificate;
-class QValueList;
 
 class KSSLCertificateCache {
 
