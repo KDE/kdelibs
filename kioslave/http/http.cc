@@ -6,19 +6,15 @@
 #define DO_GZIP
 #endif
 
-#include <kio_manager.h>
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
+#include <assert.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <signal.h>
 #include <time.h>
-#include <assert.h>
+#include <unistd.h>
 
 #ifdef DO_MD5
 #include <md5.h>
@@ -33,6 +29,9 @@
 #include "http.h"
 
 #include <kurl.h>
+#include <kio_manager.h>
+#include <kio_rename_dlg.h>
+#include <kio_skip_dlg.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const char *_head, string& _user, string& _pass );
@@ -299,9 +298,7 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
 
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
-  //QString url = _url.url();
-
-  int port = _url.port();
+  int do_proxy, port = _url.port();
   if ( port == -1 )
     port = 80;
 
@@ -311,16 +308,14 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     return false;
   }
 
-  int do_proxy = m_bUseProxy;
+  do_proxy = m_bUseProxy;
 
   if ( do_proxy && !m_strNoProxyFor.empty() ) 
     do_proxy = !revmatch( _url.host(), m_strNoProxyFor.c_str() );    
 
-  if( do_proxy )
-  {
+  if( do_proxy ) {
     debug( "http_open 0");
-    if( !initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) )
-      {
+    if( !initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) ) {
 	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost.c_str() );
 	return false;
       }
@@ -329,8 +324,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
       error( ERR_COULD_NOT_CONNECT, m_strProxyHost.c_str() );
       return false;
     }
-  }
-  else {
+  } else {
     struct sockaddr_in server_name;
 
     if( !initSockaddr( &server_name, _url.host(), port ) ) {
@@ -360,8 +354,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   else
     command = "GET ";
 
-  if( do_proxy )
-  {
+  if( do_proxy ) {
     debug( "http_open 2");
     char buffer[ 64 ];
     sprintf( buffer, ":%i", port );
@@ -423,10 +416,8 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   if (_url.pass() ||_url.user()) {
     if (Authentication == AUTH_Basic){
-      //command += "Authorization: Basic ";
       command += create_basic_auth("Authorization", _url.user(), _url.pass());
-    }
-    else if (Authentication == AUTH_Digest) {
+    } else if (Authentication == AUTH_Digest) {
       command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strAuthString.c_str());
     }
     command+="\r\n";
@@ -444,22 +435,20 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   command += "\r\n";  /* end header */
 
-  debug( "http_open 4");
-  debug( "kio_http : ############### HEADER #############\n%s", command.c_str() );
-  debug( "http_open 5");
+  /* debug( "http_open 4");
+     debug( "kio_http : ############### HEADER #############\n%s", command.c_str() );
+     debug( "http_open 5");*/
 
   int n;
 repeat1:
-  if ( ( n = write( m_sock, command.c_str(), command.size() ) ) != (int)command.size() )
-  {
+  if ( ( n = write( m_sock, command.c_str(), command.size() ) ) != (int)command.size() ) {
     if ( n == -1 && errno == EINTR )
       goto repeat1;    
     error( ERR_CONNECTION_BROKEN, _url.host() );
     return false;
   }
 repeat2:
-  if ( _post_data && ( n = write( m_sock, _post_data, _post_data_size ) != _post_data_size ) )
-  {
+  if ( _post_data && ( n = write( m_sock, _post_data, _post_data_size ) != _post_data_size ) ) {
     if ( n == -1 && errno == EINTR )
       goto repeat2;
     error( ERR_CONNECTION_BROKEN, _url.host() );
@@ -473,11 +462,10 @@ repeat2:
 
   bool unauthorized = false;
 
-  char buffer[ 1024 ];
+  char buffer[1024];
   int len = 1;
   char* ret = 0L;
-  while( len && ( ret = fgets( buffer, 1024, m_fsocket ) ) )
-  { 
+  while( len && ( ret = fgets( buffer, 1024, m_fsocket ) ) ) { 
     len = strlen( buffer );
     while( len && (buffer[ len-1 ] == '\n' || buffer[ len-1 ] == '\r') )
       buffer[ --len ] = 0;
@@ -501,7 +489,6 @@ repeat2:
       if ( strncmp( buffer + 9, "401", 3 ) == 0 ) {
 	unauthorized = true;
       } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
-
 	// Let's first send an error message
 	// this will be moved to slotErrorPage(), when it will be written
 	http_close();
@@ -579,9 +566,9 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     encs->push("gzip");
     m_iSize = 0;
   } else if (encoding.lower() == "identity") {
-    return;  // Identy is the same as no encoding.. AFAIK
+    return;  // Identy is the same as no encoding
   } else {
-    fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
+    fprintf(stderr, "Unknown encoding encountered.  Please write code.\n");
     fflush(stderr);
     abort();
   }
@@ -641,15 +628,13 @@ void HTTPProtocol::slotGetSize( const char *_url )
   string url = _url;
   
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
+  if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, url.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 )
-  {
+  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
     error( ERR_INTERNAL, "kio_http got non http url" );
     m_cmd = CMD_NONE;
     return;
@@ -658,8 +643,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
   m_cmd = CMD_GET_SIZE;
 
   m_bIgnoreErrors = false;  
-  if ( !http_open( usrc, 0L, 0, false ) )
-  {
+  if ( !http_open( usrc, 0L, 0, false ) ) {
     m_cmd = CMD_NONE;
     return;
   }
@@ -670,8 +654,8 @@ void HTTPProtocol::slotGetSize( const char *_url )
   finished();
 
   m_cmd = CMD_NONE;
-
 }
+
 
 string HTTPProtocol::getUserAgentString ()
 {
@@ -692,15 +676,13 @@ void HTTPProtocol::slotGet( const char *_url )
   string url = _url;
   
   KURL usrc( _url );
-  if ( usrc.isMalformed() )
-  {
+  if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, url.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 )
-  {
+  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
     error( ERR_INTERNAL, "kio_http got non http url" );
     m_cmd = CMD_NONE;
     return;
@@ -709,19 +691,18 @@ void HTTPProtocol::slotGet( const char *_url )
   m_cmd = CMD_GET;
 
   m_bIgnoreErrors = false;  
-  if ( !http_open( usrc, 0L, 0, false ) )
-  {
+  if ( !http_open( usrc, 0L, 0, false ) ) {
     m_cmd = CMD_NONE;
     return;
   }
-  
+
   ready();
 
   gettingFile( _url );
-  
+
   time_t t_start = time( 0L );
   time_t t_last = t_start;
-  
+
   char buffer[ 2048 ];
   long nbytes=0, sz=0;
 
@@ -753,11 +734,11 @@ void HTTPProtocol::slotGet( const char *_url )
       break;
     }
   }
-  
+
   http_close();  // Must we close the connection?
 
   if (!big_buffer.isNull()) {
-    const char *enc;
+    char *enc;
     while (!m_qTransferEncodings.isEmpty()) {
       enc = m_qTransferEncodings.pop();
       if (!enc)
@@ -899,16 +880,26 @@ void HTTPProtocol::decodeGzip()
   unsigned long len;
   int fd;
 
+
+  // Siince I can't figure out how to do the mem to mem
+  // gunzipping, this should suffice.  It just writes out
+  // the gzip'd data to a file.
   fd=mkstemp(filename);
   write(fd, big_buffer.data(), big_buffer.size());
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
+
+  // And then reads it back in with gzread so it'll
+  // decompress on the fly.
   while ( (len=gzread(gzf, tmp_buf, 1024))>0){
     int old_len=ar.size();
     ar.resize(ar.size()+len);
     memcpy(ar.data()+old_len, tmp_buf, len);
   }
   gzclose(gzf);
+
+  // And then we replace big_buffer with
+  // the "decoded" data.
   big_buffer.resize(0);
   big_buffer=ar;
   big_buffer.detach();
@@ -918,6 +909,10 @@ void HTTPProtocol::decodeGzip()
 
 size_t HTTPProtocol::sendData()
 {
+  // This was rendered necesary b/c
+  // the IPC stuff can't handle
+  // chunks much larger than 2048.
+
   size_t sent=0;
   size_t sz = big_buffer.size();
   processedSize(sz);
@@ -1188,7 +1183,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    KURL u( n.c_str() );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
-	      assert( 0 );
+	      assert( "The URL is malformed, something fucked up, you should never see this!" );
 	    // Change the destination name of the current file
 // 	    l = lst;
 // 	    l.getLast()->addPath( filename.c_str() );
@@ -1221,7 +1216,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
 	  } else
-	    assert( 0 );
+	    assert( "Unhandled command!" );
 	}
 	// No need to ask the user, so raise an error and finish
 	else {    
@@ -1347,7 +1342,7 @@ void HTTPIOJob::slotError( int _errid, const char *_txt )
 
 void openFileManagerWindow( const char * )
 {
-  assert( 0 );
+  assert( "???" );
 }
 
 
