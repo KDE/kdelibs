@@ -1,3 +1,9 @@
+kdelibs (2:980419-b4-1) unstable; urgency=low
+
+  * new upstream version Beta4
+
+ -- Stephan Kulow <coolo@kde.org>  Sun, 19 Apr 1998 13:58:13 +0200
+
 kdelibs (2:980312-4) frozen; urgency=low
 
   * touch the .so.0 files to satisfy lintian
