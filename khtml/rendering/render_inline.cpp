@@ -440,3 +440,22 @@ void RenderInline::caretPos(int offset, int flags, int &_x, int &_y, int &width,
     }
 }
 
+inline int minXPos(const RenderInline *o)
+{
+    int retval=6666666;
+    if (!o->firstLineBox()) return 0;
+    for (InlineRunBox* curr = o->firstLineBox(); curr; curr = curr->nextLineBox())
+        retval = kMin( retval, int( curr->m_x ));
+    return retval;
+}
+
+int RenderInline::inlineXPos() const
+{
+    return minXPos(this);
+}
+
+int RenderInline::inlineYPos() const
+{
+    return firstLineBox() ? firstLineBox()->yPos() : 0;
+}
+

@@ -347,7 +347,8 @@ QRect NodeImpl::getRect() const
 {
     int _x, _y;
     if(m_render && m_render->absolutePosition(_x, _y))
-        return QRect( _x, _y, m_render->width(), m_render->height() );
+        return QRect( _x + m_render->inlineXPos(), _y + m_render->inlineYPos(),
+        		m_render->width(), m_render->height() );
 
     return QRect();
 }
@@ -1497,35 +1498,6 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
         }
     }
     return true;
-}
-
-QRect NodeBaseImpl::getRect() const
-{
-    int xPos, yPos;
-    if (!getUpperLeftCorner(xPos,yPos))
-    {
-        xPos=0;
-        yPos=0;
-    }
-    int xEnd, yEnd;
-    if (!getLowerRightCorner(xEnd,yEnd))
-    {
-        if (xPos)
-            xEnd = xPos;
-        if (yPos)
-            yEnd = yPos;
-    }
-    else
-    {
-        if (xPos==0)
-            xPos = xEnd;
-        if (yPos==0)
-            yPos = yEnd;
-    }
-    if ( xEnd <= xPos || yEnd <= yPos )
-        return QRect( QPoint( xPos, yPos ), QSize() );
-
-    return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
 }
 
 void NodeBaseImpl::setFocus(bool received)

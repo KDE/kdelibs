@@ -1160,14 +1160,14 @@ int RenderText::minXPos() const
     return retval;
 }
 
-int RenderText::xPos() const
+int RenderText::inlineXPos() const
 {
-    return 0;//m_lines.isEmpty() ? 0 : m_lines[0]->xPos();
+    return minXPos();
 }
 
-int RenderText::yPos() const
+int RenderText::inlineYPos() const
 {
-    return 0;//m_lines.isEmpty() ? 0 : m_lines[0]->yPos();
+    return m_lines.isEmpty() ? 0 : m_lines[0]->yPos();
 }
 
 const QFont &RenderText::font()
