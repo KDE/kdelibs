@@ -122,11 +122,11 @@ protected:
 
   void error( int _errid, const QString &_text );
 
-  int readChunked(); // Read a chunk
-  int readLimited(); // Read maximum m_iSize bytes.
-  int readUnlimited(); // Read as much as possible.
+  int readChunked();    // Read a chunk
+  int readLimited();    // Read maximum m_iSize bytes.
+  int readUnlimited();  // Read as much as possible.
 
-  void decodeGzip(); //decodes data compressed with gzip algorithm
+  void decodeGzip();    //decodes data compressed with gzip algorithm
   void decodeDeflate(); //decodes data compressed with deflate algorithm
 
   int openStream();
@@ -169,13 +169,13 @@ protected:
 
   size_t sendData();
 
-  bool http_open();
-  void http_close(); // Close transfer
+  bool http_open();             // Open transfer
+  void http_close();            // Close transfer
 
-  bool http_openConnection(); // Open connection
-  void http_checkConnection(); // Check whether to keep connection.
-  void http_closeConnection(); // Close conection
-  bool http_isConnected(); // Checks for existing connection.
+  bool http_openConnection();   // Open connection
+  void http_checkConnection();  // Check whether to keep connection.
+  void http_closeConnection();  // Close conection
+  bool http_isConnected();      // Checks for existing connection.
 
   bool readHeader();
   bool sendBody();
@@ -266,8 +266,8 @@ protected: // Members
   bool m_bEOF;
   int m_sock;
   FILE* m_fsocket;
-  enum HTTP_REV m_HTTPrev;
-  enum HTTP_PROTO m_proto;
+  HTTP_REV m_HTTPrev;
+  HTTP_PROTO m_proto;
 
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
@@ -310,27 +310,32 @@ protected: // Members
   QString m_strRealm;
   QString m_strAuthString;
   QString m_strProxyAuthString;
-  enum HTTP_AUTH Authentication, ProxyAuthentication;
+  HTTP_AUTH Authentication, ProxyAuthentication;
   bool m_bUnauthorized;
   bool m_bRepeatAuthFail;
 
   // Persistant connections
   bool m_bKeepAlive;
 
+  // Resumable connections
+  bool m_bCanResume;
+
   // Chunked tranfer encoding
   bool m_bChunked;
-
-  bool m_bCanResume;
 
   DCOPClient *m_dcopClient;
 
   short unsigned int m_DefaultPort;
 
+  //
   unsigned int m_responseCode;
   unsigned int m_prevResponseCode;
 
   // Values that determine the remote connection timeouts.
   int m_proxyConnTimeout, m_remoteConnTimeout, m_remoteRespTimeout;
+
+  // Buffer to hold POST data for 401/407 and such responses...
+  QList<QByteArray> m_bufferList;
 
 #ifdef DO_SSL
   bool m_bUseSSL;

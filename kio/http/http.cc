@@ -369,6 +369,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
+  m_bufferList.setAutoDelete( true );
 
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
@@ -556,20 +557,22 @@ bool HTTPProtocol::eof()
 
 bool HTTPProtocol::http_isConnected()
 {
-   if (!m_sock) return false;
+   if (!m_sock)
+     return false;
+
    fd_set rdfs;
-   struct timeval tv;
-   int retval;
    FD_ZERO(&rdfs);
    FD_SET(m_sock , &rdfs);
+
+   struct timeval tv;
    tv.tv_usec = 0;
    tv.tv_sec = 0;
-   retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
 
-   if (retval != 0)
+   int retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
+   if (retval == -1)
    {
-       char buffer[100];
-       retval = recv(m_sock, buffer, 80, MSG_PEEK);
+       // char buffer[100];
+       // retval = recv(m_sock, buffer, 80, MSG_PEEK);
        return false;
    }
    return true;
@@ -581,14 +584,16 @@ void HTTPProtocol::http_checkConnection()
   // if so, we had first better make sure that our host isn't on the
   // No Proxy list
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-  {
     m_request.do_proxy = !revmatch( m_request.hostname.latin1(), m_strNoProxyFor.latin1() );
-  }
 
   if (m_sock)
   {
      bool closeDown = false;
-     if (!m_state.do_proxy && !m_request.do_proxy)
+     if ( m_request.do_proxy && m_state.do_proxy )
+     {
+        // Keep the connection to the proxy.
+     }
+     else if ( !m_state.do_proxy && !m_request.do_proxy )
      {
         if (m_state.hostname != m_request.hostname)
         {
@@ -607,18 +612,14 @@ void HTTPProtocol::http_checkConnection()
            closeDown = true;
         }
      }
-     else if (m_request.do_proxy && m_state.do_proxy)
-     {
-        // Keep the connection to the proxy.
-     }
      else
      {
         closeDown = true;
      }
+
      if (!closeDown && !http_isConnected())
-     {
         closeDown = true;
-     }
+
      if (closeDown)
         http_closeConnection();
   }
@@ -987,13 +988,16 @@ bool HTTPProtocol::http_open()
        return false;
   }
 
-  // this will be the entire header
+  // Some previous POST request variable cleanups...
+  bool moreData = false;
+  if ( m_responseCode != 401 && m_responseCode != 407 )
+    m_bufferList.clear();
+
+  // Variable to hold the entire header...
   QString header;
 
-  bool moreData = false;
-
-  // determine if this is a POST or GET method
-  switch( m_request.method) {
+  // Determine if this is a POST or GET method
+  switch ( m_request.method) {
   case HTTP_GET:
       header = "GET ";
       break;
@@ -1019,7 +1023,7 @@ bool HTTPProtocol::http_open()
   // format the URI
   char c_buffer[64];
   memset(c_buffer, 0, 64);
-  if(m_state.do_proxy) {
+  if (m_state.do_proxy) {
     sprintf(c_buffer, ":%u", m_state.port);
     // The URL for the request uses ftp:// if we are in "ftp-proxy" mode
     kdDebug() << "Using basis for URL : " << m_protocol << endl;
@@ -1030,7 +1034,6 @@ bool HTTPProtocol::http_open()
   header += m_request.url.encodedPathAndQuery(0, true);
 
   header += " HTTP/1.1\r\n"; /* start header */
-
 
 #ifdef DO_SSL
   // With SSL we don't keep the connection.
@@ -1264,7 +1267,8 @@ bool HTTPProtocol::http_open()
   if ( !moreData )
     header += "\r\n";  /* end header */
 
-  kdDebug(7113) << "(" << getpid() << ") Sending header: \n=======" << endl << header << "\n=======" << endl;
+  kdDebug(7113) << "(" << getpid() << ") Sending header: \n=======" << endl
+                << header << "\n=======" << endl;
 
   // now that we have our formatted header, let's send it!
   bool sendOk;
@@ -1786,7 +1790,7 @@ bool HTTPProtocol::readHeader()
   {
     if ( m_responseCode == 401 || m_responseCode == 407 )
     {
-        http_close();  // Close the connection first
+        http_closeConnection();  // Close the connection first
         return false;
     }
     m_bUnauthorized = false;
@@ -2009,25 +2013,44 @@ void HTTPProtocol::configAuth(const char *p, bool b)
 
 bool HTTPProtocol::sendBody()
 {
-  QList<QByteArray> bufferList;
-  int length = 0;
+  int result, length = 0;
+  QByteArray *buffer;
 
-  int result;
   // Loop until we got 'dataEnd'
-  do
+  kdDebug(7113) << "Response code: " << m_responseCode << endl;
+  if ( m_responseCode == 401 || m_responseCode == 407 )
   {
-     QByteArray *buffer = new QByteArray();
-     dataReq(); // Request for data
-     result = readData( *buffer );
-     if (result > 0)
-     {
-        bufferList.append(buffer);
-        length += result;
-     }
-   }
-   while ( result > 0 );
+    // For RE-POST on authentication failure the
+    // buffer should not be empty...
+    if ( m_bufferList.isEmpty() )
+    {
+      error( ERR_ABORTED, m_request.hostname );
+      return false;
+    }
+    kdDebug(7113) << "POST'ing saved data..." << endl;
+    QByteArray* buffer = m_bufferList.first();
+    for ( ; buffer != 0 ; buffer = m_bufferList.next() )
+        length += buffer->size();
+    result = 0;
+  }
+  else
+  {
+    kdDebug(7113) << "POST'ing live data..." << endl;
+    m_bufferList.clear();
+    do
+    {
+        QByteArray *buffer = new QByteArray();
+        dataReq(); // Request for data
+        result = readData( *buffer );
+        if (result > 0)
+        {
+            m_bufferList.append(buffer);
+            length += result;
+        }
+    } while ( result > 0 );
+  }
 
-   if ( result != 0)
+   if ( result != 0 )
    {
      error( ERR_ABORTED, m_request.hostname );
      return false;
@@ -2035,7 +2058,12 @@ bool HTTPProtocol::sendBody()
 
    char c_buffer[64];
    sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
-   kdDebug( 7113 ) << "POST: " << c_buffer << endl;
+   kdDebug( 7113 ) << c_buffer << endl;
+
+   /*** Debugging code ***/
+   buffer = m_bufferList.first();
+   for ( ; buffer != 0 ; buffer = m_bufferList.next() )
+    kdDebug( 7113 ) << "POST Data: " << buffer->data() << endl;
 
    bool sendOk;
    sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -2047,13 +2075,10 @@ bool HTTPProtocol::sendBody()
      return false;
    }
 
-   QByteArray *buffer;
-   while ( !bufferList.isEmpty() )
+   buffer = m_bufferList.first();
+   for ( ; buffer != 0 ; buffer = m_bufferList.next() )
    {
-     buffer = bufferList.take(0);
-
      sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
-     delete buffer;
      if (!sendOk)
      {
        kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
@@ -2113,12 +2138,9 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
 
 void HTTPProtocol::slave_status()
 {
-  bool connected = (m_sock != 0);
-  if (connected && !http_isConnected())
-  {
+  bool connected = http_isConnected();
+  if ( m_sock && !connected )
      http_closeConnection();
-     connected = false;
-  }
   slaveStatus( m_state.hostname, connected );
 }
 
@@ -2646,9 +2668,9 @@ bool HTTPProtocol::readBody( )
   // later to compute the transfer speed.
   time_t t_start = time(0L);
   time_t t_last = t_start;
-   
+
   // Deal with the size of the file.
-  
+
   long sz = m_request.offset;
   if ( sz ) { m_iSize += sz; }
 
@@ -3402,7 +3424,7 @@ bool HTTPProtocol::getAuthorization()
     }
 
     // Retry the cache since we now have more information.
-    // But return only if this is
+    // However, we only retry if this is NOT a repeat failure!!
     if ( !m_bRepeatAuthFail )
     {
         result = checkCachedAuthentication( info );
