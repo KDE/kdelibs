@@ -144,7 +144,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     if (a == kwm_command){
       QString com = ev->xclient.data.b;
-      emit commandRecieved(com);
+      emit commandReceived(com);
     }
 
     return TRUE;

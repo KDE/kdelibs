@@ -119,7 +119,7 @@ signals:
     * A command kwm did not understand. Maybe it is for 
     * your module. 
     */
-  void commandRecieved(QString);
+  void commandReceived(QString);
 
   
   /**
