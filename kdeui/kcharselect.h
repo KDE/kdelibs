@@ -240,7 +240,7 @@ signals:
 
 private:
     KCharSelectPrivate *d;
-    virtual void setFont(const QFont &) { QVBox::setFont(f); }
+    virtual void setFont(const QFont &f) { QVBox::setFont(f); }
 };
 
 #endif

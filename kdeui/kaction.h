@@ -1268,7 +1268,7 @@ signals:
 
 private:
     void init();
-    virtual void slotActivated() { KSelectAction::slotActivated(); }
+    virtual void slotActivated() { KAction::slotActivated(); }
 
     class KFontSizeActionPrivate;
     KFontSizeActionPrivate *d;
