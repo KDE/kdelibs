@@ -27,7 +27,7 @@ class KSambaSharePrivate;
  * Similar functionality like KFileShare, 
  * but works only for Samba and do not need 
  * any suid script.
- * Singleton class.
+ * Singleton class, call instance() to get an instance.
  */
 class KSambaShare : public QObject 
 {
@@ -44,6 +44,13 @@ public:
    * @return wether the given path is shared by Samba.
    */
   bool isDirectoryShared( const QString & path );
+  
+  /**
+   * Returns a list of all directories shared by Samba.
+   * The resulting list is not sorted.
+   * @return a list of all directories shared by Samba.
+   */
+  QStringList sharedDirectories();
   
   /**
    * KSambaShare destructor. 

@@ -183,6 +183,15 @@ bool KSambaShare::isDirectoryShared( const QString & path ) {
   return d->sharedPaths.find(fixedPath) > 0;
 }
 
+QStringList KSambaShare::sharedDirectories() {
+  QStringList result;
+  QDictIterator<bool> it(d->sharedPaths);
+  for( ; it.current(); ++it )
+      result << it.currentKey();
+      
+  return result;       
+}
+
 void KSambaShare::slotFileChange( const QString & path ) {
   if (path == d->smbConf)
      d->readSmbConf();

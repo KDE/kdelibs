@@ -27,7 +27,7 @@ class KNFSSharePrivate;
  * Similar functionality like KFileShare, 
  * but works only for NFS and do not need 
  * any suid script.
- * Singleton class.
+ * Singleton class, call instance() to get an instance.
  */
 class KNFSShare : public QObject 
 {
@@ -44,6 +44,13 @@ public:
    * @return wether the given path is shared by NFS.
    */
   bool isDirectoryShared( const QString & path );
+  
+  /**
+   * Returns a list of all directories shared by NFS.
+   * The resulting list is not sorted.
+   * @return a list of all directories shared by NFS.
+   */
+  QStringList sharedDirectories();
   
   /**
    * KNFSShare destructor. 
