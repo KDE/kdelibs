@@ -16,6 +16,8 @@
    Boston, MA 02111-1307, USA.
 */
 #include <config.h>
+#include <qclipboard.h>
+#include "kapp.h"
 #include "klibloader.h"
 #include "kglobal.h"
 #include "kstddirs.h"
@@ -77,6 +79,16 @@ KLibrary::~KLibrary()
       kdDebug(150) << " ... deleting the factory " << m_factory << endl;
       delete m_factory;
     }
+
+    // WABA: *HACK*
+    // We need to make sure to clear the clipboard before unloading a DSO
+    // because the DSO could have defined an object derived from QMimeSource
+    // and placed that on the clipboard.
+    /*kapp->clipboard()->clear();*/
+
+    // Well.. let's do something more subtle... convert the clipboard context
+    // to text. That should be safe as it only uses objects defined by Qt.
+    kapp->clipboard()->setText(kapp->clipboard()->text());
 
     lt_dlclose( m_handle );
 }
@@ -214,8 +226,6 @@ KLibLoader::~KLibLoader()
       disconnect( it.current(), SIGNAL( destroyed() ),
 	 	  this, SLOT( slotLibraryDestroyed() ) );
     }
-
-
 }
 
 KLibrary* KLibLoader::library( const char *name )
