@@ -1,3 +1,18 @@
+kdelibs-cvs (4:2.0-19990626-2) experimental; urgency=low
+
+  * back to using the paths out of debianrules with some dependency trick
+    in rules. No more hardcoded paths there
+  * don't use kderc file, but add the paths that are known to be 
+    nonstandard in rules. And install into $kde_confdir/system.kdeglobals
+    /etc/kderc may be used for the noncvs version later. For now it asks
+    for trouble in my eyes :)
+  * some changes in debianrules to make it more flexible too
+  * don't compile with --enable-debug, but with --disable-debug - this does
+    more than removing -g, don't know who made this policy within debian
+  * use --enable-final as it makes thinks smaller, faster and better anyway ;)
+  
+ -- Stephan Kulow <coolo@kde.org>  Sat, 26 Jun 1999 14:33:05 +0200
+
 kdelibs-cvs (4:2.0-19990626-1) experimental; urgency=low
 
   * New upstream CVS version
