@@ -199,6 +199,13 @@ class DeviceManager
     int checkInit(void);
 
     /**
+     * Obsolete. Please use @ref #deviceForChannel() instead.
+     *
+     */
+    MidiOut *chntodev(int chn)
+		{ return deviceForChannel(chn); };
+
+    /**
      * It's possible to send different MIDI channels to different MIDI devices,
      * so that you can for example send channel 1 to an external synthesizer,
      * channel 2 to a FM device and channel 10 to an AWE synth.
@@ -206,8 +213,18 @@ class DeviceManager
      * @return the device to which MIDI events goind to channel @p chn should
      * be sent.
      */
-    MidiOut *chntodev(int chn)
+    MidiOut *deviceForChannel(int chn)
 		{ return (device!=0L) ? device[chn2dev[chn]] : 0L ; };
+
+    /**
+     * Returns the device number associated with a given channel.
+     */
+    int deviceNumberForChannel(int chn) { return chn2dev[chn]; };
+
+    /**
+     * Sets the device number associated with a given channel.
+     */
+    void setDeviceNumberForChannel(int chn, int dev);
 
     /**
      * @return 0 if there was a problem and 1 if everything was OK. Note that the

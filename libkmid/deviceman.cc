@@ -762,3 +762,8 @@ void DeviceManager::setVolumePercentage(int v)
     }
   }
 }
+
+void DeviceManager::setDeviceNumberForChannel(int chn, int dev)
+{
+  chn2dev[chn]=dev;
+}
