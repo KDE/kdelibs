@@ -17,7 +17,7 @@ METASOURCES = AUTO
 
 kwriteincludedir = $(includedir)/kwrite
 kwriteinclude_HEADERS = kwrite_part.h kwrite_factory.h kwrite.h kwrite_view.h \
-	kwrite_doc.h kwrite_misc.cpp highlight.h
+	kwrite_doc.h kwrite_misc.h highlight.h
 
 rcdir = $(kde_datadir)/kwrite
 rc_DATA = kwrite.rc kwrite_browser.rc
