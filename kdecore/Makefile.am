@@ -89,7 +89,7 @@ uninstall-local:
 
 EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
-	kentities.c kentities.gperf makeentities kdelibs.lsm
+	kentities.c kentities.gperf makeentities 
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
