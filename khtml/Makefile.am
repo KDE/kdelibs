@@ -51,8 +51,7 @@ libkhtml_la_SOURCES = dtd.cpp\
 	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
 	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp
 
-libkhtml_la_METASOURCES = khtml.moc khtmlio.moc \
-	html_formimpl.moc
+libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtml.h khtmlsavedpage.h khtmlio.h \
 	dom_core.h dom_doc.h dom_element.h dom_exception.h \

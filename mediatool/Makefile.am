@@ -31,6 +31,5 @@ include_HEADERS= 	mediatool.h kaudio.h
 libmediatool_la_LDFLAGS = -version-info 3:0 $(all_libraries)
 libmediatool_la_LIBADD = $(LIB_QT) $(LIBCOMPAT)
 
-libmediatool_la_METASOURCES = kaudio.moc
+libmediatool_la_METASOURCES = AUTO
 
-kaudio.cpp:

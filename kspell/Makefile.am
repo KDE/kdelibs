@@ -30,5 +30,5 @@ include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
 noinst_HEADERS = version.h
 libkspell_la_SOURCES = ksconfig.cpp kspelldlg.cpp kspell.cpp kprocio.cpp
 
-libkspell_la_METASOURCES = kprocio.moc ksconfig.moc kspell.moc kspelldlg.moc
+libkspell_la_METASOURCES = AUTO
 

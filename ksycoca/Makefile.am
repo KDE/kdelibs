@@ -11,7 +11,7 @@ ksycoca_SOURCES = \
         kservicetypefactory.h kservicetypefactory.cpp \
 	kservicetype.cpp kservicetype.h main.cpp
 
-ksycoca_METASOURCES = USE_AUTOMOC
+ksycoca_METASOURCES = AUTO
 
 noinst_HEADERS =
 

@@ -72,19 +72,5 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
 		ktextbrowser.cpp kaction.cpp
 
-libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
-	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
-	kdbtn.moc keditcl.moc kfontdialog.moc kiconloaderdialog.moc \
-	kkeydialog.moc kled.moc klined.moc kmenubar.moc \
-	kpopmenu.moc kprogress.moc krestrictedline.moc kruler.moc \
-	kselect.moc kstatusbar.moc ktabbar.moc ktabctl.moc ktablistbox.moc \
-	ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
-	kurllabel.moc kwizard.moc kapplet.moc kwmmapp.moc kaccelmenu.moc \
-	klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
-	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \
-	qxembed.moc kdialog.moc kdialogbase.moc \
-	kjanuswidget.moc kaboutdialog.moc kauthicon.moc \
-	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc \
-	ktextbrowser.moc kaction.moc
-
+libkdeui_la_METASOURCES = AUTO
 

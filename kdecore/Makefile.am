@@ -55,10 +55,7 @@ libkdecore_la_SOURCES = kstddirs.cpp  \
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = -lXext qk/libqk.la ../dcop/libDCOP.la $(LIBDL) $(LIB_DMALLOC)
 
-libkdecore_la_METASOURCES = kapp.moc \
-	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \
-	kiconloader.moc kprocctrl.moc kprocess.moc ksimpleconfig.moc \
-	ksock.moc kstyle.moc kdesktopfile.moc kwinmodule.moc
+libkdecore_la_METASOURCES = AUTO
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 

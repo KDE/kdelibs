@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libkjs.la
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp
 
-libkjs_la_METASOURCES = kjs.moc
+libkjs_la_METASOURCES = AUTO
 
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
 libkjs_la_LIBADD = $(LIB_KDECORE)

@@ -26,7 +26,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h
 
-METASOURCES = kconfigtest.moc klocaletest.moc kprocesstest.moc
+METASOURCES = AUTO
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE)

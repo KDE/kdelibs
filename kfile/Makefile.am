@@ -21,10 +21,7 @@ INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
 
-libkfile_la_METASOURCES = kcombiview.moc kdir.moc kdirlistbox.moc \
-	kfilebookmark.moc kfiledetaillist.moc kfiledialog.moc \
-	kfiledialogconf.moc kfilefilter.moc kfileinfocontents.moc \
-	kfilepreview.moc kfilesimpleview.moc kpreview.moc
+libkfile_la_METASOURCES = AUTO
 
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \

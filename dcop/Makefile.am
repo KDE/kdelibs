@@ -33,9 +33,10 @@ libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 include_HEADERS = dcopclient.h dcopserver.h dcopobject.h dcopglobal.h
 noinst_HEADERS = version.h dcopglobal.h
 
-METASOURCES = dcopclient.moc dcopserver.moc
+METASOURCES = AUTO
 
 libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
+

@@ -60,21 +60,7 @@ libkab_la_SOURCES	= \
 libkab_la_LDFLAGS = -version-info 3:0 $(X_LDFLAGS) $(QT_LDFLAGS) $(USER_LDFLAGS)
 libkab_la_LIBADD  = ../kfile/libkfile.la
 
-# just to make sure, automake makes them 
-libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc \
-	PrintDialog.moc PrintDialogData.moc \
-	SearchDialog.moc SearchDialogMainWidget.moc \
-	SearchDialogMainWidgetData.moc StringListEditDialog.moc \
-	StringListEditWidget.moc StringListEditWidgetData.moc \
-	StringListSelectAndReorderSet.moc \
-	StringListSelectAndReorderSetData.moc \
-	StringListSelectOneDialog.moc \
-	StringListSelectOneDialogData.moc \
-	StringListSelectSetDialog.moc \
-	businesscard.moc datepickerdialog.moc editentry.moc \
-	kab.moc kabapi.moc searchresults.moc  
-
-# DialogBase.moc DialogBaseData.moc 
+libkab_la_METASOURCES = AUTO
 
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg

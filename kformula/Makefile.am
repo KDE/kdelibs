@@ -17,7 +17,7 @@ include_HEADERS = box.h kformula.h kformulaedit.h matrixbox.h MatrixDialog.h kfo
 libkformula_la_LDFLAGS = -version-info 3:0 $(all_libraries)
 libkformula_la_LIBADD  = ../kdeui/libkdeui.la -lm
 
-libkformula_la_METASOURCES = kformulaedit.moc kformulatoolbar.moc MatrixDialog.moc
+libkformula_la_METASOURCES = AUTO
 
 
 

@@ -26,11 +26,11 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
+check_PROGRAMS =kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
-		kwindowtest kstatusbartest kprocesstest kbuttonboxtest \
-	    ksimpleconfigtest kledtest kcontainertest klocaletest krulertest \
+		kwindowtest kstatusbartest kbuttonboxtest \
+	        kledtest kcontainertest krulertest \
 		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest dialogbasetest \
@@ -48,14 +48,7 @@ noinst_HEADERS = \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
 		kdualcolortest.h khashtest.h kruntest.h
 
-METASOURCES = kconfigtest.moc \
-	kcontainertest.moc \
-	kiconloadertestmain.moc kledtest.moc \
-	klocaletest.moc knuminputtest.moc \
-	kprocesstest.moc krulertest.moc \
-	kstatusbartest.moc ktabctltest.moc \
-	kwindowtest.moc kunbalancedgrdtest.moc kdualcolortest.moc \
-	khashtest.moc kruntest.moc
+METASOURCES = AUTO
 
 LDADD =  $(LIB_KDEUI)
 

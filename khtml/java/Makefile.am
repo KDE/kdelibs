@@ -2,8 +2,7 @@ lib_LTLIBRARIES = libkjava.la
 libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
 	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp
 
-libkjava_la_METASOURCES = kjavaprocess.moc kjavaappletwidget.moc \
-	kjavaappletcontext.moc kjavaapplet.moc kjavaappletserver.moc
+libkjava_la_METASOURCES = AUTO
 
 include_HEADERS = kjavaapplet.h kjavaappletcontext.h \
 	kjavaappletserver.h kjavaappletwidget.h kjavaprocess.h
