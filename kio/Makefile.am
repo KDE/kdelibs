@@ -92,13 +92,14 @@ kioinclude_HEADERS = connection.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h uiserver.h tcpslavebase.h
+	statusbarprogress.h uiserver.h tcpslavebase.h \
+	observer.h 
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	observer.h kimageiofactory.h \
+	kimageiofactory.h \
 	renamedlg.h skipdlg.h \
 	filter.h kprotocolinfofactory.h # old stuff
 
