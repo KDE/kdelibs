@@ -21,7 +21,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qobject.h>
-#include <qpair.h>
 #include <qdom.h>
 #include <dcopobject.h>
 #include "kbookmark.h"
@@ -153,14 +152,17 @@ public:
      */
     bool showNSBookmarks() const;
 
+    struct DynMenuInfo {
+       bool first;
+       QString second;
+    } ;
+
     /**
-     * @return tuple wiht true iff the the given bookmarks file should 
-     * be dynamically shown in the toplevel kactionmenu, and location
-     * of the shown dynamic menu.
-     * @param
+     * @return dynmenu info block for the given dynmenu name
+     * @param 
      * @since 3.2
      */
-    QPair<bool, QString> showDynamicBookmarks( const QString &type ) const;
+    DynMenuInfo showDynamicBookmarks( const QString &name ) const;
 
     /**
      * Shows an extra menu for NS bookmarks. Set this to false, if you don't

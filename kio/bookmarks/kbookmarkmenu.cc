@@ -417,7 +417,8 @@ void KBookmarkMenu::fillBookmarkMenu()
     for ( it = keys.begin(); it != keys.end(); ++it ) 
     {
        QString menuName = dynMenui18nMap[(*it)];
-       QPair<bool, QString> info = m_pManager->showDynamicBookmarks((*it));
+       KBookmarkManager::DynMenuInfo info;
+       info = m_pManager->showDynamicBookmarks((*it));
 
        if ( !info.first || !QFile::exists( info.second ) )
           continue;
@@ -845,7 +846,6 @@ void KBookmarkMenuNSImporter::endFolder()
 {
   mstack.pop();
 }
-
 
 #include "kbookmarkmenu.moc"
 #include "kbookmarkmenu_p.moc"

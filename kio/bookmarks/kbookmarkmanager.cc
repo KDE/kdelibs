@@ -528,7 +528,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
     }
 }
 
-QPair<bool, QString> KBookmarkManager::showDynamicBookmarks( const QString &type ) const {
+KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &type ) const {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");
 
@@ -554,7 +554,10 @@ QPair<bool, QString> KBookmarkManager::showDynamicBookmarks( const QString &type
       }
    }
 
-   return qMakePair(show, location);
+   DynMenuInfo info;
+   info.first = show;
+   info.second = location;
+   return info;
 }
 
 void KBookmarkManager::setDynamicBookmarks( const QString &type, const QString &filename, bool show ) {
@@ -573,7 +576,8 @@ void KBookmarkManager::setDynamicBookmarks( const QString &type, const QString &
          // update from old xbel method to new rc method
          // though only if not writing the netscape setting
          config.setGroup("DynamicMenu-" "netscape");
-         QPair<bool, QString> oldSetting = showDynamicBookmarks("netscape");
+         DynMenuInfo oldSetting;
+         oldSetting = showDynamicBookmarks("netscape");
          config.writeEntry("Show", oldSetting.first);
          config.writeEntry("Location", oldSetting.second);
       }
