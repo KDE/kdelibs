@@ -20,8 +20,6 @@
 #include <qapplication.h>
 #include <qpaintdevicemetrics.h>
 
-#include <kdebug.h>
-
 #include "ico.h"
 
 // Global header
@@ -131,20 +129,15 @@ void kimgio_ico_read(QImageIO *io)
 			prefSize = params[0].toInt();
 		if (params.count() >= 2)
 			prefDepth = params[1].toInt();
-		kdDebug() << "Requested: " << prefSize << " x " << prefSize << " x " << prefDepth << endl;
 	}
-	else
-		kdDebug() << "Requested (defaults): " << prefSize << " x " << prefSize << " x " << prefDepth << endl;
 	QValueList<IconRec> iconList;
 	uint preferred = 0;
-	kdDebug() << "Icon table" << endl;
 	for (uint i = 0; i < hdr.count; ++i)
 	{
 		IconRec rec;
 		ico >> rec.width >> rec.height >> rec.colors
 			>> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
 		iconList.append(rec);
-		kdDebug() << i << ": " << rec.width << " x " << rec.height << " x " << rec.colors << endl;
 		if (abs(rec.width - prefSize) > abs(iconList[preferred].width - prefSize))
 			continue;
 		if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
@@ -154,7 +147,6 @@ void kimgio_ico_read(QImageIO *io)
         if (abs(int(rec.colors - prefDepth)) < abs(int(iconList[preferred].colors - prefDepth)))
 			preferred = i;
 	}
-	kdDebug() << "Using: " << preferred << endl;
 	IconRec header = iconList[preferred];
     ico.device()->at(header.dibOffset);
     BMP_INFOHDR dibHeader;
@@ -205,7 +197,7 @@ void kimgio_ico_write(QImageIO *io)
         return;
 
     QByteArray dibData;
-    QDataStream dib(dibData, IO_WriteOnly);
+    QDataStream dib(dibData, IO_ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
     if (!qt_write_dib(dib, io->image()))
         return;
@@ -246,6 +238,14 @@ void kimgio_ico_write(QImageIO *io)
         << rec.hotspotX << rec.hotspotY << rec.dibSize;
     rec.dibOffset = ico.device()->at() + sizeof(rec.dibOffset);
     ico << rec.dibOffset;
+
+    BMP_INFOHDR dibHeader;
+	dib.device()->at(0);
+    dib >> dibHeader;
+	dibHeader.biHeight = io->image().height() << 1;
+	dib.device()->at(0);
+	dib << dibHeader;
+
     ico.writeRawBytes(dibData.data(), dibData.size());
     io->setStatus(0);
 }
