@@ -1291,7 +1291,9 @@ void HTTPProtocol::http_closeConnection()
 }
 
 #if 1
+#ifdef __GNUC__
 #warning To be removed ?
+#endif
 // David: No, to be implemented as stat() - it's ok to return
 // only the size if that's all kio_http can guess.
 #else
@@ -1926,7 +1928,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   m_bKeepAlive = false;
   http_close();
-  return SlaveBase::error( _err, _text );
+  SlaveBase::error( _err, _text );
 }
 
 void
