@@ -902,14 +902,9 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke, bool keypress )
     }
     else // no focused node, send to document
     {
-        if (!_ke->text().isNull()
-            // This needs figuring out the ID like TextEventImpl does. Small optimization anyway.
-            /*&& m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT)*/
-            ) {
-            // If listener returned false, stop here. Otherwise handle standard keys (#60403).
-            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(&k)) {
-                return true;
-            }
+        // If listener returned false, stop here. Otherwise handle standard keys (#60403).
+        if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(&k)) {
+            return true;
         }
     }
     return false;
