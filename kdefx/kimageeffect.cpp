@@ -1920,7 +1920,6 @@ QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )
             QRgb pix = *p;
             if ( (pix & 0x00ffffff) != background )
             {
-                // Note that qAlpha(pix) isn't used
                 int r = ((0xff-alpha) * qRed(pix) + alpha * red) >> 8;
                 int g = ((0xff-alpha) * qGreen(pix) + alpha * green) >> 8;
                 int b = ((0xff-alpha) * qBlue(pix) + alpha * blue) >> 8;
@@ -2618,7 +2617,7 @@ unsigned int KImageEffect::interpolateColor(QImage *image, double x_offset,
             if(((x+1) < image->width()) && (y >= 0)){
                 q = t[x+1];
             }
-            r = background;                                    
+            r = background;
             if((x >= 0) && ((y+1) < image->height())){
                 t = (unsigned int *)image->scanLine(y+1);
                 r = t[x+image->width()];
