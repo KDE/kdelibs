@@ -60,15 +60,14 @@ bool KSycoca::openDatabase( bool abortOnError )
    }
    else
    {
-     bNoDatabase = true;
-     if (!abortOnError)
-       return false;
      // No database file
-     // TODO launch kded here, using KProcess, and upon completion
-     // retry again (but not more than once)
-     fprintf(stderr, "Error can't open database! Run kded !\n");
-//     exit(-1);
+
+     bNoDatabase = true;
+     if (!abortOnError)  // misnamed argument ?
+       return false;
+
      // We open a dummy database instead.
+     kdDebug(7011) << "No database, opening a dummy one." << endl;
      QBuffer *buffer = new QBuffer( QByteArray() ); 
      buffer->open(IO_ReadWrite);
      m_str = new QDataStream( buffer);  
