@@ -20,6 +20,8 @@
 #ifndef _KDEBUG_H
 #define _KDEBUG_H "$Id$"
 
+#include <stdio.h>
+
 /**
   * kdebug provides and advanced mechanism for displaying debugging
   * information to the user.  kdebug works like printf does but takes two
