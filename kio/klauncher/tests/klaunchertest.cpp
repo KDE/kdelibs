@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
    printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
       result, error.ascii(), dcopService.data());
 
-   return 0;
    result = KApplication::startServiceByDesktopName(
 		"konqueror", QString::null, dcopService, error);
 
