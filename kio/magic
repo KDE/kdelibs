@@ -240,6 +240,20 @@
 >>38 string   application/x-kivio         application/x-kivio
 >>38 string   application/x-karbon        application/x-karbon
 
+#KOffice documents writen using the kzip rewrite now use 'unx' based
+#zips; dislocating the mimetype.   This is for koffice 1.3 (okt 2003)
+0    string   PK\003\004                  application/x-zip 
+>30  string   mimetype
+>>55 string   application/x-kchart        application/x-kchart
+>>55 string   application/x-kformula      application/x-kformula
+>>55 string   application/x-kontour       application/x-kontour
+>>55 string   application/x-kpresenter    application/x-kpresenter
+>>55 string   application/x-kspread       application/x-kspread
+>>55 string   application/x-krita         application/x-krita
+>>55 string   application/x-kword         application/x-kword
+>>55 string   application/x-kivio         application/x-kivio
+>>55 string   application/x-karbon        application/x-karbon
+
 # BZIP2
 0	string          BZh             application/x-bzip2
 
