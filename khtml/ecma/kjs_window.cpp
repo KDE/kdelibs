@@ -432,15 +432,18 @@ Completion WindowFunc::tryExecute(const List &args)
 
   switch (id) {
   case Alert:
+    part->xmlDocImpl()->updateRendering();
     KMessageBox::error(widget, str, "JavaScript");
     result = Undefined();
     break;
   case Confirm:
+    part->xmlDocImpl()->updateRendering();
     i = KMessageBox::warningYesNo(widget, str, "JavaScript",
                                   i18n("OK"), i18n("Cancel"));
     result = Boolean((i == KMessageBox::Yes));
     break;
   case Prompt:
+    part->xmlDocImpl()->updateRendering();
     if (args.size() >= 2)
       str2 = QInputDialog::getText("Konqueror: Prompt", str,
                                    args[1].toString().value().qstring());
