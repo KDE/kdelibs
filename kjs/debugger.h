@@ -35,6 +35,7 @@ namespace KJS {
     friend class KJScriptImp;
     friend class StatementNode;
     friend class DeclaredFunctionImp;
+    friend class FunctionImp;
   public:
     /**
      * Available modes of the debugger.
@@ -120,6 +121,16 @@ namespace KJS {
      * your debugger window with the matching source code.
      */
     int freeSourceId() const;
+    /**
+     * Invoked on each function call. Use together with @ref returnEvent
+     * if you want to keep track of the call stack.
+     */
+    virtual void callEvent(const UString &fn = UString::null,
+				    const UString &s = UString::null);
+    /**
+     * Invoked on each function exit.
+     */
+    virtual void returnEvent();
 
   private:
     void reset();

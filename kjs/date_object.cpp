@@ -416,7 +416,7 @@ Completion DateProtoFunc::execute(const List &args)
 #else
 #  if defined(__BORLANDC__)
 #error please add daylight savings offset here!
-    result = Number(_timezone / 60);
+    result = Number(_timezone / 60 - (_daylight ? 60 : 0));
 #  else
     result = Number(( timezone / 60 - ( daylight ? 60 : 0 )));
 #  endif

@@ -506,7 +506,7 @@ Object Object::create(Class c, const KJSO& val)
     break;
   case ArrayClass:
     p += "Array";
-    obj.put("length", 0);
+    obj.put("length", Number(0), DontEnum | DontDelete);
     break;
   case StringClass:
     p += "String";
@@ -790,7 +790,7 @@ void Imp::putArrayElement(const UString &p, const KJSO& v)
       return;
   }
 
-  put("length", Number(idx+1));
+  put("length", Number(idx+1), DontDelete | DontEnum);
 }
 
 bool Imp::implementsCall() const

@@ -82,6 +82,14 @@ bool Debugger::stopEvent()
   return true;
 }
 
+void Debugger::callEvent(const UString &, const UString &)
+{
+}
+
+void Debugger::returnEvent()
+{
+}
+
 void Debugger::reset()
 {
   l = -1;
@@ -157,6 +165,9 @@ UString Debugger::varInfo(const UString &ident)
 // called by varInfo() and recursively by itself on each properties
 UString Debugger::objInfo(const KJSO &obj) const
 {
+  const char *cnames[] = { "Undefined", "Array", "String", "Boolean",
+			   "Number", "Object", "Date", "RegExp",
+			   "Error", "Function" };
   PropList *plist = obj.imp()->propList(0, 0, false);
   if (!plist)
     return obj.toString().value();
@@ -165,8 +176,12 @@ UString Debugger::objInfo(const KJSO &obj) const
     while (1) {
       result += plist->name + "=";
       KJSO p = obj.get(plist->name);
-      result += objInfo(p);
-      result += ":" + UString(p.imp()->typeInfo()->name);
+      result += objInfo(p) + ":";
+      Object obj = Object::dynamicCast(p);
+      if (obj.isNull())
+	result += p.imp()->typeInfo()->name;
+      else
+	result += cnames[int(obj.getClass())];
       plist = plist->next;
       if (!plist)
 	break;

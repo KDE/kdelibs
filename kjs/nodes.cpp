@@ -223,7 +223,7 @@ KJSO ArrayNode::evaluate()
   }
 
   if (opt)
-    array.put("length", Number(elisionLen + length));
+    array.put("length", Number(elisionLen + length), DontEnum | DontDelete);
 
   return array;
 }

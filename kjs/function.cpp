@@ -120,6 +120,19 @@ void FunctionImp::processParameters(const List *args)
       printInfo("setting argument", (*args)[i]);
   }
 #endif
+#ifdef KJS_DEBUGGER
+  if (KJScriptImp::current()->debugger()) {
+    UString argStr;
+    for (int i = 0; i < args->size(); i++) {
+      if (i > 0)
+	argStr += ", ";
+      Imp *a = (*args)[i].imp();
+      argStr += a->toString().value() + " : " +	UString(a->typeInfo()->name);
+    }
+    UString n = name().isEmpty() ? UString( "(internal)" ) : name();
+    KJScriptImp::current()->debugger()->callEvent(n, argStr);
+  }
+#endif
 }
 
 // ECMA 13.2.1
@@ -155,6 +168,10 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
     printInfo("returning", comp.value());
   else
     fprintf(stderr, "returning: undefined\n");
+#endif
+#ifdef KJS_DEBUGGER
+  if (KJScriptImp::current()->debugger())
+    KJScriptImp::current()->debugger()->returnEvent();
 #endif
 
   if (comp.complType() == Throw)
