@@ -98,6 +98,9 @@ namespace KNotify
     typedef QPtrListIterator<Event> EventListIterator;
 
 
+    /**
+     * @internal
+     */
     class KNotifyWidget : public KNotifyWidgetBase
     {
         Q_OBJECT
@@ -174,6 +177,9 @@ namespace KNotify
 ///////////////////////////////////////////////////////////////////
 
 
+    /**
+     * @internal
+     */
     class Application
     {
     public:
@@ -199,6 +205,9 @@ namespace KNotify
     };
 
 
+    /**
+     * @internal
+     */
     class Event
     {
         friend class Application;
@@ -227,6 +236,9 @@ namespace KNotify
         const Application *m_app;
     };
 
+    /**
+     * @internal
+     */
     class ListViewItem : public QListViewItem
     {
     public:

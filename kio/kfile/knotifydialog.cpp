@@ -171,6 +171,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     SelectionCombo::fill( m_comboEnable );
     SelectionCombo::fill( m_comboDisable );
 
+    m_listview->setFullWidth( true );
+    
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -237,6 +239,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_messageBox->show();
         m_passivePopup->show();
         m_stderr->show();
+        m_controlsBox->show();
 
         m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
     }
@@ -252,6 +255,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_messageBox->hide();
         m_passivePopup->hide();
         m_stderr->hide();
+        m_controlsBox->hide();
 
         m_actionsBoxLayout->setSpacing( 0 );
     }
