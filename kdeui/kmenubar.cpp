@@ -40,6 +40,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.40  1998/11/06 17:59:55  radej
+// sven: fixed dynamic style change (QMenuBar is buggy)
+//
 // Revision 1.39  1998/11/06 16:48:21  radej
 // sven: nicer docking, some bugfixes
 //
@@ -180,8 +183,6 @@ void KMenuBar::ContextCallback( int )
   context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
   context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
-//   connect( context, SIGNAL( activated( int ) ), this,
-// 	   SLOT( ContextCallback( int ) ) );
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
@@ -203,11 +204,12 @@ void KMenuBar::ContextCallback( int )
 	  setGeometry(r.x(),r.y()-3+verticalOffset, r.width()-6, heightForWidth(r.width()));
       }
   }
- 
+
+  setLineWidth( 0 );
 
   resize( Parent->width(), menu->height());
   enableFloating (TRUE);
-  
+  connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
   slotReadConfig();
 
   mgr =0;
@@ -244,6 +246,22 @@ void KMenuBar::slotReadConfig ()
   _transparent = config->readBoolEntry("TransparentMoving", true);
 
   if (_highlight != highlight)
+    highlight = _highlight;
+
+  if (_transparent != transparent)
+    //debug ("Style = Motif");
+    menu->setStyle(style()); //Uh!
+
+    menu->setFrameStyle(Panel | Raised);
+    // menu->setStyle(style()); TODO: port to real Styles
+    menu->setMouseTracking(false);
+    if (position != Floating || position == FloatingSystem)
+    //debug ("Style = Windows");
+    menu->setStyle(style()); //Uh!
+  }
+    menu->setFrameStyle(NoFrame);
+    // menu->setStyle(style()); TODO: port to real Styles
+  
   }
   //else if was and now is - nothing;
   //else if was not and now is not - nothing;
@@ -486,6 +504,11 @@ void KMenuBar::enableMoving(bool flag)
 	menu->setFrameStyle( NoFrame) ;
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 		*miniGo = px;
+	    show();
+	}
+
+        emit moved (mpos);
+          Parent->installEventFilter(obj);
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
         }
      else if (position == Floating) // was floating
@@ -497,6 +520,17 @@ void KMenuBar::enableMoving(bool flag)
         position = mpos;
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
 	menu->setFrameStyle(oldMenuFrameStyle);
+        recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
+        context->changeItem (i18n("Float"), CONTEXT_FLOAT);
+        context->setItemEnabled (CONTEXT_FLAT, TRUE);
+        emit moved (mpos);
+        if (style() == MotifStyle)
+        {
+//          menu->setMouseTracking(false);
+          menu->setFrameStyle(Panel | Raised);
+        }
+        else
+        {
 //          menu->setMouseTracking(true);
           menu->setFrameStyle(NoFrame);
         }
