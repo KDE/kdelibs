@@ -322,14 +322,14 @@ ErrorType KJSO::putValue(const KJSO& v)
 void KJSO::setPrototype(const KJSO& p)
 {
   assert(rep);
-  rep->proto = p;
+  rep->proto = p.imp() ? p.imp()->ref() : 0L;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
 KJSO KJSO::prototype() const
 {
   if (rep)
-    return rep->proto;
+    return KJSO(rep->proto);
   else
     return KJSO();
 }
@@ -518,7 +518,7 @@ int List::count = 0;
 #endif
 
 Imp::Imp()
-  : refcount(1), prop(0)
+  : refcount(1), prop(0), proto(0)
 {
 #ifdef KJS_DEBUG_MEM
   count++;
@@ -530,6 +530,9 @@ Imp::~Imp()
 #ifdef KJS_DEBUG_MEM
   count--;
 #endif
+
+  if (proto)
+    proto->deref();
 
   // delete attached properties
   Property *tmp, *p = prop;
@@ -574,10 +577,10 @@ KJSO Imp::get(const UString &p) const
     pr = pr->next;
   }
 
-  if (proto.isNull())
+  if (!proto)
     return Undefined();
 
-  return proto.get(p);
+  return proto->get(p);
 }
 
 // may be overriden
@@ -627,10 +630,10 @@ bool Imp::canPut(const UString &p) const
       pr = pr->next;
     }
   }
-  if (proto.isNull())
+  if (!proto)
     return true;
 
-  return proto.canPut(p);
+  return proto->canPut(p);
 }
 
 // ECMA 8.6.2.4
@@ -646,10 +649,10 @@ bool Imp::hasProperty(const UString &p, bool recursive) const
     pr = pr->next;
   }
 
-  if (proto.isNull() || !recursive)
+  if (!proto || !recursive)
     return false;
 
-  return proto.hasProperty(p);
+  return proto->hasProperty(p);
 }
 
 // ECMA 8.6.2.5
@@ -757,7 +760,7 @@ KJSO Imp::defaultValue(Type hint) const
 
 void Imp::setPrototype(const KJSO& p)
 {
-  proto = p;
+  proto = p.imp() ? p.imp()->ref() : 0L;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 

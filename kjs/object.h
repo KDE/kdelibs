@@ -335,7 +335,7 @@ namespace KJS {
     void putArrayElement(const UString &p, const KJSO& v);
 
     Property *prop;
-    KJSO proto;
+    Imp *proto;
     static const TypeInfo info;
     
     // for future extensions
