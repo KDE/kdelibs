@@ -255,7 +255,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
     	break;
     case ATTR_HEIGHT:
 	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
-    	break;    
+    	break;
     case ATTR_BORDER:
     {
 	int border;
@@ -349,6 +349,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_VALIGN:
 	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
