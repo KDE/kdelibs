@@ -1021,6 +1021,9 @@ void DocumentImpl::clear()
     m_tokenizer = 0;
 
     removeChildren();
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current();)
+        m_windowEventListeners.removeRef(it.current());
 }
 
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
