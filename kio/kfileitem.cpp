@@ -40,7 +40,7 @@
 class KFileItem::KFileItemPrivate
 {
 public:
-  KFileItemPrivate() { 
+  KFileItemPrivate() {
     bMimeTypeKnown = false;
     refresh();
   }
@@ -49,7 +49,7 @@ public:
     for ( int i = Modification; i <= Creation; i++ )
       time[i] = (time_t) -1;
   }
-    
+
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
   bool bMimeTypeKnown;
@@ -267,7 +267,7 @@ long KFileItem::size() const
 {
   if ( d->size >= 0 )
     return d->size;
-    
+
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
@@ -289,7 +289,7 @@ long KFileItem::size() const
 time_t KFileItem::time( unsigned int which ) const
 {
   unsigned int mappedWhich = 0;
-    
+
   switch( which ) {
     case KIO::UDS_MODIFICATION_TIME:
       mappedWhich = KFileItemPrivate::Modification;
@@ -301,10 +301,10 @@ time_t KFileItem::time( unsigned int which ) const
       mappedWhich = KFileItemPrivate::Creation;
       break;
   }
-  
-  if ( d->time[mappedWhich] > (time_t) -1 )
+
+  if ( d->time[mappedWhich] != (time_t) -1 )
     return d->time[mappedWhich];
-        
+
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
@@ -312,13 +312,13 @@ time_t KFileItem::time( unsigned int which ) const
       d->time[mappedWhich] = static_cast<time_t>((*it).m_long);
       return d->time[mappedWhich];
     }
-  
+
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
     struct stat buf;
     stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ? 
+    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                            buf.st_mtime :
                            (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
                            static_cast<time_t>(0); // We can't determine creation time for local files
