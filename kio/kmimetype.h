@@ -151,19 +151,19 @@ public:
   /**
    * Retrieve the list of patterns associated with the MIME Type.
    */
-  virtual const QStringList& patterns() const { return m_lstPatterns; }
+  const QStringList& patterns() const { return m_lstPatterns; }
 
   /**
    * Load the mimetype from a stream.
    *
    * @param _parentLoaded Internal (set by the constructor)
    */
-  virtual void load( QDataStream&, bool _parentLoaded = false );
+  void load( QDataStream&, bool _parentLoaded = false );
 
   /**
    * Save the mimetype to a stream.
    */
-  virtual void save( QDataStream& );
+  void save( QDataStream& );
 
   virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
@@ -242,11 +242,6 @@ protected:
   QStringList m_lstPatterns;
 
   static Ptr s_pDefaultType;
-
-private:
-  virtual QString icon() const { return KServiceType::icon(); }
-  virtual QString comment() const { return KServiceType::comment(); }
-  virtual void load(QDataStream& d) { KServiceType::load(d); }
 };
 
 /**
@@ -268,10 +263,6 @@ public:
   virtual QString icon( const KURL& _url, bool _is_local ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
-
-private:
-  virtual QString icon() const { return KMimeType::icon(); }
-  virtual QString comment() const { return KMimeType::comment(); }
 };
 
 /**
@@ -342,15 +333,13 @@ public:
   static bool run( const KURL& _url, bool _is_local );
 
 protected:
+  virtual QPixmap pixmap(int a, int b, int c, QString *d) const
+     { return KMimeType::pixmap(a, b, c, d); }
+
   static bool runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
   static bool runApplication( const KURL& _url, const QString & _serviceFile );
   static bool runLink( const KURL& _url, const KSimpleConfig &cfg );
   static bool runMimeType( const KURL& _url, const KSimpleConfig &cfg );
-
-private:
-  QString icon() const { return KMimeType::icon(); }
-  QString comment() const { return KMimeType::comment(); }
-  QPixmap pixmap(int a, int b, int c, QString *d) const { return KMimeType::pixmap(a, b, c, d); }
 };
 
 /**

@@ -81,17 +81,17 @@ public:
    *         URL. An example is @ref KMimeType, @ref KFoldeType and
    *         others.
    */
-  virtual QString icon() const { return m_strIcon; }
+  QString icon() const { return m_strIcon; }
 
   /**
    * @return the descriptive comment associated, if any.
    */
-  virtual QString comment() const { return m_strComment; }
+  QString comment() const { return m_strComment; }
 
   /**
    * @return the name of this service type.
    */
-  virtual QString name() const { return m_strName; }
+  QString name() const { return m_strName; }
 
   /**
    * @return the relative path to the desktop entry file responsible for
@@ -112,12 +112,12 @@ public:
   /**
    * Save ourselves to the data stream.
    */
-  virtual void save( QDataStream& );
+  void save( QDataStream& );
 
   /**
    * Load ourselves from the data stream.
    */
-  virtual void load( QDataStream& );
+  void load( QDataStream& );
 
   /**
    * @return a pointer to the servicetype '_name' or 0L if the
