@@ -166,3 +166,13 @@ HTMLCollection HTMLElement::children() const
     if(!impl) return HTMLCollection();
     return HTMLCollection(impl, HTMLCollectionImpl::NODE_CHILDREN);
 }
+
+void HTMLElement::assignOther( const Node &other, int elementId )
+{
+    if(other.elementId() != elementId) {
+	if ( impl ) impl->deref();
+	impl = 0;
+    } else {
+	Node::operator = (other);
+    }   
+}
