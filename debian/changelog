@@ -1,5 +1,11 @@
 kdelibs (4:2.1-beta2-2) unstable; urgency=low
  
+   * Lots of little fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 24 Jan 2001 12:36:00 -0700
+
+kdelibs (4:2.1-beta2-2) unstable; urgency=low
+ 
    * Fixes problem with version number not showing
    * Cleaning up depends for -dev packages
  
