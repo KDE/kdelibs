@@ -2,10 +2,7 @@ TODO-List for the KFileDialog and associated classes (in order of importance)
 
 - are more messageboxes necessary?
 - KFD's default dirs configurable
-- roation is quite broken ;( Most probably KComboBox, and I guess KLineEdit
 - drag&drop support for the views (somehow into baseclass KFileView?
-- fix multiselection (parsing of the selected files in the locationCombo)
-- KFileView::setCurrentItem() / highlight() ?!?!
 - KFileView::setSelected( const QRegExp& )
 - what about KRemoteFile?
 - separate KDirOperator, location-combo, filter-combo etc. from KFileDialog

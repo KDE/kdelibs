@@ -362,7 +362,7 @@ KMimeType::Ptr KFileDialog::currentFilterMimeType()
 {
     int i = filterWidget->currentItem()-1;
 
-    if ((i >= 0) && (i < d->mimetypes.count()))
+    if ((i >= 0) && (i < (int) d->mimetypes.count()))
        return d->mimetypes[i];
     return d->defaultType;
 }

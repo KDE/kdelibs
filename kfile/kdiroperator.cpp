@@ -656,7 +656,11 @@ void KDirOperator::connectView(KFileView *view)
         fileView->setOperator(0);
         // it's _very_ unlikly that oldView still has a value
         oldView = fileView;
-        QTimer::singleShot(0, this, SLOT(deleteOldView()));
+	// the timer didn't work (KFileItems being deleted, then the view
+	// being deleted, the view deleting the view items, which tried to
+	// access the (dead) KFileItems. What was it good for anyway?
+	// QTimer::singleShot(0, this, SLOT(deleteOldView()));
+	deleteOldView();
     }
 
     fileView = view;

@@ -36,8 +36,8 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    //    const_cast<KFileViewItem*>(fileInfo())->
-    //	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
+    const_cast<KFileViewItem*>(fileInfo())->
+	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
 }
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -142,7 +142,7 @@ void KFileIconView::slotRightButtonPressed( QIconViewItem* item )
 
 KFileIconView::~KFileIconView()
 {
-	removeToolTip();
+    removeToolTip();
 }
 
 void KFileIconView::setSelected( const KFileViewItem *info, bool enable )

@@ -118,7 +118,7 @@ public:
      * You can use this to customize the dialog, e.g. to specify a filter.
      * Never returns 0L.
      */
-    KFileDialog * fileDialog() const;
+    KFileDialog * fileDialog() const; // FIXME, should be virtual
 
     /**
      * @returns a pointer to the lineedit, either the default one, or the
@@ -164,7 +164,7 @@ signals:
 protected:
     void		init();
 
-    KLineEdit *		myEdit; // obsolete, remove me
+    KLineEdit *		myEdit; // FIXME: obsolete, remove me
     QPushButton *	myButton;
     KURLCompletion *    myCompletion;
     bool 		myModal;
