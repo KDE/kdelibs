@@ -23,7 +23,6 @@
 #ifndef KCMULTIDIALOG_H
 #define KCMULTIDIALOG_H
 
-#include <qptrlist.h>
 #include <qptrdict.h>
 
 #include <kdialogbase.h>
@@ -103,9 +102,9 @@ public:
             parentmodulenames = QStringList(), bool withfallback=false);
 
     /**
-     * Remove a module from the dialog.
+     * Remove all modules from the dialog.
      */
-    void removeModule( const KCModuleInfo& moduleinfo );
+    void removeAllModules();
 
     /**
      * @internal
@@ -174,8 +173,21 @@ private:
       KCModuleInfo info;
       bool withfallback;
     };
-    QPtrList<KCModule> modules;
-    QPtrDict<LoadInfo> moduleDict;
+
+    typedef QMap<QWidget*, LoadInfo*> LoadInfoMap;
+    LoadInfoMap m_loadInfoMap;
+
+    struct CreatedModule
+    {
+        KCModule * kcm;
+        KService::Ptr service;
+    };
+    typedef QValueList<CreatedModule> ModuleList;
+    ModuleList m_modules;
+
+    typedef QMap<KService::Ptr, KCModule*> OrphanMap;
+    OrphanMap m_orphanModules;
+
     QPtrDict<QStringList> moduleParentComponents;
     QString _docPath;
     int dialogface;

@@ -31,68 +31,320 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
+#include <qvbox.h>
+#include <qlabel.h>
 
 namespace KSettings
 {
 
-class KCMISortedList : public QPtrList<KCModuleInfo>
+struct GroupInfo
 {
-	public:
-		KCMISortedList() : QPtrList<KCModuleInfo>() {}
-		KCMISortedList( const KCMISortedList &list )
-			: QPtrList<KCModuleInfo>( list ) {}
-		~KCMISortedList() { clear(); }
-		KCMISortedList &operator=( const KCMISortedList &list )
-		{ return ( KCMISortedList& )QPtrList<KCModuleInfo>::operator=( list ); }
+	QString id;
+	QString name;
+	QString comment;
+	QString icon;
+	int weight;
+	QString parentid;
+	QWidget * page;
+};
+
+// The TreeList can get really complicated. That's why a tree data structure
+// is necessary to make it suck less
+class PageNode
+{
+	private:
+		typedef QValueList<PageNode*> List;
+		enum Type { KCM, Group, Root };
+		union Value
+		{
+			KCModuleInfo * kcm;
+			GroupInfo * group;
+		};
+		Type m_type;
+		Value m_value;
+
+		Dialog * m_dialog;
+		List m_children;
+		PageNode * m_parent;
+		bool m_visible;
+		bool m_dirty;
 
 	protected:
-		int compareItems( QPtrCollection::Item item1,
-				QPtrCollection::Item item2 )
+		PageNode( KCModuleInfo * info, PageNode * parent )
+			: m_type( KCM )
+			, m_parent( parent )
+			, m_visible( true )
+			, m_dirty( true )
 		{
-			KCModuleInfo * info1 = static_cast<KCModuleInfo *>( item1 );
-			KCModuleInfo * info2 = static_cast<KCModuleInfo *>( item2 );
+			m_value.kcm = info;
+			m_dialog = parent->m_dialog;
+		}
 
-			if( info1->weight() == info2->weight() )
-				return 0;
-			else if( info1->weight() < info2->weight() )
-				return -1;
-			else
-				return 1;
+		PageNode( GroupInfo & group, PageNode * parent )
+			: m_type( Group )
+			, m_parent( parent )
+			, m_visible( true )
+			, m_dirty( true )
+		{
+			m_value.group = new GroupInfo( group );
+			m_value.group->page = 0;
+			m_dialog = parent->m_dialog;
+		}
+
+		void bubbleSort( List::Iterator begin, List::Iterator end )
+		{
+			--end;
+			bool finished;
+			List::Iterator lastswapped = begin;
+			List::Iterator i;
+			List::Iterator j;
+			while( begin != end )
+			{
+				finished = true;
+				i = j = end;
+				do {
+					--j;
+					if( **i < **j )
+					{
+						finished = false;
+						qSwap( *i, *j );
+						lastswapped = j;
+					}
+					--i;
+				} while( j != begin );
+				if( finished )
+					return;
+				++lastswapped;
+				begin = lastswapped;
+			}
+		}
+
+	public:
+		PageNode( Dialog * dialog )
+			: m_type( Root )
+			, m_dialog( dialog )
+			, m_parent( 0 )
+			, m_visible( true )
+			, m_dirty( true )
+		{}
+
+		~PageNode()
+		{
+			if( KCM == m_type )
+				delete m_value.kcm;
+			else if( Group == m_type )
+				delete m_value.group;
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				delete ( *it );
+		}
+
+		int weight() const
+		{
+			int w = ( KCM == m_type ) ? m_value.kcm->weight()
+				: m_value.group->weight;
+			kdDebug( 700 ) << k_funcinfo << name() << " " << w << endl;
+			return w;
+		}
+
+		bool operator<( const PageNode & rhs ) const
+		{
+			return weight() < rhs.weight();
+		}
+
+		bool isVisible()
+		{
+			if( m_dirty )
+			{
+				if( KCM == m_type )
+					m_visible = m_dialog->isPluginForKCMEnabled( m_value.kcm );
+				else
+				{
+					m_visible = false;
+					List::Iterator end = m_children.end();
+					for( List::Iterator it = m_children.begin(); it != end;
+							++it )
+						if( ( *it )->isVisible() )
+						{
+							m_visible = true;
+							break;
+						}
+				}
+				m_dirty = false;
+			}
+			kdDebug( 700 ) << k_funcinfo << "returns " << m_visible << endl;
+			return m_visible;
+		}
+
+		void makeDirty()
+		{
+			m_dirty = true;
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				( *it )->makeDirty();
+		}
+
+		QString name() const
+		{
+			if( Root == m_type )
+				return QString::fromAscii( "root node" );
+			return ( KCM == m_type ) ? m_value.kcm->moduleName()
+				: m_value.group->name;
+		}
+
+		QStringList parentNames() const
+		{
+			QStringList ret;
+			PageNode * node = m_parent;
+			while( node && node->m_type != Root )
+			{
+				ret.prepend( node->name() );
+				node = node->m_parent;
+			}
+			return ret;
+		}
+
+		void addToDialog( KCMultiDialog * dlg )
+		{
+			kdDebug( 700 ) << k_funcinfo << "for " << name() << endl;
+			if( ! isVisible() )
+				return;
+
+			if( KCM == m_type )
+			{
+				dlg->addModule( *m_value.kcm, parentNames() );
+				return;
+			}
+			if( Group == m_type && 0 == m_value.group->page )
+			{
+				QPixmap icon;
+				if( ! m_value.group->icon.isNull() )
+					icon = SmallIcon( m_value.group->icon,
+							IconSize( KIcon::Small ) );
+				QVBox * page = dlg->addVBoxPage( m_value.group->name,
+						QString::null, icon );
+				QLabel * comment = new QLabel( m_value.group->comment, page );
+				comment->setTextFormat( Qt::RichText );
+				m_value.group->page = page;
+			}
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				( *it )->addToDialog( dlg );
+		}
+
+		void removeFromDialog( KCMultiDialog * dlg )
+		{
+			kdDebug( 700 ) << k_funcinfo << "for " << name() << endl;
+			if( KCM == m_type )
+				return;
+			if( Root == m_type )
+				dlg->removeAllModules();
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				( *it )->removeFromDialog( dlg );
+			if( Group == m_type )
+			{
+				delete m_value.group->page;
+				m_value.group->page = 0;
+			}
+		}
+
+		void sort()
+		{
+			kdDebug( 700 ) << k_funcinfo << name() << endl;
+			List::Iterator begin = m_children.begin();
+			List::Iterator end = m_children.end();
+			bubbleSort( begin, end );
+			for( List::Iterator it = begin ; it != end; ++it )
+				( *it )->sort();
+		}
+
+		bool insert( GroupInfo & group )
+		{
+			if( group.parentid.isNull() )
+			{
+				if( Root == m_type )
+				{
+					m_children.append( new PageNode( group, this ) );
+					return true;
+				}
+				else
+					kdFatal( 700 ) << "wrong PageNode insertion"
+						<< kdBacktrace() << endl;
+			}
+			if( Group == m_type && group.parentid == m_value.group->id )
+			{
+				m_children.append( new PageNode( group, this ) );
+				return true;
+			}
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				if( ( *it )->insert( group ) )
+					return true;
+			return false;
+		}
+
+		bool insert( KCModuleInfo * info, const QString & parentid )
+		{
+			if( parentid.isNull() )
+			{
+				if( Root == m_type )
+				{
+					m_children.append( new PageNode( info, this ) );
+					return true;
+				}
+				else
+					kdFatal( 700 ) << "wrong PageNode insertion"
+						<< kdBacktrace() << endl;
+			}
+			if( Group == m_type && parentid == m_value.group->id )
+			{
+				m_children.append( new PageNode( info, this ) );
+				return true;
+			}
+			List::Iterator end = m_children.end();
+			for( List::Iterator it = m_children.begin(); it != end; ++it )
+				if( ( *it )->insert( info, parentid ) )
+					return true;
+			return false;
+		}
+
+		bool needTree()
+		{
+			List::ConstIterator end = m_children.end();
+			for( List::ConstIterator it = m_children.begin(); it != end; ++it )
+				if( ( *it )->m_children.count() > 0 )
+					return true;
+			return false;
+		}
+
+		bool singleChild()
+		{
+			return ( m_children.count() == 1 );
 		}
 };
 
 class Dialog::DialogPrivate
 {
 	public:
-		DialogPrivate()
+		DialogPrivate( Dialog * parent )
 			: dlg( 0 )
-			{
-				moduleinfos.setAutoDelete( true );
-			}
+			, pagetree( parent )
+		{
+		}
 
 		bool staticlistview;
-		KCMISortedList moduleinfos;
 		KCMultiDialog * dlg;
+		PageNode pagetree;
+		QWidget * parentwidget;
+		QStringList registeredComponents;
 		QValueList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
-		QWidget * parentwidget;
-
-		struct GroupInfo
-		{
-			QString name;
-			QString comment;
-			QString icon;
-			int weight;
-			QString parent;
-		};
-
-		QMap<QString, GroupInfo> groupmap;
-		QStringList registeredComponents;
 };
 
 Dialog::Dialog( QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new DialogPrivate )
+	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = true;
@@ -102,7 +354,7 @@ Dialog::Dialog( QWidget * parent, const char * name )
 Dialog::Dialog( ContentInListView content,
 		QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new DialogPrivate )
+	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
@@ -112,7 +364,7 @@ Dialog::Dialog( ContentInListView content,
 Dialog::Dialog( const QStringList & components,
 		QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new DialogPrivate )
+	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = true;
@@ -122,7 +374,7 @@ Dialog::Dialog( const QStringList & components,
 Dialog::Dialog( const QStringList & components,
 		ContentInListView content, QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new DialogPrivate )
+	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
@@ -205,35 +457,11 @@ QValueList<KService::Ptr> Dialog::parentComponentsServices(
 	return KTrader::self()->query( "KCModule", constraint );
 }
 
-void Dialog::setGroupIcons()
-{
-	// iterate over the groups and set the icons
-	for( QMap<QString, DialogPrivate::GroupInfo>::ConstIterator it
-			= d->groupmap.begin(); it != d->groupmap.end(); ++it )
-	{
-		if( ( *it ).icon.isNull() )
-			continue;
-
-		const DialogPrivate::GroupInfo * info = &( *it );
-		QStringList path = info->name;
-		while( ! info->parent.isNull() &&
-				d->groupmap.contains( info->parent ) )
-		{
-			info = &d->groupmap[ info->parent ];
-			path.prepend( info->name );
-		}
-		kdDebug( 700 ) << "set icon for group: " << path << ( *it ).icon
-			<< endl;
-		d->dlg->setFolderIcon( path,
-				SmallIcon( ( *it ).icon, IconSize( KIcon::Small ) ) );
-	}
-}
-
 bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 {
 	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
-	bool enabled = false;
+	bool enabled = true;
 	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
 		<< " KCM should be shown" << endl;
 	// for all parent components
@@ -275,53 +503,22 @@ void Dialog::parseGroupFile( const QString & filename )
 	for( QStringList::ConstIterator it = groups.begin(); it != groups.end();
 			++it )
 	{
-		DialogPrivate::GroupInfo group;
+		GroupInfo group;
 		QString id = *it;
 		file.setGroup( id.utf8() );
+		group.id = id;
 		group.name = file.readEntry( "Name" );
 		group.comment = file.readEntry( "Comment" );
 		group.weight = file.readNumEntry( "Weight", 100 );
-		group.parent = file.readEntry( "Parent" );
+		group.parentid = file.readEntry( "Parent" );
 		group.icon = file.readEntry( "Icon" );
-		d->groupmap[ id ] = group;
+		d->pagetree.insert( group );
 	}
-}
-
-void Dialog::setupTreeListDialog()
-{
-	d->dlg->setShowIconsInTreeList( true );
-
-	setGroupIcons();
-}
-
-QStringList Dialog::parentModuleNames( KCModuleInfo * info )
-{
-	QStringList parentnames;
-	QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
-			QVariant::String );
-	if( ! tmp.isValid() )
-		return parentnames;
-
-	QString id = tmp.toString();
-	if( ! d->groupmap.contains( id ) )
-		// the KCM wants to be a child of a not existing group
-		return parentnames;
-
-	// ok, this module is a child in some group. KDialogBase needs a
-	// QStringList of the parent pages to put this module at the right
-	// place. Create that list:
-	DialogPrivate::GroupInfo gi = d->groupmap[ id ];
-	parentnames.prepend( gi.name );
-	while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
-	{
-		gi = d->groupmap[ gi.parent ];
-		parentnames.prepend( gi.name );
-	}
-	return parentnames;
 }
 
 void Dialog::createDialogFromServices()
 {
+	// read .setdlg files
 	QString setdlgpath = locate( "appdata",
 			KGlobal::instance()->instanceName() + ".setdlg" );
 	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
@@ -333,33 +530,36 @@ void Dialog::createDialogFromServices()
 				it != setdlgaddon.end(); ++it )
 			parseGroupFile( *it );
 
-	// for all services
+	// now we process the KCModule services
 	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin();
 			it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo
-		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
-		if( ! d->staticlistview && ! isPluginForKCMEnabled( moduleinfo ) )
-		{
-			// it's not enabled so the KCModuleInfo is not needed anymore
-			delete moduleinfo;
-			continue;
-		}
-		d->moduleinfos.append( moduleinfo );
+		KCModuleInfo * info = new KCModuleInfo( *it );
+		QString parentid;
+		QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
+			QVariant::String );
+		if( tmp.isValid() )
+			parentid = tmp.toString();
+		d->pagetree.insert( info, parentid );
 	}
 
-	int dialogface = KJanusWidget::Plain;
-	if( d->groupmap.size() > 1 )
+	// At this point d->pagetree holds a nice structure of the pages we want
+	// to show. It's not going to change anymore so we can sort it now.
+	d->pagetree.sort();
+
+	int dialogface = KJanusWidget::IconList;
+	if( d->pagetree.needTree() )
 		dialogface = KJanusWidget::TreeList;
-	else if( d->moduleinfos.count() > 1 || ! d->staticlistview )
-		dialogface = KJanusWidget::IconList;
+	else if( d->pagetree.singleChild() )
+		dialogface = KJanusWidget::Plain;
 
 	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
 	d->dlg = new KCMultiDialog( dialogface, i18n( "Configure" ),
 			d->parentwidget );
 
 	if( dialogface == KJanusWidget::TreeList )
-		setupTreeListDialog();
+		d->dlg->setShowIconsInTreeList( true );
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.
@@ -372,6 +572,7 @@ void Dialog::createDialogFromServices()
 	// touch the plugin selections.
 	// I have no idea how to check that in KPluginSelector::load()...
 	//d->dlg->showButton( KDialogBase::User1, true );
+
 	if( ! d->staticlistview )
 		d->dlg->addButtonBelowList( i18n( "Configure..." ), this,
 			SLOT( configureTree() ) );
@@ -382,15 +583,10 @@ void Dialog::createDialogFromServices()
 		SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ),
 		Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
-	d->moduleinfos.sort();
-	for( KCModuleInfo * info = d->moduleinfos.first(); info;
-		info = d->moduleinfos.next() )
-	{
-		kdDebug( 700 ) << "add module: " << info->fileName() << endl;
-		d->dlg->addModule( *info, parentModuleNames( info ) );
-	}
 
-	if( d->groupmap.size() > 1 )
+	d->pagetree.addToDialog( d->dlg );
+
+	if( dialogface == KJanusWidget::TreeList )
 		d->dlg->unfoldTreeList( true );
 }
 
@@ -410,49 +606,19 @@ void Dialog::configureTree()
 
 void Dialog::updateTreeList()
 {
-	// FIXME: very inefficient code
 	kdDebug( 700 ) << k_funcinfo << endl;
-	// for all services
-	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin();
-			it != d->services.end(); ++it )
-	{
-		// we create the KCModuleInfo
-		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
-		if( ! isPluginForKCMEnabled( moduleinfo ) )
-		{
-			// it's not enabled so the KCModuleInfo is not needed anymore
-			for( KCModuleInfo * torm = d->moduleinfos.first(); torm;
-					torm = d->moduleinfos.next() )
-				if( *torm == *moduleinfo )
-				{
-					kdDebug( 700 ) << "remove module " << torm->moduleName()
-						<< endl;
-					d->dlg->removeModule( *torm );
-					d->moduleinfos.remove(); //autodeleted
-					break;
-				}
-			delete moduleinfo;
-		}
-		else
-		{
-			// it's enabled, check if we need to add it (if it's not there yet)
-			bool needtoadd = true;
-			for( KCModuleInfo * inthere = d->moduleinfos.first(); inthere;
-					inthere = d->moduleinfos.next() )
-				if( *inthere == *moduleinfo )
-				{
-					needtoadd = false;
-					break;
-				}
-			if( needtoadd )
-			{
-				// it's not there yet - add it
-				d->dlg->addModule( *moduleinfo,
-						parentModuleNames( moduleinfo ) );
-				d->moduleinfos.append( moduleinfo );
-			}
-		}
-	}
+
+	d->pagetree.makeDirty();
+
+	// remove all pages from the dialog and then add them again. This is needed
+	// because KDialogBase/KJanusWidget can only append to the end of the list
+	// and we need to have a predefined order.
+
+	d->pagetree.removeFromDialog( d->dlg );
+	d->pagetree.addToDialog( d->dlg );
+
+	if( d->pagetree.needTree() )
+		d->dlg->unfoldTreeList( true );
 }
 
 } //namespace

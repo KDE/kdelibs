@@ -66,6 +66,7 @@ namespace KSettings
  */
 class Dialog : public QObject
 {
+    friend class PageNode;
     Q_OBJECT
     public:
         /**
@@ -179,12 +180,6 @@ class Dialog : public QObject
     private:
         /**
          * @internal
-         * Set the icons from the .setdlg file.
-         */
-        void setGroupIcons();
-
-        /**
-         * @internal
          * Check whether the plugin associated with this KCM is enabled.
          */
         bool isPluginForKCMEnabled( KCModuleInfo * ) const;
@@ -197,14 +192,6 @@ class Dialog : public QObject
          * Read the .setdlg file and add it to the groupmap
          */
         void parseGroupFile( const QString & );
-
-        /**
-         * @internal
-         * If the dialog is constructed as a TreeList this method will do the
-         * necessary things to collect information needed for the tree
-         * structure.
-         */
-        void setupTreeListDialog();
 
         /**
          * @internal
