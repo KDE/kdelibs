@@ -860,8 +860,6 @@ KCmdLineArgs::getOption(const char *_opt)
    QCString opt = _opt;
    int result = ::findOption( options, opt, opt_name, def, dummy);
 
-   assert(result == 3); // Make sure to add an option to 
-                        // the list of options before querying it!
    if (result != 3)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
