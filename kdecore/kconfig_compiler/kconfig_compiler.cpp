@@ -176,7 +176,8 @@ static QString filenameOnly(QString path)
    return path;
 }
 
-CfgEntry *parseEntry( const QString &group, const QDomElement &element )
+CfgEntry *parseEntry( const QString &group, const QDomElement &element,
+                      bool globalEnums )
 {
   bool defaultCode = false;
   QString type = element.attribute( "type" );
@@ -282,8 +283,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     }
   }
 
-  if ( name.isEmpty() ) {
-    kdError() << "Entry must have a name: " << dumpNode(element) << endl;
+  if ( name.isEmpty() && key.isEmpty() ) {
+    kdError() << "Entry must have a name or a key: " << dumpNode(element) << endl;
     return 0;
   }
   if (name.contains("$(") && param.isEmpty())
@@ -291,8 +292,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     kdError() << "Name may not be parameterized: " << name << endl;
     return 0;
   }
+
   if ( key.isEmpty() ) {
     key = name;
+  }
+
+  if ( name.isEmpty() ) {
+    name = key;
+    name.replace( " ", "" );
   }
 
   if ( label.isEmpty() ) {
@@ -324,10 +331,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       defaultValue = "default" + name;
 
     } else if ( type == "QColor" ) {
-      addQuotes( defaultValue );
       defaultValue = "QColor( " + defaultValue + " )";
 
-    } else if ( type == "Enum" ) {
+    } else if ( type == "Enum" && !globalEnums ) {
       if ( values.contains(defaultValue) ) {
         defaultValue.prepend( enumName(name) + "::");
       }
@@ -470,6 +476,7 @@ int main( int argc, char **argv )
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
+  bool globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
 
   QFile input( inputFilename );
 
@@ -526,7 +533,7 @@ int main( int argc, char **argv )
       QDomNode n2;
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
-        CfgEntry *entry = parseEntry( group, e2 );
+        CfgEntry *entry = parseEntry( group, e2, globalEnums );
         if ( entry && !entry->hidden() ) entries.append( entry );
         else if ( !entry ) {
           kdError() << "Can't parse entry." << endl;
@@ -598,11 +605,15 @@ int main( int argc, char **argv )
   for( e = entries.first(); e; e = entries.next() ) {
     QStringList values = e->values();
     if ( !values.isEmpty() ) {
-      h << "    class " << enumName(e->name()) << endl;
-      h << "    {" << endl;
-      h << "      public:" << endl;
-      h << "      enum { " << values.join( ", " ) << " };" << endl;
-      h << "    };" << endl;
+      if ( globalEnums ) {
+        h << "    enum { " << values.join( ", " ) << " };" << endl;
+      } else {
+        h << "    class " << enumName(e->name()) << endl;
+        h << "    {" << endl;
+        h << "      public:" << endl;
+        h << "      enum { " << values.join( ", " ) << " };" << endl;
+        h << "    };" << endl;
+      }
     }
     values = e->paramValues();
     if ( !values.isEmpty() ) {
