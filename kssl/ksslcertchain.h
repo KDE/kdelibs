@@ -48,9 +48,17 @@ public:
 
   KSSLCertChain *replicate();
   void setChain(void *stack_of_x509);
+#if QT_VERSION < 300
+  void setChain(QList<KSSLCertificate>& chain);
+#else
   void setChain(QPtrList<KSSLCertificate>& chain);
+#endif
   void setChain(QStringList chain);
+#if QT_VERSION < 300
+  QList<KSSLCertificate> getChain();
+#else
   QPtrList<KSSLCertificate> getChain();
+#endif
   int depth();
   void *rawChain() { return _chain; }
 

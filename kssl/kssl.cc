@@ -39,7 +39,7 @@
 #include "kssl.h"
 
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ksock.h>
 #include <ksockaddr.h>
 

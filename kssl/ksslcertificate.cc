@@ -33,7 +33,7 @@
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kmdcodec.h>
 #include <klocale.h>
 #include <qdatetime.h>

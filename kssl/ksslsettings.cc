@@ -34,7 +34,7 @@
 
 #include "ksslsettings.h"
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug

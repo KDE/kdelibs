@@ -84,7 +84,7 @@
 #include <qfile.h>
 #include <qsortedlist.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <qdatetime.h>
 
@@ -116,7 +116,11 @@ public:
 
 class KSSLCertificateCache::KSSLCertificateCachePrivate {
   public:
+#if QT_VERSION < 300
+  QList<KSSLCNode> certList;
+#else
   QPtrList<KSSLCNode> certList;
+#endif
   KSimpleConfig *cfg;
   KOSSL *kossl;
 

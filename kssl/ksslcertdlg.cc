@@ -30,7 +30,7 @@
 #include <qframe.h>
 #include <qlabel.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kglobalsettings.h>

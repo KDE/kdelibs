@@ -30,14 +30,14 @@
 #include <qscrollview.h>
 #include <qfile.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kprocess.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
 #include <kurllabel.h>
-//#include <kstddirs.h>
+//#include <kstandarddirs.h>
 //#include <krun.h>
 
 class KSSLInfoDlg::KSSLInfoDlgPrivate {
