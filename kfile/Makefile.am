@@ -40,9 +40,9 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp \
 	kfilepreview.cpp kfilefilter.cpp
 
-toolbar_DATA = configure.xpm 
+toolbar_DATA = configure.png
 
-EXTRA_DIST = configure.xpm KFile.kdoc NOTES configuration.txt
+EXTRA_DIST = configure.png KFile.kdoc NOTES
 
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
