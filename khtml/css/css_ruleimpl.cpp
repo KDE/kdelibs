@@ -126,7 +126,8 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
     // we must have a docLoader !
-    m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl());
+    // ### pass correct charset here!!
+    m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl(), QString::null);
 
     m_cachedSheet->ref(this);
     m_loading = true;

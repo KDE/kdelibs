@@ -134,7 +134,8 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
             m_loading = true;
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
             // we must have a doc->docLoader() !
-            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
+            QString chset = getAttribute( ATTR_CHARSET ).string();
+            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL(), chset);
             if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }

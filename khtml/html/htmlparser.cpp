@@ -1143,7 +1143,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-        case ID_LISTING:
+    case ID_LISTING:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
 // inline

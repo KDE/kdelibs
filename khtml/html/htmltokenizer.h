@@ -330,6 +330,7 @@ protected:
     bool noMoreData;
     // URL to get source code of script from
     QString scriptSrc;
+    QString scriptSrcCharset;
     bool javascript;
     // the HTML code we will parse after the external script we are waiting for has loaded
     QString pendingSrc;
