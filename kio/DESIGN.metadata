@@ -36,6 +36,10 @@ resume          number          Try to get the file starting at the given offset
 
 charset         string          Charset of the current content as returned by a HTTP Header Response.
 
+Charsets        string          Charset(s) send in the "Accept-Charset:" HTTP Request Header.
+
+Languages       string          Language(s) send in the "Accept-Language:" HTTP Request Header.
+
 content-
 disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
