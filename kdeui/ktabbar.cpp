@@ -239,6 +239,12 @@ const QColor &KTabBar::tabColor( int id  ) const
     return colorGroup().foreground();
 }
 
+void KTabBar::removeTab( QTab *t )
+{
+    mTabColors.remove( t->identifier() );
+    QTabBar::removeTab( t );
+}
+
 void KTabBar::paintLabel( QPainter *p, const QRect& br,
                           QTab *t, bool has_focus ) const
 {

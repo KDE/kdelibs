@@ -40,7 +40,8 @@ public:
 
     const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
-
+    virtual void removeTab( QTab * );
+    
     void setTabReorderingEnabled( bool enable );
     inline bool isTabReorderingEnabled() const;
 
