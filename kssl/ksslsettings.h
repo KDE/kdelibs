@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #ifndef _KSSLSETTINGS_H
 #define _KSSLSETTINGS_H
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef HAVE_SSL
 #include <openssl/ssl.h>
 #endif
@@ -54,6 +54,8 @@ private:
   bool m_bUseSSLv2, m_bUseSSLv3, m_bUseTLSv1;
   bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
 
+  class KSSLSettingsPrivate;
+  KSSLSettingsPrivate *d;
 };
 
 

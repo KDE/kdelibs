@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #ifndef _KSSLPEERINFO_H
 #define _KSSLPEERINFO_H
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef HAVE_SSL
 #include <openssl/ssl.h>
 #endif
@@ -48,6 +48,9 @@ private:
 protected:
   KSSLPeerInfo();
 
+private:
+    class KSSLPeerInfoPrivate;
+    KSSLPeerInfoPrivate *d;
 };
 
 

@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #ifndef _KSSL_H
 #define _KSSL_H
@@ -70,6 +70,9 @@ private:
   KSSLSettings *m_cfg;
   KSSLConnectionInfo m_ci;
   KSSLPeerInfo m_pi;
+
+  class KSSLPrivate;
+  KSSLPrivate *d;
 
   void setConnectionInfo();
   void setPeerInfo();
