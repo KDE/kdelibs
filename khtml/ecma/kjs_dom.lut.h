@@ -110,7 +110,7 @@ namespace KJS {
 
 const struct HashEntry DOMAttrTableEntries[] = {
    { "specified", DOMAttr::Specified, DontDelete|ReadOnly, 0, 0 },
-   { "value", DOMAttr::ValueProperty, DontDelete|ReadOnly, 0, 0 },
+   { "value", DOMAttr::ValueProperty, DontDelete, 0, 0 },
    { "name", DOMAttr::Name, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "ownerElement", DOMAttr::OwnerElement, DontDelete|ReadOnly, 0, 0 }
