@@ -325,7 +325,18 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   // now treat 'ordinary' widgets
   QLabel *label =  dynamic_cast<QLabel*>(w);
-  if (w->isFocusEnabled() || (label && label->buddy()) || dynamic_cast<QGroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
+  if ( label  ) {
+      if ( !label->buddy() )
+          label = 0;
+      else {
+          if ( label->textFormat() == Qt::RichText ||
+               ( label->textFormat() == Qt::AutoText &&
+                 QStyleSheet::mightBeRichText( label->text() ) ) )
+              label = 0;
+      }
+  }
+
+  if (w->isFocusEnabled() || label || dynamic_cast<QGroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;
