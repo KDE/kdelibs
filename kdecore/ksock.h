@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
  * Revision 1.8  1997/10/16 11:15:03  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
@@ -65,103 +68,88 @@
  * Revision 1.4  1997/01/15 20:34:14  kalle
  * merged changes from 0.52
  *
-/// KSocket: Internet connections in KDE
-/** This is a normal socket. You can connect this socket to any internet 
-  address.
-  The socket gives you three signals: When ready for reading/writing or if the
-  connection is broken.
-  Using socket() you get a file descriptor which you can use with usual unix
-  commands like write(..) or read(...).
-  If you have already such a socket identifier you can construct a KSocket on
-  this identifier.
-  If socket() delivers a value of -1 or less, the connection had no success.
-  */
+/** A normal Internet socket.
+* You can connect this socket to any internet address. 
+ *
+ * Revision 1.2  1996/12/07 18:32:00  kalle
+ * RCS header
+* A TCP/IP client socket. You can connect this socket to any internet address. 
+*
+* The socket gives you three signals: When ready for reading/writing or 
+*
+* which you can use with usual unix commands like write(..) or read(...). 
+* If you have already such a socket identifier you can construct a KSocket
+* on this identifier. 
+*  
+* @version $Id$
+*
 * @author Torben Weis <weis@uni-frankfurt.de>
 * @version $Id$
-  Q_OBJECT
+  Q_OBJECT;
 */
-  /// Constructor with file descriptor
-  /**
-	Create a KSocket with the file descriptor _sock.
-	*/
+ * @version $Id$
+/** Create a KSocket with the provided file descriptor.
+#include <netinet/in.h> 
+
   KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
 * Create a KSocket with the provided file descriptor.
-  /// Constructor with host and port
-  /**
-	Create a socket and connect to _host:_port.
-	*/
+/** Create a socket and connect to a host.
+*
+  KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
+
+/** 
 * Create a socket and connect to a host.
 * @param _host	the remote host to which to connect.
-  /// Destructor, closes the socket.
-  /**
-	Close the socket.
-	*/
+/** Destructor.
+* Closes the socket if it is still open.
+  KSocket( const char *_host, unsigned short int _port );
 
 /** 
-  /// Return the file descriptor
-  /**
-	Returns a file descriptor for this socket.
-	*/
+/** Returns a file descriptor for this socket.
+  ~KSocket();
   int socket() { return sock; }
 /** 
-  /// Enable the socket for reading.
-  /**
-	If you enable read mode, the socket will emit the signal
-	readEvent whenever there is something to read out of this
-    socket.
-	*/
+/** Enable the socket for reading.
+  
+/** 
+* Enable the socket for reading.
+*
 * If you enable read mode, the socket will emit the signal
 * readEvent whenever there is something to read out of this
-  /// Enable the socket for writing.
-  /**
-	If you enable write mode, the socket will emit the signal
-	writeEvent whenever the socket is ready for writing.
-	*/
+/** Enable the socket for writing.
+
+/** 
+* Enable the socket for writing.
 *
 * If you enable write mode, the socket will emit the signal
-  /// Return address.
+/// Return address.
   long getAddr();
 /**
-  //@Man: signals
-  //@{
 * Return address.
-  /// Data has arrived.
-  /**
-	Tells that data has arrived on the socket. You must call
-	enableRead( TRUE ) before you get this signal.
-	*/
+/** Data has arrived for reading.
+  signals:
+/** 
+* Data has arrived for reading.
 *
 * This signal will only be raised if enableRead( TRUE ) was called
-  /// Socket is ready for writing.
-  /**
-	Tells that the socket is ready for writing. You must call
-	enableWrite( TRUE ) before you get this signal.
-	*/
+/** Socket is ready for writing.
+
+/** 
+* Socket is ready for writing.
 *
 * This signal will only be raised if enableWrite( TRUE ) was called
-  /// The connection is broken.
-  /**
-	Tells you that the connection is broken.
-	*/
+/** Raised when the connection is broken.
+  void writeEvent( KSocket * );
 
 /** 
-  //@}
-
-  //@Man: slots
-  //@{
 * Raised when the connection is broken.
- /// Slot for the writeNotifier
- /**
-   Connected to the writeNotifier.
-   */
+/** Connected to the writeNotifier.
+  
  public slots:
 /** 
-  /// Slot for the readNotifier
-  /**
-	Connected to the readNotifier.
-	*/
+/** Connected to the readNotifier.
+ void slotWrite( int );
 
-  //@}
 /** 
 * Connected to the readNotifier.
 */
@@ -180,79 +168,66 @@
   int sock;
   
   QSocketNotifier *readNotifier;
-/// KServerSocket: Listen on a port.
-/**
-  You can use a KServerSocket to listen on a port for incoming
-  connections. When a connection arrived in the port, a KSocket
-  is created and the signal accepted is raised. Make shure you
-  always connect to this signal. If you dont the ServerSocket will
-  create new KSocket's and no one will delete them!
-  If socket() is -1 or less the socket was not created properly.
- */
+/**KServerSocket: Listen on a port.
+     */
+    void slotWrite( int );
+    
+* Monitor a port for incoming TCP/IP connections.
+*
+* You can use a KServerSocket to listen on a port for incoming
+* connections. When a connection arrived in the port, a KSocket
+* is created and the signal accepted is raised. Make sure you
+* always connect to this signal. If you dont the ServerSocket will
+* create new KSocket's and no one will delete them!
+* @version $Id$
+*
 * @author Torben Weis <weis@stud.uni-frankfurt.de>
 * @version $Id$
-  Q_OBJECT
+  Q_OBJECT;
     int sock;
-  /// Constructor.
-  /**
-    Listen on port _port for incoming connections.
-	*/
+/** Constructor.
+  Q_OBJECT
+    QSocketNotifier *readNotifier;
 /**
 * Constructor.
-  /// Destructor.
-  /**
-	Close the port.
-	*/
+/** Destructor.
+* Closes the socket if it was not already closed.
+  KServerSocket( int _port );
 
 /** 
-  /// Return the file descriptor.
-  /**
-	Get the file descriptor assoziated with the socket.
-	*/
+/** Get the file descriptor assoziated with the socket.
+  ~KServerSocket();
   int socket() { return sock; }
 /** 
-  /// Return the port.
-  /**
-	Get the port the server is listening on.
-	*/
+/** Returns the port number which is being monitored.
+  int socket() const { return sock; }
   int getPort();
 /** 
-  /// Return address.
+/// The address.
   long getAddr();
 /** 
-  //@Man: slots
-  //@{
-  public slots: 
-  /// Someone connects.
-  /**
-	Called when someone connected to our port.
-	*/
+* The address.
+/** Called when someone connected to our port.
+     * Creates a UNIX domain server socket.
      */
   //@}
 /** 
-  //@Man: signals
-  //@{
-  signals:
-  /// A connection has been accepted.
-  /**
-	Tells you that someone connected to the port. It is your
-    task to delete the KSocket if it is no longer needed.
-	*/
+* Called when someone connected to our port.
+*/
+  virtual void slotAccept( int );
+     */
     ~KServerSocket();
-  //@}
 /** A connection has been accepted.
 * It is your task to delete the KSocket if it is no longer needed.
 */
   void accepted( KSocket* );
-  /******************************************************
-   * Notifies us when there is something to read on the port.
-   */
+/** Notifies us when there is something to read on the port.
+  bool init( short unsigned int );
      */
 /** 
-  /******************************************************
-   * The file descriptor for this socket. sock may be -1.
-   * This indicates that it is not connected.
-   */    
+/** The file descriptor for this socket. sock may be -1.
+  QSocketNotifier *notifier;
+  
 /** 
 * The file descriptor for this socket. sock may be -1.
 * This indicates that it is not connected.
