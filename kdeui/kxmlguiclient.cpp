@@ -26,6 +26,7 @@
 #include <qdom.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qguardedptr.h>
 
 #include <kinstance.h>
 #include <kstandarddirs.h>
@@ -41,7 +42,6 @@ public:
   KXMLGUIClientPrivate()
   {
     m_instance = KGlobal::instance();
-    m_factory = 0L;
     m_parent = 0L;
     m_builder = 0L;
     m_actionCollection = 0;
@@ -55,7 +55,7 @@ public:
   QDomDocument m_doc;
   KActionCollection *m_actionCollection;
   QDomDocument m_buildDocument;
-  KXMLGUIFactory *m_factory;
+  QGuardedPtr<KXMLGUIFactory> m_factory;
   KXMLGUIClient *m_parent;
   //QPtrList<KXMLGUIClient> m_supers;
   QPtrList<KXMLGUIClient> m_children;
