@@ -29,6 +29,7 @@
 
 #ifdef HAVE_PCREPOSIX
 #include <pcreposix.h>
+#include <pcre.h>
 #else  // POSIX regex - not so good...
 extern "C" { // bug with some libc5 distributions
 #include <regex.h>
@@ -48,8 +49,13 @@ namespace KJS {
     bool test(const UString &s, int i = -1);
   private:
     const UString &pattern;
-    //int flags;
+    int flags;
+
+#ifndef HAVE_PCREPOSIX
     regex_t preg;
+#else
+    pcre *pcregex;
+#endif
 
     RegExp();
   };
