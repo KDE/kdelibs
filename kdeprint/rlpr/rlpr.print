@@ -13,6 +13,7 @@ Comment[ko]=RLPR 환경 (원격지 LPD 서버)
 Comment[mt]=Ambjent RLPR (servers LPD remoti)
 Comment[pt_BR]= Ambiente RLPR (Servidores LPD Remotos)
 Comment[ro]=Mediu RLPR (Servere LPD distante)
+Comment[sk]=Prostredie RLPR (Vzdialené LPD servery)
 Comment[sv]=RLPR-miljö (LPD-fjärrservrar)
 DetectUris=exec:/rlpr
 DetectPrecedence=0
