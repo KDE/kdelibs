@@ -189,7 +189,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
       return false;
 
 #define DEMARSHAL( type, val ) \
-  case QVariant::##type: \
+  case QVariant::type: \
     { \
       val v; \
       stream >> v; \
@@ -257,7 +257,7 @@ bool KDCOPPropertyProxy::processPropertyRequest( const QCString &fun, const QByt
     QDataStream reply( replyData, IO_WriteOnly );
 
 #define MARSHAL( type ) \
-  case QVariant::##type: \
+  case QVariant::type: \
     reply << prop.to##type(); \
     break;
 
