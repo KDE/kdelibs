@@ -32,9 +32,11 @@ libkio_la_SOURCES = \
 	kservice.cpp kservicefactory.cpp \
 	kautomount.cpp kdirwatch.cpp kio_base.cpp kio_cache.cpp \
 	kio_connection.cpp kio_dlg.cpp kio_error.cpp kio_filter.cpp \
-	kio_interface.cpp kio_job.cpp kio_listprogress_dlg.cpp \
-	kio_littleprogress_dlg.cpp kio_netaccess.cpp \
-	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp kio_simpleprogress_dlg.cpp \
+	kio_interface.cpp kio_job.cpp kio_netaccess.cpp \
+	kio_progressbase.cpp \
+	kio_simpleprogress_dlg.cpp kio_littleprogress_dlg.cpp \
+	kio_listprogress_dlg.cpp \
+	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp \
 	kio_skip_dlg.cpp krun.cpp ktar.cpp \
 	kuserpaths.cpp kuserprofile.cpp \
 	ktrader.cpp ktraderparse.cpp \
@@ -48,7 +50,9 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kio_connection.h kio_base.h kio_rename_dlg.h \
         kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
         kio_pass_dlg.h kautomount.h \
-        kio_simpleprogress_dlg.h kio_littleprogress_dlg.h kio_listprogress_dlg.h \
+	kio_progressbase.h \
+        kio_simpleprogress_dlg.h kio_littleprogress_dlg.h \
+	kio_listprogress_dlg.h \
         kio_cache.h kio_netaccess.h kuserprofile.h \
         kio_error.h kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
