@@ -803,6 +803,12 @@ private:
     KListActionPrivate *d;
 };
 
+/**
+ *  This class is an action to handle a recent files submenu.
+ *
+ *  @author Michael Koch
+ *  @short Recent files action
+ */
 class KRecentFilesAction : public KListAction
 {
   Q_OBJECT
@@ -894,23 +900,77 @@ public:
    */
   KRecentFilesAction( QObject* parent = 0, const char* name = 0,
                       unsigned int maxItems = 10 );
+
+  /**
+   *  Destructor.
+   */
   virtual ~KRecentFilesAction();
 
+  /**
+   *  Retrieves the maximum of items in the recent files list.
+   */
   unsigned int maxItems();
-  void setMaxItems( unsigned int );
+  
+  /**
+   *  Sets the maximum of items in the recent files list.
+   *  The default for this value is 10 set in the constructor.
+   *
+   *  If this value is lesser than the number of items currently
+   *  in the recent files list the last items are deleted until
+   *  the number of items are equal to the new maximum.
+   */
+  void setMaxItems( unsigned int maxItems );
 
-  void addURL( const KURL& );
-  void removeURL( const KURL& );
+  /**
+   *  Add URL to recent files list.
+   *
+   *  @param url The URL of the file 
+   */
+  void addURL( const KURL& url );
+  
+  /**
+   *  Remove an URL from the recent files list.
+   *
+   *  @param url The URL of the file
+   */
+  void removeURL( const KURL& url );
+
+  /**
+   *  Removes all entries from the recent files list.
+   */
   void clearURLList();
 
-  void loadEntries( KConfig* );
-  void saveEntries( KConfig* );
+  /**
+   *  Loads the recent files entries from a given KConfig object.
+   *  All entries are load from a group called 'RecentFiles'
+   *
+   *  This method does not effect the active group of KConfig.
+   */
+  void loadEntries( KConfig* config );
+
+  /**
+   *  Saves the current recent files entries to a given KConfig object.
+   *  All entries are save to a group called 'RecentFiles'
+   *
+   *  This method does not effect the active group of KConfig.
+   */
+  void saveEntries( KConfig* config );
 
 signals:
-  void urlSelected( const KURL& );
+
+  /**
+   *  This signal gets emited when the user selects an URL.
+   *
+   *  @param url The URL thats the user selected.
+   */
+  void urlSelected( const KURL& url );
 
 protected slots:
-  void itemSelected( const QString& );
+
+  /**
+   *
+   */
+  void itemSelected( const QString& string );
 
 private:
   unsigned int m_maxItems;

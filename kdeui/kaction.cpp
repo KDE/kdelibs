@@ -1029,7 +1029,10 @@ void KRecentFilesAction::loadEntries( KConfig* config )
 {
     QString     key;
     QString     value;
+    QString     oldGroup;
     QStringList lst;
+
+    oldGroup = config->group();
 
     config->setGroup( "RecentFiles" );
 
@@ -1038,19 +1041,25 @@ void KRecentFilesAction::loadEntries( KConfig* config )
     {
         key = QString( "File%1" ).arg( i );
         value = config->readEntry( key, QString::null );
-        if (!value.isNull())
+        
+	if (!value.isNull())
             lst.append( value );
     }
 
     // set file
     setItems( lst );
+
+    config->setGroup( oldGroup );
 }
 
 void KRecentFilesAction::saveEntries( KConfig* config )
 {
     QString     key;
     QString     value;
+    QString     oldGroup;
     QStringList lst = items();
+
+    oldGroup = config->group();
 
     config->setGroup( "RecentFiles" );
 
@@ -1061,6 +1070,8 @@ void KRecentFilesAction::saveEntries( KConfig* config )
         value = lst[ i - 1 ];
         config->writeEntry( key, value );
     }
+
+    config->setGroup( oldGroup );
 }
 
 void KRecentFilesAction::itemSelected( const QString& text )
