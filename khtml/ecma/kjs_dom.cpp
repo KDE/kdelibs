@@ -1154,7 +1154,7 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   case SystemId: // DOM2
     return String(type.systemId());
   case InternalSubset: // DOM2
-    return String(type.internalSubset());
+    return getString(type.internalSubset()); // can be null, see domts/level2/core/internalSubset01.html
   default:
     kdDebug(6070) << "WARNING: DOMDocumentType::getValueProperty unhandled token " << token << endl;
     return Value();
