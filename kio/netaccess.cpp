@@ -2,6 +2,8 @@
 
     This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)
+    Copyright (C) 1998 Matthias Ettrich (ettrich@kde.org)
+    Copyright (C) 1999 David Faure (faure@kde.org)
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,7 +34,7 @@
 
 #include "kio_netaccess.h"
 
-bool KIONetAccess::download(const QString src, QString & target)
+bool KIONetAccess::download(const QString src, QString & target, KIOJob *job)
 {
   KURL u (src);
   if (u.isLocalFile()){
@@ -42,26 +44,19 @@ bool KIONetAccess::download(const QString src, QString & target)
   }
 
   KIONetAccess kioNet;
-  bool result = kioNet.downloadInternal( src, target );
+  bool result = kioNet.downloadInternal( src, target, job );
   return result;
 }
 
-bool KIONetAccess::upload(const QString src, QString target)
+bool KIONetAccess::upload(const QString src, QString target, KIOJob *job)
 {
-  // I'm leaving this out for now.  If both src and target
-  // are local, shouldn't we copy the file from src to target?
-  // (But that's not consistent with download() above) -- DS
-  // KURL u (target);
-  // if (u.isLocalFile()){
-  // }
-
   if (target.isEmpty())
     return false;
 
   // If !target.isEmpty(), then downloadInternal just
   // copies src to target.  Great!
   KIONetAccess kioNet;
-  bool result = kioNet.downloadInternal( src, target );
+  bool result = kioNet.downloadInternal( src, target, job );
   return result;
 }
 
@@ -78,7 +73,8 @@ void KIONetAccess::removeTempFile(const QString name)
   }
 }
  
-bool KIONetAccess::downloadInternal(const QString src, QString & target)
+bool KIONetAccess::downloadInternal(const QString src, QString & target,
+                                    KIOJob *job)
 {
   if (target.isEmpty())
   {
@@ -89,24 +85,12 @@ bool KIONetAccess::downloadInternal(const QString src, QString & target)
   }
   bDownloadOk = true; // success unless further error occurs
  
-  /* this is a bit tricky. We use a faked modal dialog to be able to
-     process the download synchronious. For the user it will look
-     (almost) as if the kfm-dialog is the modal dialog of your
-     application. After show() we will also enter a local event loop
-     within Qt. The modalWidgetHack will be hidden and destroyed in
-     the finish slot. This will implictly exit the local event loop
-     in addition (Matthias)
-  */
-  modalWidgetHack = new QWidget(0,0,WType_Modal);
-  modalWidgetHack->setGeometry(-10,-10,2,2);
-
-  KIOJob * job = new KIOJob;
+  if (!job) job = new KIOJob;
   connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotFinished (int) ) );
   connect( job, SIGNAL( sigError( int, int, const char * ) ), 
            this, SLOT( slotError ( int, int, const char * ) ) );
   job->copy(src.ascii(), target.ascii());
 
-  modalWidgetHack->show();
   qApp->enter_loop();
   return bDownloadOk;
 }
@@ -114,22 +98,12 @@ bool KIONetAccess::downloadInternal(const QString src, QString & target)
 void KIONetAccess::slotError( int , int , const char * )
 {
   bDownloadOk = false;
-  if (modalWidgetHack)
-  {
-    modalWidgetHack->close(true);
-    modalWidgetHack = 0;
-    qApp->exit_loop();
-  }
+  qApp->exit_loop();
 } 
 
 void KIONetAccess::slotFinished( int )
 {
-  if (modalWidgetHack)
-  {
-    modalWidgetHack->close(true);
-    modalWidgetHack = 0;
     qApp->exit_loop();
-  }
 }
 
 #include "kio_netaccess.moc"
