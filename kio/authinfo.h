@@ -225,14 +225,27 @@ QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
 QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
 /**
- * This class provides an interface for parsing
+ * A Singleton class that provides access to passwords
+ * stored in .netrc and kionetrc for automatic login
+ * purposes.
  *
- * @short An interface to .kionetrc and the ftp .netrc files
+ * @short An interface to kionetrc and the ftp .netrc files
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class NetRC
 {
 public:
+
+  /**
+   * Specifies the mode to be used when searching for a
+   * matching automatic login info for a given site :
+   *
+   * exactOnly        search entries with exact host name matches.
+   * defaultOnly      search entries that are specified as "default".
+   * presetOnly       search entries that are specified as "preset".
+   *
+   * @see lookup
+   */
   enum LookUpMode
   {
       exactOnly = 0x0002,
@@ -240,6 +253,9 @@ public:
       presetOnly = 0x0008
   };
 
+  /**
+   *
+   */
   struct AutoLogin
   {
     QString type;
@@ -249,13 +265,20 @@ public:
     QMap<QString, QStringList> macdef;
   };
 
-  typedef QValueList<AutoLogin> LoginList;
-  typedef QMap<QString, LoginList> LoginMap;
-
+  /**
+   *
+   */
   static NetRC* self();
+
+  /**
+   *
+   */
   bool lookup( const KURL&, AutoLogin&, bool userealnetrc = false,
                QString type = QString::null,
                int mode = (exactOnly|defaultOnly) );
+  /**
+   *
+   */
   void reload() { isDirty = true; }
 
 protected:
@@ -269,9 +292,12 @@ private:
 
 private:
   bool isDirty;
-  LoginMap loginMap;
-  static NetRC* instance;
 
+  typedef QValueList<AutoLogin> LoginList;
+  typedef QMap<QString, LoginList> LoginMap;
+  LoginMap loginMap;
+
+  static NetRC* instance;
   class NetRCPrivate;
   NetRCPrivate* d;
 };
