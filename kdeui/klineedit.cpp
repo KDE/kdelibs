@@ -134,14 +134,14 @@ void KLineEdit::connectSignals( bool handle ) const
     if( handle && !handleSignals() )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
-        connect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
+        connect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
     }
     else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
-        disconnect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
+        disconnect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
     }
 }
 

@@ -229,7 +229,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void previousMatch( KeyBindingType /*type*/ );
+    void previousMatch( KCompletionBase::KeyBindingType /*type*/ );
 
     /**
     * Signal emitted when the key-binding set for
@@ -240,7 +240,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void nextMatch( KeyBindingType /*type*/ );
+    void nextMatch( KCompletionBase::KeyBindingType /*type*/ );
 
 public slots:
 
@@ -254,7 +254,7 @@ public slots:
     *
     * @param type the key-binding invoked.
     */
-    void rotateText( KeyBindingType /* type */ );
+    void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
 protected slots:
 
