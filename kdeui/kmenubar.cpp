@@ -92,6 +92,9 @@ void KMenuBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );
   d->m_macMode = config->readBoolEntry( keyMac, false );
+  d->m_macMode = FALSE; // disabled until somebody implements it
+ // correctly. If you have questions about thxis, write to
+ // ettrich@kde.org, subject "macMode".
 }
 
 void KMenuBar::drawContents(QPainter *p)
