@@ -464,6 +464,8 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
 
+  m_url = url;
+
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
 
   emit started( 0L );
@@ -485,7 +487,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_redirectionTimer.stop();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
-  if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
+  if ( d->m_frames.count() == 0 && url.hasHTMLRef() && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
@@ -545,7 +547,8 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
-  //  m_url = url;
+  // That has been fixed by calling setBaseURL() in begin(). (Waldo)
+  m_url = url;
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   emit started( d->m_job );
@@ -872,6 +875,7 @@ void KHTMLPart::clear()
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   d->m_bClearing = false;
+  d->m_bParsing = false;
 
   d->m_bMousePressed = false;
 
@@ -983,6 +987,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     d->m_job = 0L;
     emit canceled( job->errorString() );
     // TODO: what else ?
+    checkCompleted();
     return;
   }
   kdDebug( 6050 ) << "slotFinished" << endl;
@@ -1020,6 +1025,10 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     KURL baseurl;
     if ( !lst.isEmpty() )
       baseurl = *lst.begin();
+    // Use this for relative links. 
+    // We prefer m_baseURL over m_url because m_url changes when we are
+    // about to load a new page.
+    setBaseURL(baseurl);
 
     KURL title( baseurl );
     title.setRef( QString::null );
@@ -1192,11 +1201,15 @@ void KHTMLPart::checkCompleted()
 
   if ( !d->m_redirectURL.isEmpty() )
   {
-  //    QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-    return;
+      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
   }
 
+  kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
+  if ( !d->m_redirectURL.isEmpty() )
+  {
+    return; // We don't emit completed as long as we have a redirection pending.
+    // We might want to add a message to the statusbar when we are not i18n-frozen.
+  }
 
   emit completed();
 }
@@ -1735,7 +1748,19 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !d->m_bComplete && !hasTarget )
     closeURL();
 
-  emit d->m_extension->openURLRequest( cURL, args );
+  if (m_url == cURL)
+  {
+     // We don't really want to reload, we just want to verify our
+     // cached images, but the khtml image cache can't handle that yet.
+     args.reload = true; 
+     d->m_extension->setURLArgs( args );
+     openURL(cURL); 
+  }
+  else
+  {
+    // New URL.
+    emit d->m_extension->openURLRequest( cURL, args );
+  }
 }
 
 void KHTMLPart::slotViewDocumentSource()
@@ -1743,10 +1768,7 @@ void KHTMLPart::slotViewDocumentSource()
   KURL url(m_url);
   if (KHTMLPageCache::self()->isValid(d->m_cacheId))
   {
-     QString extension = m_url.fileName(false);
-     if (extension.isEmpty())
-        extension = "index.html";
-     KTempFile sourceFile(QString::null, extension);
+     KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
      if (sourceFile.status() == 0)
      {
         KHTMLPageCache::self()->saveData(d->m_cacheId, sourceFile.dataStream());
@@ -2198,8 +2220,13 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
 
   if ( d->m_bComplete )
   {
+#if 0
+    // WABA: Looks like this belongs somewhere else
     if ( !parentPart() ) // "toplevel" html document? if yes, then notify the hosting browser about the document (url) changes
+    {
       emit d->m_extension->openURLNotify();
+    }
+#endif
     d->m_bComplete = false;
     emit started( job );
   }
@@ -2264,6 +2291,8 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
   }
 
   if ( child ) {
+      // Inform someone that we are about to show something else.
+      emit d->m_extension->openURLNotify();
       requestObject( child, url, args );
   }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
   {
@@ -2433,6 +2462,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
+#if 0
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
     kdDebug( 6050 ) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
@@ -2482,9 +2512,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
     //    emit completed();
   }
   else
+#endif
   {
+#if 0
     if ( !urlcmp( u.url(), m_url.url(), true, true ) )
+#endif
+    {
+      closeURL();
       clear();
+    }
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();
@@ -2661,6 +2697,9 @@ bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs 
 
   if ( it == d->m_frames.end() )
     return false;
+
+  // Inform someone that we are about to show something else.
+  emit d->m_extension->openURLNotify();
 
   requestObject( &it.data(), url, urlArgs );
 
