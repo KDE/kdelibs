@@ -36,6 +36,8 @@
 #define KHTML_PAGE_CACHE_SIZE 12
 #endif
 
+template class QList<KHTMLPageCacheDelivery>;
+
 class KHTMLPageCacheEntry
 {
   friend class KHTMLPageCache;

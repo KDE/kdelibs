@@ -36,6 +36,8 @@
 
 #include <kdebug.h>
 
+template class QList<KHTMLPart>;
+
 extern "C"
 {
   void *init_libkhtml()
