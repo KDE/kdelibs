@@ -263,7 +263,7 @@ void DataProtocol::get(const KURL& url) {
   QCString outData;
 
 #ifdef TESTKIO
-  cout << "current charset: \"" << *hdr.charset << "\"" << endl;
+//  cout << "current charset: \"" << *hdr.charset << "\"" << endl;
 #endif
   if (hdr.is_base64) {
     // base64 stuff is expected to contain the correct charset, so we just
