@@ -115,12 +115,11 @@ bool PlayStreamJob::done()
 }
 
 /*
- *    ( This place where we will put the objects for playing wave files and
- *      such, they are then connected to addLeft and addRight, to get their
- *      output mixed with the other clients ).
- *     _________   __________
- *    | addLeft | | addRight |
- *     ~~~~~~~~~   ~~~~~~~~~~
+ *    ( This place where other objects for playing wave files and such will
+ *      be connected, to get their output mixed with the other clients ).
+ *     _____________________
+ *    |     soundcardBus    |     (a Synth_BUS_DOWNLINK for "out_soundcard")
+ *     ~~~~~~~~~~~~~~~~~~~~~
  *        |            |
  *     ___V____________V____
  *    |      outstack       |      (here the user can plugin various effects)
@@ -133,10 +132,7 @@ bool PlayStreamJob::done()
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
 	soundcardBus.busname("out_soundcard");
-	connect(soundcardBus,"left",addLeft);
-	connect(soundcardBus,"right",addRight);
-	connect(addLeft,_outstack,"inleft");
-	connect(addRight,_outstack,"inright");
+	connect(soundcardBus,_outstack);
 	connect(_outstack,playSound);
 
 	if(AudioSubSystem::the()->fullDuplex())
@@ -149,8 +145,6 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 	}
 
 	soundcardBus.start();
-	addLeft.start();
-	addRight.start();
 	playSound.start();
 
 	asCount = 0; // AutoSuspend
@@ -316,9 +310,13 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 		if(result.loadMedia(filename))
 		{
 			// TODO: check for existence of left & right streams
-			connect(result,"left",addLeft);
-			connect(result,"right",addRight);
+			Synth_BUS_UPLINK uplink;
+			uplink.busname("out_soundcard");
+			connect(result,"left",uplink,"left");
+			connect(result,"right",uplink,"right");
+			uplink.start();
 			result._node()->start();
+			result._addChild(uplink,"uplink");
 			return result;
 		}
 		else arts_warning("couldn't load file %s", filename.c_str());
