@@ -527,11 +527,6 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     // (because we don't have access to calcTmpText()).
     // ################ This prevents the use of KPixmapEffect::selectedPixmap
     // This really needs to be opened up in qt.
-    if ( !view->wordWrapIconText() )
-    {
-        QIconViewItem::paintItem( p, cg );
-        return;
-    }
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !view->inherits("KIconView") )
     {
@@ -539,11 +534,6 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
         return;
     }
 #endif
-    if ( !m_wordWrap )
-    {
-        kdWarning() << "KIconViewItem::paintItem called but wordwrap not ready - calcRect not called, or aborted!" << endl;
-        return;
-    }
 
     p->save();
 
@@ -602,7 +592,13 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
     }
 
     int align = iconView()->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
-    m_wordWrap->drawText( p, textX, textY, align );
+    if ( iconView()->wordWrapIconText() )
+    {
+        m_wordWrap->drawText( p, textX, textY, align );
+    } else {
+        calcTmpText();
+        p->drawText( textRect( FALSE ), align, tempText() );
+    }
 }
 
 void KIconView::virtual_hook( int, void* )
