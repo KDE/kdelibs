@@ -64,7 +64,7 @@ public:
      */
     enum Attributes
     {
-        Addable     =  1, ///< The item or gorup can be added by a user
+        Addable     =  1, ///< The item or group can be added by a user
         Removable   =  2, ///< It can be removed
         Modifiable  =  4, ///< The value can be edited (no meaning for a group)
         Cummulative =  8, /**< If an application wants to display information
@@ -93,7 +93,7 @@ public:
         Description = 3, ///< Description Some information about the document
         Width       = 4, ///< A width in pixels
         Height      = 5, ///< A height in pixels
-        Size        = 6, ///< A size in pixels (witdh and height)
+        Size        = 6, ///< A size in pixels (width and height)
         Bitrate     = 7, ///< For media files
         Length      = 8, ///< The length of the file, also for media files
         Hidden      = 9, ///< The item is usually not shown to the user
@@ -179,7 +179,7 @@ public:
         }
 
        /**
-        *  A group object can contain sevaral item objects (of which you can
+        *  A group object can contain several item objects (of which you can
         *  get the names with supportedKeys() . With this method, you can
         *  get one of those item objects. See ItemInfo
         *
@@ -390,7 +390,7 @@ public:
      * @param key the key of the item
      * @param parent the parent of the QObject, or 0 for a parent-less object
      * @param name the name of the QObject, can be 0
-     * @return the validator. You are resposible for deleting it. 0 if
+     * @return the validator. You are responsible for deleting it. 0 if
      *         creation failed
      */
     QValidator * createValidator(const QString& group, const QString& key,
@@ -608,7 +608,7 @@ public:
 
     /**
      * This method returns a translated suffix to be displayed after the
-     * value. Think of the kbps in 128kbps     *
+     * value. Think of the kbps in 128kbps
      *
      * @return the suffix
      */
