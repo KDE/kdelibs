@@ -26,6 +26,7 @@
 #include <qtextcodec.h>
 #include <qfileinfo.h>
 #include <kprocess.h>
+#include <qvaluevector.h>
 
 extern int xmlLoadExtDtdDefaultValue;
 
@@ -78,6 +79,9 @@ static KCmdLineOptions options[] =
     { "check", I18N_NOOP( "Check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "Create a cache file for the document" ), 0},
     { "srcdir <dir>", I18N_NOOP( "Set the srcdir, for kdelibs" ), 0},
+
+    // XXX Un-comment after KDE 3.4
+    { "param <key>=<value>", /*I18N_NOOP( "Parameters to pass to the stylesheet" )*/ 0, 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     KCmdLineLastOption // End of options.
 };
@@ -180,6 +184,28 @@ int main(int argc, char **argv) {
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
 
+    QValueVector<const char *> params;
+    if (args->isSet( "output" ) ) {
+        params.append( qstrdup( "outputFile" ) );
+        params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).latin1() ) );
+    }
+    {
+        const QCStringList paramList = args->getOptionList( "param" );
+        QCStringList::ConstIterator it = paramList.begin();
+        QCStringList::ConstIterator end = paramList.end();
+        for ( ; it != end; ++it ) {
+            const QCString tuple = *it;
+            const int ch = tuple.find( '=' );
+            if ( ch == -1 ) {
+                kdError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
+                return( 2 );
+            }
+            params.append( qstrdup( tuple.left( ch ) ) );
+            params.append( qstrdup( tuple.mid( ch + 1 ) )  );
+        }
+    }
+    params.append( NULL );
+
     bool index = args->isSet( "htdig" );
     QString tss = args->getOption( "stylesheet" );
     if ( tss.isEmpty() )
@@ -197,10 +223,7 @@ int main(int argc, char **argv) {
 
             xmlDocPtr doc = xmlParseFile( QFile::encodeName( args->arg( 0 ) ) );
 
-            // the params can be used to customize it more flexible
-            const char *params[16 + 1];
-            params[0] = NULL;
-            xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, params);
+            xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, &params[0]);
 
             xmlFreeDoc(doc);
             xsltFreeStylesheet(style_sheet);
@@ -228,7 +251,7 @@ int main(int argc, char **argv) {
         }
 
     } else {
-        QString output = transform(args->arg( 0 ) , tss);
+        QString output = transform(args->arg( 0 ) , tss, params);
         if (output.isEmpty()) {
             fprintf(stderr, "unable to parse %s\n", args->arg( 0 ));
             return(1);

@@ -25,6 +25,7 @@
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
+#include <qvaluevector.h>
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
@@ -46,7 +47,8 @@ int closeQString(void * context) {
     return 0;
 }
 
-QString transform( const QString &pat, const QString& tss)
+QString transform( const QString &pat, const QString& tss,
+                   const QValueVector<const char *> &params )
 {
     QString parsed;
 
@@ -73,11 +75,10 @@ QString transform( const QString &pat, const QString& tss)
     if (ctxt == NULL)
         return parsed;
 
-    // the params can be used to customize it more flexible
-    const char *params[16 + 1];
-    params[0] = NULL;
     INFO(i18n("Applying stylesheet"));
-    xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, params);
+    QValueVector<const char *> p = params;
+    p.append( NULL );
+    xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, const_cast<const char **>(&p[0]));
     xmlFreeDoc(doc);
     if (res != NULL) {
         xmlOutputBufferPtr outp = xmlOutputBufferCreateIO(writeToQString, (xmlOutputCloseCallback)closeQString, &parsed, 0);

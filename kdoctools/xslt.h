@@ -2,8 +2,10 @@
 #define _MEIN_XSLT_H_
 
 #include <libxml/parser.h>
+#include <qvaluevector.h>
 
-QString transform(const QString &file, const QString& stylesheet);
+QString transform(const QString &file, const QString& stylesheet,
+                  const QValueVector<const char *> &params = QValueVector<const char *>());
 QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
 bool saveToCache( const QString &contents, const QString &filename );
