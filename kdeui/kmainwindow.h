@@ -296,6 +296,13 @@ public:
      */
     bool isHelpMenuEnabled();
 
+
+    /**
+     * Returns true, if there is a menubar
+     *
+     */
+     bool hasMenuBar();
+
     /**
      * Returns a pointer to the menu bar.
      *

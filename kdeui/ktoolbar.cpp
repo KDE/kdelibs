@@ -1891,6 +1891,9 @@ KPopupMenu *KToolBar::contextMenu()
 
   if (mainWindow()->inherits("KMainWindow"))
   {
+      if ( (static_cast<KMainWindow*>(mainWindow())->toolBarMenuAction()) &&
+		(static_cast<KMainWindow*>(mainWindow())->hasMenuBar()) )
+
       (static_cast<KMainWindow*>(mainWindow()))->toolBarMenuAction()->plug(context);
   }
 

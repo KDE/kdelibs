@@ -696,11 +696,11 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    d->toolbarMenu->clear();
+    if (d->toolbarMenu) d->toolbarMenu->clear();
     QPtrListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++ it )
         {
-            d->toolbarMenu->addToolbar(it.current());
+            if (d->toolbarMenu) d->toolbarMenu->addToolbar(it.current());
             it.current()->positionYourself( force );
         }
 
@@ -782,6 +782,11 @@ void KMainWindow::resizeEvent( QResizeEvent * )
 {
     if ( d->autoSaveWindowSize )
         setSettingsDirty();
+}
+
+bool KMainWindow::hasMenuBar()
+{
+	return (internalMenuBar());
 }
 
 KMenuBar *KMainWindow::menuBar()
