@@ -90,15 +90,25 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   // if there was none, an error occured or the type couldn't be converted.
 
   initScript();
+  // inlineCode is true for <a href="javascript:doSomething()">
+  // and false for <script>doSomething()</script>. Check if it has the
+  // expected value in all cases.
+  // See smart window.open policy for where this is used.
+  bool inlineCode = filename.isNull();
+  kdDebug() << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
 
 #ifdef KJS_DEBUGGER
   // ###    KJSDebugWin::instance()->attach(m_script);
+  if (inlineCode)
+    filename = "(unknown file)";
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->setNextSourceInfo(filename,baseLine);
   //    KJSDebugWin::instance()->setMode(KJS::Debugger::Step);
 #endif
 
-  KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
+  Window* window = Window::retrieveWindow( m_part );
+  window->setInlineCode(inlineCode);
+  KJS::Value thisNode = n.isNull() ? Value(window) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
   Completion comp = m_script->evaluate(code, thisNode);
