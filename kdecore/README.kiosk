@@ -1,4 +1,4 @@
-In KDE3 a kiosk-framework gets introduced.
+In KDE3 a kiosk-framework has been introduced.
 
 One of the driving forces behind KDE is to put the user in control and
 give him or her a large amount of possibilities to adjust KDE to his or her 
@@ -96,42 +96,39 @@ someOtherKey=11
 
 - The filesystem can also be used to mark files immutable. If KDE does not 
 have write-access to the user's version of a configuration file, the file
-will be automatically considered immutable. If you do this, the user will
-be warned that the configuration file is not writable. If you do not want
-the warning, add the following two lines to the application's configuration
-file (or to kdeglobals to disable the warning for all applications):
+will be automatically considered immutable. 
 
-[KDE Action Restrictions]
-warn_unwritable_config=false
+To make the configration file of kicker (the panel) immutable one could for
+example use the commands below.
 
 Example:
 chown root.root /home/user/.kde/share/config/kickerrc
 chmod 644 /home/user/.kde/share/config/kickerrc
-  and add the two lines mentioned above to kickerrc. 
 
-Note that this example is not fool-proof, the user can potentially still 
+If you do this, the user will be warned that the configuration file is not
+writable. Since you will normally not want that, you can add the following
+two lines to the application's configuration file (or to kdeglobals to
+disable the warning for all applications):
+
+[KDE Action Restrictions]
+warn_unwritable_config=false
+
+Note that the avove example is not fool-proof, the user can potentially still 
 rename either the root-owned kickerrc file or any of the directories in 
 the path to another name and create a new kickerrc _with_ write-access.
-
-KDE3 Kiosk Application API
-==========================
-
-Three new methods have been added to KApplication:
-
-- bool authorize(QString action); // Generic actions
-- bool authorizeKAction(QString action); // For KActions exclusively
-- bool authorizeURLAction(QString, referringURL, destinationURL) // URL Handling
 
 KDE3 Action Restrictions
 ========================
 
-.desktop files can have an additional field "X-KDE-AuthorizeAction". If this
-field is present the .desktop file is only considered if the action(s) 
-mentioned in this field get(s) authorized. If multiple actions are listed
-they should be separated by commas (','). 
+Most functionality within KDE is coupled to so called actions. For example when a user
+selects the File->Open option in the menubar of a KDE application, the "file_open"
+action is activated. Likewise, toolbar icons are usually also coupled to actions. KDE
+makes it possible to disable functionality by restricting specific actions. By restricting the
+"file_open" action for example, the corresponding entry in the menubar and the corresponding icon on
+the toolbar, if any, will disappear.
 
 To restrict access to function the kdeglobals file should contain the 
-group "[KDE Action Restrictions]", each action can then restricted by 
+group "[KDE Action Restrictions]", each action can then be restricted by 
 adding "<action>=false". E.g. to disable the action "shell_access" one 
 would add:
 [KDE Action Restrictions][$i]
@@ -315,16 +312,6 @@ user/root=false
 will disable all application entries that require root access. 
 
 
-The most important task is to define a manageable number of actions that can be 
-disabled. Actions should be defined in a generic way, "open konsole" would be
-too specific, a better definition of an action would be "shell_access". 
-It should be noted that such an action might affect KDE features which aren't
-directly associated with "shell_access". There are various locations in the 
-file system where creating a .desktop file would effectively allow the user to 
-execute arbitrary commands. This raises the question whether such features 
-should be disabled as part of the "shell_access" action or whether it should 
-get its own action definition, e.g. "custom .desktop files".
-
 Printing related action restrictions:
 
 print/system
@@ -427,22 +414,19 @@ manipulatescreen_screensavers
 	- defines whether screensavers that manipulate an image of the screen
 	  (e.g. moving chunks of the screen around) are allowed to be used.
 
-Another interesting question is what the exact scope of a certain action should
-be. Looking at the "custom .desktop files" action there are two ways to prevent
-the user from executing "custom .desktop files". The first way would be to
-make use of unix file permissions to make it impossible for the user to
-create .desktop files at e.g. the desktop. The second way would be to ignore,
-at the KDE level, any .desktop files that are found under the users home
-directory.
+When configuration files are marked immutable in whole or in part the user will no
+longer be able to make permanent changes to the settings that have been marked
+immutable. Ideally the application will recognize this and will no longer offer the
+user the possibility to change these settings. Unfortunately not all applications
+support this at the moment. It's therefor possible that the user will still be
+presented with an option in the user interface to change a setting that is
+immutable, changes made this way will not be saved though. In some cases the
+user may be able to use the changed setting till the application terminates, in
+other cases the changed setting will simply be ignored and the application will
+continue to work with the immutable setting.
 
-
-In addition KConfigBase (the baseclass of KConfig) has functions to query whether 
-config options/groups or files are immutable. This can be used in applications to
-disable configuration options when such options can't be changed anyway.
-
-
-The following applications currently have support for this:
-
+The following applications currently detect when their configuration files have been
+marked immutable and adjust their user interface accordingly:
 
 * kicker - By marking the kickerrc config file as immutable, the panel will be 
 "locked down" and it will not be possible to make any changes to it.
@@ -454,6 +438,13 @@ will be "locked down" and it will no longer be possible to select
 * kcalc - By marking the kcalcrc config file as immutable, the "Configure" button
 will not be shown
 
+Application .desktop files can have an additional field "X-KDE-AuthorizeAction".
+If this field is present the .desktop file is only considered if the action(s) 
+mentioned in this field has been authorized. If multiple actions are listed
+they should be separated by commas (','). So if the .desktop file of an application
+lists one or more actions this way and the user has no authorization for one
+of these actions then the application will not appear in the KDE menu and will not
+be used by KDE for opening files.
 
 IMPORTANT NOTE:
 Changing restrictions may influence the data that is cached in the ksycoca
@@ -482,8 +473,6 @@ The following actions are supported:
 redirect - e.g. a html-page obtained via HTTP could redirect itself to file:/path/some-file. This
            is disabled by default but could be explicitly enabled for a specific HTTP host.
            Example: rule_1=redirect,http,myhost.acme.com,,file,,,true
-
-           IMPLEMENTATION NOTE: "redirect" is not yet fully implemented!!
 
 link     - e.g. a html-page obtained via HTTP could contain links to local files. By default 
            clicking on such links results in a security error-dialog. One can however explicitly
@@ -531,7 +520,7 @@ under $KDEHOME/share. For example, Konsole stores profiles under
 $KDEDIR/share/apps/konsole and users can add additional profiles by 
 installing files in $KDEHOME/share/apps/konsole.
 
-KDE3 Resource Restrictions makes it possible to restrict the lookup of files
+KDE3 Resource Restrictions make it possible to restrict the lookup of files
 to directories outside of $KDEHOME only.
 
 The following resources are defined:
@@ -605,5 +594,12 @@ Example:
 Host[$e]=$(hostname)
 
 
+KDE3 Kiosk Application API
+==========================
 
+Three new methods have been added to KApplication:
+
+- bool authorize(QString action); // Generic actions
+- bool authorizeKAction(QString action); // For KActions exclusively
+- bool authorizeURLAction(QString, referringURL, destinationURL) // URL Handling
 
