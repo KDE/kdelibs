@@ -304,7 +304,7 @@ void KWM::setIcon(Window w, const QPixmap &pm){
     hints->flags &= ~IconMaskHint;
   XSetWMHints( qt_xdisplay(), w, hints );
   XFree(hints);
-  // delete p;
+  delete p;
 }
 
 
