@@ -40,6 +40,7 @@ class X509;
 
 //#include <kopenssl.h>
 #include <ksslcertificate.h>
+#include <ksslcertchain.h>
 
 #ifndef STACK_OF
 #define STACK_OF(x) void
@@ -143,7 +144,7 @@ private:
   EVP_PKEY *_pkey;
   KSSLCertificate *_cert;
   STACK_OF(X509) *_caStack;
-
+  KSSLCertChain *_chain;
 };
 
 

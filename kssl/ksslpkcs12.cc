@@ -135,13 +135,16 @@ X509 *x = NULL;
 
   assert(_pkcs);   // if you're calling this before pkcs gets set, it's a BUG!
 
-  int rc = kossl->PKCS12_parse(_pkcs, pass.latin1(), &_pkey, &x, NULL);
+  int rc = kossl->PKCS12_parse(_pkcs, pass.latin1(), &_pkey, &x, &_caStack);
 
   if (rc == 1) {
      // kdDebug(7029) << "PKCS12_parse success" << endl;
      if (x) {
         _cert = new KSSLCertificate;
         _cert->setCert(x);
+        if (_caStack) {
+           _cert->setChain(_caStack);
+        }
         return true;
      }
   }
@@ -211,6 +214,7 @@ return false;
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
 KSSLCertificate::KSSLValidation xx = _cert->validate();
 
+   // FIXME: PKCS12_verify_mac(p12, mpass, -1)
    if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
       xx = KSSLCertificate::PrivateKeyFailed;
    }
