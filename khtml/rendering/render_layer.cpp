@@ -956,18 +956,23 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     // Check to see if the hovered node has changed.  If not, then we don't need to
     // do anything.  An exception is if we just went from :hover into :hover:active,
     // in which case we need to update to get the new :active state.
-    DOM::NodeImpl* oldHoverNode = info.innerNode()->getDocument()->hoverNode();
+    DOM::NodeImpl *e = m_object->element();
+    DOM::DocumentImpl *doc = e ? e->getDocument() : 0;
+    if (!doc)
+	return;
+
+    DOM::NodeImpl* oldHoverNode = doc->hoverNode();
     DOM::NodeImpl* newHoverNode = info.innerNode();
 
-    if (oldHoverNode == newHoverNode && oldHoverNode->active() == info.active())
+    if (oldHoverNode == newHoverNode && (!oldHoverNode || oldHoverNode->active() == info.active()))
         return;
 
     // Update our current hover node.
-    info.innerNode()->getDocument()->setHoverNode(newHoverNode);
+    doc->setHoverNode(newHoverNode);
 
     // We have two different objects.  Fetch their renderers.
     RenderObject* oldHoverObj = oldHoverNode ? oldHoverNode->renderer() : 0;
-    RenderObject* newHoverObj = info.innerNode() ? info.innerNode()->renderer() : 0;
+    RenderObject* newHoverObj = newHoverNode ? newHoverNode->renderer() : 0;
 
     // Locate the common ancestor render object for the two renderers.
     RenderObject* ancestor = commonAncestor(oldHoverObj, newHoverObj);

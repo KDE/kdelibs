@@ -1,3 +1,8 @@
+2003-10-23  Lars Knoll <knoll@kde.org>
+	* Fix nodeAtPoint for elements that have no child (makes links on images
+	work again)
+	* Fix null pointer dereferencing in RenderLayer::updateHoverActiveState
+
 2003-10-23  Stephan Kulow  <coolo@kde.org>
 
 	* css/cssstyleselector.cpp (applyRule): if the first font isn't found,
