@@ -10,7 +10,7 @@
 	* html/html_formimpl.cpp (HTMLButtonElement::attach): Remove.
 
 	* rendering/render_box.cpp (calcWidth): implement CSS min-width/max-width 
-	support (#12996).
+	support (#12994).
 
 	* rendering/render_block.cpp (renderName): don't crash when style() is 0L.
 
