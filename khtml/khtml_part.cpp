@@ -215,6 +215,8 @@ public:
 
   struct findState
   {
+    findState()
+    { caseSensitive = false; direction = false; }
     QString text;
     bool caseSensitive;
     bool direction;
