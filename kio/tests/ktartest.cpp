@@ -25,7 +25,7 @@ int main( int argc, char** argv )
  " ./ktartest list /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n"
  " ./ktartest readwrite newfile.tar.gz                 will create the tar.gz, then close and reopen it.\n"
  " ./ktartest maxlength newfile.tar.gz                 tests the maximum filename length allowed.\n"
- " ./ktartest bytearray /path/to/existing_file.tar.gz  tests KTarData\n");
+ " ./ktartest iodevice /path/to/existing_file.tar.gz   tests KArchiveFile::device()\n");
     return 1;
   }
   KInstance instance("ktartest");
@@ -95,7 +95,7 @@ int main( int argc, char** argv )
     recursive_print(dir, "");
 
     const KTarEntry* e = dir->entry( "mydir/test3" );
-    ASSERT( e && e->isFile() );
+    Q_ASSERT( e && e->isFile() );
     const KTarFile* f = (KTarFile*)e;
 
     QByteArray arr( f->data() );
@@ -131,16 +131,21 @@ int main( int argc, char** argv )
     printf("Now run 'tar tvzf %s'\n", argv[2]);
     return 0;
   }
-  else if ( command == "bytearray" )
+  else if ( command == "iodevice" )
   {
-    QFile file( argv[2] );
-    if ( !file.open( IO_ReadOnly ) )
+    KTarGz tar( argv[2] );
+    if ( !tar.open( IO_ReadOnly ) )
       return 1;
-    QDataStream stream( &file );
-    KTarData tar( &stream );
-    tar.open( IO_ReadOnly );
     const KTarDirectory* dir = tar.directory();
-    recursive_print( dir, "" );
+    assert(dir);
+    const KTarEntry* entry = dir->entry( "my/dir/test3" );
+    if ( entry && entry->isFile() )
+    {
+        QIODevice *dev = static_cast<const KTarFile *>(entry)->device();
+        QByteArray contents = dev->readAll();
+        printf("contents='%s'\n", QCString(contents).data());
+    } else
+        printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;
   }
   else
