@@ -168,13 +168,13 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   // -----
   keys->get("Background", bgFilename);
   CHECK(keys->get("Background", bgFilename));
-  path=KApplication::getKApplication()->kde_datadir();
+  path=locate( "data", "" );
   path+=(string)"/kab/pics/"+bgFilename;
   LG(GUARD, "AddressWidget constructor: loading widget background "
      "from file \n             \"%s\".\n", path.c_str());
   card->setBackground(path.c_str());
   // -----
-  path=KApplication::getKApplication()->kde_datadir();
+  path=locate( "data", "" );
   path+=(string)"/kab/pics/"+dlgBackground;
   LG(GUARD, "AddressWidget constructor: loading dialog background "
      "from file \n             \"%s\".\n", path.c_str());
