@@ -21,6 +21,7 @@
 #define _KJS_HTML_H_
 
 #include <html_document.h>
+#include <html_form.h>
 #include <html_base.h>
 #include <html_misc.h>
 
