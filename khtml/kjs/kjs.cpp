@@ -94,8 +94,7 @@ bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   }
 #endif
 
-  delete prog;
-  prog = 0L;
+  Node::deleteAllNodes();
 
   return true;
 }
