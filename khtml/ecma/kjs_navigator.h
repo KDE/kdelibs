@@ -44,6 +44,8 @@ namespace KJS {
   // Hashtable enums
   enum { Plugins_Refresh, Plugins_Length, Plugins_Item, Plugins_NamedItem };
   enum { MimeTypes_Length, MimeTypes_Item, MimeTypes_NamedItem };
+  enum { Plugin_Name, Plugin_FileName, Plugin_Description, Plugin_Length, Plugin_Item, Plugin_NamedItem };
+  enum { MimeType_Type, MimeType_Description, MimeType_EnabledPlugin, MimeType_Suffixes };
 
 } // namespace
 

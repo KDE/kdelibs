@@ -104,10 +104,12 @@ namespace KJS {
         virtual Value get(ExecState *exec, const Identifier &propertyName) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
+        Value mimeByName(ExecState* exec, const QString& name ) const;
+        Value getValueProperty(ExecState *exec, int token) const;
+        PluginBase::PluginInfo *pluginInfo() const { return m_info; }
     private:
         PluginBase::PluginInfo *m_info;
     };
-    const ClassInfo Plugin::info = { "Plugin", 0, 0, 0 };
 
 
     class MimeType : public PluginBase {
@@ -118,10 +120,10 @@ namespace KJS {
         virtual Value get(ExecState *exec, const Identifier &propertyName) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
+        Value getValueProperty(ExecState *exec, int token) const;
     private:
         PluginBase::MimeClassInfo *m_info;
     };
-    const ClassInfo MimeType::info = { "MimeType", 0, 0, 0 };
 
 }
 
@@ -465,61 +467,129 @@ Value MimeTypesFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 }
 
 /************************************************************************/
+const ClassInfo Plugin::info = { "Plugin", 0, &PluginTable, 0 };
+/*
+@begin PluginTable 7
+  name  	Plugin_Name	  	DontDelete|ReadOnly
+  filename  	Plugin_FileName    	DontDelete|ReadOnly
+  description  	Plugin_Description    	DontDelete|ReadOnly
+  length  	Plugin_Length    	DontDelete|ReadOnly
+  item  	Plugin_Item	   	DontDelete|Function 1
+  namedItem  	Plugin_NamedItem   	DontDelete|Function 1
+@end
+*/
+IMPLEMENT_PROTOFUNC_DOM(PluginFunc)
 
 Value Plugin::get(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Plugin::get " << propertyName.qstring() << endl;
 #endif
-    if ( propertyName=="name" )
-        return String( m_info->name );
-    else if ( propertyName == "filename" )
-        return String( m_info->file );
-    else if ( propertyName == "description" )
-        return String( m_info->desc );
-    else if ( propertyName == lengthPropertyName )
-        return Number( m_info->mimes.count() );
-    else {
+  if ( propertyName == lengthPropertyName )
+    return Number( m_info->mimes.count() );
 
-        // plugin[#]
-        bool ok;
-        unsigned int i = propertyName.toULong(&ok);
-        //kdDebug(6070) << "Plugin::get plugin[" << i << "]" << endl;
-        if( ok && i<m_info->mimes.count() )
-        {
-            //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
-            return Value(new MimeType(exec, m_info->mimes.at(i)));
-        }
+  // plugin[#]
+  bool ok;
+  unsigned int i = propertyName.toULong(&ok);
+  //kdDebug(6070) << "Plugin::get plugin[" << i << "]" << endl;
+  if( ok && i<m_info->mimes.count() )
+  {
+    //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
+    return Value(new MimeType(exec, m_info->mimes.at(i)));
+  }
 
-        // plugin["name"]
-        for ( PluginBase::MimeClassInfo *m=m_info->mimes.first();
-              m!=0; m=m_info->mimes.next() ) {
-            if ( m->type==propertyName.string() )
-                return Value(new MimeType(exec, m));
-        }
+  // plugin["name"]
+  Value val = mimeByName( exec, propertyName.qstring() );
+  if (!val.isA(UndefinedType))
+    return val;
 
-    }
+  return lookupGet<PluginFunc,Plugin,ObjectImp>(exec, propertyName, &MimeTypeTable, this );
+}
 
-    return ObjectImp::get(exec,propertyName);
+Value Plugin::mimeByName(ExecState* exec, const QString& name) const
+{
+  for ( PluginBase::MimeClassInfo *m = m_info->mimes.first();
+        m != 0; m = m_info->mimes.next() ) {
+    if ( m->type == name )
+      return Value(new MimeType(exec, m));
+  }
+  return Undefined();
+}
+
+Value Plugin::getValueProperty(ExecState* /*exec*/, int token) const
+{
+  switch( token ) {
+  case Plugin_Name:
+    return String( m_info->name );
+  case Plugin_FileName:
+    return String( m_info->file );
+  case Plugin_Description:
+    return String( m_info->desc );
+  default:
+    kdDebug(6070) << "WARNING: Unhandled token in Plugin::getValueProperty : " << token << endl;
+    return Undefined();
+  }
+}
+
+Value PluginFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::Plugin, thisObj );
+  KJS::Plugin* plugin = static_cast<KJS::Plugin *>(thisObj.imp());
+  switch( id ) {
+  case Plugin_Item:
+  {
+    bool ok;
+    unsigned int i = args[0].toString(exec).toArrayIndex(&ok);
+    if( ok && i< plugin->pluginInfo()->mimes.count() )
+      return Value( new MimeType( exec, plugin->pluginInfo()->mimes.at(i) ) );
+    return Undefined();
+  }
+  case Plugin_NamedItem:
+  {
+    UString s = args[0].toString(exec);
+    return plugin->mimeByName( exec, s.qstring() );
+  }
+  default:
+    kdDebug(6070) << "WARNING: Unhandled token in PluginFunc::tryCall : " << id << endl;
+    return Undefined();
+  }
 }
 
 /*****************************************************************************/
+
+const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypesTable, 0 };
+/*
+@begin MimeTypeTable 4
+  description  	MimeType_Description    	DontDelete|ReadOnly
+  enabledPlugin MimeType_EnabledPlugin    	DontDelete|ReadOnly
+  suffixes	MimeType_Suffixes	    	DontDelete|ReadOnly
+  type  	MimeType_Type			DontDelete|ReadOnly
+@end
+*/
 
 Value MimeType::get(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "MimeType::get " << propertyName.qstring() << endl;
 #endif
-    if ( propertyName == "type" )
-        return String( m_info->type );
-    else if ( propertyName == "suffixes" )
-        return String( m_info->suffixes );
-    else if ( propertyName == "description" )
-        return String( m_info->desc );
-    else if ( propertyName == "enabledPlugin" )
-        return Value(new Plugin(exec, m_info->plugin));
+  return lookupGetValue<MimeType,ObjectImp>(exec, propertyName, &MimeTypeTable, this );
+}
 
-    return ObjectImp::get(exec,propertyName);
+Value MimeType::getValueProperty(ExecState* exec, int token) const
+{
+  switch( token ) {
+  case MimeType_Type:
+    return String( m_info->type );
+  case MimeType_Suffixes:
+    return String( m_info->suffixes );
+  case MimeType_Description:
+    return String( m_info->desc );
+  case MimeType_EnabledPlugin:
+    return Value(new Plugin(exec, m_info->plugin));
+  default:
+    kdDebug(6070) << "WARNING: Unhandled token in MimeType::getValueProperty : " << token << endl;
+    return Undefined();
+  }
 }
 
 
