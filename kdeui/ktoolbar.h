@@ -394,6 +394,14 @@ public:
   KToolBarLined * getLined (int id);
 
   /**
+   * This returns a pointer to KToolBarButton. Use it as
+   * KToolBarButton * button = toolbar->getButton(button_id);
+   * That way you can get access to other public methods
+   * that KToolBarButton provides.
+   */  
+  KToolBarButton * getButton (int id);
+
+  /**
    * Alignes item right.
    * This works only if toolbar is set to full width.
    * @see #setFullWidth

@@ -1307,6 +1307,17 @@ KToolBarLined *KToolBar::getLined (int id)
   return 0;
 }
 
+
+KToolBarButton* KToolBar::getButton( int id )
+{
+  for( KToolBarItem* b = items.first(); b != NULL; b = items.next() )
+	if( getID( b ) == id )
+	  if( getType( b ) == ITEM_BUTTON )
+		return ((KToolBarButton *) b);
+  return 0;
+}
+
+
 /// Toolbar itself
 
 void KToolBar::setFullWidth(bool flag)
