@@ -60,7 +60,7 @@ protected:
   void displayCert(KSSLCertificate *c);
 
   QFrame *_frame;
-  QLabel *_filenameLabel, *_validPeriod, *_serialNum, *_certState;
+  QLabel *_filenameLabel, *_validFrom, *_validUntil, *_serialNum, *_certState;
   KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
   QComboBox *_chain;

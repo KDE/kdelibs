@@ -46,7 +46,7 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
  _p12 = NULL;
 
  _frame = new QFrame(parent);
- grid = new QGridLayout(_frame, 10, 6, KDialog::marginHint(),
+ grid = new QGridLayout(_frame, 13, 6, KDialog::marginHint(),
                                        KDialog::spacingHint() );
  grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _frame), 0, 0, 0, 5);
  grid->addWidget(new QLabel(i18n("Chain:"), _frame), 1, 0);
@@ -54,36 +54,43 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
  grid->addMultiCellWidget(_chain, 1, 1, 1, 4);
  connect(_chain, SIGNAL(activated(int)), SLOT(slotChain(int)));
 
+ grid->addWidget(new QLabel(i18n("Subject:"), _frame), 2, 0);
+ grid->addWidget(new QLabel(i18n("Issued by:"), _frame), 2, 3);
  _subject = KSSLInfoDlg::certInfoWidget(_frame, QString(""));
  _issuer = KSSLInfoDlg::certInfoWidget(_frame, QString(""));
- grid->addMultiCellWidget(_subject, 2, 4, 0, 2);
- grid->addMultiCellWidget(_issuer, 2, 4, 3, 5);
+ grid->addMultiCellWidget(_subject, 3, 6, 0, 2);
+ grid->addMultiCellWidget(_issuer, 3, 6, 3, 5);
 
- grid->addWidget(new QLabel(i18n("File:"), _frame), 5, 0);
+ grid->addWidget(new QLabel(i18n("File:"), _frame), 7, 0);
  _filenameLabel = new QLabel("", _frame);
- grid->addWidget(_filenameLabel, 5, 1);
- grid->addWidget(new QLabel(i18n("File Format:"), _frame), 5, 3);
- grid->addWidget(new QLabel("PKCS#12", _frame), 5, 4);
-
- _validPeriod = new QLabel("", _frame);
- grid->addMultiCellWidget(_validPeriod, 6, 6, 0, 5);
-
- grid->addWidget(new QLabel(i18n("Serial Number:"), _frame), 7, 0);
- _serialNum = new QLabel("", _frame);
- grid->addWidget(_serialNum, 7, 1);
+ grid->addWidget(_filenameLabel, 7, 1);
+ grid->addWidget(new QLabel(i18n("File Format:"), _frame), 7, 3);
+ grid->addWidget(new QLabel("PKCS#12", _frame), 7, 4);
 
  grid->addWidget(new QLabel(i18n("State:"), _frame), 8, 0);
  _certState = new QLabel("", _frame);
  grid->addMultiCellWidget(_certState, 8, 8, 1, 5);
 
+ grid->addWidget(new QLabel(i18n("Valid From:"), _frame), 9, 0);
+ _validFrom = new QLabel("", _frame);
+ grid->addMultiCellWidget(_validFrom, 9, 9, 1, 5);
+
+ grid->addWidget(new QLabel(i18n("Valid Until:"), _frame), 10, 0);
+ _validUntil = new QLabel("", _frame);
+ grid->addMultiCellWidget(_validUntil, 10, 10, 1, 5);
+
+ grid->addWidget(new QLabel(i18n("Serial Number:"), _frame), 11, 0);
+ _serialNum = new QLabel("", _frame);
+ grid->addWidget(_serialNum, 11, 1);
+
  _launch = new QPushButton(i18n("&Crypto Manager..."), _frame);
  _import = new QPushButton(i18n("&Import..."), _frame);
  _save = new QPushButton(i18n("&Save..."), _frame);
  _done = new QPushButton(i18n("&Done"), _frame);
- grid->addMultiCellWidget(_launch, 9, 9, 0, 1);
- grid->addWidget(_import, 9, 3);
- grid->addWidget(_save, 9, 4);
- grid->addWidget(_done, 9, 5);
+ grid->addMultiCellWidget(_launch, 12, 12, 0, 1);
+ grid->addWidget(_import, 12, 3);
+ grid->addWidget(_save, 12, 4);
+ grid->addWidget(_done, 12, 5);
  connect(_launch, SIGNAL(clicked()), SLOT(slotLaunch()));
  connect(_import, SIGNAL(clicked()), SLOT(slotImport()));
  connect(_save, SIGNAL(clicked()), SLOT(slotSave()));
@@ -125,6 +132,7 @@ return true;
 bool KCertPart::openFile() {
 QCString pass;
 
+  emit completed();
   if (_p12) delete _p12;
   _p12 = KSSLPKCS12::loadCertFile(m_file);
 
@@ -168,7 +176,6 @@ QCString pass;
 
  _import->setEnabled(true);
  _save->setEnabled(true);
-
 return true;
 }
 
@@ -179,19 +186,32 @@ void KCertPart::displayCert(KSSLCertificate *c) {
   _issuer->setValues(c->getIssuer());
 
   // Set the valid period
-         QPalette cspl = _validPeriod->palette();
-         if (QDateTime::currentDateTime() < c->getQDTNotBefore()
-            || QDateTime::currentDateTime() > c->getQDTNotAfter()) {
+         QPalette cspl = _validFrom->palette();
+         if (QDateTime::currentDateTime() < c->getQDTNotBefore()) {
             cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
          } else {
             cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
          }
-         _validPeriod->setPalette(cspl);
- 
-         QString validText("Certificate is valid from %1 to %2.");
-         _validPeriod->setText(validText.arg(c->getNotBefore()).arg(c->getNotAfter()));
+         _validFrom->setPalette(cspl);
+         _validFrom->setText(c->getNotBefore());
+
+         cspl = _validUntil->palette();
+         if (QDateTime::currentDateTime() > c->getQDTNotAfter()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         _validUntil->setPalette(cspl);
+         _validUntil->setText(c->getNotAfter());
 
   _serialNum->setText(c->getSerialNumber());
+         cspl = _certState->palette();
+         if (!c->isValid()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         _certState->setPalette(cspl);
   _certState->setText(KSSLCertificate::verifyText(c->validate()));
 }
 
@@ -210,12 +230,14 @@ void KCertPart::slotChain(int c) {
 
 void KCertPart::slotImport() {
   KSimpleConfig cfg("ksslcertificates", false);
+
   if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
      int rc = KMessageBox::warningYesNo(_frame, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("Certificate Import"));
      if (rc == KMessageBox::No) {
         return;
      }
   }
+
   cfg.setGroup(_p12->getCertificate()->getSubject());
   cfg.writeEntry("PKCS12Base64", _p12->toString());
   cfg.writeEntry("Password", "");
@@ -230,7 +252,6 @@ void KCertPart::slotSave() {
 
 
 void KCertPart::slotDone() {
-  delete this;   // this doesn't seem to work
 }
 
 
