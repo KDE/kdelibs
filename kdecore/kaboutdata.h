@@ -35,7 +35,19 @@ class KAboutDataPrivate;
  * link to a home page. This class is intended for use in the
  * KAboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
-*/
+ *
+ * Example Usage within a main():
+ * 
+ * KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
+ *                   I18N_NOOP("A KDE version of Hello, world!"),
+ *                   KAboutData::License_LGPL,
+ *                   I18N_NOOP("Copyright (c) 2003 Developer"));
+ *
+ *   about.addAuthor("Joe Developer", I18N_NOOP("developer"), "joe@host.com", 0);
+ *   about.addCredit("Joe User", I18N_NOOP("A lot of bug reports"),
+ *                   "joe.user@host.org", 0);
+ *   KCmdLineArgs::init(argc, argv, &about);
+ */
 class KAboutPerson
 {
 public:
