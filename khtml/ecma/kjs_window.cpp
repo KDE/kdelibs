@@ -69,6 +69,8 @@ Window *KJS::newWindow(KHTMLPart *p)
   return w;
 }
 
+namespace KJS {
+
 class History : public HostImp {
   friend class HistoryFunc;
 public:
@@ -81,7 +83,7 @@ private:
 
 class HistoryFunc : public DOMFunction {
 public:
-  HistoryFunc(const History *h, int i) : history(h), id(i) { };
+  HistoryFunc(const History *h, int i) : history(h), id(i) { }
   Completion tryExecute(const List &args);
   enum { Back, Forward, Go };
 
@@ -97,6 +99,8 @@ public:
 private:
   QGuardedPtr<KHTMLPart> part;
 };
+
+}; // namespace KJS
 
 // table for screen object
 /*
@@ -159,7 +163,8 @@ KJSO Screen::get(const UString &p) const
 }
 
 Window::Window(KHTMLPart *p)
-  : part(p), screen(0), openedByJS(false), winq(0L)
+  : part(p), screen(0), history(0), frames(0),
+    openedByJS(false), winq(0L)
 {
 }
 
@@ -284,9 +289,11 @@ KJSO Window::get(const UString &p) const
   else if (p == "DOMException")
     return getDOMExceptionPrototype();
   else if (p == "frames")
-    return new FrameArray(part);
+    return KJSO(frames ? frames :
+		(const_cast<Window*>(this)->frames = new FrameArray(part)));
   else if (p == "history")
-    return KJSO(new History(part));
+    return KJSO(history ? history :
+		(const_cast<Window*>(this)->history = new History(part)));
   else if (p == "innerHeight")
     return Number(part->view()->visibleHeight());
   else if (p == "innerWidth")
@@ -802,7 +809,7 @@ KJSO FrameArray::get(const UString &p) const
     return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
   }
 
-  return Undefined();
+  return HostImp::get(p);
 }
 
 static QPtrDict<Location> *location_dict = 0L;

@@ -37,6 +37,8 @@ namespace KJS {
   class WindowFunc;
   class WindowQObject;
   class Location;
+  class History;
+  class FrameArray;
 
   class Screen : public ObjectImp {
   public:
@@ -72,6 +74,8 @@ namespace KJS {
     QGuardedPtr<KHTMLPart> part;
     QGuardedPtr<KHTMLPart> opener;
     Screen *screen;
+    History *history;
+    FrameArray *frames;
     bool openedByJS;
     WindowQObject *winq;
   };
