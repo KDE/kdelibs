@@ -27,6 +27,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kurl.h>
+#include <kprotocolmanager.h>
 #include <ktempfile.h>
 
 #include "kio/global.h"
@@ -60,7 +61,7 @@ IdleSlave::gotInput()
    QByteArray data;
    if (mConn.read( &cmd, data) == -1)
    {
-      // Communication problem with slave. 
+      // Communication problem with slave.
       kdDebug(7016) << "SlavePool: No communication with slave." << endl;
       delete this;
    }
@@ -74,8 +75,8 @@ IdleSlave::gotInput()
       kdDebug(7016) << "SlavePool: Unexpected data from slave." << endl;
       delete this;
    }
-   else 
-   {   
+   else
+   {
       QDataStream stream( data, IO_ReadOnly );
       pid_t pid;
       QCString protocol;
@@ -87,7 +88,7 @@ IdleSlave::gotInput()
       mProtocol = protocol;
       mHost = host;
       kdDebug(7016) << "SlavePool: SlaveStatus = "
-	<< mProtocol << " " << mHost << " " << 
+	<< mProtocol << " " << mHost << " " <<
            (mConnected ? "Connected" : "Not connected") << endl;
    }
 }
@@ -96,7 +97,7 @@ void
 IdleSlave::connect(const QString &app_socket)
 {
    kdDebug(7016) << "SlavePool: New mission for slave:"
-	<< mProtocol << " " << mHost << " " << 
+	<< mProtocol << " " << mHost << " " <<
 	   (mConnected ? "Connected" : "Not connected") << endl;
 
    QByteArray data;
@@ -117,7 +118,7 @@ IdleSlave::match(const QString &protocol, const QString &host, bool connected)
    return true;
 }
 
-int 
+int
 IdleSlave::age(time_t now)
 {
    return (int) difftime(now, mBirthDate);
@@ -158,18 +159,18 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       QDataStream stream(data, IO_ReadOnly);
 
       QCString name;
-      QValueList<QCString> arg_list;      
+      QValueList<QCString> arg_list;
       stream >> name >> arg_list;
       kdDebug(7016) << "KLauncher: Got exec_blind('" << name << "', ...)" << endl;
       exec_blind( name, arg_list);
       return true;
-   }   
+   }
    if ((fun == "start_service_by_name(QString,QString)") ||
        (fun == "start_service_by_desktop_path(QString,QString)")||
        (fun == "start_service_by_desktop_name(QString,QString)"))
    {
       QDataStream stream(data, IO_ReadOnly);
-      
+
       QString serviceName;
       QString filename;
       DCOPresult.result = -1;
@@ -187,7 +188,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_path('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_path(serviceName, filename);
       }
-      else 
+      else
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_name(serviceName, filename);
@@ -200,7 +201,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       }
       return true;
    }
-   else if (fun == "requestSlave(QString,QString,QString)") 
+   else if (fun == "requestSlave(QString,QString,QString)")
    {
       QDataStream stream(data, IO_ReadOnly);
       QString protocol;
@@ -227,7 +228,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
  * Read 'len' bytes from 'sock' into buffer.
  * returns -1 on failure, 0 on no data.
  */
-static int 
+static int
 read_socket(int sock, char *buffer, int len)
 {
   ssize_t result;
@@ -255,7 +256,7 @@ KLauncher::slotKInitData(int)
    klauncher_header request_header;
    QByteArray requestData;
    kdDebug(7016) << "Data from KInit!" << endl;
-   int result = read_socket(kdeinitSocket, (char *) &request_header, 
+   int result = read_socket(kdeinitSocket, (char *) &request_header,
                             sizeof( request_header));
    if (result == -1)
    {
@@ -263,10 +264,10 @@ KLauncher::slotKInitData(int)
       ::exit(255);
    }
    requestData.resize(request_header.arg_length);
-   result = read_socket(kdeinitSocket, (char *) requestData.data(), 
+   result = read_socket(kdeinitSocket, (char *) requestData.data(),
                         request_header.arg_length);
 
-   kdDebug(7016) << "Got notification (" << request_header.cmd << ") from KInit" << endl; 
+   kdDebug(7016) << "Got notification (" << request_header.cmd << ") from KInit" << endl;
    if (request_header.cmd == LAUNCHER_DIED)
    {
      long *request_data;
@@ -280,7 +281,7 @@ KLauncher::slotKInitData(int)
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
      kdDebug(7016) << lastRequest->name << " (pid " << lastRequest->pid <<
-        ") up and running." << endl;    
+        ") up and running." << endl;
      switch(lastRequest->dcop_service_type)
      {
        case KService::DCOP_None:
@@ -305,9 +306,9 @@ KLauncher::slotKInitData(int)
    {
      lastRequest->status = KLaunchRequest::Error;
      lastRequest = 0;
-     return; 
+     return;
    }
-   
+
    kdDebug(7016) << "Unexpected command from KInit (" << request_header.cmd
                  << ")" << endl;
 }
@@ -323,7 +324,7 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
          request->status = KLaunchRequest::Error;
          requestDone(request);
          return;
-      } 
+      }
    }
 }
 
@@ -333,22 +334,22 @@ KLauncher::slotAppRegistered(const QCString &appId)
    KLaunchRequest *request = requestList.first();
    for(; request; request = requestList.next())
    {
-      if ((request->dcop_name == appId) && 
+      if ((request->dcop_name == appId) &&
           (request->status == KLaunchRequest::Launching))
       {
          request->status = KLaunchRequest::Running;
          requestDone(request);
          return;
-      } 
+      }
    }
 }
 
-void 
+void
 KLauncher::requestDone(KLaunchRequest *request)
 {
 
    kdDebug(7016) << "Request done [ name = '" << request->name <<
-           "' , status ='" <<  
+           "' , status ='" <<
            QString((request->status == KLaunchRequest::Running) ? "running" : "error") <<
            "' ]" << endl;
    if (request->status == KLaunchRequest::Running)
@@ -357,7 +358,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       DCOPresult.dcopName = request->dcop_name;
       DCOPresult.error = QString::null;
    }
-   else 
+   else
    {
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
@@ -370,13 +371,13 @@ KLauncher::requestDone(KLaunchRequest *request)
       replyType = "serviceResult";
       QDataStream stream2(replyData, IO_WriteOnly);
       stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error;
-      dcopClient()->endTransaction( request->transaction, 
+      dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);
       requestList.removeRef( request );
    }
 }
 
-void 
+void
 KLauncher::requestStart(KLaunchRequest *request)
 {
    kdDebug(7016) << "Request start [ name = '" << request->name <<
@@ -395,7 +396,7 @@ KLauncher::requestStart(KLaunchRequest *request)
       length += (*it).length() + 1; // Args...
    }
    requestData.resize( length );
-   
+
    char *p = requestData.data();
    *(reinterpret_cast<long *>(p)) = request->arg_list.count()+1;
    p += sizeof(long);
@@ -408,7 +409,7 @@ KLauncher::requestStart(KLaunchRequest *request)
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
-   
+
    request_header.cmd = LAUNCHER_EXEC;
    request_header.arg_length = length;
    write(kdeinitSocket, &request_header, sizeof(request_header));
@@ -418,7 +419,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    lastRequest = request;
    do {
       slotKInitData( kdeinitSocket );
-   } 
+   }
    while (lastRequest != 0);
 }
 
@@ -436,7 +437,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    requestStart(request);
    // We don't care about this request any longer....
    requestDone(request);
-   requestList.removeRef( request ); 
+   requestList.removeRef( request );
 }
 
 
@@ -493,7 +494,7 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
    return start_service(service, filename);
 }
 
-bool 
+bool
 KLauncher::start_service(KService::Ptr service, const QString &filename)
 {
    if (!service->isValid())
@@ -524,7 +525,7 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
       request->dcop_name = QString::null;
    else
       request->dcop_name = request->name;
-   
+
    request->pid = 0;
    request->transaction = 0;
    // Are we already running?
@@ -590,7 +591,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
      {
          QString arg = *it;
          // Unquote.
-         if ((arg.length() > 1) && 
+         if ((arg.length() > 1) &&
              ((arg[0] == '\"') && (arg[arg.length()-1] == '\"') ||
               (arg[0] == '\'') && (arg[arg.length()-1] == '\''))
             )
@@ -603,7 +604,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 
   // Service Name
   replaceArg(request->arg_list, "%c", service->name().ascii());
-  
+
   // Icon
   if (service->icon().isEmpty())
     removeArg(request->arg_list, "%i");
@@ -650,7 +651,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 }
 
 void
-KLauncher::replaceArg( QValueList<QCString> &args, const QCString &target, 
+KLauncher::replaceArg( QValueList<QCString> &args, const QCString &target,
                        const QCString &replace, const char *replacePrefix)
 {
    QValueList<QCString>::Iterator it = args.begin();
@@ -682,7 +683,7 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestSlave(const QString &protocol, 
+KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
                         const QString &app_socket, QString &error)
 {
@@ -717,14 +718,22 @@ KLauncher::requestSlave(const QString &protocol,
 
     kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")" << endl;
 
-    QCString name = QCString("kio_") + protocol.ascii();
-    QCString arg1 = protocol.ascii();
+    // TODO perhaps deal with our own cache (protocol->exec, filled on demand),
+    // to save memory compared to KProtocolManager which stores everything in memory...
+    // Problem is that the protocol name is in the file (protocol= field), so we
+    // do need to parse them all...
+    QCString name = KProtocolManager::self().exec( protocol ).latin1(); // ex: "kio_ftp"
+    if ( name.isEmpty() ) {
+        name = "kio_"; name += protocol.latin1(); // fallback
+    }
+    kdDebug(7016) << "Request with name = " << name << endl;
+    QCString arg1 = protocol.latin1();
     QCString arg2 = QFile::encodeName(mPoolSocketName);
     QCString arg3 = QFile::encodeName(app_socket);
     QValueList<QCString> arg_list;
     arg_list.append(arg1);
-    arg_list.append(arg2);  
-    arg_list.append(arg3);  
+    arg_list.append(arg2);
+    arg_list.append(arg3);
 
     KLaunchRequest *request = new KLaunchRequest;
     request->name = name;
@@ -739,9 +748,9 @@ KLauncher::requestSlave(const QString &protocol,
 
     kdDebug(7016) << "Slave launched, pid = " << pid << endl;
 
-    // We don't care about this request any longer.... 
+    // We don't care about this request any longer....
     requestDone(request);
-    requestList.removeRef( request ); 
+    requestList.removeRef( request );
     return pid;
 }
 
@@ -755,7 +764,7 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     if (!mTimer.isActive())
     {
-       kdDebug(7016) << "SlavePool: starting idle timer" << endl;       
+       kdDebug(7016) << "SlavePool: starting idle timer" << endl;
        mTimer.start(1000*60);
     }
 }
