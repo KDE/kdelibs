@@ -68,6 +68,22 @@ Specifies that configuration information is read from <oldfile> and written
 to <newfile>. If you only specify <oldfile>, the information is read from
 as well as written to <oldfile>.
 
+Script=<script>[,<interpreter>]
+
+All entries from <oldfile> are piped into <script>. The output of script
+is used as new entries for <newfile>. Existing entries can be deleted by 
+adding lines with "# DELETE [group]key" in the output of the script. 
+To delete a whole group use "# DELETEGROUP [group]".
+
+If Script was issued after a "Group" command the behaviour is slightly
+different:
+All entries from <oldfile>/<oldgroup> are piped into <script>. The output
+of script is used as new entries for <newfile>/<newgroup>, unless a different
+group is specified with "[group]". Existing entries can be deleted from
+<oldgroup> by adding lines with "# DELETE key" in the output of the script. 
+To delete <oldgroup> use "# DELETEGROUP".
+
+<interpreter> can be something like "perl".
 
 Group=<oldgroup>,<newgroup>
 Group=<oldgroup>

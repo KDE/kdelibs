@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -35,6 +36,7 @@
 #include <kstddirs.h>
 #include <kaboutdata.h>
 #include <kinstance.h>
+#include <ktempfile.h>
 
 static KCmdLineOptions options[] =
 {
@@ -55,7 +57,11 @@ public:
    void gotKey(const QString &_key);
    void gotAllKeys();
    void gotOptions(const QString &_options);
+   void gotScript(const QString &_script);
    void resetOptions();
+
+   void copyGroup(KConfigBase *cfg1, const QString &grp1, 
+                  KConfigBase *cfg2, const QString &grp2);
 
 protected:
    KConfig *config;
@@ -149,7 +155,8 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
  * Options=[copy,][overwrite,]
  * Key=oldkey[,newkey]
  * AllKeys
- * Keys= ([Options]AllKeys)|([Options]Keys*)
+ * Keys= [Options](AllKeys|Keys*)
+ * Script=scriptfile[,interpreter]
  *
  * Sequence:
  * (Id,(File(Group,Keys)*)*)*
@@ -182,6 +189,11 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotFile(line.mid(5));
       else if (line.startsWith("Group="))
          gotGroup(line.mid(6));
+      else if (line.startsWith("Script="))
+      {
+         gotScript(line.mid(7));
+         resetOptions();
+      }
       else if (line.startsWith("Key="))
       {
          gotKey(line.mid(4));
@@ -367,6 +379,7 @@ void KonfUpdate::gotAllKeys()
       qWarning("AllKeys without file specification.");
       return;
    }
+
    QMap<QString, QString> list = oldConfig1->entryMap(oldGroup);
    for(QMap<QString, QString>::Iterator it = list.begin();
        it != list.end(); ++it)
@@ -390,6 +403,157 @@ void KonfUpdate::gotOptions(const QString &_options)
    }
 }
 
+void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &grp1, 
+                           KConfigBase *cfg2, const QString &grp2)
+{
+   cfg2->setGroup(grp2);
+   QMap<QString, QString> list = cfg1->entryMap(grp1);
+   for(QMap<QString, QString>::Iterator it = list.begin();
+       it != list.end(); ++it)
+   {
+      cfg2->writeEntry(it.key(), it.data());
+   }
+}
+
+void KonfUpdate::gotScript(const QString &_script)
+{
+   QString script, interpreter;
+   int i = _script.find(',');
+   if (i == -1)
+   {
+      script = _script.stripWhiteSpace();
+   }
+   else
+   {
+      script = _script.left(i).stripWhiteSpace();
+      interpreter = _script.mid(i+1).stripWhiteSpace();
+   }
+   qWarning("Running script '%s'", script.latin1());
+   if (!oldConfig1)
+   {
+      qWarning("Script without file specification.");
+      return;
+   }
+   QString path = locate("data","kconf_update/"+script);
+   if (path.isEmpty())
+   {
+      qWarning("Script '%s' not found.", script.latin1());
+      return;
+   }
+
+   KTempFile tmp1;
+   // tmp1.setAutoDelete(true);
+   KTempFile tmp2;
+   // tmp2.setAutoDelete(true);
+   KSimpleConfig cfg(tmp1.name());
+
+   if (oldGroup.isEmpty())
+   {
+       // Write all entries to tmpFile;
+       QStringList grpList = oldConfig1->groupList();
+       for(QStringList::ConstIterator it = grpList.begin();
+           it != grpList.end();
+           ++it)
+       {
+          copyGroup(oldConfig1, *it, &cfg, *it);
+       }
+   }
+   else 
+   {
+       copyGroup(oldConfig1, oldGroup, &cfg, QString::null);
+   }
+   cfg.sync();
+   qWarning("Script: Writing entries to %s", tmp1.name().latin1());
+
+   QString cmd;
+   if (interpreter.isEmpty())
+      cmd = path;
+   else
+      cmd = interpreter + " " + path;
+
+   int result = system(QFile::encodeName(QString("%1 < %2 > %3").arg(cmd).arg(tmp1.name()).arg(tmp2.name())));
+   if (result)
+   {
+      qWarning("Script: Error running '%s'", cmd.latin1());
+      return;
+   }
+
+   qWarning("Script: Filtered entries written to %s", tmp2.name().latin1());
+
+   // Deleting old entries
+   {
+     QString group = oldGroup;
+     QFile output(tmp2.name());
+     if (output.open(IO_ReadOnly))
+     { 
+       QTextStream ts( &output );
+       ts.setEncoding(QTextStream::UnicodeUTF8);
+       while(!ts.atEnd())
+       {
+         QString line = ts.readLine();
+         if (line.startsWith("# DELETE "))
+         {  
+            QString key = line.mid(9);
+            if (key[0] == '[')
+            {
+               int j = key.find(']')+1;
+               if (j > 0)
+               {
+                  group = key.mid(1,j-2);
+                  key = key.mid(j);
+               }
+            }
+            oldConfig2->setGroup(group);
+            oldConfig2->deleteEntry(key, false);
+            if (oldConfig2->deleteGroup(group, false)) // Delete group if empty.
+               qWarning("Deleting group %s", group.latin1());
+         }
+         else if (line.startsWith("# DELETEGROUP"))
+         {
+            QString key = line.mid(13).stripWhiteSpace();
+            if (key[0] == '[')
+            {
+               int j = key.find(']')+1;
+               if (j > 0)
+               {
+                  group = key.mid(1,j-2);
+               }
+            }
+            if (oldConfig2->deleteGroup(group, true)) // Delete group
+               qWarning("Deleting group %s (FORCED)", group.latin1());
+          }
+       }
+     }
+   }
+
+   // Merging in new entries.
+   m_bCopy = true;
+   {
+     KConfig *saveOldConfig1 = oldConfig1;
+     QString saveOldGroup = oldGroup;
+     QString saveNewGroup = newGroup;
+     oldConfig1 = new KConfig(tmp2.name(), true, false);
+
+     // For all groups...
+     QStringList grpList = oldConfig1->groupList();
+     for(QStringList::ConstIterator it = grpList.begin();
+         it != grpList.end();
+         ++it)
+     {
+        oldGroup = *it;
+        if (oldGroup != "<default>")
+        {
+           newGroup = oldGroup;
+        }
+        gotAllKeys(); // Copy all keys
+     }
+     delete oldConfig1;
+     oldConfig1 = saveOldConfig1;
+     oldGroup = saveOldGroup;
+     newGroup = saveNewGroup;
+   }
+}
+
 void KonfUpdate::resetOptions()
 {
    m_bCopy = false;
@@ -400,7 +564,7 @@ void KonfUpdate::resetOptions()
 int main(int argc, char **argv)
 {
    KAboutData aboutData("kconf_update", I18N_NOOP("KConf Update"),
-                        "1.0.0",
+                        "1.0.1",
                         I18N_NOOP("KDE Tool for updating user configuration files"),
                         KAboutData::License_GPL,
                         "(c) 2001, Waldo Bastian");
