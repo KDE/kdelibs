@@ -694,17 +694,46 @@ protected:
 
   /**
    * Immediately called after a successfully started process in NotifyOnExit
-   * or Block mode has exited. This function normally calls @ref commClose()
+   * mode has exited. This function normally calls @ref commClose()
    * and emits the @ref processExited() signal.
    * @param state the exit code of the process as returned by waitpid()
    */
   virtual void processHasExited(int state);
 
   /**
-   * Should clean up the communication links to the child after it has
-   * exited. Should be called from @ref processHasExited().
+   * Cleans up the communication links to the child after it has exited.
+   * This function should act upon the values of @ref pid() and @ref runs.
+   * See the kprocess.cpp source for details.
+   * @li If @ref pid() returns zero, the communication links should be closed
+   *  only.
+   * @li if @ref pid() returns non-zero and @ref runs is false, all data
+   *  immediately available from the communication links should be processed
+   *  before closing them.
+   * @li if @ref pid() returns non-zero and @ref runs is true, the communication
+   *  links should be monitored for data until the file handle returned by
+   *  KProcessController::theKProcessController->notifierFd() becomes ready
+   *  for reading - when it triggers, @ref runs should be reset to false, and
+   *  the function should be immediately left without closing anything.
+   *
+   * The previous semantics of this function are forward-compatible, but should
+   * be avoided, as they are prone to race conditions and can cause KProcess
+   * (and thus the whole program) to lock up under certain circumstances. At the
+   * end the function closes the communication links in any case. Additionally
+   * @li if @ref runs is true, the communication links are monitored for data
+   *  until all of them have returned EOF. Note that if any system function is
+   *  interrupted (errno == EINTR) the polling loop should be aborted.
+   * @li if @ref runs is false, all data immediately available from the
+   *  communication links is processed.
    */
   virtual void commClose();
+
+  /* KDE 4 - commClose will be changed to perform cleanup only in all cases *
+   * If @p notfd is -1, all data immediately available from the
+   *  communication links should be processed.
+   * If @p notfd is not -1, the communication links should be monitored 
+   *  for data until the file handle @p notfd becomes ready for reading.
+   */
+//  virtual void commDrain(int notfd);
 
   /**
    * Specify the actual executable that should be started (first argument to execve)

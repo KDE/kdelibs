@@ -216,7 +216,10 @@ void KProcess::detach()
   if (runs) {
     KProcessController::theKProcessController->addProcess(pid_);
     runs = false;
+    pid_t opid = pid_; // backwards compat
+    pid_ = 0; // close without draining
     commClose(); // Clean up open fd's and socket notifiers.
+    pid_ = opid;
   }
 }
 
@@ -416,9 +419,34 @@ bool KProcess::start(RunMode runmode, Communication comm)
   switch (runmode)
   {
   case Block:
-    commClose();
-    waitpid(pid_, &status, 0);
-    processHasExited(status);
+    for (;;)
+    {
+      commClose(); // drain only, unless obsolete reimplementation
+      if (!runs)
+      {
+        // commClose detected data on the process exit notifification pipe
+        KProcessController::theKProcessController->unscheduleCheck();
+        if (waitpid(pid_, &status, WNOHANG) != 0) // error finishes, too
+        {
+          commClose(); // this time for real (runs is false)
+          KProcessController::theKProcessController->rescheduleCheck();
+          break;
+        }
+        runs = true; // for next commClose() iteration
+      }
+      else
+      {
+        // commClose is an obsolete reimplementation and waited until
+        // all output channels were closed (or it was interrupted).
+        // there is a chance that it never gets here ...
+        waitpid(pid_, &status, 0);
+        runs = false;
+        break;
+      }
+    }
+    // why do we do this? i think this signal should be emitted _only_
+    // after the process has successfully run _asynchronously_ --ossi
+    emit processExited(this);
     break;
   case DontCare:
     detach();
@@ -682,10 +710,10 @@ KPty *KProcess::pty() const
 
 QString KProcess::quote(const QString &arg)
 {
-    QString res = arg;
-    res.replace(QString::fromLatin1("'"), QString::fromLatin1("'\\''"));
-    res.prepend('\'');
-    res.append('\'');
+    QString res = arg, q("'");
+    res.replace(q, QString::fromLatin1("'\\''"));
+    res.prepend(q);
+    res.append(q);
     return res;
 }
 
@@ -697,7 +725,7 @@ QString KProcess::quote(const QString &arg)
 
 void KProcess::processHasExited(int state)
 {
-    // only successfully run NotifyOnExit and Block processes ever get here
+    // only successfully run NotifyOnExit processes ever get here
 
     status = state;
     runs = false; // do this before commClose, so it knows we're dead
@@ -910,11 +938,14 @@ void KProcess::commClose()
 {
   closeStdin();
 
+  if (pid_) { // detached, failed, and killed processes have no output. basta. :)
     // If both channels are being read we need to make sure that one socket
     // buffer doesn't fill up whilst we are waiting for data on the other
     // (causing a deadlock). Hence we need to use select.
 
-    while (communication & (Stdout | Stderr)) {
+    int notfd = KProcessController::theKProcessController->notifierFd();
+
+    while ((communication & (Stdout | Stderr)) || runs) {
       fd_set rfds;
       FD_ZERO(&rfds);
       struct timeval timeout, *p_timeout;
@@ -930,6 +961,9 @@ void KProcess::commClose()
           max_fd = err[0];
       }
       if (runs) {
+        FD_SET(notfd, &rfds);
+        if (notfd > max_fd)
+          max_fd = notfd;
         // If the process is still running we block until we
         // receive data or the process exits.
         p_timeout = 0; // no timeout
@@ -953,7 +987,13 @@ void KProcess::commClose()
 
       if ((communication & Stderr) && FD_ISSET(err[0], &rfds))
         slotChildError(err[0]);
+
+      if (runs && FD_ISSET(notfd, &rfds)) {
+        runs = false; // hack: signal potential exit
+        return; // don't close anything, we will be called again
+      }
     }
+  }
 
   closeStdout();
   closeStderr();
