@@ -313,10 +313,13 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     // - images (reasoning: no need to save, most of the time, because fast to see)
     // e.g. postscript is different, because takes longer to read, so
     // it's more likely that the user might want to save it.
+    // - multipart/* ("server push", see kmultipart)
     if ( mime->is( "text/html" ) ||
          mime->is( "text/xml" ) ||
          mime->is( "inode/directory" ) ||
-         mimeType.startsWith( "image" ) )
+         mimeType.startsWith( "image" ) ||
+         mime->is( "multipart/x-mixed-replace" ) || 
+         mime->is( "multipart/replace" ) )
         return Open;
 
     QString question = makeQuestion( url, mimeType, suggestedFilename );
