@@ -74,6 +74,8 @@
 #include <openssl/pem.h>
 #include <openssl/rand.h>
 #include <openssl/err.h>
+#include <openssl/stack.h>
+#include <openssl/safestack.h>
 #undef crypt
 #endif
 
@@ -1103,7 +1105,7 @@ void KCryptoConfig::save()
   // Go through the non-deleted ones and save them
   for (CAItem *x = static_cast<CAItem *>(caList->firstChild()); x;
                x = static_cast<CAItem *>(x->nextSibling())) {
-     if (!x->modified) continue;
+     if (!x->modified && !x->isNew) continue;
      if (x->isNew) {
         x->isNew = false;
         _signers->addCA(x->getCert(),
@@ -1787,64 +1789,135 @@ QCString oldpass = "";
 
 void KCryptoConfig::slotCAImport() {
 #ifdef HAVE_SSL
-KSSLCertificate *x;
+#define sk_free KOSSL::self()->sk_free
+#define sk_num KOSSL::self()->sk_num
+#define sk_value KOSSL::self()->sk_value
 QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x509-ca-cert");
-QString name;
-QString certtext;
 
 	if (certFile.isEmpty())
 		return;
 
-	QFile qf(certFile);
-	qf.open(IO_ReadOnly);
-	qf.readLine(certtext, qf.size());
+	// First try to load using the OpenSSL method
+	X509_STORE *certStore = KOSSL::self()->X509_STORE_new();
+	X509_LOOKUP *certLookup = KOSSL::self()->X509_STORE_add_lookup(certStore, KOSSL::self()->X509_LOOKUP_file());
 
-	if (certtext.contains("-----BEGIN CERTIFICATE-----")) {
-		qf.reset();
-		certtext = "";
-		while (!qf.atEnd()) {
-			QString xx;
-			qf.readLine(xx, qf.size());
-			certtext += xx;
+	if (certLookup && 
+	    KOSSL::self()->X509_LOOKUP_load_file(certLookup, 
+		                                 certFile.local8Bit(), 
+						 X509_FILETYPE_PEM)) {
+		for (int i = 0; i < sk_X509_OBJECT_num(certStore->objs); i++) {
+			X509_OBJECT* x5o = sk_X509_OBJECT_value(certStore->objs, i);
+			if (!x5o) continue;
+
+			if (x5o->type != X509_LU_X509) continue;
+			
+			X509 *x5 = x5o->data.x509;
+			if (!x5) continue;
+
+			// Easier to use in this form
+			KSSLCertificate *x = KSSLCertificate::fromX509(x5);
+			
+			// Only import CA's
+			if (!x || !x->x509V3Extensions().certTypeCA()) {
+				if (x) {
+					QString emsg = x->getSubject() + ":\n" +
+					i18n("This is not a signer certificate.");
+				 	KMessageBox::error(this,
+							   emsg, 
+						   	   i18n("SSL"));
+					delete x;
+				}
+				continue;
+			}
+
+			QString name = x->getSubject();
+
+			// search for dups
+			for (CAItem *m = static_cast<CAItem *>(caList->firstChild());
+                                                                   m;
+        	                 m = static_cast<CAItem *>(m->nextSibling())) {
+			         if (m->configName() == name) {
+					QString emsg = name + ":\n" +
+						i18n("You already have this signer certificate installed.");
+				 	KMessageBox::error(this,
+							   emsg, 
+						   	   i18n("SSL"));
+					 delete x;
+					 x = NULL;
+					 break;
+				 }
+			}
+
+			if (!x) continue;
+
+			// Ok, add it to the list
+			(new CAItem(caList, 
+				    name, 
+				    x->toString(), 
+				    true, true, true, this)
+			 )->isNew = true;
+			delete x;
 		}
-		certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
-		certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
-		certtext = certtext.stripWhiteSpace();
-		certtext = certtext.replace(QRegExp("\n"), "");
-	} else {
-		// Must [could?] be DER
-		qf.close();
+
+		  // Can the PEM code be wiped out now?
+	} else {   // try to load it manually as a single X.509 DER encoded
+		// ASSUMPTION: we only read one certificate in this code
+		QFile qf(certFile);
+		QString name;
+		QString certtext;
+		KSSLCertificate *x;
 		qf.open(IO_ReadOnly);
-		char *cr;
-		cr = new char[qf.size()+1];
-		qf.readBlock(cr, qf.size());
-		QByteArray qba;
-		qba.duplicate(cr, qf.size());
-		certtext = KCodecs::base64Encode(qba);
-		delete cr;
-	}
+		qf.readLine(certtext, qf.size());
+
+		if (certStore) { KOSSL::self()->X509_STORE_free(certStore);
+				certStore = NULL; }
+
+		if (certtext.contains("-----BEGIN CERTIFICATE-----")) {
+			qf.reset();
+			certtext = "";
+			while (!qf.atEnd()) {
+				QString xx;
+				qf.readLine(xx, qf.size());
+				certtext += xx;
+			}
+			certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
+			certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
+			certtext = certtext.stripWhiteSpace();
+			certtext = certtext.replace(QRegExp("\n"), "");
+		} else {
+			// Must [could?] be DER
+			qf.close();
+			qf.open(IO_ReadOnly);
+			char *cr;
+			cr = new char[qf.size()+1];
+			qf.readBlock(cr, qf.size());
+			QByteArray qba;
+			qba.duplicate(cr, qf.size());
+			certtext = KCodecs::base64Encode(qba);
+			delete cr;
+		}
 	
-	qf.close();
+		qf.close();
 
-	x = KSSLCertificate::fromString(certtext.latin1());
+		x = KSSLCertificate::fromString(certtext.latin1());
 
-	if (!x) {
-		KMessageBox::sorry(this, 
-			i18n("The certificate file could not be loaded."), 
-			i18n("SSL"));
-		return;
-	}
-
-	if (!x->x509V3Extensions().certTypeCA()) {
-		KMessageBox::sorry(this,
-				i18n("This is not a signer certificate."),
+		if (!x) {
+			KMessageBox::sorry(this, 
+				i18n("The certificate file could not be loaded."), 
 				i18n("SSL"));
-		return;
-	}
+			return;
+		}
 
-	name = x->getSubject();
+		if (!x->x509V3Extensions().certTypeCA()) {
+			KMessageBox::sorry(this,
+					i18n("This is not a signer certificate."),
+					i18n("SSL"));
+			return;
+		}
 
-	for (CAItem *i = static_cast<CAItem *>(caList->firstChild());
+		name = x->getSubject();
+
+		for (CAItem *i = static_cast<CAItem *>(caList->firstChild());
                                                                    i;
                          i = static_cast<CAItem *>(i->nextSibling())) {
 		         if (i->configName() == name) {
@@ -1854,12 +1927,20 @@ QString certtext;
 				 delete x;
 				 return;
 			 }
+		}
+
+		(new CAItem(caList, name, x->toString(), true, true, true, this))->isNew = true;
+
+		delete x;
 	}
 
-	(new CAItem(caList, name, x->toString(), true, true, true, this))->isNew = true;
-
-	delete x;
+	
+	if (certStore) KOSSL::self()->X509_STORE_free(certStore);
+	
 	configChanged();
+#undef sk_free
+#undef sk_num
+#undef sk_value
 #endif
 }
 
