@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <qstringlist.h>
 
-void loadPageSizes(DrMain*, MaticBlock*);
+static void loadPageSizes(DrMain*, MaticBlock*);
 
 DrMain* maticToDriver(MaticBlock *blk)
 {
