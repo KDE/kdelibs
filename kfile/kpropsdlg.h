@@ -57,7 +57,7 @@ namespace KIO { class Job; }
  * The various tabs themselves will let the user view or change information
  * about the file or URL.
  *
- * This class must be created with (void)new PropertiesDialog(...)
+ * This class must be created with (void)new KPropertiesDialog(...)
  * It will take care of deleting itself.
  */
 class KPropertiesDialog : public KDialogBase
