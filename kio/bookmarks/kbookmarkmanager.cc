@@ -33,8 +33,8 @@
 #include <qtextstream.h>
 #include <kstaticdeleter.h>
 
-QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf = 0L;
-KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
+QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
+static KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
 
 KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
 {
