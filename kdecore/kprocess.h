@@ -464,12 +464,16 @@ protected:
   /**
    * the socket descriptors for stdin/stdout/stderr.
    */
-  int out[2], in[2], err[2]; 
+  int out[2];
+  int in[2];
+  int err[2]; 
 
   /**
    * The socket notifiers for the above socket descriptors.
    */
-  QSocketNotifier *innot, *outnot, *errnot; 
+  QSocketNotifier *innot;
+  QSocketNotifier *outnot;
+  QSocketNotifier *errnot; 
 
   /**
      Lists the communication links that are activated for the child
