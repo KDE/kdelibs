@@ -546,7 +546,7 @@ void KSpellConfig::getAvailDictsAspell () {
 }
 
 void
-KSpellConfig::fillDicts( QComboBox* box )
+KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
 {
   langfnames.clear();
   if ( box ) {
@@ -671,6 +671,16 @@ KSpellConfig::fillDicts( QComboBox* box )
         }
       }
     }
+    int whichelement = -1;
+    for ( unsigned int i = 0; i < langfnames.count(); ++i ) {
+      if ( langfnames[i] == qsdict )
+        whichelement = i;
+    }
+    if ( whichelement >= 0 ) {
+      box->setCurrentItem( whichelement );
+    }
+    if ( dictionaries )
+      *dictionaries = langfnames;
   }
 }
 

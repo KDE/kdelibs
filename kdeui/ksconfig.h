@@ -107,7 +107,25 @@ class KSpellConfig : public QWidget
 
     void operator=( const KSpellConfig &ksc );
 
-    void fillDicts( QComboBox* box );
+    /**
+     *
+     * @short Get the translated dictionary names and, optionally, the 
+     * corresponding internal dictionary names.
+     *
+     * Fills @p box with the human readable, translated dictionary names and
+     * selects the currently used dictionary (this will be the global 
+     * dictionary if you call @ref fillDicts directly after the constructor).
+     * If @p dictionaries isn't 0 then @p dictionaries will be filled with the
+     * corresponding internal dictionary names that are necessary to set the
+     * dictionary with @ref setDictionary.
+     *
+     * @param box Will be filled with the translated dictionary names.
+     * @param dictionaries Will be filled with the internal dictionary names.
+     *
+     * @since 3.2
+     *
+     */
+    void fillDicts( QComboBox* box, QStringList* dictionaries = 0 );
 
     /**
      * @sect Options setting routines.
