@@ -145,7 +145,7 @@ public:
     virtual ObjectType getObjectType() const
 	    {	return Clue; }
 
-    virtual HTMLAnchor *findAnchor( const char *_name, QPoint *_p );
+    virtual HTMLAnchor *findAnchor( const char *_name, int &_x, int &_y );
 
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,

@@ -43,7 +43,6 @@
 #include <qdrawutil.h>
 
 //#define CLUE_DEBUG
-//#define DEBUG_ALIGN
 
 //-----------------------------------------------------------------------------
 
@@ -309,13 +308,13 @@ bool HTMLTable::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
     return false;
 }
 
-HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
+HTMLAnchor* HTMLTable::findAnchor( const char *_name, int &_x, int &_y )
 {
     HTMLAnchor *ret;
     HTMLTableCell *cell;
 
-    _p->setX( _p->x() + x );
-    _p->setY( _p->y() + y - ascent );
+    _x += x;
+    _y += y - ascent;
  
     unsigned int r, c;
 
@@ -330,14 +329,14 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
 
-	    ret = cell->findAnchor( _name, _p );
+	    ret = cell->findAnchor( _name, _x, _y );
 	    if ( ret != 0 )
 		return ret;
 	}
     }
 	
-    _p->setX( _p->x() - x );
-    _p->setY( _p->y() - y + ascent );
+    _x -= x;
+    _y -= y - ascent;
 
     return 0;
 }
@@ -1697,8 +1696,10 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 		continue;
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
+//@@WABA: What does this do?
 	    if ( colsDone[c] )
 		continue;
+
 	    if ( cell->print( _painter, _x - x, _y - (y - ascent),
 		    _width, _height, _tx, _ty, toPrinter ) )
 		colsDone[c] = true;

@@ -18,7 +18,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/
+~*/
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Objects
@@ -1294,6 +1294,8 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     overlay = 0;
     bComplete = true;
 
+    valign = Bottom;
+
     htmlWidget = widget;
     
     url = _url;
@@ -1311,10 +1313,12 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
     border = bdr;
     percent = _percent;
+
     if (_height == UNDEFINED)
         ascent = 32 + border;
     else
-	ascent = _height + border;
+        ascent = _height + border;
+        
     descent = border;
 
     absX = -1;
@@ -1348,11 +1352,8 @@ void HTMLImage::setPixmap( QPixmap *p )
 {
     pixmap = p;
 
-    if (!predefinedHeight)
-        ascent = pixmap->height() + border;
-
     if (width == 0)
-    	return; // setMaxSize has not yet been called. Do nothing.
+        return; // setMaxSize has not yet been called. Do nothing.
 
     if (  (
            (predefinedWidth) || 
@@ -1431,6 +1432,13 @@ int HTMLImage::calcPreferredWidth()
 
 void HTMLImage::setMaxWidth( int _max_width )
 {
+    if (predefinedHeight)
+        ascent = predefinedHeight + border;
+    else if (!pixmap || pixmap->isNull())
+        ascent = 32+border;
+    else
+        ascent = pixmap->height() + border;
+
     if ( percent == UNDEFINED )
     {
         if (predefinedWidth)
@@ -1475,7 +1483,7 @@ bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _t
 
     if ( toPrinter )
     {
-	if ( _y + _height <= y + descent )
+	if ( _y + _height <= y + border )
 	    return true;
 	if ( isPrinted() )
 	    return false;
@@ -1574,7 +1582,6 @@ int HTMLImage::getAbsY()
     return absY;
 }
 
-
 HTMLImage::~HTMLImage()
 {
    htmlWidget->imageCache()->free( imageURL, this );
@@ -1598,9 +1605,9 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
 	str = aStr + "...";
     } else
 	str = aStr;
-    str.sprintf("%s (\"%s \"/%dx%d)\n", objectName(), str.data(), 
+
+    printf("%s (\"%s \"/%dx%d)\n", objectName(), str.data(), 
 		width, ascent);
-    printf(str);
 }
 
 //----------------------------------------------------------------------------
@@ -1860,21 +1867,16 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 
 //-----------------------------------------------------------------------------
 
-HTMLAnchor* HTMLAnchor::findAnchor( const char *_name, QPoint *_p )
+HTMLAnchor* HTMLAnchor::findAnchor( const char *_name, int &_x, int &_y )
 {
     if ( strcmp( _name, name ) == 0 )
     {
-	_p->setX( _p->x() + x );
-	_p->setY( _p->y() + y );
+    	_x += x;
+    	_y += y;
 	return this;
     }
     
     return 0L;
-}
-
-void HTMLAnchor::setMaxAscent( int _a )
-{
-    y -= _a;
 }
 
 //-----------------------------------------------------------------------------

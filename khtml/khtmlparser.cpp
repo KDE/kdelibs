@@ -1737,6 +1737,8 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 		    align = HTMLClue::Right;
 		else if ( strcasecmp( token + 6, "top" ) == 0 )
 		    valign = HTMLClue::Top;
+		else if ( strcasecmp( token + 6, "middle" ) == 0 )
+		    valign = HTMLClue::VCenter;
 		else if ( strcasecmp( token + 6, "bottom" ) == 0 )
 		    valign = HTMLClue::Bottom;
 	    }
@@ -1791,8 +1793,13 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 
 	    image->setBorderColor( *(colorStack.top()) );
 
+            if ( valign != HTMLClue::VNone)
+	        image->setVAlign( valign );
+
 	    if ( align == HTMLClue::HNone )
 	    {
+		flow->append( image );
+#if 0
 	    	if ( valign == HTMLClue::VNone)
 	    	{
 		    flow->append( image );
@@ -1804,6 +1811,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 		    valigned->append( image );
 		    flow->append( valigned );
 	    	}
+#endif
 	    }
 	    // we need to put the image in a HTMLClueAligned
 	    else

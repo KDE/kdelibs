@@ -54,6 +54,11 @@
 #endif
 // --- Thank you ---
 
+
+// The number of pixels (horizontally) between an aligned object and the text 
+// flow
+static const int ALIGN_MARGIN=5;
+
 //-----------------------------------------------------------------------------
 
 HTMLClue::HTMLClue()
@@ -98,23 +103,23 @@ void HTMLClue::calcAbsolutePos( int _x, int _y )
 	obj->calcAbsolutePos( lx, ly );
 }
 
-HTMLAnchor* HTMLClue::findAnchor( const char *_name, QPoint *_p )
+HTMLAnchor* HTMLClue::findAnchor( const char *_name, int &_x, int &_y)
 {
     HTMLObject *obj;
     HTMLAnchor *ret;
 
-    _p->setX( _p->x() + x );
-    _p->setY( _p->y() + y - ascent );
+    _x += x;
+    _y += y - ascent;
     
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	ret = obj->findAnchor( _name, _p );
+	ret = obj->findAnchor( _name, _x, _y );
 	if ( ret != 0 )
 	    return ret;
     }
-    
-    _p->setX( _p->x() - x );
-    _p->setY( _p->y() - y + ascent );
+
+    _x -= x;
+    _y -= y - ascent;    
 
     return 0;
 }
@@ -457,7 +462,7 @@ int HTMLClue::findPageBreak( int _y )
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	if ( !obj->isAligned() )
+	if ( !obj->isHAligned() )
 	{
 	    pos = obj->findPageBreak( _y - ( y - ascent ) );
 	    if ( pos >= 0 )
@@ -509,7 +514,7 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	if ( !obj->isAligned() )
+	if ( !obj->isHAligned() )
 	{
 	    if ( obj->print( _painter, _x - x, _y - (y - getHeight()),
 			_width, _height, _tx, _ty, toPrinter ) && toPrinter )
@@ -842,7 +847,7 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
 
 	   if ((top_y <= try_y+_height) && (base_y > try_y))
 	   {
-	      int lm = clue->getXPos() + clue->getWidth();
+	      int lm = clue->getXPos() + clue->getWidth()+ALIGN_MARGIN;
 	      if (lm > lmargin)
 	         lmargin = lm;
 	         
@@ -863,7 +868,7 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
 
 	   if ((top_y <= try_y+_height) && (base_y > try_y))
 	   {
-	      int rm = clue->getXPos();
+	      int rm = clue->getXPos()-ALIGN_MARGIN;
 	      if (rm < rmargin)
 	         rmargin = rm;
 
@@ -1122,7 +1127,7 @@ int HTMLClueV::getLeftMargin( int _y )
 		    clue->parent()->getAscent() <= _y &&
 		    clue->getYPos() + clue->parent()->getYPos() -
 		    clue->parent()->getAscent() > _y )
-	    margin = clue->getXPos() + clue->getWidth();
+	    margin = clue->getXPos() + clue->getWidth() + ALIGN_MARGIN;
     }
 
     return margin;
@@ -1139,7 +1144,7 @@ int HTMLClueV::getRightMargin( int _y )
 		clue->parent()->getAscent() <= _y &&
 		clue->getYPos() + clue->parent()->getYPos() -
 		clue->parent()->getAscent() > _y )
-	    margin = clue->getXPos();
+	    margin = clue->getXPos() - ALIGN_MARGIN;
     }
 
     return margin;
@@ -1404,7 +1409,7 @@ DEBUGL(printf("Start HTMLClueH::CalcSize( this = %p )\n", this));
 	obj->setXPos( x_pos );
 	w = obj->getWidth();
 	x_pos += w;
-	remainingWidth -= x_pos;
+	remainingWidth -= w;
 	if (remainingWidth < 0)
 	{
 	     remainingWidth = 1;
@@ -1571,7 +1576,8 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
     int d = 0;
 
     bool newLine = false;
-
+    bool doVAlignment = false;
+    
     while ( obj != 0 )
     {
 	// If we get a newline object, set newLine=true so that the current
@@ -1617,7 +1623,7 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	// a left or right aligned object is not added in this line.  It
 	// is added to our parent's list of aligned objects and will be
 	// taken into account in subsequent get*Margin() calls.
-	else if ( obj->isAligned() )
+	else if ( obj->isHAligned() )
 	{
 	    HTMLClueAligned *c = (HTMLClueAligned *)obj;
 
@@ -1654,7 +1660,7 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	    int runWidth = 0;
 	    HTMLObject *run = obj;
 	    while ( run && !run->isSeparator() && !run->isNewline() &&
-		    !run->isAligned() )
+		    !run->isHAligned() )
 	    {
 		HTMLFitType fit;
 		run->setMaxWidth( rmargin - lmargin );
@@ -1678,10 +1684,17 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 		     break;
 		}    
 
-	 	if ( run->getAscent() > a )
-		    a = run->getAscent();
-		if ( run->getDescent() > d )
-		    d = run->getDescent();
+                if (run->isVAligned() == Bottom)
+                {
+	 	    if ( run->getAscent() > a )
+		        a = run->getAscent();
+		    if ( run->getDescent() > d )
+		        d = run->getDescent();
+		}
+		else
+		{
+		    doVAlignment = true;
+		}
 
 		run = run->next();
 		
@@ -1746,6 +1759,7 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 		    a = 0;
 
 		    newLine = false;
+		    doVAlignment = false;
 		    clear = HTMLVSpace::CNone;
 		}	
 		else
@@ -1765,8 +1779,6 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	if ( newLine || !obj )
 	{
 	    int extra = 0;
-	    ascent += a + d;
-	    y += a + d;
 
 	    if ( halign == HCenter )
 	    {
@@ -1783,16 +1795,74 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 		    extra = 0;
 	    }
 
+	    ascent += a + d;
+	    y += a + d;
+
+            if (doVAlignment)
+            {
+              // Vertical alignment affects our ascent and descent in
+              // mysterious ways:
+              int old_a, old_d;
+              int new_descent, new_ascent;
+              do {
+                old_a = a;
+                old_d = d;
+                // This line contains objects with align=top or align=center
+	        for( HTMLObject *obj2 = line; 
+	             obj2 != obj; 
+	             obj2 = obj2->next())
+		{
+		    if (obj2->isHAligned())
+		        continue;
+		        
+		    switch( obj2->isVAligned() )
+		    {
+		    case Top:
+		         new_descent = obj2->getAscent()+
+		                           obj2->getDescent()-a;
+		         obj2->setYPos( ascent - d - obj2->getDescent()+
+		                        new_descent);
+		         if (new_descent > d)
+		             d = new_descent;
+		         break;
+		    
+		    case VCenter:
+		         new_descent = (obj2->getAscent()+obj2->getDescent())/2;
+		         new_ascent = new_descent;
+		         obj2->setYPos( ascent - d - obj2->getDescent()+
+		                        new_descent);
+		         if (new_descent > d)
+		             d = new_descent;
+		         if (new_ascent > a)
+		             a = new_ascent;
+		         break;
+
+                    default:
+                         // Bottom
+                         break;
+                    }
+		}
+		ascent = ascent - old_a - old_d + a + d;
+		y = y - old_a - old_d + a + d;
+	      }
+              while( (old_a != a) || (old_d != d));
+              // Keep aligning until both our ascent and descent remains
+              // unchanged
+	    }
+	    
 	    while ( line != obj )
 	    {
-		if ( !line->isAligned() )
-		{
-		    line->setYPos( ascent - d );
-		    line->setMaxAscent( a );
-		    line->setMaxDescent( d );
+	        if ( !line->isHAligned() )
+	        {
+	            if (line->isVAligned() == VNone)
+	                line->setYPos( ascent - d );
+
+                    line->setMaxAscent( a );
+                    line->setMaxDescent( d );
+
 		    if ( halign == HCenter || halign == Right )
 		    {
-			line->setXPos( line->getXPos() + extra );
+		        line->setXPos( line->getXPos() + extra );
 		    }
 		}
 		line = line->next();
@@ -1828,6 +1898,7 @@ DEBUGL(printf("Start HTMLClueFlow::CalcSize( this = %p )\n", this));
 	    a = 0;
 
 	    newLine = false;
+	    doVAlignment = false;
 	    clear = HTMLVSpace::CNone;
 	}
     }
@@ -1849,7 +1920,7 @@ int HTMLClueFlow::findPageBreak( int _y )
 
 	while ( obj && obj->getYPos() == yp )
 	{
-	    if ( !obj->isAligned() )
+	    if ( !obj->isHAligned() )
 	    {
 		pos = obj->findPageBreak( _y - ( y - ascent ) );
 		if ( pos >= 0 && pos < minpos )

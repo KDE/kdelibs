@@ -1690,12 +1690,13 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 
 bool KHTMLWidget::gotoAnchor( )
 {
+    int _x = 0;
+    int _y = 0;
+    
     if ( clue == 0 )
 	return FALSE;
 
-    QPoint p( 0, 0 );
-    
-    HTMLAnchor *anchor = clue->findAnchor( reference.data(), &p );
+    HTMLAnchor *anchor = clue->findAnchor( reference.data(), _x, _y );
     if ( anchor == 0 )
 	return FALSE;
 
@@ -1703,11 +1704,11 @@ bool KHTMLWidget::gotoAnchor( )
     if (parser)	
     {
 	// Check if the reference can be located at the top of the screen 
-        if (p.y() > docHeight() - height()  - 1)
+        if (_y > docHeight() - height()  - 1)
              return FALSE;
     }
 
-    emit scrollVert( p.y() );
+    emit scrollVert( _y );
 
     return TRUE;
 }

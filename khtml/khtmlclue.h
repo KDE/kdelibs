@@ -174,7 +174,7 @@ public:
     VAlign getVAlign() { return valign; }
     HAlign getHAlign() { return halign; }
 
-    virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
+    virtual HTMLAnchor* findAnchor( const char *_name, int &_x, int &_y );
 
     virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
 

@@ -86,7 +86,7 @@ public:
     HTMLObject();
     virtual ~HTMLObject() { objCount--; }
 
-    enum VAlign { Top, Bottom, VCenter, VNone };
+    enum VAlign { Bottom=0, VNone=0, VCenter=1, Top=2 };
     enum HAlign { Left, HCenter, Right, HNone };
 
     /**
@@ -263,9 +263,10 @@ public:
     bool isNewline() const { return flags & NewLine; }
     bool isSelected() const { return flags & Selected; }
     bool isAllSelected() const { return flags & AllSelected; }
-    bool isAligned() const { return flags & Aligned; }
+    bool isHAligned() const { return flags & Aligned; }
     bool isPrinted() const { return flags & Printed; }
     bool isHidden() const { return flags & Hidden; }
+    virtual VAlign isVAligned() const { return VNone; }
     virtual bool isSlave() const { return 0; }
     
     void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
@@ -282,7 +283,7 @@ public:
      * '_point' is modified so that it holds the position of the anchor relative
      * to the parent.
      */
-    virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
+    virtual HTMLAnchor* findAnchor( const char * /*_name*/, int &/* x */, int &/* y*/)
 			{ return 0L; }
 
     /**
@@ -331,7 +332,7 @@ protected:
     int ascent;
     int descent;
     short width;	// Actual width of object
-    unsigned char flags;
+    short flags;
     HTMLObject *nextObj;
     static int objCount;
 };
@@ -606,8 +607,8 @@ public:
 
     const char* getName() { return name; }
 
-    virtual void setMaxAscent( int _a );
-    virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
+    virtual VAlign isVAligned( void ) { return Top; }
+    virtual HTMLAnchor* findAnchor( const char *_name, int &_x, int &_y );
 
     virtual const char * objectName() const { return "HTMLAnchor"; };
 
@@ -630,6 +631,8 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
+    void setVAlign( VAlign _v ) { valign = _v; }
+    virtual VAlign isVAligned() const { return valign; }
 
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
@@ -679,7 +682,11 @@ protected:
 	 */
 	int lastWidth;
 	int lastHeight;
-
+ 
+    /*
+     * Some stuff for vertical alignment
+     */
+    VAlign valign; 
 	
     /*
      * Pointer to the image
