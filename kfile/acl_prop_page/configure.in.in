@@ -1,6 +1,6 @@
 AC_CHECK_HEADERS(sys/acl.h, [ACL_H="1"], [ACL_H=""])
-AC_CHECK_FUNC(acl_get_fd, [ACL_FUNC=1], [
-		AC_CHECK_LIB(posix1e, acl_get_fd, [
+AC_CHECK_FUNC(acl_get_tag_type, [ACL_FUNC=1], [
+		AC_CHECK_LIB(posix1e, acl_get_tag_type, [
 			ACL_FUNC="1"
 			LIBPOSIX1E="-lposix1e"
 		], [
