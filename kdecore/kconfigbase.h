@@ -1936,6 +1936,9 @@ private:
 
 class KConfigGroupPrivate;
 
+/**
+ * A KConfigBase derived class for one specific group in a KConfig object.
+ */
 class KConfigGroup: public KConfigBase
 {
 public:
