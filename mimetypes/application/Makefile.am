@@ -1,5 +1,5 @@
 
-data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
+data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
 	x-core.desktop x-font.desktop x-java.desktop \
