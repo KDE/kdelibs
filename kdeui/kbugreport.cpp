@@ -171,7 +171,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
       m_strVersion = m_aboutData->version();
   else
       m_strVersion = i18n("no version set (programmer error!)");
-  d->kde_version = QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
+  d->kde_version = QString::fromLatin1(" (KDE " KDE_VERSION_STRING ") ("
+          KDE_DISTRIBUTION_TEXT ")");
   m_strVersion += d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
@@ -180,9 +181,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
-  d->os = QString::fromLatin1("%1 (%2)").
-          arg(KDE_COMPILING_OS).
-          arg(KDE_DISTRIBUTION_TEXT);
+  d->os = QString::fromLatin1("%1").
+          arg(KDE_COMPILING_OS);
   tmpLabel = new QLabel(d->os, parent);
   glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
 
@@ -280,7 +280,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addSpacing(20);
 
     updateURL();
-    d->webFormLabel->setText( "http://bugs.kde.org/frontend/index.php" );
+    d->webFormLabel->setText( "http://bugs.kde.org/wizard/index.php" );
     lay->addWidget( d->webFormLabel );
     lay->addSpacing(20);
 
@@ -296,7 +296,7 @@ KBugReport::~KBugReport()
 
 void KBugReport::updateURL()
 {
-    QString url = QString::fromLatin1("http://bugs.kde.org/frontend/index.php");
+    QString url = QString::fromLatin1("http://bugs.kde.org/wizard/index.php");
     url += "?os=";
     url += KURL::encode_string( d->os );
     url += "&compiler=";
@@ -361,6 +361,10 @@ void KBugReport::slotSetFrom()
 void KBugReport::slotUrlClicked(const QString &urlText)
 {
   kapp->invokeBrowser( urlText );
+	
+  // When using the web form, a click can also close the window, as there's
+	// not much to do. It also gives the user a direct response to his click:
+  KDialogBase::slotCancel();
 }
 
 
