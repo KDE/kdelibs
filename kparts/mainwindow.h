@@ -6,7 +6,7 @@
 
 #include <ktmainwindow.h>
 
-#include <kparts/xmlgui.h>
+#include <kxmlgui.h>
 #include <kparts/part.h>
 
 class QString;
@@ -25,7 +25,7 @@ class MainWindowPrivate;
  * It implements all internal interfaces in the case of a @ref KTMainWindow as host:
  * the builder and servant interface (for menu merging).
  */
-class MainWindow : public KTMainWindow, public XMLGUIBuilder, public PartBase
+class MainWindow : public KTMainWindow
 {
   Q_OBJECT
  public:
@@ -37,19 +37,6 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public PartBase
    * Destructor.
    */
   virtual ~MainWindow();
-
-  XMLGUIFactory *guiFactory() const;
-
-  // ---
-
-  // KXMLGUIBuilder interface (internal)
-  virtual QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id );
-
-  // KXMLGUIBuilder interface (internal)
-  virtual QByteArray removeContainer( QWidget *container, QWidget *parent, int id );
-
-  virtual int insertSeparator( QWidget *parent, int index );
-  virtual void removeSeparator( QWidget *parent, int id );
 
 protected slots:
 
@@ -71,8 +58,6 @@ protected slots:
   virtual void slotSetStatusBarText( const QString & );
 
 private:
-  XMLGUIFactory *m_factory;
-
   MainWindowPrivate *d;
 };
 

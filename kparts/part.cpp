@@ -26,7 +26,7 @@ using namespace KParts;
 namespace KParts
 {
 
-template class QList<XMLGUIServant>;
+template class QList<KXMLGUIServant>;
 
 class PartBasePrivate
 {
@@ -37,11 +37,6 @@ public:
   ~PartBasePrivate()
   {
   }
-
-  KInstance *m_instance;
-
-  QDomDocument m_doc;
-  QActionCollection m_actionCollection;
 };
 
 class PartPrivate
@@ -70,62 +65,17 @@ PartBase::~PartBase()
   delete d; 
 }
 
-QAction *PartBase::action( const char *name )
+void PartBase::setInstance( KInstance *inst )
 {
-  return d->m_actionCollection.action( name ); 
+  setInstance( inst, true );
 }
 
-QActionCollection *PartBase::actionCollection() const
+void PartBase::setInstance( KInstance *inst, bool loadPlugins )
 {
-  return &d->m_actionCollection; 
-}
-
-QAction *PartBase::action( const QDomElement &element )
-{
-  static QString attrName = QString::fromLatin1( "name" ); 
-  return action( element.attribute( attrName ).ascii() );
-}
-
-KInstance *PartBase::instance() const
-{
-  return d->m_instance; 
-} 
-
-QDomDocument PartBase::document() const
-{
-  return d->m_doc; 
-} 
-
-void PartBase::setInstance( KInstance *instance, bool loadPlugins )
-{
-  d->m_instance = instance;
+  KXMLGUIBase::setInstance( inst );
   if ( loadPlugins )
-    Plugin::loadPlugins( m_obj, d->m_instance );
+    Plugin::loadPlugins( m_obj, instance() );
 } 
-
-void PartBase::setXMLFile( const QString & file )
-{
-  QString fullPath;
-  if ( file[0] != '/' )
-  {
-    fullPath = locate( "data", QString(instance()->instanceName())+"/"+file );
-    if ( fullPath.isEmpty() )
-    {
-      kDebugError( 1000, "File not found : %s/%s", instance()->instanceName().data(), file.ascii() );
-      return;
-    }
-  } else
-    fullPath = file;
-
-  QString xml = XMLGUIFactory::readConfigFile( fullPath );
-  setXML( xml );
-}
-
-void PartBase::setXML( const QString &document )
-{
-  d->m_doc.setContent( document ); 
-} 
-
 
 Part::Part( QObject *parent, const char* name )
  : QObject( parent, name ) , PartBase( this )

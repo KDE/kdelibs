@@ -6,7 +6,7 @@
 #include <qguardedptr.h>
 #include <kurl.h>
 
-#include <kparts/xmlgui.h>
+#include <kxmlguibase.h>
 
 class KInstance;
 class QWidget;
@@ -25,26 +25,11 @@ class PartSelectEvent;
 class GUIActivateEvent;
 class PartBasePrivate;
 
-class PartBase : public XMLGUIServant
+class PartBase : public KXMLGUIBase
 {
 public:
   PartBase( QObject *partObj );
   virtual ~PartBase();
-
-  QAction* action( const char* name );
-  QActionCollection* actionCollection() const;
-
-  virtual QAction *action( const QDomElement &element );
-
-  /**
-   * @return The instance (@ref KInstance) for this part.
-   */
-  virtual KInstance *instance() const;
-
-  /**
-   * @return The parsed XML in a @ref QDomDocument, set by @ref setXMLFile() or @ref setXML()
-   */
-  virtual QDomDocument document() const;
 
 protected:  
   /**
@@ -53,26 +38,15 @@ protected:
    * Call this first in the inherited class constructor.
    * (At least before @ref setXMLFile().)
    */
-  virtual void setInstance( KInstance *instance, bool loadPlugins = true );
+  virtual void setInstance( KInstance *instance );
 
-    /**
-     * Set the name of the rc file containing the XML for the part.
-     *
-     * Call this in the Part-inherited class constructor.
-     *
-     * @param file Either an absolute path for the file, or simply the filename,
-     *             which will then be assumed to be installed in the "data" resource,
-     *             under a directory named like the instance.
-     **/
-    virtual void setXMLFile( const QString & file );
-
-    /**
-     * Set the XML for the part.
-     *
-     * Call this in the Part-inherited class constructor if you
-     *  don't call @ref setXMLFile().
-     **/
-    virtual void setXML( const QString &document );
+  /**
+   * Set the instance (@ref KInstance) for this part.
+   *
+   * Call this first in the inherited class constructor.
+   * (At least before @ref setXMLFile().)
+   */
+  virtual void setInstance( KInstance *instance, bool loadPlugins );
 
 private:
     PartBasePrivate *d;

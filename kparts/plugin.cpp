@@ -61,7 +61,7 @@ const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instan
     for (; pIt != pEnd; ++pIt )
     {
       kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
-      QString xml = XMLGUIFactory::readConfigFile( *pIt );
+      QString xml = KXMLGUIFactory::readConfigFile( *pIt );
       if ( !xml.isEmpty() )
       {
         QDomDocument doc;
@@ -124,9 +124,9 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return (Plugin*)obj;
 }
 
-QValueList<XMLGUIServant *> Plugin::pluginServants( QObject *parent )
+QValueList<KXMLGUIServant *> Plugin::pluginServants( QObject *parent )
 {
-  QValueList<XMLGUIServant *> servants;
+  QValueList<KXMLGUIServant *> servants;
 
   if (!parent )
     return servants;
@@ -136,7 +136,7 @@ QValueList<XMLGUIServant *> Plugin::pluginServants( QObject *parent )
   QObjectListIt it( *plugins );
   while( it.current() )
   {
-    servants.append( (XMLGUIServant *)((Plugin *)it.current()) );
+    servants.append( (KXMLGUIServant *)((Plugin *)it.current()) );
     ++it;
   }
 
