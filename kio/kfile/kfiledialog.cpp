@@ -105,9 +105,6 @@ struct KFileDialogPrivate
     // the name of the filename set by setSelection
     QString selection;
 
-    // we need this to determine what has changed in the location bar
-    QString completionHack;
-
     // now following all kind of widgets, that I need to rebuild
     // the geometry management
     QBoxLayout *boxLayout;
@@ -144,10 +141,6 @@ struct KFileDialogPrivate
 
     // do we show the speedbar for the first time?
     bool initializeSpeedbar :1;
-
-    // an indicator that we're currently in a completion operation
-    // we need to lock some slots for this
-    bool completionLock :1;
 
     bool hasDefaultFilter :1; // necessary for the operationMode
     KFileDialog::OperationMode operationMode;
@@ -688,7 +681,7 @@ void KFileDialog::fileHighlighted(const KFileItem *i)
 
         d->url = i->url();
 
-        if ( !d->completionLock ) {
+        if ( !locationEdit->hasFocus() ) { // don't disturb while editing
             locationEdit->setCurrentItem( 0 );
             locationEdit->setEditText( i->name() );
             locationEdit->lineEdit()->setEdited( false );
@@ -728,7 +721,7 @@ void KFileDialog::fileSelected(const KFileItem *i)
 // (ops->selectedItems()), but what can we do?
 void KFileDialog::multiSelectionChanged()
 {
-    if ( d->completionLock ) // FIXME: completion with multiselection?
+    if ( locationEdit->hasFocus() ) // don't disturb
         return;
 
     locationEdit->lineEdit()->setEdited( false );
@@ -804,7 +797,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     KConfigGroupSaver cs( config, ConfigGroup );
     d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
-    d->completionLock = false;
 
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
@@ -958,18 +950,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     toolbar->setMovingEnabled(false);
     toolbar->adjustSize();
 
-    d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
+    KURLCompletion *pathCompletionObj = new KURLCompletion( KURLCompletion::DirCompletion );
+    d->pathCombo->setCompletionObject( pathCompletionObj );
+    d->pathCombo->setAutoDeleteCompletionObject( true );
 
     connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
              this,  SLOT( enterURL( const KURL& ) ));
     connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
              this,  SLOT( enterURL( const QString& ) ));
-    connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
-             SLOT( pathComboChanged( const QString& ) ));
-    connect( d->pathCombo, SIGNAL( completion( const QString& )),
-             SLOT( dirCompletion( const QString& )));
-    connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-             d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 
     QString whatsThisText;
 
@@ -977,26 +965,26 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->locationLabel = new QLabel(i18n("&Location:"), d->mainWidget);
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
                                     d->mainWidget, "LocationEdit");
+    connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
+             SLOT( slotLocationChanged( const QString& )) );
+    
     updateLocationWhatsThis ();
     d->locationLabel->setBuddy(locationEdit);
 
-    // to get the completionbox-signals connected:
-    locationEdit->setHandleSignals( true );
-    (void) locationEdit->completionBox();
-
     locationEdit->setFocus();
-//     locationEdit->setCompletionObject( new KURLCompletion() );
-//     locationEdit->setAutoDeleteCompletionObject( true );
-    locationEdit->setCompletionObject( ops->completionObject(), false );
-
+    KURLCompletion *fileCompletionObj = new KURLCompletion( KURLCompletion::FileCompletion );
+    QString dir = d->url.url(+1);
+    pathCompletionObj->setDir( dir );
+    fileCompletionObj->setDir( dir );
+    locationEdit->setCompletionObject( fileCompletionObj );
+    locationEdit->setAutoDeleteCompletionObject( true );
+    connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
+             SLOT( fileCompletion( const QString& )) );
+    
     connect( locationEdit, SIGNAL( returnPressed() ),
              this, SLOT( slotOk()));
     connect(locationEdit, SIGNAL( activated( const QString&  )),
             this,  SLOT( locationActivated( const QString& ) ));
-    connect( locationEdit, SIGNAL( completion( const QString& )),
-             SLOT( fileCompletion( const QString& )));
-    connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-             locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
@@ -1025,13 +1013,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     adjustSize();
 
-    // we set the completionLock to avoid entering pathComboChanged() when
-    // inserting the list of URLs into the combo.
-    d->completionLock = true;
     ops->setViewConfig( config, ConfigGroup );
     readConfig( config, ConfigGroup );
     setSelection(d->selection);
-    d->completionLock = false;
 }
 
 void KFileDialog::initSpeedbar()
@@ -1137,66 +1121,6 @@ void KFileDialog::slotFilterChanged()
 }
 
 
-void KFileDialog::pathComboChanged( const QString& txt )
-{
-    if ( d->completionLock )
-        return;
-
-    static const QString& localRoot = KGlobal::staticQString("file:/");
-    KURLComboBox *combo = d->pathCombo;
-    QString text = txt;
-    QString newText = text.left(combo->cursorPosition() -1);
-    KURL url;
-    if ( text.at( 0 ) == '/' )
-        url.setPath( text );
-    else
-        url = text;
-
-
-    // don't mess with malformed urls or remote urls without directory or host
-    if ( url.isMalformed() ||
-         !KProtocolInfo::supportsListing( url.protocol() ) ||
-         ( !url.url().startsWith( localRoot ) &&
-           ( url.directory().isNull() || url.host().isNull()) )) {
-        d->completionHack = newText;
-        return;
-    }
-
-    // when editing somewhere in the middle of the text, don't complete or
-    // follow directories
-    if ( combo->cursorPosition() != (int) combo->currentText().length() ) {
-        d->completionHack = newText;
-        return;
-    }
-
-    // the user is backspacing -> don't annoy him with completions
-    if ( autoDirectoryFollowing && d->completionHack.startsWith( newText ) ) {
-        // but we can follow the directories, if configured so
-
-        // find out the current directory according to combobox and cd into
-        int l = text.length() - 1;
-        while (!text.isEmpty() && text[l] != '/')
-            l--;
-
-        KURL newLocation(text.left(l+1));
-
-        if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
-            setURL(newLocation, true);
-            combo->setEditText(text);
-        }
-    }
-
-    // typing forward, ending with a / -> cd into the directory
-    else if ( autoDirectoryFollowing &&
-              text.at(text.length()-1) == '/' && ops->url() != text ) {
-        d->selection = QString::null;
-        setURL( text, false );
-    }
-
-    d->completionHack = newText;
-}
-
-
 void KFileDialog::setURL(const KURL& url, bool clearforward)
 {
     d->selection = QString::null;
@@ -1219,7 +1143,10 @@ void KFileDialog::urlEntered(const KURL& url)
         locationEdit->setEditText( filename );
 
     locationEdit->blockSignals( false );
-    d->completionHack = d->pathCombo->currentText();
+
+    QString dir = url.url(+1);
+    static_cast<KURLCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
+    static_cast<KURLCompletion*>( locationEdit->completionObject() )->setDir( dir );
 
     if ( d->urlBar )
         d->urlBar->setCurrentItem( url );
@@ -1318,68 +1245,25 @@ void KFileDialog::slotLoadingFinished()
         ops->setCurrentItem( d->selection );
 }
 
-
-void KFileDialog::dirCompletion( const QString& dir ) // SLOT
+// ### remove in KDE4
+void KFileDialog::pathComboChanged( const QString& )
 {
-    // we don't support popup completion here, sorry
-    if ( ops->dirCompletionObject()->completionMode() ==
-         KGlobalSettings::CompletionPopup )
-        return;
-
-    QString base = ops->url().url();
-
-    // if someone uses completion, he doesn't like the current selection
-    d->selection = QString::null;
-
-    KURL url;
-    if ( dir.at( 0 ) == '/' )
-        url.setPath( dir );
+}
+void KFileDialog::dirCompletion( const QString& ) // SLOT
+{
+}
+void KFileDialog::fileCompletion( const QString& match )
+{
+    if ( match.isEmpty() && ops->view() )
+        ops->view()->clearSelection();
     else
-        url = dir;
-
-    if ( url.isMalformed() )
-        return; // invalid entry in path combo
-
-    d->completionLock = true;
-
-    if (url.url().startsWith( base )) {
-        QString complete = ops->makeDirCompletion( url.fileName(false) );
-
-        if (!complete.isNull()) {
-            if(!base.endsWith("/"))
-                base.append('/');
-            QString newText = base + complete;
-            QString fileProt = QString::fromLatin1( "file:" );
-
-            if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
-                newText = newText.mid( 5 ); // remove file:
-
-            d->pathCombo->setCompletedText( newText );
-            d->url = newText;
-        }
-    }
-    d->completionLock = false;
+        ops->setCurrentItem( match );
 }
 
-
-void KFileDialog::fileCompletion( const QString& file )
+void KFileDialog::slotLocationChanged( const QString& text )
 {
-    d->completionLock = true;
-    QString text = ops->makeCompletion( file );
-    if ( !text.isEmpty() ) {
-        KCompletion *comp = ops->completionObject();
-        if ( comp->completionMode() == KGlobalSettings::CompletionPopup ||
-            comp->completionMode() == KGlobalSettings::CompletionPopupAuto )
-            locationEdit->setCompletedItems( comp->allMatches() );
-        else
-            locationEdit->setCompletedText( text );
-    }
-    else
-        if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup ||
-            locationEdit->completionMode() == KGlobalSettings::CompletionPopupAuto )
-            locationEdit->completionBox()->hide();
-
-    d->completionLock = false;
+    if ( text.isEmpty() && ops->view() )
+        ops->view()->clearSelection();
 }
 
 void KFileDialog::updateStatusLine(int /* dirs */, int /* files */)

@@ -873,18 +873,27 @@ protected slots:
     void locationActivated( const QString& url );
 
     /**
+     * @deprecated,
+     */
+    // ### remove in KDE4
+    void toolbarCallback(int);
+    /**
      * @deprecated
      */
-    void toolbarCallback(int);
+    // ### remove in KDE4
+    void pathComboChanged( const QString& );
+    /**
+     * @deprecated
+     */
+    // ### remove in KDE4
+    void dirCompletion( const QString& );
 
     void slotFilterChanged();
-    void pathComboChanged( const QString& );
     void fileHighlighted(const KFileItem *i);
     void fileSelected(const KFileItem *i);
     void slotStatResult(KIO::Job* job);
     void slotLoadingFinished();
 
-    void dirCompletion( const QString& );
     void fileCompletion( const QString& );
     /**
      * @since 3.1
@@ -904,6 +913,9 @@ protected slots:
     void addToRecentDocuments();
     void initSpeedbar();
 
+private slots:
+    void slotLocationChanged( const QString& text ); 
+    
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
