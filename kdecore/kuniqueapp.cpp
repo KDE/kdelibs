@@ -417,7 +417,8 @@ int KUniqueApplication::newInstance(QValueList<QCString> /*params*/)
 
 int KUniqueApplication::newInstance()
 {
-  KWin::setActiveWindow(mainWidget()->winId());
+  if ( mainWidget() )
+      KWin::setActiveWindow(mainWidget()->winId());
   return 0; // do nothing in default implementation
 }
 
