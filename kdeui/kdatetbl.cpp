@@ -134,6 +134,33 @@ KDateTable::~KDateTable()
   delete d;
 }
 
+int KDateTable::posFromDate( const QDate &dt )
+{
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  const int firstWeekDay = KGlobal::locale()->weekStartDay();
+  int pos = calendar->day( dt );
+  int offset = (firstday - firstWeekDay + 7) % 7;
+  // make sure at least one day of the previous month is visible.
+  // adjust this <1 if more days should be forced visible:
+  if ( offset < 1 ) offset += 7;
+  return pos + offset;
+}
+
+QDate KDateTable::dateFromPos( int pos )
+{
+  QDate pCellDate;
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  calendar->setYMD(pCellDate, calendar->year(date), calendar->month(date), 1);
+
+  int firstWeekDay = KGlobal::locale()->weekStartDay();
+  int offset = (firstday - firstWeekDay + 7) % 7;
+  // make sure at least one day of the previous month is visible.
+  // adjust this <1 if more days should be forced visible:
+  if ( offset < 1 ) offset += 7;
+  pCellDate = calendar->addDays( pCellDate, pos - offset );
+  return pCellDate;
+}
+
 void
 KDateTable::paintCell(QPainter *painter, int row, int col)
 {
@@ -144,12 +171,10 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QPen pen;
   int w=cellWidth();
   int h=cellHeight();
-  int pos;
   QBrush brushBlue(KGlobalSettings::activeTitleColor());
   QBrush brushLightblue(KGlobalSettings::baseColor());
   QFont font=KGlobalSettings::generalFont();
   // -----
-  int firstWeekDay = KGlobal::locale()->weekStartDay();
 
   if(row==0)
     { // we are drawing the headline
@@ -157,6 +182,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->setFont(font);
       bool normalday = true;
       QString daystr;
+      int firstWeekDay = KGlobal::locale()->weekStartDay();
       if ( col+firstWeekDay < 8 )
           daystr = calendar->weekDayName(col+firstWeekDay, true);
       else
@@ -186,53 +212,46 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
     } else {
       bool paintRect=true;
       painter->setFont(font);
-      pos=7*(row-1)+col;
+      int pos=7*(row-1)+col;
 
-      QDate pCellDate;
+      QDate pCellDate = dateFromPos( pos );
       // First day of month
-      calendar->setYMD(pCellDate, calendar->year(date), calendar->month(date), 1);
-
-      if ( firstWeekDay < 4 )
-          pos += firstWeekDay;
-      else
-          pos += firstWeekDay - 7;
-      pCellDate = calendar->addDays(pCellDate, pos-firstday);
       text = calendar->dayString(pCellDate, true);
-      if(pos<firstday || (firstday+numdays<=pos))
+      if( pCellDate.month()!=date.month() ) 
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
           painter->setPen(gray);
         } else { // paint a day of the current month
-	  if ( d->useCustomColors )
-	  {
-	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[pCellDate.toString()];
-	    if (mode)
-	    {
-	      if (mode->bgMode != NoBgMode)
-	      {
-	        QBrush oldbrush=painter->brush();
-	        painter->setBrush( mode->bgColor );
-	        switch(mode->bgMode)
-	        {
-	          case(CircleMode) : painter->drawEllipse(0,0,w,h);break;
- 		  case(RectangleMode) : painter->drawRect(0,0,w,h);break;
+          if ( d->useCustomColors )
+          {
+            KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[pCellDate.toString()];
+            if (mode)
+            {
+              if (mode->bgMode != NoBgMode)
+              {
+                QBrush oldbrush=painter->brush();
+                painter->setBrush( mode->bgColor );
+                switch(mode->bgMode)
+                {
+                  case(CircleMode) : painter->drawEllipse(0,0,w,h);break;
+                  case(RectangleMode) : painter->drawRect(0,0,w,h);break;
                   case(NoBgMode) : // Should never be here, but just to get one
-		  		// less warning when compiling
-		  default: break;
-		}
-	        painter->setBrush( oldbrush );
-	        paintRect=false;
-	      }
-	      painter->setPen( mode->fgColor );
-	    } else
-	      painter->setPen(KGlobalSettings::textColor());
-	  } else
+                                   // less warning when compiling
+                  default: break;
+                }
+                painter->setBrush( oldbrush );
+                paintRect=false;
+              }
+              painter->setPen( mode->fgColor );
+            } else
+              painter->setPen(KGlobalSettings::textColor());
+          } else //if ( firstWeekDay < 4 ) // <- this doesn' make sense at all!
           painter->setPen(KGlobalSettings::textColor());
         }
 
       pen=painter->pen();
-      if(firstday+calendar->day(date)-1==pos)
+      if( firstday+calendar->day(date) == pos )
         {
           if(hasFocus())
             { // draw the currently selected date
@@ -343,7 +362,7 @@ KDateTable::setFontSize(int size)
   maxCell.setHeight(0);
   for(count=0; count<7; ++count)
     {
-      rect=metrics.boundingRect(KGlobal::locale()->weekDayName(count+1, true));
+      rect=metrics.boundingRect(KGlobal::locale()->calendar()->weekDayName(count+1, true));
       maxCell.setWidth(QMAX(maxCell.width(), rect.width()));
       maxCell.setHeight(QMAX(maxCell.height(), rect.height()));
     }
@@ -363,7 +382,6 @@ KDateTable::wheelEvent ( QWheelEvent * e )
 void
 KDateTable::contentsMousePressEvent(QMouseEvent *e)
 {
-  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
   if(e->type()!=QEvent::MouseButtonPress)
     { // the KDatePicker only reacts on mouse press events:
@@ -375,8 +393,6 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
       return;
     }
 
-  //int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
-  int dayoff = KGlobal::locale()->weekStartDay();
   // -----
   int row, col, pos, temp;
   QPoint mouseCoord;
@@ -390,47 +406,31 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
     }
 
   // Rows and columns are zero indexed.  The (row - 1) below is to avoid counting
-  // the row with the days of the week in the calculation.  We however want pos
-  // to be "1 indexed", hence the "+ 1" at the end of the sum.
+  // the row with the days of the week in the calculation.
 
-  pos = (7 * (row - 1)) + col + 1;
-
-  // This gets pretty nasty below.  firstday is a locale independent index for
-  // the first day of the week.  dayoff is the day of the week that the week
-  // starts with for the selected locale.  Monday = 1 .. Sunday = 7
-  // Strangely, in some cases dayoff is in fact set to 8, hence all of the
-  // "dayoff % 7" sections below.
-
-  if(pos + dayoff % 7 <= firstday)
-    { // this day is in the previous month
-      setDate(date.addDays(-1 * (calendar->day(date) + firstday - pos - dayoff % 7)));
-      return;
-    }
-  if(firstday + numdays < pos + dayoff % 7)
-    { // this date is in the next month
-      setDate(date.addDays(pos - firstday - calendar->day(date) + dayoff % 7));
-      return;
-    }
-
-  temp = firstday + calendar->day(date) - dayoff % 7 - 1;
-
-  QDate clickedDate;
-  calendar->setYMD(clickedDate, calendar->year(date), calendar->month(date),
-		   pos - firstday + dayoff % 7);
-  setDate(clickedDate);
-
-  updateCell(temp/7+1, temp%7); // Update the previously selected cell
-  updateCell(row, col); // Update the selected cell
-  // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
+  // old selected date:
+  temp = posFromDate( date );
+  // new position and date
+  pos = (7 * (row - 1)) + col; 
+  QDate clickedDate = dateFromPos( pos );
+  
+  // set the new date. If it is in the previous or next month, the month will
+  // automatically be changed, no need to do that manually...
+  setDate( clickedDate );
+  
+  // call updateCell on the old and new selection. If setDate switched to a different 
+  // month, these cells will be painted twice, but that's no problem.
+  updateCell( temp/7+1, temp%7 );
+  updateCell( row, col );
 
   emit tableClicked();
 
   if (  e->button() == Qt::RightButton && d->popupMenuEnabled )
   {
-	KPopupMenu *menu = new KPopupMenu();
-	menu->insertTitle( KGlobal::locale()->formatDate(clickedDate) );
-	emit aboutToShowContextMenu( menu, clickedDate );
-	menu->popup(e->globalPos());
+        KPopupMenu *menu = new KPopupMenu();
+        menu->insertTitle( KGlobal::locale()->formatDate(clickedDate) );
+        emit aboutToShowContextMenu( menu, clickedDate );
+        menu->popup(e->globalPos());
   }
 }
 
@@ -456,8 +456,6 @@ KDateTable::setDate(const QDate& date_)
   //temp.setYMD(date.year(), date.month(), 1);
   //kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
   firstday=temp.dayOfWeek();
-  if(firstday==1) firstday=8;
-  //numdays=date.daysInMonth();
   numdays=calendar->daysInMonth(date);
 
   temp = calendar->addMonths(temp, -1);
@@ -516,8 +514,8 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
 {
     if (!fgColor.isValid())
     {
-	unsetCustomDatePainting( date );
-	return;
+        unsetCustomDatePainting( date );
+        return;
     }
 
     KDateTablePrivate::DatePaintingMode *mode=new KDateTablePrivate::DatePaintingMode;
