@@ -60,21 +60,21 @@ TCPSlaveBase::~TCPSlaveBase()
 
 ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 {
-        if (m_bIsSSL)
+        if (m_bIsSSL || d->usingTLS)
            return d->kssl->write(data, len);
 	return KSocks::self()->write(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 {
-        if (m_bIsSSL)
+        if (m_bIsSSL || d->usingTLS)
            return d->kssl->read(data, len);
 	return KSocks::self()->read(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
-        if (m_bIsSSL) {
+        if (m_bIsSSL || d->usingTLS) {
            // ugliness alert!!  calling read() so many times can't be good...
            int clen=0;
            char *buf=data;
@@ -224,8 +224,9 @@ void TCPSlaveBase::stopTLS()
 
 bool TCPSlaveBase::canUseTLS()
 {
+KSSLSettings kss;
         if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
-        return d->kssl->settings()->tlsv1();
+        return kss.tlsv1();
 }
 
 
