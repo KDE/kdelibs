@@ -667,8 +667,6 @@ bool KHTMLPart::openURL( const KURL &url )
            SLOT( slotFinished( KIO::Job * ) ) );
   connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
            SLOT( slotData( KIO::Job*, const QByteArray &)));
-  connect( d->m_job, SIGNAL( mimetype(KIO::Job*, const QString& ) ),
-           SLOT( slotMimeType(KIO::Job*, const QString& ) ) );
 
   connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL&) ),
            SLOT( slotRedirection(KIO::Job*,const KURL&) ) );
@@ -1169,32 +1167,6 @@ DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
   return d->m_ssl_in_use;
 }*/
 
-void KHTMLPart::slotMimeType ( KIO::Job*, const QString& )
-{
-    /*kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata."
-                      << endl; */
-    d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    /* kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl; */
-    d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-    /* kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" )
-                    << " done." << endl; */
-
-    if ( d->m_ssl_in_use )
-    {
-        d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
-        d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
-        d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
-        d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
-        d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
-        d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
-        d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
-        d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
-        d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
-        d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
-        d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
-    }
-}
-
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
   assert ( d->m_job == kio_job );
@@ -1214,7 +1186,28 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
 
     // When the first data arrives, the metadata has just been made available
-    // Check for any charset meta-data
+
+    //kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
+    d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
+    //kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl;
+    d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
+    //kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+
+    // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
+
+    d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
+    d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
+    d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
+    d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
+    d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
+    d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
+    d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
+    d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
+    d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
+    d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
+    d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
+    
+    // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
     {
