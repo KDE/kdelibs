@@ -330,7 +330,7 @@ public:
    * Used by the browser to save the current state of the view
    * (in order to restore it if going back in navigation).
    *
-   * If you want to save additionnal properties, reimplement it
+   * If you want to save additional properties, reimplement it
    * but don't forget to call the parent method (probably first).
    */
   virtual void saveState( QDataStream &stream );
@@ -339,7 +339,7 @@ public:
    * Used by the browser to restore the view in the state
    * it was when we left it.
    *
-   * If you saved additionnal properties, reimplement it
+   * If you saved additional properties, reimplement it
    * but don't forget to call the parent method (probably first).
    */
   virtual void restoreState( QDataStream &stream );
@@ -481,7 +481,7 @@ signals:
   /**
    * Asks the hosting browser to open a new window for the given @p url.
    *
-   * The @p args argument is optional additionnal information for the
+   * The @p args argument is optional additional information for the
    * browser,
    * @see KParts::URLArgs
    */

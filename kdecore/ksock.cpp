@@ -106,7 +106,7 @@ KSocket::KSocket( int _sock)
 
   memset(&sin, 0, len);
 
-  // getsockname will fill in all the appropiate details, and
+  // getsockname will fill in all the appropriate details, and
   // since sockaddr_in will exist everywhere and is somewhat compatible
   // with sockaddr_in6, we can use it to avoid needless ifdefs.
   KSocks::self()->getsockname(_sock, (struct sockaddr *)&sin, &len);

@@ -393,7 +393,7 @@ public:
    *
    * Note that this does not have any effect on sockets that are not
    * IPv6 and the function will always return false in those cases.
-   * Also note that this flag defaults to off in order to accomodate
+   * Also note that this flag defaults to off in order to accommodate
    * existing applications.
    *
    * @param enable	if true, no IPv4 translation will be performed;

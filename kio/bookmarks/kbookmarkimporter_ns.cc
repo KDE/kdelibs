@@ -70,10 +70,10 @@ void KNSBookmarkImporterImpl::parse()
                 if ( name.right(4) == "</A>" )
                     name = name.left( name.length() - 4 );
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
-                QCString additionnalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
+                QCString additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
                 emit newBookmark( KStringHandler::csqueeze(qname),
-                                  link, codec->toUnicode(additionnalInfo) );
+                                  link, codec->toUnicode(additionalInfo) );
               }
             }
             else if(t.left(7).upper() == "<DT><H3") {
@@ -81,13 +81,13 @@ void KNSBookmarkImporterImpl::parse()
                 QCString name = t.mid(endTag+1);
                 name = name.left(name.findRev('<'));
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
-                QCString additionnalInfo = t.mid( 8, endTag-8 );
-                bool folded = (additionnalInfo.left(6) == "FOLDED");
-                if (folded) additionnalInfo.remove(0,7);
+                QCString additionalInfo = t.mid( 8, endTag-8 );
+                bool folded = (additionalInfo.left(6) == "FOLDED");
+                if (folded) additionalInfo.remove(0,7);
 
                 emit newFolder( KStringHandler::csqueeze(qname),
                                 !folded,
-                                codec->toUnicode(additionnalInfo) );
+                                codec->toUnicode(additionalInfo) );
             }
             else if(t.left(4).upper() == "<HR>")
                 emit newSeparator();

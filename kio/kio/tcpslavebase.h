@@ -146,7 +146,7 @@ protected:
     void setBlockSize(int sz);
 
     /**
-     * Determines the appropiate port to use.
+     * Determines the appropriate port to use.
      *
      * This functions attempts to discover the appropriate port.
      *

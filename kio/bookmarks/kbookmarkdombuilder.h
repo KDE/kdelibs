@@ -30,8 +30,8 @@ public:
    virtual ~KBookmarkDomBuilder();
    void connectImporter(const QObject *);
 protected slots:
-   void newBookmark(const QString &text, const QCString &url, const QString &additionnalInfo);
-   void newFolder(const QString &text, bool open, const QString &additionnalInfo);
+   void newBookmark(const QString &text, const QCString &url, const QString &additionalInfo);
+   void newFolder(const QString &text, bool open, const QString &additionalInfo);
    void newSeparator();
    void endFolder();
 private:

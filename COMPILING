@@ -35,14 +35,14 @@ source. Qt libs then end up in /usr/local/lib/qt3/lib.
 Make sure you do (if using sh, ksh, or bash):
 export KDEDIR=/usr/local/kde
 
-With csh or tcsh the following is more appropiate:
+With csh or tcsh the following is more appropriate:
 
 setenv KDEDIR /usr/local/kde
 
 Now you want to make sure that Qt and KDE libraries are picked up correctly.
 
 On systems that respond to environment variables something similar to the 
-following is appropiate:
+following is appropriate:
 
 export LD_LIBRARY_PATH=$KDEDIR/lib:$QTDIR/lib
 

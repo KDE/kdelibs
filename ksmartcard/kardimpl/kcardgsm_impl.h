@@ -334,7 +334,7 @@ class KCardGsmImplementation:public KCardImplementation{
 
 
   /**
-   * Provides a text describing the last error appeared while accesing the card. This error may be due to problems communicating with the card or more high level problems as trying to update a record on a transparent files.
+   * Provides a text describing the last error appeared while accessing the card. This error may be due to problems communicating with the card or more high level problems as trying to update a record on a transparent files.
    This second kind of errors can be differenciated looking @ref lastStatus
    */
 

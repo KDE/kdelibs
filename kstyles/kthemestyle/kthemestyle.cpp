@@ -342,7 +342,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
                    3 + decoWidth( PushButton ) : 3 + decoWidth( PushButtonDown );
 
         case PM_ScrollBarExtent:
-        case PM_SliderThickness:  //Should this be 16 allways?
+        case PM_SliderThickness:  //Should this be 16 always?
             return getSBExtent();
 
         case PM_ButtonDefaultIndicator:

@@ -423,7 +423,7 @@ $$
 # <p>
 # Note: to enable the <b>sending</b> of browsing
 # information from this CUPS server to the LAN,
-# specify a valid <i>BrowseAdress</i>.
+# specify a valid <i>BrowseAddress</i>.
 # </p>
 # <p>
 # <i>ex</i>: On</p>

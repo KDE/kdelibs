@@ -255,7 +255,7 @@ Exec=sp %u
 
 However, imagine the sound player also supports editing of sound files
 in a graphical manner.  We might wish to define an additional action
-which could accomodate this.  Adding the action would be performed
+which could accommodate this.  Adding the action would be performed
 like this:
 
 Actions=Edit;

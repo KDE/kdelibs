@@ -170,7 +170,7 @@ protected:
      * the whatToShow flags to show the entity reference node and set
      * expandEntityReferences to true.
      *
-     * This is not implemented (allways true)
+     * This is not implemented (always true)
      */
     bool m_expandEntityReferences;
 

@@ -119,7 +119,7 @@ class AddresseeDialog : public KDialogBase
     static Addressee getAddressee( QWidget *parent );
 
     /**
-      Select multiple adress book entries.
+      Select multiple address book entries.
       
       Open addressee select dialog and return the entries selected by the user.
       If the user doesn't select an entry or presses cancel, the returned

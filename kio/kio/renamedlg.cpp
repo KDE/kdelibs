@@ -450,7 +450,7 @@ void RenameDlg::b8Pressed()
       return;
     }
     else {
-     // yes there's allready a number behind the _ so increment it by one
+     // yes there's already a number behind the _ so increment it by one
       QString tmp2 = QString::number ( number + 1 );
       basename.replace( pos+1, tmp.length() ,tmp2);
       d->m_pLineEdit->setText( basename + dotSuffix );

@@ -88,7 +88,7 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
         kdDebug()<<"running script, type = '"<<scriptType<<"'"<<endl;
 	if (newScript)
 	{
-		// See if the script is allready cached...
+		// See if the script is already cached...
 		if ( !m_scriptCache[scriptName] )
 		{
 			// via some magic we will let the old script engine go away after

@@ -142,7 +142,7 @@ bool ResourceIMAP::load()
   tempFile.unlink();
 
   // reset list of deleted addressees
-  mDeletedAdressees.clear();
+  mDeletedAddressees.clear();
     
   return true;
 }
@@ -164,7 +164,7 @@ bool ResourceIMAP::save( Ticket* )
   QByteArray paramData;
   QDataStream paramStream( paramData, IO_WriteOnly );
   paramStream << tempFile.name();
-  paramStream << mDeletedAdressees;
+  paramStream << mDeletedAddressees;
   if ( !dcopClient->call( mAppId, "KMailIface",
                           "storeAddresses(QString,QStringList)", paramData,
                           returnType, returnData, true ) )
@@ -173,7 +173,7 @@ bool ResourceIMAP::save( Ticket* )
   QDataStream argIn( returnData, IO_ReadOnly );
   bool ok;
   argIn >> ok;
-  mDeletedAdressees.clear();
+  mDeletedAddressees.clear();
   tempFile.unlink();
     
   // Always try to unlock
@@ -191,7 +191,7 @@ bool ResourceIMAP::save( Ticket* )
 
 void ResourceIMAP::removeAddressee( const Addressee& addr )
 {
-  mDeletedAdressees << addr.uid();
+  mDeletedAddressees << addr.uid();
 }
 
 void ResourceIMAP::cleanUp()
