@@ -75,6 +75,7 @@ static char *getDisplay()
 static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
 {
   const char *home_dir;
+  const char *dcop_authority;
   char *display;
   char *i;
   int n;
@@ -113,6 +114,13 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
      *i = '_';
   strncat(dcop_file, display, n);
   free(display);
+
+  dcop_authority = getenv("DCOPAUTHORITY");
+  if (dcop_authority && *dcop_authority)
+  {
+    strncpy(dcop_file, dcop_authority, max_length);
+    dcop_file[ max_length - 1 ] = '\0';
+  }
 
   return;
 }

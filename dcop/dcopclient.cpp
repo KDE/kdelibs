@@ -221,7 +221,11 @@ QCString DCOPClient::iceauthPath()
 
 static QCString dcopServerFile(const QCString &hostname, bool old)
 {
-    QCString fName = ::getenv("HOME");
+    QCString fName = ::getenv("DCOPAUTHORITY");
+    if (!old && !fName.isEmpty())
+        return fName;
+    
+    fName = ::getenv("HOME");
     if (fName.isEmpty())
     {
         fprintf(stderr, "Aborting. $HOME is not set.\n");
