@@ -1248,7 +1248,6 @@ static const colorMap cmap[] = {
     { CSS_VAL_TEAL, 0xFF008080  },
     { CSS_VAL_WHITE, 0xFFFFFFFF },
     { CSS_VAL_YELLOW, 0xFFFFFF00 },
-    { CSS_VAL_TRANSPARENT, transparentColor },
     { CSS_VAL_INVERT, invertedColor },
     { CSS_VAL_GREY, 0xff808080 },
     { 0, 0 }
@@ -2012,8 +2011,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if ( ident ) {
 		if ( ident == CSS_VAL__KONQ_TEXT )
 		    col = element->getDocument()->textColor();
+		else if ( ident == CSS_VAL_TRANSPARENT )
+		    col = QColor();
 		else
 		    col = colorForCSSValue( ident );
+		qDebug("color ident = %d, rgb=%8x", ident, col.rgb() );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {
 		if(qAlpha(primitiveValue->getRGBColorValue()))
 		    col.setRgb(primitiveValue->getRGBColorValue());
