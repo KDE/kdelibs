@@ -218,10 +218,14 @@ Attr Element::removeAttributeNode( const Attr &oldAttr )
     return attributes->removeAttr(static_cast<AttrImpl*>(static_cast<AttrImpl*>(oldAttr.handle())));
 }
 
-NodeList Element::getElementsByTagName( const DOMString &name )
+NodeList Element::getElementsByTagName( const DOMString &tagName )
 {
     if (!impl) return 0;
-    NodeImpl::Id id = impl->getDocument()->elementNames()->getId(name.implementation(), false);
+    NodeImpl::Id id;
+    if ( tagName == "*" )
+        id = 0;
+    else
+        id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
     return new TagNodeListImpl( impl, id );
 }
 

@@ -304,7 +304,11 @@ Element Document::getElementById( const DOMString &elementId ) const
 NodeList Document::getElementsByTagName( const DOMString &tagName )
 {
     if (!impl) return 0;
-    NodeImpl::Id id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
+    NodeImpl::Id id;
+    if ( tagName == "*" )
+        id = 0;
+    else
+        id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
     return new TagNodeListImpl( impl, id );
 }
 
