@@ -136,7 +136,7 @@ void KMWBackend::addBackend( int ID, bool on, int nextpage )
 		case KMWizard::TCP:
 			addBackend( ID, i18n("Ne&twork printer (TCP)"), on,
 					i18n( "<qt><p>Network TCP printer</p>"
-						  "Use this for a network-enabled printer "
+						  "<p>Use this for a network-enabled printer "
 						  "using TCP (usually on port 9100) as communication protocol. Most "
 						  "network printers can use this mode.</p></qt>" ),
 					nextpage );
