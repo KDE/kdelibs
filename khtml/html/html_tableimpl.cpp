@@ -69,7 +69,6 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     if ( getDocument()->parseMode() < DocumentImpl::Transitional ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
         addCSSProperty( CSS_PROP_COLOR, CSS_VAL__KONQ_TEXT );
-        addCSSProperty( CSS_PROP_FONT_FAMILY, CSS_VAL__KONQ_BODY );
     }
 }
 

@@ -2927,9 +2927,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		case CSS_VAL_MONOSPACE:
 		    face = settings->fixedFontName();
 		    break;
-		case CSS_VAL__KONQ_BODY:
-		    face = settings->stdFontName();
-		    break;
 		default:
 		    return;
 		}

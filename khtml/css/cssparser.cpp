@@ -1458,7 +1458,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 // 			    value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString::null )
 // 			<< endl;
 	int id = value->id;
-	if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_BODY )
+	if ( id >= CSS_VAL_SERIF && id <= CSS_VAL_MONOSPACE )
 	    list->append( new CSSPrimitiveValueImpl( id ) );
 	else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
 		  value->unit == CSSPrimitiveValue::CSS_IDENT )
