@@ -2,10 +2,26 @@
 #when you get a set of KDebug areas, and various descriptions for them
 #please email kde@kde.org with the appropiate descriptions.
 0	generic
-750	kspell
+750	kspell (kdelibs)
 125	kaccel (kdecore)
+1201	kfm (kdebase)
+1300	kfm (kioslave)
 1501	khexedit (kdeutils)
 1901	kfind (kdebase)
 1902	kfind (KfindWindow::updateResults)
 1903	kfind (KfindTabDialog::createQuery)
 2000	kfind (kdebase)
+
+# 30001-65534 are for KOffice
+30001 koffice
+31000 koffice
+31001 kxcl
+32000 kxcl
+32001 kword
+33000 kword
+33001 kpresenter
+34000 kpresenter
+34001 klyx
+35000 klyx
+35001 kchart
+36000 kchart
