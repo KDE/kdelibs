@@ -1,6 +1,19 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Perl Module
+Comment[bg]=Модул на Perl
+Comment[da]=Perl-modul
+Comment[fr]=Module Perl
+Comment[ga]=Modúl Perl
+Comment[hu]=Perl-modul
+Comment[nds]=Perl-Moduul
+Comment[nl]=Perl-module
+Comment[pt]=Módulo de Perl
+Comment[pt_BR]=Módulo Perl
+Comment[sv]=Perl-modul
+Comment[ta]=Perl கூறு
+Comment[uk]=Модуль мови програмування Perl
+Comment[zh_CN]=Perl 模块
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl-module

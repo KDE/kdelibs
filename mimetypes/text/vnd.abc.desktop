@@ -1,6 +1,23 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=ABC Music File
+Comment[bg]=Аудио файл ABC
+Comment[br]=Restr ar sonerezh ABC
+Comment[da]=ABC Musikfil
+Comment[et]=ABC muusikafail
+Comment[fr]=Fichier musique ABC
+Comment[fy]=ABC-Muzyktriem
+Comment[hu]=ABC-zenefájl
+Comment[mk]=Музичка датотека ABC
+Comment[nds]=ABC-Musikdatei
+Comment[nl]=ABC Music-bestand
+Comment[pt]=Ficheiro de Música ABC
+Comment[pt_BR]=Arquivo de Música ABC
+Comment[sv]=ABC-musikfil
+Comment[ta]=ஏபிசி இசை கோப்பு
+Comment[tr]=ABC Müzik Dosyası
+Comment[uk]=Файл музики ABC
+Comment[zh_CN]=ABC 音乐文件
 Icon=sound
 Type=MimeType
 MimeType=text/vnd.abc

@@ -2,6 +2,21 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Contacts
+Name[br]=Darempredoù
+Name[cy]=Cysylltau
+Name[et]=Kontaktid
+Name[fy]=Kontakten
+Name[ga]=Teagmhálacha
+Name[he]=אנשי קשר
+Name[hu]=Névjegyek
+Name[mk]=Контакти
+Name[nl]=Contacten
+Name[pt]=Contactos
+Name[pt_BR]=Contatos
+Name[sv]=Kontakter
+Name[ta]=தொடர்புகள்
+Name[uk]=Контакти
+Name[zh_CN]=联系人
 Type=Service
 ServiceTypes=KResources/Manager
 

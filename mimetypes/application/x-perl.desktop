@@ -1,6 +1,19 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Perl Program
+Comment[bg]=Програма на Perl
+Comment[da]=Perl-program
+Comment[fr]=Programme Perl
+Comment[ga]=Clár Perl
+Comment[hu]=Perl-program
+Comment[nds]=Perl-Programm
+Comment[nl]=Perl-programma
+Comment[pt]=Programa em Perl
+Comment[pt_BR]=Programa Perl
+Comment[sv]=Perl-program
+Comment[ta]=Perl நிரல்
+Comment[uk]=Програма PERL
+Comment[zh_CN]=Perl 程序
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl

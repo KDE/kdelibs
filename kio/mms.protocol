@@ -8,6 +8,7 @@ Class=:internet
 Description=Microsoft Media Server Protocol
 Description[da]=Microsoft Mediaserver-protokol
 Description[fr]=Protocole Microsoft Media Server
+Description[hu]=MMS protokoll
 Description[nds]=Protokoll vun den Microsoft-Medienserver
 Description[nl]=Microsoft Media Server-protocol
 Description[pt]=Protocolo Microsoft Media Server

@@ -1,6 +1,19 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=W3C XML Schema
+Comment[bg]=Схема W3C XML
+Comment[da]=W3C XML Sammensætning
+Comment[fr]=Schéma XML du W3C
+Comment[ga]=Scéimre W3C XML
+Comment[hu]=W3C XML-séma
+Comment[nds]=W3C XML-Schema
+Comment[nl]=W3C XML-schema
+Comment[pt]='Schema' XML do W3C
+Comment[pt_BR]=XML Schema do W3C
+Comment[sv]=W3C XML-schema
+Comment[ta]=W3C XML திட்டம்
+Comment[uk]=Схема W3C XML
+Comment[zh_CN]=W3C WML 大纲
 Icon=html
 Type=MimeType
 MimeType=application/xml

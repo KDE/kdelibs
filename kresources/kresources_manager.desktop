@@ -3,6 +3,20 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KResources/Manager
 Comment=KResource Manager
+Comment[bg]=Мениджър на KResource
+Comment[br]=Merour KResource
+Comment[da]=KResource-håndtering
+Comment[et]=KResource'i haldur
+Comment[fr]=Gestionnaire de KResource
+Comment[fy]=KResource-behearder 
+Comment[hu]=KResource-kezelőprogram
+Comment[nl]=KResource-beheerder
+Comment[pt]=Geror KResource
+Comment[pt_BR]=Gerenciador do KResource
+Comment[sv]=KDE-resurshantering
+Comment[ta]=கேமூல மேலாளர்
+Comment[uk]=Менеджер KResource
+Comment[zh_CN]=KResource 管理器
 
 [PropertyDef::X-KDE-ResourceFamily]
 Type=QString
