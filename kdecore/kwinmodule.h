@@ -229,7 +229,8 @@ signals:
 
     /** 
      * Something changed with the struts, may or may not have changed
-     * the work area.
+     * the work area. Usually just using the workAreaChanged() signal
+     * is sufficient.
      */
     void strutChanged();
     
@@ -268,7 +269,10 @@ signals:
      * @param id the id of the window
      */
     void windowChanged(WId id);
-    
+
+protected:
+    virtual void connectNotify( const char* signal );
+        
 private:
     KWinModulePrivate* d;
 
