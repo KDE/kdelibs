@@ -60,8 +60,8 @@ public:
    */
   RenameDlg( QWidget *parent, const QString & caption,
              const QString & src, const QString & dest, RenameDlg_Mode mode,
-             unsigned long sizeSrc = -1,
-             unsigned long sizeDest = -1,
+             unsigned long sizeSrc = (unsigned long)-1,
+             unsigned long sizeDest = (unsigned long)-1,
              time_t ctimeSrc = (time_t) -1,
              time_t ctimeDest = (time_t) -1,
              time_t mtimeSrc = (time_t) -1,

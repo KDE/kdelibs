@@ -117,17 +117,18 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       QDateTime dmtime; dmtime.setTime_t( mtimeDest );
 
       sentence1 = sentence1.arg(dest).
-          arg(KIO::convertSize(sizeDest)).
-          arg(KGlobal::locale()->formatDateTime(dctime)).
-          arg(KGlobal::locale()->formatDateTime(dmtime));
+        arg(sizeDest == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeDest)).
+        arg(ctimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
+        arg(mtimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime));
 
       QString sentence2 = i18n("The original file is %1\n"
                                "    size %2\n    created on %3\n    modified on %4\n");
       dctime.setTime_t( ctimeSrc );
       dmtime.setTime_t( mtimeSrc );
-      sentence2 = sentence2.arg(src).arg(KIO::convertSize(sizeSrc)).
-          arg(KGlobal::locale()->formatDateTime(dctime)).
-          arg(KGlobal::locale()->formatDateTime(dmtime));
+      sentence2 = sentence2.arg(src).
+        arg(sizeSrc == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeSrc)).
+        arg(ctimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
+        arg(mtimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime));
 
       lb = new QLabel( sentence1 + "\n" + sentence2, this );
   } else
