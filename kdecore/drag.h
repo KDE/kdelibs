@@ -372,7 +372,7 @@ protected:
 *
 * If you require only drop support you dont need this widget, you just need
 * KDndDropZone.
-  { drag = false; dndData = 0L; dndIcon = 0L; }
+*
 * @short A widget for drag support.
 * @author Torben Weis (weis@kde.org)
   { drag = FALSE; dndData = 0L; dndIcon = 0L; }
