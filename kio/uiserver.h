@@ -27,6 +27,7 @@
 #include <kio/skipdlg.h>
 #include <kurl.h>
 #include <ktmainwindow.h>
+#include <kdatastream.h>
 
 #include <klistview.h>
 
