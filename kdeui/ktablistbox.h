@@ -310,7 +310,7 @@ public:
 
   /** Get/set font of the table. font() and setFont() apply to the
     caption only. */
-  const QFont& tableFont(void) const { return lbox.font(); }
+  QFont tableFont(void) const { return lbox.font(); }
   void setTableFont(const QFont& fnt) { lbox.setFont(fnt); }
   
 signals:
