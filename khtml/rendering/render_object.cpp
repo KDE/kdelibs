@@ -299,6 +299,11 @@ void RenderObject::repaintObject(RenderObject *o, int x, int y)
     if(m_parent) m_parent->repaintObject(o, x, y);
 }
 
+void RenderObject::repaintContainingBlock()
+{
+    containingBlock()->repaintObject(containingBlock(), 0, 0);
+}
+
 // used for clear property & to layout replaced elements
 bool RenderObject::isSpecial() const
 {
@@ -309,7 +314,7 @@ void RenderObject::printTree(int indent) const
 {
     QString ind;
     ind.fill(' ', indent);
-    kdDebug( 6040 ) << ind << renderName() << ": " << (void*)this 
+    kdDebug( 6040 ) << ind << renderName() << ": " << (void*)this
     	    	 << " il=" << isInline() << " ci=" << childrenInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
 		 << " an=" << isAnonymousBox()

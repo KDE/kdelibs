@@ -198,15 +198,15 @@ public:
     /**
      * set the style of the object. This _has_ to be called after
      * the objects constructor to set the correct style. Also used for
-     * dhtml to change the objects current style. 
+     * dhtml to change the objects current style.
      *
-     * If changing the style dynamically, you might need to call 
-     * updateSize() after applying the style change to force a 
+     * If changing the style dynamically, you might need to call
+     * updateSize() after applying the style change to force a
      * relayout/repaint
      */
     virtual void setStyle(RenderStyle *style);
 
-    
+
     /**
      * returns the containing block level element for this element.
      * needed to compute margins and paddings
@@ -313,6 +313,10 @@ public:
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
+    /**
+     * force a repaint of this objects containing block
+     */
+    virtual void repaintContainingBlock();
 
     // from BiDiObject
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
@@ -333,7 +337,7 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
-    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}    
+    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 

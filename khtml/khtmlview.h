@@ -30,7 +30,6 @@
 #include <qstring.h>
 #include <qlist.h>
 
-#include <kurl.h>
 
 class QPainter;
 
@@ -89,13 +88,7 @@ public:
 
     //history functions
     void followLink();
-    void goBack();
-    void goForward();
-    void goHome();
-protected:
-    int buildLinkList();
-public:
- 
+
 
     /*
      * @return the width of the parsed HTML code. Remember that
