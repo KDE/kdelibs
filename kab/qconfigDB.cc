@@ -37,7 +37,6 @@ extern "C" {
 // #include <qstring.h>
 #include <qtextstream.h>
 #include <qfile.h>
-#include <iostream.h>
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
