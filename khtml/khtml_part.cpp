@@ -1354,6 +1354,11 @@ void KHTMLPart::showError( KIO::Job* job )
     job->showErrorDialog( /*d->m_view*/ );
   else
   {
+    // make sure we're not executing any embedded JS
+    bool bJSFO = d->m_bJScriptForce;
+    bool bJSOO = d->m_bJScriptOverride;
+    d->m_bJScriptForce = false;
+    d->m_bJScriptOverride = true;
     begin();
     QString url = d->m_workingURL.prettyURL();
     QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
@@ -1365,6 +1370,8 @@ void KHTMLPart::showError( KIO::Job* job )
     errText += QString::fromLatin1( "</P></BODY></HTML>" );
     write(errText);
     end();
+    d->m_bJScriptForce = bJSFO;
+    d->m_bJScriptOverride = bJSOO;
     // make the working url the current url, so that reload works and
     // emit the progress signals to advance one step in the history
     // (so that 'back' works)
@@ -1719,7 +1726,7 @@ void KHTMLPart::checkEmitLoadEvent()
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-    if ( (*it).m_run ) // still got a frame running -> too early
+    if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
   d->m_bLoadEventEmitted = true;
