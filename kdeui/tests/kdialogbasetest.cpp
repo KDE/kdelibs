@@ -6,8 +6,7 @@
 
 int main(int argc, char** argv)
 {
-  KApplication *app=new KApplication(argc, argv, "DialogBaseTest");
-  app=app; // just to avoid "unused variable" warnings
+  KApplication app(argc, argv, "DialogBaseTest");
   // -----
   QString text= // the explanation shown by the example dialog
     "<center><h1>DialogBase Example</h1></center><hr><br>"
