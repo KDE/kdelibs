@@ -82,7 +82,8 @@ HTMLDocumentImpl::~HTMLDocumentImpl()
 
 DOMString HTMLDocumentImpl::referrer() const
 {
-    // ### should we fix that? I vote against for privacy reasons
+    if ( view() )
+        return view()->part()->referrer();
     return DOMString();
 }
 
