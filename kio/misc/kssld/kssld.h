@@ -99,7 +99,11 @@ k_dcop:
 
   bool caAdd(QString certificate, bool ssl, bool email, bool code);
 
+  bool caAddFromFile(QString filename, bool ssl, bool email, bool code);
+
   bool caRemove(QString subject);
+
+  bool caRemoveFromFile(QString filename);
 
   QString caGetCert(QString subject);
 
@@ -112,6 +116,18 @@ k_dcop:
   //
   //  Certificate Home methods
   //
+
+  QStringList getHomeCertificateList();
+
+  bool addHomeCertificateFile(QString filename, QString password, bool storePass /*=false*/);
+
+  bool addHomeCertificatePKCS12(QString base64cert, QString passToStore);
+
+  bool deleteHomeCertificateByFile(QString filename, QString password);
+
+  bool deleteHomeCertificateByPKCS12(QString base64cert, QString password);
+
+  bool deleteHomeCertificateByName(QString name);
 
 private:
 

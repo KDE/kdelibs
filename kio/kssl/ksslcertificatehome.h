@@ -65,7 +65,15 @@ public:
 	 *   Returns: true on success, false error
 	 */
 	static bool addCertificate(QString filename, QString password, bool storePass = false);
-	static void addCertificate(KSSLPKCS12 *cert, QString passToStore = "");
+	static bool addCertificate(KSSLPKCS12 *cert, QString passToStore = QString::null);
+
+	/*
+	 *   These deletes a certificate from the repository.
+	 *   Returns: true on success, false error
+	 */
+	static bool deleteCertificate(const QString &filename, const QString &password);
+	static bool deleteCertificate(KSSLPKCS12 *cert);
+	static bool deleteCertificateByName(const QString &name);
  
 	/*
 	 *   Returns the list of certificates available
