@@ -153,7 +153,7 @@ static QStringList breakup(const QString &exec, bool *need_shell = 0)
                   state = PARSE_QUOTED;
               else if ( ch == '"' && arg.isEmpty() )
                   state = PARSE_DBLQUOTED;
-              else if ( ch == ' ' )
+              else if ( ch == ' ' ) /// TODO and last char wasn't a '\'
               {
                   if (!arg.isEmpty())
                       result.append(arg);
@@ -515,26 +515,22 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   return result;
 }
 
-static QString binaryName( const QString & execLine, bool removePath )
+//static
+QString KRun::binaryName( const QString & execLine, bool removePath )
 {
-  QString _bin_name = execLine;
-
   // Remove parameters and/or trailing spaces.
-
-  int firstSpace = _bin_name.find(' ');
-
-  if (-1 != firstSpace)
-    _bin_name = _bin_name.left(firstSpace);
-
+  QStringList args = breakup( execLine );
+  if ( args.isEmpty() )
+      return QString::null;
+  QString _bin_name = args.first();
   // Remove path if wanted
-
   return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
 
 static pid_t runCommandInternal( KProcess* proc, const QString& binName,
     const QString &execName_P, const QString & iconName_P )
 {
-  QString bin = binaryName( binName, false );
+  QString bin = KRun::binaryName( binName, false );
   QString execName = execName_P;
   QString iconName = iconName_P;
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
@@ -582,7 +578,7 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
           iconName = service->icon();
       KStartupInfoData data;
       data.setHostname();
-      data.setBin( binaryName( binName, true ));
+      data.setBin( KRun::binaryName( binName, true ));
       data.setName( execName );
       data.setIcon( iconName );
       if( !wmclass.isEmpty())
@@ -590,7 +586,7 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
       data.setDesktop( KWin::currentDesktop());
       KStartupInfo::sendStartup( id, data );
   }
-  pid_t pid = KProcessRunner::run( proc, binaryName( binName, true ), id );
+  pid_t pid = KProcessRunner::run( proc, KRun::binaryName( binName, true ), id );
   if( startup_notify )
   {
       KStartupInfoData data;
@@ -600,7 +596,7 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
   }
   return pid;
 #else
-  return KProcessRunner::run( proc, binaryName( binName, true ) );
+  return KProcessRunner::run( proc, KRun::binaryName( binName, true ) );
 #endif
 }
 

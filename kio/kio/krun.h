@@ -195,6 +195,14 @@ public:
    */
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
 
+  /**
+   * Given a full command line (e.g. the Exec= line from a .desktop file),
+   * extract the name of the binary being run.
+   * @param execLine the full command line
+   * @param removePath if true, remove a (relative or absolute) path. E.g. /usr/bin/ls becomes ls.
+   */
+  static QString binaryName( const QString & execLine, bool removePath );
+
 signals:
   void finished();
   void error();
