@@ -101,10 +101,11 @@ KJSO ArrayPrototype::get(const UString &p) const
 // ECMA 15.4.4
 Completion ArrayProtoFunc::execute(const List &args)
 {
-  KJSO result, obj;
+  KJSO result, obj, obj2;
   Object thisObj = Object::dynamicCast(thisValue());
   unsigned int length = thisObj.get("length").toUInt32();
-  UString str = "";
+  unsigned int middle;
+  UString str = "", str2;
   UString seperator = ",";
 
   switch (id) {
@@ -146,6 +147,53 @@ Completion ArrayProtoFunc::execute(const List &args)
     length += args.size();
     thisObj.put("length", length);
     result = Number(length);
+    break;
+  case Reverse:
+    middle = length / 2;
+    for (unsigned int k = 0; k < middle; k++) {
+      str = UString::from(k);
+      str2 = UString::from(length - k - 1);
+      obj = thisObj.get(str);
+      obj2 = thisObj.get(str2);
+      if (thisObj.hasProperty(str2)) {
+	if (thisObj.hasProperty(str)) {
+	  thisObj.put(str, obj2);
+	  thisObj.put(str2, obj);
+	} else {
+	  thisObj.put(str, obj2);
+	  thisObj.deleteProperty(str2);
+	}
+      } else {
+	if (thisObj.hasProperty(str)) {
+	  thisObj.deleteProperty(str);
+	  thisObj.put(str2, obj);
+	} else {
+	  // why delete something that's not there ? Strange.
+	  thisObj.deleteProperty(str);
+	  thisObj.deleteProperty(str2);
+	}
+      }
+    }
+    result = thisObj;
+    break;
+  case Shift:
+    if (length == 0) {
+      thisObj.put("length", Number(length));
+      result = Undefined();
+    } else {
+      result = thisObj.get("0");
+      for(unsigned int k = 1; k < length; k++) {
+	str = UString::from(k);
+	str2 = UString::from(k-1);
+	if (thisObj.hasProperty(str)) {
+	  obj = thisObj.get(str);
+	  thisObj.put(str2, obj);
+	} else
+	  thisObj.deleteProperty(str2);
+      }
+      thisObj.deleteProperty(UString::from(length - 1));
+      thisObj.put("length", length - 1);
+    }
     break;
     /* TODO */
   default:
