@@ -28,40 +28,18 @@ template class QAsciiDict<KLibrary>;
 
 class KLibFactoryPrivate {
 public:
-    const char **m_mocClasses;
 };
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )
     : QObject( parent, name )
 {
     d = new KLibFactoryPrivate;
-    d->m_mocClasses = 0;
 }
 
 KLibFactory::~KLibFactory()
 {
     kdDebug(150) << "Deleting KLibFactory " << this << endl;
     delete d;
-}
-
-void KLibFactory::setMocClasses( const char **names )
-{
-    d->m_mocClasses = names;
-}
-
-void KLibFactory::destroyMocClasses() const
-{
-    if (objectDict && d->m_mocClasses) {
-        const char **n = d->m_mocClasses;
-	kdDebug(150) << "KLibFactory: removing references to meta classes" << endl;
-	for (; *n; n++) {
-	    kdDebug(150) << "KLibFactory: removing metaclass for " << *n << endl;
-	    /* Because objectDict was set to AutoDelete the following does the
-	       right thing. */
-	    while (objectDict->remove(*n)) ;
-	}
-	kdDebug(150) << "KLibFactory: done removing meta classes" << endl;
-    }
 }
 
 // -----------------------------------------------
@@ -97,7 +75,6 @@ KLibrary::~KLibrary()
 
     if ( m_factory ) {
       kdDebug(150) << " ... deleting the factory " << m_factory << endl;
-      m_factory->destroyMocClasses();
       delete m_factory;
     }
 

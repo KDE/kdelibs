@@ -101,18 +101,6 @@ public:
 
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
-    /**
-     * Tells the libloading system, which QObject derived classes are
-     * provided by the library.  This is necessary for unloading, to remove
-     * any references to the meta objects created by Qt's object system.
-     *
-     * @p names an array of class names, for which this library provides
-     * meta classes; the end of array is indicated by a 0 element
-     */
-    void setMocClasses(const char **names);
-    
-    void destroyMocClasses() const;
-
 signals:
     /**
      * Emit this in @ref create
