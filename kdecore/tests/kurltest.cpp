@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <kdebug.h>
 
+////NOTE: for this test to run properly, you need first to
+//// cd kdebase/kioslave/gzip ; cp *desktop /opt/kde2/share/config/protocols/
+//// cd ../tar ; cp *desktop /opt/kde2/share/config/protocols/
+////
+
 bool check(QString txt, QString a, QString b)
 {
   printf("%s : checking '%s' against expected value '%s'... ",
@@ -109,6 +114,10 @@ int main(int argc, char *argv[])
   KURL lastUrl = lst.last();
   QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
+
+  KURL ftpUrl ( "ftp://ftp.de.kde.org" );
+  printf("\n* URL is %s\n",ftpUrl.url().latin1());
+  check("KURL::path()", ftpUrl.path(), QString::null);
 
   // WABA: The following tests are to test the handling of relative URLs as
   //       found on web-pages.
