@@ -29,7 +29,9 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "synthout.h"
+#include "fmout.h"
 #include "midimapper.h"
+#include "../version.h"
 
 SEQ_DEFINEBUF (1024);
 //#define AT_HOME
@@ -41,6 +43,7 @@ default_dev=def;
 initialized=0;
 ok=1;
 device = NULL;
+mapper_tmp = NULL;
 seqfd=-1;
 for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 };
@@ -48,15 +51,31 @@ for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 DeviceManager::~DeviceManager(void)
 {
 closeDev();
-for (int i=0;i<n_midi;i++)
+if (device!=NULL)
+   {
+   for (int i=0;i<n_midi;i++)
 	delete device[i];
-delete device;
-device=NULL;
+   delete device;
+   device=NULL;
+   };
+};
+
+int DeviceManager::OK(void)
+{
+int r=ok;
+ok=1;
+return r;
 };
 
 int DeviceManager::checkInit(void)
 {
-if (initialized==0) return initManager();
+if (initialized==0) 
+    {
+    int r=initManager();
+    setMidiMap(mapper_tmp);
+    printf("check : %d\n",r);
+    return r;
+    };
 return 0;
 };
 
@@ -127,7 +146,10 @@ for (i=0;i<n_synths;i++)
             case (SAMPLE_TYPE_GUS) : printf("Gus\n");break;
             default : printf("default subtype\n");break;
             };
-        device[i+n_midi]=new synthOut(i);
+	if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
+	    device[i+n_midi]=new fmOut(i,synthinfo[i].nr_voices);
+	   else
+	    device[i+n_midi]=new synthOut(i);
         };
     };
 
@@ -145,7 +167,7 @@ return 0;
 
 void DeviceManager::openDev(void)
 {
-if (checkInit()<0) {ok = 0; return;};
+if (checkInit()<0) {printf("DeviceManager::openDev : Not initialized\n");ok = 0; return;};
 ok=1;
 seqfd = open("/dev/sequencer", O_WRONLY, 0);
 if (seqfd==-1)
@@ -154,6 +176,10 @@ if (seqfd==-1)
    ok=0;
    return;
    };
+_seqbufptr = 0;
+ioctl(seqfd,SNDCTL_SEQ_RESET);
+ioctl(seqfd,SNDCTL_SEQ_PANIC);
+
 for (int i=0;i<n_total;i++) device[i]->openDev(seqfd);
 for (int i=0;i<n_total;i++) if (!device[i]->OK()) ok=0;
 if (ok==0)
@@ -163,17 +189,17 @@ if (ok==0)
    return;
    };
 printf("Devices opened\n");
-if (strcmp(type(default_dev),"FM")==0)
-    {
-    printf("FM not supported yet, setting device 0 as default !\n");
-    setDefaultDevice(0); 
-    };
+
 };
 
 void DeviceManager::closeDev(void)
 {
 if (seqfd==-1) return;
-for (int i=0;i<n_total;i++) device[i]->initDev();
+if (device!=NULL) for (int i=0;i<n_total;i++) 
+	{
+	device[i]->initDev();
+//	device[i]->closeDev();
+	};
 close(seqfd);
 seqfd=-1;
 };
@@ -307,6 +333,8 @@ return (device[default_dev]!=NULL) ?
 
 void DeviceManager::setMidiMap(MidiMapper *map)
 {
-if ((device==NULL)||(device[default_dev]==NULL)||(map==NULL)) return;
+if (map==NULL) return;
+mapper_tmp=map;
+if ((device==NULL)||(device[default_dev]==NULL)) return;
 device[default_dev]->useMapper(map);
 };

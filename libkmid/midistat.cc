@@ -24,10 +24,9 @@
 #include "midistat.h"
 #include "deviceman.h"
 #include "sndcard.h"
+#include "../version.h"
 
 extern int MT32toGM[128];
-
-//#define MIDISTAT_DEBUG
 
 midiStat::midiStat()
 {
@@ -35,7 +34,7 @@ int i;
 tempo=1000000;
 for (int chn=0;chn<N_CHANNELS;chn++)
 	{
-	chn_patch[chn]=3;
+	chn_patch[chn]=0;
 	chn_bender[chn]=0x4000;
 	chn_pressure[chn]=127;
 	for (i=0;i<N_CTL;i++)
@@ -81,14 +80,14 @@ void midiStat::sendData(DeviceManager *midi,int gm)
 {
 for (int chn=0;chn<N_CHANNELS;chn++)
 	{
-#ifdef MIDISTAT_DEBUG
+#ifdef MIDISTATDEBUG
 	printf("Restoring channel %d\n",chn);
 #endif
 	midi->chnPatchChange(chn,
 	 (gm==1)?(chn_patch[chn]):(MT32toGM[chn_patch[chn]]));
 	midi->chnPitchBender(chn,chn_bender[chn]&0xFF,chn_bender[chn]>>8);
 	midi->chnPressure(chn,chn_pressure[chn]);
-	midi->chnController(chn,7,chn_controller[chn][7]);
+	midi->chnController(chn,CTL_MAIN_VOLUME,chn_controller[chn][CTL_MAIN_VOLUME]);
 /*	for (int i=0;i<N_CTL;i++)
 		midi->chnController(chn,i,chn_controller[chn][i]);
 */

@@ -40,6 +40,10 @@ int n_synths;  // Number of synths devices
 int n_midi;  // Number of midi ports
 int n_total; // n_midi+n_synths
 
+MidiMapper *mapper_tmp; // Keeps a pointer to the mapper so that if devices
+	// weren't initialized when first called setMidiMap
+	// then, when they get initialized, they use the proper mapper
+
 int initialized;
 int seqfd; // The real file handler that is opened and closed.
 int default_dev; // The device to which timer events will be sent
@@ -58,7 +62,7 @@ public:
 			// -1 if error 
 
   midiOut *chntodev(int chn);
-  int OK(void) {int r=ok;ok=1;return r;};
+  int OK(void);
 
 // The following funtion are here to emulate a midi, so that the DeviceManager
 // send the events to the appropiate devices.

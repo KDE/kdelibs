@@ -54,9 +54,14 @@ public:
 //    void noteOff	( uchar chn, uchar note, uchar vel );
     void keyPressure	( uchar chn, uchar note, uchar vel );
     void chnPatchChange	( uchar chn, uchar patch );
+    uchar chnPatch	( uchar chn ) { return chn_patch[chn]; };
+
     void chnPressure	( uchar chn, uchar vel );
+    uchar chnPressure	( uchar chn ) {return chn_pressure[chn];};
     void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
+    int chnPitchBender	( uchar chn) {return chn_bender[chn];};
     void chnController	( uchar chn, uchar ctl , uchar v ); 
+    uchar chnController	( uchar chn, uchar ctl ) {return chn_controller[chn][ctl];}; 
 
     void sysex		( uchar *data,ulong size);
 

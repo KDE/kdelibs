@@ -207,7 +207,7 @@ switch (ev->command)
     case (MIDI_CTL_CHANGE) :
 	ev->ctl = *ptrdata;ptrdata++; currentpos++;
 	ev->d1  = *ptrdata;ptrdata++;currentpos++;
-	switch (ev->ctl)
+/*	switch (ev->ctl)
 		{
 		case (96) : printf("RPN Increment\n");break;
 		case (97) : printf("RPN Decrement\n");break;
@@ -216,7 +216,7 @@ switch (ev->command)
 		case (100) : printf("RPN 100 %d\n",ev->d1);break;
 		case (101) : printf("RPN 101 %d\n",ev->d1);break;
 		};
-	break;
+*/	break;
     
     case (MIDI_SYSTEM_PREFIX) :
 	switch ((ev->command|ev->chn))

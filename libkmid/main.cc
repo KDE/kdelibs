@@ -28,6 +28,7 @@
 #include <string.h>
 #include "midispec.h"
 #include "sndcard.h"
+#include "../version.h"
 
 // If you want to use a midi map you have to change the next definition :
 #define MAP_PATH NULL
@@ -59,7 +60,7 @@ if ((pctl.ev->command==MIDI_SYSTEM_PREFIX)&&((pctl.ev->command|pctl.ev->chn)==ME
 
 int main(int argc, char **argv)
 {
-printf("ConsoleKMid version 0.4.1, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n");
+printf("ConsoleKMid version %s, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n",VERSION_SHORTTXT);
 printf("ConsoleKMid comes with ABSOLUTELY NO WARRANTY; for details view file COPYING\n");
 printf("This is free software, and you are welcome to redistribute it\n");
 printf("under certain conditions\n");
@@ -68,7 +69,8 @@ if (argc<2)
     printf("Usage:  %s [nameofmidifile]\n",argv[0]);
     exit(0);
     };
-DeviceManager * devman=new DeviceManager(0);
+
+DeviceManager * devman=new DeviceManager(1);
 //midiOut *midi=new midiOut();
 //MidiMapper *map=new MidiMapper(MAP_PATH);
 devman->initManager();
@@ -76,8 +78,9 @@ player *Player=new player(devman,&pctl);
 //midi->useMapper(map);
 pctl.message=0;
 pctl.gm=1;
+pctl.error=0;
 int nmid=1;
-while (nmid<argc)
+while ((nmid<argc)&&(pctl.error!=1))
     {
     Player->loadSong(argv[nmid]);
     Player->play(1,consoleOutput);
@@ -88,5 +91,6 @@ while (nmid<argc)
 delete devman;
 printf("Bye...\n");
 //delete map;
+
 return 0;
 };

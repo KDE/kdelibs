@@ -47,18 +47,18 @@ removeSong();
 
 void player::removeSong(void)
 {
-if (songLoaded)
+if ((songLoaded)&&(tracks!=NULL))
     {
     int i=0;
     while (i<info->ntracks)
         {
-        delete tracks[i];
+        if (tracks[i]!=NULL) delete tracks[i];
         i++;
         };
     delete tracks;
-    delete info;
-    songLoaded=0;
+    if (info!=NULL) delete info;
     };
+songLoaded=0;
 };
 
 int player::loadSong(char *filename)
@@ -366,6 +366,7 @@ midi->closeDev();
 ctl->playing=0;
 printf("Bye...\n");
 ctl->OK=1;
+ctl->finished=1;
 };
 
 

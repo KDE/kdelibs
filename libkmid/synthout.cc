@@ -33,14 +33,12 @@
 #include <string.h>
 #include <sys/param.h>
 #include "awe_sup.h"
+#include "../version.h"
 
 #define NEWMACRO
 
 //SEQ_DEFINEBUF (1024); 
 SEQ_USE_EXTBUF();
-
-//#define SYNTHOUTDEBUG
-
 
 synthOut::synthOut(int d)
 {

@@ -27,8 +27,7 @@
 #include <unistd.h>
 #include "sndcard.h"
 #include "midispec.h"
-
-#define MIDFILE_DEBUG
+#include "../version.h"
 
 /* This function gives the metronome tempo, from a tempo data as found in
  a midi file */
@@ -175,7 +174,7 @@ int trk,minTrk;
 //ulong minTicks;
 ulong tempo=1000000;
 
-#ifdef MIDFILE_DEBUG
+#ifdef MIDFILEDEBUG
 printf("Parsing 1 ...\n");
 #endif
 
@@ -208,7 +207,7 @@ while (parsing)
     if ((minTime==maxTime))
         {
         parsing=0;
-#ifdef MIDFILE_DEBUG
+#ifdef MIDFILEDEBUG
         printf("END of parsing\n");
 #endif
         }
@@ -248,7 +247,7 @@ for (i=0;i<info->ntracks;i++)
     Tracks[i]->init();
     };
 
-#ifdef MIDFILE_DEBUG
+#ifdef MIDFILEDEBUG
 printf("info.ticksTotal = %ld \n",info->ticksTotal);
 printf("info.ticksPlayed= %ld \n",info->ticksPlayed);
 printf("info.millisecsTotal  = %g \n",info->millisecsTotal);

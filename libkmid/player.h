@@ -61,6 +61,7 @@ struct PlayerController
 	volatile int	playing; // if 1, the player is playing (or paused)
 	volatile int	paused;  // if 1, the player is paused
 	volatile int    moving;  // if 1, the player is moving the position
+	volatile int	finished; // if 1, the song has finished playing
 	volatile int	message; // set one of the following :
 
 #define PLAYER_DOPAUSE	1
@@ -89,10 +90,7 @@ midifileinfo *info;
 track **tracks;
 SpecialEvent *spev;
 
-
 int songLoaded;
-
-void removeSong(void);
 
 PlayerController *ctl;
 
@@ -106,6 +104,7 @@ player(DeviceManager *midi_,PlayerController *pctl);
 ~player();
 
 int loadSong(char *filename);
+void removeSong(void); // Unload the current song, so that everything is empty
 
 int isSongLoaded(void) {return songLoaded;};
 SpecialEvent *takeSpecialEvents() {return spev;};
