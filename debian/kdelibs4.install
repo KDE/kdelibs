@@ -7,6 +7,8 @@ debian/tmp/usr/lib/kde3/kabc_ldap.la
 debian/tmp/usr/lib/kde3/kabc_ldap.so
 debian/tmp/usr/lib/kde3/kabcformat_binary.la
 debian/tmp/usr/lib/kde3/kabcformat_binary.so
+debian/tmp/usr/lib/kde3/kabcformat_vcard2.la
+debian/tmp/usr/lib/kde3/kabcformat_vcard2.so
 debian/tmp/usr/lib/kde3/kbzip2filter.la
 debian/tmp/usr/lib/kde3/kbzip2filter.so
 debian/tmp/usr/lib/kde3/kcm_kabc.la
@@ -47,12 +49,12 @@ debian/tmp/usr/lib/kde3/kimg_krl.la
 debian/tmp/usr/lib/kde3/kimg_krl.so
 debian/tmp/usr/lib/kde3/kimg_pcx.la
 debian/tmp/usr/lib/kde3/kimg_pcx.so 
+debian/tmp/usr/lib/kde3/kimg_tga.la
+debian/tmp/usr/lib/kde3/kimg_tga.so
 debian/tmp/usr/lib/kde3/kimg_tiff.la
 debian/tmp/usr/lib/kde3/kimg_tiff.so
 debian/tmp/usr/lib/kde3/kimg_xview.la
 debian/tmp/usr/lib/kde3/kimg_xview.so
-debian/tmp/usr/lib/kde3/kio_data.la
-debian/tmp/usr/lib/kde3/kio_data.so
 debian/tmp/usr/lib/kde3/kio_file.la
 debian/tmp/usr/lib/kde3/kio_file.so
 debian/tmp/usr/lib/kde3/kio_ftp.la
