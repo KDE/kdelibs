@@ -1,3 +1,8 @@
+2003-10-21  Dirk Mueller  <mueller@kde.org>
+
+	* xml/dom_nodeimpl.cpp (replaceChild/appendChild/removeChild): 
+	Reverting commit patch invalidated layout on child when it was attached.
+
 2003-10-20  Lars Knoll <knoll@kde.org>
 
 	* fix most issues with the layering code by 
