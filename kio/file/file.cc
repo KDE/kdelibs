@@ -319,8 +319,16 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
       {
          if (write_all( fd, buffer.data(), buffer.size()))
          {
-            result = -1;
-            error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+            if ( errno == ENOSPC ) // disk full
+            {
+              error( KIO::ERR_DISK_FULL, dest_orig);
+              result = -2; // means: remove dest file
+            }
+            else
+            {
+              error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+              result = -1;
+            }
          }
       }
     }
@@ -331,7 +339,10 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     {
         close(fd);
 	kdDebug(7101) << "Error during 'put'. Aborting." << endl;
-        if (bMarkPartial)
+        if (result == -2)
+        {
+	   remove(_dest.data());
+        } else if (bMarkPartial)
         {
            struct stat buff;
            if (( ::stat( _dest.data(), &buff ) == -1 ) ||
@@ -465,9 +476,17 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
        if (write_all( dest_fd, buffer, n))
        {
-          error( KIO::ERR_COULD_NOT_WRITE, dest.path());
           close(src_fd);
           close(dest_fd);
+          if ( errno == ENOSPC ) // disk full
+          {
+              error( KIO::ERR_DISK_FULL, dest.path());
+              remove( _dest.data() );
+          }
+          else
+          {
+              error( KIO::ERR_COULD_NOT_WRITE, dest.path());
+          }
           return;
        }
 
