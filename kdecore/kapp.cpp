@@ -1012,9 +1012,11 @@ void KApplication::startKdeinit()
      srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
   if (srv.isEmpty())
      return;
-  setOverrideCursor( Qt::waitCursor ); 
+  if (kapp)
+    setOverrideCursor( Qt::waitCursor ); 
   my_system(QFile::encodeName(srv)+" --suicide");
-  restoreOverrideCursor();
+  if (kapp)
+    restoreOverrideCursor();
 }
 
 void KApplication::dcopFailure(const QString &msg)
@@ -2207,9 +2209,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
 
     // set a short icon text
-    // TODO: perhaps using .ascii() isn't right here as this may be seen by
-    // a user?
-    XSetIconName( qt_xdisplay(), topWidget->winId(), caption().ascii() );
+    XSetIconName( qt_xdisplay(), topWidget->winId(), caption().utf8() );
     
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
