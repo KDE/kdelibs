@@ -77,14 +77,14 @@ class KReplaceNextDialog;
  *          res = m_replace->res();
  *
  *          if ( res == KFind::NoMatch ) {
- *              <Move to the next non-empty text fragment, honouring the FindBackwards setting for the direction>
+ *              <Move to the next text fragment, honouring the FindBackwards setting for the direction>
  *          }
  *      }
  *
  *      if ( res == KFind::NoMatch ) // i.e. at end
  *          <Call either  m_replace->displayFinalDialog(); delete m_replace; m_replace = 0L;
- *           or           if ( m_replace->shouldRestart() ) { reinit and call slotReplaceNext(); }
- *                        else { delete m_replace; m_replace = 0L; }>
+ *           or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
+ *                        else { m_replace->closeReplaceNextDialog(); }>
  *  }
  * </pre>
  *

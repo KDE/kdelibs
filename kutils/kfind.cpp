@@ -405,4 +405,9 @@ void KFind::closeFindNextDialog()
     m_dialogClosed = true;
 }
 
+int KFind::index() const
+{
+    return m_index;
+}
+
 #include "kfind.moc"

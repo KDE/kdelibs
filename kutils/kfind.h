@@ -74,14 +74,14 @@
  *          res = m_find->find();
  *
  *          if ( res == KFind::NoMatch ) {
- *              <Move to the next non-empty text fragment, honouring the FindBackwards setting for the direction>
+ *              <Move to the next text fragment, honouring the FindBackwards setting for the direction>
  *          }
  *      }
  *
  *      if ( res == KFind::NoMatch ) // i.e. at end
  *          <Call either  m_find->displayFinalDialog(); delete m_find; m_find = 0L;
- *           or           if ( m_find->shouldRestart() ) { reinit and call slotFindNext(); }
- *                        else { delete m_find; m_find = 0L; }>
+ *           or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
+ *                        else { m_find->closeFindNextDialog(); }>
  *  }
  * </pre>
  *
@@ -227,6 +227,15 @@ public:
      * "find previous" won't be possible anymore.
      */
     void closeFindNextDialog();
+
+    /**
+     * @return the current matching index ( or -1 ).
+     * Same as the matchingIndex parameter passed to highlight.
+     * You usually don't need to use this, except maybe when updating the current data,
+     * so you need to call setData( newData, index() ).
+     * @since 3.2
+     */
+    int index() const;
 
 signals:
 
