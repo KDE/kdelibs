@@ -1547,7 +1547,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   }
   break;
   case ID_CAPTION: {
-    DOM::HTMLTableCaptionElement tableCaption;
+    DOM::HTMLTableCaptionElement tableCaption = element;
     switch (token) {
     case TableCaptionAlign:       return getString(tableCaption.align());
     }
@@ -2481,7 +2481,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
     }
     break;
     case ID_CAPTION: {
-      DOM::HTMLTableCaptionElement tableCaption;
+      DOM::HTMLTableCaptionElement tableCaption = element;
       switch (token) {
       case TableAlign:           { tableCaption.setAlign(str); return; }
       }
