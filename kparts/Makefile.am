@@ -4,6 +4,8 @@ INCLUDES= -I$(srcdir)/../ $(all_includes)
 LDFLAGS	= $(all_libraries)  -version-info 1:0:0
 libkparts_la_LIBADD  = $(LIB_KIO)
 
+SUBDIRS = . tests
+
 ####### Files
 
 lib_LTLIBRARIES = libkparts.la

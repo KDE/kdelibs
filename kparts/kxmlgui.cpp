@@ -54,6 +54,10 @@ struct XMLGUIContainerClient
   bool m_mergedClient;
 };
 
+template class QList<XMLGUIContainerClient>;
+class XMLGUIContainerNode;
+template class QList<XMLGUIContainerNode>;
+
 /**
  * Here we store detailed information about a container, its clients (client=a servant having actions
  * plugged into the container), child nodes, naming information (tagname and name attribute) and
