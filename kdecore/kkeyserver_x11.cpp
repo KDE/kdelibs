@@ -756,6 +756,7 @@ bool modXToMod( uint modX, uint& mod )
 
 bool codeXToSym( uchar codeX, uint modX, uint& sym )
 {
+	KeySym keySym;
 	XKeyPressedEvent event;
 
 	event.type = KeyPress;
@@ -763,7 +764,8 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	event.state = modX;
 	event.keycode = codeX;
 
-	XLookupString( &event, 0, 0, (KeySym*) &sym, 0 );
+	XLookupString( &event, 0, 0, &keySym, 0 );
+	sym = (uint) keySym;
 	return true;
 }
 #endif //!Q_WS_WIN

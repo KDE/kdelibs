@@ -79,9 +79,11 @@ void KKeyNative::clear()
 #ifdef Q_WS_X11
 bool KKeyNative::init( const XEvent* pEvent )
 {
+	KeySym keySym;
 	m_code = pEvent->xkey.keycode;
 	m_mod = pEvent->xkey.state;
-	XLookupString( (XKeyEvent*) pEvent, 0, 0, (KeySym*) &m_sym, 0 );
+	XLookupString( (XKeyEvent*) pEvent, 0, 0, &keySym, 0 );
+	m_sym = (uint) keySym;
 	return true;
 }
 #endif
