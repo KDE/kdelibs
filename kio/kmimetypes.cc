@@ -19,26 +19,16 @@
 #include <kurl.h>
 #include <kdebug.h>
 
-QDict<KMimeType>* KMimeType::s_mapTypes = 0L;
+QDict<KMimeType>* KMimeType::s_mapMimeTypes = 0L;
 KMimeType* KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
 
 void KMimeType::initStatic()
 {
-  if ( s_mapTypes != 0L )
+  if ( s_mapMimeTypes != 0L )
     return;
   
-  s_mapTypes = new QDict<KMimeType>;
-
-  /*
-  // Read the application bindings in the local directories
-  QString path = kapp->localkdedir().data();
-  path += "/share/mimelnk";
-  scanMimeTypes( path.data() );
-    
-  // Read the application bindings in the global directories
-  path = kapp->kde_mimedir().copy();
-  scanMimeTypes( path.data() );  */
+  s_mapMimeTypes = new QDict<KMimeType>;
 }
 
 void KMimeType::check()
@@ -47,71 +37,70 @@ void KMimeType::check()
     return;
   initStatic();
 
-  kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapTypes->count() );
+  kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapMimeTypes->count() );
 
   s_bChecked = true; // must be done before building mimetypes
   
   // Try to find the default type
-  if ( ( s_pDefaultType = KMimeType::find( "application/octet-stream" ) ) == 0L )
+  if ( ( s_pDefaultType = KMimeType::mimeType( "application/octet-stream" ) ) == 0L )
     errorMissingMimeType( "application/octet-stream" );
 
   // No default type ?
   if ( s_pDefaultType == 0L )
   {
-    QStrList tmp;
+    QStringList tmp;
     s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.xpm", "", tmp );
   }
   
   // No Mime-Types installed ?
   // Lets do some rescue here.
-  if ( s_mapTypes->count() <= 1 )
+  if ( s_mapMimeTypes->count() <= 1 )
     QMessageBox::critical( 0, i18n( "KFM Error" ), i18n( "No mime types installed!" ), i18n( "OK" ) );
 	
-  if ( KMimeType::find( "inode/directory" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
-  if ( KMimeType::find( "inode/directory-locked" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/directory-locked" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory-locked" );
-  if ( KMimeType::find( "inode/blockdevice" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/blockdevice" ) == s_pDefaultType )
     errorMissingMimeType( "inode/blockdevice" );
-  if ( KMimeType::find( "inode/chardevice" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/chardevice" ) == s_pDefaultType )
     errorMissingMimeType( "inode/chardevice" );
-  if ( KMimeType::find( "inode/socket" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/socket" ) == s_pDefaultType )
     errorMissingMimeType( "inode/socket" );
-  if ( KMimeType::find( "inode/fifo" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "inode/fifo" ) == s_pDefaultType )
     errorMissingMimeType( "inode/fifo" );
-  if ( KMimeType::find( "application/x-shellscript" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "application/x-shellscript" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-shellscript" );
-  if ( KMimeType::find( "application/x-executable" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "application/x-executable" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-executable" );
-  if ( KMimeType::find( "application/x-kdelnk" ) == s_pDefaultType )
+  if ( KMimeType::mimeType( "application/x-kdelnk" ) == s_pDefaultType )
     errorMissingMimeType( "application/x-kdelnk" );
 }
 
-void KMimeType::errorMissingMimeType( const char *_type )
+void KMimeType::errorMissingMimeType( const QString& _type )
 {
-  QString tmp = i18n( "Could not find mime type\n" );
-  tmp += _type;
+  QString tmp = i18n( "Could not find mime type\n%s" );
+  tmp = tmp.arg( _type );
     
   QMessageBox::critical( 0, i18n( "KFM Error" ), tmp, i18n("OK" ) );
 
-  QString mime = _type;
-  QStrList dummy;
+  QStringList dummy;
   
   KMimeType *e;
-  if ( mime == "inode/directory" )
-    e = new KFolderType( mime, "unknown.xpm", "", dummy );
-  else if ( mime == "application/x-kdelnk" )
-    e = new KDELnkMimeType( mime, "unknown.xpm", "", dummy );
-  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( mime, "unknown.xpm", "", dummy );
+  if ( _type == "inode/directory" )
+    e = new KFolderType( _type, "unknown.xpm", "", dummy );
+  else if ( _type == "application/x-kdelnk" )
+    e = new KDELnkMimeType( _type, "unknown.xpm", "", dummy );
+  else if ( _type == "application/x-executable" || _type == "application/x-shellscript" )
+    e = new KExecMimeType( _type, "unknown.xpm", "", dummy );
   else
-    e = new KMimeType( mime, "unknown.xpm", "", dummy );
+    e = new KMimeType( _type, "unknown.xpm", "", dummy );
 
-  s_mapTypes->insert( _type, e );
+  s_mapMimeTypes->insert( _type, e );
 }
 
 ///////// Old method, never called ////////////
-void KMimeType::scanMimeTypes( const char* _path )
+void KMimeType::scanMimeTypes( const QString& _path )
 {   
   initStatic();
 
@@ -127,20 +116,20 @@ void KMimeType::scanMimeTypes( const char* _path )
     if ( strcmp( ep->d_name, "." ) != 0 && strcmp( ep->d_name, ".." ) != 0 &&
 	 strcmp( ep->d_name, "magic" ) != 0 && ep->d_name[0] != '.' )
     {
-      string file = _path;
+      QString file = _path;
       file += "/";
       file += ep->d_name;
 
       struct stat buff;
-      stat( file.c_str(), &buff );
+      stat( file, &buff );
       if ( S_ISDIR( buff.st_mode ) )
 	scanMimeTypes( file.data() );
       else if ( S_ISREG( buff.st_mode ) )
       {
-	if ( access( file.c_str(), R_OK ) == -1 )
+	if ( access( file, R_OK ) == -1 )
 	  continue;
 
-	KSimpleConfig config( file.c_str(), true );
+	KSimpleConfig config( file, true );
 	config.setGroup( "KDE Desktop Entry" );
 		
 	// Get a ';' separated list of all pattern
@@ -153,21 +142,20 @@ void KMimeType::scanMimeTypes( const char* _path )
 	{
           QString tmp = i18n( "The mime type config file\n"
 			      "%1\n"
-			      "does not contain a MimeType=... entry")
-	      .arg(file.c_str() );
+			      "does not contain a MimeType=... entry").arg(file );
 
 	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
 	  continue;
 	}
       
 	// Is this file type already registered ?
-	if ( KMimeType::find( mime ) )
+	if ( KMimeType::mimeType( mime ) )
 	  continue;
 	// If not then create a new type
 	if ( icon.isEmpty() )
 	  icon = "unknown.xpm";
       
-	QStrList patterns;
+	QStringList patterns;
 	int pos2 = 0;
 	int old_pos2 = 0;
 	while ( ( pos2 = pats.find( ";", pos2 ) ) != - 1 )
@@ -196,13 +184,13 @@ void KMimeType::scanMimeTypes( const char* _path )
   closedir(dp);
 }
 
-KMimeType* KMimeType::find( const char *_name )
+KMimeType* KMimeType::mimeType( const QString& _name )
 {
   check();
 
-  assert( s_mapTypes );
+  assert( s_mapMimeTypes );
 
-  KMimeType* mime = (*s_mapTypes)[ _name ];
+  KMimeType* mime = (*s_mapMimeTypes)[ _name ];
   if ( !mime )
     return s_pDefaultType;
 
@@ -252,8 +240,8 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   QString path ( _url.path( 0 ) );
   
   // Try to find it out by looking at the filename
-  assert( s_mapTypes );
-  QDictIterator<KMimeType> it( *s_mapTypes );
+  assert( s_mapMimeTypes );
+  QDictIterator<KMimeType> it( *s_mapMimeTypes );
   for( ; it.current() != 0L; ++it )
     if ( it.current()->matchFilename( path.data() ) )
       return it.current();
@@ -290,43 +278,43 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return find( result->mimeType() );
 }
 
-KMimeType::KMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns )
+KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+		      const QStringList& _patterns )
+  : KServiceType( _type, _icon, _comment )
 {
   initStatic();
   
-  assert( s_mapTypes );
+  assert( s_mapMimeTypes );
   
-  s_mapTypes->insert( _type, this );
-  m_strIcon = _icon;
-  m_strComment = _comment;
-  m_strMimeType = _type;
+  s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
 
 KMimeType::~KMimeType()
 {
-  s_mapTypes->remove( m_strMimeType );
+  s_mapMimeTypes->remove( m_strName );
 }
 
-bool KMimeType::matchFilename( const char *_filename )
+bool KMimeType::matchFilename( const QString& _filename ) const
 {
-  int len = strlen( _filename );
+  int len = _filename.length();
   
-  const char *s;
-  for( s = m_lstPatterns.first(); s != 0L; s = m_lstPatterns.next() )
+  QStringList::ConstIterator it = m_lstPatterns.begin();
+  for( ; it != m_lstPatterns.end(); ++it )
   {
-    int pattern_len = strlen( s );
+    const char* s = it->ascii();
+    int pattern_len = it->length();
     if (!pattern_len)
       continue;
 
     if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
-      if ( strncasecmp( _filename, s, pattern_len - 1 ) == 0 )
+      if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
 	return true;
     
     if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
-      if ( strncasecmp( _filename + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
+      if ( strncasecmp( _filename.ascii() + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
 	return true;
-    if ( strcasecmp( _filename, s ) == 0 )
+    if ( strcasecmp( _filename.ascii(), s ) == 0 )
       return true;
   }
 
@@ -339,14 +327,15 @@ bool KMimeType::matchFilename( const char *_filename )
  *
  ******************************************************/
 
-KFolderType::KFolderType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns )
+KFolderType::KFolderType( const QString& _type, const QString& _icon, const QString& _comment,
+			  const QStringList& _patterns )
   : KMimeType( _type, _icon, _comment, _patterns )
 {
 }
 
-QString KFolderType::icon( const char *_url, bool _is_local )
+QString KFolderType::icon( const QString& _url, bool _is_local ) const
 {
-  if ( !_is_local || !_url )
+  if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
   KURL u( _url );
@@ -382,7 +371,7 @@ QString KFolderType::icon( const char *_url, bool _is_local )
   return icon;
 }
 
-QString KFolderType::icon( KURL& _url, bool _is_local )
+QString KFolderType::icon( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
@@ -399,9 +388,9 @@ QString KFolderType::icon( KURL& _url, bool _is_local )
   return icon;
 }
 
-QString KFolderType::comment( const char *_url, bool _is_local )
+QString KFolderType::comment( const QString& _url, bool _is_local ) const
 {
-  if ( !_is_local || !_url )
+  if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
   KURL u( _url );
@@ -416,7 +405,7 @@ QString KFolderType::comment( const char *_url, bool _is_local )
   return comment;
 }
 
-QString KFolderType::comment( KURL& _url, bool _is_local )
+QString KFolderType::comment( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
@@ -439,21 +428,22 @@ QString KFolderType::comment( KURL& _url, bool _is_local )
  *
  ******************************************************/
 
-KDELnkMimeType::KDELnkMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns )
+KDELnkMimeType::KDELnkMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+				const QStringList& _patterns )
   : KMimeType( _type, _icon, _comment, _patterns )
 {
 }
 
-QString KDELnkMimeType::icon( const char *_url, bool _is_local )
+QString KDELnkMimeType::icon( const QString& _url, bool _is_local ) const
 {
-  if ( !_is_local || !_url )
+  if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
   KURL u( _url );
   return icon( u, _is_local );
 }
 
-QString KDELnkMimeType::icon( KURL& _url, bool _is_local )
+QString KDELnkMimeType::icon( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
@@ -482,16 +472,16 @@ QString KDELnkMimeType::icon( KURL& _url, bool _is_local )
   return icon;
 }
 
-QString KDELnkMimeType::comment( const char *_url, bool _is_local )
+QString KDELnkMimeType::comment( const QString& _url, bool _is_local ) const
 {
-  if ( !_is_local || !_url )
+  if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
   KURL u( _url );
   return comment( u, _is_local );
 }
 
-QString KDELnkMimeType::comment( KURL& _url, bool _is_local )
+QString KDELnkMimeType::comment( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
@@ -505,7 +495,7 @@ QString KDELnkMimeType::comment( KURL& _url, bool _is_local )
   return comment;
 }
 
-bool KDELnkMimeType::run( const char *_url, bool _is_local )
+bool KDELnkMimeType::run( const QString& _url, bool _is_local )
 {
   // It might be a security problem to run external untrusted kdelnk files
   if ( !_is_local )
@@ -542,7 +532,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
   return false;    
 }
 
-bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
+bool KDELnkMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
 {
   QString point = cfg.readEntry( "MountPoint" );
   QString dev = cfg.readEntry( "Dev" );
@@ -577,7 +567,7 @@ bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDELnkMimeType::runApplication( const char *_url, KSimpleConfig &cfg )
+bool KDELnkMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
 {
   KService* s = KService::parseService( _url, cfg, false );
   if ( !s )
@@ -590,7 +580,7 @@ bool KDELnkMimeType::runApplication( const char *_url, KSimpleConfig &cfg )
   return res;
 }
 
-bool KDELnkMimeType::runLink( const char *_url, KSimpleConfig &cfg )
+bool KDELnkMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
 {
   QString url = cfg.readEntry( "URL" );
   if ( url.isEmpty() )
@@ -605,22 +595,24 @@ bool KDELnkMimeType::runLink( const char *_url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDELnkMimeType::runMimeType( const char *_url, KSimpleConfig &cfg )
+bool KDELnkMimeType::runMimeType( const QString& _url, KSimpleConfig &cfg )
 {
   // HACK: TODO
   return false;
 }
 
-void KDELnkMimeType::builtinServices( KURL& _url, list<Service>& _lst )
+QValueList<KDELnkMimeType::Service> KDELnkMimeType::builtinServices( const KURL& _url )
 {
+  QValueList<Service> result;
+  
   if ( !_url.isLocalFile() )
-    return;
+    return result;
   
   KSimpleConfig cfg( _url.path(), true );
   cfg.setGroup( "KDE Desktop Entry" );
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
-    return;
+    return result;
   
   if ( type == "FSDevice" )
   {
@@ -639,14 +631,14 @@ void KDELnkMimeType::builtinServices( KURL& _url, list<Service>& _lst )
 	Service mount;
 	mount.m_strName = i18n("Mount");
 	mount.m_type = ST_MOUNT;
-	_lst.push_back( mount );  
+	result.append( mount );  
       }
       else
       {
 	Service unmount;
 	unmount.m_strName = i18n("Unmount");
 	unmount.m_type = ST_UNMOUNT;
-	_lst.push_back( unmount );  
+	result.append( unmount );  
       }
     }
   }
@@ -655,19 +647,23 @@ void KDELnkMimeType::builtinServices( KURL& _url, list<Service>& _lst )
   props.m_strName = i18n("Properties");
   props.m_type = ST_PROPERTIES;
   _lst.push_back( props );   */
+  
+  return result;
 }
 
-void KDELnkMimeType::userDefinedServices( KURL& _url, list<KDELnkMimeType::Service>& _lst )
+QValueList<KDELnkMimeType::Service> KDELnkMimeType::userDefinedServices( const KURL& _url )
 {
+  QValueList<Service> result;
+  
   if ( !_url.isLocalFile() )
-    return;
+    return result;
 
   KSimpleConfig cfg( _url.path(), true );
   cfg.setGroup( "Menu" );
   
   QStrList keys;
   if ( cfg.readListEntry( "Menus", keys ) <= 0 )
-    return;
+    return result;
   
   const char *k;
   for( k = keys.first(); k != 0L; k = keys.next() )
@@ -682,7 +678,7 @@ void KDELnkMimeType::userDefinedServices( KURL& _url, list<KDELnkMimeType::Servi
       s.m_strIcon = lst.at(1);
       s.m_strExec = lst.at(2);
       s.m_type = ST_USER_DEFINED;
-      _lst.push_back( s ); 
+      result.append( s ); 
     }
     else
     {
@@ -690,9 +686,11 @@ void KDELnkMimeType::userDefinedServices( KURL& _url, list<KDELnkMimeType::Servi
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
     }
   }
+
+  return result;
 }
 
-void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& _service )
+void KDELnkMimeType::executeService( const QString& _url, KDELnkMimeType::Service& _service )
 {
   kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
   
@@ -759,7 +757,8 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
  *
  ******************************************************/
 
-KExecMimeType::KExecMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns )
+KExecMimeType::KExecMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+			      const QStringList& _patterns )
   : KMimeType( _type, _icon, _comment, _patterns )
 {
 }

@@ -45,10 +45,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
   
   // Get all services for this mime type
-  KServiceTypeProfile::OfferList offers;
-  KServiceTypeProfile* profile = KServiceTypeProfile::find( _mimetype );
-  if ( profile )
-    offers = profile->offers();
+  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( _mimetype );
   
   if ( offers.count() == 0 || !offers.begin()->allowAsDefault() )
   {
@@ -334,7 +331,7 @@ void KRun::init()
 
     KMimeType* mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
     assert( mime );
-    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType() );
+    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
     foundMimeType( mime->mimeType() );
     return;
   }

@@ -56,7 +56,7 @@ KMimeTypeFactory::KMimeTypeFactory()
 
 void KMimeTypeFactory::save( QDataStream& _str, KMimeType *_mime )
 {
-  _str << _mime->m_strIcon << _mime->m_strComment << _mime->m_strMimeType
+  _str << _mime->m_strIcon << _mime->m_strComment << _mime->m_strName
        << _mime->m_lstPatterns;
 }
 
@@ -65,7 +65,7 @@ KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, QDataSt
   QString icon;
   QString comment;
   QString mime;
-  QStrList patterns;
+  QStringList patterns;
   _str >> icon >> comment >> mime >> patterns;
 
   KMimeType *e;
@@ -121,7 +121,7 @@ KMimeType* KMimeTypeFactory::createMimeType( const char *_file, KSimpleConfig &_
   if ( icon.isEmpty() )
     icon = "unknown.xpm";
       
-  QStrList patterns;
+  QStringList patterns;
   int pos2 = 0;
   int old_pos2 = 0;
   while ( ( pos2 = pats.find( ";", pos2 ) ) != - 1 )

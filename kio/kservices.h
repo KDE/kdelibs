@@ -53,8 +53,15 @@ public:
   /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
+   *
+   * @deprecated Use @ref #service instead
    */
-  static KService* find( const QString& _name );
+  static KService* find( const QString& _name ) { return service( _name ); }
+  /**
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   */
+  static KService* service( const QString& _name );
   
   /**
    * @param _file is only used while displaying error messages.
@@ -70,7 +77,7 @@ public:
   /**
    * @return the whole list of services. Useful to display them.
    */
-  static QList<KService>* allServices() { return s_lstServices; }
+  static const QList<KService>& services() { return *s_lstServices; }
 
 protected:  
   static void initServices( const QString&  _path );

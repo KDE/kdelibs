@@ -32,12 +32,12 @@ QString KPixmapCache::pixmapFileForURL( const char* _url, mode_t _mode, bool _is
 
 QPixmap* KPixmapCache::pixmapForMimeType( const char *_mime_type, bool _mini )
 {
-  return pixmap( KMimeType::find( _mime_type )->icon( 0L, false ), _mini );
+  return pixmap( KMimeType::mimeType( _mime_type )->icon( QString::null, false ), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, bool _mini )
 {
-  return pixmap( _mime_type->icon( 0L, false ), _mini );
+  return pixmap( _mime_type->icon( QString::null, false ), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, KURL& _url, bool _is_local_file, bool _mini )
@@ -47,7 +47,7 @@ QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, KURL& _url, boo
 
 QString KPixmapCache::pixmapFileForMimeType( const char *_mime_type, bool _mini )
 {
-  return pixmapFile( KMimeType::find( _mime_type )->icon( 0L, false ), _mini );
+  return pixmapFile( KMimeType::mimeType( _mime_type )->icon( QString::null, false ), _mini );
 }
 
 QPixmap* KPixmapCache::toolbarPixmap( const char *_pixmap )

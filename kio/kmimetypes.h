@@ -3,16 +3,14 @@
 
 #include <sys/stat.h>
 
-#include <list>
-#include <string>
-#include <map>
-
 #include <qstring.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
+#include <qvaluelist.h>
 #include <qdict.h>
 
 #include <kurl.h>
 #include <ksimpleconfig.h>
+#include <kservicetype.h>
 
 class KMimeTypeFactory;
 
@@ -30,26 +28,32 @@ class KMimeTypeFactory;
  *   registry.load();
  * </pre>
  */
-class KMimeType
+class KMimeType : public KServiceType
 {
   friend KMimeTypeFactory;
 public:
-  KMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
+  KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+	     const QStringList& _patterns );
   virtual ~KMimeType();
   
   /**
-   * @param _url may be 0L
+   * @param _url may be empty
    */
-  virtual QString icon( const char *_url, bool _is_local ) { return m_strIcon; }
-  virtual QString icon( KURL& _url, bool _is_local ) { return m_strIcon; }
+  virtual QString icon( const QString& _url, bool _is_local ) const { return m_strIcon; }
+  virtual QString icon( const KURL& _url, bool _is_local ) const { return m_strIcon; }
   /**
    * @param _url may be 0L
    */
-  virtual QString comment( const char *_url, bool _is_local ) { return m_strComment; }
-  virtual QString comment( KURL& _url, bool _is_local ) { return m_strComment; }
-  virtual const char* mimeType() { return m_strMimeType; }
+  virtual QString comment( const QString& _url, bool _is_local ) const { return m_strComment; }
+  virtual QString comment( const KURL& _url, bool _is_local ) const { return m_strComment; }
+  /**
+   * @depreciated
+   * 
+   * Use @ref KServiceType::name instead.
+   */
+  virtual QString mimeType() const { return m_strName; }
   
-  virtual QStrList patterns() { return m_lstPatterns; }
+  virtual const QStringList& patterns() const { return m_lstPatterns; }
   
   /**
    * Looks whether the given filename matches this mimetypes extension patterns.
@@ -58,13 +62,22 @@ public:
    *
    * @see #m_lstPatterns
    */
-  virtual bool matchFilename( const char *_filename );
+  virtual bool matchFilename( const QString&_filename ) const;
 
   /**
-   * @return a pointer to the mime type '_name' or a pointer to the default mime type "application/octet-stream".
-   *         0L is NEVER returned.
+   * @return a pointer to the mime type '_name' or a pointer to the default
+   *         mime type "application/octet-stream". 0L is NEVER returned.
+   *
+   * @deprecated Use @ref #mimeType instead
    */
-  static KMimeType* find( const char *_name );
+  static KMimeType* find( const QString& _name ) { return mimeType( _name ); }
+  /**
+   * @return a pointer to the mime type '_name' or a pointer to the default
+   *         mime type "application/octet-stream". 0L is NEVER returned.
+   *
+   * @see KServiceType::serviceType
+   */
+  static KMimeType* mimeType( const QString& _name );
   /**
    * This function looks at mode_t first. If that does not help it looks at the extension. 
    * This is ok for FTP, FILE, TAR and friends, but is not for
@@ -88,18 +101,19 @@ public:
 
   /**
    * Get all the mimetypes dict. Useful for showing the list of available mimetypes.
+   * The returned dict contains a subset of the entries returned by @ref KServiceType::serviceTypes
    */
-  static QDict<KMimeType> * allTypes() { return s_mapTypes; }
+  static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; }
 
 protected:
   /**
    * Signal a missing mime type
    */
-  static void errorMissingMimeType( const char *_type );
+  static void errorMissingMimeType( const QString& _type );
   /**
    * Old method, not used anymore
    */
-  static void scanMimeTypes( const char* _path );
+  static void scanMimeTypes( const QString& _path );
 
   /**
    * Check for static variables initialised. Called by constructor
@@ -117,24 +131,22 @@ protected:
    */
   static bool s_bChecked;
 
-  QString m_strMimeType;
-  QString m_strIcon;
-  QString m_strComment;
-  QStrList m_lstPatterns;
+  QStringList m_lstPatterns;
   
-  static QDict<KMimeType>* s_mapTypes;
+  static QDict<KMimeType>* s_mapMimeTypes;
   static KMimeType* s_pDefaultType;
 };
 
 class KFolderType : public KMimeType
 {
 public:
-  KFolderType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
+  KFolderType( const QString& _type, const QString& _icon, const QString& _comment,
+	       const QStringList& _patterns );
 
-  virtual QString icon( const char *_url, bool _is_local );
-  virtual QString icon( KURL& _url, bool _is_local );
-  virtual QString comment( const char *_url, bool _is_local );
-  virtual QString comment( KURL& _url, bool _is_local );
+  virtual QString icon( const QString& _url, bool _is_local ) const;
+  virtual QString icon( const KURL& _url, bool _is_local ) const;
+  virtual QString comment( const QString& _url, bool _is_local ) const;
+  virtual QString comment( const KURL& _url, bool _is_local ) const;
 };
 
 class KDELnkMimeType : public KMimeType
@@ -150,21 +162,22 @@ public:
     ServiceType m_type;
   };
   
-  KDELnkMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
+  KDELnkMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+		  const QStringList& _patterns );
 
-  virtual QString icon( const char *_url, bool _is_local );
-  virtual QString icon( KURL& _url, bool _is_local );
-  virtual QString comment( const char *_url, bool _is_local );
-  virtual QString comment( KURL& _url, bool _is_local );
+  virtual QString icon( const QString& _url, bool _is_local ) const;
+  virtual QString icon( const KURL& _url, bool _is_local ) const;
+  virtual QString comment( const QString& _url, bool _is_local ) const;
+  virtual QString comment( const KURL& _url, bool _is_local ) const;
 
-  static void builtinServices( KURL& _url, list<Service>& _lst );
-  static void userDefinedServices( KURL& _url, list<Service>& _lst );
+  static QValueList<Service> builtinServices( const KURL& _url );
+  static QValueList<Service> userDefinedServices( const KURL& _url );
 
   /**
    * @param _url is the URL of the kdelnk file. The URL must be local, otherwise
    *             nothing will happen.
    */
-  static void executeService( const char *_url, KDELnkMimeType::Service& _service );
+  static void executeService( const QString& _url, KDELnkMimeType::Service& _service );
 
   /**
    * Invokes the default action for the kdelnk file. If the kdelnk file
@@ -175,19 +188,20 @@ public:
    *
    * @see KRun::runURL
    */
-  static bool run( const char *_url, bool _is_local );
+  static bool run( const QString& _url, bool _is_local );
 
 protected:
-  static bool runFSDevice( const char *_url, KSimpleConfig &cfg );
-  static bool runApplication( const char *_url, KSimpleConfig &cfg );
-  static bool runLink( const char *_url, KSimpleConfig &cfg );
-  static bool runMimeType( const char *_url, KSimpleConfig &cfg );
+  static bool runFSDevice( const QString& _url, KSimpleConfig &cfg );
+  static bool runApplication( const QString& _url, KSimpleConfig &cfg );
+  static bool runLink( const QString& _url, KSimpleConfig &cfg );
+  static bool runMimeType( const QString& _url, KSimpleConfig &cfg );
 };
 
 class KExecMimeType : public KMimeType
 {
 public:
-  KExecMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
+  KExecMimeType( const QString& _type, const QString& _icon, const QString& _comment,
+		 const QStringList& _patterns );
 };
 
 #endif

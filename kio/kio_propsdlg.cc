@@ -805,7 +805,7 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     enableCheckedEdit();
 
     if ( iconStr.isNull() )
-        iconStr = KMimeType::find("")->icon(0L, true); // default icon
+        iconStr = KMimeType::mimeType("")->KServiceType::icon(); // default icon
     
     iconBox->setIcon( iconStr ); 
 
@@ -1006,7 +1006,7 @@ URLPropsPage::URLPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     if ( !URLStr.isNull() )
 	URLEdit->setText( URLStr.data() );
     if ( iconStr.isNull() )
-        iconStr = KMimeType::find("")->icon(0L, true); // default icon
+        iconStr = KMimeType::mimeType("")->KServiceType::icon(); // default icon
 
     iconBox->setIcon( iconStr );
 
@@ -1124,8 +1124,7 @@ DirPropsPage::DirPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 
     if ( iconStr.isEmpty() )
     {
-	QString str( KMimeType::findByURL( properties->kurl(),
-					   properties->mode(), true )->icon(0L, true) );
+	QString str( KMimeType::findByURL( properties->kurl(), properties->mode(), true )->KServiceType::icon() );
 	KURL u( str );
 	iconStr = u.filename();
     }
@@ -1214,7 +1213,7 @@ void DirPropsPage::applyChanges()
 
     // Get the default image
     QString str( KMimeType::findByURL( properties->kurl(),
-				       properties->mode(), true )->icon(0L, "") );
+				       properties->mode(), true )->KServiceType::icon() );
     KURL u( str );
     QString str2 = u.filename();
     QString sIcon;
@@ -1497,7 +1496,7 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props ) : PropsPa
     addMimeType( "alldirs" );
     addMimeType( "allfiles" );
 
-    QDictIterator<KMimeType> it ( * KMimeType::allTypes() );
+    QDictIterator<KMimeType> it ( KMimeType::mimeTypes() );
     for ( ; it.current(); ++it )
         addMimeType ( it.currentKey() );
 }
@@ -1846,13 +1845,13 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
     QString mimeStr = config.readEntry( "MimeType" );
 
     if ( !patternStr.isEmpty() )
-	patternEdit->setText( patternStr.data() );
+	patternEdit->setText( patternStr );
     if ( !commentStr.isEmpty() )
-	commentEdit->setText( commentStr.data() );
+	commentEdit->setText( commentStr );
     if ( iconStr.isEmpty() )
-        iconStr = KMimeType::find("")->icon(0L, true); // default icon
+        iconStr = KMimeType::mimeType("")->KServiceType::icon(); // default icon
     if ( !mimeStr.isEmpty() )
-	mimeEdit->setText( mimeStr.data() );
+	mimeEdit->setText( mimeStr );
     
     iconBox->setIcon( iconStr );
     
@@ -1861,7 +1860,7 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
     QString currApp;
     appBox->insertItem( i18n("<none>") );
     kdelnklist.append( "" ); // empty item
-    QListIterator<KService> it ( * KService::allServices() );
+    QListIterator<KService> it ( KService::services() );
     for ( ; it.current(); ++it )
     {
 	currApp = it.current()->name();
@@ -2182,9 +2181,9 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
     else
 	readonly->setChecked( true );
     if ( mountedStr.isEmpty() )
-        mountedStr = KMimeType::find("")->icon(0L, true); // default icon
+        mountedStr = KMimeType::mimeType("")->KServiceType::icon(); // default icon
     if ( unmountedStr.isEmpty() )
-        unmountedStr = KMimeType::find("")->icon(0L, true); // default icon
+        unmountedStr = KMimeType::mimeType("")->KServiceType::icon(); // default icon
 
     mounted->setIcon( mountedStr ); 
     unmounted->setIcon( unmountedStr ); 

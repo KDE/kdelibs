@@ -14,14 +14,13 @@ class KServiceOffer
 public:
   KServiceOffer();
   KServiceOffer( const KServiceOffer& );
-  KServiceOffer( const KServiceTypeProfile*, const KService* _service,
+  KServiceOffer( const KService* _service,
 		 int _pref, bool _default );
   
   bool operator< ( const KServiceOffer& ) const;
   bool allowAsDefault() const { return m_bAllowAsDefault; }
   int preference() const { return m_iPreference; }
   const KService& service() const { return *m_pService; }
-  const KServiceTypeProfile& profile() const { return *m_pProfile; }
   bool isValid() const { return m_iPreference >= 0; }
   
 private:
@@ -33,7 +32,6 @@ private:
    * Is it allowed to use this service for default actions.
    */
   bool m_bAllowAsDefault;
-  const KServiceTypeProfile* m_pProfile;
   const KService* m_pService;
 };
 
@@ -61,7 +59,11 @@ public:
   /**
    * @return the profile for the requested service type.
    */
-  static KServiceTypeProfile* find( const QString& _servicetype );
+  static KServiceTypeProfile* serviceTypeProfile( const QString& _servicetype );
+
+  static OfferList offers( const QString& _servicetype );
+
+  static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
   
 protected:
   /**

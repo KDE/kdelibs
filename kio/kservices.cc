@@ -33,7 +33,7 @@ void KService::initStatic()
   KService::initServices( path.data() ); */
 }
 
-KService* KService::find( const QString& _name )
+KService* KService::service( const QString& _name )
 {
   initStatic();
   
@@ -208,8 +208,14 @@ KService::~KService()
   s_lstServices->removeRef( this );
 }
 
-bool KService::hasServiceType( const QString& _service ) const
+bool KService::hasServiceType( const QString& _servicetype ) const
 {
-  return ( m_lstServiceTypes.find( _service ) != m_lstServiceTypes.end() );
+  debug("Testing %s", m_strName.ascii());
+  
+  QStringList::ConstIterator it = m_lstServiceTypes.begin();
+  for( ; it != m_lstServiceTypes.end(); ++it )
+    debug("    has %s", it->ascii() );
+  
+  return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
 
