@@ -345,6 +345,12 @@ void KFileDetailView::slotSortingChanged( int col )
     else
         sortSpec &= ~QDir::Reversed;
 
+    if ( sort & QDir::IgnoreCase )
+        sortSpec |= QDir::IgnoreCase;
+    else
+        sortSpec &= ~QDir::IgnoreCase;
+
+
     KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
 
     KFileItem *item;
@@ -388,10 +394,15 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
     else
         col = COL_NAME;
 
-    if ( spec & QDir::Reversed ) { // so slotSortingChanged() will reverse
-        KFileView::setSorting( (QDir::SortSpec) (spec & ~QDir::Reversed) );
-        m_sortingCol = col;
-    }
+    // inversed, because slotSortingChanged will revers it
+    if ( spec & QDir::Reversed ) 
+        spec = (QDir::SortSpec) (spec & ~QDir::Reversed);
+    else
+        spec = (QDir::SortSpec) (spec | QDir::Reversed);
+
+    m_sortingCol = col;
+    KFileView::setSorting( (QDir::SortSpec) spec );
+    
 
     // don't emit sortingChanged() when called via setSorting()
     m_blockSortingSignal = true; // can't use blockSignals()

@@ -333,13 +333,20 @@ void KURLBar::setCurrentItem( const KURL& url )
     if ( m_activeItem && m_activeItem->url().url(-1) == u )
         return;
 
+    bool hasURL = false;
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
             m_listBox->setCurrentItem( item );
+            hasURL = true;
             break;
         }
         item = item->next();
+    }
+    
+    if ( !hasURL ) {
+        m_listBox->clearSelection();
+        m_activeItem = 0L;
     }
 }
 
@@ -505,10 +512,10 @@ void KURLBar::editItem( KURLBarItem *item )
     QString description = item->description();
     QString icon        = item->icon();
     bool appLocal       = item->applicationLocal();
-    
+
     if ( KURLBarDropDialog::getInformation( m_useGlobal,
                                             item->url(), description,
-                                            icon, appLocal, this )) 
+                                            icon, appLocal, this ))
     {
         item->setDescription( description );
         item->setIcon( icon );
