@@ -321,7 +321,18 @@ public:
      */
     virtual int plug( QWidget *w, int index = -1 );
 	
-    // DOCUMENT ME!
+    /**
+	 * "Plug" or insert this action into a given KAccel.
+	 *
+	 * It is sometimes useful to use the action paradigm for
+	 * actions that are not associated with some widget (ie actions
+	 * that are only activated by keyboard).
+	 *
+	 * @param accel The KAccel which activates this action
+	 * @param configurable If the accelerator is configurable via
+	 * the KAccel configuration dialog (this is somehow deprecated since
+	 * there is now a KAction key configuration dialog).
+	 */
 	virtual void plugAccel(KAccel *accel, bool configurable = true);
 
     /**
@@ -338,7 +349,9 @@ public:
      */
     virtual void unplug( QWidget *w );
 	
-    // DOCUMENT ME!
+    /**
+	 * Disconnect this action from the KAccel.
+	 */
     virtual void unplugAccel();
 	
     /**
