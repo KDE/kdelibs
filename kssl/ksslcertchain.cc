@@ -41,9 +41,13 @@
 
 #include <kopenssl.h>
 #include <kdebug.h>
+#include <qstringlist.h>
+
 
 
 #ifdef HAVE_SSL
+#define sk_new d->kossl->sk_new
+#define sk_push d->kossl->sk_push
 #define sk_free d->kossl->sk_free
 #define sk_value d->kossl->sk_value
 #define sk_num d->kossl->sk_num
@@ -81,7 +85,11 @@ bool KSSLCertChain::isValid() {
 
 
 KSSLCertChain *KSSLCertChain::replicate() {
+KSSLCertChain *x = new KSSLCertChain;
+QList<KSSLCertificate> ch = getChain();
 
+  x->setChain(ch);   // this will do a deep copy for us
+return x;
 }
 
 
@@ -102,22 +110,44 @@ STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
    for (int i = 0; i < sk_X509_num(x); i++) {
      X509* x5 = sk_X509_value(x, i);
      KSSLCertificate *nc = new KSSLCertificate;
-     nc->setCert(x5);
+     nc->setCert(d->kossl->X509_dup(x5));
      cl.append(nc);
    }
 #endif
 return cl;
 }
 
+
+void KSSLCertChain::setChain(QList<KSSLCertificate>& chain) {
+#ifdef HAVE_SSL
+  if (_chain) sk_X509_free((STACK_OF(X509) *) _chain);
+
+  _chain = (void *)sk_new(NULL);
+  for (KSSLCertificate *x = chain.first(); x != 0; x = chain.next()) {
+    sk_X509_push((STACK_OF(X509)*)_chain, d->kossl->X509_dup(x->getCert()));
+  }
+
+#endif
+}
+
  
 void KSSLCertChain::setChain(void *stack_of_x509) {
+#ifdef HAVE_SSL
 if (_chain) {
-   #ifdef HAVE_SSL
       sk_X509_free((STACK_OF(X509)*)_chain);
-   #endif
 }
+#endif
 _chain = stack_of_x509;
 }
 
+
+void KSSLCertChain::setChain(QStringList chain) {
+    QList<KSSLCertificate> cl;
+    cl.setAutoDelete(true);
+    for (QStringList::Iterator s = chain.begin(); s != chain.end(); ++s) {
+       cl.append(KSSLCertificate::fromString((*s).local8Bit()));
+    }
+    setChain(cl);
+}
 
 

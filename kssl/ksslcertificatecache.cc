@@ -67,6 +67,7 @@
 
 
 #include "ksslcertificatecache.h"
+#include "ksslcertchain.h"
 #include "ksslcertificate.h"
 #include <qlist.h>
 #include <ksimpleconfig.h>
@@ -153,6 +154,14 @@ void KSSLCertificateCache::saveToDisk() {
       d->cfg->writeEntry("Policy", node->policy);
       d->cfg->writeEntry("Expires", node->expires);
       d->cfg->writeEntry("Permanent", node->permanent);
+      // Also write the chain
+      QStringList qsl;
+      QList<KSSLCertificate> cl(node->cert->chain().getChain());
+      for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         qsl << c->toString();
+      }
+      d->cfg->writeEntry("Chain", qsl);
     }
   }  
 
@@ -199,6 +208,7 @@ void KSSLCertificateCache::loadDefaultPolicies() {
                 d->cfg->readNumEntry("Policy");
     n->permanent = d->cfg->readBoolEntry("Permanent");
     n->expires = d->cfg->readDateTimeEntry("Expires");
+    newCert->chain().setChain(d->cfg->readListEntry("Chain"));
     d->certList.append(n); 
   }
 }

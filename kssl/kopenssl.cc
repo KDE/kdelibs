@@ -95,6 +95,9 @@ static void (*K_X509_STORE_CTX_set_chain) (X509_STORE_CTX *, STACK_OF(X509)*) = 
 static void (*K_sk_free) (STACK*) = NULL;
 static int (*K_sk_num) (STACK*) = NULL;
 static char* (*K_sk_value) (STACK*, int) = NULL;
+static STACK* (*K_sk_new) (int (*)()) = NULL;
+static int (*K_sk_push) (STACK*, char*) = NULL;
+static STACK* (*K_sk_dup) (STACK *) = NULL;
 #endif    
 };
 
@@ -201,6 +204,9 @@ KConfig *cfg;
       K_sk_free = (void (*) (STACK *)) _cryptoLib->symbol("sk_free");
       K_sk_num = (int (*) (STACK *)) _cryptoLib->symbol("sk_num");
       K_sk_value = (char* (*) (STACK *, int)) _cryptoLib->symbol("sk_value");
+      K_sk_new = (STACK* (*) (int (*)())) _cryptoLib->symbol("sk_new");
+      K_sk_push = (int (*) (STACK*, char*)) _cryptoLib->symbol("sk_push");
+      K_sk_dup = (STACK* (*) (STACK *)) _cryptoLib->symbol("sk_dup");
 #endif
    }
 
@@ -676,6 +682,25 @@ char *KOpenSSLProxy::sk_value(STACK *s, int n) {
 void KOpenSSLProxy::X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* x) {
    if (K_X509_STORE_CTX_set_chain) (K_X509_STORE_CTX_set_chain)(v,x);
 }
+
+
+STACK* KOpenSSLProxy::sk_dup(STACK *s) {
+   if (K_sk_dup) return (K_sk_dup)(s);
+   else return NULL;
+}
+
+
+STACK* KOpenSSLProxy::sk_new(int (*cmp)()) {
+   if (K_sk_new) return (K_sk_new)(cmp);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::sk_push(STACK* s, char* d) {
+   if (K_sk_push) return (K_sk_push)(s,d);
+   else return -1;
+}
+
 
 #endif
 

@@ -437,6 +437,9 @@ KSSLCertificate *KSSLCertificate::replicate() {
   #ifdef HAVE_SSL
   newOne->setCert(d->kossl->X509_dup(getCert()));
   #endif
+  KSSLCertChain *c = d->_chain.replicate();
+  newOne->setChain(c->rawChain());
+  delete c;
   return newOne;
 }
 

@@ -447,6 +447,23 @@ public:
    char *sk_value(STACK *s, int n);
 
 
+   /* 
+    *  Create a new stack
+    */
+   STACK *sk_new(int (*cmp)());
+
+
+   /* 
+    *  Add an element to the stack
+    */
+   int sk_push(STACK *s, char *d);
+
+
+   /* 
+    *  Duplicate the stack
+    */
+   STACK *sk_dup(STACK *s);
+
 #endif
 
 private:

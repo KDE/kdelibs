@@ -27,6 +27,7 @@ class QString;
 class QCString;
 class KSSL;
 class KSSLCertChainPrivate;
+class QStringList;
 
 #include <ksslcertificate.h>
 
@@ -46,6 +47,8 @@ public:
 
   KSSLCertChain *replicate();
   void setChain(void *stack_of_x509);
+  void setChain(QList<KSSLCertificate>& chain);
+  void setChain(QStringList chain);
   QList<KSSLCertificate> getChain();
   int depth();
   void *rawChain() { return _chain; }
