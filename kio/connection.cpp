@@ -146,7 +146,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 	return false;
     }
 
-    debug("sendnow %d", _cmd);
+    kDebugInfo(7017, "sendnow %d", _cmd);
 
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );

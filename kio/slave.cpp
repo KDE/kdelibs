@@ -45,6 +45,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol)
 
 void Slave::gotInput( int )
 {
+    debug("gotInput");
     if (!dispatch())
     {
         QString arg = m_protocol;
@@ -57,6 +58,7 @@ void Slave::gotInput( int )
 
 void Slave::gotAnswer( int )
 {
+    debug("gotAnswer");
     int cmd;
     QByteArray data;
     bool ok = true;

@@ -183,13 +183,12 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	
 	emit warning( str1 );
 	break;
-    case ERR_NEED_PASSWD:
-	{
-	    QString user, pass;
-	    stream >> str1 >> user >> pass;
-	    openPassDlg(str1, user, pass);
-	}
-	break;
+    case INF_NEED_PASSWD: {
+      QString user, pass;
+      stream >> str1 >> user >> pass;
+      openPassDlg(str1, user, pass);
+    }
+    break;
     default:
 	assert( 0 );
     }
@@ -197,7 +196,6 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {
-    debug("openPassDlg");
     PassDlg dlg( 0L, 0L, true, 0, head, user, pass );
     QByteArray packedArgs;
 

@@ -34,20 +34,20 @@ class Connection;
  enum Command {
    CMD_CONNECT = '0', //
    CMD_DISCONNECT,
-   CMD_NONE = 'A' + 0,
-   CMD_TESTDIR,
-   CMD_GET,
-   CMD_PUT,
-   CMD_STAT,
-   CMD_MIMETYPE,
-   CMD_LISTDIR,
-   CMD_MKDIR,
-   CMD_RENAME,
-   CMD_COPY,
-   CMD_DEL,
-   CMD_CHMOD,
-   CMD_SPECIAL,
-   CMD_USERPASS
+   CMD_NONE = 'A',
+   CMD_TESTDIR = 'B',
+   CMD_GET = 'C',
+   CMD_PUT = 'D',
+   CMD_STAT = 'E',
+   CMD_MIMETYPE = 'F',
+   CMD_LISTDIR = 'G',
+   CMD_MKDIR = 'H',
+   CMD_RENAME = 'I',
+   CMD_COPY = 'J',
+   CMD_DEL = 'K',
+   CMD_CHMOD = 'L',
+   CMD_SPECIAL = 'M',
+   CMD_USERPASS = 'N'
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -66,13 +66,14 @@ class Connection;
    INF_SPEED,
    INF_COPYING_FILE,
    INF_MAKING_DIR,
-   INF_REDIRECTION,
+   INF_REDIRECTION = 20,
    INF_MIME_TYPE,
    INF_ERROR_PAGE,
    INF_WARNING,
    INF_GETTING_FILE,
    INF_DELETING_FILE,
-   INF_CONNECT_FINISHED
+   INF_CONNECT_FINISHED,
+   INF_NEED_PASSWD
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
