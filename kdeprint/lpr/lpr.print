@@ -29,5 +29,6 @@ Comment[ta]=LPR/LPRng «îÍò¦¾¡Ì¾¢
 Comment[ven]=LPR/Maitele au phirintha a LPRng
 Comment[xh]=LPR/LPRng ukuprinta system
 Comment[xx]=xx
+Comment[zu]=LPR/LPRng isistimu yokushicelela
 DetectUris=service:/printer
 DetectPrecedence=0
