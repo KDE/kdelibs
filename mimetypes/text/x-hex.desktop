@@ -5,4 +5,4 @@ Encoding=UTF-8
 MimeType=text/x-hex
 X-KDE-IsAlso=text/plain
 Patterns=*.HEX;*.hex;
-Comment=Intel® Hexadecimal Object File Format
+Comment=IntelÂ® Hexadecimal Object File Format
