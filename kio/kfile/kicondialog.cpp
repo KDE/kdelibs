@@ -6,6 +6,7 @@
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *           (C) 2000 Kurt Granroth <granroth@kde.org>
  *           (C) 1997 Christoph Neerfeld <chris@kde.org>
+ *           (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  * This is free software; it comes under the GNU Library General
  * Public License, version 2. See the file "COPYING.LIB" for the
@@ -84,7 +85,7 @@ KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
     connect(this, SIGNAL(currentChanged(QIconViewItem *)),
 	    SLOT(slotCurrentChanged(QIconViewItem *)));
-    setGridX(65);
+    setGridX(80);
     setWordWrapIconText(false);
     setShowToolTips(true);
 }
@@ -95,7 +96,7 @@ KIconCanvas::~KIconCanvas()
     delete d;
 }
 
-void KIconCanvas::loadFiles(QStringList files)
+void KIconCanvas::loadFiles(const QStringList& files)
 {
     clear();
     mFiles = files;
@@ -124,7 +125,7 @@ void KIconCanvas::slotLoadFiles()
 	    emit progress(i);
             emitProgress = 0;
         }
-        
+
         emitProgress++;
 //	kapp->processEvents();
         if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
@@ -180,7 +181,9 @@ void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
 class KIconDialog::KIconDialogPrivate
 {
   public:
-    KIconDialogPrivate() { m_bStrictIconSize = true; }
+    KIconDialogPrivate() { 
+        m_bStrictIconSize = true;
+    }
     ~KIconDialogPrivate() {}
     bool m_bStrictIconSize;
     QString custom;
@@ -210,7 +213,7 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
 
 void KIconDialog::init()
 {
-    mGroup = KIcon::Desktop;
+    mGroupOrSize = KIcon::Desktop;
     mContext = KIcon::Any;
     mType = 0;
     mFileList = KGlobal::dirs()->findAllResources("appicon", QString::fromLatin1("*.png"));
@@ -279,10 +282,10 @@ void KIconDialog::showIcons()
     mpCanvas->clear();
     QStringList filelist;
     if (mType == 0)
-	if (d->m_bStrictIconSize)
-	  filelist=mpLoader->queryIcons(mGroup, mContext);
+	if (d->m_bStrictIconSize) 
+            filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
-	  filelist=mpLoader->queryIconsByContext(mGroup, mContext);
+            filelist=mpLoader->queryIconsByContext(mGroupOrSize, mContext);
     else
 	filelist=mFileList;
 
@@ -311,9 +314,34 @@ bool KIconDialog::strictIconSize() const
     return d->m_bStrictIconSize;
 }
 
+void KIconDialog::setIconSize( int size )
+{
+    // see KIconLoader, if you think this is weird
+    if ( size == 0 )
+        mGroupOrSize = KIcon::Desktop; // default Group
+    else
+        mGroupOrSize = -size; // yes, KIconLoader::queryIconsByContext is weird
+}
+
+int KIconDialog::iconSize() const
+{
+    // 0 or any other value ==> mGroupOrSize is a group, so we return 0
+    return (mGroupOrSize < 0) ? -mGroupOrSize : 0;
+}
+
+#ifndef KDE_NO_COMPAT
 QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool user)
 {
-    mGroup = group;
+    setup( group, context, false, 0, user );
+    return openDialog();
+}
+#endif
+
+void KIconDialog::setup(KIcon::Group group, KIcon::Context context, 
+                        bool strictIconSize, int iconSize, bool user )
+{
+    d->m_bStrictIconSize = strictIconSize;
+    mGroupOrSize = (iconSize == 0) ? group : -iconSize;
     mType = user ? 1 : 0;
     mpRb1->setChecked(!user);
     mpRb2->setChecked(user);
@@ -321,10 +349,13 @@ QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool
     mpBrowseBut->setEnabled(user);
     mContext = context;
     mpCombo->setCurrentItem(mContext-1);
-    showIcons();
-    KDialogBase::exec();
+}
 
-    if (result() == Accepted)
+QString KIconDialog::openDialog()
+{
+    showIcons();
+
+    if ( exec() == Accepted )
     {
         if (!d->custom.isNull())
             return d->custom;
@@ -338,14 +369,15 @@ QString KIconDialog::selectIcon(KIcon::Group group, KIcon::Context context, bool
 }
 
 QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
-                             bool strictIconSize, bool user,
+                             bool strictIconSize, int iconSize, bool user,
                              QWidget *parent, const QString &caption)
 {
     KIconDialog dlg(parent, "icon dialog");
-    dlg.setStrictIconSize(strictIconSize);
+    dlg.setup( group, context, strictIconSize, iconSize, user );
     if (!caption.isNull())
         dlg.setCaption(caption);
-    return dlg.selectIcon(group, context, user);
+    
+    return dlg.openDialog();
 }
 
 void KIconDialog::slotButtonClicked(int id)
@@ -417,9 +449,13 @@ void KIconDialog::slotFinished()
 class KIconButton::KIconButtonPrivate
 {
   public:
-    KIconButtonPrivate() { m_bStrictIconSize = false; }
+    KIconButtonPrivate() { 
+        m_bStrictIconSize = false;
+        iconSize = 0; // let KIconLoader choose the default
+    }
     ~KIconButtonPrivate() {}
     bool m_bStrictIconSize;
+    int iconSize;
 };
 
 
@@ -471,6 +507,16 @@ bool KIconButton::strictIconSize() const
     return d->m_bStrictIconSize;
 }
 
+void KIconButton::setIconSize( int size )
+{
+    d->iconSize = size;
+}
+
+int KIconButton::iconSize() const
+{
+    return d->iconSize;
+}
+
 void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool user)
 {
     mGroup = group;
@@ -481,7 +527,7 @@ void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool u
 void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
-    setPixmap(mpLoader->loadIcon(mIcon, mGroup));
+    setPixmap(mpLoader->loadIcon(mIcon, mGroup, d->iconSize));
 }
 
 void KIconButton::resetIcon()
@@ -493,16 +539,18 @@ void KIconButton::resetIcon()
 void KIconButton::slotChangeIcon()
 {
     if (!mpDialog)
-      mpDialog = new KIconDialog(mpLoader, this);
-    mpDialog->setStrictIconSize(d->m_bStrictIconSize);
-    QString name = mpDialog->selectIcon(mGroup, mContext, mbUser);
-    if (name.isNull())
+        mpDialog = new KIconDialog(mpLoader, this);
+
+    mpDialog->setup( mGroup, mContext, d->m_bStrictIconSize, d->iconSize, 
+                     mbUser );
+    
+    QString name = mpDialog->openDialog();
+    if (name.isEmpty())
 	return;
-    QPixmap pm = mpLoader->loadIcon(name, mGroup);
+    QPixmap pm = mpLoader->loadIcon(name, mGroup, d->iconSize);
     setPixmap(pm);
     mIcon = name;
     emit iconChanged(name);
 }
-
 
 #include "kicondialog.moc"

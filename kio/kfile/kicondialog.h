@@ -6,6 +6,7 @@
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *           (C) 2000 Kurt Granroth <granroth@kde.org>
  *           (C) 1997 Christoph Neerfeld <chris@kde.org>
+ *           (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  * This is free software; it comes under the GNU Library General
  * Public License, version 2. See the file "COPYING.LIB" for the
@@ -44,7 +45,7 @@ public:
     ~KIconCanvas();
 
     /** Load icons into the canvas. */
-    void loadFiles(QStringList files);
+    void loadFiles(const QStringList& files);
 
     /** Returns the current icon. */
     QString getCurrent() const;
@@ -63,7 +64,7 @@ signals:
 private slots:
     void slotLoadFiles();
     void slotCurrentChanged(QIconViewItem *item);
-    
+
 private:
     QStringList mFiles;
     QTimer *mpTimer;
@@ -100,7 +101,7 @@ public:
 
     /**
      * Sets a strict icon size policy for allowed icons. When true,
-     * only icons of the specified group's size in selectIcon are shown.
+     * only icons of the specified group's size in @ref getIcon() are shown.
      * When false, icons not available at the desired group's size will
      * also be selectable.
      */
@@ -111,10 +112,42 @@ public:
     bool strictIconSize() const;
 
     /**
+     * Sets the size of the icons to be shown / selected.
+     * @see KIcon::StdSizes
+     * @see #iconSize
+     */
+    void setIconSize(int size);
+
+    /**
+     * Returns the iconsize set via @ref setIconSize() or 0, if the default
+     * iconsize will be used.
+     */
+    int iconSize() const;
+
+#ifndef KDE_NO_COMPAT
+    /**
      * @deprecated in KDE 3.0, use the static method getIcon instead.
      */
     QString selectIcon(KIcon::Group group=KIcon::Desktop, KIcon::Context
 	    context=KIcon::Application, bool user=false);
+#endif
+
+    /**
+     * Allows you to set the same parameters as in the class method
+     * @ref getIcon().
+     */
+    void setup( KIcon::Group group,
+                KIcon::Context context = KIcon::Application,
+                bool strictIconSize = false, int iconSize = 0,
+                bool user = false );
+
+    /**
+     * exec()utes this modal dialog and returns the name of the selected icon,
+     * or QString::null if the dialog was aborted.
+     * @returns the name of the icon, suitable for loading with KIconLoader.
+     * @see #getIcon
+     */
+    QString openDialog();
 
     /**
      * Pops up the dialog an lets the user select an icon.
@@ -127,13 +160,17 @@ public:
      * @param strictIconSize When true, only icons of the specified group's size
      * are shown, otherwise icon not available in the desired group's size
      * will also be selectable.
+     * @param iconSize the size of the icons -- the default of the icongroup
+     *        if set to 0
      * @param user Begin with the "user icons" instead of "system icons".
      * @return The name of the icon, suitable for loading with KIconLoader.
      * @version New in 3.0
      */
-    static QString getIcon(KIcon::Group group=KIcon::Desktop, KIcon::Context context=KIcon::Application,
-                           bool strictIconSize=false, bool user=false,
-                           QWidget *parent=0, const QString &caption=QString::null);
+    static QString getIcon(KIcon::Group group=KIcon::Desktop,
+                           KIcon::Context context=KIcon::Application,
+                           bool strictIconSize=false, int iconSize = 0,
+                           bool user=false, QWidget *parent=0,
+                           const QString &caption=QString::null);
 
 private slots:
     void slotButtonClicked(int);
@@ -146,7 +183,7 @@ private:
     void init();
     void showIcons();
 
-    KIcon::Group mGroup;
+    int mGroupOrSize;
     KIcon::Context mContext;
     int mType;
 
@@ -220,6 +257,19 @@ public:
      * Returns the name of the selected icon.
      */
     QString icon() const { return mIcon; }
+
+    /**
+     * Sets the size of the icon to be shown / selected.
+     * @see KIcon::StdSizes
+     * @see #iconSize
+     */
+    void setIconSize( int size );
+
+    /**
+     * Returns the iconsize set via @ref setIconSize() or 0, if the default
+     * iconsize will be used.
+     */
+    int iconSize() const;
 
 signals:
     /**
