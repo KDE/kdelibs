@@ -71,10 +71,23 @@ KServiceFactory::~KServiceFactory()
    delete m_relNameDict;
 }
 
+template<class type> class KStaticDeleter {
+	public:
+		type *deleteit;
+	KStaticDeleter() { deleteit = 0; }
+	~KStaticDeleter() { 
+		delete deleteit;
+	}
+};
+
+static KStaticDeleter<KServiceFactory> ksd;
+
 KServiceFactory * KServiceFactory::self()
 {
-  if (!_self)
+  if (!_self) {
     _self = new KServiceFactory();
+    ksd.deleteit = _self;
+  }
   return _self;
 }
 
