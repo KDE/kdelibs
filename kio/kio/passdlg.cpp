@@ -210,6 +210,11 @@ void PasswordDialog::setPrompt(const QString& prompt)
     d->prompt->setFixedSize( w, d->prompt->heightForWidth( w ) );
 }
 
+void PasswordDialog::setPassword(const QString &p)
+{
+    d->passEdit->setText(p);
+}
+
 void PasswordDialog::setUserReadOnly( bool readOnly )
 {
     d->userEdit->setReadOnly( readOnly );

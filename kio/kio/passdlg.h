@@ -105,6 +105,11 @@ public:
     };
 
     /**
+     * Presets the password
+     */
+    void setPassword( const QString& password );
+
+    /**
      * A convienence static method for obtaining authorization
      * information from the end user.
      *
