@@ -27,9 +27,9 @@
  * This class is mostly of internal use. You probably don't need it :)
  *
  * It provides an automatic synchronization of the X11 Clipboard and Selection
- * buffers. It connects to the selectionChanged() and dataChanged() signals of 
+ * buffers. It connects to the selectionChanged() and dataChanged() signals of
  * QClipboard and copies the buffer's contents to the other buffer, if configured.
- * 
+ *
  * Additionally to keeping them in sync, there is the option to automatically copy
  * the clipboard buffer to the selection buffer, when your application sets the
  * clipboard buffer. That is the default behavior in KDE.
@@ -45,8 +45,10 @@ class KClipboard : public QObject
     Q_OBJECT
 
 public:
-    enum Mode { Clipboard = 1, Selection = 2 };
+    friend class Klipper;
+    friend class KApplication;
 
+    enum Mode { Clipboard = 1, Selection = 2 };
     /**
      * @returns the KClipboard singleton object.
      */
@@ -65,7 +67,8 @@ public:
     }
 
     /**
-     * @returns whether Clipboard and Selection will be synchronized upon changes.
+     * @returns whether Clipboard and Selection will be synchronized upon
+     * changes.
      * @see #setSynchronizing
      */
     static bool isSynchronizing()
@@ -74,8 +77,8 @@ public:
     }
 
     /**
-     * Configures KClipboard to copy the Clipboard buffer to the Selection buffer
-     * whenever the Clipboard changes. 
+     * Configures KClipboard to copy the Clipboard buffer to the Selection
+     * buffer whenever the Clipboard changes.
      *
      * Default is true.
      * @see #implicitSelection
@@ -86,8 +89,8 @@ public:
     }
 
     /**
-     * @returns whether the Clipboard buffer will be copied to the Selection buffer
-     * upon changes.
+     * @returns whether the Clipboard buffer will be copied to the Selection
+     * buffer upon changes.
      * @see #setImplicitSelection
      */
     static bool implicitSelection()
@@ -114,7 +117,14 @@ private:
     static bool s_blocked;
 
     class MimeSource;
-    
+
+private:
+    // needed by klipper
+    enum Configuration { Synchronize = 1, ImplicitSelection = 2 };
+    // called by KApplication upon kipc message, invoked by klipper
+    static void newConfiguration( int config );
+
+
 };
 
 #endif // KCLIPBOARD_H

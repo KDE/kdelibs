@@ -221,15 +221,15 @@ public:
         { b = true; s = s.mid(1); } \
         else b = false;
 
-     URLActionRule(const QString &act, 
+     URLActionRule(const QString &act,
                    const QString &bProt, const QString &bHost, const QString &bPath,
                    const QString &dProt, const QString &dHost, const QString &dPath,
                    bool perm)
-                   : action(act), 
+                   : action(act),
                      baseProt(bProt), baseHost(bHost), basePath(bPath),
                      destProt(dProt), destHost(dHost), destPath(dPath),
-                     permission(perm) 
-                   { 
+                     permission(perm)
+                   {
                       checkEndWildCard(baseProt, baseProtWildCard);
                       checkStartWildCard(baseHost, baseHostWildCard);
                       checkEndWildCard(basePath, basePathWildCard);
@@ -306,7 +306,7 @@ public:
               return false;
         }
         return true;
-     } 
+     }
 
      QString action;
      QString baseProt;
@@ -585,7 +585,7 @@ void KApplication::init(bool GUIenabled)
       (void) new KProcessController();
 
   (void) KClipboard::self();
-  
+
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
@@ -626,7 +626,8 @@ void KApplication::init(bool GUIenabled)
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
-                  (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged);
+                  (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
+                  (1 << KIPC::ClipboardConfigChanged);
 
   // Trigger creation of locale.
   (void) KGlobal::locale();
@@ -1401,7 +1402,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
             (_event->xclient.message_type == kipcCommAtom))
     {
         XClientMessageEvent *cme = (XClientMessageEvent *) _event;
-
+        
         int id = cme->data.l[0];
         int arg = cme->data.l[1];
         if ((id < 32) && (kipcEventMask & (1 << id)))
@@ -1448,6 +1449,10 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 KGlobal::config()->reparseConfiguration();
                 KGlobal::instance()->newIconLoader();
                 emit iconChanged(arg);
+                break;
+
+            case KIPC::ClipboardConfigChanged:
+                KClipboard::newConfiguration(arg);
                 break;
             }
         }
@@ -2329,7 +2334,7 @@ bool KApplication::authorizeKAction(const char *action)
 }
 
 void KApplication::initUrlActionRestrictions()
-{  
+{
   d->urlActionRestrictions.setAutoDelete(true);
   d->urlActionRestrictions.clear();
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
@@ -2356,11 +2361,11 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL
   bool result = false;
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();
-  for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first(); 
+  for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
       rule; rule = d->urlActionRestrictions.next())
   {
-     if ((action == rule->action) && 
-         rule->baseMatch(baseURL) && 
+     if ((action == rule->action) &&
+         rule->baseMatch(baseURL) &&
          rule->destMatch(destURL))
      {
         result = rule->permission;

@@ -25,12 +25,32 @@
 #include "kclipboard.h"
 
 
-
 class KClipboard::MimeSource : public QMimeSource
 {
 public:
-    MimeSource( const QMimeSource * src );
-    ~MimeSource();
+    MimeSource( const QMimeSource * src )
+        : QMimeSource(),
+          m_formats( true ) // deep copies!
+    {
+        m_formats.setAutoDelete( true );
+        m_data.setAutoDelete( true );
+
+        if ( src )
+        {
+            QByteArray *byteArray;
+            const char *format;
+            int i = 0;
+            while ( (format = src->format( i++ )) )
+            {
+                byteArray = new QByteArray();
+                *byteArray = src->encodedData( format ).copy();
+                m_data.append( byteArray );
+                m_formats.append( format );
+            }
+        }
+    }
+
+    ~MimeSource() {}
 
     virtual const char *format( int i ) const {
         if ( i < (int) m_formats.count() )
@@ -41,16 +61,25 @@ public:
     virtual bool provides( const char *mimeType ) const {
         return ( m_formats.find( mimeType ) > -1 );
     }
-    virtual QByteArray encodedData( const char *format ) const;
+    virtual QByteArray encodedData( const char *format ) const
+    {
+        int index = m_formats.find( format );
+        if ( index > -1 )
+        {
+            // grmbl, gcc (2.95.3 at least) doesn't let me call m_data.at(),
+            // due to it being non-const. Even if mutable.
+            QPtrList<QByteArray> *list =
+                const_cast<QPtrList<QByteArray> *>( &m_data );
+            return *(list->at( index ));
+        }
+
+        return QByteArray();
+    }
 
 private:
     mutable QStrList m_formats;
     QPtrList<QByteArray> m_data;
 };
-
-
-
-
 
 
 KClipboard * KClipboard::s_self = 0L;
@@ -149,48 +178,11 @@ void KClipboard::setClipboard( QMimeSource *data, Mode mode )
     s_blocked = false;
 }
 
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-
-KClipboard::MimeSource::MimeSource( const QMimeSource * source )
-    : QMimeSource(),
-      m_formats( true ) // deep copies!
+// private, called by KApplication
+void KClipboard::newConfiguration( int config )
 {
-    m_formats.setAutoDelete( true );
-    m_data.setAutoDelete( true );
-    
-    if ( source )
-    {
-        QByteArray *byteArray;
-        const char *format;
-        int i = 0;
-        while ( (format = source->format( i++ )) )
-        {
-            byteArray = new QByteArray();
-            *byteArray = source->encodedData( format ).copy();
-            m_data.append( byteArray );
-            m_formats.append( format );
-        }
-    }
-}
-
-KClipboard::MimeSource::~MimeSource()
-{
-}
-
-QByteArray KClipboard::MimeSource::encodedData( const char *format ) const
-{
-    int index = m_formats.find( format );
-    if ( index > -1 )
-    {
-        // grmbl, gcc (2.95.3 at least) doesn't let me call m_data.at(), due
-        // to it being non-const. Even if mutable.
-        QPtrList<QByteArray> *list = 
-            const_cast<QPtrList<QByteArray> *>( &m_data );
-        return *(list->at( index ));
-    }
-
-    return QByteArray();
+    s_sync = (config & Synchronize);
+    s_implicitSelection = (config & ImplicitSelection);
 }
 
 #include "kclipboard.moc"

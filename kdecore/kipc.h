@@ -48,6 +48,7 @@ class KIPC
 public:
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
                    BackgroundChanged, SettingsChanged, IconChanged, ToolbarStyleChanged,
+                   ClipboardConfigChanged,
                    UserMessage=32 };
 
     /**
