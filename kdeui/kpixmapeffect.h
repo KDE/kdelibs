@@ -4,7 +4,7 @@
  * Daniel M. Duley <mosfet@kde.org>
  * Dirk A. Mueller <dmuell@gmx.net>
  *
- * $Id: $
+ * $Id$
  */
 
 #ifndef __KPIXMAP_EFFECT_H
@@ -189,6 +189,21 @@ public:
      */
     static void flatten(QImage &image, const QColor &ca, 
 	    const QColor &cb, int ncols=0);
+
+    /**
+     * Fade an image to a certain background color. The number of colors
+     * will not be changed.
+     *
+     * @param image The QImage to process.
+     * @param val The strength of the effect. 0 <= val <= 1.
+     * @param color The background color.
+     */
+    static void fade(QImage &img, double val, const QColor &color);
+
+    /**
+     * The same as above, only works on a KPixmap now.
+     */
+    static void fade(KPixmap &pixmap, double val, const QColor &color);
 };
 
 

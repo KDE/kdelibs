@@ -1172,3 +1172,52 @@ void KPixmapEffect::flatten(QImage &img, const QColor &ca,
     delete[] pal;
 }
 
+
+void KPixmapEffect::fade(QImage &img, double val, const QColor &color)
+{
+    // We don't handle bitmaps
+    if (img.depth() == 1)
+	return;
+
+    int red = color.red();
+    int green = color.green();
+    int blue = color.blue();
+
+    QRgb col;
+    int r, g, b;
+
+    if (img.depth() == 8) {
+	// pseudo color
+
+	for (int i=0; i<img.numColors(); i++) {
+	    col = img.color(i);
+	    r = (int) ((1 - val) * qRed(col) + val * red + 0.5);
+	    g = (int) ((1 - val) * qGreen(col) + val * green + 0.5);
+	    b = (int) ((1 - val) * qBlue(col) + val * blue + 0.5);
+	    img.setColor(i, qRgb(r, g, b));
+	}
+
+    } else {
+	// truecolor
+
+	for (int y=0; y<img.height(); y++)
+	    for (int x=0; x<img.width(); x++) {
+		col = img.pixel(x, y);
+		r = (int) ((1 - val) * qRed(col) + val * red + 0.5);
+		g = (int) ((1 - val) * qGreen(col) + val * green + 0.5);
+		b = (int) ((1 - val) * qBlue(col) + val * blue + 0.5);
+		img.setPixel(x, y, qRgb(r, g, b));
+	    }
+    }
+
+}
+
+
+void KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
+{
+    QImage img = pixmap.convertToImage();
+    fade(img, val, color);
+    pixmap.convertFromImage(img);
+}
+	    
+
