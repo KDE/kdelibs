@@ -112,7 +112,8 @@ static QString encodeHost( const QString& segment, bool encode_slash, int encodi
 
   // Note: when merging qt-addon, use QResolver::domainToAscii here
 #ifndef KDE_QT_ONLY
-  encode_slash = encoding_hint = 0; // to keep the compiler happy
+  Q_UNUSED( encode_slash );
+  Q_UNUSED( encoding_hint );
   return KIDNA::toAscii(segment);
 #else
   return encode(segment, encode_slash, encoding_hint);
