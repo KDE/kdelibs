@@ -203,7 +203,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       strftime(timebuffer, bufsize, "%X",t);
     } else { // toGMTString & toUTCString
       t = gmtime(&tv);
-      strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
+      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %Z", t);
     }
     setlocale(LC_TIME,oldlocale.c_str());
     result = String(timebuffer);
