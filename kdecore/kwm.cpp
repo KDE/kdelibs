@@ -214,6 +214,9 @@ void KWM::enableSessionManagement(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "WM_SAVE_YOURSELF", False);
+  static Atom b = 0;
+  if (!b)
+    b = XInternAtom(qt_xdisplay(), "KWM_SAVE_YOURSELF", False);
   Atom *p;
   int i,n;
   if (XGetWMProtocols(qt_xdisplay(), w, &p, &n)){
@@ -232,6 +235,7 @@ void KWM::enableSessionManagement(Window w){
   }
   else
     XSetWMProtocols(qt_xdisplay(), w, &a, 1);
+  setSimpleProperty(w, b, 1);
 }
 
 
