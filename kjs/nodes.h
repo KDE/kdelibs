@@ -39,6 +39,8 @@ namespace KJS {
   class ObjectLiteralNode;
   class PropertyNode;
   class SourceStream;
+  class PropertyValueNode;
+  class PropertyNode;
 
   enum Operator { OpEqual,
 		  OpEqEq,
@@ -246,6 +248,7 @@ namespace KJS {
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class ArrayNode;
     ElementNode *list;
     int elision;
     Node *node;
@@ -255,14 +258,15 @@ namespace KJS {
   public:
     ArrayNode(int e) : element(0L), elision(e), opt(true) { }
     ArrayNode(ElementNode *ele)
-      : element(ele), elision(0), opt(false) { }
+      : element(ele), elision(0), opt(false) { reverseElementList(); }
     ArrayNode(int eli, ElementNode *ele)
-      : element(ele), elision(eli), opt(true) { }
+      : element(ele), elision(eli), opt(true) { reverseElementList(); }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseElementList();
     ElementNode *element;
     int elision;
     bool opt;
@@ -345,19 +349,21 @@ namespace KJS {
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class ArgumentsNode;
     ArgumentListNode *list;
     Node *expr;
   };
 
   class ArgumentsNode : public Node {
   public:
-    ArgumentsNode(ArgumentListNode *l);
+    ArgumentsNode(ArgumentListNode *l) : list(l) { reverseList(); }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseList();
     ArgumentListNode *list;
   };
 
@@ -646,6 +652,7 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class CaseClauseNode;
     StatementNode *statement;
     StatListNode *list;
   };
@@ -677,26 +684,28 @@ namespace KJS {
   class VarDeclListNode : public Node {
   public:
     VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
-    VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
+    VarDeclListNode(VarDeclListNode *l, VarDeclNode *v) : list(l), var(v) {}
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    Node *list;
+    friend class VarStatementNode;
+    VarDeclListNode *list;
     VarDeclNode *var;
   };
 
   class VarStatementNode : public StatementNode {
   public:
-    VarStatementNode(VarDeclListNode *l) : list(l) {}
+    VarStatementNode(VarDeclListNode *l) : list(l) { reverseList(); }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseList();
     VarDeclListNode *list;
   };
 
@@ -848,7 +857,7 @@ namespace KJS {
 
   class CaseClauseNode: public Node {
   public:
-    CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
+    CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { reverseList(); }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -856,6 +865,7 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseList();
     Node *expr;
     StatListNode *list;
   };
@@ -863,15 +873,16 @@ namespace KJS {
   class ClauseListNode : public Node {
   public:
     ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
+    ClauseListNode(ClauseListNode *n, CaseClauseNode *c) : cl(c), nx(n) { }
     virtual void ref();
     virtual bool deref();
-    ClauseListNode* append(CaseClauseNode *c);
     virtual Value evaluate(ExecState *exec) const;
     CaseClauseNode *clause() const { return cl; }
     ClauseListNode *next() const { return nx; }
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class CaseBlockNode;
     CaseClauseNode *cl;
     ClauseListNode *nx;
   };
@@ -879,7 +890,7 @@ namespace KJS {
   class CaseBlockNode: public Node {
   public:
     CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2)
-      : list1(l1), def(d), list2(l2) { }
+      : list1(l1), def(d), list2(l2) { reverseLists(); }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -887,6 +898,7 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseLists();
     ClauseListNode *list1;
     CaseClauseNode *def;
     ClauseListNode *list2;
@@ -973,7 +985,7 @@ namespace KJS {
   class ParameterNode : public Node {
   public:
     ParameterNode(const Identifier &i) : id(i), next(0L) { }
-    ParameterNode *append(const Identifier &i);
+    ParameterNode(ParameterNode *list, const Identifier &i) : id(i), next(list) { }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -981,6 +993,8 @@ namespace KJS {
     ParameterNode *nextParam() const { return next; }
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class FuncDeclNode;
+    friend class FuncExprNode;
     Identifier id;
     ParameterNode *next;
   };
@@ -995,7 +1009,7 @@ namespace KJS {
   class FuncDeclNode : public StatementNode {
   public:
     FuncDeclNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
-      : ident(i), param(p), body(b) { }
+      : ident(i), param(p), body(b) { reverseParameterList(); }
     virtual void ref();
     virtual bool deref();
     Completion execute(ExecState* /*exec*/)
@@ -1003,6 +1017,7 @@ namespace KJS {
     void processFuncDecl(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseParameterList();
     Identifier ident;
     ParameterNode *param;
     FunctionBodyNode *body;
@@ -1011,12 +1026,13 @@ namespace KJS {
   class FuncExprNode : public Node {
   public:
     FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
-	: param(p), body(b) { }
+	: param(p), body(b) { reverseParameterList(); }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    void reverseParameterList();
     ParameterNode *param;
     FunctionBodyNode *body;
   };
