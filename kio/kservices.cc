@@ -93,7 +93,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   config.setDesktopGroup();
   m_strExec = config.readEntry( "Exec" );
   m_strName = config.readEntry( "Name" );
-  if ( m_strName.isEmpty() || m_strExec.isEmpty() )
+  if ( m_strName.isEmpty() )
   {
     m_bValid = false;
     return;
@@ -218,7 +218,7 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QVariant( m_libraryMinor );
   else if ( _name == "LibraryDependencies" )
     p = new QVariant( m_lstLibraryDeps );
-		      
+		
   if ( p )
     return KService::PropertyPtr( p );
 
@@ -256,7 +256,7 @@ QStringList KService::propertyNames() const
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );
   res.append( "LibraryDependencies" );
-  
+
   return res;
 }
 
