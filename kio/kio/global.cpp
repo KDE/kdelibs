@@ -35,7 +35,6 @@
 #include "kio/job.h"
 
 #include <kdebug.h>
-#include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
