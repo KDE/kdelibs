@@ -82,8 +82,8 @@ ksystemtray.cpp
 ktabctl.cpp
 ktextbrowser.cpp
 ktip.cpp
-ktoolbar.cpp
-ktoolbarbutton.cpp
+ktoolbar.cpp		Waldo Bastian <bastian@kde.org>
+ktoolbarbutton.cpp	Waldo Bastian <bastian@kde.org>
 ktoolbarradiogroup.cpp
 kurllabel.cpp
 kwindowlistmenu.cpp
