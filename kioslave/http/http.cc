@@ -3361,6 +3361,8 @@ bool HTTPProtocol::readHeader()
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
      else if (m_request.url.path().right(4).upper() == ".PEM")
         m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
+     else if (m_request.url.path().right(4).upper() == ".SWF")
+        m_strMimeType = QString::fromLatin1("application/x-shockwave-flash");
   }
 
 #if 0
