@@ -314,7 +314,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                                       actionCollection(), "saveimageas" );
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                                             actionCollection(), "copyimagelocation" );
-    QString name = KStringHandler::csqueeze(d->m_imageURL.fileName(), 25);
+    QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
     d->m_paViewImage = new KAction( i18n( "View Image (%1)" ).arg(name), 0, this, SLOT( slotViewImage() ),
                                             actionCollection(), "viewimage" );
   }
