@@ -207,14 +207,25 @@ int main( int argc, char **argv )
 #define BOOLENTRY2 false
 
   KConfig sc( "kconfigtest" );
-  
+
+  sc.setGroup("Hello");  
   sc.writeEntry( "Bua", "Brumm" );
+  sc.writeEntry( "Test", QString::fromLocal8Bit("Hello הצü"));
+  sc.writeEntry( "Test2", "");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 ); 
   sc.writeEntry( "boolEntry2", BOOLENTRY2 );
+  sc.setGroup("Bye");  
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
   sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
+  sc.sync();
   
-  bool b1 = sc.readBoolEntry( "boolEntry1" );
+  KConfig sc2( "kconfigtest" );
+  sc2.setGroup("Hello");  
+  QString hello = sc2.readEntry("Test");
+  fprintf(stderr, "hello = %s\n", hello.local8Bit().data());
+  hello = sc2.readEntry("Test2", "Fietsbel");
+  fprintf(stderr, "Test2 = '%s'\n", hello.latin1());
+  bool b1 = sc2.readBoolEntry( "boolEntry1" );
   fprintf(stderr, "comparing boolEntry1 %s with %s -> ", BOOLVALUE(BOOLENTRY1), BOOLVALUE(b1));
   if (b1 == BOOLENTRY1)
     fprintf(stderr, "OK\n");
@@ -222,7 +233,7 @@ int main( int argc, char **argv )
     fprintf(stderr, "not OK\n");
     exit(-1);
   }
-  bool b2 = sc.readBoolEntry( "boolEntry2" );
+  bool b2 = sc2.readBoolEntry( "boolEntry2" );
   fprintf(stderr, "comparing boolEntry2 %s with %s -> ", BOOLVALUE(BOOLENTRY2), BOOLVALUE(b2));
   if (b2 == BOOLENTRY2)
     fprintf(stderr, "OK\n");
@@ -230,8 +241,9 @@ int main( int argc, char **argv )
     fprintf(stderr, "not OK\n");
     exit(-1);
   }
-  QRect rect = sc.readRectEntry( "rectEntry" );
-  QPoint point = sc.readPointEntry( "pointEntry" );
+  sc2.setGroup("Bye");  
+  QRect rect = sc2.readRectEntry( "rectEntry" );
+  QPoint point = sc2.readPointEntry( "pointEntry" );
   fprintf( stderr, "rect is (%d,%d,%d,%d)\n", rect.left(), rect.top(), rect.width(), rect.height() );
   fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
 }
