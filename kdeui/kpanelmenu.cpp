@@ -28,7 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "kpanelmenu.h"
 #include "kpanelmenu.moc"
-#include "kaccelmanager.h"
+//#include "kaccelmanager.h"
 
 
 class KPanelMenuPrivate
@@ -67,7 +67,8 @@ void KPanelMenu::init(const QString& path)
     config->setGroup("menus");
     d->clearDelay = config->readNumEntry("MenuCacheTime", 60000); // 1 minute
 
-    KAcceleratorManager::manage(this);
+    //KAcceleratorManager::manage(this);
+    setKeyboardShortcutsEnabled(true);
 }
 
 KPanelMenu::~KPanelMenu()

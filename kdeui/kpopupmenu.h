@@ -95,15 +95,21 @@ private:
 };
 
 /**
- * KPopupMenu is a class for menus with standard title items. It acts
- * identically to QPopupMenu, with the addition of insertTitle() and
- * changeTitle() methods.
+ * KPopupMenu is a class for menus with standard title items and keyboard
+ * accessibility for popups with many options and/or varying options. It acts
+ * identically to QPopupMenu, with the addition of insertTitle(),
+ * changeTitle(), setKeyboardShortcutsEnabled() and
+ * setKeyboardShortcutsExecute() methods.
  *
  * The titles support a text string, an icon, plus user defined gradients,
  * colors, and background pixmaps.
  *
+ * The keyboard search algorithm is incremental with additional underlining
+ * for user feedback.
+ *
  * @short A menu with title items.
  * @author Daniel M. Duley <mosfet@kde.org>
+ * @author Hamish Rodda <meddie@yoyo.its.monash.edu.au>
  */
 class KPopupMenu : public QPopupMenu {
     Q_OBJECT
@@ -146,6 +152,28 @@ public:
      * Returns the icon of the title item at the specified id.
      */
     QPixmap titlePixmap(int id) const;
+
+    /**
+     * Enables keyboard navigation by searching for the entered key sequence.
+     * Also underlines the currently selected item, providing feedback on the search.
+     *
+     * Defaults to off.
+     *
+     * WARNING: calls to text() of currently keyboard-selected items will
+     * contain additional ampersand characters.
+     *
+     * WARNING: though pre-existing keyboard shortcuts will not interfere with the
+     * operation of this feature, they may be confusing to the user as the existing
+     * shortcuts will not work.
+     */
+    void setKeyboardShortcutsEnabled(bool enable);
+
+    /**
+     * Enables execution of the menu item once it is uniquely specified.
+     * Defaults to off.
+     */
+    void setKeyboardShortcutsExecute(bool enable);
+
     /**
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
@@ -158,7 +186,15 @@ public:
     void setTitle(const QString &title);
 
 protected:
+    virtual void closeEvent(QCloseEvent *);
+    virtual void keyPressEvent(QKeyEvent* e);
+
     virtual void virtual_hook( int id, void* data );
+
+protected slots:
+    QString underlineText(const QString& text, uint length);
+    void resetKeyboardVars(bool noMatches = false);
+
 private:
     class KPopupMenuPrivate;
     KPopupMenuPrivate *d;
