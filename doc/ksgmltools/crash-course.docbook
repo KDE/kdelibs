@@ -1489,7 +1489,7 @@ and/or purchase a DocBook book.</para>
 <para>
 Below are a list of KDE and other resources that will help you acquire and get started with DocBook.
 <itemizedlist>
-<listitem><para><ulink url="http://www.kde.org/documentation/docbook/index.html">KDE DocBook page (Contains this crash course)</ulink></para></listitem>
+<listitem><para><ulink url="http://i18n.kde.org/doc/index.html">KDE documentation home page (contains more detailed markup instructions)</ulink></para></listitem>
 <listitem><para><ulink url="http://www.oasis-open.org/docbook/">OASIS DocBook site</ulink></para></listitem>
 <listitem><para><ulink url="http://nwalsh.com/docbook/defguide/qr/quickref.htm"> DocBook 3.1 Quick
 Reference</ulink></para> </listitem>
