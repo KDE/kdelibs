@@ -178,6 +178,15 @@ public:
   void setAddress(const QString& node, const QString& service);
 
   /**
+   * Sets the timeout for accepting. When you call @ref accept,
+   * it will wait at most @p msecs milliseconds or return with an error
+   * (returning a NULL object).
+   *
+   * @param msecs		the time in milliseconds to wait, 0 to wait forever
+   */
+  void setTimeout(int msecs);
+
+  /**
    * Starts the lookup for peer and local hostnames as
    * well as their services.
    *

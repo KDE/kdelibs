@@ -45,11 +45,12 @@ public:
 
   enum { None, LookupDone, Bound, Listening } state;
   int backlog;
+  int timeout;
 
   bool bindWhenFound : 1, listenWhenBound : 1, useKBufferedSocket : 1;
 
   KServerSocketPrivate()
-    : state(None), bindWhenFound(false), listenWhenBound(false),
+    : state(None), timeout(0), bindWhenFound(false), listenWhenBound(false),
       useKBufferedSocket(true)
   { 
     resolver.setFlags(KResolver::Passive);
@@ -131,6 +132,11 @@ void KServerSocket::setAddress(const QString& node, const QString& service)
   d->resolver.setNodeName(node);
   d->resolver.setServiceName(service);
   d->resolverResults.empty();
+}
+
+void KServerSocket::setTimeout(int msec)
+{
+  d->timeout = msec;
 }
 
 bool KServerSocket::lookup()
@@ -295,6 +301,20 @@ KActiveSocketBase* KServerSocket::accept()
       else if (!listen())
 	// error happened during listen
 	return false;
+    }
+
+  // check to see if we're doing a timeout
+  if (blocking() && d->timeout > 0)
+    {
+      bool timedout;
+      if (!socketDevice()->poll(d->timeout, &timedout))
+	{
+	  copyError();
+	  return NULL;
+	}
+
+      if (timedout)
+	return 0L;
     }
 
   // we're listening here
