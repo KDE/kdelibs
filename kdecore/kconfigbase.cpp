@@ -1066,7 +1066,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
    unsigned int len = homeDir.length();
    // replace by "$HOME" if possible
    if (path.length() == len || path[len] == '/') {
-        path = path.replace(0, len, QString::fromLatin1("$HOME"));
+        path.replace(0, len, QString::fromLatin1("$HOME"));
         return true;
    } else
         return false;
@@ -1076,6 +1076,9 @@ static QString translatePath( QString path )
 {
    if (path.isEmpty())
        return path;
+
+   // only "our" $HOME should be interpreted
+   path.replace('$', "$$");
 
    bool startsWithFile = path.startsWith("file:", false);
 
