@@ -161,7 +161,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     result = getDOMNode(element);
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
@@ -341,7 +341,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "value")           return getString(select.value());
       else if (p == "length")          return Number(select.length());
       else if (p == "form")            return getDOMNode(select.form()); // type HTMLFormElement
-      else if (p == "options")         return getHTMLCollection(select.options()); // type HTMLCollection
+      else if (p == "options")         return getSelectHTMLCollection(select.options(), select); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
       else if (p == "name")            return getString(select.name());
@@ -964,7 +964,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
@@ -1553,54 +1553,6 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
   return result;
 }
 
-void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
-{
-  // NON-STANDARD inserting new'ed Option objects into the collection
-  DOM::Node node = collection.item(0).parentNode();
-  while (node.elementId() != ID_SELECT) {
-      if (node.isNull())
-	  return;
-      node = node.parentNode();
-  }
-  DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
-  // resize ?
-  if (p == "length") {
-    long newLen = v.toInt32();
-    long diff = sel.length() - newLen;
-    while (diff-- > 0) {
-      sel.remove(newLen);
-    }
-    return;
-  }
-  // is v an option element ?
-  node = KJS::toNode(v);
-  if (node.isNull() || node.elementId() != ID_OPTION)
-    return;
-  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
-  // an index ?
-  bool ok;
-  unsigned int u = p.toULong(&ok);
-  if (!ok)
-    return;
-
-  long diff = long(u) - sel.length();
-  DOM::HTMLElement before;
-  // out of array bounds ? first insert empty dummies
-  if (diff > 0) {
-    DOM::Document doc = sel.ownerDocument();
-    while (diff--) {
-      DOM::Element dummy = doc.createElement("OPTION");
-      sel.add(dummy, before);
-    }
-    // replace an existing entry ?
-  } else if (diff < 0) {
-    before = sel.options().item(u+1);
-    sel.remove(u);
-  }
-  // finally add the new element
-  sel.add(option, before);
-}
-
 Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 {
   KJSO result;
@@ -1616,7 +1568,62 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
       break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
+}
+
+KJSO KJS::HTMLSelectCollection::tryGet(const UString &p) const
+{
+  if (p == "selectedIndex")
+    return Number(element.selectedIndex());
+
+  return  HTMLCollection::tryGet(p);
+}
+
+void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
+{
+  // resize ?
+  if (p == "length") {
+    long newLen = v.toInt32();
+    long diff = element.length() - newLen;
+    while (diff-- > 0) {
+      element.remove(newLen);
+    }
+    return;
+  }
+  // an index ?
+  bool ok;
+  unsigned int u = p.toULong(&ok);
+  if (!ok)
+    return;
+
+  if (v.isA(NullType) || v.isA(UndefinedType)) {
+    // null and undefined delete. others, too ?
+    element.remove(u);
+    return;
+  }
+  // is v an option element ?
+  DOM::Node node = KJS::toNode(v);
+  if (node.isNull() || node.elementId() != ID_OPTION)
+    return;
+
+  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
+  long diff = long(u) - element.length();
+  DOM::HTMLElement before;
+  // out of array bounds ? first insert empty dummies
+  if (diff > 0) {
+    DOM::Document doc = element.ownerDocument();
+    while (diff--) {
+      DOM::Element dummy = doc.createElement("OPTION");
+      element.add(dummy, before);
+    }
+    // replace an existing entry ?
+  } else if (diff < 0) {
+    before = element.options().item(u+1);
+    element.remove(u);
+  }
+
+  // finally add the new element
+  element.add(option, before);
 }
 
 ////////////////////// Option Object ////////////////////////
@@ -1631,11 +1638,20 @@ Object OptionConstructor::construct(const List &args)
 {
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
-  DOM::Text t = doc.createTextNode(args[0].toString().value().string());
-  try { opt.appendChild(t); }
-  catch(DOM::DOMException& e) {
+  int sz = args.size();
+  if (sz > 0) {
+    DOM::Text t = doc.createTextNode(args[0].toString().value().string());
+    try { opt.appendChild(t); }
+    catch(DOM::DOMException& e) {
       // oh well
+    }
   }
+  if (sz > 1)
+    opt.setValue(args[1].toString().value().string());
+  if (sz > 2)
+    opt.setDefaultSelected( args[2].toBoolean().value() );
+  if (sz > 3)
+    opt.setSelected( args[3].toBoolean().value() );
 
   return Object(getDOMNode(opt).imp());
 }
@@ -1654,7 +1670,7 @@ ImageObject::ImageObject(const Global& global)
 
 Completion ImageObject::tryExecute(const List &)
 {
-  return Completion(Normal, Undefined());
+  return Completion(ReturnValue);
 }
 #endif
 
@@ -1709,6 +1725,20 @@ KJSO KJS::getHTMLCollection(DOM::HTMLCollection c)
     return ret;
   else {
     ret = new HTMLCollection(c);
+    htmlCollections.insert(c.handle(),ret);
+    return ret;
+  }
+}
+
+KJSO KJS::getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+{
+  HTMLCollection *ret;
+  if (c.isNull())
+    return Null();
+  else if ((ret = htmlCollections[c.handle()]))
+    return ret;
+  else {
+    ret = new HTMLSelectCollection(c, e);
     htmlCollections.insert(c.handle(),ret);
     return ret;
   }
