@@ -17,7 +17,7 @@ class QWidget;
  *
  * When told to retrieve settings (@ref retrieveSettings()) KAutoConfig 
  * will traverse the specified widgets building a list of all known widgets
- * that haven't been marked to be ignored.  If a setting is marked immutible
+ * that haven't been marked to be ignored.  If a setting is marked immutable
  * the value is loaded and the widget is disabled.
  *
  * The name of the widget determines the name of the setting.  The initial
@@ -60,7 +60,7 @@ Q_OBJECT
 signals:
   /**
    * One or more of the settings have been saved (such as when the user
-   * clicks on the Apply button).  This is only emited by @ref saveSettings()
+   * clicks on the Apply button).  This is only emitted by @ref saveSettings()
    * whenever one or more setting were changed and consequently saved.
    */ 
   void settingsChanged();
@@ -71,11 +71,11 @@ signals:
    * contains the one or more modified setting.
    * @see settingsChanged()
    */
-  void settingsChanged(QWidget *widget);
+  void settingsChanged( QWidget *widget );
 	
   /**
-   * If @ref retreiveSettings was told to track changes
-   * then if any known setting was changed this signal will be emited.  Note
+   * If @ref retrieveSettings() was told to track changes then if
+   * any known setting was changed this signal will be emitted.  Note
    * that a settings can be modified several times and might go back to the 
    * original saved state.  @ref hasChanged() will tell you if anything has
    * actually changed from the saved values.
@@ -90,7 +90,7 @@ public:
    * @param parent - Parent object.
    * @param name - Object name.
    */ 
-  KAutoConfig(KConfig *kconfig, QObject *parent=0, const char *name=0);	
+  KAutoConfig( KConfig *kconfig, QObject *parent=0, const char *name=0 );	
  
   /**
    * Constructor.
@@ -99,7 +99,7 @@ public:
    * @param parent - Parent object.
    * @param name - Object name.
    */ 
-  KAutoConfig(QObject *parent=0, const char *name=0);
+  KAutoConfig( QObject *parent=0, const char *name=0 );
 
   /**
    * Destructor.  Deletes private class.
@@ -116,14 +116,14 @@ public:
    * group it should be added separately and also ignored.
    * @see ignoreSubWidget()
    */ 
-  void addWidget(QWidget *widget, const QString &group);
+  void addWidget( QWidget *widget, const QString &group );
 
   /**
    * Ignore the specified child widget when performing an action.  Doesn't
    * effect widgets that were added with @ref addWidget() only their children.
    * @param widget - Pointer to the widget that should be ignored.  
    **/ 
-  void ignoreSubWidget(QWidget *widget);
+  void ignoreSubWidget( QWidget *widget );
 
   /**
    * Traverse the specified widgets to see if anything is different then the
@@ -145,7 +145,7 @@ public:
    * Adds a widget and its signal to the internal list so that when
    * KAutoConfig finds widgetName in @ref retrieveSettings() it will know
    * how to connect its signal that it has changed to KAutoConfig's signal
-   * widgetModifed().  This function should be called before 
+   * widgetModified().  This function should be called before 
    *
    * Example:
    * <pre>
@@ -158,9 +158,9 @@ public:
    * @param widgetName - The class name of the widget (className()).
    * @param signal - The signal (with "SIGNAL()" wrapper) that should be called.
    */ 
-  inline void addWidgetChangedSignal(const QString &widgetName,
-		  const char *signal){
-    changedMap.insert(widgetName, signal);
+  inline void addWidgetChangedSignal( const QString &widgetName,
+		  const char *signal ){
+    changedMap.insert( widgetName, signal );
   }
 
 public slots:
@@ -168,11 +168,11 @@ public slots:
    * Traverse the specified widgets, retrieving the settings for all known
    * widgets that aren't being ignored and storing the default values.
    * @param trackChanges - If any changes by the widgets should be tracked
-   * set true.  This causes the emiting the @ref modified() signal when
+   * set true.  This causes the emitting the @ref modified() signal when
    * something changes.
    * @return bool - True if any setting was changed from the default.
    */ 
-  bool retrieveSettings(bool trackChanges=false);
+  bool retrieveSettings( bool trackChanges=false );
   
   /**
    * Traverse the specified widgets, saving the settings for all known
@@ -200,16 +200,16 @@ protected:
    * Recursive function that finds all known children.
    * Goes through the children of widget and if any are known and not being 
    * ignored, stores them in currentGroup.  Also checks if the widget
-   * should be disabled because it is set immutible.
+   * should be disabled because it is set immutable.
    * @param widget - Parent of the children to look at.
    * @param currentGroup - Place to store known children of widget.
    * @param trackChanges - If true then tracks any changes to the children of
    * widget that are known.
-   * @return bool - If a widget was set to semething other then its default.
+   * @return bool - If a widget was set to something other then its default.
    * @see retrieveSettings()
    */ 
-  bool parseChildren(const QWidget *widget,
-		  QPtrList<QWidget>&currentGroup, bool trackChanges);
+  bool parseChildren( const QWidget *widget,
+		  QPtrList<QWidget>&currentGroup, bool trackChanges );
  
 private:
   // KAutoConfig Private class.
