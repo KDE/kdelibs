@@ -1,0 +1,4 @@
+usr/lib/kde2/libkdeprint_cups.so
+usr/lib/kde2/libkdeprint_cups.la
+usr/bin/make_driver_db_cups
+usr/share/lintian/overrides/kdeprint

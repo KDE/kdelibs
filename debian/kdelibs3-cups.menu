@@ -1,4 +1,4 @@
-?package(kdeprint):\
+?package(kdelibs3-cups):\
 	needs=x11\
 	section=Apps/System\
 	hints="KDE"\

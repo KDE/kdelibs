@@ -1,6 +1,0 @@
-kdeprint: menu-item-contains-unknown-tag kderemove /usr/lib/menu/kdeprint:7
-kdeprint: shlib-missing-in-control-file libkdeprint_cups.so usr/lib/kde2/libkdeprint_cups.so
-kdeprint: shlib-missing-in-control-file libkdeprint_lpd.so usr/lib/kde2/libkdeprint_lpd.so
-kdeprint: shlib-missing-in-control-file libkdeprint_lpdunix.so usr/lib/kde2/libkdeprint_lpdunix.so
-kdeprint: shlib-missing-in-control-file libcupsdconf.so usr/lib/libcupsdconf.so
-kdeprint: shlib-missing-in-control-file libkdeprint_rlpr.so usr/lib/kde2/libkdeprint_rlpr.so

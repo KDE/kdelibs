@@ -30,7 +30,7 @@ build-stamp:
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa
 
-	make
+	$(MAKE)
 
 	touch build-stamp
 
@@ -42,9 +42,9 @@ debian-clean:
 clean: debian-clean
 	-rm -f debian/debiandirs
 	if test -d CVS; then \
-	  make -f admin/Makefile.common cvs-clean ;\
+	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
 	fi
-	-make distclean
+	-$(MAKE) distclean
 
 binary-indep:	build
 	dh_testdir
@@ -88,13 +88,13 @@ binary-arch:  build
 	install -d debian/kdelibs3/etc/kde2
 	install -d debian/kdelibs3/usr/share/lintian/overrides
 	install -d debian/libkmid-alsa/usr/bin
-	make DESTDIR=`pwd`/debian/kdelibs3/ install
-	make -C arts/ clean
-	make -C libkmid/ clean
+	$(MAKE) DESTDIR=`pwd`/debian/kdelibs3/ install
+	$(MAKE) -C arts/ clean
+	$(MAKE) -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl \
-		--includedir=/usr/include/kde
-	make -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
-	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+		--includedir=/usr/include/kde --enable-cups
+	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
+	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	install -d debian/libkmid-alsa/usr/share/lintian/overrides
 	install -d debian/libarts-alsa/usr/share/lintian/overrides
 	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
@@ -154,7 +154,7 @@ binary-arch:  build
 	chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
-	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdeprint/usr/lib
+	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
 	#to get rid of self-dependency
 	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
