@@ -166,7 +166,7 @@ void Addressee::setNameFromString( const QString &str )
   QString emptyStr = "";
   AddresseeHelper *helper = AddresseeHelper::self();
       
-  int i = str.find(',');
+  int i = str.find( ',' );
   if( i < 0 ) {
     QStringList parts = QStringList::split( spaceStr, str );
     int leftOffset = 0;
@@ -220,29 +220,36 @@ void Addressee::setNameFromString( const QString &str )
     int leftOffset = 0;
     int rightOffset = parts.count() - 1;
 
-    QString suffix;
-    while ( rightOffset >= 0 ) {
-      if ( helper->containsSuffix( parts[ rightOffset ] ) ) {
-        suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr));
+    if ( parts.count() > 0 ) {
+
+      QString suffix;
+      while ( rightOffset >= 0 ) {
+        if ( helper->containsSuffix( parts[ rightOffset ] ) ) {
+          suffix.prepend(parts[ rightOffset ] + (suffix.isEmpty() ? emptyStr : spaceStr));
+          rightOffset--;
+        } else
+          break;
+      }
+      setSuffix( suffix );
+
+      if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
+        setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
         rightOffset--;
       } else
-        break;
-    }
-    setSuffix( suffix );
+        setFamilyName( parts[ rightOffset ] );
 
-    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
-      setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
-      rightOffset--;
-    } else
-      setFamilyName( parts[ rightOffset ] );
-
-    QString prefix;
-    while ( leftOffset < rightOffset ) {
-      if ( helper->containsTitle( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
-        leftOffset++;
-      } else
-        break;
+      QString prefix;
+      while ( leftOffset < rightOffset ) {
+        if ( helper->containsTitle( parts[ leftOffset ] ) ) {
+          prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+          leftOffset++;
+        } else
+          break;
+      }
+    } else {
+      setPrefix( "" );
+      setFamilyName( "" );
+      setSuffix( "" );
     }
 
     parts = QStringList::split( spaceStr, part2 );
@@ -250,26 +257,33 @@ void Addressee::setNameFromString( const QString &str )
     leftOffset = 0;
     rightOffset = parts.count();
 
-    while ( leftOffset < rightOffset ) {
-      if ( helper->containsTitle( parts[ leftOffset ] ) ) {
-        prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+    if ( parts.count() > 0 ) {
+
+      QString prefix;
+      while ( leftOffset < rightOffset ) {
+        if ( helper->containsTitle( parts[ leftOffset ] ) ) {
+          prefix.append( ( prefix.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+          leftOffset++;
+        } else
+          break;
+      }
+      setPrefix( prefix );
+
+      if ( leftOffset < rightOffset ) {
+        setGivenName( parts[ leftOffset ] );
         leftOffset++;
-      } else
-        break;
-    }
-    setPrefix( prefix );
+      }
 
-    if ( leftOffset < rightOffset ) {
-      setGivenName( parts[ leftOffset ] );
-      leftOffset++;
+      QString additionalName;
+      while ( leftOffset < rightOffset ) {
+        additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
+        leftOffset++;
+      }
+      setAdditionalName( additionalName );
+    } else {
+      setGivenName( "" );
+      setAdditionalName( "" );
     }
-
-    QString additionalName;
-    while ( leftOffset < rightOffset ) {
-      additionalName.append( ( additionalName.isEmpty() ? emptyStr : spaceStr) + parts[ leftOffset ] );
-      leftOffset++;
-    }
-    setAdditionalName( additionalName );
   }
 }
 
