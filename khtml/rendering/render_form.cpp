@@ -1015,9 +1015,13 @@ void RenderSelect::updateFromElement()
                     text = QString::fromLatin1("    ")+text;
                 }
 
-                if(m_useListBox)
-                    static_cast<KListBox*>(m_widget)->insertItem(text, listIndex);
-                else
+                if(m_useListBox) {
+                    KListBox *l = static_cast<KListBox*>(m_widget);
+                    l->insertItem(text, listIndex);
+                    DOMString disabled = optElem->getAttribute(ATTR_DISABLED);
+                    if (!disabled.isEmpty() && l->item( listIndex ))
+                        l->item( listIndex )->setSelectable( false );
+                }  else
                     static_cast<KComboBox*>(m_widget)->insertItem(text, listIndex);
             }
             else

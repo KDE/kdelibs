@@ -1,3 +1,8 @@
+2003-10-24  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_form.cpp (updateFromElement): support disabled attribute
+	select option (#61347)
+
 2003-10-24  Lars Knoll <knoll@kde.org>
 	* Make the <button> element work correctly
 	* remove lot's of addCSSProperty calls and moved the
