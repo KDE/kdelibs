@@ -354,6 +354,7 @@ public:
         friend class RenderText;
         friend class RenderObject;
         friend class RenderFrameSet;
+	friend class RenderLayer;
         friend class DOM::HTMLAreaElementImpl;
     public:
         NodeInfo(bool readonly, bool active)

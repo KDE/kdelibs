@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
- *               2003 Lars Knoll <knoll@kde.org>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -50,10 +49,9 @@
 #include <assert.h>
 
 #include "render_object.h"
-#include "render_style.h"
 
 class QScrollBar;
-template <class T> class QValueVector;
+template <class T> class QPtrVector;
 
 namespace khtml {
     class RenderStyle;
@@ -82,6 +80,10 @@ private:
 class RenderLayer
 {
 public:
+#ifdef APPLE_CHANGES
+    static QScrollBar* gScrollBar;
+#endif
+
     RenderLayer(RenderObject* object);
     ~RenderLayer();
 
@@ -99,6 +101,11 @@ public:
     void removeOnlyThisLayer();
     void insertOnlyThisLayer();
 
+#ifdef APPLE_CHANGES
+    bool isTransparent();
+    RenderLayer* transparentAncestor();
+#endif
+
     RenderLayer* root() {
         RenderLayer* curr = this;
         while (curr->parent()) curr = curr->parent();
@@ -107,8 +114,10 @@ public:
 
     int xPos() const { return m_x; }
     int yPos() const { return m_y; }
+
     short width() const;
     int height() const;
+
     short scrollWidth() const { return m_scrollWidth; }
     int scrollHeight() const { return m_scrollHeight; }
 
@@ -128,23 +137,27 @@ public:
     void showScrollbar(Qt::Orientation, bool);
     QScrollBar* horizontalScrollbar() { return m_hBar; }
     QScrollBar* verticalScrollbar() { return m_vBar; }
-    int verticalScrollbarWidth() { return vBarRect.width(); }
-    int horizontalScrollbarHeight() { return hBarRect.height(); }
+    int verticalScrollbarWidth();
+    int horizontalScrollbarHeight();
     void moveScrollbarsAside();
-    void positionScrollbars(int tx, int ty);
-    void paintScrollbars(QPainter* p, int x, int y, int w, int h);
+    void positionScrollbars(const QRect &damageRect);
+    void paintScrollbars(QPainter* p, const QRect& damageRect);
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
     void updateScrollPositionFromScrollbars();
 
-    void layout();
     void updateLayerPosition();
+    void layout();
 
-    // Get the enclosing stacking context for this layer. A stacking
-    // context has a non-auto z-index.
+    // Get the enclosing stacking context for this layer.  A stacking context is a layer
+    // that has a non-auto z-index.
     RenderLayer* stackingContext() const;
+    bool isStackingContext() const { return !hasAutoZIndex() || renderer()->isCanvas(); }
 
-    void setLayerDirty();
+    void dirtyZOrderLists();
+    void updateZOrderLists();
+    QPtrVector<RenderLayer>* posZOrderList() const { return m_posZOrderList; }
+    QPtrVector<RenderLayer>* negZOrderList() const { return m_negZOrderList; }
 
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).
@@ -152,18 +165,28 @@ public:
 
     void convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const;
 
-    bool hasAutoZIndex() { return renderer()->style()->hasAutoZIndex(); }
-    int zIndex() { return renderer()->style()->zIndex(); }
+    bool hasAutoZIndex() const { return renderer()->style()->hasAutoZIndex(); }
+    int zIndex() const { return renderer()->style()->zIndex(); }
 
     // The two main functions that use the layer system.  The paint method
     // paints the layers that intersect the damage rect from back to
     // front.  The nodeAtPoint method looks for mouse events by walking
     // layers that intersect the point from front to back.
-    void paint(QPainter *p, int x, int y, int w, int h, int tx, int ty, bool selectionOnly=false);
-    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
+    void paint(QPainter *p, const QRect& damageRect, bool selectionOnly=false);
+    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y);
 
-    void clearOtherLayersHoverActiveState();
-    void clearHoverAndActiveState(RenderObject* obj);
+    // This method figures out our layerBounds in coordinates relative to
+    // |rootLayer}.  It also computes our background and foreground clip rects
+    // for painting/event handling.
+    void calculateRects(const RenderLayer* rootLayer, const QRect& paintDirtyRect, QRect& layerBounds,
+                        QRect& backgroundRect, QRect& foregroundRect);
+    void calculateClipRects(const RenderLayer* rootLayer, QRect& overflowClipRect,
+                            QRect& posClipRect, QRect& fixedClipRect);
+
+    bool intersectsDamageRect(const QRect& layerBounds, const QRect& damageRect) const;
+    bool containsPoint(int x, int y, const QRect& damageRect) const;
+
+    //void updateHoverActiveState(RenderObject::NodeInfo& info);
 
     void detach(RenderArena* renderArena);
 
@@ -173,8 +196,6 @@ public:
 
     // Overridden to prevent the normal delete from being called.
     void operator delete(void* ptr, size_t sz);
-
-    void updateLayerInformation();
 
 private:
     // The normal operator new is disallowed on all render objects.
@@ -187,56 +208,47 @@ private:
     void setFirstChild(RenderLayer* first) { m_first = first; }
     void setLastChild(RenderLayer* last) { m_last = last; }
 
-    struct PositionedLayer {
-        RenderLayer *layer;
-	// these are relative to the layer holding the stacking context
-	int idx; // used by sorting to preserve doc order
-	bool operator == (const PositionedLayer &o) const { return layer == o.layer; }
-	bool operator < (const PositionedLayer &o) const {
-	    if (layer == o.layer)
-		return false;
-	    if (layer->renderer()->style()->zIndex() != o.layer->renderer()->style()->zIndex())
-		return layer->renderer()->style()->zIndex() < o.layer->renderer()->style()->zIndex();
-	    return idx < o.idx;
-	}
-    };
+    void collectLayers(QPtrVector<RenderLayer>*&, QPtrVector<RenderLayer>*&);
 
-    void collectLayers(QValueVector<PositionedLayer> *, int tx, int ty, int &idx);
+    void paintLayer(RenderLayer* rootLayer, QPainter *p, const QRect& paintDirtyRect, bool selectionOnly=false);
+    RenderLayer* nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
+                                     int x, int y, const QRect& hitTestRect);
 
 protected:
-    QRect hBarRect;
-    QRect vBarRect;
-
     RenderObject* m_object;
 
-    RenderLayer *m_parent;
-    RenderLayer *m_previous;
-    RenderLayer *m_next;
+    RenderLayer* m_parent;
+    RenderLayer* m_previous;
+    RenderLayer* m_next;
 
-    RenderLayer *m_first;
-    RenderLayer *m_last;
+    RenderLayer* m_first;
+    RenderLayer* m_last;
+
+    // Our (x,y) coordinates are in our parent layer's coordinate space.
+    short m_x;
+    int m_y;
+
+    // Our scroll offsets if the view is scrolled.
+    short m_scrollX;
+    int m_scrollY;
+
+    // The width/height of our scrolled area.
+    short m_scrollWidth;
+    int m_scrollHeight;
 
     // For layers with overflow, we have a pair of scrollbars.
     QScrollBar* m_hBar;
     QScrollBar* m_vBar;
     RenderScrollMediator* m_scrollMediator;
 
-    QValueVector<PositionedLayer>* m_zOrderList;
-
-    // Our (x,y) coordinates are in our parent layer's coordinate space.
-    int m_y;
-    short m_x;
-
-    // Our scroll offsets if the view is scrolled.
-    int m_scrollY;
-    short m_scrollX;
-
-    // The width/height of our scrolled area.
-    short m_scrollWidth;
-    short m_scrollHeight;
-
-    bool m_zOrderListDirty;
+    // For layers that establish stacking contexts, m_posZOrderList holds a sorted list of all the
+    // descendant layers within the stacking context that have z-indices of 0 or greater
+    // (auto will count as 0).  m_negZOrderList holds descendants within our stacking context with negative
+    // z-indices.
+    QPtrVector<RenderLayer>* m_posZOrderList;
+    QPtrVector<RenderLayer>* m_negZOrderList;
+    bool m_zOrderListsDirty;
 };
 
-} // namespace
+}; // namespace
 #endif

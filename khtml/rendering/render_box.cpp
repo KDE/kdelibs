@@ -262,9 +262,6 @@ void RenderBox::paintBoxDecorations(QPainter *p,int _x, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    if (layer())
-	layer()->scrollOffset(_tx, _ty);
-
     int my = kMax(_ty,_y);
     int end = kMin( _y + _h,  _ty + h );
     int mh = end - my;
@@ -1000,11 +997,11 @@ void RenderBox::calcAbsoluteVertical()
     else if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
-        if (m_height-pab>h) {
-            if ( isBlockFlow() )
+        if (m_height-pab > h) {
+            if ( isRenderBlock() )
               static_cast<RenderBlock*>( this )->setOverflowHeight( m_height + pab - ( paddingBottom() + borderBottom() ) );
-            h=m_height+pab;
         }
+	m_height = h + pab;
     }
     else if (isReplaced())
         h = intrinsicHeight();
@@ -1113,15 +1110,14 @@ void RenderBox::calcAbsoluteVertical()
     if (m_height<h+pab) //content must still fit
         m_height = h+pab;
 
+    if (style()->hidesOverflow() && m_height > h+pab)
+        m_height = h+pab;
+
     m_marginTop = mt;
     m_marginBottom = mb;
-
-    int old_m_y = m_y;
     m_y = t + mt;
-    if ( old_m_y != m_y && m_layer)
-        m_layer->updateLayerPosition();
 
-    //paintf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
+    //printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
 
 }
 

@@ -961,8 +961,8 @@ void RenderObject::setStyle(RenderStyle *style)
         if ( ( m_style->hasAutoZIndex() != style->hasAutoZIndex() ||
                m_style->zIndex() != style->zIndex() ||
                m_style->visibility() != style->visibility() ) ) {
-            layer()->stackingContext()->setLayerDirty();
-            layer()->setLayerDirty();
+            layer()->stackingContext()->dirtyZOrderLists();
+            layer()->dirtyZOrderLists();
         }
     }
 

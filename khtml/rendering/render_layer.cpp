@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
- *               2003 Lars Knoll <knoll@kde.org>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -42,52 +41,55 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
+#include "render_layer.h"
 #include <kdebug.h>
-#include <kglobal.h>
-
 #include <assert.h>
 #include "khtmlview.h"
-#include "rendering/render_layer.h"
-#include "rendering/render_block.h"
-#include "rendering/render_replaced.h"
-#include "rendering/render_arena.h"
+#include "render_block.h"
+#include "render_arena.h"
+#include "render_replaced.h"
 #include "xml/dom_docimpl.h"
 
 #include <qscrollbar.h>
+#include <qptrvector.h>
 #include <qstyle.h>
-#include <qvaluevector.h>
-#include <qtl.h>
 
 using namespace DOM;
 using namespace khtml;
+
+#ifdef APPLE_CHANGES
+QScrollBar* RenderLayer::gScrollBar = 0;
+#endif
 
 #ifndef NDEBUG
 static bool inRenderLayerDetach;
 #endif
 
-void RenderScrollMediator::slotValueChanged()
+void
+RenderScrollMediator::slotValueChanged()
 {
     m_layer->updateScrollPositionFromScrollbars();
 }
 
 RenderLayer::RenderLayer(RenderObject* object)
-    : m_object( object ),
-      m_parent( 0 ),
-      m_previous( 0 ),
-      m_next( 0 ),
-      m_first( 0 ),
-      m_last( 0 ),
-      m_hBar( 0 ),
-      m_vBar( 0 ),
-      m_scrollMediator( 0 ),
-      m_zOrderList( 0 ),
-      m_y( 0 ),
-      m_x( 0 ),
-      m_scrollY( 0 ),
-      m_scrollX( 0 ),
-      m_scrollWidth( 0 ),
-      m_scrollHeight( 0 ),
-      m_zOrderListDirty( true )
+: m_object( object ),
+m_parent( 0 ),
+m_previous( 0 ),
+m_next( 0 ),
+m_first( 0 ),
+m_last( 0 ),
+m_x( 0 ),
+m_y( 0 ),
+m_scrollX( 0 ),
+m_scrollY( 0 ),
+m_scrollWidth( 0 ),
+m_scrollHeight( 0 ),
+m_hBar( 0 ),
+m_vBar( 0 ),
+m_scrollMediator( 0 ),
+m_posZOrderList( 0 ),
+m_negZOrderList( 0 ),
+m_zOrderListsDirty( true )
 {
 }
 
@@ -99,14 +101,14 @@ RenderLayer::~RenderLayer()
     delete m_hBar;
     delete m_vBar;
     delete m_scrollMediator;
-    delete m_zOrderList;
+    delete m_posZOrderList;
+    delete m_negZOrderList;
 }
 
 void RenderLayer::updateLayerPosition()
 {
-    // The canvas is sized to the docWidth/Height over in
-    // RenderCanvas::layout, so we don't need to ever update our layer
-    // position here.
+    // The canvas is sized to the docWidth/Height over in RenderCanvas::layout, so we
+    // don't need to ever update our layer position here.
     if (renderer()->isCanvas())
         return;
 
@@ -114,8 +116,8 @@ void RenderLayer::updateLayerPosition()
     int y = m_object->yPos();
 
     if (!m_object->isPositioned()) {
-        // We must adjust our position by walking up the render tree
-        // looking for the nearest enclosing object with a layer.
+        // We must adjust our position by walking up the render tree looking for the
+        // nearest enclosing object with a layer.
         RenderObject* curr = m_object->parent();
         while (curr && !curr->layer()) {
             x += curr->xPos();
@@ -137,7 +139,7 @@ void RenderLayer::updateLayerPosition()
 short RenderLayer::width() const
 {
     int w = m_object->width();
-    if (!m_object->isCanvas() && !m_object->style()->hidesOverflow())
+    if (!m_object->style()->hidesOverflow())
         w = kMax(m_object->overflowWidth(), w);
     return w;
 }
@@ -145,32 +147,47 @@ short RenderLayer::width() const
 int RenderLayer::height() const
 {
     int h = m_object->height();
-    if (!m_object->isCanvas() && !m_object->style()->hidesOverflow())
+    if (!m_object->style()->hidesOverflow())
         h = kMax(m_object->overflowHeight(), h);
     return h;
 }
+
 
 RenderLayer *RenderLayer::stackingContext() const
 {
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
-         curr->m_object->style()->hasAutoZIndex();
-         curr = curr->parent())
-        ;
-
+          curr->m_object->style()->hasAutoZIndex();
+          curr = curr->parent());
     return curr;
 }
 
-RenderLayer* RenderLayer::enclosingPositionedAncestor() const
+RenderLayer*
+RenderLayer::enclosingPositionedAncestor() const
 {
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
          !curr->m_object->isPositioned() && !curr->m_object->isRelPositioned();
-         curr = curr->parent())
-        ;
+         curr = curr->parent());
 
     return curr;
 }
+
+#ifdef APPLE_CHANGES
+bool
+RenderLayer::isTransparent()
+{
+    return m_object->style()->opacity() < 1.0f;
+}
+
+RenderLayer*
+RenderLayer::transparentAncestor()
+{
+    RenderLayer* curr = parent();
+    for ( ; curr && curr->m_object->style()->opacity() == 1.0f; curr = curr->parent());
+    return curr;
+}
+#endif
 
 void* RenderLayer::operator new(size_t sz, RenderArena* renderArena) throw()
 {
@@ -218,7 +235,8 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
 
     child->setParent(this);
 
-    child->stackingContext()->setLayerDirty();
+    // Dirty the z-order list in which we are contained.
+    child->stackingContext()->dirtyZOrderLists();
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
@@ -234,9 +252,12 @@ RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
     if (m_last == oldChild)
         m_last = oldChild->previousSibling();
 
+    // Dirty the z-order list in which we are contained.  When called via the
+    // reattachment process in removeOnlyThisLayer, the layer may already be disconnected
+    // from the main layer tree, so we need to null-check the |stackingContext| value.
     RenderLayer* stackingContext = oldChild->stackingContext();
-    if ( stackingContext )
-        stackingContext->setLayerDirty();
+    if (stackingContext)
+        oldChild->stackingContext()->dirtyZOrderLists();
 
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
@@ -283,9 +304,10 @@ void RenderLayer::insertOnlyThisLayer()
         curr->moveLayers(m_parent, this);
 }
 
-void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
+void
+RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
 {
-    if (ancestorLayer == this || !m_object->style() )
+    if (ancestorLayer == this)
         return;
 
     if (m_object->style()->position() == FIXED) {
@@ -312,24 +334,27 @@ void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x,
     y += yPos();
 }
 
-void RenderLayer::scrollOffset(int& x, int& y)
+void
+RenderLayer::scrollOffset(int& x, int& y)
 {
     x += scrollXOffset();
     y += scrollYOffset();
 }
 
-void RenderLayer::subtractScrollOffset(int& x, int& y)
+void
+RenderLayer::subtractScrollOffset(int& x, int& y)
 {
     x -= scrollXOffset();
     y -= scrollYOffset();
 }
 
-void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
+void
+RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
 {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    int maxX = scrollWidth() - m_object->clientWidth();
-    int maxY = scrollHeight() - m_object->clientHeight();
+    int maxX = m_scrollWidth - m_object->clientWidth();
+    int maxY = m_scrollHeight - m_object->clientHeight();
     if (x > maxX) x = maxX;
     if (y > maxY) y = maxY;
 
@@ -340,11 +365,12 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
     // layer or contains fixed backgrounds, etc.).
     m_scrollX = x;
     m_scrollY = y;
+    qDebug("scrolling to %d/%d", m_scrollX, m_scrollY);
 
     // FIXME: Fire the onscroll DOM event.
 
     // Just schedule a full repaint of our object.
-    m_object->repaint();
+    m_object->repaint(true);
 
     if (updateScrollbars) {
         if (m_hBar)
@@ -354,7 +380,8 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
     }
 }
 
-void RenderLayer::updateScrollPositionFromScrollbars()
+void
+RenderLayer::updateScrollPositionFromScrollbars()
 {
     bool needUpdate = false;
     int newX = m_scrollX;
@@ -376,7 +403,8 @@ void RenderLayer::updateScrollPositionFromScrollbars()
         scrollToOffset(newX, newY, false);
 }
 
-void RenderLayer::showScrollbar(Qt::Orientation o, bool show)
+void
+RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 {
     QScrollBar *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
 
@@ -385,7 +413,6 @@ void RenderLayer::showScrollbar(Qt::Orientation o, bool show)
         sb = new QScrollBar(o, scrollView);
         scrollView->addChild(sb, 0, -50000);
 	sb->setBackgroundMode(QWidget::NoBackground);
-        sb->setPalette( m_object->style()->palette() );
 	sb->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
@@ -402,26 +429,55 @@ void RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 	m_vBar = sb;
 }
 
+int
+RenderLayer::verticalScrollbarWidth()
+{
+    if (!m_vBar)
+        return 0;
+
+    return m_vBar->width();
+}
+
+int
+RenderLayer::horizontalScrollbarHeight()
+{
+    if (!m_hBar)
+        return 0;
+
+    return m_hBar->height();
+}
+
 void
 RenderLayer::moveScrollbarsAside()
 {
     QScrollView* scrollView = m_object->element()->getDocument()->view();
-    if (m_hBar)
+  if (m_hBar)
         scrollView->addChild(m_hBar, 0, -50000);
     if (m_vBar)
         scrollView->addChild(m_vBar, 0, -50000);
 }
 
-void RenderLayer::layout()
+void
+RenderLayer::positionScrollbars(const QRect& absBounds)
 {
-    updateLayerPosition();
-    checkScrollbarsAfterLayout();
-    if (!renderer()->style()->hasAutoZIndex() || renderer()->isCanvas())
-	updateLayerInformation();
-}
+#ifdef APPLE_CHANGES
+    if (m_vBar) {
+        scrollView->addChild(m_vBar, absBounds.x()+absBounds.width()-m_object->borderRight()-m_vBar->width(),
+                     absBounds.y()+m_object->borderTop());
+        m_vBar->resize(m_vBar->width(), absBounds.height() -
+                       (m_object->borderTop()+m_object->borderBottom()) -
+                       (m_hBar ? m_hBar->height()-1 : 0));
+    }
 
-void RenderLayer::positionScrollbars(int tx,  int ty)
-{
+    if (m_hBar) {
+        scrollView->addChild(m_hBar, absBounds.x()+m_object->borderLeft(),
+                     absBounds.y()+absBounds.height()-m_object->borderBottom()-m_hBar->height());
+        m_hBar->resize(absBounds.width() - (m_object->borderLeft()+m_object->borderRight()) -
+                       (m_vBar ? m_vBar->width()-1 : 0), m_hBar->height());
+    }
+#else
+    int tx = absBounds.x();
+    int ty = absBounds.y();
     int bl = m_object->borderLeft();
     int bt = m_object->borderTop();
     int w = width() - bl - m_object->borderRight();
@@ -441,25 +497,29 @@ void RenderLayer::positionScrollbars(int tx,  int ty)
     int sw = b->style().pixelMetric(QStyle::PM_ScrollBarExtent);
 
     if (m_vBar) {
-	vBarRect = QRect(tx + w - sw + 1, ty, sw, h - (m_hBar ? sw : 0) + 1);
+	QRect vBarRect = QRect(tx + w - sw + 1, ty, sw, h - (m_hBar ? sw : 0) + 1);
         m_vBar->resize(vBarRect.width(), vBarRect.height());
         scrollView->addChild(m_vBar, vBarRect.x(), vBarRect.y());
     }
 
     if (m_hBar) {
-	hBarRect = QRect(tx, ty + h - sw + 1, w - (m_vBar ? sw : 0) + 1, sw);
+	QRect hBarRect = QRect(tx, ty + h - sw + 1, w - (m_vBar ? sw : 0) + 1, sw);
         m_hBar->resize(hBarRect.width(), hBarRect.height());
         scrollView->addChild(m_hBar, hBarRect.x(), hBarRect.y());
     }
+#endif
 }
 
 #define LINE_STEP   10
 #define PAGE_KEEP   40
 
-void RenderLayer::checkScrollbarsAfterLayout()
+void
+RenderLayer::checkScrollbarsAfterLayout()
 {
-    int rightPos = m_object->rightmostPosition();
-    int bottomPos = m_object->lowestPosition();
+    updateLayerPosition();
+
+    int rightPos = m_object->overflowWidth();
+    int bottomPos = m_object->overflowHeight();
 
     int clientWidth = m_object->clientWidth();
     int clientHeight = m_object->clientHeight();
@@ -491,14 +551,11 @@ void RenderLayer::checkScrollbarsAfterLayout()
         showScrollbar(Qt::Vertical, needVerticalBar);
 
         m_object->setLayouted(false);
-#if 0
-	// ##############
 	if (m_object->isRenderBlock())
             static_cast<RenderBlock*>(m_object)->layoutBlock(true);
         else
             m_object->layout();
-
-#endif
+	return;
     }
 
     // Set up the range (and page step/line step).
@@ -509,7 +566,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
 #ifdef APPLE_CHANGES
         m_hBar->setKnobProportion(clientWidth, m_scrollWidth);
 #else
-        m_hBar->setRange(0, m_scrollWidth-clientWidth);
+        m_hBar->setRange(0, needHorizontalBar ? m_scrollWidth-clientWidth : 0);
 #endif
     }
     if (m_vBar) {
@@ -519,301 +576,561 @@ void RenderLayer::checkScrollbarsAfterLayout()
 #ifdef APPLE_CHANGES
         m_vBar->setKnobProportion(clientHeight, m_scrollHeight);
 #else
-        m_vBar->setRange(0, m_scrollHeight-clientHeight);
+        m_vBar->setRange(0, needVerticalBar ? m_scrollHeight-clientHeight : 0);
 #endif
     }
-
 }
 
-void RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
+void
+RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
 {
 #ifdef APPLE_CHANGES
     if (m_hBar)
-        m_hBar->paint(p, QRect(x, y, w, h));
+        m_hBar->paint(p, damageRect);
     if (m_vBar)
-        m_vBar->paint(p, QRect(x, y, w, h));
+        m_vBar->paint(p, damageRect);
 #else
-    if (m_hBar)
-	RenderWidget::paintWidget(p, m_hBar, x, y, w, h,
-			    hBarRect.x(), hBarRect.y());
-    if (m_vBar)
-	RenderWidget::paintWidget(p, m_vBar, x, y, w, h,
-			    vBarRect.x(), vBarRect.y());
+    QScrollView* scrollView = m_object->element()->getDocument()->view();
+    if (m_hBar) {
+	int x = m_hBar->x();
+	int y = m_hBar->y();
+	scrollView->viewportToContents(x, y, x, y);
+	RenderWidget::paintWidget(p, m_hBar,
+				  damageRect.x(), damageRect.y(), damageRect.width(), damageRect.height(),
+				  x, y);
+    }
+    if (m_vBar) {
+	int x = m_vBar->x();
+	int y = m_vBar->y();
+	scrollView->viewportToContents(x, y, x, y);
+	RenderWidget::paintWidget(p, m_vBar,
+				  damageRect.x(), damageRect.y(), damageRect.width(), damageRect.height(),
+				  x, y);
+    }
 #endif
 }
 
-
-static void setClip(QPainter *p, const QRect &clip)
+void RenderLayer::layout()
 {
-    QRect cr = p->xForm(clip);
+    updateLayerPosition();
+    checkScrollbarsAfterLayout();
+    if (!renderer()->style()->hasAutoZIndex() || renderer()->isCanvas())
+       updateZOrderLists();
+}
 
-    QRegion creg(cr);
-    QRegion old = p->clipRegion();
-    if (!old.isNull())
-	creg = old.intersect(creg);
+void
+RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly)
+{
+    paintLayer(this, p, damageRect, selectionOnly);
+}
+
+static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect)
+{
+    if (paintDirtyRect == clipRect)
+        return;
 
     p->save();
+
+#ifdef APPLE_CHANGES
+    p->addClip(clipRect);
+#else
+    QRect clippedRect = p->xForm(clipRect);
+    QRegion creg(clippedRect);
+    QRegion old = p->clipRegion();
+    if (!old.isNull())
+        creg = old.intersect(creg);
     p->setClipRegion(creg);
+#endif
+
 }
 
-void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
-		   int tx, int ty, bool selectionOnly)
+static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect)
 {
-    tx += xPos();
-    ty += yPos();
-
-    if ( m_zOrderListDirty )
-        updateLayerInformation();
-
-    if(!m_zOrderList
-//        || (ty > y + h) || (ty + height() < y)
-//        || (tx > x + h) || (tx + width() < x)
-        )
- 	return;
-
-
-    // do this before we paint the background
-    positionScrollbars(tx, ty);
-    /*
-      This is from the latest CSS 2.1 draft:
-
-      Each stacking context consists of the following stacking levels (from
-      back to front):
-      1.     the background and borders of the element forming the stacking
-      context.
-      2.     the stacking contexts of descendants with negative stack levels.
-      3.     a stacking level containing in-flow non-inline-level descendants.
-      4.     a stacking level for floats and their contents.
-      5.     a stacking level for in-flow inline-level descendants.
-      6.     a stacking level for positioned descendants with 'z-index:
-      auto', and any descendant stacking contexts with 'z-index: 0'.
-      7.     the stacking contexts of descendants with positive stack levels.
-    */
-
-    // Walk the list and paint each layer, adding in the appropriate offset.
-
-    bool clip = renderer()->style()->overflow() != OVISIBLE;
-    QScrollBar *bar = m_hBar;
-    if (!m_hBar)
-	bar = m_vBar;
-    int cw = width();
-    int ch = height();
-    int sw = bar ? bar->style().pixelMetric(QStyle::PM_ScrollBarExtent) - 1 : 0;
-    int bl = m_object->borderLeft();
-    int br = m_object->borderRight();
-    int bt = m_object->borderTop();
-    int bb = m_object->borderBottom();
-    bool clip2 = bar && ((bl != 0) | (br != 0) | (bt != 0) | (bb != 0));
-
-    // paint our background
-    if (!selectionOnly) {
-	if (clip)
-	    setClip(p, QRect(tx, ty, cw, ch));
-	renderer()->paint(p, x, y, w, h,
-			  tx - renderer()->xPos(), ty - renderer()->yPos(),
-			  PaintActionElementBackground);
-#warning HACK HACK HACK HACK
-        renderer()->paint(p, x, y, w, h,
-                          tx - renderer()->xPos(), ty - renderer()->yPos(),
-  			  PaintActionChildBackgrounds);
-
-	if (clip2)
-            p->restore();
-    }
-    if (clip2)
-	setClip(p, QRect(tx + bl, ty + bt,
-			 w - bl - br - (m_vBar ? sw : 0) , h - bt - bb - (m_hBar ? sw : 0)));
-
-    uint count = m_zOrderList->count();
-    for (uint i = 0; i < count; i++) {
-        const PositionedLayer &pLayer = m_zOrderList->at(i);
-	RenderLayer *l = pLayer.layer;
-	RenderObject *r = l->renderer();
-	int xOff = 0, yOff = 0;
-	l->convertToLayerCoords(this, xOff, yOff);
-
-	bool lclip = r->style()->overflow() != OVISIBLE;
-	cw = l->width();
-	ch = l->height();
-	bar = l->m_hBar;
-	if (!m_hBar)
-	    bar = l->m_vBar;
-	sw = bar ? bar->style().pixelMetric(QStyle::PM_ScrollBarExtent) -1 : 0;
-	bl = r->borderLeft();
-	br = r->borderRight();
-	bt = r->borderTop();
-	bb = r->borderBottom();
-	bool clip2 = bar && ((bl != 0) | (br != 0) | (bt != 0) | (bb != 0));
-
-	l->positionScrollbars(tx + xOff, ty + yOff);
-	if (l != this && !l->hasAutoZIndex()) {
-	    // layer has it's own stacking context, just call paint on the layer.
-	    l->paint(p, x, y, w, h, tx + xOff - l->xPos(), ty + yOff - l->yPos(), selectionOnly);
-	} else {
-	    if (selectionOnly) {
-		r->paint(p, x, y, w, h,
-			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionSelection);
-	    } else {
-		if (l != this) {
-		    if (lclip)
-			setClip(p, QRect(tx + xOff, ty + yOff, cw, ch));
-		    r->paint(p, x, y, w, h,
-			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionElementBackground);
-                    r->paint(p, x, y, w, h,
-			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionChildBackgrounds);
-
-		    if (clip2)
-                        p->restore();
-		}
-		if (clip2)
-		    setClip(p, QRect(tx + xOff + bl, ty + yOff + bt,
-				     cw - bl - bt - (l->m_vBar ? sw : 0) ,
-				     ch - bt - bb - (l->m_hBar ? sw : 0)));
-		r->paint(p, x, y, w, h,
-			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionFloat);
-		r->paint(p, x, y, w, h,
-			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionForeground);
-		if (lclip)
-                    p->restore();
-
-		l->paintScrollbars(p, x, y, w, h);
-	    }
-	}
-    }
-
-
-    if (clip)
-        p->restore();
-
-    paintScrollbars(p, x, y, w, h);
-}
-
-void RenderLayer::clearOtherLayersHoverActiveState()
-{
-    if (!m_parent)
+    if (paintDirtyRect == clipRect)
         return;
-
-    for (RenderLayer* curr = m_parent->firstChild(); curr; curr = curr->nextSibling()) {
-        if (curr == this)
-            continue;
-        curr->clearHoverAndActiveState(curr->renderer());
-    }
-
-    m_parent->clearOtherLayersHoverActiveState();
+    p->restore();
 }
 
-void RenderLayer::clearHoverAndActiveState(RenderObject* obj)
+void
+RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
+                        const QRect& paintDirtyRect, bool selectionOnly)
 {
-    if (!obj->mouseInside())
-        return;
+    // Calculate the clip rects we should use.
+    QRect layerBounds, damageRect, clipRectToApply;
+    calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
+    int x = layerBounds.x();
+    int y = layerBounds.y();
 
-    obj->setMouseInside(false);
-    if (obj->element()) {
-        obj->element()->setActive(false);
-        if (obj->style()->affectedByHoverRules() || obj->style()->affectedByActiveRules())
-            obj->element()->setChanged(true);
-    }
+    // Ensure our z-order lists are up-to-date.
+    updateZOrderLists();
 
-    for (RenderObject* child = obj->firstChild(); child; child = child->nextSibling())
-        if (child->mouseInside())
-            clearHoverAndActiveState(child);
-}
+#ifdef APPLE_CHANGES
+    // Set our transparency if we need to.
+    if (isTransparent())
+        p->beginTransparencyLayer(renderer()->style()->opacity());
+#endif
 
-bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty, bool inBox)
-{
-    tx += xPos();
-    ty += yPos();
+    // We want to paint our layer, but only if we intersect the damage rect.
+    bool shouldPaint = intersectsDamageRect(layerBounds, damageRect);
+    if (shouldPaint && !selectionOnly) {
+        // Paint our background first, before painting any child layers.
+        if (!damageRect.isEmpty()) {
+            // Establish the clip used to paint our background.
+            setClip(p, paintDirtyRect, damageRect);
 
-    if (!m_zOrderList)
-	return renderer()->nodeAtPoint(info, x, y, tx - renderer()->xPos(), ty - renderer()->yPos(), inBox);
+            // Paint the background.
+            renderer()->paint(p, damageRect.x(), damageRect.y(),
+                              damageRect.width(), damageRect.height(),
+                              x - renderer()->xPos(), y - renderer()->yPos(),
+                              PaintActionElementBackground);
 
-    bool inside = false;
-    RenderLayer *insideLayer = 0;
+            // Position our scrollbars.
+            positionScrollbars(layerBounds);
 
+            // Our scrollbar widgets paint exactly when we tell them to, so that they work properly with
+            // z-index.  We paint after we painted the background/border, so that the scrollbars will
+            // sit above the background/border.
+            paintScrollbars(p, damageRect);
 
-//     qDebug("%p nodeAtPoint: numlayers=%d x=%d y=%d, tx=%d, ty=%d, xPos=%d, yPos=%d", this->renderer(), m_zOrderList->count(), x, y, tx, ty, xPos(), yPos());
-    for (int i = m_zOrderList->count()-1; i >= 0; i--) {
-        const PositionedLayer &pLayer = m_zOrderList->at(i);
-	RenderLayer *l = pLayer.layer;
-	RenderObject *r = l->renderer();
-	int xOff = 0, yOff = 0;
-        if (!(l && r)) {
-            continue;
-        }
-	l->convertToLayerCoords(this, xOff, yOff);
-
-// 	qDebug("   testing %p x=%d y=%d, w=%d, h=%d", r, tx+xOff, ty+yOff, l->width(), l->height());
-	if (l != this)
-	    inside = l->nodeAtPoint(info, x, y, tx + xOff - l->xPos(), ty + yOff - l->yPos(), inBox);
-	else
-	    inside = r->nodeAtPoint(info, x, y, tx + xOff - r->xPos(), ty + yOff - r->yPos(), inBox);
-        if (inside) {
-            insideLayer = l;
-            break;
+            // Restore the clip.
+            restoreClip(p, paintDirtyRect, damageRect);
         }
     }
 
-//     if (insideLayer)
-// 	qDebug("      insideLayer: %p     %d %d %d %d", insideLayer->renderer(), insideLayer->xPos(), insideLayer->yPos(), insideLayer->width(), insideLayer->height());
-//     else
-// 	qDebug("      no layer found");
-    if (insideLayer) {
-        // Clear out the other layers' hover/active state
-        insideLayer->clearOtherLayersHoverActiveState();
-
-        // Now clear out our descendant layers
-        for (RenderLayer* child = insideLayer->firstChild();
-             child; child = child->nextSibling())
-            child->clearHoverAndActiveState(child->renderer());
+    // Now walk the sorted list of children with negative z-indices.
+    if (m_negZOrderList) {
+        uint count = m_negZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_negZOrderList->at(i);
+            child->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
+        }
     }
 
-    return inside;
+    // Now establish the appropriate clip and paint our child RenderObjects.
+    if (shouldPaint && !clipRectToApply.isEmpty()) {
+        // Set up the clip used when painting our children.
+        setClip(p, paintDirtyRect, clipRectToApply);
+
+        if (selectionOnly)
+            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
+                              clipRectToApply.width(), clipRectToApply.height(),
+                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionSelection);
+        else {
+            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
+                              clipRectToApply.width(), clipRectToApply.height(),
+                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionChildBackgrounds);
+            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
+                              clipRectToApply.width(), clipRectToApply.height(),
+                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionFloat);
+            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
+                              clipRectToApply.width(), clipRectToApply.height(),
+                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionForeground);
+        }
+
+        // Now restore our clip.
+        restoreClip(p, paintDirtyRect, clipRectToApply);
+    }
+
+    // Now walk the sorted list of children with positive z-indices.
+    if (m_posZOrderList) {
+        uint count = m_posZOrderList->count();
+        for (uint i = 0; i < count; i++) {
+            RenderLayer* child = m_posZOrderList->at(i);
+            child->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
+        }
+    }
+
+#ifdef APPLE_CHANGES
+    // End our transparency layer
+    if (isTransparent())
+        p->endTransparencyLayer();
+#endif
 }
 
-void RenderLayer::setLayerDirty()
+bool
+RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
 {
-    if ( m_zOrderList )
-        m_zOrderList->clear();
+#ifdef APPLE_CHANGES
+    // Clear our our scrollbar variable
+    RenderLayer::gScrollBar = 0;
+#endif
 
-    m_zOrderListDirty = true;
+    QRect damageRect(m_x, m_y, width(), height());
+    RenderLayer* insideLayer = nodeAtPointForLayer(this, info, x, y, damageRect);
+
+    // Now determine if the result is inside an anchor.
+    DOM::NodeImpl* node = info.innerNode();
+    while (node) {
+        if (node->hasAnchor())
+            info.setURLElement(node);
+        node = node->parentNode();
+    }
+
+    // Next set up the correct :hover/:active state along the new chain.
+    //updateHoverActiveState(info);
+
+    // Now return whether we were inside this layer (this will always be true for the root
+    // layer).
+    return insideLayer;
 }
 
-void RenderLayer::updateLayerInformation()
+RenderLayer*
+RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
+                                 int xMousePos, int yMousePos, const QRect& hitTestRect)
 {
-    assert(!renderer()->style()->hasAutoZIndex() || renderer()->isCanvas());
+    // Calculate the clip rects we should use.
+    QRect layerBounds, bgRect, fgRect;
+    calculateRects(rootLayer, hitTestRect, layerBounds, bgRect, fgRect);
 
-//    if ( renderer()->isCanvas() || !m_zOrderListDirty )
-//         return;
+    // Ensure our z-order lists are up-to-date.
+    updateZOrderLists();
 
-    if (!m_zOrderList)
-	m_zOrderList = new QValueVector<PositionedLayer>();
-    else
-	m_zOrderList->clear();
+    // This variable tracks which layer the mouse ends up being inside.  The minute we find an insideLayer,
+    // we are done and can return it.
+    RenderLayer* insideLayer = 0;
 
-    int idx = 0;
-    collectLayers(m_zOrderList, 0, 0, idx);
-    qHeapSort(*m_zOrderList);
+    // Begin by walking our list of positive layers from highest z-index down to the lowest
+    // z-index.
+    if (m_posZOrderList) {
+        uint count = m_posZOrderList->count();
+        for (int i = count-1; i >= 0; i--) {
+            RenderLayer* child = m_posZOrderList->at(i);
+            insideLayer = child->nodeAtPointForLayer(rootLayer, info, xMousePos, yMousePos, hitTestRect);
+            if (insideLayer)
+                return insideLayer;
+        }
+    }
 
-    m_zOrderListDirty = false;
+    // Next we want to see if the mouse pos is inside the child RenderObjects of the layer.
+    if (containsPoint(xMousePos, yMousePos, fgRect) &&
+        renderer()->nodeAtPoint(info, xMousePos, yMousePos,
+                                layerBounds.x() - renderer()->xPos(),
+                                layerBounds.y() - renderer()->yPos(),
+                                /*HitTestChildrenOnly*/ true))
+	if (info.innerNode() != m_object->element())
+	    return this;
+
+    // Now check our negative z-index children.
+    if (m_negZOrderList) {
+        uint count = m_negZOrderList->count();
+        for (int i = count-1; i >= 0; i--) {
+            RenderLayer* child = m_negZOrderList->at(i);
+            insideLayer = child->nodeAtPointForLayer(rootLayer, info, xMousePos, yMousePos, hitTestRect);
+            if (insideLayer)
+                return insideLayer;
+        }
+    }
+
+    // Next we want to see if the mouse pos is inside this layer but not any of its children.
+    if (containsPoint(xMousePos, yMousePos, bgRect) &&
+        renderer()->nodeAtPoint(info, xMousePos, yMousePos,
+                                layerBounds.x() - renderer()->xPos(),
+                                layerBounds.y() - renderer()->yPos(),
+                                /*HitTestSelfOnly*/ true))
+        return this;
+
+    // No luck.
+    return 0;
 }
 
-
-void RenderLayer::collectLayers(QValueVector<PositionedLayer> *l, int tx, int ty, int &idx)
+void RenderLayer::calculateClipRects(const RenderLayer* rootLayer, QRect& overflowClipRect,
+                                     QRect& posClipRect, QRect& fixedClipRect)
 {
-    tx += xPos();
-    ty += yPos();
+    if (parent())
+        parent()->calculateClipRects(rootLayer, overflowClipRect, posClipRect, fixedClipRect);
 
+    updateLayerPosition(); // For relpositioned layers or non-positioned layers,
+                           // we need to keep in sync, since we may have shifted relative
+                           // to our parent layer.
 
-    PositionedLayer p = { this, idx++ };
-    l->append(p);
+    // A fixed object is essentially the root of its containing block hierarchy, so when
+    // we encounter such an object, we reset our clip rects to the fixedClipRect.
+    if (m_object->style()->position() == FIXED) {
+        posClipRect = fixedClipRect;
+        overflowClipRect = fixedClipRect;
+    }
+    else if (m_object->style()->position() == RELATIVE)
+        posClipRect = overflowClipRect;
 
-    if (l == m_zOrderList || renderer()->style()->hasAutoZIndex()) {
-	// collect from all children
-        for (RenderLayer* child = firstChild();
-             child; child = child->nextSibling())
-	    child->collectLayers(l, tx, ty, idx);
+    // Update the clip rects that will be passed to child layers.
+    if (m_object->hasOverflowClip() || m_object->hasClip()) {
+        // This layer establishes a clip of some kind.
+        int x = 0;
+        int y = 0;
+        convertToLayerCoords(rootLayer, x, y);
+
+        if (m_object->hasOverflowClip()) {
+            QRect newOverflowClip = m_object->getOverflowClipRect(x,y);
+            overflowClipRect  = newOverflowClip.intersect(overflowClipRect);
+            if (m_object->isPositioned() || m_object->isRelPositioned())
+                posClipRect = newOverflowClip.intersect(posClipRect);
+        }
+        if (m_object->hasClip()) {
+            QRect newPosClip = m_object->getClipRect(x,y);
+            posClipRect = posClipRect.intersect(newPosClip);
+            overflowClipRect = overflowClipRect.intersect(newPosClip);
+            fixedClipRect = fixedClipRect.intersect(newPosClip);
+        }
     }
 }
 
+void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& paintDirtyRect, QRect& layerBounds,
+                                 QRect& backgroundRect, QRect& foregroundRect)
+{
+    QRect overflowClipRect = paintDirtyRect;
+    QRect posClipRect = paintDirtyRect;
+    QRect fixedClipRect = paintDirtyRect;
+    if (parent())
+        parent()->calculateClipRects(rootLayer, overflowClipRect, posClipRect, fixedClipRect);
 
-#include "render_layer.moc"
+    updateLayerPosition();
+
+    int x = 0;
+    int y = 0;
+    convertToLayerCoords(rootLayer, x, y);
+    layerBounds = QRect(x,y,width(),height());
+
+    backgroundRect = m_object->style()->position() == FIXED ? fixedClipRect :
+        (m_object->isPositioned() ? posClipRect : overflowClipRect);
+    foregroundRect = backgroundRect;
+
+    // Update the clip rects that will be passed to child layers.
+    if (m_object->hasOverflowClip() || m_object->hasClip()) {
+        // This layer establishes a clip of some kind.
+        if (m_object->hasOverflowClip())
+            foregroundRect = foregroundRect.intersect(m_object->getOverflowClipRect(x,y));
+        if (m_object->hasClip()) {
+            // Clip applies to *us* as well, so go ahead and update the damageRect.
+            QRect newPosClip = m_object->getClipRect(x,y);
+            backgroundRect = backgroundRect.intersect(newPosClip);
+            foregroundRect = foregroundRect.intersect(newPosClip);
+        }
+
+        // If we establish a clip at all, then go ahead and make sure our background
+        // rect is intersected with our layer's bounds.
+        backgroundRect = backgroundRect.intersect(layerBounds);
+    }
+}
+
+bool RenderLayer::intersectsDamageRect(const QRect& layerBounds, const QRect& damageRect) const
+{
+    return (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isBody() ||
+            renderer()->hasOverhangingFloats() ||
+            (renderer()->isInline() && !renderer()->isReplaced()) ||
+            layerBounds.intersects(damageRect));
+}
+
+bool RenderLayer::containsPoint(int x, int y, const QRect& damageRect) const
+{
+    return (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isBody() ||
+            renderer()->hasOverhangingFloats() ||
+            (renderer()->isInline() && !renderer()->isReplaced()) ||
+            damageRect.contains(x, y));
+}
+
+#if 0
+// This code has been written to anticipate the addition of CSS3-::outside and ::inside generated
+// content (and perhaps XBL).  That's why it uses the render tree and not the DOM tree.
+static RenderObject* hoverAncestor(RenderObject* obj)
+{
+    return (!obj->isInline() && obj->continuation()) ? obj->continuation() : obj->parent();
+}
+
+static RenderObject* commonAncestor(RenderObject* obj1, RenderObject* obj2)
+{
+    if (!obj1 || !obj2)
+        return 0;
+
+    for (RenderObject* currObj1 = obj1; currObj1; currObj1 = hoverAncestor(currObj1))
+        for (RenderObject* currObj2 = obj2; currObj2; currObj2 = hoverAncestor(currObj2))
+            if (currObj1 == currObj2)
+                return currObj1;
+
+    return 0;
+}
+#endif
+
+#if 0
+void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
+{
+    // We don't update :hover/:active state when the info is marked as readonly.
+    if (info.readonly())
+        return;
+
+    // Check to see if the hovered node has changed.  If not, then we don't need to
+    // do anything.  An exception is if we just went from :hover into :hover:active,
+    // in which case we need to update to get the new :active state.
+    DOM::NodeImpl* oldHoverNode = info.innerNode()->getDocument()->hoverNode();
+    DOM::NodeImpl* newHoverNode = info.innerNode();
+
+    if (oldHoverNode == newHoverNode && oldHoverNode->active() == info.active())
+        return;
+
+    // Update our current hover node.
+    info.innerNode()->getDocument()->setHoverNode(newHoverNode);
+
+    // We have two different objects.  Fetch their renderers.
+    RenderObject* oldHoverObj = oldHoverNode ? oldHoverNode->renderer() : 0;
+    RenderObject* newHoverObj = info.innerNode() ? info.innerNode()->renderer() : 0;
+
+    // Locate the common ancestor render object for the two renderers.
+    RenderObject* ancestor = commonAncestor(oldHoverObj, newHoverObj);
+
+    // The old hover path only needs to be cleared up to (and not including) the common ancestor;
+    for (RenderObject* curr = oldHoverObj; curr && curr != ancestor; curr = hoverAncestor(curr)) {
+        curr->setMouseInside(false);
+        if (curr->element() && !curr->isText()) {
+            bool oldActive = curr->element()->active();
+            curr->element()->setActive(false);
+            if (curr->style()->affectedByHoverRules() ||
+                (curr->style()->affectedByActiveRules() && oldActive))
+                curr->element()->setChanged();
+        }
+    }
+
+    // Now set the hover state for our new object up to the root.
+    for (RenderObject* curr = newHoverObj; curr; curr = hoverAncestor(curr)) {
+        bool oldInside = curr->mouseInside();
+        curr->setMouseInside(true);
+        if (curr->element() && !curr->isText()) {
+            bool oldActive = curr->element()->active();
+            curr->element()->setActive(info.active());
+            if ((curr->style()->affectedByHoverRules() && !oldInside) ||
+                (curr->style()->affectedByActiveRules() && oldActive != info.active()))
+                curr->element()->setChanged();
+        }
+    }
+}
+#endif
+
+// Sort the buffer from lowest z-index to highest.  The common scenario will have
+// most z-indices equal, so we optimize for that case (i.e., the list will be mostly
+// sorted already).
+static void sortByZOrder(QPtrVector<RenderLayer::RenderLayer>* buffer,
+                         QPtrVector<RenderLayer::RenderLayer>* mergeBuffer,
+                         uint start, uint end)
+{
+    if (start >= end)
+        return; // Sanity check.
+
+    if (end - start <= 6) {
+        // Apply a bubble sort for smaller lists.
+        for (uint i = end-1; i > start; i--) {
+            bool sorted = true;
+            for (uint j = start; j < i; j++) {
+                RenderLayer* elt = buffer->at(j);
+                RenderLayer* elt2 = buffer->at(j+1);
+                if (elt->zIndex() > elt2->zIndex()) {
+                    sorted = false;
+                    buffer->insert(j, elt2);
+                    buffer->insert(j+1, elt);
+                }
+            }
+            if (sorted)
+                return;
+        }
+    }
+    else {
+        // Peform a merge sort for larger lists.
+        uint mid = (start+end)/2;
+        sortByZOrder(buffer, mergeBuffer, start, mid);
+        sortByZOrder(buffer, mergeBuffer, mid, end);
+
+        RenderLayer* elt = buffer->at(mid-1);
+        RenderLayer* elt2 = buffer->at(mid);
+
+        // Handle the fast common case (of equal z-indices).  The list may already
+        // be completely sorted.
+        if (elt->zIndex() <= elt2->zIndex())
+            return;
+
+        // We have to merge sort.  Ensure our merge buffer is big enough to hold
+        // all the items.
+        mergeBuffer->resize(end - start);
+        uint i1 = start;
+        uint i2 = mid;
+
+        elt = buffer->at(i1);
+        elt2 = buffer->at(i2);
+
+        while (i1 < mid || i2 < end) {
+            if (i1 < mid && (i2 == end || elt->zIndex() <= elt2->zIndex())) {
+                mergeBuffer->insert(mergeBuffer->count(), elt);
+                i1++;
+                if (i1 < mid)
+                    elt = buffer->at(i1);
+            }
+            else {
+                mergeBuffer->insert(mergeBuffer->count(), elt2);
+                i2++;
+                if (i2 < end)
+                    elt2 = buffer->at(i2);
+            }
+        }
+
+        for (uint i = start; i < end; i++)
+            buffer->insert(i, mergeBuffer->at(i-start));
+
+        mergeBuffer->clear();
+    }
+}
+
+void RenderLayer::dirtyZOrderLists()
+{
+    if (m_posZOrderList)
+        m_posZOrderList->clear();
+    if (m_negZOrderList)
+        m_negZOrderList->clear();
+    m_zOrderListsDirty = true;
+}
+
+void RenderLayer::updateZOrderLists()
+{
+    if (!isStackingContext() || !m_zOrderListsDirty)
+        return;
+
+    for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->collectLayers(m_posZOrderList, m_negZOrderList);
+
+    // Sort the two lists.
+    if (m_posZOrderList) {
+        QPtrVector<RenderLayer> mergeBuffer;
+        sortByZOrder(m_posZOrderList, &mergeBuffer, 0, m_posZOrderList->count());
+    }
+    if (m_negZOrderList) {
+        QPtrVector<RenderLayer> mergeBuffer;
+        sortByZOrder(m_negZOrderList, &mergeBuffer, 0, m_negZOrderList->count());
+    }
+
+    m_zOrderListsDirty = false;
+}
+
+void RenderLayer::collectLayers(QPtrVector<RenderLayer>*& posBuffer, QPtrVector<RenderLayer>*& negBuffer)
+{
+    // FIXME: A child render object or layer could override visibility.  Don't remove this
+    // optimization though until RenderObject's nodeAtPoint is patched to understand what to do
+    // when visibility is overridden by a child.
+    if (renderer()->style()->visibility() != VISIBLE)
+        return;
+
+    // Determine which buffer the child should be in.
+    QPtrVector<RenderLayer>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
+
+    // Create the buffer if it doesn't exist yet.
+    if (!buffer)
+        buffer = new QPtrVector<RenderLayer>();
+
+    // Resize by a power of 2 when our buffer fills up.
+    if (buffer->count() == buffer->size())
+        buffer->resize(2*(buffer->size()+1));
+
+    // Append ourselves at the end of the appropriate buffer.
+    buffer->insert(buffer->count(), this);
+
+    // Recur into our children to collect more layers, but only if we don't establish
+    // a stacking context.
+    if (!isStackingContext()) {
+        for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
+            child->collectLayers(posBuffer, negBuffer);
+    }
+}

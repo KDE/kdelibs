@@ -357,7 +357,7 @@ void MouseEventImpl::computeLayerPos()
     DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
-        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY, 0, 0, false);
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
         while (node && !node->renderer())
