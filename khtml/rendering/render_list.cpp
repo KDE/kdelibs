@@ -320,15 +320,15 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     switch(style()->listStyleType()) {
     case DISC:
         p->setBrush( color );
-        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, offset/2+1, offset/2+1 );
+        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
         return;
     case CIRCLE:
         p->setBrush( Qt::NoBrush );
-        p->drawEllipse( _tx + xoff, _ty + yoff, offset-1, offset-1 );
+        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
         return;
     case SQUARE:
         p->setBrush( color );
-        p->drawRect( _tx + xoff, _ty + yoff, offset, offset );
+        p->drawRect( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
         return;
     case LNONE:
         return;
