@@ -21,8 +21,8 @@ Shell::Shell()
   m_manager = new KParts::PartManager( this );
 
   // When the manager says the active part changes, the builder updates (recreates) the GUI
-  connect( m_manager, SIGNAL( activePartChanged( Part * ) ),
-           this, SLOT( createGUI( Part * ) ) );
+  connect( m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
+           this, SLOT( createGUI( KParts::Part * ) ) );
 
   // We can do this "switch active part" because we have a splitter with
   // two items in it.

@@ -92,7 +92,7 @@ protected slots:
    * @ref KPartManager::activePartChanged() signal
    * @param part The active part (set to 0L if no part).
    */
-  virtual void createGUI( Part * part );
+  virtual void createGUI( KParts::Part * part );
 
 protected:
 //should be obsolete (Simon)
