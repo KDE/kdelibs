@@ -75,7 +75,7 @@ static KProtocolManagerPrivate* d = 0;
 
 // DEFAULT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
-QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3)") \
+QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3) (KHTML, like Gecko)") \
         .arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(X)
 
 void KProtocolManager::reparseConfiguration()
