@@ -829,7 +829,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 pos = str.find(selStr, pos, strictParsing);
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || str[pos-1] == ' ' ) {
-                    int endpos = pos + selStrlen;
+                    uint endpos = pos + selStrlen;
                     if ( endpos >= str.length() || str[endpos] == ' ' )
                         break; // We have a match.
                 }
