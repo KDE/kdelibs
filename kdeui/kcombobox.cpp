@@ -71,14 +71,14 @@ public:
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
-          :QComboBox( parent, name )
+    : QComboBox( parent, name )
 {
     m_trapReturnKey = false;
     init();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
-          :QComboBox( rw, parent, name )
+    : QComboBox( rw, parent, name )
 {
     m_trapReturnKey = false;
 
@@ -162,12 +162,12 @@ void KComboBox::setCompletedText( const QString& text, bool marked )
 {
     if ( lineEdit() )
     {
-      QString txt = currentText();
-      if ( text != txt )
-      {
-        int curpos = marked ? txt.length() : text.length();
-        lineEdit()->validateAndSet( text, curpos, curpos, text.length() );
-      }
+        QString txt = currentText();
+        if ( text != txt )
+        {
+            int curpos = marked ? txt.length() : text.length();
+            lineEdit()->validateAndSet( text, curpos, curpos, text.length() );
+        }
     }
 }
 
@@ -341,6 +341,7 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
         }
         d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
     }
+
     // Read-only combobox
     else if ( !edit )
     {
@@ -353,6 +354,7 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
             return;
         }
     }
+
     QComboBox::keyPressEvent(e);
 }
 
@@ -525,8 +527,7 @@ bool KComboBox::trapReturnKey() const
 
 void KComboBox::setEditURL( const KURL& url )
 {
-    if ( lineEdit() )
-        setEditText( url.prettyURL() );
+    setEditText( url.prettyURL() );
 }
 
 void KComboBox::insertURL( const KURL& url, int index )
@@ -571,7 +572,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
     {
         QString txt = currentText();
         if ( !items.isEmpty() &&
-             !(items.count() == 1 && txt == items[0]) )
+             !(items.count() == 1 && txt == items.first()) )
         {
             if ( !d->completionBox )
                 makeCompletionBox();
@@ -584,7 +585,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
         else
         {
             if ( d->completionBox && d->completionBox->isVisible() )
-                hideCompletionBox();
+                d->completionBox->hide();
         }
     }
     else
@@ -704,7 +705,7 @@ void KHistoryCombo::init( bool useCompletion )
 
     contextMenu()->insertSeparator();
     contextMenu()->insertItem( i18n("Empty contents"),
-                                           this, SLOT( slotClear()));
+                               this, SLOT( slotClear()));
 
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));

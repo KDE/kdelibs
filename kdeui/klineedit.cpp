@@ -453,10 +453,9 @@ void KLineEdit::makeCompletionBox()
 
     d->completionBox = new KCompletionBox( this, "completion box" );
     connect( d->completionBox, SIGNAL( highlighted( const QString& )),
-                 SLOT( setCompletedText( const QString& )));
+             SLOT( setCompletedText( const QString& )));
     connect( d->completionBox, SIGNAL( userCancelled( const QString& ) ),
-                 SLOT( setText(const QString&) ) );
-
+             SLOT( setText(const QString&) ) );
 }
 
 // FIXME: make pure virtual in KCompletionBase!
@@ -467,7 +466,7 @@ void KLineEdit::setCompletedItems( const QStringList& items )
     {
         QString txt = text();
         if ( !items.isEmpty() &&
-             !(items.count() == 1 && txt == items[0]) )
+             !(items.count() == 1 && txt == items.first()) )
         {
             if ( !d->completionBox )
                 makeCompletionBox();

@@ -48,6 +48,9 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
+    connect( this, SIGNAL( doubleClicked( QListBoxItem * ) ),
+             SLOT( slotActivated( QListBoxItem * ) ) );
+
     installEventFilter( this );
 }
 
@@ -142,6 +145,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     break;
                 }
             }
+
             // parent loses focus -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ||
@@ -151,6 +155,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         }
         return false;
     }
+
     else { // any other object received an event while we're visible
         if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
              (type == QEvent::Move && d->m_parent &&
@@ -179,11 +184,11 @@ void KCompletionBox::popup()
 QSize KCompletionBox::sizeHint() const
 {
     int ih = itemHeight();
-    int h = QMIN( 10 * ih, (int) count() * ih ) +1;
+    int h = QMIN( 15 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
 
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
-    w = QMAX( KListBox::sizeHint().width(), w );
+    w = QMAX( KListBox::minimumSizeHint().width(), w );
     return QSize( w, h );
 }
 
@@ -226,8 +231,7 @@ void KCompletionBox::end()
 void KCompletionBox::show()
 {
     if ( d->m_parent ) {
-        move( d->m_parent->mapToGlobal( QPoint(0,
-                  d->m_parent->height())));
+        move( d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) ));
         qApp->installEventFilter( this );
     }
     resize( sizeHint() );
