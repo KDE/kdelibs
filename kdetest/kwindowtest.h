@@ -7,11 +7,11 @@
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 
 class QMultiLineEdit;
 
-class testWindow  : public KTopLevelWidget
+class testWindow  : public KTMainWindow
 {
     Q_OBJECT
 

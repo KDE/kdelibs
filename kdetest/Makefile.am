@@ -26,7 +26,7 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-LDADD = $(top_builddir)/kformula/libkformula.la $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
+LDADD =  $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
 kformulatest_LDADD = $(LIB_KFORMULA)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \

@@ -8,7 +8,7 @@
 
 #include <kstatusbar.h>
 #include <kapp.h>
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 #include <kmenubar.h>
 #include <kiconloader.h>
 #include <qmultilinedit.h>
@@ -31,7 +31,7 @@
  */
 
 testWindow::testWindow (QWidget *, const char *name)
-    : KTopLevelWidget (name)
+    : KTMainWindow (name)
 {
     ena=false;
     setCaption ("Test KTW");
@@ -522,6 +522,7 @@ int main( int argc, char *argv[] )
         test.beYFixed();
 
     test.show();
+	test.resize(400, 500);
     int ret = myApp->exec();
 
     //delete test;
