@@ -1,3 +1,4 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
              (C) 1999 David Faure <faure@kde.org>
@@ -46,9 +47,30 @@ public:
     m_bAllowNestedParts = false;
     m_bIgnoreScrollBars = false;
     m_activationButtonMask = Qt::LeftButton | Qt::MidButton | Qt::RightButton;
+    m_reason = PartManager::NoReason;
   }
   ~PartManagerPrivate()
   {
+  }
+  void setReason( QEvent* ev ) {
+    switch( ev->type() ) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonDblClick: {
+      QMouseEvent* mev = static_cast<QMouseEvent *>( ev );
+      m_reason = mev->button() == Qt::LeftButton
+                 ? PartManager::ReasonLeftClick
+                 : ( mev->button() == Qt::MidButton
+                     ? PartManager::ReasonMidClick
+                     : PartManager::ReasonRightClick );
+      break;
+    }
+    case QEvent::FocusIn:
+      m_reason = static_cast<QFocusEvent *>( ev )->reason();
+      break;
+    default:
+      kdWarning(1000) << "PartManagerPrivate::setReason got unexpected ev type " << ev->type() << endl;
+      break;
+    }
   }
 
   Part * m_activePart;
@@ -65,6 +87,7 @@ public:
   short int m_activationButtonMask;
   bool m_bIgnoreScrollBars;
   bool m_bAllowNestedParts;
+  int m_reason;
 };
 
 }
@@ -213,7 +236,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 #ifdef DEBUG_PARTMANAGER
           kdDebug(1000) << "PartManager::eventFilter dblclick -> setActivePart" << part << endl;
 #endif
+          d->setReason( ev );
           setActivePart( part, w );
+          d->m_reason = NoReason;
           return true;
         }
 
@@ -226,7 +251,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 #ifdef DEBUG_PARTMANAGER
               kdDebug(1000) << "Part " << part << " (non-selectable) made active because " << w->className() << " got event" << " " << evType << endl;
 #endif
+              d->setReason( ev );
               setActivePart( part, w );
+              d->m_reason = NoReason;
           }
           return true;
         }
@@ -235,7 +262,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 #ifdef DEBUG_PARTMANAGER
           kdDebug(1000) << "Part " << part << " made active (from selected) because " << w->className() << " got event" << " " << evType << endl;
 #endif
+          d->setReason( ev );
           setActivePart( part, w );
+          d->m_reason = NoReason;
           return true;
         }
         else if ( d->m_activeWidget == w && d->m_activePart == part )
@@ -251,7 +280,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 #ifdef DEBUG_PARTMANAGER
         kdDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << " " << evType << endl;
 #endif
+        d->setReason( ev );
         setActivePart( part, w );
+        d->m_reason = NoReason;
       }
 
       return false;
@@ -557,6 +588,11 @@ void PartManager::slotManagedTopLevelWidgetDestroyed()
 {
   const QWidget *widget = static_cast<const QWidget *>( sender() );
   removeManagedTopLevelWidget( widget );
+}
+
+int PartManager::reason() const
+{
+  return d->m_reason;
 }
 
 void PartManager::virtual_hook( int, void* )

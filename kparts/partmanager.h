@@ -1,3 +1,4 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
              (C) 1999 David Faure <faure@kde.org>
@@ -52,8 +53,15 @@ class PartManager : public QObject
   Q_PROPERTY( bool allowNestedParts READ allowNestedParts WRITE setAllowNestedParts )
   Q_PROPERTY( bool ignoreScrollBars READ ignoreScrollBars WRITE setIgnoreScrollBars )
 public:
-  // the default policy of a PartManager is Direct!
+  /// Selection policy. The default policy of a PartManager is Direct.
   enum SelectionPolicy { Direct, TriState };
+
+  /**
+   * This extends QFocusEvent::Reason with the non-focus-event reasons for partmanager to activate a part.
+   * To test for "any focusin reason", use < ReasonLeftClick
+   * NoReason usually means: explicit activation with @ref setActivePart.
+   */
+  enum Reason { ReasonLeftClick = 100, ReasonMidClick, ReasonRightClick, NoReason };
 
   /**
    * Constructs a part manager.
@@ -210,6 +218,12 @@ public:
    * @see addManagedTopLevelWidget
    */
   void removeManagedTopLevelWidget( const QWidget *topLevel );
+
+  /**
+   * @return the reason for the last activePartChanged signal emitted.
+   * @see Reason
+   */
+  int reason() const;
 
 signals:
   /**
