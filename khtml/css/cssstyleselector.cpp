@@ -1418,7 +1418,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	    lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
-	    lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*style->font().pointSize(), Fixed);
+	    lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100, Percent);
 	else
 	    return;
 	style->setLineHeight(lineHeight);
