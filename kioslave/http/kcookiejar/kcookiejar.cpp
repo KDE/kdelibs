@@ -604,15 +604,16 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           QCString t = partList[0].lower().utf8();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
               break;
-
-          // The .name domain uses <name>.<surname>.name
-          // Although the TLD is striclty speaking .name, for our purpose
-          // it should be <surname>.name since people should not be able
-          // to set cookies for everyone with the same surname.
-          // Matches <surname>.name
-          if (partList[1].lower() == "name")
-              break;
        }
+
+       // The .name domain uses <name>.<surname>.name
+       // Although the TLD is striclty speaking .name, for our purpose
+       // it should be <surname>.name since people should not be able
+       // to set cookies for everyone with the same surname.
+       // Matches <surname>.name
+       if ((partList.count() == 2)&& (partList[1].lower() == "name"))
+          break;
+
        QString domain = partList.join(".");
        _domains.append("." + domain);
        _domains.append(domain);
@@ -752,7 +753,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (Value.isEmpty())
                    lastCookie->mPath = QString::null; // Catch "" <> QString::null
                 else
-                   lastCookie->mPath = Value;
+                   lastCookie->mPath = KURL::decode_string(Value);
             }
             else if (Name == "version")
             {
