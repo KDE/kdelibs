@@ -405,7 +405,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 	QListView::contentsMouseMoveEvent( e );
 
 	// I have just started to move my mouse..
-	if ((e->state() == LeftButton) && !d->startDragPos.isNull())
+	if ((e->state() == LeftButton) && d->startDragPos.isNull())
 	{
 	  d->startDragPos = e->pos();
 	}
