@@ -88,8 +88,8 @@ libkdeui_la_SOURCES = \
 		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
-		kxmlguibuilder.cpp kedittoolbar.cpp kpanelappmenu.cpp \
-		kdockwidget.cpp kdockwidget_private.cpp \
+		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
+		kpanelappmenu.cpp kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
@@ -101,7 +101,7 @@ libkdeui_la_SOURCES = \
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
-		kdepackages.h kdeui-doc.h kshortcutdialog.h
+		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)

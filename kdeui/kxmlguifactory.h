@@ -29,10 +29,14 @@ class KAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
-class KXMLGUIContainerNode;
-class KXMLGUIContainerClient;
 class KInstance;
-struct MergingIndex; // ### find better name to avoid possible name clashes
+
+namespace KXMLGUI
+{
+struct MergingIndex;
+class ContainerNode;
+class ContainerClient;
+};
 
 /**
  * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create
@@ -157,26 +161,26 @@ class KXMLGUIFactory : public QObject
 
  private:
 
-  void resetInternal( KXMLGUIContainerNode *node );
+  void resetInternal( KXMLGUI::ContainerNode *node );
 
-  void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
-  bool removeRecursive( QDomElement &element, KXMLGUIContainerNode *node );
+  void buildRecursive( const QDomElement &element, KXMLGUI::ContainerNode *parentNode );
+  bool removeRecursive( QDomElement &element, KXMLGUI::ContainerNode *node );
 
-  int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName,
-                        QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
+  int calcMergingIndex( KXMLGUI::ContainerNode *node, const QString &mergingName,
+                        QValueList<KXMLGUI::MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
 
-  QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
+  QWidget *findRecursive( KXMLGUI::ContainerNode *node, bool tag );
 
-  QPtrList<QWidget> findRecursive( KXMLGUIContainerNode *node, const QString &tagName );
+  QPtrList<QWidget> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
                             KXMLGUIBuilder **builder );
 
-  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName,
-                                      const QValueList<MergingIndex>::Iterator &mIt );
+  KXMLGUI::ContainerClient *findClient( KXMLGUI::ContainerNode *node, const QString &groupName,
+                                      const QValueList<KXMLGUI::MergingIndex>::Iterator &mIt );
 
-  void plugActionListRecursive( KXMLGUIContainerNode *node );
-  void unplugActionListRecursive( KXMLGUIContainerNode *node );
+  void plugActionListRecursive( KXMLGUI::ContainerNode *node );
+  void unplugActionListRecursive( KXMLGUI::ContainerNode *node );
 
   void processStateElement( const QDomElement &element );
 
