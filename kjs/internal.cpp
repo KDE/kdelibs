@@ -408,8 +408,8 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
   func = f;
 
+  put("arguments", this, DontDelete | DontEnum); // circular reference
 #if 0
-  put("arguments", this, DontDelete | DontEnum);
   if (func->hasProperty("arguments"))
     put("OldArguments", func->get("arguments"));
 #endif
