@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Image
+Name[bg]=Изображение Portable Pixmap Image
 Name[ca]=Imatge portable mapa de píxels
 Name[cs]=Obrázek ve formátu "Portable Pixmap"
 Name[cy]=Delwedd Bicsfap Llwydfap

@@ -1,6 +1,7 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[bg]=Автоматично конфигуриране на прокси сървъра
 Comment[ca]=Configuració automàtica del servidor d'intercanvi
 Comment[cs]=Automatické nastavení proxy
 Comment[cy]=Ffurweddiad Awtomatig o'r Dirprwy
@@ -29,6 +30,7 @@ Comment[zh_CN]=自动代理配置
 
 [script-error]
 Name=Invalid proxy script
+Name[bg]=Невалиден скрипт за прокси сървъра
 Name[ca]=Script del servidor intermedi no vàlid
 Name[cs]=Neplatný proxy skript
 Name[cy]=Sgript dirprwy annilys
@@ -54,6 +56,7 @@ Name[uz]=Прокси скрипти ҳақиқий эмас
 Name[xx]=xxInvalid proxy scriptxx
 Name[zh_CN]=无效的代理脚本
 Comment=The downloaded proxy configuration script is invalid
+Comment[bg]=Изтегленият скрипт за конфигуриране на прокси сървъра е невалиден
 Comment[ca]=L'script de configuració del servidor intermedi descarregat no és vàlid
 Comment[cs]=Stažený konfigurační skript pro proxy je neplatný
 Comment[cy]=Mae'r sgript ffurfweddu'r dirprwy a chafodd ei lawrlwytho yn annilys
@@ -82,6 +85,7 @@ default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[bg]=Грешка при изтегляне на скрипта
 Name[ca]=Error descàrrega de l'script
 Name[cs]=Chyba ve stažení skriptu
 Name[cy]=Gwall wrth lawrlwytho'r sgript
@@ -107,6 +111,7 @@ Name[uz]=Скриптни ёзиб олишда хато рўй берди
 Name[xx]=xxScript download errorxx
 Name[zh_CN]=脚本下载错误
 Comment=The proxy configuration script could not be downloaded
+Comment[bg]=Скриптът за конфигуриране на прокси сървъра не може да бъде изтеглен
 Comment[ca]=L'script de configuració del servidor intermedi no es pot descarregar
 Comment[cs]=Nelze stáhnout konfigurační skript pro proxy
 Comment[cy]=Y sgript ffurfweddu'r dirprwy
@@ -136,6 +141,7 @@ default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[bg]=Грешка при обработка на скрипта
 Name[ca]=Error en l'evaluació de l'script
 Name[cs]=Chyba v analýze skriptu
 Name[cy]=Gwall wrth werthuso'r sgript
@@ -161,7 +167,7 @@ Name[uz]=Скриптни текширишда хато рўй берди
 Name[xx]=xxScript evaluation errorxx
 Name[zh_CN]=脚本求值错误
 Comment=There was an error executing the proxy configuration script
-Comment[bg]=Сериозна грешка, предизвикваща излизане от програмата
+Comment[bg]=Грешка по време на изпълнение на скрипта за конфигуриране на прокси сървъра
 Comment[ca]=Hi ha hagut un error executant l'script de configuració del servidor intermedi
 Comment[cs]=Nastala chyba při spouštění konfiguračního skriptu proxy
 Comment[cy]=Digwyddodd gwall wrth weithredu'r sgript ffurfweddu'r dirprwy

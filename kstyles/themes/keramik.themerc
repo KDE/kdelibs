@@ -1,7 +1,6 @@
 [Misc]
 Name=Keramik
 Name[be]=Кераміка
-Name[bg]=Керамик
 Name[cs]=Keramika
 Name[eo]=Ceramiko
 Name[fa]=کرامیک
@@ -15,6 +14,7 @@ Name[th]=เครามิก - K
 Name[uz]=Керамика
 Name[xx]=xxKeramikxx
 Comment=The default style using alphablending
+Comment[bg]=Стандартния стил, използващ алфа сливане
 Comment[ca]=L'estil per omissió usant la mescla alfa
 Comment[cs]=Výchozí styl používající alfa kanál
 Comment[cy]=Yr arddull rhagosod sy'n defnyddio cymysgu-alffa
@@ -35,6 +35,7 @@ Comment[sk]=Štandardný štýl používajúci alfa kanál
 Comment[sr]=Подразумевани стил који користи претапање боја
 Comment[sv]=Förvald stil som använder alfablandning
 Comment[tr]=Alpha karışımı kullanan öntanımlı stil
+Comment[uz]=Alphablending'ли андоза услуб
 Comment[xx]=xxThe default style using alphablendingxx
 Comment[zh_CN]=使用 alpha 混和的默认风格
 

@@ -2,12 +2,13 @@
 Encoding=UTF-8
 Name=Evolution
 Name[be]=Эвалюцыя
-Name[bg]=Развитие
 Name[eo]=Evoluo
 Name[lv]=Evolūcija
+Name[sr]=Еволуција
 Name[ven]=Tsikoni
 Name[wa]=Evolucion
 Name[xh]=Utshintsho lwendawo ngokwenqanawa
+Name[xx]=xxEvolutionxx
 Name[zu]=Evolushini
 X-KDE-Library=kabc_evo
 Type=Service
