@@ -88,7 +88,8 @@ public:
    * @param item file item whose properties should be displayed.
    */
   KPropertiesDialog( KFileItem * item );
-
+  KPropertiesDialog( KFileItem * item, QWidget* parent, bool modal
+);
   /**
    * Bring up a Properties dialog. Normal constructor for
    * file-manager-like applications.
@@ -101,6 +102,7 @@ public:
    *
    */
   KPropertiesDialog( KFileItemList _items );
+  KPropertiesDialog( KFileItemList _items, QWidget *parent, bool modal);
 
   /**
    * Bring up a Properties dialog. Convenience constructor for
@@ -110,6 +112,8 @@ public:
    * @param _mode the mode, as returned by stat(). Don't set if unknown.
    */
   KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1 );
+  KPropertiesDialog( const KURL& _url, mode_t _mode,
+                     QWidget* parent, bool modal);
 
   /**
    * Create a properties dialog for a new .desktop file (whose name
@@ -123,6 +127,9 @@ public:
    */
   KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
                     const QString& _defaultName );
+  KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
+                     const QString& _defaultName,
+                     QWidget* parent, bool modal);
 
   /**
    * Cleans up the properties dialog and frees any associated resources,
@@ -217,7 +224,8 @@ private:
   /**
    * Common initialization for all constructors
    */
-  void init();
+  void init(QWidget* parent = 0L, bool modal = false);
+
   /**
    * Inserts all pages in the dialog.
    */

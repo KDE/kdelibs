@@ -120,6 +120,17 @@ KPropertiesDialog::KPropertiesDialog( KFileItem * item ) :
   init();
 }
 
+// BIC: MERGE with the above, parent = 0L, modal = false
+KPropertiesDialog::KPropertiesDialog (KFileItem* item, QWidget* parent, bool modal)
+  : m_singleUrl( item->url() ), m_bMustDestroyItems( false )
+{
+  d = new KPropertiesDialogPrivate;
+  m_items.append( item );
+  assert( item );
+  assert(!m_singleUrl.isEmpty());
+  init(parent, modal);
+}
+
 KPropertiesDialog::KPropertiesDialog( KFileItemList _items ) :
   m_singleUrl( _items.first()->url() ), m_items( _items ),
   m_bMustDestroyItems( false )
@@ -130,6 +141,17 @@ KPropertiesDialog::KPropertiesDialog( KFileItemList _items ) :
   init();
 }
 
+// BIC: MERGE with the above, parent = 0L, modal = false
+KPropertiesDialog::KPropertiesDialog (KFileItemList _items, QWidget* parent, bool modal)
+  : m_singleUrl( _items.first()->url() ), m_items( _items ),
+    m_bMustDestroyItems( false )
+{
+  d = new KPropertiesDialogPrivate;
+  assert( !_items.isEmpty() );
+  assert(!m_singleUrl.isEmpty());
+  init(parent, modal);
+}
+
 KPropertiesDialog::KPropertiesDialog( const KURL& _url, mode_t _mode ) :
   m_singleUrl( _url ), m_bMustDestroyItems( true )
 {
@@ -138,6 +160,18 @@ KPropertiesDialog::KPropertiesDialog( const KURL& _url, mode_t _mode ) :
   // Create a KFileItem from the information we have
   m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
   init();
+}
+
+// BIC: MERGE with the above, parent = 0L, modal = false
+KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
+                                      QWidget* parent, bool modal)
+  : m_singleUrl( _url ), m_bMustDestroyItems( true )
+{
+  d = new KPropertiesDialogPrivate;
+  assert(!_url.isEmpty());
+  // Create a KFileItem from the information we have
+  m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
+  init(parent, modal);
 }
 
 KPropertiesDialog::KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
@@ -152,15 +186,31 @@ KPropertiesDialog::KPropertiesDialog( const KURL& _tempUrl, const KURL& _current
   init();
 }
 
-void KPropertiesDialog::init()
+// BIC: MERGE with the above, parent = 0L, modal = false
+KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _currentDir,
+                                      const QString& _defaultName,
+                                      QWidget* parent, bool modal)
+  : m_singleUrl( _tempUrl ), m_bMustDestroyItems( true ),
+    m_defaultName( _defaultName ), m_currentDir( _currentDir )
+{
+  d = new KPropertiesDialogPrivate;
+  assert(!m_singleUrl.isEmpty());
+  // Create the KFileItem for the _template_ file, in order to read from it.
+  m_items.append( new KFileItem( -1, -1, m_singleUrl ) );
+  init(parent, modal);
+}
+
+void KPropertiesDialog::init (QWidget* parent, bool modal)
 {
   m_pageList.setAutoDelete( true );
 
   m_tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(m_singleUrl.fileName()),
-			 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, 0L, "propsdlg", false );
+                           KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                           parent, "propsdlg", modal );
 
   // Matthias: let the dialog look like a modal dialog
-  XSetTransientForHint(qt_xdisplay(), m_tab->winId(), m_tab->winId());
+  if (!modal)
+    XSetTransientForHint(qt_xdisplay(), m_tab->winId(), m_tab->winId());
 
   m_tab->setGeometry( m_tab->x(), m_tab->y(), 400, 400 );
 
