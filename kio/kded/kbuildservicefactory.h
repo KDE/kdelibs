@@ -45,6 +45,8 @@ public:
    */
   virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
 
+  virtual KService * createEntry( int ) { assert(0); return 0L; }
+
   /**
    * Add a new entry.
    */

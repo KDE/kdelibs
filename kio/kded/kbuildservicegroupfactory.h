@@ -41,6 +41,8 @@ public:
    */
   virtual KServiceGroup * createEntry(const QString &, const char *);
 
+  virtual KServiceGroup * createEntry(int) { assert(0); return 0L; }
+
   /**
    * Adds the entry newEntry to the correct group, creating the group if
    * necassery. If newEntry is 0, only the group is created.

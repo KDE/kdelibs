@@ -50,6 +50,8 @@ public:
    */
   virtual KSycocaEntry* createEntry(const QString &, const char *);
 
+  virtual KSycocaEntry * createEntry( int ) { assert(0); return 0L; }
+
   virtual void addEntry(KSycocaEntry *newEntry, const char *);
 };
 

@@ -47,6 +47,8 @@ public:
    */
   virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
 
+  virtual KServiceType * createEntry( int ) { assert(0); return 0L; }
+
   /**
    * Write out service type specific index files.
    */
