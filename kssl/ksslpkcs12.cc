@@ -214,7 +214,6 @@ return false;
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
 KSSLCertificate::KSSLValidation xx = _cert->validate();
 
-   // FIXME: PKCS12_verify_mac(p12, mpass, -1)
    if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
       xx = KSSLCertificate::PrivateKeyFailed;
    }
