@@ -191,13 +191,14 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     // 3. print floats and other non-flow objects.
     // we have to do that after the contents otherwise they would get obscured by background settings.
     // it is anyway undefined if regular text is above fixed objects or the other way round.
+
     if (m_view)
     {
         _tx += m_view->contentsX();
         _ty += m_view->contentsY();
     }
 
-    if(specialObjects)
+    if(specialObjects) 
         printSpecialObjects(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
@@ -250,12 +251,18 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     }
     //kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
-    clearSelection();
-
     while (s->firstChild())
         s = s->firstChild();
     while (e->lastChild())
         e = e->lastChild();
+
+    bool changedSelectionBorder = ( s != m_selectionStart || e != m_selectionEnd );
+
+    if ( !changedSelectionBorder && m_selectionStartPos == sp && m_selectionEndPos == ep )
+        return;
+
+    if ( changedSelectionBorder )
+        clearSelection();
 
     // set selection start
     if (m_selectionStart)
@@ -274,27 +281,27 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     m_selectionEndPos = ep;
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
-    RenderObject* o = s;
-    while (o && o!=e)
-    {
-        o->setSelectionState(SelectionInside);
+    if (  s && changedSelectionBorder ) {
+        for( RenderObject* o = s; o != e; ) {
+            o->setSelectionState(SelectionInside);
+            o->repaint();
 //      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
-        RenderObject* no;
-        if ( !(no = o->firstChild()) )
-            if ( !(no = o->nextSibling()) )
-            {
-                no = o->parent();
-                while (no && !no->nextSibling())
-                    no = no->parent();
-                if (no)
-                    no = no->nextSibling();
-            }
-        o=no;
+            RenderObject* no;
+            if ( !(no = o->firstChild()) )
+                if ( !(no = o->nextSibling()) )
+                {
+                    no = o->parent();
+                    while (no && !no->nextSibling())
+                        no = no->parent();
+                    if (no)
+                        no = no->nextSibling();
+                }
+            o=no;
+        }
+
+        s->setSelectionState(SelectionStart);
+        e->setSelectionState(s == e ? SelectionBoth : SelectionEnd);
     }
-    s->setSelectionState(SelectionStart);
-    e->setSelectionState(SelectionEnd);
-    if(s == e) s->setSelectionState(SelectionBoth);
-    repaint();
 }
 
 
@@ -304,9 +311,8 @@ void RenderRoot::clearSelection()
     RenderObject* o = m_selectionStart;
     while (o && o!=m_selectionEnd)
     {
-        if (o->selectionState()!=SelectionNone)
-            o->repaint();
         o->setSelectionState(SelectionNone);
+        o->repaint();
         RenderObject* no;
         if ( !(no = o->firstChild()) )
             if ( !(no = o->nextSibling()) )
@@ -319,10 +325,9 @@ void RenderRoot::clearSelection()
             }
         o=no;
     }
-    if (m_selectionEnd)
-    {
+    if (m_selectionEnd) {
         m_selectionEnd->setSelectionState(SelectionNone);
-        m_selectionEnd->repaint();
+	m_selectionEnd->repaint();
     }
 
     // set selection start & end to 0
