@@ -59,11 +59,11 @@ KTMLayout::setGeometry(const QRect& rect)
 		currY += hfw;
 	}
 
-	/* layout flattened bars */
-	flatBarLayout(rect, currY, flatBars);
-
 	/* layout top tool bars */
 	hToolBarLayout(rect, currY, topToolBars);
+
+	/* layout flattened bars */
+	flatBarLayout(rect, currY, flatBars);
 
 	/* position main layout */
 	int bottomHeight = toolBarHeight(rect.width(), bottomToolBars) +
