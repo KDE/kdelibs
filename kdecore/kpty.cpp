@@ -172,6 +172,7 @@ struct KPtyPrivate {
    }
 
    bool xonXoff : 1;
+   bool utf8    : 1;
    int masterFd;
    int slaveFd;
    struct winsize winSize;
@@ -325,6 +326,13 @@ bool KPty::open()
   else
     ttmode.c_iflag |= (IXOFF | IXON);
 
+#ifdef IUTF8
+  if (!d->utf8)
+    ttmode.c_iflag &= ~IUTF8;
+  else
+    ttmode.c_iflag |= IUTF8;
+#endif
+
   ttmode.c_cc[VINTR] = CTRL('C' - '@');
   ttmode.c_cc[VQUIT] = CTRL('\\' - '@');
   ttmode.c_cc[VERASE] = 0177;
@@ -477,6 +485,28 @@ void KPty::setXonXoff(bool useXonXoff)
       ttmode.c_iflag |= (IXOFF | IXON);
 
     _tcsetattr(d->masterFd, &ttmode);
+  }
+}
+
+void KPty::setUtf8Mode(bool useUtf8)
+{
+  d->utf8 = useUtf8;
+  if (d->masterFd >= 0) {
+    // without the '::' some version of HP-UX thinks, this declares
+    // the struct in this class, in this method, and fails to find
+    // the correct tc[gs]etattr
+    struct ::termios ttmode;
+
+#ifdef IUTF8
+    _tcgetattr(d->masterFd, &ttmode);
+
+    if (!useUtf8)
+      ttmode.c_iflag &= ~IUTF8;
+    else
+      ttmode.c_iflag |= IUTF8;
+
+    _tcsetattr(d->masterFd, &ttmode);
+#endif
   }
 }
 
