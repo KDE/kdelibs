@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <kapplication.h>
 #include <qfile.h>
@@ -120,6 +121,11 @@ void PartMonitor::partCompleted()
     }
 }
 
+void signal_handler( int x )
+{
+    printf( "timeout\n" );
+    abort();
+}
 // -------------------------------------------------------------------------
 
 RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
@@ -356,6 +362,8 @@ int main(int argc, char *argv[])
     setenv( "KDEHOME", "/var/tmp/non_existant", 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
+
+    signal( SIGALRM, signal_handler );
 
     KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
                        "Regression tester for khtml", "1.0");
