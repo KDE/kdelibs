@@ -437,49 +437,63 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 //    if(m_part->keyPressHook(_ke)) return;
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
-    switch ( _ke->key() )
-    {
-    case Key_Down:
-    case Key_J:
-        scrollBy( 0, 10 );
-        break;
+    if (_ke->state()&ShiftButton)
+      switch(_ke->key())
+	{
+	case Key_Space:
+	    scrollBy( 0, -clipper()->height() - offs );
+	    break;
+	}
+    else
+	switch ( _ke->key() )
+	{
+	case Key_Down:
+	case Key_J:
+	    scrollBy( 0, 10 );
+	    break;
 
-    case Key_Next:
-        scrollBy( 0, clipper()->height() - offs );
-        break;
+	case Key_Space:
+	    if (d->currentNode)
+	    {
+	        toggleActLink(false);
+	        break;
+	    }
+	    // no current Node? scroll...
+	case Key_Next:
+	    scrollBy( 0, clipper()->height() - offs );
+	    break;
 
-    case Key_Up:
-    case Key_K:
-        scrollBy( 0, -10 );
-        break;
+	case Key_Up:
+	case Key_K:
+	    scrollBy( 0, -10 );
+	    break;
 
-    case Key_Prior:
-        scrollBy( 0, -clipper()->height() + offs );
-        break;
-    case Key_Right:
-    case Key_L:
-        scrollBy( 10, 0 );
-        break;
-    case Key_Left:
-    case Key_H:
-        scrollBy( -10, 0 );
-        break;
-    case Key_Enter:
-    case Key_Return:
-    case Key_Space:
-          toggleActLink(false);
-        break;
-    case Key_Home:
-        setContentsPos( 0, 0 );
-        break;
-    case Key_End:
-        setContentsPos( 0, contentsHeight() - height() );
-        break;
-    default:
-	//	d->currentNode->keyPressEvent( _ke );
-	return;
-	break;
-    }
+	case Key_Prior:
+	    scrollBy( 0, -clipper()->height() + offs );
+	    break;
+	case Key_Right:
+	case Key_L:
+	    scrollBy( 10, 0 );
+	    break;
+	case Key_Left:
+	case Key_H:
+	    scrollBy( -10, 0 );
+	    break;
+	case Key_Enter:
+	case Key_Return:
+	    toggleActLink(false);
+	    break;
+	case Key_Home:
+	    setContentsPos( 0, 0 );
+	    break;
+	case Key_End:
+	    setContentsPos( 0, contentsHeight() - height() );
+	    break;
+	default:
+	    //	d->currentNode->keyPressEvent( _ke );
+	    return;
+	    break;
+	}
     _ke->accept();
 }
 
