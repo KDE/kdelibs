@@ -253,7 +253,8 @@ void Shell::setActiveView( View* view, Part* part )
 
 KToolBar* Shell::createToolBar( const char* name )
 {
-    KToolBar* bar = new KToolBar( this, name );
+    bool honor_mode = (QString(name) == "mainToolBar") ? true : false;
+    KToolBar* bar = new KToolBar( this, name, -1, honor_mode );
     m_toolbars.append( bar );
 
     addToolBar( bar );
