@@ -192,7 +192,7 @@ QPtrList<KMountPoint> KMountPoint::possibleMountPoints(int infoNeeded)
             mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
       }
       // TODO: Strip trailing '/' ?
-      result->append(mp);
+      result.append(mp);
    } //while
 
    f.close();
