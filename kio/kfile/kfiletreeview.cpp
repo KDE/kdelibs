@@ -261,7 +261,6 @@ void KFileTreeView::slotCollapsed( QListViewItem *item )
    {
       item->setPixmap( 0, itemIcon(kftvi));
    }
-
 }
 
 void KFileTreeView::slotExpanded( QListViewItem *item )
@@ -274,7 +273,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    KFileTreeBranch *branch = it->branch();
 
    /* Start the animation for the branch object */
-   if( it->isDir() && branch )
+   if( it->isDir() && branch && item->childCount() == 0 )
    {
       /* check here if the branch really needs to be populated again */
       kdDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;

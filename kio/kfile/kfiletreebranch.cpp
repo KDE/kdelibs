@@ -30,8 +30,6 @@
 #include "kfiletreeviewitem.h"
 #include "kfiletreebranch.h"
 
-class KFileTreeView;
-
 
 /* --- KFileTreeViewToplevelItem --- */
 KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
@@ -155,11 +153,11 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
             /* Cut off the file extension in case it is not a directory */
             if( !m_showExtensions && !currItem->isDir() )	/* Need to cut the extension */
             {
-                QString n = currItem->text();
-                int mPoint = n.findRev( '.' );
+                QString name = currItem->text();
+                int mPoint = name.findRev( '.' );
                 if( mPoint > 0 )
-                    n = n.left( mPoint );
-                newKFTVI->setText( 0, n );
+                    name = name.left( mPoint );
+                newKFTVI->setText( 0, name );
             }
         }
 
@@ -207,7 +205,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         treeViewItList.append( newKFTVI );
     }
 
-    emit( newTreeViewItems( this, treeViewItList ));
+    emit newTreeViewItems( this, treeViewItList );
 }
 
 KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *parent,
@@ -252,7 +250,6 @@ bool KFileTreeBranch::showExtensions( ) const
  */
 void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
-
     if( !it ) return;
     kdDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
 
@@ -298,9 +295,25 @@ void KFileTreeBranch::slotDirlisterClear()
 {
     kdDebug(250)<< "*** Clear all !" << endl;
     /* this slots needs to clear all listed items, but NOT the root item */
-    if( ! m_root ) return;
+    if( m_root )
+        deleteChildrenOf( m_root );
+}
 
-    QListViewItem *child = m_root->firstChild();
+void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
+{
+    kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
+    KFileItem *item = findByURL( url );
+    if( item )
+    {
+        KFileTreeViewItem *ftvi =
+            static_cast<KFileTreeViewItem *>(item->extraData( this ));
+        deleteChildrenOf( ftvi );
+    }
+}
+
+void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
+{
+    QListViewItem *child = parent->firstChild();
     QListViewItem *next = child;
 
     while( child )
@@ -317,21 +330,7 @@ void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
     {
         m_startURL = newUrl;
     }
-
 }
-
-void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
-{
-    kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
-    KFileItem *item = findByURL( url );
-    if( item )
-    {
-        KFileTreeViewItem *ftvi =
-            static_cast<KFileTreeViewItem *>(item->extraData( this ));
-        delete ftvi;
-    }
-}
-
 
 KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
 {
