@@ -253,7 +253,7 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
             // now we need to get the exact position
 	    int delta = _x - _tx - s->x;
 	    int pos = 0;
-	    while(1)
+	    while(pos < s->len)
 	    {
 		// ### this will produce wrong results for RTL text!!!
 		int w = fm->width(*(s->m_text+pos));
