@@ -495,7 +495,6 @@ public:
      */
      static void setMainCatalogue(const char *catalogue);
 
-private:
     QString chset;
     bool m_weekStartsMonday;
 
@@ -535,6 +534,7 @@ private:
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );
 
+private:
     static void initInstance();
     /**
      * @internal function used by the two translate versions
