@@ -339,9 +339,11 @@ static KCmdLineOptions options[] =
   { "s", 0, 0 } ,
   { "show", "Show the window while running tests", 0 } ,
   { "t", 0, 0 } ,
-  { "test <filename>", "Run only a single test", 0 } ,
+  { "test <filename>", "Run only a single test. Multiple options allowed.", 0 } ,
   { "js",  "Only run .js tests", 0 },
   { "html", "Only run .html tests", 0},
+  { "o", 0, 0 },
+  { "output <directory>", "Put output in <directory> instead of <base_dir>/output", 0 } ,
   { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
   KCmdLineLastOption
 };
@@ -442,6 +444,7 @@ int main(int argc, char *argv[])
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
                                                         args->arg(0),
+                                                        args->getOption("output"),
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
                                                         !args->isSet( "js" ));
@@ -450,9 +453,13 @@ int main(int argc, char *argv[])
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
-    bool result;
-    if (!args->getOption("test").isNull())
-	result = regressionTest->runTests(args->getOption("test"),true);
+    bool result = false;
+    QCStringList tests = args->getOptionList("test");
+    if (tests.count() > 0)
+        for (QValueListConstIterator<QCString> it = tests.begin(); it != tests.end(); ++it) {
+	    result = regressionTest->runTests(*it,true);
+            if (!result) break;
+        }
     else
 	result = regressionTest->runTests();
 
@@ -481,7 +488,7 @@ int main(int argc, char *argv[])
             if ( regressionTest->m_errors )
                 printf("Errors:   %d\n",regressionTest->m_errors);
 
-            QFile list( regressionTest->m_baseDir + "/output/links.html" );
+            QFile list( regressionTest->m_outputDir + "/links.html" );
             list.open( IO_WriteOnly|IO_Append );
             QString link, cl;
             link = QString( "<hr>%1 failures. (%2 expected failures)" )
@@ -513,7 +520,7 @@ int main(int argc, char *argv[])
 
 RegressionTest *RegressionTest::curr = 0;
 
-RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
+RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QString &outputDir,
 			       bool _genOutput, bool runJS, bool runHTML)
   : QObject(part)
 {
@@ -522,6 +529,12 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     m_baseDir = m_baseDir.replace( "//", "/" );
     if ( m_baseDir.endsWith( "/" ) )
         m_baseDir = m_baseDir.left( m_baseDir.length() - 1 );
+    if (outputDir.isEmpty())
+        m_outputDir = m_baseDir + "/output";
+    else {
+        createMissingDirs(outputDir + "/");
+        m_outputDir = outputDir;
+    }
     m_genOutput = _genOutput;
     m_runJS = runJS;
     m_runHTML =  runHTML;
@@ -529,14 +542,14 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     m_failures_work = m_failures_fail = 0;
     m_errors = 0;
 
-    ::unlink( QFile::encodeName( m_baseDir + "/output/links.html" ) );
-    QFile f( m_baseDir + "/output/empty.html" );
+    ::unlink( QFile::encodeName( m_outputDir + "/links.html" ) );
+    QFile f( m_outputDir + "/empty.html" );
     QString s;
     f.open( IO_WriteOnly | IO_Truncate );
     s = "<html><body>Follow the white rabbit";
     f.writeBlock( s.latin1(), s.length() );
     f.close();
-    f.setName( m_baseDir  + "/output/index.html" );
+    f.setName( m_outputDir + "/index.html" );
     f.open( IO_WriteOnly | IO_Truncate );
     s = "<html><frameset cols=150,*><frame src=links.html><frame name=content src=empty.html>";
     f.writeBlock( s.latin1(), s.length() );
@@ -864,12 +877,12 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
 
 void RegressionTest::createLink( const QString& test, int failures )
 {
-    createMissingDirs( m_baseDir + "/output/" + test + "-compare.html" );
+    createMissingDirs( m_outputDir + "/" + test + "-compare.html" );
 
-    QFile list( m_baseDir + "/output/links.html" );
+    QFile list( m_outputDir + "/links.html" );
     list.open( IO_WriteOnly|IO_Append );
     QString link;
-    link = QString( "<a href=\"%1\" target=\"content\" title\"%2\">" )
+    link = QString( "<a href=\"%1\" target=\"content\" title=\"%2\">" )
            .arg( test + "-compare.html" )
            .arg( test );
     link += m_currentTest;
@@ -887,9 +900,9 @@ void RegressionTest::createLink( const QString& test, int failures )
 
 void RegressionTest::doJavascriptReport( const QString &test )
 {
-    QFile compare( m_baseDir + "/output/" + test + "-compare.html" );
+    QFile compare( m_outputDir + "/" + test + "-compare.html" );
     if ( !compare.open( IO_WriteOnly|IO_Truncate ) )
-        kdDebug() << "failed to open " << m_baseDir + "/output/" + test + "-compare.html" << endl;
+        kdDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html" << endl;
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += "<body><tt>";
@@ -909,10 +922,58 @@ void RegressionTest::doJavascriptReport( const QString &test )
     compare.close();
 }
 
+/** returns the path in a way that is relatively reachable from base.
+ * @param base base directory (must not include trailing slash)
+ * @param path directory/file to be relatively reached by base
+ * @return path with all elements replaced by .. and concerning path elements
+ *	to be relatively reachable from base.
+ */
+static QString makeRelativePath(const QString &base, const QString &path)
+{
+    QString absBase = QFileInfo(base).absFilePath();
+    QString absPath = QFileInfo(path).absFilePath();
+//     kdDebug() << "absPath: \"" << absPath << "\"" << endl;
+//     kdDebug() << "absBase: \"" << absBase << "\"" << endl;
+
+    // walk up to common ancestor directory
+    int pos = 0;
+    do {
+        pos++;
+        int newpos = absBase.find('/', pos);
+        if (newpos == -1) newpos = absBase.length();
+        QConstString cmpPathComp(absPath.unicode() + pos, newpos - pos);
+        QConstString cmpBaseComp(absBase.unicode() + pos, newpos - pos);
+//         kdDebug() << "cmpPathComp: \"" << cmpPathComp.string() << "\"" << endl;
+//         kdDebug() << "cmpBaseComp: \"" << cmpBaseComp.string() << "\"" << endl;
+//         kdDebug() << "pos: " << pos << " newpos: " << newpos << endl;
+        if (cmpPathComp.string() != cmpBaseComp.string()) { pos--; break; }
+        pos = newpos;
+    } while (pos < (int)absBase.length() && pos < (int)absPath.length());
+    int basepos = pos < (int)absBase.length() ? pos + 1 : pos;
+    int pathpos = pos < (int)absPath.length() ? pos + 1 : pos;
+
+//     kdDebug() << "basepos " << basepos << " pathpos " << pathpos << endl;
+
+    QString rel;
+    {
+        QConstString relBase(absBase.unicode() + basepos, absBase.length() - basepos);
+        QConstString relPath(absPath.unicode() + pathpos, absPath.length() - pathpos);
+        // generate as many .. as there are path elements in relBase
+        if (relBase.string().length() > 0) {
+            for (int i = relBase.string().contains('/'); i > 0; --i)
+                rel += "../";
+            rel += "..";
+            if (relPath.string().length() > 0) rel += "/";
+        }
+        rel += relPath.string();
+    }
+    return rel;
+}
+
 void RegressionTest::doFailureReport( const QString& test, int failures )
 {
     if ( failures == NoFailure ) {
-        ::unlink( QFile::encodeName( m_baseDir + "/output/" + test + "-compare.html" ) );
+        ::unlink( QFile::encodeName( m_outputDir + "/" + test + "-compare.html" ) );
         return;
     }
 
@@ -923,18 +984,14 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         return; // no support for both kind
     }
 
-    QFile compare( m_baseDir + "/output/" + test + "-compare.html" );
+    QFile compare( m_outputDir + "/" + test + "-compare.html" );
 
-    // create a relative path so that it works via web as well. ugly
-    QString relpath = "..";
-    for ( int i = 0; i < test.contains( '/' ); ++i )
-        relpath += "/../";
-    if ( relpath.endsWith( "/" ) )
-        relpath = relpath.left( relpath.length() - 1 );
-    relpath = relpath.replace( "//", "/" );
+    QString testFile = QFileInfo(test).fileName();
 
     QString renderDiff;
     QString domDiff;
+
+    QString relOutputDir = makeRelativePath(m_baseDir, m_outputDir);
 
     // are blocking reads possible with KProcess?
     char pwd[PATH_MAX];
@@ -943,8 +1000,8 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render output/%2-render" )
-                            .arg ( test ).arg( test ).latin1(), "r" );
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
+                            .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->eof(); ++line )
             renderDiff += is->readLine() + "\n";
@@ -955,8 +1012,8 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & DomFailure ) {
         domDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom output/%2-dom" )
-                            .arg ( test ).arg( test ).latin1(), "r" );
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
+                            .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->eof(); ++line )
             domDiff += is->readLine() + "\n";
@@ -966,6 +1023,10 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     }
 
     chdir( pwd );
+
+    // create a relative path so that it works via web as well. ugly
+    QString relpath = makeRelativePath(m_outputDir + "/"
+        + QFileInfo(test).dirPath(), m_baseDir);
 
     compare.open( IO_WriteOnly|IO_Truncate );
     QString cl;
@@ -980,7 +1041,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
                   "var t = 1;\n"
                   "var lastb=0;\n" )
           .arg( relpath+"/baseline/"+test+"-dump.png" )
-          .arg( relpath+"/output/"+test+"-dump.png" );
+          .arg( testFile+"-dump.png" );
     cl += QString( "function toggleVisible(visible) {\n"
                   "     document.getElementById('render').style.visibility= visible == 'render' ? 'visible' : 'hidden';\n"
                   "     document.getElementById('image').style.visibility= visible == 'image' ? 'visible' : 'hidden';\n"
@@ -1224,12 +1285,12 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     baseline.load( absFilename, "PNG");
     QImage output = renderToImage();
     if ( !imageEqual( baseline, output ) ) {
-        QString outputFilename = m_baseDir + "/output/" + againstFilename;
+        QString outputFilename = m_outputDir + "/" + againstFilename;
         createMissingDirs(outputFilename );
         output.save(outputFilename, "PNG", 60);
     }
     else {
-        ::unlink( QFile::encodeName( m_baseDir + "/output/" + againstFilename ) );
+        ::unlink( QFile::encodeName( m_outputDir + "/" + againstFilename ) );
         result = true;
     }
     return result;
@@ -1250,7 +1311,7 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     bool result = true;
 
     // compare result to existing file
-    QString outputFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
+    QString outputFilename = QFileInfo(m_outputDir + "/" + againstFilename).absFilePath();
     bool kf = false;
     if ( m_known_failures & AllFailure )
         kf = true;
