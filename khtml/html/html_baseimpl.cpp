@@ -417,7 +417,6 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
 {
     _x-=_tx;
     _y-=_ty;
-    kdDebug( 6030 ) << "mouseEvent" << endl;
 
     NodeImpl *child = _first;
     while(child)
@@ -426,8 +425,6 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
 	    if(child->mouseEvent( _x, _y, _tx, _ty, ev )) return true;
 	child = child->nextSibling();
     }
-
-    kdDebug( 6030 ) << "children done.." << endl;
 
     if(noresize) return true;
 

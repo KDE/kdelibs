@@ -235,13 +235,20 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         int pos = str.find(QRegExp("[;,]"));
         if (pos == -1) // There can be no url (David)
         {
-            int delay = str.stripWhiteSpace().toInt();
-//              kdDebug( ) << "delay = " << delay << endl;
-//              kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
-            v->part()->scheduleRedirection(delay, v->part()->url().url());
+            bool ok = false;
+            int delay;
+            if(!_content.isNull())
+                delay = _content.implementation()->toInt(&ok);
+//             kdDebug( ) << "delay = " << delay << " ok = " << ok << endl;
+//             kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
+            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
-            int delay = str.left(pos).stripWhiteSpace().toInt();
-//            kdDebug( ) << "delay = " << delay << ", separator at " << pos << endl;
+            int delay = 0;
+            if(!_content.isNull()) {
+                DOMStringImpl* s = _content.implementation()->substring(pos, _content.length()-pos);
+                delay = s->toInt();
+                delete s;
+            }
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             if(pos < (int)str.length()) str = str.mid(pos);
@@ -249,7 +256,6 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             {
                 str = str.mid(4).simplifyWhiteSpace();
 		str = parseURL( DOMString(str) ).string();
-//                kdDebug( ) << "====> got redirect to " << str << endl;
                 v->part()->scheduleRedirection(delay, str);
             }
         }

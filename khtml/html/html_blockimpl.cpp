@@ -136,8 +136,8 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_SIZE:
     {
-        DOMString s = attr->value();
-        int _s = s.toInt();
+        if(!attr->val()) break;
+        int _s = attr->val()->toInt();
         if(_s % 2)
         {
             QString n;
@@ -156,11 +156,11 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_WIDTH:
     {
+        if(!attr->val()) break;
         // cheap hack to cause linebreaks
         // khtmltests/html/strange_hr.html
-        QString vstr = attr->value().string();
         bool ok;
-        int v = vstr.toInt(&ok);
+        int v = attr->val()->toInt(&ok);
         if(ok && !v)
             addCSSLength(CSS_PROP_WIDTH, "1");
         else
@@ -301,7 +301,7 @@ HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentImpl *doc)
 HTMLLayerElementImpl::~HTMLLayerElementImpl()
 {
 }
-    
+
 const DOMString HTMLLayerElementImpl::nodeName() const
 {
     return "LAYER";
@@ -311,7 +311,7 @@ ushort HTMLLayerElementImpl::id() const
 {
     return ID_LAYER;
 }
-    
+
 
 void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
 {
