@@ -261,5 +261,27 @@ bool KToggleAction::isChecked() const
     return checked;
 }
 
+// ############ Reggie: uuuuuuugly hack!!! Will remove it soon.
+void KToggleAction::uncheckGroup()
+{
+    if ( parent() && !exclusiveGroup().isEmpty() )
+    {
+	const QObjectList *list = parent()->children();
+	if ( list )
+	{
+	    QObjectListIt it( *list );
+	    for( ; it.current(); ++it )
+	    {
+		if ( it.current()->inherits( "KToggleAction" ) && 
+		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
+ 		    ((KToggleAction*)it.current())->blockSignals( TRUE );
+		    ((KToggleAction*)it.current())->setChecked( FALSE );
+ 		    ((KToggleAction*)it.current())->blockSignals( FALSE );
+		}
+	    }
+	}
+    }
+}
+
 #include "kaction.moc"
 

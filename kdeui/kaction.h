@@ -45,6 +45,8 @@ public:
     virtual void setChecked( bool );
     bool isChecked() const;
 
+    void uncheckGroup();
+    
 protected slots:
     void slotActivated();
 
