@@ -1,10 +1,10 @@
 This file is meant to be a place to track of medium to large-scale API changes
 that we would like to make for the next binary incompatible release.
 
-- Change all FooPrivate *d; -> FooPrivate * const d; and place initialization
-in constructor (for classes that would benefit this).  To help catch silly mistakes sense d should never change. Also concider changing to use KStaticDeleter to help prvent mistakes where developers forget to delete the pointer.  
+- Change all FooPrivate *d; -> Private * const d; and place initialization
+in constructor (for classes that would benefit this).  To help catch silly mistakes since d should never change. Also concider changing to use KStaticDeleter to help prvent mistakes where developers forget to delete the pointer.  
 
-- Move alll utility functions away from KApplication. TDB: Make KApplication 
+- Move all utility functions away from KApplication. TDB: Make KApplication 
   a very thin wrapper around QApplication. Ideally, KApplication should go 
   away completely. The kapp pointer references everywhere must die. Find a 
   way to make that possible
