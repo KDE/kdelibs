@@ -43,7 +43,7 @@
 
 #include <qstring.h>
 
-#define AMP_ENTITY "&"
+#define AMP_ENTITY "&amp;"
 #define YYERROR_VERBOSE
  
 extern int yylex();
