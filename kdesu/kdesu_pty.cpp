@@ -59,10 +59,16 @@ extern "C" char * ptsname(int fd);
 extern "C" int unlockpt(int fd);
 #endif
 
-#include <pty.h>
+#ifdef HAVE_PTY_H
+	#include <pty.h>
+#endif
+
 #include <termios.h>
+
 #ifdef HAVE_LIBUTIL_H
-#include <libutil.h>
+	#include <libutil.h>
+#elif defined(HAVE_UTIL_H)
+	#include <util.h>
 #endif
 
 PTY::PTY()
