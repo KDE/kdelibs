@@ -36,8 +36,30 @@ public class JSObject extends netscape.javascript.JSObject {
     private Object evaluate(String _script, boolean global) throws netscape.javascript.JSException {
         Main.info("evaluate (\"" + _script + "\")");
         
-        String script = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
-
+        // the following line only works from java 1.4 on
+        //String script = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
+        
+        // and this is the replacement for older versions:
+        StringBuffer sb = new StringBuffer();
+        int idx;
+        int off;
+        String script = _script;
+        
+        for (off = 0; (idx = script.indexOf("\\", off)) >= 0; off = idx + 1) {
+            sb.append(script.substring(off, idx));
+            sb.append("\\\\\\\\");
+        }
+        sb.append(script.substring(off, script.length()));
+        script = sb.toString();
+        sb = new StringBuffer();
+        for (off = 0; (idx = script.indexOf("\"", off)) >= 0; off = idx + 1) {
+            sb.append(script.substring(off, idx));
+            sb.append("\\\\\\\"");
+        }
+        sb.append(script.substring(off, script.length()));
+        script = sb.toString();
+        // end of replacement
+         
         KJASAppletContext kc = (KJASAppletContext) applet.getAppletContext();
         String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
