@@ -46,21 +46,6 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
     resize(minimumSize());
 }
 
-#if 0
-KReplaceNextDialog::KReplaceNextDialog(const QString &pattern, const QString &, long options, QWidget *parent) :
-    KDialogBase(parent, 0, false,  // non-modal!
-        i18n("Replace"),
-        User3 | User2 | User1 | Close,
-        User3,
-        false,
-        i18n("&All"), i18n("&Skip"), i18n("&Yes"))
-{
-    // m_options = options; #####
-    // setMainWidget done by KReplace ####
-    init( pattern );
-}
-#endif
-
 ////
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent )
@@ -110,7 +95,7 @@ void KFind::setData( const QString& data, int startPos )
     Q_ASSERT( m_index != -1 );
 }
 
-KFindNextDialog* KFind::dialog()
+KDialogBase* KFind::dialog()
 {
     if ( !m_dialog )
     {
@@ -323,10 +308,14 @@ void KFind::slotFindNext()
     emit findNext();
 }
 
-void KFind::displayFinalDialog()
+void KFind::displayFinalDialog() const
 {
-    if (!m_matches)
-        KMessageBox::information(parentWidget(), i18n("No match was found."));
+    QString message;
+    if ( numMatches() )
+        message = i18n( "1 match found.", "%n matches found.", numMatches() );
+    else
+        message = i18n("No matches found.");
+    KMessageBox::information(parentWidget(), message);
 }
 
 bool KFind::shouldRestart( bool forceAsking ) const
@@ -335,7 +324,10 @@ bool KFind::shouldRestart( bool forceAsking ) const
     // Well, unless the user can modify the document during a search operation,
     // hence the force boolean.
     if ( !forceAsking && (m_options & KFindDialog::FromCursor) == 0 )
+    {
+        displayFinalDialog();
         return false;
+    }
     QString message;
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );

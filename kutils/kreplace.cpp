@@ -28,54 +28,73 @@
 #include "kreplacedialog.h"
 #include <qregexp.h>
 
-class KReplace::KReplacePrivate
+class KReplaceNextDialog : public KDialogBase
 {
 public:
-    void setLabel( const QString& pattern, const QString& replacement ) {
-        m_mainLabel->setText( i18n("Replace '%1' with '%2'?").arg(pattern).arg(replacement) );
-    }
+    KReplaceNextDialog( QWidget *parent );
+    void setLabel( const QString& pattern, const QString& replacement );
+private:
     QLabel* m_mainLabel;
 };
 
-// Create the dialog.
-KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent) :
-    KFind( pattern, replacement, options, parent )
+KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
+    KDialogBase(parent, 0, false,  // non-modal!
+        i18n("Replace"),
+        User3 | User2 | User1 | Close,
+        User3,
+        false,
+        i18n("&All"), i18n("&Skip"), i18n("&Yes"))
 {
-    d = new KReplacePrivate;
-    d->m_mainLabel = new QLabel( this );
-    d->setLabel( pattern, replacement );
-    setMainWidget( d->m_mainLabel );
+    m_mainLabel = new QLabel( this );
+    setMainWidget( m_mainLabel );
+    resize(minimumSize());
+}
 
+void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replacement )
+{
+    kdDebug() << k_funcinfo << pattern << " " << replacement << endl;
+    m_mainLabel->setText( i18n("Replace '%1' with '%2'?").arg(pattern).arg(replacement) );
+}
+
+////
+
+KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent) :
+    KFind( pattern, options, parent )
+{
     m_replacements = 0;
     m_replacement = replacement;
 }
 
 KReplace::~KReplace()
 {
-    if (displayFinalDialog() && !m_cancelled)
-    {
-        if ( !m_replacements )
-            KMessageBox::information(parentWidget(), i18n("No text was replaced."));
-        else
-            KMessageBox::information(parentWidget(), i18n("1 replacement done.", "%n replacements done.", m_replacements ) );
-
-    }
-    setDisplayFinalDialog( false ); // don't display the KFind dialog :)
-    delete d;
 }
 
-bool KReplace::replace(QString &text, const QRect &expose)
+KReplaceNextDialog* KReplace::dialog()
 {
-    if (m_options & KFindDialog::FindBackwards)
+    if ( !m_dialog )
     {
-        m_index = text.length();
+        m_dialog = new KReplaceNextDialog( parentWidget() );
+        connect( m_dialog, SIGNAL( user1Clicked() ), this, SLOT( slotReplaceAll() ) );
+        connect( m_dialog, SIGNAL( user2Clicked() ), this, SLOT( slotSkip() ) );
+        connect( m_dialog, SIGNAL( user3Clicked() ), this, SLOT( slotReplace() ) );
+        connect( m_dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
     }
+    return static_cast<KReplaceNextDialog *>(m_dialog);
+}
+
+void KReplace::displayFinalDialog() const
+{
+    if ( !m_replacements )
+        KMessageBox::information(parentWidget(), i18n("No text was replaced."));
     else
-    {
-        m_index = 0;
-    }
-    m_text = text;
-    m_expose = expose;
+        KMessageBox::information(parentWidget(), i18n("1 replacement done.", "%n replacements done.", m_replacements ) );
+}
+
+KFind::Result KReplace::replace()
+{
+    //kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
+    Q_ASSERT( !needData() ); // happens if setData(QString::null) was called -> don't do that
+    Q_ASSERT( m_index != -1 );
     do
     {
         // Find the next match.
@@ -85,36 +104,44 @@ bool KReplace::replace(QString &text, const QRect &expose)
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
         if (m_index != -1)
         {
-            if (m_options & KReplaceDialog::PromptOnReplace)
+            // Flexibility: the app can add more rules to validate a possible match
+            if ( validateMatch( m_text, m_index, m_matchedLength ) )
             {
-                if ( validateMatch( m_text, m_index, m_matchedLength ))
+                if (m_options & KReplaceDialog::PromptOnReplace)
                 {
+                    kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText = m_text.mid( m_index, m_matchedLength );
                     QString rep = matchedText;
                     KReplace::replace(rep, m_replacement, 0, m_matchedLength);
-                    d->setLabel( matchedText, rep );
+                    dialog()->setLabel( matchedText, rep );
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
-                    emit highlight(m_text, m_index, m_matchedLength, m_expose);
-                    show();
-                    kapp->enter_loop();
+                    emit highlight(m_text, m_index, m_matchedLength);
+                    dialog()->show();
+                    // Get ready for next match
+                    if (m_options & KFindDialog::FindBackwards)
+                        m_index--;
+                    else
+                        m_index++;
+                    return Match;
                 }
                 else
+                {
+                    doReplace();
+                }
+            }
+            else // not validated -> skip match
+                if (m_options & KFindDialog::FindBackwards)
+                    m_index -= m_matchedLength;
+                else
                     m_index += m_matchedLength;
-            }
-            else
-            {
-                doReplace();
-            }
         }
     }
-    while ((m_index != -1) && !m_cancelled);
-    text = m_text;
+    while (m_index != -1);
 
-    // Should the user continue?
-    return !m_cancelled;
+    return NoMatch;
 }
 
 int KReplace::replace(QString &text, const QString &pattern, const QString &replacement, int index, long options, int *replacedLength)
@@ -159,27 +186,26 @@ int KReplace::replace(QString &text, const QString &replacement, int index, int 
     return rep.length();
 }
 
-// All.
-void KReplace::slotUser1()
+void KReplace::slotReplaceAll()
 {
     doReplace();
     m_options &= ~KReplaceDialog::PromptOnReplace;
-    kapp->exit_loop();
+    emit findNext();
 }
 
-// Skip.
-void KReplace::slotUser2()
+void KReplace::slotSkip()
 {
-    if (m_options & KReplaceDialog::FindBackwards) m_index--;
-       else m_index++;
-    kapp->exit_loop();
+    if (m_options & KReplaceDialog::FindBackwards)
+        m_index--;
+    else
+        m_index++;
+    emit findNext();
 }
 
-// Yes.
-void KReplace::slotUser3()
+void KReplace::slotReplace()
 {
     doReplace();
-    kapp->exit_loop();
+    emit findNext();
 }
 
 void KReplace::doReplace()
@@ -188,7 +214,7 @@ void KReplace::doReplace()
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
-    emit replace(m_text, m_index, replacedLength, m_matchedLength, m_expose);
+    emit replace(m_text, m_index, replacedLength, m_matchedLength);
     m_replacements++;
     if (m_options & KReplaceDialog::FindBackwards)
         m_index--;
@@ -210,7 +236,10 @@ bool KReplace::shouldRestart( bool forceAsking ) const
     // hence the force boolean.
     if ( !forceAsking && (m_options & KFindDialog::FromCursor) == 0
          && (m_options & KReplaceDialog::PromptOnReplace) == 0 )
+    {
+        displayFinalDialog();
         return false;
+    }
     QString message;
     if ( !m_replacements )
         message = i18n("No text was replaced.");

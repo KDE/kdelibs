@@ -23,10 +23,12 @@
 
 #include "kfind.h"
 
+class KReplaceNextDialog;
+
 /**
  * @short A generic implementation of the "replace" function.
  *
- * @author S.R.Haque <srhaque@iee.org>
+ * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
  * @sect Detail
  *
@@ -88,14 +90,10 @@ public:
 
     /**
      * Walk the text fragment (e.g. kwrite line, kspread cell) looking for matches.
-     * For each match, if prompt-on-replace is specified, emits the expose() signal
+     * For each match, if prompt-on-replace is specified, emits the highlight() signal
      * and displays the prompt-for-replace dialog before doing the replace.
-     *
-     * @param text The text fragment to modify.
-     * @param exposeOnReplace The region to expose
-     * @return False if the user elected to discontinue the replace.
      */
-    bool replace(QString &text, const QRect &expose);
+    Result replace();
 
     /**
      * Search the given string, replaces with the given replacement string,
@@ -127,6 +125,12 @@ public:
      */
     virtual bool shouldRestart( bool forceAsking = false ) const;
 
+    /**
+     * Displays the final dialog telling the user how many replacements were made.
+     * Call either this or shouldRestart().
+     */
+    virtual void displayFinalDialog() const;
+
 signals:
 
     /**
@@ -142,26 +146,25 @@ signals:
      * @param replacementIndex Starting index of the matched substring
      * @param replacedLength Length of the replacement string
      * @param matchedLength Length of the matched string
-     * @param expose The rectangle to expose
      */
-    void replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength, const QRect &expose);
+    void replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
+
+protected slots:
+
+    void slotSkip();
+    void slotReplace();
+    void slotReplaceAll();
 
 private:
+    KReplaceNextDialog* dialog();
     void doReplace();
+    static int replace( QString &text, const QString &replacement, int index, int length );
 
     QString m_replacement;
     unsigned m_replacements;
 
-    static int replace( QString &text, const QString &replacement, int index, int length );
-
     // Binary compatible extensibility.
     class KReplacePrivate;
     KReplacePrivate *d;
-
-private slots:
-
-    virtual void slotUser1();   // All
-    virtual void slotUser2();   // Skip
-    virtual void slotUser3();   // Yes
 };
 #endif

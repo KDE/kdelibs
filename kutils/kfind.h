@@ -24,12 +24,10 @@
 #include <kdialogbase.h>
 #include <qrect.h>
 
-class KFindNextDialog;
-
 /**
  * @short A generic implementation of the "find" function.
  *
- * @author S.R.Haque <srhaque@iee.org>
+ * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
  * @sect Detail
  *
@@ -105,7 +103,7 @@ public:
     KFind(const QString &pattern, long options, QWidget *parent);
     virtual ~KFind();
 
-    enum Result { NoMatch, Match /*, Cancelled*/ };
+    enum Result { NoMatch, Match };
 
     /**
      * @return true if the application must supply a new text fragment
@@ -127,7 +125,7 @@ public:
 
     /**
      * Walk the text fragment (e.g. text-processor line, kspread cell) looking for matches.
-     * For each match, emits the expose() signal and displays the find-again dialog
+     * For each match, emits the highlight() signal and displays the find-again dialog
      * proceeding.
      */
     Result find();
@@ -199,7 +197,7 @@ public:
      * Displays the final dialog saying "no match was found", if that was the case.
      * Call either this or shouldRestart().
      */
-    void displayFinalDialog();
+    virtual void displayFinalDialog() const;
 
 signals:
 
@@ -222,15 +220,14 @@ protected:
 
     QWidget* parentWidget() const { return (QWidget *)parent(); }
 
-    KFindNextDialog* dialog();
-
-private slots:
+protected slots:
 
     void slotFindNext();
     void slotDialogClosed() { m_dialogClosed = true; }
 
 private:
     void init( const QString& pattern );
+    KDialogBase* dialog();
 
     static bool isInWord( QChar ch );
     static bool isWholeWords( const QString &text, int starts, int matchedLength );
@@ -240,7 +237,7 @@ private:
 
     QString m_pattern;
     QRegExp *m_regExp;
-    KFindNextDialog* m_dialog;
+    KDialogBase* m_dialog;
     long m_options;
     unsigned m_matches;
 
