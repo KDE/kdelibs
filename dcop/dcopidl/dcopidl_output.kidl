@@ -1,7 +1,7 @@
 <!DOCTYPE DCOP-IDL><DCOP-IDL>
 <SOURCE>./dcopidl_test.h</SOURCE>
-<INCLUDE>dcopref.h</INCLUDE>
 <INCLUDE>dcopobject.h</INCLUDE>
+<INCLUDE>dcopref.h</INCLUDE>
 <INCLUDE>qstring.h</INCLUDE>
 <CLASS>
     <NAME>Test</NAME>

@@ -168,9 +168,9 @@ main
 	;
 	
 includes
-	: T_INCLUDE includes
+	: includes T_INCLUDE
           {
-		printf("<INCLUDE>%s</INCLUDE>\n", $1->latin1() );
+		printf("<INCLUDE>%s</INCLUDE>\n", $2->latin1() );
 	  }
 	| T_EXTERN_C T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
 	  {
