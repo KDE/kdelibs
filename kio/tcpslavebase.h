@@ -70,7 +70,16 @@ protected:
     // This determines the appropiate port to use.
     unsigned short int GetPort(unsigned short int port);
 
-    // This does the initial TCP connection stuff and/or SSL handshaking
+    /**
+     * This does the initial TCP connection stuff and/or SSL handshaking
+     * 
+     * @param host hostname
+     * @param port port number
+     * 
+     * @return on succes, true is returned.
+     *         on failure, false is returned and an appropriate error 
+     *         message is send to the application.
+     */
     bool ConnectToHost(const QCString &host, unsigned short int port);
 
     // The proper way to close up a socket here, as it closes the stdio

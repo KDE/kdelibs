@@ -119,7 +119,10 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	if (m_iSock == -1) return false;
 
 	if (!KSocket::initSockaddr(&server_name, host, port))
+        {
+		error( ERR_UNKNOWN_HOST, host);
 		return false;
+        }
 
 	if (::connect(m_iSock, (struct sockaddr*)(&server_name), sizeof(server_name))) {
 		error( ERR_COULD_NOT_CONNECT, host);
