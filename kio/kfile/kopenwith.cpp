@@ -20,8 +20,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>
@@ -359,8 +357,8 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
 {
-    d = new KOpenWithDlgPrivate();
-    bool bReadOnly = kapp && !kapp->authorize("shell_access");
+  d = new KOpenWithDlgPrivate;
+  bool bReadOnly = kapp && !kapp->authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
