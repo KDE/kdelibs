@@ -884,8 +884,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_LAYER:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
+    case ID_P:
     case ID_DIV:
-        n = new HTMLDivElementImpl(document);
+        n = new HTMLDivElementImpl(document, t->id);
         break;
     case ID_H1:
     case ID_H2:
@@ -897,9 +898,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(document);
-        break;
-    case ID_P:
-        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_PRE:
         ++inPre;
@@ -1245,7 +1243,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
         myform = new HTMLFormElementImpl(document, true);
         n = myform;
     } else
-        n = new HTMLDivElementImpl( document );
+        n = new HTMLDivElementImpl( document, ID_DIV );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
     AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;

@@ -33,13 +33,12 @@ namespace DOM {
 
 // -------------------------------------------------------------------------
 
-class HTMLDivElementImpl : public HTMLElementImpl
+class HTMLDivElementImpl : public HTMLGenericElementImpl
 {
 public:
-    HTMLDivElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc) {}
+    HTMLDivElementImpl(DocumentPtr *doc, ushort _tagid)
+        : HTMLGenericElementImpl(doc, _tagid) {}
 
-    virtual NodeImpl::Id id() const;
     virtual void parseAttribute(AttributeImpl *token);
 };
 
