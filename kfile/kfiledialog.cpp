@@ -126,19 +126,19 @@ void KFileBaseDialog::init()
     toolbar= new KToolBar(wrapper, "fileDialogToolbar");
 
     // Build the toolbar
-    toolbar->insertButton(Icon("back.xpm"),
+    toolbar->insertButton(ICON("back.xpm"),
 			  BACK_BUTTON, false,
 			  i18n("Back"));
-    toolbar->insertButton(Icon("forward.xpm"),
+    toolbar->insertButton(ICON("forward.xpm"),
 			  FORWARD_BUTTON, false,
 			  i18n("Forward"));
-    toolbar->insertButton(Icon("up.xpm"),
+    toolbar->insertButton(ICON("up.xpm"),
 			  PARENT_BUTTON, true,
 			  i18n("Up to parent"));
-    toolbar->insertButton(Icon("home.xpm"),
+    toolbar->insertButton(ICON("home.xpm"),
 			  HOME_BUTTON, true,
 			  i18n("Home"));
-    toolbar->insertButton(Icon("reload.xpm"),
+    toolbar->insertButton(ICON("reload.xpm"),
 			  RELOAD_BUTTON, true,
 			  i18n("Reload"));
 
@@ -150,7 +150,7 @@ void KFileBaseDialog::init()
 	     this, SLOT( bookmarksChanged() ) );
 
     QString bmFile = KApplication::localkdedir() +
-      "/share/apps/kdeui/";
+	"/share/apps/kdeui/";
 
     QDir tmpdir( bmFile );
     if ( !tmpdir.exists() )
@@ -160,17 +160,17 @@ void KFileBaseDialog::init()
 
     bookmarks->read(bmFile);
 
-    toolbar->insertButton(Icon("flag.xpm"),
+    toolbar->insertButton(ICON("flag.xpm"),
 			  HOTLIST_BUTTON, true,
 			  i18n("Bookmarks"), -1);
 
-    toolbar->insertButton(Icon("idea.xpm"),
+    toolbar->insertButton(ICON("idea.xpm"),
 			  MKDIR_BUTTON, true,
 			  i18n("Create new folder"));
-    toolbar->insertButton(Icon("search.xpm"),
+    toolbar->insertButton(ICON("search.xpm"),
 			  FIND_BUTTON, true,
 			  i18n("Search for a file"));
-    toolbar->insertButton(Icon("configure.xpm"),
+    toolbar->insertButton(ICON("configure.xpm"),
 			  CONFIGURE_BUTTON, true,
 			  i18n("Configure this dialog [development only]"));
 
@@ -325,7 +325,7 @@ void KFileBaseDialog::initGUI()
 	delete boxLayout; // deletes all sub layouts
 
     boxLayout = new QVBoxLayout(wrapper, 4);
-    boxLayout->addSpacing(toolbar->height());
+    boxLayout->addWidget(toolbar);
     boxLayout->addWidget(fileList->widget(), 4);
     boxLayout->addSpacing(3);
 
@@ -1206,11 +1206,6 @@ void KFileBaseDialog::completion() // SLOT
         // dg: added a little timeout: time to reread the new directory
         QTimer::singleShot( 500, this, SLOT(completion()) );
     }
-}
-
-void KFileBaseDialog::resizeEvent(QResizeEvent *)
-{
-    toolbar->updateRects(true);
 }
 
 /**

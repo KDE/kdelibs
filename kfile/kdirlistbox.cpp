@@ -68,16 +68,16 @@ KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
     : QListBoxItem() 
 {
     if (!folder_pixmap) // don't use IconLoader to always get the same icon
-      folder_pixmap = new QPixmap(locate("icon", "mini/folder.xpm"));
+      folder_pixmap = new QPixmap(locate("mini", "folder.xpm"));
 				    
     if (!locked_folder)
-      locked_folder = new QPixmap(locate("icon", "mini/lockedfolder.xpm"));
+      locked_folder = new QPixmap(locate("mini", "lockedfolder.xpm"));
     
     if (!file_pixmap)
-      file_pixmap = new QPixmap(locate("icon", "mini/unknown.xpm"));
+      file_pixmap = new QPixmap(locate("mini", "unknown.xpm"));
 				
     if (!locked_file)
-      locked_file = new QPixmap(locate("icon", "mini/locked.xpm"));
+      locked_file = new QPixmap(locate("mini", "locked.xpm"));
      
     
     if (i->isDir())

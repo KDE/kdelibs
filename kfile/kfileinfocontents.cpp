@@ -51,16 +51,16 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
     nameList = 0;
 
     if (!folder_pixmap) // don't use IconLoader to always get the same icon
-      folder_pixmap = new QPixmap(locate("icon", "mini/folder.xpm"));
+      folder_pixmap = new QPixmap(locate("mini", "folder.xpm"));
 				    
     if (!locked_folder)
-      locked_folder = new QPixmap(locate("icon", "mini/lockedfolder.xpm"));
+      locked_folder = new QPixmap(locate("mini", "lockedfolder.xpm"));
     
     if (!file_pixmap)
-      file_pixmap = new QPixmap(locate("icon", "mini/unknown.xpm"));
+      file_pixmap = new QPixmap(locate("mini", "unknown.xpm"));
 				
     if (!locked_file)
-      locked_file = new QPixmap(locate("icon", "mini/locked.xpm"));
+      locked_file = new QPixmap(locate("mini", "locked.xpm"));
 
     sig = new KFileInfoContentsSignaler();
     filesNumber = 0;

@@ -281,8 +281,6 @@ protected:
       */
     bool stackLock;
 
-    void resizeEvent(QResizeEvent *);
-
     /**
       * Subclasses should reimplement this method to swallow the main
       * layout. This allows the addition of children that are outside
