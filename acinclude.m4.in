@@ -137,11 +137,14 @@ if test -n "$kde_libraries"; then
 fi
 
 if test -n "$qt_libraries"; then
-  KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $qt_libraries $KDE_EXTRA_RPATH"
+  KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $qt_libraries"
 fi
 
-dnl I have no idea, why I used KDE_TEST_RPATH once
-KDE_TEST_RPATH="$KDE_RPATH"
+if test -n "$x_libraries"; then
+  KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $x_libraries"
+fi
+
+KDE_TEST_RPATH="$KDE_TEST_RPATH $KDE_EXTRA_RPATH"
 
 ac_compile='${CXX-g++} -c $CXXFLAGS $all_includes $CPPFLAGS conftest.$ac_ext'
 if AC_TRY_EVAL(ac_compile); then
