@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_srcdir)/interfaces/kregexpeditor $(all_includes)
 
 lib_LTLIBRARIES   = libkutils.la
 libkutils_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 2:0:1
