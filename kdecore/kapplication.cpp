@@ -1965,21 +1965,24 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
-     if ((*it).startsWith("subject="))
+   {
+     QString q = (*it).lower();
+     if (q.startsWith("subject="))
        subject = KURL::decode_string((*it).mid(8));
      else
-     if ((*it).startsWith("cc="))
+     if (q.startsWith("cc="))
        cc = KURL::decode_string((*it).mid(3));
      else
-     if ((*it).startsWith("bcc="))
+     if (q.startsWith("bcc="))
        bcc = KURL::decode_string((*it).mid(4));
      else
-     if ((*it).startsWith("body="))
+     if (q.startsWith("body="))
        body = KURL::decode_string((*it).mid(5));
      //else
-     //  if ((*it).startsWith("attach="))
+     //  if (q.startsWith("attach="))
      //    attach = KURL::decode_string((*it).mid(7));
-
+   }
+   
    invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList() );
 }
 
