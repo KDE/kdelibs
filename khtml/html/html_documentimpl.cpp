@@ -26,6 +26,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "misc/khtmldata.h"
+#include "misc/htmlattrs.h"
 
 #include "htmlparser.h"
 #include "htmltokenizer.h"
@@ -168,6 +169,16 @@ void HTMLDocumentImpl::finishParsing (  )
 {
     if(tokenizer)
 	tokenizer->finish();
+    
+    // onload script...
+    if(m_view && m_view->part()->jScriptEnabled()) {
+	DOMString script = body()->getAttribute(ATTR_ONLOAD);
+	if(script.length()) {
+	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    m_view->part()->executeScript( script.string() );
+	}
+    }
+
 }
 
 ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
@@ -334,6 +345,17 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
 void HTMLDocumentImpl::detach()
 {
+    // onunload script...
+    if(m_view->part()->jScriptEnabled()) {
+	DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
+	if(script.length()) {
+	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    m_view->part()->executeScript( script.string() );
+	}
+    }
+
+
+    
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
