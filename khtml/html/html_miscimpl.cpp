@@ -95,7 +95,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                 break;
             case TABLE_ROWS:
             case TSECTION_ROWS:
-                if(e->id() == ID_TR || e->id() == ID_TH)
+                if(e->id() == ID_TR)
                     len++;
                 else if(e->id() == ID_TABLE)
                     deep = false;
@@ -182,7 +182,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                 break;
             case TABLE_ROWS:
             case TSECTION_ROWS:
-                if(e->id() == ID_TR || e->id() == ID_TH)
+                if(e->id() == ID_TR)
                     len++;
                 else if(e->id() == ID_TABLE)
                     deep = false;
@@ -308,7 +308,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 break;
             case TABLE_ROWS:
             case TSECTION_ROWS:
-                if(e->id() == ID_TR || e->id() == ID_TH)
+                if(e->id() == ID_TR)
                     check = true;
                 else if(e->id() == ID_TABLE)
                     deep = false;
