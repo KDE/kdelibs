@@ -1090,8 +1090,9 @@ void HTTPProtocol::slotGet( const char *_url )
  * 3) Start the process going with an http_open() -- everything else is
  *    done automagically.
  */
-void HTTPProtocol::slotPut(const char *_url, int _mode, bool _overwrite,
-                           bool _resume, int _len)
+void HTTPProtocol::slotPut(const char *_url, int /*_mode*/, 
+			   bool /*_overwrite*/,
+                           bool /*_resume*/, int _len)
 {
 	// transform this URL into a KURL for easy manipulating
 	KURL usrc(_url);
