@@ -1855,7 +1855,7 @@ static QColor colorForCSSValue( int css_value )
     return c;
 }
 
-static inline int nextFontSize(QValueVector<int>& a, int v, bool smaller)
+static inline int nextFontSize(const QValueVector<int>& a, int v, bool smaller)
 {
     // return the nearest bigger/smaller value in scale a, when v is in range.
     // otherwise increase/decrease value using a 1.2 fixed ratio
@@ -1864,7 +1864,7 @@ static inline int nextFontSize(QValueVector<int>& a, int v, bool smaller)
         m = (l+r)/2;
         if (a[m] == v)
             return smaller ? ( m ? a[m-1] : (v*5)/6 ) : 
-                             ( m+1<a.count() ? a[m+1] : (v*6)/5 );
+                             ( m+1<int(a.count()) ? a[m+1] : (v*6)/5 );
         else if (v < a[m])
             r = m-1;
         else
@@ -1872,7 +1872,7 @@ static inline int nextFontSize(QValueVector<int>& a, int v, bool smaller)
     }
     if (!l)
         return smaller ? (v*5)/6 : kMin((v*6)/5, a[0]);
-    if (l == a.count())
+    if (l == int(a.count()))
         return smaller ? kMax((v*5)/6, a[r]) : (v*6)/5;
         
     return smaller ? a[r] : a[l];
@@ -2936,10 +2936,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
 #ifdef APPLE_CHANGES
-	    QValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
+	    const QValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
 					 m_fixedFontSizes : m_fontSizes;
 #else
-	    QValueVector<int>& fontSizes = m_fontSizes;
+	    const QValueVector<int>& fontSizes = m_fontSizes;
 #endif
             switch(primitiveValue->getIdent())
             {
