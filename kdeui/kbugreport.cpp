@@ -59,7 +59,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     ? aboutData
     : ( KGlobal::_activeInstance ? KGlobal::_activeInstance->aboutData()
                                  : KGlobal::instance()->aboutData() );
-  m_process = 0L;
+  m_process = 0;
   QWidget * parent = plainPage();
   QLabel * tmpLabel;
   QVBoxLayout * lay = new QVBoxLayout( parent, 0, spacingHint() );
@@ -74,7 +74,6 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addWidget( tmpLabel, 0,0 );
   m_from = new QLabel( parent );
   glay->addWidget( m_from, 0, 1 );
-  slotSetFrom();
 
   // Program name
   tmpLabel = new QLabel( i18n("Application : "), parent );
@@ -96,11 +95,11 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addMultiCellWidget( m_version, 2, 2, 1, 2 );
 
   // Configure email button
-  QPushButton * configureEmail = new QPushButton( i18n("Configure E-Mail"),
+  m_configureEmail = new QPushButton( i18n("Configure E-Mail"),
 						  parent );
-  connect( configureEmail, SIGNAL( clicked() ), this,
+  connect( m_configureEmail, SIGNAL( clicked() ), this,
 	   SLOT( slotConfigureEmail() ) );
-  glay->addMultiCellWidget( configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
+  glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
 
   // Severity
   m_bgSeverity = new QHButtonGroup( i18n("Severity"), parent );
@@ -174,6 +173,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   // Necessary for vertical label and url alignment.
   label->setFixedHeight( fontMetrics().lineSpacing() );
   url->setFixedHeight( fontMetrics().lineSpacing()-1 );
+
+  slotSetFrom();
 }
 
 KBugReport::~KBugReport()
@@ -182,6 +183,7 @@ KBugReport::~KBugReport()
 
 void KBugReport::slotConfigureEmail()
 {
+  if (m_process) return;
   m_process = new KProcess;
   *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("Personalization/email");
   connect(m_process, SIGNAL(processExited(KProcess *)), this, SLOT(slotSetFrom()));
@@ -189,12 +191,17 @@ void KBugReport::slotConfigureEmail()
   {
     qDebug("Couldn't start kcmshell..");
     delete m_process;
+    m_process = 0;
+    return;
   }
+  m_configureEmail->setEnabled(false);
 }
 
 void KBugReport::slotSetFrom()
 {
   delete m_process;
+  m_process = 0;
+  m_configureEmail->setEnabled(true);
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
   emailConf.setGroup( QString::fromLatin1("UserInfo") );
   QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );

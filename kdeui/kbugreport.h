@@ -87,6 +87,7 @@ protected:
   QLabel * m_version;
   QString m_strVersion;
   QHButtonGroup * m_bgSeverity;
+  QPushButton * m_configureEmail;
 
 private:
   KBugReportPrivate *d;
