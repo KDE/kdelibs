@@ -86,12 +86,6 @@ public:
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
 
-    /*
-     * state() and restoreState() are complimentary functions.
-     */
-    virtual QString state() { return QString::null; }
-    virtual void restoreState(const QString &) { };
-
     bool prepareSubmit();
     void submit();
     void reset();
@@ -276,6 +270,7 @@ public:
     DOMString filename() const { return m_filename; }
     void setFilename(DOMString _filename) { m_filename = _filename; }
 
+    virtual bool maintainsState() { return true; }
     virtual QString state();
     virtual void restoreState(const QString &);
 
@@ -390,6 +385,7 @@ public:
     DOMString value();
     void setValue(DOMStringImpl* value);
 
+    virtual bool maintainsState() { return true; }
     virtual QString state();
     virtual void restoreState(const QString &);
 
@@ -528,6 +524,7 @@ public:
 
     DOMString type() const;
 
+    virtual bool maintainsState() { return true; }
     virtual QString state();
     virtual void restoreState(const QString &);
 

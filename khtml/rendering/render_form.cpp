@@ -883,11 +883,6 @@ void RenderSelect::close()
 {
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
 
-    // Restore state
-    QString state = f->ownerDocument()->registerElement(f); // ### move this code to HTMLSelectElementImpl
-    if ( !state.isEmpty())
-        static_cast<HTMLSelectElementImpl*>(m_element)->restoreState( state );
-
     setLayouted(false);
     static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
 
@@ -1132,10 +1127,6 @@ void RenderTextArea::close( )
     HTMLTextAreaElementImpl *e = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
     e->setValue( e->defaultValue() );
-
-    QString state = e->ownerDocument()->registerElement( e );
-    if ( !state.isEmpty() )
-        e->restoreState( state );
 
     RenderFormElement::close();
 }

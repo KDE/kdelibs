@@ -68,14 +68,15 @@ class EventImpl;
         DocumentImpl *doc;
     };
 
-// Skeleton of a node. No children and no parents are allowed.
-// We use this class as a basic Node Implementation, and derive all other
-// Node classes from it. This is done to reduce memory overhead.
-// Derived classes will only implement the functionality needed, and only
-// use as much storage as they really need; i.e. if a node has no children
-// or even no parent; it does not need to store null pointers.
-// (Such nodes could be attributes or readonly nodes at the end of the
-// tree)
+/**
+ * @internal
+ *
+ * Skeleton of a node. No children and no parents are allowed. We use this class as a basic Node Implementation, and
+ * derive all other Node classes from it. This is done to reduce memory overhead. Derived classes will only implement
+ * the functionality needed, and only use as much storage as they really need; i.e. if a node has no children or even
+ * no parent; it does not need to store null pointers. (Such nodes could be attributes or readonly nodes at the end of
+ * the tree)
+ */
 class NodeImpl : public DomShared
 {
     friend class DocumentImpl;
@@ -321,6 +322,31 @@ public:
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
+    // Methods for maintaining the state of the element between history navigation
+
+    /**
+     * Indicates whether or not this type of node maintains it's state. If so, the state of the node will be stored when
+     * the user goes to a different page using the state() method, and restored using the restoreState() method if the
+     * user returns (e.g. using the back button). This is used to ensure that user-changeable elements such as form
+     * controls maintain their contents when the user returns to a previous page in the history.
+     */
+    virtual bool maintainsState();
+
+    /**
+     * Returns the state of this node represented as a string. This string will be passed to restoreState() if the user
+     * returns to the page.
+     *
+     * @return State information about the node represented as a string
+     */
+    virtual QString state();
+
+    /**
+     * Sets the state of the element based on a string previosuly returned by state(). This is used to initialize form
+     * controls with their old values when the user returns to the page in their history.
+     *
+     * @param state A string representation of the node's previously-stored state
+     */
+    virtual void restoreState(const QString &state);
 
 protected:
     DocumentPtr *document;
@@ -345,7 +371,11 @@ protected:
     bool m_styleElement : 1; // contains stylesheet text
 };
 
-// this class implements nodes, which can have a parent but no children:
+/**
+ * @internal
+ *
+ * This class implements nodes, which can have a parent but no children:
+ */
 class NodeWParentImpl : public NodeImpl
 {
 public:
@@ -381,7 +411,11 @@ protected:
     bool checkReadOnly() const;
 };
 
-// this is the full Node Implementation with parents and children.
+/**
+ * @internal
+ *
+ * This is the full Node Implementation with parents and children.
+ */
 class NodeBaseImpl : public NodeWParentImpl
 {
 public:

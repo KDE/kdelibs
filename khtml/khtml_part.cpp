@@ -3236,7 +3236,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   QStringList docState;
   if (d->m_doc)
   {
-     docState = d->m_doc->state();
+     docState = d->m_doc->docState();
   }
   stream << (Q_UINT32) 0 << d->m_encoding << docState;
 

@@ -997,6 +997,20 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     }
 }
 
+bool NodeImpl::maintainsState()
+{
+    return false;
+}
+
+QString NodeImpl::state()
+{
+    return QString::null;
+}
+
+void NodeImpl::restoreState(const QString &/*state*/)
+{
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentPtr *doc) : NodeImpl(doc)

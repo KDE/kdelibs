@@ -713,10 +713,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     return n;
 }
 
-// Used to maintain list of all forms in document
-QString DocumentImpl::registerElement(ElementImpl *e)
+QString DocumentImpl::nextState()
 {
-   m_registeredElements.append(e);
    QString state;
    if (!m_state.isEmpty())
    {
@@ -726,23 +724,15 @@ QString DocumentImpl::registerElement(ElementImpl *e)
    return state;
 }
 
-// Used to maintain list of all forms in document
-void DocumentImpl::removeElement(ElementImpl *e)
+QStringList DocumentImpl::docState()
 {
-   m_registeredElements.removeRef(e);
+    QStringList s;
+    for (NodeImpl *n = this; n != 0; n = n->traverseNextNode()) {
+	if (n->maintainsState())
+	    s.append(n->state());
+    }
+    return s;
 }
-
-QStringList DocumentImpl::state()
-{
-   QStringList s;
-   for( ElementImpl *e = m_registeredElements.first();
-        e; e = m_registeredElements.next())
-   {
-       s.append(e->state());
-   }
-   return s;
-}
-
 
 RangeImpl *DocumentImpl::createRange()
 {

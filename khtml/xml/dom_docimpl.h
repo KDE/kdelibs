@@ -156,16 +156,10 @@ public:
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     void updateStyleSelector();
 
-    // Used to maintain list of all elements in the document
-    // that want to save and restore state.
-    // Returns the state the element should restored to.
-    QString registerElement(ElementImpl *);
-
-    // Used to maintain list of all forms in document
-    void removeElement(ElementImpl *);
+    QString nextState();
 
     // Query all registered elements for their state
-    QStringList state();
+    QStringList docState();
 
     // Set the state the document should restore to
     void setRestoreState( const QStringList &s) { m_state = s; }
@@ -323,7 +317,6 @@ signals:
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;
-    QPtrList<ElementImpl> m_registeredElements;
     QStringList m_state;
 
     khtml::DocLoader *m_docLoader;

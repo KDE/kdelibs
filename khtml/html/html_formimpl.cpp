@@ -837,7 +837,6 @@ void HTMLInputElementImpl::init()
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
-    if ( ownerDocument() ) ownerDocument()->removeElement(this);
 }
 
 NodeImpl::Id HTMLInputElementImpl::id() const
@@ -1098,16 +1097,6 @@ void HTMLInputElementImpl::attach()
         if (m_render)
         {
             m_render->setStyle(m_style);
-            QString state = ownerDocument()->registerElement(this);
-            if ( !state.isEmpty())
-            {
-#ifdef FORMS_DEBUG
-                kdDebug( 6030 ) << "Restoring InputElem name=" << _name.string() <<
-                    " state=" << state << endl;
-#endif
-                restoreState( state );
-            }
-
             r->addChild(m_render, nextRenderer());
         }
     }
