@@ -40,7 +40,7 @@ $$
 # The email address to send all complaints or problems to.
 # By default CUPS will use "root@hostname".</p>
 # <p>
-# <i>ex</i>: root@myhost.com</P>
+# <i>ex</i>: root@myhost.com</p>
 $$
 #ServerAdmin root@your.domain.com
 @@
@@ -55,7 +55,7 @@ $$
 # You can also use the special name <b>syslog</b> to send the output to the
 # syslog file or daemon.</p>
 # <p>
-# <i>ex</i>: /var/log/cups/acces_log</p>
+# <i>ex</i>: /var/log/cups/access_log</p>
 $$
 #AccessLog /var/log/cups/access_log
 @@
@@ -76,9 +76,9 @@ $$
 # <p>
 # The default character set to use. If not specified,
 # defaults to utf-8.  Note that this can also be overridden in
-# HTML documents...<p>
+# HTML documents...</p>
 # <p>
-# <i>ex</i>: utf-8</P>
+# <i>ex</i>: utf-8</p>
 $$
 #DefaultCharset utf-8
 @@
@@ -98,7 +98,7 @@ $$
 # <b>Document directory (DocumentRoot)</b>
 # <p>
 # The root directory for HTTP documents that are served.
-# By default the compiled in directory.</p>
+# By default the compiled-in directory.</p>
 # <p>
 # <i>ex</i>: /usr/share/cups/doc</p>
 $$
@@ -123,7 +123,7 @@ $$
 %%fontpath
 # <b>Font path (FontPath)</b>
 # <p>
-# The path to locate all font files (currently only for pstoraster)
+# The path to locate all font files (currently only for pstoraster).
 # By default /usr/share/cups/fonts.</p>
 # <p>
 # <i>ex</i>: /usr/share/cups/fonts</p>
@@ -136,14 +136,14 @@ $$
 # <p>
 # Controls the number of messages logged to the ErrorLog
 # file and can be one of the following:</p>
-# <ul>
+# <ul type=circle>
 #     <li><i>debug2</i>:     Log everything.</li>
 #     <li><i>debug</i>:     Log almost everything.</li>
 #     <li><i>info</i>:      Log all requests and state changes.</li>
 #     <li><i>warn</i>:      Log errors and warnings.</li>
 #     <li><i>error</i>:     Log only errors.</li>
 #     <li><i>none</i>:      Log nothing.</li>
-# </ul>
+# </ul><p>
 # <i>ex</i>: info</p>
 $$
 #LogLevel info
@@ -179,7 +179,7 @@ $$
 # <b>Preserve job history (PreserveJobHistory)</b>
 # <p>
 # Whether or not to preserve the job history after a
-# job is completed, cancelled, or stopped.  Default is Yes.</p>
+# job is completed, canceled, or stopped.  Default is Yes.</p>
 # <p>
 # <i>ex</i>: Yes</p>
 $$
@@ -187,10 +187,10 @@ $$
 @@
 
 %%preservejobfiles
-# <b>Preserver job files (PreserveJobFiles)</b>
+# <b>Preserve job files (PreserveJobFiles)</b>
 # <p>
 # Whether or not to preserve the job files after a
-# job is completed, cancelled, or stopped.  Default is No.</p>
+# job is completed, canceled, or stopped.  Default is No.</p>
 # <p>
 # <i>ex</i>: No</p>
 $$
@@ -236,7 +236,7 @@ $$
 # The root directory for the scheduler executables.
 # By default /usr/lib/cups or /usr/lib32/cups (IRIX 6.5).</p>
 # <p>
-# <i>ex</i>: /usr/bin/cups</p>
+# <i>ex</i>: /usr/lib/cups</p>
 $$
 #ServerBin /usr/lib/cups
 @@
@@ -286,7 +286,7 @@ $$
 # The amount of memory that each RIP should use to cache
 # bitmaps.  The value can be any real number followed by "k" for
 # kilobytes, "m" for megabytes, "g" for gigabytes, or "t" for tiles
-# (1 tile = 256x256 pixels.)  Defaults to "8m" (8 megabytes).</p>
+# (1 tile = 256x256 pixels).  Defaults to "8m" (8 megabytes).</p>
 # <p>
 # <i>ex</i>: 8m</p>
 $$
@@ -323,15 +323,15 @@ $$
 %%listen
 # <b>Listen to (Port/Listen)</b>
 # <p>
-# Ports/addresses that we listen to.  The default port 631 is reserved
-# for the Internet Printing Protocol (IPP) and is what we use here.</p>
+# Ports/addresses that are listened to.  The default port 631 is reserved
+# for the Internet Printing Protocol (IPP) and is what is used here.</p>
 # <p>
 # You can have multiple Port/Listen lines to listen to more than one
 # port or address, or to restrict access.</p>
 # <p>
-# NOTE: Unfortunately, most web browsers don't support TLS or HTTP Upgrades
-# for encryption.  If you want to support web-based encryption you'll
-# probably need to listen on port 443 (the "https" port...).</p>
+# Note: Unfortunately, most web browsers don't support TLS or HTTP Upgrades
+# for encryption.  If you want to support web-based encryption you will
+# probably need to listen on port 443 (the "HTTPS" port...).</p>
 # <p>
 # <i>ex</i>: 631, myhost:80, 1.2.3.4:631</p>
 $$
@@ -421,7 +421,7 @@ $$
 # Enabled by default.
 # </p>
 # <p>
-# NOTE: to enable the <b>sending</b> of browsing
+# Note: to enable the <b>sending</b> of browsing
 # information from this CUPS server to the LAN,
 # specify a valid <i>BrowseAdress</i>.
 # </p>
@@ -706,7 +706,7 @@ $$
 @@
 
 %%authtype
-# <b>Authentification (AuthType)</b>
+# <b>Authentication (AuthType)</b>
 # <p>
 # The authorization to use:<p>
 # <ul type=circle>
@@ -714,9 +714,9 @@ $$
 #    <li><i>Basic</i>  - Perform authentication using the HTTP Basic method.</li>
 #    <li><i>Digest</i> - Perform authentication using the HTTP Digest method.</li>
 # </ul><p>
-#    <u>Note</u>: local certificate authentication can be substituted by
-#           the client for <i>Basic</i> or <i>Digest</i> when connecting to the
-#           localhost interface.</p>
+#    Note: local certificate authentication can be substituted by
+#          the client for <i>Basic</i> or <i>Digest</i> when connecting to the
+#          localhost interface.</p>
 @@
 
 %%authclass
@@ -752,7 +752,7 @@ $$
 @@
 
 %%authgroupname
-# <b>Authentification group name (AuthGroupName)</b>
+# <b>Authentication group name (AuthGroupName)</b>
 # <p>
 # The group name for <i>Group</i> authorization.</p>
 @@
@@ -851,7 +851,7 @@ $$
 # </ul><p>
 # The default is <b>cups</b>.</p>
 # <p>
-# <u>NOTE</u>: If you choose to use SLPv2, it is <b>strongly</b> recommended that
+# Note: If you choose to use SLPv2, it is <b>strongly</b> recommended that
 #       you have at least one SLP Directory Agent (DA) on your
 #       network.  Otherwise, browse updates can take several seconds,
 #       during which the scheduler will not response to client
@@ -922,8 +922,8 @@ $$
 %%maxjobs
 # <b>Max jobs (MaxJobs)</b>
 # <p>
-# Maximum number of jobs to keep in memory (active and completed.)
-# Default is 0 (no limit.)</p>
+# Maximum number of jobs to keep in memory (active and completed).
+# Default is 0 (no limit).</p>
 $$
 #MaxJobs 0
 @@
@@ -934,10 +934,10 @@ $$
 # The MaxJobsPerUser directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each user. Once a user reaches the limit, new
 # jobs will be rejected until one of the active jobs is completed, stopped,
-# aborted, or cancelled.
+# aborted, or canceled.
 #
 # Setting the maximum to 0 disables this functionality.
-# Default is 0 (no limit.)
+# Default is 0 (no limit).
 # </p>
 $$
 #MaxJobsPerUser 0
@@ -949,10 +949,10 @@ $$
 # The MaxJobsPerPrinter directive controls the maximum number of <i>active</i>
 # jobs that are allowed for each printer or class. Once a printer or class
 # reaches the limit, new jobs will be rejected until one of the active jobs
-# is completed, stopped, aborted, or cancelled.
+# is completed, stopped, aborted, or canceled.
 #
 # Setting the maximum to 0 disables this functionality.
-# Default is 0 (no limit.)
+# Default is 0 (no limit).
 # </p>
 $$
 #MaxJobsPerPrinter 0

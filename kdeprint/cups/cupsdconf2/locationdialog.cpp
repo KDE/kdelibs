@@ -70,7 +70,7 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	connect(authtype_, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
 
 	QLabel	*l1 = new QLabel(i18n("Resource:"), dummy);
-	QLabel	*l2 = new QLabel(i18n("Authentification:"), dummy);
+	QLabel	*l2 = new QLabel(i18n("Authentication:"), dummy);
 	QLabel	*l3 = new QLabel(i18n("Class:"), dummy);
 	QLabel	*l4 = new QLabel(i18n("Names:"), dummy);
 	QLabel	*l5 = new QLabel(i18n("Encryption:"), dummy);
