@@ -302,6 +302,10 @@ public:
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
+
+  static Ptr findByURL( const KURL& _url, mode_t _mode,
+                        bool _is_local_file, bool _fast_mode,
+		  	bool *accurate);
   /**
    * Finds a KMimeType with the given @p _url.
    * This function looks at mode_t first.
@@ -458,6 +462,11 @@ protected:
   QStringList m_lstPatterns;
 
   static Ptr s_pDefaultType;
+
+protected:
+  friend class KServiceTypeFactory;
+  int patternsAccuracy() const;
+
 protected:
   virtual void virtual_hook( int id, void* data );
 };

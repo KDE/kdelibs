@@ -214,6 +214,17 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
         if ( _is_local_file || _url.hasSubURL() || // Explicitly trust suburls
 	     KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
 	{
+    	    if ( _is_local_file && !_fast_mode ) {
+    	    	if ( mime->patternsAccuracy()<100 )
+    	    	{
+    	    	    KMimeMagicResult* result =
+    	    	    	    KMimeMagic::self()->findFileType( path );
+
+    	    	    if ( result && result->isValid() )
+    	    	    	return mimeType( result->mimeType() );
+    	    	}
+    	    }
+
 	    return mime;
   	}
       }
@@ -266,6 +277,15 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // The mimemagic stuff was successful
   return mimeType( result->mimeType() );
+}
+
+KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
+				     bool _is_local_file, bool _fast_mode,
+	    	    	    	     bool *accurate)
+{
+    KMimeType::Ptr mime = findByURL(_url, _mode, _is_local_file, _fast_mode);
+    if (accurate) *accurate = !(_fast_mode) || (mime->patternsAccuracy() == 100);
+    return mime;
 }
 
 KMimeType::Ptr KMimeType::diagnoseFileName(const QString &fileName, QString &pattern)
@@ -371,7 +391,11 @@ void KMimeType::init( KDesktopFile * config )
   QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) )
     m_mapProps.insert( XKDEIsAlso, config->readEntry( XKDEIsAlso ) );
-  
+
+  QString XKDEPatternsAccuracy = QString::fromLatin1("X-KDE-PatternsAccuracy");
+  if ( config->hasKey( XKDEPatternsAccuracy ) )
+    m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy ) );
+
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
@@ -531,6 +555,13 @@ bool KMimeType::is( const QString& mimeTypeName ) const
       st = ptr->parentMimeType();
   }
   return false;
+}
+
+int KMimeType::patternsAccuracy() const {
+  QVariant v = property("X-KDE-PatternsAccuracy");
+  if (v.asString().isEmpty()) return 100;
+  else
+      return v.toInt();
 }
 
 

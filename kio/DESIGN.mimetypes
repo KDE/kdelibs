@@ -28,3 +28,7 @@ This is what X-KDE-IsAlso was introduced for. X-KDE-IsAlso kind of "works the ot
 If M1 is a special kind of M2 (mimetypes), then "the ability to open M2" derives from "the ability to open M1"
 So we say in text/xml:  X-KDE-IsAlso=text/plain, and applications that can open text/plain can also open text/xml.
 
+Pattern Accuracy
+======================
+In some cases of inheritance several mimetypes shares the same extension (with the primary case being Ogg Multimedia files).
+This has been solved sofar by matching the extension to most generic mimetype. To indicate that the mimetype can be refined further, the flag X-KDE-PatternsAccuracy can be set. The value to X-KDE-PatternsAccuracy is a number between 0-100, with 100 being the default if not set. Any values below 100 is interpreted as the possibility of further mimetype refinement.

@@ -215,12 +215,13 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   // determine the mimetype
   if (!m_pMimeType )
   {
+      bool accurate = false;
       m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL,
                                           // use fast mode if not mimetype on demand
-                                          _determineMimeTypeOnDemand );
+                                          _determineMimeTypeOnDemand, &accurate );
       // if we didn't use fast mode, or if we got a result, then this is the mimetype
       // otherwise, determineMimeType will be able to do better.
-      m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || (m_pMimeType->name() != KMimeType::defaultMimeType());
+      m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
   }
 
 }
