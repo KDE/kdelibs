@@ -298,7 +298,7 @@ void SimpleJob::slotFinished( )
 
     if (subjobs.isEmpty())
     {
-        if ( m_command == CMD_MKDIR )
+        if ( m_command == CMD_MKDIR && !m_error )
         {
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
             allDirNotify.FilesAdded( url().directory() );
