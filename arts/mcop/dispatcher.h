@@ -107,6 +107,7 @@ public:
 	inline IOManager *ioManager() { return _ioManager; };
 	InterfaceRepo interfaceRepo();
 	FlowSystem_impl *flowSystem();
+	Pool<Object_skel> activeObjectPool() { return objectPool; }
 	GlobalComm globalComm();
 	void setFlowSystem(FlowSystem_impl *fs);
 
