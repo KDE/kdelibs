@@ -879,7 +879,7 @@ void KCryptoConfig::slotCWall() {
 
 
 void KCryptoConfig::slotExportCert() {
-
+  KMessageBox::information(this, "Sorry, this isn't implemented yet.", i18n("SSL"));
 }
 
 
@@ -896,7 +896,24 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
 
 void KCryptoConfig::slotVerifyCert() {
+OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+  if (!x) return;
 
+  policies->setGroup(x->getSub());
+  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+
+  if (!cert) {
+    KMessageBox::error(this, i18n("Error obtaining the certificate."), i18n("SSL"));
+    return;
+  }
+ 
+  if (cert->isValid()) {
+     KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
+  } else {
+     KMessageBox::detailedSorry(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(cert->validate()), i18n("SSL"));
+  }
+
+  delete cert;
 }
 
 
@@ -979,6 +996,7 @@ QString iss = "";
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
+         delete cert;
       } else {
          validFrom->setText("");
          validUntil->setText("");
