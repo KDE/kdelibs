@@ -9,7 +9,7 @@
 int main(int argc, char **argv) {
    KApplication a(argc, argv, "kwalletbackendtest");
 
-   KWalletBackend be("ktestwallet");
+   KWallet::Backend be("ktestwallet");
    printf("KWalletBackend constructed\n");
 
    QByteArray apass, bpass, cpass;
@@ -19,25 +19,25 @@ int main(int argc, char **argv) {
    cpass.duplicate("cpassword", 9);
 
    printf("Passwords initialised.\n");
-   int rc = be.lock(apass);
+   int rc = be.close(apass);
 
-   printf("be.lock(apass) returned %d  (should be -255)\n", rc);
+   printf("be.close(apass) returned %d  (should be -255)\n", rc);
 
-   rc = be.unlock(bpass);
+   rc = be.open(bpass);
 
-   printf("be.unlock(bpass) returned %d  (should be 0 or 1)\n", rc);
+   printf("be.open(bpass) returned %d  (should be 0 or 1)\n", rc);
 
-   rc = be.lock(bpass);
+   rc = be.close(bpass);
 
-   printf("be.lock(bpass) returned %d  (should be 0)\n", rc);
+   printf("be.close(bpass) returned %d  (should be 0)\n", rc);
 
-   rc = be.unlock(apass);
+   rc = be.open(apass);
 
-   printf("be.unlock(apass) returned %d  (should be negative)\n", rc);
+   printf("be.open(apass) returned %d  (should be negative)\n", rc);
 
-   rc = be.unlock(bpass);
+   rc = be.open(bpass);
 
-   printf("be.unlock(bpass) returned %d  (should be 0)\n", rc);
+   printf("be.open(bpass) returned %d  (should be 0)\n", rc);
 
    return 0;
 }

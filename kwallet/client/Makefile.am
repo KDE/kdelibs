@@ -11,3 +11,7 @@ libkwalletclient_la_SOURCES =	kwalletentry.cc \
 
 libkwalletclient_la_METASOURCES = AUTO
 
+include_HEADERS = kwallet.h
+
+noinst_HEADERS = kwalletentry.h
+

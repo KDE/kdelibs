@@ -26,6 +26,8 @@
  * _Applied_Cryptography_ (c) Bruce Schneier, 1996.
  */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

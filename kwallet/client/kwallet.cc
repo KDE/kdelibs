@@ -234,6 +234,23 @@ return rc;
 }
 
 
+int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readMap", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(value);
+		rc = 0;
+	}
+
+return rc;
+}
+
+
 int Wallet::readPassword(const QString& key, QString& value) {
 int rc = -1;
 
@@ -259,6 +276,22 @@ int rc = -1;
 	}
 
 	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, value);
 	if (r.isValid()) {
 		r.get(rc);
 	}
@@ -312,6 +345,22 @@ bool rc = false;
 	}
 
 return rc;
+}
+
+
+Wallet::EntryType Wallet::entryType(const QString& key) {
+long rc = 0;
+
+	if (_handle == -1) {
+		return Wallet::Unknown;
+	}
+
+	DCOPReply r = _dcopRef->call("entryType", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return static_cast<EntryType>(rc);
 }
 
 

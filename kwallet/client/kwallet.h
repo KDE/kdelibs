@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002 George Staikos <staikos@kde.org>
+ * Copyright (C) 2002-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,8 +26,6 @@
 #include <qstringlist.h>
 #include <qobject.h>
 #include <dcopobject.h>
-#include "kwalletentry.h"
-
 
 class DCOPRef;
 
@@ -41,6 +39,8 @@ class Wallet : public QObject, public DCOPObject {
 		Wallet(const Wallet&);
 
 	public:
+		enum EntryType { Unknown=0, Password, Stream, Map };
+
 		virtual ~Wallet();
 		
 		static Wallet* openWallet(const QString& name);
@@ -73,15 +73,21 @@ class Wallet : public QObject, public DCOPObject {
 		// Entry management functions
 		virtual int readEntry(const QString& key, QByteArray& value);
 
+		virtual int readMap(const QString& key, QMap<QString,QString>& value);
+
 		virtual int readPassword(const QString& key, QString& value);
 
 		virtual int writeEntry(const QString& key, const QByteArray& value);
+
+		virtual int writeMap(const QString& key, const QMap<QString,QString>& value);
 
 		virtual int writePassword(const QString& key, const QString& value);
 
 		virtual bool hasEntry(const QString& key);
 
 		virtual int removeEntry(const QString& key);
+
+		virtual EntryType entryType(const QString& key);
 
 	signals:
 		void walletClosed();

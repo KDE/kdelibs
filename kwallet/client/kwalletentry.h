@@ -23,35 +23,37 @@
 #define _KWALLETENTRY_H
 
 #include <qstring.h>
+#include <qmap.h>
 #include <qdatastream.h>
+
+#include "kwallet.h"
 
 namespace KWallet {
 
 class Entry {
 	public:
-		enum EntryType { Unknown=0, Password, Stream };
 		Entry();
 		~Entry();
 		
 		const QString& key() const;
-		QByteArray value() const;
+		const QByteArray& value() const;
 		QString password() const;
+		QMap<QString,QString> map() const;
 
 		void setValue(const QByteArray& val);
 		void setValue(const QString& val);
+		void setValue(const QMap<QString,QString>& val);
 		void setKey(const QString& key);
 
-		EntryType type() const;
-		void setType(EntryType type);
+		Wallet::EntryType type() const;
+		void setType(Wallet::EntryType type);
 
 		void copy(const Entry* x);
 
 	private:
-		class EntryPrivate;
-		EntryPrivate *d;
 		QString _key;
 		QByteArray _value;
-		EntryType _type;
+		Wallet::EntryType _type;
 };
 
 };

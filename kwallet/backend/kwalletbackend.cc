@@ -115,7 +115,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 static int password2hash(const QByteArray& password, QByteArray& hash) {
 	QByteArray first, second, third;
 
-	// FIXME: really broken
+	// FIXME: really broken - also crashes if password.length() < 3
 	first.resize(password.size()/3 + (password.size()%3 == 1 ? 1 : 0));
 	second.resize(password.size()/3 + (password.size()%3 == 2 ? 1 : 0));
 	third.resize(password.size()/3);
@@ -151,8 +151,9 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	const char *t = (const char *)sha.getHash();
 
-	for (unsigned int i = 0; i < 19; i++)
+	for (unsigned int i = 0; i < 19; i++) {
 		hash[19+i] = t[i];
+	}
 
 	sha.reset();
 
@@ -160,8 +161,9 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	t = (const char *)sha.getHash();
 
-	for (unsigned int i = 0; i < 18; i++)
+	for (unsigned int i = 0; i < 18; i++) {
 		hash[38+i] = t[i];
+	}
 
 	sha.reset();
 
@@ -207,10 +209,9 @@ int Backend::open(const QByteArray& password) {
 		return -2;         // error opening file
 	}
 
-	char magicBuf[10];
+	char magicBuf[KWMAGIC_LEN];
 	db.readBlock(magicBuf, KWMAGIC_LEN);
-	if (qstrncmp(magicBuf, KWMAGIC, KWMAGIC_LEN)) { // FIXME: can't use
-							// this anymore. 
+	if (memcmp(magicBuf, KWMAGIC, KWMAGIC_LEN) != 0) {
 		return -3;         // bad magic
 	}
 
@@ -238,7 +239,6 @@ int Backend::open(const QByteArray& password) {
 	// Decrypt the encrypted data
 	password2hash(password, passhash);
 
-
 	bf.setKey((void *)passhash.data(), passhash.size()*8);
 
 	int rc = bf.decrypt(encrypted.data(), encrypted.size());
@@ -258,16 +258,16 @@ int Backend::open(const QByteArray& password) {
 	// strip the file size off
 	long fsize = 0;
 
-	fsize |= ((char)*t << 24);
+	fsize |= (*t << 24);
 	t++;
-	fsize |= ((char)*t << 16);
+	fsize |= (*t << 16);
 	t++;
-	fsize |= ((char)*t <<  8);
+	fsize |= (*t <<  8);
 	t++;
-	fsize |=  (char)*t;
+	fsize |= *t;
 	t++;
 
-	if (fsize < 0) {
+	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
 		encrypted.fill(0);
 		return -7;         // file structure error.
 	}
@@ -289,15 +289,53 @@ int Backend::open(const QByteArray& password) {
 	
 	sha.reset();
 	
-	// Load the data structures up
-	// FIXME
-
 	// chop off the leading blksz+4 bytes
 	QByteArray tmpenc;
 	tmpenc.duplicate(encrypted.data()+blksz+4, fsize);
 	encrypted.fill(0);
 	encrypted.duplicate(tmpenc.data(), tmpenc.size());
 	tmpenc.fill(0);
+
+	// Load the data structures up
+	QDataStream eStream(encrypted, IO_ReadOnly);
+
+	while (!eStream.atEnd()) {
+		QString folder;
+		size_t n;
+
+		eStream >> folder;
+		eStream >> n;
+
+		// Force initialisation
+		_entries[folder].clear();
+
+		for (size_t i = 0; i < n; i++) {
+			QString key;
+			KWallet::Wallet::EntryType et = KWallet::Wallet::Unknown;
+			Entry *e = new Entry;
+			eStream >> key;
+			long x = 0; // necessary to read properly
+			eStream >> x;
+			et = static_cast<KWallet::Wallet::EntryType>(x);
+
+			switch (et) {
+			case KWallet::Wallet::Password:
+			case KWallet::Wallet::Stream:
+			case KWallet::Wallet::Map:
+			break;
+			default: // Unknown entry
+				delete e;
+				continue;
+			}
+
+			QByteArray a;
+		 	eStream >> a;
+			e->setValue(a);
+			e->setType(et);
+			e->setKey(key);
+			_entries[folder][key] = e;
+		}
+	}
 
 	_open = true;
 	return 0;
@@ -329,7 +367,25 @@ int Backend::close(const QByteArray& password) {
 	QByteArray decrypted;
 
 	// populate decrypted
-	// FIXME
+	QDataStream dStream(decrypted, IO_WriteOnly);
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		dStream << i.key();
+		dStream << i.data().count();
+		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
+			dStream << j.key();
+			dStream << static_cast<long>(j.data()->type());
+			switch (j.data()->type()) {
+			case KWallet::Wallet::Password:
+			case KWallet::Wallet::Stream:
+			case KWallet::Wallet::Map:
+				dStream << j.data()->value();
+				break;
+			default:
+				assert(0);
+				break;
+			}
+		}
+	}
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -455,7 +511,7 @@ void Backend::writeEntry(Entry *e) {
 
 
 bool Backend::hasEntry(const QString& key) const {
-	return _entries[_folder].contains(key);
+	return _entries.contains(_folder) && _entries[_folder].contains(key);
 }
 
 
@@ -467,7 +523,7 @@ bool Backend::removeEntry(const QString& key) {
 	FolderMap::Iterator fi = _entries.find(_folder);
 	EntryMap::Iterator ei = fi.data().find(key);
 
-	if (ei != fi.data().end()) {
+	if (fi != _entries.end() && ei != fi.data().end()) {
 		delete ei.data();
 		fi.data().remove(ei);
 		return true;

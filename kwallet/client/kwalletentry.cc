@@ -36,13 +36,21 @@ const QString& Entry::key() const {
 }
 
 
-QByteArray Entry::value() const {
+const QByteArray& Entry::value() const {
 	return _value;
 }
 
 
 QString Entry::password() const {
 QString x;
+	QDataStream qds(_value, IO_ReadOnly);
+	qds >> x;
+	return x;
+}
+
+
+QMap<QString,QString> Entry::map() const {
+QMap<QString,QString> x;
 	QDataStream qds(_value, IO_ReadOnly);
 	qds >> x;
 	return x;
@@ -64,17 +72,24 @@ void Entry::setValue(const QString& val) {
 }
 
 
+void Entry::setValue(const QMap<QString,QString>& val) {
+	_value.fill(0);
+	QDataStream qds(_value, IO_WriteOnly);
+	qds << val;
+}
+
+
 void Entry::setKey(const QString& key) {
 	_key = key;
 }
 
 
-Entry::EntryType Entry::type() const {
+Wallet::EntryType Entry::type() const {
 	return _type;
 }
 
 
-void Entry::setType(Entry::EntryType type) {
+void Entry::setType(Wallet::EntryType type) {
 	_type = type;
 }
 

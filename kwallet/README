@@ -1,22 +1,12 @@
 
-###########################################################################
-This code is incomplete and not usable.  Please wait for a working version
-in KDE 3.1
-###########################################################################
-
-
-
-
-
 This directory consists of two libraries: kwalletbackend and kwalletclient
 
+KWallet::Backend makes use of KWalletClient.
 
-KWalletBackend makes use of KWalletClient.
-
-KWalletBackend is used inside kdesud to manage the actual files and
-encryption.  On the other hand, KWalletClient is used to represent
+KWallet::Backend is used inside kded to manage the actual files and
+encryption.  On the other hand, KWallet::Wallet is used to represent
 wallet entries and to encapsulate communication to and from the
-wallet server inside kdesud.
+wallet server inside kded.
 
 
 Application level:
