@@ -117,6 +117,7 @@ public:
 	m_caretViewContext = 0;
 	m_editorContext = 0;
 #endif // KHTML_NO_CARET
+        postponed_autorepeat = NULL;
         reset();
         tp=0;
         paintBuffer=0;
@@ -125,7 +126,6 @@ public:
         prevScrollbarVisible = true;
 	tooltip = 0;
         possibleTripleClick = false;
-        filter_next_autorepeat_press = false;
     }
     ~KHTMLViewPrivate()
     {
@@ -133,6 +133,7 @@ public:
         delete tp; tp = 0;
         delete paintBuffer; paintBuffer =0;
         delete vertPaintBuffer;
+        delete postponed_autorepeat;
         if (underMouse)
 	    underMouse->deref();
 	delete tooltip;
@@ -168,6 +169,8 @@ public:
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
+        delete postponed_autorepeat;
+        postponed_autorepeat = NULL;
 	layoutTimerId = 0;
         repaintTimerId = 0;
         scrollTimerId = 0;
@@ -244,7 +247,6 @@ public:
     bool borderTouched:1;
     bool borderStart:1;
     bool scrollBarMoved:1;
-    bool filter_next_autorepeat_press:1;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -262,6 +264,7 @@ public:
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
     int layoutTimerId;
+    QKeyEvent* postponed_autorepeat;
 
     int repaintTimerId;
     int scrollTimerId;
@@ -901,57 +904,70 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     // The problem here is that Qt generates two autorepeat events (keyrelease+keypress)
     // for autorepeating, while DOM wants only one autorepeat event (keypress), so one
     // of the Qt events shouldn't be passed to DOM, but it should be still filtered
-    // out if DOM would filter the autorepeat event. Therefore, DOM autorepeat events
-    // are sent on Qt autorepeat release (because it comes sooner then press), and the following
-    // Qt autorepeat press is filtered out if the release was filtered out.
-    // Moreover, first Qt (non-autorepeat) keypress should generate DOM keydown followed
-    // by DOM keypress.
+    // out if DOM would filter the autorepeat event. Additional problem is that Qt keyrelease
+    // events don't have text() set (Qt bug?), so DOM often would ignore the keypress event
+    // if it was created using Qt keyrelease, but Qt autorepeat keyrelease comes
+    // before Qt autorepeat keypress (i.e. problem whether to filter it out or not).
+    // The solution is to filter out and postpone the Qt autorepeat keyrelease until
+    // the following Qt keypress event comes. If DOM accepts the DOM keypress event,
+    // the postponed event will be simply discarded. If not, it will be passed to keyPressEvent()
+    // again, and here it will be ignored.
     //
     //  Qt:      Press      | Release(autorepeat) Press(autorepeat) etc. |   Release
-    //  DOM:   Down + Press |       Press             (nothing)          |     Up
-    //
-    // Additional problem: during autorepeat, the keypress has the text, NOT the keyrelease!
+    //  DOM:   Down + Press |      (nothing)           Press             |     Up
+    
+    if( _ke == d->postponed_autorepeat ) // replayed event
+        return false;
 
     if( _ke->type() == QEvent::KeyPress )
     {
-        if( _ke->isAutoRepeat())
-        { // ignore autorepeat press and filter out if necessary
-            return d->filter_next_autorepeat_press;
+        if( !_ke->isAutoRepeat())
+        {
+            bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
+            if( dispatchKeyEventHelper( _ke, true )) // keypress
+                ret = true;
+            return ret;
         }
-        bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
-        if( dispatchKeyEventHelper( _ke, true )) // keypress
-            ret = true;
-        return ret;
+        else // autorepeat
+        {
+            bool ret = dispatchKeyEventHelper( _ke, true ); // keypress
+            if( !ret && d->postponed_autorepeat )
+                keyPressEvent( d->postponed_autorepeat );
+            delete d->postponed_autorepeat;
+            d->postponed_autorepeat = NULL;
+            return ret;
+        }
     }
     else // QEvent::KeyRelease
     {
-        if( _ke->isAutoRepeat())
-        {
-            bool ret = dispatchKeyEventHelper( _ke, true ); // keypress
-            d->filter_next_autorepeat_press = ret;
-            return ret;
-        }
-        else
+        if( !_ke->isAutoRepeat())
             return dispatchKeyEventHelper( _ke, false ); // keyup
+        else
+        {
+            Q_ASSERT( d->postponed_autorepeat == NULL );
+            d->postponed_autorepeat = new QKeyEvent( _ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
+                _ke->text(), _ke->isAutoRepeat(), _ke->count());
+            if( _ke->isAccepted())
+                d->postponed_autorepeat->accept();
+            else
+                d->postponed_autorepeat->ignore();
+            return true;
+        }
     }
 }
 
 bool KHTMLView::dispatchKeyEventHelper( QKeyEvent *_ke, bool keypress )
 {
     DOM::NodeImpl* keyNode = m_part->xmlDocImpl()->focusNode();
-    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
-                _ke->text(),
-                keypress /*true for autorepeat means keypress, see TextEventImpl*/,
-                _ke->count());
     if (keyNode) {
-        if (keyNode->dispatchKeyEvent(&k)) {
+        if (keyNode->dispatchKeyEvent(_ke, keypress)) {
             return true;
 	}
     }
     else // no focused node, send to document
     {
         // If listener returned false, stop here. Otherwise handle standard keys (#60403).
-        if (!m_part->xmlDocImpl()->dispatchKeyEvent(&k)) {
+        if (!m_part->xmlDocImpl()->dispatchKeyEvent(_ke, keypress)) {
             return true;
         }
     }

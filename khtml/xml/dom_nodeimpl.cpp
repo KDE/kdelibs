@@ -675,11 +675,11 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 }
 
-bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
+bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 {
     int exceptioncode = 0;
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
-    TextEventImpl *keyEventImpl = new TextEventImpl(key, getDocument()->defaultView());
+    TextEventImpl *keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
     keyEventImpl->ref();
     bool r = dispatchEvent(keyEventImpl,exceptioncode,true);
     // the default event handler should accept() the internal QKeyEvent

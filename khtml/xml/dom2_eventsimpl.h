@@ -260,7 +260,7 @@ public:
 	       bool inputGeneratedArg,
 	       bool numPadArg);
 
-  TextEventImpl(QKeyEvent *key, AbstractViewImpl *view);
+  TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *view);
 
   virtual ~TextEventImpl();
 

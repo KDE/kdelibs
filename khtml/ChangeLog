@@ -1,4 +1,9 @@
 
+2003-12-05  Lubos Lunak  <l.lunak@kde.org>
+
+	* khtmlview.cpp, xml/dom2_eventsimpl.*, xml/dom_nodeimpl.*, rendering/render_replaced.cpp :
+            fix mapping between Qt and DOM key events
+
 2003-12-05  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_object.cpp (nodeAtPoint): don't offset

@@ -469,7 +469,9 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
-        if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e)))
+    // TODO this seems wrong - Qt events are not correctly translated to DOM ones,
+    // like in KHTMLView::dispatchKeyEvent()
+        if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e),false))
             filtered = true;
         break;
     default:
@@ -590,18 +592,19 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         // See KHTMLView::dispatchKeyEvent: autorepeat is just keypress in the DOM
         // but it's keyrelease+keypress in Qt. So here we do the inverse mapping as
         // the one done in KHTMLView: generate two events for one DOM auto-repeat keypress.
-        // (We know it's auto-repeat if the Qt event is KeyRelease)
+        // Similarly, DOM keypress events with non-autorepeat Qt event do nothing here,
+        // because the matching Qt keypress event was already sent from DOM keydown event.
 
         // Reverse drawing as the one in KHTMLView:
         //  DOM:   Down     Press   |       Press                             |     Up
         //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
 
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
-        if (ke && ke->type() == QEvent::KeyRelease) {
+        if (ke && ke->isAutoRepeat()) {
+            QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
+                               ke->text(), ke->isAutoRepeat(), ke->count() );
+            static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
-            QKeyEvent pressEv( QEvent::KeyPress, ke->key(), ke->ascii(), ke->state(),
-                               ke->text(), true /*autorepeat*/, ke->count() );
-            static_cast<EventPropagator *>(m_widget)->sendEvent(&pressEv);
         }
 
 	break;

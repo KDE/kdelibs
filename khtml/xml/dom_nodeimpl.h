@@ -255,7 +255,7 @@ public:
     bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
     bool dispatchUIEvent(int _id, int detail = 0);
     bool dispatchSubtreeModifiedEvent();
-    bool dispatchKeyEvent(QKeyEvent *key);
+    bool dispatchKeyEvent(QKeyEvent *key, bool keypress);
 
     void handleLocalEvents(EventImpl *evt, bool useCapture);
 
