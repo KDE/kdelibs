@@ -158,6 +158,8 @@ public:
    */
   QString resource() const;
 
+  QStringList sortOrder() const;
+
 private:
 
   // copy-construction and assignment are not allowed

@@ -207,3 +207,10 @@ KDesktopFile::filename() const { return backEnd->filename(); }
  */
 QString 
 KDesktopFile::resource() const { return backEnd->resource(); }
+
+QStringList
+KDesktopFile::sortOrder() const
+{
+  return readListEntry(QString::fromLatin1("SortOrder"));
+}
+
