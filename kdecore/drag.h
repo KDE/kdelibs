@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.22  1998/10/22 11:44:54  ettrich
+ * Matthias: simplified and documented the do-not-include-x.h fix
+ *
  * Revision 1.21  1998/10/20 18:58:11  ettrich
  * ugly hack to get rid of X11 includes, small fix
  *
@@ -164,11 +167,10 @@
 
 
 // we need Window and Atom but do not want to include X.h since it
-// #defines way too many constants 
+// #defines way too many constants
 #include <X11/Xmd.h>
 typedef CARD32 XID;
 typedef CARD32 Atom;
-#endif
 typedef XID Window;
 
 
