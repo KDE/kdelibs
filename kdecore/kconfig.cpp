@@ -38,6 +38,7 @@
 #include "kconfig.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
+#include "kstaticdeleter.h"
 #include <qtimer.h>
 
 KConfig::KConfig( const QString& fileName,
@@ -319,6 +320,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
+static KStaticDeleter< QValueList<KSharedConfig*> > sd;
 QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
 KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
@@ -339,8 +341,10 @@ KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekd
  : KConfig(fileName, readonly, usekdeglobals)
 {
   if (!s_list)
-     s_list = new QValueList<KSharedConfig*>;
-     
+  {
+    sd.setObject(s_list, new QValueList<KSharedConfig*>);
+  }
+
   s_list->append(this);
 }
 
