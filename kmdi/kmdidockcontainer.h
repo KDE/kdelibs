@@ -22,8 +22,8 @@
 #define _KATE_DOCK_CONTAINER_
 
 #include <qwidget.h>
-#include <qstringlist.h>
-#include <kmdidockwidget.h>
+#include <kdockwidget.h>
+#include <kdockwidget_p.h>
 #include <qmap.h>
 
 #include <qpushbutton.h>
@@ -32,21 +32,19 @@ class QWidgetStack;
 class KMultiTabBar;
 class KDockButton_Private;
 
-class KMdiDockContainer: public QWidget, public KMdiDockContainerBase
+class KMdiDockContainer: public QWidget, public KDockContainer
 {
         Q_OBJECT
 public:
         KMdiDockContainer(QWidget *parent, QWidget *win, int position);
         virtual ~KMdiDockContainer();
-        KMdiDockWidget *parentDockWidget();
+        KDockWidget *parentDockWidget();
         virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
         virtual void setToolTip (KDockWidget *, QString &);
 	virtual void undockWidget(KDockWidget*);
 	virtual void removeWidget(KDockWidget*);	
-#ifndef NO_KDE2
 	virtual void save(KConfig *);
 	virtual void load(KConfig *);
-#endif
 public slots:
 	void init();
         void collapseOverlapped();
@@ -57,9 +55,9 @@ private:
 	int mTabCnt;
 	int oldtab;
   	int m_position; 
-	QMap<KMdiDockWidget*,int> m_map;
-	QMap<int,KMdiDockWidget*> m_revMap;
-	QMap<KMdiDockWidget*,KDockButton_Private*> m_overlapButtons;
+	QMap<KDockWidget*,int> m_map;
+	QMap<int,KDockWidget*> m_revMap;
+	QMap<KDockWidget*,KDockButton_Private*> m_overlapButtons;
 	QStringList itemNames;
 	int m_inserted;
 	int m_delayedRaise;
