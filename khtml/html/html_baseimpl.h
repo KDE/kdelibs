@@ -193,7 +193,7 @@ protected:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif
 

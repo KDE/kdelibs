@@ -33,7 +33,7 @@ class KHTMLView;
 
 namespace khtml {
     class CachedCSSStyleSheet;
-};
+}
 
 
 namespace DOM {
@@ -194,6 +194,6 @@ protected:
     DOMString m_title;
 };
 
-}; //namespace
+} //namespace
 
 #endif

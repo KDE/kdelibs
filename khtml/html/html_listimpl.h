@@ -108,6 +108,6 @@ public:
     virtual Id id() const;
 };
 
-}; //namespace
+} //namespace
 
 #endif

@@ -241,7 +241,7 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 };
 
-}; //namespace
+} //namespace
 
 #endif
 

@@ -67,5 +67,5 @@ public:
     void setWidth( long w );
 };
 
-}; //namespace
+} //namespace
 #endif
