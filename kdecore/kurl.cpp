@@ -37,11 +37,13 @@ void KURL::encodeURL( QString& _url ) {
     char *new_url = new char[ old_length * 3 + 1 ];
     int new_length = 0;
      
-    for (int i = 0; i < old_length; i++) {
+    for (int i = 0; i < old_length; i++) 
+    {
        // 'unsave' and 'reserved' characters
        // according to RFC 1738,
        // 2.2. URL Character Encoding Issues (pp. 3-4)
-	if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", _url[i]) ) {
+	if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", _url[i]) ) 
+	{
 	    new_url[ new_length++ ] = '%';
 
 	    char c = _url[ i ] / 16;
@@ -52,8 +54,11 @@ void KURL::encodeURL( QString& _url ) {
 	    c += (c > 9) ? ('A' - 10) : '0';
 	    new_url[ new_length++ ] = c;
 	    
-	} else
+	} 
+	else
+	{
 	    new_url[ new_length++ ] = _url[i];
+	}
     }
 
     new_url[new_length]=0;
@@ -83,14 +88,15 @@ void KURL::decodeURL( QString& _url ) {
     char *new_url = new char[ old_length + 1];
         
     for (int i = 0; i < old_length; i++) 
+    {
+	uchar character = _url[ i ];
+	if ( character == '%' ) 
 	{
-	    uchar character = _url[ i ];
-	    if ( character == '%' ) {
-		character = hex2int( _url[i+1] ) * 16 + hex2int( _url[i+2] );
-		i += 2;
-	    }
-	    new_url [ new_length++ ] = character;
+	    character = hex2int( _url[i+1] ) * 16 + hex2int( _url[i+2] );
+	    i += 2;
 	}
+	new_url [ new_length++ ] = character;
+    }
     new_url [ new_length ] = 0;
     _url = new_url;
     delete [] new_url;
@@ -124,23 +130,37 @@ KURL::KURL()
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-    malformed = _base_url.malformed;
-    protocol_part = _base_url.protocol_part;
-    host_part = _base_url.host_part;
-    port_number = _base_url.port_number;
-    path_part = _base_url.path_part;
-    path_part_decoded = _base_url.path_part_decoded;
-    ref_part = _base_url.ref_part;
-    dir_part = _base_url.dir_part;
-    user_part = _base_url.user_part;
-    passwd_part = _base_url.passwd_part;
-    bNoPath = _base_url.bNoPath;
-    detach();
+    char * pos1 = index( _rel_url, ':');
+    char * pos2 = index( _rel_url, '/');
     
-    if ( strstr( _rel_url, ":/" ) == 0 )
-	cd( _rel_url );
+    // A full URL has a ':' and no '/' in front of the ':'
+
+    if ( (pos1 != 0) && 
+         ( (pos2 == 0) || (pos2 > pos1) ) 
+       )
+    {
+    	// Full URL
+        parse( _rel_url );
+    }
     else
-	parse( _rel_url );
+    {
+	// Relative URL
+
+        malformed = _base_url.malformed;
+        protocol_part = _base_url.protocol_part;
+        host_part = _base_url.host_part;
+        port_number = _base_url.port_number;
+        path_part = _base_url.path_part;
+        path_part_decoded = _base_url.path_part_decoded;
+        ref_part = _base_url.ref_part;
+        dir_part = _base_url.dir_part;
+        user_part = _base_url.user_part;
+        passwd_part = _base_url.passwd_part;
+        bNoPath = _base_url.bNoPath;
+        detach();
+
+	cd( _rel_url );
+    } 
 }
 
 KURL::KURL( const char* _url)
@@ -154,7 +174,8 @@ void KURL::parse( const char * _url )
     // defaults
     malformed = false;
     path_part_decoded = 0;
-    search_part = 0L;
+    search_part = 0;
+    ref_part = "";
     bNoPath = false;
 
     if ( _url[0] == '/' )
@@ -174,7 +195,7 @@ void KURL::parse( const char * _url )
 	malformed = true;
 	return;
     }
-    protocol_part = url.left( pos );
+    protocol_part = url.left( pos ).lower();
 
     if ( protocol_part == "info" || protocol_part == "mailto" || 
 	 protocol_part == "man" || protocol_part == "news" )
@@ -212,9 +233,12 @@ void KURL::parse( const char * _url )
 	    pos2 = url.length();
 	}
 	else
+	{
 	    host_part = url.mid( pos + 1, 
 				 (( pos2 == -1) ? url.length() : pos2) 
-				 - pos - 1);      
+				 - pos - 1);
+	}
+				 
     }
     else
     {
@@ -262,7 +286,9 @@ void KURL::parse( const char * _url )
 	host_part = host_part.left( p );
     }
     else
+    {
 	port_number = 0;
+    }
     
     // Find the path
     if( pos2 < static_cast<int>(url.length()) && pos2 != -1)
@@ -271,7 +297,9 @@ void KURL::parse( const char * _url )
 	int pos3 = url.findRev( '#' );
 	// Is there a) no reference or b) only a subprotocol like file:/tmp/arch.tgz#tar:/usr/
 	if ( pos3 == -1 || exp.match( url, pos3 + 1 ) != -1 )
+	{
 	    path_part = url.mid( pos2, url.length() );
+        }
 	else 
 	{
 	    path_part = url.mid( pos2, pos3 - pos2 );
