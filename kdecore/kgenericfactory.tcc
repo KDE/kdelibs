@@ -28,6 +28,9 @@ namespace KDEPrivate
         static ConversionDoesNotExist test( ... );
     };
 
+    /* Simon: KCC doesn't eat the generic InheritanceDetector<Base>. 
+       Instead we have to use concrete instantiations :-(
+
     template <class Base, class Derived>
     struct InheritanceTest
     {
@@ -35,6 +38,24 @@ namespace KDEPrivate
         enum { Result = sizeof( InheritanceDetector<Base>::test( DerivedPtr() ) ) ==
                         sizeof( InheritanceDetector<Base>::ConversionExists ) };
     };
+    */
+
+    template <class Derived>
+    struct QWidgetInheritanceTest
+    {
+        typedef Derived * DerivedPtr;
+        enum { Result = sizeof( InheritanceDetector<QWidget>::test( DerivedPtr() ) ) ==
+                        sizeof( InheritanceDetector<QWidget>::ConversionExists ) };
+    };
+
+    template <class Derived>
+    struct PartInheritanceTest
+    {
+        typedef Derived * DerivedPtr;
+        enum { Result = sizeof( InheritanceDetector<KParts::Part>::test( DerivedPtr() ) ) ==
+                        sizeof( InheritanceDetector<KParts::Part>::ConversionExists ) };
+    };
+
 
     template <bool condition, typename Then, typename Else>
     struct If
@@ -68,9 +89,10 @@ namespace KDEPrivate
     {
     public:
         // select the right base type using inheritance tests. 
-        typedef typename If< InheritanceTest< KParts::Part, T >::Result,
+        // (can't use the generic InheritanceTest because kcc doesn't get it)
+        typedef typename If< PartInheritanceTest< T >::Result,
                              KParts::Part,
-                             typename If< InheritanceTest< QWidget, T >::Result,
+                             typename If< QWidgetInheritanceTest< T >::Result,
                                           QWidget, QObject >::Result >::Result BaseType;
  
         static inline T *create( QWidget *parentWidget, const char *widgetName,
