@@ -118,9 +118,70 @@ Window::~Window()
   delete winq;
 }
 
-bool Window::hasProperty(const UString &p, bool) const
+bool Window::hasProperty(const UString &p, bool recursive) const
 {
-  return !get(p).isA(UndefinedType);
+  if (p == "closed")
+    return true;
+
+  // we don't want any operations on a closed window
+  if (part.isNull())
+    return false;
+
+  if (p == "crypto" ||
+      p == "defaultStatus" ||
+      p == "document" ||
+      p == "Node" ||
+      p == "frames" ||
+      p == "history" ||
+      p == "innerHeight" ||
+      p == "innerWidth" ||
+      p == "length" ||
+      p == "location" ||
+      p == "name" ||
+      p == "navigator" ||
+      p == "offscreenBuffering" ||
+      p == "opener" ||
+      p == "outerHeight" ||
+      p == "outerWidth" ||
+      p == "pageXOffset" ||
+      p == "pageYOffset" ||
+      p == "parent" ||
+      p == "personalbar" ||
+      p == "screenX" ||
+      p == "screenY" ||
+      p == "scrollbars" ||
+      p == "scroll" ||
+      p == "scrollBy" ||
+      p == "scrollTo" ||
+      p == "self" ||
+      p == "top" ||
+      p == "screen" ||
+      p == "Image" ||
+      p == "alert" ||
+      p == "confirm" ||
+      p == "prompt" ||
+      p == "open" ||
+      p == "setTimeout" ||
+      p == "clearTimeout" ||
+      p == "focus" ||
+      p == "blur" ||
+      p == "close" ||
+      p == "setInterval" ||
+      p == "clearInterval" ||
+      Imp::hasProperty(p,recursive) ||
+      part->findFrame( p.qstring() ))
+    return true;
+
+  // allow shortcuts like 'Image1' instead of document.images.Image1
+  if (part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = part->htmlDocument().all();
+    DOM::HTMLElement element = coll.namedItem(p.string());
+    if (!element.isNull()) {
+        return true;
+    }
+  }
+
+  return false;
 }
 
 KJSO Window::get(const UString &p) const
@@ -222,9 +283,8 @@ KJSO Window::get(const UString &p) const
   else if (p == "clearInterval")
     return Function(new WindowFunc(this, WindowFunc::ClearInterval));
 
-  KJSO v = Imp::get(p);
-  if (v.isDefined())
-      return v;
+  if (Imp::hasProperty(p,true))
+    return Imp::get(p);
 
   KHTMLPart *kp = part->findFrame( p.qstring() );
   if (kp)
