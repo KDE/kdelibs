@@ -422,7 +422,7 @@ void KBookmarkManager::slotEditBookmarks()
     KProcess proc;
     proc << QString::fromLatin1("keditbookmarks");
     if (!dptr()->m_editorCaption.isNull())
-       proc << QString::fromLatin1("--caption") << dptr()->m_editorCaption;
+       proc << QString::fromLatin1("--customcaption") << dptr()->m_editorCaption;
     if (!dptr()->m_browserEditor)
        proc << QString::fromLatin1("--nobrowser");
     proc << m_bookmarksFile;
