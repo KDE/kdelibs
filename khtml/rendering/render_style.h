@@ -252,7 +252,6 @@ public:
     LengthBox margin;
     LengthBox padding;
     BorderData border;
-    BorderValue outline;
 };
 
 
@@ -378,6 +377,7 @@ public:
 	image = o.image;
 	x_position = o.x_position;
 	y_position = o.y_position;
+        outline = o.outline;
     }
 
     bool operator==(const StyleBackgroundData& o) const
@@ -386,7 +386,8 @@ public:
 	    color == o.color &&
 	    image == o.image &&
 	    x_position == o.x_position &&
-	    y_position == o.y_position;
+	    y_position == o.y_position &&
+            outline == o.outline;
     }
 
     bool operator!=(const StyleBackgroundData &o) const
@@ -399,6 +400,7 @@ public:
 
     Length x_position;
     Length y_position;
+    BorderValue outline;
 };
 
 
@@ -600,8 +602,7 @@ protected:
         PseudoId _styleType : 3;
         bool _hasHover : 1;
         bool _hasActive : 1;
-
-	bool _jsClipMode : 1;
+        bool _jsClipMode : 1;
         EUnicodeBidi _unicodeBidi : 2;
     } noninherited_flags;
 
@@ -696,9 +697,9 @@ public:
     const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
 
     unsigned short  outlineWidth() const
-    { if(surround->outline.style == BNONE) return 0; return surround->outline.width; }
-    EBorderStyle    outlineStyle() const {  return surround->outline.style; }
-    const QColor &  	    outlineColor() const {  return surround->outline.color; }
+    { if(background->outline.style == BNONE) return 0; return background->outline.width; }
+    EBorderStyle    outlineStyle() const {  return background->outline.style; }
+    const QColor &  	    outlineColor() const {  return background->outline.color; }
 
     EOverflow overflow() const { return  noninherited_flags._overflow; }
     EVisibility visibility() const { return inherited_flags._visibility; }
@@ -805,9 +806,9 @@ public:
     void setBorderBottomWidth(unsigned short v) {  SET_VAR(surround,border.bottom.width,v) }
     void setBorderBottomStyle(EBorderStyle v)   {  SET_VAR(surround,border.bottom.style,v) }
     void setBorderBottomColor(const QColor & v) {  SET_VAR(surround,border.bottom.color,v) }
-    void setOutlineWidth(unsigned short v) {  SET_VAR(surround,outline.width,v) }
-    void setOutlineStyle(EBorderStyle v)   {  SET_VAR(surround,outline.style,v) }
-    void setOutlineColor(const QColor & v) {  SET_VAR(surround,outline.color,v) }
+    void setOutlineWidth(unsigned short v) {  SET_VAR(background,outline.width,v) }
+    void setOutlineStyle(EBorderStyle v)   {  SET_VAR(background,outline.style,v) }
+    void setOutlineColor(const QColor & v) {  SET_VAR(background,outline.color,v) }
 
     void setOverflow(EOverflow v) {  noninherited_flags._overflow = v; }
     void setVisibility(EVisibility v) { inherited_flags._visibility = v; }
