@@ -61,7 +61,7 @@ inline QPixmap* KThemePixmap::border(BorderType type)
 inline void KThemePixmap::setBorder(BorderType type, const QPixmap &p)
 {
     if(b[type]){
-        warning("KThemePixmap: Overwriting existing border!");
+        qWarning("KThemePixmap: Overwriting existing border!");
         delete(b[type]);
     }
     b[type] = new QPixmap(p);
