@@ -28,9 +28,12 @@
 
 class KMJob;
 class KMThreadJob;
+class KActionCollection;
 
 class KMJobManager : public QObject
 {
+	Q_OBJECT
+
 public:
 	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
 
@@ -52,6 +55,8 @@ public:
 	KMThreadJob* threadJob();
 
 	virtual int actions();
+	virtual void createPluginActions(KActionCollection*);
+	virtual void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
 
 protected:
 	void discardAllJobs();

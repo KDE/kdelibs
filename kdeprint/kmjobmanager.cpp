@@ -149,3 +149,13 @@ int KMJobManager::actions()
 {
 	return 0;
 }
+
+void KMJobManager::createPluginActions(KActionCollection*)
+{
+}
+
+void KMJobManager::validatePluginActions(KActionCollection*, const QPtrList<KMJob>&)
+{
+}
+
+#include "kmjobmanager.moc"
