@@ -1187,7 +1187,12 @@ bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
   if ( !toPrinter && bIsMarked )
   {
     QPen pen( _painter->pen() );
-    _painter->setPen( black );
+    QPen newPen( black );
+    _painter->setPen( newPen );
+    _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
+    newPen.setColor( white );
+    newPen.setStyle( DotLine );
+    _painter->setPen( newPen );
     _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
     _painter->setPen( pen );
   }
