@@ -448,6 +448,7 @@ void HTMLGenericFormElementImpl::onChange()
     DOMString script = getAttribute(ATTR_ONCHANGE);
     if (!script.isEmpty())
 	view->part()->executeScript(script.string());
+}
 
 
 void HTMLGenericFormElementImpl::blur()
