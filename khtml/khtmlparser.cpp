@@ -1096,7 +1096,7 @@ void KHTMLParser::parseTagArea(void)
 	    break;
     }
     if (href.length())
-        HTMLWidget->addHref(href.string().ascii());
+        HTMLWidget->addHref(href.string());
         
     if ( area )
         imageMap->addArea( area );
@@ -1121,7 +1121,7 @@ void KHTMLParser::parseTagBase(void)
 	}
 	else if ( p->id == ATTR_HREF )
 	{
-	    HTMLWidget->setBaseURL( p->value().string().ascii() );
+	    HTMLWidget->setBaseURL( p->value().string() );
 	}
     }
 }
@@ -1174,7 +1174,7 @@ void KHTMLParser::parseTagBody(void)
 	}
 	else if ( token->id == ATTR_BACKGROUND )
 	{
-	    HTMLWidget->setBGImage( token->value().string().ascii() );
+	    HTMLWidget->setBGImage( token->value().string() );
         }
 	else if ( token->id == ATTR_TEXT )
 	{

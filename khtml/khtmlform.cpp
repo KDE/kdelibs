@@ -696,7 +696,7 @@ HTMLReset::HTMLReset( QWidget *parent, HTMLString v, const HTMLFont *f )
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( value().length() )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Reset" );
@@ -729,7 +729,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, HTMLString n, HTMLString v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( value().length() )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Submit Query" );
@@ -781,7 +781,7 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, HTMLString n, HTMLString v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( value().length() )
 		((QLineEdit *)w)->setText( value() );
 	if ( password )
 	    ((QLineEdit *)w)->setEchoMode ( QLineEdit::Password );

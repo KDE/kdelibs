@@ -318,7 +318,7 @@ KHTMLCache::requestImage( HTMLObject *obj, QString _url)
 	    actSize += im->size;
 	}
 	else 
-	    htmlWidget->requestFile( this, kurl.url().ascii() );
+	    htmlWidget->requestFile( this, kurl.url() );
 	return;
     }
 
@@ -467,12 +467,12 @@ KHTMLCache::preload( QString _url, CacheStatus s)
 	printf("Cache: *** new cached image %s\n", kurl.path().data());
 #endif
 	im = new KHTMLCachedImage();
-	im->load( kurl.path().ascii() );
+	im->load( kurl.path() );
 	actSize += im->size;
 	if( s != Unknown )  // specific status required
 	    im->status = s;
 	cache->insert( kurl.url(), im );
-	lru->append( kurl.url().ascii() );
+	lru->append( kurl.url() );
     }
 }
 
