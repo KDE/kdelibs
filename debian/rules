@@ -53,7 +53,7 @@ binary-arch:  build
 	dh_clean 
 	-rm -f debian/undocumented
 	dh_installdirs
-	install -d debian/tmp/etc/kde2/applnk
+	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp/ install
 	debianrc=debian/tmp/$(kde_confdir)/system.kdeglobals ;\
