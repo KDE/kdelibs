@@ -537,16 +537,16 @@ QString KHTMLSettings::fantasyFontName() const
 
 void KHTMLSettings::setStdFontName(const QString &n)
 {
-    if (d->fonts.count() >= 1)
-        d->fonts[0] = n;
-    else
-        d->fonts.append(n);
+    while(d->fonts.count() <= 0)
+        d->fonts.append(QString::null);
+    d->fonts[0] = n;
 }
 
 void KHTMLSettings::setFixedFontName(const QString &n)
 {
-    if (d->fonts.count() >= 2)
-        d->fonts[1] = n;
+    while(d->fonts.count() <= 1)
+        d->fonts.append(QString::null);
+    d->fonts[1] = n;
 }
 
 const QValueList<int> &KHTMLSettings::fontSizes() const
