@@ -185,8 +185,9 @@ CSSValueList::CSSValueList(CSSValueListImpl *impl) : CSSValue(impl)
 
 CSSValueList &CSSValueList::operator = (const CSSValueList &other)
 {
+    // TODO
     //CSSValue::operator = (other);
-    //return *this;
+    return *this;
 }
 
 CSSValueList::~CSSValueList()
@@ -203,6 +204,7 @@ CSSValue CSSValueList::item( unsigned long index )
 {
     //if(!impl) return 0;
     //return ((CSSValueListImpl *)impl)->item( index );
+    return 0;
 }
 
 
@@ -221,7 +223,7 @@ CSSPrimitiveValue::CSSPrimitiveValue(CSSPrimitiveValueImpl *impl) : CSSValue(imp
 CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSPrimitiveValue &other)
 {
     //CSSValue::operator = (other);
-    //return *this;
+    return *this;
 }
 
 CSSPrimitiveValue::~CSSPrimitiveValue()
@@ -263,18 +265,21 @@ Counter CSSPrimitiveValue::getCounterValue(  )
 {
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getCounterValue(  );
+  return Counter();
 }
 
 Rect CSSPrimitiveValue::getRectValue(  )
 {
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getRectValue(  );
+  return Rect();
 }
 
 RGBColor CSSPrimitiveValue::getRGBColorValue(  )
 {
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getRGBColorValue(  );
+  return RGBColor();
 }
 
 // -------------------------------------------------------------------
@@ -290,7 +295,7 @@ Counter::Counter(const Counter &other)
 Counter &Counter::operator = (const Counter &other)
 {
     //::operator = (other);
-    //return *this;
+    return *this;
 }
 
 Counter::~Counter()
@@ -299,14 +304,17 @@ Counter::~Counter()
 
 DOMString Counter::identifier() const
 {
+  return DOMString();
 }
 
 DOMString Counter::listStyle() const
 {
+  return DOMString();
 }
 
 DOMString Counter::separator() const
 {
+  return DOMString();
 }
 
 // --------------------------------------------------------------------
@@ -328,6 +336,7 @@ RGBColor::RGBColor(const QColor &color)
 RGBColor &RGBColor::operator = (const RGBColor &other)
 {
     m_color = other.m_color;
+    return *this;
 }
 
 RGBColor::~RGBColor()
@@ -362,6 +371,8 @@ Rect::Rect(const Rect &other)
 
 Rect &Rect::operator = (const Rect &other)
 {
+  // TODO
+  return *this;
 }
 
 Rect::~Rect()
@@ -370,18 +381,22 @@ Rect::~Rect()
 
 CSSPrimitiveValue Rect::top() const
 {
+  return CSSPrimitiveValue();
 }
 
 CSSPrimitiveValue Rect::right() const
 {
+  return CSSPrimitiveValue();
 }
 
 CSSPrimitiveValue Rect::bottom() const
 {
+  return CSSPrimitiveValue();
 }
 
 CSSPrimitiveValue Rect::left() const
 {
+  return CSSPrimitiveValue();
 }
 
 

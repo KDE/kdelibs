@@ -135,6 +135,7 @@ CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const
 
 DOM::DOMString CSSStyleDeclarationImpl::cssText() const
 {
+  return DOM::DOMString();
     // ###
 }
 
@@ -145,6 +146,7 @@ void CSSStyleDeclarationImpl::setCssText(DOM::DOMString str)
 
 bool CSSStyleDeclarationImpl::parseString( const DOMString &string )
 {
+    return false;
     // ###
 }
 
@@ -162,6 +164,7 @@ CSSValueImpl::~CSSValueImpl()
 
 DOM::DOMString CSSValueImpl::cssText() const
 {
+  return DOM::DOMString();
     // ###
 }
 
@@ -183,10 +186,14 @@ CSSValueListImpl::~CSSValueListImpl()
 
 unsigned long CSSValueListImpl::length() const
 {
+  // TODO
+  return 0;
 }
 
 CSSValueImpl *CSSValueListImpl::item( unsigned long index )
 {
+  // TODO
+  return 0;
 }
 
 unsigned short CSSValueListImpl::valueType() const
@@ -334,6 +341,7 @@ unsigned short CSSPrimitiveValueImpl::valueType() const
 bool CSSPrimitiveValueImpl::parseString( const DOMString &string )
 {
     // ###
+    return false;
 }
 
 int CSSPrimitiveValueImpl::getIdent()
