@@ -47,7 +47,7 @@ libksycoca_la_SOURCES = \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c  \
 	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp \
-	kdatatool.cpp karchive.cpp
+	kdatatool.cpp karchive.cpp kfilefilter.cpp
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
@@ -85,7 +85,7 @@ libkio_la_SOURCES = \
 	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
 	observer.cpp uiserver.stub observer.skel \
 	kemailsettings.cpp authinfo.cpp \
-	kprotocolinfo.cpp kprotocolinfofactory.cpp kfilefilter.cpp
+	kprotocolinfo.cpp kprotocolinfofactory.cpp
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
