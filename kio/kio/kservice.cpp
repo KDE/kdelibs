@@ -144,11 +144,12 @@ KService::init( KDesktopFile *config )
   if ( (m_strType == "Application") &&
        (!resource.isEmpty()) &&
        (resource != "apps") &&
+       (resource != "vfolder") &&
        !absPath)
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << " but is located under \"" << resource
-           << "\" instead of \"apps\"" << endl;
+           << "\" instead of \"apps\" or \"vfolder\"" << endl;
     m_bValid = false;
     return;
   }
@@ -378,7 +379,12 @@ protected:
    QCString value;
 };
 
-QVariant KService::property( const QString& _name ) const
+QVariant KService::property( const QString& _name) const
+{
+   return property( _name, QVariant::Invalid);
+}
+
+QVariant KService::property( const QString& _name, QVariant::Type t ) const
 {
   if ( _name == "Type" )
     return QVariant( m_strType );
@@ -416,18 +422,21 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_lstKeywords );
 
   // Ok we need to convert the property from a QString to its real type.
-  // First we need to ask KServiceTypeFactory what the type of this property
-  // is supposed to be.
-  // Then we use a homebuild class based on KBaseConfig to convert the QString.
-  // For some often used property types we do the conversion ourselves.
-
-  QVariant::Type t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
+  // Maybe the caller helped us.
   if (t == QVariant::Invalid)
   {
-    kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
-    return QVariant(); // Unknown property: Invalid variant.
+    // No luck, let's ask KServiceTypeFactory what the type of this property
+    // is supposed to be.
+    QVariant::Type t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
+    if (t == QVariant::Invalid)
+    {
+      kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
+      return QVariant(); // Unknown property: Invalid variant.
+    }
   }
 
+  // Then we use a homebuild class based on KBaseConfig to convert the QString.
+  // For some often used property types we do the conversion ourselves.
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( (it == m_mapProps.end()) || (!it.data().isValid()))
   {
@@ -527,14 +536,14 @@ KService::List KService::allInitServices()
 }
 
 bool KService::substituteUid() const {
-  QVariant v = property("X-KDE-SubstituteUID");
+  QVariant v = property("X-KDE-SubstituteUID", QVariant::Bool);
   return v.isValid() && v.toBool();
 }
 
 QString KService::username() const {
   // See also KDesktopFile::tryExec()
   QString user;
-  QVariant v = property("X-KDE-Username");
+  QVariant v = property("X-KDE-Username", QVariant::String);
   user = v.isValid() ? v.toString() : QString::null;
   if (user.isEmpty())
      user = ::getenv("ADMIN_ACCOUNT");

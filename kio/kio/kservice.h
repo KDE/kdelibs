@@ -306,6 +306,7 @@ public:
    * @see KServiceType
    */
   virtual QVariant property( const QString& _name ) const;
+
   /**
    * Returns the list of all properties that this service can have.
    * That means, that some of these properties may be empty.
@@ -394,6 +395,16 @@ protected:
   void init(KDesktopFile *config);
 
   QStringList &accessServiceTypes() { return m_lstServiceTypes; }
+
+  /**
+   * Returns the requested property.
+   * 
+   * @param _name the name of the property
+   * @param t the assumed type of the property
+   * @return the property, or invalid if not found
+   * @see KServiceType
+   */
+  QVariant property( const QString& _name, QVariant::Type t ) const;
 
 private:
   QString m_strType;
