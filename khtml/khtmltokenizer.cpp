@@ -210,6 +210,8 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
     // which is either </script> or </style>,
     // otherwise print out every received character
 
+  printf("HTMLTokenizer::parseListing()\n");
+
     while ( src.length() )
     {
 	// do we need to enlarge the buffer?
@@ -649,6 +651,10 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		if(tquote)
 		{
 		    printf("bad HTML in parseTag: SearchEqual\n");
+		    // this is moslty due to a missing '"' somewhere before...
+		    // so let's start searching for a new tag
+		    tquote = NoQuote;
+		    tag = TagName;
 		    ++src;
 		    break;
 		}
@@ -837,6 +843,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 			scriptCodeSize = 0;
 			scriptCodeMaxSize = 1024;
 			parseScript(src);
+			printf("end of script\n");
 		    }
 		}
 		else if ( tagID == ID_STYLE )
