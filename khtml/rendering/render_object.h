@@ -261,8 +261,6 @@ public:
     virtual QSize size() const;
 
     virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
-    virtual void setXPos( int /*xPos*/ ) { }
-    virtual void setYPos( int /*yPos*/ ) { }
 
     virtual void setSize( int /*width*/, int /*height*/ ) { }
     virtual void setWidth( int /*width*/ ) { }

@@ -335,8 +335,7 @@ void RenderFrameSet::positionFrames()
       if ( !child )
         return;
     /*
-            e->renderer()->setXPos(xPos);
-            e->renderer()->setYPos(yPos);
+            e->renderer()->setPos(xPos, yPos);
             e->setWidth(colWidth[c]);
             e->setAvailableWidth(colWidth[c]);
             e->setDescent(rowHeight[r]);

@@ -65,9 +65,7 @@ public:
 
     virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
 
-    virtual void setPos( int xPos, int yPos ) { m_x = xPos, m_y = yPos; }
-    virtual void setXPos( int xPos ) { m_x = xPos; }
-    virtual void setYPos( int yPos ) { m_y = yPos; }
+    virtual void setPos( int xPos, int yPos ) { m_x = xPos; m_y = yPos; }
 
     virtual int xPos() const { return m_x; }
     virtual int yPos() const { return m_y; }

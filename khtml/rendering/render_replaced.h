@@ -80,9 +80,11 @@ public:
     virtual void focus();
     virtual void blur();
 
+    virtual void setPos( int /*xPos*/, int /*yPos*/ );
+
 public slots:
     void slotWidgetDestructed();
- 
+
 
 protected:
     void setQWidget(QWidget *widget, bool show = true);

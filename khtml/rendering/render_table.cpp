@@ -1414,8 +1414,7 @@ void RenderTable::layout()
     // ### collapse caption margin, left, right
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM)
     {
-        tCaption->setYPos(m_height);
-        tCaption->setXPos(tCaption->marginLeft());
+        tCaption->setPos(m_height, tCaption->marginLeft());
         tCaption->layout();
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
@@ -1432,8 +1431,7 @@ void RenderTable::layout()
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
     {
-        tCaption->setYPos(m_height);
-        tCaption->setXPos(tCaption->marginLeft());
+        tCaption->setPos(m_height, tCaption->marginLeft());
         tCaption->layout();
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }

@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -46,7 +47,6 @@
 using namespace khtml;
 using namespace DOM;
 
-
 TextSlave::~TextSlave()
 {
     if(deleteText)
@@ -61,10 +61,10 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
 
     QConstString s(m_text, len);
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(x + _tx, y + _ty + m_baseline, s.string());
+    p->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
 }
 
-void TextSlave::printSelection(QPainter *p, RenderText* rt, int tx, int ty, int startPos, int endPos)
+void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > len) return;
     if(startPos < 0) startPos = 0;
@@ -86,22 +86,24 @@ void TextSlave::printSelection(QPainter *p, RenderText* rt, int tx, int ty, int 
         QConstString aStr(m_text, startPos);
         _offset = p->fontMetrics().width(aStr.string());
     }
-    QColor c = rt->style()->color();
+
+    p->save();
+    QColor c = style->color();
     p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
-    p->fillRect(x + tx + _offset, y + ty, _width, m_height, c);
+    p->fillRect(m_x + tx + _offset, m_y + ty, _width, m_height, c);
 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(x + tx + _offset, y + ty, s.string());
-
-
+    p->drawText(m_x + tx + _offset, m_y + ty, s.string());
+    p->restore();
 }
+
 // no blink at the moment...
 void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
 {
-    _tx += x;
-    _ty += y;
+    _tx += m_x;
+    _ty += m_y;
 
     int underlineOffset = m_height/7 + m_baseline;
     if(underlineOffset == m_baseline) underlineOffset++;
@@ -115,23 +117,14 @@ void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
 // ### add BLINK
 }
 
-void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _ty, bool begin, bool end)
+void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
-    _tx += x;
-    _ty += y;
+    _tx += m_x;
+    _ty += m_y;
 
     bool parentInline = p->parent()->isInline();
 
     //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
-
-    RenderStyle* pseudo=0;
-    RenderStyle *style = p->style();
-    if (firstLine &&
-        (pseudo=style->getPseudoStyle(RenderStyle::FIRST_LINE)))
-    {
-        style = pseudo;
-    }
-
     if (parentInline)
         _ty -= p->paddingTop() + p->borderTop();
 
@@ -169,17 +162,69 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 
 void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
 {
-  p->drawRect(_tx+x-2,_ty+y, m_width+3, m_height+2);
-  p->drawRect(_tx+x-3,_ty+y+1, m_width+5, m_height);
+  p->drawRect(_tx+m_x-2,_ty+m_y, m_width+3, m_height+2);
+  p->drawRect(_tx+m_x-3,_ty+m_y+1, m_width+5, m_height);
 }
 
 
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 {
-    if((_ty + y > _y) || (_ty + y + m_height < _y) ||
-       (_tx + x > _x) || (_tx + x + m_width < _x))
+    if((_ty + m_y > _y) || (_ty + m_y + m_height < _y) ||
+       (_tx + m_x > _x) || (_tx + m_x + m_width < _x))
         return false;
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+TextSlaveArray::TextSlaveArray()
+{
+    setAutoDelete(true);
+}
+
+int TextSlaveArray::compareItems( Item d1, Item d2 )
+{
+    ASSERT(d1);
+    ASSERT(d2);
+
+    return static_cast<TextSlave*>(d1)->m_y - static_cast<TextSlave*>(d2)->m_y;
+}
+
+// remove this once QVector::bsearch is fixed
+int TextSlaveArray::findFirstMatching( Item d) const
+{
+    int len = count();
+
+    if ( !len )
+	return -1;
+    if ( !d )
+	return -1;
+    int n1 = 0;
+    int n2 = len - 1;
+    int mid = 0;
+    bool found = FALSE;
+    while ( n1 <= n2 ) {
+	int  res;
+	mid = (n1 + n2)/2;
+	if ( (*this)[mid] == 0 )			// null item greater
+	    res = -1;
+	else
+	    res = ((QGVector*)this)->compareItems( d, (*this)[mid] );
+	if ( res < 0 )
+	    n2 = mid - 1;
+	else if ( res > 0 )
+	    n1 = mid + 1;
+	else {					// found it
+	    found = TRUE;
+	    break;
+	}
+    }
+    if ( !found && !1)
+	return -1;
+    // search to first one equal or bigger
+    while ( found && (mid > 0) && !((QGVector*)this)->compareItems(d, (*this)[mid-1]) )
+	mid--;
+    return mid;
 }
 
 // -------------------------------------------------------------------------------------
@@ -191,8 +236,6 @@ RenderText::RenderText(DOMStringImpl *_str)
     m_isText = true;   // our object inherits from RenderText
     m_inline = true;   // our object is Inline
 
-    m_first = 0;
-    m_last = 0;
     m_minWidth = -1;
     m_maxWidth = -1;
     str = _str;
@@ -224,26 +267,27 @@ RenderText::~RenderText()
 
 void RenderText::deleteSlaves()
 {
-    // delete all slaves
-    TextSlave *s = m_first;
-    while(s)
-    {
-        TextSlave *next = s->next();
-        delete s;
-        s = next;
-    }
-    m_first = m_last = 0;
+    // this is a slight variant of QArray::clear().
+    // We don't delete the array itself here because its
+    // likely to be used in the same size later again, saves
+    // us resize() calls
+    unsigned int len = m_lines.size();
+    for(unsigned int i=0; i < len; i++)
+        m_lines.remove(i);
+
+    ASSERT(m_lines.count() == 0);
 }
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 {
-    TextSlave *s = m_first;
+    TextSlave *s = m_lines.count() ? m_lines[0] : 0;
+    int si = 0;
     while(s)
     {
         if( s->checkPoint(_x, _y, _tx, _ty) )
         {
             // now we need to get the exact position
-            int delta = _x - _tx - s->x;
+            int delta = _x - _tx - s->m_x;
             int pos = 0;
             while(pos < s->len)
             {
@@ -256,40 +300,39 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
                 pos++;
                 delta -= w;
             }
-            offset = s->m_text - m_first->m_text + pos;
+            offset = s->m_text - m_lines[0]->m_text + pos;
             //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
             return true;
         }
         // ### this might be wrong, if combining chars are used ( eg arabic )
-        s=s->next();
+        s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
     }
     return false;
 }
 
 void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 {
-  if (!m_first) {
+  if (!m_lines.count()) {
     _x = _y = height = -1;
     return;
   }
 
+  TextSlave* s = m_lines[0];
+  int si = 0;
   _x = 0;
-  TextSlave *s = m_first;
   int off = s->len;
-
-  while(offset > off && s->next())
+  while(offset > off && si < (int)m_lines.count())
   {
-      s=s->next();
-      off = s->m_text - m_first->m_text + s->len;
+      s = m_lines[++si];
+      off = s->m_text - m_lines[0]->m_text + s->len;
   }   // we are now in the correct text slave
-
   int pos = (offset > off ? s->len : s->len - (off - offset ));
-  _y = s->y;
+  _y = s->m_y;
   height = s->m_height;
 
   QString tekst(s->m_text, s->len);
-  _x = s->x + (fm->boundingRect(tekst, pos)).right();
+  _x = s->m_x + (fm->boundingRect(tekst, pos)).right();
   if(pos)
       _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
 
@@ -304,19 +347,21 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
     _x += absx;
     _y += absy;
   }
-
 }
 
 void RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
     if(m_parent) {
         m_parent->absolutePosition(xPos, yPos, false);
-        if ( m_first ) {
-            xPos += m_first->x;
-            yPos += m_first->y;
+        if ( m_lines.count() ) {
+            TextSlave* s = m_lines[0];
+            xPos += s->m_x;
+            yPos += s->m_y;
+            return;
         }
-    } else
-        xPos = yPos = -1;
+    }
+
+    xPos = yPos = -1;
 }
 
 void RenderText::posOfChar(int chr, int &x, int &y)
@@ -331,190 +376,132 @@ void RenderText::posOfChar(int chr, int &x, int &y)
     if( chr > (int) str->l )
 	chr = str->l;
 
-    TextSlave *s = m_first;
+    int si = 0;
+    TextSlave *s = m_lines[0];
     TextSlave *last = s;
     QChar *ch = str->s + chr;
     while ( s && ch >= s->m_text )
     {
         last = s;
-	s = s->next();
+        s = m_lines[++si];
     }
 
-    x += last->x;
-    y += last->y;
+    x += last->m_x;
+    y += last->m_y;
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
-    //kdDebug( 6040 ) << "Text::printObject(long)" << endl;
-
-    TextSlave *s = m_first;
-
-    //kdDebug( 6040 ) << "Text::printObject(2)" << endl;
-
     RenderStyle* pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE);
-
-    bool start = true;
-#ifndef BIDI_DEBUG
-    if(m_printSpecial &&
-        (m_parent->isInline() || pseudoStyle))
-#endif
-    {
-        bool breakallowed = false;
-        while(s)
-        {
-            if (pseudoStyle && !s->firstLine)
-                break;
-
-            bool end = false;
-            if(!s->next()) end = true;
-            if(s->checkVerticalPoint(y, ty, h))
-            {
-                breakallowed = true;
-                s->printBoxDecorations(p, this, tx, ty, start, end);
-            }
-            else if (breakallowed)
-                break;
-
-            s=s->next();
-            start = false;
-        }
-        s = m_first;
-    }
-
-    p->setFont( m_style->font() );
-    //kdDebug( 6040 ) << "charset used: " << m_style->font().charSet() << endl;
-#if 0
-    kdDebug( 6040 ) << "charset used: " << m_style->font().charSet() << " mapper: " << fm->mapper()->name() << endl;
-#endif
-
-    // ### as QPainter::drawText only honors the pen color, we can avoid
-    // updating the pen if the text color is still correct - this saves
-    // quite some time
-    if(m_style->color() != p->pen().color())
-        p->setPen( m_style->color() );
-
-    // as the textslaves are ordered from top to bottom
-    // as soon as we find one that is "below" our
-    // printing range, we can quit
-    // ### better if textslaves are placed in a double linked list
-    bool breakallowed = false;
-    while(s)
-    {
-        if(s->checkVerticalPoint(y, ty, h))
-        {
-            breakallowed = true;
-            s->print(p, tx, ty);
-        }
-        else if(breakallowed)
-            break;
-
-        s=s->next();
-    }
-
     int d = m_style->textDecoration();
-    if(d != TDNONE && hasKeyboardFocus==DOM::ActivationOff)
+    TextSlave f(0, y-ty);
+    int firstSi = m_lines.findFirstMatching(&f);
+    int si = firstSi;
+    if(si >= 0)
     {
-        p->setPen( m_style->textDecorationColor() );
-        s = m_first;
-        bool breakallowed = false;
-        while(s)
-        {
-            if(s->checkVerticalPoint(y, ty, h))
-            {
-                breakallowed = true;
-                s->printDecoration(p, tx, ty, d);
-            }
-            else if(breakallowed)
-                break;
+        // something matching found, find the first one to print
+        int oldsi = si;
 
-            s=s->next();
-        }
-    }
+        while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h))
+            si--;
 
+        firstSi = si;
 
-    s = m_first;
-    if (selectionState() != SelectionNone)
-    {
+        if(oldsi - si > 2)
+            qDebug("backtracked %d items", oldsi-si);
+
         int endPos, startPos;
         bool breakAtEnd = false;
-        if (selectionState()==SelectionInside)
+        if (selectionState() != SelectionNone)
         {
-            startPos = 0;
-            endPos = -1;
-        }
-        else
-        {
-            selectionStartEnd(startPos,endPos);
-            breakAtEnd = true;
-            if(selectionState() == SelectionStart) {
-                endPos = -1;
-                breakAtEnd = false;
-            }
-            else if(selectionState() == SelectionEnd)
+            if (selectionState() == SelectionInside)
+            {
                 startPos = 0;
-//          kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
+                endPos = -1;
+            }
+            else
+            {
+                selectionStartEnd(startPos, endPos);
+                breakAtEnd = true;
+                if(selectionState() == SelectionStart) {
+                    endPos = -1;
+                    breakAtEnd = false;
+                }
+                else if(selectionState() == SelectionEnd)
+                    startPos = 0;
+            }
         }
 
-        breakallowed = false;
-        while(s && endPos)
-        {
-            if(s->checkVerticalPoint(y, ty, h))
-            {
-                breakallowed = true;
-                s->printSelection(p, this, tx, ty, startPos, endPos);
-            }
-            else if(breakallowed)
-                break;
+        // run until we find one that is outside the range, then we
+        // know we can stop
+        do {
+            TextSlave* s = m_lines[si];
+            RenderStyle* style = pseudoStyle && s->firstLine ? pseudoStyle : m_style;
 
-            int diff;
-            if(s->next())
-                diff = s->next()->m_text - s->m_text;
+            if(style->font() != p->font())
+                p->setFont(style->font());
+
+            if(style->color() != p->pen().color())
+                p->setPen(style->color());
+
+            if((m_printSpecial  &&
+                (m_parent->isInline() || pseudoStyle)) &&
+               (!pseudoStyle || s->firstLine))
+                s->printBoxDecorations(p, style, this, tx, ty, si == 0, si == (int)m_lines.count());
+
+            s->print(p, tx, ty);
+
+            if(d != TDNONE && hasKeyboardFocus == DOM::ActivationOff)
+            {
+                p->setPen(m_style->textDecorationColor());
+                s->printDecoration(p, tx, ty, d);
+            }
+
+
+            if (selectionState() != SelectionNone && endPos)
+            {
+
+                s->printSelection(p, style, tx, ty, startPos, endPos);
+
+                int diff;
+                if(si < (int)m_lines.count()-1)
+                    diff = m_lines[si+1]->m_text - s->m_text;
+                else
+                    diff = s->len;
+                endPos -= diff;
+                startPos -= diff;
+            }
+        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
+
+        if (hasKeyboardFocus!=DOM::ActivationOff)
+        {
+            si = firstSi;
+            bool clip = p->hasClipping();
+            p->setClipping(false);
+            p->setRasterOp(Qt::XorROP);
+            if (hasKeyboardFocus==DOM::ActivationPassive)
+                p->setPen(Qt::white);
             else
-                diff = s->len;
-            endPos -= diff;
-            startPos -= diff;
-            if(breakAtEnd && endPos < 0) break;
-            s=s->next();
+                p->setPen(Qt::blue);
+
+            do {
+                TextSlave* s = m_lines[si];
+
+                if(s->checkVerticalPoint(y, ty, h))
+                    s->printActivation(p, tx, ty);
+
+                int diff;
+                if(si < (int) m_lines.count()-1)
+                    diff = m_lines[si+1]->m_text - s->m_text;
+                else
+                    diff = s->len;
+
+            } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
+            p->setRasterOp(Qt::CopyROP);
+            p->setClipping(clip);
         }
     }
-    if (hasKeyboardFocus!=DOM::ActivationOff)
-    {
-        bool clip = p->hasClipping();
-	p->setClipping(false);
-	p->setRasterOp(Qt::XorROP);
-        if (hasKeyboardFocus==DOM::ActivationPassive)
-          p->setPen(QColor("white"));
-        else
-          p->setPen(QColor("blue"));
-
-        breakallowed = false;
-        while(s)
-        {
-            if(s->checkVerticalPoint(y, ty, h))
-            {
-                breakallowed = true;
-                s->printActivation(p, tx, ty);
-            }
-            else if(breakallowed)
-                break;
-
-            int diff;
-            if(s->next())
-                diff = s->next()->m_text - s->m_text;
-            else
-                diff = s->len;
-            s=s->next();
-        }
-	p->setRasterOp(Qt::CopyROP);
-	p->setClipping(clip);
-    }
-#ifdef BIDI_DEBUG
-    p->setPen(QPen(QColor("#00CC00"), 1, Qt::DashLine));
-    p->setBrush( Qt::NoBrush );
-    p->drawRect(tx + boundingRect.x(), ty + boundingRect.y(), boundingRect.width(), boundingRect.height());
-#endif
 }
 
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
@@ -529,7 +516,6 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 void RenderText::calcMinMaxWidth()
 {
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): known=" << minMaxKnown() << endl;
-
     if(minMaxKnown()) return;
 
     // ### calc Min and Max width...
@@ -589,16 +575,16 @@ void RenderText::calcMinMaxWidth()
 
 int RenderText::xPos() const
 {
-    if (m_first)
-        return m_first->x;
+    if (m_lines.count())
+        return m_lines[0]->m_x;
     else
         return 0;
 }
 
 int RenderText::yPos() const
 {
-    if (m_first)
-        return m_first->y;
+    if (m_lines.count())
+        return m_lines[0]->m_y;
     else
         return 0;
 }
@@ -656,61 +642,11 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     QChar *ch;
     bool deleteChar = false;
-#if QT_VERSION < 221
-    // Qt still uses the old BiDi code with 8859-6/8...
-    if((reverse && (( !m_style->visuallyOrdered() &&
-                      font().charSet() != QFont::ISO_8859_8 &&
-                      font().charSet() != QFont::ISO_8859_6)
-                    ||
-                    ( m_style->visuallyOrdered() &&
-                      ( font().charSet() == QFont::ISO_8859_8 ||
-                        font().charSet() == QFont::ISO_8859_6))
-        )))
-    {
-        deleteChar = true;
-        // reverse String
-        QString aStr = QConstString(str->s+from, len).string();
-#ifdef DEBUG_LAYOUT
-        kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
-#endif
-        len = aStr.length();
-        ch = QT_ALLOC_QCHAR_VEC(len);
-        int half =  len/2;
-        const QChar *s = aStr.unicode();
-        for(int i = 0; i <= half; i++)
-        {
-            ch[len-1-i] = s[i];
-            ch[i] = s[len-1-i];
-            if(ch[i].mirrored() && !m_style->visuallyOrdered())
-                ch[i] = ch[i].mirroredChar();
-            if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
-                ch[len-1-i] = ch[len-1-i].mirroredChar();
-        }
-    }
-    else if ( reverse && !m_style->visuallyOrdered() &&
-              (font().charSet() == QFont::ISO_8859_8 || font().charSet() == QFont::ISO_8859_6 ) ) {
-        deleteChar = true;
-        QString aStr = QConstString(str->s+from, len).string();
-        len = aStr.length();
-        ch = QT_ALLOC_QCHAR_VEC(len);
-        const QChar *s = aStr.unicode();
-        for( int i = 0; i < len; i++ ) {
-            if( s[i].mirrored() )
-                ch[i] = s[i].mirroredChar();
-            else
-                ch[i] = s[i];
-        }
-    }
-    else
-        ch = str->s+from;
-#else
     if ( reverse && !m_style->visuallyOrdered() ) {
         deleteChar = true;
         // reverse String
         QString aStr = QConstString(str->s+from, len).string();
-#ifdef DEBUG_LAYOUT
-        kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
-#endif
+        //kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
         len = aStr.length();
         ch = QT_ALLOC_QCHAR_VEC(len);
         int half =  len/2;
@@ -727,7 +663,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     }
     else
         ch = str->s+from;
-#endif
+
     // ### margins and RTL
     if(from == 0 && m_parent->isInline() && m_parent->firstChild()==this)
     {
@@ -746,13 +682,13 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     TextSlave *s = new TextSlave(x, y, ch, len,
                                  bidiHeight(), baselineOffset(), width, deleteChar, firstLine);
 
-    if(!m_first)
-        m_first = m_last = s;
-    else
+    if(m_lines.count() == m_lines.size())
     {
-        m_last->setNext(s);
-        m_last = s;
+        kdDebug( 6040 ) << "resizing TextSlave array!" << endl;
+        m_lines.resize(m_lines.size()*2+1);
     }
+
+    m_lines.insert(m_lines.count(), s);
 }
 
 unsigned int RenderText::width( int from, int len) const
@@ -773,10 +709,28 @@ unsigned int RenderText::width( int from, int len) const
             w += borderLeft() + paddingLeft() + marginLeft();
         if(from + len == int(str->l) &&
            m_parent->lastChild() == static_cast<const RenderObject*>(this))
-            w += borderRight() + paddingRight() +marginRight();;
+            w += borderRight() + paddingRight() +marginRight();
     }
 
     //kdDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;
+    return w;
+}
+
+short RenderText::width() const
+{
+    int w = 0;
+    // as TextSlaves are supposed to be sorted from up to bottom, left to right..
+    if(m_lines.count())
+        w = m_lines[m_lines.count()-1]->m_x + m_lines[m_lines.count()-1]->m_width;
+
+    if(m_parent->isInline())
+    {
+        if(m_parent->firstChild() == static_cast<const RenderObject*>(this))
+            w += borderLeft() + paddingLeft();
+        if(m_parent->lastChild() == static_cast<const RenderObject*>(this))
+            w += borderRight() + paddingRight();
+    }
+
     return w;
 }
 

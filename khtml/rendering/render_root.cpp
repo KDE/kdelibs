@@ -84,9 +84,7 @@ void RenderRoot::layout()
 {
     //kdDebug(6040) << "RenderRoot::layout()" << endl;
     if (printingMode)
-    {
        m_minWidth = m_width;
-    }
 
     calcMinMaxWidth();
 

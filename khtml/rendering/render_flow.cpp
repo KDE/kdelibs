@@ -192,18 +192,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 }
 
-void RenderFlow::setPos( int xPos, int yPos )
-{
-    m_y = yPos;
-    setXPos(xPos);
-}
-
-void RenderFlow::setXPos( int xPos )
-{
-    m_x = xPos;
-}
-
-
 void RenderFlow::layout()
 {
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
@@ -247,7 +235,7 @@ void RenderFlow::layout()
         layoutBlockChildren();
 
     calcHeight();
-    
+
     if(hasOverhangingFloats())
     {
         if(isFloating() || isTableCell())
@@ -255,17 +243,17 @@ void RenderFlow::layout()
             m_height = floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
-    }    
-    else if (isTableCell() && m_last && m_last->hasOverhangingFloats()) 
+    }
+    else if (isTableCell() && m_last && m_last->hasOverhangingFloats())
     {
         m_height = m_last->yPos() + static_cast<RenderFlow*>(m_last)->floatBottom();
-        m_height += borderBottom() + paddingBottom();       
+        m_height += borderBottom() + paddingBottom();
     }
-    
+
     layoutSpecialObjects();
 
-    //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl; 
-    
+    //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
+
     setLayouted();
 }
 
@@ -316,7 +304,7 @@ void RenderFlow::layoutBlockChildren()
 
     RenderObject *child = firstChild();
     RenderFlow *prevFlow = 0;
-    
+
     int prevMargin = 0;
     if(isTableCell() && child)
         prevMargin = -child->marginTop();
@@ -334,7 +322,7 @@ void RenderFlow::layoutBlockChildren()
         {
             child->layout();
             static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
-	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl; 
+	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl;
             child = child->nextSibling();
             continue;
         } else if ( child->isReplaced() )
@@ -356,10 +344,10 @@ void RenderFlow::layoutBlockChildren()
                 child->setLayouted(false);
             else
                 prevFlow=0;
-        }          
-        
-        child->setYPos(m_height);
-        child->layout();                                                     
+        }
+
+        child->setPos(child->xPos(), m_height);
+        child->layout();
 
         int chPos = xPos + child->marginLeft();
 
@@ -375,15 +363,15 @@ void RenderFlow::layoutBlockChildren()
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
                 chPos -= leftOffset(m_height);
         }
-        child->setXPos(chPos);
+        child->setPos(chPos, child->yPos());
 
         m_height += child->height();
 
         prevMargin = child->marginBottom();
-        
+
         if (child->isFlow())
             prevFlow = static_cast<RenderFlow*>(child);
-                
+
         child = child->nextSibling();
     }
 
@@ -541,7 +529,7 @@ void RenderFlow::positionNewFloats()
             f = specialObjects->next();
             continue;
         }
-                
+
         RenderObject *o = f->node;
         int _height = o->height() + o->marginTop() + o->marginBottom();
 
@@ -561,8 +549,7 @@ void RenderFlow::positionNewFloats()
             }
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
-            o->setXPos(fx + o->marginLeft());
-            o->setYPos(y + o->marginTop());
+            o->setPos(fx + o->marginLeft(), y + o->marginTop());
         }
         else
         {
@@ -574,8 +561,7 @@ void RenderFlow::positionNewFloats()
             }
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
-            o->setXPos(fx - o->marginRight() - o->width());
-            o->setYPos(y + o->marginTop());
+            o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
         f->startY = y;
         f->endY = f->startY + _height;
@@ -832,17 +818,17 @@ RenderFlow::rightBottom()
 void
 RenderFlow::clearFloats()
 {
-//    kdDebug( 6040 ) << "clearFloats" << endl; 
-    
+//    kdDebug( 6040 ) << "clearFloats" << endl;
+
     if (specialObjects) {
 	if( containsPositioned() ) {
-            specialObjects->first();            
+            specialObjects->first();
             while ( specialObjects->current()) {
-		if ( specialObjects->current()->type != SpecialObject::Positioned ) 
+		if ( specialObjects->current()->type != SpecialObject::Positioned )
 		    specialObjects->remove();
                 else
 		    specialObjects->next();
-	    }	
+	    }
 	} else
 	    specialObjects->clear();
     }
@@ -952,10 +938,10 @@ void RenderFlow::calcMinMaxWidth()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
-    
+
     m_minWidth = 0;
     m_maxWidth = 0;
-        
+
     if (isInline())
         return;
 
@@ -1015,7 +1001,7 @@ void RenderFlow::calcMinMaxWidth()
                         continue;
                     }
                 }
-                if (noBreak || 
+                if (noBreak ||
                         (prevchild && prevchild->isFloating() && child->isFloating()))
                 {
                     inlineMin += childMin;
@@ -1044,17 +1030,17 @@ void RenderFlow::calcMinMaxWidth()
     else
     {
         while(child != 0)
-        {                    
+        {
             if(!child->minMaxKnown())
                 child->calcMinMaxWidth();
 
             // positioned children don't affect the minmaxwidth
             if (child->isPositioned())
             {
-                child = child->nextSibling();   
+                child = child->nextSibling();
                 continue;
-            }                                
-            
+            }
+
             int margin=0;
             //  auto margins don't affect minwidth
 
@@ -1141,41 +1127,41 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                        ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
-    
-    
-    RenderStyle* pseudoStyle;
-    if ((!m_first || m_first==beforeChild) 
+
+
+    RenderStyle* pseudoStyle=0;
+    if ((!m_first || m_first==beforeChild)
             && (pseudoStyle=m_style->getPseudoStyle(RenderStyle::FIRST_LETTER))
             && newChild->style()->styleType()==RenderStyle::NOPSEUDO)
     {
 
-        RenderText* newTextChild=0;            
+        RenderText* newTextChild=0;
         if (newChild->isText())
         {
             newTextChild = static_cast<RenderText*>(newChild);
         }
-        
+
         kdDebug( 6040 ) << "first letter" << endl;
-        
+
         if (newTextChild)
         {
             kdDebug( 6040 ) << "letter=" << endl;
-            
+
             RenderFlow* firstLetter = new RenderFlow();
             firstLetter->setStyle(pseudoStyle);
 
             addChild(firstLetter);
 
             DOMStringImpl* oldText = newTextChild->string();
-                                                
+
             newTextChild->setText(oldText->substring(1,oldText->l-1));
-            
-            RenderText* letter = new RenderText(oldText->substring(0,1));        
+
+            RenderText* letter = new RenderText(oldText->substring(0,1));
             letter->setStyle(new RenderStyle(pseudoStyle));
             firstLetter->addChild(letter);
-            firstLetter->close();            
+            firstLetter->close();
         }
-                
+
     }
 
     bool nonInlineInChild = false;
@@ -1193,9 +1179,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     //to prevents non-layouted elements from getting printed
     if (!newChild->isInline() && !newChild->isFloating())
-    {
-        newChild->setYPos(-500000);
-    }
+        newChild->setPos(newChild->xPos(), -500000);
 
     if (!newChild->isText())
     {
@@ -1246,7 +1230,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 boxSource->setFirstChild(beforeBox);
                 boxSource->setLastChild(beforeBox);
                 beforeBox->close();
-                beforeBox->setYPos(-100000);
+                beforeBox->setPos(beforeBox->xPos(), -100000);
                 beforeBox->setLayouted(false);
             }
             if (beforeChild) {
@@ -1277,7 +1261,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                   boxSource->setFirstChild(afterBox);
                 afterBox->setPreviousSibling(beforeBox);
                 afterBox->close();
-                afterBox->setYPos(-100000);
+                afterBox->setPos(afterBox->xPos(), -100000);
                 afterBox->setLayouted(false);
                 beforeChild = afterBox;
             }
@@ -1334,7 +1318,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 newBox->setIsAnonymousBox(true);
                 RenderObject::addChild(newBox,beforeChild);
                 newBox->addChild(newChild);
-                newBox->setYPos(-100000);
+                newBox->setPos(newBox->xPos(), -100000);
                 setHaveAnonymousBox();
                 return;
             }
@@ -1431,7 +1415,7 @@ void RenderFlow::makeChildrenNonInline()
             box->setParent(this);
 
             box->close();
-            box->setYPos(-100000);
+            box->setPos(box->xPos(), -100000);
             box->setLayouted(false);
         }
 

@@ -23,6 +23,9 @@
 #ifndef RENDERTEXT_H
 #define RENDERTEXT_H
 
+#include <qvector.h>
+#include <qarray.h>
+
 #include "dom_string.h"
 #include "dom_stringimpl.h"
 #include "render_object.h"
@@ -43,9 +46,8 @@ public:
     TextSlave(int _x, int _y, QChar *text, int _len,
               int height, int baseline, int width, bool _deleteText = false, bool _firstLine = false)
     {
-        x = _x;
-        y = _y;
-        n = 0;
+        m_x = _x;
+        m_y = _y;
         m_text = text;
         len = _len;
         m_height = height;
@@ -57,37 +59,51 @@ public:
     ~TextSlave();
     void print( QPainter *p, int _tx, int _ty);
     void printDecoration( QPainter *p, int _tx, int _ty, int decoration);
-    void printBoxDecorations(QPainter *p, RenderText *parent, int _tx, int _ty, bool begin, bool end);
+    void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
+    void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
     void printActivation( QPainter *, int, int );
 
     bool checkPoint(int _x, int _y, int _tx, int _ty);
-
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
      * of a view, would the @ref _y -coordinate be inside the vertical range
      * of this object's representation?
      */
     bool checkVerticalPoint(int _y, int _ty, int _h)
-    { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
-    void printSelection(QPainter *p, RenderText* rt, int tx, int ty, int startPos, int endPos);
+    { if((_ty + m_y > _y + _h) || (_ty + m_y + m_height < _y)) return false; return true; }
 
-    void setNext(TextSlave *_n) { n = _n; }
-    TextSlave *next() { return n; }
-
-    int x;
-    int y;
     QChar* m_text;
-    int len;
-
-    TextSlave *n;
+    int m_y;
+    unsigned short len;
+    unsigned short m_x;
     unsigned short m_height;
     unsigned short m_baseline;
     unsigned short m_width;
 
     // this is needed for right to left text. In this case, m_text will point to a QChar array which
     // holds the already reversed string. The slave has to delete this string by itself.
-    bool deleteText;
-    bool firstLine;
+    bool deleteText : 1;
+    bool firstLine : 1;
+private:
+    // this is just for QVector::bsearch. Don't use it otherwise
+    TextSlave(int _x, int _y)
+    {
+        m_x = _x;
+        m_y = _y;
+        deleteText = false;
+    };
+    friend class RenderText;
+};
+
+class TextSlaveArray : public QVector<TextSlave> // ### change this to QArray for Qt 3.0
+{
+public:
+    TextSlaveArray();
+
+    TextSlave* first();
+
+    int	  findFirstMatching( Item ) const;
+    virtual int compareItems( Item, Item );
 };
 
 class RenderText : public RenderObject
@@ -120,8 +136,9 @@ public:
     // no need for this to be virtual, however length needs to be!
     inline QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
-    virtual unsigned int width( int from, int len) const;
 
+    virtual unsigned int width( int from, int len) const;
+    virtual short width() const;
     virtual int height() const;
 
     // from BiDiObject
@@ -146,9 +163,6 @@ public:
 
     void setText(DOM::DOMStringImpl *text);
 
-    TextSlave *first() { return m_first; }
-    TextSlave *last() { return m_last; }
-
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
@@ -160,11 +174,10 @@ public:
 
     virtual void repaint();
 protected:
+    TextSlaveArray m_lines;
 
     QFontMetrics *fm;
     DOM::DOMStringImpl *str;
-    TextSlave *m_first;
-    TextSlave *m_last;
 
     int m_contentHeight;
     short m_minWidth;
