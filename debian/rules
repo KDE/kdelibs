@@ -101,7 +101,7 @@ binary-arch:  build
 	mv debian/tmp/usr/lib/kio_https.so debian/tmp/usr/lib/kio_https-nossl.so
 	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
 	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
-	mv debian/kdelibs3-dev/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
+	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
 	dh_installchangelogs ChangeLog
 	dh_undocumented
 	dh_strip
