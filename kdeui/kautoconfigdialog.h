@@ -47,7 +47,15 @@ signals:
    * the user clicked on the Apply or Ok button.
    */
   void settingsChanged();
-
+  /** 
+   * One or more of the settings have been permanently changed such as if
+   * the user clicked on the Apply or Ok button.
+   * This signal is usefull when using kautoconfigdialog to configure
+   * items in a list.  When emits the main class would then know what
+   * item in the list was actually changed.
+   * @param dialogName the name of the dialog.
+   */
+  void settingsChanged(const char *dialogName);
 
 public:
   /**
@@ -137,6 +145,11 @@ protected slots:
    * Some setting was modified, updates the Apply and Default buttons.
    */ 
   virtual void settingModified();
+  
+  /**
+   * Some setting was changed.
+   */
+  virtual void settingsChangedSlot();
 
 protected:
   // Pointer to the KAutoConfig object.

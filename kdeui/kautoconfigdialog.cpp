@@ -29,6 +29,7 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
 
   kautoconfig = new KAutoConfig(kdialogbase, "kautoconfig");
   connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
+  connect(kautoconfig, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
   connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
 
   connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
@@ -103,6 +104,9 @@ void KAutoConfigDialog::settingModified(){
   kdialogbase->enableButton(KDialogBase::Default, !kautoconfig->isDefault());
 }
 
+void KAutoConfigDialog::settingsChangedSlot(){
+  emit (settingsChanged(name()));
+}
 
 void KAutoConfigDialog::show(bool track){
   if(!d->shown){
