@@ -1,5 +1,8 @@
 1998-06-07  Stephan Kulow  <coolo@kde.org>
 
+	* kfilesimpleview.cpp: added some checks to prevent division with
+	zero using the latest qt snapshots
+
 	* kfilesimpleview.cpp: added a repaint call after a resize
 
 	* kfiledialog.cpp: new experimental button order

@@ -244,7 +244,11 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 	    pixmaps.insert(index, locked_file);
     }
     
-    int curCol = index / rowsVisible;
+    int curCol;
+    if (rowsVisible > 0)
+	curCol = index / rowsVisible;
+    else
+	curCol = 0;
 
     for (int j = curCol; j < numCols(); j++)
       cellWidths[ j ] = -1; // reset values
@@ -276,8 +280,17 @@ void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
     QTableView::resizeEvent(e);
     rowsVisible = lastRowVisible();
-    setNumRows(rowsVisible);
-    setNumCols(count() / rowsVisible + 1);
+    
+    int cols;
+    if (rowsVisible > 0) {
+	setNumRows(rowsVisible);
+	cols = count() / rowsVisible + 1;
+    } else {
+	if (rowsVisible < 0)
+	    rowsVisible = 0;
+	cols = 0;
+    }
+    setNumCols(cols);
     QTableView::repaint(true);
 }
 
