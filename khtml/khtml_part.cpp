@@ -1586,7 +1586,10 @@ void KHTMLPart::checkCompleted()
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
   if ( !d->m_redirectURL.isEmpty() )
+  {
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
     emit completed( true );
+  }
   else
     emit completed();
 
@@ -1655,7 +1658,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 
 void KHTMLPart::slotRedirect()
 {
-  // kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
+  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -2432,11 +2435,6 @@ void KHTMLPart::updateActions()
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
-
-  // Now start the redirection since the current
-  // document should be completely loaded. (DA)
-  if ( !d->m_redirectURL.isEmpty() )
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 }
 
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
