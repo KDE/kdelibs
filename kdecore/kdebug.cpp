@@ -255,8 +255,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
               else */
                   output = stderr;				
               // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
-	      if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
-	      //if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
+	      // if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
+	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
           }
