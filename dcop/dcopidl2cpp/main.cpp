@@ -128,6 +128,7 @@ int main( int argc, char** argv )
 			    if ( !first )
 				funcname += ",";
 			    funcname += f.attribute("type");
+			    first = FALSE;
 			}
 			funcname += ")";
 			
@@ -175,11 +176,8 @@ int main( int argc, char** argv )
 	        {
 		    if ( s.tagName() == "SUPER" )
 	            {
-			if ( s.attribute("name") != "DCOPObject" )
-		        {
-			    str << "\tif ( " << s.attribute("name") << "::process( fun, data, replyData ) )" << endl;
-			    str << "\t\treturn TRUE" << endl;
-			}
+			str << "\tif ( " << s.attribute("name") << "::process( fun, data, replyType, replyData ) )" << endl;
+			str << "\t\treturn TRUE;" << endl;
 		    }
 		}
 
@@ -456,7 +454,7 @@ int main( int argc, char** argv )
 			str << " snd, _type_, rcv );" << endl;
 			
 			str << "\tASSERT( _type_ == \"" << ret << "\" );" << endl;
-						    
+						
 			if ( ret != "void" )
 		        {
 			    str << "\tQDataStream out( rcv, IO_ReadOnly );"  << endl;
