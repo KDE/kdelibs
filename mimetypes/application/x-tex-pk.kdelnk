@@ -3,7 +3,7 @@
 Comment=Packed Font file
 Comment[ca]=Fitxer de font empaquetada
 Comment[cs]=Sbalené znakové sady pro TeX
-Comment[da]=Komproimeret skriftfil
+Comment[da]=Komprimeret skriftfil
 Comment[de]=Komprimierte Fontdatei
 Comment[es]=Fuente comprimida
 Comment[fi]=Pakattu kirjasin
@@ -18,6 +18,7 @@ Comment[pt_BR]=Fonte comprimida
 Comment[ro]=Fiºier de font împachetat
 Comment[ru]=õĞÁËÏ×ÁÎÎÙÅ ÛÒÉÆÔÙ
 Comment[sk]=Skomprimované znakové sady
+Comment[sl]=Stisnjena pisava za TeX
 Comment[sv]=Komprimerad typsnittsfil
 Icon=pk.xpm
 Type=MimeType

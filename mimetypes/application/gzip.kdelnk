@@ -19,6 +19,7 @@ Comment[pt_BR]=Arquivo GZip
 Comment[ro]=Fiºier comprimat cu GZip
 Comment[ru]=áÒÈÉ× Gzip
 Comment[sk]=GZip súbor
+Comment[sl]=Stisnjena datoteka (gzip)
 Comment[sv]=Fil som är komprimerad med gzip
 DefaultApp=ark
 Icon=tgz.xpm

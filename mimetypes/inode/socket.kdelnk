@@ -9,6 +9,7 @@ Comment[pl]=Gniazdko
 Comment[ro]=Canal de comunicaşie de tip SOCKET
 Comment[ru]=Socket (ËÁÎÁÌ ÄÌÑ ËÏÍÍÕÎÉËÁÃÉÉ)
 Comment[sk]=Socket (kanál pre komunikáciu)
+Comment[sl]=Vtiè
 Comment[sv]=Socket (kommunikationskanal)
 Icon=socket.xpm
 Type=MimeType

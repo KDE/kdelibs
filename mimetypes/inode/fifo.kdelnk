@@ -11,6 +11,7 @@ Comment[pl]=Kolejka
 Comment[ro]=Canal de comunicaşie de tip FIFO
 Comment[ru]=ëÁÎÁÌ FIFO
 Comment[sk]=FIFO rúra
+Comment[sl]=Cev
 Comment[sv]=FIFO-rör (kommunikationskanal)
 Icon=pipe.xpm
 Type=MimeType
