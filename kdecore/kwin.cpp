@@ -273,6 +273,8 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 		     &x, &y, &w, &h, &border_w, &depth);
 	if (w > 0 && h > 0){
 	    QPixmap pm(w, h, depth);
+	    // Always detach before doing something behind QPixmap's back.
+	    pm.detach();
 	    XCopyArea(qt_xdisplay(), p, pm.handle(),
 		      qt_xget_temp_gc(qt_xscreen(), depth==1),
 		      0, 0, w, h, 0, 0);
