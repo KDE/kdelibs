@@ -401,9 +401,11 @@ void RenderBox::updateHeight()
         {
             setLayouted(false);
             if(cb != this) cb->updateHeight();
-        } else
-            root()->updateHeight();
-
+        } else {
+            RenderRoot *rt = root();
+            if( rt )
+              rt->updateHeight();
+	}
         return;
     }
 
