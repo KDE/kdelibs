@@ -79,14 +79,13 @@ void RemoteService::resolveAsync()
 {
 	if (d->isRunning()) return;
 	d->m_resolved = false;
-	DNSServiceRef ref;
 	kdDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 #ifdef HAVE_DNSSD
+	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type.ascii(), 
 		domainToDNS(m_domain),resolve_callback,reinterpret_cast<void*>(this))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
-	kdDebug() << "REF is " << ref << ", running: " << d->isRunning() << "\n";
 	if (!d->isRunning()) emit resolved(false);
 }
 
@@ -97,12 +96,12 @@ bool RemoteService::isResolved() const
 
 void RemoteService::customEvent(QCustomEvent* event)
 {
-	if (event->type() == SD_ERROR) {
+	if (event->type() == QEvent::User+SD_ERROR) {
 		d->stop();
 		d->m_resolved=false;
 		emit resolved(false);
 	}
-	if (event->type() == SD_RESOLVE) {
+	if (event->type() == QEvent::User+SD_RESOLVE) {
 		ResolveEvent* rev = static_cast<ResolveEvent*>(event);
 		m_hostName = rev->m_hostname;
 		m_port = rev->m_port;

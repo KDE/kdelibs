@@ -162,11 +162,11 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 
 void PublicService::customEvent(QCustomEvent* event)
 {
-	if (event->type()==SD_ERROR) {
+	if (event->type()==QEvent::User+SD_ERROR) {
 		stop();
 		emit published(false);
 	}
-	if (event->type()==DNSSD::SD_PUBLISH) {
+	if (event->type()==QEvent::User+SD_PUBLISH) {
 		d->m_published=true;
 		emit published(true);
 		m_serviceName = static_cast<PublishEvent*>(event)->m_name;

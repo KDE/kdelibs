@@ -77,8 +77,8 @@ void Query::startQuery()
 {
 	if (d->isRunning()) return;
 	d->m_finished = false;
-	DNSServiceRef ref;
 #ifdef HAVE_DNSSD
+	DNSServiceRef ref;
 	if (DNSServiceBrowse(&ref,0,0, d->m_type.ascii(), 
 	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
@@ -92,12 +92,12 @@ void Query::virtual_hook(int, void*)
 
 void Query::customEvent(QCustomEvent* event)
 {
-	if (event->type()==SD_ERROR) {
+	if (event->type()==QEvent::User+SD_ERROR) {
 		d->stop();
 		d->m_finished=false;
 		emit finished();
 	}
-	if (event->type()==SD_ADDREMOVE) {
+	if (event->type()==QEvent::User+SD_ADDREMOVE) {
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
 		RemoteService*  svr = new RemoteService(aev->m_name+"."+
