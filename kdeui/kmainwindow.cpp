@@ -870,6 +870,8 @@ void KMainWindow::restoreWindowSize( KConfig * config )
         // restore the size
         int scnum = QApplication::desktop()->screenNumber(parentWidget());
         QRect desk = QApplication::desktop()->screenGeometry(scnum);
+        if ( d->defaultWindowSize.isNull() ) // only once
+          d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
         QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
                     config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
         if (size.isEmpty()) {
@@ -945,10 +947,6 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
              this, SLOT( setSettingsDirty() ) );
 
-    // Get default values
-    int scnum = QApplication::desktop()->screenNumber(parentWidget());
-    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-    d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height());
     // Now read the previously saved settings
     applyMainWindowSettings( KGlobal::config(), groupName );
 }
