@@ -191,6 +191,12 @@ void Observer::slotDeleting( KIO::Job* job, const KURL& url )
   m_uiserver->deleting( job->progressId(), url );
 }
 
+void Observer::slotTransferring( KIO::Job* job, const KURL& url )
+{
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTransferring " << job << " " << url.url() << endl;
+  m_uiserver->transferring( job->progressId(), url );
+}
+
 void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
 {
   //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;

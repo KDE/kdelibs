@@ -28,7 +28,7 @@
 #include "progressbase.h"
 
 namespace KIO {
-    
+
 /*
  * @ref ProgressBase
  */
@@ -57,6 +57,7 @@ public slots:
   virtual void slotCopying( KIO::Job*, const KURL& src, const KURL& dest );
   virtual void slotMoving( KIO::Job*, const KURL& src, const KURL& dest );
   virtual void slotDeleting( KIO::Job*, const KURL& url );
+  void slotTransferring( KIO::Job*, const KURL& url );
   virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
   virtual void slotStating( KIO::Job*, const KURL& dir );
   virtual void slotMounting( KIO::Job*, const QString & dev, const QString & point );

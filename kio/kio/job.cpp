@@ -660,7 +660,7 @@ StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
 
 StatJob *KIO::stat(const KURL& url, bool sideIsSource, short int details, bool showProgressInfo)
 {
-    //kdDebug(7007) << "stat " << url.prettyURL() << endl;
+    kdDebug(7007) << "stat " << url.prettyURL() << endl;
     KIO_ARGS << url;
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs, showProgressInfo );
     job->setSide( sideIsSource );
@@ -691,6 +691,8 @@ TransferJob::TransferJob( const KURL& url, int command,
     m_suspended = false;
     m_errorPage = false;
     m_subJob = 0L;
+    if ( showProgressInfo )
+        Observer::self()->slotTransferring( this, url );
 }
 
 // Slave sends data

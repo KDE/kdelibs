@@ -56,7 +56,7 @@ DefaultProgress::DefaultProgress( bool showNow )
           KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 32 ),
           KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 16 ) );
 #endif
-  
+
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
                                             KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
@@ -94,10 +94,10 @@ DefaultProgress::DefaultProgress( bool showNow )
                                              QSizePolicy::Preferred ) );*/
   progressLabel->setAlignment( QLabel::AlignRight );
   hBox->addWidget( progressLabel );
-  
+
   hBox = new QHBoxLayout();
   topLayout->addLayout(hBox);
-  
+
   speedLabel = new QLabel(this);
   hBox->addWidget(speedLabel, 1);
 
@@ -158,7 +158,7 @@ void DefaultProgress::showTotals()
   if ( m_iProcessedFiles == 0 && m_iProcessedDirs == 0 )
   {
     QString tmps;
-    if ( m_iTotalDirs > 1 ) 
+    if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
       tmps = i18n("%n directory", "%n directories", m_iTotalDirs) + "   ";
     tmps += i18n("%n file", "%n files", m_iTotalFiles);
@@ -288,6 +288,16 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
     d->noCaptionYet = false;
   }
   mode = Delete;
+  sourceLabel->setText(url.prettyURL());
+  setDestVisible( false );
+}
+
+void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
+{
+  if ( d->noCaptionYet ) {
+    setCaption(i18n("Loading progress"));
+    d->noCaptionYet = false;
+  }
   sourceLabel->setText(url.prettyURL());
   setDestVisible( false );
 }

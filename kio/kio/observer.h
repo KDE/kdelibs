@@ -154,6 +154,7 @@ public slots:
   void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
   void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
   void slotDeleting( KIO::Job*, const KURL& url );
+  void slotTransferring( KIO::Job*, const KURL& url );
   void slotCreatingDir( KIO::Job*, const KURL& dir );
   // currently unused
   void slotCanResume( KIO::Job*, KIO::filesize_t offset );
