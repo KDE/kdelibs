@@ -388,7 +388,7 @@ void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
   else if ( parent->inherits( "QMenuBar" ) )
     static_cast<QMenuBar *>(parent)->removeItem( id );
   else if ( parent->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(parent)->removeItem( id );
+    static_cast<KToolBar *>(parent)->removeItemDelayed( id );
 }
 
 KXMLGUIClient *KXMLGUIBuilder::builderClient() const
