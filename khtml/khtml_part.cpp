@@ -961,7 +961,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
     }
 }
 
-bool KHTMLPart::findTextNext( const QString &str )
+bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive )
 {
     if(!d->m_findNode) d->m_findNode = d->m_doc->body();
 
@@ -975,7 +975,7 @@ bool KHTMLPart::findTextNext( const QString &str )
 	{
 	    DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
 	    QConstString s(t->s, t->l);
-	    d->m_findPos = s.string().find(str, d->m_findPos+1);
+	    d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
 	    if(d->m_findPos != -1)
 	    {
 		int x = 0, y = 0;
@@ -987,14 +987,36 @@ bool KHTMLPart::findTextNext( const QString &str )
 	    }
 	}
 	d->m_findPos = -1;
-	NodeImpl *next = d->m_findNode->firstChild();
-	if(!next) next = d->m_findNode->nextSibling();
-	while(d->m_findNode && !next) {
-	    d->m_findNode = d->m_findNode->parentNode();
-	    if( d->m_findNode ) {
-		next = d->m_findNode->nextSibling();
-            }
+
+	NodeImpl *next;
+	
+	if ( forward )
+	{
+     	  next = d->m_findNode->firstChild();
+	
+	  if(!next) next = d->m_findNode->nextSibling();
+	  while(d->m_findNode && !next) {
+	      d->m_findNode = d->m_findNode->parentNode();
+	      if( d->m_findNode ) {
+		  next = d->m_findNode->nextSibling();
+              }
+	  }
 	}
+	else
+	{
+     	  next = d->m_findNode->lastChild();
+	
+	  if (!next ) next = d->m_findNode->previousSibling();
+	  while ( d->m_findNode && !next )
+	  {
+	    d->m_findNode = d->m_findNode->parentNode();
+	    if( d->m_findNode )
+	    {
+	      next = d->m_findNode->previousSibling();
+	    }
+	  }
+	}
+	
 	d->m_findNode = next;
 	if(!d->m_findNode) return false;
     }

@@ -29,7 +29,7 @@ void KHTMLFind::slotSearch()
     m_part->findTextBegin();
     m_first = false;
   }
-  m_part->findTextNext( getText() );
+  m_part->findTextNext( getText(), !get_direction(), case_sensitive() );
 }
 
 #include "khtml_find.moc"

@@ -394,7 +394,7 @@ public:
   /**
    * Find the next occurence of the string.
    */
-  bool findTextNext( const QString &str );
+  bool findTextNext( const QString &str, bool forward, bool caseSensitive );
 
   /**
    * Get the text the user has marked.
