@@ -109,7 +109,7 @@ class KKeyChooserPrivate
 
 	KListView *pList;
 	QLabel *lInfo;
-	KKeyButton *bChange;
+	KKeyButton *pbtnShortcut;
 	QGroupBox *fCArea;
 	QButtonGroup *kbGroup;
 
@@ -363,21 +363,21 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
   grid->addLayout( pushLayout, 1, 3 );
 
-  d->bChange = new KKeyButton(d->fCArea, "key");
-  d->bChange->setEnabled( false );
-  connect( d->bChange, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(capturedShortcut(const KShortcut&)) );
-  grid->addRowSpacing( 1, d->bChange->sizeHint().height() + 5 );
+  d->pbtnShortcut = new KKeyButton(d->fCArea, "key");
+  d->pbtnShortcut->setEnabled( false );
+  connect( d->pbtnShortcut, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(capturedShortcut(const KShortcut&)) );
+  grid->addRowSpacing( 1, d->pbtnShortcut->sizeHint().height() + 5 );
 
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
   		"you can press the key-combination which you would like to be assigned "
 		"to the currently selected action.");
-  QWhatsThis::add( d->bChange, wtstr );
+  QWhatsThis::add( d->pbtnShortcut, wtstr );
 
   //
   // Add widgets to the geometry manager
   //
   pushLayout->addSpacing( KDialog::spacingHint()*2 );
-  pushLayout->addWidget( d->bChange );
+  pushLayout->addWidget( d->pbtnShortcut );
   pushLayout->addStretch( 10 );
 
   d->lInfo = new QLabel(d->fCArea);
@@ -404,8 +404,8 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 	//d->pList->setSorting( -1 );
 	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
-    QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
-	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, str);
+	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
+	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, str );
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
@@ -452,17 +452,18 @@ void KKeyChooser::updateButtons()
 		m_prbNone->setEnabled( false );
 		m_prbDef->setEnabled( false );
 		m_prbCustom->setEnabled( false );
-		d->bChange->setEnabled( false );
-		d->bChange->setShortcut( KShortcut() );
+		d->pbtnShortcut->setEnabled( false );
+		d->pbtnShortcut->setShortcut( KShortcut() );
 	} else {
 		bool bConfigurable = pItem->isConfigurable();
+		bool bQtShortcut = (m_type == Application || m_type == Standard);
 		const KShortcut& cutDef = pItem->shortcutDefault();
 
 		// Set key strings
 		QString keyStrCfg = pItem->shortcut().toString();
 		QString keyStrDef = cutDef.toString();
 
-		d->bChange->setShortcut( pItem->shortcut() );
+		d->pbtnShortcut->setShortcut( pItem->shortcut(), bQtShortcut );
 		//item->setText( 1, keyStrCfg );
 		pItem->repaint();
 		d->lInfo->setText( i18n("Default key:") + QString(" %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
@@ -480,7 +481,7 @@ void KKeyChooser::updateButtons()
 		m_prbNone->setEnabled( bConfigurable );
 		m_prbDef->setEnabled( bConfigurable && cutDef.count() != 0 );
 		m_prbCustom->setEnabled( bConfigurable );
-		d->bChange->setEnabled( bConfigurable );
+		d->pbtnShortcut->setEnabled( bConfigurable );
 	}
 }
 
@@ -509,7 +510,7 @@ void KKeyChooser::slotDefaultKey()
 
 void KKeyChooser::slotCustomKey()
 {
-	d->bChange->captureShortcut();
+	d->pbtnShortcut->captureShortcut();
 }
 
 void KKeyChooser::readGlobalKeys()
@@ -522,7 +523,7 @@ void KKeyChooser::readGlobalKeys()
 
 void KKeyChooser::fontChange( const QFont & )
 {
-        d->fCArea->setMinimumHeight( 4*d->bChange->sizeHint().height() );
+        d->fCArea->setMinimumHeight( 4*d->pbtnShortcut->sizeHint().height() );
 
         int widget_width = 0;
 

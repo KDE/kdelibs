@@ -49,6 +49,12 @@ const int XKeyRelease = KeyRelease;
 
 const char* psTemp[] = { I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") };
 
+class KKeyButtonPrivate
+{
+ public:
+	bool bQtShortcut;
+};
+
 /***********************************************************************/
 /* KKeyButton                                                          */
 /*                                                                     */
@@ -59,23 +65,30 @@ const char* psTemp[] = { I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP
 KKeyButton::KKeyButton(QWidget *parent, const char *name)
 :	QPushButton( parent, name )
 {
+	d = new KKeyButtonPrivate;
 	setFocusPolicy( QWidget::StrongFocus );
 	m_bEditing = false;
 	connect( this, SIGNAL(clicked()), this, SLOT(captureShortcut()) );
-	setShortcut( KShortcut() );
+	setShortcut( KShortcut(), true );
 }
 
 KKeyButton::~KKeyButton ()
 {
-//	if( m_bEditing )
-//		captureShortcut( false );
+	delete d;
 }
 
-void KKeyButton::setShortcut( const KShortcut& cut )
+void KKeyButton::setShortcut( const KShortcut& cut, bool bQtShortcut )
 {
+	d->bQtShortcut = bQtShortcut;
 	m_cut = cut;
 	QString keyStr = m_cut.toString();
 	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
+}
+
+// deprecated //
+void KKeyButton::setShortcut( const KShortcut& cut )
+{
+	setShortcut( cut, false );
 }
 
 void KKeyButton::setText( const QString& text )
@@ -84,24 +97,6 @@ void KKeyButton::setText( const QString& text )
 	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
-/*
-void KKeyButton::captureShortcut( bool bCapture )
-{
-	m_bEditing = bCapture;
-	if( m_bEditing == true ) {
-		setFocus();
-		KGlobalAccel::setKeyEventsEnabled( false );
-		grabKeyboard();
-		grabMouse( IbeamCursor );
-	} else {
-		releaseMouse();
-		releaseKeyboard();
-		KGlobalAccel::setKeyEventsEnabled( true );
-	}
-	repaint();
-}
-*/
-
 void KKeyButton::captureShortcut()
 {
 	KShortcut cut;
@@ -109,7 +104,7 @@ void KKeyButton::captureShortcut()
 	m_bEditing = true;
 	repaint();
 
-	KShortcutDialog dlg( m_cut, this );
+	KShortcutDialog dlg( m_cut, d->bQtShortcut, this );
 	if( dlg.exec() == KDialog::Accepted )
 		emit capturedShortcut( dlg.cut() );
 

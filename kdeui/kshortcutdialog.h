@@ -25,12 +25,13 @@ class KShortcutDialog : public KDialog
 {
 	Q_OBJECT
  public:
-	KShortcutDialog( const KShortcut& cut, QWidget* parent = 0, const char* name = 0 );
+	KShortcutDialog( const KShortcut& cut, bool bQtShortcut, QWidget* parent = 0, const char* name = 0 );
 	~KShortcutDialog();
 
 	const KShortcut& cut() const { return m_cut; }
 
  protected:
+	bool          m_bQtShortcut;      // true if qt shortcut, false if native shortcut
 	bool          m_bGrabKeyboardOnFocusIn;
 	bool          m_bKeyboardGrabbed;
 	KShortcut     m_cut;

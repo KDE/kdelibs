@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2001, 2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,10 +24,19 @@
 #include <kshortcut.h>
 
 /**
- *  A push button that looks like a keyboard key.
- *  @short A push button that looks like a keyboard key.
- *  @author Mark Donohoe <donohoe@kde.org>
- *  @internal
+ * A push button that looks like a keyboard key.
+ *
+ * You must call setShortcut() to set the widget's currently displayed key.
+ * You can call captureShortcut() to get a new shortcut from the user.
+ * If captureShortcut() suceeds, then the capturedShortcut signal will be
+ * emitted with the value of the new shortcut.  The widget containing
+ * a KKeyButton widget must connect to this signal and check if the shortcut
+ * is valid.  If it is, you will need to call setShortcut() with the new
+ * value in order make it the key currently displayed.
+ *
+ * @short A push button that looks like a keyboard key.
+ * @author Mark Donohoe <donohoe@kde.org>
+ * @internal
  */
 class KKeyButton: public QPushButton
 {
@@ -43,7 +52,9 @@ class KKeyButton: public QPushButton
 	*/
 	virtual ~KKeyButton();
 
+	/** @deprecated */
 	void setShortcut( const KShortcut& cut );
+	void setShortcut( const KShortcut& cut, bool bQtShortcut );
 	const KShortcut& shortcut() const
 		{ return m_cut; }
 
@@ -51,7 +62,7 @@ class KKeyButton: public QPushButton
 	* Reimplemented for internal purposes.
 	*/
 	void setText( const QString& text );
-
+ 
  signals:
 	void capturedShortcut( const KShortcut& );
 
@@ -76,6 +87,5 @@ class KKeyButton: public QPushButton
  private:
 	class KKeyButtonPrivate* d;
 };
-
 
 #endif

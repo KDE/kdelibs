@@ -52,10 +52,11 @@ void KShortcutBox::setSeq( const KKeySequence& seq )
 		setText( i18n("None") );
 }
 
-KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const char* name )
+KShortcutDialog::KShortcutDialog( const KShortcut& cut, bool bQtShortcut, QWidget* parent, const char* name )
 :	KDialog( parent, name ),
 	m_cut( cut )
 {
+	m_bQtShortcut = bQtShortcut;
 	m_bGrabKeyboardOnFocusIn = true;
 	m_bKeyboardGrabbed = false;
 	m_iSeq = 0;
@@ -248,6 +249,8 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 
 				KKey key = keyNative;
 				key.simplify();
+				if( m_bQtShortcut )
+					key = key.keyCodeQt();
 				KKeySequence seq;
 				if( m_iKey == 0 )
 					seq = key;
@@ -265,7 +268,7 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				// The parent must decide whether this is a valid
 				//  key, and if so, call setShortcut(uint) with the new value.
 				//emit capturedShortcut( KShortcut(KKey(keyNative)) );
-				kdDebug(125) << "m_cut = " << m_cut.toString() << endl;
+				kdDebug(125) << "m_cut = " << m_cut.toString() << " m_bQtShortcut = " << m_bQtShortcut << endl;
 				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() )
 					accept();
 			}
