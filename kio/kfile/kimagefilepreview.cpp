@@ -115,7 +115,9 @@ void KImageFilePreview::toggleAuto( bool a )
     autoMode = a;
     if ( autoMode )
     {
-	showPreview( currentURL, true );
+        // Pass a copy since clearPreview() may will currentURL
+        KURL url = currentURL;
+        showPreview( url, true );
     }
 }
 
@@ -165,7 +167,7 @@ void KImageFilePreview::clearPreview()
     }
 
     imageLabel->clear();
-//     currentURL = KURL();
+    currentURL = KURL();
 }
 
 void KImageFilePreview::virtual_hook( int id, void* data )

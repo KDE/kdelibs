@@ -117,7 +117,10 @@ void KFileMetaPreview::showPreview(const KURL &url)
         provider->showPreview( url );
     }
     else
+    {
+        clearPreview();
         m_stack->setEnabled( false );
+    }
 }
 
 void KFileMetaPreview::clearPreview()
