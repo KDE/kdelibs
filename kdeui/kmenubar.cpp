@@ -59,6 +59,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
     d = new KMenuBarPrivate;
+    d->frameStyle = frameStyle();
 
     mouseActive = false;
 
