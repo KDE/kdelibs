@@ -417,6 +417,7 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
          "Hello world\n",
          "This is a test file\n",
          "You can safely delete it.\n",
+	 "BIG\n",
          0
        };
     const char *fileData = fileDataArray[putBuffer++];
@@ -426,7 +427,10 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
        kdDebug(0) << "DataReq: <End>" << endl;
        return;
     }
-    data.duplicate(fileData, strlen(fileData));
+    if (!strcmp(fileData, "BIG\n"))
+	data.fill(0, 29*1024*1024);
+    else
+	data.duplicate(fileData, strlen(fileData));
     kdDebug(0) << "DataReq: \"" << fileData << "\"" << endl;
 }
 
@@ -448,7 +452,7 @@ static KCmdLineOptions options[] =
  { "d", 0, 0 },
  { "dest <dest>", "Destination URL", "" },
  { "o", 0, 0 },
- { "operation <operation>", "Operation (list,listrecursive,stat,get,copy,move,del,shred,mkdir)", "copy" },
+ { "operation <operation>", "Operation (list,listrecursive,stat,get,put,copy,move,del,shred,mkdir)", "copy" },
  { "p", 0, 0 },
  { "progress <progress>", "Progress Type (none,default,status)", "default" }
 };
@@ -477,6 +481,8 @@ int main(int argc, char **argv) {
     op = KioslaveTest::Stat;
   } else if ( tmps == "get") {
     op = KioslaveTest::Get;
+  } else if ( tmps == "put") {
+    op = KioslaveTest::Put;
   } else if ( tmps == "copy") {
     op = KioslaveTest::Copy;
   } else if ( tmps == "move") {
