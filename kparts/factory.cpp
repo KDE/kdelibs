@@ -54,10 +54,7 @@ Part *Factory::createPartObject( QWidget *, const char *, QObject *, const char 
 
 QObject *Factory::createObject( QObject *parent, const char *name, const char *classname, const QStringList &args )
 {
-  if (!parent || parent->isWidgetType())
-    return createPart( static_cast<QWidget *>( parent ), name, parent, name, classname, args );
-  else
-   return createPart( 0L, name, parent, name, classname, args );
+  assert( !parent || parent->isWidgetType() );
+  return createPart( static_cast<QWidget *>( parent ), name, parent, name, classname, args );
 }
-
 #include "factory.moc"
