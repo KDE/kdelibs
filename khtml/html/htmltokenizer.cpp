@@ -1468,7 +1468,7 @@ void HTMLTokenizer::finish()
             brokenComments = true;
         else if (server)
             brokenServer = true;
-        else
+        else if (script)
             brokenScript = true;
 
         checkScriptBuffer();
@@ -1492,7 +1492,7 @@ void HTMLTokenizer::finish()
         if (script)
             scriptHandler();
 
-        comment = server = script = false;
+        comment = title = server = script = false;
         if ( !food.isEmpty() )
             write(food, true);
     }
