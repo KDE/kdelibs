@@ -16,8 +16,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id$
-
 
 #include <qhbuttongroup.h>
 #include <qlabel.h>
@@ -366,7 +364,7 @@ bool KBugReport::sendBugReport()
   fwrite(btext.ascii(),btext.length(),1,fd);
 
   int error = pclose(fd);
-  if (error) {
+  if (error == 42) {
       QFile of(outputfile.name());
       if (of.open(IO_ReadOnly )) {
           QTextStream is(&of);
