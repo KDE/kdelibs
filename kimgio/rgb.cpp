@@ -107,7 +107,7 @@ bool RGBImage::getRow(uchar *dest)
 					m_pos++;
 			}
 		} else {
-			for (; i <= m_xsize && n--; i++)
+			for (; i < m_xsize && n--; i++)
 				*dest++ = *m_pos;
 			m_pos++;
 			if (m_bpc == 2)
