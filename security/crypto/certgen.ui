@@ -56,7 +56,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Country Code:</string>
+            <string>Country code:</string>
         </property>
     </widget>
     <widget>
@@ -76,7 +76,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>State or Province (in full):</string>
+            <string>State or province (in full):</string>
         </property>
     </widget>
     <widget>
@@ -96,7 +96,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Certificate Type:</string>
+            <string>Certificate type:</string>
         </property>
     </widget>
     <widget>
@@ -156,7 +156,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Organization Name:</string>
+            <string>Organization name:</string>
         </property>
     </widget>
     <widget>
@@ -176,7 +176,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Organizational Unit/Group:</string>
+            <string>Organizational unit/group:</string>
         </property>
     </widget>
     <widget>
@@ -196,7 +196,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Full Hostname of the Server:</string>
+            <string>Full hostname of the server:</string>
         </property>
     </widget>
     <widget>
@@ -272,7 +272,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Email Address:</string>
+            <string>Email address:</string>
         </property>
     </widget>
     <widget>
@@ -604,7 +604,7 @@
         </property>
         <property stdset="1">
             <name>text</name>
-            <string>Bit Strength:</string>
+            <string>Bit strength:</string>
         </property>
     </widget>
     <widget>
