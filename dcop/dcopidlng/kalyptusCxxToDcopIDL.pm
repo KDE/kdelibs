@@ -25,58 +25,14 @@ use Ast;
 use kdocAstUtil;
 use kdocUtil;
 use Iter;
-use Data::Dumper;
 
 use strict;
 no strict "subs";
 
-use vars qw/
-	$libname $rootnode $outputdir $opt $debug
-	%typedeflist/;
+use vars qw/$libname $rootnode $outputdir $opt $debug/;
 
 BEGIN
 {
-# Probably not needed anymore (this is from kalyptusCxxToSmoke)
-%typedeflist =
-(
-   'signed char' => 'char',
-   'unsigned char' => 'uchar',
-   'signed short' => 'short',
-   'unsigned short' => 'ushort',
-   'signed' => 'int',
-   'signed int' => 'int',
-   'unsigned' => 'uint',
-   'unsigned int' => 'uint',
-   'signed long' => 'long',
-   'unsigned long' => 'ulong',
-
-   'mode_t'  =>  'long',
-   'QProcess::PID'  =>  'long',
-   'size_type'  =>  'int', # QSqlRecordInfo
-   'Qt::ComparisonFlags'  =>  'uint',
-   'Qt::ToolBarDock'  =>  'int', # compat thing, Qt shouldn't use it
-   'QIODevice::Offset'  =>  'ulong',
-   'WState'  =>  'int',
-   'WId'  =>  'ulong',
-   'QRgb'  =>  'uint',
-   'QCOORD'  =>  'int',
-   'QTSMFI'  =>  'int',
-   'Qt::WState'  =>  'int',
-   'Qt::WFlags'  =>  'int',
-   'Qt::HANDLE' => 'uint',
-   'QEventLoop::ProcessEventsFlags' => 'uint',
-   'QStyle::SCFlags' => 'int',
-   'QStyle::SFlags' => 'int',
-   'Q_INT16' => 'short',
-   'Q_INT32' => 'int',
-   'Q_INT8' => 'char',
-   'Q_LONG' => 'long',
-   'Q_UINT16' => 'ushort',
-   'Q_UINT32' => 'uint',
-   'Q_UINT8' => 'uchar',
-   'Q_ULONG' => 'long',
-);
-
 }
 
 sub writeDoc
@@ -187,8 +143,6 @@ sub generateMethod($$)
     # Don't generate anything for destructors
     return if $isDestructor;
 
-    my @argTypeList=();
-
     my $args = "";
 
     foreach my $arg ( @{$m->{ParamList}} ) {
@@ -210,13 +164,7 @@ sub generateMethod($$)
 	$argType =~ s/\s//g;
 
 	$args .= "        <ARG><TYPE$typeAttrs>$argType</TYPE><NAME>$arg->{ArgName}</NAME></ARG>\n";
-
-	push @argTypeList, $argType;
     }
-
-    my $isStatic = ($flags =~ "s"); 
-    my $extra = "";
-    $extra .= "static " if $isStatic || $isConstructor;
 
     my $qual = "";
     $qual .= " qual=\"const\"" if $flags =~ "c";
@@ -246,10 +194,6 @@ sub generateAllMethods
 {
     my ($classNode) = @_;
     my $methodCode = '';
-
-    my $sourcename = $classNode->{Source}->{astNodeName};
-    $sourcename =~ s!.*/(.*)!$1!m;
-    die "Empty source name for $classNode->{astNodeName}" if ( $sourcename eq '' );
 
     # Then all methods
     Iter::MembersByType ( $classNode, undef,
