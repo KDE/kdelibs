@@ -399,6 +399,7 @@ void PreviewJob::createThumbnail( QString pixPath )
     thumbURL.setProtocol("thumbnail");
     thumbURL.setPath(pixPath);
     KIO::TransferJob *job = KIO::get(thumbURL, false, false);
+    addSubjob(job);
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotThumbData(KIO::Job *, const QByteArray &)));
     job->addMetaData("mimeType", d->currentItem.item->mimetype());
     job->addMetaData("width", QString().setNum(d->width));
@@ -428,7 +429,6 @@ void PreviewJob::createThumbnail( QString pixPath )
     }
     if (d->shmid != -1)
         job->addMetaData("shmid", QString().setNum(d->shmid));
-    addSubjob(job);
 }
 
 void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
