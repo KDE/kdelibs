@@ -23,6 +23,7 @@
 
 #include <qobject.h>
 #include <qguardedptr.h>
+#include <qmap.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
 
@@ -110,14 +111,14 @@ namespace KJS {
     int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
   public slots:
-    void timeout();
     void timeoutClose();
   protected slots:
     void parentDestroyed();
+  protected:
+    void timerEvent(QTimerEvent *e);
   private:
     Window *parent;
-    QTimer *timer;
-    UString timeoutHandler;
+    QMap<int, QString> map;
   };
 
   class Location : public HostImp {

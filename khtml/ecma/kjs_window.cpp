@@ -776,7 +776,7 @@ void WindowFunc::initJScript(KHTMLPart *p)
 }
 
 WindowQObject::WindowQObject(Window *w)
-  : parent(w), timer(0L)
+  : parent(w)
 {
     connect( parent->part, SIGNAL( destroyed() ),
              this, SLOT( parentDestroyed() ) );
@@ -784,41 +784,41 @@ WindowQObject::WindowQObject(Window *w)
 
 WindowQObject::~WindowQObject()
 {
-  delete timer;
+  killTimers();
 }
 
 void WindowQObject::parentDestroyed()
 {
-  delete timer;
-  timer = 0;
+  killTimers();
+  map.clear();
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
-  /* TODO: multiple timers */
-  if (!timer) {
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), SLOT(timeout()));
-  }
-  timeoutHandler = handler;
-  timer->start(t, singleShot);
+  int id = startTimer(t);
+  QString hnd = handler.qstring();
+  // prepend 0 or 1 to differentiate between single timeouts and intervals
+  hnd.prepend(singleShot ? "0" : "1");
+  map.insert(id, hnd);
 
-  return 0;
+  return id;
 }
 
-void WindowQObject::clearTimeout(int /* timerId */)
+void WindowQObject::clearTimeout(int timerId)
 {
-  /* TODO: delete on id basis */
-  if (timer) {
-    timer->stop();
-    timeoutHandler = "";
-  }
+  killTimer(timerId);
+  map.remove(timerId);
 }
 
-void WindowQObject::timeout()
+void WindowQObject::timerEvent(QTimerEvent *e)
 {
-  if (!parent->part.isNull())
-    parent->part->executeScript(timeoutHandler.qstring());
+  if (!parent->part.isNull()) {
+    QString hnd = map[e->timerId()];
+    parent->part->executeScript(hnd.mid(1));
+    // remove single shots installed by setTimeout()
+    if (hnd.startsWith("0"))
+      clearTimeout(e->timerId());
+  }
 }
 
 void WindowQObject::timeoutClose()
