@@ -549,6 +549,8 @@ void KMManager::checkUpdatePossibleInternal()
 
 void KMManager::setUpdatePossible( bool value )
 {
+	if ( value != m_updatepossible )
+		m_virtualmgr->reset();
 	m_updatepossible = value;
 	emit updatePossible( m_updatepossible );
 }
