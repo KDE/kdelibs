@@ -2364,9 +2364,9 @@ void KHTMLWidget::parseG( HTMLClueV *, const char * )
 // <hr
 void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 {
-	static QRegExp re("h[1-6]", FALSE );
-
-	if ( re.match( str ) == 0 )
+        if ( *(str)=='h' &&
+	    ( *(str+1)=='1' || *(str+1)=='2' || *(str+1)=='3' ||
+     	      *(str+1)=='4' || *(str+1)=='5' || *(str+1)=='6' ) )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
@@ -2429,15 +2429,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 	}
 	else if ( *str=='/' && *(str+1)=='h' &&
 	    ( *(str+2)=='1' || *(str+2)=='2' || *(str+2)=='3' ||
-	    *(str+2)=='4' || *(str+2)=='5' || *(str+2)=='6' ) )
-    /*
-	else if ( strncmp(str, "/h1", 3 ) == 0 ||
-		strncmp(str, "/h2", 3 ) == 0 ||
-		strncasecmp(str, "/h3", 3 ) == 0 ||
-		strncasecmp(str, "/h4", 3 ) == 0 ||
-		strncasecmp(str, "/h5", 3 ) == 0 ||
-		strncasecmp(str, "/h6", 3 ) == 0 )
-    */
+ 	      *(str+2)=='4' || *(str+2)=='5' || *(str+2)=='6' ))
 	{
 		// Insert a vertical space if this did not happen already.
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
@@ -2929,7 +2921,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		flow = 0;
 		popFont();
 	}
-	else if ( strncmp( str, "p", 1 ) == 0 )
+	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
 	{
 		closeAnchor();
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
@@ -2953,11 +2945,6 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		flow->setIndent( indent );
 		flow->setHAlign( align );
 		_clue->append( flow );
-	}
-	else if ( strncmp( str, "/p", 2 ) == 0 )
-	{
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = 0;
 	}
 }
 
@@ -3053,6 +3040,11 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	{
 		popFont();
 	}
+	else if ( strncmp( str, "strike", 6 ) == 0 )
+	{
+	    strikeOut = TRUE;
+	    selectFont();
+	}
 	else if ( strncmp(str, "s", 1 ) == 0 )
 	{
 	    if ( str[1] == '>' || str[1] == ' ' )
@@ -3060,11 +3052,6 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		strikeOut = TRUE;
 		selectFont();
 	    }
-	}
-	else if ( strncmp( str, "strike", 6 ) == 0 )
-	{
-		strikeOut = TRUE;
-		selectFont();
 	}
 	else if ( strncmp(str, "/s", 2 ) == 0 ||
 		strncmp( str, "/strike", 7 ) == 0 )
@@ -3441,11 +3428,15 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 
 		    break;
 		}
-		else if ( strncmp( str, "<td", 3 ) == 0 ||
-			strncmp( str, "<th", 3 ) == 0 )
+		else if (*str=='<' && *(str+1)=='t' && (*(str+2)=='d' ||
+			 *(str+2)=='h'))
+		//		else if ( strncmp( str, "<td", 3 ) == 0 ||
+		//			strncmp( str, "<th", 3 ) == 0 )
 		{
 		    bool heading = false;
-		    if ( strncasecmp( str, "<th", 3 ) == 0 )
+
+		    // if ( strncasecmp( str, "<th", 3 ) == 0 )
+		    if (*(str+2)=='h')
 			    heading = true;
 		    // <tr> may not be specified for the first row
 		    if ( firstRow )
@@ -3564,9 +3555,13 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		else
 		{
 		    // catch-all for broken tables
+      		  if ( *str != '<' || *(str+1) != '/' || *(str+2) != 't' ||
+                      ( *(str+3)!='d' && *(str+3)!='h' && *(str+3)!='r' ) )
+/*
 		    if ( strncmp( str, "</td", 4 ) &&
 			    strncmp( str, "</th", 4 ) &&
 			    strncmp( str, "</tr", 4 ) )
+*/
 		    {
 			flow = 0;
 			if ( !tmpCell )

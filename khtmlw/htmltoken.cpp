@@ -312,7 +312,7 @@ void HTMLTokenizer::write( const char *str )
 			    dest = buffer;
 
 			    // set the new font
-			    sprintf( ampBuffer, "%c<FONT FACE=\"%s\">",
+			    sprintf( ampBuffer, "%c<font face=\"%s\">",
 				(char)TAG_ESCAPE, AmpSeqFontFaces[ampFontId] );
 			    appendToken( ampBuffer, strlen( ampBuffer ) );
 			}
@@ -328,7 +328,7 @@ void HTMLTokenizer::write( const char *str )
 			    appendToken( buffer, dest-buffer );
 			    dest = buffer;
 
-			    sprintf( ampBuffer, "%c</FONT>", (char)TAG_ESCAPE );
+			    sprintf( ampBuffer, "%c</font>", (char)TAG_ESCAPE );
 			    appendToken( ampBuffer, strlen( ampBuffer ) );
 			}
 		    }
@@ -566,6 +566,40 @@ void HTMLTokenizer::write( const char *str )
 		    pre_pos++;
 
 		*dest++ = '\"';
+	    }
+	}
+	else if ( *src == '=' )
+	{
+	    src++;
+
+	    if ( tag )
+	    {
+		if ( tquote )
+		{
+		    space = false;
+		    discardCR = false;
+		    *dest++ = '=';
+		}
+		else
+		{
+		    // discard space before '='
+		    if ( *(dest-1) == ' ' )
+			dest--;
+
+		    *dest++ = '=';
+		    space = true;
+		    discardCR = true;
+		}
+	    }
+	    else
+	    {
+		space = false;
+		discardCR = false;
+
+		if ( pre )
+		    pre_pos++;
+
+		*dest++ = '=';
 	    }
 	}
 	else

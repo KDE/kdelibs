@@ -1,7 +1,14 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 7 November 1997 - Martin Jones.
+Last Change: 9 November 1997 - Martin Jones.
+
+Version 0.12.01 - Martin
+------------------------
+
+Bug fixes and optimisations from Norman Markgraf.
+Allow spaces around an '=' in tags, e.g. <img src = "a.gif">
+
 
 Version 0.12.00 - Martin
 ------------------------
