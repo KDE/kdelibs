@@ -261,7 +261,7 @@ void KIconDialog::init()
     mpCombo->insertItem(i18n("Filesystems"));
     mpCombo->insertItem(i18n("Mimetypes"));
     mpCombo->setFixedSize(mpCombo->sizeHint());
-    mpBrowseBut->setFixedSize(QSize(mpCombo->width(), mpCombo->height()+6));
+    mpBrowseBut->setFixedWidth(mpCombo->width());
 
     // Make the dialog a little taller
     incInitialSize(QSize(0,100));
@@ -450,7 +450,7 @@ void KIconDialog::slotButtonClicked(int id)
             d->custom = file;
 	    if ( mType == 1 )
 	      d->customLocation = QFileInfo( file ).dirPath( true );
-            accept();
+            slotOk();
 	}
 	break;
     }
