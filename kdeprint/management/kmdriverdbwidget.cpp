@@ -210,6 +210,7 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 		else
 		{
 			KMessageBox::error(this,i18n("Unable to find the Postscript driver."));
+			m_postscript->setChecked(false);
 		}
 	}
 }
