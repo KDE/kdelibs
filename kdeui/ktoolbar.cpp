@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.119  1999/06/11 04:40:14  glenebob
+// printf -> debug (twice)
+//
 // Revision 1.118  1999/06/10 21:47:50  cschlaeg
 // setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
 //
@@ -287,6 +290,7 @@
 #include <ktopwidget.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <kglobal.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
@@ -739,7 +743,7 @@ void KToolBarButton::modeChange()
     fnt=buttonFont;
   }
   else
-    fnt=kapp->generalFont();
+    fnt=KGlobal::generalFont();
 
   QFontMetrics fm(fnt);
 

@@ -26,7 +26,7 @@
 
 
 #include "khtmldata.h"
-#include <kapp.h>
+#include <kglobal.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -42,9 +42,9 @@ HTMLSettings::HTMLSettings()
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
     fontBaseColor = Qt::black;
-    fontBaseFace  = kapp->generalFont().family();
+    fontBaseFace  = KGlobal::generalFont().family();
 
-    fixedFontFace = kapp->fixedFont().family();
+    fixedFontFace = KGlobal::fixedFont().family();
 
     linkColor     = Qt::blue;
     vLinkColor    = Qt::darkMagenta;

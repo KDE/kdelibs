@@ -186,7 +186,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   box2Layout->addSpacing(15);
 
   xlfdLabel = new QLabel(xlfdBox, "xlfdLabel");
-  xlfdLabel->setFont(kapp->fixedFont());
+  xlfdLabel->setFont(KGlobal::fixedFont());
   xlfdLabel->setAlignment(Qt::AlignCenter);
   box2Layout->addWidget(xlfdLabel);
 
@@ -195,7 +195,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   box2Layout->activate();
 
   // lets initialize the display if possible
-  setFont(kapp->generalFont());
+  setFont(KGlobal::generalFont());
 
   // Create displayable charsets list
   fillCharsetsCombo();
@@ -486,6 +486,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.39  1999/06/11 20:01:33  knoll
+* changes to make it working with new kcharsets
+*
 * Revision 1.38  1999/06/07 18:21:28  pbrown
 * QLineEdit --> KLineEdit, header cleanup.
 *
