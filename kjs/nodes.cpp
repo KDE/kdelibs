@@ -225,11 +225,12 @@ KJSO NewExprNode::evaluate()
 
   Constructor constr = Constructor::dynamicCast(v);
 
-  List nullList;
   if (!argList)
-    argList = &nullList;
+    argList = new List;
   
   KJSO res = constr.construct(*argList);
+
+  delete argList;
 
   return res;
 }

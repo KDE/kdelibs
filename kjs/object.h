@@ -101,7 +101,7 @@ namespace KJS {
   class Number;
   class String;
   class Object;
-  class Property;
+  struct Property;
   class List;
 
   /**

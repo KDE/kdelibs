@@ -376,10 +376,13 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 // ECMA 10.1.6
 ActivationImp::~ActivationImp()
 {
+  /* TODO */
+#if 0
   if (!hasProperty("OldArguments"))
     func->deleteProperty("arguments");
   else
     func->put("arguments", get("OldArguments")); /* TODO: deep copy ? */
+#endif
 }
 
 KJScriptImp* KJScriptImp::curr = 0L;
@@ -411,7 +414,6 @@ void KJScriptImp::init()
   KJScriptImp::curr = this;
 
   if (!initialized) {
-    glob = Global();
     con = new Context();
     initialized = true;
   }

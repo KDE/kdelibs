@@ -91,8 +91,8 @@ KJSO::KJSO(const KJSO &o)
 
 KJSO& KJSO::operator=(const KJSO &o)
 {
-  if (rep && rep->deref())
-    delete rep;
+  //  if (rep && rep->deref())
+  //    delete rep;
   rep = o.rep ? o.rep->ref() : 0L;
 
   return *this;
