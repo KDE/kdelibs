@@ -46,7 +46,7 @@ public:
 class NamespaceHelper {
 protected:
 	FILE *out;
-	list<string> currentNamespace;
+	std::list<std::string> currentNamespace;
 
 public:	
 	NamespaceHelper(FILE *outputfile);
@@ -58,7 +58,7 @@ public:
 	 * namespace Arts. Since this generates code, it should only be called
 	 * outside of class definitions.
 	 */
-	void setFromSymbol(string symbol);
+	void setFromSymbol(std::string symbol);
 
 	/**
 	 * This leaves all open namespaces which is useful if you want to include
@@ -72,21 +72,20 @@ public:
 	 * ::Arts::Object, if you are in a different namespace, and just Object,
 	 * if you are in the Arts namespace.
 	 */
-	string printableForm(string symbol);
+	std::string printableForm(std::string symbol);
 
 	/**
 	 * Returns only the last component of the symbol (the name) cutting the
 	 * namespace components
 	 */
-	static string nameOf(string symbol);
+	static std::string nameOf(std::string symbol);
 
 	/**
 	 * Returns everything but the last component of the symbol, which is
 	 * the namespace (e.g. namespaceOf("Arts::Object") returns Arts, and
 	 * nameOf("Arts::Object") returns Object).
 	 */
-	static string namespaceOf(string symbol);
+	static std::string namespaceOf(std::string symbol);
 };
 
 #endif
-

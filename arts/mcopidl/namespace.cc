@@ -27,6 +27,8 @@
 #include <map>
 #include "namespace.h"
 
+using namespace std;
+
 /* generic utilities */
 
 static list<string> symbolToList(string symbol)
