@@ -188,7 +188,6 @@ protected:
   void addNewFolder();
 
   void fillContextMenu( QPopupMenu *, const QString &, int );
-  bool invalid( int val );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;
