@@ -620,7 +620,22 @@ static void handle_launcher_request(int sock = -1)
            return;
          }
       }
+
+      QCString olddisplay = getenv("DISPLAY");
+      QCString kdedisplay = getenv("KDE_DISPLAY");
+      bool reset_display = (! olddisplay.isNull() &&
+                            ! kdedisplay.isNull() &&
+                            olddisplay != kdedisplay);
+
+      if (reset_display)
+          setenv("DISPLAY", kdedisplay, true);
+
       pid = launch(argc, name, args);
+
+      if (reset_display) {
+          unsetenv("KDE_DISPLAY");
+          setenv("DISPLAY", olddisplay, true);
+      }
 
       if (pid && (d.result == 0))
       {

@@ -270,6 +270,8 @@ protected:
    * @param pid       PID of the running process.
    * @param resName   Name that will be set in WM_CLASS.res_name on startup.
    * @param compliant Application complies with the NET_WM protocol.
+   * @param screen    On multihead displays, this is the screen that the application was
+   *                  run on.
    *
    */
   static void clientStarted(
@@ -277,7 +279,8 @@ protected:
     const QString & iconName,
     pid_t pid,
     const QString & resName,
-    bool compliant);
+    bool compliant,
+    int screen_number);
 
   /**
    * Extracts binary name from Exec command line

@@ -836,6 +836,9 @@ void KApplication::propagateSessionManager()
 {
     QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
     QCString display = ::getenv("DISPLAY");
+    int pos = display.findRev('.');
+    if (pos != -1)
+	display.remove(pos, 10);
     fName += "-"+display;
     QCString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
@@ -929,6 +932,27 @@ void KApplication::saveState( QSessionManager& sm )
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
+
+    {
+        // if multihead is enabled, we save our -display argument so that
+	// we are restored onto the correct head... one problem with this
+	// is that the display is hard coded, which means we cannot restore
+	// to a different display (ie. if we are in a university lab and try,
+	// try to restore a multihead session, our apps could be started on
+	// someone else's display instead of our own)
+        KConfig config("kdeglobals", true);
+	config.setGroup("X11");
+        if (config.readBoolEntry("enableMultihead")) {
+            QCString displayname = getenv("DISPLAY");
+            if (! displayname.isNull()) {
+                // only store the command if we actually have a DISPLAY
+		// environment variable
+	        restartCommand.append("-display");
+	        restartCommand.append(displayname);
+	    }
+	}
+    }
+
     sm.setRestartCommand( restartCommand );
 
     // finally: do session management
@@ -1828,6 +1852,16 @@ startServiceInternal( const QCString &function,
       dcopClient->call(_launcher, _launcher,
          "setLaunchEnv(QCString,QCString)", params2, replyType, replyData);
    }
+
+   if (qt_xdisplay()) {
+       QByteArray dpyarray;
+       QCString dpystring(XDisplayString(qt_xdisplay()));
+       QDataStream dpystream(dpyarray, IO_WriteOnly);
+       dpystream << QCString("KDE_DISPLAY") << dpystring;
+       dcopClient->call(_launcher, _launcher, "setLaunchEnv(QCString,QCString)",
+			dpyarray, replyType, replyData);
+   }
+
    if (!dcopClient->call(_launcher, _launcher,
         function, params, replyType, replyData))
    {

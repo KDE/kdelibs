@@ -29,6 +29,7 @@
 #include "kio/job.h"
 #include "kio/global.h"
 
+#include <kdatastream.h>
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kapp.h>
@@ -139,7 +140,19 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 
       // App-starting notification
       bool compliant = _service.mapNotify();
-      clientStarted(_service.name(), miniicon, pid, binaryName(_service.exec()), compliant);
+
+      // get screen number from the DISPLAY environment variable
+      int screen_number = 0;
+      QCString displayname = getenv("DISPLAY");
+      if (! displayname.isNull()) {
+	  int dotpos = displayname.findRev('.');
+	  if (dotpos != -1) {
+	      displayname.remove(0, dotpos + 1);
+	      screen_number = displayname.toInt();
+	  }
+      }
+
+      clientStarted(_service.name(), miniicon, pid, binaryName(_service.exec()), compliant, screen_number);
 
       return pid;
 
@@ -731,15 +744,17 @@ void KRun::clientStarted(
   const QString & iconName,
   pid_t pid,
   const QString & binaryName,
-  bool compliant
+  bool compliant,
+  int screen_number
 )
 {
-  kdDebug(7010) << "clientStarted pid=" << (int)pid << " binaryName=" << binaryName << endl;
+  kdDebug(7010) << "clientStarted pid=" << (int)pid << " binaryName=" << binaryName <<
+      " screen_number=" << screen_number << endl;
 
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
-  stream << name << iconName << (int)pid << binaryName << compliant;
-  kapp->dcopClient()->emitDCOPSignal("clientStarted(QString,QString,pid_t,QString,bool)", params );
+  stream << name << iconName << (int)pid << binaryName << compliant << screen_number;
+  kapp->dcopClient()->emitDCOPSignal("clientStarted(QString,QString,pid_t,QString,bool,int)", params );
 }
 
 /****************/

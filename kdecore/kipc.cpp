@@ -71,7 +71,7 @@ void KIPC::sendMessage(Message msg, WId w, int data)
     ev.xclient.data.l[0] = msg;
     ev.xclient.data.l[1] = data;
     XSendEvent(qt_xdisplay(), (Window) w, False, 0L, &ev);
-    
+
     // KDE 1 support
     static Atom kde1 = 0;
     if ( msg == PaletteChanged || msg == FontChanged ) {
@@ -90,17 +90,20 @@ void KIPC::sendMessageAll(Message msg, int data)
     Window dw1, dw2, *rootwins = 0;
     int (*defaultHandler)(Display *, XErrorEvent *);
     Display *dpy = qt_xdisplay();
-    int screen = DefaultScreen(dpy);
-    Window root = RootWindow(dpy, screen);
+    int screen_count = ScreenCount(dpy);
 
     defaultHandler = XSetErrorHandler(&dropError);
 
-    XQueryTree(dpy, root, &dw1, &dw2, &rootwins, &nrootwins);
-    Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
-    for (i = 0; i < nrootwins; i++)
-    {
-        if (getSimpleProperty(rootwins[i], a) != 0L)
-	    sendMessage(msg, rootwins[i], data);
+    for (int s = 0; s < screen_count; s++) {
+	Window root = RootWindow(dpy, s);
+
+	XQueryTree(dpy, root, &dw1, &dw2, &rootwins, &nrootwins);
+	Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
+	for (i = 0; i < nrootwins; i++)
+	    {
+		if (getSimpleProperty(rootwins[i], a) != 0L)
+		    sendMessage(msg, rootwins[i], data);
+	    }
     }
 
     XFlush(dpy);

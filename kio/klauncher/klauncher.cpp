@@ -228,7 +228,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
          kdDebug(7016) << "KLauncher: Got kdeinit_exec('" << serviceName << "', ...)" << endl;
          finished = kdeinit_exec(serviceName, urls, false);
       }
-      else 
+      else
       {
          kdDebug(7016) << "KLauncher: Got kdeinit_exec_wait('" << serviceName << "', ...)" << endl;
          finished = kdeinit_exec(serviceName, urls, true);
@@ -558,19 +558,6 @@ KLauncher::requestStart(KLaunchRequest *request)
       slotKDEInitData( kdeinitSocket );
    }
    while (lastRequest != 0);
-
-#ifndef NDEBUG
-   qDebug("KLauncher doing clientStarted(`%s')", request->name.data());
-#endif
-   QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
-   stream << request->name << "" << (int)lastRequest;
-   kapp->dcopClient()->send(
-     "kicker",
-     "TaskbarApplet",
-     "clientStarted(QString,QString,pid_t)",
-     params
-   );
 }
 
 void
@@ -693,7 +680,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
 
    request->dcop_service_type =  service->DCOPServiceType();
 
-   if ((request->dcop_service_type == KService::DCOP_None) ||   
+   if ((request->dcop_service_type == KService::DCOP_None) ||
        (request->dcop_service_type == KService::DCOP_Wait))
       request->dcop_name = 0;
    else
@@ -729,7 +716,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args, bool wait)
 
    if (wait)
       request->dcop_service_type = KService::DCOP_Wait;
-   else 
+   else
       request->dcop_service_type = KService::DCOP_None;
    request->dcop_name = 0;
    request->pid = 0;
