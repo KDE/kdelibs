@@ -61,6 +61,9 @@ KProcessController::KProcessController()
   act.sa_handler=theSigCHLDHandler;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
+  // Make sure we don't block this signal. gdb tends to do that :-(
+  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0); 
+
   act.sa_flags = SA_NOCLDSTOP;
 
   // CC: take care of SunOS which automatically restarts interrupted system
