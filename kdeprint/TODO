@@ -1,10 +1,9 @@
 BUGS
 ----
 
-- log in as normal user, then su: IPP report cannot be printed
-  because the temp file created is not world-readable (the dir
-  where it is located is not readable)
-
+- Allow multiple "FontPath" directives in cupsd.conf:
+	FontPath /usr/...
+	FontPath /opt/...
 
 
 WISHES
