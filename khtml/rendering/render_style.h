@@ -26,6 +26,8 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qlist.h>
+#include <qpalette.h>
+#include <qapplication.h>
 #include "dom/dom_misc.h"
 
 #include <khtmllayout.h>
@@ -290,30 +292,12 @@ enum ETableLayout {
 class StyleVisualData : public SharedData
 {
 public:
-    StyleVisualData()
-    {
-	colspan = 1;
-    }
+    StyleVisualData();
 
-    virtual ~StyleVisualData() {
-    }
+    virtual ~StyleVisualData();
 
-    StyleVisualData(const StyleVisualData& o ) : SharedData()
-    {
-    	clip = o.clip;
-	colspan = o.colspan;
-	counter_increment = o.counter_increment;
-	counter_reset = o.counter_reset;
-    }
+    StyleVisualData(const StyleVisualData& o );
 
-    bool operator==(const StyleVisualData& o) const
-    {
-    	return
-	    clip == o.clip &&
-	    colspan == o.colspan &&
-	    counter_increment == o.counter_increment &&
-	    counter_reset == o.counter_reset;
-    }
 
     LengthBox clip;
 
@@ -321,6 +305,8 @@ public:
 
     short counter_increment; //ok, so these are not visual mode spesific
     short counter_reset;     //can't go to inherited, since these are not inherited
+    
+    QPalette palette;      //widget styling with IE attributes
 
 };
 
@@ -807,6 +793,12 @@ public:
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
+    
+    QPalette palette() const { return visual->palette; }
+    void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c)
+    {
+        visual.access()->palette.setColor(g,r,c); 
+    } 
 
 };
 

@@ -1353,6 +1353,13 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_BOTTOM_COLOR:
     case CSS_PROP_BORDER_LEFT_COLOR:
     case CSS_PROP_TEXT_DECORATION_COLOR:
+    case CSS_PROP_SCROLLBAR_FACE_COLOR:
+    case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
+    case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:
+    case CSS_PROP_SCROLLBAR_3DLIGHT_COLOR:
+    case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:        
+    case CSS_PROP_SCROLLBAR_TRACK_COLOR:
+    case CSS_PROP_SCROLLBAR_ARROW_COLOR:        
     {
         value = value.stripWhiteSpace();
         //kdDebug(6080) << "parsing color " << value << endl;

@@ -37,10 +37,16 @@ namespace khtml {
 
 	virtual const char *renderName() const { return "RenderBody"; }
 	virtual void repaint();
+        
+        virtual void layout();
+        
+        virtual void setStyle(RenderStyle* style);
 
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
+    
+        bool scrollbarsStyled;
 
     };
 };

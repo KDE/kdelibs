@@ -1364,6 +1364,15 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_OUTLINE_COLOR:
         // this property is an extension used to get HTML4 <font> right.
     case CSS_PROP_TEXT_DECORATION_COLOR:
+        // ie scrollbar styling
+    case CSS_PROP_SCROLLBAR_FACE_COLOR:
+    case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
+    case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:
+    case CSS_PROP_SCROLLBAR_3DLIGHT_COLOR:
+    case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:
+    case CSS_PROP_SCROLLBAR_TRACK_COLOR:
+    case CSS_PROP_SCROLLBAR_ARROW_COLOR:
+    
     {
         QColor col;
         if(value->valueType() == CSSValue::CSS_INHERIT)
@@ -1414,6 +1423,34 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
             style->setOutlineColor(col); break;
+        case CSS_PROP_SCROLLBAR_FACE_COLOR:                
+            style->setPaletteColor(QPalette::Active, QColorGroup::Button, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Button, col);             
+            break;
+        case CSS_PROP_SCROLLBAR_SHADOW_COLOR:                
+            style->setPaletteColor(QPalette::Active, QColorGroup::Shadow, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Shadow, col); 
+            break;
+        case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:                
+            style->setPaletteColor(QPalette::Active, QColorGroup::Light, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Light, col); 
+            break;
+        case CSS_PROP_SCROLLBAR_3DLIGHT_COLOR:                
+            break;
+        case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR: 
+            style->setPaletteColor(QPalette::Active, QColorGroup::Dark, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Dark, col);                            
+            break;                             
+        case CSS_PROP_SCROLLBAR_TRACK_COLOR:                
+            style->setPaletteColor(QPalette::Active, QColorGroup::Mid, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Mid, col);                   
+            style->setPaletteColor(QPalette::Active, QColorGroup::Background, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Background, col);             
+            break;      
+        case CSS_PROP_SCROLLBAR_ARROW_COLOR:                
+            style->setPaletteColor(QPalette::Active, QColorGroup::ButtonText, col); 
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::ButtonText, col);
+            break;                  
         default:
             return;
         }

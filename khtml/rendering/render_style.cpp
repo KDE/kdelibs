@@ -82,6 +82,23 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 	    z_index == o.z_index;
 }
 
+StyleVisualData::StyleVisualData()
+{
+    colspan = 1;
+    palette = QApplication::palette();
+}
+
+StyleVisualData::~StyleVisualData() {
+}
+
+StyleVisualData::StyleVisualData(const StyleVisualData& o ) : SharedData()
+{
+    clip = o.clip;
+    colspan = o.colspan;
+    counter_increment = o.counter_increment;
+    counter_reset = o.counter_reset;
+    palette = o.palette;
+}
 
 
 void
@@ -268,6 +285,7 @@ RenderStyle::~RenderStyle()
     }
 }
 
+/*
 bool RenderStyle::operator==(const RenderStyle& o) const
 {
 // compare everything except the pseudoStyle pointer
@@ -304,7 +322,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 //             _hasHover == o._hasHover &&
 //             _hasFocus == o._hasFocus &&
 //             _hasActive == o._hasActive);
-}
+}*/
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {

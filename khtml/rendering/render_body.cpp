@@ -21,8 +21,10 @@
  * $Id$
  */
 #include "render_body.h"
+#include "render_root.h"
 
 #include <qpainter.h>
+#include <qscrollview.h>
 
 #include <kdebug.h>
 
@@ -31,10 +33,17 @@ using namespace khtml;
 RenderBody::RenderBody()
     : RenderFlow()
 {
+    scrollbarsStyled = false;
 }
 
 RenderBody::~RenderBody()
 {
+}
+
+void RenderBody::setStyle(RenderStyle* style)
+{
+    RenderFlow::setStyle(style);
+    scrollbarsStyled = false;
 }
 
 void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
@@ -71,4 +80,16 @@ void RenderBody::repaint()
     RenderObject *cb = containingBlock();
     if(cb != this)
 	cb->repaint();
+}
+
+void RenderBody::layout()
+{
+    RenderFlow::layout();
+    
+    if (!scrollbarsStyled)
+    {
+        root()->view()->horizontalScrollBar()->setPalette(style()->palette());
+        root()->view()->verticalScrollBar()->setPalette(style()->palette());    
+        scrollbarsStyled=true;
+    }
 }

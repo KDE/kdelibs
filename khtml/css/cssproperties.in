@@ -122,3 +122,10 @@ padding
 pause
 konq_bgpos_x
 konq_bgpos_y
+scrollbar-face-color
+scrollbar-shadow-color
+scrollbar-highlight-color
+scrollbar-3dlight-color
+scrollbar-darkshadow-color
+scrollbar-track-color
+scrollbar-arrow-color
