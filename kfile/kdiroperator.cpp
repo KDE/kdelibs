@@ -636,6 +636,7 @@ void KDirOperator::setView( KFile::FileView view )
 void KDirOperator::deleteOldView()
 {
     if ( oldView ) {
+	oldView->widget()->removeEventFilter( this );
         oldView->widget()->hide();
         delete oldView;
         oldView = 0;
@@ -1150,13 +1151,14 @@ void KDirOperator::slotIOFinished()
 // somehow focusNextPrevChild() is not called ;(
 bool KDirOperator::eventFilter( QObject *o, QEvent *e )
 {
-    if ( o == fileView->widget() ) {
-	if ( e->type() == QEvent::FocusOut ) {
+    if ( e->type() == QEvent::FocusOut ) {
+	if ( fileView && o == fileView->widget() ) {
 	    focusNextPrevChild( true );
 	    return true;
 	}
+	return false;
     }
-    return false;
+    return QWidget::eventFilter( o, e );
 }
 
 #include "kdiroperator.moc"
