@@ -81,11 +81,11 @@ GradientLow=171,171,171
 
 [ToolButton]
 Border=0
-Background=147,165,198
+Background=154,180,201
 
 [ToolButtonDown]
 Border=0
-Background=167,185,218
+Background=174,200,221
 
 [ScrollButton]
 Border=0
