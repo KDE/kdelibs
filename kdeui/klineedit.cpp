@@ -4,7 +4,7 @@
    Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
-   Re-designed for KDE 2.x by 
+   Re-designed for KDE 2.x by
    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
    Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>
+#include <kiconloader.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -269,10 +270,10 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             return;
 
         KPopupMenu *popup = new KPopupMenu( this );
-        popup->insertItem( i18n( "Cut" ), Cut );
-        popup->insertItem( i18n( "Copy" ), Copy );
+        popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
+        popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
+        popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
         popup->insertItem( i18n( "Clear" ), Clear );
-        popup->insertItem( i18n( "Paste" ), Paste );
         // Create and insert the completion sub-menu iff
         // a completion object is present.
         if( compObj() )
@@ -295,7 +296,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
                 subMenu->insertItem( i18n("Default"), Default );
             }
             popup->insertSeparator();
-            popup->insertItem( i18n("Completion"), subMenu );
+            popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
         }
         popup->insertSeparator();
         popup->insertItem( i18n( "Unselect" ), Unselect );

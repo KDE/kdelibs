@@ -33,6 +33,7 @@
 #include <kcompletionbox.h>
 #include <kurl.h>
 #include <knotifyclient.h>
+#include <kiconloader.h>
 
 #include "kcombobox.h"
 #include "kcombobox.moc"
@@ -339,10 +340,10 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 return true;
 
             KPopupMenu *popup = new KPopupMenu( this );
-            popup->insertItem( i18n( "Cut" ), Cut );
-            popup->insertItem( i18n( "Copy" ), Copy );
+            popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
+            popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
+            popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
             popup->insertItem( i18n( "Clear" ), Clear );
-            popup->insertItem( i18n( "Paste" ), Paste );
             // Create and insert the completion sub-menu iff
             // a completion object is present.
             if( compObj() )
@@ -365,7 +366,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                     subMenu->insertItem( i18n("Default"), Default );
                 }
                 popup->insertSeparator();
-                popup->insertItem( i18n("Completion"), subMenu );
+                popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
             }
             popup->insertSeparator();
             popup->insertItem( i18n( "Unselect" ), Unselect );
