@@ -401,11 +401,15 @@ void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   }
   kapp->syncX();
   m_delayedRaise=-1;
+
+  for (QMap<KDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
+    it!=m_overlapButtons.end();++it)
+    it.data()->setOn(!isOverlapMode());
+
   if (!raise.isEmpty())
   {
     for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it)
     {
-
       if (it.key()->name()==raise)
       {
 /*        tabClicked(it.data());
@@ -414,6 +418,7 @@ void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
         m_ws->raiseWidget(it.key());
         kapp->sendPostedEvents();
         kapp->syncX();*/
+
         m_delayedRaise=it.data();
         QTimer::singleShot(0,this,SLOT(delayedRaise()));
         kdDebug()<<"************** raising *******: "<<it.key()->name()<<endl;
