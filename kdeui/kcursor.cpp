@@ -26,6 +26,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 
+#include "kcursor_private.h"
 
 KCursor::KCursor()
 {
@@ -150,62 +151,81 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable )
                             true ) )
         return;
 
-    // we need an object for a slot and for the eventfilter
-    static KCursorPrivate hideHelper;
-
-    // nice Qt "feature": installing an eventfilter twice, gives us...
-    // ... two eventfilters => two events arriving here
-    // so we better remove an existing eventFilter
-    // Arnt said it will be fixed, in 2.2.
-    w->removeEventFilter( &hideHelper );
-
+    KCursorPrivate *kp = KCursorPrivate::self();
     if ( enable ) {
-	hideHelper.start();
+	kp->start();
 	w->setMouseTracking( true );
 
         // nice Qt "feature": installing an eventfilter twice, gives us...
         // ... two eventfilters => two events arriving here
         // so we better remove an existing eventFilter before installing one
-        // Arnt said it will be fixed, in 2.2.
-        w->removeEventFilter( &hideHelper );
-	w->installEventFilter( &hideHelper );
+	// Arnt said it will be fixed, in 2.2.-- FIXME, remove then
+        w->removeEventFilter( kp );
+	w->installEventFilter( kp );
     }
 
     else {
 	w->setMouseTracking( false );
-        w->removeEventFilter( &hideHelper );
-	hideHelper.stop();
+        w->removeEventFilter( kp );
+	kp->stop();
     }
 }
 
+void KCursor::setHideCursorDelay( int ms )
+{
+    KCursorPrivate::self()->hideCursorDelay = ms;
+}
+
+int KCursor::hideCursorDelay()
+{
+    return KCursorPrivate::self()->hideCursorDelay;
+}
+
+
 // **************************************************************************
 // **************************************************************************
 
-QTimer * KCursorPrivate::s_autoHideTimer = 0L;
-int KCursorPrivate::s_hideCursorDelay = 5000; // 5s default value
-int KCursorPrivate::s_count = 0;
-bool KCursorPrivate::s_isCursorHidden = false;
-bool KCursorPrivate::s_isOwnCursor    = false;
-// grr, Bug in gcc 2.95-2 (segfault when calling QCursor::operator=(QCursor))
-QCursor * KCursorPrivate::s_oldCursor = 0L;
+KCursorPrivate * KCursorPrivate::s_self = 0L;
+
+KCursorPrivate * KCursorPrivate::self()
+{
+    if ( !s_self )
+	s_self = new KCursorPrivate;
+
+    return s_self;
+}
+
+KCursorPrivate::KCursorPrivate()
+{
+    count = 0;
+    autoHideTimer = 0;
+    hideCursorDelay = 5000; // 5s default value
+    isCursorHidden = false;
+    isOwnCursor = false;
+}
+
+KCursorPrivate::~KCursorPrivate()
+{
+    delete autoHideTimer;
+}
 
 void KCursorPrivate::start()
 {
-    if ( !s_autoHideTimer ) {
-	s_autoHideTimer = new QTimer;
-	QObject::connect( s_autoHideTimer, SIGNAL( timeout() ),
+    if ( !autoHideTimer ) {
+	autoHideTimer = new QTimer( this );
+	QObject::connect( autoHideTimer, SIGNAL( timeout() ),
 			  this, SLOT( slotHideCursor() ));
     }
-    s_count++;
+    count++;
 }
 
 void KCursorPrivate::stop()
 {
-    s_count--;
-    if ( s_count <= 0 ) {
-	delete s_autoHideTimer;
-	s_autoHideTimer = 0L;
-	s_count = 0;
+    count--;
+    if ( count <= 0 ) {
+	delete autoHideTimer;
+	autoHideTimer = 0L;
+	count = 0;
     }
 }
 
@@ -214,26 +234,21 @@ void KCursorPrivate::hideCursor( QWidget *w )
     if ( !w )
 	return;
 
-    s_isCursorHidden = true;
-    // FIXME (when Qt 2.2 is out, QWidget::hasOwnCursor())
-    s_isOwnCursor = w->testWState( WState_OwnCursor );
-    if ( s_isOwnCursor ) {
-	delete s_oldCursor;
-	s_oldCursor = new QCursor( w->cursor() );
-    }
+    isCursorHidden = true;
+    // FIXME (when Qt 2.2 is out, use QWidget::hasOwnCursor())
+    isOwnCursor = w->testWState( WState_OwnCursor );
+    if ( isOwnCursor )
+	oldCursor = w->cursor();
 
     w->setCursor( KCursor::blankCursor() );
 }
 
 void KCursorPrivate::unhideCursor( QWidget *w )
 {
-    s_isCursorHidden = false;
+    isCursorHidden = false;
     if ( w ) {
-	if ( s_isOwnCursor ) {
-	    w->setCursor( *s_oldCursor );
-	    delete s_oldCursor;
-	    s_oldCursor = 0L;
-	}
+	if ( isOwnCursor )
+	    w->setCursor( oldCursor );
 	else
 	    w->unsetCursor();
     }
@@ -250,27 +265,27 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     QWidget *w = static_cast<QWidget *>( o );
 
     if ( t == QEvent::Leave || t == QEvent::FocusOut ) {
-	s_autoHideTimer->stop();
-	if ( s_isCursorHidden )
+	autoHideTimer->stop();
+	if ( isCursorHidden )
 	    unhideCursor( w );
 	
-	s_isCursorHidden = false;
+	isCursorHidden = false;
 	return false;
     }
-    
+
     // don't process events not coming from the focus-widget
     if ( w != qApp->focusWidget() )
 	 return false;
 
     else if ( t == QEvent::Enter ) {
-	if ( s_isCursorHidden )
+	if ( isCursorHidden )
 	    unhideCursor( w );
-	s_isCursorHidden = false;
-	s_autoHideTimer->start( s_hideCursorDelay, true );
+	isCursorHidden = false;
+	autoHideTimer->start( hideCursorDelay, true );
     }
 	
     else { // no enter/leave/focus events
-	if ( s_isCursorHidden ) {
+	if ( isCursorHidden ) {
 	    if ( t == QEvent::MouseButtonPress ||
 		 t ==QEvent::MouseButtonRelease ||
 		 t == QEvent::MouseButtonDblClick || t == QEvent::MouseMove ||
@@ -284,7 +299,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 	    }
 	    else {
 		if ( insideWidget( QCursor::pos(), w ))
-		    s_autoHideTimer->start( s_hideCursorDelay, true );
+		    autoHideTimer->start( hideCursorDelay, true );
 	    }
 	}
     }
@@ -293,7 +308,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
 void KCursorPrivate::slotHideCursor()
 {
-    if ( !s_isCursorHidden )
+    if ( !isCursorHidden )
 	hideCursor( kapp->focusWidget() );
 }
 
@@ -302,4 +317,4 @@ bool KCursorPrivate::insideWidget( const QPoint &p, QWidget *w )
     return w->geometry().contains( w->mapFromGlobal( p ) );
 }
 
-#include "kcursor.moc"
+#include "kcursor_private.moc"

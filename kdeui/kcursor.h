@@ -23,47 +23,10 @@
 #ifndef _KCURSOR_H
 #define _KCURSOR_H
 
-#include <qobject.h>
-#include <qpoint.h>
 #include <kapp.h>
 
 class QCursor;
 class QWidget;
-
-
-/**
- * I don't want the eventFilter to be in KCursor, so we have another class
- * for that stuff
- * @internal
- * @author Carsten Pfeiffer <pfeiffer@kde.org>
-*/
-class KCursorPrivate : public QObject
-{
-    Q_OBJECT
-
-public:
-    virtual bool eventFilter( QObject *o, QEvent *e );
-    void start();
-    void stop();
-
-    static void hideCursor( QWidget * );
-    static void unhideCursor( QWidget * );
-
-    static int s_hideCursorDelay;
-
-private slots:
-    void slotHideCursor();
-
-private:
-    bool insideWidget( const QPoint&, QWidget * );
-
-    static bool s_isCursorHidden;
-    static bool s_isOwnCursor;
-    static QCursor *s_oldCursor;
-    static QTimer *s_autoHideTimer;
-    static int s_count;
-};
-
 
 /**
  * A wrapper around @ref QCursor that allows for "themed" cursors.
@@ -185,16 +148,14 @@ public:
      *
      * Default is 5000, i.e. 5 seconds.
      */
-    static void setHideCursorDelay( int ms ) {
-	KCursorPrivate::s_hideCursorDelay = ms;
-    }
+    static void setHideCursorDelay( int ms );
 
     /**
      * @returns the current auto-hide delay time.
      *
      * Default is 5000, i.e. 5 seconds.
      */
-    static int hideCursorDelay() { return KCursorPrivate::s_hideCursorDelay; }
+    static int hideCursorDelay();
 
 };
 
