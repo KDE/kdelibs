@@ -1963,8 +1963,8 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 			_y - ( y -ascent ) );
 		    if ( area )
 		    {
-			strcpy( url, area->getURL() );
-			strcpy( target, area->getTarget() );
+			strncpy( url, area->getURL(), KHTMLW_MAX_URL );
+			strncpy( target, area->getTarget(), KHTMLW_MAX_TARGET );
 			return this;
 		    }
 		    else

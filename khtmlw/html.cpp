@@ -3349,20 +3349,26 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    {
 		// allocate enough mem for any URL which might be in the
 		// image map
-		char *newurl = new char [1024];
+		char *newurl = new char [KHTMLW_MAX_URL + 1];
 		newurl[0] = '\0';
 		if ( url )
-		    strcpy( newurl, url );
+        {
+		    strncpy( newurl, url, KHTMLW_MAX_URL );
+            newurl[ KHTMLW_MAX_URL ] = '\0';
+        }
 		url = newurl;
 		parsedURLs.append( url );
 
 		// allocate enough mem for any target which might be in the
 		// image map
-		char *newtarget = new char [256];
+		char *newtarget = new char [KHTMLW_MAX_TARGET + 1];
 		newtarget[0] = '\0';
 
 		if ( target )
-		    strcpy( newtarget, target );
+        {
+		    strncpy( newtarget, target, KHTMLW_MAX_TARGET );
+            newtarget[ KHTMLW_MAX_TARGET ] = '\0';
+        }
 
 		target = newtarget;
 		parsedTargets.append( target );

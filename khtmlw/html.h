@@ -25,7 +25,9 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1303		// 00.13.03
+#define KHTMLW_VERSION    1303		// 00.13.03
+#define KHTMLW_MAX_URL    1024      // Maximum length of a URL
+#define KHTMLW_MAX_TARGET 256       // Maximum length of a target window name
 
 #include <qpainter.h>
 #include <qstrlist.h>
