@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -17,40 +17,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DOM_TEXT_H_
-#define _DOM_TEXT_H_
-
-#include <dom_text.h>
+#ifndef _KJS_BINDING_H_
+#define _KJS_BINDING_H_
 
 #include <kjs/object.h>
-#include <kjs/function.h>
-
-#include "kjs_binding.h"
+#include <dom/dom_node.h>
 
 namespace KJS {
 
-  class DOMCharacterData : public NodeObject {
+  /**
+   * Abstract base class for DOM objects that derive from Node.
+   * Derived classes must implement the toNode() method to allow
+   * dynamic type casting.
+   */
+  class NodeObject : public HostObject {
   public:
-    DOMCharacterData(DOM::CharacterData d) : data(d) { }
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
-    virtual DOM::Node toNode() const { return data; }
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-  private:
-    DOM::CharacterData data;
+    virtual DOM::Node toNode() const = 0L;
   };
 
-  class DOMText : public NodeObject {
-  public:
-    DOMText(DOM::Text t) : text(t) { }
-    virtual KJSO *get(const UString &p);
-    virtual DOM::Node toNode() const { return text; }
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-  private:
-    DOM::Text text;
-  };
+  /**
+   * Convert an object to a Node. Returns a null Node if not possible.
+   */
+  DOM::Node toNode(KJSO *);
 
 }; // namespace
 

@@ -27,6 +27,9 @@
 
 using namespace KJS;
 
+const TypeInfo DOMCharacterData::info = { "CharacterData", HostType,
+					  &DOMNode::info, 0, 0 };
+
 KJSO *DOMCharacterData::get(const UString &p)
 {
   if (p == "data")
@@ -49,6 +52,9 @@ void DOMCharacterData::put(const UString &p, KJSO *v)
     tmp->put(p, v);
   }
 }
+
+const TypeInfo DOMText::info = { "Text", HostType,
+				 &DOMCharacterData::info, 0, 0 };
 
 KJSO *DOMText::get(const UString &p)
 {

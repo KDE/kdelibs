@@ -33,8 +33,6 @@
 
 #include <stdio.h>
 #include <kjs/kjs.h>
-#include <kjs/object.h>
-#include <kjs/function.h>
 #include <dom_doc.h>
 #include "kjs_dom.h"
 
@@ -43,8 +41,7 @@ using namespace KJS;
 int main(int, char **)
 {
   KJScript kjs;
-  Ptr debug = new DebugPrint();
-  kjs.global()->put("debug", debug);
+  kjs.enableDebug();
   DOM::Document doc;
   DOMDocument dd(&doc);
   kjs.global()->put("document", &dd);

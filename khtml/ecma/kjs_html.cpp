@@ -19,82 +19,19 @@
 
 #include <stdio.h>
 
-#include <khtml_part.h>
 #include <html_element.h>
 #include <html_head.h>
 #include <html_inline.h>
 #include <html_image.h>
 #include <dom_string.h>
 
-#include <kjs/kjs.h>
 #include <kjs/operations.h>
 #include "kjs_dom.h"
 #include "kjs_html.h"
-#include "kjs_window.h"
-#include "kjs_navigator.h"
 
 #include <htmltags.h>
 
 using namespace KJS;
-
-extern "C" {
-  // initialize HTML module
-  KJSProxy *kjs_html_init(KHTMLPart *khtml)
-  {
-    KJScript *script = new KJScript();
-
-    KJS::Global *global = script->global();
-    DOM::HTMLDocument doc;
-    doc = khtml->htmlDocument();
-    global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
-    global->put("window", zeroRef(new KJS::Window(khtml->view())));
-    global->put("navigator", zeroRef(new Navigator()));
-    global->put("Image", zeroRef(new ImageObject(global)));
-
-    // this is somewhat ugly. But the only way I found to control the
-    // dlopen'ed interpreter (*no* linking!) were callback functions.
-    return new KJSProxy(script, &kjs_eval, &kjs_clear,
-			&kjs_special, &kjs_destroy);
-  }
-  // evaluate code
-  bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
-  {
-    return script->evaluate(c, len);
-  }
-  // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script)
-  {
-    script->clear();
-  }
-  // for later extensions.
-  const char *kjs_special(KJScript *, const char *)
-  {
-    // return something like a version number for now
-    return "1";
-  }
-  void kjs_destroy(KJScript *script)
-  {
-    delete script;
-  }
-};
-
-UString::UString(const DOM::DOMString &d)
-{
-  unsigned int len = d.length();
-  UChar *dat = new UChar[len];
-  memcpy(dat, d.unicode(), len * sizeof(UChar));
-  rep = new UStringData(dat, len);
-}
-
-DOM::DOMString UString::string() const
-{
-  return DOM::DOMString((QChar*) data(), size());
-}
-
-QString UString::qstring() const
-{
-  return QString((QChar*) data(), size());
-}
 
 KJSO *KJS::HTMLDocFunction::get(const UString &p)
 {
@@ -192,6 +129,9 @@ KJSO *KJS::HTMLDocFunction::execute(const List &args)
   return newCompletion(Normal, result);
 }
 
+const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
+					   &DOMDocument::info, 0, 0 };
+
 KJSO *KJS::HTMLDocument::get(const UString &p)
 {
   KJSO *result;
@@ -258,6 +198,9 @@ void KJS::HTMLDocument::put(const UString &p, KJSO *v)
     doc.setCookie(s->stringVal().string());
   }
 }
+
+const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
+					  &DOMElement::info, 0, 0 };
 
 KJSO *KJS::HTMLElement::get(const UString &p)
 {

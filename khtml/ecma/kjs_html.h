@@ -27,6 +27,8 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 
+#include "kjs_binding.h"
+
 class HTMLElement;
 class HTMLCollection;
 
@@ -44,20 +46,26 @@ namespace KJS {
     int id;
   };
 
-  class HTMLDocument : public HostObject {
+  class HTMLDocument : public NodeObject {
   public:
     HTMLDocument(DOM::HTMLDocument d) : doc(d) { }
     virtual KJSO *get(const UString &p);
     virtual void put(const UString &p, KJSO *v);
+    virtual DOM::Node toNode() const { return doc; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::HTMLDocument doc;
   };
 
-  class HTMLElement : public HostObject {
+  class HTMLElement : public NodeObject {
   public:
     HTMLElement(DOM::HTMLElement e) : element(e) { }
     virtual KJSO *get(const UString &p);
     virtual void put(const UString &p, KJSO *v);
+    virtual DOM::Node toNode() const { return element; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::HTMLElement element;
   };

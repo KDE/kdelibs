@@ -27,12 +27,17 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 
+#include "kjs_binding.h"
+
 namespace KJS {
 
-  class DOMNode : public HostObject {
+  class DOMNode : public NodeObject {
   public:
     DOMNode(DOM::Node n) : node(n) { }
     virtual KJSO *get(const UString &p);
+    virtual DOM::Node toNode() const { return node; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::Node node;
   };
@@ -57,10 +62,13 @@ namespace KJS {
     DOM::NodeList list;
   };
 
-  class DOMDocument : public HostObject {
+  class DOMDocument : public NodeObject {
   public:
     DOMDocument(DOM::Document d) : doc(d) { }
     virtual KJSO *get(const UString &p);
+    virtual DOM::Node toNode() const { return doc; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::Document doc;
   };
@@ -77,19 +85,25 @@ namespace KJS {
     int id;
   };
 
-  class DOMAttr : public HostObject {
+  class DOMAttr : public NodeObject {
   public:
     DOMAttr(DOM::Attr a) : attr(a) { }
     virtual KJSO *get(const UString &p);
     virtual void put(const UString &p, KJSO *v);
+    virtual DOM::Node toNode() const { return attr; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::Attr attr;
   };
 
-  class DOMElement : public HostObject {
+  class DOMElement : public NodeObject {
   public:
     DOMElement(DOM::Element e) : element(e) { }
     virtual KJSO *get(const UString &p);
+    virtual DOM::Node toNode() const { return element; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     DOM::Element element;
   };

@@ -28,6 +28,8 @@
 
 using namespace KJS;
 
+const TypeInfo DOMNode::info = { "Node", HostType, 0, 0, 0 };
+
 KJSO *DOMNode::get(const UString &p)
 {
   KJSO *result;
@@ -83,8 +85,20 @@ KJSO *DOMNodeFunc::execute(const List &args)
     Ptr b = toBoolean(arg);
     result = new DOMNode(node.cloneNode(b->boolVal()));
   } else {
-    /* TODO: retrieve nodes from args for InsertBefore etc. */
-    result = newUndefined();
+    Ptr arg1 = args[0];
+    DOM::Node n1 = toNode(arg1);
+    if (id == AppendChild) {
+      result = new DOMNode(node.appendChild(n1));
+    } else if (id == RemoveChild) {
+      result = new DOMNode(node.removeChild(n1));
+    } else {
+      Ptr arg2 = args[1];
+      DOM::Node n2 = toNode(arg2);
+      if (id == InsertBefore)
+	result = new DOMNode(node.insertBefore(n1, n2));
+      else
+	result = new DOMNode(node.replaceChild(n1, n2));
+    }
   }
   return newCompletion(Normal, result);
 }
@@ -100,6 +114,8 @@ KJSO *DOMNodeList::get(const UString &p)
 
   return result;
 }
+
+const TypeInfo DOMAttr::info = { "Attr", HostType, &DOMNode::info, 0, 0 };
 
 KJSO *DOMAttr::get(const UString &p)
 {
@@ -127,6 +143,9 @@ void DOMAttr::put(const UString &p, KJSO *v)
     tmp->put(p, v);
   }
 }
+
+const TypeInfo DOMDocument::info = { "Document", HostType,
+				     &DOMNode::info, 0, 0 };
 
 KJSO *DOMDocument::get(const UString &p)
 {
@@ -201,6 +220,9 @@ KJSO *DOMDocFunction::execute(const List &args)
 
   return newCompletion(Normal, result);
 }
+
+const TypeInfo DOMElement::info = { "Element", HostType,
+				    &DOMNode::info, 0, 0 };
 
 KJSO *DOMElement::get(const UString &p)
 {
