@@ -468,6 +468,7 @@ Object Object::create(Class c, const KJSO& val)
     break;
   case ArrayClass:
     p += "Array";
+    obj.put("length", 0);
     break;
   case StringClass:
     p += "String";

@@ -106,6 +106,8 @@ KJSO StringPrototype::get(const UString &p) const
     id = StringProtoFunc::LastIndexOf;
   else if (p == "replace")
     id = StringProtoFunc::Replace;
+  else if (p == "split")
+    id = StringProtoFunc::Split;
   else if (p == "substr")
     id = StringProtoFunc::Substr;
   else if (p == "substring")
@@ -171,7 +173,7 @@ Completion StringProtoFunc::execute(const List &args)
   String s2;
   Number n, m;
   UString u, u2, u3;
-  int pos, i;
+  int pos, p0, i;
   double d, d2;
   KJSO v = thisObj.internalValue();
   String s = v.toString();
@@ -243,6 +245,21 @@ Completion StringProtoFunc::execute(const List &args)
 	     u.substr(pos + len);
 	result = String(u3);
     }
+    break;
+  case Split:
+    result = Object::create(ArrayClass);
+    u = s.value();
+    u2 = a0.toString().value();
+    i = p0 = 0;
+    /* TODO: regexps with backtracking, special cases */
+    while ((pos = u.find(u2, p0)) >= 0) {
+      result.put(UString::from(i), String(u.substr(p0, pos-p0)));
+      p0 = pos + 1;
+      i++;
+    }
+    if (p0 < len - 1)
+      result.put(UString::from(i++), String(u.substr(p0)));
+    result.put("length", i);
     break;
   case Substr:
     n = a0.toInteger();
