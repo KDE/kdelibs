@@ -42,7 +42,8 @@
 
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
-  : KConfigBase(), bGroupImmutable(false), bFileImmutable(false)
+  : KConfigBase(), bGroupImmutable(false), bFileImmutable(false), 
+    bForceGlobal(false)
 {
   // set the object's read-only status.
   setReadOnly(bReadOnly);
@@ -140,7 +141,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
   {
     // Leave the default values out && leave deleted entries out
-    if (!aIt.key().bDefault && !(*aIt).bDeleted) 
+    if (!aIt.key().bDefault && !(*aIt).bDeleted)
       tmpMap.insert(QString::fromUtf8(aIt.key().mKey), QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length()));
   }
 
@@ -191,7 +192,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
 
   // check to see if the special group key is present,
   // and if not, put it in.
-  if (_checkGroup) 
+  if (_checkGroup)
   {
     KEntryKey groupKey( _key.mGroup, 0);
     KEntry &entry = aEntryMap[groupKey];
@@ -207,9 +208,11 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
 
   entry = _data;
 
+  entry.bGlobal |= bForceGlobal; // force to kdeglobals
+
   if (_key.bDefault)
   {
-     // We have added the data as default value, 
+     // We have added the data as default value,
      // add it as normal value as well.
      KEntryKey key(_key);
      key.bDefault = false;
@@ -227,7 +230,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
     const KEntry &entry = *aIt;
     if (entry.bDeleted)
        return KEntry();
-    else 
+    else
        return entry;
   }
   else {

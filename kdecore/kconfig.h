@@ -113,6 +113,19 @@ public:
    */
   void setFileWriteMode(int mode);
 
+  /**
+   * Forces all following write-operations being performed on kdeglobals,
+   * independent of the bGlobal flag in writeEntry().
+   * @see #forceGlobal
+   */
+  void setForceGlobal( bool force ) { bForceGlobal = force; }
+
+  /**
+   * Returns true if all entries are being written into kdeglobals.
+   * @see #setForceGlobal
+   */
+  bool forceGlobal() const { return bForceGlobal; }
+    
 protected:
 
   /**
@@ -193,6 +206,7 @@ private:
 private:
   bool bGroupImmutable : 1; // Current group is immutable.
   bool bFileImmutable  : 1; // Current file is immutable.
+  bool bForceGlobal    : 1; // Apply everything to kdeglobals.
   KConfigPrivate *d;
 };
 
