@@ -1619,9 +1619,11 @@ void KToolBar::slotReadConfig()
     else if ( position == "Flat" )
 	pos = Flat;
 
-    if ( mw )
+    if ( mw ) {
 	mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
-    setBarPos( pos );
+	if ( testWState( WState_ForceHide ) )
+	    hide();
+    }	
 
     if (doUpdate)
 	emit modechange(); // tell buttons what happened

@@ -440,5 +440,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 	if ( it == d->toolBarInfos.end() )
 	    continue;
 	mw->moveToolBar( toolbar, (*it).dock, (*it).newline, (*it).index, (*it).offset );
+	if ( toolbar->testWState( Qt::WState_ForceHide ) )
+	    toolbar->hide();
     }
 }
