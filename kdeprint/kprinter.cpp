@@ -576,7 +576,7 @@ void KPrinter::setFullPage(bool on)
 { setOption("kde-fullpage",(on ? "1" : "0")); }
 
 KPrinter::ColorMode KPrinter::colorMode() const
-{ return (option("kde-colormode") == "GrayScale" ? GrayScale : Color); }
+{ return (KPrinter::ColorMode)(option("kde-colormode") == "GrayScale" ? GrayScale : Color); }
 
 void KPrinter::setColorMode(ColorMode m)
 { setOption("kde-colormode",(m == Color ? "Color" : "GrayScale")); }
