@@ -180,7 +180,7 @@ make_unix(const char *name, const char *serv)
 static int check_ipv6_stack()
 {
 # ifndef AF_INET6
-  return 1;			// how can we check?
+  return 2;			// how can we check?
 # else
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
   ::close(fd);
