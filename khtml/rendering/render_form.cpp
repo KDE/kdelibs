@@ -426,13 +426,19 @@ void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl)
     image->ref(this);
 }
 
-void RenderImageButton::setPixmap( const QPixmap &p, CachedObject * )
+void RenderImageButton::setPixmap( const QPixmap &p, CachedObject *, bool *manualUpdate )
 {
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
     calcMinMaxWidth(); // does the layout and resizing of the button too.
 
-    if(m_parent) updateSize();	
+    if(m_parent) 
+    {
+       if (manualUpdate)
+          *manualUpdate = true;
+       else
+          updateSize();	
+    }
 }
 
 

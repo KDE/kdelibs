@@ -237,7 +237,7 @@ public:
         { RenderButton::setValue(value); }
 
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
-    virtual void setPixmap( const QPixmap &, CachedObject * );
+    virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0 );
 
     CachedObject *image;
 };

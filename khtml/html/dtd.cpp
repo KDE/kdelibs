@@ -417,6 +417,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	return check_array(childID, tag_list_4);
     case ID_PRE:
 	// PRE: _0 * - _5
+	if( childID == ID_HR ) return true;
 	return check_array(childID, tag_list_0);
     case ID_DL:
 	// DL: _6 +

@@ -54,7 +54,7 @@ namespace khtml
 	virtual void layout( bool );
 	virtual void calcMinMaxWidth();
 
-	virtual void setPixmap( const QPixmap &, CachedObject * );	
+	virtual void setPixmap( const QPixmap &, CachedObject *, bool *manualUpdate=0);	
 
 	long int val;
 	QString item;

@@ -250,8 +250,14 @@ void RenderListMarker::layout(bool)
     m_height = QFontMetrics(m_style->font()).height();
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o )
+void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpdate )
 {
+    if (manualUpdate && *manualUpdate)
+    {
+        updateSize();	
+        repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        return;
+    }
     if(o != listImage)
 	RenderBox::setPixmap(p, o);
 
@@ -261,8 +267,15 @@ void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o )
 	setMinMaxKnown(false);
 	layout(true);
 	// the updateSize() call should trigger a repaint too
-	updateSize();	
-	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        if (manualUpdate)
+        {
+            *manualUpdate = true;
+        }
+        else
+        {
+            updateSize();	
+	    repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        }
     }
     else
     {

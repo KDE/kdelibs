@@ -52,8 +52,14 @@ RenderImage::~RenderImage()
     if(image) image->deref(this);
 }
 
-void RenderImage::setPixmap( const QPixmap &p, CachedObject *o )
+void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpdate )
 {
+    if (manualUpdate && *manualUpdate)
+    {
+        updateSize();	
+	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        return;
+    }
     if(o != image)
 	RenderReplaced::setPixmap(p, o);
 
@@ -67,8 +73,15 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o )
 	setMinMaxKnown(false);
 	layout();
 	// the updateSize() call should trigger a repaint too
-	updateSize();	
-	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        if (manualUpdate) 
+        {
+           *manualUpdate = true;
+        } 
+        else 
+        {
+           updateSize();	
+	   repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        }
     }
     else
     {

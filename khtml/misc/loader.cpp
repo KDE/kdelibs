@@ -454,11 +454,10 @@ const QPixmap &CachedImage::tiled_pixmap() const
 
     if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT))
     {
-       CachedImage *non_const_this = const_cast<CachedImage *>(this);
-       delete non_const_this->bg;
-       non_const_this->bg = new QPixmap(r);
-       fixBackground(*(non_const_this->bg));
-       return *(non_const_this->bg);
+       delete bg;
+       bg = new QPixmap(r);
+       fixBackground(*bg);
+       return *bg;
     }
     return r;
 }
@@ -506,12 +505,26 @@ void CachedImage::notify( CachedObjectClient *c )
 
     if ( !pixmap.isNull() )
     {
+	QList<CachedObjectClient> updateList;
 	CachedObjectClient *c;
         for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG	
 	    kdDebug( 6060 ) << "CachedImage::setPixmap() " << endl;
 #endif
-	    c->setPixmap( pixmap, this );
+	    kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
+            bool manualUpdate = false; // set the pixmap, dont update yet.
+	    c->setPixmap( pixmap, this, &manualUpdate );
+            if (manualUpdate)
+               updateList.append(c);
+	}
+        for ( c = updateList.first(); c != 0; c = updateList.next() ) {
+	    kdDebug( 6060 ) << "CachedImage: manually updating size (" << c << ")" << endl;
+            bool manualUpdate = true; // Update!
+            // Actually we want to do c->updateSize()
+            // This is a terrible hack which does the same.
+            // updateSize() does not exist in CachecObjectClient only
+            // in RenderBox()
+	    c->setPixmap( pixmap, this, &manualUpdate );
 	}
     }
 }
@@ -522,13 +535,29 @@ void CachedImage::movieUpdated( const QRect & )
     kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
 #endif
     QPixmap pixmap = m->framePixmap();
+    QList<CachedObjectClient> updateList;
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG
+#ifdef CACHE_DEBUG	
 	kdDebug(6060) << "setting pixmap" << endl;
 #endif
-	c->setPixmap( pixmap, this );
+        kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
+        bool manualUpdate = false; // set the pixmap, dont update yet.
+        c->setPixmap( pixmap, this, &manualUpdate );
+        if (manualUpdate)
+           updateList.append(c);
     }
+    for ( c = updateList.first(); c != 0; c = updateList.next() ) {
+        kdDebug( 6060 ) << "CachedImage: manually updating size (" << c << ")" << endl;
+        bool manualUpdate = true; // Update!
+        // Actually we want to do c->updateSize()
+        // This is a terrible hack which does the same.
+        // updateSize() does not exist in CachecObjectClient only
+        // in RenderBox()
+        c->setPixmap( pixmap, this, &manualUpdate );
+        if (manualUpdate)
+           updateList.append(c);
+   }
 }
 
 void CachedImage::clear()
@@ -687,9 +716,9 @@ void Loader::slotFinished( KIO::Job* job )
 
     servePendingRequests();
   }
-  
+
   emit requestDone( r->m_baseURL, r->object );
-    
+
   delete r;
 }
 

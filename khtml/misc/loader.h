@@ -59,7 +59,7 @@ namespace khtml
     class CachedObjectClient
     {
     public:
-	virtual void setPixmap(const QPixmap &, CachedObject *) {}
+	virtual void setPixmap(const QPixmap &, CachedObject *, bool * = 0) {}
 	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
 	virtual void notifyFinished(CachedObject */*finishedObj*/) {}
     };
@@ -241,7 +241,7 @@ namespace khtml
 	bool gotFrame;
 	
         // Used to cache a tiled version of the image
-	QPixmap *bg;
+	mutable QPixmap *bg;
 
 	ImageSource* imgSource;
 
