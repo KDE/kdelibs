@@ -3,7 +3,9 @@
 
 #include "config.h"
 
+#ifdef __GNUC__
 #warning "Remove operator<<(QDataStream &, long) before Qt 2.2. release"
+#endif
 
 #if SIZEOF_LONG == 8
 QDataStream & operator << (QDataStream & str, long l)
