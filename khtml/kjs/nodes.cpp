@@ -294,7 +294,16 @@ KJSO *AssignNode::evaluate()
 // ECMA 11.3
 KJSO *PostfixNode::evaluate()
 {
-  /* TODO */
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr n = toNumber(v);
+
+  double newValue = (oper == OpPlusPlus) ? n->dVal() + 1 : n->dVal() - 1;
+  Ptr n2 = new KJSNumber(newValue);
+
+  e->putValue(n2);
+
+  return n->ref();
 }
 
 // ECMA 11.4.1
@@ -356,7 +365,16 @@ KJSO *TypeOfNode::evaluate()
 // ECMA 11.4.4 and 11.4.5
 KJSO *PrefixNode::evaluate()
 {
-  /* TODO */
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr n = toNumber(v);
+
+  double newValue = (oper == OpPlusPlus) ? n->dVal() + 1 : n->dVal() - 1;
+  Ptr n2 = new KJSNumber(newValue);
+
+  e->putValue(n2);
+
+  return n2->ref();
 }
 
 // ECMA 11.4.6
@@ -453,7 +471,7 @@ KJSO *AddNode::evaluate()
 
   KJSNumber *result;
   if (oper == '+')
-    result = new KJSNumber(n1->dVal() + n2->dVal()); // TODO: NaN, Infinity ...
+    result = new KJSNumber(n1->dVal() + n2->dVal());
   else
     result = new KJSNumber(n1->dVal() - n2->dVal());
 
