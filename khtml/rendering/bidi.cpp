@@ -309,7 +309,7 @@ static void embed( QChar::Direction d )
 // collects one line of the paragraph and transforms it to visual order
 void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &end)
 {
-
+    if ( start == end ) return;
     //kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 
     QPtrList<BidiRun> runs;
