@@ -1030,12 +1030,11 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   // Loop until we got 'dataEnd'
   while ( m_cmd == CMD_PUT && dispatch() );
 
-  ftp.ftpDisconnect( true );
   ftp.ftpClose();
+  ftp.ftpDisconnect( true );
 
   if ( (e = ftp.ftpStat( udest )) ) {
     if ( e->size == _size ) {
-
       // after full download rename the file back to original name
       if ( m_bMarkPartial ) {
 	cerr << "kio_ftp renaming\n";
@@ -1070,7 +1069,6 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   }
 
   ftp.ftpDisconnect( true );
-  ftp.ftpClose();
 
   // We have done our job => finish
   finished();
