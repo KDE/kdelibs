@@ -256,7 +256,7 @@ HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
 	align = _align;
 	shade = _shade;
 
-	if ( percent )
+	if ( percent > 0 )
 	{
 		length = max_width * percent / 100;
 		setFixedWidth( false );
@@ -268,7 +268,7 @@ void HTMLRule::setMaxWidth( int _max_width )
 	max_width = _max_width;
 	width = _max_width;
 
-	if ( percent )
+	if ( percent > 0 )
 		length = max_width * percent / 100;
 }
 
@@ -511,7 +511,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _u
 
 void HTMLImage::init()
 {
-    if ( percent )
+    if ( percent > 0 )
     {
 	width = max_width * percent / 100;
 	ascent = pixmap->height() * width / pixmap->width();
@@ -556,7 +556,7 @@ void HTMLImage::imageLoaded( const char *_filename )
 
 int HTMLImage::calcMinWidth()
 {
-	if ( percent )
+	if ( percent > 0 )
 		return 1;
 
 	return width;
@@ -569,7 +569,7 @@ int HTMLImage::calcPreferredWidth()
 
 void HTMLImage::setMaxWidth( int _max_width )
 {
-	if ( percent )
+	if ( percent > 0 )
 	{
 		max_width = _max_width;
 		width = max_width * percent / 100;
@@ -659,13 +659,13 @@ void HTMLTableCell::setMaxWidth( int _max_width )
 	HTMLObject *obj;
 
 	// We allow fixed width cells to be resized in a table
-	max_width = _max_width;
-
-    if ( percent )
+	width = max_width = _max_width;
+/*
+    if ( percent > 0 )
 		width = _max_width * percent / 100;
 	else if ( !isFixedWidth() )
 		width = max_width;
-
+*/
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
 	{
 		obj->setMaxWidth( width );
@@ -729,7 +729,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
 		memset( cells[r], 0, totalCols * sizeof( HTMLTableCell * ) );
 	}
 
-	if ( percent )
+	if ( percent > 0 )
 		width = max_width * percent / 100;
 	else if ( width == 0 )
 		width = max_width;
@@ -1021,8 +1021,8 @@ void HTMLTable::calcColumnWidths()
 				continue;
 
 			// calculate preferred pos
-/*
-			if ( cell->getPercent() )
+
+			if ( cell->getPercent() > 0 )
 			{
 				colPos = columnPrefPos[ c - cell->colSpan() + 1 ] +
 					( max_width * cell->getPercent() / 100 ) + padding +
@@ -1030,9 +1030,7 @@ void HTMLTable::calcColumnWidths()
 				fixed[c] = true;
 				columnPrefPos[c + 1] = colPos;
 			}
-			else
-*/
-			if ( cell->isFixedWidth() )
+			else if ( cell->isFixedWidth() )
 			{
 				colPos = columnPrefPos[ c - cell->colSpan() + 1 ] +
 					cell->getWidth() + padding +
@@ -1048,13 +1046,18 @@ void HTMLTable::calcColumnWidths()
 				if ( columnPrefPos[c + 1] < colPos )
 					columnPrefPos[c + 1] = colPos;
 			}
+
+			if ( columnPrefPos[c + 1] < columnPos[c + 1] )
+				columnPrefPos[c + 1] = columnPos[c + 1];
 		}
 	}
 }
 
 // Use the minimum and preferred cell widths to produce an optimum
 // cell spacing.  When this has been done columnOpt contains
-// the optimised cell widths.
+// the optimum cell widths.
+// This function needs to be modified to take into account the relative
+// preferred widths one day.
 void HTMLTable::optimiseCellWidth()
 {
 	unsigned int c;
@@ -1062,7 +1065,19 @@ void HTMLTable::optimiseCellWidth()
 
 	columnOpt = columnPos.copy();
 
-	if ( columnPrefPos[totalCols] > tableWidth )
+	if ( ( percent > 0 || isFixedWidth() ) &&
+		tableWidth > columnPos[ totalCols ] )
+	{
+		int extra = tableWidth - columnPos[totalCols];
+		int addSize = extra / totalCols;
+
+		for ( c = 1; c <= totalCols; c++ )
+		{
+			for ( unsigned int c1 = c; c1 <= totalCols; c1++ )
+				columnOpt[c1] += addSize;
+		}
+	}
+	else if ( columnPrefPos[totalCols] > tableWidth )
 	{
 		int extra = tableWidth - columnPos[totalCols];
 
@@ -1080,18 +1095,6 @@ void HTMLTable::optimiseCellWidth()
 				}
 				extra -= addSize;
 			}
-		}
-	}
-	else if ( percent || isFixedWidth() )
-	{
-		columnPos = columnPrefPos;
-		int extra = tableWidth - columnPrefPos[totalCols];
-		int addSize = extra / totalCols;
-
-		for ( c = 1; c <= totalCols; c++ )
-		{
-			for ( unsigned int c1 = c; c1 <= totalCols; c1++ )
-				columnOpt[c1] += addSize;
 		}
 	}
 	else
@@ -1144,7 +1147,7 @@ void HTMLTable::setMaxWidth( int _max_width )
 {
 	max_width = _max_width;
 
-	if ( percent )
+	if ( percent > 0 )
 		width = max_width * percent / 100;
 	else if ( !isFixedWidth() )
 		width = max_width;
@@ -1499,9 +1502,14 @@ HTMLClue::HTMLClue( int _x, int _y, int _max_width, int _percent )
     halign = Left;
     list.setAutoDelete( TRUE );
 
-	if ( percent )
+	if ( percent > 0 )
 	{
 		width = max_width * percent / 100;
+		setFixedWidth( false );
+	}
+	else if ( percent < 0 )
+	{
+		width = max_width;
 		setFixedWidth( false );
 	}
 	else
@@ -1704,6 +1712,9 @@ int HTMLClue::calcMinWidth()
 		minWidth = w;
     }
 
+	if ( isFixedWidth() )
+		return width > minWidth ? width : minWidth;
+
 	return minWidth;
 }
 
@@ -1842,7 +1853,7 @@ void HTMLClueV::setMaxWidth( int _max_width )
 	if ( !isFixedWidth() )
 	{
 		max_width = _max_width;
-		if ( percent )
+		if ( percent > 0 )
 			width = _max_width * percent / 100;
 		else
 			width = max_width;
@@ -2112,6 +2123,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	descent = 0;
 	width = 0;
 	lmargin = parent->getLeftMargin( getYPos() );
+	if ( indent > lmargin )
+		lmargin = indent;
 	rmargin = parent->getRightMargin( getYPos() );
 	int w = lmargin;
 	int a = 0;
@@ -2145,6 +2158,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 					++line;
 				++line;
 				lmargin = parent->getLeftMargin( getYPos() + 1 );
+				if ( indent > lmargin )
+					lmargin = indent;
 				rmargin = parent->getRightMargin( getYPos() + 1 );
 				w = lmargin;
 			}
@@ -2194,6 +2209,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 			}
 
 			lmargin = parent->getLeftMargin( getYPos() + 1 );
+			if ( indent > lmargin )
+				lmargin = indent;
 			rmargin = parent->getRightMargin( getYPos() + 1 );
 
 			ascent += obj->getHeight();
@@ -2274,6 +2291,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 			}
 
 			lmargin = parent->getLeftMargin( getYPos() + 1 );
+			if ( indent > lmargin )
+				lmargin = indent;
 			rmargin = parent->getRightMargin( getYPos() + 1 );
 
 			// Do not print newlines or separators at the beginning of a line.
@@ -2371,6 +2390,11 @@ int HTMLClueFlow::findPageBreak( int _y )
 	return -1;
 }
 
+int HTMLClueFlow::calcMinWidth()
+{
+	return HTMLClue::calcMinWidth() + indent;
+}
+
 int HTMLClueFlow::calcPreferredWidth()
 {
 	HTMLObject *obj;
@@ -2394,7 +2418,7 @@ int HTMLClueFlow::calcPreferredWidth()
 	if ( w > maxw )
 		maxw = w;
 
-	return maxw;
+	return maxw + indent;
 }
 
 void HTMLClueFlow::setMaxWidth( int _max_width )
@@ -2405,7 +2429,7 @@ void HTMLClueFlow::setMaxWidth( int _max_width )
 
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
-		obj->setMaxWidth( max_width );
+		obj->setMaxWidth( max_width - indent );
 	}
 }
 

@@ -510,11 +510,6 @@ protected:
     const char* parseCell( HTMLClue *_clue, const char *attr );
 
     /*********************************************************
-     * parse list types
-     */
-    const char* parseList( HTMLClueV *_clue, int _max_width, ListType t );
-
-    /*********************************************************
      * parse glossaries
      */
     const char* parseGlossary( HTMLClueV *_clue, int _max_width );
@@ -710,9 +705,23 @@ protected:
 	bool parsing;
 
 	/*********************************************************
-	 * Nested level of current list item
+	 * size of current indenting
 	 */
-	int listLevel;
+	int indent;
+
+	class HTMLList
+	{
+		public:
+			HTMLList( ListType t ) { type = t; itemNumber = 1; }
+		ListType type;
+		int itemNumber;
+	};
+
+	/*********************************************************
+	 * Stack of lists currently active.
+	 * The top affects whether a bullet or numbering is used by <li>
+	 */
+	QStack<HTMLList> listStack;
 
 	/*********************************************************
 	 * The current alignment, set by <DIV > or <CENTER>
@@ -761,9 +770,9 @@ protected:
     
     /// If this flag is set, the widget must repaint after parsing
     /**
-      If an image is loaded from the web and we knew already about its size, it may
-      happen that the image arrives during parsing. In this case we paint the loaded
-      image after parsing has finished.
+      If an image is loaded from the web and we knew already about its size,
+	  it may happen that the image arrives during parsing. In this case we
+	  paint the loaded image after parsing has finished.
       */
     bool bPaintAfterParsing;
 
@@ -772,9 +781,9 @@ protected:
     /**
      * The URL of the not loaded!! background image
      * If we are waiting for a background image then this is its URL.
-     * If the image is already loaded or if we dont have one this variable contains 0L.
-     * You can write bgPixmapURL.isNull() to test wether we are waiting for a background
-     * pixmap.
+     * If the image is already loaded or if we dont have one this variable
+	 * contains 0L. You can write bgPixmapURL.isNull() to test wether we are
+	 * waiting for a background pixmap.
      */
     QString bgPixmapURL;
 

@@ -178,6 +178,11 @@ public:
      * to have. If you do not use HCenter or Right and if this Box
      * becomes a child of a VBox you may set _x to give this Box
      * a shift to the right.
+	 *
+	 * if:
+	 *     _percent == -ve     width = best fit
+	 *     _percent == 0       width = _max_width (fixed)
+	 *     _percent == +ve     width = _percent * 100 / _max_width
      */
     HTMLClue( int _x, int _y, int _max_width, int _percent = 100);
 	virtual ~HTMLClue() { }
@@ -211,7 +216,7 @@ public:
     virtual void getSelected( QStrList & );
 
     virtual void calcAbsolutePos( int _x, int _y );
-
+	virtual void setIndent( int ) { }
     virtual void reset();
 
     /************************************************************
@@ -274,13 +279,20 @@ class HTMLClueFlow : public HTMLClue
 {
 public:
     HTMLClueFlow( int _x, int _y, int _max_width, int _percent=100)
-		: HTMLClue( _x, _y, _max_width, _percent ) { }
+		: HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
 	virtual ~HTMLClueFlow() { }
     
     virtual void calcSize( HTMLClue *parent = NULL );
 	virtual int  findPageBreak( int _y );
+    virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
+
+	virtual void setIndent( int i )
+		{	indent = i; }
+
+private:
+	int indent;
 };
 
 //-----------------------------------------------------------------------------

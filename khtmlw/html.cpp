@@ -36,6 +36,7 @@
 #endif
 
 #define PRINTING_MARGIN		36	// printed margin in 1/72in units
+#define INDENT_SIZE			30
 
 HTMLFontManager* pFontManager = NULL;
 
@@ -115,6 +116,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name )
     bParseAfterLastImage = false;
     bPaintAfterParsing = false;
     formList.setAutoDelete( true );
+	listStack.setAutoDelete( true );
 
     standardFont = "times";
     fixedFont = "courier";
@@ -959,7 +961,7 @@ void KHTMLWidget::parse()
 	inTitle = false;
 
 	parsing = true;
-	listLevel = 0;
+	indent = 0;
 	vspace_inserted = false;
 	divAlign = HTMLClue::Left;
 
@@ -1190,6 +1192,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 			if ( flow == NULL )
 			{
 			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+			flow->setIndent( indent );
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 			}
@@ -1321,10 +1324,11 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		c->setVAlign( HTMLClue::Top );
 
-		HTMLClueV *vc = new HTMLClueV( 0, 0, 30, 0 );	// fixed width spacer
+		// fixed width spacer
+		HTMLClueV *vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 );
 		c->append( vc );
 
-		vc = new HTMLClueV( 0, 0, c->getMaxWidth()-60 );
+		vc = new HTMLClueV( 0, 0, c->getMaxWidth()-INDENT_SIZE*2 );
 		c->append( vc );
 		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
 		flow->setHAlign( divAlign );
@@ -1334,7 +1338,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 
 		_clue->append( c );
 
-		vc = new HTMLClueV( 0, 0, 30, 0 );	// fixed width spacer
+		vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 );	// fixed width spacer
 		c->append( vc );
 
 		flow = 0;
@@ -1472,7 +1476,15 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 {
 	if ( strncasecmp( str, "<dir", 4 ) == 0 )
 	{
-		parseList( _clue, _clue->getMaxWidth(), Dir );
+		listStack.push( new HTMLList( Dir ) );
+		indent += INDENT_SIZE;
+//		parseList( _clue, _clue->getMaxWidth(), Dir );
+	}
+	else if ( strncasecmp( str, "</dir>", 6 ) == 0 )
+	{
+		listStack.pop();
+		indent -= INDENT_SIZE;
+		flow = NULL;
 	}
 	else if ( strncasecmp( str, "<div", 4 ) == 0 )
 	{
@@ -1498,8 +1510,9 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	{
 		divAlign = HTMLClue::Left;
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		_clue->append( flow );
+		flow->setIndent( indent );
 		flow->setHAlign( divAlign );
+		_clue->append( flow );
 	}
 	else if ( strncasecmp( str, "<dl>", 4 ) == 0 )
 	{
@@ -1740,6 +1753,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		}
 		// Start a new flow box
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
 		flow->setHAlign( align );
 		_clue->append( flow );
 
@@ -1799,11 +1813,12 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
 		flow->setHAlign( divAlign );
 		_clue->append( flow );
 
 		int size = 1;
-		int length = _clue->getMaxWidth();
+		int length = _clue->getMaxWidth() - indent;
 		int percent = 100;
 		HTMLRule::HAlign align = divAlign;
 		bool shade = TRUE;
@@ -1841,8 +1856,8 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 				shade = FALSE;
 			}
 		}
-		flow->append( new HTMLRule( _clue->getMaxWidth(), length, percent,
-			size, align, shade ));
+		flow->append( new HTMLRule( _clue->getMaxWidth() - indent, length,
+			percent, size, align, shade ));
 		flow = 0;
 	}
 }
@@ -1905,6 +1920,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 			if ( flow == 0)
 			{
 				flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+				flow->setIndent( indent );
 				flow->setHAlign( divAlign );
 				_clue->append( flow );
 			}
@@ -1932,6 +1948,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		if ( flow == NULL )
 		{
 			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+			flow->setIndent( indent );
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 		}
@@ -1960,25 +1977,58 @@ void KHTMLWidget::parseK( HTMLClueV *, const char *str )
 // <li>
 void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 {
-	// support <li> outside of <ul></ul> because netscape does
 	if (strncasecmp( str, "<li>", 4 ) == 0)
 	{
+		QString item;
+		ListType type = Unordered;
+		int listLevel = 1;
+		int itemNumber = 1;
+		int indentSize = INDENT_SIZE;
+		if ( listStack.count() > 0 )
+		{
+			type = listStack.top()->type;
+			itemNumber = listStack.top()->itemNumber;
+			listLevel = listStack.count();
+			indentSize = indent;
+		}
 		HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		c->setVAlign( HTMLClue::Top );
 		_clue->append( c );
-		HTMLClueV *vc = new HTMLClueV( 0, 0, 30, 0 ); // fixed width spacer
+
+		// fixed width spacer
+		HTMLClueV *vc = new HTMLClueV( 0, 0, indentSize, 0 );
 		vc->setVAlign( HTMLClue::Top );
 		c->append( vc );
-		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
-		flow->setHAlign( HTMLClue::Right );
-		vc->append( flow );
-		flow->append( new HTMLBullet( font_stack.top()->pointSize(),
-			1, textColor ) );
 
-		vc = new HTMLClueV( 0, 0, _clue->getMaxWidth() - 30 );
+		switch ( type )
+		{
+			case Unordered:
+				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
+				flow->setHAlign( HTMLClue::Right );
+				vc->append( flow );
+				flow->append( new HTMLBullet( font_stack.top()->pointSize(),
+					listLevel, textColor ) );
+				break;
+
+			case Ordered:
+				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
+				flow->setHAlign( HTMLClue::Right );
+				vc->append( flow );
+				item.sprintf( "%2d. ", itemNumber );
+				tempStrings.append( item );
+				flow->append(new HTMLText(tempStrings.getLast(),currentFont(),
+						  painter,"", ""));
+				break;
+
+			default:
+				break;
+		}
+
+		vc = new HTMLClueV( 0, 0, _clue->getMaxWidth() - indentSize );
 		c->append( vc );
 		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
 		vc->append( flow );
+		listStack.top()->itemNumber++;
 	}
 }
 
@@ -1988,8 +2038,16 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	if (strncasecmp( str, "<menu>", 6 ) == 0)
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		parseList( _clue, _clue->getMaxWidth(), Menu );
-		flow = 0;
+		listStack.push( new HTMLList( Menu ) );
+		indent += INDENT_SIZE;
+//		parseList( _clue, _clue->getMaxWidth(), Menu );
+		flow = NULL;
+	}
+	if (strncasecmp( str, "</menu>", 7 ) == 0)
+	{
+		listStack.pop();
+		indent -= INDENT_SIZE;
+		flow = NULL;
 	}
 }
 
@@ -2003,7 +2061,15 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
 {
 	if ( strncasecmp( str, "<ol", 3 ) == 0 )
 	{
-		parseList( _clue, _clue->getMaxWidth(), Ordered );
+		listStack.push( new HTMLList( Ordered ) );
+		indent += INDENT_SIZE;
+//		parseList( _clue, _clue->getMaxWidth(), Ordered );
+	}
+	else if ( strncasecmp( str, "</ol>", 5 ) == 0 )
+	{
+		listStack.pop();
+		indent -= INDENT_SIZE;
+		flow = NULL;
 	}
 	else if ( strncasecmp( str, "<option", 7 ) == 0 )
 	{
@@ -2082,6 +2148,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 			}
 		}
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
 		flow->setHAlign( align );
 		_clue->append( flow );
 	}
@@ -2161,6 +2228,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		if ( flow == NULL )
 		{
 			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+			flow->setIndent( indent );
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 		}
@@ -2203,6 +2271,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	if ( strncasecmp( str, "<table", 6 ) == 0 )
 	{
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
 		flow->setHAlign( divAlign );
 		_clue->append( flow );
 		parseTable( flow, _clue->getMaxWidth(), str + 7 );
@@ -2253,6 +2322,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 		if ( flow == NULL )
 		{
 			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+			flow->setIndent( indent );
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 		}
@@ -2306,7 +2376,16 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
 				type = UnorderedPlain;
 		}
 
-		parseList( _clue, _clue->getMaxWidth(), type );
+		listStack.push( new HTMLList( type ) );
+		indent += INDENT_SIZE;
+		flow = NULL;
+//		parseList( _clue, _clue->getMaxWidth(), type );
+	}
+	else if ( strncasecmp( str, "</ul>", 5 ) == 0 )
+	{
+		listStack.pop();
+		indent -= INDENT_SIZE;
+		flow = NULL;
 	}
 }
 
@@ -2380,113 +2459,6 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     return str;
 }
 
-// list parser.
-// <dir> really should be placed across the page like <grid>
-//
-const char* KHTMLWidget::parseList(HTMLClueV *_clue,int _max_width,ListType t)
-{
-    const char* str = NULL;
-	static const char *endul[] = { "<li>", "</ul>", NULL };
-	static const char *endol[] = { "<li>", "</ol>", NULL };
-	static const char *endmenu[] = { "<li>", "</menu>", NULL };
-	static const char *enddir[] = { "<li>", "</dir>", NULL };
-	const char **end = endul;     
-	int   itemNum = 1;
-	QString item;
-
-	listLevel++;
-
-	switch ( t )
-	{
-		case Unordered:
-		case UnorderedPlain:
-			end = endul;
-			break;
-
-		case Ordered:
-			end = endol;
-			break;
-
-		case Menu:
-			end = endmenu;
-			break;
-
-		case Dir:
-			end = enddir;
-			break;
-	}
-
-	HTMLClueV *container = new HTMLClueV( 0, 0, _max_width );
-	container->setHAlign( divAlign );
-	_clue->append( container );
-
-    while ( ht->hasMoreTokens() )
-    {
-	str = ht->nextToken();
-
-	// Every tag starts with an escape character
-	if ( str[0] == TAG_ESCAPE )
-	{
-	    str++;
-	    
-	    while ( str && strncasecmp( str, "<li>", 4 ) == 0)
-	    {
-		HTMLClueH *c = new HTMLClueH( 0, 0, _max_width );
-		c->setVAlign( HTMLClue::Top );
-		container->append( c );
-		HTMLClueV *vc = new HTMLClueV( 0, 0, 30, 0 ); // fixed width spacer
-		vc->setVAlign( HTMLClue::Top );
-		c->append( vc );
-		switch ( t )
-		{
-			case Unordered:
-				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
-				flow->setHAlign( HTMLClue::Right );
-				vc->append( flow );
-				flow->append( new HTMLBullet( font_stack.top()->pointSize(),
-					listLevel, textColor ) );
-				break;
-
-			case Ordered:
-				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
-				flow->setHAlign( HTMLClue::Right );
-				vc->append( flow );
-				item.sprintf( "%2d. ", itemNum );
-				tempStrings.append( item );
-				flow->append(new HTMLText(tempStrings.getLast(),currentFont(),
-							  painter,"", ""));
-				break;
-
-			default:
-				break;
-		}
-		vc = new HTMLClueV( 0, 0, _max_width - 30 );
-		c->append( vc );
-		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
-		vc->append( flow );
-		str = parseBody( vc, end );
-		itemNum++;
-
-		// did we run out of html
-		if ( str == NULL )
-		{
-    		listLevel--;
-			return NULL;
-		}
-		}
-
-	    if ( !str || strncasecmp( str, end[1], strlen( end[1]) ) == 0)
-			break;
-	}
-    }
-
-    flow = NULL;
-    
-    listLevel--;
-
-    return str;
-}
-
 // glossary parser.
 //
 const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
@@ -2531,9 +2503,9 @@ const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
 			{
 				HTMLClueH *c = new HTMLClueH( 0, 0, _max_width );
 				container->append( c );
-				vc = new HTMLClueV( 0, 0, 30, 0 ); // fixed width spacer
+				vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 ); // fixed width spacer
 				c->append( vc );
-				vc = new HTMLClueV( 0, 0, _max_width-30 );
+				vc = new HTMLClueV( 0, 0, _max_width-INDENT_SIZE );
 				c->append( vc );
 				flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
 				vc->append( flow );
@@ -2547,11 +2519,11 @@ const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
 			{
 			    HTMLClueH *c = new HTMLClueH( 0, 0, _max_width );
 			    container->append( c );
-			    vc = new HTMLClueV( 0, 0, 30, 0 ); // fixed width spacer
+			    vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 ); // fixed width spacer
 			    c->append( vc );
-			    vc = new HTMLClueV( 0, 0, _max_width-30 );
+			    vc = new HTMLClueV( 0, 0, _max_width-INDENT_SIZE );
 			    c->append( vc );
-			    if ( ( str = parseGlossary( vc, _max_width-30 ) ) == NULL )
+			    if ( ( str = parseGlossary( vc, _max_width-INDENT_SIZE ) ) == NULL )
 				{
 					return NULL;
 				}
@@ -2707,7 +2679,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 
 			int rowSpan = 1, colSpan = 1;
 			int width = _clue->getMaxWidth();
-			int percent = 100;
+			int percent = -1;
 			QColor bgcolor;
 			HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
 							HTMLClue::VCenter : rowvalign);

@@ -394,25 +394,31 @@ void HTMLTokenizer::write( const char *str )
 			}
 			src++;
 		}
-		// Dont manipulate any character inside of the <script> tag
-		else if ( !tag && script && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
+		else if ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 )
 		{
-		    *dest++ = *src++;
-		}
-		else if ( !tag && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
-		{
-			if ( !space )
+			if ( !tag && script )
 			{
-			// MRJ - taking this line out reduces mem usage by about 1/3
-			// and makes almost no difference to output
-			//		*dest++ = 0;
-				*dest++ = ' ';
-				*dest++ = 0;
-				tokenList.append( buffer );
-				dest = buffer;
+				// Dont manipulate any character inside of the <script> tag
+		    	*dest++ = *src++;
 			}
-			src++;
-			space = TRUE;
+			else
+			{
+				if ( !space )
+				{
+					*dest++ = ' ';
+					if ( !tag )
+					{
+					// MRJ - taking this line out reduces mem usage by about 1/3
+					// and makes almost no difference to output
+					//		*dest++ = 0;
+						*dest++ = 0;
+						tokenList.append( buffer );
+						dest = buffer;
+					}
+				}
+				src++;
+				space = TRUE;
+			}
 		}
 		else
 		{

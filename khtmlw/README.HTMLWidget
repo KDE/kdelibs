@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.8.1
+This is the alpha version 0.8.2
 
 Developers
 ----------
@@ -438,7 +438,18 @@ Version 0.8.1 - Martin
 
  More fixes to tables.
 
-Last change
-28.6.97 Martin Jones
+Version 0.8.2 - Martin
 
+ More work on tables - they seem to be working much better now.
+
+ Changed the way lists are parsed so that <ul></ul> can indent text like
+ Netscape.  Added indent property to HTMLClueFlow.
+
+ Fixed tokenising of tags so that they can be broken by CR, e.g. this
+ works now:
+     <a
+     href="http://www.kde.org">KDE</a>
+
+Last change
+8.7.97 Martin Jones
 
