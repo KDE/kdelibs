@@ -650,7 +650,7 @@ KPaletteTable::readNamedColor( void )
 	{
 	  continue;
 	}
-	list.append( i18n("color", name ) );
+	list.append( i18n("color", name.latin1() ) );
       }
     }
 
