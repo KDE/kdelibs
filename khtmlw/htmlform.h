@@ -39,36 +39,30 @@ class HTMLForm;
 
 //---------------------------------------------------------------------------
 
-class HTMLElement : public QObject, public HTMLObject
+class HTMLElement
 {
-	Q_OBJECT
 public:
 	HTMLElement( const char *n )
-		{ _name = n; _absX = 0; _absY = 0; widget = 0; form = 0; }
+		{ _name = n; form = 0; }
 	virtual ~HTMLElement();
 
-	const QString &name() const
+	const QString &elementName() const
 		{	return _name; }
-	void setName( const char *n )
+	void setElementName( const char *n )
 		{	_name = n; }
 
 	void setForm( HTMLForm *f )
 		{	form = f; }
 
-	int absX() const
-		{	return _absX; }
-	int absY() const
-		{	return _absY; }
-
 	// This function places the element on the page using the
-	// absolute cooridinates.  Also responsible for showing/hiding
+	// absolute coordinates.  Also responsible for showing/hiding
 	// non-visible elements
-	void position( int _x, int _y, int _width, int _height );
+	virtual void position( int _x, int _y, int _width, int _height ) {}
 
 	virtual QString encoding()
 		{	return QString( "" ); }
 
-	virtual void calcAbsolutePos( int _x, int _y );
+	virtual void calcAbsolutePos( int _x, int _y ) {}
 
 	virtual void reset() { }
 
@@ -77,21 +71,46 @@ protected:
 	QString encodeString( const QString &e );
 
 protected:
-	QWidget *widget;
 	QString _encoding;
 
 private:
 	QString _name;
 
+	HTMLForm *form;
+};
+
+class HTMLWidgetElement : public QObject, public HTMLObject, public HTMLElement
+{
+	Q_OBJECT
+public:
+	HTMLWidgetElement( const char *n ) : HTMLElement( n )
+	    { _absX = 0; _absY = 0; widget = 0; }
+	virtual ~HTMLWidgetElement();
+
+	int absX() const
+		{	return _absX; }
+	int absY() const
+		{	return _absY; }
+
+	// This function places the element on the page using the
+	// absolute coordinates.  Also responsible for showing/hiding
+	// non-visible elements
+	virtual void position( int _x, int _y, int _width, int _height );
+
+	virtual void calcAbsolutePos( int _x, int _y );
+
+protected:
+	QWidget *widget;
+
+private:
 	// absolute position of this element in the page
 	int _absX;
 	int _absY;
-	HTMLForm *form;
 };
 
 //---------------------------------------------------------------------------
 
-class HTMLSelect : public HTMLElement
+class HTMLSelect : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
@@ -123,7 +142,7 @@ private:
 
 //---------------------------------------------------------------------------
 
-class HTMLTextArea : public HTMLElement
+class HTMLTextArea : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
@@ -142,7 +161,7 @@ private:
 
 //---------------------------------------------------------------------------
 
-class HTMLInput : public HTMLElement
+class HTMLInput : public HTMLWidgetElement
 {
 	Q_OBJECT
 public:
@@ -229,31 +248,23 @@ signals:
 
 //---------------------------------------------------------------------------
 
-class HTMLImageButton : public HTMLInput
-{
-    Q_OBJECT
-public:
-    HTMLImageButton( QWidget *parent, const char *v, const char * imgurl );
-    virtual ~HTMLImageButton() { }
-
-protected:
-    QImage *image;
-};
-
-//---------------------------------------------------------------------------
-
 class HTMLSubmit : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLSubmit( QWidget *parent, const char *v );
+	HTMLSubmit( QWidget *parent, const char *n, const char *v );
 	virtual ~HTMLSubmit() { }
+
+	virtual QString encoding();
 
 protected slots:
 	void slotClicked();
 
 signals:
 	void submitForm();
+
+private:
+	bool activated;
 };
 
 //---------------------------------------------------------------------------
@@ -278,6 +289,29 @@ signals:
 
 private:
 	QString _defText;
+};
+
+//---------------------------------------------------------------------------
+
+class HTMLImageInput : public HTMLImage, public HTMLElement
+{
+    Q_OBJECT
+public:
+    HTMLImageInput( KHTMLWidget *widget, const char *, int mw, const char *n );
+    virtual ~HTMLImageInput() {}
+
+    virtual QString encoding();
+
+    virtual HTMLObject *mouseEvent( int, int, int, int );
+
+signals:
+    void submitForm();
+
+private:
+    int  _xp;
+    int  _yp;
+    bool pressed;
+    bool activated;
 };
 
 //---------------------------------------------------------------------------

@@ -688,6 +688,36 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
     return 0L;
 }
 
+HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
+{
+    unsigned int r, c;
+    HTMLObject *obj;
+    HTMLTableCell *cell;
+
+    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+	return 0;
+
+    for ( r = 0; r < totalRows; r++ )
+    {
+	for ( c = 0; c < totalCols; c++ )
+	{
+	    if ( ( cell = cells[r][c] ) == 0 )
+		continue;
+
+	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
+		continue;
+	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
+		continue;
+
+	    if ( ( obj = cell->mouseEvent( _x-x, _y-(y - ascent), button,
+		    state ) ) != 0 )
+		return obj;
+	}
+    }
+
+    return 0;
+}
+
 void HTMLTable::selectByURL( QPainter *_painter, const char *_url, bool _select,
 int _tx, int _ty )
 {
@@ -1298,6 +1328,24 @@ HTMLObject* HTMLClue::checkPoint( int _x, int _y )
     return 0;
 }
 
+HTMLObject* HTMLClue::mouseEvent( int _x, int _y, int button, int state )
+{
+    HTMLObject *obj;
+    HTMLObject *obj2;
+
+    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+	return 0;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+    {
+	if ((obj2 = obj->mouseEvent( _x - x, _y - (y - ascent), button,
+		state )) != 0 )
+	    return obj2;
+    }
+
+    return 0;
+}
+
 void HTMLClue::calcSize( HTMLClue * )
 {
     // If we have already called calcSize for the children, then just
@@ -1522,6 +1570,35 @@ HTMLObject* HTMLClueV::checkPoint( int _x, int _y )
     }
 
     return 0L;
+}
+
+HTMLObject* HTMLClueV::mouseEvent( int _x, int _y, int button, int state )
+{
+    HTMLObject *obj2;
+
+    if ( ( obj2 = HTMLClue::mouseEvent( _x, _y, button, state ) ) != 0L )
+	    return obj2;
+
+    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+	return 0;
+
+    HTMLClueAligned *clue;
+    for ( clue = alignLeftList; clue != 0; clue = clue->nextClue() )
+    {
+	if ((obj2 = clue->mouseEvent( _x - x - clue->parent()->getXPos(),
+		 _y - (y - ascent) - ( clue->parent()->getYPos() -
+		 clue->parent()->getAscent() ), button, state )) != 0 )
+	    return obj2;
+    }
+    for ( clue = alignRightList; clue != 0; clue = clue->nextClue() )
+    {
+	if ((obj2 = clue->mouseEvent( _x - x - clue->parent()->getXPos(),
+		 _y - (y - ascent) - ( clue->parent()->getYPos() -
+		 clue->parent()->getAscent() ), button, state )) != 0 )
+	    return obj2;
+    }
+
+    return 0;
 }
 
 void HTMLClueV::calcSize( HTMLClue *parent )

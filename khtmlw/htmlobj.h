@@ -109,7 +109,8 @@ public:
      */
     virtual void print( QPainter *, int, int ) { }
 
-    virtual HTMLObject* checkPoint( int, int );
+    virtual HTMLObject *checkPoint( int, int );
+    virtual HTMLObject *mouseEvent( int, int, int, int ) { return 0; }
     virtual void selectByURL(QPainter *, const char *, bool, int _tx, int _ty);
     virtual void select( QPainter *, bool, int _tx, int _ty );
 

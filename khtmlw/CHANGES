@@ -1,6 +1,15 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.10 - 15 February 1998
+---------------
+
+Fixed crashes with images using USEMAP   (kb119)
+Implemented MULTIPLE in <SELECT ...>     (kb140)
+Implemented <INPUT TYPE=IMAGE ...>       (kb124)
+Other fixes in form stuff.
+
+
 Version 0.12.09 - 04 February 1998
 ---------------
 

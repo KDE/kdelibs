@@ -92,7 +92,8 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxAscent( int );
-    virtual HTMLObject* checkPoint( int, int );
+    virtual HTMLObject *checkPoint( int, int );
+    virtual HTMLObject *mouseEvent( int, int, int, int );
     virtual void selectByURL( QPainter *,const char *,bool, int _tx, int _ty );
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );
@@ -226,7 +227,8 @@ public:
     virtual void reset();
 
     virtual void setMaxWidth( int );
-    virtual HTMLObject* checkPoint( int, int );
+    virtual HTMLObject *checkPoint( int, int );
+    virtual HTMLObject *mouseEvent( int, int, int, int );
     virtual void calcSize( HTMLClue *parent = 0L );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
@@ -337,7 +339,8 @@ public:
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int _max_width );
     virtual void setMaxAscent( int );
-    virtual HTMLObject* checkPoint( int, int );
+    virtual HTMLObject *checkPoint( int, int );
+    virtual HTMLObject *mouseEvent( int, int, int, int );
     virtual void selectByURL( QPainter *,const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );

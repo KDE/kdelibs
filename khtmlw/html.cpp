@@ -290,6 +290,11 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
     // Make this frame the active one
     if ( bIsFrame && !bIsSelected )
 	htmlView->setSelected( TRUE );
+
+    if ( clue->mouseEvent( _mouse->x() + x_offset - leftBorder,
+	    _mouse->y() + y_offset - topBorder, _mouse->button(),
+	    _mouse->state() ) )
+	return;
     
     if ( _mouse->button() == LeftButton )
     {
@@ -509,6 +514,11 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     // Used to prevent dndMouseMoveEvent from initiating a drag before
     // the mouse is pressed again.
     pressed = false;
+
+    if ( clue->mouseEvent( _mouse->x() + x_offset - leftBorder,
+	    _mouse->y() + y_offset - topBorder, _mouse->button(),
+	    _mouse->state() ) )
+	return;
 
     // Does the parent want to process the event now ?
     if ( htmlView )
@@ -2730,12 +2740,8 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		char *newurl = new char [1024];
 		newurl[0] = '\0';
 		if ( url )
-		{
 		    strcpy( newurl, url );
-		    delete [] url;
-		}
 		url = newurl;
-		parsedURLs.removeLast();
 		parsedURLs.append( url );
 
 		// allocate enough mem for any target which might be in the
@@ -2744,15 +2750,9 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		newtarget[0] = '\0';
 
 		if ( target )
-		{
 		    strcpy( newtarget, target );
-		    delete [] target;
-		}
-		else
-		    strcpy( newtarget, "" );
 
 		target = newtarget;
-		parsedTargets.removeLast();
 		parsedTargets.append( target );
 
 		image =  new HTMLImageMap( this, kurl.url(), url, target,
@@ -3836,10 +3836,10 @@ const char *KHTMLWidget::parseInput( const char *attr )
     enum InputType { CheckBox, Hidden, Radio, Reset, Submit, Text, Image,
 	    Button, Password, Undefined };
     const char *p;
-    HTMLInput *element = 0;
     InputType type = Text;
     QString name = "";
     QString value = "";
+    QString imgSrc;
     bool checked = false;
     int size = 20;
     int maxLen = -1;
@@ -3900,6 +3900,10 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	{
 	    checked = true;
 	}
+	else if ( strncasecmp( token, "src=", 4 ) == 0 )
+	{
+	    imgSrc = token + 4;
+	}
 	else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
 	{
 	    QString code;
@@ -3920,66 +3924,95 @@ const char *KHTMLWidget::parseInput( const char *attr )
     switch ( type )
     {
 	case CheckBox:
-	    element = new HTMLCheckBox( this, name, value, checked );
+	    {
+		HTMLCheckBox *cb = new HTMLCheckBox( this,name,value,checked );
+		cb->setForm( form );
+		form->addElement( cb );
+		flow->append( cb );
+	    }
 	    break;
 
 	case Hidden:
-	    element = new HTMLHidden( name, value );
+	    {
+		HTMLHidden *hidden = new HTMLHidden( name, value );
+		hidden->setForm( form );
+		form->addHidden( hidden );
+	    }
 	    break;
 
 	case Radio:
-	    element = new HTMLRadio( this, name, value, checked );
-	    connect( element, SIGNAL(radioSelected(const char *, const char *)),
-		form, SLOT(slotRadioSelected(const char *, const char *)));
-	    connect( form, SIGNAL( radioSelected(const char*, const char *) ),
-		element, SLOT(slotRadioSelected(const char *, const char *)));
+	    {
+		HTMLRadio *radio = new HTMLRadio( this, name, value, checked );
+		radio->setForm( form );
+		form->addElement( radio );
+		flow->append( radio );
+		connect(radio,SIGNAL(radioSelected(const char *,const char *)),
+		    form, SLOT(slotRadioSelected(const char *, const char *)));
+		connect(form,SIGNAL( radioSelected(const char*,const char *) ),
+		radio, SLOT(slotRadioSelected(const char *, const char *)));
+	    }
 	    break;
 
 	case Reset:
-	    element = new HTMLReset( this, value );
-	    connect( element, SIGNAL( resetForm() ),
-		    form, SLOT( slotReset() ) );
+	    {
+		HTMLReset *reset = new HTMLReset( this, value );
+		reset->setForm( form );
+		form->addElement( reset );
+		flow->append( reset );
+		connect( reset, SIGNAL( resetForm() ),
+			form, SLOT( slotReset() ) );
+	    }
 	    break;
 
 	case Submit:
-	    element = new HTMLSubmit( this, value );
-	    connect( element, SIGNAL( submitForm() ),
-		    form, SLOT( slotSubmit() ) );
+	    {
+		HTMLSubmit *submit = new HTMLSubmit( this, name, value );
+		submit->setForm( form );
+		form->addElement( submit );
+		flow->append( submit );
+		connect( submit, SIGNAL( submitForm() ),
+			form, SLOT( slotSubmit() ) );
+	    }
 	    break;
 
 	case Button:
-	    element = new HTMLButton( this, name, value, handlers );
-	    break;
+	    {
+		HTMLButton *button = new HTMLButton(this,name,value,handlers);
+		button->setForm( form );
+		form->addElement( button );
+		flow->append( button );
+		break;
+	    }
 
 	case Text:
 	case Password:
-	    element = new HTMLTextInput( this, name, value, size,
-		    maxLen, (type == Password));
-	    connect( element, SIGNAL( submitForm() ),
-		    form, SLOT( slotSubmit() ) );
+	    {
+		HTMLTextInput *ti = new HTMLTextInput( this, name, value, size,
+			maxLen, (type == Password));
+		ti->setForm( form );
+		form->addElement( ti );
+		flow->append( ti );
+		connect( ti, SIGNAL( submitForm() ),
+			form, SLOT( slotSubmit() ) );
+	    }
 	    break;
 
 	case Image:
+	    if ( !imgSrc.isEmpty() )
+	    {
+		KURL kurl( baseURL, imgSrc );
+		HTMLImageInput *ii = new HTMLImageInput( this, kurl.url(),
+			100, name );
+		ii->setForm( form );
+		form->addElement( ii );
+		flow->append( ii );
+		connect( ii, SIGNAL( submitForm() ),
+			form, SLOT( slotSubmit() ) );
+	    }
 	    break;
 
 	case Undefined:
 	    break;
-    }
-
-    if ( element )
-    {
-	element->setForm( form );
-
-	// hidden elements are not added to the HTMLObject hierarchy
-	if ( type == Hidden )
-	{
-	    form->addHidden( (HTMLHidden *)element );
-	}
-	else
-	{
-	    form->addElement( element );
-	    flow->append( element );
-	}
     }
 
     return 0;
