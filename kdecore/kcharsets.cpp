@@ -62,8 +62,8 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "koi8r",
     "koi8u",
 #if QT_VERSION >= 224
-    "cp1251",
-    "pt154",
+    "cp 1251",
+    "pt 154",
 #endif
     "eucjp",
     "euckr",
