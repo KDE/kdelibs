@@ -2375,7 +2375,7 @@ void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
     d->caretViewContext();
     NodeImpl *caretNode = m_part->d->caretNode().handle();
 #if DEBUG_CARETMODE > 0
-  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, kMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15)).string() + "\"" : QString::null) << endl;
+  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, kMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString::null) << endl;
 #endif
     caretNode->getCaret(m_part->d->caretOffset(),
                 caretOverrides(),
