@@ -49,16 +49,30 @@ class KOpenWithDlg : public QDialog
 {
     Q_OBJECT
 public:
+
     /**
-     * Create a dialog that asks for a application to open a given URL(s) with.
+     * Create a dialog that asks for a application to open a given
+     * URL(s) with.
+     *
+     * @param urls   is the URL that should be opened
+     * @param parent parent widget
+     */
+    KOpenWithDlg( const KURL::List& urls, QWidget *parent = (QWidget*)0 );
+
+    /**
+     * Create a dialog that asks for a application to open a given
+     * URL(s) with.
      *
      * @param urls   is the URL that should be opened
      * @param text   appears as a label on top of the entry box.
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-
     KOpenWithDlg( const KURL::List& urls, const QString&text, const QString&value, QWidget *parent );
+
+    /**
+    * Destructor
+    */
     ~KOpenWithDlg();
 
     /**
@@ -80,6 +94,16 @@ public slots:
     void slotOK();
 
 protected:
+
+    /**
+     * Create a dialog that asks for a application to open a given
+     * URL(s) with.
+     *
+     * @param urls   is the URL that should be opened
+     * @param parent parent widget
+     */
+    void init( const KURL::List&, const QString&, const QString& );
+
     KURLRequester * edit;
     QString m_command;
 

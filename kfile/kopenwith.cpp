@@ -318,13 +318,40 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  *
  ***************************************************************/
 
+KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
+             :QDialog( parent, 0, true )
+{
+    setCaption( i18n( "Open With" ) );
+    QString text;
+    if( _urls.count() == 1 )
+    {
+        text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
+                     "If the program is not listed, enter the name or click "
+                     "the browse button.</qt>").arg( _urls.first().filename() );
+    }
+    else
+        // Should never happen ??
+        text = i18n( "Choose the name of the program to open the selected files with." );
+    init( _urls, text, QString() );
+}
+
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
+  QString caption = _urls.first().decodedURL();
+  if (_urls.count() > 1)
+      caption += QString::fromLatin1("...");
+  setCaption(caption);
+  init( _urls, _text, _value );
+}
+
+void KOpenWithDlg::init( const KURL::List& _urls, const QString& _text, const QString& _value )
+{
+
   if ( _urls.count() == 1 )
   {
-    qServiceType = KMimeType::findByURL(_urls.first())->name();
+    qServiceType = KMimeType::findByURL( _urls.first())->name();
     if (qServiceType == QString::fromLatin1("application/octet-stream"))
       qServiceType = QString::null;
   }
@@ -334,11 +361,6 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   m_pTree = 0L;
   m_pService = 0L;
   haveApp = false;
-
-  QString caption = _urls.first().decodedURL();
-  if (_urls.count() > 1)
-      caption += QString::fromLatin1("...");
-  setCaption(caption);
 
   QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
 					  KDialog::spacingHint());
@@ -356,8 +378,6 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
 
-  terminal = new QCheckBox( i18n("Run in terminal"), this );
-  l->addWidget(terminal);
 
   m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
@@ -365,17 +385,22 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
 
-  if (!qServiceType.isNull()) {
+  terminal = new QCheckBox( i18n("Run in terminal"), this );
+  topLayout->addWidget(terminal);
+
+  if (!qServiceType.isNull())
+  {
     remember = new QCheckBox(i18n("Remember application association for this file"), this);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
-  } else
+  }
+  else
     remember = 0L;
 
   // Use KButtonBox for the aligning pushbuttons nicely
   KButtonBox* b = new KButtonBox(this);
   clear = b->addButton( i18n("C&lear") );
-  b->addStretch(1);
+  b->addStretch(2);
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
 
   ok = b->addButton( i18n ("&OK") );
@@ -389,6 +414,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   topLayout->addWidget(b);
 
   //edit->setText( _value );
+  resize( minimumWidth(), sizeHint().height() );
   edit->setFocus();
 }
 
