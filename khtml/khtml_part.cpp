@@ -3776,11 +3776,15 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     // However we don't want to ask for flash and other plugin things..
     if ( child->m_type != khtml::ChildFrame::Object )
     {
+      QString suggestedFilename;
+      if ( child->m_run )
+        suggestedFilename = child->m_run->suggestedFilename();
+
       KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
-        url, mimetype/*, suggestedFilename */ );
+        url, mimetype, suggestedFilename  );
       switch( res ) {
       case KParts::BrowserRun::Save:
-        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString::null, 0 /*, suggestedFilename */ );
+        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString::null, 0, suggestedFilename);
         // fall-through
       case KParts::BrowserRun::Cancel:
         child->m_bCompleted = true;
@@ -5363,6 +5367,11 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
     d->m_bRightMousePressed = false;
   }
+
+  DOM::DOMString url = event->url();
+  DOM::DOMString target = event->target();
+  DOM::Node innerNode = event->innerNode();
+
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
       ( (!d->m_strSelectedURL.isEmpty() && !isEditable())
@@ -5374,23 +5383,20 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     HTMLImageElementImpl *img = 0L;
     QDragObject *drag = 0;
     KURL u;
-    if ( d->m_mousePressNode.handle() && d->m_mousePressNode.handle()->id() == ID_IMG )
+
+    // qDebug("****************** Event URL: %s", url.string().latin1());
+    // qDebug("****************** Event Target: %s", target.string().latin1());
+
+    // Normal image...
+    if ( url.length() == 0 && innerNode.handle() && innerNode.handle()->id() == ID_IMG )
     {
-      // Normal image
-      img = static_cast<HTMLImageElementImpl *>(d->m_mousePressNode.handle());
+      img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KURL( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
-      pix = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
-    }
-    else if ( event->innerNode().handle() && event->innerNode().handle()->id() == ID_IMG )
-    {
-      // Image inside a link?
-      img = static_cast<HTMLImageElementImpl *>(event->innerNode().handle());
-      u = completeURL( d->m_strSelectedURL );
       pix = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
     }
     else
     {
-      // Text link
+      // Text or image link...
       u = completeURL( d->m_strSelectedURL );
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
@@ -5421,10 +5427,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     return;
   }
 #endif
-
-  DOM::DOMString url = event->url();
-  DOM::DOMString target = event->target();
-  DOM::Node innerNode = event->innerNode();
 
   // Not clicked -> mouse over stuff
   if ( !d->m_bMousePressed )
