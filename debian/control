@@ -1,7 +1,6 @@
 Source: kdelibs4
-Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, libssl-dev
+Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), libsasl-dev, nas-dev, libssl-dev
 Build-Depends-Indep: kdoc, qt3-doc
-Build-Conflicts: nas-lib
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -12,8 +11,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdelibs3, kdepim-libs (<< 3.0-0.alpha1-1), koffice-libs, kdebase-libs (<< 4:2.2.1-2)
 Depends: ${shlibs:Depends}, python, xbase-clients
-Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, aspell | ispell, libssl0.9.6
-Suggests: anti-aliasing-howto, gdb, kdelibs4-cups
+Suggests: libarts1, libarts-bin, libkmid0, libkmid-bin, aspell | ispell, libssl0.9.6, anti-aliasing-howto, gdb, kdelibs4-cups
 Provides: kdelibs
 Description: KDE core libraries (runtime files)
  KDE core libraries.

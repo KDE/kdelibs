@@ -1,8 +1,8 @@
-kdelibs4 (3.0-0.alpha1-7) unstable; urgency=low
+kdelibs4 (3.0-0.beta1-1) unstable; urgency=low
 
   * sync
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 05 Nov 2001 10:18:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 06 Dec 2001 19:02:00 -0700
 
 kdelibs4 (3.0-0.alpha1-2) unstable; urgency=low
   
