@@ -18,13 +18,16 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include "partmanager.h"
 #include <kparts/event.h>
-#include <kparts/partmanager.h>
 #include <kparts/part.h>
 #include <kglobal.h>
 #include <kdebug.h>
+#include <kdebugclasses.h>
 
 #include <qapplication.h>
+
+//#define DEBUG_PARTMANAGER
 
 using namespace KParts;
 
@@ -43,6 +46,7 @@ public:
     m_selectedWidget = 0;
     m_bAllowNestedParts = false;
     m_bIgnoreScrollBars = false;
+    m_activationButtonMask = Qt::LeftButton | Qt::MidButton | Qt::RightButton;
   }
   ~PartManagerPrivate()
   {
@@ -58,11 +62,10 @@ public:
   Part *m_selectedPart;
   QWidget *m_selectedWidget;
 
-  bool m_bAllowNestedParts;
-
   QPtrList<QWidget> m_managedTopLevelWidgets;
-
+  short int m_activationButtonMask;
   bool m_bIgnoreScrollBars;
+  bool m_bAllowNestedParts;
 };
 
 };
@@ -133,6 +136,16 @@ bool PartManager::ignoreScrollBars() const
   return d->m_bIgnoreScrollBars;
 }
 
+void PartManager::setActivationButtonMask( short int buttonMask )
+{
+    d->m_activationButtonMask = buttonMask;
+}
+
+short int PartManager::activationButtonMask() const
+{
+    return d->m_activationButtonMask;
+}
+
 bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 {
 
@@ -150,6 +163,17 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
        w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) )
     return false;
 
+  QMouseEvent* mev = 0L;
+  if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
+  {
+      mev = static_cast<QMouseEvent *>( ev );
+#ifdef DEBUG_PARTMANAGER
+      kdDebug() << "PartManager::eventFilter button: " << mev->button() << " " << "d->m_activationButtonMask=" << d->m_activationButtonMask << endl;
+#endif
+      if ( ( mev->button() & d->m_activationButtonMask ) == 0 )
+        return false; // ignore this button
+  }
+
   Part * part;
   while ( w )
   {
@@ -161,13 +185,18 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( d->m_bIgnoreScrollBars && w->inherits( "QScrollBar" ) )
       return false;
 
-    if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
+    if ( mev ) // mouse press or mouse double-click event
     {
-      pos = static_cast<QMouseEvent *>( ev )->globalPos();
+      pos = mev->globalPos();
       part = findPartFromWidget( w, pos );
     } else
       part = findPartFromWidget( w );
 
+#ifdef DEBUG_PARTMANAGER
+    QCString evType = ( ev->type() == QEvent::MouseButtonPress ) ? "MouseButtonPress"
+                      : ( ev->type() == QEvent::MouseButtonDblClick ) ? "MouseButtonDblClick"
+                      : ( ev->type() == QEvent::FocusIn ) ? "FocusIn" : "OTHER! ERROR!";
+#endif
     if ( part ) // We found a part whose widget is w
     {
       if ( d->m_policy == PartManager::TriState )
@@ -177,7 +206,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
           if ( part == d->m_activePart && w == d->m_activeWidget )
             return false;
 
-          //kdDebug(1000) << "PartManager::eventFilter -> setActivePart" << part << endl;
+#ifdef DEBUG_PARTMANAGER
+          kdDebug(1000) << "PartManager::eventFilter dblclick -> setActivePart" << part << endl;
+#endif
           setActivePart( part, w );
           return true;
         }
@@ -187,12 +218,19 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
         {
           if ( part->isSelectable() )
             setSelectedPart( part, w );
-          else
-            setActivePart( part, w );
+          else {
+#ifdef DEBUG_PARTMANAGER
+              kdDebug(1000) << "Part " << part << " (non-selectable) made active because " << w->className() << " got event" << " " << evType << endl;
+#endif
+              setActivePart( part, w );
+          }
           return true;
         }
         else if ( d->m_selectedWidget == w && d->m_selectedPart == part )
         {
+#ifdef DEBUG_PARTMANAGER
+          kdDebug(1000) << "Part " << part << " made active (from selected) because " << w->className() << " got event" << " " << evType << endl;
+#endif
           setActivePart( part, w );
           return true;
         }
@@ -206,8 +244,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       }
       else if ( part != d->m_activePart )
       {
-        // kdDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << endl;
-
+#ifdef DEBUG_PARTMANAGER
+        kdDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << " " << evType << endl;
+#endif
         setActivePart( part, w );
       }
 
@@ -219,13 +258,17 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( w && ( ( w->testWFlags( WType_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
     {
-      //kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
+#ifdef DEBUG_PARTMANAGER
+      kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
+#endif
       return false;
     }
 
   }
 
-  //kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
+#ifdef DEBUG_PARTMANAGER
+  kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
+#endif
   return false;
 }
 
@@ -345,7 +388,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
   }
 
   //kdDebug() << "PartManager::setActivePart d->m_activePart=" << d->m_activePart << "<->part=" << part
-  //          << " d->m_activeWidget=" << (void*)d->m_activeWidget << "<->widget=" << (void*)widget << endl;
+  //          << " d->m_activeWidget=" << d->m_activeWidget << "<->widget=" << widget << endl;
 
   // don't activate twice
   if ( d->m_activePart && part && d->m_activePart == part &&
