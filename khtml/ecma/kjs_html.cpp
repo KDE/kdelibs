@@ -274,6 +274,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "rev")             return getString(link.rev());
       else if (p == "target")          return getString(link.target());
       else if (p == "type")            return getString(link.type());
+      else if (p == "sheet")           return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
     break;
     case ID_TITLE: {
@@ -306,6 +307,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "disabled")        return Boolean(style.disabled());
       else if (p == "media")           return getString(style.media());
       else if (p == "type")            return getString(style.type());
+      else if (p == "sheet")           return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
     break;
     case ID_BODY: {

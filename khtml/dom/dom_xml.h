@@ -31,6 +31,7 @@
 #define _DOM_XML_h
 
 #include <dom/dom_text.h>
+#include <dom/css_stylesheet.h>
 
 namespace DOM {
 
@@ -295,6 +296,15 @@ public:
      *
      */
     void setData( const DOMString & );
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the LinkStyle interface
+     *
+     * The style sheet.
+     */
+    StyleSheet sheet() const;
+
 protected:
     ProcessingInstruction(ProcessingInstructionImpl *i);
 };

@@ -157,6 +157,7 @@ public:
      * @internal
      */
     StyleSheetImpl *handle() const { return impl; }
+    bool isNull() const;
 protected:
     StyleSheetImpl *impl;
 };
@@ -334,6 +335,12 @@ public:
      */
     StyleSheet item ( unsigned long index );
 
+    /**
+     * @internal
+     */
+    StyleSheetListImpl *handle() const;
+    bool isNull() const;
+
 protected:
     StyleSheetListImpl *impl;
 };
@@ -423,6 +430,12 @@ public:
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this list is readonly.
      */
     void appendMedium(const DOM::DOMString &newMedium);
+
+    /**
+     * @internal
+     */
+    MediaListImpl *handle() const;
+    bool isNull() const;
 
 protected:
     MediaListImpl *impl;

@@ -116,6 +116,11 @@ MediaList StyleSheet::media() const
     return ((StyleSheetImpl *)impl)->media();
 }
 
+bool StyleSheet::isNull() const
+{
+    return (impl == 0);
+}
+
 
 
 CSSStyleSheet::CSSStyleSheet() : StyleSheet()
@@ -231,6 +236,16 @@ StyleSheet StyleSheetList::item( unsigned long index )
     return ((StyleSheetListImpl *)impl)->item( index );
 }
 
+StyleSheetListImpl *StyleSheetList::handle() const
+{
+    return impl;
+}
+
+bool StyleSheetList::isNull() const
+{
+    return (impl == 0);
+}
+
 // ----------------------------------------------------------
 
 MediaList::MediaList()
@@ -305,7 +320,15 @@ void MediaList::appendMedium(const DOM::DOMString &newMedium)
         ((MediaListImpl *)impl)->append( newMedium );
 }
 
+MediaListImpl *MediaList::handle() const
+{
+    return impl;
+}
 
+bool MediaList::isNull() const
+{
+    return (impl == 0);
+}
 
 // ----------------------------------------------------------
 

@@ -31,6 +31,7 @@
 #define HTML_HEAD_H
 
 #include <dom/html_element.h>
+#include <dom/css_stylesheet.h>
 
 namespace DOM {
 
@@ -231,6 +232,15 @@ public:
      * see @ref type
      */
     void setType( const DOMString & );
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the LinkStyle interface
+     *
+     * The style sheet.
+     */
+    StyleSheet sheet() const;
+
 };
 
 // --------------------------------------------------------------------------
@@ -489,6 +499,15 @@ public:
      * see @ref type
      */
     void setType( const DOMString & );
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the LinkStyle interface
+     *
+     * The style sheet.
+     */
+    StyleSheet sheet() const;
+
 };
 
 // --------------------------------------------------------------------------

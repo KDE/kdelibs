@@ -31,6 +31,7 @@
 #define _DOM_Document_h_
 
 #include <dom/dom_node.h>
+#include <dom/css_stylesheet.h>
 
 class KHTMLView;
 class KHTMLPart;
@@ -472,6 +473,18 @@ public:
      * The default AbstractView for this Document, or null if none available.
      */
     AbstractView defaultView() const;
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentStyle interface
+     *
+     * A list containing all the style sheets explicitly linked into or
+     * embedded in a document. For HTML documents, this includes external style
+     * sheets, included via the HTML LINK element, and inline STYLE elements.
+     * In XML, this includes external style sheets, included via style sheet
+     * processing instructions (see [XML-StyleSheet]).
+     */
+    StyleSheetList styleSheets() const;
 
     /**
      * @return The KHTML view widget of this document.

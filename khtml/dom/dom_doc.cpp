@@ -315,6 +315,15 @@ AbstractView Document::defaultView() const
     return ((DocumentImpl *)impl)->defaultView();
 }
 
+StyleSheetList Document::styleSheets() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return ((DocumentImpl *)impl)->styleSheets();
+}
+
+
 KHTMLView *Document::view() const
 {
     return ((DocumentImpl*)impl)->view();

@@ -25,6 +25,7 @@
 #define _DOM_XmlImpl_h_
 
 #include "dom_nodeimpl.h"
+#include "css_stylesheetimpl.h"
 
 namespace DOM {
 
@@ -108,6 +109,7 @@ public:
     virtual void setData( const DOMString &_data );
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    StyleSheetImpl *sheet() const;
 
 protected:
     DOMStringImpl *m_target;

@@ -29,6 +29,7 @@
 #include <kjs/function.h>
 
 #include "kjs_binding.h"
+#include "kjs_css.h"
 
 namespace KJS {
 

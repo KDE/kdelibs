@@ -315,6 +315,11 @@ NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exception
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
+StyleSheetImpl *ProcessingInstructionImpl::sheet() const
+{
+    // ###
+    return 0;
+}
 
 
 

@@ -31,11 +31,15 @@
 #include <css/cssproperties.h>
 #include <css/cssparser.h>
 #include "kjs_binding.h"
+#include "kjs_dom.h"
 
 using namespace KJS;
 #include <kdebug.h>
 
 QPtrDict<DOMCSSStyleDeclaration> domCSSStyleDeclarations;
+QPtrDict<DOMStyleSheet> styleSheets;
+QPtrDict<DOMStyleSheetList> styleSheetLists;
+QPtrDict<DOMMediaList> mediaLists;
 
 static QString jsNameToProp( const UString &p )
 {
@@ -50,20 +54,6 @@ static QString jsNameToProp( const UString &p )
 
     return prop.lower();
 }
-
-/*
-KJSO Style::get(const UString &p) const
-{
-    return KJSO();
-}
-
-void Style::put(const UString &p, const KJSO& v)
-{
-
-}
-*/
-
-
 
 DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
 {
@@ -192,4 +182,171 @@ KJSO KJS::getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration s)
   }
 }
 
+// -------------------------------------------------------------------------
+
+const TypeInfo DOMStyleSheet::info = { "StyleSheet", HostType, 0, 0, 0 };
+
+DOMStyleSheet::~DOMStyleSheet()
+{
+  styleSheets.remove(styleSheet.handle());
+}
+
+KJSO DOMStyleSheet::tryGet(const UString &p) const
+{
+  KJSO result;
+
+  if (p == "type")
+    return getString(styleSheet.type());
+  else if (p == "disabled")
+    return Boolean(styleSheet.disabled());
+  else if (p == "ownerNode")
+    return getDOMNode(styleSheet.ownerNode());
+  else if (p == "parentStyleSheet")
+    return getDOMStyleSheet(styleSheet.parentStyleSheet());
+  else if (p == "href")
+    return getString(styleSheet.href());
+  else if (p == "title")
+    return getString(styleSheet.title());
+//  else if ( p == "media") ###
+//    return getDOMMediaList(styleSheet.media());
+  return DOMObject::tryGet(p);
+}
+
+void DOMStyleSheet::tryPut(const UString &p, const KJSO& v)
+{
+  if (p == "disabled") {
+    styleSheet.setDisabled(v.toBoolean().value());
+  }
+  else
+    DOMObject::tryPut(p, v);
+}
+
+KJSO KJS::getDOMStyleSheet(DOM::StyleSheet ss)
+{
+  DOMStyleSheet *ret;
+  if (ss.isNull())
+    return Null();
+  else if ((ret = styleSheets[ss.handle()]))
+    return ret;
+  else {
+    ret = new DOMStyleSheet(ss);
+    styleSheets.insert(ss.handle(),ret);
+    return ret;
+  }
+}
+
+// -------------------------------------------------------------------------
+
+const TypeInfo DOMStyleSheetList::info = { "StyleSheetList", HostType, 0, 0, 0 };
+
+DOMStyleSheetList::~DOMStyleSheetList()
+{
+  styleSheetLists.remove(styleSheetList.handle());
+}
+
+KJSO DOMStyleSheetList::tryGet(const UString &p) const
+{
+  if (p == "length")
+    return Number(styleSheetList.length());
+  else if (p == "item")
+    return new DOMStyleSheetListFunc(styleSheetList,DOMStyleSheetListFunc::Item);
+  return DOMObject::tryGet(p);
+}
+
+KJSO KJS::getDOMStyleSheetList(DOM::StyleSheetList ssl)
+{
+  DOMStyleSheetList *ret;
+  if (ssl.isNull())
+    return Null();
+  else if ((ret = styleSheetLists[ssl.handle()]))
+    return ret;
+  else {
+    ret = new DOMStyleSheetList(ssl);
+    styleSheetLists.insert(ssl.handle(),ret);
+    return ret;
+  }
+}
+
+Completion DOMStyleSheetListFunc::tryExecute(const List &args)
+{
+  KJSO result;
+
+  if (id == Item)
+    result = getDOMStyleSheet(styleSheetList.item(args[0].toNumber().intValue()));
+  return Completion(ReturnValue, result);
+}
+
+// -------------------------------------------------------------------------
+
+const TypeInfo DOMMediaList::info = { "MediaList", HostType, 0, 0, 0 };
+
+DOMMediaList::~DOMMediaList()
+{
+  mediaLists.remove(mediaList.handle());
+}
+
+KJSO DOMMediaList::tryGet(const UString &p) const
+{
+  DOM::MediaList list = DOM::MediaList(mediaList.handle());
+//  DOM::MediaListImpl *handle = mediaList.handle();
+  if (p == "mediaText")
+    return getString(list.mediaText());
+  else if (p == "length")
+    return Number(list.length());
+  else if (p == "item")
+    return new DOMMediaListFunc(list,DOMMediaListFunc::Item);
+  else if (p == "deleteMedium")
+    return new DOMMediaListFunc(list,DOMMediaListFunc::DeleteMedium);
+  else if (p == "appendMedium")
+    return new DOMMediaListFunc(list,DOMMediaListFunc::AppendMedium);
+
+  return DOMObject::tryGet(p);
+}
+
+
+
+void DOMMediaList::tryPut(const UString &p, const KJSO& v)
+{
+  if (p == "mediaText")
+    mediaList.setMediaText(v.toString().value().string());
+  else
+    DOMObject::tryPut(p, v);
+}
+
+KJSO KJS::getDOMMediaList(DOM::MediaList ml)
+{
+  DOMMediaList *ret;
+  if (ml.isNull())
+    return Null();
+  else if ((ret = mediaLists[ml.handle()]))
+    return ret;
+  else {
+    ret = new DOMMediaList(ml);
+    mediaLists.insert(ml.handle(),ret);
+    return ret;
+  }
+}
+
+Completion DOMMediaListFunc::tryExecute(const List &args)
+{
+  KJSO result;
+
+  switch (id) {
+    case Item:
+      result = getString(mediaList.item(args[0].toNumber().intValue()));
+      break;
+    case DeleteMedium:
+      mediaList.deleteMedium(args[0].toString().value().string());
+      result = Undefined();
+      break;
+    case AppendMedium:
+      mediaList.appendMedium(args[0].toString().value().string());
+      result = Undefined();
+      break;
+    default:
+      break;
+  }
+
+  return Completion(ReturnValue, result);
+}
 

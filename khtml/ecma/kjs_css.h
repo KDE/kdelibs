@@ -23,19 +23,10 @@
 #include <dom/dom_node.h>
 #include <kjs/object.h>
 #include <dom/css_value.h>
+#include <dom/css_stylesheet.h>
 #include "kjs_binding.h"
 
 namespace KJS {
-
-/*  class Style : public HostImp {
-  public:
-    Style(const DOM::Node &n) : node(n) { }
-    virtual KJSO get(const UString &p) const;
-    virtual void put(const UString &p, const KJSO& v);
-  private:
-    DOM::Node node;
-  };
-*/
 
   class DOMCSSStyleDeclaration : public DOMObject {
   public:
@@ -63,6 +54,82 @@ namespace KJS {
   };
 
   KJSO getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration n);
+
+  class DOMStyleSheet : public DOMObject {
+  public:
+    DOMStyleSheet(DOM::StyleSheet ss) : styleSheet(ss) { }
+    ~DOMStyleSheet();
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
+    static const TypeInfo info;
+  private:
+    DOM::StyleSheet styleSheet;
+  };
+
+  KJSO getDOMStyleSheet(DOM::StyleSheet ss);
+
+  class DOMStyleSheetList : public DOMObject {
+  public:
+    DOMStyleSheetList(DOM::StyleSheetList ssl) : styleSheetList(ssl) { }
+    ~DOMStyleSheetList();
+    virtual KJSO tryGet(const UString &p) const;
+    // no put - all read-only
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
+    static const TypeInfo info;
+  private:
+    DOM::StyleSheetList styleSheetList;
+  };
+
+  KJSO getDOMStyleSheetList(DOM::StyleSheetList ss);
+
+  class DOMStyleSheetListFunc : public DOMFunction {
+    friend class DOMStyleSheetList;
+  public:
+    DOMStyleSheetListFunc(DOM::StyleSheetList ssl, int i) : styleSheetList(ssl), id(i) { }
+    Completion tryExecute(const List &);
+    enum { Item };
+  private:
+    DOM::StyleSheetList styleSheetList;
+    int id;
+  };
+
+  class DOMMediaList : public DOMObject {
+  public:
+    DOMMediaList(DOM::MediaList ml) : mediaList(ml) { }
+    ~DOMMediaList();
+    virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Boolean toBoolean() const { return Boolean(true); }
+    static const TypeInfo info;
+  private:
+    DOM::MediaList mediaList;
+  };
+
+  KJSO getDOMMediaList(DOM::MediaList ss);
+
+  class DOMMediaListFunc : public DOMFunction {
+    friend class DOMMediaList;
+  public:
+    DOMMediaListFunc(DOM::MediaList ml, int i) : mediaList(ml), id(i) { }
+    Completion tryExecute(const List &);
+    enum { Item, DeleteMedium, AppendMedium };
+  private:
+    DOM::MediaList mediaList;
+    int id;
+  };
+
+
+
+
+
+
+
+
+
 
 }; // namespace
 

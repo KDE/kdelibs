@@ -720,6 +720,8 @@ KJSO DOMProcessingInstruction::tryGet(const UString &p) const
     return getString(static_cast<DOM::ProcessingInstruction>(node).target());
   else if (p == "data")
     return getString(static_cast<DOM::ProcessingInstruction>(node).data());
+  else if (p == "sheet")
+    return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
   else
     return DOMNode::tryGet(p);
 }

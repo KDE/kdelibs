@@ -220,6 +220,12 @@ void HTMLLinkElement::setType( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
 
+StyleSheet HTMLLinkElement::sheet() const
+{
+    if(!impl) return 0;
+    return ((HTMLLinkElementImpl *)impl)->sheet();
+}
+
 // --------------------------------------------------------------------------
 
 HTMLMetaElement::HTMLMetaElement() : HTMLElement()
@@ -482,6 +488,13 @@ void HTMLStyleElement::setType( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TYPE, value);
 }
+
+StyleSheet HTMLStyleElement::sheet() const
+{
+    if(!impl) return 0;
+    return ((HTMLStyleElementImpl *)impl)->sheet();
+}
+
 
 // --------------------------------------------------------------------------
 

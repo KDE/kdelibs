@@ -250,5 +250,10 @@ ProcessingInstruction::ProcessingInstruction(ProcessingInstructionImpl *i) : Nod
 {
 }
 
+StyleSheet ProcessingInstruction::sheet() const
+{
+    if (impl) return ((ProcessingInstructionImpl*)impl)->sheet();
+    return 0;
+}
 
 
