@@ -206,6 +206,7 @@ int main(int argc, char **argv)
     filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
     filter( "foo@bar.com", "mailto:foo@bar.com", KURIFilterData::NET_PROTOCOL );
+    filter( "firstname.lastname@x.foo.bar", "mailto:firstname.lastname@x.foo.bar", KURIFilterData::NET_PROTOCOL );
     filter( "www.123.foo", "http://www.123.foo", KURIFilterData::NET_PROTOCOL );
     filter( "user@www.123.foo:3128", "http://user@www.123.foo:3128", KURIFilterData::NET_PROTOCOL );
 
