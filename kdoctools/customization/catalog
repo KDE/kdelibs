@@ -1,5 +1,5 @@
 --
-Recommended catalogue for KDE DocBook XML
+Catalogue for KDE DocBook XML
 
 Copyright (C) 2001,2002 Frederik Fouvry
  
@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-Send suggestions, comments, etc. to Frederik Fouvry
-<fouvry@coli.uni-sb.de>.
+Send suggestions, comments, etc. to the KDE DocBook mailing list
+<kde-docbook@kde.org>.
 --
 
 OVERRIDE YES
@@ -26,18 +26,21 @@ SGMLDECL "xml.dcl"
 
 			    -- DocBook --
 
+-- DocBook 4.2 KDE Variant V1.1 --
+
 PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN"
        "dtd/kdex.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.1//EN"
        "dtd/rdbpool.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications (Restrictions) V1.1//EN"
+       "dtd/modifications.elements"
+
 PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.2//EN"
        "entities/general.entities"
 PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations (Persons) V1.0//EN"
        "entities/contributor.entities"
-PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications (Restrictions) V1.1//EN"
-       "dtd/modifications.elements"
 
 		      -- General KDE Entities --
 
@@ -101,7 +104,7 @@ CATALOG wa/catalog
 CATALOG xh/catalog
 CATALOG zh-TW/catalog
 
--- Previous versions --
+-- DocBook 4.1.2 KDE Variant V1.1 --
 
 PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
        "obsolete/kdex.dtd"
@@ -111,3 +114,8 @@ PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
        "obsolete/rdbpool.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
        "obsolete/modifications.elements"
+
+-- DocBook 4.1.2 KDE Variant V1.0 --
+
+PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+       "obsolete/kdex-412-10.dtd"

@@ -1,0 +1,42 @@
+<!-- This is just a quick fix for a backwards compatibility issue.
+     Meant to be used with the FPI 
+     "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+     Note: this is NOT the actual V4.1.2-V1.0 DTD. -->
+<!--
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+-->
+
+<!-- just to be on the safe side -->
+<!ENTITY % local.smallcptr.char.mix "|envar">
+
+<!ENTITY % DocBookDTD	    PUBLIC
+  "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "../../docbook/xml-dtd-4.1.2/docbookx.dtd"         > 
+%DocBookDTD;
+
+<!-- The current obsolete version will do (see below) -->
+<!ENTITY % kde.general.entities	PUBLIC
+  "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"    
+  "general.entities"                                     >
+%kde.general.entities;
+
+<!-- Define here any missing entities -->
+
+<!-- this one is OK -->
+<!ENTITY % kde.i18n.entities PUBLIC
+  "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V1.0//EN"
+  "../entities/l10n.entities"                                        >
+%kde.i18n.entities;
