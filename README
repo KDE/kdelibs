@@ -10,8 +10,9 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.2alpha2 of the KDE libraries. "alpha" indicates that this is
-a technology preview, but we don't pretend its stable in any way.
+This is version 2.2beta1 of the KDE libraries. "beta" indicates that we think
+it is prety stable but we anticipate that it contains a few bugs that we have
+missed.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -94,6 +95,8 @@ Here is a list:
 * pics
     Database of icons.
 
+* libkscreensaver
+    Library for making KDE screensavers.
 
 Licensing
 ---------
@@ -145,6 +148,12 @@ Often, KDE compile failures are not KDE's faults but the one of the
 compiler or the distribution used. For that reason, please have a look at
 http://www.kde.org/compilationfaq.html for know issues in certain OS
 environments before reporting bugs or going mad :). 
+
+gcc 3.0 is not yet able to compile all of KDE without errors, mostly due
+to bugs in this version of the compiler. Some older version of gcc 2.96
+also have problems compiling KDE due to compiler bugs. Even though 
+compilation may not report errors with these compiler, the usage of these
+compilers may cause crashes when using the resulting executables.
 
 If you are running a FreeBSD system, you will need to make sure that LIBS
 is set to "-Wl,-export-dynamic". The easiest way to do this is to prefix
