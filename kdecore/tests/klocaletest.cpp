@@ -82,7 +82,7 @@ void Test::createFields()
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
   string+="\nLocalized number: ";
-  string+=KGlobal::locale()->formatNumber(1234567.89);
+  string+=KGlobal::locale()->formatNumber(1234567.89123456789);
   string+="\nLocalized monetary numbers: ";
   string+=KGlobal::locale()->formatMoney(1234567.89) + " / " +KGlobal::locale()->formatMoney(-1234567.89);
   // This will not work
@@ -119,6 +119,9 @@ int main( int argc, char ** argv )
   num = KGlobal::locale()->readNumber( "12,0000000,000", &ok ); check("readNumber(12,0000000,000)",ok?"yes":"no","no");
   num = KGlobal::locale()->readNumber( "12,0000000", &ok ); check("readNumber(12,0000000)",ok?"yes":"no","no");
   num = KGlobal::locale()->readNumber( "12,146,131.12", &ok ); check("readNumber(12,146,131.12)",ok?"yes":"no","yes");
+  num = KGlobal::locale()->readNumber( "1.12345678912", &ok );
+        qDebug( "%s", QString::number( num, 'g', 12 ).latin1() ); // warning this is the only way to see all decimals
+        check("readNumber(1.12345678912)",ok && num==1.12345678912?"yes":"no","yes");
 
   QDate date;
   date.setYMD( 2002, 5, 3 );
