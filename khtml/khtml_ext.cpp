@@ -16,6 +16,7 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
+#include <kprocess.h>
 #include <ktoolbarbutton.h>
 #include <ktoolbar.h>
 #include <ksavefile.h>
@@ -501,7 +502,8 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 }
                 else
                 {
-                    cmd+=" " + url.url()+" "+destURL.url();
+                    cmd += " " + KProcess::quote(url.url()) + " " +
+                           KProcess::quote(destURL.url());
                     kdDebug(1000) << "Calling command  "<<cmd<<endl;
                     KRun::runCommand(cmd);
                 }
