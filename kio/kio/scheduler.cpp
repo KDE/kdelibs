@@ -592,7 +592,7 @@ if (!jobData)
           idleSlaves->append(slave);
           slave->setIdle();
           _scheduleCleanup();
-          slave->connection()->send( CMD_SLAVE_STATUS );
+//          slave->connection()->send( CMD_SLAVE_STATUS );
        }
     }
     if (protInfo->joblist.count())
