@@ -317,6 +317,8 @@ QRect KWinModule::workArea( int desktop ) const
     if ( desk <= 0 )
 	return QApplication::desktop()->geometry();
     NETRect r = d->workArea( desk );
+    if( r.size.width <= 0 || r.size.height <= 0 ) // not set
+	return QApplication::desktop()->geometry();
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
