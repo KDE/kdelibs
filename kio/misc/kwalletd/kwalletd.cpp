@@ -192,19 +192,31 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		KPasswordDialog *kpd;
 		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
 			kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
-			kpd->setPrompt(i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet));
+			if (appid.isEmpty()) {
+				kpd->setPrompt(i18n("KDE has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(wallet));
+			} else {
+				kpd->setPrompt(i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet));
+			}
 			brandNew = false;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else if (wallet == KWallet::Wallet::LocalWallet() ||
 				wallet == KWallet::Wallet::NetworkWallet()) {
 			// Auto create these wallets.
 			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
-			kpd->setPrompt(i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(appid));
+			if (appid.isEmpty()) {
+				kpd->setPrompt(i18n("KDE has requested to open the wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request."));
+			} else {
+				kpd->setPrompt(i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(appid));
+			}
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else {
 			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
-			kpd->setPrompt(i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet));
+			if (appid.length() == 0) {
+				kpd->setPrompt(i18n("KDE has requested to create a new wallet named '%1'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(wallet));
+			} else {
+				kpd->setPrompt(i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet));
+			}
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Create"));
 		}
