@@ -1,3 +1,12 @@
+2005-01-25  Germain Garand  <germain@ebooksfrance.org>
+        
+        fix #95704: float double-painting bug.  Most of the work done by Charles Samuels.
+
+        * rendering/render_block.h (FloatingObject::FloatingObject): add crossedLayer flag to prevent noPaint from 
+        being toggled off once we have crossed a layer during the float propagation process
+
+        * rendering/render_block.cpp (addOverHangingFloats): use/update said flag.
+
 2005-01-19  Allan Sandfeld Jensen <kde@carewolf.com>
         
         * css/*: Parse opacity and outline-offset

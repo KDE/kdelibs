@@ -191,6 +191,7 @@ protected:
             left = 0;
             width = 0;
             noPaint = false;
+            crossedLayer = false;
 
         }
         RenderObject* node;
@@ -200,6 +201,7 @@ protected:
         short width;
         Type type : 1; // left or right aligned
         bool noPaint : 1;
+        bool crossedLayer : 1; // lock noPaint flag
     };
 
 protected:

@@ -1078,7 +1078,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         if (child->isRenderBlock())
             prevFlow = static_cast<RenderBlock*>(child);
 
-        if (child->hasOverhangingFloats() && !child->style()->hidesOverflow()) {
+        if (child->hasOverhangingFloats() && !child->hasOverflowClip()) {
             // need to add the child's floats to our floating objects list, but not in the case where
             // overflow is auto/scroll
             addOverHangingFloats( static_cast<RenderBlock *>(child), -child->xPos(), -child->yPos(), true );
@@ -1905,44 +1905,50 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     for ( ; (r = it.current()); ++it ) {
         if ( ( !child && r->endY > offset ) ||
              ( child && flow->yPos() + r->endY > height() ) ) {
-
-            if (child && (flow->enclosingLayer() == enclosingLayer()))
-                // Set noPaint to true only if we didn't cross layers.
-                r->noPaint = true;
+            if (child && !r->crossedLayer) {
+                if (flow->enclosingLayer() == enclosingLayer()) {
+                  // Set noPaint to true only if we didn't cross layers.
+                  r->noPaint = true;
+                } else {
+                  r->crossedLayer = true;
+                }
+            }
 
             FloatingObject* f = 0;
             // don't insert it twice!
             QPtrListIterator<FloatingObject> it(*m_floatingObjects);
             while ( (f = it.current()) ) {
-                if (f->node == r->node) return;
+                if (f->node == r->node) break;
                 ++it;
             }
+            if ( !f ) {
+                FloatingObject *floatingObj = new FloatingObject(r->type);
+                floatingObj->startY = r->startY - offset;
+                floatingObj->endY = r->endY - offset;
+                floatingObj->left = r->left - xoff;
+                // Applying the child's margin makes no sense in the case where the child was passed in.
+                // since his own margin was added already through the subtraction of the |xoff| variable
+                // above.  |xoff| will equal -flow->marginLeft() in this case, so it's already been taken
+                // into account.  Only apply this code if |child| is false, since otherwise the left margin
+                // will get applied twice. -dwh
+                if (!child && flow != parent())
+                    floatingObj->left += flow->marginLeft();
+                if ( !child ) {
+                    floatingObj->left -= marginLeft();
+                    floatingObj->noPaint = true;
+                }
+                else {
+                    floatingObj->noPaint = (r->crossedLayer || !r->noPaint);
+                    floatingObj->crossedLayer = r->crossedLayer;
+                }
 
-            FloatingObject *floatingObj = new FloatingObject(r->type);
-            floatingObj->startY = r->startY - offset;
-            floatingObj->endY = r->endY - offset;
-            floatingObj->left = r->left - xoff;
-            // Applying the child's margin makes no sense in the case where the child was passed in.
-            // since his own margin was added already through the subtraction of the |xoff| variable
-            // above.  |xoff| will equal -flow->marginLeft() in this case, so it's already been taken
-            // into account.  Only apply this code if |child| is false, since otherwise the left margin
-            // will get applied twice. -dwh
-            if (!child && flow != parent())
-                floatingObj->left += flow->marginLeft();
-            if ( !child ) {
-                floatingObj->left -= marginLeft();
-                floatingObj->noPaint = true;
-            }
-            else
-                // Only paint if |flow| isn't.
-                floatingObj->noPaint = !r->noPaint;
-
-            floatingObj->width = r->width;
-            floatingObj->node = r->node;
-            m_floatingObjects->append(floatingObj);
+                floatingObj->width = r->width;
+                floatingObj->node = r->node;
+                m_floatingObjects->append(floatingObj);
 #ifdef DEBUG_LAYOUT
-            kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
+                kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
 #endif
+            }
         }
     }
 }
