@@ -651,7 +651,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
         bool processingActionsToEnable = (tagName == "enable");
 
         // process action names
-        for (QDomNode n2 = element.firstChild(); !n2.isNull(); n2 = n2.nextSibling() )
+        for (QDomNode n2 = n.firstChild(); !n2.isNull(); n2 = n2.nextSibling() )
         {
             QDomElement actionEl = n2.toElement();
             if ( actionEl.tagName().lower() != "action" ) continue;
