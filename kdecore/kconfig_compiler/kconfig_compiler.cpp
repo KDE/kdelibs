@@ -220,6 +220,18 @@ static QString quoteString( const QString &s )
   return "\"" + r + "\"";
 }
 
+static QString literalString( const QString &s )
+{
+  bool isAscii = true;
+  for(int i = s.length(); i--;)
+     if (s[i].unicode() > 127) isAscii = false;
+  
+  if (isAscii)
+     return "QString::fromLatin1( " + quoteString(s) + " )";
+  else
+     return "QString::fromUtf8( " + quoteString(s) + " )";
+}
+
 static QString dumpNode(const QDomNode &node)
 {
   QString msg;
@@ -246,10 +258,10 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
                                QString &code )
 {
     if ( type == "String" && !defaultValue.isEmpty() ) {
-      addQuotes( defaultValue );
+      defaultValue = literalString(defaultValue);
 
     } else if ( type == "Path" && !defaultValue.isEmpty() ) {
-      addQuotes( defaultValue );
+      defaultValue = literalString( defaultValue );
 
     } else if ( type == "StringList" && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, IO_WriteOnly | IO_Append );
@@ -1021,7 +1033,7 @@ int main( int argc, char **argv )
         if ( e->paramType() == "Enum" ) {
           h << "QString::fromLatin1( ";
           if (globalEnums) 
-            h << enumName(e->name()) << "ToString[i]";
+            h << enumName(e->param()) << "ToString[i]";
           else 
             h << enumName(e->param()) << "::enumToString[i]";
           h << " )";
