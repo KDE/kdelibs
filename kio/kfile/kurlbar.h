@@ -531,6 +531,7 @@ protected:
 
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
     virtual void contentsDropEvent( QDropEvent * );
+    virtual void contextMenuEvent( QContextMenuEvent * );
 
 private:
     Qt::Orientation m_orientation;
