@@ -1,3 +1,8 @@
+2003-11-20  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: return NaN in getter functions if the time
+	value is NaN itself.
+
 2003-11-18  Harri Porten  <porten@kde.org>
 
 	* reference_list.cpp: patch by Maciej that initializes

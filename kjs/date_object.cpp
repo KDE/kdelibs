@@ -179,6 +179,12 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     oldlocale = setlocale(LC_ALL, NULL);
   Value v = thisObj.internalValue();
   double milli = v.toNumber(exec);
+  // special case: time value is NaN
+  if (isNaN(milli) && (id == GetYear || id == GetFullYear || id == GetMonth ||
+                       id == GetDate || id == GetDay || id == GetHours ||
+                       id == GetMinutes || id == GetSeconds ||
+                       id == GetMilliSeconds || id == GetTimezoneOffset))
+    return Number(NaN);
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
