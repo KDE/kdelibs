@@ -3,7 +3,7 @@ classes KApplication, KConfig, KTextStream, KColorSet,
 automake, autoconf, maintenance
 
 Richard Moore <moorer@cs.man.ac.uk>:
-KLedLamp class
+KLedLamp class, KNewPanner class.
 
 Martynas Kunigelis <algikun@santaka.ktu.lt>:
 KProgress class
