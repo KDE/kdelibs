@@ -47,6 +47,7 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
+#define QT_CLEAN_NAMESPACE 1
 # include <config.h>
 
 /* Stephan Kulow: some defaults */
@@ -227,8 +228,9 @@ struct loaded_l10nfile
 
   struct loaded_l10nfile *next;
   struct loaded_l10nfile *successor[1];
-};
 
+  loaded_l10nfile() : filename(0), decided(0), data(0), next(0) {}
+};
 
 extern const char *_nl_normalize_codeset(const char *codeset,
 					 size_t name_len);

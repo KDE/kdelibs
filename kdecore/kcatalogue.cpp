@@ -9,6 +9,7 @@
 char *find_msg(struct loaded_l10nfile *domain_file,
 	       const char *msgid);
 
+#ifndef KDE_USE_FINAL // with --enable-final, we're getting this from libintl.cpp
 struct loaded_l10nfile
 {
   const char *filename;
@@ -21,6 +22,7 @@ struct loaded_l10nfile
 
   loaded_l10nfile() : filename(0), decided(0), data(0), next(0) {}
 };
+#endif
 
 class KCataloguePrivate
 {
