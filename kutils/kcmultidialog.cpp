@@ -352,20 +352,15 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     moduleParentComponents.insert( module,
             new QStringList( parentComponents ) );
 
-    connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
-
-    CreatedModule cm;
-    cm.kcm = module;
-    cm.service = loadInfo->info.service();
-    m_modules.append( cm );
-
     if( module->changed() )
     {
         kdWarning(710) << "The KCModule \"" << module->className() <<
             "\" called setChanged( true ) in the constructor."
             " Please fix the module." << endl;
-        clientChanged( true );
+        module->setChanged( false );
     }
+
+    connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
 
     module->reparent( page, 0, QPoint( 0, 0 ), true );
 
@@ -378,6 +373,11 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     //setHelp( docpath, QString::null );
     // FIXME: this will break if two KCMs have a different docPath
     _docPath = loadInfo->info.docPath();
+
+    CreatedModule cm;
+    cm.kcm = module;
+    cm.service = loadInfo->info.service();
+    m_modules.append( cm );
 
     delete loadInfo;
 

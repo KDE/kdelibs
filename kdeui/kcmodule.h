@@ -61,7 +61,9 @@ class KInstance;
 
 class KCModule : public QWidget
 {
-  friend class KCMultiDialog; // ### KDE4 remove setChanged workaround
+  friend class KCMultiDialog;
+  friend class KCDialog;
+  friend class ProxyWidget;
   Q_OBJECT
 
 public:
