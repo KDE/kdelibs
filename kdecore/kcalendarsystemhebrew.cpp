@@ -221,7 +221,7 @@ static int hebrewDaysInYear(int y)
  */
 static int long_cheshvan(int year)
 {
-  return ((hebrewDaysInYear(year) % 10) == 5);
+  return (((hebrewDaysInYear(year + 1) - hebrewDaysInYear(year)) % 10) == 5);
 }
 
 /**
@@ -230,7 +230,7 @@ static int long_cheshvan(int year)
  */
 static int short_kislev(int year)
 {
-  return ((hebrewDaysInYear(year) % 10) == 3);
+  return (((hebrewDaysInYear(year + 1) - hebrewDaysInYear(year)) % 10) == 3);
 }
 
 static bool is_leap_year(int year)
@@ -478,21 +478,12 @@ int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
   return hndays(sd->hd_mon, sd->hd_year);
 }
 
-// ### HPB: This is incorrect
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
-  if ( is_leap_year(year) )
-    if ( mon == 6 )
-      mon = 13;
-    else if ( mon == 7 )
-      mon = 14;
-    else
-      --mon;
-
   if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
     mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ ||
     mon == 14 /*ADAR 2*/||
-    ( mon == 13 /*ADAR 1*/ && !is_leap_year(year)) /*!leap*/||
+    ( mon == 6 /*ADAR*/ && !is_leap_year(year)) ||
     (mon ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
     (mon == 3 /*KISLEV*/ && short_kislev(year)))
     return 29;
