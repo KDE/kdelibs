@@ -31,7 +31,7 @@
  * Get or modify window properties and to interact with the
  * windowmanager.
  *
- * This class is now supposed to be instantiated.  It exists mostly as
+ * This class is not supposed to be instantiated.  It exists mostly as
  * a namespace for the static member functions.
  *
  * It implements the new NET-protocol, a common window manager
