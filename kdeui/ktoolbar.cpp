@@ -1244,6 +1244,9 @@ void KToolBar::slotHotSpot(int hs)
         break;
     }
   }
+  kdDebug() << "slotHotSpot : saving" << endl;
+  d->m_stateChanged = true;
+  saveState();
 }
 
 void KToolBar::resizeEvent(QResizeEvent*)
@@ -2456,8 +2459,6 @@ void KToolBar::setBarPos(BarPosition bpos)
 //      KWM::setDecoration(winId(), 2);
 //      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
       KWin::setType( winId(), NET::Toolbar );
-      // The Dock type seems to make the window sticky :(. (David)
-      KWin::setOnAllDesktops( winId(), false );
       context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
       context->setItemChecked(CONTEXT_FLOAT, false);
       for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
@@ -2750,12 +2751,8 @@ void KToolBar::ContextCallback( int )
           kdWarning() << "No such menu item " << i << " in toolbar context menu" << endl;
     }
 
-  // if the user selected anything, then the state has changed
-  if (i > 0)
-  {
-    d->m_stateChanged = true;
-    saveState();
-  }
+  d->m_stateChanged = true;
+  saveState();
 
   mouseEntered=false;
   repaint(false);
