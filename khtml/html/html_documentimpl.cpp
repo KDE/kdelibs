@@ -157,7 +157,7 @@ void HTMLDocumentImpl::detach()
 {
     NodeImpl *b = body();
     if (b)
-	dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+	b->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
@@ -172,7 +172,7 @@ void HTMLDocumentImpl::slotFinishedParsing()
 
     NodeImpl *b = body();
     if (b)
-	dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+	b->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
