@@ -201,7 +201,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
         // A special object may be registered with several different objects... so we only print the
-        // object if we are it's containing block
+        // object if we are its containing block
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
            r->node->print(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
@@ -1220,7 +1220,7 @@ void RenderFlow::calcMinMaxWidth()
     if (style()->width().isFixed())
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
-    if ( style()->whiteSpace() != NORMAL )
+    if ( style()->whiteSpace() == NOWRAP )
         m_minWidth = m_maxWidth;
 
     int toAdd = 0;
@@ -1258,6 +1258,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
     setLayouted( false );
+    
+    bool madeBoxesNonInline = FALSE;
 
     if ( newChild->isPositioned() ) {
 	m_blockBidi = false;
@@ -1323,13 +1325,15 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         else {
             // Trying to insert a block child into an anonymous block box which contains only
             // inline elements... move all of the anonymous box's inline children into other
-            // anonmous boxes which become children of this
+            // anonymous boxes which become children of this
 
             RenderObject *anonBox = beforeChild->parent();
             KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
 
-	    if ( anonBox->childrenInline() )
+	    if ( anonBox->childrenInline() ) {
 		static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
+		madeBoxesNonInline = true;
+	    }
             beforeChild = beforeChild->parent();
 
             RenderObject *child;
@@ -1356,13 +1360,15 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             setOverhangingContents();
     }
 
-    // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.
-    // So, if our children are currently inline and block child has to be inserted, we move all our
+    // RenderFlow has to either have all of its children inline, or all of its children as blocks.
+    // So, if our children are currently inline and a block child has to be inserted, we move all our
     // inline children into anonymous block boxes
     if ( m_childrenInline && !newChild->isInline() && !newChild->isSpecial() )
     {
-	if ( m_childrenInline )
+	if ( m_childrenInline ) {
 	    makeChildrenNonInline(beforeChild);
+	    madeBoxesNonInline = true;
+	}
         if (beforeChild) {
 	    if ( beforeChild->parent() != this ) {
 		beforeChild = beforeChild->parent();
@@ -1424,7 +1430,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     if(!newChild->isInline()) // block child
     {
         // If we are inline ourselves and have become block, we have to make sure our parent
-        // makes the necessary adjustments so that all of it's other children are moved into
+        // makes the necessary adjustments so that all of its other children are moved into
         // anonymous block boxes where necessary
         if (style()->display() == INLINE)
         {
@@ -1432,6 +1438,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	    RenderObject *p = parent();
             if (p && p->isFlow() && p->childrenInline() ) {
                 static_cast<RenderFlow*>(p)->makeChildrenNonInline();
+		madeBoxesNonInline = true;
             }
         }
     }
@@ -1442,7 +1449,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
     insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
-
+    
+    if ( madeBoxesNonInline )
+	removeLeftoverAnonymousBoxes();
 }
 
 void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
@@ -1497,14 +1506,14 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
         child = next;
     }
 
-
     if (isInline()) {
         setInline(false);
         if (parent()->isFlow()) {
             KHTMLAssert(parent()->childrenInline());
 	    static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
         }
-    }
+    } 
+    
     setLayouted(false);
 }
 
@@ -1512,8 +1521,10 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
     bool inBox = false;
     if (specialObjects) {
-        int stx = _tx;
-        int sty = _ty;
+        int stx = _tx + xPos();
+        int sty = _ty + yPos();
+        if (isRelPositioned())
+            static_cast<RenderBox*>(this)->relativePositionOffset(stx, sty);
         // special case - special objects in root are relative to viewport
         if (isRoot()) {
             stx += static_cast<RenderRoot*>(this)->view()->contentsX();
@@ -1522,8 +1533,9 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         SpecialObject* o;
         QPtrListIterator<SpecialObject> it(*specialObjects);
         for (it.toLast(); (o = it.current()); --it)
-            if (o->node->containingBlock() == this)
-                inBox |= o->node->nodeAtPoint(info, _x, _y, stx+xPos(), sty+yPos());
+            if ( (o->node->isPositioned() && o->node->containingBlock() == this) ||
+                 (o->node->isFloating() && !o->noPaint) )
+                inBox |= o->node->nodeAtPoint(info, _x, _y, stx, sty);
     }
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);

@@ -58,7 +58,8 @@ namespace KJS {
   class History : public ObjectImp {
     friend class HistoryFunc;
   public:
-    History(KHTMLPart *p) : part(p) { }
+    History(ExecState *exec, KHTMLPart *p)
+      : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -70,7 +71,8 @@ namespace KJS {
 
   class FrameArray : public ObjectImp {
   public:
-    FrameArray(KHTMLPart *p) : part(p) { }
+    FrameArray(ExecState *exec, KHTMLPart *p)
+      : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
   private:
     QGuardedPtr<KHTMLPart> part;
@@ -254,7 +256,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(KHTMLPart *p)
-  : m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
+  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
@@ -357,11 +359,10 @@ Value Window::get(ExecState *exec, const UString &p) const
     return Undefined();
 
   // Look for overrides first
-  ValueImp * val = ObjectImp::getDirect(p);
-  if (val) {
+  Value val = ObjectImp::get(exec, p);
+  if (!val.isA(UndefinedType)) {
     //kdDebug(6070) << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
-    if (isSafeScript(exec))
-      return Value(val);
+    return isSafeScript(exec) ? val : Undefined();
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
@@ -403,10 +404,10 @@ Value Window::get(ExecState *exec, const UString &p) const
       return getEventConstructor(exec);
     case Frames:
       return Value(frames ? frames :
-                   (const_cast<Window*>(this)->frames = new FrameArray(m_part)));
+                   (const_cast<Window*>(this)->frames = new FrameArray(exec,m_part)));
     case _History:
       return Value(history ? history :
-                   (const_cast<Window*>(this)->history = new History(m_part)));
+                   (const_cast<Window*>(this)->history = new History(exec,m_part)));
 
     case Event:
       if (m_evt)
@@ -651,7 +652,7 @@ Value Window::get(ExecState *exec, const UString &p) const
       Value ret = parentObject.get(exec,p);
       if (ret.type() != UndefinedType ) {
 #ifdef KJS_VERBOSE
-        kdDebug() << "Window::get property " << p.qstring() << " found in parent part" << endl;
+        kdDebug(6070) << "Window::get property " << p.qstring() << " found in parent part" << endl;
 #endif
         return ret;
       }
@@ -696,10 +697,20 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location: {
-      QString str = value.toString(exec).qstring();
+      // Complete the URL using the "active part" (running interpreter)
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-      if ( p )
-        m_part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
+      if (p) {
+        QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
+        //kdDebug() << "Window::put dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
+        if (dstUrl.find("javascript:", 0, false) || isSafeScript(exec))
+        {
+          // Check if the URL is the current one. No [infinite] redirect in that case.
+          if ( !m_part->url().cmp( KURL(dstUrl), true ) )
+            m_part->scheduleRedirection(0,
+                                        dstUrl,
+                                        false /*don't lock history*/);
+        }
+      }
       return;
     }
     case Onabort:
@@ -830,8 +841,38 @@ void Window::scheduleClose()
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
 }
 
+void Window::closeNow()
+{
+  if (!m_part.isNull())
+  {
+    //kdDebug(6070) << k_funcinfo << " -> closing window" << endl;
+    delete m_part;
+  }
+}
+
+void Window::afterScriptExecution()
+{
+  DOM::DocumentImpl::updateDocumentsRendering();
+  QValueList<DelayedAction>::Iterator it = m_delayed.begin();
+  for ( ; it != m_delayed.end() ; ++it )
+  {
+    switch ((*it).actionId) {
+    case DelayedClose:
+      scheduleClose();
+      return; // stop here, in case of multiple actions
+    case DelayedGoHistory:
+      goHistory( (*it).param.toInt() );
+      break;
+    };
+  }
+}
+
 bool Window::isSafeScript(ExecState *exec) const
 {
+  if (m_part.isNull()) { // part deleted ? can't grant access
+    kdDebug(6070) << "Window::isSafeScript: accessing deleted part !" << endl;
+    return false;
+  }
   KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
   if (!activePart) {
     kdDebug(6070) << "Window::isSafeScript: current interpreter's part is 0L!" << endl;
@@ -859,6 +900,7 @@ bool Window::isSafeScript(ExecState *exec) const
   //kdDebug(6070) << "current domain:" << actDomain.string() << ", frame domain:" << thisDomain.string() << endl;
   if ( actDomain == thisDomain )
     return true;
+
   kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
   return false;
 }
@@ -924,6 +966,25 @@ void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
   //kdDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+}
+
+void Window::delayedGoHistory( int steps )
+{
+    m_delayed.append( DelayedAction( DelayedGoHistory, steps ) );
+}
+
+void Window::goHistory( int steps )
+{
+  KParts::BrowserExtension *ext = m_part->browserExtension();
+  if(!ext)
+    return;
+  KParts::BrowserInterface *iface = ext->browserInterface();
+
+  if ( !iface )
+    return;
+
+  iface->callMethod( "goHistory(int)", steps );
+  //emit ext->goHistory(steps);
 }
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -1079,14 +1140,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
           while ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url());
+          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
           return Window::retrieve(part);
       }
       if ( uargs.frameName == "_parent" )
       {
           if ( part->parentPart() )
               part = part->parentPart();
-          part->scheduleRedirection(0, url.url());
+          part->scheduleRedirection(0, url.url(), false/*don't lock history*/);
           return Window::retrieve(part);
       }
       uargs.serviceType = "text/html";
@@ -1210,12 +1271,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     else
       return Undefined();
   case Window::SetInterval:
-    if (args.size() == 2 && v.isA(StringType)) {
+    if (args.size() >= 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
       int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
       return Number(r);
     }
-    else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
+    else if (args.size() >= 2 && !Object::dynamicCast(v).isNull() &&
+	     Object::dynamicCast(v).implementsCall()) {
       Value func = args[0];
       int i = args[1].toInt32(exec);
 #if 0
@@ -1240,7 +1302,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Blur:
     // TODO
     return Undefined();
-  case Window::Close:
+  case Window::Close: {
     /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
        The close method closes only windows opened by JavaScript using the open method.
        If you attempt to close any other window, a confirm is generated, which
@@ -1251,20 +1313,33 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
        special case for one-off windows that need to open other windows and
        then dispose of themselves.
     */
+    bool doClose = false;
     if (!part->openedByJS())
     {
       // To conform to the SPEC, we only ask if the window
       // has more than one entry in the history (NS does that too).
-      History history(part);
+      History history(exec,part);
       if ( history.get( exec, "length" ).toInt32(exec) <= 1 ||
-           KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
-        (const_cast<Window*>(window))->scheduleClose();
+           KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") ) == KMessageBox::Yes )
+        doClose = true;
     }
     else
+      doClose = true;
+
+    if (doClose)
     {
-      (const_cast<Window*>(window))->scheduleClose();
+      // If this is the current window (the one the interpreter runs in),
+      // then schedule a delayed close (so that the script terminates first).
+      // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
+      if ( Window::retrieveActive(exec) == window ) {
+        // We'll close the window at the end of the script execution
+        Window* w = const_cast<Window*>(window);
+        w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
+      } else
+        (const_cast<Window*>(window))->closeNow();
     }
     return Undefined();
+  }
   case Window::CaptureEvents:
     // Do nothing. This is a NS-specific call that isn't needed in Konqueror.
     break;
@@ -1411,11 +1486,7 @@ void WindowQObject::timerEvent(QTimerEvent *e)
 
 void WindowQObject::timeoutClose()
 {
-  if (!parent->part().isNull())
-  {
-    //kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
-    delete parent->m_part;
-  }
+  parent->closeNow();
 }
 
 Value FrameArray::get(ExecState *exec, const UString &p) const
@@ -1598,7 +1669,7 @@ void Location::put(ExecState *exec, const UString &p, const Value &v, int attr)
     return;
   }
 
-  m_part->scheduleRedirection(0, url.url());
+  m_part->scheduleRedirection(0, url.url(), false /*don't lock history*/);
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
@@ -1630,11 +1701,11 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       QString str = args[0].toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->part();
       if ( p )
-        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string());
+        part->scheduleRedirection(0, p->htmlDocument().completeURL(str).string(), true /*lock history*/);
       break;
     }
     case Location::Reload:
-      part->scheduleRedirection(0, part->url().url());
+      part->scheduleRedirection(0, part->url().url(), true/*lock history*/);
       break;
     case Location::ToString:
       return String(location->toString(exec));
@@ -1696,20 +1767,11 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return err;
   }
   History *history = static_cast<History *>(thisObj.imp());
-  KParts::BrowserExtension *ext = history->part->browserExtension();
 
   Value v = args[0];
   Number n;
   if(!v.isNull())
     n = v.toInteger(exec);
-
-  if(!ext)
-    return Undefined();
-
-  KParts::BrowserInterface *iface = ext->browserInterface();
-
-  if ( !iface )
-    return Undefined();
 
   int steps;
   switch (id) {
@@ -1735,8 +1797,10 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     history->part->openURL( history->part->url() ); /// ## need args.reload=true?
   } else
   {
-    iface->callMethod( "goHistory(int)", steps );
-//      emit ext->goHistory(steps);
+    // Delay it.
+    // Testcase: history.back(); alert("hello");
+    Window* window = Window::retrieveWindow( history->part );
+    window->delayedGoHistory( steps );
   }
   return Undefined();
 }
@@ -1809,4 +1873,3 @@ UString Konqueror::toString(ExecState *) const
 /////////////////////////////////////////////////////////////////////////////
 
 #include "kjs_window.moc"
-

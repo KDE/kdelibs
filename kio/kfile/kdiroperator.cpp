@@ -49,6 +49,7 @@
 #include <kio/previewjob.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
+#include <kstdaccel.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -392,8 +393,15 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                                     bool ask, bool showProgress )
 {
+    return del( items, viewWidget(), ask, showProgress );
+}
+
+KIO::DeleteJob * KDirOperator::del( const KFileItemList& items, 
+                                    QWidget *parent,
+                                    bool ask, bool showProgress )
+{
     if ( items.isEmpty() ) {
-        KMessageBox::information( this,
+        KMessageBox::information( parent,
                                   i18n("You didn't select a file to delete."),
                                   i18n("Nothing to delete") );
         return 0L;
@@ -416,14 +424,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     if ( ask ) {
         int ret;
         if ( items.count() == 1 ) {
-            ret = KMessageBox::warningContinueCancel( viewWidget(),
+            ret = KMessageBox::warningContinueCancel( parent,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Delete File"),
                                                       i18n("Delete") );
         }
         else
-            ret = KMessageBox::warningContinueCancelList( viewWidget(),
+            ret = KMessageBox::warningContinueCancelList( parent,
                 i18n("Do you really want to delete these %1 items?")
                 .arg( items.count() ),
                                                     files,
@@ -601,7 +609,7 @@ void KDirOperator::pathChanged()
 
 void KDirOperator::slotRedirected( const KURL& newURL )
 {
-    qDebug("*** REDIRECTED: %s", newURL.url().latin1());
+    currUrl = newURL;
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
@@ -965,6 +973,8 @@ void KDirOperator::setDirLister( KDirLister *lister )
     connect( dir, SIGNAL(redirection( const KURL& )),
 	     SLOT( slotRedirected( const KURL& )));
     connect( dir, SIGNAL( clear() ), SLOT( slotClearView() ));
+    connect( dir, SIGNAL( refreshItems( const KFileItemList& ) ),
+             SLOT( slotRefreshItems( const KFileItemList& ) ) );
 }
 
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
@@ -995,9 +1005,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    KURL tmp( currUrl );
-    tmp.cd(item->name());
-    setURL(tmp, true);
+    setURL(item->url(), true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)
@@ -1096,6 +1104,7 @@ void KDirOperator::setupActions()
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
+    reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
 
     // the sort menu actions
@@ -1511,6 +1520,17 @@ void KDirOperator::togglePreview( bool on )
         setView( (KFile::FileView) (d->restorePreview &
                                     ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
+
+void KDirOperator::slotRefreshItems( const KFileItemList& items )
+{
+    if ( !m_fileView )
+        return;
+
+    KFileItemListIterator it( items );
+    for ( ; it.current(); ++it )
+        m_fileView->updateView( it.current() );
+}
+
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -91,14 +91,26 @@ public:
    * @internal
   */
   void removeKProcess( KProcess* );
- public slots:
+  
+  /**
+   * Wait for any process to exit and handle their exit without
+   * starting an event loop.
+   * This function may cause KProcess to emit any of its signals.
+   *
+   * @return true if a process exited, false
+   *         if no process exited within @p timeout seconds.
+   */
+  bool waitForProcessExit(int timeout);
+
+public slots:
   /**
    * @internal
    */
  void slotDoHousekeeping(int socket);
 
- private slots:
+private slots:
  void delayedChildrenCleanup();
+
 private:
   int fd[2];
   QSocketNotifier *notifier;

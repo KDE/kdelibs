@@ -46,7 +46,7 @@ KMDBCreator::~KMDBCreator()
 {
 	if (m_proc.isRunning())
 		m_proc.kill();
-	delete m_dlg;
+	//delete m_dlg;
 }
 
 bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
@@ -110,7 +110,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	{
 		if (!m_dlg)
 		{
-			m_dlg = new QProgressDialog(parent,"progress-dialog",true);
+			m_dlg = new QProgressDialog(parent->topLevelWidget(),"progress-dialog",true);
 			m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
 			m_dlg->setCaption(i18n("Driver Database"));
 			connect(m_dlg,SIGNAL(cancelled()),SLOT(slotCancelled()));

@@ -29,6 +29,7 @@
 #include "dom/dom_string.h"
 #include "dom/dom_node.h"
 #include "misc/helper.h"
+#include "misc/shared.h"
 
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
@@ -55,13 +56,12 @@ class CSSStyleDeclarationImpl;
 class RegisteredEventListener;
 class EventImpl;
 
-class DocumentPtr : public DomShared
+class DocumentPtr : public khtml::Shared<DocumentPtr>
 {
 public:
     DocumentImpl *document() const { return doc; }
 private:
     DocumentPtr() { doc = 0; }
-    void resetDocument() { doc = 0; }
     friend class DocumentImpl;
     friend class DOMImplementationImpl;
 
@@ -69,7 +69,7 @@ private:
 };
 
 // this class implements nodes, which can have a parent but no children:
-class NodeImpl : public DomShared
+class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
     friend class DocumentImpl;
 public:
@@ -108,10 +108,8 @@ public:
 
     // helper functions not being part of the DOM
     // Attention: they assume that the caller did the consistency checking!
-    void setParent(NodeImpl *parent) { m_parent = parent; }
     void setPreviousSibling(NodeImpl *previous) { m_previous = previous; }
     void setNextSibling(NodeImpl *next) { m_next = next; }
-    virtual bool deleteMe();
 
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
@@ -358,7 +356,6 @@ public:
 
 private: // members
     DocumentPtr *document;
-    NodeImpl *m_parent;
     NodeImpl *m_previous;
     NodeImpl *m_next;
 protected:
@@ -449,9 +446,10 @@ protected:
 class Node;
 class NodeImpl;
 
-class NodeListImpl : public DomShared
+class NodeListImpl : public khtml::Shared<NodeListImpl>
 {
 public:
+    virtual ~NodeListImpl() {}
 
     // DOM methods & attributes for NodeList
     virtual unsigned long length() const;
@@ -536,7 +534,7 @@ protected:
 // Generic NamedNodeMap interface
 // Other classes implement this for more specific situations e.g. attributes
 // of an element
-class NamedNodeMapImpl : public DomShared
+class NamedNodeMapImpl : public khtml::Shared<NamedNodeMapImpl>
 {
 public:
     NamedNodeMapImpl();

@@ -298,10 +298,22 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 
              int fqdnCount = domains.count();
              int cookieDomainCount = cookieDomainList.count();
-
-             if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
-                  domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
+             
+             if ((fqdnCount == 1) && (cookieDomainCount == 1))
+             {
+                if (domains[0] != cookieDomainList[0])
+                   continue;
+             }
+             else if ((fqdnCount >= 2) && ( cookieDomainCount >= 2))
+             {
+                if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
+                     domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
+                   continue;
+             }
+             else
+             {
                 continue;
+             }
           }
 
 
@@ -622,7 +634,8 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             {
                 lastCookie->mProtocolVersion = Value.toInt();
             }
-            else if (Name == "secure")
+            else if ((Name == "secure") || 
+                     (Name.isEmpty() && Value.lower() == "secure"))
             {
                 lastCookie->mSecure = true;
             }

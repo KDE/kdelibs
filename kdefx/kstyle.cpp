@@ -447,7 +447,7 @@ void KStyle::drawPrimitive( PrimitiveElement pe,
 		QWidget *widget, *parent;
 
 		if (p && p->device()->devType() == QInternal::Widget) {
-			widget = dynamic_cast<QWidget*>(p->device());
+			widget = static_cast<QWidget*>(p->device());
 			parent = widget->parentWidget();
 		} else
 			return;		// Don't paint on non-widgets
@@ -671,8 +671,33 @@ void KStyle::drawControl( ControlElement element,
 
 			// Draw progress bar
 			if (progress > 0 || steps == 0) {
-				double pg = (steps == 0) ? 1.0 : progress / steps;
+				double pg = (steps == 0) ? 0.1 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
+				if (steps == 0) { //Busy indicator
+				
+					if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+					
+					int remWidth = cr.width() - width; //Never disappear completely
+					if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+					
+					int pstep =  int(progress) % ( 2 *  remWidth ); 
+					
+					if ( pstep > remWidth ) {
+						//Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+						// - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+						pstep = - (pstep - 2 * remWidth );                                                                                      
+					}
+					
+					if (reverse)
+						p->fillRect(cr.x() + cr.width() - width - pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));                                       
+					else
+						p->fillRect(cr.x() + pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));
+					
+					return;                                       
+				}
+                                
 	
 				// Do fancy gradient for highcolor displays
 				if (d->highcolor) {
@@ -1622,9 +1647,6 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		QMenuBar* menubar = dynamic_cast<QMenuBar*>(object);
-		QToolBar* toolbar = dynamic_cast<QToolBar*>(object);
-
 		// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
 		// ensure that the filled frame contents are properly painted.
 		// We essentially modify the paintEvent's rect to include the
@@ -1632,9 +1654,15 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		// This is nasty, but I see no other way to properly repaint 
 		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
-		if ( menubar || toolbar ) 
+		if (event->type() == QEvent::Paint) 
 		{
-			if (event->type() == QEvent::Paint) 
+			QMenuBar* menubar = 0;
+			QToolBar* toolbar = 0;
+			if (object->inherits("QMenuBar"))
+				menubar = static_cast<QMenuBar*>(object);
+			else if (object->inherits("QToolBar"))
+				toolbar = static_cast<QToolBar*>(object);
+			if ( menubar || toolbar ) 
 			{
 				bool horizontal = true;
 				QPaintEvent* pe = (QPaintEvent*)event;

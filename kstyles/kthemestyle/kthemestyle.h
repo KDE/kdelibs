@@ -20,7 +20,7 @@ Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
 Drawing routines adapted from the KDE2 HCStyle,
 Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
   (C) 2000 Dirk Mueller      <mueller@kde.org>
-  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+  (C) 2001 Martijn Klingens  <klingens@kde.org>
 
 
  This library is free software; you can redistribute it and/or
@@ -131,6 +131,7 @@ public:
 
     virtual void polish( QWidget* );
     virtual void unPolish( QWidget* );
+    virtual bool eventFilter( QObject* object, QEvent* event );
     /**
      * By default this just sets the background brushes to the pixmapped
      * background.
@@ -199,6 +200,9 @@ protected:
 
     mutable QPixmap* menuCache;
     mutable QPixmap* vsliderCache;
+
+    int brushHandle;
+    bool brushHandleSet;
 
 protected slots:
     void paletteChanged();

@@ -122,15 +122,15 @@ KProcess::setWorkingDirectory(const QString &dir)
 {
    if (!d)
       d = new KProcessPrivate;
-   d->wd = dir;   
-} 
+   d->wd = dir;
+}
 
-void 
+void
 KProcess::setupEnvironment()
 {
    if (d)
    {
-      QMap<QString,QString>::Iterator it;
+      QMap<QString,QString>::ConstIterator it;
       for(it = d->env.begin(); it != d->env.end(); ++it)
          setenv(QFile::encodeName(it.key()).data(),
                 QFile::encodeName(it.data()).data(), 1);
@@ -211,19 +211,18 @@ KProcess &KProcess::operator<<(const QStringList& args)
 
 KProcess &KProcess::operator<<(const QCString& arg)
 {
-  return operator<< (arg.data());
-}
-
-KProcess &KProcess::operator<<(const char* arg)
-{
   arguments.append(arg);
   return *this;
 }
 
+KProcess &KProcess::operator<<(const char* arg)
+{
+  return operator<<(QCString(arg));
+}
+
 KProcess &KProcess::operator<<(const QString& arg)
 {
-  arguments.append(QFile::encodeName(arg));
-  return *this;
+  return operator<<(QFile::encodeName(arg));
 }
 
 void KProcess::clearArguments()
@@ -233,9 +232,7 @@ void KProcess::clearArguments()
 
 bool KProcess::start(RunMode runmode, Communication comm)
 {
-  uint i;
   uint n = arguments.count();
-  char **arglist;
 
   if (runs || (0 == n)) {
         return false;  // cannot start a process that is already running
@@ -244,9 +241,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
   run_mode = runmode;
   status = 0;
 
-  arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
+  char** arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
   Q_CHECK_PTR(arglist);
-  for (i=0; i < n; i++)
+  for (uint i = 0; i < n; i++)
     arglist[i] = arguments[i].data();
   arglist[n]= 0;
 
@@ -290,7 +287,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // The child process
         if(!commSetupDoneC())
           kdDebug() << "Could not finish comm setup in child!" << endl;
-          
+
         setupEnvironment();
 
         // Matthias
@@ -362,7 +359,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
           while(runs)
           {
              KProcessController::theKProcessController->
-                  slotDoHousekeeping(0);
+                  waitForProcessExit(10);
           }
           emit processExited(this);
         }
@@ -879,7 +876,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 
         if(!commSetupDoneC())
           kdDebug() << "Could not finish comm setup in child!" << endl;
-          
+
         setupEnvironment();
 
         // Matthias

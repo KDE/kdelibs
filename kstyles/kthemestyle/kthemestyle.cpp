@@ -20,7 +20,7 @@ Port version 0.9.6
 	Drawing routines adapted from the KDE2 HCStyle,
 		Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
 		(C) 2000 Dirk Mueller      <mueller@kde.org>
-		(C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+		(C) 2001 Martijn Klingens  <klingens@kde.org>
 
 
  This library is free software; you can redistribute it and/or
@@ -375,7 +375,8 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
-        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 ),
+         brushHandle( 0 ), brushHandleSet( false )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -413,13 +414,12 @@ void KThemeStyle::polish( QPalette &p )
 
     if ( isPixmap( Background ) )
     {
-        if ( isPixmap( Background ) )
-        {
-            QBrush bgBrush( p.color( QPalette::Normal,
-                                     QColorGroup::Background ),
-                            *uncached( Background ) );
-            p.setBrush( QColorGroup::Background, bgBrush );
-        }
+        QBrush bgBrush( p.color( QPalette::Normal,
+                                QColorGroup::Background ),
+                                *uncached( Background ) );
+        brushHandle = uncached( Background )->handle();
+        brushHandleSet = true;
+        p.setBrush( QColorGroup::Background, bgBrush );
     }
 
 }
@@ -437,8 +437,57 @@ void KThemeStyle::unPolish( QApplication *app )
     app->setPalette( oldPalette, true );
 }
 
+bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
+{
+    if( object->inherits("KActiveLabel"))
+    {
+        if(event->type() == QEvent::Move || event->type() == QEvent::Resize ||
+            event->type() == QEvent::Show)
+        {
+            QWidget *w = static_cast<QWidget*>(object);
+            QPoint pos(0, 0);
+            pos = w->mapTo(w->topLevelWidget(), pos);
+            QPixmap pix(uncached( Background )->size());
+            QPainter p;
+            p.begin(&pix);
+            p.drawTiledPixmap(0, 0,
+                            uncached( Background )->width(),
+                            uncached( Background )->height() ,
+                            *uncached( Background ),
+                            pos.x(), pos.y());
+            p.end();
+            QPalette pal(w->palette());
+            QBrush brush( pal.color( QPalette::Normal,
+                                                    QColorGroup::Background),
+                                pix );
+            pal.setBrush(QColorGroup::Base, brush);
+            w->setPalette(pal);
+        }
+    }
+
+    return KStyle::eventFilter(object, event);
+}
+
 void KThemeStyle::polish( QWidget *w )
 {
+    if (w->inherits("QStatusBar"))
+        w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+
+    if (w->backgroundPixmap() && !w->isTopLevel())
+    {
+        //The brushHandle check verifies that the bg pixmap is actually the brush..
+        if (!brushHandleSet || brushHandle == w->backgroundPixmap()->handle())
+        {
+            w->setBackgroundOrigin( QWidget::WindowOrigin );
+        }
+    }
+
+    if (w->inherits("KActiveLabel"))
+    {
+        if (uncached( Background ))
+            w->installEventFilter(this);
+    }
+
     if ( w->inherits( "QTipLabel" ) )
     {
         polishLock = true;
@@ -458,24 +507,6 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( !w->isTopLevel() )
-    {
-        if ( w->inherits( "QGroupBox" ) )   //#### Doing this for TabWidget created problems -- should this one go as well?
-        {
-            w->setAutoMask( TRUE );
-            return ;
-        }
-        if ( w->inherits( "QLabel" )
-                || w->inherits( "QSlider" )
-                || w->inherits( "QButton" )
-                || w->inherits( "QProgressBar" )
-                || w->inherits( "KActiveLabel" )
-                || w->inherits( "KJanusWidget" )
-           )
-        {
-            w->setBackgroundOrigin( QWidget::ParentOrigin );
-        }
-    }
     if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) || w->inherits ("QToolButton") )
     {
         w->setBackgroundMode( QWidget::NoBackground );
@@ -542,20 +573,10 @@ void KThemeStyle::polish( QWidget *w )
 
 void KThemeStyle::unPolish( QWidget* w )
 {
-    if ( !w->isTopLevel() )
+    if (w->backgroundPixmap() && !w->isTopLevel())
     {
-        if ( w->inherits( "QGroupBox" ) )
-        {
-            w->setAutoMask( FALSE );
-            return ;
-        }
-        if ( w->inherits( "QLabel" )
-                || w->inherits( "QSlider" )
-                || w->inherits( "QButton" )
-                || w->inherits( "QProgressBar" )
-                || w->inherits( "KActiveLabel" )
-                || w->inherits( "KJanusWidget" )
-           )
+        //The brushHandle check verifies that the bg pixmap is actually the brush..
+        if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
         {
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
         }
@@ -646,6 +667,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
     bool down = ( flags & Style_Down );
     bool on = flags & Style_On;
     QColorGroup g = g_base;
+    
 
     switch ( pe )
     {
@@ -868,6 +890,12 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                                                          IndicatorOn : IndicatorOff ) );
                     handled = true;
                 }
+                break;
+            }
+        case PE_PanelPopup:
+            {
+                if (h==8 && w==50) //Used by Qt when no items..  #### WORKAROUND/HACK
+                    p->fillRect(r, g.brush(QColorGroup::Background) );
                 break;
             }
         case PE_Splitter:
@@ -1309,7 +1337,6 @@ void KThemeStyle::drawControl( ControlElement element,
 
                 QPixmap* cache = makeMenuBarCache(pr.width(), pr.height());
 
-
                 QPixmap buf( w, pr.height() );
 
                 bitBlt(&buf, 0, 0, cache, x, y, w, pr.height());
@@ -1317,19 +1344,15 @@ void KThemeStyle::drawControl( ControlElement element,
 
                 if ( active )
                 {
-                    drawBaseButton( &p2, 0,  0, w, h, *g, false, false, MenuBarItem );
+                    drawBaseButton( &p2, 0, 0, w, h, *g, false, false, MenuBarItem );
                 }
-
-                drawItem( &p2, QRect(0,0,w,h), AlignCenter | ShowPrefix | DontClip | SingleLine,
-                          *g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                          -1, &btext );
-
-
-
+                
                 p2.end();
                 p->drawPixmap( x, y, buf, 0, 0, w, h );
-
-
+                                
+                drawItem( p, QRect(x,y,w,h), AlignCenter | AlignVCenter | ShowPrefix | DontClip | SingleLine,
+                          *g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                          -1, &btext );
                 handled = true;
                 break;
             }
@@ -1554,7 +1577,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 if ( mi->popup() )
                 {
                     PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-                    int dim = ( h - 2 * itemFrame ) / 2;
+                    int dim = 10 -  itemFrame; //We're not very useful to inherit off, so just hardcode..
                     QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
                                                   y + h / 2 - dim / 2, dim, dim ), r );
 
@@ -1591,29 +1614,52 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_ProgressBarContents:
             {
+                const QProgressBar* pb = (const QProgressBar*)widget;
+                QRect cr = subRect(SR_ProgressBarContents, widget);
+                double progress = pb->progress();
                 bool reverse = QApplication::reverseLayout();
-                const QProgressBar* br = ( const QProgressBar* ) widget;
-                QRect cr = subRect( SR_ProgressBarContents, widget );
-                cr.rect(&x,&y,&w,&h);
-                float prog = 1.0;
-                if ( br->totalSteps() )
-                    prog = ( float ) br->progress() / br->totalSteps();
-                if ( prog < 0 )
-                    prog = 0;
-                //p2.end();
-                int wp = (int)(w * prog);
+                int steps = pb->totalSteps();
+                
+                int pstep = 0;
 
-                if ( !reverse )
-                    drawBaseButton( p, x, y, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
-                else
+                if (!cr.isValid())
+                        return;
+
+                // Draw progress bar
+                if (progress > 0 || steps == 0)
                 {
-                    //TODO:Optimize
-                    QPixmap buf( wp, h );
-                    QPainter p2( &buf );
-                    drawBaseButton( &p2, 0, 0, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
-                    p2.end();
-                    QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
-                    bitBlt( p->device(), x + ( w - wp ), y, &mirroredPix );
+                        double pg = (steps == 0) ? 0.1 : progress / steps;
+                        int width = QMIN(cr.width(), (int)(pg * cr.width()));
+                        if (steps == 0)
+                        { //Busy indicator
+
+                                if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+
+                                int remWidth = cr.width() - width; //Never disappear completely
+                                if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+
+                                pstep =  int(progress) % ( 2 *  remWidth ); 
+
+                                if ( pstep > remWidth )
+                                {
+                                        //Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+                                        // - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+                                        pstep = - (pstep - 2 * remWidth );                                                                                      
+                                }
+                        }
+                                                                           
+                        if ( !reverse )
+                                drawBaseButton( p, x + pstep, y, width, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
+                        else
+                        {
+                                //TODO:Optimize
+                                QPixmap buf( width, h );
+                                QPainter p2( &buf );
+                                drawBaseButton( &p2, 0, 0, width, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
+                                p2.end();
+                                QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
+                                bitBlt( p->device(), x + w - width - pstep, y, &mirroredPix );
+                        }
                 }
 
                 handled = true;

@@ -28,6 +28,7 @@
 
 #include "dom/dom_node.h"
 #include "dom/dom_misc.h"
+#include "misc/shared.h"
 #include "dom/dom2_traversal.h"
 
 namespace DOM {
@@ -35,7 +36,7 @@ namespace DOM {
 class NodeImpl;
 class DocumentImpl;
 
-class NodeIteratorImpl : public DomShared
+class NodeIteratorImpl : public khtml::Shared<NodeIteratorImpl>
 {
 public:
     NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow, NodeFilter _filter, bool _entityReferenceExpansion);
@@ -76,13 +77,13 @@ protected:
     DocumentImpl *m_doc;
 };
 
-class NodeFilterImpl : public DomShared
+class NodeFilterImpl : public khtml::Shared<NodeFilterImpl>
 {
 public:
     NodeFilterImpl();
     ~NodeFilterImpl();
 
-    virtual short acceptNode(const Node &n);
+    short acceptNode(const Node &n);
 
     void setCustomNodeFilter(CustomNodeFilter *custom);
     CustomNodeFilter *customNodeFilter();
@@ -91,7 +92,7 @@ protected:
 
 };
 
-class TreeWalkerImpl : public DomShared
+class TreeWalkerImpl : public khtml::Shared<TreeWalkerImpl>
 {
 public:
     TreeWalkerImpl();

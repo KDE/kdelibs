@@ -140,7 +140,6 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
     reset();
     current = i;
     inBody = true;
-    inSelect = false;
 }
 
 KHTMLParser::~KHTMLParser()
@@ -167,17 +166,17 @@ void KHTMLParser::reset()
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
     inBody = false;
-    noRealBody = true;
     haveFrameSet = false;
+    haveContent = false;
     inSelect = false;
-    _inline = false;
+    m_inline = false;
 
+    inPre = 0;
     form = 0;
     map = 0;
     head = 0;
     end = false;
     isindex = 0;
-    flat = false;
     haveKonqBlock = false;
 
     discard_until = 0;
@@ -202,15 +201,13 @@ void KHTMLParser::parseToken(Token *t)
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->id).string() << "(" << t->id << ")"
                     << " current = " << getTagName(current->id()).string() << "(" << current->id() << ")" << endl;
-    kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << " noRealBody=" << noRealBody << " haveFrameSet=" << haveFrameSet << endl;
+    kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << endl;
 #endif
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
     if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
         t->id -= ID_CLOSE_TAG;
-
-    flat = t->flat;
 
     if(t->id > ID_CLOSE_TAG)
     {
@@ -219,13 +216,11 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if( t->id == ID_TEXT ) {
+    if( t->id == ID_TEXT && t->text ) {
+        if(inBody && !skipMode() && t->text->l > 2) haveContent = true;
 #ifdef PARSER_DEBUG
-        if(t->text)
-            kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
+        kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
-
-        if ( inBody ) noRealBody = false;
     }
 
     NodeImpl *n = getElement(t);
@@ -253,7 +248,7 @@ void KHTMLParser::parseToken(Token *t)
         popOneBlock();
     }
 
-    if ( !insertNode(n) ) {
+    if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
@@ -276,7 +271,7 @@ void KHTMLParser::parseToken(Token *t)
     }
 }
 
-bool KHTMLParser::insertNode(NodeImpl *n)
+bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 {
     int id = n->id();
 
@@ -311,7 +306,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
 #endif
             //_inline = current->isInline();
-            if(current->isInline()) _inline = true;
+            if(current->isInline()) m_inline = true;
         }
         else {
 #if SPEED_DEBUG < 2
@@ -328,7 +323,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(n->renderer())
                 n->renderer()->close();
 #endif
-            flat = false;
         }
 
 #if SPEED_DEBUG < 1
@@ -354,12 +348,12 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
                 return false;
             break;
-            // We can deal with a base, meta and link element in the body, by just adding the element to head.
         case ID_META:
         case ID_LINK:
+        case ID_ISINDEX:
         case ID_BASE:
-            if( !head )
-                createHead();
+            // when there is no head yet, we will create it further below
+            // and arrive here again
             if( head ) {
                 if ( head->addChild(n) ) {
 #if SPEED_DEBUG < 2
@@ -390,7 +384,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 		    }
 		    if ( changed )
 			doc()->recalcStyle( NodeImpl::Inherit );
-		    noRealBody = false;
 		}
                 return false;
 	    }
@@ -440,7 +433,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
-                noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
             return false;
@@ -710,8 +702,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         default:
             if(current->isDocumentNode())
             {
-                if(current->firstChild() == 0)
-                {
+                if(current->firstChild() == 0) {
                     e = new HTMLHtmlElementImpl(document);
                     insertNode(e);
                     handled = true;
@@ -757,7 +748,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         startBody();
-        noRealBody = false;
         break;
 
 // head elements
@@ -783,7 +773,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
-        if ( inBody && !haveFrameSet) {
+        if ( inBody && !haveFrameSet && !haveContent) {
             popBlock( ID_BODY );
             // ### actually for IE document.body returns the now hidden "body" element
             // we can't implement that behaviour now because it could cause too many
@@ -793,19 +783,17 @@ NodeImpl *KHTMLParser::getElement(Token* t)
                 static_cast<HTMLDocumentImpl*>(document->document())->body()
                     ->addCSSProperty(CSS_PROP_DISPLAY, "none");
             inBody = false;
-            noRealBody = true;
         }
-        if ( haveFrameSet && current->id() == ID_HTML )
+        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
         startBody();
-        noRealBody = false;
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
         n = new HTMLIFrameElementImpl(document);
-        discard_until = ID_IFRAME+ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_IFRAME+ID_CLOSE_TAG;
         break;
 
 // form elements
@@ -830,7 +818,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             isindex = n;
             n = 0;
         } else
-            flat = true;
+            t->flat = true;
         break;
     case ID_KEYGEN:
         n = new HTMLKeygenElementImpl(document, form);
@@ -918,8 +906,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_P:
         n = new HTMLParagraphElementImpl(document);
         break;
-    case ID_XMP:
     case ID_PRE:
+        ++inPre;
+    case ID_XMP:
     case ID_PLAINTEXT:
         n = new HTMLPreElementImpl(document, t->id);
         break;
@@ -940,6 +929,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // anchor
     case ID_A:
+        if (blockStack && blockStack->id == ID_A)
+            popBlock(ID_A);
+
         n = new HTMLAnchorElementImpl(document);
         break;
 
@@ -1054,13 +1046,13 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
         // these are special, and normally not rendered
     case ID_NOEMBED:
-        discard_until = ID_NOEMBED + ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_NOEMBED + ID_CLOSE_TAG;
         return 0;
     case ID_NOFRAMES:
-        discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
         return 0;
     case ID_NOSCRIPT:
-        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
+        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled() && !t->flat)
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
         return 0;
     case ID_NOLAYER:
@@ -1102,11 +1094,6 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_MAP+ID_CLOSE_TAG:
         map = 0;
         break;
-    case ID_HEAD+ID_CLOSE_TAG:
-        //inBody = true;
-        // don't close head neither. the creation of body will do it for us.
-        // fixes some sites, that define stylesheets after </head>
-        return;
     case ID_SELECT+ID_CLOSE_TAG:
         inSelect = false;
         break;
@@ -1209,7 +1196,10 @@ void KHTMLParser::popOneBlock()
     // we only set inline to false, if the element we close is a block level element.
     // This helps getting cases as <p><b>bla</b> <b>bla</b> right.
     if(!current->isInline())
-        _inline = false;
+        m_inline = false;
+    if (current->id() == ID_PRE)
+        --inPre;
+
     current = Elem->node;
 
     delete Elem;
@@ -1279,8 +1269,7 @@ void KHTMLParser::startBody()
     inBody = true;
 
     if( isindex ) {
-        flat = true; // don't decend into this node
-        insertNode( isindex );
+        insertNode( isindex, true /* don't decend into this node */ );
         isindex = 0;
     }
 }

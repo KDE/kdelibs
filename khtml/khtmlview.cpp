@@ -130,8 +130,8 @@ public:
 	borderY = 30;
 	clickX = -1;
 	clickY = -1;
-	prevMouseX = -1;
-	prevMouseY = -1;
+        prevMouseX = -1;
+        prevMouseY = -1;
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
@@ -409,20 +409,10 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     //kdDebug( 6000 ) << "\nmousePressEvent: x=" << xm << ", y=" << ym << endl;
 
-
-    // Make this frame the active one
-    // ### need some visual indication for the active frame.
-    /* ### use PartManager (Simon)
-       if ( _isFrame && !_isSelected )
-       {
-        kdDebug( 6000 ) << "activating frame!" << endl;
-        topView()->setFrameSelected(this);
-    }*/
-
     d->isDoubleClick = false;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
@@ -458,7 +448,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     d->isDoubleClick = true;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
@@ -495,7 +485,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -596,7 +586,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     //kdDebug( 6000 ) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
@@ -732,6 +722,8 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 
 void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 {
+// ### what kind of c*** is that ?
+#if 0
     if (!m_part->xmlDocImpl()) return;
     int xm = _ce->x();
     int ym = _ce->y();
@@ -748,12 +740,11 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 
         QWidget *w = static_cast<RenderWidget*>(targetNode->renderer())->widget();
         QContextMenuEvent cme(_ce->reason(),pos,_ce->globalPos(),_ce->state());
-// ### what kind of c*** is that ?
-//        setIgnoreEvents(true);
-//        QApplication::sendEvent(w,&cme);
-//        setIgnoreEvents(false);
+        setIgnoreEvents(true);
+        QApplication::sendEvent(w,&cme);
+        setIgnoreEvents(false);
     }
-
+#endif
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
@@ -987,7 +978,7 @@ void KHTMLView::print()
     if(printer->setup(this)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
-        printer->setFullPage(true);
+        printer->setFullPage(false);
         printer->setCreator("KDE 3.0 HTML Library");
         QString docname = m_part->xmlDocImpl()->URL();
         if ( !docname.isEmpty() )
@@ -1000,10 +991,19 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
+        // We ignore margin settings for html and body when printing
+        // and use the default margins from the print-system
+        // (In Qt 3.0.x the default margins are hardcoded in Qt)
         m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ?
                                                   "* { background-image: none !important;"
-                                                  "    background-color: transparent !important;"
-                                                  "    color: black !important }" : "" );
+                                                  "    background-color: white !important;"
+                                                  "    color: black !important; }"
+                                                  "body { margin: 0px !important; }"
+                                                  "html { margin: 0px !important; }" :
+                                                  "body { margin: 0px !important; }"
+                                                  "html { margin: 0px !important; }"
+                                                  );
+
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -1035,8 +1035,6 @@ void KHTMLView::print()
         // the whole thing.
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
-        // We print the bottom 'overlap' units again at the top of the next page.
-        int overlap = 30;
         p->setClipRect(0,0, pageWidth, pageHeight);
         if(root->docWidth() > metrics.width()) {
             double scale = ((double) metrics.width())/((double) root->docWidth());
@@ -1045,19 +1043,20 @@ void KHTMLView::print()
 #endif
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
-            overlap = (int) (overlap/scale);
         }
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+            root->setTruncatedAt(top+pageHeight);
 
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
-            p->translate(0,-(pageHeight-overlap));
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
-            top += (pageHeight-overlap);
+
+            p->translate(0, top - root->truncatedAt());
+            top = root->truncatedAt();
         }
 
         p->end();
@@ -1226,18 +1225,19 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool ctrlKey = (_mouse->state() & ControlButton);
     bool altKey = (_mouse->state() & AltButton);
     bool shiftKey = (_mouse->state() & ShiftButton);
-	bool metaKey = (_mouse->state() & MetaButton);
+    bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
-    	NodeImpl *oldUnder = 0;
 
+        // ### this code sucks. we should save the oldUnder instead of calculating
+        // it again. calculating is expensive! (Dirk)
+        NodeImpl *oldUnder = 0;
 	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
 	    NodeImpl::MouseEvent mev( _mouse->stateAfter(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
-	    m_part->xmlDocImpl()->prepareMouseEvent( d->prevMouseX, d->prevMouseY, &mev );
+	    m_part->xmlDocImpl()->prepareMouseEvent( true, d->prevMouseX, d->prevMouseY, &mev );
 	    oldUnder = mev.innerNode.handle();
 	}
-
 	if (oldUnder != targetNode) {
 	    // send mouseout event to the old node
 	    if (oldUnder){
@@ -1265,9 +1265,9 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->deref();
 	    }
 
-	    if (oldUnder)
-		oldUnder->deref();
-	}
+            if (oldUnder)
+                oldUnder->deref();
+        }
     }
 
     bool swallowEvent = false;

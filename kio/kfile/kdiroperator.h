@@ -66,7 +66,7 @@ namespace KIO {
  * Currently, those classes don't support Drag&Drop out of the box -- there
  * you have to use your own view-classes. You can use some DnD-aware views
  * from Björn Sahlström <bjorn@kbear.org> until they will be integrated
- * into this library. See http://master.kde.org/~pfeiffer/DnD-classes.tar.gz
+ * into this library. See http://devel-home.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
  * This widget is the one used in the KFileDialog.
  *
@@ -434,6 +434,16 @@ class KDirOperator : public QWidget
                           bool ask = true, bool showProgress = true );
 
     /**
+     * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
+     *
+     * @param parent the parent widget for the confirmation messagebox
+     * @param ask specifies whether a confirmation dialog should be shown
+     * @param showProgress passed to the DeleteJob to show a progress dialog
+     */
+    KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
+                          bool ask = true, bool showProgress = true );
+
+    /**
      * Clears the forward and backward history.
      */
     void clearHistory();
@@ -796,6 +806,7 @@ private slots:
     void slotViewSortingChanged( QDir::SortSpec );
 
     void slotClearView();
+    void slotRefreshItems( const KFileItemList& items );
 
     void slotProperties();
 

@@ -291,7 +291,7 @@ public:
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString::null,
-                         const KGuiItem &buttonContinue = QString::null,
+                         const KGuiItem &buttonContinue = KGuiItem(),
                          const QString &dontAskAgainName = QString::null,
                          int options = Notify);
 

@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 3.0 of the KDE libraries.
+This is version 3.0.3 of the KDE libraries.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -147,7 +147,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 3.0.1 or newer. If you have peeked there
+to get a copy of Qt, version 3.0.3 or newer. If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 

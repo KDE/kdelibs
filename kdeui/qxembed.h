@@ -82,6 +82,7 @@ protected:
 private:
     WId window;
     QXEmbedData* d;
+    void sendSyntheticConfigureNotifyEvent();
 };
 
 

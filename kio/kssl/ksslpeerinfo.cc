@@ -65,7 +65,21 @@ void KSSLPeerInfo::setPeerHost(QString realHost) {
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
 KSSLX509Map certinfo(m_cert.getSubject());
-QString cn = certinfo.getValue("CN").stripWhiteSpace().lower();
+QStringList cns = QStringList::split(QRegExp("[ \n\r]"), certinfo.getValue("CN"));
+
+	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
+		if (cnMatchesAddress((*cn).stripWhiteSpace().lower()))
+			return true;
+	}
+
+#endif
+
+return false;
+}
+
+
+bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
+#ifdef HAVE_SSL
 QRegExp rx;
 
 
@@ -89,15 +103,18 @@ QRegExp rx;
 	// Check for IPv4 address
 	rx.setPattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	if (rx.exactMatch(d->peerHost))
-    return d->peerHost == cn;
+		return d->peerHost == cn;
 
 	// Check for IPv6 address here...
 	rx.setPattern("^\\[.*\\]$");
 	if (rx.exactMatch(d->peerHost))
-    return d->peerHost == cn;
+		return d->peerHost == cn;
 
 	if (cn.contains('*')) {
+		// First make sure that there are at least two valid parts
+		// after the wildcard (*).
 		QStringList parts = QStringList::split('.', cn, false);
+		int partCount = parts.count();
 
 		while(parts.count() > 2)
 			parts.remove(parts.begin());
@@ -110,7 +127,11 @@ QRegExp rx;
 			return false;
 		}
 
-		if (QRegExp(cn, false, true).exactMatch(d->peerHost))
+		// RFC2818 says that *.example.com should match against
+		// foo.example.com but not bar.foo.example.com
+		// (ie. they must have the same number of parts)
+		if (QRegExp(cn, false, true).exactMatch(d->peerHost) &&
+		    partCount == QStringList::split('.', d->peerHost, false).count())
 			return true;
 
 		return false;

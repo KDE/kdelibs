@@ -43,6 +43,8 @@ public:
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
+    KFileIconViewItem( QIconView *parent, KFileItem *fi )
+	: KIconViewItem( parent ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
 
@@ -155,13 +157,15 @@ protected:
     // ### workaround for Qt3 bug (see #35080)
     virtual void showEvent( QShowEvent * );
 
+    virtual bool eventFilter( QObject *o, QEvent *e );
+    
 private slots:
     void selected( QIconViewItem *item );
+    void slotActivate( QIconViewItem * );
     void highlighted( QIconViewItem *item );
     void showToolTip( QIconViewItem *item );
     void removeToolTip();
     void slotActivateMenu( QIconViewItem *, const QPoint& );
-    void slotDoubleClicked( QIconViewItem * );
     void slotSelectionChanged();
 
     void slotSmallColumns();
@@ -192,6 +196,8 @@ private:
             return (KFileIconViewItem *) item->extraData( this );
         return 0L;
     }
+
+    void initItem(KFileIconViewItem *item, const KFileItem *i );
 
 protected:
     virtual void virtual_hook( int id, void* data );

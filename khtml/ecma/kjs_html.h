@@ -79,7 +79,7 @@ namespace KJS {
            LinkSheet, TitleText, MetaName, MetaHttpEquiv, MetaContent, MetaScheme,
            BaseHref, BaseTarget, IsIndexForm, IsIndexPrompt, StyleDisabled,
            StyleSheet, StyleType, StyleMedia, BodyBackground, BodyVLink, BodyText,
-           BodyLink, BodyALink, BodyBgColor, BodyScrollHeight, BodyScrollWidth,
+           BodyLink, BodyALink, BodyBgColor, ElementScrollHeight, ElementScrollWidth,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
@@ -139,7 +139,7 @@ namespace KJS {
            TableCellAlign, TableCellAxis, TableCellScope, FrameSetCols,
            FrameSetRows, FrameSrc, FrameLocation, FrameFrameBorder, FrameScrolling,
            FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName, FrameContentDocument,
-           FrameNoResize, IFrameLongDesc, IFrameDocument, IFrameAlign,
+           FrameNoResize, IFrameLongDesc, IFrameAlign,
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth, IFrameContentDocument,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
@@ -159,7 +159,8 @@ namespace KJS {
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
+    enum ReturnType { ReturnNodeOrFrame, ReturnNode };
+    HTMLCollection(ExecState *exec, DOM::HTMLCollection c, ReturnType returnType = ReturnNode);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
@@ -174,6 +175,7 @@ namespace KJS {
     DOM::HTMLCollection toCollection() const { return collection; }
   protected:
     DOM::HTMLCollection collection;
+    ReturnType m_returnType;
   };
 
   class HTMLSelectCollection : public HTMLCollection {

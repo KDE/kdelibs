@@ -916,3 +916,5 @@ void KDEDesktopMimeType::virtual_hook( int id, void* data )
 void KExecMimeType::virtual_hook( int id, void* data )
 { KMimeType::virtual_hook( id, data ); }
 
+
+#include "kmimetyperesolver.moc"

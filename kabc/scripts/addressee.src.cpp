@@ -27,6 +27,18 @@
 
 using namespace KABC;
 
+struct Addressee::AddresseeData : public KShared
+{
+  --VARIABLES--
+
+  PhoneNumber::List phoneNumbers;
+  Address::List addresses;
+  QStringList emails;
+  QStringList categories;
+  QStringList custom;
+
+  bool empty;
+};
 
 Addressee::Addressee()
 {
@@ -53,13 +65,13 @@ Addressee &Addressee::operator=( const Addressee &a )
 Addressee Addressee::copy()
 {
   Addressee a;
-  a.mData = new AddresseeData;
   *(a.mData) = *mData;
   return a;
 }
 
 void Addressee::detach()
 {
+  if ( mData.count() == 1 ) return;
   *this = copy();
 }
 

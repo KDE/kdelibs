@@ -67,7 +67,7 @@ public:
 
     long length() const;
 
-    QByteArray formData( );
+    QByteArray formData(bool& ok);
 
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
@@ -145,6 +145,8 @@ public:
     DOMString name() const;
     void setName(const DOMString& name);
 
+    virtual bool isGenericFormElement() const { return true; }
+
     /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
@@ -207,6 +209,12 @@ public:
     virtual ~HTMLFieldSetElementImpl();
 
     virtual Id id() const;
+    virtual void attach();
+    virtual NodeImpl *addChild(NodeImpl *child);
+    virtual void parseAttribute(AttributeImpl *attr);
+              
+protected:
+    NodeImpl *m_legend;
 };
 
 // -------------------------------------------------------------------------
@@ -325,6 +333,8 @@ public:
     virtual ~HTMLLegendElementImpl();
 
     virtual Id id() const;
+    virtual void attach();
+    virtual void parseAttribute(AttributeImpl *attr);
 };
 
 

@@ -247,6 +247,7 @@ namespace KJS {
   };
 
   Value getDOMNode(ExecState *exec, DOM::Node n);
+  Value getDOMNodeOrFrame(ExecState *exec, DOM::Node n);
   Value getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m);
   Value getDOMNodeList(ExecState *exec, DOM::NodeList l);
   Value getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i);
@@ -257,10 +258,11 @@ namespace KJS {
   // when multiple nodes have the same name.
   class DOMNamedNodesCollection : public DOMObject {
   public:
-    DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes );
+    DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes, int returnType );
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
   private:
     QValueList<DOM::Node> m_nodes;
+    int m_returnType;
   };
 
   class DOMCharacterData : public DOMNode {

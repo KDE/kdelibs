@@ -223,14 +223,13 @@ protected:
   void httpClose();            // Close transfer
 
   bool httpOpenConnection();   // Open connection
+  void httpCloseConnection();  // Close connection
   void httpCheckConnection();  // Check whether to keep connection.
-  void httpCloseConnection();  // Close conection
-  bool httpIsConnected();      // Checks for existing connection.
 
   bool readHeader();
-  // where dataInternal == true, the content is to come from
-  // an internal function.
-  bool sendBody( bool dataInternal = false );
+
+  bool sendBody();
+
   // where dataInternal == true, the content is to be made available
   // to an internal function.
   bool readBody( bool dataInternal = false );
@@ -451,6 +450,9 @@ protected:
   short unsigned int m_iProxyAuthCount;
   short unsigned int m_iWWWAuthCount;
 
+  // First request on a connection
+  bool m_bFirstRequest;
+
   // Persistant connections
   bool m_bKeepAlive;
 
@@ -466,6 +468,9 @@ protected:
 
   // Indicates whether there was some connection error.
   bool m_bError;
+
+  // Indicates current request is a redirection
+  bool m_bRedirect;
 
   // Indicates whether an error-page or error-msg should is preferred.
   bool m_bErrorPage;

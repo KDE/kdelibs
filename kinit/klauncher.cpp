@@ -215,9 +215,6 @@ KLauncher::~KLauncher()
 void
 KLauncher::destruct(int exit_code)
 {
-   ::signal( SIGHUP, SIG_IGN);
-   ::signal( SIGPIPE, SIG_IGN);
-   ::signal( SIGTERM, SIG_IGN);
    delete kapp;
    ::exit(exit_code);
 }
@@ -372,6 +369,8 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    else if (fun == "terminateKDE()")
    {
+      ::signal( SIGHUP, SIG_IGN);
+      ::signal( SIGTERM, SIG_IGN);
       kdDebug() << "KLauncher::process ---> terminateKDE" << endl;
       klauncher_header request_header;
       request_header.cmd = LAUNCHER_TERMINATE_KDE;
@@ -471,6 +470,8 @@ KLauncher::slotKDEInitData(int)
    if (result == -1)
    {
       kdError(7016) << "KLauncher: KDEInit communication error! Commiting suicide!" << endl;
+      ::signal( SIGHUP, SIG_IGN);
+      ::signal( SIGTERM, SIG_IGN);
       destruct(255); // Exit!
    }
    requestData.resize(request_header.arg_length);
