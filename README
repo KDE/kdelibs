@@ -74,11 +74,8 @@ COPYING.
 Common Mistakes
 ---------------
 
-IMPORTANT: most applications need KDEDIR as the directory where KDE is
-installed.  Please set this in your login file.
-
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.00 or newer.
+to get a copy of Qt, version 2.00.
 
 Debugging
 ---------
