@@ -62,7 +62,7 @@ ArrayPrototype::ArrayPrototype(const Object& proto)
 {
   // The constructor will be added later in ArrayObject's constructor
 
-  put("length", 0u);
+  put("length", 0u, DontEnum | DontDelete);
 }
 
 KJSO ArrayPrototype::get(const UString &p) const
@@ -132,20 +132,20 @@ Completion ArrayProtoFunc::execute(const List &args)
     break;
   case Pop:
     if (length == 0) {
-      thisObj.put("length", Number(length));
+      thisObj.put("length", Number(length), DontEnum | DontDelete);
       result = Undefined();
     } else {
       str = UString::from(length - 1);
       result = thisObj.get(str);
       thisObj.deleteProperty(str);
-      thisObj.put("length", length - 1);
+      thisObj.put("length", length - 1, DontEnum | DontDelete);
     }
     break;
   case Push:
     for (int n = 0; n < args.size(); n++)
       thisObj.put(UString::from(length + n), args[n]);
     length += args.size();
-    thisObj.put("length", length);
+    thisObj.put("length", length, DontEnum | DontDelete);
     result = Number(length);
     break;
   case Reverse:
@@ -178,7 +178,7 @@ Completion ArrayProtoFunc::execute(const List &args)
     break;
   case Shift:
     if (length == 0) {
-      thisObj.put("length", Number(length));
+      thisObj.put("length", Number(length), DontEnum | DontDelete);
       result = Undefined();
     } else {
       result = thisObj.get("0");
@@ -192,7 +192,7 @@ Completion ArrayProtoFunc::execute(const List &args)
 	  thisObj.deleteProperty(str2);
       }
       thisObj.deleteProperty(UString::from(length - 1));
-      thisObj.put("length", length - 1);
+      thisObj.put("length", length - 1, DontEnum | DontDelete);
     }
     break;
     /* TODO */
