@@ -54,6 +54,7 @@
 #include <ktrader.h>
 #include <kparts/partmanager.h>
 #include <kcharsets.h>
+#include <kxmlgui.h>
 
 #include <qtextcodec.h>
 
@@ -155,6 +156,8 @@ public:
 
     DOM::DOMString m_userSheet;
     DOM::DOMString m_userSheetUrl;
+
+  QString m_popupMenuXML;
 };
 
 namespace khtml {
@@ -176,7 +179,6 @@ namespace khtml {
 	KHTMLPartPrivate *m_part;
     };
 };
-
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
@@ -210,6 +212,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
 	   this, SLOT( updateActions() ) );
+  
+  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 }
 
 KHTMLPart::~KHTMLPart()
@@ -675,7 +679,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     printf("setting the encoding to %s\n",name.latin1());
     d->m_encoding = name;
-    
+
     // ### hack!!!!
     if(!d->m_settings->charset == QFont::Unicode)
 	d->m_settings->charset = KGlobal::charsets()->nameToID(name);
@@ -1244,7 +1248,7 @@ void KHTMLPart::popupMenu( const QString &url )
 {
   KURL u( m_url );
   if ( !url.isEmpty() )
-    u = url;
+    u = KURL( m_url, url );
 
   mode_t mode = 0;
   if ( !u.isLocalFile() )
@@ -1255,7 +1259,16 @@ void KHTMLPart::popupMenu( const QString &url )
     if ( i >= 1 && cURL[ i - 1 ] == '/' )
       mode = S_IFDIR;
   }
-  emit d->m_extension->popupMenu( QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
+
+  KXMLGUIClient *client = 0;
+
+  if ( !url.isEmpty() )
+    client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, u );
+
+  emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
+
+  delete client;
+
   emit popupMenu(url, QCursor::pos());
 }
 
@@ -1572,3 +1585,55 @@ void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
   m_part->restoreState( stream );
 }
 
+class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
+{
+public:
+  KHTMLPart *m_khtml;
+  KURL m_url;
+  KAction *m_paSaveLinkAs;
+};
+
+KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url )
+{
+  d = new KHTMLPopupGUIClientPrivate;
+  d->m_khtml = khtml;
+  d->m_url = url;
+
+  setInstance( khtml->instance() );
+
+  d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
+				   actionCollection(), "savelinkas" );
+
+  setXML( doc );
+}
+
+KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
+{
+  delete d;
+}
+
+void KHTMLPopupGUIClient::slotSaveLinkAs()
+{
+  if ( d->m_url.filename( false ).isEmpty() )
+    d->m_url.setFileName( "index.html" );
+
+  KFileDialog *dlg = new KFileDialog( QString::null, QString::null, d->m_khtml->widget(), "filedia", true );
+
+  dlg->setCaption( i18n( "Save Link As" ) );
+
+  dlg->setSelection( d->m_url.filename() );
+
+  if ( dlg->exec() )
+  {
+    KURL destURL( dlg->selectedURL() );
+    if ( !destURL.isMalformed() )
+    {
+      /*KIO::Job *job = */ KIO::copy( d->m_url, destURL );
+      // TODO connect job result, to display errors
+    }
+  }
+
+  delete dlg;
+}
+
+#include "khtml_part.moc"

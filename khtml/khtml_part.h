@@ -433,4 +433,21 @@ private:
   KHTMLPart *m_part;
 };
 
+/**
+ * INTERNAL class. *NOT* part of the public API.
+ */
+class KHTMLPopupGUIClient : public QObject, public KXMLGUIClient
+{
+  Q_OBJECT
+public:
+  KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
+  virtual ~KHTMLPopupGUIClient();
+
+private slots:
+  void slotSaveLinkAs();
+private:
+  class KHTMLPopupGUIClientPrivate;
+  KHTMLPopupGUIClientPrivate *d;
+};
+
 #endif

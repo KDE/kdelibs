@@ -58,7 +58,7 @@ servicedir = $(kde_servicesdir)
 service_DATA = khtml.desktop
 
 rcdir = $(kde_datadir)/khtml
-rc_DATA = khtml.rc
+rc_DATA = khtml.rc khtml_popupmenu.rc
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
