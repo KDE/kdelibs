@@ -23,6 +23,10 @@
   
     $Log$
 
+    Revision 1.9  1997/10/21 20:45:00  kulow
+    removed all NULLs and replaced it with 0L or "".
+    There are some left in mediatool, but this is not C++
+
     Revision 1.8  1997/10/16 11:15:21  torben
     Kalle: Copyright headers
     kdoctoolbar removed
@@ -48,6 +52,9 @@
     Revision 1.3  1997/05/02 16:46:39  kalle
     Kalle: You may now override how KApplication reacts to external changes
     KButton uses the widget default palette
+    new kfontdialog version 0,5
+    new kpanner by Paul Kendall
+    new: KIconLoader
 
     Revision 1.4  1997/04/29 02:44:24  wuebben
     *** empty log message ***
@@ -361,7 +368,7 @@ void KFontDialog::display_example(const QFont& font){
  QFont::CharSet charset=selFont.charSet();
   actual_size_label_data->setText(string);
 
- int number_of_entries; 
+  if (info.bold())
     actual_weight_label_data->setText(klocale->translate("Bold"));
   else
     actual_weight_label_data->setText(klocale->translate("Normal"));
@@ -369,7 +376,7 @@ void KFontDialog::display_example(const QFont& font){
   if (info.italic())
     actual_style_label_data->setText(klocale->translate("italic"));
   else
- for (int i = 0;i < number_of_entries ; i++){
+    actual_style_label_data->setText(klocale->translate("roman"));
   
  QFont::CharSet charset=info.charSet();
   for(i = 0;i<CHARSETS_COUNT;i++)
@@ -385,7 +392,7 @@ void KFontDialog::setCombos(){
  QString string;
  QComboBox* combo;
  int number_of_entries, i=0; 
- for (int i = 0;i < number_of_entries - 1; i++){
+ bool found;
 
  number_of_entries =  family_combo->count(); 
  string = selFont.family();

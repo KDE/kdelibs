@@ -41,13 +41,13 @@
 
 class KIconLoaderCanvas : public QTableView
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   KIconLoaderCanvas (QWidget *parent=0, const char *name=0);
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dir_name, QString filter);
-  QString getCurrent() { if(name_list.isEmpty()) return NULL; return name_list.at(sel_id); }
+  QString getCurrent() { if(name_list.isEmpty()) return (char *)NULL; return name_list.at(sel_id); }
 
   signals:
   void nameChanged( const char * );
@@ -72,7 +72,7 @@ protected:
 
 class KIconLoaderDialog : public QDialog
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   KIconLoaderDialog ( QWidget *parent=0, const char *name=0 );
   ~KIconLoaderDialog ();
@@ -112,7 +112,7 @@ protected:
 */
 class KIconLoader : public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   /// Constructor
   /**

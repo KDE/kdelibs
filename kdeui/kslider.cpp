@@ -4,6 +4,10 @@
 // Copyright (C) Martin R. Jones 1997
 //
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qpainter.h>
 #include <qdrawutl.h>
 #include <qevent.h>
@@ -167,6 +171,7 @@ void KSlider::moveArrow( const QPoint &pos )
 void KSlider::paintEvent( QPaintEvent * )
 {
   QPainter painter;
+  int i = 0;
 
   int diffMaxMin = checkWidth(); //sanity check
   painter.begin( this );
@@ -176,13 +181,13 @@ void KSlider::paintEvent( QPaintEvent * )
 	  qDrawShadeLine(&painter, 5, 3, 5, height()-3, colorGroup(), TRUE, 1, 2);
 
 	  // draw ruler marks
-	  for ( int i = 0; i <= maxValue() - minValue(); i += lineStep() )
+	  for ( i = 0; i <= maxValue() - minValue(); i += lineStep() )
 		{
 		  int pos = (height()-10) * i / diffMaxMin + 5;
 		  painter.drawLine( ARROW_LENGTH+1, pos, ARROW_LENGTH + 4, pos );
 		}
 
-	  for ( int i = 0; i <= maxValue() - minValue(); i += pageStep() )
+	  for ( i = 0; i <= maxValue() - minValue(); i += pageStep() )
 		{
 		  int pos = (height()-10) * i / diffMaxMin + 5;
 		  painter.drawLine( ARROW_LENGTH+1, pos, ARROW_LENGTH + 6, pos );
@@ -193,13 +198,13 @@ void KSlider::paintEvent( QPaintEvent * )
 	  qDrawShadeLine(&painter, 3, 5, width()-3, 5, colorGroup(), TRUE, 1, 2);
 
 	  // draw ruler marks
-	  for ( int i = 0; i <= maxValue() - minValue(); i += lineStep() )
+	  for ( i = 0; i <= maxValue() - minValue(); i += lineStep() )
 		{
 		  int pos = (width()-10) * i / diffMaxMin + 5;
 		  painter.drawLine( pos, ARROW_LENGTH+1, pos, ARROW_LENGTH + 4 );
 		}
 
-	  for ( int i = 0; i <= maxValue() - minValue(); i += pageStep() )
+	  for ( i = 0; i <= maxValue() - minValue(); i += pageStep() )
 		{
 		  int pos = (width()-10) * i / diffMaxMin + 5;
 		  painter.drawLine( pos, ARROW_LENGTH+1, pos, ARROW_LENGTH + 6 );

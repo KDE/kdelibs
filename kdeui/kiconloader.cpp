@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
 //----------------------------------------------------------------------
-KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent=0, const char *name=0)
+KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent=0, const char *name )
   :QTableView( parent, name )
 {
   max_width = 0;
@@ -170,7 +170,7 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
 //---------------  KICONLOADERDIALOG   ---------------------------------
 //----------------------------------------------------------------------
 
-KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent=0, const char *name=0 )
+KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent=0, const char *name )
   : QDialog( parent, name, TRUE )
 {
   setCaption("Select Icon");
@@ -391,7 +391,7 @@ void KIconLoader::setCaching( bool b )
   pix_dialog = NULL;
 }
 
-int KIconLoader::readListConf( QString key, QStrList &list, char sep = ',' )
+int KIconLoader::readListConf( QString key, QStrList &list, char sep )
 {
   if( !config->hasKey( key ) )
     return 0;

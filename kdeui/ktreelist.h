@@ -284,6 +284,10 @@ struct KItemSearchInfo {
   double click on item selects it
   
   normal scrolling functions in conjunction with scrollbars if present
+
+  2nd scrolling with the middle mouse button: pressing MMB inserts a
+  rubberband, showing which part of the whole tree is currently visible.
+  moving the mouse will scroll the visible part
   
   * Signals/Slots
 
@@ -725,6 +729,16 @@ protected:
   int indent;
   int maxItemWidth;
   bool showText;
+
+  // Rainer Bawidamann: move window in "rubberband" mode
+  bool rubberband_mode;             // true if in "rubberband_mode"
+  QPoint rubber_startMouse;         // where the user pressed the MMB
+  int rubber_height, rubber_width,  // the size if the rubberband rect
+	rubber_startX, rubber_startY; // the x/yOffset() when the MMB was pressed
+  void draw_rubberband();
+  void start_rubberband(const QPoint& where);
+  void end_rubberband();
+  void move_rubberband(const QPoint& where);
 };
 
 #endif // KTREE_LIST_H

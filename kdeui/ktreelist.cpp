@@ -491,6 +491,7 @@ KTreeList::KTreeList(QWidget *parent,
   setNumRows(0);
   setNumCols(1);
   setTableFlags(Tbl_autoScrollBars | Tbl_clipCellPainting | Tbl_snapToVGrid);
+  clearTableFlags(Tbl_scrollLastVCell | Tbl_scrollLastHCell | Tbl_snapToVGrid);
   switch(style()) {
     case WindowsStyle:
     case MotifStyle:
@@ -707,7 +708,7 @@ void KTreeList::forEveryItem(KForEvery func,
     stack.push(item);
     while(!stack.isEmpty()) {
       KTreeListItem *poppedItem = stack.pop();
-      if((func)(poppedItem, user))
+      if((*func)(poppedItem, user))
 	return;
       if(poppedItem->hasChild()) {
 	KTreeListItem *childItem = poppedItem->getChild();
@@ -732,7 +733,7 @@ void KTreeList::forEveryVisibleItem(KForEvery func,
   KTreeListItem *item = treeRoot->getChild();
   do {
     while(item) {
-      if((func)(item, user)) return;
+      if((*func)(item, user)) return;
       if(item->hasChild() && item->isExpanded()) {
         stack.push(item);
         item = item->getChild();
@@ -1341,7 +1342,7 @@ void KTreeList::forEveryVisibleItem(KForEveryM func,
   KTreeListItem *item = treeRoot->getChild();
   do {
     while(item) {
-      if((func)(item, user)) return;
+      if((this->*func)(item, user)) return;
       if(item->hasChild() && item->isExpanded()) {
         stack.push(item);
         item = item->getChild();
@@ -1578,13 +1579,38 @@ void KTreeList::mouseDoubleClickEvent(QMouseEvent *e)
 }
 
 // handle mouse movement events
-void KTreeList::mouseMoveEvent(QMouseEvent *)
+void KTreeList::mouseMoveEvent(QMouseEvent *e)
 {
+  // in rubberband_mode we actually scroll the window now
+  if (rubberband_mode) 
+	{
+	  move_rubberband(e->pos());
+	}
 }
+
 
 // handle single mouse presses
 void KTreeList::mousePressEvent(QMouseEvent *e)
 {
+  // first: check which button was pressed
+
+  if (e->button() == MidButton) 
+	{
+	  // RB: the MMB is hardcoded to the "rubberband" scroll mode
+	  if (!rubberband_mode) {
+		start_rubberband(e->pos());
+	  }
+	  return;
+	} 
+  else if (rubberband_mode) 
+	{
+	  // another button was pressed while rubberbanding, stop the move.
+	  // RB: if we allow other buttons while rubberbanding the tree can expand
+	  //     while rubberbanding - we then need to reclaculate and resize the
+	  //     rubberband rect and show the new size)
+	  end_rubberband();
+	  return;  // should we process the button press?
+	}
 
   // find out which row has been clicked
 	
@@ -1622,9 +1648,86 @@ void KTreeList::mousePressEvent(QMouseEvent *e)
 }
 
 // handle mouse release events
-void KTreeList::mouseReleaseEvent(QMouseEvent *)
+void KTreeList::mouseReleaseEvent(QMouseEvent *e)
 {
+  // if it's the MMB end rubberbanding
+  if (rubberband_mode && e->button()==MidButton) 
+	{
+	  end_rubberband();
+	}
 }
+
+// rubberband move: draw the rubberband
+void KTreeList::draw_rubberband()
+{
+  // RB: I'm using a white pen because of the XorROP mode. I would prefer to
+  //     draw the rectangle in red but I don't now how to get a pen which
+  //     draws red in XorROP mode (this depends on the background). In fact
+  //     the color should be configurable.
+
+  if (!rubberband_mode) return;
+  QPainter paint(this);
+  paint.setPen(white);
+  paint.setRasterOp(XorROP);
+  paint.drawRect(xOffset()*viewWidth()/totalWidth(),
+                 yOffset()*viewHeight()/totalHeight(),
+                 rubber_width+1, rubber_height+1);
+  paint.end();
+}
+
+// rubberband move: start move
+void KTreeList::start_rubberband(const QPoint& where)
+{
+  if (rubberband_mode) { // Oops!
+    end_rubberband();
+  }
+  // RB: Don't now, if this check is necessary
+  if (!viewWidth() || !viewHeight()) return; 
+
+  // calculate the size of the rubberband rectangle
+  rubber_width = viewWidth()*viewWidth()/totalWidth();
+  if (rubber_width > viewWidth()) rubber_width = viewWidth();
+  rubber_height = viewHeight()*viewHeight()/totalHeight();
+  if (rubber_height > viewHeight()) rubber_height = viewHeight();
+
+  // remember the cursor position and the actual offset
+  rubber_startMouse = where;
+  rubber_startX = xOffset();
+  rubber_startY = yOffset();
+  rubberband_mode=TRUE;
+  draw_rubberband();
+}
+
+// rubberband move: end move
+void KTreeList::end_rubberband()
+{
+  if (!rubberband_mode) return;
+  draw_rubberband();
+  rubberband_mode = FALSE;
+}
+
+// rubberband move: hanlde mouse moves
+void KTreeList::move_rubberband(const QPoint& where)
+{
+  if (!rubberband_mode) return;
+
+  // look how much the mouse moved and calc the new scroll position
+  QPoint delta = where - rubber_startMouse;
+  int nx = rubber_startX + delta.x() * totalWidth() / viewWidth();
+  int ny = rubber_startY + delta.y() * totalHeight() / viewHeight();
+
+  // check the new position (and make it valid)
+  if (nx < 0) nx = 0;
+  else if (nx > maxXOffset()) nx = maxXOffset();
+  if (ny < 0) ny = 0;
+  else if (ny > maxYOffset()) ny = maxYOffset();
+
+  // redraw the rubberband at the new position
+  draw_rubberband();
+  setOffset(nx,ny);
+  draw_rubberband();
+}
+
 
 // paints the cell at the specified row and col
 // col is ignored for now since there is only one

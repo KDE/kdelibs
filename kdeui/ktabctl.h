@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:43  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:10  cvsuser
  * Sources imported
  *
@@ -41,7 +44,7 @@
 */
 class KTabCtl : public QWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     KTabCtl(QWidget *parent = 0, const char *name = 0);

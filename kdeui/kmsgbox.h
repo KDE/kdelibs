@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * KTreeList has rubberbanding now
+ * Patches for SGI
+ *
+ * Revision 1.2  1997/05/08 22:53:20  kalle
+ * Kalle:
  * KPixmap gone for good
  * Eliminated static objects from KApplication and HTML-Widget
  *
@@ -33,6 +38,7 @@
 
 // kmsgbox.h
 
+#ifndef _KMSGBOX_H_
 #define _KMSGBOX_H_
 
 #include <qobjdefs.h>
@@ -47,7 +53,7 @@
 /** A message box API for the KDE project. KMsgBox provides a Windows - lookalike message- or
  error box with icons and up to 4 configurable buttons.
  */
-    Q_OBJECT;
+
 class KMsgBox : public QDialog
 {
     Q_OBJECT
@@ -113,7 +119,7 @@ private:
     int         w, h, h1, text_offset;
     void        calcOptimalSize();
     void        resizeEvent(QResizeEvent *);
-                       const QPixmap & icon = 0);
+                       const QPixmap & icon = (char *)NULL);
     void        initMe(const char *caption, const char *message, const char *b1text,
                        const char *b2text, const char *b3text, const char *b4text,
                        const QPixmap & icon = QPixmap());

@@ -16,7 +16,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		dither.h kdatepik.h kdatetbl.h \
 		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
-		kbutton.h kslider.h kseparator.h kiconloader.h kfloater.h	\
+		kbutton.h kslider.h kseparator.h kiconloader.h	\
 		klined.h kcombo.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
@@ -24,14 +24,14 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp	\
-		kiconloader.cpp kfloater.cpp klined.cpp kcombo.cpp
+		kiconloader.cpp klined.cpp kcombo.cpp	
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc	\
-		kfloater.moc klined.moc kcombo.moc
+		klined.moc kcombo.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -52,7 +52,6 @@ ktopwidget.cpp: ktopwidget.moc
 kbutton.cpp: kbutton.moc
 kslider.cpp: kslider.moc
 kiconloader.cpp: kiconloader.moc
-kfloater.cpp: kfloater.moc
 klined.cpp: klined.moc
 kcombo.cpp: kcombo.moc
 

@@ -13,28 +13,35 @@ class KCombo : public QComboBox
   Q_OBJECT
 
 public:
-  /** Constructor
-	*/
+  /**
+    *
+    * Kcombo is normal writable or readonly ComboBox with two
+    * more signals completion() (ctrl-d) and rotation (ctrl-s).
+    * Unfortunately, ctrl-d combination doesn't work. Use signal
+    * rotation() instead.
+    * @author sven.radej@iname.com
+    */
+   
   KCombo ( bool _rw, QWidget *_parent, const char *name );
-
-  /** Destructor
-	*/
   ~KCombo ();
 
-  /** Put the cursor at the end of the string. 
-	*  This puts cursor at and of string. When using out of toolbar,
-	* call this in your slot connected to signal completion.
-	*/
+  /**
+    * This puts cursor at and of string. When using out of toolbar,
+    * call this in your slot connected to signal completion.
+    *
+    */
+   
   void cursorAtEnd();
 
   signals:
 
-  /** Connect to this signal to receive ctrl-D
+  /**
+	* Connect to this signal to receive ctrl-D
+	* Unfortunately this doesn't work. Use signal rotation() instead.
 	*/
+     
   void completion ();
-
-  /** Connect to this signal to receive Ctrl-S
-	*/
+  /// Connect to this signal to receive Ctrl-S
   void rotation ();
 
 protected:
