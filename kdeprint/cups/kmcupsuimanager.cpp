@@ -35,6 +35,7 @@
 #include "kmwippprinter.h"
 #include "kmconfigcups.h"
 #include "kmconfigcupsdir.h"
+#include "kmwfax.h"
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
@@ -75,6 +76,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	backend->addBackend(KMWizard::IPP,i18n("Remote CUPS server (IPP/HTTP)"),false,KMWizard::Password);
 	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/IPP (IPP/HTTP)"),false);
 	backend->addBackend(KMWizard::File,i18n("File printer (print to file)"),false);
+	backend->addBackend(KMWizard::Custom+2,i18n("Serial Fax/Modem printer"),false);
 	backend->addBackend();
 	backend->addBackend(KMWizard::Class,i18n("Class of printers"));
 
@@ -104,6 +106,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 					backend->enableBackend(KMWizard::IPP,true);
 					backend->enableBackend(KMWizard::Custom+1,true);
 				}
+				else if (strncmp(attr->values[0].string.text,"fax",3) == 0) backend->enableBackend(KMWizard::Custom+2,true);
 			}
 			attr = attr->next;
 		}
@@ -115,6 +118,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	wizard->addPage(new KMWIpp(wizard));
 	wizard->addPage(new KMWIppSelect(wizard));
 	wizard->addPage(new KMWIppPrinter(wizard));
+	wizard->addPage(new KMWFax(wizard));
 }
 
 void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)

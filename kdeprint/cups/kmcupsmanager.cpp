@@ -473,7 +473,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 						for (;it.current();++it)
 						{
 							QString	type = it.current()->arg("type");
-							if (type != "float" && type != "int")
+							if (type != "float" && type != "int" && type != "string")
 								continue;	// skip it
 							if (!adjgrp)
 							{
@@ -484,12 +484,17 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 							DrBase	*opt(0);
 							if (type == "float")
 								opt = new DrFloatOption();
-							else
+							else if (type == "int")
 								opt = new DrIntegerOption();
+							else
+								opt = new DrStringOption();
 							opt->setName(it.current()->arg("name"));
 							opt->set("text",it.current()->arg("comment"));
-							opt->set("minval",it.current()->arg("min"));
-							opt->set("maxval",it.current()->arg("max"));
+							if (type == "float" || type == "int")
+							{
+								opt->set("minval",it.current()->arg("min"));
+								opt->set("maxval",it.current()->arg("max"));
+							}
 							opt->setValueText(it.current()->arg("default"));
 							opt->set("default",it.current()->arg("default"));
 							adjgrp->addOption(opt);

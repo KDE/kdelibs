@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -69,6 +69,7 @@ void KMPropBackend::setPrinter(KMPrinter *p)
 		else if (prot == "smb") m_type->setText(i18n("SMB printers (Windows)"));
 		else if (prot == "lpd") m_type->setText(i18n("Remote LPD queue"));
 		else if (prot == "file") m_type->setText(i18n("File printer"));
+		else if (prot == "fax") m_type->setText(i18n("Serial Fax/Modem printer"));
 		else m_type->setText(i18n("Unknown"));
 		emit enable(true);
 	}
