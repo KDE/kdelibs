@@ -617,8 +617,9 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      //     Sat, 01 Jan 2000 08:00:00 GMT
      // or
      //     01 Jan 99 22:00 +0100    (exceptions in rfc822/rfc2822)
-     // ### non RFC format, added for Javascript:
+     // ### non RFC formats, added for Javascript:
      //     [Wednesday] January 09 1999 23:12:40 GMT
+     //     [Wednesday] January 09 23:12:40 GMT 1999
      //
      // We ignore the weekday
      //
@@ -743,24 +744,18 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
      // '99 23:12:40 GMT'
      year = strtol(dateString, &newPosStr, 10);
-     dateString = newPosStr;
-
-     // Y2K: Solve 2 digit years
-     if ((year >= 0) && (year < 50))
-         year += 2000;
-
-     if ((year >= 50) && (year < 100))
-         year += 1900;  // Y2K
-
-     if ((year < 1900) || (year > 2500))
-     	return invalidDate;
 
      // Don't fail if the time is missing.
-     if (*dateString)
+     if (*newPosStr)
      {
         // ' 23:12:40 GMT'
-        if (!isspace(*dateString++))
-           return invalidDate;
+        if (!isspace(*newPosStr)) {
+           if ( *newPosStr == ':' ) // Ah, so there was no year, but the number was the hour
+               year = -1;
+           else
+               return invalidDate;
+        } else // in the normal case (we parsed the year), advance to the next number
+            dateString = ++newPosStr;
 
         have_time = true;
         hour = strtol(dateString, &newPosStr, 10);
@@ -800,6 +795,9 @@ double KJS::KRFCDate_parseDate(const UString &_date)
         while(*dateString && isspace(*dateString))
            dateString++;
      }
+     else
+       dateString = newPosStr;
+
 
      // don't fail if the time zone is missing, some
      // broken mail-/news-clients omit the time zone
@@ -846,35 +844,22 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        }
      }
 
-#if 0
-     if (sizeof(time_t) == 4)
-     {
-         if ((time_t)-1 < 0)
-         {
-            if (year >= 2038)
-            {
-               year = 2038;
-               month = 0;
-               day = 1;
-               hour = 0;
-               minute = 0;
-               second = 0;
-            }
-         }
-         else
-         {
-            if (year >= 2115)
-            {
-               year = 2115;
-               month = 0;
-               day = 1;
-               hour = 0;
-               minute = 0;
-               second = 0;
-            }
-         }
+     while(*dateString && isspace(*dateString))
+        dateString++;
+
+     if ( *dateString && year == -1 ) {
+       year = strtol(dateString, &newPosStr, 10);
      }
-#endif
+
+     // Y2K: Solve 2 digit years
+     if ((year >= 0) && (year < 50))
+         year += 2000;
+
+     if ((year >= 50) && (year < 100))
+         year += 1900;  // Y2K
+
+     if ((year < 1900) || (year > 2500))
+     	return invalidDate;
 
      if (!have_time && !have_tz) {
        // fall back to midnight, local timezone
