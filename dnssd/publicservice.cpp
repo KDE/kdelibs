@@ -22,7 +22,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <qapplication.h>
-#include <ksocketaddress.h>
+#include <network/ksocketaddress.h>
 #include <kurl.h>
 #include <unistd.h>
 #include "sdevent.h"
@@ -45,11 +45,11 @@ public:
 };
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
-			      const QString& domain) 
+			      const QString& domain)
   		: QObject(), ServiceBase(name, type, QString::null, domain, port)
 {
 	d = new PublicServicePrivate;
-	if (domain.isNull()) 
+	if (domain.isNull())
 		if (Configuration::publishType()==Configuration::EnumPublishType::LAN) m_domain="local.";
 		else m_domain=Configuration::publishDomain();
 }
@@ -70,7 +70,7 @@ void PublicService::setServiceName(const QString& serviceName)
 	}
 }
 
-void PublicService::setDomain(const QString& domain) 
+void PublicService::setDomain(const QString& domain)
 {
 	m_domain = domain;
 	if (d->isRunning()) {
@@ -179,7 +179,7 @@ const KURL PublicService::toInvitation(const QString& host)
 	url.setPath("/"+m_type+"/"+KURL::encode_string(m_serviceName));
 	QString query;
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
-	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
+	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it)
 		url.addQueryItem(it.key(),it.data());;
 	return url;
 }
@@ -215,7 +215,7 @@ static unsigned long publicIP()
 	::close(sock);
 	return addr.sin_addr.s_addr;
 }
-	
+
 
 }
 
