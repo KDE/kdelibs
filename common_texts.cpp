@@ -18,7 +18,7 @@
 */
 
 /* This file contains several often used phrases to avoid double
-   work. If you think, that a phrase belongs here, contact me 
+   work. If you think, that a phrase belongs here, contact me
 */
 
 i18n( "Error" );
@@ -182,5 +182,30 @@ i18n("key accelerator", "CapsLock");
 i18n("key accelerator", "NumLock");
 i18n("key accelerator", "ScrollLock");
 i18n("key accelerator", "Space");
+i18n("key accelerator", "ParenLeft");
+i18n("key accelerator", "ParenRight");
+i18n("key accelerator", "Asterisk");
+i18n("key accelerator", "Plus");
+i18n("key accelerator", "Comma");
+i18n("key accelerator", "Minus");
+i18n("key accelerator", "Period");
+i18n("key accelerator", "Slash");
+i18n("key accelerator", "Colon");
+i18n("key accelerator", "Semicolon");
+i18n("key accelerator", "Less");
+i18n("key accelerator", "Equal");
+i18n("key accelerator", "Greater");
+i18n("key accelerator", "Question");
+i18n("key accelerator", "BracketLeft");
+i18n("key accelerator", "Backslash");
+i18n("key accelerator", "BracketRight");
+i18n("key accelerator", "AsciiCircum");
+i18n("key accelerator", "Underscore");
+i18n("key accelerator", "QuoteLeft");
+i18n("key accelerator", "BraceLeft");
+i18n("key accelerator", "BraceRight");
+i18n("key accelerator", "AsciiTilde");
+i18n("key accelerator", "PgUp");
+i18n("key accelerator", "PgDown");
 i18n("Main Toolbar");
 
