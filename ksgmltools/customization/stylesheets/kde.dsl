@@ -33,6 +33,7 @@
   <!ENTITY kde-html-ttlpg.dsl SYSTEM "kde-ttlpg.dsl">
   <!ENTITY kde-html-anchor.dsl SYSTEM "kde-anchor.dsl">
   <!ENTITY kde-html-search.dsl SYSTEM "kde-search.dsl">
+  <!ENTITY kde-html-imagemap.dsl SYSTEM "kde-img.dsl">
 ]>
 <!--
     USAGE
@@ -469,6 +470,8 @@
 (define %callout-graphics-path% %kde-doc-common-path%)
 (define %callout-graphics-number-limit% 10)
 
+;; Creates HTML image maps
+&kde-html-imagemap.dsl;
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
@@ -624,6 +627,6 @@
 <!--
 Local Variables:
 outline-regexp: " *<STYLE-SPECIFICATION[ >]"
-outline-heading-end-regexp: ">\n"
+outline-heading-end-regexp: ">"
 End:
 -->
