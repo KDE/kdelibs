@@ -675,11 +675,22 @@ int AutoTableLayout::calcEffectiveWidth()
 		haveVariable = true;
 		// fall through
 	    default:
-		layoutStruct[lastCol].effWidth = Length();
-		allColsArePercent = false;
-		allColsAreFixed = false;
-	    }
-	    span -= table->spanOfEffCol( lastCol );
+                // If the column is a percentage width, do not let the spanning cell overwrite the
+                // width value.  This caused a mis-rendering on amazon.com.
+                // Sample snippet:
+                // <table border=2 width=100%><
+                //   <tr><td>1</td><td colspan=2>2-3</tr>
+                //   <tr><td>1</td><td colspan=2 width=100%>2-3</td></tr>
+                // </table>
+                if (!layoutStruct[lastCol].effWidth.isPercent()) {
+                    layoutStruct[lastCol].effWidth = Length();
+                    allColsArePercent = false;
+                }
+                else
+                    totalPercent += layoutStruct[lastCol].effWidth.value();
+                allColsAreFixed = false;
+            }
+            span -= table->spanOfEffCol( lastCol );
 	    minWidth += layoutStruct[lastCol].effMinWidth;
 	    maxWidth += layoutStruct[lastCol].effMaxWidth;
 	    lastCol++;
@@ -979,6 +990,24 @@ void AutoTableLayout::layout()
     qDebug("variable satisfied: available is %d",  available );
 #endif
 
+    // spread over fixed colums
+    if ( available > 0 && numFixed) {
+        // still have some width to spread, distribute to fixed columns
+        for ( int i = 0; i < nEffCols; i++ ) {
+            const Length &width = layoutStruct[i].effWidth;
+            if ( width.isFixed() ) {
+                int w = available * layoutStruct[i].effMaxWidth / totalFixed;
+                available -= w;
+                totalFixed -= layoutStruct[i].effMaxWidth;
+                layoutStruct[i].calcWidth += w;
+            }
+        }
+    }
+
+#ifdef DEBUG_LAYOUT
+    qDebug("after fixed distribution: available=%d",  available );
+#endif
+
     // spread over percent colums
     if ( available > 0 && hasPercent && totalPercent < 100) {
         // still have some width to spread, distribute weighted to percent columns
@@ -996,24 +1025,6 @@ void AutoTableLayout::layout()
 
 #ifdef DEBUG_LAYOUT
     qDebug("after percent distribution: available=%d",  available );
-#endif
-
-    // spread over fixed colums
-    if ( available > 0 && numFixed) {
-        // still have some width to spread, distribute to fixed columns
-        for ( int i = 0; i < nEffCols; i++ ) {
-            const Length &width = layoutStruct[i].effWidth;
-            if ( width.isFixed() ) {
-                int w = available * layoutStruct[i].effMaxWidth / totalFixed;
-                available -= w;
-                totalFixed -= layoutStruct[i].effMaxWidth;
-                layoutStruct[i].calcWidth += w;
-            }
-        }
-    }
-
-#ifdef DEBUG_LAYOUT
-    qDebug("after fixed distribution: available=%d",  available );
 #endif
 
     // spread over the rest

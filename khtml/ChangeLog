@@ -1,3 +1,10 @@
+2004-11-27  Germain Garand  <germain@ebooksfrance.org>
+
+        merge WebCore differences in logic for Auto table layout
+
+        * rendering/table_layout.cpp (calcEffectiveWidth/layout):
+        distribute remaining width starting with fixed rather than percent (#88104).
+
 2004-11-26  Germain Garand  <germain@ebooksfrance.org>
 
         merge zero deep-copy TokenizerString class from WebCore
