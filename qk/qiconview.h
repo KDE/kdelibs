@@ -93,8 +93,11 @@ class Q_EXPORT QIconDrag : public QDragObject
     Q_OBJECT
     friend class QIconView;
     friend class QIconViewPrivate;
+    friend struct IconDragItem;
+    struct Item;
+    friend struct Item;
 
-private:
+public: // #### this really shouldn't be public, but some compilers don't get it when it is private....
     struct IconDragItem
     {
 	IconDragItem();
@@ -238,19 +241,23 @@ protected:
 private:
     void renameItem();
     void cancelRenameItem();
-
+    void checkRect();
+    
     QIconView *view;
     QString itemText, itemKey;
     QString tmpText;
     QPixmap *itemIcon;
     QIconViewItem *prev, *next;
-    bool allow_rename, allow_drag, allow_drop;
-    bool selected, selectable;
+    uint allow_rename : 1;
+    uint allow_drag : 1;
+    uint allow_drop : 1;
+    uint selected : 1;
+    uint selectable : 1;
+    uint dirty : 1;
+    uint wordWrapDirty : 1;
     QRect itemRect, itemTextRect, itemIconRect;
     QIconViewItemLineEdit *renameBox;
-    bool isReady;
     QRect oldRect;
-    bool dirty, wordWrapDirty;
 
     QIconViewItemPrivate *d;
 
@@ -398,7 +405,6 @@ public slots:
 signals:
     void selectionChanged();
     void selectionChanged( QIconViewItem *item );
-    void currentChanged();
     void currentChanged( QIconViewItem *item );
     void clicked( QIconViewItem * );
     void clicked( QIconViewItem *, const QPoint & );
