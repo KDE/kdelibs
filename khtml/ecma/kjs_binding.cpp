@@ -18,6 +18,7 @@
  */
 
 #include <qptrdict.h>
+#include <kdebug.h>
 
 #include <kjs/kjs.h>
 #include <kjs/object.h>
@@ -42,6 +43,12 @@
 
 using namespace KJS;
 
+/* TODO:
+ * The catch all (...) clauses below shouldn't be necessary.
+ * But they helped to view for example www.faz.net in an stable manner.
+ * Those unknown exceptions should be treated as severe bugs and be fixed.
+ */
+
 KJSO DOMObject::get(const UString &p) const
 {
   KJSO result;
@@ -51,6 +58,11 @@ KJSO DOMObject::get(const UString &p) const
   catch (DOM::DOMException e) {
     result = Undefined();
   }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMObject::get()" << endl;
+    result = String("Unknown exception");
+  }
+
   return result;
 }
 
@@ -60,6 +72,9 @@ void DOMObject::put(const UString &p, const KJSO& v)
     tryPut(p,v);
   }
   catch (DOM::DOMException e) {
+  }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMObject::put()" << endl;
   }
 }
 
@@ -78,6 +93,11 @@ KJSO DOMFunction::get(const UString &p) const
   catch (DOM::DOMException e) {
     result = Undefined();
   }
+  catch (...) {
+    kdError(6070) << "Unknown exception in DOMFunction::get()" << endl;
+    result = String("Unknown exception");
+  }
+
   return result;
 }
 
@@ -90,6 +110,10 @@ Completion DOMFunction::execute(const List &args)
   catch (DOM::DOMException e) {
     KJSO v = Error::create(GeneralError);
     v.put("code", Number(e.code));
+    completion = Completion(Throw, v);
+  } catch (...) {
+    kdError(6070) << "Unknown exception in DOMFunction::execute()" << endl;
+    KJSO v = Error::create(GeneralError, "Unknown exception");
     completion = Completion(Throw, v);
   }
   return completion;
