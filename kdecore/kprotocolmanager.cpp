@@ -24,6 +24,8 @@ KProtocolManager::KProtocolManager()
 void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
 {
   QDir dir( _dir );
+  if (!dir.exists())
+    return;
   const QStrList* p = dir.entryList();
   if ( !p )
     return;
