@@ -326,6 +326,8 @@ void slave_sigchld_handler(int)
     signal(SIGCHLD, slave_sigchld_handler);
 }
 
+extern "C" const lt_dlsymlist lt_preloaded_symbols[]; 
+
 int main(int argc, char **argv)
 {
   KAboutData aboutData( "kioslave", I18N_NOOP("KDE Daemon"),
@@ -335,7 +337,7 @@ int main(int argc, char **argv)
   KCmdLineArgs::init(argc, argv, &aboutData);
   KUniqueApplication::addCmdLineOptions();
 
-  LTDL_SET_PRELOADED_SYMBOLS();
+  lt_dlpreload_default(lt_preloaded_symbols); 
   if (lt_dlinit() != 0) {
     fprintf (stderr, "error during initialization: %s\n", lt_dlerror());
     return 1;
