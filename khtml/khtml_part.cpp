@@ -2273,6 +2273,15 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if (!m_url.url().isEmpty())
       args.metaData()["referrer"]=m_url.url();
+  
+  if ( button == MidButton && (state & ShiftButton) )
+  {
+    KParts::WindowArgs winArgs;
+    winArgs.lowerWindow = true;
+    KParts::ReadOnlyPart *newPart = 0;
+    emit d->m_extension->createNewWindow( cURL, args, winArgs, newPart );
+    return;
+  }
   emit d->m_extension->openURLRequest( cURL, args );
 }
 
