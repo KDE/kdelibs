@@ -471,7 +471,7 @@ namespace KJS {
     /**
      * @internal Reimplemenation of @ref Imp::mark().
      */
-    virtual void mark(Imp*);
+    virtual void mark(Imp *imp = 0L);
   private:
     Class cl;
     Imp *val;
