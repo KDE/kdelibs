@@ -741,7 +741,11 @@ void KFileDialog::multiSelectionChanged()
         text.append( begin ).append( item->name() ).append( '\"' );
         ++it;
     }
+    disconnect( locationEdit, SIGNAL( textChanged( const QString& ) ),
+             this, SLOT( slotLocationChanged( const QString& ) ) );
     locationEdit->setCurrentItem( 0 );
+    connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
+             SLOT( slotLocationChanged( const QString& )) );
     locationEdit->setEditText( text.stripWhiteSpace() );
 }
 
