@@ -22,9 +22,11 @@
  * $Id$
  */
 #include "render_replaced.h"
+#include "render_root.h"
 #include <qscrollview.h>
 #include <assert.h>
 #include "misc/helper.h"
+#include "khtmlview.h"
 
 using namespace khtml;
 
