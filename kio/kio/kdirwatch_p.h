@@ -120,12 +120,14 @@ private:
 
 #ifdef HAVE_DNOTIFY
   bool supports_dnotify;
+  bool rescan_all;
   int mPipe[2];
   QTimer mTimer;
   QSocketNotifier *mSn;
   QIntDict<Entry> fd_Entry;
 
   static void dnotify_handler(int, siginfo_t *si, void *);
+  static void dnotify_sigio_handler(int, siginfo_t *si, void *);
   bool useDNotify(Entry*);
 #endif
 };

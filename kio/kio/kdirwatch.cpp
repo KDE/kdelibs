@@ -39,6 +39,7 @@
 //#include <time.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <errno.h>
 #endif
 
 #include <assert.h>
@@ -80,6 +81,10 @@ static int dnotify_signal = 0;
  */
 void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 {
+  // write might change errno, we have to save it and restore it
+  // (Richard Stevens, Advanced programming in the Unix Environment)
+  int saved_errno = errno;
+
   Entry* e = (dwp_self) ? dwp_self->fd_Entry.find(si->si_fd) :0;
 
 //  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
@@ -92,6 +97,40 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 
   char c = 0;
   write(dwp_self->mPipe[1], &c, 1);
+  errno = saved_errno;
+}
+
+static struct sigaction old_sigio_act;
+/* DNOTIFY SIGIO signal handler
+ *
+ * When the kernel queue for the dnotify_signal overflows, a SIGIO is send.
+ */
+void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
+{
+  // write might change errno, we have to save it and restore it
+  // (Richard Stevens, Advanced programming in the Unix Environment)
+  int saved_errno = errno;
+
+  if (dwp_self) 
+    dwp_self->rescan_all = true;
+
+  char c = 0;
+  write(dwp_self->mPipe[1], &c, 1);
+
+  errno = saved_errno;
+  
+  // Call previous signal handler
+  if (old_sigio_act.sa_flags & SA_SIGINFO)
+  {
+    if (old_sigio_act.sa_sigaction)
+      (*old_sigio_act.sa_sigaction)(sig, si, p);
+  }
+  else
+  {
+    if ((old_sigio_act.sa_handler != SIG_DFL) &&
+        (old_sigio_act.sa_handler != SIG_IGN))
+      (*old_sigio_act.sa_handler)(sig);
+  }
 }
 #endif
 
@@ -157,6 +196,7 @@ KDirWatchPrivate::KDirWatchPrivate()
 
 #ifdef HAVE_DNOTIFY
   supports_dnotify = true; // not guilty until proven guilty
+  rescan_all = false;
   struct utsname uts;
   int major, minor, patch;
   if (uname(&uts) < 0)
@@ -185,6 +225,9 @@ KDirWatchPrivate::KDirWatchPrivate()
     if( dnotify_signal == 0 )
         dnotify_signal = SIGRTMIN + 8;
     sigaction(dnotify_signal, &act, NULL);
+    
+    act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
+    sigaction(SIGIO, &act, &old_sigio_act);
   }
 #endif
 
@@ -901,11 +944,22 @@ void KDirWatchPrivate::slotRescan()
   QPtrList<Entry> dList, cList;
 
   // for DNotify method,
-  // progate dirty flag to dependant entries (e.g. file watches)
-  it = m_mapEntries.begin();
-  for( ; it != m_mapEntries.end(); ++it )
-    if ( ((*it).m_mode == DNotifyMode) && (*it).dn_dirty )
-      (*it).propagate_dirty();
+  if (rescan_all)
+  {
+    // mark all as dirty
+    it = m_mapEntries.begin();
+    for( ; it != m_mapEntries.end(); ++it )
+      (*it).dn_dirty = true;
+    rescan_all = false;
+  }
+  else
+  {
+    // progate dirty flag to dependant entries (e.g. file watches)
+    it = m_mapEntries.begin();
+    for( ; it != m_mapEntries.end(); ++it )
+      if ( ((*it).m_mode == DNotifyMode) && (*it).dn_dirty )
+        (*it).propagate_dirty();
+  }
 
 #endif
 
