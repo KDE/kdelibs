@@ -517,6 +517,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   case ID_CAPTION:
     return &caption_info;
   case ID_COL:
+  case ID_COLGROUP:
     return &col_info;
   case ID_THEAD:
     return &tablesection_info;
@@ -1684,7 +1685,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     }
   }
   break;
-  case ID_COL: {
+  case ID_COL:
+  case ID_COLGROUP: {
     DOM::HTMLTableColElement tableCol = element;
     switch (token) {
     case TableColAlign:           return getString(tableCol.align());
@@ -2637,7 +2639,8 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       }
     }
     break;
-    case ID_COL: {
+    case ID_COL:
+    case ID_COLGROUP: {
       DOM::HTMLTableColElement tableCol = element;
       switch (token) {
       case TableColAlign:           { tableCol.setAlign(str); return; }
