@@ -33,11 +33,10 @@
 <!ELEMENT entry (label?,whatsthis?,code?,values?,default?,parameter?)>
   <!ATTLIST entry 
                   name CDATA #REQUIRED
-		  type (String|StringList|Font|Brush|Rect|Size|Color|
-		        Palette|ColorGroup|Point|Int|UInt|Bool|Double|
-			PointArray|Region|SizePolicy|Date|Time|
-			DateTime|KeySequence|Pen|LongLong|ULongLong|
-			IntList|Enum|Path) #REQUIRED
+		  type (String|StringList|Font|Rect|Size|Color|
+		        Point|Int|UInt|Bool|Double||Date|Time|
+			DateTime|LongLong|ULongLong|IntList|
+			Enum|Path) #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 
