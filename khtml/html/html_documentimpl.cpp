@@ -172,9 +172,9 @@ void HTMLDocumentImpl::finishParsing (  )
 {
     if(tokenizer)
 	tokenizer->finish();
-    
+
     // onload script...
-    if(m_view && m_view->part()->jScriptEnabled()) {
+    if(m_view && m_view->part()->jScriptEnabled() && body()) {
 	DOMString script = body()->getAttribute(ATTR_ONLOAD);
 	if(script.length()) {
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
@@ -358,7 +358,7 @@ void HTMLDocumentImpl::detach()
     }
 
 
-    
+
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
