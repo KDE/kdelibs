@@ -85,8 +85,7 @@ public:
     virtual ~KFileView();
 
     /**
-     * inserts a list of items. This is a speed optimized version of
-     * function above.
+     * inserts a list of items.
      **/
     virtual void addItemList(const KFileViewItemList *list);
 
@@ -112,7 +111,7 @@ public:
 				const KFileViewItem * entry = 0);
 
     /**
-     * clears the view and and all item lists
+     * clears the view and all item lists
       */
     virtual void clear();
 
@@ -120,7 +119,7 @@ public:
       * does a repaint of the view.
       *
       * The default implementation calls
-      * <code>widget()->repaint(f)</code>
+      * <pre>widget()->repaint(f)</pre>
       **/
     virtual void updateView(bool f = true);
 
@@ -179,7 +178,7 @@ public:
     bool isReversed() const { return reversed; }
 
     /**
-      * @returns returns the number of dirs and files
+      * @returns the number of dirs and files
       **/
     uint count() const { return filesNumber + dirsNumber; }
 
@@ -252,7 +251,7 @@ public:
     const KFileViewItemList * selectedItems() const;
 
     /**
-     * @returns all items currently available
+     * @returns all items currently available in the current sort-order
      */
     const KFileViewItemList * items() const;
 
@@ -260,7 +259,7 @@ public:
      * Inserts "counter" KFileViewItems and sorts them conforming to the
      * current sort-order.
      * If you override this method, you have to call @ref setFirstItem()
-     * to set the first item of your newly sorted items.
+     * afterwards, to set the first item of your newly sorted items.
      */
     virtual void insertSorted(KFileViewItem *first, uint counter);
 

@@ -771,8 +771,10 @@ void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
 	if (progress) // it may not be visible even if not 0
 	    progress->setValue(100);
 
-	if (isLocal)
-	    fileList->addItemList(dir->currentContents());
+	if (isLocal) {
+		fileList->clear();
+		fileList->addItemList(dir->currentContents());
+	}
 
 	QTimer::singleShot(0, this, SLOT(readNextMimeType()));
 	QTimer::singleShot(200, this, SLOT(resetCursor()));

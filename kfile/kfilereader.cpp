@@ -155,7 +155,6 @@ void KFileReader::setURL(const KURL& url)
 
         if ( myAutoUpdate ) {
 	    dirWatch->removeDir( oldurl.url() );
-	    setAutoUpdate( false );
 	}
     }
 

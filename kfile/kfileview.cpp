@@ -203,9 +203,10 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
     if (!list2)
 	return list1;
 
-    if ( list1 == list2 ) {
-	debug("**** KFileView: FIX this bug (items in mergeLists are equal)");
-    }
+    // We can't have the same item twice in the list. If the assertion fails,
+    // there is a bug somewhere else, e.g. you tried to add an item which is 
+    // already there.
+    ASSERT( list1 != list2 );
 
     KFileViewItem *newlist;
 
@@ -269,10 +270,10 @@ void KFileView::sortReversed()
 
 void KFileView::clear()
 {
-    clearView();
+    first = 0;
     filesNumber = 0;
     dirsNumber = 0;
-    first = 0;
+    clearView();
     itemListDirty = true;
 }
 
