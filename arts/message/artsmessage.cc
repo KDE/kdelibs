@@ -30,6 +30,7 @@ Gnome, etc. and used instead.
 */
 
 #include <klocale.h>
+#include <kglobal.h>
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kmessagebox.h>
@@ -54,9 +55,11 @@ KAboutData aboutData("artsmessage", I18N_NOOP("artsmessage"), "0.1",
 
 int main(int argc, char **argv) {
 	aboutData.addAuthor("Jeff Tranter", 0, "tranter@kde.org");
+	KGlobal::locale()->setMainCatalogue("kdelibs");
 	KCmdLineArgs::init(argc, argv, &aboutData);
 	KCmdLineArgs::addCmdLineOptions(options);
 	KApplication app;
+	
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 	QString msg;
 
