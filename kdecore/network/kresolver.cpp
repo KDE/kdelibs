@@ -32,6 +32,7 @@
 #include <time.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <stdlib.h>
 
 // Qt includes
 #include <qapplication.h>
@@ -869,6 +870,9 @@ static QString ToUnicode(const QString& label);
 // implement the ToAscii function, as described by IDN documents
 QCString KResolver::domainToAscii(const QString& unicodeDomain)
 {
+  if (getenv("KDE_USE_IDN") == 0L)
+    return unicodeDomain.latin1();
+
   QCString retval;
   // RFC 3490, section 4 describes the operation:
   // 1) this is a query, so don't allow unassigned
@@ -908,6 +912,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 {
   if (asciiDomain.isEmpty())
     return asciiDomain;
+  if (getenv("KDE_USE_IDN") == 0L)
+    return asciiDomain;;
 
   QString retval;
 
