@@ -28,11 +28,7 @@
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 1
 
-#define Icon(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
-#define ICON(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
-
 class KConfig;
-class KIconLoader;
 class KCharsets;
 class KStyle;
 
@@ -176,14 +172,6 @@ public:
 							
 
   /**
-    * Get an iconloader for the application. If it does not yet exist,
-    * create one.
-    * @return a pointer to the Iconloader of the application
-    * @see KIconLoader
-    */
-  KIconLoader* getIconLoader();
-
-  /**
     * Get character set information.
     * @return a pointer to the KCharsets object of the application
     * @see KCharsets
@@ -304,25 +292,6 @@ public:
   static QString kde_datadir();
 
   /**
-   * Returns the directory where cgi scripts are stored
-   *
-   * The default for this directory is $KDEDIR/cgi-bin
-   * @return the name of the directory
-   */
-  static QString kde_cgidir();
-
-  /**
-   * Returns the directory where sound data are stored.
-   * This directory is for KDE specific sounds. Sound data of
-   * Applications should go into kde_datadir()
-   *
-   * The default for this directory is $KDEDIR/share/sounds
-   *
-   * @return the name of the directory
-   */
-  static QString kde_sounddir();
-
-  /**
    * Returns the directory where toolbar icons are stored
    *
    * The default for this directory is $KDEDIR/share/toolbar
@@ -331,28 +300,12 @@ public:
   static QString kde_toolbardir();
 
   /**
-   * Returns the directory where wallpapers are stored
-   *
-   * The default for this directory is $KDEDIR/share/wallpapers
-   * @return the name of the directory
-   */
-  static QString kde_wallpaperdir();
-
-  /**
    * Returns the directory where executable programs are stored
    *
    * The default for this directory is $KDEDIR/bin
    * @return the name of the directory
    */
   static QString kde_bindir();
-
-  /**
-   * Returns the directory where KParts are stored
-   *
-   * The default for this directory is $KDEDIR/parts
-   * @return the name of the directory
-   */
-  static QString kde_partsdir();
 
   /**
    * Returns the directory where config files are stored
@@ -556,7 +509,6 @@ private:
   QString aWmCommand; // for userdefined session management
   ConfigState eConfigState;
   static QStrList* pSearchPaths;
-  KIconLoader* pIconLoader; // the application's own icon loader
   static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compatibility
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
@@ -700,6 +652,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.77  1999/05/23 16:28:42  kulow
+// kde_localedir has been removed - first step on the way to KStdDirs.
+//
 // Revision 1.76  1999/05/23 00:50:57  kulow
 // searching for memory leaks - dmalloc is a great tool for that. The problem
 // is that it doesn't know the concept of static variables, but for the

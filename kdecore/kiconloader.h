@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.25  1999/05/09 23:58:34  pbrown
+   was broken with QStringList.  fixed.
+
    Revision 1.24  1999/05/09 17:22:54  ssk
    API_CHANGE: KIconLoader::getDirList now returns QStringList.
    KIconLoader now uses QPixmapCache.
@@ -55,6 +58,9 @@ class KConfig;
 #include <qpixmap.h>
 #include <qstringlist.h>
 #include <qstring.h>
+
+#define Icon(x) KGlobal::iconLoader()->loadIcon(x,0,0,false)
+#define ICON(x) KGlobal::iconLoader()->loadIcon(x,0,0,false)
 
 /**
 	Icon loader with caching.

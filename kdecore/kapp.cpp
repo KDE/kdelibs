@@ -146,7 +146,6 @@ void KApplication::init()
   */
   KApp = this;
 
-  pIconLoader = 0L;
   styleHandle = 0;
   pKStyle = 0;
 
@@ -321,18 +320,6 @@ void KApplication::setWmCommand(const QString& s){
     KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 }
 
-
-
-
-KIconLoader* KApplication::getIconLoader()
-{
-  if( !pIconLoader )
-    pIconLoader = new KIconLoader();
-
-  return pIconLoader;
-}
-
-
 QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 	   const QString& aboutAppText )
 {
@@ -499,12 +486,12 @@ void KApplication::parseCommandLine( int& argc, char** argv )
       if (argv[i+1][0] == '/')
         aIconPixmap = QPixmap(argv[i+1]);
       else
-        aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
+        aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
       if (aMiniIconPixmap.isNull()){
 		if (argv[i+1][0] == '/')
 		  aMiniIconPixmap = aIconPixmap;
 		else
-		  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
+		  aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
       }
       aDummyString2 += parameter_strings[icon-1];
       aDummyString2 += " ";
@@ -515,7 +502,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
       if (argv[i+1][0] == '/')
         aMiniIconPixmap = QPixmap(argv[i+1]);
       else
-        aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
+        aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
       aDummyString2 += parameter_strings[miniicon-1];
       aDummyString2 += " ";
       aDummyString2 += argv[i+1];
@@ -576,8 +563,8 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 QPixmap KApplication::getIcon() const
 {
   if( aIconPixmap.isNull()) {
-    KApplication *that = (KApplication*)this;
-    that->aIconPixmap = that->getIconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
+      KApplication *that = const_cast<KApplication*>(this);
+      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
   }
   return aIconPixmap; 
 }
@@ -585,17 +572,14 @@ QPixmap KApplication::getIcon() const
 QPixmap KApplication::getMiniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
-    KApplication *that = (KApplication*)this;    
-    that->aMiniIconPixmap = that->getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm"));
+      KApplication *that = const_cast<KApplication*>(this);
+      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( aAppName + ".xpm" );
   }
   return aMiniIconPixmap; 
 }
 KApplication::~KApplication()
 {
   removeEventFilter( this );
-
-  if( pIconLoader )
-    delete pIconLoader;
 
   delete pCharsets;
 
@@ -1300,28 +1284,6 @@ QString KApplication::kde_datadir()
   return dir;
 }
 
-QString KApplication::kde_cgidir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_CGIDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
-QString KApplication::kde_sounddir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_SOUNDDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
 QString KApplication::kde_toolbardir()
 {
   static QString dir;
@@ -1333,33 +1295,11 @@ QString KApplication::kde_toolbardir()
   return dir;
 }
 
-QString KApplication::kde_wallpaperdir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_WALLPAPERDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
 QString KApplication::kde_bindir()
 {
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_BINDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
-QString KApplication::kde_partsdir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_PARTSDIR;
       if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }

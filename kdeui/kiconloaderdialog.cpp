@@ -30,7 +30,7 @@
 
 #include <kpixmap.h>
 #include <klocale.h>
-#define klocale KApplication::getKApplication()->getLocale()
+#include <kglobal.h>
 
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
@@ -281,8 +281,8 @@ void KIconLoaderDialog::init()
 KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   : QDialog( parent, name, TRUE )
 {
-  icon_loader = KApplication::getKApplication()->getIconLoader();
-  init();
+    icon_loader = KGlobal::iconLoader();
+    init();
 }
 
 KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, const char *name )
@@ -366,7 +366,7 @@ KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) : QPushButton( _parent 
 {
     iconStr = "";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
-    iconLoader = kapp->getIconLoader();
+    iconLoader = KGlobal::iconLoader();
     loaderDialog = new KIconLoaderDialog();
 }
 
@@ -395,7 +395,7 @@ void KIconLoaderButton::setIcon(const QString& _icon)
     iconStr = _icon;
 
     // A Hack, since it uses loadApplicationIcon!!!
-    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr ) );
+    setPixmap( KGlobal::iconLoader()->loadApplicationIcon( iconStr ) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()
