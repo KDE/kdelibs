@@ -43,7 +43,7 @@ ac_have_new_cups="yes"
 ac_cups_libs=0
 CUPSSUBDIR=
 LIB_CUPS=
-AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=yes]],ac_use_cups=$enableval, ac_use_cups=yes)
+AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=auto]],ac_use_cups=$enableval, ac_use_cups=yes)
 if test "$ac_use_cups" = "yes"; then
   ac_CPPFLAGS_save="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $all_includes"
