@@ -466,6 +466,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
 KIntNumInput::~KIntNumInput()
 {
+	delete d;
 }
 
 void KIntNumInput::setValue(int val)
