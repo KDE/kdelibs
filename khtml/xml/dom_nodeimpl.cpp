@@ -175,7 +175,7 @@ QString NodeImpl::toHTML()
     const int stdInc = 10000;
     long currentLength = stdInc;
     QChar *htmlText = QT_ALLOC_QCHAR_VEC(stdInc);
-    
+
     recursive( htmlText, currentLength, offset, stdInc );
     QString finishedHtmlText( htmlText, offset );
     return finishedHtmlText;
@@ -192,7 +192,7 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
         int i = me.length();
         while( (currentLength - offset) <= i*2+4)
             increaseStringLength( htmlText, currentLength, offset, stdInc);
-        
+
         memcpy(htmlText+offset, me.stringPtr(), i*2);
         offset += i;
     }
@@ -250,7 +250,7 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
     {
         // print firstChild
         firstChild()->recursive( htmlText, currentLength, offset, stdInc);
-        
+
         // Print my ending tag
         if ( nodeType() != Node::TEXT_NODE )
         {
@@ -397,8 +397,6 @@ NodeBaseImpl::~NodeBaseImpl()
 
     for( n = _first; n != 0; n = next )
     {
-	n->setPreviousSibling(0);
-	n->setNextSibling(0);
 	n->setParent(0);
 	next = n->nextSibling();
 	if(n->deleteMe()) delete n;
@@ -437,7 +435,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     NodeImpl *newParent = newChild->parentNode();
     if(newParent)
         newParent->removeChild( newChild );
-    
+
     // seems ok, lets's insert it.
 
     NodeImpl *prev = refChild->previousSibling();
@@ -470,7 +468,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     NodeImpl *newParent = newChild->parentNode();
     if(newParent)
         newParent->removeChild( newChild );
-    
+
     // seems ok, lets's insert it.
 
     NodeImpl *prev = oldChild->previousSibling();
