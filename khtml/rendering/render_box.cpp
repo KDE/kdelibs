@@ -447,33 +447,37 @@ void RenderBox::calcAbsoluteHorizontal()
     if(!m_style->width().isVariable())
 	w = m_style->width().width(cw);
     
+    RenderObject* o=parent(); 
     if (style()->direction()==LTR && l==AUTO)
     {
 	if (m_next) l = m_next->xPos();
-	else if (m_previous) l = m_previous->xPos()+m_previous->width();
-	else l=0;	    
+	else if (m_previous) l = m_previous->xPos()+m_previous->contentWidth();
+	else l=0;
+	while (o && o!=containingBlock()) { l+=o->xPos(); o=o->parent(); }
     }
     else if (r==AUTO)
     {
-    	if (m_previous) r = cw - (m_previous->xPos() + m_previous->width());
+    	if (m_previous) r = cw - (m_previous->xPos() + m_previous->contentWidth());
 	else if (m_next) r = cw - m_next->xPos();
-	else r=cw;	    
+	else r=cw;
+	while (o && o!=containingBlock()) { r+=o->xPos(); o=o->parent(); }	    
     }
     
     if (w==AUTO)
     {
     	if (l==AUTO) l=0;
 	if (r==AUTO) r=0;
-	m_width = cw - ( r+l+marginLeft()+marginRight())
-	    + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
-    }
-    else
-    	m_width = w + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
+	w = cw - ( r+l+marginLeft()+marginRight()
+	    + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight());
+    };
+
+    m_width = w + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
 	
-    if (l!=AUTO)
-    	m_x = l + marginLeft();
-    else 
-    	m_x = marginLeft();
+    if (l==AUTO)
+    	l=0;
+
+    m_x = l + marginLeft() +
+    	containingBlock()->paddingLeft() + containingBlock()->borderLeft();
 	
 //    printf("h: %d, %d, %d\n",l,w,r);
 }
@@ -499,33 +503,36 @@ void RenderBox::calcAbsoluteVertical()
     if(!m_style->height().isVariable())
 	h = m_style->height().width(ch);
 
-    if (t==AUTO && b!=AUTO && h!=AUTO)
+/*    if (t==AUTO && b!=AUTO && h!=AUTO)
     { 
     	t = ch - b - 
 	    (h +borderBottom()+paddingTop()+paddingBottom());
-    }
+    }*/
 
+    RenderObject* o = parent();
     if (t==AUTO)
     {
 	if (m_next) t = m_next->yPos();
 	else if (m_previous) t = m_previous->yPos()+m_previous->height();
-	else t=0;	    
+	else t=0;	
+	while (o && o!=containingBlock()) { t+=o->yPos(); o=o->parent(); }    
     }
     
     if (b==AUTO && h==AUTO)
     	b=0;
     
     if (h==AUTO)
-    	h = ch - ( t+b+marginTop()+marginBottom())
-	    + borderTop()+borderBottom()+paddingTop()+paddingBottom();	
-    else
-    	h += borderTop()+borderBottom()+paddingTop()+paddingBottom();
+    	h = ch - ( t+b+marginTop()+marginBottom()+
+	    borderTop()+borderBottom()+paddingTop()+paddingBottom());	
+    
+    h += borderTop()+borderBottom()+paddingTop()+paddingBottom();
     
     if (m_height<h)
     	m_height = h;
     
 //    printf("v: %d, %d, %d\n",t,h,b);
 
-    m_y = t + marginTop();
+    m_y = t + marginTop() + 
+    	containingBlock()->paddingTop() + containingBlock()->borderTop();
     	
 }

@@ -180,7 +180,7 @@ void RenderObject::setContainingBlock()
     }
     else if(m_style->position() == ABSOLUTE)
     {
-	while(o && m_style->position() == STATIC) o = o->parent();
+	while(o && o->style()->position() == STATIC && !o->isRoot()) o = o->parent();
     }
     else
     {
@@ -312,6 +312,7 @@ void RenderObject::printTree(int indent) const
     	    	 << " il=" << isInline() << " ci=" << childrenInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
 		 << " an=" << isAnonymousBox()
+		 << " ps=" << isPositioned()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();

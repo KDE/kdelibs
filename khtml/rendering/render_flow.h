@@ -111,6 +111,7 @@ protected:
     virtual void closeParagraph() { positionNewFloats(); }
 
     void insertFloat(RenderObject *child);
+    void insertPositioned(RenderObject *child);
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();

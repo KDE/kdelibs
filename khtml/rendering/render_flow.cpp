@@ -126,12 +126,6 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
 
-    if(isPositioned())
-    {
-    	calcAbsoluteHorizontal();
-    	calcAbsoluteVertical();    
-    }
-
     if(!isInline())
     {
 	_tx += m_x;
@@ -182,7 +176,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     RenderObject *child = firstChild();
     while(child != 0)
     {
-	if(!child->isFloating())
+	if(!child->isFloating() && !child->isPositioned())
 	    child->print(p, _x, _y, _w, _h, _tx, _ty);
 	child = child->nextSibling();
     }
@@ -244,7 +238,8 @@ void RenderFlow::layout( bool deep )
     // floats for some reason
 
     if (specialObjects==0)
-    	if (oldWidth == m_width && layouted()) return;
+    	if (oldWidth == m_width && layouted() 
+	    && !containsPositioned() && !isPositioned()) return;
     else
     	if (nextSibling())
 	    nextSibling()->setLayouted(false);
@@ -300,6 +295,19 @@ void RenderFlow::layout( bool deep )
 	    m_next->layout();
 	}
     }     
+    
+    if(specialObjects)
+    {
+	SpecialObject* r;	
+	QListIterator<SpecialObject> it(*specialObjects);
+	for ( ; (r = it.current()); ++it )
+    	    if (r->type == SpecialObject::Positioned)
+	    {
+		r->node->layout(true);			
+	    }
+    }
+    
+    
     setLayouted();
 }
 
@@ -373,7 +381,8 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     	if (child->isPositioned())
 	{
-	    child->layout(true);   
+	    child->layout(true);
+	    static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
 	    child = child->nextSibling();
 	    continue;
 	}
@@ -473,6 +482,31 @@ void RenderFlow::layoutInlineChildren()
     if(m_first)
 	m_height = reorder(0, m_height);
     m_height += toAdd;
+}
+
+void
+RenderFlow::insertPositioned(RenderObject *o)
+{
+    if(!specialObjects) {
+	specialObjects = new QList<SpecialObject>;
+	specialObjects->setAutoDelete(true);	
+    }
+    
+    // don't insert it twice!
+    QListIterator<SpecialObject> it(*specialObjects);
+    SpecialObject* f;	
+    while ( (f = it.current()) ) {
+	if (f->node == o) return;
+	++it;
+    }
+    
+    if (!f) f = new SpecialObject;
+
+    f->noPaint=false;
+    f->type = SpecialObject::Positioned;
+    f->node = o;
+    
+    specialObjects->append(f);
 }
 
 void
@@ -1018,23 +1052,13 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    break;
 	case ABSOLUTE:
 	{
-	    setContainsPositioned(true);
-	    RenderObject* p=this;
-	    while (!(p->isPositioned() || p->isRelPositioned()))
-	    	p = p->containingBlock();
-	    if (this==p)
-	    {
-	    	RenderObject::addChild(newChild);
-		return;	    
-	    }
-	    else
-	    {
-	    	p->addChild(newChild);
-		return;
-	    }
-	    break;
+//	    kdDebug( 6040 ) << "absolute found" << endl;
+	    setContainsPositioned(true);	    
+    	    RenderObject::addChild(newChild);
+	    return;
 	}
 	default: ;
+
     }
 
 
@@ -1129,7 +1153,7 @@ BiDiObject *RenderFlow::first()
     RenderObject *o = m_first;
 
     if(o->isText()) static_cast<RenderText *>(o)->deleteSlaves();
-    if(!o->isText() && !o->isReplaced() && !o->isFloating())
+    if(!o->isText() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
 	o = static_cast<RenderObject *>(next(o));
 
     return o;
@@ -1152,7 +1176,7 @@ BiDiObject *RenderFlow::next(BiDiObject *c)
 	    static_cast<RenderText *>(next)->deleteSlaves();
 	    return next;
 	}
-	else if(next->isFloating() || next->isReplaced())
+	else if(next->isFloating() || next->isReplaced() || next->isPositioned())
 	{
 	    return next;
 	}
@@ -1164,7 +1188,7 @@ BiDiObject *RenderFlow::next(BiDiObject *c)
 RenderObject *RenderFlow::nextObject(RenderObject *current)
 {
     RenderObject *next = 0;
-    if(!current->isFloating() && !current->isReplaced())
+    if(!current->isFloating() && !current->isReplaced() && !current->isPositioned())
 	next = current->firstChild();
     if(next) return next;
 
@@ -1180,16 +1204,19 @@ RenderObject *RenderFlow::nextObject(RenderObject *current)
 void RenderFlow::specialHandler(BiDiObject *special)
 {
     RenderObject *o = static_cast<RenderObject *>(special);
-
+//    kdDebug( 6040 ) << "specialHandler" << endl;
     if(o->isFloating())
     {
 	o->layout(true);
 	insertFloat(o);
     }
+    else if(o->isPositioned())
+    {
+	static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
+    }	
     else if(o->isReplaced())
 	o->layout(true);
-    else if(o->isPositioned())
-    	o->layout(true);
+    
 	
     if( !o->isPositioned() && !o->isFloating() && 
     	(!o->isInline() || o->isBR()) )
