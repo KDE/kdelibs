@@ -1280,7 +1280,7 @@ Node* AddNode::create(Node *t1, Node *t2, char op)
   if ((t1->type() == NumberType || t1->type() == BooleanType) &&
       (t2->type() == NumberType || t2->type() == BooleanType)) {
     double d = t2->toNumber(0);
-    Node* n = new NumberNode(t1->toNumber(0) + op == '+' ? d : -d);
+    Node* n = new NumberNode(t1->toNumber(0) + (op == '+' ? d : -d));
     // ### probably always count == 1
     if (t1->deref())
       delete t1;
