@@ -85,13 +85,13 @@ class KProcessPrivate;
  *
  *A small usage example:
  *<pre>
- *KProcess proc;
+ *KProcess *proc = new KProcess;
  *
- *proc << "my_executable";
- *proc << "These" << "are" << "the" << "command" << "line" << "args";
- *QApplication::connect(&proc, SIGNAL(processExited(KProcess *)),
- *                      pointer_to_my_object, SLOT(my_objects_slot));
- *proc.start();
+ **proc << "my_executable";
+ **proc << "These" << "are" << "the" << "command" << "line" << "args";
+ *QApplication::connect(proc, SIGNAL(processExited(KProcess *)),
+ *                      pointer_to_my_object, SLOT(my_objects_slot(KProcess *)));
+ *proc->start();
  *</pre>
  *
  *This will start "my_executable" with the commandline arguments "These"...
