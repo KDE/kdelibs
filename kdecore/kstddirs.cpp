@@ -16,7 +16,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <assert.h>
-static int tokenize( QStringList& token, const QString& str, 
+static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
 KStandardDirs::KStandardDirs( const QString& )
@@ -63,7 +63,7 @@ bool KStandardDirs::addResourceType( const QString& type,
     return false;
 }
 
-bool KStandardDirs::addResourceDir( const QString& type, 
+bool KStandardDirs::addResourceDir( const QString& type,
 		     const QString& absdir, bool)
 {
     QStringList *abs = absolutes.find(type);
@@ -79,7 +79,7 @@ bool KStandardDirs::addResourceDir( const QString& type,
     return false;
 }
 
-QString KStandardDirs::findResource( const QString& type, 
+QString KStandardDirs::findResource( const QString& type,
 		      const QString& filename ) const
 {
     if (filename.at(0) == '/')
@@ -98,10 +98,10 @@ QString KStandardDirs::findResourceDir( const QString& type,
         warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!\n", type.ascii());
 	return QString::null;
     }
-    
+
     QStringList candidates = getResourceDirs(type);
     QDir testdir;
-    for (QStringList::ConstIterator it = candidates.begin(); 
+    for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) {
 	testdir.setPath(*it);
 	debug("looking for filename " + *it + filename);
@@ -121,11 +121,11 @@ QStringList KStandardDirs::findAllResources( const QString& type, bool recursive
     QDir testdir;
 
     QStringList entries;
-    for (QStringList::ConstIterator it = candidates.begin(); 
+    for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) {
 	testdir.setPath(*it);
 	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
-	for (QStringList::ConstIterator it2 = entries.begin(); 
+	for (QStringList::ConstIterator it2 = entries.begin();
 	     it2 != entries.end(); it2++) {
 	  list.append(*it + *it2);
 	}
@@ -140,19 +140,19 @@ QStringList KStandardDirs::getResourceDirs(const QString& type) const
         QDir testdir;
 	candidates = new QStringList();
 	QStringList *dirs = absolutes.find(type);
-	if (dirs) 
-	    for (QStringList::ConstIterator it = dirs->begin(); 
+	if (dirs)
+	    for (QStringList::ConstIterator it = dirs->begin();
 		 it != dirs->end(); it++) {
 	      testdir.setPath(*it);
 	      if (testdir.exists() && !candidates->contains(*it)) {
-		debug("adding abs %s for type %s", it->ascii(), type.ascii());
+		debug("adding abs %s for type %s", (*it).ascii(), type.ascii());
 		candidates->append(*it);
 	      }
 	    }
 	dirs = relatives.find(type);
-	if (dirs) 
-	    for (QStringList::ConstIterator pit = prefixes.fromLast(); 
-		 pit != prefixes.end(); pit--)  
+	if (dirs)
+	    for (QStringList::ConstIterator pit = prefixes.fromLast();
+		 pit != prefixes.end(); pit--)
 	      for (QStringList::ConstIterator it = dirs->begin();
 		   it != dirs->end(); it++)
 		  {
@@ -168,7 +168,7 @@ QStringList KStandardDirs::getResourceDirs(const QString& type) const
     return *candidates;
 }
 
-QString KStandardDirs::findExe( const QString& appname, 
+QString KStandardDirs::findExe( const QString& appname,
 		const QString& pstr, bool ignore)
 {
 	QFileInfo info;
@@ -233,7 +233,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 	return list.count();
 }
 
-static int tokenize( QStringList& tokens, const QString& str, 
+static int tokenize( QStringList& tokens, const QString& str,
 		     const QString& delim )
 {
 	int index = 0;
@@ -261,10 +261,10 @@ void KStandardDirs::addKDEDefaults() {
     QString kdedir = getenv("KDEDIR");
     if (kdedir.isEmpty())
           kdedir = KDEDIR;
-    
+
     addPrefix(kdedir);
     addPrefix(QDir::homeDirPath() + "/.kde/");
-    
+
     addResourceType("html", "share/doc/HTML/");
     addResourceType("icon", "share/icons/");
     addResourceType("mini", "share/icons/mini/");

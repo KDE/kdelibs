@@ -1,4 +1,4 @@
-/* 
+/*
    $Id$
 
    This file is part of the KDE libraries
@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.42  1999/05/26 18:02:13  kulow
+   David is right when he says addIcons is overkill. Removed the function
+   again and renamed the old function setDir to changeDirs as this is what
+   it does. For this I added getResourceDirs(type) to kstddirs. Don't use
+   it if you can avoid it ;)
+
    Revision 1.41  1999/05/26 12:29:32  kulow
    adding getIconList() - the iconloader will find all icons itself. Currently
    it's just a call to findAllResources("toolbar"), but in this case we urgently
@@ -92,7 +98,7 @@ void KIconLoader::initPath()
   // set the key depending on the current application
   // FIXME: This is not a very nice hack at all. The app should be
   // able to specify its own key. (Taj)
-  
+
   QString key = "KDE";
   if (kapp->name() == "kpanel")
     key = "kpanel";
@@ -103,40 +109,40 @@ void KIconLoader::initPath()
   QString setting = config.readEntry( key + "IconStyle", "Normal" );
   //debug("App is %s - setting is %s", kapp->name(), setting.data());
   // DF
-  
+
   // order is important! -- Bernd
   // higher priority at the end
-  
+
   bool large = (setting == "Large" );
-  
+
   addPath( KApplication::kde_toolbardir() );
-  
-  addPath( KApplication::localkdedir() + "/share/toolbar" ); 
-  
-  if ( large ) 
+
+  addPath( KApplication::localkdedir() + "/share/toolbar" );
+
+  if ( large )
     KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
-  
-  addPath( KApplication::kde_datadir() + "/" 
+
+  addPath( KApplication::kde_datadir() + "/"
 	   + kapp->appName() + "/toolbar" );
-  addPath( KApplication::localkdedir() + "/share/apps/" 
-	   + kapp->appName() + "/toolbar" ); 
-  addPath( KApplication::kde_datadir() + "/" 
+  addPath( KApplication::localkdedir() + "/share/apps/"
+	   + kapp->appName() + "/toolbar" );
+  addPath( KApplication::kde_datadir() + "/"
 	   + kapp->appName() + "/pics" );
-  
+
   if ( large )
-    addPath( KApplication::kde_datadir() + "/" 
+    addPath( KApplication::kde_datadir() + "/"
 	     + kapp->appName() + "/pics/large" );
-  
-  addPath( KApplication::localkdedir() + "/share/apps/" 
-	   + kapp->appName() + "/pics" ); 
-  
+
+  addPath( KApplication::localkdedir() + "/share/apps/"
+	   + kapp->appName() + "/pics" );
+
   if ( large )
-    addPath( KApplication::localkdedir() + "/share/apps/" 
-	     + kapp->appName() + "/pics/large" ); 
-  
+    addPath( KApplication::localkdedir() + "/share/apps/"
+	     + kapp->appName() + "/pics/large" );
+
 }
 
-KIconLoader::KIconLoader( KConfig *conf, 
+KIconLoader::KIconLoader( KConfig *conf,
 		const QString &app_name, const QString &var_name )
 {
 
@@ -177,7 +183,7 @@ KIconLoader::KIconLoader()
 
 }
 
-QPixmap KIconLoader::loadIcon ( const QString& name, int w, 
+QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 		int h, bool canReturnNull ) {
 	QPixmap result = loadInternal(name, w, h);
 
@@ -188,7 +194,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	if the icon doesn't exist, anyway. And base apps should be ok now.
 	 */
 	if (result.isNull() && !canReturnNull) {
-		warning("%s : ERROR: couldn't find icon: %s", 
+		warning("%s : ERROR: couldn't find icon: %s",
 				kapp->appName().ascii(), name.ascii() );
 		result = loadInternal("unknown.xpm", w, h);
 	}
@@ -197,7 +203,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 }
 
 
-QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ) 
+QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 {
         flush( name );
 	
@@ -211,7 +217,7 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 }
 
 
-QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name, 
+QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 	int w, int h )
 {
         QPixmap result = loadInternal(locate("mini", name), w, h);
@@ -243,9 +249,9 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 				break;
 			++it;
 		}
-		if ( (always_valid) && (it->isNull()) ){
+		if ( (always_valid) && ( (*it).isNull()) ){
 			// Let's be recursive (but just once at most)
-			full_path = getIconPath( "unknown.xpm" , false); 
+			full_path = getIconPath( "unknown.xpm" , false);
 		}
 	}
 	return full_path;
@@ -281,15 +287,15 @@ QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h )
 	return pix;
 }
 
-bool KIconLoader::insertDirectory( int index, const QString& dir_name ) 
-{ 
+bool KIconLoader::insertDirectory( int index, const QString& dir_name )
+{
 	if( index < 0 || (unsigned)index > pixmap_dirs.count() ) {
 		return false;
 
 	}
 
-	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name ); 
-	return true; 
+	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name );
+	return true;
 }
 
 

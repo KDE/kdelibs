@@ -2,17 +2,17 @@
   This file is part of the KDE libraries
   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
   Copyright (C) 1997-1999 Matthias Kalle Dalheimer (kalle@kde.org)
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
-  
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Library General Public License for more details.
-  
+
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -84,7 +84,7 @@ KConfig::KConfig( const QString& pGlobalFileName,
       }
     }
   }
-  
+
   // for right now we will hardcode that we are using the INI
   // back end driver.  In the future this should be converted over to
   // a object factory of some sorts.
@@ -115,7 +115,7 @@ KConfig::KConfig( const QString& pGlobalFileName,
 KConfig::~KConfig()
 {
   sync();
-  
+
   if (backEnd)
     delete backEnd;
 }
@@ -130,7 +130,7 @@ void KConfig::rollback(bool bDeep)
   // clear any dirty flags that entries might have set
   for (KEntryMapIterator aIt = aEntryMap.begin();
        aIt != aEntryMap.end(); ++aIt)
-    aIt->bDirty = false;
+    (*aIt).bDirty = false;
 }
 
 QStringList KConfig::groupList() const
@@ -159,21 +159,21 @@ bool KConfig::hasKey(const QString &pKey) const
     QString aKey = pKey + "[";
     aKey += locale();
     aKey += "]";
-    
+
     aEntryKey.group = group();
     aEntryKey.key = aKey;
-    
+
     aIt = aEntryMap.find(aEntryKey);
-    if (aIt != aEntryMap.end() && !aIt->aValue.isNull())
+    if (aIt != aEntryMap.end() && !(*aIt).aValue.isNull())
       return true;
   }
-  
+
   // try the non-localized version
   aEntryKey.group = group();
   aEntryKey.key = pKey;
-  
+
   aIt = aEntryMap.find(aEntryKey);
-  return  (aIt != aEntryMap.end() && !aIt->aValue.isNull());
+  return  (aIt != aEntryMap.end() && !(*aIt).aValue.isNull());
 }
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
@@ -187,7 +187,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 
   aIt = aEntryMap.find(groupKey);
   for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
-    tmpMap.insert(aIt.key().key, aIt->aValue);
+    tmpMap.insert(aIt.key().key, (*aIt).aValue);
 
   return tmpMap;
 }
@@ -236,7 +236,7 @@ void KConfig::flushCache()
     // don't need to do anything
     return;
   }
-  
+
   if (isDirty()) {
     // if the config object has dirty status, we can't flush it
     return;

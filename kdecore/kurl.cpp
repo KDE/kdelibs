@@ -102,16 +102,16 @@ void KURL::parse( const QString& _url )
       m_bIsMalformed = TRUE;
       return;
     }
-  
+
   m_bIsMalformed = FALSE;
-  
+
   QString port;
   int start = 0;
   uint len = _url.length();
   QChar* buf = new QChar[ len + 1 ];
   QChar* orig = buf;
   memcpy( buf, _url.unicode(), len * sizeof( QChar ) );
-  
+
   uint pos = 0;
 
   // Node 1: Accept alpha or slash
@@ -579,7 +579,7 @@ KURL::List KURL::split( const QString& _url )
       lst.append( u );
       // Append the HTML style reference to the
       // first URL.
-      lst.begin()->setRef( tmp );
+      (*lst.begin()).setRef( tmp );
       return lst;
     }
     // No more references and suburls
@@ -603,11 +603,11 @@ QString KURL::join( const KURL::List & lst )
   for( it = lst.begin() ; it != lst.end(); ++it )
   {
     if ( it == lst.begin() )
-      ref = it->ref();
+      ref = (*it).ref();
     else
-      ASSERT( !it->hasRef() );
+      ASSERT( !(*it).hasRef() );
 
-    QString tmp = it->url();
+    QString tmp = (*it).url();
     dest += tmp;
     if ( it != lst.fromLast() )
       dest += "#";
@@ -855,7 +855,7 @@ KURL KURL::upURL( bool _zapRef ) const
   // to file:/home/weis/
   KURL::List lst = split( u );
 
-  QString ref = lst.begin()->ref();
+  QString ref = (*lst.begin()).ref();
 
   // Remove first protocol
   lst.remove( lst.begin() );
@@ -863,7 +863,7 @@ KURL KURL::upURL( bool _zapRef ) const
   // Remove all stream protocols
   while( lst.begin() != lst.end() )
   {
-    if ( KProtocolManager::self().inputType( lst.begin()->protocol() ) == KProtocolManager::T_STREAM )
+    if ( KProtocolManager::self().inputType( (*lst.begin()).protocol() ) == KProtocolManager::T_STREAM )
       lst.remove( lst.begin() );
     else
       break;
@@ -878,10 +878,10 @@ KURL KURL::upURL( bool _zapRef ) const
   // and end with file:/home/x.tgz until now. Yet we
   // just strip the filename at the end of the leftmost
   // url.
-  lst.begin()->setPath( lst.begin()->directory( FALSE ) );
+  (*lst.begin()).setPath( (*lst.begin()).directory( FALSE ) );
 
   if ( !_zapRef )
-    lst.begin()->setRef( ref );
+    (*lst.begin()).setRef( ref );
 
   return join( lst );
 }
@@ -896,7 +896,7 @@ QString KURL::htmlRef() const
   }
 
   List lst = split( *this );
-  QString tmp = lst.begin()->ref();
+  QString tmp = (*lst.begin()).ref();
   decode( tmp );
 
   return tmp;
@@ -914,7 +914,7 @@ void KURL::setHTMLRef( const QString& _ref )
   List lst = split( *this );
   QString tmp = _ref;
   encode( tmp );
-  lst.begin()->setRef( tmp );
+  (*lst.begin()).setRef( tmp );
 
   *this = join( lst );
 }
@@ -927,7 +927,7 @@ bool KURL::hasHTMLRef() const
   }
 
   List lst = split( *this );
-  return lst.begin()->hasRef();
+  return (*lst.begin()).hasRef();
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )
@@ -971,14 +971,14 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 
   if ( _ignore_ref )
   {
-    list1.begin()->setRef("");
-    list2.begin()->setRef("");
+    (*list1.begin()).setRef("");
+    (*list2.begin()).setRef("");
   }
 
   KURL::List::Iterator it1 = list1.begin();
   KURL::List::Iterator it2 = list2.begin();
   for( ; it1 != list1.end() ; ++it1, ++it2 )
-    if ( !it1->cmp( *it2, _ignore_trailing ) )
+    if ( !(*it1).cmp( *it2, _ignore_trailing ) )
       return FALSE;
 
   return TRUE;

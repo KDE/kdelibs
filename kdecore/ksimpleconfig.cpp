@@ -6,12 +6,12 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -56,21 +56,21 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
   // retrieve the current entry map for the group specified by pKey
   KEntryKey entryKey = { group(), aLocalizedKey };
   KEntryMapIterator aIt;
-  
+
   aIt = aEntryMap.find(entryKey);
   if (aIt != aEntryMap.end()) {
-    QString retValue = aIt->aValue;
+    QString retValue = (*aIt).aValue;
     // we found the key, get rid of it
     aEntryMap.remove(aIt);
     return retValue;
-  } else 
+  } else
     return QString::null;
 }
 
 
 bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
-  
+
   KEntryMapIterator aIt;
   KEntryKey groupKey = { pGroup, QString() };
 
@@ -96,11 +96,11 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 
 void KSimpleConfig::sync()
 {
-   if (isReadOnly()) 
-       return; 
+   if (isReadOnly())
+       return;
    backEnd->sync(false);
 
    if (isDirty())
-     rollback(); 
-}   
+     rollback();
+}
 

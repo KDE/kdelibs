@@ -2,17 +2,17 @@
   This file is part of the KDE libraries
   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
   Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
-  
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Library General Public License for more details.
-  
+
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -50,7 +50,7 @@ static const char* globalConfigFileNames[] =
   "/usr/local/lib/KDE/system.kderc",
   "~/.kderc",
 };
- 
+
 const int CONFIGFILECOUNT = 5; // number of entries in globalConfigFileNames[]
 
 
@@ -107,14 +107,14 @@ static QString stringToPrintable(const QString& s){
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, const QString &_globalFileName,
 			       const QString &_localFileName, bool _useKderc)
-  : pConfig(_config), aGlobalFileName(_globalFileName), 
+  : pConfig(_config), aGlobalFileName(_globalFileName),
     aLocalFileName(_localFileName), useKderc(_useKderc)
 {}
 
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
- 
+
   // Parse the general config files
   if (useKderc) {
     // only parse the system kderc files if we have been directed to.
@@ -125,7 +125,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       char* pHome = getenv( "HOME" );
       if( (aFileName[0] == '~') && pHome )
 	aFileName.replace( 0, 1, pHome );
-      
+
       QFile aConfigFile( aFileName );
       QFileInfo aInfo( aConfigFile );
       // only work with existing files currently
@@ -136,7 +136,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       aConfigFile.close();
     }
   }
- 
+
   // Parse app-specific config files if available
   if (!aGlobalFileName.isEmpty()) {
     QFile aConfigFile( aGlobalFileName );
@@ -156,29 +156,29 @@ bool KConfigINIBackEnd::parseConfigFiles()
       aConfigFile.setName(aLocalFileName);
       aConfigFile.open(IO_ReadOnly);
     }
-    
+
     parseSingleConfigFile( aConfigFile, 0L, false );
     aConfigFile.close();
   }
   return true;
 }
 
-void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile, 
+void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					   KEntryMap *pWriteBackMap,
 					   bool bGlobal)
 {
   if (!rFile.isOpen()) // come back, if you have real work for us ;->
     return;
- 
+
   QString aCurrentLine;
   QString aCurrentGroup;
-  
+
   // reset the stream's device
   rFile.at(0);
   QTextStream aStream( &rFile );
   while (!aStream.atEnd()) {
     aCurrentLine = aStream.readLine();
-    
+
     // check for a group
     int nLeftBracket = aCurrentLine.find( '[' );
     int nRightBracket = aCurrentLine.find( ']', 1 );
@@ -187,31 +187,31 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       // between the brackets
       aCurrentGroup =
 	aCurrentLine.mid( 1, nRightBracket-1 );
-      
+
       if (pWriteBackMap) {
 	// add the special group key indicator
 	KEntryKey groupKey = { aCurrentGroup, QString() };
 	pWriteBackMap->insert(groupKey, KEntry());
-      } 
+      }
       continue;
     };
-    
+
     if( aCurrentLine[0] == '#' )
       // comment character in the first column, skip the line
       continue;
-    
+
     int nEqualsPos = aCurrentLine.find( '=' );
     if( nEqualsPos == -1 )
       // no equals sign: incorrect or empty line, skip it
       continue;
-    
+
     // insert the key/value line
     QString key = aCurrentLine.left(nEqualsPos).stripWhiteSpace();
     QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
 
     KEntryKey aEntryKey = { aCurrentGroup, key };
     KEntry aEntry = { val, true, false, bGlobal };
-    
+
     if (pWriteBackMap) {
       // don't insert into the config object but into the temporary
       // scratchpad map
@@ -233,7 +233,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
   bool bEntriesLeft = true;
   bool bLocalGood = false;
-  
+
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
   if (!aLocalFileName.isEmpty()) {
@@ -252,7 +252,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.close();
     }
   }
-  
+
   // If we could not write to the local app-specific config file,
   // we can try the global app-specific one. This will only work
   // as root, but is worth a try.
@@ -267,7 +267,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.close();
     }
   }
-  
+
   // only write out entries to the kderc file if there are any
   // entries marked global (indicated by bEntriesLeft) and
   // the useKderc flag is set.
@@ -282,7 +282,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       char* pHome = getenv( "HOME" );
       if ((aFileName[0] == '~') && pHome)
 	aFileName.replace(0, 1, pHome);
-      
+
       QFile aConfigFile( aFileName );
       QFileInfo aInfo( aConfigFile );
       // can we allow the write? (see above)
@@ -295,7 +295,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       }
     }
   }
-  
+
 }
 
 bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
@@ -303,41 +303,41 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 {
   KEntryMap aTempMap;
   bool bEntriesLeft = false;
-  
+
   // is the config object read-only?
   if (pConfig->isReadOnly())
     return true; // pretend we wrote it
 
- 
+
   QTextStream* pStream;
   if (bMerge) {
     // merge entries on disk
 
     pStream = new QTextStream( &rConfigFile );
-  
+
     // fill the temporary structure with entries from the file
     parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal );
-    
+
     KEntryMap aMap = pConfig->internalEntryMap();
 
     // augment this structure with the dirty entries from the config object
     for (KEntryMapIterator aInnerIt = aMap.begin();
 	 aInnerIt != aMap.end(); ++aInnerIt) {
       KEntry currentEntry = *aInnerIt;
-      
+
       if (currentEntry.bDirty) {
 	// only write back entries that have the same
 	// "globality" as the file
 	if (currentEntry.bGlobal == bGlobal) {
 	  KEntryKey entryKey = aInnerIt.key();
-	  
+	
 	  // put this entry from the config object into the
 	  // temporary map, possibly replacing an existing entry
 	  if (aTempMap.contains(entryKey))
 	    aTempMap.replace(entryKey, currentEntry);
 	  else {
 	    KEntryKey groupKey = { entryKey.group, QString() };
-	    
+	
 	    // add special group key
 	    if (!aTempMap.contains(groupKey))
 	      aTempMap.insert(groupKey, KEntry());
@@ -349,7 +349,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	  bEntriesLeft = true;
       }
     } // loop
-    
+
     // truncate file
     delete pStream;
   } else {
@@ -366,14 +366,14 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
   // to the file, if it doesn't run  SUID?
   if (!checkAccess(rConfigFile.name(), W_OK)) // write not allowed
     return false; // can't allow to write config data.
- 
- 
+
+
   rConfigFile.open(IO_Truncate | IO_WriteOnly);
   // Set uid/gid (neccesary for SUID programs)
   chown(rConfigFile.name().ascii(), getuid(), getgid());
- 
+
   pStream = new QTextStream( &rConfigFile );
- 
+
   // write back -- start with the default group
   KEntryKey groupKey = { "<default>", QString() };
   KEntryMapIterator aWriteIt = aTempMap.find(groupKey);
@@ -384,19 +384,19 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
       // if group had no entries we may well now be pointing at another group,
       // we need to skip over the special group entry
       continue;
-    if (aWriteIt->bNLS &&
+    if ( (*aWriteIt).bNLS &&
 	aWriteIt.key().key.right(1) != "]")
       // not yet localized, but should be
       *pStream << aWriteIt.key().key << '['
 	       << pConfig->locale() << ']' << "="
-	       << stringToPrintable(aWriteIt->aValue) << '\n';
+	       << stringToPrintable( (*aWriteIt).aValue) << '\n';
     else
       // need not be localized or already is
       *pStream << aWriteIt.key().key << "="
-	       << stringToPrintable(aWriteIt->aValue) << '\n';
-    
+	       << stringToPrintable( (*aWriteIt).aValue) << '\n';
+
   } // for loop
- 
+
   // now write out all other groups.
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
     // check if it's not the default group (which has already been written)
@@ -408,32 +408,32 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
       *pStream << '[' << aWriteIt.key().group << ']' << '\n';
     } else {
       // it is data for a group
-      if (aWriteIt->bNLS &&
+      if ( (*aWriteIt).bNLS &&
 	  aWriteIt.key().key.right(1) != "]")
 	// not yet localized, but should be
 	*pStream << aWriteIt.key().key << '['
 		 << pConfig->locale() << ']' << "="
-		 << stringToPrintable(aWriteIt->aValue) << '\n';
+		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
       else
 	// need not be localized or already is
 	*pStream << aWriteIt.key().key << "="
-		 << stringToPrintable(aWriteIt->aValue) << '\n';
+		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
     }
   } // for loop
-  
+
   // clean up
   delete pStream;
   rConfigFile.close();
- 
- 
+
+
   // Reopen the config file.
- 
+
   // Can we allow the write? (see above)
   if( checkAccess( rConfigFile.name(), W_OK ) )
     // Yes, write OK
     rConfigFile.open( IO_ReadWrite );
   else
     rConfigFile.open( IO_ReadOnly );
- 
+
   return bEntriesLeft;
 }
