@@ -28,8 +28,11 @@
 /**
  * KDE Spellchecker
  *
- * @short A KDE programmer's interface to International ISpell 3.1  (GPL 1997)
- * @author David Sweet dsweet@kde.org
+ * A KDE programmer's interface to International ISpell 3.1.  (GPL 1997)
+ * A static method, @ref modalCheck() is provided for convenient
+ *  access to the spellchecker.
+ *
+ * @author David Sweet <dsweet@kde.org>
  * @version $Id$
  * @see KSpellConfig
  */
@@ -45,15 +48,15 @@ public:
   /**
    * Possible states of the spell checker.
    *
-   * @li @p Starting - After creation of @ref KSpell.
-   * @li @p Running - After the ready signal has been emitted.
-   * @li @p Cleaning - After @ref cleanUp() has been called.
-   * @li @p Finished - After @ref cleanUp() has been completed.
+   * @li @tt Starting - After creation of @ref KSpell.
+   * @li @tt Running - After the ready signal has been emitted.
+   * @li @tt Cleaning - After @ref cleanUp() has been called.
+   * @li @tt Finished - After @ref cleanUp() has been completed.
    *
    * The following error states exist:
    *
-   * @li @p Error -  An error occured in the @p Starting state.
-   * @li @p Crashed - An error occured in the @p Running state.
+   * @li @tt Error -  An error occured in the @p Starting state.
+   * @li @tt Crashed - An error occured in the @p Running state.
    **/
   enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed };
   
@@ -64,7 +67,7 @@ public:
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
    * Be sure to call @ref cleanUp() when you are done with @ref KSpell.
    *
-   * If KSpell could not be started correctly, @ref death() is emitted.
+   * If @ref KSpell could not be started correctly, @ref death() is emitted.
    *
    * @param _parent      Parent of @ref KSpellConfig dialg..
    * @param _caption     Caption of @ref KSpellConfig dialog.
@@ -80,8 +83,9 @@ public:
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
   /**
-   * Returns the status of @ref KSpell.
-   * @see spellStatus
+   * Retrieve the status of @ref KSpell.
+   *
+   * @see spellStatus()
    */
   spellStatus status() { return m_status; }
 
@@ -89,25 +93,25 @@ public:
    * Clean up ISpell.
    *
    * Write out the personal dictionary and close ISpell's
-   *  stdin..  A @ref death() signal will be emitted when the cleanup is
+   *  stdin.  A @ref death() signal will be emitted when the cleanup is
    *  complete, but this method will return immediately.
    **/
   virtual void cleanUp ();
 
   /** 
-   * Auto delete the @ref KSpell object after emitting @ref death().
+   * Auto-delete the @ref KSpell object after emitting @ref death().
    */
   void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
 
   /**
-   *  Spell check a buffer of many words in plain text 
+   *  Spellcheck a buffer of many words in plain text 
    *  format.
    *
    * The @p _buffer is not modified.  The signal @ref done() will be
    *  sent when @ref check() is finished and the argument will be a 
    *  spell-corrected version of @p _buffer.  
    *
-   * The spell check may be stopped by the user before the entire buffer
+   * The spel check may be stopped by the user before the entire buffer
    *  has been checked.  You can check @ref lastPosition() to see how far
    *  in @p _buffer @ref check() reached before stopping.
    */
@@ -115,8 +119,8 @@ public:
   virtual bool check (const QString &_buffer);
 
   /**
-   * Retrieve the position (for @ref check())  or word 
-   * number (for @ref checkList()) of
+   * Retrieve the position (when using @ref check())  or word 
+   * number (when using @ref checkList()) of
    * the last word checked.
    **/
   inline int lastPosition()
@@ -135,23 +139,26 @@ public:
   virtual bool checkList (QStringList *_wordlist);
 
   /**
-   * Spell check a single word.
+   * Spellcheck a single word.
    *
    * checkWord() is the most flexible function.  Some applications
-   *  might need this
-   *  flexibility but will sacrifice speed.  Consider @ref checkList()
-   *  for checking many words.  Use this method for implementing
-   * "online" spellchecking.
+   *  might need this flexibility but will sacrifice speed when
+   *  checking large numbers of words.  Consider @ref checkList() for
+   *  checking many words.
    *
-   * checkWord () returns @p false if @p buffer is not a word, otherwise it
-   *  returns @p true;
+   *  Use this method for implementing  "online" spellchecking (i.e.,
+   *  spellcheck as-you-type).
    *
-   * If @p usedialog is set to @true, @ref KSpell will put up the standard
+   * checkWord () returns @tt false if @p buffer is not a word, otherwise it
+   *  returns @tt true;
+   *
+   * If @p usedialog is set to @tt true, @ref KSpell will put up the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  @ref dlgResult() and @ref replacement(). 
    *
-   *  The signal @ref corrected() is emitted when the check is complete.  You can
-   *  look at @ref suggestions() to see what the suggested replacements were.
+   *  The signal @ref corrected() is emitted when the check is
+   *  complete.  You can look at @ref suggestions() to see what the
+   *  suggested replacements were. 
    */
   virtual bool checkWord (QString _buffer,  bool usedialog=FALSE);
 
@@ -168,7 +175,7 @@ public:
    * After calling @ref checkWord() (an in response to
    *  a @ref misspelled() signal you can
    *  use this to get the list of
-   *  suggestions (if any were available)
+   *  suggestions (if any were available).
    */
   inline QStringList *suggestions ()	{ return &sugg; }
 
@@ -179,13 +186,13 @@ public:
    *  result code.
    * The possible
    *  values are (from kspelldlg.h):
-   *    @li  KS_CANCEL - 0 
-   *    @li KS_REPLACE     1
-   *    @li KS_REPLACEALL  - 2
-   *    @li  KS_IGNORE   -   3
-   *    @li KS_IGNOREALL   - 4
-   *    @li KS_ADD   -      5     
-   *    @li KS_STOP -       7
+   *    @li KS_CANCEL
+   *    @li KS_REPLACE
+   *    @li KS_REPLACEALL
+   *    @li KS_IGNORE
+   *    @li KS_IGNOREALL
+   *    @li KS_ADD
+   *    @li KS_STOP
    *
    */
   inline int dlgResult ()
@@ -220,7 +227,7 @@ public:
   /**
    * Tell ISpell/ASpell to ignore this word for the life of this @ref KSpell instance.
    *
-   *  @ref ignore() returns @p false if word is not a word or there was an error
+   *  @ref ignore() returns @tt false if word is not a word or there was an error
    *  communicating with ISpell/ASpell.
    */
   virtual bool ignore (QString word);
@@ -228,7 +235,7 @@ public:
   /**
    * Add a word to the user's personal dictionary. 
    *
-   * Returns @p false if word
+   * Returns @tt false if @p word
    *  is not a word or there was an error communicating with ISpell/ASpell.
    */
   virtual bool addPersonal (QString word);
@@ -257,6 +264,7 @@ public:
    * Perform a sychronous spellcheck.
    *
    * This method does not return until spellchecking is done or canceled.
+   * Your application's GUI will still be updated, however.
    */
   static int modalCheck( QString& text );
 
@@ -286,7 +294,7 @@ signals:
    * "Replace All" for this word). 
    *
    * Results from the dialog may be checked with @ref dlgResult()
-   *  and @ref replacement()
+   *  and @ref replacement().
    *
    * @see check()
    */

@@ -52,7 +52,7 @@ enum KSpellClients {
  * people may be writing in a language different from that used for
  * writing papers in their word processor.
  *
- * @author David Sweet dsweet@kde.org
+ * @author David Sweet <dsweet@kde.org>
  * @version $Id$
  * @see KSpell
  */
