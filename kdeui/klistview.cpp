@@ -1155,15 +1155,7 @@ void KListView::keyPressEvent (QKeyEvent* e)
         }
 
   if (d->selectionMode != Konqueror)
-    {
-      if (e->key() == Key_Next && contentsHeight() <= visibleHeight())
-        {
-          setSelected (lastItem(), true);
-          return;
-        }
-
-      QListView::keyPressEvent (e);
-    }
+        QListView::keyPressEvent (e);
   else
         konquerorKeyPressEvent (e);
 }
