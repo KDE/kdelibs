@@ -170,7 +170,6 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
  
   md.update( authStr );
   md.finalize();
-  md.rawDigest();
   authStr = "";    
   if ( algorithm == "md5-sess" )
   {
@@ -180,7 +179,8 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
     authStr += cnonce;
   }
   md2.reset();
-  /* Note: RFC 2831 actually demands hexDigest here, but then it doesn't work */
+  /* SASL authentication uses rawDigest here, whereas HTTP authentication uses
+     hexDigest() */
   md2.update(md.rawDigest(), 16);
   md2.update( authStr );
   md2.finalize();
