@@ -32,9 +32,13 @@
 
 #include <kdebug.h>
 
+#include <stdlib.h>
+
 #include "ldapclient.h"
 
 using namespace KABC;
+
+#define NB_MAX_ATTRIBS		20
 
 QString LdapObject::toString() const
 {
@@ -83,6 +87,10 @@ void LdapObject::assign( const LdapObject& that )
 LdapClient::LdapClient( QObject* parent, const char* name )
   : QObject( parent, name ), mJob( 0 ), mActive( false )
 {
+	mBindDN = "";
+	mPwdBindDN = "";
+	mIdLdap = 0;
+	mIdSearch = 0;
 }
 
 LdapClient::~LdapClient()
@@ -105,6 +113,16 @@ void LdapClient::setBase( const QString& base )
   mBase = base;
 }
 
+void LdapClient::setBindDN( const QString& binddn )
+{
+  mBindDN = binddn;
+}
+
+void LdapClient::setPwdBindDN( const QString& pwdbinddn )
+{
+  mPwdBindDN = pwdbinddn;
+}
+
 void LdapClient::setAttrs( const QStringList& attrs )
 {
   mAttrs = attrs;
@@ -112,34 +130,143 @@ void LdapClient::setAttrs( const QStringList& attrs )
 
 void LdapClient::startQuery( const QString& filter )
 {
+  int scope = LDAP_SCOPE_SUBTREE ;
+  char *attribs[NB_MAX_ATTRIBS];
+  
   cancelQuery();
   QString query;
   if ( mScope.isEmpty() )
     mScope = "sub";
 
-  QString host = mHost;
-  if ( !mPort.isEmpty() ) {
-    host += ':';
-    host += mPort;
+  if ( mPort.isEmpty() ) {
+	  mPort = "389";
   }
 
-  if ( mAttrs.empty() ) {
-    query = QString("ldap://%1/%2?*?%3?(%4)").arg( host ).arg( mBase ).arg( mScope ).arg( filter );
-  } else {
-    query = QString("ldap://%1/%2?%3?%4?(%5)").arg( host ).arg( mBase )
-      .arg( mAttrs.join(",") ).arg( mScope ).arg( filter );
+  mIdLdap = ldap_open(mHost.latin1(), mPort.toInt());
+  if (!mIdLdap) 
+  {
+	  kdDebug(5700) << "Can't contact server : (" << mHost.latin1() << ":" << mPort.toInt() << ")" <<endl;
+  	  emit error( QString("Can't contact server %1:%2").arg( mHost ).arg( mPort ) );
+	  return;
   }
-  kdDebug(5700) << "Doing query" << query.latin1() << endl;
 
-  startParseLDIF();
+  if ( !mBindDN.isEmpty() )
+  {
+    if (ldap_simple_bind(mIdLdap, mBindDN.latin1(), mPwdBindDN.latin1()) < 0)
+    {
+	  kdDebug(5700) << "Authentification failed : (" << mBindDN.latin1() << "/" << mPwdBindDN.latin1() << ")" <<endl;
+  	  emit error( QString("Authentification failed : (%1/%2)").arg( mBindDN ).arg( mPwdBindDN ) );
+	  return;
+    }
+  }
+
+  if (mAttrs.count() >= NB_MAX_ATTRIBS)
+  {
+	  kdDebug(5700) << "Too many arguments" << endl;
+  	  slotDone();
+	  return;
+  }
+
+  if (mScope == "sub")
+	  scope = LDAP_SCOPE_SUBTREE;
+  if (mScope == "one")
+	  scope = LDAP_SCOPE_ONELEVEL;
+  if (mScope == "base")
+	  scope = LDAP_SCOPE_BASE;
+
+  //  Begin search
   mActive = true;
-  mJob = KIO::get( KURL( query ), false, false );
-  connect( mJob, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
-           this, SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
-  connect( mJob, SIGNAL( infoMessage( KIO::Job*, const QString& ) ),
-           this, SLOT( slotInfoMessage( KIO::Job*, const QString& ) ) );
-  connect( mJob, SIGNAL( result( KIO::Job* ) ),
-           this, SLOT( slotDone() ) );
+  if ( mAttrs.empty() )
+  {
+	char  *defaultattr[] = {"*", NULL};
+	
+  	mIdSearch = ldap_search(
+		mIdLdap, 
+		mBase.latin1(), 
+		scope,
+		filter.ascii(), 
+		defaultattr,
+		0);
+  }
+  else
+  {
+	unsigned int	i;
+
+	memset(attribs, 0, sizeof(attribs));
+	for (i = 0; i < mAttrs.count(); i++)
+  	{
+	  	attribs[i] = (char*)malloc(mAttrs[i].length() + 1);
+	  	strcpy(attribs[i], mAttrs[i].latin1());
+  	}
+  
+  	mIdSearch = ldap_search(
+		mIdLdap, 
+		mBase.latin1(), 
+		scope,
+		filter.ascii(), 
+		attribs,
+		0);
+
+	for (i = 0; i < mAttrs.count(); i++)
+		free(attribs[i]);
+  }
+  
+  LDAPMessage	*ldapresult = NULL;
+  struct timeval	tv;
+  int res;
+  
+  //  Waiting for results
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+  res = ldap_result(mIdLdap, mIdSearch, 0, &tv, &ldapresult);
+  while (res > 0 && mActive)
+  {
+	LDAPMessage *entry = NULL;
+	BerElement *ber = NULL;
+	char *attr;
+	char **values;
+	
+	//  for each attributes
+	for (entry = ldap_first_entry(mIdLdap, ldapresult); entry != NULL; entry = ldap_next_entry(mIdLdap, entry))
+	{
+		for (attr = ldap_first_attribute(mIdLdap, entry, &ber); attr != NULL;
+				attr = ldap_next_attribute(mIdLdap, entry, ber))
+		{
+			values = ldap_get_values(mIdLdap, entry, attr);
+
+			kdDebug(5700) << "Ajout de " << attr << " = " << values[0] << endl;
+			mCurrentObject.attrs[ attr ].append( QCString(values[0]) );
+
+			ldap_value_free(values);
+			free(attr);
+			mCurrentObject.dn = ldap_get_dn(mIdLdap, entry);
+		}
+		
+		kdDebug(5700) << "Next entry " << endl;
+	}
+
+        if ( !mCurrentObject.dn.isNull() ) 
+	{
+		  kdDebug(5700) << "Utilisateur " <<  mCurrentObject.dn.latin1() << endl;
+	          emit result( mCurrentObject );
+	          mCurrentObject.clear();
+	}
+
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
+	ldap_msgfree(ldapresult);
+	ldapresult = NULL;
+  	res = ldap_result(mIdLdap, mIdSearch, 0, &tv, &ldapresult);
+  }
+
+  kdDebug(5700) << "Recherche terminée "  << endl;
+
+  if (mIdLdap)
+	ldap_unbind(mIdLdap);
+
+  mActive = false;
+
+  emit done();
 }
 
 void LdapClient::cancelQuery()
@@ -186,6 +313,7 @@ void LdapClient::startParseLDIF()
   mLastAttrName  = 0;
   mLastAttrValue = 0;
   mIsBase64 = false;
+  
 }
 
 void LdapClient::endParseLDIF()
@@ -201,6 +329,8 @@ void LdapClient::endParseLDIF()
         mCurrentObject.attrs[ mLastAttrName ].append( mLastAttrValue );
       }
     }
+    if (mIdLdap)
+	    ldap_unbind(mIdLdap);
     emit result( mCurrentObject );
   }
 }
@@ -305,6 +435,11 @@ LdapSearch::LdapSearch()
       if ( !base.isEmpty() )
         ldapClient->setBase( base );
 
+      QString bind = config.readEntry( QString( "SelectedBind%1" ).arg( j ), "" ).stripWhiteSpace();
+      ldapClient->setBindDN( bind );
+      QString passwd = config.readEntry( QString( "SelectedPwdBind" ).arg( j ), "" ).stripWhiteSpace();
+      ldapClient->setPwdBindDN( passwd );
+
       QStringList attrs;
       attrs << "cn" << "mail" << "givenname" << "sn";
       ldapClient->setAttrs( attrs );
@@ -341,7 +476,7 @@ void LdapSearch::startSearch( const QString& txt )
   } else
     mSearchText = txt;
 
-  QString filter = QString( "|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*)" )
+  QString filter = QString( "(|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*))" )
       .arg( mSearchText ).arg( mSearchText ).arg( mSearchText ).arg( mSearchText );
 
   QValueList< LdapClient* >::Iterator it;
@@ -423,10 +558,12 @@ QStringList LdapSearch::makeSearchData()
         kdDebug() << "<" << name << "><" << mail << ">" << endl;
       ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
       // this sucks
+/*
       if ( givenname.upper().startsWith( search_text_upper ) )
         ret.append( QString( "$$%1$%2 <%3>" ).arg( givenname ).arg( name ).arg( mail ) );
       if ( sn.upper().startsWith( search_text_upper ) )
         ret.append( QString( "$$%1$%2 <%3>" ).arg( sn ).arg( name ).arg( mail ) );
+*/
     }
   }
 

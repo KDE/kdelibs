@@ -33,6 +33,8 @@
 
 #include <kio/job.h>
 
+#include <ldap.h>
+
 namespace KABC {
 
 typedef QValueList<QByteArray> LdapAttrValue;
@@ -123,6 +125,18 @@ class LdapClient : public QObject
     void setBase( const QString& base );
     QString base() const { return mBase; }
 
+    /*!
+     * Set the bind DN 
+     */
+    void setBindDN( const QString& binddn );
+    QString binddn() const { return mBindDN; }
+
+    /*!
+     * Set the pwd bind DN 
+     */
+    void setPwdBindDN( const QString& pwdbinddn );
+    QString pwdbinddn() const { return mPwdBindDN; }
+
     /*! Set the attributes that should be
      * returned, or an empty list if
      * all attributes are wanted
@@ -151,15 +165,20 @@ class LdapClient : public QObject
     void startParseLDIF();
     void parseLDIF( const QByteArray& data );
     void endParseLDIF();
+    void parseLdapResult(void *arg);
 
     QString mHost;
     QString mPort;
     QString mBase;
     QString mScope;
+    QString mBindDN;
+    QString mPwdBindDN;
     QStringList mAttrs;
   
     QGuardedPtr<KIO::SimpleJob> mJob;
     bool mActive;
+    LDAP *mIdLdap;
+    int mIdSearch;
   
     LdapObject mCurrentObject;
     QCString mBuf;
