@@ -26,6 +26,7 @@
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 #include <qmainwindow.h>
+#include <qmetaobject.h>
 #include <ktoolbar.h>
 
 class KPopupMenu;
@@ -80,8 +81,8 @@ class KToolBarMenuAction;
  * windows have unsaved data on close or logout, reimplement @ref
  * queryClose() and/or @ref queryExit().
  *
- * There is also a macro RESTORE which can restore all your windows
- * on next login.
+ * There are also @ref kRestoreMainWindows convenience functions which
+ * can restore all your windows on next login.
  *
  *  Note that a KMainWindow per-default is created with the
  *  WDestructiveClose flag, i.e. it is automatically destroyed when the
@@ -220,8 +221,9 @@ public:
      * to determine the exact type before calling the childMW
      * constructor in the example from above.
      *
-     * If your client has only one kind of toplevel widgets (which should
-     * be pretty usual) then you should use the RESTORE-macro:
+     * If your client has only one kind of toplevel widgets (which
+     * should be pretty usual) then you should use the RESTORE-macro
+     * for backwards compatibility with 3.1 and 3.0 branches:
      *
      * <pre>
      * if (kapp->isRestored())
@@ -234,10 +236,27 @@ public:
      * The macro expands to the term above but is easier to use and
      * less code to write.
      *
+     * For new code or if you have more than one kind of toplevel
+     * widget (each derived from @ref KMainWindow, of course), you can
+     * use the templated @ref kRestoreMainWindows global functions:
+     *
+     * <pre>
+     * if (kapp->isRestored())
+     *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
+     * else {
+     * // create default application as usual
+     * }
+     * </pre>
+     *
+     * Currently, these functions are provided for up to three
+     * template arguments. If you need more, tell us. To help you in
+     * deciding whether or not you can use @ref kRestoreMainWindows, a
+     * define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS is provided.
+     *
      * @see restore()
      * @see classNameOfToplevel()
      *
-     */
+     **/
     static bool canBeRestored( int number );
 
     /**
@@ -742,10 +761,72 @@ private:
     void initKMainWindow(const char *name);
 };
 
-#define RESTORE(type) { int n = 1;\
-    while (KMainWindow::canBeRestored(n)){\
-      (new type)->restore(n);\
-      n++;}}
+#define RESTORE(type) kRestoreMainWindows<type>()
 
+#define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
+
+/** @since 3.2
+
+    These global convenience functions (that come with a varying
+    number of template arguments) are a replacement for the RESTORE
+    macro provided in earlier versions of KDE. The old RESTORE macro
+    is still provided for backwards compatibility. See
+    @ref KMainWindow documentation for more.
+ **/
+template <typename T>
+inline void kRestoreMainWindows() {
+  for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
+    const QString className = KMainWindow::classNameOfToplevel( n );
+    if ( className == T::staticMetaObject()->className() )
+      (new T)->restore( n );
+  }
+}
+
+/** @since 3.2
+
+    These global convenience functions (that come with a varying
+    number of template arguments) are a replacement for the RESTORE
+    macro provided in earlier versions of KDE. The old RESTORE macro
+    is still provided for backwards compatibility. See
+    @ref KMainWindow documentation for more.
+ **/
+template <typename T0, typename T1>
+inline void kRestoreMainWindows() {
+  const char * classNames[2];
+  classNames[0] = T0::staticMetaObject()->className();
+  classNames[1] = T1::staticMetaObject()->className();
+  for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
+    const QString className = KMainWindow::classNameOfToplevel( n );
+    if ( className == classNames[0] )
+      (new T0)->restore( n );
+    else if ( className == classNames[1] )
+      (new T1)->restore( n );
+  }
+}
+
+/** @since 3.2
+
+    These global convenience functions (that come with a varying
+    number of template arguments) are a replacement for the RESTORE
+    macro provided in earlier versions of KDE. The old RESTORE macro
+    is still provided for backwards compatibility. See
+    @ref KMainWindow documentation for more.
+ **/
+template <typename T0, typename T1, typename T2>
+inline void kRestoreMainWindows() {
+  const char * classNames[3];
+  classNames[0] = T0::staticMetaObject()->className();
+  classNames[1] = T1::staticMetaObject()->className();
+  classNames[2] = T1::staticMetaObject()->className();
+  for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
+    const QString className = KMainWindow::classNameOfToplevel( n );
+    if ( className == classNames[0] )
+      (new T0)->restore( n );
+    else if ( className == classNames[1] )
+      (new T1)->restore( n );
+    else if ( className == classNames[2] )
+      (new T2)->restore( n );
+  }
+}
 
 #endif
