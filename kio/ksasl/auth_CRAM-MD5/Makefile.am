@@ -1,4 +1,4 @@
-# $Id
+# $Id$
 INCLUDES = -I$(top_srcdir)/kio/ksasl -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES = ksasl_auth_cram.la
