@@ -44,7 +44,7 @@ class KReplaceNextDialog;
  * <pre>
  *
  *  // This creates a replace-on-prompt dialog if needed.
- *  m_replace = new KReplace(pattern, replacement, options);
+ *  m_replace = new KReplace(pattern, replacement, options, this);
  *
  *  // Connect signals to code which handles highlighting
  *  // of found text, and on-the-fly replacement.

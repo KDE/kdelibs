@@ -43,7 +43,7 @@
  * <pre>
  *
  *  // This creates a find-next-prompt dialog if needed.
- *  m_find = new KFind(pattern, options);
+ *  m_find = new KFind(pattern, options, this);
  *
  *  // Connect highlight signal to code which handles highlighting
  *  // of found text.
