@@ -119,10 +119,7 @@ void KMenuBar::slotReadConfig()
 
 void KMenuBar::drawContents(QPainter *p)
 {
-// From Qt's spacing
-static const int motifItemHMargin       = 5;    // menu item hor text margin
-static const int motifItemVMargin       = 4;    // menu item ver text margin
-        QMenuBar::drawContents(p);
+    QMenuBar::drawContents(p);
 }
 
 void KMenuBar::enterEvent(QEvent *ev)
@@ -143,14 +140,14 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     if ( d->topLevel ) {
 	if ( ev->type() == QEvent::Resize )
 	    return FALSE; // hinder QMenubar to adjust its size
-	
+
 	if ( parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
-	
+
 	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable ) {
 		if ( QApplication::sendEvent( topLevelWidget(), ev ) )
 		    return TRUE;
-	    }		
-	
+	    }
+
 	    if ( ev->type() == QEvent::Show && isHidden() )
 		show();
 	    else if ( ev->type() == QEvent::WindowActivate )
