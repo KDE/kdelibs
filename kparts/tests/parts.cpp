@@ -2,7 +2,6 @@
 
 #include <partmanager.h>
 
-#include <qlayout.h>
 #include <qcheckbox.h>
 #include <qfile.h>
 #include <qdir.h>

@@ -3,10 +3,12 @@ INCLUDES= -I$(top_srcdir)/kparts -I$(top_srcdir)/libltdl $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
-check_PROGRAMS = kpartstest normalktmtest
+check_PROGRAMS = kpartstest normalktmtest ghostviewtest
 
 kpartstest_SOURCES = example.cpp notepad.cpp parts.cpp
 normalktmtest_SOURCES = normalktm.cpp notepad.cpp parts.cpp
+ghostviewtest_SOURCES = ghostview.cpp
+ghostviewtest_LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KFILE)
 
 lib_LTLIBRARIES = libspellcheck.la libnotepad.la
 
@@ -26,6 +28,9 @@ testpart_DATA = kpartstest_part1.rc
 
 notepaddir = $(kde_datadir)/notepadpart
 notepad_DATA = notepadpart.rc
+
+ghostviewtestdir = $(kde_datadir)/ghostviewtest
+ghostviewtest_DATA = ghostviewtest_shell.rc
 
 pluginsdir = $(kde_datadir)/notepadpart/kpartplugins
 plugins_DATA = plugin_foobar.rc plugin_spellcheck.rc
