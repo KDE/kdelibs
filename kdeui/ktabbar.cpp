@@ -64,7 +64,7 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
     if ( e->state() == LeftButton ) {
-        int delay = KGlobalSettings::dndEventDelay();
+	int delay = KGlobalSettings::dndEventDelay();
         QPoint newPos = e->pos();
         if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
             newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
@@ -86,9 +86,8 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 QTab *tab = selectTab( e->pos() );
                 if( tab!= 0L && mTabReordering ) {
                     reorderStartTab = indexOf( tab->identifier() );
-                    setMouseTracking( true );
                     grabMouse( sizeAllCursor );
-                    return;
+		    return;
                 }
             }
         }
@@ -109,7 +108,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
     if ( mHoverCloseButton ) {
         QTab *t = selectTab( e->pos() );
         if( t && t->iconSet() ) {
-            if ( b ) {
+	    if ( b ) {
                 if ( btab == t )
                     return;
                 delete b;
@@ -157,7 +156,6 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
         else {
             releaseMouse();
             setCursor( arrowCursor );
-            setMouseTracking( false );
             reorderStartTab=-1;
             previousTabIndex=-1;
         }
