@@ -22,6 +22,7 @@
 
 #include <kconfig.h>
 #include <kapp.h>
+#include <kglobal.h>
 #include <kdebug.h>
 
 #include <qtl.h>
@@ -45,23 +46,24 @@ void KServiceTypeProfile::initStatic()
 
   KSimpleConfig config( "profilerc");
 
+  static const QString & defaultGroup = KGlobal::staticQString("<default>");
+
   QStringList tmpList = config.groupList();
   for (QStringList::Iterator aIt = tmpList.begin();
        aIt != tmpList.end(); ++aIt) {
-    if ( *aIt == "<default>" )
+    if ( *aIt == defaultGroup )
       continue;
 
     config.setGroup( *aIt );
-	
+
     QString appDesktopPath = config.readEntry( "Application" );
-    QString type = config.readEntry( "ServiceType" );
-    int pref = config.readNumEntry( "Preference" );
-    bool allow = config.readBoolEntry( "AllowAsDefault" );
 
     KService::Ptr pService = KService::serviceByDesktopPath( appDesktopPath );
-	
+
     if ( pService ) {
       QString application = pService->name();
+      QString type = config.readEntry( "ServiceType" );
+      int pref = config.readNumEntry( "Preference" );
 
       if ( !type.isEmpty() && pref >= 0 )
       {
@@ -71,6 +73,7 @@ void KServiceTypeProfile::initStatic()
         if ( !p )
           p = new KServiceTypeProfile( type );
 
+        bool allow = config.readBoolEntry( "AllowAsDefault" );
         p->addService( application, pref, allow );
       }
     }
