@@ -1,11 +1,11 @@
 [Image Format]
 Type=jp2
-Header=^\001\001
+Header=^\x01\x01\x01\x0C\x6A\x50
 Name=JPEG 2000-Pictures
 Name[fa]=تصاویر JPEG 2000
 Name[sv]=Jpeg 2000-bilder
 Read=true
 Write=false
-Suffices=jp2
+Suffices=jp2,JP2
 Mimetype=image/jp2
 Library=kimg_jp2.la
