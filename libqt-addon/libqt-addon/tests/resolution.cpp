@@ -15,8 +15,13 @@ public:
   Test(QString host, QString service)
   {
     int flags = 0;
-    int families = QResolver::AnyFamily;
-    QResolver::resolveAsync(this, SLOT(results(QResolverResults)), host, service, flags, families);
+    int families = QResolver::KnownFamily;
+    QResolver::resolveAsync(this, SLOT(results(QResolverResults)),
+    			    host, service, flags, families);
+
+    families = QResolver::AnyFamily;
+    QResolver::resolveAsync(this, SLOT(results(QResolverResults)),
+    			    host, service, flags, families);
   }
 
 public slots:
@@ -25,6 +30,8 @@ public slots:
     if (r.errorCode() == 0)
       {
 	QResolverResults::const_iterator it = r.begin();
+	qDebug("[%s]:%s", r.nodeName().local8Bit().data(),
+	       r.serviceName().local8Bit().data());
 	while (it != r.end())
 	  {
 	    qDebug("%s | %s", (*it).address().nodeName().local8Bit().data(), (*it).address().serviceName().local8Bit().data());
@@ -34,7 +41,7 @@ public slots:
     else
       qFatal("Could not resolve: %s", QResolver::strError(r.errorCode(), r.systemError()).local8Bit().data());
 
-    QApplication::exit();
+    //    QApplication::exit();
   }
 
 };
