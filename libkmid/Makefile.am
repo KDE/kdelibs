@@ -1,5 +1,5 @@
 
-INCLUDES = $(all_includes) -I$(srcdir)/..
+INCLUDES =  -I$(srcdir)/.. $(all_includes)
 
 libkmidincludedir = $(includedir)/libkmid
 libkmidinclude_HEADERS = midiout.h player.h track.h midimapper.h \
