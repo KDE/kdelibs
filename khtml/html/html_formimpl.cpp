@@ -22,7 +22,9 @@
  *
  * $Id$
  */
-#undef FORMS_DEBUG
+
+//#define FORMS_DEBUG
+#under FORMS_DEBUG
 
 #include "html_formimpl.h"
 
@@ -139,15 +141,12 @@ QByteArray HTMLFormElementImpl::formData()
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it )
     {
         QString enc = (*it);
-        qDebug("trying: %s", enc.latin1());
         if(enc.contains("UNKNOWN"))
         {
             // use standard document encoding
             enc = "ISO 8859-1";
             if(view && view->part())
                 enc = view->part()->encoding();
-            qDebug("using enc: %s", enc.latin1());
-
         }
         if((codec = QTextCodec::codecForName(enc.latin1())))
             break;
@@ -194,12 +193,14 @@ QByteArray HTMLFormElementImpl::formData()
                         if(i->clickX() != -1)
                         {
                             QCString aStr;
-                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(QString(current->name().string() + ".x")));
+                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(
+                                QString(current->name().isEmpty() ? "x" : current->name(). string() + ".x")));
                             aStr.setNum(i->clickX());
                             enc_string += "=";
                             enc_string += aStr;
                             enc_string += "&";
-                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(QString(current->name().string() + ".y")));
+                            enc_string += HTMLFormElementImpl::encodeByteArray(codec->fromUnicode(
+                                QString(current->name().isEmpty() ? "y" : current->name().string() + ".y")));
                             enc_string += "=";
                             aStr.setNum(i->clickY());
                             enc_string += aStr;
@@ -272,9 +273,16 @@ QByteArray HTMLFormElementImpl::formData()
 
 void HTMLFormElementImpl::setEnctype( const DOMString& type )
 {
-    m_enctype = type;
-    if ( strcasecmp( type, "multipart/form-data" ) == 0 )
+    if(type.string().find("multipart", 0, false) != -1 || type.string().find("form-data", 0, false) != -1)
+    {
+        m_enctype = "multipart/form-data";
         m_multipart = true;
+    }
+    else
+    {
+        m_enctype = "application/x-www-form-urlencoded";
+        m_multipart = false;
+    }
 }
 
 void HTMLFormElementImpl::setBoundary( const DOMString& bound )
@@ -921,7 +929,8 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding)
 {
-    if (_name.isEmpty()) return false;
+    // image generates its own name's
+    if (_name.isEmpty() && _type != IMAGE) return false;
 
     switch (_type) {
         case HIDDEN:
