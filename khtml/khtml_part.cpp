@@ -1250,10 +1250,14 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
-  d->m_delayRedirect = delay;
-  d->m_redirectURL = url;
-  if(!d->m_bComplete)
-      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    if(!d->m_redirectionTimer.isActive() || delay < d->m_delayRedirect)
+    {
+        d->m_delayRedirect = delay;
+        d->m_redirectURL = url;
+
+        if(!d->m_bComplete)
+            d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    }
 }
 
 void KHTMLPart::slotRedirect()
