@@ -6,6 +6,7 @@
 #include "cachedwav.h"
 #include "stdsynthmodule.h"
 #include "convert.h"
+#include <iostream>
 
 class WavPlayObject_impl :public WavPlayObject_skel, public StdSynthModule {
 protected:

@@ -28,6 +28,7 @@
 #include "cachedwav.h"
 #include "convert.h"
 #include <stdio.h>
+#include <iostream>
 
 extern "C" {
 /* Some versions of libaudiofile seem to lack the extern "C" declaration,
