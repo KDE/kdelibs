@@ -45,7 +45,7 @@ KServiceTypeFactory::KServiceTypeFactory()
 KSycocaEntry *
 KServiceTypeFactory::createEntry(const QString &file)
 {
-  debug("KServiceTypeFactory::createEntry(%s)",file.ascii());
+  //debug("KServiceTypeFactory::createEntry(%s)",file.ascii());
   // Just a backup file ?
   if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
       return 0;

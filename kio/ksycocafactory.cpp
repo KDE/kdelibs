@@ -118,7 +118,7 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    // This is because local dirs are parsed BEFORE global dirs.
    if ( oldEntry )
    {
-     kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
+     //kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
      delete newEntry;
    }
    else

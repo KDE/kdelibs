@@ -21,6 +21,7 @@
 #include "kbuildsycoca.h"
 
 #include <kservice.h>
+#include <kmimetype.h>
 #include <ksycocatype.h>
 #include <ksycocaentry.h>
 #include <ksycocafactory.h>
@@ -106,7 +107,7 @@ void KBuildSycoca::update(const QString& path)
 
 void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory )
 {
-  kdebug(KDEBUG_INFO, 7011, QString("reading %1").arg(_path));
+  //kdebug(KDEBUG_INFO, 7011, QString("reading %1").arg(_path));
 
   QDir d( _path );                               // set QDir ...
   if ( !d.exists() )                            // exists&isdir?
@@ -166,8 +167,85 @@ void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory
     }
 }
 
-void 
-KBuildSycoca::save()
+void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
+                                  KSycocaFactory * servicetypeFactory )
+{
+   if (!serviceFactory || !servicetypeFactory)
+   {
+     kdebug(KDEBUG_WARN, 7011, "Don't have the two mandatory factories. No servicetype index.");
+     return;
+   }
+   // For each entry in servicetypeFactory
+   for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
+       it.current(); 
+       ++it)
+   {
+      // export associated services
+      // This means looking for the service type in ALL services
+      // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
+      // Doing it here saves a lot of time to the clients
+      QString serviceType = it.current()->name();
+      for(QDictIterator<KSycocaEntry> itserv ( *(serviceFactory->entryDict()) );
+          itserv.current(); 
+          ++itserv)
+      {
+         if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
+         {
+            (*str) << (Q_INT32) it.current()->offset();
+            (*str) << (Q_INT32) itserv.current()->offset();
+            //kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
+            //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
+         }
+      }
+   }
+   (*str) << (Q_INT32) 0;               // End of list marker (0)
+}
+
+
+/**
+ * Saves the mimetype patterns index
+ * @return the index of the start of the index
+ */
+void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory )
+{
+   if (!servicetypeFactory)
+   {
+     kdebug(KDEBUG_WARN, 7011, "No service type factory. Can't save mimetype patterns index.");
+     return;
+   }
+   // Store each pattern in a string list(for sorting)
+   QStringList patterns;
+   QDict<KMimeType> dict;
+   // For each mimetype in servicetypeFactory
+   for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
+       it.current(); 
+       ++it)
+   {
+      if ( it.current()->isType( KST_KMimeType ) )
+      {
+        QStringList pat = ( (KMimeType *) it.current())->patterns();
+        QStringList::ConstIterator patit = pat.begin();
+        for ( ; patit != pat.end() ; ++patit )
+          if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
+          {
+            patterns.append( (*patit) );
+            dict.insert( (*patit), (KMimeType *) it.current() );
+          }
+      }
+   }
+   // Sort the list
+   patterns.sort();
+   // Now for each pattern
+   QStringList::ConstIterator it = patterns.begin();
+   for ( ; it != patterns.end() ; ++it )
+   {
+     debug("SORTED : '%s' '%s'",(*it).ascii(), dict[(*it)]->name().ascii());
+   }
+   
+   (*str) << (Q_INT32) 0;               // End of list marker (0)
+}
+
+void KBuildSycoca::save()
 {
    // Write header (#pass 1)
    str->device()->at(0);
@@ -190,7 +268,8 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
-   (*str) << (Q_INT32) 0; // Servicetype index offset
+   (*str) << (Q_INT32) 0; // Offer list offset
+   (*str) << (Q_INT32) 0; // Mimetype patterns index offset
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -200,38 +279,11 @@ KBuildSycoca::save()
       factory->save(*str);
    }
 
-   // Write servicetype index
-   Q_INT32 servicetypeIndexOffset = str->device()->at();
+   Q_INT32 offerListOffset = str->device()->at();
+   saveOfferList( serviceFactory, servicetypeFactory );
 
-   if (!serviceFactory || !servicetypeFactory)
-     kdebug(KDEBUG_WARN, 7011, "Don't have the two mandatory factories. No servicetype index.");
-   else
-   {
-     // For each entry in servicetypeFactory
-     for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
-         it.current(); 
-         ++it)
-     {
-       // export associated services
-       // This means looking for the service type in ALL services
-       // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
-       // Doing it here saves a lot of time to the clients
-       QString serviceType = it.current()->name();
-       for(QDictIterator<KSycocaEntry> itserv ( *(serviceFactory->entryDict()) );
-           itserv.current(); 
-           ++itserv)
-       {
-         if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
-         {
-           (*str) << (Q_INT32) it.current()->offset();
-           (*str) << (Q_INT32) itserv.current()->offset();
-           //kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
-           //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
-         }
-       }
-     }
-     (*str) << (Q_INT32) 0;               // End of list marker (0)
-   }
+   Q_INT32 mimeTypesPatternsOffset = str->device()->at();
+   saveMimeTypePattern( servicetypeFactory );
    
    int endOfData = str->device()->at();
 
@@ -250,9 +302,15 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
-   kdebug(KDEBUG_INFO, 7011, QString("servicetypeIndexOffset : %1").
-          arg(servicetypeIndexOffset,8,16));
-   (*str) << servicetypeIndexOffset;
+   kdebug(KDEBUG_INFO, 7011, QString("offerListOffset : %1").
+          arg(offerListOffset,8,16));
+   (*str) << offerListOffset;
+   kdebug(KDEBUG_INFO, 7011, QString("mimeTypesPatternsOffset : %1").
+          arg(mimeTypesPatternsOffset,8,16));
+   (*str) << mimeTypesPatternsOffset;;
+
+   kdebug(KDEBUG_INFO, 7011, QString("endOfData : %1").
+          arg(endOfData,8,16));
 
    // Jump to end of database
    str->device()->at(endOfData);
