@@ -156,7 +156,7 @@
 <!ENTITY Java	"<trademark>Java</trademark>">
 <!ENTITY Jini	"<trademark>Jini</trademark>">
 <!ENTITY kab2	"<application>Kab2</application>">
-<!ENTITY kabalone	"<application>KAbalone</application>">
+<!ENTITY &kenolaba; 	"<application>Kenolaba</application>">
 <!ENTITY kaboodle	"<application>Kaboodle</application>">
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
@@ -359,6 +359,7 @@
 
 <!-- Obsolete entities -->
 <!ENTITY kab	"<application>Kab</application>">
+<!ENTITY kabalone	"<application>Kenolaba</application>">
 <!ENTITY kfm	"<application>KFM</application>">
 <!ENTITY killustrator "<application>Kontour</application>">
 <!ENTITY ktop	"<application>KTop</application>">
