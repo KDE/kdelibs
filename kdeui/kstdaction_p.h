@@ -84,8 +84,10 @@ static const KStdActionInfo g_rgActionInfo[] =
 	{ ConfigureToolbars, KStdAccel::AccelNone, "options_configure_toolbars", I18N_NOOP("Configure Tool&bars..."), 0,"configure_toolbars" },
 	{ ConfigureNotifications, KStdAccel::AccelNone, "options_configure_notifications", I18N_NOOP("Configure &Notifications..."), 0, "knotify" },
 
+	// the idea here is that Contents is used in menus, and Help in dialogs, so both share the same
+	// shortcut
 	{ Help,          KStdAccel::Help, "help", 0, 0, "help" },
-	{ HelpContents,  KStdAccel::AccelNone, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "contents" },
+	{ HelpContents,  KStdAccel::Help, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "contents" },
 	{ WhatsThis,     KStdAccel::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "contexthelp" },
 	{ TipofDay,      KStdAccel::AccelNone, "help_show_tip", I18N_NOOP("Tip of the &Day"), 0, "idea" },
 	{ ReportBug,     KStdAccel::AccelNone, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, 0 },
