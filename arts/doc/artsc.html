@@ -11,6 +11,14 @@ blocking way. So for most apps, you simply remove the few system calls
 that deal with your audio device, and replace them with the appropriate
 aRts calls.
 </p>
+<p>
+I did two ports as proof of concept, that is <b>mpg123</b> and <b>quake</b>.
+You can get the patches
+<a href="http://space.twc.de/~stefan/kde/download/artsc-patches.tar.gz">here</a>.
+Of course feel free to submit your own patches either to me and/or to
+maintainers of software packages so that they can integrate aRts support
+in their code.
+</p>
 <H4>Quick walkthrough</H4>
 <p>
 Sending audio to the sound server with that API is very simple.

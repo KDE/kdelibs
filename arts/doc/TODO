@@ -59,12 +59,6 @@ currently mostly done. Remaining issues are:
   and similar dependant on what the client is: no effects for games, but
   effects for the music
 
- => C Api
-
-- finalize C Api (move to -ldl base, so that people only need to link one
-  library and -ldl, and aRts loads what it needs dynamically)
-- release something on the C Api
-
 2. To get everything up again
 
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
@@ -103,6 +97,7 @@ currently mostly done. Remaining issues are:
 - Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
   it wants to have addObject() and removeObject() methods - this leads to
   slightly unlogic accesses from outside
+- recording, full duplex
 
 3. To have more fun
 
