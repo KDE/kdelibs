@@ -1170,7 +1170,11 @@ int main( int argc, char **argv )
       if ( setUserTexts )
         cpp << userTextsFunctions( e );
 
-      cpp << "  addItem( \"" << e->name() << "\", " << itemVar(e) << " );" << endl;
+      cpp << "  addItem( " << itemVar(e);
+      QString quotedName = e->name();
+      addQuotes( quotedName );
+      if ( quotedName != key ) cpp << ", \"" << e->name() << "\"";
+      cpp << " );" << endl;
     }
     else
     {
@@ -1194,7 +1198,8 @@ int main( int argc, char **argv )
         if ( setUserTexts )
           cpp << userTextsFunctions( e );
 
-        cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", " << itemVar(e) << " );" << endl;
+        cpp << "  addItem( " << itemVar( e ) << ", \""
+            << paramString(e->paramName(), e, i) << "\" );" << endl;
       }
     }
   }

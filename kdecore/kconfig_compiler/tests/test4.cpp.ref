@@ -27,13 +27,13 @@ Test4::Test4(  )
 QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   KConfigSkeleton::ItemColor  *itemColor;
   itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #0", mColor[0], defaultColor[0] );
-  addItem( "Color0", itemColor );
+  addItem( itemColor, "Color0" );
   itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #1", mColor[1], defaultColor[1] );
-  addItem( "Color1", itemColor );
+  addItem( itemColor, "Color1" );
   itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #2", mColor[2], defaultColor[2] );
-  addItem( "Color2", itemColor );
+  addItem( itemColor, "Color2" );
   itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #3", mColor[3], defaultColor[3] );
-  addItem( "Color3", itemColor );
+  addItem( itemColor, "Color3" );
   QValueList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
@@ -57,19 +57,19 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   }
   KConfigSkeleton::ItemEnum  *itemMouseAction;
   itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "right_mouse_action", mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
-  addItem( "MouseActionright", itemMouseAction );
+  addItem( itemMouseAction, "MouseActionright" );
   itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "mid_mouse_action", mMouseAction[1], valuesMouseAction, EnumMouseAction::Encrypt );
-  addItem( "MouseActionmid", itemMouseAction );
+  addItem( itemMouseAction, "MouseActionmid" );
   itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "left_mouse_action", mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
-  addItem( "MouseActionleft", itemMouseAction );
+  addItem( itemMouseAction, "MouseActionleft" );
   KConfigSkeleton::ItemString  *itemFooBar;
   itemFooBar = new KConfigSkeleton::ItemString( currentGroup(), "foo bar", mFooBar );
-  addItem( "FooBar", itemFooBar );
+  addItem( itemFooBar, "FooBar" );
   KConfigSkeleton::ItemInt  *itemAge;
   itemAge = new KConfigSkeleton::ItemInt( currentGroup(), "Age", mAge, 35 );
   itemAge->setMinValue(8);
   itemAge->setMaxValue(88);
-  addItem( "Age", itemAge );
+  addItem( itemAge );
 }
 
 Test4::~Test4()

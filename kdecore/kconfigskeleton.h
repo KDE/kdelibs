@@ -781,9 +781,10 @@ public:
   }
 
   /**
-   * Register a custom @ref KConfigSkeletonItem.
+   * Register a custom @ref KConfigSkeletonItem with a given name. If the name
+   * parameter is null, take the name from KConfigSkeletonItem::name().
    */
-  void addItem(const QString & name, KConfigSkeletonItem *);
+  void addItem(KConfigSkeletonItem *, const QString & name = QString::null );
 
   /**
    * Register an item of type QString.

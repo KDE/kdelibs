@@ -934,10 +934,10 @@ void KConfigSkeleton::writeConfig()
   readConfig();
 }
 
-void KConfigSkeleton::addItem( const QString &name, KConfigSkeletonItem *item )
+void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
 {
   mItems.append( item );
-  mItemDict.insert( name, item );
+  mItemDict.insert( name.isNull() ? item->name() : name, item );
   item->readDefault( mConfig );
 }
 
@@ -948,7 +948,7 @@ KConfigSkeleton::ItemString *KConfigSkeleton::addItemString( const QString &name
   item = new KConfigSkeleton::ItemString( mCurrentGroup, key.isNull() ? name : key,
                                           reference, defaultValue,
                                           KConfigSkeleton::ItemString::Normal );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -958,7 +958,7 @@ KConfigSkeleton::ItemPassword *KConfigSkeleton::addItemPassword( const QString &
   KConfigSkeleton::ItemPassword *item;
   item = new KConfigSkeleton::ItemPassword( mCurrentGroup, key.isNull() ? name : key,
                                           reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -968,7 +968,7 @@ KConfigSkeleton::ItemPath *KConfigSkeleton::addItemPath( const QString &name, QS
   KConfigSkeleton::ItemPath *item;
   item = new KConfigSkeleton::ItemPath( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -978,7 +978,7 @@ KConfigSkeleton::ItemProperty *KConfigSkeleton::addItemProperty( const QString &
   KConfigSkeleton::ItemProperty *item;
   item = new KConfigSkeleton::ItemProperty( mCurrentGroup, key.isNull() ? name : key,
                                             reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -988,7 +988,7 @@ KConfigSkeleton::ItemBool *KConfigSkeleton::addItemBool( const QString &name, bo
   KConfigSkeleton::ItemBool *item;
   item = new KConfigSkeleton::ItemBool( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -998,7 +998,7 @@ KConfigSkeleton::ItemInt *KConfigSkeleton::addItemInt( const QString &name, int 
   KConfigSkeleton::ItemInt *item;
   item = new KConfigSkeleton::ItemInt( mCurrentGroup, key.isNull() ? name : key,
                                        reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1008,7 +1008,7 @@ KConfigSkeleton::ItemUInt *KConfigSkeleton::addItemUInt( const QString &name, un
   KConfigSkeleton::ItemUInt *item;
   item = new KConfigSkeleton::ItemUInt( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1018,7 +1018,7 @@ KConfigSkeleton::ItemInt64 *KConfigSkeleton::addItemInt64( const QString &name, 
   KConfigSkeleton::ItemInt64 *item;
   item = new KConfigSkeleton::ItemInt64( mCurrentGroup, key.isNull() ? name : key,
                                          reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1028,7 +1028,7 @@ KConfigSkeleton::ItemUInt64 *KConfigSkeleton::addItemUInt64( const QString &name
   KConfigSkeleton::ItemUInt64 *item;
   item = new KConfigSkeleton::ItemUInt64( mCurrentGroup, key.isNull() ? name : key,
                                           reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1038,7 +1038,7 @@ KConfigSkeleton::ItemLong *KConfigSkeleton::addItemLong( const QString &name, lo
   KConfigSkeleton::ItemLong *item;
   item = new KConfigSkeleton::ItemLong( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1048,7 +1048,7 @@ KConfigSkeleton::ItemULong *KConfigSkeleton::addItemULong( const QString &name, 
   KConfigSkeleton::ItemULong *item;
   item = new KConfigSkeleton::ItemULong( mCurrentGroup, key.isNull() ? name : key,
                                          reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1058,7 +1058,7 @@ KConfigSkeleton::ItemDouble *KConfigSkeleton::addItemDouble( const QString &name
   KConfigSkeleton::ItemDouble *item;
   item = new KConfigSkeleton::ItemDouble( mCurrentGroup, key.isNull() ? name : key,
                                           reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1068,7 +1068,7 @@ KConfigSkeleton::ItemColor *KConfigSkeleton::addItemColor( const QString &name, 
   KConfigSkeleton::ItemColor *item;
   item = new KConfigSkeleton::ItemColor( mCurrentGroup, key.isNull() ? name : key,
                                          reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1078,7 +1078,7 @@ KConfigSkeleton::ItemFont *KConfigSkeleton::addItemFont( const QString &name, QF
   KConfigSkeleton::ItemFont *item;
   item = new KConfigSkeleton::ItemFont( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1088,7 +1088,7 @@ KConfigSkeleton::ItemRect *KConfigSkeleton::addItemRect( const QString &name, QR
   KConfigSkeleton::ItemRect *item;
   item = new KConfigSkeleton::ItemRect( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1098,7 +1098,7 @@ KConfigSkeleton::ItemPoint *KConfigSkeleton::addItemPoint( const QString &name, 
   KConfigSkeleton::ItemPoint *item;
   item = new KConfigSkeleton::ItemPoint( mCurrentGroup, key.isNull() ? name : key,
                                          reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1108,7 +1108,7 @@ KConfigSkeleton::ItemSize *KConfigSkeleton::addItemSize( const QString &name, QS
   KConfigSkeleton::ItemSize *item;
   item = new KConfigSkeleton::ItemSize( mCurrentGroup, key.isNull() ? name : key,
                                         reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1118,7 +1118,7 @@ KConfigSkeleton::ItemDateTime *KConfigSkeleton::addItemDateTime( const QString &
   KConfigSkeleton::ItemDateTime *item;
   item = new KConfigSkeleton::ItemDateTime( mCurrentGroup, key.isNull() ? name : key,
                                             reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1128,7 +1128,7 @@ KConfigSkeleton::ItemStringList *KConfigSkeleton::addItemStringList( const QStri
   KConfigSkeleton::ItemStringList *item;
   item = new KConfigSkeleton::ItemStringList( mCurrentGroup, key.isNull() ? name : key,
                                               reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 
@@ -1138,7 +1138,7 @@ KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &na
   KConfigSkeleton::ItemIntList *item;
   item = new KConfigSkeleton::ItemIntList( mCurrentGroup, key.isNull() ? name : key,
                                            reference, defaultValue );
-  addItem( name, item );
+  addItem( item, name );
   return item;
 }
 

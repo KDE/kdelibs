@@ -13,10 +13,10 @@ Test1::Test1(  const QString &transport, const QString &folder )
 
   KConfigSkeleton::ItemBool  *itemOneOption;
   itemOneOption = new KConfigSkeleton::ItemBool( currentGroup(), "OneOption", mOneOption, true );
-  addItem( "OneOption", itemOneOption );
+  addItem( itemOneOption );
   KConfigSkeleton::ItemInt  *itemAnotherOption;
   itemAnotherOption = new KConfigSkeleton::ItemInt( currentGroup(), "Another Option", mAnotherOption, 5 );
-  addItem( "AnotherOption", itemAnotherOption );
+  addItem( itemAnotherOption, "AnotherOption" );
   QValueList<KConfigSkeleton::ItemEnum::Choice> valuesListOption;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
@@ -35,36 +35,36 @@ Test1::Test1(  const QString &transport, const QString &folder )
   }
   KConfigSkeleton::ItemEnum  *itemListOption;
   itemListOption = new KConfigSkeleton::ItemEnum( currentGroup(), "ListOption", mListOption, valuesListOption, EnumListOption::One );
-  addItem( "ListOption", itemListOption );
+  addItem( itemListOption );
 
   setCurrentGroup( "MyOptions" );
 
   KConfigSkeleton::ItemString  *itemMyString;
   itemMyString = new KConfigSkeleton::ItemString( currentGroup(), "MyString", mMyString, "Default String" );
-  addItem( "MyString", itemMyString );
+  addItem( itemMyString );
   KConfigSkeleton::ItemPath  *itemMyPath;
   itemMyPath = new KConfigSkeleton::ItemPath( currentGroup(), "MyPath", mMyPath, QDir::homeDirPath()+".hidden_file" );
-  addItem( "MyPath", itemMyPath );
+  addItem( itemMyPath );
   KConfigSkeleton::ItemInt  *itemAnotherOption2;
   itemAnotherOption2 = new KConfigSkeleton::ItemInt( currentGroup(), "Another Option", mAnotherOption2, 10 );
-  addItem( "AnotherOption2", itemAnotherOption2 );
+  addItem( itemAnotherOption2, "AnotherOption2" );
   QStringList defaultMyStringList;
   defaultMyStringList.append( "up" );
   defaultMyStringList.append( "down" );
 
   KConfigSkeleton::ItemStringList  *itemMyStringList;
   itemMyStringList = new KConfigSkeleton::ItemStringList( currentGroup(), "MyStringList", mMyStringList, defaultMyStringList );
-  addItem( "MyStringList", itemMyStringList );
+  addItem( itemMyStringList );
   QStringList defaultMyStringListHidden;
   defaultMyStringListHidden.append( "up" );
   defaultMyStringListHidden.append( "down" );
 
   KConfigSkeleton::ItemStringList  *itemMyStringListHidden;
   itemMyStringListHidden = new KConfigSkeleton::ItemStringList( currentGroup(), "MyStringListHidden", mMyStringListHidden, defaultMyStringListHidden );
-  addItem( "MyStringListHidden", itemMyStringListHidden );
+  addItem( itemMyStringListHidden );
   KConfigSkeleton::ItemInt  *itemMyNumber;
   itemMyNumber = new KConfigSkeleton::ItemInt( currentGroup(), QString("List-%1-%2").arg( mParamtransport ).arg( mParamfolder ), mMyNumber, 1 );
-  addItem( "MyNumber", itemMyNumber );
+  addItem( itemMyNumber, "MyNumber" );
 }
 
 Test1::~Test1()

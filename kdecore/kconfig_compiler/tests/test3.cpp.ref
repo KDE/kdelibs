@@ -11,14 +11,14 @@ Test3::Test3(  )
   setCurrentGroup( "General" );
 
   mAutoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), "Auto Save", mAutoSave, false );
-  addItem( "AutoSave", mAutoSaveItem );
+  addItem( mAutoSaveItem, "AutoSave" );
 
   setCurrentGroup( "Blah" );
 
   mBlubbItem = new KConfigSkeleton::ItemInt( currentGroup(), "Blubb", mBlubb, 10 );
-  addItem( "Blubb", mBlubbItem );
+  addItem( mBlubbItem );
   mBlahBlahItem = new KConfigSkeleton::ItemString( currentGroup(), "BlahBlah", mBlahBlah, "a string" );
-  addItem( "BlahBlah", mBlahBlahItem );
+  addItem( mBlahBlahItem );
 }
 
 Test3::~Test3()
