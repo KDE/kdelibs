@@ -585,8 +585,17 @@ Completion WindowFunc::tryExecute(const List &args)
   {
     KConfig *config = new KConfig("konquerorrc");
     config->setGroup("Java/JavaScript Settings");
+    int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 );
+    if ( policy == 1 ) {
+      if ( KMessageBox::questionYesNo(widget,
+                                      i18n( "This site is trying to open up a new browser "
+                                            "window using Javascript.\n\n"
+                                            "Do you want to allow this?" ),
+                                      i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
+        policy = 0;
+    }
 
-    if ( config->readBoolEntry("DisableWindowOpen") ) {
+    if ( policy ) {
       result = Undefined();
     } else {
       KParts::WindowArgs winargs;
