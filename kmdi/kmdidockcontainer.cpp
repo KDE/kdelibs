@@ -63,45 +63,61 @@ KMdiDockContainer::KMdiDockContainer( QWidget *parent, QWidget *win, int positio
 	m_separatorPos = 17;
 	m_movingState = NotMoving;
 	m_startEvent = 0;
-	kdDebug( 760 ) << "KMdiDockContainer created" << endl;
+	kdDebug( 760 ) << k_funcinfo << endl;
 
 	QBoxLayout *l;
-	m_vertical = !( ( position == KDockWidget::DockTop ) || ( position == KDockWidget::DockBottom ) );
+	m_horizontal = ( ( position == KDockWidget::DockTop ) || ( position == KDockWidget::DockBottom ) );
 
-	if ( !m_vertical )
-		l = new QVBoxLayout( this );
+
+	if ( m_horizontal )
+		l = new QVBoxLayout( this ); //vertical layout for top and bottom docks
 	else
-		l = new QHBoxLayout( this );
+		l = new QHBoxLayout( this ); //horizontal layout for left and right docks
 
 	l->setAutoAdd( false );
 
-	m_tb = new KMultiTabBar( ( ( position == KDockWidget::DockTop ) || ( position == KDockWidget::DockBottom ) ) ?
-	                         KMultiTabBar::Horizontal : KMultiTabBar::Vertical, this );
+	m_tb = new KMultiTabBar( m_horizontal ? KMultiTabBar::Horizontal : KMultiTabBar::Vertical, this );
 
 	m_tb->setStyle( KMultiTabBar::KMultiTabBarStyle( flags ) );
 	m_tb->showActiveTabTexts( true );
 
-	m_tb->setPosition( ( position == KDockWidget::DockLeft ) ? KMultiTabBar::Left :
-	                   ( position == KDockWidget::DockBottom ) ? KMultiTabBar::Bottom :
-	                   ( position == KDockWidget::DockTop ) ? KMultiTabBar::Top : KMultiTabBar::Right );
+	KMultiTabBar::KMultiTabBarPosition kmtbPos;
+	switch( position )
+	{
+	case KDockWidget::DockLeft:
+		kmtbPos = KMultiTabBar::Left;
+		break;
+	case KDockWidget::DockRight:
+		kmtbPos = KMultiTabBar::Right;
+		break;
+	case KDockWidget::DockTop:
+		kmtbPos = KMultiTabBar::Top;
+		break;
+	case KDockWidget::DockBottom:
+		kmtbPos = KMultiTabBar::Bottom;
+		break;
+	default:
+		kmtbPos = KMultiTabBar::Right;
+		break;
+	}
+	m_tb->setPosition( kmtbPos );
 
 	m_ws = new QWidgetStack( this );
 
 	m_ws->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-	if ( ( position == KDockWidget::DockLeft ) || ( position == KDockWidget::DockTop ) )
+	//layout the tabbar
+	if ( position == KDockWidget::DockLeft || position == KDockWidget::DockTop )
 	{
-		l->add
-		( m_tb );
-		l->add
-		( m_ws );
+		//add the tabbar then the widget stack
+		l->add( m_tb );
+		l->add( m_ws );
 	}
 	else
 	{
-		l->add
-		( m_ws );
-		l->add
-		( m_tb );
+		//add the widget stack then the tabbar
+		l->add( m_ws );
+		l->add( m_tb );
 	}
 
 	l->activate();
@@ -124,7 +140,7 @@ KMdiDockContainer::~KMdiDockContainer()
 		KDockWidget *w = it.key();
 		if ( m_overlapButtons.contains( w ) )
 		{
-			( static_cast<KDockWidgetHeader*>( w->getHeader() ->qt_cast( "KDockWidgetHeader" ) ) ) ->removeButton( m_overlapButtons[ w ] );
+			( static_cast<KDockWidgetHeader*>( w->getHeader()->qt_cast( "KDockWidgetHeader" ) ) )->removeButton( m_overlapButtons[w] );
 			m_overlapButtons.remove( w );
 		}
 		m_map.remove( w );
@@ -136,35 +152,38 @@ KMdiDockContainer::~KMdiDockContainer()
 
 void KMdiDockContainer::init()
 {
-	if ( m_vertical )
+	kdDebug( 760 ) << k_funcinfo << endl;
+	if ( !m_horizontal )
 	{
-		parentDockWidget() ->setForcedFixedWidth( m_tb->width() );
+		kdDebug( 760 ) << k_funcinfo << "Horizontal tabbar. Setting forced fixed width." << endl;
+		parentDockWidget()->setForcedFixedWidth( m_tb->width() );
 		activateOverlapMode( m_tb->width() );
 	}
 	else
 	{
-		parentDockWidget() ->setForcedFixedHeight( m_tb->height() );
+		kdDebug( 760 ) << k_funcinfo << "Vertical tabbar. Setting forced fixed height." << endl;
+		parentDockWidget()->setForcedFixedHeight( m_tb->height() );
 		activateOverlapMode( m_tb->height() );
 	}
 
 	// try to restore splitter size
-	if ( parentDockWidget() && parentDockWidget() ->parent() )
+	if ( parentDockWidget() && parentDockWidget()->parent() )
 	{
-		KDockSplitter * sp = static_cast<KDockSplitter*>( parentDockWidget() ->
-		                     parent() ->qt_cast( "KDockSplitter" ) );
+		KDockSplitter * sp = static_cast<KDockSplitter*>( parentDockWidget()->parent()->qt_cast( "KDockSplitter" ) );
 		if ( sp )
 			sp->setSeparatorPosX( m_separatorPos );
 	}
 }
 
-KDockWidget *KMdiDockContainer::parentDockWidget()
+KDockWidget* KMdiDockContainer::parentDockWidget()
 {
 	return ( ( KDockWidget* ) parent() );
 }
 
 void KMdiDockContainer::insertWidget ( KDockWidget *dwdg, QPixmap pixmap, const QString &text, int & )
 {
-	KDockWidget * w = ( KDockWidget* ) dwdg;
+	kdDebug( 760 ) << k_funcinfo << "Adding a dockwidget to the dock container" << endl;
+	KDockWidget* w = dwdg;
 	int tab;
 	bool alreadyThere = m_map.contains( w );
 
@@ -172,10 +191,9 @@ void KMdiDockContainer::insertWidget ( KDockWidget *dwdg, QPixmap pixmap, const 
 	{
 		tab = m_map[ w ];
 		if ( m_ws->addWidget( w, tab ) != tab )
-			kdDebug( 760 ) << "ERROR COULDN'T READD WIDGET************" << endl;
-		kdDebug( 760 ) << "READDED WIDGET***********************************" << endl;
-		/*JOWENN    m_tb->setTab(tab,true);
-		    tabClicked(tab);*/
+			kdDebug( 760 ) << "ERROR COULDN'T READD WIDGET" << endl;
+		
+		kdDebug( 760 ) << k_funcinfo << "Readded widget " << dwdg << endl;
 	}
 	else
 	{
@@ -186,17 +204,15 @@ void KMdiDockContainer::insertWidget ( KDockWidget *dwdg, QPixmap pixmap, const 
 		if ( ( ( KDockWidget* ) parentWidget() ) ->mayBeShow() )
 			( ( KDockWidget* ) parentWidget() ) ->dockBack();
 
-		if ( w->getHeader() ->qt_cast( "KDockWidgetHeader" ) )
+		if ( w->getHeader()->qt_cast( "KDockWidgetHeader" ) )
 		{
-			kdDebug( 760 ) << "*** KDockWidgetHeader has been found" << endl;
+			kdDebug( 760 ) << k_funcinfo << "The dockwidget we're adding has a header" << endl;
+			kdDebug( 760 ) << k_funcinfo << "Adding our overlap mode button to it" << endl;
 
-			KDockWidgetHeader *hdr = static_cast<KDockWidgetHeader*>( w->getHeader() ->
-			                         qt_cast( "KDockWidgetHeader" ) );
-
+			KDockWidgetHeader *hdr = static_cast<KDockWidgetHeader*>( w->getHeader()->qt_cast( "KDockWidgetHeader" ) );
 			KDockButton_Private *btn = new KDockButton_Private( hdr, "OverlapButton" );
 
-			QToolTip::add
-				( btn, i18n( "Switch between overlap and side by side mode", "Overlap" ) );
+			QToolTip::add( btn, i18n( "Switch between overlap and side by side mode", "Overlap" ) );
 
 			btn->setToggleButton( true );
 			btn->setPixmap( const_cast< const char** >( kmdi_not_close_xpm ) );
@@ -208,21 +224,15 @@ void KMdiDockContainer::insertWidget ( KDockWidget *dwdg, QPixmap pixmap, const 
 		}
 
 		m_tb->appendTab( pixmap.isNull() ? SmallIcon( "misc" ) : pixmap, tab, w->tabPageLabel() );
-		m_tb->tab( tab ) ->installEventFilter( this );
-		kdDebug( 760 ) << "NAMENAMENAMENAME:===========================:" << w->tabPageLabel() << endl;
-
-		//FB    m_tb->setTab(tab,true);
+		m_tb->tab( tab )->installEventFilter( this );
+		kdDebug( 760 ) << k_funcinfo << "Added tab with label " << w->tabPageLabel() <<
+			" to the tabbar" << endl;
 
 		connect( m_tb->tab( tab ), SIGNAL( clicked( int ) ), this, SLOT( tabClicked( int ) ) );
-
-		kdDebug( 760 ) << "KMdiDockContainer::insertWidget()" << endl;
-
-		//FB    m_tb->setTab(oldtab,false);
 
 		mTabCnt++;
 		m_inserted = tab;
 		int dummy = 0;
-		//FB    tabClicked(tab);
 		KDockContainer::insertWidget( w, pixmap, text, dummy );
 		itemNames.append( w->name() );
 		tabCaptions.insert( w->name(), w->tabPageLabel() );
@@ -238,33 +248,44 @@ bool KMdiDockContainer::eventFilter( QObject *obj, QEvent *event )
 	switch ( event->type() )
 	{
 	case QEvent::MouseButtonPress:
+	{
+		KMultiTabBarTab* kmtbTab = dynamic_cast<KMultiTabBarTab*>( obj );
+		if ( !obj )
 		{
-			KDockWidget * w = m_revMap[ dynamic_cast<KMultiTabBarTab*>( obj ) ->id() ];
-			if ( !w )
-			{
-				kdDebug() << "NoWidget" << endl;
-				break;
-			}
-			if ( !w->getHeader() )
-			{
-				kdDebug() << "NO HEADER" << endl;
-				break;
-			}
-			KDockWidgetHeader *hdr = static_cast<KDockWidgetHeader*>( w->getHeader() ->
-			                         qt_cast( "KDockWidgetHeader" ) );
-			if ( !hdr )
-			{
-				kdDebug() << "Wrong header type in KMdiDockContainer::eventFilter" << endl;
-				break;
-			}
-			m_dockManager = w->dockManager();
-			m_dragPanel = hdr->dragPanel();
-			if ( m_dragPanel )
-				m_movingState = WaitingForMoveStart;
-			delete m_startEvent;
-			m_startEvent = new QMouseEvent( * ( ( QMouseEvent* ) event ) );
+			kdDebug(760) << k_funcinfo << "Got a mouse button press but we have no tab" << endl;
+			break;
 		}
-		break;
+		
+		KDockWidget* w = m_revMap[ dynamic_cast<KMultiTabBarTab*>( obj )->id() ];
+		if ( !w )
+		{
+			kdDebug(760) << k_funcinfo << "Got a mouse button press but we have no widget" << endl;
+			break;
+		}
+		
+		if ( !w->getHeader() )
+		{
+			kdDebug(760) << k_funcinfo << "Got a mouse button press but we have no header" << endl;
+			break;
+		}
+		
+		KDockWidgetHeader *hdr = static_cast<KDockWidgetHeader*>( w->getHeader()->qt_cast( "KDockWidgetHeader" ) );
+		if ( !hdr )
+		{
+			kdDebug(760) << "Wrong header type in KMdiDockContainer::eventFilter" << endl;
+			break;
+		}
+		
+		m_dockManager = w->dockManager();
+		m_dragPanel = hdr->dragPanel();
+		
+		if ( m_dragPanel )
+			m_movingState = WaitingForMoveStart;
+		
+		delete m_startEvent;
+		m_startEvent = new QMouseEvent( * ( ( QMouseEvent* ) event ) );
+	}
+	break;
 	case QEvent::MouseButtonRelease:
 		if ( m_movingState == Moving )
 		{
@@ -276,7 +297,7 @@ bool KMdiDockContainer::eventFilter( QObject *obj, QEvent *event )
 	case QEvent::MouseMove:
 		if ( m_movingState == WaitingForMoveStart )
 		{
-			QPoint p( ( ( QMouseEvent* ) event ) ->pos() - m_startEvent->pos() );
+			QPoint p( ( ( QMouseEvent* ) event )->pos() - m_startEvent->pos() );
 			if ( p.manhattanLength() > KGlobalSettings::dndEventDelay() )
 			{
 				m_dockManager->eventFilter( m_dragPanel, m_startEvent );
@@ -285,9 +306,8 @@ bool KMdiDockContainer::eventFilter( QObject *obj, QEvent *event )
 			}
 		}
 		else if ( m_movingState == Moving )
-		{
 			m_dockManager->eventFilter( m_dragPanel, event );
-		}
+		
 		break;
 	default:
 		break;
@@ -301,6 +321,7 @@ void KMdiDockContainer::showWidget( KDockWidget *w )
 {
 	if ( !m_map.contains( w ) )
 		return ;
+	
 	int id = m_map[ w ];
 	m_tb->setTab( id, true );
 	tabClicked( id );
@@ -310,72 +331,73 @@ void KMdiDockContainer::changeOverlapMode()
 {
 	const KDockButton_Private * btn = dynamic_cast<const KDockButton_Private*>( sender() );
 
-	kdDebug( 760 ) << "KMdiDockContainer::changeOverlapMode: button==" << btn << endl;
-
 	if ( !btn )
 		return ;
 
 	if ( !btn->isOn() )
 	{
-		kdDebug( 760 ) << "KMdiDockContainer::changeOverlapMode: activateOverlapMode" << endl;
-		if ( m_vertical )
-		{
+		kdDebug( 760 ) << k_funcinfo << "Activating overlap mode" << endl;
+		if ( !m_horizontal )
 			activateOverlapMode( m_tb->width() );
-		}
 		else
-		{
 			activateOverlapMode( m_tb->height() );
-		}
+
 	}
 	else
 	{
-		kdDebug( 760 ) << "KMdiDockContainer::changeOverlapMode: deactivateOverlapMode" << endl;
+		kdDebug( 760 ) << k_funcinfo << "Deactivating overlap mode" << endl;
 		deactivateOverlapMode();
 	}
 
-	for ( QMap<KDockWidget*, KDockButton_Private*>::iterator it = m_overlapButtons.begin();
-	        it != m_overlapButtons.end();++it )
-		it.data() ->setOn( !isOverlapMode() );
+	QMap<KDockWidget*, KDockButton_Private*>::iterator it;
+	for ( it = m_overlapButtons.begin(); it != m_overlapButtons.end(); ++it )
+		it.data()->setOn( !isOverlapMode() );
 }
 
 void KMdiDockContainer::hideIfNeeded()
 {
-	kdDebug( 760 ) << "************************* hideIfNeeded *************************" << endl;
-	if ( !itemNames.count() )
-		( ( KDockWidget* ) parentWidget() ) ->undock();
+	if ( itemNames.count() == 0 )
+	{
+		kdDebug( 760 ) << k_funcinfo << "Hiding the dock container" << endl;
+		( ( KDockWidget* ) parentWidget() )->undock();
+	}
 }
 
 void KMdiDockContainer::removeWidget( KDockWidget* dwdg )
 {
-	KDockWidget * w = ( KDockWidget* ) dwdg;
+
+	KDockWidget * w = dwdg;
 	if ( !m_map.contains( w ) )
-		return ;
+		return; //we don't have this widget in our container
+
+	kdDebug( 760 ) << k_funcinfo << endl;
+	//lower the tab. ( TODO: needed? )
 	int id = m_map[ w ];
 	if ( m_tb->isTabRaised( id ) )
 	{
 		m_tb->setTab( id, false );
 		tabClicked( id );
 	}
+	
 	m_tb->removeTab( id );
 	m_ws->removeWidget( w );
 	m_map.remove( w );
 	m_revMap.remove( id );
 	if ( m_overlapButtons.contains( w ) )
 	{
-		( static_cast<KDockWidgetHeader*>( w->getHeader() ->qt_cast( "KDockWidgetHeader" ) ) ) ->removeButton( m_overlapButtons[ w ] );
+		( static_cast<KDockWidgetHeader*>( w->getHeader() ->qt_cast( "KDockWidgetHeader" ) ) )->removeButton( m_overlapButtons[ w ] );
 		m_overlapButtons.remove( w );
 	}
 	KDockContainer::removeWidget( w );
 	itemNames.remove( w->name() );
 	tabCaptions.remove( w->name() );
 	tabTooltips.remove( w->name() );
-	if ( !itemNames.count() )
-		( ( KDockWidget* ) parentWidget() ) ->undock();
+	hideIfNeeded();
 }
 
 void KMdiDockContainer::undockWidget( KDockWidget *dwdg )
 {
-	KDockWidget * w = ( KDockWidget* ) dwdg;
+	KDockWidget * w = dwdg;
 
 	if ( !m_map.contains( w ) )
 		return ;
@@ -383,7 +405,7 @@ void KMdiDockContainer::undockWidget( KDockWidget *dwdg )
 	int id = m_map[ w ];
 	if ( m_tb->isTabRaised( id ) )
 	{
-		kdDebug( 760 ) << "Wiget has been undocked, setting tab down" << endl;
+		kdDebug( 760 ) << k_funcinfo << "Widget has been undocked, setting tab down" << endl;
 		m_tb->setTab( id, false );
 		tabClicked( id );
 	}
@@ -391,54 +413,59 @@ void KMdiDockContainer::undockWidget( KDockWidget *dwdg )
 
 void KMdiDockContainer::tabClicked( int t )
 {
-	kdDebug( 760 ) << "KMdiDockContainer::tabClicked()" << endl;
 	bool call_makeVisible = !m_tabSwitching;
 	m_tabSwitching = true;
 	if ( m_tb->isTabRaised( t ) )
 	{
-
+		kdDebug( 760 ) << k_funcinfo << "Tab " << t << " was just activated" << endl;
 		if ( m_ws->isHidden() )
 		{
-			m_ws->show ();
-			parentDockWidget() ->restoreFromForcedFixedSize();
+			kdDebug( 760 ) << k_funcinfo << "Showing widgetstack for tab just clicked" << endl;
+			m_ws->show();
+			parentDockWidget()->restoreFromForcedFixedSize();
 		}
+		
 		if ( !m_ws->widget( t ) )
 		{
-			m_revMap[ t ] ->manualDock( parentDockWidget(), KDockWidget::DockCenter, 20 );
+			kdDebug( 760 ) << k_funcinfo << "Widget tab was clicked for is not in our stack" << endl;
+			kdDebug( 760 ) << k_funcinfo << "Docking it back in" << endl;
+			m_revMap[t]->manualDock( parentDockWidget(), KDockWidget::DockCenter, 20 );
 			if ( call_makeVisible )
-				m_revMap[ t ] ->makeDockVisible(); //manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
+				m_revMap[t]->makeDockVisible();
 			m_tabSwitching = false;
 			emit activated( this );
 			return ;
 		}
-		m_ws->raiseWidget( t );
+		
 		if ( m_ws->widget( t ) )
 		{
-			KDockWidget * tmpDw = static_cast<KDockWidget*>( m_ws->widget( t ) ->qt_cast( "KDockWidget" ) );
+			m_ws->raiseWidget( t );
+			KDockWidget * tmpDw = static_cast<KDockWidget*>( m_ws->widget( t )->qt_cast( "KDockWidget" ) );
 			if ( tmpDw )
 			{
 				if ( tmpDw->getWidget() )
-					tmpDw->getWidget() ->setFocus();
+					tmpDw->getWidget()->setFocus();
 			}
 			else
-				kdDebug( 760 ) << "Something really weird is going on" << endl;
+				kdDebug( 760 ) << k_funcinfo << "Something really weird is going on" << endl;
 		}
 		else
-			kdDebug( 760 ) << "KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 " << endl;
+			kdDebug( 760 ) << k_funcinfo << "We have no widget to handle in our stack." << endl;
 
 		if ( oldtab != t )
 			m_tb->setTab( oldtab, false );
+		
 		m_tabSwitching = true;
 		oldtab = t;
 		emit activated( this );
 	}
 	else
 	{
+		kdDebug( 760 ) << k_funcinfo << "Tab " << t << " was just deactiviated" << endl;
 		// try save splitter position
-		if ( parentDockWidget() && parentDockWidget() ->parent() )
+		if ( parentDockWidget() && parentDockWidget()->parent() )
 		{
-			KDockSplitter * sp = static_cast<KDockSplitter*>( parentDockWidget() ->
-			                     parent() ->qt_cast( "KDockSplitter" ) );
+			KDockSplitter * sp = static_cast<KDockSplitter*>( parentDockWidget()->parent()->qt_cast( "KDockSplitter" ) );
 			if ( sp )
 				m_separatorPos = sp->separatorPos();
 		}
@@ -456,18 +483,22 @@ void KMdiDockContainer::tabClicked( int t )
 		m_ws->hide ();
 
 
-		kdDebug( 760 ) << "Fixed Width:" << m_tb->width() << endl;
-		if ( m_vertical )
-			parentDockWidget() ->setForcedFixedWidth( m_tb->width() ); // strange why it worked before at all
+		kdDebug( 760 ) << k_funcinfo << "Fixed Width:" << m_tb->width() << endl;
+		if ( !m_horizontal )
+			parentDockWidget()->setForcedFixedWidth( m_tb->width() ); // strange why it worked before at all
 		else
-			parentDockWidget() ->setForcedFixedHeight( m_tb->height() ); // strange why it worked before at all
+			parentDockWidget()->setForcedFixedHeight( m_tb->height() ); // strange why it worked before at all
 	}
 	m_tabSwitching = false;
 }
 
-void KMdiDockContainer::setToolTip ( KDockWidget *, QString &s )
+void KMdiDockContainer::setToolTip ( KDockWidget* w, QString &s )
 {
-	kdDebug( 760 ) << "***********************************Setting tooltip for a widget: " << s << endl;
+	kdDebug( 760 ) << k_funcinfo << "Setting tooltip '" << s << "' for widget " << w << endl;
+	int tabId = m_map[w];
+	KMultiTabBarTab *mbTab = m_tb->tab( tabId );
+	QToolTip::remove( mbTab );
+	QToolTip::add( mbTab, s );
 }
 
 void KMdiDockContainer::setPixmap( KDockWidget* widget , const QPixmap& pixmap )
@@ -555,18 +586,17 @@ void KMdiDockContainer::load( QDomElement& dockEl )
 		}
 	}
 
-
 	QPtrList<KMultiTabBarTab>* tl = m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it1( *tl );
 	m_ws->hide();
-	if ( m_vertical )
-		parentDockWidget() ->setForcedFixedWidth( m_tb->width() );
+	if ( !m_horizontal )
+		parentDockWidget()->setForcedFixedWidth( m_tb->width() );
 	else
-		parentDockWidget() ->setForcedFixedHeight( m_tb->height() );
+		parentDockWidget()->setForcedFixedHeight( m_tb->height() );
+	
 	for ( ;it1.current() != 0;++it1 )
-	{
 		m_tb->setTab( it1.current() ->id(), false );
-	}
+
 	kapp->syncX();
 	m_delayedRaise = -1;
 
@@ -582,7 +612,7 @@ void KMdiDockContainer::load( QDomElement& dockEl )
 			{
 				m_delayedRaise = it.data();
 				QTimer::singleShot( 0, this, SLOT( delayedRaise() ) );
-				kdDebug( 760 ) << "************** raising *******: " << it.key() ->name() << endl;
+				kdDebug( 760 ) << k_funcinfo << "raising " << it.key()->name() << endl;
 				break;
 			}
 		}
@@ -590,10 +620,6 @@ void KMdiDockContainer::load( QDomElement& dockEl )
 	}
 	if ( m_delayedRaise == -1 )
 		QTimer::singleShot( 0, this, SLOT( init() ) );
-
-
-
-
 }
 
 void KMdiDockContainer::save( KConfig* cfg, const QString& group_or_prefix )
@@ -663,7 +689,7 @@ void KMdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 		QString dwn = cfg->readEntry( QString( "widget%1" ).arg( i ) );
 		if ( dwn.isEmpty() )
 			break;
-		kdDebug( 760 ) << "*************************************************************Configuring dockwidget :" << dwn << endl;
+		kdDebug( 760 ) << k_funcinfo << "configuring dockwidget :" << dwn << endl;
 		KDockWidget *dw = ( ( KDockWidget* ) parent() ) ->dockManager() ->getDockWidgetFromName( dwn );
 		if ( dw )
 		{
@@ -688,7 +714,7 @@ void KMdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 	QPtrList<KMultiTabBarTab>* tl = m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it1( *tl );
 	m_ws->hide();
-	if ( m_vertical )
+	if ( !m_horizontal )
 		parentDockWidget() ->setForcedFixedWidth( m_tb->width() );
 	else
 		parentDockWidget() ->setForcedFixedHeight( m_tb->height() );
@@ -718,7 +744,7 @@ void KMdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 
 				m_delayedRaise = it.data();
 				QTimer::singleShot( 0, this, SLOT( delayedRaise() ) );
-				kdDebug( 760 ) << "************** raising *******: " << it.key() ->name() << endl;
+				kdDebug( 760 ) << k_funcinfo << "raising" << it.key() ->name() << endl;
 				break;
 			}
 		}
@@ -738,19 +764,21 @@ void KMdiDockContainer::delayedRaise()
 
 void KMdiDockContainer::collapseOverlapped()
 {
+	//don't collapse if we're switching tabs
 	if ( m_tabSwitching )
-		return ;
+		return;
+	
 	if ( isOverlapMode() )
 	{
 		QPtrList<KMultiTabBarTab>* tl = m_tb->tabs();
 		QPtrListIterator<KMultiTabBarTab> it( *tl );
 		for ( ;it.current();++it )
 		{
-			if ( it.current() ->isOn() )
+			if ( it.current()->isOn() )
 			{
-				kdDebug( 760 ) << "Lowering TAB" << endl;
-				it.current() ->setState( false );
-				tabClicked( it.current() ->id() );
+				kdDebug( 760 ) << k_funcinfo << "lowering tab with id " << ( *it )->id() << endl;
+				it.current()->setState( false );
+				tabClicked( ( *it )->id() );
 			}
 		}
 	}
@@ -758,23 +786,25 @@ void KMdiDockContainer::collapseOverlapped()
 
 void KMdiDockContainer::toggle()
 {
-	kdDebug( 760 ) << "DockContainer:activate" << endl;
+	kdDebug( 760 ) << k_funcinfo << endl;
+	
 	if ( m_tb->isTabRaised( oldtab ) )
 	{
+		kdDebug( 760 ) << k_funcinfo << "lowering tab" << endl;
 		m_tb->setTab( oldtab, false );
 		tabClicked( oldtab );
 		KMdiMainFrm *mainFrm = dynamic_cast<KMdiMainFrm*>( m_mainWin );
 		if ( mainFrm && mainFrm->activeWindow() )
-			mainFrm->activeWindow() ->setFocus();
-
+			mainFrm->activeWindow()->setFocus();
 	}
 	else
 	{
-		kdDebug( 760 ) << "KMdiDockContainer::toggle(): raising tab" << endl;
+		kdDebug( 760 ) << k_funcinfo << "raising tab" << endl;
 		if ( m_tb->tab( m_previousTab ) == 0 )
 		{
 			if ( m_tb->tabs() ->count() == 0 )
 				return ;
+			
 			m_previousTab = m_tb->tabs() ->getFirst() ->id();
 		}
 		m_tb->setTab( m_previousTab, true );
@@ -784,32 +814,42 @@ void KMdiDockContainer::toggle()
 
 void KMdiDockContainer::prevToolView()
 {
+	kdDebug( 760 ) << k_funcinfo << endl;
 	QPtrList<KMultiTabBarTab>* tabs = m_tb->tabs();
 	int pos = tabs->findRef( m_tb->tab( oldtab ) );
+	
 	if ( pos == -1 )
 		return ;
+	
 	pos--;
 	if ( pos < 0 )
 		pos = tabs->count() - 1;
+	
 	KMultiTabBarTab *tab = tabs->at( pos );
 	if ( !tab )
 		return ; //can never happen here, but who knows
+	
 	m_tb->setTab( tab->id(), true );
 	tabClicked( tab->id() );
 }
 
 void KMdiDockContainer::nextToolView()
 {
+	kdDebug( 760 ) << k_funcinfo << endl;
 	QPtrList<KMultiTabBarTab>* tabs = m_tb->tabs();
 	int pos = tabs->findRef( m_tb->tab( oldtab ) );
+	
 	if ( pos == -1 )
 		return ;
+	
 	pos++;
 	if ( pos >= ( int ) tabs->count() )
 		pos = 0;
+	
 	KMultiTabBarTab *tab = tabs->at( pos );
 	if ( !tab )
 		return ; //can never happen here, but who knows
+	
 	m_tb->setTab( tab->id(), true );
 	tabClicked( tab->id() );
 }

@@ -1,4 +1,4 @@
-/* This file is part of the KDE project
+ /* This file is part of the KDE project
   Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
@@ -150,7 +150,7 @@ private:
 	QMap<QString, QString> tabTooltips;
 	int m_inserted;
 	int m_delayedRaise;
-	bool m_vertical;
+	bool m_horizontal;
 	bool m_block;
 	bool m_tabSwitching;
 	QObject *m_dragPanel;

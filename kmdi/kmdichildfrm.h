@@ -61,7 +61,7 @@ signals:
 };
 
 //==============================================================================
-/* some special events, see qetxtmdidefines.h
+/* some special events, see kmdidefines.h
 */ 
 //------------------------------------------------------------------------------
 /**
@@ -71,12 +71,8 @@ signals:
 class KMDI_EXPORT KMdiChildFrmMoveEvent : public QCustomEvent
 {
 public:
-	/**
-	* Constructs a new customer event of type QEvent::User + KMdi::EV_DragMove
-	*/
-	KMdiChildFrmMoveEvent( QMoveEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_Move ) ), e )
-	{}
-	;
+	KMdiChildFrmMoveEvent( QMoveEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_Move ) ), e ) {}
+
 };
 
 //------------------------------------------------------------------------------
@@ -87,12 +83,7 @@ public:
 class KMDI_EXPORT KMdiChildFrmDragBeginEvent : public QCustomEvent
 {
 public:
-	/**
-	* Constructs a new customer event of type QEvent::User + KMdi::EV_DragBegin
-	*/
-	KMdiChildFrmDragBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_DragBegin ) ), e )
-	{}
-	;
+	KMdiChildFrmDragBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_DragBegin ) ), e ) {}
 };
 
 //------------------------------------------------------------------------------
@@ -103,12 +94,7 @@ public:
 class KMDI_EXPORT KMdiChildFrmDragEndEvent : public QCustomEvent
 {
 public:
-	/**
-	* Constructs a new customer event of type QEvent::User + KMdi::EV_DragEnd
-	*/
-	KMdiChildFrmDragEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_DragEnd ) ), e )
-	{}
-	;
+	KMdiChildFrmDragEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_DragEnd ) ), e ) {}
 };
 
 //------------------------------------------------------------------------------
@@ -119,12 +105,7 @@ public:
 class KMDI_EXPORT KMdiChildFrmResizeBeginEvent : public QCustomEvent
 {
 public:
-	/**
-	* Constructs a new customer event of type QEvent::User + KMdi::EV_ResizeBegin
-	*/
-	KMdiChildFrmResizeBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_ResizeBegin ) ), e )
-	{}
-	;
+	KMdiChildFrmResizeBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_ResizeBegin ) ), e ) {}
 };
 
 //------------------------------------------------------------------------------
@@ -135,12 +116,7 @@ public:
 class KMDI_EXPORT KMdiChildFrmResizeEndEvent : public QCustomEvent
 {
 public:
-	/**
-	* Constructs a new customer event of type QEvent::User + KMdi::EV_ResizeEnd
-	*/
-	KMdiChildFrmResizeEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_ResizeEnd ) ), e )
-	{}
-	;
+	KMdiChildFrmResizeEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( KMdi::EV_ResizeEnd ) ), e ) {}
 };
 
 
@@ -331,7 +307,7 @@ protected:
 	/**
 	 * Reimplemented from the base class.
 	 * Resizes the captionbar, relayouts the position of the system buttons,
-	 * and calls resize for its embedded client KMdiChildView with the proper size
+	 * and calls resize for its embedded KMdiChildView with the proper size
 	 */
 	virtual void resizeEvent( QResizeEvent * );
 	
@@ -444,13 +420,13 @@ protected:
 
 	/**
 	 * Restore the focus policies for _all_ widgets in the view using the list given as parameter.
-	 * Install the event filter for all direct child widgets of this. (See KMdiChildFrm::eventFilter )
+	 * Install the event filter for all direct child widgets of this. (See KMdiChildFrm::eventFilter)
 	 */
 	void linkChildren( QDict<FocusPolicy>* pFocPolDict );
 
 	/**
 	 * Backups all focus policies of _all_ child widgets in the MDI childview since they get lost during a reparent.
-	 * Remove all event filters for all direct child widgets of this. (See KMdiChildFrm::eventFilter )
+	 * Remove all event filters for all direct child widgets of this. (See KMdiChildFrm::eventFilter)
 	 */
 	QDict<QWidget::FocusPolicy>* unlinkChildren();
 	

@@ -176,7 +176,7 @@ KMdiMainFrm::KMdiMainFrm( QWidget* parentWidget, const char* name, KMdi::MdiMode
 		, m_managedDockPositionMode( false )
 		, m_documentTabWidget( 0 )
 {
-	kdDebug() << "=== KMdiMainFrm() ===" << endl;
+	kdDebug(760) << "=== KMdiMainFrm() ===" << endl;
 	// Create the local lists of windows
 	m_pDocumentViews = new QPtrList<KMdiChildView>;
 	m_pDocumentViews->setAutoDelete( false );
@@ -313,9 +313,7 @@ KMdiMainFrm::~KMdiMainFrm()
 }
 
 //============ applyOptions ============//
-#ifdef __GNUC__
-#warning fixme
-#endif
+//FIXME something wrong with this function. dunno what though
 void KMdiMainFrm::applyOptions()
 {
 	for ( KMdiChildView * w = m_pDocumentViews->first();w;w = m_pDocumentViews->next() )
@@ -759,11 +757,9 @@ void KMdiMainFrm::detachWindow( KMdiChildView *pWnd, bool bShow )
 //============== removeWindowFromMdi ==============//
 void KMdiMainFrm::removeWindowFromMdi( KMdiChildView *pWnd )
 {
-	Q_UNUSED( pWnd )
+	Q_UNUSED( pWnd );
 	//Closes a child window. sends no close event : simply deletes it
-#ifdef __GNUC__
-#warning FIXME FIXME FIXME
-#endif
+	//FIXME something wrong with this, but nobody knows whatcart
 #if 0
 	if ( !( m_pWinList->removeRef( pWnd ) ) )
 		return ;
@@ -880,7 +876,7 @@ void KMdiMainFrm::closeWindow( KMdiChildView *pWnd, bool layoutTaskBar )
 		if ( m_pDocumentViews->count() == 0 )
 			m_pClose->hide();
 		pWnd->reparent( 0L, QPoint( 0, 0 ) );
-		kdDebug() << "-------- 1" << endl;
+		kdDebug(760) << "-------- 1" << endl;
 		if ( m_pDocumentViews->count() == 1 )
 		{
 			m_pDocumentViews->last() ->activate(); // all other views are activated by tab switch
@@ -968,18 +964,19 @@ void KMdiMainFrm::closeWindow( KMdiChildView *pWnd, bool layoutTaskBar )
 }
 
 //================== findWindow =================//
-KMdiChildView * KMdiMainFrm::findWindow( const QString& caption )
+KMdiChildView* KMdiMainFrm::findWindow( const QString& caption )
 {
-	for ( KMdiChildView * w = m_pDocumentViews->first();w;w = m_pDocumentViews->next() )
+	QPtrListIterator<KMdiChildView> it( *m_pDocumentViews );
+	for ( ; ( *it ); ++it )
 	{
-		if ( QString( w->caption() ) == QString( caption ) )
-			return w;   //F.B.
+		if ( ( *it )->caption() == caption )
+			return ( *it );
 	}
 	return 0L;
 }
 
 //================== activeWindow ===================//
-KMdiChildView * KMdiMainFrm::activeWindow()
+KMdiChildView* KMdiMainFrm::activeWindow()
 {
 	return m_pCurrentWindow;
 }
@@ -1016,7 +1013,7 @@ QPopupMenu * KMdiMainFrm::windowPopup( KMdiChildView * pWnd, bool bIncludeTaskba
 }
 
 //================ taskBarPopup =================//
-QPopupMenu * KMdiMainFrm::taskBarPopup( KMdiChildView *pWnd, bool /*bIncludeWindowPopup*/ )
+QPopupMenu* KMdiMainFrm::taskBarPopup( KMdiChildView *pWnd, bool /*bIncludeWindowPopup*/ )
 {
 	//returns the g_pTaskBarPopup filled according to the KMdiChildView state
 	m_pTaskBarPopup->clear();
@@ -1048,16 +1045,12 @@ void KMdiMainFrm::slotDocCurrentChanged( QWidget* pWidget )
 
 	bool bActivateNecessary = true;
 	if ( m_pCurrentWindow != pWnd )
-	{
 		m_pCurrentWindow = pWnd;
-	}
 
 	if ( m_pTaskBar )
-	{
 		m_pTaskBar->setActiveButton( pWnd );
-	}
 
-	if ( m_documentTabWidget && m_mdiMode == KMdi::TabPageMode || m_mdiMode == KMdi::IDEAlMode )
+	if ( m_documentTabWidget && ( m_mdiMode == KMdi::TabPageMode || m_mdiMode == KMdi::IDEAlMode ) )
 	{
 		m_documentTabWidget->showPage( pWnd );
 		pWnd->activate();
@@ -1067,20 +1060,19 @@ void KMdiMainFrm::slotDocCurrentChanged( QWidget* pWidget )
 		if ( pWnd->isAttached() )
 		{
 			if ( bActivateNecessary && ( m_pMdi->topChild() == pWnd->mdiParent() ) )
-			{
 				pWnd->activate();
-			}
+			
 			pWnd->mdiParent() ->raiseAndActivate();
 		}
 		if ( !pWnd->isAttached() )
 		{
 			if ( bActivateNecessary )
 				pWnd->activate();
+			
 			m_pMdi->setTopChild( 0L ); // lose focus in the mainframe window
 			if ( !pWnd->isActiveWindow() )
-			{
 				pWnd->setActiveWindow();
-			}
+			
 			pWnd->raise();
 		}
 	}
@@ -1095,9 +1087,7 @@ void KMdiMainFrm::activateView( KMdiChildView* pWnd )
 
 	bool bActivateNecessary = true;
 	if ( m_pCurrentWindow != pWnd )
-	{
 		m_pCurrentWindow = pWnd;
-	}
 	else
 	{
 		bActivateNecessary = false;
@@ -1107,45 +1097,32 @@ void KMdiMainFrm::activateView( KMdiChildView* pWnd )
 	}
 
 	if ( m_pTaskBar )
-	{
 		m_pTaskBar->setActiveButton( pWnd );
-	}
 
 	if ( m_documentTabWidget && m_mdiMode == KMdi::TabPageMode || m_mdiMode == KMdi::IDEAlMode )
 	{
 		m_documentTabWidget->showPage( pWnd );
 		pWnd->activate();
 	}
-#if 0
-	if ( m_mdiMode == KMdi::TabPageMode )
-	{
-		makeWidgetDockVisible( pWnd );
-		m_pDockbaseOfTabPage = ( KDockWidget* ) pWnd->parentWidget();
-	}
-#endif
 	else
 	{
 		if ( pWnd->isAttached() )
 		{
 			if ( bActivateNecessary && ( m_pMdi->topChild() == pWnd->mdiParent() ) )
-			{
 				pWnd->activate();
-			}
+			
 			pWnd->mdiParent() ->raiseAndActivate();
 		}
 		if ( !pWnd->isAttached() )
 		{
 			if ( bActivateNecessary )
 				pWnd->activate();
+			
 			m_pMdi->setTopChild( 0L ); // lose focus in the mainframe window
 			if ( !pWnd->isActiveWindow() )
-			{
 				pWnd->setActiveWindow();
-			}
+			
 			pWnd->raise();
-			//         if (!pWnd->hasFocus()) {
-			//            pWnd->setFocus();
-			//         }
 		}
 	}
 
@@ -1176,7 +1153,7 @@ bool KMdiMainFrm::event( QEvent* e )
 			closeWindow( pWnd );
 		return true;
 		// A little hack: If MDI child views are moved implicietly by moving
-		// the main widget the should know this too. Unfortunately there seems to
+		// the main widget they should know this too. Unfortunately there seems to
 		// be no way to catch the move start / move stop situations for the main
 		// widget in a clean way. (There is no MouseButtonPress/Release or
 		// something like that.) Therefore we do the following: When we get the
@@ -1190,7 +1167,7 @@ bool KMdiMainFrm::event( QEvent* e )
 		// Actually we seem to be lucky that the timer does not elapse while we
 		// are moving -> so we have no obsolete drag end / begin
 	}
-	else if ( isVisible() && ( e->type() == QEvent::Move ) )
+	else if ( isVisible() && e->type() == QEvent::Move )
 	{
 		if ( m_pDragEndTimer->isActive() )
 		{
@@ -1200,11 +1177,11 @@ bool KMdiMainFrm::event( QEvent* e )
 		else
 		{
 			// this is the first move -> send the drag begin to all concerned views
-			KMdiChildView* pView;
-			for ( m_pDocumentViews->first(); ( pView = m_pDocumentViews->current() ) != 0L; m_pDocumentViews->next() )
+			QPtrListIterator<KMdiChildView> it( *m_pDocumentViews );
+			for ( ; ( *it ); ++it )
 			{
 				KMdiChildFrmDragBeginEvent dragBeginEvent( 0L );
-				QApplication::sendEvent( pView, &dragBeginEvent );
+				QApplication::sendEvent( ( *it ), &dragBeginEvent );
 			}
 		}
 		m_pDragEndTimer->start( 200, true ); // single shot after 200 ms
@@ -1220,7 +1197,8 @@ bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 		QFocusEvent * pFE = ( QFocusEvent* ) e;
 		if ( pFE->reason() == QFocusEvent::ActiveWindow )
 		{
-			if ( m_pCurrentWindow && !m_pCurrentWindow->isHidden() && !m_pCurrentWindow->isAttached() && m_pMdi->topChild() )
+			if ( m_pCurrentWindow && !m_pCurrentWindow->isHidden() &&
+			     !m_pCurrentWindow->isAttached() && m_pMdi->topChild() )
 			{
 				return true;   // eat the event
 			}
@@ -1266,7 +1244,7 @@ bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 			}
 			else
 			{
-				kdDebug( 9000 ) << "KAction( \"view_last_window\") not found." << endl;
+				kdDebug(760) << "KAction( \"view_last_window\") not found." << endl;
 			}
 		}
 	}
@@ -1279,7 +1257,7 @@ bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 void KMdiMainFrm::closeAllViews()
 {
 	//save the children first to a list, as removing invalidates our iterator
-	QValueList<KMdiChildView *> children;
+	QValueList<KMdiChildView*> children;
 	for ( KMdiChildView * w = m_pDocumentViews->first();w;w = m_pDocumentViews->next() )
 	{
 		children.append( w );
@@ -1287,7 +1265,7 @@ void KMdiMainFrm::closeAllViews()
 	QValueListIterator<KMdiChildView *> childIt;
 	for ( childIt = children.begin(); childIt != children.end(); ++childIt )
 	{
-		( *childIt ) ->close();
+		( *childIt )->close();
 	}
 }
 
@@ -1297,8 +1275,9 @@ void KMdiMainFrm::closeAllViews()
  */
 void KMdiMainFrm::iconifyAllViews()
 {
-	for ( KMdiChildView * w = m_pDocumentViews->first();w;w = m_pDocumentViews->next() )
-		w->minimize();
+	QPtrListIterator<KMdiChildView> it( *m_pDocumentViews );
+	for ( ; ( *it ); ++it )
+		( *it )->minimize();
 }
 
 /**
@@ -1306,10 +1285,8 @@ void KMdiMainFrm::iconifyAllViews()
  */
 void KMdiMainFrm::closeActiveView()
 {
-	if ( m_pCurrentWindow != 0L )
-	{
+	if ( m_pCurrentWindow )
 		m_pCurrentWindow->close();
-	}
 }
 
 /** find the root dockwidgets and store their geometry */
@@ -1326,9 +1303,8 @@ void KMdiMainFrm::findRootDockWidgets( QPtrList<KDockWidget>* pRootDockWidgetLis
 
 	QObjectList* pObjList = queryList( "KDockWidget" );
 	if ( pObjList->isEmpty() )
-	{
 		pObjList = queryList( "KDockWidget_Compat::KDockWidget" );
-	}
+
 	QObjectListIt it( *pObjList );
 	QObject* pObj;
 	// for all dockwidgets (which are children of this mainwindow)
@@ -1342,9 +1318,9 @@ void KMdiMainFrm::findRootDockWidgets( QPtrList<KDockWidget>* pRootDockWidgetLis
 		// find the oldest ancestor of the current dockwidget that can be undocked
 		while ( !pW->isTopLevel() )
 		{
-			if ( pW->inherits( "KDockWidget" ) || pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
+			if ( ::qt_cast<KDockWidget*>( pW ) ||  pW->inherits( "KDockWidget_Compat::KDockWidget" ) )
 			{
-				pUndockCandidate = ( KDockWidget* ) pW;
+				pUndockCandidate = static_cast<KDockWidget*>( pW );
 				if ( pUndockCandidate->enableDocking() != KDockWidget::DockNone )
 					pRootDockW = pUndockCandidate;
 			}
@@ -1366,10 +1342,9 @@ void KMdiMainFrm::findRootDockWidgets( QPtrList<KDockWidget>* pRootDockWidgetLis
 				if ( !found )
 				{
 					pRootDockWidgetList->append( ( KDockWidget* ) pDockW );
-					kdDebug( 760 ) << "pRootDockWidgetList->append(" << pDockW->name() << ");" << endl;
+					kdDebug( 760 ) << k_funcinfo << "pRootDockWidgetList->append(" << pDockW->name() << ");" << endl;
 					QPoint p = pDockW->mapToGlobal( pDockW->pos() ) - pDockW->pos();
-					QRect r( p.x(),
-					         p.y() + m_undockPositioningOffset.y(),
+					QRect r( p.x(), p.y() + m_undockPositioningOffset.y(),
 					         pDockW->width() - windowTitleHeight - frameBorderWidth * 2,
 					         pDockW->height() - windowTitleHeight - frameBorderWidth * 2 );
 					pPositionList->append( r );
@@ -1378,10 +1353,9 @@ void KMdiMainFrm::findRootDockWidgets( QPtrList<KDockWidget>* pRootDockWidgetLis
 			else
 			{
 				pRootDockWidgetList->append( ( KDockWidget* ) pRootDockW );
-				kdDebug( 760 ) << "pRootDockWidgetList->append(" << pDockW->name() << ");" << endl;
+				kdDebug( 760 ) << k_funcinfo << "pRootDockWidgetList->append(" << pDockW->name() << ");" << endl;
 				QPoint p = pRootDockW->mapToGlobal( pRootDockW->pos() ) - pRootDockW->pos();
-				QRect r( p.x(),
-				         p.y() + m_undockPositioningOffset.y(),
+				QRect r( p.x(), p.y() + m_undockPositioningOffset.y(),
 				         pRootDockW->width() - windowTitleHeight - frameBorderWidth * 2,
 				         pRootDockW->height() - windowTitleHeight - frameBorderWidth * 2 );
 				pPositionList->append( r );
@@ -1407,29 +1381,22 @@ void KMdiMainFrm::switchToToplevelMode()
 	const int frameBorderWidth = 7;  // @todo: Can we / do we need to ask the window manager?
 	setUndockPositioningOffset( QPoint( 0, ( m_pTaskBar ? m_pTaskBar->height() : 0 ) + frameBorderWidth ) );
 
-
 	// 1.) select the dockwidgets to be undocked and store their geometry
 	QPtrList<KDockWidget> rootDockWidgetList;
 	QValueList<QRect> positionList;
 	if ( oldMdiMode != KMdi::IDEAlMode )
 		findRootDockWidgets( &rootDockWidgetList, &positionList );
 
-	// 2.) undock the MDI views of QextMDI
+	// 2.) undock the MDI views of KMDI
 	if ( oldMdiMode == KMdi::ChildframeMode )
-	{
 		finishChildframeMode();
-	}
 	else if ( oldMdiMode == KMdi::TabPageMode )
-	{ // if tabified, release all views from their docking covers
-		finishTabPageMode();
-	}
+		finishTabPageMode(); //release alll views from their tabbed mode
 	else if ( m_mdiMode == KMdi::IDEAlMode )
 	{
 		finishIDEAlMode();
 		findRootDockWidgets( &rootDockWidgetList, &positionList );
 	}
-
-	//   if (hasMenuBar()) menuBar()->setTopLevelMenu(false);
 
 	// 3.) undock all these found oldest ancestors (being KDockWidgets)
 	QPtrListIterator<KDockWidget> it3( rootDockWidgetList );
@@ -1470,19 +1437,15 @@ void KMdiMainFrm::switchToToplevelMode()
 		}
 	}
 
-#ifdef __GNUC__
-#warning fixme
-#endif
+	//FIXME although i don't know what to fix
 	// 5. show the child views again
 	QPtrListIterator<KMdiChildView> it( *m_pDocumentViews );
 	for ( it.toFirst(); it.current(); ++it )
 	{
 		KMdiChildView* pView = it.current();
 #ifdef Q_WS_X11
-
 		XSetTransientForHint( qt_xdisplay(), pView->winId(), winId() );
 #endif
-		//      if( !pView->isToolView())
 		pView->show();
 	}
 
@@ -1497,8 +1460,8 @@ void KMdiMainFrm::switchToToplevelMode()
 
 	m_pDockbaseAreaOfDocumentViews->setDockSite( KDockWidget::DockNone );
 	m_mdiMode = KMdi::ToplevelMode;
-	//qDebug("ToplevelMode on");
-
+	
+	kdDebug( 760 ) << k_funcinfo << "Switch to toplevel mode completed" << endl;
 	emit mdiModeHasBeenChangedTo( KMdi::ToplevelMode );
 
 }
@@ -1506,7 +1469,6 @@ void KMdiMainFrm::switchToToplevelMode()
 void KMdiMainFrm::finishToplevelMode()
 {
 	m_pDockbaseAreaOfDocumentViews->setDockSite( KDockWidget::DockCorner );
-	//KIPC::sendMessage(KIPC::ToolbarStyleChanged,winId());
 }
 
 /**
@@ -1548,11 +1510,9 @@ void KMdiMainFrm::switchToChildframeMode()
 		// select the dockwidgets to be undocked and store their geometry
 		QValueList<QRect> positionList;
 		findRootDockWidgets( &rootDockWidgetList, &positionList );
-
-
-
+		
 		// undock all these found oldest ancestors (being KDockWidgets)
-
+		
 		QPtrListIterator<KDockWidget> it3( rootDockWidgetList );
 		for ( ; it3.current(); ++it3 )
 		{
@@ -1564,9 +1524,6 @@ void KMdiMainFrm::switchToChildframeMode()
 		m_mdiMode = KMdi::IDEAlMode;
 
 	}
-
-	//return; //debug
-
 
 	if ( !m_pDockbaseAreaOfDocumentViews )
 	{
@@ -1612,10 +1569,7 @@ void KMdiMainFrm::switchToChildframeMode()
 	KMdi::MdiMode oldMdiMode = m_mdiMode;
 	m_mdiMode = KMdi::ChildframeMode;
 
-#ifdef __GNUC__
-#warning fixme
-#endif
-
+	//FIXME although i don't know what to fix.
 	QPtrListIterator<KMdiChildView> it( *m_pDocumentViews );
 	for ( ; it.current(); ++it )
 	{
@@ -1713,7 +1667,7 @@ void KMdiMainFrm::switchToTabPageMode()
 	{
 		m_pClose->show();
 	}
-	//qDebug("TabPageMode on");
+	kdDebug( 760 ) << "Switch to tab page mode complete" << endl;
 	emit mdiModeHasBeenChangedTo( KMdi::TabPageMode );
 }
 

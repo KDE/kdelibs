@@ -526,8 +526,8 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 		if ( ke->key() == Qt::Key_Tab )
 		{
 			QWidget* w = ( QWidget* ) obj;
-			FocusPolicy wfp = widg->focusPolicy();
-			if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+			FocusPolicy wfp = w->focusPolicy();
+			if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || w->focusPolicy() == QWidget::WheelFocus )
 			{
 				if ( m_lastFocusableChildWidget != 0 )
 				{
@@ -578,7 +578,7 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 				++it;
 				widg->removeEventFilter( this );
 				FocusPolicy wfp = widg->focusPolicy();
-				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || widg->focusPolicy() == QWidget::WheelFocus )
 				{
 					if ( m_firstFocusableChildWidget == widg )
 						m_firstFocusableChildWidget = 0L;   // reset first widget
@@ -612,7 +612,7 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 				widg->installEventFilter( this );
 				connect( widg, SIGNAL( destroyed() ), this, SLOT( slot_childDestroyed() ) );
 				FocusPolicy wfp = widg->focusPolicy();
-				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || widg->focusPolicy() == QWidget::WheelFocus )
 				{
 					if ( m_firstFocusableChildWidget == 0 )
 						m_firstFocusableChildWidget = widg;  // first widge
