@@ -145,7 +145,7 @@ public:
      * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
      * returns "/bar/stuff.tar.gz".
      */
-    const char* path();
+    const char* path() const;
     
     /**
      * If we parse for example ftp://weis@localhost then we dont have a path.

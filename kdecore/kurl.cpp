@@ -363,7 +363,7 @@ KURL::~KURL() {
     debugC("~ %p",this);
 }
 
-const char* KURL::path() 
+const char* KURL::path() const
 { 
     static uint count = 0;
     debugC("path() %d",++count);
@@ -371,9 +371,10 @@ const char* KURL::path()
     if (path_part.isNull()) 
 	return "";
     else {
-	if (path_part_decoded.isNull()) {
-	    path_part_decoded = path_part.copy();
-	    KURL::decodeURL(path_part_decoded);
+        KURL *that = const_cast<KURL*>(this);
+	if (that->path_part_decoded.isNull()) {
+	    that->path_part_decoded = path_part.copy();
+	    KURL::decodeURL(that->path_part_decoded);
 	}
 	debugC("path return \"%s\"",path_part_decoded.data());
 	return path_part_decoded.data();
