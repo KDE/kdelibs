@@ -78,11 +78,6 @@ class KTMainWindowPrivate;
  * There is also a macro RESTORE which can restore all your windows
  * on next login.
  *
- * KTMainWindow might be replaced/extended in the future to
- * KMainWindow which will be a child of @ref QMainWindow. Anyway,
- * the current interface will be supported for compatibility
- * reasons.
- *
  *  Note that a KTMainWindow per-default is created with the
  *  WDestructiveClose flag, i.e. it is automatically destroyed when the
  *  window is closed. If you do not want this behavior, specify 0 as
