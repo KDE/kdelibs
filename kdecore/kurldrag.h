@@ -28,17 +28,17 @@ class QMimeSource;
 class KURLDragPrivate;
 /**
  * This class is to be used instead of QUriDrag when using KURL.
- * The reason is : QUriDrag (and the XDND/W3C standards) expect URLs to
+ * The reason is: QUriDrag (and the XDND/W3C standards) expect URLs to
  * be encoded in UTF-8 (unicode), but KURL uses the current locale
  * by default.
  * The other reasons for using this class are:
- * - it exports text/plain (for dropping/pasting into lineedits, mails etc.)
- * - it has support for metadata, shipped as part of the dragobject
+ * @li it exports text/plain (for dropping/pasting into lineedits, mails etc.)
+ * @li it has support for metadata, shipped as part of the dragobject
  * This is important, for instance to set a correct HTTP referrer (some websites
  * require it for downloading e.g. an image).
  *
- * To create a drag object, use KURLDrag::newDrag with a list of KURLs.
- * To decode a drop, use KURLDrag::decode or QUriDrag::decodeLocalFiles.
+ * To create a drag object, use KURLDrag::newDrag() with a list of KURLs.
+ * To decode a drop, use KURLDrag::decode() or QUriDrag::decodeLocalFiles().
  */
 class KURLDrag : public QUriDrag
 {
@@ -48,11 +48,19 @@ public:
    * The @p dragSource and @p name arguments are passed on to QUriDrag,
    * and the list of urls is converted to UTF-8 before being passed
    * to QUriDrag.
+   * @param urls the list of URLs
+   * @param dragSource the parent of the QObject
+   * @param name the name of the QObject
    */
   KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
+   * @param urls the list of URLs
+   * @param metaData a map containing meta data
+   * @param dragSource the parent of the QObject
+   * @param name the name of the QObject
+   * @see metaData()
    */
   KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
             QWidget* dragSource, const char * name );
@@ -71,17 +79,20 @@ public:
                              QWidget* dragSource = 0, const char * name = 0 );
 
   /**
-   * Meta-data to associate with those URLs (to be used after newDrag)
-   * @see KIO::TransferJob etc.
+   * Meta-data to associate with those URLs (to be used after newDrag).
    * This is an alternative way of setting the metadata:
    * either use the constructor to pass it all at once, or use
    * drag->metaData()["key"] = data;
+   * @see KIO::TransferJob
    */
   QMap<QString, QString> &metaData() { return m_metaData; }
 
   /**
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs.
+   * @param e the mime source
+   * @param urls the list of urls will be written here
+   * @return true if successful, false otherwise
    */
   static bool decode( const QMimeSource *e, KURL::List &urls );
 
@@ -89,6 +100,10 @@ public:
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs and a set of metadata.
    * You should be using this one, if possible.
+   * @param e the mime source
+   * @param urls the list of urls will be written here
+   * @param metaData the metadata map will be written here
+   * @return true if successful, false otherwise
    */
   static bool decode( const QMimeSource *e, KURL::List &urls, QMap<QString,QString>& metaData );
 
