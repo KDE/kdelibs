@@ -569,7 +569,7 @@ QString KFileItem::getToolTipText()
 {
   // we can return QString::null if no tool tip should be shown
 #ifdef _GNUC  
-#waring move that tool tip maxcout elsewhere (make it configurable?)
+#waring move that tool tip maxcount elsewhere (make it configurable?)
 #endif
   const int maxcount = 6;
 
@@ -632,12 +632,33 @@ QString KFileItem::getToolTipText()
       if ( item && (item->key() != "Title") && (item->key() != "Name") )
       {
         QString s;
-        if ( item->value().type() == QVariant::Bool )
-          s = item->value().toBool() ? i18n("Yes") : i18n("No");
-        else
-          s = item->value().toString();
+        const QVariant& value = item->value();
+        switch ( value.type() ) {
+          case QVariant::Bool:
+            s = value.toBool() ? i18n("Yes") : i18n("No");
+            break;
+          case QVariant::Time:
+            s = KGlobal::locale()->formatTime( value.toTime(), true );
+            break;
+          case QVariant::DateTime:
+            s = KGlobal::locale()->formatDateTime( value.toDateTime(), true, true );
+            break;
+          case QVariant::Date:
+            s = KGlobal::locale()->formatDate( value.toDate(), true );
+            break;
+          case QVariant::Double: {
+            bool ok;
+            double val = value.toDouble( &ok );
+            if ( ok )
+              s = KGlobal::locale()->formatNumber( val );
+            break;
+          }
+          default:
+            s = value.toString();
+            break;
+        }
       
-        if ( (s != QString::null) && ! s.isEmpty() )
+        if ( !s.isEmpty() )
         {
           count++;
           tip += QStyleSheet::escape( item->translatedKey() ) + ": " +
