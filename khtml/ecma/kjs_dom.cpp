@@ -457,13 +457,13 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     break;
   case ScrollTop: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer())
+    if (rend && rend->layer() && rend->style()->hidesOverflow())
         rend->layer()->scrollToYOffset(value.toInt32(exec));
     break;
   }
   case ScrollLeft: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer())
+    if (rend && rend->layer() && rend->style()->hidesOverflow())
       rend->layer()->scrollToXOffset(value.toInt32(exec));
     break;
   }
