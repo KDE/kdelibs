@@ -1437,7 +1437,7 @@ static const KCmdLineOptions kde_options[] =
    { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
    { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager"), 0},
    { "style <style>", I18N_NOOP("sets the application GUI style"), 0},
-   { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget"), 0},
+   { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget - see man X for the argument format"), 0},
 #if QT_VERSION < 0x030100
    { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
 #else
@@ -1876,7 +1876,7 @@ void KApplication::applyGUIStyle()
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (d->overrideStyle.isEmpty()) {
-      // ### add check wether we already use the correct style to return then
+      // ### add check whether we already use the correct style to return then
       // (workaround for Qt misbehavior to avoid double style initialization)
 
       QStyle* sp = QStyleFactory::create( styleStr );
