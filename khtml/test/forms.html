@@ -7,7 +7,7 @@ This page is a regression test for forms.<BR>
 The word "Start" should be above the textarea.<BR>
 The word "End" should be underneath the textarea.<BR>
 The text inside the textarea should match with its description.
-<form action="http://localhost/test.cgi" method=get> 
+<form action="http://localhost/test.cgi" method=get>
 <H2>Textarea</H2>
 <P>Start
 <P>
@@ -29,6 +29,12 @@ Start
 Start
 <P>
 <input type=submit name=inputs value="Submit">
+<P>End
+&lt;INPUT type=image&gt;
+<P>
+Start
+<P>
+<input type=image name=image value="konqi" src=konqi.gif>
 <P>End
 <H2>Input, reset</H2>
 <P>
@@ -64,17 +70,23 @@ Test<BR>
 <p>
 SELECT:<br>
 
-<select _name=select1>
+<select name=select1>
 <option>option1</option>
 <option selected>option2</option>
 </select>
 <p>
 SELECT Size=2:<br>
-<select _name=select2 size=2>
+<select name=select2 size=2>
 <option>option1</option>
 <option selected>option2</option>
 </select>
 
+<p>
+BUTTON:<br>
+
+<button name=button type=submit value="this should get replaced by the contents">
+	This text should be visible on the button
+</button>
 </form>
 
 </body>

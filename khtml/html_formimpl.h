@@ -114,7 +114,7 @@ public:
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
-    
+
     virtual short getMinWidth() const;
     virtual short getMaxWidth() const;
 
@@ -134,13 +134,20 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
+class HTMLButtonElementImpl : public QObject, public HTMLGenericFormElementImpl
 {
+    Q_OBJECT
 public:
     HTMLButtonElementImpl(DocumentImpl *doc);
     HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
     virtual ~HTMLButtonElementImpl();
+
+    enum typeEnum {
+	SUBMIT,
+	RESET,
+	BUTTON
+    };
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -148,13 +155,33 @@ public:
     virtual tagStatus startTag() { return BUTTONStartTag; }
     virtual tagStatus endTag() { return BUTTONEndTag; }
 
-    bool disabled() const;
+    bool disabled() const { return _disabled; }
     void setDisabled( bool );
 
     long tabIndex() const;
     void setTabIndex( long );
 
     DOMString type() const;
+
+    void parseAttribute(Attribute *attr);
+
+    virtual void attach(KHTMLWidget *w);
+    virtual void layout( bool deep = false );
+
+    virtual QString encoding();
+    virtual void calcMinMaxWidth();
+
+    virtual void reset();
+
+public slots:
+    void slotSubmit();
+
+protected:
+    DOMString _value;
+    bool _disabled;
+    bool _clicked;
+    typeEnum _type;
+    QString currValue;
 };
 
 // -------------------------------------------------------------------------

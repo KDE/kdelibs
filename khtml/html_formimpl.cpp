@@ -24,6 +24,8 @@
 
 #include <stdio.h>
 
+#include <klocale.h>
+
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
@@ -379,14 +381,14 @@ void HTMLGenericFormElementImpl::detach()
     view = 0;
 }
 
-short HTMLGenericFormElementImpl::getMinWidth() const 
+short HTMLGenericFormElementImpl::getMinWidth() const
 {
     if (w)
     	return w->width();
     return 0;
 }
 
-short HTMLGenericFormElementImpl::getMaxWidth() const 
+short HTMLGenericFormElementImpl::getMaxWidth() const
 {
     if (w)
     	return w->width();
@@ -398,11 +400,19 @@ short HTMLGenericFormElementImpl::getMaxWidth() const
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
+    _disabled = false;
+    _clicked = false;
+    _type = SUBMIT;
+    setBlocking();
 }
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
+    _disabled = false;
+    _clicked = false;
+    _type = SUBMIT;
+    setBlocking();
 }
 
 HTMLButtonElementImpl::~HTMLButtonElementImpl()
@@ -417,12 +427,6 @@ const DOMString HTMLButtonElementImpl::nodeName() const
 ushort HTMLButtonElementImpl::id() const
 {
     return ID_BUTTON;
-}
-
-bool HTMLButtonElementImpl::disabled() const
-{
-    // ###
-    return false;
 }
 
 void HTMLButtonElementImpl::setDisabled( bool )
@@ -443,6 +447,134 @@ DOMString HTMLButtonElementImpl::type() const
 {
     // ###
     return DOMString();
+}
+
+void HTMLButtonElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_TYPE:
+	if ( strcasecmp( attr->value(), "submit" ) == 0 )
+	    _type = SUBMIT;
+	else if ( strcasecmp( attr->value(), "reset" ) == 0 )
+	    _type = RESET;
+	else if ( strcasecmp( attr->value(), "button" ) == 0 )
+	    _type = BUTTON;
+	break;
+    case ATTR_VALUE:
+	_value = attr->value();
+	currValue = _value.string();
+	break;
+    case ATTR_DISABLED:
+	_disabled = true;
+	break;
+    case ATTR_TABINDEX:
+    case ATTR_ACCESSKEY:
+    case ATTR_ONFOCUS:
+    case ATTR_ONBLUR:
+	// ignore for the moment
+	break;
+    case ATTR_NAME:
+	// handled by parent...
+    default:
+	HTMLGenericFormElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
+{
+    view = _view;
+
+    QPushButton *b = new QPushButton(view->viewport());
+    w = b;
+
+    switch(_type)
+    {
+    case SUBMIT:
+    {
+	if(_value != 0)
+	    b->setText(_value.string());
+	else
+	    b->setText(i18n("Submit Query"));
+	QObject::connect(b, SIGNAL(clicked()), this, SLOT(slotSubmit()));
+	view->addChild(w, 0, 0);
+	break;
+    }
+    case RESET:
+    {
+	QPushButton *b = new QPushButton(view->viewport());
+	w = b;
+	if ( _value.length() )
+	    b->setText( _value.string() );
+	else
+	    b->setText( i18n("Reset") );
+	view->addChild(w, 0, 0);
+	QObject::connect(b, SIGNAL(clicked()), form(), SLOT(slotReset()));
+	break;
+    }
+    case BUTTON:
+    {
+	QPushButton *b = new QPushButton(view->viewport());
+	w = b;
+	if ( _value.length() )
+	    b->setText( _value.string() );
+	else
+	    b->setText( "" );
+	view->addChild(w, 0, 0);
+	break;
+    }
+    }
+    if(w && _disabled) w->setEnabled(false);
+}
+
+void HTMLButtonElementImpl::layout( bool deep = false )
+{
+    if(!w) return;
+    
+    if(_first)
+    {
+	// ### render contents into button
+    }
+
+    w->resize(w->sizeHint());
+    descent = 5;
+    ascent = w->height() - 5;
+    width = w->width();
+    
+    setLayouted();
+    setBlocking(false);
+}
+
+QString HTMLButtonElementImpl::encoding()
+{
+    QString _encoding;
+    
+    if(!_disabled && (_type != SUBMIT || _clicked) )
+    {
+	_encoding = encodeString( _name.string() );
+	_encoding += '=';
+	_encoding += encodeString( currValue );
+    }	
+    return _encoding;
+}
+
+void HTMLButtonElementImpl::calcMinMaxWidth()
+{
+    layout();
+    
+    minWidth = width;
+    maxWidth = width;
+}
+
+void HTMLButtonElementImpl::reset()
+{
+    currValue = _value.string();
+}
+
+void HTMLButtonElementImpl::slotSubmit()
+{
+    _clicked = true;
+    if(form()) _form->slotSubmit();
 }
 
 // -------------------------------------------------------------------------
@@ -695,7 +827,7 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 	if(_value != 0)
 	    b->setText(_value.string());
 	else
-	    b->setText("Submit Query");
+	    b->setText(i18n("Submit Query"));
 	QObject::connect(b, SIGNAL(clicked()), this, SLOT(slotSubmit()));
 	view->addChild(w, 0, 0);
 	break;
@@ -707,7 +839,7 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 	if ( _value.length() )
 	    b->setText( _value.string() );
 	else
-	    b->setText( "Reset" );
+	    b->setText( i18n("Reset") );
 	view->addChild(w, 0, 0);
 	QObject::connect(b, SIGNAL(clicked()), form(), SLOT(slotReset()));
 	break;
@@ -721,8 +853,9 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 	QPushButton *b = new QPushButton(view->viewport());
 	w = b;
 	b->setText("IMG");
-	if(_src != 0) //###
-	    /*_src =*/ document->requestImage(this, _src);
+	if(_src != 0)
+	    _src = document->requestImage(this, _src);
+	QObject::connect(b, SIGNAL(clicked()), this, SLOT(slotSubmit()));
 	break;
     }
     case BUTTON:
@@ -742,9 +875,6 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 
 void HTMLInputElementImpl::layout( bool )
 {
-  //width = availableWidth;
-    //if(!width) return;
-
     printf("inputElement::layout()\n");
     switch(_type)
     {
@@ -798,6 +928,8 @@ void HTMLInputElementImpl::setPixmap( QPixmap *p )
     _pixmap = p;
     if(_type == IMAGE)
 	static_cast<QPushButton *>(w)->setPixmap(*p);
+    calcMinMaxWidth();
+    if(_parent) _parent->updateSize();	
 }
 
 void HTMLInputElementImpl::pixmapChanged( QPixmap *p )
@@ -805,6 +937,8 @@ void HTMLInputElementImpl::pixmapChanged( QPixmap *p )
     _pixmap = p;
     if(_type == IMAGE)
 	static_cast<QPushButton *>(w)->setPixmap(*p);
+    calcMinMaxWidth();
+    if(_parent) _parent->updateSize();	
 }
 
 QString HTMLInputElementImpl::encoding()
@@ -837,9 +971,9 @@ QString HTMLInputElementImpl::encoding()
 	    _encoding += encodeString( currValue );
 	}
 	break;
-    case IMAGE:
     case BUTTON:
 	break;
+    case IMAGE:
     case SUBMIT:
 	if ( _clicked )
 	{
@@ -859,6 +993,7 @@ QString HTMLInputElementImpl::encoding()
 	break;
     }
 
+    _clicked = false;
     printf("this:enc = %s\n", _encoding.ascii());
     return _encoding;
 }
@@ -1377,7 +1512,6 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
 {
     _rows = _cols = 0;
     _disabled = false;
-
 }
 
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -1385,11 +1519,13 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
 {
     _rows = _cols = 0;
     _disabled = false;
-
 }
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
 {
+    // funny... it somehow doesn't work without.
+    if(w) delete w;
+    w = 0;
 }
 
 const DOMString HTMLTextAreaElementImpl::nodeName() const
