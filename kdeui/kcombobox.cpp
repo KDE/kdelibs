@@ -20,8 +20,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <stdlib.h>
-
 #include <qclipboard.h>
 #include <qlistbox.h>
 #include <qpopupmenu.h>
@@ -70,8 +68,8 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 
     if ( rw )
     {
-        KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
-        setLineEdit( edit );
+      KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
+      setLineEdit( edit );
     }
 }
 
@@ -93,11 +91,6 @@ void KComboBox::init()
 
     // for wheelscrolling
     installEventFilter( this );
-    if ( lineEdit() )
-    {
-        connect( lineEdit(), SIGNAL( returnPressed() ), 
-                 this, SIGNAL( returnPressed() ));
-    }
 }
 
 
@@ -257,16 +250,20 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
+    // Non-editable combobox cannot have a line edit.
+    if (!editable ())
+      return;
+      
     QComboBox::setLineEdit( edit );
     d->klineEdit = dynamic_cast<KLineEdit*>( edit );
     setDelegate( d->klineEdit );
-
-    // forward some signals.
-    if ( edit )
+    
+    // Connect the returnPressed signal for both Q[K]LineEdits'
+    if (edit)
         connect( edit, SIGNAL( returnPressed() ), SIGNAL( returnPressed() ));
-
+    
     if ( d->klineEdit )
-    {
+    {        
         connect( d->klineEdit, SIGNAL( returnPressed( const QString& )), 
                  SIGNAL( returnPressed( const QString& ) ));
 
