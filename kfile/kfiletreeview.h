@@ -74,68 +74,62 @@ public:
    /**
     *  adds a branch to the treeview item. This highlevel function creates the branch, adds
     *  it to the treeview, starts the branches dirlister to list the directory and
-    *  @returns the id of the new branch or -1 in case of an error
+    *  @returns a pointer to the new branch or zero
     *  @param path is the base url of the branch
     *  @param name is the name of the branch, which will be the text for column 0
     *  @param showHidden says if hidden files and directories should be visible
     */
-   int addBranch( const KURL &path, const QString& name, bool showHidden = false );
+   KFileTreeBranch* addBranch( const KURL &path, const QString& name, bool showHidden = false );
 
    /**
     *  same as the function above but with a pixmap to set for the branch.
     */
-   int addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
+   KFileTreeBranch* addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
 
     // ### addBranch( KFileTreeBranch * )?
     
    /**
     *  removes the branch with the given number from the treeview.
-    *  @param branchno is the number of the branch to remove.
+    *  @param branch is a pointer to the branch
     *  @returns true on success.
     */
-   bool removeBranch( int branchno );
+   bool removeBranch( const KFileTreeBranch *branch );
 
    /**
     *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.
-    *  @param branchno is the index number of the branch
+    *  @param branchno is the name of a branch
     */
-   KFileTreeBranch *branch( int branchno );
-
    KFileTreeBranch *branch( const QString& searchName );
-   /**
-    *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.
-    *  @param searchName is a string with the branch name to search for.
-    */
    
    /**
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
+    *  @param branch is a pointer to a @ref KFileTreeBranch
     */
-   void setDirOnlyMode( int branchno, bool );
-
+   void setDirOnlyMode( KFileTreeBranch *brnch, bool );
 
    /**
     * searches a branch for a @ref KFileTreeViewItem identified by the relative url given as
     * second parameter. The method adds the branches base url to the relative path and finds
     * the item.
     * @returns a pointer to the item or zero if the item does not exist.
-    * @param branchNo is the index number of the branch in the kfiletreeview
+    * @param brnch  is a pointer to the branch to search in
     * @param relUrl is the branch relativ url
     */
-   KFileTreeViewItem *findItem( int branchNo, const QString& relUrl );
+   KFileTreeViewItem *findItem( KFileTreeBranch* brnch, const QString& relUrl );
 
    /**
     * see method above, differs only in the first parameter. Finds the branch by its name.
     */
    KFileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
    
-   /**
-    * see method above, differs only in the first parameter.
-    */
-   KFileTreeViewItem *findItem( KFileTreeBranch* brnch, const QString& relUrl );
-
    
 public slots:
-   void populateBranch( int );
+   /**
+    * starts to list the filesystem for the branch. This is the last method to call after
+    * having created a branch and set attributes like @ref setDirOnlyMode. This makes the
+    * branch alive
+    */
+   void populateBranch( KFileTreeBranch *brnch );
 
 protected:
     virtual QDragObject * dragObject();

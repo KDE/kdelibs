@@ -369,7 +369,7 @@ void KFileTreeView::FilesChanged( const KURL::List & urls )
 }
 #endif
 
-int KFileTreeView::addBranch( const KURL &path, const QString& name,
+KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
                               bool showHidden )
 {
     const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( KIcon::Small );
@@ -377,7 +377,7 @@ int KFileTreeView::addBranch( const KURL &path, const QString& name,
     return addBranch( path, name, folderPix, showHidden);
 }
 
-int KFileTreeView::addBranch( const KURL &path, const QString& name,
+KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
                               const QPixmap& pix, bool showHidden )
 {
    kdDebug(1201) << "adding another root " << path.prettyURL() << endl;
@@ -389,14 +389,9 @@ int KFileTreeView::addBranch( const KURL &path, const QString& name,
 	    this, SLOT( slotPopulateFinished( KFileTreeViewItem* )));
 
    m_branches.append( newBranch );
-   return( m_branches.at());
+   return( newBranch );
 }
 
-KFileTreeBranch *KFileTreeView::branch( int branchno )
-{
-   KFileTreeBranch *branch = m_branches.at( branchno );
-   return( branch );
-}
 
 KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
 {
@@ -416,29 +411,27 @@ KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
    return ( 0L ); 
 }
 
-bool KFileTreeView::removeBranch( int branchno )
+bool KFileTreeView::removeBranch( const KFileTreeBranch *branch )
 {
-   return( m_branches.remove( branchno ));
+   return( m_branches.remove( branch ));
 }
 
-void KFileTreeView::setDirOnlyMode( int branchno, bool bom )
+void KFileTreeView::setDirOnlyMode( KFileTreeBranch* branch, bool bom )
 {
-   KFileTreeBranch *branch = m_branches.at( branchno );
    if( branch )
    {
       branch->setDirOnlyMode( bom );
    }
 }
 
-void KFileTreeView::populateBranch(int branchno)
+void KFileTreeView::populateBranch( KFileTreeBranch *brnch )
 {
-   KFileTreeBranch *branch = m_branches.at( branchno );
-   if( branch )
+   if( brnch )
    {
-      branch->populate();
+      brnch->populate();
    }
 
-   startAnimation( branch->root() );
+   startAnimation( brnch->root() );
    kdDebug() << "Starting to populate !" << endl;
 }
 
@@ -560,12 +553,6 @@ void KFileTreeView::slotOnItem( QListViewItem *item )
 
 void KFileTreeView::slotItemRenamed(QListViewItem* item, const QString &name, int col)
 {
-}
-
-KFileTreeViewItem *KFileTreeView::findItem( int branchNo, const QString& relUrl )
-{
-   KFileTreeBranch *br = branch( branchNo );
-   return( findItem( br, relUrl ));
 }
 
 KFileTreeViewItem *KFileTreeView::findItem( const QString& branchName, const QString& relUrl )
