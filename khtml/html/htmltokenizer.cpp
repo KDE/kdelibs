@@ -289,7 +289,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    scriptCode = 0;
 	
 	    addScriptOutput();
-    
+
 	    return; // Finished parsing script/style/comment/listing
         }
         // Find out wether we see an end tag without looking at
@@ -1282,7 +1282,7 @@ void HTMLTokenizer::end()
 	return;
     }
 
-    processToken();
+    if(currToken) processToken();
 
     delete [] buffer;
     buffer = 0;
