@@ -66,8 +66,8 @@
 
     Calling these definitions as indicated above will make the
     following entities available for use in the text:
-    . &license-links; (not yet)
-    . &help-menu; (not yet)
+    . &license-links;
+    . &help-menu;
     . &FDLNotice;
 -->
 
