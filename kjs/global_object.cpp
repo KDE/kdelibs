@@ -226,7 +226,7 @@ Completion GlobalFunc::execute(const List &args)
     Number n = args[0].toNumber();
     res = Boolean(!n.isNaN() && !n.isInf());
   } else if (id == Escape) {
-    UString r, s, str = args[0].toString().value();
+    UString r = "", s, str = args[0].toString().value();
     const UChar *c = str.data();
     for (int k = 0; k < str.size(); k++, c++) {
       int u = c->unicode();

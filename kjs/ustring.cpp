@@ -380,6 +380,8 @@ double UString::toDouble() const
 
 int UString::find(const UString &f, int pos) const
 {
+  if (isNull())
+    return -1;
   long fsize = f.size() * sizeof(UChar);
   if (pos < 0)
     pos = 0;
@@ -393,6 +395,8 @@ int UString::find(const UString &f, int pos) const
 
 int UString::rfind(const UString &f, int pos) const
 {
+  if (isNull())
+    return -1;
   if (pos + f.size() >= size())
     pos = size() - f.size();
   long fsize = f.size() * sizeof(UChar);
@@ -406,6 +410,8 @@ int UString::rfind(const UString &f, int pos) const
 
 UString UString::substr(int pos, int len) const
 {
+  if (isNull())
+    return -1;
   if (pos < 0)
     pos = 0;
   else if (pos >= (int) size())
