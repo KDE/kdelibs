@@ -86,4 +86,41 @@
 
 -->
 
+<!-- try with olinks: it nearly works --><!--
+  <xsl:template match="olink">
+    <a>
+      <xsl:attribute name="href">
+	<xsl:choose>
+	  <xsl:when test="@type = 'kde-installation'">
+	    <xsl:choose>
+	      <xsl:when test="@linkmode = 'kdems-man'">
+		<xsl:value-of select="id(@linkmode)"/>
+		<xsl:value-of select="@targetdocent"/>
+		<xsl:text>(</xsl:text>
+		<xsl:value-of select="@localinfo"/>
+		<xsl:text>)</xsl:text>
+	      </xsl:when>
+	      <xsl:when test="@linkmode = 'kdems-help'">
+		<xsl:value-of select="id(@linkmode)"/>
+		<xsl:text>/</xsl:text>
+		<xsl:value-of select="@targetdocent"/>
+<xsl:variable name="targetdocent" select="@targetdocent"/>
+<xsl:value-of select="$targetdocent"/>
+          <xsl:if test="@targetdocent">
+            <xsl:value-of select="unparsed-entity-uri(string($targetdocent))"/>
+          </xsl:if>
+                <xsl:for-each select="document('/home/fouvry/kdeutils/doc/kedit/index.docbook')">
+		  <xsl:value-of select=".//*[@id=$localinfo]"/>
+                </xsl:for-each>
+		<xsl:text>#</xsl:text>
+		<xsl:value-of select="@localinfo"/>
+	      </xsl:when>
+	    </xsl:choose>
+	  </xsl:when>
+	</xsl:choose>
+      </xsl:attribute>
+      <xsl:value-of select="."/>
+    </a>
+  </xsl:template>
+-->
 </xsl:stylesheet>
