@@ -429,7 +429,7 @@ void AutoTableLayout::recalcColumn( int effCol )
     }
 
 #if 0
-    // this quirk currently seems to break more than it fixes (anyone knows a place where this is needed??)
+    // this quirk currently seems to break more than it fixes (anyone knows a place where this is needed?? )
     // Nav/IE quirk, see the condition above
     if ( l.width.type == Fixed ) {
 	if ( table->style()->htmlHacks()
@@ -686,6 +686,7 @@ int AutoTableLayout::calcEffectiveWidth()
 #ifdef DEBUG_LAYOUT
 		    qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", col, lastCol-1, cMinWidth, minWidth );
 #endif
+		    int maxw = maxWidth;
 		    for ( unsigned int pos = col; minWidth > 0 && pos < lastCol; pos++ ) {
 
 			int w;
@@ -693,12 +694,12 @@ int AutoTableLayout::calcEffectiveWidth()
 			    w = QMAX( layoutStruct[pos].effMinWidth, layoutStruct[pos].width.value );
 			    fixedWidth -= layoutStruct[pos].width.value;
 			} else {
-			    w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMinWidth / minWidth );
+			    w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMaxWidth / maxw );
 			}
 #ifdef DEBUG_LAYOUT
 			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 #endif
-			minWidth -= layoutStruct[pos].effMinWidth;
+			maxw -= layoutStruct[pos].effMaxWidth;
 			cMinWidth -= w;
 			layoutStruct[pos].effMinWidth = w;
 		    }
