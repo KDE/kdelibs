@@ -379,7 +379,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Document:
       if (isSafeScript(exec))
       {
-        if (m_part->document().isNull() || m_part->htmlDocument().body().isNull()) {
+        if (m_part->document().isNull()) {
           kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
           m_part->begin();
           m_part->write("<HTML><BODY>");

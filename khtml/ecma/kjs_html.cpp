@@ -45,6 +45,8 @@
 #include "java/kjavaappletcontext.h"
 
 #include "misc/htmltags.h"
+#include "rendering/render_object.h"
+#include "rendering/render_root.h"
 
 #include <kdebug.h>
 
@@ -524,6 +526,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
   document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
+  scrollHeight	KJS::HTMLElement::ElementScrollHeight	DontDelete|ReadOnly
+  scrollWidth	KJS::HTMLElement::ElementScrollWidth	DontDelete|ReadOnly
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
 @end
@@ -575,8 +579,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   link		KJS::HTMLElement::BodyLink	DontDelete
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
-  scrollHeight	KJS::HTMLElement::BodyScrollHeight	DontDelete|ReadOnly
-  scrollWidth	KJS::HTMLElement::BodyScrollWidth	DontDelete|ReadOnly
 @end
 @begin HTMLFormElementTable 11
 # Also supported, by name/index
@@ -1194,8 +1196,19 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case BodyLink:            return getString(body.link());
     case BodyText:            return getString(body.text());
     case BodyVLink:           return getString(body.vLink());
-    case BodyScrollHeight:   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
-    case BodyScrollWidth:    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
+    // Those exist for all elements, but have a different implementation for body
+    // e.g. lowestPosition doesn't include margins.
+    case ElementScrollHeight:
+    case ElementScrollWidth:
+      {
+        khtml::RenderObject *rend = body.ownerDocument().handle() ? body.ownerDocument().handle()->renderer() : 0L;
+        if (rend) {
+          Q_ASSERT( rend->isRoot() );
+          khtml::RenderRoot* root = static_cast<khtml::RenderRoot*>(rend);
+          return Number( token == ElementScrollWidth ? root->docWidth() : root->docHeight() );
+        }
+        return Number(0);
+      }
     }
   }
   break;
@@ -1772,6 +1785,15 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
     return getHTMLCollection(exec,element.children());
+  case ElementScrollHeight: {
+    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
+    // Note: lowestPosition only works on blocklevel, special or replaced elements
+    return Number(rend ? rend->lowestPosition() : 0);
+  }
+  case ElementScrollWidth: {
+    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
+    return Number(rend ? rend->rightmostPosition() : 0);
+  }
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kdError() << "HTMLElement::getValueProperty unhandled token " << token << endl;

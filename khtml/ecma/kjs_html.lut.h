@@ -51,7 +51,7 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry HTMLElementTableEntries[] = {
-   { 0, 0, 0, 0, 0 },
+   { "scrollHeight", KJS::HTMLElement::ElementScrollHeight, DontDelete|ReadOnly, 0, 0 },
    { "innerHTML", KJS::HTMLElement::ElementInnerHTML, DontDelete, 0, &HTMLElementTableEntries[10] },
    { "title", KJS::HTMLElement::ElementTitle, DontDelete, 0, &HTMLElementTableEntries[8] },
    { 0, 0, 0, 0, 0 },
@@ -61,12 +61,13 @@ const struct HashEntry HTMLElementTableEntries[] = {
    { "dir", KJS::HTMLElement::ElementDir, DontDelete, 0, &HTMLElementTableEntries[9] },
    { "lang", KJS::HTMLElement::ElementLang, DontDelete, 0, 0 },
    { "className", KJS::HTMLElement::ElementClassName, DontDelete, 0, &HTMLElementTableEntries[11] },
-   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[12] },
-   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, 0 },
+   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[13] },
+   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, &HTMLElementTableEntries[12] },
+   { "scrollWidth", KJS::HTMLElement::ElementScrollWidth, DontDelete|ReadOnly, 0, 0 },
    { "children", KJS::HTMLElement::ElementChildren, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLElementTable = { 2, 13, HTMLElementTableEntries, 8 };
+const struct HashTable HTMLElementTable = { 2, 14, HTMLElementTableEntries, 8 };
 
 }; // namespace
 
@@ -205,13 +206,11 @@ const struct HashEntry HTMLBodyElementTableEntries[] = {
    { "vLink", KJS::HTMLElement::BodyVLink, DontDelete, 0, 0 },
    { "text", KJS::HTMLElement::BodyText, DontDelete, 0, 0 },
    { "link", KJS::HTMLElement::BodyLink, DontDelete, 0, 0 },
-   { "aLink", KJS::HTMLElement::BodyALink, DontDelete, 0, &HTMLBodyElementTableEntries[10] },
-   { "bgColor", KJS::HTMLElement::BodyBgColor, DontDelete, 0, &HTMLBodyElementTableEntries[9] },
-   { "scrollHeight", KJS::HTMLElement::BodyScrollHeight, DontDelete|ReadOnly, 0, 0 },
-   { "scrollWidth", KJS::HTMLElement::BodyScrollWidth, DontDelete|ReadOnly, 0, 0 }
+   { "aLink", KJS::HTMLElement::BodyALink, DontDelete, 0, 0 },
+   { "bgColor", KJS::HTMLElement::BodyBgColor, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLBodyElementTable = { 2, 11, HTMLBodyElementTableEntries, 8 };
+const struct HashTable HTMLBodyElementTable = { 2, 9, HTMLBodyElementTableEntries, 8 };
 
 }; // namespace
 
