@@ -124,15 +124,20 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
-			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -L 'serv_name' -W %2 %3").arg(KProcess::quote(item->text(0))).arg(KProcess::quote(item->text(0))).arg(smbPasswordString(m_login,m_password));
-			*m_proc << cmd;
+			*m_proc << "nmblookup -M ";
+                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -L 'serv_name' -W ";
+                        *m_proc << KProcess::quote(item->text(0)) + " "+ KProcess::quote(smbPasswordString(m_login,m_password));
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			m_current = item;
-			QString	cmd = QString("smbclient -L %1 -W %2 %3").arg(KProcess::quote(item->text(0))).arg(KProcess::quote(item->parent()->text(0))).arg(smbPasswordString(m_login,m_password));
-			*m_proc << cmd;
+			*m_proc << "smbclient -L ";
+                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << "-W";
+                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << KProcess::quote(smbPasswordString(m_login,m_password));
 			startProcess(ShareListing);
 		}
 	}
