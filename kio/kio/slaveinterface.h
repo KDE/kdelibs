@@ -271,6 +271,9 @@ protected:
      */
     static void sigpipe_handler(int);
 
+protected slots:
+    void calcSpeed();
+
 protected:
     Connection * m_pConnection;
 

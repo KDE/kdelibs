@@ -28,6 +28,8 @@
 #include <kio/observer.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <time.h>
+#include <qtimer.h>
 
 using namespace KIO;
 
@@ -115,6 +117,30 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     return s;
 }
 
+static const unsigned int max_nums = 8;
+
+class KIO::SlaveInterfacePrivate 
+{
+public:
+  SlaveInterfacePrivate() { 
+    slave_calcs_speed = false; 
+    start_time.tv_sec = 0;
+    start_time.tv_usec = 0;
+    last_time = 0; 
+    nums = 0;
+    filesize = 0;
+  }
+  bool slave_calcs_speed;
+  struct timeval start_time;
+  uint nums;
+  long times[max_nums];
+  KIO::filesize_t sizes[max_nums];
+  size_t last_time;
+  KIO::filesize_t filesize;
+
+  QTimer speed_timer;
+};
+
 //////////////
 
 SlaveInterface::SlaveInterface( Connection * connection )
@@ -122,12 +148,17 @@ SlaveInterface::SlaveInterface( Connection * connection )
     m_pConnection = connection;
     m_progressId = 0;
     signal( SIGPIPE, sigpipe_handler );
+    
+    d = new SlaveInterfacePrivate;
+    connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
 }
 
 SlaveInterface::~SlaveInterface()
 {
     // Note: no kdDebug() here (scheduler is deleted very late)
     m_pConnection = 0; // a bit like the "wasDeleted" of QObject...
+
+    delete d;
 }
 
 static KIO::filesize_t readFilesize_t(QDataStream &stream)
@@ -157,6 +188,43 @@ bool SlaveInterface::dispatch()
     return dispatch( cmd, data );
 }
 
+void SlaveInterface::calcSpeed()
+{
+  if (d->slave_calcs_speed) {
+    d->speed_timer.stop();
+    return;
+  }
+
+  struct timeval tv;
+  gettimeofday(&tv, 0);
+  
+  long diff = ((tv.tv_sec - d->start_time.tv_sec) * 1000000 +
+	       tv.tv_usec - d->start_time.tv_usec) / 1000;
+  if (diff - d->last_time >= 900) {
+    d->last_time = diff;
+    if (d->nums == max_nums) {
+      // let's hope gcc can optimize that well enough
+      // otherwise I'd try memcpy :)
+      for (unsigned int i = 1; i < max_nums; ++i) {
+	d->times[i-1] = d->times[i];
+	d->sizes[i-1] = d->sizes[i];
+      }
+      d->nums--;
+    }
+    d->times[d->nums] = diff;
+    d->sizes[d->nums++] = d->filesize;
+    
+    KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
+    kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << endl;
+    if (!lspeed) {
+      d->nums = 1;
+      d->times[0] = diff;
+      d->sizes[0] = d->filesize;
+    }
+    emit speed(lspeed);
+  }
+}
+
 bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
     //kdDebug(7007) << "dispatch " << _cmd << endl;
@@ -177,6 +245,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_FINISHED:
 	//kdDebug(7007) << "Finished [this = " << this << "]" << endl;
+        d->speed_timer.stop();
 	emit finished();
 	break;
     case MSG_STAT_ENTRY:
@@ -230,6 +299,15 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_TOTAL_SIZE:
 	{
 	    KIO::filesize_t size = readFilesize_t(stream);
+	    kdDebug() << "totalSize " << endl;
+	    gettimeofday(&d->start_time, 0);
+	    d->last_time = 0;
+	    d->sizes[0] = 0;
+	    d->times[0] = 0;
+	    d->nums = 1;
+	    d->filesize = 0;
+	    d->speed_timer.start(1000);
+	    d->slave_calcs_speed = false;
 	    emit totalSize( size );
 	}
 	break;
@@ -237,10 +315,13 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	{
 	    KIO::filesize_t size = readFilesize_t(stream);
 	    emit processedSize( size );
+	    d->filesize = size;
 	}
 	break;
     case INF_SPEED:
 	stream >> ul;
+	d->slave_calcs_speed = true;
+	d->speed_timer.stop();
 
 	emit speed( ul );
 	break;
