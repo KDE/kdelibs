@@ -38,7 +38,7 @@ namespace KIO {
 class SlaveConfigProtocol
 {
 public:
-  SlaveConfigProtocol() { }
+  SlaveConfigProtocol() { host.setAutoDelete(true); }
   ~SlaveConfigProtocol() 
   {
      delete configFile;
