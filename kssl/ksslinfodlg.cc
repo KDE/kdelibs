@@ -354,7 +354,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         new QLabel(tmp, _frame);
     }
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
-        label = new QLabel(i18n("EMail:"), _frame);
+        label = new QLabel(i18n("Email:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         if (mailCatcher) {
            KURLLabel *mail = new KURLLabel(tmp, tmp, _frame);
