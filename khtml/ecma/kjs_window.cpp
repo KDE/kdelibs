@@ -258,7 +258,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
 
 Window::Window(KHTMLPart *p)
-  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
+  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), m_frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
@@ -318,6 +318,12 @@ Location *Window::location() const
   return loc;
 }
 
+ObjectImp* Window::frames( ExecState* exec ) const
+{
+  return m_frames ? m_frames :
+    (const_cast<Window*>(this)->m_frames = new FrameArray(exec,m_part));
+}
+
 // reference our special objects during garbage collection
 void Window::mark()
 {
@@ -326,8 +332,8 @@ void Window::mark()
     screen->mark();
   if (history && !history->marked())
     history->mark();
-  if (frames && !frames->marked())
-    frames->mark();
+  if (m_frames && !m_frames->marked())
+    m_frames->mark();
   //kdDebug(6070) << "Window::mark " << this << " marking loc=" << loc << endl;
   if (loc && !loc->marked())
     loc->mark();
@@ -405,8 +411,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case EventCtor:
       return getEventConstructor(exec);
     case Frames:
-      return Value(frames ? frames :
-                   (const_cast<Window*>(this)->frames = new FrameArray(exec,m_part)));
+      return Value(frames(exec));
     case _History:
       return Value(history ? history :
                    (const_cast<Window*>(this)->history = new History(exec,m_part)));

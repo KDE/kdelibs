@@ -23,7 +23,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "alinkColor", HTMLDocument::AlinkColor, DontDelete, 0, 0 },
    { "getElementsByName", HTMLDocument::GetElementsByName, DontDelete|Function, 1, 0 },
    { "applets", HTMLDocument::Applets, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[34] },
-   { "links", HTMLDocument::Links, DontDelete|ReadOnly, 0, 0 },
+   { "links", HTMLDocument::Links, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[35] },
    { "title", HTMLDocument::Title, DontDelete, 0, 0 },
    { "location", HTMLDocument::Location, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -39,10 +39,11 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "forms", HTMLDocument::Forms, DontDelete|ReadOnly, 0, 0 },
    { "fgColor", HTMLDocument::FgColor, DontDelete, 0, 0 },
    { "lastModified", HTMLDocument::LastModified, DontDelete|ReadOnly, 0, 0 },
-   { "width", HTMLDocument::Width, DontDelete|ReadOnly, 0, 0 }
+   { "width", HTMLDocument::Width, DontDelete|ReadOnly, 0, 0 },
+   { "frames", HTMLDocument::Frames, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLDocumentTable = { 2, 35, HTMLDocumentTableEntries, 31 };
+const struct HashTable HTMLDocumentTable = { 2, 36, HTMLDocumentTableEntries, 31 };
 
 }; // namespace
 

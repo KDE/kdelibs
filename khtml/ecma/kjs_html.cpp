@@ -140,6 +140,8 @@ const ClassInfo KJS::HTMLDocument::info =
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
   dir			HTMLDocument::Dir		DontDelete
+#IE extension
+  frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #potentially obsolete array properties
 # layers
 # plugins
@@ -324,6 +326,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return Number(view ? view->visibleWidth() : 0);
     case Dir:
       return String(body.dir());
+    case Frames:
+      if ( view && view->part() )
+      {
+        Window* win = Window::retrieveWindow(view->part());
+        return Value(win->frames(exec));
+      }
     }
   }
   if (DOMDocument::hasProperty(exec, propertyName))

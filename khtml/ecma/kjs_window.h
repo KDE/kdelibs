@@ -98,6 +98,7 @@ namespace KJS {
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;
+    ObjectImp* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
@@ -133,7 +134,7 @@ namespace KJS {
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;
     History *history;
-    FrameArray *frames;
+    FrameArray *m_frames;
     Location *loc;
     WindowQObject *winq;
     DOM::Event *m_evt;

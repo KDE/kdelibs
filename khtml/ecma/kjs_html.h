@@ -46,7 +46,8 @@ namespace KJS {
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
            Images, Applets, Links, Forms, Anchors, Scripts, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName,
-           BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified, Height, Width, Dir };
+           BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
+           Height, Width, Dir, Frames };
     DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
   };
 
