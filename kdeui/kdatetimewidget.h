@@ -35,6 +35,7 @@
 class KDateTimeWidget : public QWidget
 {
   Q_OBJECT
+  Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime )
 
 public:
   /**

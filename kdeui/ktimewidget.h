@@ -33,6 +33,7 @@
 class KTimeWidget : public QWidget
 {
   Q_OBJECT
+  Q_PROPERTY( QTime time READ time WRITE setTime )
 
 public:
   /**

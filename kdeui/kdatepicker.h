@@ -51,7 +51,8 @@ class KDatePicker: public QFrame
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)
   Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
-
+  Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
+  
 public:
   /** The usual constructor.  The given date will be displayed
    * initially.

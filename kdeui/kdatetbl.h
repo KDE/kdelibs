@@ -249,6 +249,9 @@ public:
 class KDateTable : public QGridView
 {
     Q_OBJECT
+    Q_PROPERTY( QDate date READ getDate WRITE setDate )
+    Q_PROPERTY( bool popupMenu READ popupMenuEnabled WRITE setPopupMenuEnabled )
+    
 public:
     /**
      * The constructor.

@@ -33,6 +33,7 @@
 class KDateWidget : public QWidget
 {
   Q_OBJECT
+  Q_PROPERTY( QDate date READ date WRITE setDate )
 
 public:
   /**
