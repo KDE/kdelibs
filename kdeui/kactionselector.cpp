@@ -462,7 +462,7 @@ void KActionSelector::buttonUpClicked()
 void KActionSelector::buttonDownClicked()
 {
   int c = d->selectedListBox->currentItem();
-  if ( c < 0 || c == d->selectedListBox->count() - 1 ) return;
+  if ( c < 0 || c == int( d->selectedListBox->count() ) - 1 ) return;
   QListBoxItem *item = d->selectedListBox->item( c );
   d->selectedListBox->takeItem( item );
   d->selectedListBox->insertItem( item, c+1 );
