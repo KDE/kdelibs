@@ -300,9 +300,9 @@ int DeviceManager::initManager(void)
     int  client;
     int  port;
 
-    snd_seq_t *handle=0;
 #ifdef HAVE_ALSA_SUPPORT
 #ifdef HAVE_LIBASOUND2
+    snd_seq_t *handle=0;
     snd_seq_client_info_t *clienti;
     snd_seq_client_info_malloc(&clienti);
     snd_seq_port_info_t *porti;
@@ -338,6 +338,7 @@ int DeviceManager::initManager(void)
     snd_seq_port_info_free(porti);
     snd_seq_system_info_free(info);
 #else
+    snd_seq_t *handle=0;
     snd_seq_client_info_t clienti;
     snd_seq_port_info_t porti;
 
