@@ -520,6 +520,8 @@ void RenderBox::calcWidth()
         Length mr = m_style->marginRight();
 
         int cw = containingBlockWidth();
+        
+        if (cw<0) cw = 0;
 
         m_marginLeft = 0;
         m_marginRight = 0;
@@ -542,8 +544,9 @@ void RenderBox::calcWidth()
 //          kdDebug( 6040 ) << "variable" << endl;
             m_marginLeft = ml.minWidth(cw);
             m_marginRight = mr.minWidth(cw);
-            m_width = cw - m_marginLeft - m_marginRight;
-//          kdDebug( 6040 ) <<  m_width <<"," <<
+            if (cw) m_width = cw - m_marginLeft - m_marginRight;
+            
+//          kdDebug( 6040 ) <<  m_width <<"," << cw <<"," <<
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
             if(m_width < m_minWidth) m_width = m_minWidth;
@@ -559,7 +562,7 @@ void RenderBox::calcWidth()
             calcHorizontalMargins(ml,mr,cw);
         }
 
-        if (cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
+        if (cw && cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
         {
             if (style()->direction()==LTR)
                 m_marginRight = cw - m_width - m_marginLeft;
