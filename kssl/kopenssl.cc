@@ -95,6 +95,7 @@ bool KOpenSSLProxy::hasLibCrypto() const {
 
 void KOpenSSLProxy::destroy() {
   delete this;
+  _me = NULL;
 }
 
 
