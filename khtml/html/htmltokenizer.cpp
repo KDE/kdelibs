@@ -523,6 +523,10 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 if ( res != QChar::null ) {
                     switch (res.unicode())
                     {
+                        case 0x82: res = ','; break;
+                        case 0x84: res = '"'; break;
+                        case 0x8b: res = '<'; break;
+                        case 0x9b: res = '>'; break;
                         case 0x91: res = '\''; break;
                         case 0x92: res = '\''; break;
                         case 0x93: res = '"'; break;
