@@ -197,7 +197,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d->m_listBox->insertStringList( list );
     d->m_listBox->setSelected( current, true );
     d->m_listBox->ensureCurrentVisible();
-    layout->addWidget( d->m_listBox );
+    layout->addWidget( d->m_listBox, 10 );
   }
 
   layout->addStretch();
