@@ -47,28 +47,20 @@ class KLocalePrivate
 {
 public:
   int plural_form;
-  bool defaultsOnly;
   QString language;
   QStringList languageList;
-  QList<KCatalogue> catalogues;
+  QValueList<KCatalogue> catalogues;
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfig * config;
-
-  KLocalePrivate()
-    : defaultsOnly(false)
-    {
-    }
 };
 
 extern void qt_set_locale_codec( QTextCodec *codec );
 
-KLocale::KLocale( const QString & catalogue, bool useEnv, KConfig * config )
+KLocale::KLocale( const QString & catalogue, KConfig * config )
 {
   d = new KLocalePrivate;
   d->config = config;
-  // make it the owner of the objecs in the list
-  d->catalogues.setAutoDelete( true );
 
   KConfig *cfg = d->config;
   if (!cfg) cfg = KGlobal::instance()->config();
@@ -79,7 +71,7 @@ KLocale::KLocale( const QString & catalogue, bool useEnv, KConfig * config )
   initEncoding(cfg);
   initCatalogue(catalogue);
 
-  initLanguage(cfg, useEnv);
+  initLanguage(cfg, config == 0);
 }
 
 void KLocale::initCatalogue(const QString & catalogue)
@@ -95,10 +87,10 @@ void KLocale::initCatalogue(const QString & catalogue)
                  << "before init" << endl;
   }
   else
-    d->catalogues.append( new KCatalogue( mainCatalogue ) );
+    d->catalogues.append( KCatalogue(mainCatalogue ) );
 
   // always include kdelibs.mo
-  d->catalogues.append( new KCatalogue( SYSTEM_MESSAGES ) );
+  d->catalogues.append( KCatalogue( SYSTEM_MESSAGES ) );
 }
 
 void KLocale::initLanguage(KConfig * config, bool useEnv)
@@ -116,7 +108,6 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
       (':', QFile::decodeName( ::getenv("KDE_LANG") ));
 
   languageList += config->readListEntry("Language", ':');
-  kdDebug(173) << "languages:" << config->readEntry("Language");
 
   // same order as setlocale use
   if ( useEnv )
@@ -154,10 +145,10 @@ void KLocale::doBindInit()
 {
   kdDebug(173) << "KLocale::doBindInit" << endl;
 
-  for ( QListIterator<KCatalogue> it(d->catalogues);
-	it.current();
+  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+	it != d->catalogues.end();
 	++it )
-    initCatalogue( it );
+    initCatalogue( *it );
 
   if ( useDefaultLanguage() )
     d->plural_form = -1;
@@ -330,13 +321,6 @@ bool KLocale::setCountry(const QString & country)
   return true;
 }
 
-void KLocale::setDefaultsOnly(bool defaultsOnly)
-{
-  d->defaultsOnly = defaultsOnly;
-
-  doFormatInit();
-}
-
 bool KLocale::setLanguage(const QString & language)
 {
   if ( language.isEmpty() )
@@ -344,12 +328,12 @@ bool KLocale::setLanguage(const QString & language)
 
   bool bRes = true;
   if ( language != defaultLanguage() )
-    for ( QListIterator<KCatalogue> it(d->catalogues);
-	  it.current() && bRes;
+    for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+	  it != d->catalogues.end() && bRes;
 	  ++it )
       {
 	QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
-	  .arg( language ).arg( (*it)->name() );
+	  .arg( language ).arg( (*it).name() );
 	bRes = !locate("locale", path).isNull();
         if ( !bRes )
 	  kdDebug(173) << "message catalogue not found: " << path << endl;
@@ -503,7 +487,7 @@ QString KLocale::weekDayName (int i, bool shortName) const
 
 void KLocale::insertCatalogue( const QString & catalogue )
 {
-  KCatalogue * cat = new KCatalogue( catalogue );
+  KCatalogue cat( catalogue );
 
   initCatalogue( cat );
 
@@ -529,11 +513,11 @@ QString KLocale::translate_priv(const char *msgid,
   if ( useDefaultLanguage() )
     return QString::fromUtf8( fallback );
 
-  for ( QListIterator<KCatalogue> it(d->catalogues);
-	it.current();
+  for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+	it != d->catalogues.end();
 	++it )
     {
-      const char * text = (*it)->translate( msgid );
+      const char * text = (*it).translate( msgid );
 
       if ( text )
 	{
@@ -1561,17 +1545,15 @@ void KLocale::initEncoding(KConfig *config)
   ASSERT( d->codecForEncoding );
 }
 
-void KLocale::initCatalogue( KCatalogue * catalogue )
+void KLocale::initCatalogue( KCatalogue & catalogue )
 {
-  ASSERT( catalogue );
-
   QString str = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg( language() )
-    .arg( catalogue->name() );
+    .arg( catalogue.name() );
 
   str = locate("locale", str);
 
-  catalogue->setFileName( str );
+  catalogue.setFileName( str );
 }
 
 bool KLocale::setCharset(const QString & charset)
@@ -1718,7 +1700,6 @@ bool KLocale::setEncoding(int mibEnum)
 KLocale::KLocale(const KLocale & rhs)
 {
   d = new KLocalePrivate;
-  d->catalogues.setAutoDelete( true );
 
   *this = rhs;
 }
@@ -1750,20 +1731,19 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 
   m_country = rhs.m_country;
 
+#if 0
   d->plural_form = rhs.d->plural_form;
-  d->defaultsOnly = rhs.d->defaultsOnly;
   d->language = rhs.d->language;
   d->languageList = rhs.d->languageList;
 
-  d->catalogues.clear();
-  for ( QListIterator<KCatalogue> it(rhs.d->catalogues);
-	it.current();
-	++it )
-    d->catalogues.append( new KCatalogue( *(*it) ) );
+  d->catalogues = rhs.d->catalogues;
 
   d->encoding = rhs.d->encoding;
   d->codecForEncoding = rhs.d->codecForEncoding;
   d->config = rhs.d->config;
+#else
+  *d = *rhs.d;
+#endif
 
   return *this;
 }

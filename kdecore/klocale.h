@@ -21,14 +21,15 @@
 #define _KLOCALE_H
 
 #include <qstring.h>
-#include <qstringlist.h>
 
-class QTextCodec;
 class QStrList;
+class QStringList;
+class QTextCodec;
 class QDate;
 class QTime;
 class QDateTime;
 
+class KGlobal;
 class KConfig;
 class KLocalePrivate;
 class KCatalogue;
@@ -73,27 +74,30 @@ QString i18n(const char *singular, const char *plural, unsigned long n);
   */
 class KLocale
 {
+  friend KGlobal; // for initInstance()
 public:
   /**
    * Create a KLocale with the given catalogue name.
    * The constructor looks for an entry Locale/Language in the
    * configuration file.
-   * If nothing is set there, it looks for the environment variable
-   * $LANG. The format for LANG is de, if de (german) is your
-   * prefered language. If none of them can be find, the default (en_US)
-   * will be used.
+   * If no config file is specified, it will also look for languages
+   * using the environment variables (KDE_LANG, LC_MESSAGES, LC_ALL, LANG),
+   * as well as the global configuration fie. If we were not able to use
+   * non of the specified languages, the default language (en_US) will be
+   * used.
+   *
+   * If you specify a configuration file, it has to be valid until
+   * the KLocale object is destoryed.
    *
    * @param catalogue The name of the main language file
-   * @param useEnv True if we should use environment variables.
-   * @param config KLocale will use this config when reading the config
-   *               settings. 0 means global config.
+   * @param config The configuration file to use.
    */
-  KLocale( const QString& catalogue, bool useEnv = true, KConfig *config = 0 );
+  KLocale( const QString& catalogue, KConfig *config = 0 );
 
   /**
    * Copy constructor.
    */
-  KLocale( const KLocale& );
+  KLocale( const KLocale & rhs );
 
   /**
    * Assignment operator.
@@ -172,12 +176,22 @@ public:
    * unchanged if failed. It will force a reload of the country specific 
    * configuration as well.
    *
-   * @param language The ISO ???? language code.
+   * @param language The language code.
    *
    * @return True on success.
    */
   bool setLanguage(const QString & language);
 
+
+  /**
+   * Changes the list of prefed languages for the locale. The first valid
+   * language in the list will be used, or the default (en_US) language
+   * will be used if non of the specified languages were available.
+   *
+   * @param languages The list of language codes.
+   *
+   * @return True if one of the specified languages were used.
+   */
   bool setLanguage(const QStringList & languages);
 
   /**
@@ -186,21 +200,11 @@ public:
    * configuration.
    *
    * @param country The ISO 3166 country code.
-   * @param defaultsOnly True if we should not let the global configuration
-   * overload the country profile.
    *
    * @return True on success.
    */
   bool setCountry(const QString & country);
   
-  /**
-   * @deprecated This will be changed before KDE 3 is released. Do not use.
-   * Reloads the configuration with or without the global configuration.
-   *
-   * @param defaultsOnly True if we should not read the global configuration.
-   */
-  void setDefaultsOnly(bool defaultsOnly);
-
   /**
    * Various positions for where to place the positive or negative
    * sign when they are related to a monetary value.
@@ -743,11 +747,10 @@ public:
    */
   static QString defaultCountry();
 
+protected:
   /**
    * @internal Creates a KLocale object for KGlobal and inits the locale
    * pointer.
-   *
-   * #### HPB: Make protected again?
    */
   static void initInstance();
 
@@ -804,7 +807,7 @@ private:
    * @internal Changes the file name of the catalogue to the correct
    * one.
    */
-  void initCatalogue( KCatalogue * catalogue );
+  void initCatalogue( KCatalogue & catalogue );
   /**
    * @internal Read the language and format configuration form disk.
    */
@@ -852,16 +855,16 @@ private:
   QString m_dateFormatShort;
 
   // #### HPB: Remove in KDE 3
-  QStrList *catalogues;
+  QStrList *m_cataloguesNOTUSED;
   // #### HPB: Remove in KDE 3
-  bool m_inited;
+  bool m_initedNOTUSED;
 
   // #### HPB: Remove in KDE 3
-  QCString m_lang;
+  QCString m_langNOTUSED;
   // #### HPB: Remove in KDE 3
-  QTextCodec * m_codec; // Codec used for translations
+  QTextCodec * m_codecNOTUSED; // Codec used for translations
   // #### HPB: Remove in KDE 3
-  QString m_langs;
+  QString m_langsNOTUSED;
   QString m_country;
 
   KLocalePrivate *d;
