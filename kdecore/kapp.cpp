@@ -248,8 +248,11 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
 
 int KApplication::xioErrhandler()
 {
-  emit shutDown();
-  exit( 1 );
+    if(kapp)
+    {
+        emit shutDown();
+        exit( 1 );
+    }
   return 0;
 }
 
