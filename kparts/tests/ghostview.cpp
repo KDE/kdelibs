@@ -37,7 +37,7 @@ Shell::Shell()
     if (factory)
     {
       m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().latin1(), "KParts::ReadOnlyPart"));
-      setView( m_gvpart->widget() );
+      setCentralWidget( m_gvpart->widget() );
       // Integrate its GUI
       createGUI( m_gvpart );
 
@@ -58,7 +58,7 @@ Shell::Shell()
       m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
                  "KParts::ReadOnlyPart" );
       // Set the main widget
-      setView( m_gvpart->widget() );
+      setCentralWidget( m_gvpart->widget() );
       // Integrate its GUI
       createGUI( m_gvpart );
     }

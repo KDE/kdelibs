@@ -46,7 +46,7 @@ Shell::Shell()
   (void)new KAction( "Yet another menu item", 0, coll, "shell_yami" );
   (void)new KAction( "Yet another submenu item", 0, coll, "shell_yasmi" );
 
-  setView( m_splitter );
+  setCentralWidget( m_splitter );
   m_splitter->setMinimumSize( 400, 300 );
 
   m_splitter->show();
