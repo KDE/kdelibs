@@ -1,6 +1,6 @@
 SUBDIRS = vcard
 
-INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
+INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top_srcdir)/kab \
   $(all_includes)
 
 lib_LTLIBRARIES   = libkabc.la
