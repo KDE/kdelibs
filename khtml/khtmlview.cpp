@@ -577,6 +577,8 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     xe = bounds.right();
     ye = bounds.bottom();
 
+    kdDebug(6000)<<"scrolling coords: x="<<x<<" y="<<y<<" width="<<xe-x<<" height="<<ye-y<<endl;
+
     int deltax;
     int deltay;
 
@@ -587,7 +589,7 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 	ye  = y + curHeight - d->borderY;
 
     if (xe-x>curWidth-d->borderX)
-	xe = x + curHeight - d->borderX;
+	xe = x + curWidth - d->borderX;
 
     // is xpos of target left of the view's border?
     if (x < contentsX() + d->borderX )
@@ -614,8 +616,6 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 
     scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
     scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
-
-    kdDebug(6000)<<"deltaX:"<<deltax<<" deltay:"<<deltay<<" scrollX:"<<scrollX<<" scrollY:"<<scrollY<<endl;
 
     scrollBy(scrollX, scrollY);
 
@@ -653,7 +653,7 @@ bool KHTMLView::gotoLink(bool forward)
 	// we're just about entering the view, so let's set reasonable initial values.
 	setContentsPos(contentsX(), (forward?0:contentsHeight()));
 	d->borderTouched = true;
-	if (nextTarget->getRect().top()  < contentsX() ||
+	if (nextTarget->getRect().top()  < contentsY() ||
 	    nextTarget->getRect().bottom() > contentsY()+visibleHeight())
 	    return true;
     }
