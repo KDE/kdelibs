@@ -48,9 +48,6 @@
                       instead of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menüü">
 
-<!-- Temporary solution to have at least partially translated docs.
- -->
-
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY FAQ    '<acronym>KKK</acronym>'>
 <!ENTITY OS     "operatsioonisüsteem"><!-- <acronym>OS</acronym>-->
