@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	KApplication app;
 	if (KMManager::self()->addPrinterWizard() == -1)
 	{
-		KMessageBox::error(0, KMManager::self()->errorMsg());
+		KMessageBox::error(0, KMManager::self()->errorMsg().prepend("<qt>").append("</qt>"));
 	}
 	
 	return 0;

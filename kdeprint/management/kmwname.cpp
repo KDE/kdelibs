@@ -55,10 +55,10 @@ bool KMWName::isValid(QString& msg)
 		QString	conv = text(0);
 		conv.replace(QRegExp("\\s"), "");
 		int result = KMessageBox::warningYesNoCancel(this,
-					i18n("<p>This is usually not a good idea to include spaces "
+					i18n("This is usually not a good idea to include spaces "
 					     "in printer name. This may prevent your printer from "
 					     "working correctly. The wizard can strip all spaces "
-					     "from the string you entered, resulting in <b>%1</b>. "
+					     "from the string you entered, resulting in %1. "
 					     "What do you want to do?").arg(conv),
 					QString::null,
 					i18n("Strip"), i18n("Keep"));

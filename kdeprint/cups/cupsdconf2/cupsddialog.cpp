@@ -172,7 +172,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 		ok = pagelist_.current()->loadConfig(conf_, msg);
 	if (!ok)
 	{
-		KMessageBox::error(this, msg, i18n("CUPS configuration error"));
+		KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
 		return false;
 	}
 	return true;
@@ -215,8 +215,8 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 	{
 		fn = cupsGetConf();
 		if (fn.isEmpty())
-			errormsg = i18n("Unable to retrieve configuration file from the CUPS server.\n")+
-				   i18n("You probably don't have the access permissions to perform this operation.");
+			errormsg = i18n("Unable to retrieve configuration file from the CUPS server. "
+				        "You probably don't have the access permissions to perform this operation.");
 		else needUpload = true;
 	}
 
@@ -233,7 +233,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 
 	if (!errormsg.isEmpty())
 	{
-		KMessageBox::error(parent, errormsg, i18n("CUPS configuration error"));
+		KMessageBox::error(parent, errormsg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
 	}
 	else
 	{
@@ -248,8 +248,8 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 			else if (!cupsPutConf(encodedFn.data()))
 			{
 				KMessageBox::error(parent,
-					i18n("Unable to upload the configuration file to CUPS server.\n")+
-					i18n("You probably don't have the access permissions to perform this operation."), i18n("CUPS configuration error"));
+					i18n("Unable to upload the configuration file to CUPS server. "
+					     "You probably don't have the access permissions to perform this operation."), i18n("CUPS configuration error"));
 			}
 		}
 
@@ -278,7 +278,7 @@ void CupsdDialog::slotApply()
 		}
 		if (!ok)
 		{
-			KMessageBox::error(this, msg, i18n("CUPS configuration error"));
+			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS configuration error"));
 		}
 	}
 }

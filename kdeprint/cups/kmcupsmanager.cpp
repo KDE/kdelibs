@@ -743,13 +743,13 @@ void* KMCupsManager::loadCupsdConfFunction(const char *name)
 		m_cupsdconf = KLibLoader::self()->library("libcupsdconf");
 		if (!m_cupsdconf)
 		{
-			setErrorMsg(i18n("Library <b>libcupsdconf</b> not found. Check your installation."));
+			setErrorMsg(i18n("Library libcupsdconf not found. Check your installation."));
 			return NULL;
 		}
 	}
 	void*	func = m_cupsdconf->symbol(name);
 	if (!func)
-		setErrorMsg(i18n("Symbol <b>%1</b> not found in libcupsdconf library.").arg(name));
+		setErrorMsg(i18n("Symbol %1 not found in libcupsdconf library.").arg(name));
 	return func;
 }
 

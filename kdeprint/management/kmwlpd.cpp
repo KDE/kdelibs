@@ -69,7 +69,7 @@ kdDebug() << "checking LPD queue" << endl;
 	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
 	{
 kdDebug() << "Invalid queue" << endl;
-		if (KMessageBox::warningYesNo(this, i18n("<nobr>Can't find queue <b>%1</b> on <b>%2</b> !</nobr><br>Do you wish to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
+		if (KMessageBox::warningYesNo(this, i18n("Can't find queue %1 on server %2! Do you want to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
 			return false;
 	}
 kdDebug() << "Valid queue" << endl;

@@ -721,12 +721,12 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 		if (inputCheck > None && (cmd.find("%in") == -1 || inputCheck == Advanced) && cmd.find("%filterinput") == -1)
 		{
 			status = false;
-			errmsg = i18n("The command does not contain the required tag <b>%1</b>.").arg(inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");
+			errmsg = i18n("The command does not contain the required tag %1.").arg(inputCheck == Advanced ? "%filterinput" : "{%in,%filterinput}");
 		}
 		if (status && outputCheck > None && (cmd.find("%out") == -1 || outputCheck == Advanced) && cmd.find("filteroutput") == -1)
 		{
 			status = false;
-			errmsg = i18n("The command does not contain the required tag <b>%1</b>.").arg(outputCheck == Advanced ? "%filteroutput" : "{%out,%filteroutput}");
+			errmsg = i18n("The command does not contain the required tag %1.").arg(outputCheck == Advanced ? "%filteroutput" : "{%out,%filteroutput}");
 		}
 	}
 

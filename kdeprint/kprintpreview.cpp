@@ -196,10 +196,10 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 		QString	exe = conf->readEntry("PreviewCommand", "gv");
 		if (KStandardDirs::findExe(exe).isEmpty())
 		{
-			KMessageBox::error(NULL, i18n("<p>The preview program <b>%1</b> cannot be found. "
+			KMessageBox::error(NULL, i18n("The preview program %1 cannot be found. "
 						      "Check that the program is correctly installed and "
-						      "located in a directory included in your <b>PATH</b> "
-						      "environment variable.</p>").arg(exe));
+						      "located in a directory included in your PATH "
+						      "environment variable.").arg(exe));
 			return false;
 
 		}
@@ -209,7 +209,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			proc << exe << file;
 			if (!proc.startPreview())
 			{
-				KMessageBox::error(NULL, i18n("<p>Preview failed: unable to start program <b>%1</b>.</p>").arg(exe));
+				KMessageBox::error(NULL, i18n("Preview failed: unable to start program %1.").arg(exe));
 				return false;
 			}
 			else
@@ -228,9 +228,9 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 		}
 		else
 			return (KMessageBox::warningYesNo(parentW,
-				i18n("<p>KDE was unable to locate an appropriate object "
+				i18n("KDE was unable to locate an appropriate object "
 				     "for print previewing. Do you want to continue "
-					 "printing anyway?</p>"),
+					 "printing anyway?"),
 				i18n("Warning"), i18n("Print"), i18n("Cancel")) == KMessageBox::Yes);
 	}
 }

@@ -223,7 +223,7 @@ void KMWizard::slotNext()
 		if (!page->isValid(msg))
 		{
 			if (!msg.isEmpty())
-				KMessageBox::error(this,msg,page->title());
+				KMessageBox::error(this,msg.prepend("<qt>").append("</qt>"),page->title());
 		}
 		else
 		{

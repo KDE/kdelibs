@@ -245,7 +245,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{
-		manager()->setErrorMsg(i18n("Unable to find the executable <b>foomatic-datafile</b> "
+		manager()->setErrorMsg(i18n("Unable to find the executable foomatic-datafile "
 		                            "in your PATH. Check that Foomatic is correctly installed."));
 		return NULL;
 	}
@@ -272,7 +272,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 			return driver;
 		}
 	}
-	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver <b>[%1,%2]</b>. "
+	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
 	                            "Either that driver does not exist, or you don't have "
 	                            "the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
 	return NULL;

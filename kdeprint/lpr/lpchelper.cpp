@@ -126,7 +126,7 @@ bool LpcHelper::changeState(const QString& printer, bool state, QString& msg)
 	else if (result.startsWith("?Privileged"))
 		msg = i18n("Permission denied.");
 	else if (result.startsWith("unknown"))
-		msg = i18n("Printer <b>%1</b> does not exist.").arg(printer);
+		msg = i18n("Printer %1 does not exist.").arg(printer);
 	else
 		msg = i18n("Unknown error: %1").arg(result.replace(QRegExp("\\n"), " "));
 	return false;

@@ -236,8 +236,8 @@ void KMWIppPrinter::slotIppReport()
 			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_PRINTER, caption);
 		}
 		else
-			KMessageBox::error(this, i18n("<p>Unable to generate report. IPP request failed with message "
-			                              "<b>%1</b> (0x%2).</p>").arg(ippErrorString((ipp_status_t)req.status())).arg(req.status(),0,16));
+			KMessageBox::error(this, i18n("Unable to generate report. IPP request failed with message: "
+			                              "%1 (0x%2).").arg(ippErrorString((ipp_status_t)req.status())).arg(req.status(),0,16));
 	}
 }
 

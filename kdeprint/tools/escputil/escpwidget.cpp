@@ -121,15 +121,15 @@ void EscpWidget::startCommand(const QString& arg)
 
 	if (m_proc.isRunning())
 	{
-		KMessageBox::error(this, i18n("<p>An <b>escputil</b> process is still running. "
-		                              "You must wait until its completion before continuing.</p>"));
+		KMessageBox::error(this, i18n("An escputil process is still running. "
+		                              "You must wait until its completion before continuing."));
 		return;
 	}
 
 	QString	exestr = KStandardDirs::findExe("escputil");
 	if (exestr.isEmpty())
 	{
-		KMessageBox::error(this, i18n("<p>The executable <b>escputil</b> cannot be found in your "
+		KMessageBox::error(this, i18n("The executable escputil cannot be found in your "
 		                              "PATH environment variable. Make sure gimp-print is "
 		                              "installed and that escputil is in your PATH.</p>"));
 		return;
@@ -157,7 +157,7 @@ void EscpWidget::slotProcessExited(KProcess*)
 	setEnabled(true);
 	if (!m_proc.normalExit() || m_proc.exitStatus() != 0)
 	{
-		QString	msg1 = "<nobr>"+i18n("Operation terminated with errors.")+"</nobr>";
+		QString	msg1 = "<qt>"+i18n("Operation terminated with errors.")+"</qt>";
 		QString	msg2;
 		if (!m_outbuffer.isEmpty())
 			msg2 += "<p><b><u>"+i18n("Output")+"</u></b></p><p>"+m_outbuffer+"</p>";

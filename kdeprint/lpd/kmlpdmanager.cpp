@@ -156,7 +156,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	// create spool directory (if necessary) and update PrintcapEntry object
 	if (!createSpooldir(ent))
 	{
-		setErrorMsg(i18n("Unable to create spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
+		setErrorMsg(i18n("Unable to create spool directory %1 for printer %2.").arg(ent->arg("sd")).arg(ent->m_name));
 		delete ent;
 		return false;
 	}

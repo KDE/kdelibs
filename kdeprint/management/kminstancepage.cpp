@@ -157,7 +157,7 @@ void KMInstancePage::slotRemove()
 	bool	reload(false);
 
 	QString	src = m_view->currentText();
-        QString msg = (src != i18n("(Default)") ? i18n("<nobr>Do you really want to remove instance <b>%1</b> ?</nobr>") : i18n("<nobr>You can't remove the default instance. However all<br>settings of <b>%1</b> will be discarded. Continue ?</nobr>"));
+        QString msg = (src != i18n("(Default)") ? i18n("Do you really want to remove instance %1?") : i18n("You can't remove the default instance. However all settings of %1 will be discarded. Continue?"));
 	if (!src.isEmpty() && KMessageBox::warningYesNo(this,msg.arg(src)) == KMessageBox::Yes)
 	{
 		if (src == i18n("(Default)"))
@@ -256,7 +256,7 @@ void KMInstancePage::slotTest()
 			KMessageBox::error(this,i18n("Unable to locate test page."));
 		else if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
-		else if (KMessageBox::warningContinueCancel(this, i18n("<p>You are about to print a test page on <b>%1</b>. Do you want to continue?</p>").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?").arg(mpr->printerName()), QString::null, i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
 		{
 			KPrinter::setApplicationType(KPrinter::StandAlone);
 			KPrinter	pr;
@@ -264,9 +264,9 @@ void KMInstancePage::slotTest()
 			pr.setSearchName(mpr->name());
 			pr.setOptions(mpr->defaultOptions());
 			if (!pr.printFiles(testpage))
-				KMessageBox::error(this,i18n("<nobr>Unable to send test page to <b>%1</b>.</nobr>").arg(pr.printerName()));
+				KMessageBox::error(this,i18n("Unable to send test page to %1.").arg(pr.printerName()));
 			else
-				KMessageBox::information(this,i18n("<nobr>Test page succesfully sent to printer <b>%1</b>.</nobr>").arg(pr.printerName()));
+				KMessageBox::information(this,i18n("Test page succesfully sent to printer %1.").arg(pr.printerName()));
 		}
 	}
 

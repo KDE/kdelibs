@@ -433,7 +433,7 @@ int KMManager::addPrinterWizard(QWidget *parent)
 {
 	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management");
 	if (!lib)
-		setErrorMsg(i18n("Unable to load KDE print management library:<br>%1").arg(KLibLoader::self()->lastErrorMessage()));
+		setErrorMsg(i18n("Unable to load KDE print management library: %1").arg(KLibLoader::self()->lastErrorMessage()));
 	else
 	{
 		int (*func)(QWidget*) = (int(*)(QWidget*))lib->symbol("add_printer_wizard");

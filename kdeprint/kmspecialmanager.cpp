@@ -49,7 +49,7 @@ bool KMSpecialManager::savePrinters()
 		if (confname.startsWith(KGlobal::dirs()->localkdedir()))
 		{
 			// seems there's a problem here
-			m_mgr->setErrorMsg(i18n("A file <b>share/kdeprint/specials.desktop</b> was found in your "
+			m_mgr->setErrorMsg(i18n("A file share/kdeprint/specials.desktop was found in your "
 						"local KDE directory. This file probably comes from a previous KDE "
 						"release and should be removed in order to manage global pseudo "
 						"printers."));

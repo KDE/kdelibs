@@ -75,7 +75,7 @@ void KMDriverDB::init(QWidget *parent)
 	{
 		// starts DB creation and wait for creator signal
 		if (!m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent))
-			KMessageBox::error(parent, KMFactory::self()->manager()->errorMsg());
+			KMessageBox::error(parent, KMFactory::self()->manager()->errorMsg().prepend("<qt>").append("</qt>"));
 	}
 	else if (m_entries.count() == 0)
 	{

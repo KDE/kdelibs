@@ -293,9 +293,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 	if (!KMManager::self()->errorMsg().isEmpty())
 	{
 		KMessageBox::error(parentWidget(),
-			"<nobr>"+
+			"<qt><nobr>"+
 			i18n("An error occurred while retrieving the printer list:")
-			+"</nobr><br><br>"+KMManager::self()->errorMsg());
+			+"</nobr><br><br>"+KMManager::self()->errorMsg()+"</qt>");
 	}
 
 	if (plist)
@@ -401,7 +401,7 @@ void KPrintDialog::done(int result)
 					it.current()->getOptions(opts);
 				else
 				{
-					KMessageBox::error(this, msg);
+					KMessageBox::error(this, msg.prepend("<qt>").append("/qt>"));
 					return;
 				}
 			}
@@ -452,7 +452,7 @@ bool KPrintDialog::checkOutputFile()
 		if (f.exists())
 		{
 			if (f.isWritable())
-				value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite ?").arg(f.absFilePath())) == KMessageBox::Yes);
+				value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
 			else
 				KMessageBox::error(this,i18n("You don't have write permissions to this file."));
 		}
@@ -507,7 +507,7 @@ void KPrintDialog::slotWizard()
 {
 	int	result = KMFactory::self()->manager()->addPrinterWizard(this);
 	if (result == -1)
-		KMessageBox::error(this, KMFactory::self()->manager()->errorMsg());
+		KMessageBox::error(this, KMFactory::self()->manager()->errorMsg().prepend("<qt>").append("</qt>"));
 	else if (result == 1)
 		initialize(d->m_printer);
 }
