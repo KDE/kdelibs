@@ -330,7 +330,10 @@ RenderResetButton::~RenderResetButton()
 
 void RenderResetButton::slotClicked()
 {
-    RenderSubmitButton::slotClicked();
+    m_clicked = true;
+
+    // don't call RenderSubmitButton::slotClicked here!
+    RenderButton::slotClicked();
     if (m_element->form())
         m_element->form()->reset();
 }
