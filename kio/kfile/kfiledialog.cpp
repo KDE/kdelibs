@@ -751,7 +751,7 @@ void KFileDialog::multiSelectionChanged()
         text.append( begin ).append( item->name() ).append( '\"' );
         ++it;
     }
-    
+
     setLocationText( text.stripWhiteSpace() );
 }
 
@@ -759,7 +759,7 @@ void KFileDialog::setLocationText( const QString& text )
 {
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
-    // the KDirOperator's view-selection in there 
+    // the KDirOperator's view-selection in there
     disconnect( locationEdit, SIGNAL( textChanged( const QString& ) ),
                 this, SLOT( slotLocationChanged( const QString& ) ) );
     locationEdit->setCurrentItem( 0 );
@@ -1241,7 +1241,7 @@ void KFileDialog::setSelection(const QString& url)
         int sep = filename.findRev('/');
         if (sep >= 0) { // there is a / in it
             if ( KProtocolInfo::supportsListing( u ))
-                setURL(filename.left(sep), true);
+                setURL(KURL( u.directory(), true) );
 
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KURL::fileName()
