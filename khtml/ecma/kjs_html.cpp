@@ -352,6 +352,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "remove")          return new HTMLElementFunction(element,HTMLElementFunction::Remove);
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
+      else if (p == "submit")          return new HTMLElementFunction(select.form(),HTMLElementFunction::Submit); // ### temp - should use form
       else {
 	bool ok;
 	uint u = p.toULong(&ok);
@@ -395,6 +396,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "readOnly")        return Boolean(input.readOnly());
       else if (p == "size")            return getString(input.size());
       else if (p == "src")             return getString(input.src());
+      // ### remove this and have proper scoping on on* calls so the form's submit property is found
       else if (p == "submit")          return new HTMLElementFunction(input.form(),HTMLElementFunction::Submit);
       else if (p == "tabIndex")        return Number(input.tabIndex());
       else if (p == "type")            return getString(input.type());
@@ -431,6 +433,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
       else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
+      else if (p == "submit")          return new HTMLElementFunction(textarea.form(),HTMLElementFunction::Submit); // ### temp - should use form
     }
     break;
     case ID_BUTTON: {
