@@ -1,5 +1,8 @@
 2004-10-02  Harri Porten  <porten@kde.org>
 
+	* lexer.cpp: parse function expressions with identifier as
+	function argument
+
 	* date_object.cpp: parse YYYY/MM/DD-style dates
 
 2004-09-30  Harri Porten  <porten@kde.org>
