@@ -112,7 +112,9 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 
     KCModuleInfo info(path, _baseGroup);
 
-    QHBox* page = addHBoxPage(info.moduleName(), info.comment(),
+    QHBox* page = 0;
+    if (!info.service()->noDisplay())
+        page = addHBoxPage(info.moduleName(), info.comment(),
                               KGlobal::iconLoader()->loadIcon(info.icon(), KIcon::Desktop, KIcon::SizeMedium));
     if(!page) {
         KCModuleLoader::unloadModule(info);
