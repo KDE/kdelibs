@@ -49,11 +49,9 @@ class QDateTime;
 class KSSLCertChain;
 class KSSLX509V3;
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ksslconfig.h"
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 typedef struct x509_st X509;
 #else
 class X509;
