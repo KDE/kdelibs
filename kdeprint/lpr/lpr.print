@@ -1,7 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpr
 Comment=LPR/LPRng print system
-Comment[af]= lpr /lprng druk stelsel
+Comment[af]= lpr /Lprng druk stelsel
 Comment[ar]=نظام طباعة LPR/LPRng
 Comment[be]=LPR/LPRng сістэма друку
 Comment[bs]=LPR (standardni BSD sistem štampe)

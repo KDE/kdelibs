@@ -2,7 +2,7 @@
 # go = The K-icon from kicker
 IconName=go
 Comment=KDE System Notifications
-Comment[af]=kde stelsel inkennistelling
+Comment[af]=Kde Stelsel Inkennistelling
 Comment[ar]=تنبيهات كيدي
 Comment[az]=KDE Sistem Bildirişləri
 Comment[bg]=Системни съобщения на KDE
@@ -58,7 +58,7 @@ Comment[zu]=Izaziso Zendlela ye KDE
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
-Name[af]=teksvoltooiïng: rotering
+Name[af]=Teksvoltooiïng: rotering
 Name[ar]=اكمال نص: تدوير
 Name[az]=Textcompletion: döndərmə
 Name[br]=KlokadurSrid : troerezh
@@ -111,7 +111,7 @@ Name[zh_CN]=文字补齐：轮转
 Name[zh_TW]=文字補齊: 旋轉
 Name[zu]=Ukuqedeka kokubhaliweyoiwe umjikelezo
 Comment=The end of the list of matches has been reached.
-Comment[af]=die einde van die lys van ooreenstemmende inskrywings het al bereik.
+Comment[af]=Die einde van Die lys van ooreenstemmende inskrywings het al bereik.
 Comment[ar]=نهاية قائمة التماثلات انتهت
 Comment[az]=Oxşar siyahısının sonuna gəlindi.
 Comment[bg]=Достигнат е край на списъка от съвпадения.
@@ -169,7 +169,7 @@ default_presentation=1
 
 [Textcompletion: no match]
 Name=Textcompletion: no match
-Name[af]=teksvoltooiïng: nee ooreenstem
+Name[af]=Teksvoltooiïng: nee ooreenstem
 Name[ar]=اكمال نص: لا يوجد تماثل
 Name[az]=Textcompletion: oxşarı Yoxdur
 Name[bg]=Автозавършване: няма съвпадение
@@ -224,7 +224,7 @@ Name[zh_CN]=文字补齐：没有匹配
 Name[zh_TW]=文字補齊︰沒有匹配
 Name[zu]=UKuqedwa kokubhaliweyo: akukho okufaniswayo
 Comment=No matching completion was found.
-Comment[af]=nee ooreenstemmende voltooiïng was gevind.
+Comment[af]=Nee ooreenstemmende voltooiïng was gevind.
 Comment[ar]=لا توجد تكملة مماثلة
 Comment[az]=Oxşar tapıla bilmədi.
 Comment[bg]=Не е намерено съвпадение.
@@ -282,7 +282,7 @@ default_presentation=1
 
 [Textcompletion: partial match]
 Name=Textcompletion: partial match
-Name[af]=teksvoltooiïng: gedeeltelike ooreenstem
+Name[af]=Teksvoltooiïng: gedeeltelike ooreenstem
 Name[ar]=اكمال نص: تماثل جزئي
 Name[az]=Textcompletion: qismi oxşar
 Name[bg]=Автозавършване: частично съвпадение
@@ -337,7 +337,7 @@ Name[zh_CN]=文字补齐：部分匹配
 Name[zh_TW]=文字補齊︰部分匹配
 Name[zu]=Ukuqedwa kokubhaliweyo: okufaniswayo kwesikhashana
 Comment=There is more than one possible match.
-Comment[af]=daar is meer as een moontlik ooreenstem.
+Comment[af]=Daar is meer as een moontlik ooreenstem.
 Comment[ar]=هناك أكثر من تماثل واحد
 Comment[az]=Birden çox oxşarı var.
 Comment[bg]=Намерени са повече от едно съвпадение.
@@ -395,7 +395,7 @@ default_presentation=1
 
 [cannotopenfile]
 Name=Cannot Open File
-Name[af]=kan nie open lêer
+Name[af]=Kan nie Open Lêer
 Name[ar]=لا أستطيع فتح الملف
 Name[az]=Fayl Açıla bilmir
 Name[be]=Немагчыма адчыніць файл
@@ -452,7 +452,7 @@ Name[zh_CN]=无法打开文件
 Name[zh_TW]=無法打開檔案
 Name[zu]=Ayingeke Ivule Ifayela
 Comment=The selected file cannot be opened for reading or writing
-Comment[af]=die gekose lêer kan nie wees geöpende vir lees of om te skryf
+Comment[af]=Die gekose lêer kan nie wees geöpende vir lees of om te skryf
 Comment[ar]=الملف المختار لا يمكن فتحه للقراءة أو الكتابة
 Comment[az]=Seçili fayl oxunmaq ya da yazılmaq üçün açıla bilmir
 Comment[bg]=Не мога да намеря избраният файл за четене или запис
@@ -510,7 +510,7 @@ default_presentation=0
 
 [fatalerror]
 Name=Fatal Error
-Name[af]=fatale fout
+Name[af]=Fatale Fout
 Name[ar]=خطأ قاتل
 Name[az]=Ölümcül Xəta
 Name[be]=Фатальная памылка
@@ -565,7 +565,7 @@ Name[zh_CN]=致命错误
 Name[zh_TW]=嚴重錯誤
 Name[zu]=Iphutha Eliyingozi
 Comment=There was a serious error causing the program to exit.
-Comment[af]=daar was 'n ernstige fout veroorsaak dat die program na beïendig.
+Comment[af]=Daar was 'n ernstige fout veroorsaak dat die program na beïendig.
 Comment[ar]=لقد اكن هناك خطأ كبير أدى الى خروج البرنامج
 Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu.
 Comment[bg]=Сериозна грешка предизвикваща излизане от програмата
@@ -624,7 +624,7 @@ level=4
 
 [notification]
 Name=Notification
-Name[af]=inkennisstelling
+Name[af]=Inkennisstelling
 Name[ar]=تنبيه
 Name[az]=Xəbərdarlıq
 Name[bg]=Съобщение
@@ -678,7 +678,7 @@ Name[zh_CN]=通知
 Name[zh_TW]=通知
 Name[zu]=Isaziso
 Comment=Something Special Happened in the Program
-Comment[af]=iets spesiaal het gebeur in die program
+Comment[af]=Iets Spesiaal Het gebeur in die Program
 Comment[ar]=شئ خاص حدث في البرنامج
 Comment[az]=Proqramda Xüsusi Bir Vəziyyət Meydana Gəldi
 Comment[bg]=В програмата се случи неще специално
@@ -739,7 +739,7 @@ level=1
 
 [warning]
 Name=Warning
-Name[af]=waarskuwing
+Name[af]=Waarskuwing
 Name[ar]=تحذير
 Name[az]=Diqqət
 Name[be]=Папярэджаньне
@@ -796,7 +796,7 @@ Name[zh_CN]=警告
 Name[zh_TW]=警告
 Name[zu]=Isexwayiso
 Comment=There was an error in the program which may cause problems.
-Comment[af]=daar was 'n fout in die program wat dalk mag veroorsaak probleme.
+Comment[af]=Daar was 'n fout in die program wat dalk mag veroorsaak probleme.
 Comment[ar]=هناك خطأ في البرنامج قد يؤدي الى حصول مشاكل
 Comment[az]=Proqramda ciddi bir xəta oldu.
 Comment[bg]=Грешка в програмата която може да предизвика проблеми.
@@ -854,7 +854,7 @@ level=2
 
 [catastrophe]
 Name=Catastrophe
-Name[af]=katastrofe
+Name[af]=Katastrofe
 Name[ar]=كارثة
 Name[az]=Faciə
 Name[be]=Катастрофа
@@ -965,7 +965,7 @@ default_presentation=2
 level=8
 [startkde]
 Name=Login
-Name[af]=aanteken
+Name[af]=Aanteken
 Name[ar]=دخول
 Name[az]=Giriş
 Name[bg]=Влизане в системата
@@ -1012,7 +1012,7 @@ Name[zh_CN]=登录
 Name[zh_TW]=登入
 Name[zu]=Vakela Igama
 Comment=KDE is Starting Up
-Comment[af]=kde is beginne begin
+Comment[af]=Kde is Beginne Begin
 Comment[ar]=جاري بدء كيدي
 Comment[az]=KDE Masa üstü Başlayır
 Comment[bg]=KDE се зарежда
@@ -1070,7 +1070,7 @@ default_sound=KDE_Startup.wav
  
 [exitkde]
 Name=Logout
-Name[af]=teken af
+Name[af]=Teken af
 Name[ar]=خروج
 Name[az]=Çıxış
 Name[bg]=Излизане от KDE
@@ -1120,7 +1120,7 @@ Name[zh_CN]=注消
 Name[zh_TW]=登出
 Name[zu]=Phumisa igama
 Comment=KDE is Exiting
-Comment[af]=kde is besig om toe te maak
+Comment[af]=Kde is Besig om toe te maak
 Comment[ar]=جارى إيقاف كيدي
 Comment[az]="KDE"dən Çıxılır
 Comment[bg]=Изход на KDE
@@ -1178,7 +1178,7 @@ default_sound=KDE_Logout.wav
 
 [printerror]
 Name=Print error
-Name[af]=druk fout
+Name[af]=Druk fout
 Name[ar]=خطأ في الطباعة
 Name[az]=Çap Edici xətası
 Name[be]=Памылка друку

@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable Image Viewing Component
-Comment[af]=inlegbare beeld aansig komponent
+Comment[af]=Inlegbare Beeld Aansig Komponent
 Comment[ar]=مكون عرض صور قابل للدمج
 Comment[az]=Hopdurula Bilən Rəsm Nümayiş Vasitəsi
 Comment[bg]=Вграден елемент на преглед за картини
@@ -54,7 +54,7 @@ Comment[zh_TW]=可嵌入的影像檢視元件
 Comment[zu]=Ohlanganisekayo Umbonisi Womfanekiso
 MimeType=image/gif;image/x-xpm;image/x-xbm;image/jpeg;image/x-bmp;image/png;image/x-ico;image/x-portable-bitmap;image/x-portable-anymap;image/x-portable-pixmap;image/x-portable-graymap
 Name=Embeddable Image Viewer
-Name[af]=inlegbare beeld aansig
+Name[af]=Inlegbare Beeld Aansig
 Name[ar]=عارض الصور القابل للدمج
 Name[az]=Daxili Rəsm Nümayişçisi
 Name[bg]=Вграден преглед на картини

@@ -1,6 +1,5 @@
 [Misc]
 Name=Qt Motif Plus
-Name[af]=qt motif plus
 Name[az]=Qt Motif +
 Name[br]=Qt Motif Mui
 Name[de]=Qt-Motif-Plus
@@ -17,7 +16,7 @@ Name[xh]=Qt Uyilo olulawulayo kunye
 Name[xx]=xx
 Name[zu]=t Motif Kanye
 Comment=Built-in enhanced Motif style
-Comment[af]=ingeboude verbeterde motif styl
+Comment[af]=Ingeboude verbeterde Motif styl
 Comment[ar]=مظهر مضمن محسّن مشابه لMotif
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Вграден в Qt подобрен стил на Motif

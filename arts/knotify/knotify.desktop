@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=KNotify
-Name[af]=knotify
+Name[af]=Knotify
 Name[ar]=المنبه
 Name[bg]=Уведомяване
 Name[eo]=Atentigilo
@@ -21,7 +21,7 @@ Name[xx]=xx
 Name[zu]=Isaziso se K
 Exec=knotify
 Comment=KDE Notification Daemon
-Comment[af]=kde inkennisstelling bediener
+Comment[af]=Kde Inkennisstelling Bediener
 Comment[ar]=مراقب تنبيهات كيدي
 Comment[az]=KDE Bildirim Daemon'u
 Comment[bg]=Демон за уведомяване в KDE

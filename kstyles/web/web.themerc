@@ -1,6 +1,6 @@
 [Misc]
 Name=Web style
-Name[af]=web styl
+Name[af]=Web styl
 Name[ar]=مظهر الويب
 Name[az]=Veb tərzi
 Name[bg]=WWW-стил
@@ -46,7 +46,7 @@ Name[zh_CN]=Web 风格
 Name[zh_TW]=網站風格
 Name[zu]=Uhlobo lwe Web
 Comment=Web widget style
-Comment[af]=web gui-element styl
+Comment[af]=Web gui-element styl
 Comment[ar]=مظهر ويدجات الويب
 Comment[az]=Veb pəncərəcik tərzi
 Comment[bg]=Стил на Web графични обекти

@@ -9,6 +9,7 @@ X-KDE-Smartcard-Type=gem1
 X-KDE-Smartcard-SubType=gem2
 X-KDE-Smartcard-SubSubType=gem3
 Name=GemSafe Card implementation
+Name[af]=Gemsafe Kaart implementering
 Name[az]=GemSafe Kart implementasiyası
 Name[bg]=Имплементация на Картата GemSafe 
 Name[bs]=GemSafe Card implementacija

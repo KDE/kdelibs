@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable Personal Certificate Manager
-Comment[af]=inlegbare persoonlike sertifikaat bestuurder
+Comment[af]=Inlegbare Persoonlike Sertifikaat Bestuurder
 Comment[ar]=مدير شهادات اعتماد شخصي قابل للدمج
 Comment[az]=Hopdurulabilən Şəxsi Vəsiqə İdarəçisi
 Comment[bg]=Вграден личен менаджър
@@ -48,7 +48,7 @@ Comment[zu]=Ohlanganisekayo Oyimfihlo Umphathi Wesitifiketi
 MimeType=application/x-pkcs12;application/x-x509-ca-cert;application/binary-certificate;
 Icon=lock
 Name=KCertPart
-Name[af]=kcertpart
+Name[af]=Kcertpart
 Name[eo]=Atestilo-parto
 Name[sv]=Kcertpart
 Name[ven]=Tshipida tsha cert ya K

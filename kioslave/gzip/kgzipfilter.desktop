@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=GZip Filter
-Name[af]=gzip filter
+Name[af]=Gzip Filter
 Name[ar]=فلتر GZip
 Name[az]=GZip Süzgəci
 Name[be]=Фільтар GZip

@@ -1,6 +1,6 @@
 [Misc]
 Name=KDE default
-Name[af]=kde verstek
+Name[af]=Kde verstek
 Name[ar]=افتراضي
 Name[az]=KDE əsas
 Name[be]=KDE па ўмаўчаньні
@@ -57,7 +57,7 @@ Name[zh_CN]=KDE 默认
 Name[zh_TW]=KDE 預設
 Name[zu]=KDE engaqedekanga
 Comment=Default KDE style
-Comment[af]=verstek kde styl
+Comment[af]=Verstek Kde styl
 Comment[ar]=مظهر كيدي الافتراضي
 Comment[az]=Əsas KDE tərzi
 Comment[be]=Стыль KDE па ўмаўчаньні

@@ -1,7 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpdunix
 Comment=Generic UNIX LPD print system (default)
-Comment[af]=generies unix lpd druk stelsel (verstek)
+Comment[af]=Generies Unix Lpd druk stelsel (verstek)
 Comment[ar]=نظام طباعة LPD العام ليونيكس (افتراصي)
 Comment[az]=Ümumi UNİX LPD Çap Etmə Sistemi (əsas)
 Comment[be]=Агульная сістэма друку UNIX LPD (па ўмаўчаньні)

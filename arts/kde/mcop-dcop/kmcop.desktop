@@ -2,11 +2,12 @@
 Encoding=UTF-8
 Type=Service
 Name=KMCOP
+Name[af]=Kmcop
 Name[eo]=MCOP-ilo
 Name[xx]=xx
 Exec=kmcop
 Comment=KDE MCOP-DCOP Bridge
-Comment[af]=kde MCOP-DCOP brug
+Comment[af]=Kde MCOP-DCOP Brug
 Comment[ar]=جسر KDE MCOP-DCOP
 Comment[az]=KDE MCOP-DCOP Körpüsü
 Comment[be]=Мост KDE MCOP-DCOP

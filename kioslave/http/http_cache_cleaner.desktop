@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=HTTP Cache Cleaner
-Name[af]=http kas skoonmaker
+Name[af]=Http Kas Skoonmaker
 Name[ar]=مزيل كاش HTTP
 Name[az]=HTTP Ön Yaddaş Təmizləyici
 Name[bg]=Изчистван на HTTP кеш
@@ -58,7 +58,7 @@ Name[zh_TW]=HTTP 快取清除程式
 Name[zu]=UHTTP Cache Umhlanzi
 Exec=kio_http_cache_cleaner
 Comment=Cleans up old entries from the HTTP cache
-Comment[af]=skoonmaak begin ou inskrywings van die http kas
+Comment[af]=Skoonmaak begin ou inskrywings van die Http kas
 Comment[ar]=يزيل المداخل القديمة من كاش HTTP
 Comment[az]=HTTP ön yaddaşından köhnə girişləri silər
 Comment[bg]=Изтриване на старите елемент в кеша на HTTP

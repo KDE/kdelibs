@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=HTTP Cookie Jar
-Name[af]=http koekie houer
+Name[af]=Http Koekie Houer
 Name[ar]=سكاكر HTTP
 Name[az]=HTTP Cookie Qutusu
 Name[br]=Bac'h toupinoÃ¹ HTTP
@@ -14,7 +14,6 @@ Name[de]=HTTP-Cookie-Behälter
 Name[el]=Βαζάκι για Cookies
 Name[eo]=HTTP-kuketo-traktilo
 Name[es]=Jarra de cookies de HTTP
-Name[eu]=HTTP Cookiak
 Name[fi]=HTTP evästesäilö
 Name[fr]=Gestionnaire de cookies HTTP
 Name[gl]=Xestor de cookies HTTP

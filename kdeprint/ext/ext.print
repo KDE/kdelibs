@@ -1,7 +1,7 @@
 [KDE Print Entry]
 PrintSystem=ext
 Comment=Print through an external program (generic)
-Comment[af]=druk deur 'n eksterne program (generies)
+Comment[af]=Druk deur 'n eksterne program (generies)
 Comment[ar]=الطباعة من خلال برنامج خارجي
 Comment[az]=Xarici proqram üstündən çap et (generik)
 Comment[bg]=Печат посредством външна програма

@@ -1,5 +1,6 @@
 [KDE Print Filter Entry]
 Name=ps2pdf
+Name[af]=ps-na-pdf
 Name[eo]=Konvertilo de Postskripto al PDF
 Name[fr]=Ps2pdf
 Name[pl]=Konwersja PS do PDF
@@ -7,7 +8,7 @@ Name[pt_BR]=Conversão de PS para PDF
 Name[xx]=xx
 Require=exec:/ps2pdf
 Comment=PostScript to PDF converter
-Comment[af]=postscript na pdf omskakelaar
+Comment[af]=Postscript na Pdf omskakelaar
 Comment[ar]=محول مستندات بوست سكريبت إلى PDF
 Comment[az]=PostScript-dən PDF sənədinə gönüşdürücü
 Comment[be]=Канвэртар PostScript у PDF

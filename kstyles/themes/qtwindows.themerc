@@ -1,6 +1,6 @@
 [Misc]
 Name=Qt Windows
-Name[af]=qt vensters
+Name[af]=Qt Vensters
 Name[de]=Qt-Windows
 Name[eo]=Qt Vindozo
 Name[hr]=Qt prozori
@@ -14,7 +14,7 @@ Name[ven]=Dziwindo dza Qt
 Name[xx]=xx
 Name[zu]=Qt Amawindi
 Comment=Built-in unthemed Windows 9x style
-Comment[af]=ingeboude ongetemade vensters 9x styl
+Comment[af]=Ingeboude ongetemade Vensters 9x styl
 Comment[ar]=مظهر مضمن مشابه لويندوز
 Comment[az]=Yerləşmiş, örtüsüz Windows 98 tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на Windows 9x

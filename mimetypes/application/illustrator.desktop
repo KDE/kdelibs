@@ -5,6 +5,7 @@ MimeType=application/illustrator
 Icon=postscript
 Patterns=*.ai;*.AI;
 Comment=Adobe Illustrator Document
+Comment[af]=Adobe Illustreerder Dokument
 Comment[ar]=مستند Adobe Illustrator
 Comment[be]=Дакумэнт Adobe Illustrator
 Comment[bg]=Нов документ на Adobe Illustrator

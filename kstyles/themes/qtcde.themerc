@@ -1,12 +1,12 @@
 [Misc]
 Name=Qt CDE
-Name[af]=qt cde
+Name[af]=Qt Cde
 Name[de]=Qt-CDE
 Name[nn]=Qt-CDE
 Name[th]=ตัวจัดการหน้าต่าง CDE - Qt
 Name[xx]=xx
 Comment=Built-in unthemed CDE style
-Comment[af]=ingeboude ongetemade cde styl
+Comment[af]=Ingeboude ongetemade Cde styl
 Comment[ar]=مظهر مضمن مشابه لCDE
 Comment[az]=Yerləşmiş, örtüsüz CDE tərzi
 Comment[bg]=Вграден в Qt стил без тема, приличащ на CDE

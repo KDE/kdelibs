@@ -1,5 +1,6 @@
 [KDE Print Filter Entry]
 Name=psresize
+Name[af]=ps-hervergroot
 Name[eo]=PS-grandecŝanĝilo
 Name[fr]=PsResize
 Name[hu]=PSResize
@@ -11,7 +12,7 @@ Name[xx]=xx
 Name[zu]=psphinda ushintshe usayizi
 Require=exec:/psresize
 Comment=Scale print content to fit on another paper size
-Comment[af]=skaal druk inhoud na pas op nog 'n papier grootte
+Comment[af]=Skaal druk inhoud na pas op nog 'n papier grootte
 Comment[ar]=قم يتحجيم محتويات الطباعة حتى تتناسب مع حجم صفحة أخرى
 Comment[bs]=Skaliraj štampani sadržaj kako bi stao na drugu veličinu papira
 Comment[cs]=Roztáhne tištěný obsah na jiný rozměr papíru

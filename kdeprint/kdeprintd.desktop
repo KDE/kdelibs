@@ -10,7 +10,7 @@ X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 
 Name=KDE Print Deamon
-Name[af]=kde druk bediener
+Name[af]=Kde Druk Bediener
 Name[ar]=مراقب طباعة كيدي
 Name[az]=KDE Çap Edici Vasitəsi
 Name[bg]=Демон на печата в KDE
@@ -55,7 +55,7 @@ Name[zh_CN]=KDE 打印进程
 Name[zh_TW]=KDE 列印伺服程式
 Name[zu]=I Daemon Yoshicilelo lwe KDE
 Comment=A Print Daemon for KDE
-Comment[af]='n druk bediener vir kde
+Comment[af]='n Druk Bediener vir Kde
 Comment[ar]=مراقب طباعة لكيدي
 Comment[az]=KDE üçün Çap Edici Vasitəsi
 Comment[bg]=Демон на печата в KDE

@@ -1,5 +1,6 @@
 [KDE Print Filter Entry]
 Name=psselect
+Name[af]=ps-kies
 Name[ar]=psseleect
 Name[eo]=PS-elektilo
 Name[fr]=PsSelect
@@ -9,6 +10,7 @@ Name[xx]=xx
 Name[zu]=pskhetha
 Require=exec:/psselect
 Comment=Page selection/ordering filter
+Comment[af]=Bladsy keuse/rangskikking filter
 Comment[ar]=فلتر اختيار/ترتيب الصفحات
 Comment[az]=Səhifə seçmə/sıralama süzgəci
 Comment[bs]=Filter za izbor/poredak stranica
