@@ -124,6 +124,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
 
   if ( !e->isValid() )
   {
+    kdebug( KDEBUG_WARN, 7012, "Invalid ServiceType : %s", _file.ascii() );
     delete e;
     return 0;
   }
@@ -163,6 +164,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
 
   if ( !e->isValid() )
   {
+    kdebug( KDEBUG_WARN, 7012, "Invalid ServiceType : %s", _file.ascii() );
     delete e;
     return 0;
   }
@@ -239,6 +241,7 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QData
   KService *s = new KService( _str );
   if ( !s->isValid() )
   {
+    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
     delete s;
     return 0;
   }
@@ -256,6 +259,7 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
   KService *service = new KService( _cfg );
   if ( !service->isValid() )
   {
+    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
     delete service;
     return 0;
   }
