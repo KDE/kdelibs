@@ -176,3 +176,5 @@ DOXYGEN_EXCLUDE = malloc
 
 include ../admin/Doxyfile.am
 
+KDE_OPTIONS = nofinal
+
