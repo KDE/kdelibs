@@ -76,9 +76,9 @@ public:
     virtual void setCurrentItem( int i );	
     void setItems( const QStringList& lst );
     void clear();
-    
+
 protected slots:
-    virtual void slotActivated( int );
+    virtual void slotActivated( int ) {}
 
 };
 
