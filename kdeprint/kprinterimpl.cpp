@@ -481,9 +481,9 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
 
 	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
-	s.replace(QRegExp("%out"), quote(p->outputFileName()));
 	s.replace(QRegExp("%psl"), ps.lower());
 	s.replace(QRegExp("%psu"), ps);
+	s.replace(QRegExp("%out"), quote(p->outputFileName())); // Replace as last
 	cmd = s;
 	return true;
 }
