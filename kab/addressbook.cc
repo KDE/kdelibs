@@ -825,6 +825,32 @@ AddressBook::getKey(int index, KabKey& key)
   // ###########################################################################
 }
 
+AddressBook::ErrorCode
+AddressBook::getIndex(const KabKey& key, int& index)
+{
+  register bool GUARD; GUARD=true;
+  // ###########################################################################
+  StringKabKeyMap::iterator pos;
+  // -----
+  index=0;
+  for(pos=entries->begin(); pos!=entries->end(); ++pos)
+    {
+      kDebugInfo("%s <--> %s", (const char*)(*pos).second.getKey(),
+		 (const char*) key.getKey());
+      if((*pos).second==key) break;
+      ++index;
+    }
+  kDebugInfo(pos==entries->end(), KAB_KDEBUG_AREA,
+	     "AddressBook::getIndex: no such key.");
+  if(pos==entries->end())
+    {
+      return NoSuchEntry;
+    } else {
+      return NoError;
+    }
+  // ###########################################################################
+}
+
 Section*
 AddressBook::entrySection()
 {

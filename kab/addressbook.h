@@ -422,6 +422,9 @@ public:
 			bool reverse=false, bool initials=false);
   /** Get the key of the item in the selector with the given index. */
   ErrorCode getKey(int index, KabKey&);
+  /** Get the index of this key in the selector. This is the reverse
+      functionality to getKey(). */
+  ErrorCode getIndex(const KabKey&, int&);
   /** Display this entry. If the entry has more than one address, the address
    *  at index \a index is displayed. */
   // ErrorCode displayEntry(const AddressBook::Entry&, int index=0);

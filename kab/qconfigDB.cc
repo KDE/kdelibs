@@ -1,7 +1,7 @@
 /* the Configuration Database library, Version II
  *
  * the KDE addressbook
- * copyright:  (C) Mirko Sucker, 1998, 1999
+ * copyright:  (C) Mirko Sucker, 1998, 1999, 2000
  * mail to:    Mirko Sucker <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 2.0
  
