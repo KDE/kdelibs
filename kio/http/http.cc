@@ -2228,6 +2228,7 @@ bool HTTPProtocol::readBody( )
 
 
   // this is the main incoming loop.  gather everything while we can...
+  big_buffer.resize(0);
   while (!eof()) {
     int bytesReceived;
     if (m_bChunked)
