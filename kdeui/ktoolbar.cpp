@@ -104,6 +104,10 @@ KToolBar::KToolBar(QWidget *parent, char *name)
 	init();
 }
     emit (moved(position));
+void KToolBar::enableMoving(bool flag) {
+  moving = flag;
+};
+    updateRects( true );
 void KToolBar::ContextCallback( int index )
 {
 	switch ( index ) {
@@ -134,6 +138,7 @@ void KToolBar::init()
 				SLOT( ContextCallback( int ) ) );
 
 	position = Top;
+	moving = TRUE;
 	setFrameStyle( QFrame::Panel | QFrame::Raised );
 	setLineWidth( 2 );
 	resize( width(), ToolbarWidth );
@@ -231,9 +236,9 @@ int KToolBar::insertItem( KPixmap& pixmap, int id, bool enabled,
 {
 	KToolBarItem *button = new KToolBarItem( pixmap, id, this );
 	if ( index == -1 )
-    	buttons.append( button );
+	  buttons.append( button );
   	else
-    	buttons.insert( index, button );
+	  buttons.insert( index, button );
   
 	connect(button, SIGNAL(clicked(int)), this, SLOT(ItemClicked(int)));
 	connect(button, SIGNAL(released(int)), this, SLOT(ItemReleased(int)));
@@ -247,11 +252,11 @@ int KToolBar::insertItem( KPixmap& pixmap, int id, bool enabled,
 	return buttons.at();
 }
 
-int KToolBar::insertItem( KPixmap& pixmap, const char *signal,
+int KToolBar::insertItem( KPixmap& pixmap, int id, const char *signal,
 		const QObject *receiver, const char *slot, bool enabled,
 		char *tooltiptext, int index )
 {
-	KToolBarItem *button = new KToolBarItem( pixmap, 0, this );
+	KToolBarItem *button = new KToolBarItem( pixmap, id, this );
 	if ( index == -1 ) 
 		buttons.append( button );
 	else
@@ -263,6 +268,7 @@ int KToolBar::insertItem( KPixmap& pixmap, const char *signal,
 	connect( button, signal, receiver, slot );
 	button->enable( enabled );
 	updateRects( TRUE );
+	printf("insertItem %d\n",buttons.at());
 	return buttons.at();
 }
 
@@ -273,8 +279,8 @@ int KToolBarItem::ID()
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-	if ( m->button() == RightButton ) {}
-		context->popup( mapToGlobal( m->pos() ), 0 );
+  if ( m->button() == RightButton && moving )
+    context->popup( mapToGlobal( m->pos() ), 0 );
 }
 
 int KToolBar::insertSeparator( int index )
@@ -362,9 +368,9 @@ void KToolBar::paintEvent( QPaintEvent * )
 
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-	for ( KToolBarItem *b = buttons.first(); b!=NULL; b=buttons.next() ) 
-      		if ( b->ID() == id )
-				b->enable( enabled );
+  for ( KToolBarItem *b = buttons.first(); b!=NULL; b=buttons.next() ) 
+    if ( b->ID() == id )
+      b->enable( enabled );
 }
 				
 	

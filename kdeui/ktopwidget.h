@@ -14,10 +14,10 @@ class KTopLevelWidget : public QWidget {
 	friend class KToolBar;
   
 public:
-	KTopLevelWidget( char *name = NULL );
+	KTopLevelWidget( const char *name = NULL );
 	~KTopLevelWidget();
 	
-	int addToolbar( KToolBar *toolbar, int index = -1 );
+	int addToolBar( KToolBar *toolbar, int index = -1 );
 	void setView( QWidget *view, bool show_frame = TRUE );
 	void setMenu( KMenuBar *menu );
 	void setStatusBar( KStatusBar *statusbar );

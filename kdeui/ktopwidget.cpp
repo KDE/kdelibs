@@ -3,7 +3,7 @@
 
 #include "ktopwidget.moc"
 
-KTopLevelWidget::KTopLevelWidget( char *name = NULL )
+KTopLevelWidget::KTopLevelWidget( const char *name = NULL )
 	: QWidget( 0L, name )
 {
 	kmenubar = NULL;
@@ -21,7 +21,7 @@ KTopLevelWidget::~KTopLevelWidget()
 {
 }
 
-int KTopLevelWidget::addToolbar( KToolBar *toolbar, int index )
+int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
 {
 	if ( index == -1 )
 		toolbars.append( toolbar );

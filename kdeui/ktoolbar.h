@@ -49,21 +49,23 @@ public:
 	~KToolBar();
 	int insertItem(KPixmap& pixmap, int ID, bool enabled = TRUE, 
 							char *ToolTipText = NULL, int index=-1);
-	int insertItem(KPixmap& pixmap, const char *signal, 
+	int insertItem(KPixmap& pixmap, int ID, const char *signal, 
 						const QObject *receiver, const char *slot, 
 						bool enabled = TRUE, 
 						char *tooltiptext = NULL, int index=-1);
+	void enableMoving(bool flag = TRUE);
 	int insertSeparator(int index=-1);
 	void setPos(Position pos);
 	Position Pos();
 	bool enable(BarStatus stat);
-
+	
 	void setItemEnabled( int id, bool enabled );
 
 private:
 	QList <KToolBarItem> buttons;
 	Position position;
 	QPopupMenu *context;
+	bool moving;
 
 protected:
 	void drawContents ( QPainter *);
