@@ -152,6 +152,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	    emit adaptSize( 0, 0 );
 
         enable = false;
+	updateGeometry();
     }
     else
     {
@@ -332,6 +333,8 @@ void KVideoWidget::resizeNotify( int width, int height )
 	emit adaptSize( videoWidth, videoHeight );
     else if (isDoubleSize())
 	emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
+
+    updateGeometry();
 }
 
 bool KVideoWidget::x11Event( XEvent *event )
