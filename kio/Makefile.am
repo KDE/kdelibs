@@ -34,7 +34,6 @@ libksycoca_la_LIBADD = ./libkio.la
 libksycoca_la_SOURCES = \
 	kdirwatch.cpp \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
-	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kservicegroup.cpp \
 	kservice.cpp kservicefactory.cpp \
@@ -44,16 +43,15 @@ libksycoca_la_SOURCES = \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
-	yacc.c lex.c kprotocolinfo.cpp kprotocolinfofactory.cpp \
-	chmodjob.cpp kscan.cpp ktar.cpp \
-	ksycoca.skel
+	yacc.c lex.c  \
+	chmodjob.cpp kscan.cpp ktar.cpp 
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
 #kdirnotify_stub.h
 $(srcdir)/kmimetype.cpp: kdirnotify_stub.h
 
-include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
+include_HEADERS = \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
@@ -72,15 +70,16 @@ libkio_la_SOURCES = \
 	connection.cpp \
 	slaveinterface.cpp job.cpp  \
 	global.cpp \
-	slave.cpp \
+	slave.cpp slaveconfig.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
-	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
+	kdirnotify.cpp kdirnotify.skel kdirnotify.stub ObjectBIface.stub \
 	observer.cpp uiserver.stub observer.skel \
-	kemailsettings.cpp authinfo.cpp
+	kemailsettings.cpp authinfo.cpp \
+	kprotocolinfo.cpp kprotocolinfofactory.cpp
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
@@ -95,7 +94,7 @@ METASOURCES = AUTO
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h \
-        slaveinterface.h \
+        slaveinterface.h slaveconfig.h \
         global.h passdlg.h netaccess.h job.h scheduler.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
@@ -105,8 +104,8 @@ kioinclude_HEADERS = connection.h \
         kpac.h kmdbase.h authinfo.h
 
 # Internal
-noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
-	ksycocadict.h kmessageboxwrapper.h \
+noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
+	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h \
 	kprotocolinfofactory.h # old stuff
