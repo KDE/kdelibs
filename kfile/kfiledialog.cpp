@@ -476,7 +476,7 @@ void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
     filename_ = 0;
     QString pathstr = _pathstr;
     
-    if (pathstr.right(1)[0] != '/')
+    if (pathstr.length() == 0 || pathstr.right(1)[0] != '/')
 	pathstr += "/";
     
     if (pathstr.left(1)[0] == '/')
