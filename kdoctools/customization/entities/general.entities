@@ -220,6 +220,7 @@
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodo	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
+<!ENTITY koncd	"<application>KOnCD</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
