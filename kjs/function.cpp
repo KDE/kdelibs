@@ -31,6 +31,8 @@
 #include "debugger.h"
 
 #include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
@@ -430,21 +432,16 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     break;
   }
   case ParseInt: {
-    String str = args[0].toString(exec);
+    CString cstr = args[0].toString(exec).cstring();
     int radix = args[1].toInt32(exec);
-    if (radix == 0)
-      radix = 10;
-    else if (radix < 2 || radix > 36) {
+
+    char* endptr;
+    errno = 0;
+    long value = strtol(cstr.c_str(), &endptr, radix);
+    if (errno != 0 || endptr == cstr.c_str())
       res = Number(NaN);
-      return res;
-    }
-    /* TODO: use radix */
-    // Can't use toULong(), we want to accept floating point values too
-    double value = str.value().toDouble( true /*tolerant*/ );
-    if ( isNaN(value) )
-        res = Number(NaN);
     else
-        res = Number(static_cast<long>(value)); // remove floating-point part
+      res = Number(value);
     break;
   }
   case ParseFloat: {
