@@ -56,7 +56,7 @@ class Entry {
 		Wallet::EntryType _type;
 };
 
-};
+}
 
 #endif
 

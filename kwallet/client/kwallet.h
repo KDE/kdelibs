@@ -115,7 +115,7 @@ class Wallet : public QObject, public DCOPObject {
 		virtual void virtual_hook(int id, void *data);
 };
 
-};
+}
 
 #endif
 
