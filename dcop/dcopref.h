@@ -243,7 +243,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * \endcode
  *
  * If you use custom data types that do support QDataStream but have
- * no corrsponding dcopTypeName overload, you can either provide such
+ * no corresponding dcopTypeName overload, you can either provide such
  * an overload or use a DCOPArg wrapper that allows you to specify the type.
  *
  * \code
@@ -263,7 +263,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * returns a simple bool on whether the signal could be sent or not:
  *
  * \code
- *	if ( example.pingMe( "message" ) == false )
+ *	if ( example.send( "pingMe", "message" ) == false )
  *	   qWarning("could not ping example" );
  * \endcode
  *

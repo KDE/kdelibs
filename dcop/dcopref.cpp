@@ -41,7 +41,7 @@ bool DCOPReply::typeCheck( const char* t, bool warn )
 	return true;
     if( warn
 	|| strcmp( t, "<unknown>" )) // type not listed in dcoptypes.h
-	qWarning( "DCOPReply<%s>: cast to '%s' error",
+	qWarning( "WARNING: DCOPReply<%s>: cast to '%s' error",
 	         STR( type ), t );
     return false;
 }
