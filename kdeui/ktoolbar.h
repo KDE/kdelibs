@@ -29,6 +29,10 @@
 #include <qpixmap.h>
 #include <qpopmenu.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kbutton.h"
 #include "kcombo.h"
 #include "klined.h"
