@@ -1569,8 +1569,16 @@ void HTMLTokenizer::processToken()
     }
     kdDebug( 6036 ) << endl;
 #endif
+
+    // In some cases, parseToken() can cause javascript code to be executed
+    // (for example, when setting an attribute that causes an event handler
+    // to be created). So we need to protect against re-entrancy into the parser
+    m_executingScript++;
+
     // pass the token over to the parser, the parser DOES NOT delete the token
     parser->parseToken(&currToken);
+
+    m_executingScript--;
 
     if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;

@@ -76,6 +76,7 @@ namespace khtml
   class RenderWidget;
   class CSSStyleSelector;
   class HTMLTokenizer;
+  class Decoder;
 };
 
 namespace KJS {
@@ -83,6 +84,7 @@ namespace KJS {
     class WindowFunc;
     class JSEventListener;
     class DOMDocument;
+    class SourceFile;
 };
 
 namespace KParts
@@ -160,6 +162,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::WindowFunc;
   friend class KJS::JSEventListener;
   friend class KJS::DOMDocument;
+  friend class KJS::SourceFile;
   friend class KJSProxy;
   friend class KHTMLPartBrowserExtension;
   friend class DOM::DocumentImpl;
@@ -1130,6 +1133,7 @@ private:
   void findText();
   void findTextNext();
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
+  khtml::Decoder *decoder();
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

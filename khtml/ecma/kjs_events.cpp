@@ -50,7 +50,7 @@ JSEventListener::~JSEventListener()
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::instance() && KJSDebugWin::instance()->inSession())
+  if (KJSDebugWin::debugWindow() && KJSDebugWin::debugWindow()->inSession())
     return;
 #endif
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();

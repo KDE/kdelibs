@@ -1152,9 +1152,6 @@ void DocumentImpl::open(  )
     m_decoderMibEnum = 0;
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
-
-    if (m_view && m_view->part()->jScript())
-        m_view->part()->jScript()->setSourceFile(m_url,"");
 }
 
 void DocumentImpl::close(  )
@@ -1183,9 +1180,6 @@ void DocumentImpl::write( const QString &text )
         write(QString::fromLatin1("<html><title></title><body>"));
     }
     m_tokenizer->write(text, false);
-
-    if (m_view && m_view->part()->jScript())
-        m_view->part()->jScript()->appendSourceFile(m_url,text);
 }
 
 void DocumentImpl::writeln( const DOMString &text )

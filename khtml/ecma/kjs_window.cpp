@@ -1513,6 +1513,8 @@ void ScheduledAction::execute(Window *window)
         Q_ASSERT( window == interpreter->globalObject().imp() );
         Object obj( window );
         func.call(exec,obj,args); // note that call() creates its own execution state for the func call
+	if (exec->hadException())
+	  exec->clearException();
       }
     }
   }

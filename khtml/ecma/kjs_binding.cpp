@@ -107,6 +107,8 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
     val = tryCall(exec, thisObj, args);
   }
   // pity there's no way to distinguish between these in JS code
+  // ### Look into setting prototypes of these & the use of instanceof so the exception
+  // type can be determined. See what other browsers do.
   catch (DOM::DOMException e) {
     Object err = Error::create(exec, GeneralError, QString("DOM Exception %1").arg(e.code).local8Bit());
     err.put(exec, "code", Number(e.code));

@@ -33,6 +33,7 @@
 #include <qptrstack.h>
 #include <qcheckbox.h>
 #include <kdialogbase.h>
+#include <kmainwindow.h>
 
 #include <kjs/debugger.h>
 
@@ -41,38 +42,20 @@
 class QListBox;
 class QComboBox;
 class QMultiLineEdit;
-class QPushButton;
+class KActionCollection;
+class KAction;
 
 namespace KJS {
   class FunctionImp;
   class List;
   class Interpreter;
 
-  /**
-   * @internal
-   *
-   * A hack to allow KJSDebugWin to act as a modal window only some of the time
-   * (i.e. when it is paused, to prevent the user quitting the app during a
-   * debugging session)
-   */
-  class FakeModal : public QWidget
-  {
-    Q_OBJECT
-  public:
-    FakeModal() {}
-    void enable(QWidget *modal);
-    void disable();
-
-  protected:
-    bool eventFilter( QObject *obj, QEvent *evt );
-    QWidget *modalWidget;
-  };
-
   class SourceFile : public DOM::DomShared
   {
    public:
     SourceFile(QString u, QString c, int i, Interpreter *interp) 
 	: url(u), code(c), index(i), interpreter(interp) {}
+    QString getCode();
     QString url;
     QString code;
     int index;
@@ -108,7 +91,7 @@ namespace KJS {
   class KJSErrorDialog : public KDialogBase {
     Q_OBJECT
   public:
-    KJSErrorDialog(QWidget *parent, const QString& errorMessage);
+    KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug);
     virtual ~KJSErrorDialog();
 
     bool debugSelected() const { return m_debugSelected; }
@@ -130,7 +113,7 @@ namespace KJS {
    *
    * There is only one debug window per program. This can be obtained by calling #instance
    */
-  class KJSDebugWin : public QWidget, public Debugger
+  class KJSDebugWin : public KMainWindow, public Debugger
   {
     Q_OBJECT
   public:
@@ -139,7 +122,7 @@ namespace KJS {
 
     static KJSDebugWin *createInstance();
     static void destroyInstance();
-    static KJSDebugWin *instance() { return kjs_html_debugger; }
+    static KJSDebugWin *debugWindow() { return kjs_html_debugger; }
 
     enum Mode { Disabled = 0, // No break on any statements
 		Next     = 1, // Will break on next statement in current context
@@ -151,8 +134,6 @@ namespace KJS {
 
     void setSourceLine(int sourceId, int lineno);
     void setNextSourceInfo(QString url, int baseLine);
-    void setSourceFile(QString url, QString code, Interpreter* interp);
-    void appendSourceFile(QString url, QString code, Interpreter* interp);
     bool inSession() const { return !m_execStates.isEmpty(); }
     void setMode(Mode m) { m_mode = m; }
     void clear(Interpreter *interp);
@@ -181,8 +162,16 @@ namespace KJS {
   protected:
 
     virtual void closeEvent(QCloseEvent *e);
+    virtual bool eventFilter(QObject *obj, QEvent *evt);
+    void disableOtherWindows();
+    void enableOtherWindows();
 
   private:
+
+    SourceFile *getSourceFile(Interpreter *interpreter, QString url);
+    void setSourceFile(Interpreter *interpreter, QString url, SourceFile *sourceFile);
+    void removeSourceFile(Interpreter *interpreter, QString url);
+
     void checkBreak(ExecState *exec);
     void enterSession(ExecState *exec);
     void leaveSession();
@@ -225,19 +214,21 @@ namespace KJS {
     QMap<int,SourceFragment*> m_sourceFragments; /* maps SourceId->SourceFragment */
     QMap<int,SourceFile*> m_sourceSelFiles; /* maps combobox index->SourceFile */
 
+    KActionCollection *m_actionCollection;
     QPixmap m_stopIcon;
     QPixmap m_emptyIcon;
     QListBox *m_sourceDisplay;
     QListBox *m_contextList;
-    QPushButton *m_stepButton;
-    QPushButton *m_nextButton;
-    QPushButton *m_continueButton;
-    QPushButton *m_stopButton;
-    QPushButton *m_breakButton;
-    QPushButton *m_breakpointButton;
+
+    KAction *m_stepAction;
+    KAction *m_nextAction;
+    KAction *m_continueAction;
+    KAction *m_stopAction;
+    KAction *m_breakAction;
+    KAction *m_breakpointAction;
+
     QComboBox *m_sourceSel;
     QMultiLineEdit *m_evalEdit;
-    FakeModal m_fakeModal;
 
     static KJSDebugWin *kjs_html_debugger;
   };

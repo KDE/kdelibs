@@ -1456,22 +1456,14 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
 void KHTMLPart::write( const char *str, int len )
 {
-  if ( !d->m_decoder ) {
-    d->m_decoder = new khtml::Decoder();
-    if( !d->m_encoding.isNull() )
-      d->m_decoder->setEncoding( d->m_encoding.latin1(), d->m_haveEncoding );
-    else
-      d->m_decoder->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
-
-    d->m_decoder->setAutomaticDetectionLanguage( d->m_automaticDetectionLanguage );
-  }
+  khtml::Decoder *dec = decoder();
   if ( len == 0 )
     return;
 
   if ( len == -1 )
     len = strlen( str );
 
-  QString decoded = d->m_decoder->decode( str, len );
+  QString decoded = dec->decode( str, len );
 
   if(decoded.isEmpty()) return;
 
@@ -1482,13 +1474,11 @@ void KHTMLPart::write( const char *str, int len )
 
   //kdDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
-      if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-      d->m_doc->setDecoderCodec(d->m_decoder->codec());
+      if(dec->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
+      d->m_doc->setDecoderCodec(dec->codec());
       d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
-  if (jScript())
-    jScript()->appendSourceFile(m_url.url(),decoded);
   Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( decoded, true );
@@ -1504,8 +1494,6 @@ void KHTMLPart::write( const QString &str )
       d->m_doc->setParseMode( DocumentImpl::Strict );
       d->m_bFirstData = false;
   }
-  if (jScript())
-    jScript()->appendSourceFile(m_url.url(),str);
   Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( str, true );
@@ -5229,6 +5217,19 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
   d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), false );
 }
 
+khtml::Decoder *KHTMLPart::decoder()
+{
+  if ( !d->m_decoder ) {
+    d->m_decoder = new khtml::Decoder();
+    if( !d->m_encoding.isNull() )
+      d->m_decoder->setEncoding( d->m_encoding.latin1(), d->m_haveEncoding );
+    else
+      d->m_decoder->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
+
+    d->m_decoder->setAutomaticDetectionLanguage( d->m_automaticDetectionLanguage );
+  }
+  return d->m_decoder;
+}
 
 using namespace KParts;
 #include "khtml_part.moc"

@@ -36,6 +36,8 @@
 #include <qbitmap.h>
 #include <qwidgetlist.h>
 #include <qlabel.h>
+#include <qdatastream.h>
+#include <qcstring.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -43,60 +45,39 @@
 #include <kglobal.h>
 #include <kmessagebox.h>
 #include <kguiitem.h>
+#include <kpopupmenu.h>
+#include <kmenubar.h>
+#include <kaction.h>
+#include <kactioncollection.h>
+#include <kshortcut.h>
 
 #include "kjs_dom.h"
+#include "kjs_binding.h"
+#include "khtml_part.h"
+#include "khtml_pagecache.h"
+#include "misc/decoder.h"
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
 
 using namespace KJS;
+using namespace khtml;
 
 KJSDebugWin * KJSDebugWin::kjs_html_debugger = 0;
 
-bool FakeModal::eventFilter( QObject *o, QEvent *e )
+QString SourceFile::getCode()
 {
-  // ### does this prevent the use of alert boxes brought up
-  // during a debugging session?
-  switch (e->type()) {
-  case QEvent::MouseButtonPress:
-  case QEvent::MouseButtonRelease:
-  case QEvent::MouseButtonDblClick:
-  case QEvent::MouseMove:
-  case QEvent::KeyPress:
-  case QEvent::KeyRelease:
-  case QEvent::Destroy:
-  case QEvent::Close:
-  case QEvent::Quit:
-    while (o->parent())
-      o = o->parent();
-    if (o == modalWidget)
-      return QWidget::eventFilter( o, e );
-    else
-      return TRUE;
-    break;
-  default:
-    return QWidget::eventFilter( o, e );
+  KHTMLPart *part = static_cast<ScriptInterpreter*>(interpreter)->part();
+  if (url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
+    Decoder *decoder = part->decoder();
+    QByteArray data;
+    QDataStream stream(data,IO_WriteOnly);
+    KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
+    return decoder->decode(data.data(),data.size());
   }
-}
 
-
-void FakeModal::enable(QWidget *modal)
-{
-  QWidgetList *widgets = QApplication::allWidgets();
-  QWidgetListIt it(*widgets);
-  for (; it.current(); ++it)
-    it.current()->installEventFilter(this);
-  modalWidget = modal;
-}
-
-void FakeModal::disable()
-{
-  QWidgetList *widgets = QApplication::allWidgets();
-  QWidgetListIt it(*widgets);
-  for (; it.current(); ++it)
-    it.current()->removeEventFilter(this);
-  modalWidget = 0;
+  return code;
 }
 
 //-------------------------------------------------------------------------
@@ -116,10 +97,10 @@ SourceFragment::~SourceFragment()
 
 //-------------------------------------------------------------------------
 
-KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage)
+KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug)
   : KDialogBase(parent,0,true,i18n("JavaScript error"),
-		KDialogBase::Ok|KDialogBase::User1,KDialogBase::Ok,false,
-		KGuiItem("&Debug","gear"))
+		showDebug ? KDialogBase::Ok|KDialogBase::User1 : KDialogBase::Ok,
+		KDialogBase::Ok,false,KGuiItem("&Debug","gear"))
 {
   QWidget *page = new QWidget(this);
   setMainWidget(page);
@@ -157,7 +138,7 @@ void KJSErrorDialog::slotUser1()
 
 //-------------------------------------------------------------------------
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
-  : QWidget(parent, name)
+  : KMainWindow(parent, name, WType_TopLevel)
 {
   m_breakpoints = 0;
   m_breakpointCount = 0;
@@ -173,42 +154,69 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_emptyIcon.setMask(emptyMask);
 
   setCaption(i18n("JavaScript Debugger"));
-  QVBoxLayout *vl = new QVBoxLayout(this, 5);
+
+  QWidget *mainWidget = new QWidget(this);
+  setCentralWidget(mainWidget);
+
+  QVBoxLayout *vl = new QVBoxLayout(mainWidget,5);
 
   // frame list & code
-  QSplitter *hsplitter = new QSplitter(Qt::Vertical, this);
+  QSplitter *hsplitter = new QSplitter(Qt::Vertical,mainWidget);
   QSplitter *vsplitter = new QSplitter(hsplitter);
   QFont font("fixed",10);
 
-  m_contextList = new QListBox(vsplitter);
+  QWidget *contextContainer = new QWidget(vsplitter);
+
+  QLabel *contextLabel = new QLabel(i18n("Call stack"),contextContainer);
+  QWidget *contextListContainer = new QWidget(contextContainer);
+  m_contextList = new QListBox(contextListContainer);
   m_contextList->setFont(font);
   m_contextList->setMinimumSize(100,200);
   connect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(showFrame(int)));
+
+  QHBoxLayout *clistLayout = new QHBoxLayout(contextListContainer);
+  clistLayout->addWidget(m_contextList);
+  clistLayout->addSpacing(KDialog::spacingHint());
+
+  QVBoxLayout *contextLayout = new QVBoxLayout(contextContainer);
+  contextLayout->addWidget(contextLabel);
+  contextLayout->addSpacing(KDialog::spacingHint());
+  contextLayout->addWidget(contextListContainer);
 
   // source selection & display
   QWidget *sourceSelDisplay = new QWidget(vsplitter);
   QVBoxLayout *ssdvl = new QVBoxLayout(sourceSelDisplay);
 
-  m_sourceSel = new QComboBox(sourceSelDisplay);
+  m_sourceSel = new QComboBox(toolBar());
   connect(m_sourceSel,SIGNAL(activated(int)),this,SLOT(sourceSelected(int)));
-  ssdvl->addWidget(m_sourceSel);
+//   ssdvl->addWidget(m_sourceSel);
 
   m_sourceDisplay = new QListBox(sourceSelDisplay);
   m_sourceDisplay->setFont(font);
   ssdvl->addWidget(m_sourceDisplay);
-  connect(m_sourceDisplay, SIGNAL(doubleClicked(QListBoxItem*)), SLOT(toggleBreakpoint()));
+  connect(m_sourceDisplay,SIGNAL(doubleClicked(QListBoxItem*)),SLOT(toggleBreakpoint()));
 
   QValueList<int> vsplitSizes;
-  vsplitSizes.insert(vsplitSizes.end(),200);
-  vsplitSizes.insert(vsplitSizes.end(),400);
+  vsplitSizes.insert(vsplitSizes.end(),120);
+  vsplitSizes.insert(vsplitSizes.end(),480);
   vsplitter->setSizes(vsplitSizes);
 
   // evaluate
-  m_evalEdit = new QMultiLineEdit(hsplitter);
+
+  QWidget *evalContainer = new QWidget(hsplitter);
+
+  QLabel *evalLabel = new QLabel(i18n("JavaScript console"),evalContainer);
+  m_evalEdit = new QMultiLineEdit(evalContainer);
   m_evalEdit->setReadOnly(true);
   m_evalEdit->setWordWrap(QMultiLineEdit::NoWrap);
   m_evalEdit->setFont(font);
-  connect(m_evalEdit, SIGNAL(returnPressed()), SLOT(eval()));
+  connect(m_evalEdit,SIGNAL(returnPressed()),SLOT(eval()));
+
+  QVBoxLayout *evalLayout = new QVBoxLayout(evalContainer);
+  evalLayout->addSpacing(KDialog::spacingHint());
+  evalLayout->addWidget(evalLabel);
+  evalLayout->addSpacing(KDialog::spacingHint());
+  evalLayout->addWidget(m_evalEdit);
 
   QValueList<int> hsplitSizes;
   hsplitSizes.insert(hsplitSizes.end(),400);
@@ -217,40 +225,61 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   vl->addWidget(hsplitter);
 
-  // control buttons
-  QHBoxLayout *hl2 = new QHBoxLayout(vl);
-  m_nextButton = new QPushButton(i18n("&Next"), this);
-  m_stepButton = new QPushButton(i18n("&Step"), this);
-  m_continueButton = new QPushButton(i18n("&Continue"), this);
-  m_stopButton = new QPushButton(i18n("St&op"), this);
-  m_breakButton = new QPushButton(i18n("&Break at next Statement"), this);
-  m_breakpointButton = new QPushButton(i18n("&Toggle Breakpoint"), this);
-  hl2->addWidget(m_nextButton);
-  hl2->addWidget(m_stepButton);
-  hl2->addWidget(m_continueButton);
-  hl2->addWidget(m_stopButton);
-  hl2->addWidget(m_breakButton);
-  hl2->addWidget(m_breakpointButton);
-  hl2->addStretch();
+  // actions
+  KPopupMenu *debugMenu = new KPopupMenu(this);
+  menuBar()->insertItem("&Debug",debugMenu);
 
-  connect(m_nextButton, SIGNAL(clicked()), SLOT(next()));
-  connect(m_stepButton, SIGNAL(clicked()), SLOT(step()));
-  connect(m_continueButton, SIGNAL(clicked()), SLOT(cont()));
-  connect(m_stopButton, SIGNAL(clicked()), SLOT(stop()));
-  connect(m_breakButton, SIGNAL(clicked()), SLOT(breakNext()));
-  connect(m_breakpointButton, SIGNAL(clicked()), SLOT(toggleBreakpoint()));
+  m_actionCollection = new KActionCollection(this);
 
-  m_nextButton->setEnabled(false);
-  m_stepButton->setEnabled(false);
-  m_continueButton->setEnabled(false);
-  m_stopButton->setEnabled(false);
-  m_breakButton->setEnabled(true);
-  m_breakpointButton->setEnabled(false);
+  // ### maybe find some more suitable icons... the kdevelop debugger icons look nice
+  m_nextAction       = new KAction(i18n("&Next"),"1rightarrow",KShortcut(),this,SLOT(next()),
+				   m_actionCollection,"next");
+  m_stepAction       = new KAction(i18n("&Step"),"1downarrow",KShortcut(),this,SLOT(step()),
+				   m_actionCollection,"step");
+  m_continueAction   = new KAction(i18n("&Continue"),"2rightarrow",KShortcut(),this,SLOT(cont()),
+				   m_actionCollection,"cont");
+  m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(stop()),
+				   m_actionCollection,"stop");
+  m_breakAction      = new KAction(i18n("&Break at next Statement"),"bottom",KShortcut(),this,SLOT(breakNext()),
+				   m_actionCollection,"breaknext");
+  m_breakpointAction = new KAction(i18n("&Toggle Breakpoint"),"indent",KShortcut(),this,SLOT(toggleBreakpoint()),
+				   m_actionCollection,"toggle");
 
+  m_nextAction->setToolTip(i18n("Next"));
+  m_stepAction->setToolTip(i18n("Step"));
+  m_continueAction->setToolTip(i18n("Continue"));
+  m_stopAction->setToolTip(i18n("Stop"));
+  m_breakAction->setToolTip("Break at next Statement");
+  m_breakpointAction->setToolTip("Toggle Breakpoint");
+
+  m_nextAction->setEnabled(false);
+  m_stepAction->setEnabled(false);
+  m_continueAction->setEnabled(false);
+  m_stopAction->setEnabled(false);
+  m_breakAction->setEnabled(true);
+  m_breakpointAction->setEnabled(false);
+
+  m_nextAction->plug(debugMenu);
+  m_stepAction->plug(debugMenu);
+  m_continueAction->plug(debugMenu);
+//   m_stopAction->plug(debugMenu); ### disabled until DebuggerImp::stop() works reliably
+  m_breakAction->plug(debugMenu);
+  m_breakpointAction->plug(debugMenu);
+
+  m_nextAction->plug(toolBar());
+  m_stepAction->plug(toolBar());
+  m_continueAction->plug(toolBar());
+//   m_stopAction->plug(toolBar()); ###
+  m_breakAction->plug(toolBar());
+  m_breakpointAction->plug(toolBar());
+
+  toolBar()->insertWidget(1,300,m_sourceSel);
+  toolBar()->setItemAutoSized(1);
+
+  updateContextList();
   setMinimumSize(300,200);
   resize(600,450);
 
-  updateContextList();
 }
 
 KJSDebugWin::~KJSDebugWin()
@@ -293,7 +322,9 @@ void KJSDebugWin::cont()
 void KJSDebugWin::stop()
 {
   m_mode = Stop;
-  leaveSession();
+  while (!m_execStates.isEmpty())
+    leaveSession();
+  m_currentContext = Context();
 }
 
 void KJSDebugWin::breakNext()
@@ -427,27 +458,96 @@ void KJSDebugWin::closeEvent(QCloseEvent *e)
   return QWidget::closeEvent(e);
 }
 
-bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
-                               const KJS::UString &source, int /*errorLine*/)
+bool KJSDebugWin::eventFilter(QObject *o, QEvent *e)
 {
-  // the interpreter has parsed some js code - store it in a SourceFragment object
-  // ### report errors (errorLine >= 0)
-  SourceFile *sourceFile = m_sourceFiles[m_nextSourceUrl];
+  // ### does this prevent the use of alert boxes brought up
+  // during a debugging session?
+  switch (e->type()) {
+  case QEvent::MouseButtonPress:
+  case QEvent::MouseButtonRelease:
+  case QEvent::MouseButtonDblClick:
+  case QEvent::MouseMove:
+  case QEvent::KeyPress:
+  case QEvent::KeyRelease:
+  case QEvent::Destroy:
+  case QEvent::Close:
+  case QEvent::Quit:
+    while (o->parent())
+      o = o->parent();
+    if (o == this)
+      return QWidget::eventFilter(o,e);
+    else
+      return TRUE;
+    break;
+  default:
+    return QWidget::eventFilter(o,e);
+  }
+}
+
+void KJSDebugWin::disableOtherWindows()
+{
+  QWidgetList *widgets = QApplication::allWidgets();
+  QWidgetListIt it(*widgets);
+  for (; it.current(); ++it)
+    it.current()->installEventFilter(this);
+}
+
+void KJSDebugWin::enableOtherWindows()
+{
+  QWidgetList *widgets = QApplication::allWidgets();
+  QWidgetListIt it(*widgets);
+  for (; it.current(); ++it)
+    it.current()->removeEventFilter(this);
+}
+
+bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
+                               const KJS::UString &source, int errorLine)
+{
+  // Parse errors are handled by exception()
+  if (errorLine >= 0)
+    return true;
+
+  // Work out which source file this fragment is in
+  SourceFile *sourceFile = getSourceFile(exec->interpreter(),m_nextSourceUrl);
+  int index;
   if (!sourceFile) {
+    index = m_sourceSel->count();
     if (!m_nextSourceUrl.isEmpty()) {
-      setSourceFile(m_nextSourceUrl,source.qstring(),exec->interpreter());
-      sourceFile = m_sourceFiles[m_nextSourceUrl];
+
+      QString code = source.qstring();
+      KHTMLPart *part = static_cast<ScriptInterpreter*>(exec->interpreter())->part();
+      if (m_nextSourceUrl == part->url().url()) {
+	// Only store the code here if it's not from the part's html page... in that
+	// case we can get it from KHTMLPageCache
+	code = QString::null;
+      }
+
+      sourceFile = new SourceFile(m_nextSourceUrl,code,index,exec->interpreter());
+      setSourceFile(exec->interpreter(),m_nextSourceUrl,sourceFile);
+      m_sourceSelFiles[index] = sourceFile;
+      m_sourceSel->insertItem(m_nextSourceUrl,index);
     }
     else {
-      sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count(), exec->interpreter());
-      m_sourceSelFiles[sourceFile->index] = sourceFile;
-      m_sourceSel->insertItem("???");
+      // Sourced passed from somewhere else (possibly an eval call)... we don't know the url,
+      // but we still know the interpreter
+      sourceFile = new SourceFile("(unknown)",source.qstring(),index,exec->interpreter());
+      m_sourceSelFiles[index] = sourceFile;
+      m_sourceSel->insertItem("???",index);
     }
+  }
+  else {
+    for (index = 0; index < m_sourceSel->count(); index++) {
+      if (m_sourceSelFiles[index] == sourceFile)
+	break;
+    }
+    assert(index < m_sourceSel->count());
   }
 
   SourceFragment *sf = new SourceFragment(sourceId,m_nextSourceBaseLine,sourceFile);
   m_sourceFragments[sourceId] = sf;
 
+  if (m_sourceSel->currentItem() == index)
+    displaySourceFile(sourceFile);
 
   m_nextSourceBaseLine = 1;
   m_nextSourceUrl = "";
@@ -455,10 +555,12 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
+bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int /*sourceId*/)
 {
   // the source fragment is no longer in use, so we can free it
 
+  // ###
+/*
   SourceFragment *fragment = m_sourceFragments[sourceId];
   if (fragment) {
       m_sourceFragments.erase(sourceId);
@@ -474,27 +576,41 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
       }
       delete fragment;
   }
+*/
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool /*inTryCatch*/)
+bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch)
 {
-  assert(m_currentContext.imp());
+  // Ignore exceptions that will be caught by the script
+  if (inTryCatch)
+    return true;
 
-  SourceFragment *sourceFragment = m_sourceFragments[m_currentContext.sourceId()];
-  QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3")
-		.arg(sourceFragment->sourceFile->url)
-		.arg(sourceFragment->baseLine+m_currentContext.curStmtFirstLine()-1)
-		.arg(value.toString(exec).qstring());
+  if (!m_currentContext.imp()) {
+    // An exception occurred and we're not currently executing any code... this can
+    // happen in some cases e.g. a parse error, or native code accessing funcitons like
+    // Object::put()
+    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1")
+		  .arg(value.toString(exec).qstring());
+    KJSErrorDialog *dlg = new KJSErrorDialog(this,msg,false);
+    dlg->exec();
+  }
+  else {
+    SourceFragment *sourceFragment = m_sourceFragments[m_currentContext.sourceId()];
+    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3")
+		  .arg(sourceFragment->sourceFile->url)
+		  .arg(sourceFragment->baseLine+m_currentContext.curStmtFirstLine()-1)
+		  .arg(value.toString(exec).qstring());
 
-  KJSErrorDialog dlg(this,msg);
-  dlg.exec();
-  // ### disable javascript error reporting option if don't show again is checked
+    KJSErrorDialog dlg(this,msg,true);
+    dlg.exec();
+    // ### disable javascript error reporting option if don't show again is checked
 
-  if (dlg.debugSelected()) {
-    m_mode = Next;
-    m_steppingContext = m_currentContext;
-    enterSession(exec);
+    if (dlg.debugSelected()) {
+      m_mode = Next;
+      m_steppingContext = m_currentContext;
+      enterSession(exec);
+    }
   }
 
   return (m_mode != Stop);
@@ -540,8 +656,9 @@ bool KJSDebugWin::exitContext(ExecState *exec, const Completion &/*completion*/)
 
 void KJSDebugWin::displaySourceFile(SourceFile *sourceFile)
 {
-  const QChar *chars = sourceFile->code.unicode();
-  uint len = sourceFile->code.length();
+  QString code = sourceFile->getCode();
+  const QChar *chars = code.unicode();
+  uint len = code.length();
   QChar newLine('\n');
   QChar cr('\r');
   QChar tab('\t');
@@ -558,7 +675,7 @@ void KJSDebugWin::displaySourceFile(SourceFile *sourceFile)
 	c = newLine;
     }
     if (c == newLine) {
-      QPixmap icon = haveBreakpoint(sourceFile,lineno+1,lineno+1) ? m_stopIcon : m_emptyIcon;
+      QPixmap icon = haveBreakpoint(sourceFile,lineno,lineno) ? m_stopIcon : m_emptyIcon;
       QString str = QString().sprintf("%4d",m_sourceDisplay->count()+1) + " " + line;
       m_sourceDisplay->insertItem(new QListBoxPixmap(icon,str));
       lineno++;
@@ -569,7 +686,7 @@ void KJSDebugWin::displaySourceFile(SourceFile *sourceFile)
       line += c;
   }
   if (line.length()) {
-    QPixmap icon = haveBreakpoint(sourceFile,lineno+1,lineno+1) ? m_stopIcon : m_emptyIcon;
+    QPixmap icon = haveBreakpoint(sourceFile,lineno,lineno) ? m_stopIcon : m_emptyIcon;
     QString str = QString().sprintf("%4d",m_sourceDisplay->count()+1) + " " + line;
     m_sourceDisplay->insertItem(new QListBoxPixmap(icon,str));
   }
@@ -602,27 +719,9 @@ void KJSDebugWin::setNextSourceInfo(QString url, int baseLine)
   m_nextSourceBaseLine = baseLine;
 }
 
-void KJSDebugWin::setSourceFile(QString url, QString code, Interpreter* interp)
-{
-  SourceFile *srcfile = m_sourceFiles[url];
-  if (srcfile) {
-    srcfile->code = code;
-    srcfile->interpreter = interp;
-  } else {
-    int index = m_sourceSel->count();
-    srcfile = new SourceFile(url, code, index, interp);
-    m_sourceSel->insertItem(url, index);
-    m_sourceFiles[url] = srcfile;
-    m_sourceSelFiles[index] = srcfile;
-  }
-  if (m_sourceSel->currentItem() >= 0 && m_sourceSel->currentText() == url) {
-    m_curSourceFile = 0; // force refresh
-    sourceSelected(m_sourceSel->currentItem());
-  }
-}
-
-void KJSDebugWin::clear(Interpreter* interp) {
+void KJSDebugWin::clear(Interpreter* /*interp*/) {
   // ###
+/*
   QMap<QString,SourceFile*>::iterator iter = m_sourceFiles.begin();
   QMap<QString,SourceFile*>::iterator remove = m_sourceFiles.end();
   for (; iter != m_sourceFiles.end(); iter++) {
@@ -650,20 +749,25 @@ void KJSDebugWin::clear(Interpreter* interp) {
     delete *remove;
     m_sourceFiles.erase(remove);
   }
+*/
 }
 
-void KJSDebugWin::appendSourceFile(QString url, QString code, Interpreter* interp)
+SourceFile *KJSDebugWin::getSourceFile(Interpreter *interpreter, QString url)
 {
-  SourceFile *existing = m_sourceFiles[url];
-  if (!existing) {
-    setSourceFile(url,code, interp);
-    return;
-  }
-  existing->code.append(code);
-  if (m_sourceSel->currentItem() >= 0 && m_sourceSel->currentText() == url) {
-    m_curSourceFile = 0; // force refresh
-    sourceSelected(m_sourceSel->currentItem());
-  }
+  QString key = QString("%1|%2").arg((long)interpreter).arg(url);
+  return m_sourceFiles[key];
+}
+
+void KJSDebugWin::setSourceFile(Interpreter *interpreter, QString url, SourceFile *sourceFile)
+{
+  QString key = QString("%1|%2").arg((long)interpreter).arg(url);
+  m_sourceFiles[key] = sourceFile;
+}
+
+void KJSDebugWin::removeSourceFile(Interpreter *interpreter, QString url)
+{
+  QString key = QString("%1|%2").arg((long)interpreter).arg(url);
+  m_sourceFiles.remove(key);
 }
 
 void KJSDebugWin::checkBreak(ExecState *exec)
@@ -692,13 +796,13 @@ void KJSDebugWin::enterSession(ExecState *exec)
   m_mode = Continue;
 
   if (m_execStates.isEmpty()) {
-    m_fakeModal.enable(this);
-    m_nextButton->setEnabled(true);
-    m_stepButton->setEnabled(true);
-    m_continueButton->setEnabled(true);
-    m_stopButton->setEnabled(true);
-    m_breakButton->setEnabled(false);
-    m_breakpointButton->setEnabled(true);
+    disableOtherWindows();
+    m_nextAction->setEnabled(true);
+    m_stepAction->setEnabled(true);
+    m_continueAction->setEnabled(true);
+    m_stopAction->setEnabled(true);
+    m_breakAction->setEnabled(false);
+    m_breakpointAction->setEnabled(true);
     m_evalEdit->setReadOnly(false);
   }
   m_execStates.push(exec);
@@ -719,15 +823,15 @@ void KJSDebugWin::leaveSession()
   m_execStates.pop();
 
   if (m_execStates.isEmpty()) {
-    m_nextButton->setEnabled(false);
-    m_stepButton->setEnabled(false);
-    m_continueButton->setEnabled(false);
-    m_stopButton->setEnabled(false);
-    m_breakButton->setEnabled(true);
-    m_breakpointButton->setEnabled(false);
+    m_nextAction->setEnabled(false);
+    m_stepAction->setEnabled(false);
+    m_continueAction->setEnabled(false);
+    m_stopAction->setEnabled(false);
+    m_breakAction->setEnabled(true);
+    m_breakpointAction->setEnabled(false);
     m_sourceDisplay->clearSelection();
     m_evalEdit->setReadOnly(true);
-    m_fakeModal.disable();
+    enableOtherWindows();
   }
 
   qApp->exit_loop();
