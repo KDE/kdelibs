@@ -37,6 +37,7 @@ class QCheckBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
+class KActionCollection;
 
 
 /**
@@ -183,7 +184,9 @@ public:
 			    QWidget *parent = 0  );
   static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
 			    QWidget *parent = 0 );
-	
+  static int configureKeys( KActionCollection *coll, const QString& xmlfile,
+                            bool save_settings = true, QWidget *parent = 0 );
+
 private:
 
   QPushButton* bDefaults;

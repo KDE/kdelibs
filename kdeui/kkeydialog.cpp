@@ -45,6 +45,8 @@
 
 #include "kkeydialog.h"
 
+#include <kaction.h>
+
 /*****************************************************************************/
 /* KSplitListItem                                                            */
 /*                                                                           */
@@ -284,8 +286,26 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
   return retcode;
 }
 
+int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
+                               bool save_settings, QWidget *parent )
+{
+  QDict<KKeyEntry> *dict = coll->keyDict();
 
+  KKeyDialog *kd = new KKeyDialog( dict, parent );
+  CHECK_PTR( kd );
+  int retcode = kd->exec();
+  delete kd;
 
+  if( retcode == Accepted ) 
+  {
+    coll->setKeyDict( *dict );
+    //TODO: Save the settings as action properties in 'file'
+//    if (save_settings)
+//      coll->saveAccel();
+  }
+
+  return retcode;
+}
 
 KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			  bool check_against_std_keys)
