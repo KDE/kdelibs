@@ -659,7 +659,7 @@ void RenderBox::calcAbsoluteHorizontal()
     // css2 spec 10.3.7 & 10.3.8
     // 1
     RenderObject* o=parent();
-    if (style()->direction()==LTR && l==AUTO && r==AUTO)
+    if (style()->direction()==LTR && l==AUTO )
     {
 	if (m_next) l = m_next->xPos();
 	else if (m_previous) l = m_previous->xPos()+m_previous->contentWidth();
@@ -668,13 +668,17 @@ void RenderBox::calcAbsoluteHorizontal()
     }
 
     // 2
-    else if (style()->direction()==RTL && r==AUTO && r==AUTO)
+    else if (style()->direction()==RTL && r==AUTO )
     {
-    	if (m_previous) r = cw - (m_previous->xPos() + m_previous->contentWidth());
-	else if (m_next) r = cw - m_next->xPos();
-	else r=cw;
-	while (o && o!=containingBlock()) { r+=o->xPos(); o=o->parent(); }	
+    	if (m_previous) r = (m_previous->xPos() + m_previous->contentWidth());
+	else if (m_next) r = m_next->xPos();
+	else r=0;
+        r += cw -
+            (o->width()-o->borderLeft()-o->borderRight()-o->paddingLeft()-o->paddingRight());
+	while (o && o!=containingBlock()) { r-=o->xPos(); o=o->parent(); }
     }
+    
+//    printf("h12: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 
     // 3
     if (w==AUTO)
@@ -683,6 +687,8 @@ void RenderBox::calcAbsoluteHorizontal()
 	if (r==AUTO) r=0;
     };
 
+//    printf("h3: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+
     // 4
     if (w==AUTO || l==AUTO || r==AUTO)
     {
@@ -690,6 +696,8 @@ void RenderBox::calcAbsoluteHorizontal()
         if (mr==AUTO) mr=0;
     }
 
+//    printf("h4: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+    
     // 5
     if (ml==AUTO && mr==AUTO)
     {
@@ -697,6 +705,8 @@ void RenderBox::calcAbsoluteHorizontal()
         ml = (cw - ot)/2;
         mr = cw - ot - ml;
     }
+
+//    printf("h5: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 
     // 6
     if (w==AUTO)
@@ -710,21 +720,27 @@ void RenderBox::calcAbsoluteHorizontal()
     if (mr==AUTO)
         mr = cw - ( r + l + w + ml + pab);
 
-    // 7
+//    printf("h6: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+    
+    // 7 
     if (cw != l + r + w + ml + mr + pab)
     {
-        if (style()->direction()==LTR)
+        if (m_style->left().isVariable())
+            l = cw - ( r + w + ml + mr + pab);
+        else if (m_style->right().isVariable())    
             r = cw - ( l + w + ml + mr + pab);
-        else
+        else if (style()->direction()==LTR)
+            r = cw - ( l + w + ml + mr + pab);
+        else 
             l = cw - ( r + w + ml + mr + pab);
     }
 
     m_width = w + pab;
-    m_marginLeft = ml;
-    m_marginLeft = mr;
+    m_marginLeft = ml+l;
+    m_marginRight = mr+r;
     m_x = l + ml + containingBlock()->paddingLeft() + containingBlock()->borderLeft();
 	
-//    printf("h: %d, %d, %d\n",l,w,r);
+//    printf("h: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 }
 
 
@@ -802,8 +818,13 @@ void RenderBox::calcAbsoluteVertical()
 
     if (m_height<h+pab)
     	m_height = h+pab;
-    m_marginTop = mt;
-    m_marginBottom = mb + b;
+    
+    // add the top and bottom distance to the value of margin.
+    // in principle this is incorrect, but no one (except
+    // the document height code, where it is useful) should 
+    // care about it anyway
+    m_marginTop = mt+t;
+    m_marginBottom = mb+b;    
     m_y = t + mt +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
 	
