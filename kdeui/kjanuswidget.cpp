@@ -1044,10 +1044,8 @@ const QPixmap &KJanusWidget::IconListItem::defaultPixmap()
 void KJanusWidget::IconListItem::paint( QPainter *painter )
 {
   QFontMetrics fm = painter->fontMetrics();
-  //int wt = fm.boundingRect(text()).width();
+  int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
   int wp = mPixmap.width();
-  int hf = text().contains( '\n' ) + 1;
-  int ht = hf * fm.lineSpacing();
   int hp = mPixmap.height();
 
   painter->drawPixmap( (mMinimumWidth-wp)/2, 5, mPixmap );
@@ -1065,15 +1063,15 @@ int KJanusWidget::IconListItem::height( const QListBox *lb ) const
   }
   else
   {
-    int hf = text().contains( '\n' ) + 1;
-    return( mPixmap.height() + lb->fontMetrics().lineSpacing() * hf + 10 );
+    int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
+    return( mPixmap.height() + ht + 10 );
   }
 }
 
 
 int KJanusWidget::IconListItem::width( const QListBox *lb ) const
 {
-  int wt = lb->fontMetrics().boundingRect(text()).width()+10;
+  int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
   int w  = QMAX( wt, wp );
   return( QMAX( w, mMinimumWidth ) );
