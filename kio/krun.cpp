@@ -332,7 +332,6 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_dele
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
-fprintf(stderr, "KRun:Start timeout.\n");
 }
 
 void KRun::init()
