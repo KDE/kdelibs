@@ -105,7 +105,7 @@ extern IcePaAuthStatus _KDE_IcePaMagicCookie1Proc (IceConn, void **, int, int, v
 #ifdef __cplusplus
 }
 #endif
-// these 4 below are static, otherwise build with --disable-shared will fail
+/* these 4 below are static, otherwise build with --disable-shared will fail */
 static IcePoAuthProc DCOPClientAuthProcs[] = {_KDE_IcePoMagicCookie1Proc};
 static IcePaAuthProc DCOPServerAuthProcs[] = {_KDE_IcePaMagicCookie1Proc};
 static int DCOPAuthCount = 1;
