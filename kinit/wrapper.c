@@ -37,6 +37,24 @@
 #include <unistd.h>
 #include <pwd.h>
 
+static char *getDisplay()
+{
+   const char *display;
+   char *result;
+   char *screen;
+   display = getenv("DISPLAY");
+   if (!display || !*display)
+   {
+      display = ":0";
+   }
+   result = malloc(strlen(display)+1);
+   strcpy(result, display);
+   screen = strrchr(result, '.');
+   if (screen)
+      *screen = '\0';
+   return result;
+}
+
 /*
  * Write 'len' bytes from 'buffer' into 'sock'.
  * returns 0 on success, -1 on failure.
@@ -132,12 +150,7 @@ static int openSocket()
   }
 
   /* append $DISPLAY */
-  display = getenv("DISPLAY");
-  if (!display) 
-  {
-     fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
-     exit(255);
-  }
+  display = getDisplay();
   if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Aborting. Socket name will be too long.\n");
@@ -145,6 +158,7 @@ static int openSocket()
   }
   strcat(sock_file, "/kdeinit-");
   strcat(sock_file, display);
+  free(display);
 
   if (strlen(sock_file) >= sizeof(server.sun_path))
   {
