@@ -374,8 +374,8 @@ void KEdit::mouseMoveEvent (QMouseEvent* e){
 }
 
 
-void KEdit::installRBPopup(QPopupMenu *) {
-  //KContextMenuManager::insert( this, p );
+void KEdit::installRBPopup(QPopupMenu *p) {
+  KContextMenuManager::insert( this, p );
 }
 
 void KEdit::mouseReleaseEvent (QMouseEvent* e){
