@@ -58,10 +58,14 @@ public:
     virtual void detach();
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * );
+    
+    virtual void print( QPainter *, int x, int y, int w, int h,
+			int tx, int ty);
 
 protected:
     KHTMLWidget *view;
     DOMString bgURL;
+    QPixmap* bgPixmap;
 };
 
 // -------------------------------------------------------------------------

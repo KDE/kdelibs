@@ -892,6 +892,8 @@ private:
     DOM::NodeImpl *findNode;
 
     QCString post_data;
+    
+    QPixmap* paintBuffer;
 };
 
 /**

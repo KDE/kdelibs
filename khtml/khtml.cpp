@@ -76,6 +76,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     setCursor(arrowCursor);
     _isFrame = false;
     _isSelected = false;
+    
+    paintBuffer = 0;
 
     init();
 }
@@ -97,6 +99,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
     _isFrame = true;
     _isSelected = false;
 
+    paintBuffer = 0;
+
     if(_parent) setURLCursor(_parent->urlCursor());
 
     init();
@@ -111,6 +115,7 @@ KHTMLWidget::~KHTMLWidget()
 
   if(cache) delete cache;
   if(defaultSettings) delete defaultSettings;
+  if(paintBuffer) delete paintBuffer;
 }
 
 void KHTMLWidget::init()
@@ -950,14 +955,14 @@ void KHTMLWidget::end()
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 {
     printf("resizeEvent\n");
-//    viewport()->setUpdatesEnabled(false);
+    viewport()->setUpdatesEnabled(false);
     QScrollView::resizeEvent(event);
     layout();
-//    viewport()->setUpdatesEnabled(true);
+    viewport()->setUpdatesEnabled(true);
 
     //repaint without erasing the background
-    //viewport()->repaint(false);
-    viewport()->repaint(true);
+    viewport()->repaint(false);
+    //viewport()->repaint(true);
 
     //emit resized( event->size() );
 }
@@ -966,11 +971,34 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
 				 int clipy, int clipw, int cliph )
 
 {
+
+    if (paintBuffer==0)
+            paintBuffer=new QPixmap(width()+100,height()+100);
+    else if ( paintBuffer->width() < width() 
+            || paintBuffer->height() < height()
+            || paintBuffer->width() > width()+200 
+            || paintBuffer->height() > height()+200 )
+    {
+        delete paintBuffer;
+        paintBuffer = new QPixmap(width()+100,height()+100);            
+    }
+    paintBuffer->fill();
+        
+    QPainter* tp = new QPainter;
+    tp->begin( paintBuffer );
+    tp->translate(-clipx,-clipy);
+    
+
     if(!document) return;
     NodeImpl *body = document->body();
     if(!body) return;
     // ### fix this for frames...
-    body->print(p, clipx, clipy, clipw, cliph, 0, 0);
+    body->print(tp, clipx, clipy, clipw, cliph, 0, 0);
+    
+    tp->end();
+    delete tp;
+    
+    p->drawPixmap(clipx,clipy,*paintBuffer,0,0,clipw,cliph);
 }
 
 void KHTMLWidget::layout()

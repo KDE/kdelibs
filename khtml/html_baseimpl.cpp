@@ -44,6 +44,7 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
 {
     ascent = descent = 0;
     view = v;
+    bgPixmap = 0;
 }
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
@@ -64,17 +65,11 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 {
     switch(attr->id)
     {
-    case ATTR_BGCOLOR:
-    {
-	QColor bg;
-	setNamedColor( bg, attr->value().string() );
-	// ### FIXME
-	if(view) view->viewport()->setBackgroundColor( bg );
-	break;
-    }
+
     case ATTR_BACKGROUND:
         bgURL = attr->value();
 	break;
+    case ATTR_BGCOLOR: 	
     case ATTR_TEXT:
     case ATTR_LINK:
     case ATTR_VLINK:
@@ -103,6 +98,11 @@ void HTMLBodyElementImpl::setStyle(CSSStyle *currentStyle)
     {
 	setNamedColor( pSettings->vLinkColor, s.string() );
     }
+    s = attributeMap.valueForId(ATTR_BGCOLOR);
+    if(!s.isEmpty())
+    {
+	setNamedColor( currentStyle->bgcolor, s.string() );
+    }
 
 
     HTMLElementImpl::setStyle(currentStyle);
@@ -128,12 +128,14 @@ void HTMLBodyElementImpl::detach()
 void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
 {
     printf("setting bg pixmap\n");
-    if(view) view->viewport()->setBackgroundPixmap( *p );
+    //if(view) view->viewport()->setBackgroundPixmap( *p );
+    bgPixmap = p;
 }
 
 void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
 {
-    if(view) view->viewport()->setBackgroundPixmap( *p );
+    //if(view) view->viewport()->setBackgroundPixmap( *p );
+    bgPixmap = p;
 }
 
 void HTMLBodyElementImpl::close()
@@ -142,6 +144,21 @@ void HTMLBodyElementImpl::close()
     calcMinMaxWidth();
     setLayouted(false);
     _parent->updateSize();
+}
+
+void HTMLBodyElementImpl::print( QPainter *p, int x, int y, int w, int h,
+			int tx, int ty)
+{
+    if (bgPixmap)
+    {
+    	int pmX = x % bgPixmap->width();
+	int pmY = y % bgPixmap->height();
+	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);    
+    }
+    else
+    	p->fillRect(x,y,w,h,style()->bgcolor);
+	
+    HTMLBlockElementImpl::print(p,x,y,w,h,tx,ty);
 }
 
 
