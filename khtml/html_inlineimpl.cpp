@@ -276,7 +276,7 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
 void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
 {
     DOMString s = attributeMap.valueForId(ATTR_SIZE);
-    if(s != 0)
+    if(!s.isEmpty())
     {
 	int num = s.toInt();
 	if ( *s.unicode() == '+' ||
@@ -288,12 +288,12 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
 	if(currentStyle->font.size < 1) currentStyle->font.size = 1;
     }
     s = attributeMap.valueForId(ATTR_COLOR);
-    if(s != 0)
+    if(!s.isEmpty())
     {
 	setNamedColor( currentStyle->font.color, s.string() );
     }
     s = attributeMap.valueForId(ATTR_FACE);
-    if(s != 0)
+    if(!s.isEmpty())
     {
       //printf("setting face\n");
 	QString str = s.string();
