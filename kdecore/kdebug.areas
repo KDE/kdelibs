@@ -57,9 +57,11 @@
 750        kspell (kdelibs)
 760        kmdi
 780        kcmshell (kdelibs)
+790        kimproxy (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
 912        ksmartcard (kdelibs)
+
 
 1000        kparts
 1001        kparts (mainwindow)
