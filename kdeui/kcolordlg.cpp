@@ -805,7 +805,8 @@ public:
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
+  :KDialogBase( parent, name, modal, i18n("Select Color"), 
+		modal ? Help|Ok|Cancel : Help|Close,
 		Ok, true )
 {
   d = new KColorDialogPrivate;
@@ -813,6 +814,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bColorPicking = false;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
+  connect( this, SIGNAL(closeClicked(void)),this,SLOT(slotWriteSettings(void)));
 
   QLabel *label;
 
