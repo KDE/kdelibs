@@ -1,5 +1,8 @@
 2003-10-21  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_list.cpp (calcListValue): skip anonymous block while searching
+	for the <ol> block. Thanks to the Maksim regression testengine.
+
 	* rendering/render_object.cpp (setOverhangingContents): refine assert to avoid
 	crash on bananalotto.com. Adjust to changed containingBlock() behavior.
 

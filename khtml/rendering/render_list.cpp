@@ -259,10 +259,16 @@ void RenderListItem::calcListValue()
             RenderListItem *item = static_cast<RenderListItem *>(o);
             m_marker->m_value = item->m_marker->m_value + 1;
         }
-        else if (parent()->element() && parent()->element()->id() == ID_OL)
-            m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(parent()->element())->start();
-        else
-            m_marker->m_value = 1;
+        else {
+            RenderObject* o = parent();
+            while ( o && o->isAnonymous() )
+                o = o->parent();
+
+            if (o->element() && o->element()->id() == ID_OL)
+                m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(o->element())->start();
+            else
+                m_marker->m_value = 1;
+        }
     }
 }
 
