@@ -521,21 +521,16 @@ bool PropertyValueNode::deref()
 // ECMA 11.1.5
 Value PropertyValueNode::evaluate(ExecState *exec) const
 {
-  Object obj;
-  if (list) {
-    obj = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
-    KJS_CHECKEXCEPTIONVALUE
-  }
-  else {
-    Value newObj = exec->interpreter()->builtinObject().construct(exec,List::empty());
-    obj = Object(static_cast<ObjectImp*>(newObj.imp()));
-  }
-  Value n = name->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  Value v = assign->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
+  Object obj = exec->interpreter()->builtinObject().construct(exec, List::empty());
 
-  obj.put(exec,n.toString(exec), v);
+  for (const PropertyValueNode *p = this; p; p = p->list) {
+    Value n = p->name->evaluate(exec);
+    KJS_CHECKEXCEPTIONVALUE
+    Value v = p->assign->evaluate(exec);
+    KJS_CHECKEXCEPTIONVALUE
+
+    obj.put(exec, n.toString(exec), v);
+  }
 
   return obj;
 }

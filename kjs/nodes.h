@@ -38,9 +38,9 @@ namespace KJS {
   class RegExp;
   class SourceElementsNode;
   class ProgramNode;
-  class SourceStream;
-  class PropertyValueNode;
+  class ObjectLiteralNode;
   class PropertyNode;
+  class SourceStream;
 
   enum Operator { OpEqual,
 		  OpEqEq,
@@ -268,26 +268,19 @@ namespace KJS {
     bool opt;
   };
 
-  class ObjectLiteralNode : public Node {
-  public:
-    ObjectLiteralNode(PropertyValueNode *l) : list(l) { }
-    virtual void ref();
-    virtual bool deref();
-    virtual Value evaluate(ExecState *exec) const;
-    virtual void streamTo(SourceStream &s) const;
-  private:
-    PropertyValueNode *list;
-  };
-
   class PropertyValueNode : public Node {
   public:
+    // list is circular during construction, cut in ObjectLiteralNode ctor
     PropertyValueNode(PropertyNode *n, Node *a, PropertyValueNode *l = 0L)
-      : name(n), assign(a), list(l) { }
+      : name(n), assign(a) {
+      if (l) { list = l; l->list = this; } else { l = this; }
+    }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    friend class ObjectLiteralNode;
     PropertyNode *name;
     Node *assign;
     PropertyValueNode *list;
@@ -302,6 +295,20 @@ namespace KJS {
   private:
     double numeric;
     UString str;
+  };
+
+  class ObjectLiteralNode : public Node {
+  public:
+    // l points to last list element, get and detach pointer to first one
+    ObjectLiteralNode(PropertyValueNode *l) {
+      if (l) { list = l->list; l->list = 0; } else { list = 0; }
+    }
+    virtual void ref();
+    virtual bool deref();
+    virtual Value evaluate(ExecState *exec) const;
+    virtual void streamTo(SourceStream &s) const;
+  private:
+    PropertyValueNode *list;
   };
 
   class AccessorNode1 : public Node {

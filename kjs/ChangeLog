@@ -3,6 +3,7 @@
 	* internal.h: added NumberImp::staticNaN
 	* gave PropertyNode and PropertyValueNode their own types in the
 	parser, ref and deref them as list rather then recursively
+	* turned recursive object literal evaluation into a simple loop
 
 2003-02-01  Harri Porten  <porten@kde.org>
 
