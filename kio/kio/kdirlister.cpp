@@ -475,12 +475,14 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
         // watch cached directories
         item->incAutoUpdate();
       }
-      else
+      else {
         delete item;
+        item = 0;
+      }
     }
   }
 
-  if ( lister->d->autoUpdate )
+  if ( item && lister->d->autoUpdate )
     item->decAutoUpdate();
 }
 
