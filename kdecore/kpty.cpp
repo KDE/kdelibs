@@ -21,11 +21,10 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
 
 #include "kpty.h"
 #include "kprocess.h"
-
-#include <config.h>
 
 #ifdef __sgi
 #define __svr4__
@@ -52,19 +51,13 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-//#include <sys/socket.h>
-#include <sys/wait.h>
+#include <sys/param.h>
 
 #ifdef HAVE_SYS_STROPTS_H
 # include <sys/stropts.h>	// Defines I_PUSH
 # define _NEW_TTY_CTRL
 #endif
-//#ifdef HAVE_SYS_SELECT_H
-//#include <sys/select.h>
-//#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -130,9 +123,6 @@ extern "C" {
 #if defined(HAVE_PTY_H)
 # include <pty.h>
 #endif
-
-//#include <qfile.h>
-//#include <qapplication.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
@@ -207,8 +197,6 @@ bool KPty::open()
 
   QCString ptyName;
 
-  d->needGrantPty = true;
-
   // Find a master pty that we can open ////////////////////////////////
 
   // Because not all the pty animals are created equal, they want to
@@ -216,89 +204,93 @@ bool KPty::open()
 
   // We try, as we know them, one by one.
 #if defined(HAVE_OPENPTY)
-    if (openpty(&d->masterFd, &d->slaveFd, NULL, NULL, NULL) == 0)
-    {
-      d->ttyName = ttyname(d->slaveFd);
-
-      d->needGrantPty = false;
-
-      /* Get the group ID of the special `tty' group.  */
-      struct group* p = getgrnam(TTY_GROUP);    /* posix */
-      gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
-
-      if (fchown(d->slaveFd, (uid_t) -1, gid) < 0)
-      {
-         int e = errno;
-         d->needGrantPty = true;
-         kdWarning(175) << "Cannot chown " << d->ttyName << endl
-                        << "Reason " << strerror(e) << endl;
-      }
-      else if (fchmod(d->slaveFd, S_IRUSR|S_IWUSR|S_IWGRP) < 0)
-      {
-         int e = errno;
-         d->needGrantPty = true;
-         kdWarning(175) << "Cannot chmod " << d->ttyName << endl
-                        << "Reason " << strerror(e) << endl;
-      }
-      goto gotpty;
-    }
+  if (openpty(&d->masterFd, &d->slaveFd, NULL, NULL, NULL) == 0)
+  {
+    d->ttyName = ttyname(d->slaveFd);
+    goto gotpty2;
+  }
 #endif
 
-//#if defined(__sgi__) || defined(__osf__) || defined(__svr4__)
-#if defined(HAVE_GRANTPT) && defined(HAVE_PTSNAME)
+#if defined(HAVE_PTSNAME)
 #ifdef _AIX
-    d->masterFd = ::open("/dev/ptc",O_RDWR);
+  d->masterFd = ::open("/dev/ptc",O_RDWR);
 #else
-    d->masterFd = ::open("/dev/ptmx",O_RDWR);
+  d->masterFd = ::open("/dev/ptmx",O_RDWR);
 #endif
-    if (d->masterFd >= 0)
-    {
-      char *ptsn = ptsname(d->masterFd);
-      if (ptsn) {
-          d->ttyName = ptsn;
-          grantpt(d->masterFd);	// XXX could this fail?
-          d->needGrantPty = false;
-          goto gotpty;
-      } else {
-	  ::close(d->masterFd);
-	  d->masterFd = -1;
-      }
+  if (d->masterFd >= 0)
+  {
+    char *ptsn = ptsname(d->masterFd);
+    if (ptsn) {
+        d->ttyName = ptsn;
+        goto gotpty1;
+    } else {
+       ::close(d->masterFd);
+       d->masterFd = -1;
     }
+  }
 #endif
 
-    // Linux device names, FIXME: Trouble on other systems?
-    for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3 != 0; s3++)
+  // Linux device names, FIXME: Trouble on other systems?
+  for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3; s3++)
+  { 
+    for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4; s4++)
     { 
-      for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4 != 0; s4++)
-      { 
-        ptyName.sprintf("/dev/pty%c%c", *s3, *s4);
-        d->ttyName.sprintf("/dev/tty%c%c", *s3, *s4);
-        //if (access(d->ttyName.data(), F_OK) < 0) 
-        //  break; // no such device ...
-           
-        d->masterFd = ::open(ptyName.data(), O_RDWR);
-        if (d->masterFd >= 0)
-        {
-          if (geteuid() == 0 || access(d->ttyName.data(),R_OK|W_OK) == 0)
-            goto gotpty; // Success !!
+      ptyName.sprintf("/dev/pty%c%c", *s3, *s4);
+      d->ttyName.sprintf("/dev/tty%c%c", *s3, *s4);
+         
+      d->masterFd = ::open(ptyName.data(), O_RDWR);
+      if (d->masterFd >= 0)
+      {
+#ifdef __sun
+        /* Need to check the process group of the pty.
+         * If it exists, then the slave pty is in use,
+         * and we need to get another one.
+         */
+        int pgrp_rtn;
+        if (ioctl(d->masterFd, TIOCGPGRP, &pgrp_rtn) == 0 || errno != EIO) {
           ::close(d->masterFd);
           d->masterFd = -1;
+          continue;
         }
+#endif /* sun */
+        if (geteuid() == 0 || access(d->ttyName.data(),R_OK|W_OK) == 0)
+          goto gotpty1; // Success !!
+        ::close(d->masterFd);
+        d->masterFd = -1;
       }
     }
+  }
 
-    kdWarning(175) << "Can't open a pseudo teletype" << endl;
-    return false;
+  kdWarning(175) << "Can't open a pseudo teletype" << endl;
+  return false;
 
- gotpty:
+ gotpty1:
+#if defined(HAVE_GRANTPT)
+  grantpt(d->masterFd);
+#else
+  /* Get the group ID of the special `tty' group.  */
+  struct group* p = getgrnam(TTY_GROUP);    /* posix */
+  gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
+
+  chown(d->ttyName.data(), getuid(), gid);
+  chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IWGRP);
+#endif
+ gotpty2:
+  struct stat st;
+  if (stat(d->ttyName.data(), &st))
+    return false; // this just cannot happen ... *cough*
+  d->needGrantPty = st.st_uid != getuid() || (st.st_mode & S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH);
+
+#ifdef BSD
+  revoke(d->ttyName.data());
+#endif
+
   if (!chownpty(true))
   {
     kdWarning(175)
       << "chownpty failed for device " << ptyName << "::" << d->ttyName
       << "\nThis means the communication can be eavesdropped." << endl;
   }
-
-//  fcntl(d->masterFd,F_SETFL,O_NDELAY);
 
 #ifdef HAVE_UNLOCKPT
   unlockpt(d->masterFd);
@@ -353,6 +345,8 @@ void KPty::close()
 {
    if (d->masterFd < 0)
       return;
+   chown(d->ttyName.data(), 0, 0);
+   chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
    chownpty(false);
    ::close(d->slaveFd);
    ::close(d->masterFd);
