@@ -150,7 +150,7 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
         {
             if( !(*it).isEmpty() )
             {
-                output << (*it).latin1();
+                output << (*it).local8Bit();
             }
             output << sep;
         }
