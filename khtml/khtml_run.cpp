@@ -24,7 +24,7 @@
 #include <kio/job.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <khtml_ext.h>
+#include "khtml_ext.h"
 #include <qwidget.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
@@ -59,6 +59,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
     if ( m_bFinished )
     {
         m_timer.start( 0, true );
+        emit static_cast<KHTMLPart *>(m_part)->canceled(QString::null);
         return;
     }
 
