@@ -29,6 +29,7 @@
 #include <qstring.h>
 #include <qregexp.h>
 #include <qstyle.h>
+#include <qtimer.h>
 
 #include "kprogress.h"
 
@@ -150,8 +151,12 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
       mAutoClose(true),
       mAutoReset(false),
       mCancelled(false),
-      mAllowCancel(true)
+      mAllowCancel(true),
+      mShown(false),
+      mMinDuration(2000)
 {
+    mShowTimer = new QTimer(this);
+    
     showButton(KDialogBase::Close, false);
     mCancelText = actionButton(KDialogBase::Cancel)->text();
 
@@ -165,11 +170,25 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
     layout->addWidget(mProgressBar);
 
     connect(mProgressBar, SIGNAL(percentageChanged(int)),
-            this, SLOT(autoActions(int)));
+            this, SLOT(slotAutoActions(int)));
+    connect(mShowTimer, SIGNAL(timeout()), this, SLOT(slotAutoShow()));
+    mShowTimer->start(mMinDuration, true);
 }
 
 KProgressDialog::~KProgressDialog()
 {
+}
+
+void KProgressDialog::slotAutoShow()
+{
+    if (mShown || mCancelled)
+    {
+        return;
+    }
+
+    show();
+    kapp->processEvents();
+    mShown = true;
 }
 
 void KProgressDialog::slotCancel()
@@ -185,6 +204,21 @@ void KProgressDialog::slotCancel()
 bool KProgressDialog::wasCancelled()
 {
     return mCancelled;
+}
+
+void KProgressDialog::setMinimumDuration(int ms)
+{
+    mMinDuration = ms;
+    if (!mShown)
+    {
+        mShowTimer->stop();
+        mShowTimer->start(mMinDuration, true);
+    }
+}
+
+int KProgressDialog::minimumDuration()
+{
+    return mMinDuration;
 }
 
 void KProgressDialog::setAllowCancel(bool allowCancel)
@@ -249,7 +283,7 @@ QString KProgressDialog::buttonText()
     return mCancelText;
 }
 
-void KProgressDialog::autoActions(int percentage)
+void KProgressDialog::slotAutoActions(int percentage)
 {
     if (percentage < 100)
     {

@@ -182,19 +182,24 @@ class KProgressDialog : public KDialogBase
         bool allowCancel();
 
         void showCancelButton(bool show);
-        bool autoClose();
 
         void setAutoClose(bool close);
-        bool autoReset();
+        bool autoClose();
 
         void setAutoReset(bool autoReset);
+        bool autoReset();
+
         bool wasCancelled();
 
         void setButtonText(const QString&);
         QString buttonText();
 
+        void setMinimumDuration(int ms);
+        int  minimumDuration();
+
     protected slots:
-        void autoActions(int percentage);
+        void slotAutoShow();
+        void slotAutoActions(int percentage);
         void slotCancel();
 
     private:
@@ -202,9 +207,12 @@ class KProgressDialog : public KDialogBase
         bool       mAutoReset;
         bool       mCancelled;
         bool       mAllowCancel;
+        bool       mShown;
         QString    mCancelText;
         QLabel*    mLabel;
         KProgress* mProgressBar;
+        QTimer*    mShowTimer;
+        int        mMinDuration;
         class KProgressPrivate;
         KProgressPrivate *d;
 };
