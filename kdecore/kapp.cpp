@@ -115,7 +115,6 @@
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
-#define Key
 #ifdef KeyPress
 #undef KeyPress
 #endif
