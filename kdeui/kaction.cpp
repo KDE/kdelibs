@@ -1287,7 +1287,7 @@ int KToggleAction::plug( QWidget* widget, int index )
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
-    bar->setToggle( itemId( _index ), TRUE );
+    bar->setToggle( itemId( _index ), true );
     bar->setButton( itemId( _index ), isChecked() );
   }
 
@@ -1314,7 +1314,11 @@ void KToggleAction::setChecked( bool c )
       for( ; it.current(); ++it ) {
         if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
             static_cast<KToggleAction*>(it.current())->exclusiveGroup() == exclusiveGroup() ) {
-          static_cast<KToggleAction*>(it.current())->setChecked( FALSE );
+	  KToggleAction *a = static_cast<KToggleAction*>(it.current());
+	  if( a->isChecked() ) {
+	    a->setChecked( false );
+	    emit a->toggled( false );
+	  }
         }
       }
     }
@@ -1535,9 +1539,9 @@ void KSelectAction::setCurrentItem( int id )
     if ( d->m_menu )
     {
         if ( d->m_current >= 0 )
-            d->m_menu->setItemChecked( d->m_current, FALSE );
+            d->m_menu->setItemChecked( d->m_current, false );
         if ( id >= 0 )
-            d->m_menu->setItemChecked( id, TRUE );
+            d->m_menu->setItemChecked( id, true );
     }
 
     d->m_current = id;
@@ -2262,7 +2266,7 @@ KFontAction::KFontAction( const QString& text,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::KFontAction( const QString& text, const KShortcut& cut,
@@ -2273,7 +2277,7 @@ KFontAction::KFontAction( const QString& text, const KShortcut& cut,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix,
@@ -2284,7 +2288,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix,
@@ -2295,7 +2299,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix,
@@ -2307,7 +2311,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix,
@@ -2319,7 +2323,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 
@@ -2329,7 +2333,7 @@ KFontAction::KFontAction( QObject* parent, const char* name )
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
     KSelectAction::setItems( d->m_fonts );
-    setEditable( TRUE );
+    setEditable( true );
 }
 
 KFontAction::~KFontAction()
@@ -2484,7 +2488,7 @@ void KFontSizeAction::init()
 {
     d = new KFontSizeActionPrivate;
 
-    setEditable( TRUE );
+    setEditable( true );
     QValueList<int> sizes = get_standard_font_sizes();
     QStringList lst;
     for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
