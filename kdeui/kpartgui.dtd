@@ -32,6 +32,10 @@
   -- Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
   --             fullWidth: if true (default), the toolbar extends to the full width of the window
   --             position: the position of the toolbar in the window
+  --             iconText: whether to show icon or text or both
+  --             iconSize: the size of the icons (0 for default, or usually 22 or 32)
+  --             index: the index in the toolbar dock (see QMainWindow::moveToolBar)
+  --             offset: the X offset in the toolbar dock (see QMainWindow::moveToolBar)
   --             newline: if true, this toolbar will start a new line (i.e. under the ones before it).
   --             group: optional group name, for named merging (?)
   --             hidden: if true, the toolbar is initially hidden. There should be a menu entry for showing it.
@@ -42,6 +46,10 @@
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
   position (top|bottom|left|right) "top"
+  iconText (icononly|textonly|icontextright|icontextbottom) #IMPLIED
+  iconSize CDATA #IMPLIED
+  index CDATA #IMPLIED
+  offset CDATA #IMPLIED
   newline (true|false) "false"
   group CDATA #IMPLIED
   hidden (true|false) "false"
