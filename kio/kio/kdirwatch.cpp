@@ -391,6 +391,10 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 {
   if (!use_fam) return false;
 
+  // handle FAM events to avoid deadlock
+  // (FAM sends back all files in a directory when monitoring)
+  famEventReceived();
+
   e->m_mode = FAMMode;
   e->dirty = false;
 
