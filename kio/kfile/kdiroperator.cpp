@@ -381,12 +381,12 @@ void KDirOperator::slotToggleIgnoreCase()
 void KDirOperator::mkdir()
 {
     bool ok;
-    QString where = url().isLocalFile() ? url().path(+1) : url().prettyURL();
+    QString where = url().prettyURL( +1, KURL::StripFileProtocol );
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ).arg( where ),
                                          i18n("New Folder"), &ok, this);
     if (ok)
-      mkdir( dir, true );
+      mkdir( KIO::encodeFileName( dir ), true );
 }
 
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
