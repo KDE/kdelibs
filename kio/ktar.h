@@ -1,3 +1,6 @@
+#ifndef __ktar_h
+#define __ktar_h
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <zlib.h>
@@ -352,3 +355,5 @@ public:
 private:
   QDict<KTarEntry> m_entries;
 };
+
+#endif
