@@ -1,3 +1,4 @@
+
 #	This file is part of the KDE libraries
 #    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
 #			  (C) 1997 Stephan Kulow (coolo@kde.org)
@@ -18,7 +19,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I../kdecore $(QT_INCLUDES) $(X_INCLUDES) 
+INCLUDES= -I../kdecore -I../kfile $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 DISTCLEANFILES = $(BUILT_SOURCES)
 
