@@ -326,7 +326,7 @@ void RenderFlow::layout()
     if(childrenInline()) {
         // ### make bidi resumeable so that we can get rid of this ugly hack
          if (!m_blockBidi)
-            layoutInlineChildren();
+            layoutInlineChildren( relayoutChildren );
     }
     else
         layoutBlockChildren( relayoutChildren );
@@ -418,9 +418,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
         if ( relayoutChildren || floatBottom() > m_height ||
              ( ( child->isReplaced() || child->isFloating() ) &&
 	       ( child->style()->width().isPercent() || child->style()->height().isPercent() ) )
-	    ) {
-                child->setLayouted(false);
-           }
+	    )
+	    child->setLayouted(false);
+
 	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
 	     style()->width().isFixed() ) {
 	    // flow around floats only flows around the ones on the left side (right side if direction==RTL)
@@ -434,7 +434,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    }
 	}
 
-//         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+//         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() <<" float="<< child->isFloating() << " y=" << m_height << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
 
@@ -455,7 +455,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 		m_height += prevMargin;
 	    insertSpecialObject( child );
 	    positionNewFloats();
-	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
+// 	    kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
 	    if ( prevMargin != TABLECELLMARGIN )
 		m_height -= prevMargin;
 	    child = child->nextSibling();
