@@ -51,3 +51,8 @@ void KAppDCOPInterface::quit()
 {
 	m_KApplication->quit();
 }
+
+void KAppDCOPInterface::updateUserTimestamp( unsigned long time )
+{
+        m_KApplication->updateUserTimestamp( time );
+}

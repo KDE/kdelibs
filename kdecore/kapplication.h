@@ -936,6 +936,13 @@ public:
    */
   void updateUserTimestamp( unsigned long time = 0 );
   
+  /**
+   * Returns the last user action timestamp or 0 if no user activity has taken place yet.
+   * @since 3.2.3
+   * @see updateuserTimestamp
+   */
+  unsigned long userTimestamp() const;
+
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
