@@ -122,6 +122,10 @@ protected:
     RenderObject *nextObject(RenderObject *current);
 
     struct SpecialObject {
+	SpecialObject() {
+	    zindex = 0;
+	    noPaint = false;
+	}
 	enum Type {
 	    FloatLeft,
 	    FloatRight,

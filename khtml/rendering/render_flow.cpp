@@ -338,6 +338,7 @@ void RenderFlow::layout( bool deep )
 	    {
 		r->node->layout(true);			
 	    }
+	specialObjects->sort();
     }
 
 
@@ -539,7 +540,8 @@ RenderFlow::insertPositioned(RenderObject *o)
     else
         f->type = SpecialObject::Positioned;
     f->node = o;
-
+    f->zindex = o->style()->zIndex();
+    
     specialObjects->append(f);
 }
 
@@ -635,11 +637,11 @@ void RenderFlow::positionNewFloats()
         y = currentY();
     else
         y = m_height;
-    
+
     // the float can not start above the y position of the last positioned float.
     if(lastFloat && lastFloat->startY > y)
 	y = lastFloat->startY;
-    
+
     while(f)
     {
 	RenderObject *o = f->node;
