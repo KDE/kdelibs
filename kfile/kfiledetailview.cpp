@@ -117,7 +117,6 @@ void KFileDetailView::setSelected( const KFileViewItem *info, bool enable )
 
     if ( item && item != currentItem() ) {
         KListView::setCurrentItem( item );
-	KListView::ensureItemVisible( item );
 	KListView::setSelected( item, enable );
     }
 }
