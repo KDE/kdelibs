@@ -21,6 +21,7 @@
 #include "kwalletbackend.h"
 #include <kglobal.h>
 #include <kdebug.h>
+#include <kmdcodec.h>
 #include <kstandarddirs.h>
 #include <qfile.h>
 #include "blowfish.h"
@@ -268,6 +269,28 @@ int Backend::open(const QByteArray& password) {
 		return -42;	   // unknown hash
 	}
 
+	_hashes.clear();
+	// Read in the hashes
+	QDataStream hds(&db);
+	size_t n;
+	hds >> n;
+	for (size_t i = 0; i < n; ++i) {
+		KMD5::Digest d, d2; // judgement day
+		MD5Digest ba;
+		QMap<MD5Digest,QValueList<MD5Digest> >::iterator it;
+		size_t fsz;
+		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
+		hds >> fsz;
+		ba.duplicate(reinterpret_cast<char *>(d), 16);
+		it = _hashes.insert(ba, QValueList<MD5Digest>());
+		for (size_t j = 0; j < fsz; ++j) {
+			hds.readRawBytes(reinterpret_cast<char *>(d2), 16);
+			ba.duplicate(reinterpret_cast<char *>(d2), 16);
+			(*it).append(ba);
+		}
+	}	
+	
+	// Read in the rest of the file.
 	QByteArray encrypted = db.readAll();
 	assert(encrypted.size() < db.size());
 
@@ -409,14 +432,30 @@ int Backend::close(const QByteArray& password) {
 	version[3] = KWALLET_HASH_SHA1;
 	qf.writeBlock(version, 4);
 
+	// Holds the hashes we write out
+	QByteArray hashes;
+	QDataStream hashStream(hashes, IO_WriteOnly);
+	KMD5 md5;
+	hashStream << _entries.count();
+
 	// Holds decrypted data prior to encryption
 	QByteArray decrypted;
+
+	// FIXME: we should estimate the amount of data we will write in each
+	// buffer and resize them approximately in order to avoid extra
+	// resizes.
 
 	// populate decrypted
 	QDataStream dStream(decrypted, IO_WriteOnly);
 	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
 		dStream << i.data().count();
+
+		md5.reset();
+		md5.update(i.key().utf8());
+		hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
+		hashStream << i.data().count();
+
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
 			switch (j.data()->type()) {
 			case KWallet::Wallet::Password:
@@ -425,6 +464,10 @@ int Backend::close(const QByteArray& password) {
 				dStream << j.key();
 				dStream << static_cast<long>(j.data()->type());
 				dStream << j.data()->value();
+
+				md5.reset();
+				md5.update(j.key().utf8());
+				hashStream.writeRawBytes(reinterpret_cast<const char*>(md5.rawDigest()), 16);
 				break;
 			default:
 				assert(0);
@@ -432,6 +475,8 @@ int Backend::close(const QByteArray& password) {
 			}
 		}
 	}
+
+	qf.writeBlock(hashes, hashes.size());
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -444,6 +489,7 @@ int Backend::close(const QByteArray& password) {
 	QByteArray wholeFile;
 	long blksz = bf.blockSize();
 	long newsize = decrypted.size() +
+		       hashes.size()    +
 		       blksz            +    // encrypted block
 		       4                +    // file size
 		       20;      // size of the SHA hash
