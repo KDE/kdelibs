@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   char code[BufferSize];
 
   if (argc != 2) {
-    fprintf(stderr, "You have to specify a filename");
+    fprintf(stderr, "You have to specify a filename\n");
     return -1;
   }
 

@@ -181,13 +181,11 @@ KJSGlobal::KJSGlobal()
   put("NaN", new KJSNumber(NaN));
   put("Infinity", new KJSNumber(Inf));
 
-  put("Math", new KJSMath(), DontEnum);
-
   // TODO: add function properties
   put("eval", new KJSInternalFunction(&eval));
 }
 
-KJSO* KJSGlobal::eval(KJSO *)
+KJSO* KJSGlobal::eval()
 {
   Debug("KJSGLOBAL::eval");
   return new KJSNumber(11);
@@ -325,19 +323,18 @@ int KJSArgList::count() const
 // ECMA 10.1.3
 void KJSFunction::processParameters(KJSArgList *args)
 {
-  //  cout << "processParameters: " << param->list() << endl;
-
   KJSO *variable = KJSWorld::context->variableObject();
 
   assert(args);
-  assert(param);
-  KJSArg *arg = args->firstArg();
-  for(int i = 0; i < param->count(); i++)
-    if (arg) {
-      variable->put(param->at(i), arg->object());
-      arg = arg->nextArg();
-    } else
-      variable->put(param->at(i), new KJSUndefined());
+  if (param) {
+    KJSArg *arg = args->firstArg();
+    for(int i = 0; i < param->count(); i++)
+      if (arg) {
+	variable->put(param->at(i), arg->object());
+	arg = arg->nextArg();
+      } else
+	variable->put(param->at(i), new KJSUndefined());
+  }
 }
 
 KJSDeclaredFunction::KJSDeclaredFunction(const CString &i, KJSParamList *p,
@@ -351,9 +348,4 @@ KJSO* KJSDeclaredFunction::execute()
 {
  /* TODO */
   return block->evaluate();
-}
-
-KJSMath::KJSMath()
-{
-  //  put("E", new KJSNumber(2.7182818284590452354));
 }

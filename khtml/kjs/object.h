@@ -155,12 +155,11 @@ public:
   Type type() const { return Boolean; }
 };
 
-typedef KJSO* (*fPtr)(KJSO*);
+typedef KJSO* (*fPtr)();
 
 class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
-  KJSFunction(char *i, void *, void*) { /* TODO */ }
   void processParameters(KJSArgList *);
   virtual KJSO* execute() = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
@@ -171,11 +170,11 @@ protected:
 
 class KJSInternalFunction : public KJSFunction {
 public:
-  KJSInternalFunction(KJSO* (*f)(KJSO*)) { func = f; }
+  KJSInternalFunction(KJSO* (*f)()) { func = f; }
   Type type() const { return InternalFunction; }
-  KJSO* execute() { return (*func)(0L); }
+  KJSO* execute() { return (*func)(); }
 private:
-  KJSO* (*func)(KJSO*);
+  KJSO* (*func)();
 };
 
 class KJSDeclaredFunction : public KJSFunction {
@@ -250,17 +249,12 @@ private:
   KJSScope *scopeChain;
 };
 
-class KJSMath : public KJSObject {
-public:
-  KJSMath();
-};
-
 class KJSGlobal : public KJSO {
 public:
   KJSGlobal();
   Type type() const { return Object; }
 private:
-  static KJSO* eval(KJSO *);
+  static KJSO* eval();
 };
 
 class KJSArgList;
