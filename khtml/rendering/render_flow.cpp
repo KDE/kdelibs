@@ -619,14 +619,15 @@ void RenderFlow::positionNewFloats()
     if(!specialObjects) return;
     SpecialObject *f = specialObjects->getLast();
     if(!f || f->startY != -1) return;
+    SpecialObject *lastFloat;
     while(1)
     {
-	SpecialObject *aFloat = specialObjects->prev();
-	if(!aFloat || aFloat->startY != -1) {
+	lastFloat = specialObjects->prev();
+	if(!lastFloat || lastFloat->startY != -1) {
 	    specialObjects->next();
 	    break;
 	}	
-	f = aFloat;
+	f = lastFloat;
     }
 
     int y;
@@ -634,7 +635,11 @@ void RenderFlow::positionNewFloats()
         y = currentY();
     else
         y = m_height;
-
+    
+    // the float can not start above the y position of the last positioned float.
+    if(lastFloat && lastFloat->startY > y)
+	y = lastFloat->startY;
+    
     while(f)
     {
 	RenderObject *o = f->node;
