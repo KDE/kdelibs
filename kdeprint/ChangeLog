@@ -427,3 +427,4 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     specification (simply add a config entry in protocol file)
   * general: large UI standardization by making use of KDialogBase along
     with KGuiItem
+  * kicker menu: possibility to open main Options Dialog from the menu
