@@ -697,6 +697,8 @@ void KHTMLPart::clear()
     }
   }
 
+  findTextBegin(); // resets d->m_findNode and d->m_findPos
+
   if ( d->m_jscript )
     d->m_jscript->clear();
 
