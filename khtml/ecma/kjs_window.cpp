@@ -58,8 +58,6 @@ using namespace KJS;
 
 namespace KJS {
 
-ScriptMap *script_map = 0L;
-
 ////////////////////// History Object ////////////////////////
 
 class History : public HostImp {
@@ -158,8 +156,7 @@ KJSO Screen::get(const UString &p) const
 ////////////////////// Window Object ////////////////////////
 
 Window::Window(KHTMLPart *p)
-  : m_part(p), screen(0), history(0), frames(0), loc(0),
-    openedByJS(false)
+  : m_part(p), screen(0), history(0), frames(0), loc(0)
 {
   winq = new WindowQObject(this);
   //kdDebug() << "Window::Window this=" << this << " part=" << part << endl;
@@ -184,18 +181,12 @@ Window *Window::retrieveActive()
 
 Imp *Window::retrieve(KHTMLPart *p)
 {
-  assert(p && script_map);
-  KJScript *script;
-  ScriptMap::Iterator it = script_map->find(p);
-  if (it == script_map->end()) {
-    KJScript *old = KJScript::current();
-    script = kjs_create(p);
-    old->init();
-  } else {
-    script = it.data();
-  }
-  // the Global object is the "window"
-  return script->globalObject();
+  assert(p);
+  KJSProxy *proxy = p->jScript();
+  if (proxy)
+    return proxy->jScript()->globalObject(); // the Global object is the "window"
+  else
+    return Null().imp();
 }
 
 Location *Window::location() const
@@ -411,10 +402,10 @@ KJSO Window::get(const UString &p) const
   else if (p == "offscreenBuffering")
     return Boolean(true);
   else if (p == "opener")
-    if (opener.isNull())
+    if (!m_part->opener())
       return Null(); 	// ### a null Window might be better, but == null
     else                // doesn't work yet
-      return retrieve(opener);
+      return retrieve(m_part->opener());
   else if (p == "outerHeight" || p == "outerWidth") {
     if (!m_part->widget())
       return Number(0);
@@ -819,8 +810,8 @@ Completion WindowFunc::tryExecute(const List &args)
 	  KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
 	  Window *win = Window::retrieveWindow(khtmlpart);
 	    //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
-	    win->opener = part;
-	    win->openedByJS = true;
+            khtmlpart->setOpener(part);
+	    khtmlpart->setOpenedByJS(true);
 	    uargs.serviceType = QString::null;
 	    if (uargs.frameName == "_blank")
               uargs.frameName = QString::null;
@@ -930,7 +921,7 @@ Completion WindowFunc::tryExecute(const List &args)
         special case for one-off windows that need to open other windows and
         then dispose of themselves.
         */
-    if (!window->openedByJS)
+    if (!window->m_part->openedByJS())
     {
         // To conform to the SPEC, we only ask if the window
         // has more than one entry in the history (NS does that too).
@@ -973,11 +964,6 @@ void WindowQObject::parentDestroyed()
 {
   killTimers();
   map.clear();
-  ScriptMap::Iterator it = script_map->find(part);
-  if (it == script_map->end())
-    return;
-  //  KJScript *scr = it.data();
-  script_map->remove(part);
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)

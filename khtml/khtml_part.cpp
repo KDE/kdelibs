@@ -200,6 +200,8 @@ public:
 
     m_focusNodeNumber = 0;
     m_focusNodeRestored = false;
+    m_opener = 0;
+    m_openedByJS = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -363,6 +365,8 @@ public:
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
+  QGuardedPtr<KHTMLPart> m_opener;
+  bool m_openedByJS;
 };
 
 namespace khtml {
@@ -4154,6 +4158,25 @@ DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
     return proxy->createHTMLEventHandler(code);
 }
 
+KHTMLPart *KHTMLPart::opener()
+{
+    return d->m_opener;
+}
+
+void KHTMLPart::setOpener(KHTMLPart *_opener)
+{
+    d->m_opener = _opener;
+}
+
+bool KHTMLPart::openedByJS()
+{
+    return d->m_openedByJS;
+}
+
+void KHTMLPart::setOpenedByJS(bool _openedByJS)
+{
+    d->m_openedByJS = _openedByJS;
+}
 
 using namespace KParts;
 #include "khtml_part.moc"

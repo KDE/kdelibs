@@ -54,8 +54,6 @@ namespace KJS {
     KHTMLView *view;
   };
 
-  typedef QMap<KHTMLPart *, KJScript *> ScriptMap;
-
   class Window : public HostImp {
     friend QGuardedPtr<KHTMLPart> getInstance();
     friend class Location;
@@ -93,12 +91,10 @@ namespace KJS {
     KJSO getListener(int eventId) const;
   private:
     QGuardedPtr<KHTMLPart> m_part;
-    QGuardedPtr<KHTMLPart> opener;
     Screen *screen;
     History *history;
     FrameArray *frames;
     Location *loc;
-    bool openedByJS;
     WindowQObject *winq;
   };
 

@@ -72,6 +72,7 @@ public:
   QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
   DOM::EventListener *createHTMLEventHandler(QString code);
   KHTMLPart *khtmlpart;
+  KJScript *jScript() { return script; }
 private:
   KJSCreateFunc *create;
   KJScript *script;

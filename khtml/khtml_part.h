@@ -136,6 +136,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
+  friend class KJS::Window;
   friend class KJS::WindowFunc;
   friend class KJS::JSEventListener;
   friend class KHTMLPartBrowserExtension;
@@ -1029,6 +1030,11 @@ private:
   bool checkLinkSecurity(const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null);
 
   KJSProxy *jScript();
+
+  KHTMLPart *opener();
+  void setOpener(KHTMLPart *_opener);
+  bool openedByJS();
+  void setOpenedByJS(bool _openedByJS);
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

@@ -87,22 +87,10 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   return proxy;
 }
 
-namespace KJS {
-    extern ScriptMap *script_map;
-};
-
 // init the interpreter
   KJScript* kjs_create(KHTMLPart *khtmlpart)
   {
-    if (!script_map)
-      script_map = new ScriptMap;
- 
-    ScriptMap::Iterator it = script_map->find(khtmlpart);
-    if (it != script_map->end())
-      return it.data();
-
     KJScript *script = new KJScript();
-    script_map->insert((KHTMLPart*)khtmlpart, script);
 #ifndef NDEBUG
     script->enableDebug();
 #endif
@@ -146,10 +134,6 @@ namespace KJS {
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script, KHTMLPart *part)
   {
-    ScriptMap::Iterator it = script_map->find(part);
-    if (it != script_map->end())
-      script_map->remove(it);
-
     script->clear();
     //    delete script;
   }
