@@ -63,9 +63,9 @@ class QSqlPropertyMap;
  * To add KColorButton the following code would be inserted in the main.
  *
  * \code
+ * kapp->installKDEPropertyMap();
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
  * map->insert("KColorButton", "color");
- * QSqlPropertyMap::installDefaultMap(map);
  * \endcode
  *
  * If you add a new widget to the QSqlPropertyMap and wish to be notified when
