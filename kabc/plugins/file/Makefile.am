@@ -14,7 +14,6 @@ kde_module_LTLIBRARIES = kabc_file.la
 kabc_file_la_SOURCES = resourcefileplugin.cpp
 kabc_file_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kabc_file_la_LIBADD = libkabc_file.la
-kabc_file_la_COMPILE_FIRST = libkabc_file.la
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
