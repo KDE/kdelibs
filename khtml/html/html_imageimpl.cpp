@@ -194,7 +194,7 @@ DOMString HTMLImageElementImpl::altText() const
     if ( alt.isNull() )
         alt = getAttribute( ATTR_TITLE );
     if ( alt.isNull() ) {
-        QString p = KURL( m_imageURL.string() ).prettyURL();
+        QString p = KURL( ownerDocument()->completeURL( m_imageURL.string() ) ).prettyURL();
         int pos;
         if ( ( pos = p.findRev( '.' ) ) > 0 )
             p.truncate( pos );
