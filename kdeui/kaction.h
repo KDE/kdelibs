@@ -1,5 +1,5 @@
-#ifndef __k2action_h__
-#define __k2action_h__ $Id$
+#ifndef __kaction_h__
+#define __kaction_h__ $Id$
 
 #include <qaction.h>
 
