@@ -358,7 +358,7 @@ class KAboutData
     /**
      * Defines a short description of what the program does.
      *
-     * @param version The program version This string should be marked
+     * @param shortDescription The program description This string should be marked
      *        for translation. Example: I18N_NOOP("An advanced text editor
      *        with syntax highlithing support.").
      */

@@ -376,7 +376,7 @@ class kdbgstream {
 
     /**
      * Prints the given value.
-     * @param brush the brush to print
+     * @param variant the variant to print
      * @return this stream
      * @since 3.3
      */
