@@ -77,7 +77,7 @@ void KFM::removeTempFile(const QString & name){
   if (!tmpfiles)
     return;
   if (tmpfiles->contains(name)){
-    QFile::remove(name);
+    unlink(name);
     tmpfiles->remove(name);
   }
 }
