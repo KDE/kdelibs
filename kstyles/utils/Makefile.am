@@ -1,1 +1,1 @@
-SUBDIRS=mktheme settheme
+SUBDIRS= settheme
