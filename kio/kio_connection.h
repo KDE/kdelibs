@@ -35,8 +35,6 @@ public:
   size_t bufferSize() {return m_iBufferSize;}
 
 protected:
-  // Connection();
-
   void init( int _in_fd, int _out_fd, size_t _buf_len );
   /**
     * Return the default size of the buffer.  This is useful when
