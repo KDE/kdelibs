@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * client.cpp: A client for kdesud.
@@ -34,28 +34,34 @@
 
 #include "client.h"
 
+class KDEsuClient::KDEsuClientPrivate {
+public:
+    QString daemon;
+};
 
 #ifndef SUN_LEN
 #define SUN_LEN(ptr) ((ksize_t) (((struct sockaddr_un *) 0)->sun_path) \
-	             + strlen ((ptr)->sun_path))   
+	             + strlen ((ptr)->sun_path))
 #endif
 
 KDEsuClient::KDEsuClient()
 {
     sockfd = -1;
     char *dpy = getenv("DISPLAY");
-    if (dpy == 0L) 
+    if (dpy == 0L)
     {
 	kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
 	return;
     }
     sock = QFile::encodeName(locateLocal("socket", QString("kdesud_%1").arg(dpy)));
+    d = new KDEsuClientPrivate;
     connect();
 }
 
 
 KDEsuClient::~KDEsuClient()
 {
+    delete d;
     if (sockfd >= 0)
 	close(sockfd);
 }
@@ -64,14 +70,14 @@ int KDEsuClient::connect()
 {
     if (sockfd >= 0)
 	close(sockfd);
-    if (access(sock, R_OK|W_OK)) 
+    if (access(sock, R_OK|W_OK))
     {
 	sockfd = -1;
 	return -1;
     }
 
     sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
-    if (sockfd < 0) 
+    if (sockfd < 0)
     {
 	kdWarning(900) << k_lineinfo << "socket(): " << perror << "\n";
 	return -1;
@@ -80,7 +86,7 @@ int KDEsuClient::connect()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, sock);
 
-    if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) 
+    if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
         kdWarning(900) << k_lineinfo << "connect():" << perror << endl;
 	close(sockfd); sockfd = -1;
@@ -115,19 +121,19 @@ int KDEsuClient::connect()
 	return -1;
     }
 #else
-    struct ucred cred; 
-    socklen_t siz = sizeof(cred); 
- 
-    // Security: if socket exists, we must own it 
-    if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0) 
+    struct ucred cred;
+    socklen_t siz = sizeof(cred);
+
+    // Security: if socket exists, we must own it
+    if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)
     {
-        if (cred.uid != getuid()) 
-        { 
+        if (cred.uid != getuid())
+        {
             kdWarning(900) << "socket not owned by me! socket uid = " << cred.uid << endl;
             close(sockfd); sockfd = -1;
             return -1;
-        } 
-    } 
+        }
+    }
 #endif
 
     return 0;
@@ -335,15 +341,8 @@ int KDEsuClient::stopServer()
 
 bool KDEsuClient::isServerSGID()
 {
-    QString daemon = KStandardDirs::findExe("kdesud");
-    if (daemon.isEmpty())
-    {
-	kdWarning(900) << k_lineinfo << "daemon not found\n";
-	return false;
-    }
-
     struct stat sbuf;
-    if (stat(QFile::encodeName(daemon), &sbuf) < 0)
+    if (stat(QFile::encodeName(d->daemon), &sbuf) < 0)
     {
 	kdWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;
@@ -353,12 +352,23 @@ bool KDEsuClient::isServerSGID()
 
 int KDEsuClient::startServer()
 {
-    if (!isServerSGID())
+    d->daemon = locate("bin", "kdesud");
+    if (d->daemon.isNull()) // if not in KDEDIRS, rely on PATH
+	d->daemon = KStandardDirs::findExe("kdesud");
+
+    if (d->daemon.isEmpty())
+    {
+	kdWarning(900) << k_lineinfo << "daemon not found\n";
+	return -1;
+    }
+
+    if (!isServerSGID()) {
 	kdWarning(900) << k_lineinfo << "kdesud not setgid!\n";
+    }
 
     // kdesud only forks to the background after it is accepting
     // connections.
-    int ret = system("kdesud");
+    int ret = system(QFile::encodeName(d->daemon));
     connect();
     return ret;
 }
