@@ -270,6 +270,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
      QString result = proxyForURL(u);
      if (result.startsWith("http"))
         result.replace(0, 4, "webdav");
+     return result;
   }
 
   QString proxy;
