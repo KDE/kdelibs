@@ -593,7 +593,7 @@ void KStepStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(sunken ? g.light() : g.dark());
     p->drawLine(x2, y, x2, y2);
     p->drawLine(x, y2, x2, y2);
-    p->fillRect(x+1, y+1, w-2, h-2, sunken? g.mid() : g.midlight());
+    p->fillRect(x+1, y+1, w-2, h-2, sunken? g.midlight() : g.mid());
     int dx, dy;
 
     if (icontext == Icon){ // icon only
