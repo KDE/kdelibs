@@ -571,7 +571,7 @@ QString KFileItem::getToolTipText()
 #ifdef _GNUC  
 #waring move that tool tip maxcout elsewhere (make it configurable?)
 #endif
-  const int maxcount = 5;
+  const int maxcount = 6;
 
   QString tip;
   KFileMetaInfo* info = 0L;
@@ -588,8 +588,10 @@ QString KFileItem::getToolTipText()
       info = d->metaInfo;
   }
 
-  // if we got no info, show a default tip
-  if ( !info )
+  QStringList keys;
+  
+  // if we got no or empty info, show a default tip
+  if ( !info || (keys = info->preferredKeys()) .isEmpty() )
   {
     kdDebug() << "Found no meta info" << endl;
     tip  = "<nobr><b><center>"+ m_url.fileName() + "</center></b>";
@@ -622,12 +624,11 @@ QString KFileItem::getToolTipText()
             "</center></b>";
       
     // now the rest
-    QStringList l = info->preferredKeys();
     
-    QStringList::Iterator it = l.begin();
-    for (int count = 0; it!=l.end() && count<=maxcount; ++it)
+    QStringList::Iterator it = keys.begin();
+    for (int count = 0; count<=maxcount && it!=keys.end() ; ++it)
     {
-      item = info->item(*it);
+      item = info->item( *it );
       if ( item && (item->key() != "Title") && (item->key() != "Name") )
       {
         QString s;
@@ -640,9 +641,11 @@ QString KFileItem::getToolTipText()
         {
           count++;
           tip += QStyleSheet::escape( item->translatedKey() ) + ": " +
-                 item->prefix() + QStyleSheet::escape( s ) + item->postfix();
+                 item->prefix() +
+                 QStyleSheet::escape( s ) +
+                 item->postfix();
           
-          if ( (item->key()!=l.last()) && (count<=maxcount) ) tip += "<br>";
+          if ( (item->key()!=keys.last()) && (count<=maxcount) ) tip += "<br>";
         }
 
       }
