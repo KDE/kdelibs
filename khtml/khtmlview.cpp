@@ -1207,6 +1207,8 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
     d->ignoreWheelEvents = e;
 }
 
+#ifndef QT_NO_WHEELEVENT
+
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
     if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
@@ -1222,6 +1224,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         QScrollView::viewportWheelEvent( e );
     }
 }
+#endif
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {

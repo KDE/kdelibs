@@ -128,7 +128,7 @@ public:
      * Overrides the scrollbar mode.
      */
     void forceHScrollBarMode( ScrollBarMode mode );
-    
+
     /**
      * Overrides the scrollbar mode.
      */
@@ -181,7 +181,9 @@ protected:
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
     virtual void viewportMouseMoveEvent(QMouseEvent *);
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
+#ifndef QT_NO_WHEELEVENT
     virtual void viewportWheelEvent(QWheelEvent*);
+#endif
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
