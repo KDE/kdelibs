@@ -305,7 +305,6 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QCString(_body.utf8()), false );
@@ -497,14 +496,16 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
   slotFinished(0);
 }
 
-void XMLHttpRequest::slotFinished(KIO::Job *job)
+void XMLHttpRequest::slotFinished(KIO::Job *)
 {
   if (decoder) {
     response += decoder->flush();
   }
 
-  changeState(Completed);
+  // make sure to forget about the job before emitting completed,
+  // since changeState triggers JS code, which might e.g. call abort.
   job = 0;
+  changeState(Completed);
 
   delete decoder;
   decoder = 0;
@@ -565,7 +566,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   }
 
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj.imp());
-
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -585,7 +585,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2 || args.size() > 5) {
-    return Undefined();
+        return Undefined();
       }
 
       QString method = args[0].toString(exec).qstring();
