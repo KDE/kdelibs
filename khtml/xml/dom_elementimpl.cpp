@@ -595,6 +595,9 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 
     if(!m_render) return false;
 
+    int origTx = _tx;
+    int origTy = _ty;
+
     RenderObject *p = m_render->parent();
     while( p && p->isAnonymousBox() ) {
 // 	kdDebug( 6030 ) << "parent is anonymous!" << endl;
@@ -630,8 +633,8 @@ bool ElementImpl::mouseEvent( int _x, int _y,
                 {
                     //kdDebug(6030) << nodeName().string() << " SETTING innerNode " << endl;
                     ev->innerNode = Node(this);
-                    ev->nodeAbsX = _tx;
-                    ev->nodeAbsY = _ty;
+                    ev->nodeAbsX = origTx;
+                    ev->nodeAbsY = origTy;
                     ev->zIndex = ev->currentZIndex;
                     inside = true;
                 }
