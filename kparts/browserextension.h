@@ -90,10 +90,9 @@ class BrowserExtensionPrivate;
   * The following standard actions are defined by the host of the view :
   *
   * [selection-dependent actions]
-  * @li cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
-  * @li copy : copy selected items to clipboard (and notifies it's not a cut)
-  * @li pastecut : called when doing a paste after a cut
-  * @li pastecopy : called when doing a paste after a copy
+  * @li cut : copy selected items to clipboard and store 'not cut' in clipboard
+  * @li copy : copy selected items to clipboard and store 'cut' in clipboard
+  * @li paste : paste clipboard into selected items
   * @li trash : move selected items to trash
   * @li del : delete selected items (couldn't call it delete!)
   * @li shred : shred selected items (secure deletion)

@@ -187,8 +187,7 @@ QMap<QCString,QCString> BrowserExtension::actionSlotMap()
 
   res.insert( "cut", SLOT( cut() ) );
   res.insert( "copy", SLOT( copy() ) );
-  res.insert( "pastecut", SLOT( pastecut() ) );
-  res.insert( "pastecopy", SLOT( pastecopy() ) );
+  res.insert( "paste", SLOT( paste() ) );
   res.insert( "trash", SLOT( trash() ) );
   res.insert( "del", SLOT( del() ) );
   res.insert( "shred", SLOT( shred() ) );
