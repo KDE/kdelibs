@@ -159,6 +159,7 @@ class KCheckAccelerators : public QObject
 public:
     KCheckAccelerators( QObject* parent, int k )
 	: QObject( parent, "kapp_accel_filter" ), key( k ), block( false ) {
+	 strictMenuCheck = TRUE;
 	parent->installEventFilter( this );
     }
     bool eventFilter( QObject * , QEvent * e) {
@@ -239,6 +240,8 @@ public:
 		s = mi->text();
 		if ( s.contains( '\t' ) )
 		    s = s.left( s.find( '\t' ) );
+		if ( !strictMenuCheck )
+		    accels.clear();
 		checkMenuData( prefix + s + "/", mi->popup(), accels );
 	    }
 	}
@@ -382,6 +385,8 @@ public:
 	view->setFocus();
 	dlg->exec();
     }
+    
+    bool strictMenuCheck;
 
 private:
     int key;
@@ -624,9 +629,9 @@ void KApplication::init(bool GUIenabled)
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
- 
+
   // Trigger creation of locale.
-  (void) KGlobal::locale(); 
+  (void) KGlobal::locale();
 
   if (GUIenabled)
   {
@@ -652,8 +657,10 @@ void KApplication::init(bool GUIenabled)
     KConfig* config = KGlobal::config();
     KConfigGroupSaver saver( config, "Development" );
     QString sKey = config->readEntry("CheckAccelerators" );
-    if ( !sKey.isEmpty() && KAccel::stringToKey( sKey ) )
+    if ( !sKey.isEmpty() && KAccel::stringToKey( sKey ) ) {
 	d->checkAccelerators = new KCheckAccelerators( this, KAccel::stringToKey( sKey ) );
+	d->checkAccelerators->strictMenuCheck = config->readBoolEntry("StrictMenuCheck", false );
+    }
   }
 
   installTranslator(new KDETranslator(this));
