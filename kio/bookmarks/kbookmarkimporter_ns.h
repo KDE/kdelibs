@@ -29,8 +29,6 @@
 
 /**
  * A class for importing NS bookmarks
- * KEditBookmarks uses it to insert bookmarks into its DOM tree,
- * and KActionMenu uses it to create actions directly.
  * @deprecated
  */
 class KNSBookmarkImporter : public QObject
@@ -58,6 +56,10 @@ protected:
     QString m_fileName;
 };
 
+/**
+ * A class for importing NS bookmarks
+ * @since 3.2
+ */
 class KNSBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:

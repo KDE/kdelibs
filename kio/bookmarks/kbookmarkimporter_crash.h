@@ -25,10 +25,11 @@
 #include <qmap.h>
 #include <ksimpleconfig.h>
 
+#include "kbookmarkimporter.h"
+
 /**
  * A class for importing all crash sessions as bookmarks
- * KEditBookmarks uses it to insert bookmarks into its DOM tree,
- * and KActionMenu uses it to create actions directly. (TODO)
+ * @deprecated
  */
 class KCrashBookmarkImporter : public QObject
 {
@@ -41,39 +42,33 @@ public:
 
     // Usual place for crash bookmarks
     static QString crashBookmarksDir( );
-
     // Returns the list of crash logs
     static QStringList getCrashLogs();
 
 signals:
-
-    /**
-     * Notify about a new bookmark
-     * Use "html" for the icon
-     */
     void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-
-    /**
-     * Notify about a new folder
-     * Use "bookmark_folder" for the icon
-     */
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
-
-    /**
-     * Notify about a new separator
-     */
     void newSeparator();
-
-    /**
-     * Tell the outside world that we're going down
-     * one menu
-     */
     void endFolder();
 
 protected:
     QString m_fileName;
-
     void parseCrashLog( QString filename, bool del );
+};
+
+/**
+ * A class for importing all crash sessions as bookmarks
+ * @since 3.2
+ */
+class KCrashBookmarkImporterImpl : public KBookmarkImporterBase
+{
+public:
+    KCrashBookmarkImporterImpl() { }
+    void setShouldDelete(bool);
+    virtual void parse();
+    virtual QString findDefaultLocation(bool forSaving = false) const;
+private:
+    bool m_shouldDelete;
 };
 
 #endif

@@ -150,8 +150,22 @@ void KCrashBookmarkImporter::parseCrashBookmarks( bool del )
    }
 }
 
-QString KCrashBookmarkImporter::crashBookmarksDir( )
+QString KCrashBookmarkImporter::crashBookmarksDir()
 {
+   static KCrashBookmarkImporterImpl importer;
+   return importer.findDefaultLocation();
+}
+
+void KCrashBookmarkImporterImpl::setShouldDelete(bool shouldDelete) {
+   m_shouldDelete = shouldDelete;
+}
+
+void KCrashBookmarkImporterImpl::parse() {
+   KCrashBookmarkImporter importer(QString::null);
+   importer.parseCrashBookmarks(m_shouldDelete);
+}
+
+QString KCrashBookmarkImporterImpl::findDefaultLocation(bool) const {
    return locateLocal("tmp", "");
 }
 
