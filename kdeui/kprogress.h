@@ -48,7 +48,8 @@
  *
  * @short A progress indicator widget.
  * @author Martynas Kunigelis
- * @version $Id$ */
+ * @version $Id$
+ */
 class KProgress : public QFrame, public QRangeControl
 {
   Q_OBJECT

@@ -204,7 +204,8 @@ class KDialogBaseTile : public QObject
  * inspiration you should study the code for these.
  *
  * @short A dialog base class which standard buttons and predefined layouts.
- * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espen@kde.org) */
+ * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espen@kde.org)
+ */
 class KDialogBase : public KDialog
 {
   Q_OBJECT

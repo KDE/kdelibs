@@ -47,7 +47,8 @@ namespace KIO {
    *
    *  Port to kio done by David Faure, faure@kde.org
    *
-   * @short Provides a synchronous interface to io jobs.  */
+   * @short Provides a synchronous interface to io jobs.
+   */
 class NetAccess : public QObject
 {
   Q_OBJECT

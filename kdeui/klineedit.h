@@ -123,7 +123,8 @@
  * </pre>
  *
  * @short An enhanced single line input widget.
- * @author Dawit Alemayehu <adawit@kde.org> */
+ * @author Dawit Alemayehu <adawit@kde.org>
+ */
 
 class KLineEdit : public QLineEdit, public KCompletionBase
 {

@@ -301,7 +301,8 @@ public:
  *
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$ */
+ * @version $Id$
+ */
 class KDockWidget: public QWidget
 {
   Q_OBJECT
@@ -322,7 +323,8 @@ public:
    * @param pixmap      An icon (for instance shown when docked centered)
    * @param parent      Parent widget
    * @param strCaption  Title of the dockwidget window (shown when toplevel)
-   * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption */
+   * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
+   */
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
 
@@ -645,7 +647,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
-*/
+ */
 class KDockManager: public QObject
 {
   Q_OBJECT
@@ -946,7 +948,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
-*/
+ */
 class KDockMainWindow : public KTMainWindow
 {
   Q_OBJECT

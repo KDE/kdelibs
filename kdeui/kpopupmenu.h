@@ -31,7 +31,8 @@
  * you wish to customize it's look.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
- * @short KPopupMenu title widget.  */
+ * @short KPopupMenu title widget.
+ */
 class KPopupTitle : public QWidget
 {
 public:

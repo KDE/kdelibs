@@ -27,16 +27,17 @@
 
 class QColor;
 /** 
-* Display a round  or rectangular light emitting diode.
-*
-* It is configurable to five colors, the two on/off states and three
-* styles (or "looks");
-*
-* It may display itself in a performant flat view, a round view with
-* light spot or a round view sunken in the screen.
-*
-* @short An LED widget.
-* @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999 */
+ * Display a round  or rectangular light emitting diode.
+ *
+ * It is configurable to five colors, the two on/off states and three
+ * styles (or "looks");
+ *
+ * It may display itself in a performant flat view, a round view with
+ * light spot or a round view sunken in the screen.
+ *
+ * @short An LED widget.
+ * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
+ */
 class KLed : public QWidget
 {
     Q_OBJECT
