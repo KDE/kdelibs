@@ -124,7 +124,9 @@ AudioIOSun::AudioIOSun()
      * default parameters
      */
     param(samplingRate) = 44100;
-    paramStr(deviceName) = "/dev/audio";
+	// solaris convention to support SunRays run out-of-the-box
+	const char *audioDev = getenv("AUDIODEV");
+    paramStr(deviceName) = (audioDev != 0)?audioDev:"/dev/audio";
     param(fragmentSize) = 1024;
     param(fragmentCount) = 7;
     param(channels) = 2;
