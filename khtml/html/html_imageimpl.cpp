@@ -191,7 +191,7 @@ void HTMLImageElementImpl::attach()
         renderImage->setStyle(m_style);
         renderImage->setAlt(alt);
         m_render = renderImage;
-        if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
+        if(m_render) r->addChild(m_render, nextRenderer());
         renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL(),
                                  static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
 

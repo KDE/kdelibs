@@ -286,6 +286,8 @@ public:
 
     DocumentPtr *docPtr() const { return document; }
 
+    virtual khtml::RenderObject *nextRenderer();
+
 private:
     DocumentPtr *document;
     friend class DocumentImpl;
@@ -334,6 +336,7 @@ public:
     virtual void setNextSibling(NodeImpl *);
     virtual unsigned long nodeIndex() const;
     virtual bool isReadOnly();
+    virtual khtml::RenderObject *nextRenderer();
 
 protected:
     NodeImpl *_parent;

@@ -304,7 +304,7 @@ void TextImpl::attach()
         if( r && style() ) {
 	    m_render = new RenderText(str);
 	    m_render->setStyle( style() );
-	    r->addChild(m_render, _next ? _next->renderer() : 0);
+	    r->addChild(m_render, nextRenderer());
         }
     }
 

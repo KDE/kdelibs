@@ -777,3 +777,23 @@ void RenderObject::invalidateVerticalPositions()
 	child = child->nextSibling();
     }
 }
+
+bool RenderObject::applyChanges(bool force)
+{
+    bool childChanged = false;
+    for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
+	if (c->applyChanges(force || changed()))
+	    childChanged = true;
+    }
+
+    if (force || changed()) {
+	calcMinMaxWidth();
+
+	if (changed()) {
+	    updateSize();
+	}
+    }
+
+    return (childChanged || force || changed());
+}
+

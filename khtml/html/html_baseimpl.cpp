@@ -176,7 +176,7 @@ void HTMLBodyElementImpl::attach()
 
     m_render = new RenderBody(this);
     m_render->setStyle(m_style);
-    r->addChild( m_render, _next ? _next->renderer() : 0 );
+    r->addChild( m_render, nextRenderer() );
 
     if (m_styleSheet)
 	getDocument()->createSelector();
@@ -295,7 +295,7 @@ void HTMLFrameElementImpl::attach()
     khtml::RenderFrame *renderFrame = new khtml::RenderFrame( w, this );
     m_render = renderFrame;
     m_render->setStyle(m_style);
-    r->addChild( m_render, _next ? _next->renderer() : 0 );
+    r->addChild( m_render, nextRenderer() );
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
     if(name.isEmpty() || w->part()->frameExists( name.string() ) )
@@ -438,7 +438,7 @@ void HTMLFrameSetElementImpl::attach()
     khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w, m_rows, m_cols );
     m_render = renderFrameSet;
     m_render->setStyle(m_style);
-    r->addChild( m_render, _next ? _next->renderer() : 0 );
+    r->addChild( m_render, nextRenderer() );
 
     HTMLElementImpl::attach();
 }
@@ -576,7 +576,7 @@ void HTMLHtmlElementImpl::attach()
 
     m_render = new khtml::RenderHtml();
     m_render->setStyle(m_style);
-    r->addChild( m_render, _next ? _next->renderer() : 0 );
+    r->addChild( m_render, nextRenderer() );
 
     HTMLElementImpl::attach();
 }
@@ -677,7 +677,7 @@ void HTMLIFrameElementImpl::attach()
   khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
   m_render = renderFrame;
   m_render->setStyle(m_style);
-  r->addChild( m_render, _next ? _next->renderer() : 0 );
+  r->addChild( m_render, nextRenderer() );
   renderFrame->updateWidget();
 
 

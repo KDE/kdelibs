@@ -685,6 +685,11 @@ NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) {
     return 0;
 }
 
+RenderObject *NodeImpl::nextRenderer()
+{
+    return 0;
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentPtr *doc) : NodeImpl(doc)
@@ -765,6 +770,16 @@ bool NodeWParentImpl::isReadOnly()
 	n = n->parentNode();
     }
     return NodeImpl::isReadOnly();
+}
+
+RenderObject * NodeWParentImpl::nextRenderer()
+{
+    NodeImpl *n = _next;
+    for (; n; n = n->nextSibling()) {
+	if (n->renderer())
+	    return n->renderer();
+    }
+    return 0;
 }
 
 //-------------------------------------------------------------------------
@@ -1195,8 +1210,6 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
     if (!attached())
 	return;
 
-    int ow = (m_style?m_style->outlineWidth():0);
-
     if (top)
         recalcStyle();
 
@@ -1208,39 +1221,9 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
         n = n->nextSibling();
     }
 
-    if (!m_render)
-        return;
-
-    // calc min and max widths starting from leafs
-    // might belong to renderer, but this is simple to do here
-    if (force || changed())
-	m_render->calcMinMaxWidth();
-
-    if(top) {
-        if (force)
-        {
-            // force a relayout of this part of the document
-            m_render->updateSize();
-            // force a repaint of this part.
-            // ### if updateSize() changes any size, it will already force a
-            // repaint, so we might do double work here...
-            m_render->repaint();
-        }
-        else
-        {
-            // ### FIX ME
-            if (m_style) ow = QMAX(ow, m_style->outlineWidth());
-            RenderObject *cb = m_render->containingBlock();
-            if (cb && cb != m_render)
-                cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
-            else
-                m_render->repaint();
-        }
-    }
-    setChanged(false);
+    if (m_render)
+	m_render->setChanged(true);
 }
-
-
 
 void NodeBaseImpl::attach()
 {

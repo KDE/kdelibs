@@ -211,7 +211,7 @@ void HTMLBRElementImpl::attach()
     {
         m_render = new RenderBR();
         m_render->setStyle(m_style);
-        r->addChild(m_render, _next ? _next->renderer() : 0);
+        r->addChild(m_render, nextRenderer());
     }
     HTMLElementImpl::attach();
 }
@@ -311,7 +311,7 @@ void HTMLFontElementImpl::attach()
 
         if(m_render)
         {
-            _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
+            _parent->renderer()->addChild(m_render, nextRenderer());
         }
     }
 

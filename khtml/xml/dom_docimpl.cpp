@@ -664,12 +664,15 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 
 void DocumentImpl::updateRendering()
 {
+    if (changedNodes.isEmpty())
+	return;
+
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ++it) {
-        if( it.current()->changed() )
-            it.current()->applyChanges( true, true );
+	it.current()->applyChanges( true, true );
     }
-     changedNodes.clear();
+    changedNodes.clear();
+    static_cast<RenderRoot*>(m_render)->updateRendering();
 }
 
 void DocumentImpl::attach(KHTMLView *w)

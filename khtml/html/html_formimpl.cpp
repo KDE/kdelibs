@@ -1023,7 +1023,7 @@ void HTMLInputElementImpl::attach()
                 restoreState( state );
             }
 
-            r->addChild(m_render, _next ? _next->renderer() : 0);
+            r->addChild(m_render, nextRenderer());
         }
     }
     HTMLElementImpl::attach();
@@ -1564,7 +1564,7 @@ void HTMLSelectElementImpl::attach()
         {
             m_render = f;
             m_render->setStyle(m_style);
-            r->addChild(m_render, _next ? _next->renderer() : 0);
+            r->addChild(m_render, nextRenderer());
         }
     }
     HTMLElementImpl::attach();
@@ -1991,7 +1991,7 @@ void HTMLTextAreaElementImpl::attach()
         {
             m_render = f;
             m_render->setStyle(m_style);
-            r->addChild(m_render, _next ? _next->renderer() : 0);
+            r->addChild(m_render, nextRenderer());
 
             // registerElement and restoreState calls are in RenderTextArea::close
 

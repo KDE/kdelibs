@@ -706,7 +706,7 @@ void HTMLTableCellElementImpl::attach()
             cell->setColSpan(cSpan);
             cell->setNoWrap(nWrap);
         }
-        if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
+        if(m_render) r->addChild(m_render, nextRenderer());
     }
 
     HTMLElementImpl::attach();

@@ -150,7 +150,7 @@ void HTMLAppletElementImpl::attach()
   {
       m_render = f;
       m_render->setStyle(m_style);
-      r->addChild(m_render, _next ? _next->renderer() : 0);
+      r->addChild(m_render, nextRenderer());
   }
   HTMLElementImpl::attach();
 }
@@ -261,7 +261,7 @@ void HTMLEmbedElementImpl::attach()
         p = new RenderPartObject( w, this );
         m_render = p;
         m_render->setStyle(m_style);
-        r->addChild( m_render, _next ? _next->renderer() : 0 );
+        r->addChild( m_render, nextRenderer() );
      } else
         r->setStyle(m_style);
    }
@@ -358,7 +358,7 @@ void HTMLObjectElementImpl::attach()
     RenderPartObject *p = new RenderPartObject( w, this );
     m_render = p;
     m_render->setStyle(m_style);
-    r->addChild( m_render, _next ? _next->renderer() : 0 );
+    r->addChild( m_render, nextRenderer() );
     p->updateWidget();
   }
 
