@@ -329,7 +329,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_SUP:
     case ID_SPAN:
     case ID_BDO:
-	//case ID_FONT:
+	case ID_FONT:
     case ID_P:
     case ID_H1:
     case ID_H2:
@@ -379,7 +379,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_IFRAME:
     case ID_NOFRAMES:
     case ID_NOSCRIPT:
-	case ID_FONT:
+	//case ID_FONT:
 	// DIV: _1 *
 	return check_array(childID, tag_list_1);
     case ID_A:
