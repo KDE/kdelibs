@@ -50,11 +50,12 @@ class TCPSlaveBase
 {
 public:
     TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);
+    TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket, bool useSSL);
     virtual ~TCPSlaveBase();
 protected:
 
     // These two act like the standard syscalls except they will
-    // decipher SSL stuff if needed
+    // decipher SSL stuff or do SOCKS if needed
     ssize_t Write(const void *data, ssize_t len);
     ssize_t Read(void *data, ssize_t len);
 
@@ -94,6 +95,7 @@ protected:
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate *d;
 
+    void doConstructorStuff();
 };
 
 };

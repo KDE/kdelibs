@@ -62,7 +62,7 @@ include_HEADERS = \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
-libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kssl/libkssl.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 libkio_la_SOURCES = \
 	kshred.cpp \

@@ -17,30 +17,80 @@
 
 using namespace KIO;
 
+#include <kssl.h>
+
+
+class TCPSlaveBase::TcpSlaveBasePrivate {
+public:
+  KSSL *kssl;
+};
+
+
 TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket)
 	: SlaveBase (protocol, pool_socket, app_socket), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol), fp(0)
 {
-	InitializeSSL();
+// We have to have two constructors, so don't add anything else in here.
+// put it in doConstructorStuff() instead.
+        doConstructorStuff();
+        m_bIsSSL = false;
+}
+
+TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket, bool useSSL)
+	: SlaveBase (protocol, pool_socket, app_socket), m_bIsSSL(useSSL), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol), fp(0)
+{
+        doConstructorStuff();
+        if (useSSL)
+           m_bIsSSL = InitializeSSL();
+}
+
+// The constructor procedures go here now.
+void TCPSlaveBase::doConstructorStuff()
+{
+        d = new TcpSlaveBasePrivate;
 }
 
 TCPSlaveBase::~TCPSlaveBase()
 {
 	CleanSSL();
+        delete d;
 }
 
 ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 {
+        if (m_bIsSSL)
+           return d->kssl->write(data, len);
 	return KSocks::self()->write(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 {
+        if (m_bIsSSL)
+           return d->kssl->read(data, len);
 	return KSocks::self()->read(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
-	memset(data, 0, len);
+        if (m_bIsSSL) {
+           // ugliness alert!!  calling read() so many times can't be good...
+           int clen=0;
+           char *buf=data;
+           char mybuf[2]={0,0};
+           while (clen < len) {
+              d->kssl->read(mybuf, 1);
+              if (*mybuf == '\r') // Ignore!
+                 continue;
+              if (*mybuf == '\n')
+                 break;
+              *buf++ = *mybuf;
+              clen++;
+           }
+           *buf=0; 
+           return clen;
+        }
+
+        // This should change.  It's O(2n) and can be made O(n).
+        *data = 0;
 	fgets(data, len, fp);
 	return strlen(data);
 }
@@ -72,26 +122,6 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 
 	port = GetPort(_port);
 
-#if 0
-	memset(&server_name, 0, sizeof(server_name));
-
-	m_iSock = ::socket(PF_INET, SOCK_STREAM, 0);
-	if (m_iSock == -1) return false;
-
-	if (!KSocket::initSockaddr(&server_name, host, port))
-        {
-		error( ERR_UNKNOWN_HOST, host);
-		CloseDescriptor();
-		return false;
-        }
-
-	if (::connect(m_iSock, (struct sockaddr*)(&server_name), sizeof(server_name))) {
-		error( ERR_COULD_NOT_CONNECT, host);
-		CloseDescriptor();
-		return false;
-	}
-#else
-
 	ks.setAddress(host, port);
 	if (ks.connect() < 0)
 	  {
@@ -103,8 +133,14 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	  }
 	m_iSock = ks.fd();
 	ks.release();		// KExtendedSocket no longer applicable
-#endif
-	
+        if (m_bIsSSL) {
+           d->kssl->reInitialize();
+           int rc = d->kssl->connect(m_iSock);
+           if (rc < 0) { 
+              CloseDescriptor();
+              return false;
+           }
+        }
 
 	// Since we want to use stdio on the socket,
 	// we must fdopen it to get a file pointer,
@@ -123,7 +159,8 @@ void TCPSlaveBase::CloseDescriptor()
 		fclose(fp);
 		fp=0;
 		m_iSock=-1;
-		CleanSSL();
+                if (m_bIsSSL)
+                   d->kssl->close();
 	}
 	if (m_iSock != -1) {
 		close(m_iSock);
@@ -133,14 +170,25 @@ void TCPSlaveBase::CloseDescriptor()
 
 bool TCPSlaveBase::InitializeSSL()
 {
-return false;
+   if (m_bIsSSL) {
+      if (KSSL::doesSSLWork()) {
+         d->kssl = new KSSL;
+         d->kssl->setAutoReconfig(true);
+         return true;
+      } else return false;
+   } else return false;
 }
 
 void TCPSlaveBase::CleanSSL()
 {
+   if (m_bIsSSL) {
+      delete d->kssl;
+   }
 }
 
 bool TCPSlaveBase::AtEOF()
 {
 	return feof(fp);
 }
+
+
