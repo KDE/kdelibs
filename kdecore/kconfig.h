@@ -161,7 +161,7 @@ public:
    * @param config optional config object to reuse
    * @since 3.2
    */
-  KConfig* copyTo(const QString &file, KConfig *config=0);
+  KConfig* copyTo(const QString &file, KConfig *config=0) const;
 
 protected:
 

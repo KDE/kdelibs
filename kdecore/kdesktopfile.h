@@ -225,7 +225,7 @@ public:
    * @param file the new KDesktopFile object it will save itself to.
    * @since 3.2
    */
-  KDesktopFile* copyTo(const QString &file);
+  KDesktopFile* copyTo(const QString &file) const;
 
 #ifdef KDE_NO_COMPAT
 private:

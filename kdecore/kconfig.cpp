@@ -286,7 +286,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   setGroup(oldGroup);
 }
 
-KConfig* KConfig::copyTo(const QString &file, KConfig *config)
+KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
   if (!config)
      config = new KConfig(QString::null, false, false);

@@ -318,7 +318,7 @@ QString KDesktopFile::readDocPath() const
 	return readPathEntry( "DocPath" );
 }
 
-KDesktopFile* KDesktopFile::copyTo(const QString &file)
+KDesktopFile* KDesktopFile::copyTo(const QString &file) const
 {
   KDesktopFile *config = new KDesktopFile(QString::null, false);
   KConfig::copyTo(file, config);
