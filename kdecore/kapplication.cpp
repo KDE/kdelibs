@@ -424,9 +424,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
     {
        static const KShortcut& _selectAll = KStdAccel::selectAll();
-       if (receiver && receiver->inherits("QLineEdit"))
+       QLineEdit *edit = ::qt_cast<QLineEdit *>(receiver);
+       if (edit)
        {
-          QLineEdit *edit = static_cast<QLineEdit *>(receiver);
           // We have a keypress for a lineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           KKey key(kevent);
@@ -462,9 +462,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
           }
        }
-       if (receiver && receiver->inherits("QTextEdit"))
+       QTextEdit *medit = ::qt_cast<QTextEdit *>(receiver);
+       if (medit)
        {
-          QTextEdit *medit = static_cast<QTextEdit *>(receiver);
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (_selectAll.contains(KKey(kevent)))
@@ -481,7 +481,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
           }
        }
     }
-    if( event->type() == QEvent::Show && receiver->isWidgetType())
+    if( t == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
@@ -489,10 +489,10 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 	if( w->isTopLevel() && qt_x_user_time != CurrentTime ) // CurrentTime means no input event yet
             XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
                 32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
-    }
-    if( event->type() == QEvent::Show && receiver->isWidgetType())
-    {
-	QWidget* w = static_cast< QWidget* >( receiver );
+    //}
+    //if( t == QEvent::Show && receiver->isWidgetType())
+    //{
+	//QWidget* w = static_cast< QWidget* >( receiver );
         if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
