@@ -242,6 +242,8 @@ void Window::mark(ValueImp *)
 
 bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/, bool /*recursive*/) const
 {
+  //fprintf( stderr, "Window::hasProperty: always saying true\n" );
+
   // emulate IE behaviour: it doesn't throw exceptions when undeclared
   // variables are used. Returning true here will lead to get() returning
   // 'undefined' in those cases.
@@ -383,7 +385,13 @@ Value Window::get(ExecState *exec, const UString &p) const
     return String(UString(m_part->jsStatusBarText()));
   else if (p == "document") {
     if (isSafeScript(exec))
-      return getDOMNode(m_part->document());
+    {
+      Value val = getDOMNode(m_part->document());
+      // Cache the value. This also prevents the GC from deleting the document
+      // while the window exists (important if the users sets properties on it).
+      const_cast<Window*>(this)->ObjectImp::put( exec, UString("document"), val, Internal );
+      return val;
+    }
     else
       return Undefined();
   }

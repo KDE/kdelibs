@@ -59,6 +59,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (part && listener.implementsCall()) {
 
     KJS::Interpreter *interpreter = KJSProxy::proxy( part )->interpreter();
+    ExecState *exec = interpreter->globalExec();
 
     List args;
     args.append(getDOMEvent(evt));
@@ -66,14 +67,14 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // Add the event's target element to the scope
     // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
     Object thisObj = Object::dynamicCast(getDOMNode(evt.currentTarget()));
-    List * scope = 0L;
+    List scope;
     List oldScope = listener.scope();
     //if (thisVal.type() != NullType)
     if ( !thisObj.isNull() ) {
       scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope();
-      if (scope) {
+      if ( !scope.isEmpty() ) {
         List curScope = oldScope.copy();
-        curScope.prependList( *scope );
+        curScope.prependList( scope );
         listener.setScope( curScope );
       }
     }
@@ -82,12 +83,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // Set the event we're handling in the Window object
     window->setCurrentEvent( &evt );
 
-    ExecState *exec = interpreter->globalExec();
     Value retval = listener.call(exec, thisObj, args);
     QVariant ret = ValueToVariant(exec, retval);
-    if (scope)
-    {
-      delete scope;
+    if ( !scope.isEmpty() ) {
       listener.setScope( oldScope );
     }
     window->setCurrentEvent( 0 );

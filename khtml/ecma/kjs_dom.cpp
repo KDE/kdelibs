@@ -38,6 +38,9 @@
 
 using namespace KJS;
 
+// ### This cache should be in the Window object (i.e. per part)
+// and all nodes should be marked by the window, so that the GC can't
+// delete bindings that have been created (thus losing any custom-set properties)
 QPtrDict<DOMNode> nodes(1021);
 QPtrDict<DOMNamedNodeMap> namedNodeMaps;
 QPtrDict<DOMNodeList> nodeLists;
@@ -59,6 +62,9 @@ Boolean DOMNode::toBoolean(ExecState *) const
 
 bool DOMNode::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMNode::hasProperty " << p.qstring().latin1() << endl;
+#endif
   if (p == "nodeName" || p == "nodeValue" || p == "nodeType" ||
       p == "parentNode" || p == "childNodes" || p == "firstChild" ||
       p == "lastChild" || p == "previousSibling" || p == "nextSibling" ||
@@ -227,6 +233,9 @@ Value DOMNode::tryGet(ExecState *exec, const UString &p) const
 
 void DOMNode::tryPut(ExecState *exec, const UString &p, const Value& value, int attr)
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMNode::tryPut " << p.qstring().latin1() << endl;
+#endif
   if (p == "nodeValue") {
     node.setNodeValue(value.toString(exec).value().string());
   }
@@ -319,9 +328,9 @@ Value DOMNode::getListener(int eventId) const
 	return Null();
 }
 
-List *DOMNode::eventHandlerScope() const
+List DOMNode::eventHandlerScope() const
 {
-  return 0;
+  return List::empty();
 }
 
 Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -944,7 +953,7 @@ Value KJS::getDOMNode(DOM::Node n)
   DOMNode *ret = 0;
   if (n.isNull())
     return Null();
-  else if ((ret = nodes[n.handle()]))
+  if ((ret = nodes[n.handle()]))
     return ret;
 
   switch (n.nodeType()) {

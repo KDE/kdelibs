@@ -64,7 +64,7 @@ namespace KJS {
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
     virtual String toString(ExecState *exec) const;
-    virtual List *eventHandlerScope() const;
+    virtual List eventHandlerScope() const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };

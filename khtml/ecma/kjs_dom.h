@@ -46,7 +46,7 @@ namespace KJS {
     virtual String toString(ExecState *exec) const;
     void setListener(ExecState *exec, int eventId, Value func) const;
     Value getListener(int eventId) const;
-    virtual List *eventHandlerScope() const;
+    virtual List eventHandlerScope() const;
 
   protected:
     DOM::Node node;

@@ -946,9 +946,13 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
 
 bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
+#endif
     Value tmp = tryGet(exec, propertyName);
-    if (!tmp.isNull())
-	return true;
+    if (!tmp.isA(UndefinedType)) {
+      return true;
+    }
     return recursive && DOMElement::hasProperty(exec, propertyName, true);
 }
 
@@ -960,20 +964,20 @@ String KJS::HTMLElement::toString(ExecState *exec) const
     return DOMElement::toString(exec);
 }
 
-List *KJS::HTMLElement::eventHandlerScope() const
+List KJS::HTMLElement::eventHandlerScope() const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
-  List *scope = new List();
-  scope->append(getDOMNode(element.ownerDocument()));
+  List scope;
+  scope.append(getDOMNode(element.ownerDocument()));
 
   DOM::Node form = element.parentNode();
   while (!form.isNull() && form.elementId() != ID_FORM)
     form = form.parentNode();
   if (!form.isNull())
-    scope->append(getDOMNode(form));
+    scope.append(getDOMNode(form));
 
-  scope->append(getDOMNode(element));
+  scope.append(getDOMNode(element));
   return scope;
 }
 
