@@ -289,7 +289,8 @@ signals:
 		    unsigned pos);
 
   /**
-   * Emitted after the dialog is closed, or if the word was 
+   * Emitted after the "Replace" or "Replace All" buttons of the dialog
+   * was pressed, or if the word was 
    * corrected without calling the dialog (i.e., the user previously chose
    * "Replace All" for this word). 
    *

@@ -635,6 +635,8 @@ void KSpell::checkList2 ()
   // send one word from the list to KProcIO
   // invoked first time by checkList, later by checkList3 and checkList4
 {
+  kdDebug(750) << "KS: checkList2" << endl;
+
   // send next word
   if (wlIt != wordlist->end())
     {
@@ -712,8 +714,8 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      kdDebug(750) << "cklist4: lastpos==(" << lastpos << ")" << endl;
-      wordlist->remove (wlIt);
+      kdDebug(750) << "cklist4: lastpos: " << lastpos << endl;
+      wlIt = wordlist->remove (wlIt);
       wordlist->insert (wlIt, replacement());
       wlIt++;
       break;
@@ -956,6 +958,7 @@ void KSpell::dialog2 (int result)
   //process result here
   switch (dlgresult)
     {
+
     case KS_IGNOREALL:
       ignorelist.prepend(dlgorigword.lower());
       break;
@@ -967,10 +970,13 @@ void KSpell::dialog2 (int result)
     case KS_REPLACEALL:
       replacelist.append (dlgorigword);
       replacelist.append (replacement());
+    case KS_REPLACE:
+      emit corrected (dlgorigword, replacement(), lastpos);
       break;
     }
 
-  emit corrected (dlgorigword, replacement(), lastpos);
+  
+  // emit corrected (dlgorigword, replacement(), lastpos);
   connect (this, SIGNAL (dialog3()), this, dialog3slot.ascii());
   emit dialog3();
 }
@@ -1106,7 +1112,7 @@ KSpell::modalCheck( QString& text )
 void KSpell::slotModalReady()
 {
   //kdDebug() << qApp->loopLevel() << endl;
-  kdDebug(750) << "MODAL READY" << endl;
+  //kdDebug(750) << "MODAL READY" << endl;
   
   ASSERT( m_status == Running );
   connect( this, SIGNAL( done( const QString & ) ), 
@@ -1117,7 +1123,7 @@ void KSpell::slotModalReady()
 
 void KSpell::slotModalDone( const QString &_buffer )
 {
-    kdDebug(750) << "MODAL DONE " << _buffer << endl;
+  //kdDebug(750) << "MODAL DONE " << _buffer << endl;
     modaltext = _buffer;
     cleanUp();
 
