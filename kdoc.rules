@@ -15,45 +15,45 @@ kdefx_FILES = *.h
 kdefx_LIBS = -lqt
 
 kdecore_FILES = k*.h net*.h
-kdecore_LIBS = -ldcop -lqt
+kdecore_LIBS = -lkdefx -ldcop -lqt
 
 kdeui_FILES = *.h
-kdeui_LIBS = -lkdecore -ldcop -lqt
+kdeui_LIBS = -lkdecore -lkdefx -ldcop -lqt
 
 kab_FILES = kabapi.h addressbook.h
 kab_LIBS = -lkdecore -lkdeui -lqt
 
 kfile_FILES= *.h
-kfile_LIBS= -lkio -lkdecore -lkdeui -lqt
+kfile_LIBS= -lkio -lkdecore -lkdeui -lkdefx -lqt
 
 kspell_FILES = *.h
-kspell_LIBS = -lkdecore -lkdeui -lqt
+kspell_LIBS = -lkdecore -lkdeui -lkdefx -lqt
 
 kjs_FILES = value.h types.h object.h interpreter.h operations.h ustring.h
 kjs_LIBS = -lqt
 
 khtml_FILES = *.h dom/*.h
-khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lqt
+khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lkdefx -lqt
 
 kdejava_FILES = *.h
 kdejava_PATH = khtml/java
-kdejava_LIBS = -lkdecore -lkdeui -lqt
+kdejava_LIBS = -lkdecore -lkdeui -lkdefx -lqt
 
 kio_FILES = *.h
-kio_LIBS = -lkdecore -lkdeui -ldcop -lqt
+kio_LIBS = -lkdecore -lkdeui -lkdefx -ldcop -lqt
 
 kded_FILES = *.h
 kded_PATH = kio/kded
-kded_LIBS = -lkio -lkdecore -lkdeui -ldcop -lqt
+kded_LIBS = -lkio -lkdecore -lkdeui -lkdefx -ldcop -lqt
 
 kparts_FILES = *.h
-kparts_LIBS = -lkdeui -lkdecore -lqt
+kparts_LIBS = -lkdeui -lkdefx -lkdecore -lqt
 
 kdeprint_FILES = kprinter.h kprintdialogpage.h kpreloadobject.h
-kdeprint_LIBS = -lkdeui -lkdecore -lqt
+kdeprint_LIBS = -lkdefx -lkdeui -lkdecore -lqt
 
 libkmid_FILES = *.h
 libkmid_LIBS = -lqt
 
 interfaces_FILES = */*.h
-interfaces_LIBS = -lkparts -l kdeui -lqt
+interfaces_LIBS = -lkparts -lkdeui -lqt
