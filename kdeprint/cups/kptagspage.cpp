@@ -66,7 +66,7 @@ bool KPTagsPage::isValid(QString& msg)
 			continue;
 		else if (tag.find(re) != -1)
 		{
-			msg = i18n("The tag name may not contain any space: <b>%1</b>.").arg(tag);
+			msg = i18n("The tag name must not contain any spaces: <b>%1</b>.").arg(tag);
 			return false;
 		}
 	}
