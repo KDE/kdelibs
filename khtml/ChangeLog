@@ -1,3 +1,9 @@
+2004-01-26  Dirk Mueller  <mueller@kde.org>
+
+	* khtmlview.cpp (scheduleRepaint): make scheduling not starvating repaints.
+	Fix repainting logic to optimize for reduced X server load and minimum CPU
+	usage in traversing the render tree (#72575).
+
 2004-01-25  Dirk Mueller  <mueller@kde.org>
 
         * rendering/render_object (offsetLeft/offsetTop): fix Heirmenus which expect to get the

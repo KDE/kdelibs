@@ -80,6 +80,10 @@
 
 //#define DEBUG_NO_PAINT_BUFFER
 
+//#define DEBUG_FLICKER
+
+//#define DEBUG_PIXEL
+
 #define PAINT_BUFFER_HEIGHT 128
 
 using namespace DOM;
@@ -158,6 +162,11 @@ public:
         vmode = QScrollView::AlwaysOff;
         hmode = QScrollView::AlwaysOff;
 #endif
+#ifdef DEBUG_PIXEL
+        timer.start();
+        pixelbooth = 0;
+        repaintbooth = 0;
+#endif
         scrollBarMoved = false;
         ignoreWheelEvents = false;
 	borderX = 30;
@@ -179,7 +188,7 @@ public:
         firstRelayout = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
-        updateRect = QRect();
+        updateRegion = QRegion();
         m_dialogsAllowed = true;
 #ifndef KHTML_NO_CARET
         if (m_caretViewContext) {
@@ -240,6 +249,12 @@ public:
     }
 #endif // KHTML_NO_CARET
 
+#ifdef DEBUG_PIXEL
+    QTime timer;
+    unsigned int pixelbooth;
+    unsigned int repaintbooth;
+#endif
+
     QPainter *tp;
     QPixmap  *paintBuffer;
     QPixmap  *vertPaintBuffer;
@@ -282,7 +297,7 @@ public:
     bool possibleTripleClick;
     bool dirtyLayout;
     bool m_dialogsAllowed;
-    QRect updateRect;
+    QRegion updateRegion;
     KHTMLToolTip *tooltip;
     QPtrDict<QWidget> visibleWidgets;
 #ifndef KHTML_NO_CARET
@@ -440,6 +455,19 @@ void KHTMLView::drawContents( QPainter*)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
+#ifdef DEBUG_PIXEL
+
+    if ( d->timer.elapsed() > 5000 ) {
+        qDebug( "drawed %d pixels in %d repaints the last %d milliseconds",
+                d->pixelbooth, d->repaintbooth,  d->timer.elapsed() );
+        d->timer.restart();
+        d->pixelbooth = 0;
+        d->repaintbooth = 0;
+    }
+    d->pixelbooth += ew*eh;
+    d->repaintbooth++;
+#endif
+
 //     kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
@@ -788,6 +816,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     QCursor c;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
+        if ( r && r->isText() )
+            c = KCursor::ibeamCursor();
+
         if ( mev.url.length() && m_part->settings()->changeCursor() )
             c = m_part->urlCursor();
 
@@ -2217,8 +2248,28 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
-    updateContents( d->updateRect );
-    d->updateRect = QRect();
+    QMemArray<QRect> rects = d->updateRegion.rects();
+    QRegion updateRegion;
+    if ( rects.size() )
+        updateRegion = rects[0];
+
+    for ( unsigned i = 1; i < rects.size(); ++i ) {
+        QRect obR = updateRegion.boundingRect();
+        QRegion newRegion = updateRegion.unite(rects[i]);
+        if (2*newRegion.boundingRect().height() > 3*obR.height() )
+        //if ( !obR.intersects( rects[i] ) )
+        {
+            repaintContents( obR, false );
+            updateRegion = rects[i];
+        }
+        else
+            updateRegion = newRegion;
+    }
+
+    if ( !updateRegion.isNull() )
+        repaintContents( updateRegion.boundingRect(), false );
+
+    d->updateRegion = QRegion();
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
@@ -2274,31 +2325,22 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 //     kdDebug() << "parsing " << parsing << endl;
 //     kdDebug() << "complete " << d->complete << endl;
 
-    int time;
+    int time = parsing ? 300 : ( !d->complete ? 100 : 20 );
 
-    // if complete...
-    if (d->complete)
-        // ...repaint immediately
-        time = 20;
-    else
-    {
-        if (parsing)
-            // not complete and still parsing
-            time = 300;
-        else
-            // not complete, not parsing, extend the timer if it exists
-            // otherwise, repaint immediately
-            time = d->repaintTimerId ? 400 : 20;
-    }
+#ifdef DEBUG_FLICKER
+    QPainter p;
+    p.begin( viewport() );
 
-    if (d->repaintTimerId) {
-        killTimer(d->repaintTimerId);
-        d->updateRect = d->updateRect.unite(QRect(x,y,w,h));
-    } else
-        d->updateRect = QRect(x,y,w,h);
+    int vx, vy;
+    contentsToViewport( x, y, vx, vy );
+    p.fillRect( vx, vy, w, h, Qt::red );
+    p.end();
+#endif
 
-//	kdDebug(6000) << "scheduled repaint for " << d->updateRect << endl;
-    d->repaintTimerId = startTimer( time );
+    d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
+
+    if ( !d->repaintTimerId )
+        d->repaintTimerId = startTimer( time );
 
 //     kdDebug() << "starting timer " << time << endl;
 }
