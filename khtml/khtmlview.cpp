@@ -1587,7 +1587,10 @@ void KHTMLView::focusNextPrevNode(bool next)
     }
 
     // Set focus node on the document
+    Node guard(newFocusNode);
     m_part->xmlDocImpl()->setFocusNode(newFocusNode);
+    if( newFocusNode != NULL && newFocusNode->hasOneRef()) // deleted, only held by guard
+        return;
     emit m_part->nodeActivated(Node(newFocusNode));
 }
 
@@ -1655,10 +1658,15 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
     if (!scrollTo(node->getRect()))
 	return true;
 
+    Node guard( node );
     if( node->isSelectable()) {
         // Set focus node on the document
         m_part->xmlDocImpl()->setFocusNode(node);
+        if( node != NULL && node->hasOneRef()) // deleted, only held by guard
+            return true;
         emit m_part->nodeActivated(Node(node));
+        if( node != NULL && node->hasOneRef())
+            return true;
     }
     switch( node->id()) {
         case ID_A:
