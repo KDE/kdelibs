@@ -1,7 +1,7 @@
 /* -*- C++ -*-
  * This file implements a dialog for selecting a date.
  * It uses KDatePicker.
- * 
+ *
  * the KDE addressbook.
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -28,7 +28,7 @@ DatePickerDialog::DatePickerDialog(QWidget* parent, const char* name)
   dateLabel=new DateLabel(this);
   dateLabel->setAlignment(AlignHCenter | AlignVCenter);
   initializeGeometry();
-  connect(datePicker, SIGNAL(dateSelected(QDate)), 
+  connect(datePicker, SIGNAL(dateSelected(QDate)),
 	  dateLabel, SLOT(setDate(QDate)));
   connect(cancel, SIGNAL(clicked()), SLOT(reject()));
   connect(ok, SIGNAL(clicked()), SLOT(accept()));
@@ -60,7 +60,7 @@ void DatePickerDialog::initializeGeometry()
   // -----
   setFixedSize(x, y);
   // ############################################################################
-}  
+}
 
 const QDate& DatePickerDialog::getDate()
 {
@@ -88,7 +88,7 @@ DatePickerDialog::~DatePickerDialog()
   // ############################################################################
 }
 
-DateLabel::DateLabel(QWidget* parent, const char* name, 
+DateLabel::DateLabel(QWidget* parent, const char* name,
 		     const QDate& dateToSet)
   : QLabel(parent, name),
     date(dateToSet),
@@ -96,7 +96,7 @@ DateLabel::DateLabel(QWidget* parent, const char* name,
 {
   // ############################################################################
   setAlignment(AlignVCenter | AlignCenter);
-  setBackgroundColor("peachpuff");
+  setBackgroundColor(QColor("peachpuff"));
   setFrameStyle(QFrame::Box | QFrame::Plain);
   setText(date.toString());
   // ############################################################################
