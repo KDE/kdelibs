@@ -67,7 +67,8 @@ public:
 	/**
 	 * Static play function.
 	 *
-	 * @param filename Absolute path to the filename of the sound file to play
+	 * @param filename Absolute path to the filename of the sound file to play.
+	 *                if not absolute, goes off KDEDIR/share/sounds/ (preferred)
 	 */
 	static void play(QString filename);
 
