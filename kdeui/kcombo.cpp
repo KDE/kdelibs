@@ -190,7 +190,7 @@ void KCombo::resizeEvent( QResizeEvent* e )
 {
 	QFrame::resizeEvent( e );
 	
-	QRect rect( rect() );
+	QRect rect( KCombo::rect() );
 
 	boxRect.setRight( rect.right() - 10 );
 	boxRect.setLeft( rect.right() - 24 );
@@ -276,7 +276,7 @@ int KCombo::count() const
 	return (int)listBox->count();
 }
 
-void KCombo::insertItem( const char* text, int index = -1 )
+void KCombo::insertItem( const char* text, int index)
 {
 	if( popup ) popup->insertItem( text, -1, index );
 	else {
@@ -286,7 +286,7 @@ void KCombo::insertItem( const char* text, int index = -1 )
 	}
 }
 
-void KCombo::insertItem( const QPixmap& pixmap, int index = -1 )
+void KCombo::insertItem( const QPixmap& pixmap, int index)
 {
 	if( popup ) popup->insertItem( pixmap, -1, index );
 	else listBox->insertItem( pixmap, index );
