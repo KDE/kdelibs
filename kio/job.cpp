@@ -675,6 +675,7 @@ void TransferJob::slotRedirection( const KURL &url)
     {
        m_redirectionURL = url; // We'll remember that when the job finishes
        m_redirectionList.append(url);
+       m_outgoingMetaData["ssl_was_in_use"] = m_incomingMetaData["ssl_in_use"];
        // Tell the user that we haven't finished yet
        emit redirection(this, m_redirectionURL);
     }
