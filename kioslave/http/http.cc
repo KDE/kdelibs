@@ -3200,19 +3200,19 @@ bool HTTPProtocol::readHeader()
   if ( bCanResume && m_request.offset )
     canResume();
 
-  // Do not cache pages originating from password
-  // protected sites.
-  if ( !hasCacheDirective && Authentication != AUTH_None )
+  // We don't cache certain text objects
+  if (m_strMimeType.startsWith("text/") &&
+      (m_strMimeType != "text/css"))
   {
-    m_request.bCachedWrite = false;
-    mayCache = false;
-  }
-
-  // Do not cache any text from SSL sites.
-  if (m_bIsSSL && m_strMimeType.startsWith("text/"))
-  {
-    m_request.bCachedWrite = false;
-    mayCache = false;
+     // Do not cache secure pages or pages 
+     // originating from password protected sites
+     if ( m_bIsSSL ||
+         (!hasCacheDirective && Authentication != AUTH_None)
+        ) 
+     {
+        m_request.bCachedWrite = false;
+        mayCache = false;
+     }
   }
 
   // WABA: Correct for tgz files with a gzip-encoding.
