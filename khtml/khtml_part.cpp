@@ -367,10 +367,7 @@ namespace khtml {
             m_part = part;
             m_priv = priv;
             // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
-            if ( docLoader )
-              m_cachedSheet = docLoader->requestStyleSheet(url, DOMString("foo"), QString::null);
-            else
-              m_cachedSheet = Cache::requestStyleSheet(0, url, DOMString("foo") );
+            m_cachedSheet = Cache::requestStyleSheet(0, url, DOMString("foo") );
             m_cachedSheet->ref( this );
         }
         virtual ~PartStyleSheetLoader()
