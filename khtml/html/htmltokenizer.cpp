@@ -160,6 +160,7 @@ void HTMLTokenizer::begin()
     listing = false;
     processingInstruction = false;
     script = false;
+    escaped = false;
     style = false;
     skipLF = false;
     select = false;
@@ -283,7 +284,17 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         checkScriptBuffer();
 
         char ch = src[0].latin1();
-        if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+
+        if ( escaped ) {
+            scriptCode[ scriptCodeSize++ ] = src[0];
+            ++src;
+            escaped = false;
+        }
+        else if ( script && ch == '\\' ) {
+            escaped = true;
+            ++src;
+        }
+        else if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -409,7 +420,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 else if(script && ch == '\'')
                     tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
                 else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
-                    tquote = NoQuote; // HACK!!!
+                    tquote = NoQuote;
 
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
