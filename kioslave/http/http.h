@@ -501,6 +501,7 @@ protected:
   bool m_bUseProxy;
   bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
   bool m_bIsTunneled; // Whether we have an active SSL tunnel 
+  bool m_bProxyAuthValid;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strProxyRealm;

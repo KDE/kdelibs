@@ -121,6 +121,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
 
   m_bBusy = false;
   m_bFirstRequest = false;
+  m_bProxyAuthValid = false;
 
   m_iSize = NO_SIZE;
   m_lineBufUnget = 0;
@@ -204,6 +205,7 @@ void HTTPProtocol::resetSessionSettings()
        (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
        (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
   {
+    m_bProxyAuthValid = false;
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
 
@@ -2444,6 +2446,7 @@ bool HTTPProtocol::readHeader()
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
   int currentAge = 0;
   int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
+  int maxHeaderSize = 64*1024; // 64Kb to catch DOS-attacks
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -2500,6 +2503,7 @@ bool HTTPProtocol::readHeader()
 
   bool noHeader = true;
   HTTP_REV httpRev = HTTP_Unknown;
+  int headerSize = 0;
 
   do
   {
@@ -2515,6 +2519,8 @@ bool HTTPProtocol::readHeader()
       kdDebug(7103) << "(" << m_pid << ") --empty--" << endl;
       continue;
     }
+    
+    headerSize += len;
 
     // We have a response header.  This flag is a work around for
     // servers that append a "\r\n" before the beginning of the HEADER
@@ -3072,7 +3078,7 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
 
-  } while ((len || noHeader) && (gets(buffer, sizeof(buffer)-1)));
+  } while ((len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
 
   // Now process the HTTP/1.1 upgrade
@@ -4794,6 +4800,16 @@ bool HTTPProtocol::getAuthorization()
     // out if we have a cached version and avoid a re-prompt!
     // We also do not use verify path unlike the pre-emptive
     // requests because we already know the realm value...
+    
+    if (m_bProxyAuthValid)
+    {
+      // Reset cached proxy auth
+      m_bProxyAuthValid = false;
+      KURL proxy = config()->readEntry("UseProxy");
+      m_proxyURL.setUser(proxy.user());
+      m_proxyURL.setPass(proxy.pass());
+    }
+    
     info.verifyPath = false;
     if ( m_responseCode == 407 )
     {
@@ -4897,6 +4913,7 @@ void HTTPProtocol::saveAuthorization()
   AuthInfo info;
   if ( m_prevResponseCode == 407 )
   {
+    m_bProxyAuthValid = true;
     info.url = m_proxyURL;
     info.username = m_proxyURL.user();
     info.password = m_proxyURL.pass();
