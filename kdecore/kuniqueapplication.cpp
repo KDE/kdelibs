@@ -99,7 +99,6 @@ KUniqueApplication::start()
         pid.setNum(getpid());
         appName = appName + "-" + pid;
      }
-     ( void ) dcopClient();
      dcopClient()->registerAs(appName, false );
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
@@ -122,11 +121,7 @@ KUniqueApplication::start()
      // Child
      ::close(fd[0]);
      if (s_multipleInstances)
-     {
-        QCString pid;
-        pid.setNum(getpid());
-        appName = appName + "-" + pid;
-     }
+        appName.append("-").append(QCString().setNum(getpid()));
      dc = dcopClient();
      {
         QCString regName = dc->registerAs(appName, false);
@@ -212,11 +207,7 @@ KUniqueApplication::start()
 //     DCOPClient::emergencyClose();
 //     dcopClient()->detach();
      if (s_multipleInstances)
-     {
-        QCString pid;
-        pid.setNum(fork_result);
-        appName = appName + "-" + pid;
-     }
+        appName.append("-").append(QCString().setNum(fork_result));
      ::close(fd[1]);
      for(;;)
      {
@@ -224,7 +215,7 @@ KUniqueApplication::start()
        if (n == 1) break;
        if (n == 0)
        {
-          kdError() << "KUniqueApplication: Pipe closed unexpected." << endl;
+          kdError() << "KUniqueApplication: Pipe closed unexpectedly." << endl;
           ::exit(255);
        }
        if (errno != EINTR)
