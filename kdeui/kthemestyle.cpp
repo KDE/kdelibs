@@ -25,6 +25,8 @@
 #include <qmenudata.h>
 #include <qpopupmenu.h>
 
+#include <limits.h>
+
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
 void KThemeStyle::polish(QApplication *app)
@@ -501,11 +503,11 @@ void KThemeStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
     else
         sliderLength = (sb->pageStep()*maxlen) / (sb->maxValue() -
                                                   sb->minValue() + sb->pageStep());
-    sliderMax = sliderMin + maxlen - sliderLength;
-    if (sliderLength < 12)
+    if (sliderLength < 12 || (sb->maxValue()-sb->minValue()) > INT_MAX/2)
         sliderLength = 12;
     if (sliderLength > maxlen )
         sliderLength = maxlen;
+    sliderMax = sliderMin + maxlen - sliderLength;
 }
 
 QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
