@@ -116,7 +116,7 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     else
         tmp->setAppletName( args[QString::fromLatin1("code") ] );
 
-    if( args[QString::fromLatin1("archive") ] )
+    if( !args[QString::fromLatin1("archive") ].isEmpty() )
         tmp->setJARFile( args[QString::fromLatin1("archive") ] );
 }
 

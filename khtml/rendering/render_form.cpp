@@ -264,7 +264,7 @@ QString RenderCheckBox::state()
 
 void RenderCheckBox::restoreState(const QString &state)
 {
-   static_cast<QCheckBox *>(m_widget)->setChecked(state == "on");
+   static_cast<QCheckBox *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
 }
 
 void RenderCheckBox::reset()
@@ -312,7 +312,7 @@ QString RenderRadioButton::state()
 
 void RenderRadioButton::restoreState(const QString &state)
 {
-   static_cast<QRadioButton *>(m_widget)->setChecked(state == "on");
+   static_cast<QRadioButton *>(m_widget)->setChecked(state == QString::fromLatin1("on"));
 }
 
 void RenderRadioButton::reset()
@@ -488,7 +488,7 @@ QString RenderLineEdit::encoding()
 QString RenderLineEdit::state()
 {
    // Make sure the string is not empty!
-   return static_cast<QLineEdit *>(m_widget)->text()+".";
+   return static_cast<QLineEdit *>(m_widget)->text()+'.';
 }
 
 void RenderLineEdit::restoreState(const QString &state)
@@ -975,7 +975,7 @@ QString RenderTextArea::encoding()
 QString RenderTextArea::state()
 {
    // Make sure the string is not empty!
-   return static_cast<TextAreaWidget *>(m_widget)->text()+".";
+   return static_cast<TextAreaWidget *>(m_widget)->text()+'.';
 }
 
 void RenderTextArea::restoreState(const QString &state)

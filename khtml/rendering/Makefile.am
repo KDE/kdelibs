@@ -20,7 +20,7 @@
 #KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 #-Woverloaded-virtual
 
-AM_CPPFLAGS = -DQT_NO_CAST_ASCII
+AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
 
 noinst_LTLIBRARIES = libkhtmlrender.la
 libkhtmlrender_la_SOURCES = \

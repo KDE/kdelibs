@@ -511,7 +511,7 @@ void RenderPartObject::close()
 	      if ( child->id() == ID_PARAM ) {
 		  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-		  if ( p->name().lower() == "src" || p->name().lower() == "movie" ) {
+		  if ( p->name().lower() == QString::fromLatin1("src") || p->name().lower() == QString::fromLatin1("movie") ) {
 		      url = p->value();
 		      break;
 		  }
