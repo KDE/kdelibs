@@ -183,7 +183,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   QString fileName ( _url.fileName() );
 
-  if ( ! fileName.isNull() )
+  if ( ! fileName.isNull() && _url.path().right(1) != "/" )
     {
       // Try to find it out by looking at the filename
       KMimeType * mime = KServiceTypeFactory::self()->findFromPattern( fileName );
@@ -323,7 +323,7 @@ QPixmap KMimeType::pixmap( const KURL& _url, int _group, int _force_size,
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
                                  int _force_size, int _state, QString * _path )
 {
-    KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(), 
+    KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
 				   false /*HACK*/);
     static QString unknown = QString::fromLatin1("unknown");
     QString i( mt->icon( _url, _url.isLocalFile() ));
@@ -332,7 +332,7 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
     if ( mt->icon( _url, _url.isLocalFile() ) == unknown )
 	i = KProtocolManager::self().icon( _url.protocol() );
 
-    return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state, 
+    return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state,
 					    _path, false );
 }
 
