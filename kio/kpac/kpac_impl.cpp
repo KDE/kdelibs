@@ -75,6 +75,8 @@ QString KPACImpl::proxyForURL(const KURL &url)
                 if (p >= 0)
                 {
                     proxy = proxy.mid(p + 1).stripWhiteSpace();
+                    if (proxy.left(7) != "http://")
+                        proxy = "http://" + proxy;
                     time_t badMark = blackList.readNumEntry(proxy);
                     if (badMark < time(0) - 1800)
                     {
@@ -84,6 +86,8 @@ QString KPACImpl::proxyForURL(const KURL &url)
                     }
                 }
             }
+            else if (proxy == "DIRECT")
+                return proxy;
         }
     }
     return QString::null;
