@@ -22,6 +22,7 @@
 #include "types.h"
 #include "internal.h"
 #include "error_object.h"
+#include "debugger.h"
 
 using namespace KJS;
 
@@ -53,6 +54,11 @@ ErrorObject::ErrorObject(const Object& proto, ErrorType t,
   put("name", String(n));
   put("message", String(m));
   put("line", Number(l));
+#ifdef KJS_DEBUGGER
+  Debugger *dbg = KJScriptImp::current()->debugger();
+  if (dbg)
+    put("sid", Number(dbg->sourceId()));
+#endif
 }
 
 // ECMA 15.9.2

@@ -75,12 +75,29 @@ namespace KJS {
      * Returns the line number the debugger currently has stopped at.
      * -1 if the debugger is not in a break status.
      */
-    int line() const { return l; }
+    int lineNumber() const { return l; }
     /**
      * Returns the source id the debugger currently has stopped at.
      * -1 if the debugger is not in a break status.
      */
     int sourceId() const { return sid; }
+    /**
+     * Sets a breakpoint in the first statement where line lies in between
+     * the statements range. Returns true if sucessfull, false if no
+     * matching statement could be found.
+     */
+    bool setBreakpoint(int id, int line);
+    bool deleteBreakpoint(int id, int line);
+    void clearAllBreakpoints(int id=-1);
+    /**
+     * Returns the value of ident out of the current context in string form
+     */
+    UString varInfo(const UString &ident);
+    /**
+     * Set variable ident to value. Returns true if successful, false if
+     * the specified variable doesn't exist or isn't writable.
+     */
+    bool setVar(const UString &ident, const KJSO &value);
 
   protected:
     /**
@@ -106,7 +123,7 @@ namespace KJS {
 
   private:
     void reset();
-    bool hit(int line);
+    bool hit(int line, bool breakPoint);
     void setSourceId(int i) { sid = i; }
 
     KJScript *eng;

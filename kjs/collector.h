@@ -22,7 +22,7 @@
 
 //
 // Define this > 0 if you want to limit the number of objects that can
-// be allocated. If this number is reached an "Out of memory" error
+// be allocated. -1 otherwise. If this number is reached an "Out of memory" error
 // will be thrown. Execution is not guaranteed to stop immediately but
 // on one of the next statements.
 //

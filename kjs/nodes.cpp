@@ -36,8 +36,10 @@ using namespace KJS;
 
 #ifdef KJS_DEBUGGER
 #define KJS_BREAKPOINT if (!hitStatement()) return Completion(Normal);
+#define KJS_ABORTPOINT if (abortStatement()) return Completion(Normal);
 #else
 #define KJS_BREAKPOINT
+#define KJS_ABORTPOINT
 #endif
 
 int   Node::nodeCount = 0;
@@ -98,9 +100,48 @@ void StatementNode::setLoc(int line0, int line1)
 bool StatementNode::hitStatement()
 {
   if (KJScriptImp::current()->debugger())
-    return KJScriptImp::current()->debugger()->hit(firstLine());
+    return KJScriptImp::current()->debugger()->hit(firstLine(), breakPoint);
   else
     return true;
+}
+
+// return true if the debugger wants us to stop at this point
+bool StatementNode::abortStatement()
+{
+  if (KJScriptImp::current()->debugger() &&
+      KJScriptImp::current()->debugger()->mode() == Debugger::Stop)
+      return true;
+
+  return false;
+}
+
+bool Node::setBreakpoint(Node *firstNode, int id, int line, bool set)
+{
+  while (firstNode) {
+    if (firstNode->setBreakpoint(id, line, set) && line >= 0) // line<0 for all
+      return true;
+    firstNode = firstNode->next;
+  }
+  return false;
+}
+
+/**
+ * Try to set or delete a breakpoint depending on the value of set.
+ * The call will return true if successful, i.e. if line is inside
+ * of the statement's range. Additionally, a breakpoint had to
+ * be set already if you tried to delete with set=false.
+ */
+bool StatementNode::setBreakpoint(int id, int line, bool set)
+{
+  // in our source unit and line range ?
+  if (id != sid || ((line < l0 || line > l1) && line >= 0))
+    return false;
+
+  if (!set && !breakPoint)
+    return false;
+
+  breakPoint = set;
+  return true;
 }
 #endif
 
@@ -781,6 +822,7 @@ Completion StatListNode::execute()
 {
   if (!list) {
     Completion c = statement->execute();
+    KJS_ABORTPOINT
     Imp *ex = KJScriptImp::exception();
     if (ex) {
       KJScriptImp::setException(0L);
@@ -790,9 +832,11 @@ Completion StatListNode::execute()
   }
 
   Completion l = list->execute();
+  KJS_ABORTPOINT
   if (l.complType() != Normal)
     return l;
   Completion e = statement->execute();
+  KJS_ABORTPOINT
   Imp *ex = KJScriptImp::exception();
   if (ex) {
     KJScriptImp::setException(0L);

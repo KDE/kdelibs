@@ -32,6 +32,7 @@ namespace KJS {
   class KJSO;
   class Object;
   class Imp;
+  class List;
   class KJScriptImp;
 #ifdef KJS_DEBUGGER
   class Debugger;
@@ -92,6 +93,12 @@ public:
    * @param code is an Unicode string containing the code to be executed.
    */
   bool evaluate(const KJS::UString &code);
+  /**
+   * Call the specified function directly, optionally passing args as a
+   * list of arguments. Return value and treatment of errors is analog
+   * to the evaluate() calls.
+   */
+  bool call(const KJS::UString &func, const KJS::List &args);
   /**
    * Clear the interpreter's memory. Otherwise, function declarations
    * and global variables will be remembered after each invokation of

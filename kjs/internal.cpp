@@ -600,6 +600,10 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     errLine = err.get("line").toInt32();
     errMsg = err.get("name").toString().value() + ". ";
     errMsg += err.get("message").toString().value();
+#ifdef KJS_DEBUGGER
+    if (dbg)
+      dbg->setSourceId(err.get("sid").toInt32());
+#endif
     context->clearError();
   } else {
     errType = 0;
@@ -624,6 +628,38 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   return !errType;
 }
 
+bool KJScriptImp::call(const UString &func, const List &args)
+{
+  init();
+  Context *ctx = Context::current();
+  const List *chain = ctx->pScopeChain();
+  ListIterator scope = chain->begin();
+  while (scope != chain->end()) {
+    if (scope->hasProperty(func))
+	break;
+    scope++;
+  }
+  if (scope == chain->end()) {
+#ifndef NDEBUG
+      fprintf(stderr, "couldn't resolve function name %s. call() failed\n",
+	      func.ascii());
+#endif
+      return false;
+  }
+
+  KJSO v = scope->get(func);
+  if (!v.isA(ConstructorType)) {
+#ifndef NDEBUG
+      fprintf(stderr, "%s is not a function. call() failed.\n", func.ascii());
+#endif
+      return false;
+  }
+  ConstructorImp *ctor = static_cast<ConstructorImp*>(v.imp());
+  Null nil; /* TODO */
+  ctor->executeCall(nil.imp(), &args);
+  return !ctx->hadError();
+}
+
 #ifdef KJS_DEBUGGER
 void KJScriptImp::attachDebugger(Debugger *d)
 {
@@ -639,6 +675,13 @@ void KJScriptImp::attachDebugger(Debugger *d)
 
   dbg = d;
 }
+
+bool KJScriptImp::setBreakpoint(int id, int line, bool set)
+{
+  init();
+  return Node::setBreakpoint(firstNode, id, line, set);
+}
+
 #endif
 
 bool PropList::contains(const UString &name)

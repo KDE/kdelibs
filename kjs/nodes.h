@@ -71,6 +71,10 @@ namespace KJS {
     virtual KJSO evaluate() = 0;
     int lineNo() const { return line; }
     static void deleteAllNodes(Node **first, ProgramNode **prog);
+#ifdef KJS_DEBUGGER
+    static bool setBreakpoint(Node *firstNode, int id, int line, bool set);
+    virtual bool setBreakpoint(int, int, bool) { return false; }
+#endif
   protected:
     KJSO throwError(ErrorType e, const char *msg);
   private:
@@ -85,12 +89,14 @@ namespace KJS {
   class StatementNode : public Node {
   public:
 #ifdef KJS_DEBUGGER
-    StatementNode() : l0(-1), l1(-1), sid(-1) { }
+    StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false) { }
     void setLoc(int line0, int line1);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
     int sourceId() const { return sid; }
     bool hitStatement();
+    bool abortStatement();
+    virtual bool setBreakpoint(int id, int line, bool set);
 #endif
     virtual Completion execute() = 0;
     void pushLabel(const UString *id) {
@@ -103,6 +109,7 @@ namespace KJS {
 #ifdef KJS_DEBUGGER
     int l0, l1;
     int sid;
+    bool breakPoint;
 #endif
   };
 
@@ -456,13 +463,12 @@ namespace KJS {
     Node *expr1, *expr2;
   };
 
-  class StatListNode : public Node {
+  class StatListNode : public StatementNode {
   public:
     StatListNode(StatementNode *s) : statement(s), list(0L) { }
     StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
     Completion execute();
   private:
-    KJSO evaluate() { return Null(); }
     StatementNode *statement;
     StatListNode *list;
   };

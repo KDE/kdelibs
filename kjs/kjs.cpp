@@ -65,6 +65,11 @@ bool KJScript::evaluate(const KJSO &thisV,
   return rep->evaluate((UChar*)code, length, thisV.imp());
 }
 
+bool KJScript::call(const KJS::UString &func, const List &args)
+{
+  return rep->call(func, args);
+}
+
 void KJScript::clear()
 {
   rep->clear();

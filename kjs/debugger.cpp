@@ -21,6 +21,7 @@
 
 #include "debugger.h"
 #include "kjs.h"
+#include "ustring.h"
 
 using namespace KJS;
 
@@ -82,19 +83,79 @@ bool Debugger::stopEvent()
 
 void Debugger::reset()
 {
-    l = -1;
+  l = -1;
 }
 
 int Debugger::freeSourceId() const
 {
-    return eng ? eng->rep->sourceId()+1 : -1;
+  return eng ? eng->rep->sourceId()+1 : -1;
+}
+
+bool Debugger::setBreakpoint(int id, int line)
+{
+  if (!eng)
+    return false;
+  return eng->rep->setBreakpoint(id, line, true);
+}
+
+bool Debugger::deleteBreakpoint(int id, int line)
+{
+  if (!eng)
+    return false;
+  return eng->rep->setBreakpoint(id, line, false);
+}
+
+void Debugger::clearAllBreakpoints(int id)
+{
+  if (!eng)
+    return;
+  eng->rep->setBreakpoint(id, -1, false);
+}
+
+UString Debugger::varInfo(const UString &ident)
+{
+  if (!eng)
+    return UString();
+  const List *chain = Context::current()->pScopeChain();
+  ListIterator scope = chain->begin();
+  while (scope != chain->end()) {
+    if (scope->hasProperty(ident)) {
+      KJSO val = scope->get(ident);
+      return UString(val.imp()->typeInfo()->name) + ":" +
+	val.toString().value();
+    }
+    scope++;
+  }
+  return UString();
+}
+
+bool Debugger::setVar(const UString &ident, const KJSO &value)
+{
+  if (!eng)
+    return false;
+  const List *chain = Context::current()->pScopeChain();
+  ListIterator scope = chain->begin();
+  while (scope != chain->end()) {
+    if (scope->hasProperty(ident)) {
+      if (!scope->canPut(ident))
+	return false;
+      scope->put(ident, value);
+      return true;
+    }
+    scope++;
+  }
+  // didn't find variable
+  return false;
 }
 
 // called from the scripting engine each time a statement node is hit.
-bool Debugger::hit(int line)
+bool Debugger::hit(int line, bool breakPoint)
 {
   l = line;
-  if (!eng || mode() == Continue || mode() == Disabled)
+  if (!eng)
+    return true;
+
+  if (!breakPoint && ( mode() == Continue || mode() == Disabled ) )
       return true;
 
   bool ret = stopEvent();

@@ -286,6 +286,7 @@ namespace KJS {
     void attachDebugger(Debugger *d);
     Debugger *debugger() const { return dbg; }
     int sourceId() const { return sid; }
+    bool setBreakpoint(int id, int line, bool set);
 #endif
   private:
     /**
@@ -295,6 +296,7 @@ namespace KJS {
     void clear();
     bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
 		  bool onlyCheckSyntax = false);
+    bool call(const UString &func, const List &args);
   public:
     ProgramNode *progNode;
     Node *firstNode;
