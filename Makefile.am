@@ -27,7 +27,7 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 AUTOMAKE_OPTIONS = foreign 1.4
 
 messages:
-	test -d po
+	test -h po
 	rm -rf po.backup
 	mkdir po.backup
 	for i in `ls -1 po/*.pot | sed -e "s#po/##"`; do \
@@ -35,7 +35,7 @@ messages:
 	  cp po/$$i po.backup/backup_$$i ;  \
 	done
 	$(XGETTEXT) -C -ktranslate -ki18n */*.cpp */*.cc && mv messages.po po/kdelibs.pot
-	$(XGETTEXT) -C -ktranslate -ki18n po/texts.cpp && mv messages.po po/kde.pot
+	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po po/kde.pot
 	for  i in `ls -1 po/*.pot | sed -e "s#po/##"`; do \
 	  grep -v "POT-Creation-Date:" po/$$i > temp.pot ;\
 	  if diff -q temp.pot po.backup/$$i; then \
@@ -47,7 +47,6 @@ messages:
 	done
 	rm -f temp.pot
 	rm -rf po.backup
-	(cd po && $(MAKE) -f Makefile.am merge)
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
 
