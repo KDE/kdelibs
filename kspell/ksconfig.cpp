@@ -215,7 +215,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	////
-	tmpQPushButton->setEnabled (FALSE);
+	  //tmpQPushButton->setEnabled (FALSE);
 	layout->addWidget (tmpQPushButton, rhelp, 6);
 	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
 
@@ -575,6 +575,8 @@ void KSpellConfig::sPathDictionary(bool on)
 
 void KSpellConfig::sHelp()
 {
+  QString file ("kspell/ksconfig.html"), label ("");
+  kapp->invokeHTMLHelp (file, label);
 }
 /*
 void KSpellConfig::textChanged1 (const char *s)
