@@ -81,7 +81,7 @@ KService::KService( const QString & _fullpath )
 }
 
 KService::KService( KDesktopFile *config )
- : KSycocaEntry( config->filename())
+ : KSycocaEntry( config->fileName())
 {
   init(config);
 }
@@ -268,7 +268,7 @@ QPixmap KService::pixmap( KIcon::Group _group, int _force_size, int _state, QStr
 
       iconLoader->addExtraDesktopThemes();
   }
-  
+
   return iconLoader->loadIcon( m_strIcon, _group, _force_size, _state, _path );
 }
 
@@ -294,7 +294,7 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
-    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName 
+    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName
     >> d->categories;
 
   m_bAllowAsDefault = def;
@@ -327,7 +327,7 @@ void KService::save( QDataStream& s )
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName 
+    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName
     << d->categories;
 }
 
@@ -414,7 +414,7 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( d->categories );
   else if ( _name == "Keywords")
     return QVariant( m_lstKeywords );
-  
+
   // Ok we need to convert the property from a QString to its real type.
   // First we need to ask KServiceTypeFactory what the type of this property
   // is supposed to be.
