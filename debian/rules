@@ -28,7 +28,8 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa
+	--includedir=/usr/include/kde --without-ssl --without-alsa \
+	--disable-cups
 
 	$(MAKE)
 
@@ -95,6 +96,7 @@ binary-arch:  build
 		--includedir=/usr/include/kde --enable-cups
 	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
 	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
 	install -d debian/libkmid-alsa/usr/share/lintian/overrides
 	install -d debian/libarts-alsa/usr/share/lintian/overrides
 	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
