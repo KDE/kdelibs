@@ -21,7 +21,7 @@
 
 #include <stdlib.h>        // for atoi()
 #include <qstring.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qregexp.h>            // for the word ranges
 
 
@@ -45,9 +45,7 @@
  * python. See the @ref word and @ref remword functions for more detail.
  *
  * This class contains no data members of it own. All strings are cut
- * on the fly and returned as new qstrings/qstrlists. While the actual
- * arguments are not const either, they are not touched in any way, and
- * probably should be const.
+ * on the fly and returned as new qstrings/qstringlists. 
  *
  * Quick example on how to use:
  *
@@ -71,17 +69,11 @@
 class KStringHandler
 {
 public: 
-    /** Default (empty) constructor */
-    KStringHandler();
-    
-    /** Default destructor */
-    ~KStringHandler();
-
     /** Returns the nth word in the string if found
       * Returns a EMPTY (not null) string otherwise.
       * Note that the FIRST index is 0
       */
-    QString        word( QString &text , uint pos );
+    static QString        word( const QString &text , uint pos );
 
     /** Returns a range of words from that string.
       * Ie:
@@ -93,19 +85,19 @@ public:
       *
       * If you grok python, you're set.
       */
-    QString        word( QString &text , const char *range );
+    static QString        word( const QString &text , const char *range );
 
     /** Inserts a word into the string, and returns
       * a new string with the word included. the first
       * index is zero (0)
       */
-    QString        insword( QString &text , QString &word , uint pos );
+    static QString        insword( const QString &text , const QString &word , uint pos );
 
     /** Replaces a word in the string, and returns
       * a new string with the word included. the first
       * index is zero (0)
       */
-    QString        setword( QString &text , QString &word , uint pos );
+    static QString        setword( const QString &text , const QString &word , uint pos );
 
     /** Removes a word or ranges of words from the string,
       * and returns a new string. The ranges definitions
@@ -116,38 +108,38 @@ public:
       * "0:3"    removes the first to fourth words
       * ":3"    removes everything up to the fourth word
       */
-    QString        remrange( QString &text , const char *range );
+    static QString        remrange( const QString &text , const char *range );
 
 
     /** Removes a word at the given index, and returns a
       * new string. The first index is zero (0)
       */
-    QString        remword( QString &text , uint pos );
+    static QString        remword( const QString &text , uint pos );
 
     /** Removes a matching word from the string, and returns
       * a new string. Note that only ONE match is removed.
       */
-    QString        remword( QString &text , QString &word );
+    static QString        remword( const QString &text , const QString &word );
 
     /** Capitalizes each word in the string
       * "hello there" becomes "Hello There"        (string)
       */
-    QString        capwords( QString &text );
+    static QString        capwords( const QString &text );
 
     /** Capitalizes each word in the list
       * [hello, there] becomes [Hello, There]    (list)
       */
-    QStrList    capwords( QStrList &list );
+    static QStringList    capwords( const QStringList &list );
 
     /** Reverses the order of the words in a string
       * "hello there" becomes "there hello"        (string)
       */
-    QString        reverse( QString &text );
+    static QString        reverse( const QString &text );
 
     /** Reverses the order of the words in a list
       * [hello, there] becomes [there, hello]    (list)
       */
-    QStrList    reverse( QStrList &list );
+    static QStringList    reverse( const QStringList &list );
 
     /** These string justify a string along x, and returns a
       * string at least 'width' characters wide, and justified.
@@ -157,14 +149,15 @@ public:
       * rjust    Right justify
       * center    Centers
       */
-    QString        ljust( QString &text , uint width );
-    QString        rjust( QString &text , uint width );
-    QString        center( QString &text , uint width );
+    static QString        ljust( const QString &text , uint width );
+    static QString        rjust( const QString &text , uint width );
+    static QString        center( const QString &text , uint width );
 
     /** Returns a list with each word */
-    QStrList    split( QString &text , const char *sep = " " );
+    static QStringList    split( const QString &text , const char *sep = " " );
+
     /** Returns a new string built from the list */
-    QString        join( QStrList &list , const char *sep = " " );
+    static QString        join( const QStringList &list , const char *sep = " " );
 };
 
 #endif

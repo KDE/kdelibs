@@ -19,28 +19,24 @@
 
 #include "kstringhandler.h"
 
-KStringHandler::KStringHandler() {}
-KStringHandler::~KStringHandler() {}
-
-
-QString KStringHandler::word( QString &text , uint pos )
+QString KStringHandler::word( const QString &text , uint pos )
 {
-    QStrList list = split( text , " " );
-    QString tmp = "";
+    QStringList list = split( text , " " );
 
     if ( pos < list.count() )
-        tmp = list.at( pos );
+        return list[ pos ];
 
-    return tmp;
+    return "";
 }
-QString KStringHandler::word( QString &text , const char *range )
+
+QString KStringHandler::word( const QString &text , const char *range )
 {
     // Format in: START:END
     // Note index starts a 0 (zero)
     //
     // 0:        first word to end
     // 1:3        second to fourth words
-    QStrList list = split( text , " " );
+    QStringList list = split( text , " " );
     QString tmp = "";
     QString r = range;
 
@@ -85,75 +81,76 @@ QString KStringHandler::word( QString &text , const char *range )
     //
     // Extract words
     //
-    while ( pos <= cnt )
-    {
-        if ((uint) pos >= list.count() )
-            break;
+    int wordsToExtract = cnt-pos+1;
+    QStringList::Iterator it = list.at( pos);
 
-        tmp += list.at(pos);
-        tmp += " ";
-        pos++;
+    while ( (it != list.end()) && (wordsToExtract-- > 0))
+    {
+       tmp += *it;
+       tmp += " ";
+       it++;
     }
 
-    return (tmp = tmp.stripWhiteSpace());
+    return tmp.stripWhiteSpace();
 }
 
 //
 // Insertion and removal routines
 //
-QString KStringHandler::insword( QString &text , QString &word , uint pos )
+QString KStringHandler::insword( const QString &text , const QString &word , uint pos )
 {
     QString tmp = "";
 
     if ( text.isEmpty() )
-        return (tmp = word);
+        return word;
 
     if ( word.isEmpty() )
-        return (tmp = text);
+        return text;
 
     // Split words and add into list
-    QStrList list = split( text );
+    QStringList list = split( text );
 
     if ( pos >= list.count() )
         list.append( word );
     else
-        list.insert( pos , word );
+        list.insert( list.at(pos) , word );
 
     // Rejoin
-    return (tmp = join( list ));
+    return join( list );
 }
-QString KStringHandler::setword( QString &text , QString &word , uint pos )
+
+QString KStringHandler::setword( const QString &text , const QString &word , uint pos )
 {
     QString tmp = "";
 
     if ( text.isEmpty() )
-        return (tmp = word);
+        return word;
 
     if ( word.isEmpty() )
-        return (tmp = text);
+        return text;
 
     // Split words and add into list
-    QStrList list = split( text );
+    QStringList list = split( text );
 
     if ( pos >= list.count() )
         list.append( word );
     else
     {
-        list.remove( pos );
-        list.insert( pos , word );
+        list.insert( list.remove( list.at(pos) ) , word );
     }
 
     // Rejoin
-    return (tmp = join( list ));
+    return join( list );
 }
-QString KStringHandler::remrange( QString &text , const char *range )
+
+QString KStringHandler::remrange( const QString &text , const char *range )
 {
     // Format in: START:END
     // Note index starts a 0 (zero)
     //
     // 0:        first word to end
     // 1:3        second to fourth words
-    QStrList list = split( text , " " );
+    QStringList list = split( text , " " );
     QString tmp = "";
     QString r = range;
 
@@ -192,28 +189,22 @@ QString KStringHandler::remrange( QString &text , const char *range )
     }
     else
     {
-        return (tmp = text); // not found/implemented
+        return text; // not found/implemented
     }
 
     //
     // Remove that range of words
     //
-    while ( pos <= cnt )
-    {
-        if ((uint) pos >= list.count() )
-            break;
-        else
-        {
-            list.remove( pos );
-            cnt--; // the list size changes after you remove an item,
-                   // so you have to decr this to stay in the right
-                   // place inside the list;
-        }
-    }
+    int wordsToDelete = cnt-pos+1;
+    QStringList::Iterator it = list.at( pos);
 
-    return (tmp = join( list));
+    while ( (it != list.end()) && (wordsToDelete-- > 0))
+       it = list.remove( it );
+
+    return join( list);
 }
-QString KStringHandler::remword( QString &text , uint pos )
+
+QString KStringHandler::remword( const QString &text , uint pos )
 {
     QString tmp = "";
 
@@ -221,15 +212,16 @@ QString KStringHandler::remword( QString &text , uint pos )
         return tmp;
 
     // Split words and add into list
-    QStrList list = split( text );
+    QStringList list = split( text );
 
     if ( pos < list.count() )
-        list.remove( pos );
+        list.remove( list.at( pos ) );
 
     // Rejoin
-    return (tmp = join( list ));
+    return join( list );
 }
-QString KStringHandler::remword( QString &text , QString &word )
+
+QString KStringHandler::remword( const QString &text , const QString &word )
 {
     QString tmp = "";
 
@@ -237,54 +229,48 @@ QString KStringHandler::remword( QString &text , QString &word )
         return tmp;
 
     if ( word.isEmpty() )
-        return (tmp = text);
+        return text;
 
     // Split words and add into list
-    QStrList list = split( text );
+    QStringList list = split( text );
 
-    int pos = -1;
+    QStringList::Iterator it = list.find(word);
 
-    if ( (pos = list.find(word)) != -1 )
-        list.remove( pos );
+    if (it != list.end())
+       list.remove( it );
 
     // Rejoin
-    return (tmp = join( list ));
+    return join( list );
 }
 
 //
 // Capitalization routines
 //
-QString KStringHandler::capwords( QString &text )
+QString KStringHandler::capwords( const QString &text )
 {
     QString tmp = "";
-    QString word;
 
     if ( text.isEmpty() )
         return tmp;
 
-    QStrList list = split( text );
+    QStringList list = split( text );
     
-    for ( uint i = 0 ; i < list.count() ; i++ )
-    {
-        word = list.at(i);
-        word = word.left(1).upper() + word.remove(0,1);
-
-        tmp += word + " ";
-    }
-
-    return (tmp = tmp.stripWhiteSpace());
+    return join( capwords( split( text )));
 }
-QStrList KStringHandler::capwords( QStrList &list )
+
+QStringList KStringHandler::capwords( const QStringList &list )
 {
-    QStrList tmp;
+    QStringList tmp;
     QString word;
 
     if ( list.count() == 0 )
         return tmp;
 
-    for ( uint i = 0 ; i < list.count() ; i++ )
+    for ( QStringList::ConstIterator it= list.begin();
+          it != list.end();
+          it++)
     {
-        word = list.at(i);
+        word = *it;
         word = word.left(1).upper() + word.remove(0,1);
 
         tmp.append( word ); // blank list to start with
@@ -296,30 +282,31 @@ QStrList KStringHandler::capwords( QStrList &list )
 //
 // Reverse routines
 //
-QString KStringHandler::reverse( QString &text )
+QString KStringHandler::reverse( const QString &text )
 {
     QString tmp;
 
     if ( text.isEmpty() )
         return tmp;
 
-    QStrList list;
+    QStringList list;
     list = split( text );
     list = reverse( list );
 
-    tmp = join( list );
-
-    return tmp;
+    return join( list );
 }
-QStrList KStringHandler::reverse( QStrList &list )
+
+QStringList KStringHandler::reverse( const QStringList &list )
 {
-    QStrList tmp;
+    QStringList tmp;
 
     if ( list.count() == 0 )
         return tmp;
 
-    for ( uint i = 0 ; i < list.count() ; i++ )
-        tmp.insert( 0 , list.at(i) );
+    for ( QStringList::ConstIterator it= list.begin();
+          it != list.end();
+          it++)
+        tmp.prepend( *it );
 
     return tmp;
 }
@@ -327,7 +314,7 @@ QStrList KStringHandler::reverse( QStrList &list )
 //
 // Left, Right, Center justification
 //
-QString KStringHandler::ljust( QString &text , uint width )
+QString KStringHandler::ljust( const QString &text , uint width )
 {
     QString tmp = text;
     tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
@@ -340,7 +327,8 @@ QString KStringHandler::ljust( QString &text , uint width )
 
     return tmp;
 }
-QString KStringHandler::rjust( QString &text , uint width )
+
+QString KStringHandler::rjust( const QString &text , uint width )
 {
     QString tmp = text;
     tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
@@ -353,7 +341,8 @@ QString KStringHandler::rjust( QString &text , uint width )
 
     return tmp;
 }
-QString KStringHandler::center( QString &text , uint width )
+
+QString KStringHandler::center( const QString &text , uint width )
 {
     // Center is slightly different, in that it will add
     // spaces to the RIGHT side (left-justified) before
@@ -384,31 +373,34 @@ QString KStringHandler::center( QString &text , uint width )
 //
 // Joins words in a list together
 //
-QString KStringHandler::join( QStrList &list , const char *sep )
+QString KStringHandler::join( const QStringList &list , const char *sep )
 {
     QString tmp = "";
 
     if ( list.count() == 0 )
         return tmp;
     
+    QStringList::ConstIterator last = list.fromLast();
     // Add all items with a sep except the last one
-    for ( uint i = 0 ; i < list.count() - 1 ; i++ )
+    for ( QStringList::ConstIterator it = list.begin();
+          it != last;
+          it++)
     {
-        tmp += list.at( i );
+        tmp += *it;
         tmp += sep;
     }
 
     // Add the last item
-    tmp += list.at( list.count() - 1 );
+    tmp += *last;
     return tmp;
 }
 
 //
 // Splits words in a string apart
 //
-QStrList KStringHandler::split( QString &text , const char *sep )
+QStringList KStringHandler::split( const QString &text , const char *sep )
 {
-    QStrList tmp;
+    QStringList tmp;
     
     if ( text.isEmpty() )
         return tmp;
