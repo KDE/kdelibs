@@ -196,12 +196,12 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*t
     return 0;
 }
 
-DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v = 0 )
+DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 {
     return new DocumentImpl(this, 0, v);
 }
 
-HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v = 0 )
+HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
     DOMString nullstr;
     int exceptioncode = 0;
