@@ -782,7 +782,7 @@ bool CSSParser::parseValue( int propId, bool important )
                     styleElement );
                 valueList->next();
 #ifdef CSS_DEBUG
-                kdDebug( 6080 ) << "image, url=" << uri.string() << " base=" << styleElement->baseURL().string() << endl;
+                kdDebug( 6080 ) << "image, url=" << uri.string() << " base=" << styleElement->baseURL().url() << endl;
 #endif
             }
         }
@@ -1000,6 +1000,9 @@ bool CSSParser::parseValue( int propId, bool important )
     {
 #ifdef CSS_DEBUG_BCKGR
         kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
+#endif
+#ifndef NDEBUG
+        uint old_numParsed = numParsedProperties;
 #endif
         // The CSS 2.1 specs require the browser to set all possible expanded
         // properties to their initial value before the right side is parsed
@@ -1286,7 +1289,7 @@ bool CSSParser::parseContent( int propId, bool important )
             parsedValue = new CSSImageValueImpl(
                 DOMString(KURL( styleElement->baseURL(), value.string()).url() ), styleElement );
 #ifdef CSS_DEBUG
-            kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().string() << endl;
+            kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( ) << endl;
 #endif
         } else if ( val->unit == Value::Function ) {
             // attr( X )
@@ -1326,6 +1329,7 @@ bool CSSParser::parseShape( int propId, bool important )
     Value *value = valueList->current();
     ValueList *args = value->function->args;
     QString fname = qString( value->function->name ).lower();
+    qDebug( "parseShape: fname: %d", fname.latin1() );
     if ( fname != "rect(" || !args )
         return false;
 
@@ -1719,6 +1723,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
 
 
 static inline int yyerror( const char *str ) {
+//    assert( 0 );
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "CSS parse error " << str << endl;
 #else
