@@ -457,6 +457,9 @@ bool KDockWidget::event( QEvent *event )
 
 KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos, int spliPos, QPoint pos, bool check, int tabIndex )
 {
+  if (this == target)
+    return 0L;  // docking to itself not possible
+
   bool succes = true; // tested flag
 
   // check allowed this dock submit this operations
