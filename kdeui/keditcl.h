@@ -128,7 +128,6 @@ public:
 
 protected:
     void focusInEvent( QFocusEvent *);
-    void resizeEvent(QResizeEvent *);
 
 private:
 
@@ -171,7 +170,6 @@ public:
 protected:
 
     void focusInEvent( QFocusEvent *);
-    void resizeEvent ( QResizeEvent *);
 
 private:
 
@@ -290,9 +288,9 @@ public:
 
     /** Presents a search dialog to the user
      */
-    void 	Search();
+    void 	search();
 
-    /** Repeasts the last search specified on the search dialog. If the user
+    /** Repeats the last search specified on the search dialog. If the user
         hasn't searched for anything until now, this method will simply return
 	without doing anything.
     */
@@ -300,7 +298,7 @@ public:
 
     /**  Presents a Search and Replace Dialog to the User.
      */
-    void 	Replace();
+    void 	replace();
 
     /** Presents a "Goto Line" dialog to the User
      */
@@ -322,7 +320,7 @@ public:
 
     /** Returns the Indent Mode. TRUE = Indent  mode on, FALSE = Indent mode off.
      */
-    bool        AutoIndentMode(){ return autoIndentMode; };
+    bool        autoIndentMode(){ return autoIndMode; };
 
     /** Install a Popup Menue for KEdit. The Popup Menu will be activated on
         a right mouse button press event.
@@ -490,7 +488,7 @@ private:
     QString     current_directory;
 
     bool 	modified;
-    bool 	autoIndentMode;
+    bool 	autoIndMode;
     bool 	can_replace;
     bool	killing;
     bool 	killtrue;
