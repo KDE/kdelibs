@@ -78,9 +78,7 @@ class QStrList;
  *
  * \endcode
  *
- * @warning This interface is only present since KDE 3.2.  Do _NOT_
- *          use if you want your app to work on previous versions of
- *          KDE.
+ * @since 3.2
  *
  * @author Dominique Devriese <devriese@kde.org>
  */
