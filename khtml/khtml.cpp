@@ -25,6 +25,8 @@
 #include <qstack.h>
 #include <qdragobject.h>
 
+#include <kapp.h>
+
 #include <kio_job.h>
 #include <kio_cache.h>
 #include <kio_error.h>
@@ -209,6 +211,9 @@ void KHTMLWidget::clear()
     findNode = 0;
 
     resizeContents(clipper()->width(), clipper()->height());
+
+    m_strRedirectUrl = QString::null;
+    m_delayRedirect = 0;
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
@@ -958,7 +963,12 @@ void KHTMLWidget::end()
   else
       setContentsPos( m_iNextXOffset, m_iNextYOffset );
 
-
+  if(!m_strRedirectUrl.isEmpty())
+  {
+      QTimer::singleShot(1000*m_delayRedirect, this, SLOT(slotRedirect()));
+      return;
+  }
+  
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
@@ -1008,13 +1018,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
     {
 	QPainter p(viewport());
 
-	// ### use kapp->palette().normal().brush(QColorGroup::Background)
-	if(_settings) 
-	    p.fillRect(r.x(), r.y(), ew, eh, _settings->bgColor);
-	else if(defaultSettings)
-	    p.fillRect(r.x(), r.y(), ew, eh, defaultSettings->bgColor);
-	else
-	    p.fillRect(r.x(), r.y(), ew, eh, Qt::lightGray);
+	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
     //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
@@ -1236,15 +1240,17 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // drag of URL
     if(pressed && !m_strSelectedURL.isEmpty())
     {
+#if 0
+	// ### broken...
 	QStrList uris;
 	KURL u(completeURL(m_strSelectedURL));
 	uris.append(u.url().ascii());
 	QDragObject *d = new QUriDrag(uris, this);
-	printf("filename = %s\n", locate( "data", "khtml/pics/khtml_dnd.png").ascii());
 	QPixmap p(locate( "data", "khtml/pics/khtml_dnd.png"));
 	if(p.isNull()) printf("null pixmap\n");
 	d->setPixmap(p);
-	d->dragCopy();
+	d->drag();
+#endif
     }
 
     int xm, ym;
@@ -1784,4 +1790,17 @@ bool KHTMLWidget::setCharset(const QString &name, bool /*override*/)
 
     defaultSettings->charset = f.charSet();
     return true;
+}
+
+void KHTMLWidget::scheduleRedirection(int delay, const QString & url)
+{
+    m_delayRedirect = delay;
+    m_strRedirectUrl = url;
+}
+
+void KHTMLWidget::slotRedirect()
+{
+    urlSelected(m_strRedirectUrl, LeftButton, QString::null);
+    m_strRedirectUrl == QString::null;
+    m_delayRedirect = 0;
 }

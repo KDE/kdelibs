@@ -158,6 +158,44 @@ ushort HTMLMetaElementImpl::id() const
     return ID_META;
 }
 
+void HTMLMetaElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_HTTP_EQUIV:
+      _equiv = attr->value();
+      break;
+    case ATTR_CONTENT:
+      _content = attr->value();
+      break;
+    default:
+	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+
+void HTMLMetaElementImpl::attach(KHTMLWidget *v)
+{
+    printf("meta::attach() equiv=%s, content=%s\n", _equiv.string().ascii(), _content.string().ascii());
+    if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
+    {
+	// get delay and url
+	QString str = _content.string();
+	int pos = str.find(QRegExp("[;,]"));
+	int delay = str.left(pos).toInt();
+	printf("delay = %d, separator at %d\n", delay, pos);
+	pos++;
+	while(pos < str.length() && str[pos].isSpace()) pos++;
+	if(pos < str.length()) str = str.mid(pos);
+	if(strncasecmp(str, "url=", 4) == 0)
+	{
+	    str = str.mid(4);
+	    printf("====> got redirect to %s\n", str.ascii());
+	    v->scheduleRedirection(delay, str);
+	}
+    }
+}
+
 // -------------------------------------------------------------------------
 
 HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)

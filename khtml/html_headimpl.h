@@ -105,6 +105,13 @@ public:
 
     virtual tagStatus startTag() { return METAStartTag; }
     virtual tagStatus endTag() { return METAEndTag; }
+
+    virtual void parseAttribute(Attribute *attr);
+    virtual void attach(KHTMLWidget *);
+
+protected:
+    DOMString _equiv;
+    DOMString _content;
 };
 
 // -------------------------------------------------------------------------

@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org))  
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org))
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,8 @@
 // -------------------------------------------------------------------------
 
 #include "dom_string.h"
+
+#include <kapp.h>
 
 #include "html_baseimpl.h"
 #include "html_documentimpl.h"
@@ -153,9 +155,21 @@ void HTMLBodyElementImpl::print( QPainter *p, int x, int y, int w, int h,
 	int pmY = y % bgPixmap->height();
 	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);
     }
+    else if(style()->bgcolor.isValid())
+	p->fillRect(x,y,w,h,style()->bgcolor);
     else
-    	p->fillRect(x,y,w,h,style()->bgcolor);
-	
+    {
+	QBrush b = kapp->palette().normal().brush(QColorGroup::Background);
+	if(b.pixmap())
+	{
+	    QPixmap *pix = b.pixmap();
+	    int pmX = x % pix->width();
+	    int pmY = y % pix->height();
+	    p->drawTiledPixmap(x, y, w, h, *pix, pmX, pmY);
+	}
+	else
+	    p->fillRect(x, y, w, h, b); 	
+    }
     HTMLBlockElementImpl::print(p,x,y,w,h,tx,ty);
 }
 

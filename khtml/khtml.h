@@ -558,6 +558,8 @@ public:
 
     HTMLSettings *settings();
 
+    void scheduleRedirection(int delay, const QString & url); 
+    
 public slots:
     /**
      * stops loading the current document
@@ -655,7 +657,12 @@ protected slots:
     void data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof );
     void slotFinished( int _id );
     void slotError( int _id, int _err, const QString &_text );
+
+    // gets called for redirection triggered by the http header
     void slotRedirection( int _id, const char *_url );
+
+    // used for <meta> redirection
+    void slotRedirect();
 
     //virtual void slotURLRequest( const QString & _url );
     //virtual void slotCancelURLRequest( const QString & _url );
@@ -682,7 +689,7 @@ protected:
 
     void paintElement( DOM::NodeImpl *e, bool recursive=false );
     virtual void resizeEvent ( QResizeEvent * event );
-    virtual void viewportPaintEvent ( QPaintEvent* pe  );    
+    virtual void viewportPaintEvent ( QPaintEvent* pe  );
 public:
     void layout();
 protected:
@@ -895,8 +902,11 @@ private:
     DOM::NodeImpl *findNode;
 
     QCString post_data;
-    
+
     static QPixmap* paintBuffer;
+
+    int m_delayRedirect;
+    QString m_strRedirectUrl;
 };
 
 #endif

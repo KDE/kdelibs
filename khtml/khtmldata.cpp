@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -51,10 +51,11 @@ HTMLSettings::HTMLSettings()
     linkColor     = Qt::blue;
     vLinkColor    = Qt::darkMagenta;
 
-    bgColor       = Qt::lightGray;
+    // leave bgColor undefined, so we can get the themed background.
+    //bgColor       = Qt::lightGray;
 
     charset	  = QFont::Latin1;
-    
+
     underlineLinks = true;
 }
 
@@ -68,8 +69,8 @@ void HTMLSettings::setFontSizes(const int *newFontSizes, const int *newFixedFont
     else
     {
        memcpy( fixedFontSizes, newFontSizes, sizeof(fixedFontSizes) );
-    }    
-}                                    
+    }
+}
 
 void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
 {
@@ -78,13 +79,13 @@ void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
     {
        memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
     }
-}                                    
+}
 
 void HTMLSettings::resetFontSizes(void)
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
-}                                    
+}
 
 HTMLSettings::HTMLSettings( const HTMLSettings &s )
 {
@@ -99,7 +100,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
     vLinkColor    = s.vLinkColor;
 
     bgColor       = s.bgColor;
-    
+
     charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
@@ -118,7 +119,7 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     vLinkColor    = s.vLinkColor;
 
     bgColor       = s.bgColor;
-    
+
     charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
