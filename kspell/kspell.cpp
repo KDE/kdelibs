@@ -355,7 +355,7 @@ char * KSpell::funnyWord (char *word)
 	  i=j-1;
 	  
 	  if ((k=qs.find (shorty.data()))==0 ||
-	      k==qs.length()-shorty.length() && k!=-1)
+	      k==(signed)(qs.length()-shorty.length()) && k!=-1)
 	    qs.remove (j,shorty.length());
 	  else
 	    {

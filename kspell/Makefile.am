@@ -20,7 +20,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES=  -I../kdecore -I../kdeui $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES=  -I/opt/kde/include $(QT_INCLUDES) $(X_INCLUDES)
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 
