@@ -23,6 +23,7 @@
 #include <qprinter.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qbuttongroup.h>
@@ -85,7 +86,7 @@ void KPrintDialog::addGeneralPage()
 
    QButtonGroup *printDest;
    printDest = new QButtonGroup(page);
-   printDest->setTitle(i18n("Print destination"));
+   printDest->setTitle(i18n("Select printer"));
    QGridLayout *printDestLayout;
    printDestLayout = new QGridLayout( printDest, 5, 3, marginHint(), spacingHint());
    printDestLayout->addColSpacing(0, 20);
@@ -93,26 +94,20 @@ void KPrintDialog::addGeneralPage()
 
    row++;
 
-   QRadioButton *printToPrinter;
-   printToPrinter = new QRadioButton(i18n("Print to p&rinter:"), printDest);
-   printDestLayout->addMultiCellWidget( printToPrinter, row, row,0,1 );
-
-   row++;
-
    d->printerList = new KListView(printDest);   
    d->printerList->addColumn(i18n("Printer"));
    d->printerList->addColumn(i18n("Description"));
    d->printerList->setFixedHeight(100);
-   printDestLayout->addWidget( d->printerList, row, 1);
+   printDestLayout->addMultiCellWidget( d->printerList, row, row, 0, 2);
    printDestLayout->setRowStretch(row, 1);
+   connect(d->printerList, SIGNAL( selectionChanged()), 
+		SLOT( slotPrinterSelected()));
 
    row++;
 
-   QRadioButton *printToFile;
-   printToPrinter = new QRadioButton(i18n("Print to &file:"), printDest);
-   printDestLayout->addMultiCellWidget(printToPrinter, row, row, 0, 1);
-
-   row++;
+   QCheckBox *cbPrintToFile;
+   cbPrintToFile = new QCheckBox(i18n("Print to &file:"), printDest);
+   printDestLayout->addWidget(cbPrintToFile, row, 0);
 
    d->fileSelection = new KLineEdit( printDest);
    printDestLayout->addWidget( d->fileSelection, row, 1);
@@ -135,8 +130,10 @@ void KPrintDialog::addGeneralPage()
 
    row++;
 
-   KNumInput *nrOfCopies;
+   KIntNumInput *nrOfCopies;
    nrOfCopies = new KIntNumInput( options);
+   nrOfCopies->setRange( 1, 9999, 1, false);
+   nrOfCopies->setValue(1);
    nrOfCopies->setLabel( i18n("&Number of copies:"), AlignHCenter | AlignVCenter);
    optionsLayout->addWidget(nrOfCopies, row, 0);
 
@@ -283,5 +280,15 @@ KPrintDialog::slotBrowse()
    d->fileSelection->setText(url.path());
 }
 
+void 
+KPrintDialog::slotPrinterSelected()
+{
+   QListViewItem *current = d->printerList->currentItem();
+   if (!current) return;
+   QString printerName = current->text(0);
 
+   KPrinter *printer = new KPrinter(printerName);
+   d->job->setPrinter( printer );
+   setPrinterSettings();
+}
 #include "kprintdialog.moc"

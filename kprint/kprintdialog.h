@@ -55,6 +55,7 @@ protected:
 
 protected slots:
    void slotBrowse();
+   void slotPrinterSelected();
 
 protected:
    
