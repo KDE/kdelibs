@@ -72,15 +72,18 @@ public:
 	/**
 	 * The Default constructor.  You should have little use
 	 * for this thanks to the @ref event method.
+	 * This will launch the KNotify service if needed.
+	 *
 	 * @param message The event type to send, such as "Desktop1" for a virtual
 	 *                desktop change
 	 * @param text If you need to send off a message with your alert.  This
 	 *             will happen for an error level of 2 or more.
 	 * @param present How to present it.  If "Default" is chosen, the server
 	 *                will decide according to the config
+	 * @param sound The sound to play (KDEDIR/share/sounds/ if not absolute)
+	 * @param file file to write to (if selected)
 	 * @param client The DCOPClient to use.  Usually it pulls the one from
 	 *               your KApplication.
-	 * @param sound The sound to play (KDEDIR/share/sounds/ if not absolute)
      */
 	KNotifyClient(QObject *parent, const QString &message, const QString &text=0,
 	             int present=Default,
