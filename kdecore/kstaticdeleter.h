@@ -32,17 +32,19 @@ public:
 };
 
 /**
- * little helper class to clean up static objects that are
+ * Little helper class to clean up static objects that are
  * held as pointer.
  * When the library is unloaded, or the app terminated, all static deleters
  * are destroyed, which in turn destroys those static objects properly.
  *
  * A typical use is
+ * <pre>
  * static KStaticDeleter<MyClass> sd;
  *
  * MyClass::self() {
  *   if (!_self) { sd.setObject(_self, new MyClass()); }
  * }
+ * </pre>
  */
 template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:
