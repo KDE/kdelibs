@@ -472,9 +472,12 @@ bool ReadWritePart::queryClose()
   if ( !isReadWrite() || !isModified() )
     return true;
 
+  QString docName = url().fileName();
+  if (docName.isEmpty()) docName = i18n( "Untitled" );
+
   int res = KMessageBox::warningYesNoCancel( widget(),
           i18n( "The document \"%1\" has been modified.\n"
-                "Do you want to save it?" ).arg( url().fileName() ),
+                "Do you want to save it?" ).arg( docName ),
           i18n( "Save Document?" ), KStdGuiItem::save(), KStdGuiItem::discard() );
 
   switch(res) {
