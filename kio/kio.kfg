@@ -1,0 +1,33 @@
+kioslave 'file' 
+{
+	exec<string> = 'kio_file';
+	protocol<string> = 'file';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+	listing<@string> = { 'Name', 'Type', 'Size', 'Date', 'Access', 'Owner', 'Group', 'Link' };
+};
+
+kioslave 'gzip'
+{
+	exec<string> = 'kio_gzip';
+	protocol<string> = 'gzip';
+	input<string> = 'stream';
+	output<string> = 'stream';
+};
+
+kioslave 'http'
+{
+	exec<string> = 'kio_http';
+	protocol<string> = 'http';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+};
+
+kioslave 'trader' 
+{
+	exec<string> = 'kio_trader';
+	protocol<string> = 'trader';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+	listing<@string> = { 'Name', 'Type' };
+};
