@@ -1,3 +1,7 @@
+Tue Aug 11 02:25:41 1998  Steffen Hansen  <stefh@slagelse.mip.ou.dk>
+
+	* kapp.cpp (init): Removed creation of KProcessController
+
 1998-07-23  Waldo Bastian  <w.bastian@kde.org>
 
 	* kurl.cpp: Fixed the bug in the bugfix of the fix of the NULL-bug.

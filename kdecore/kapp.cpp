@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.106  1998/07/23 20:55:11  ettrich
+// Matthias: new configurable keybindings
+//
 // Revision 1.105  1998/07/02 15:42:42  ettrich
 // Matthias: Added a new signal
 //
@@ -337,9 +340,11 @@ void KApplication::init()
 
   // CC: install KProcess' signal handler
   // by creating the KProcController instance (if its not already existing)
+  // This is handled be KProcess (stefh)
+  /*
   if ( theKProcessController == 0L) 
     theKProcessController = new KProcessController();
-
+  */
   KApp = this;
   bLocaleConstructed = false; // no work around mutual dependencies
   
