@@ -299,15 +299,15 @@ public:
    * value, use @ref verify( const char*, DigestType ) instead.
    */
   bool verify( FILE* f, const char * msg_digest, DigestType type = HEX );
-  
+
   /**
    * Compares the given string with with the current message digest.
    *
-   * NOTE: Unlike the other verify functions this one does not reset
-   * the current message digest if one is already present.  It is meant
-   * to allow you to compare against the existing message digest.  Also
-   * note that this function will return false if a digest has yet to be
-   * calculated.
+   * Unlike the other verify functions this one does not reset the current
+   * message digest if one is already present.  It is meant to allow you to
+   * compare against the existing message digest.  Note that this function
+   * will also return false if a digest has yet to be calculated.  Use the
+   * error functions to determine which is the case.
    *
    * @param msg_digest  the digest to compare the result against
    * @param type        the format of the result for comparison (binary or hexidecimal).
@@ -331,7 +331,7 @@ public:
    *
    * NOTE: you are responsible for making a copy of this string.
    */
-  Q_UINT8* rawDigest ();  // digest as a 16-byte binary array
+  Q_UINT8* rawDigest ();
 
   /**
    * Fills the given array with the binary representation of the
@@ -352,7 +352,7 @@ public:
    *
    * NOTE: you are responsible for making a copy of this string.
    */
-  char * hexDigest ();  // digest as a 33-byte ascii-hex string
+  char * hexDigest ();
 
   /**
    * Fills the given array with the hexcidecimal representation of
@@ -360,7 +360,8 @@ public:
    *
    * Use this method if you do not want to worry about making
    * copy of the digest once you obtain it. Also note that this
-   * method will append a terminating NULL charater.
+   * method will append a terminating NULL charater to form a
+   * properly terminated string.
    *
    * @param bin an array of 33 characters ( char[33] )
    * @return true if the digest is ready, otherwise false.
@@ -369,15 +370,15 @@ public:
 
   /**
    * Indicates whether the message digest calculation failed
-   * or succeeded.  Use @ref error to determine the error type.
+   * or succeeded.  Use @ref error() to determine the error type.
    *
-   * @return true if 
+   * @return true if
    */
   bool hasErrored() const { return (m_error != ERR_NONE); }
 
   /**
-   * Returns the type error that occurred. See @ref ErrorType
-   * for descriptions.
+   * Returns the type of error that occurred.
+   * See @ref ErrorType for descriptions.
    */
   int error() const { return m_error; }
 
