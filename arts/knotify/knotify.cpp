@@ -119,7 +119,7 @@ KNotify::KNotify()
 {
     d = new KNotifyPrivate;
     d->soundServer = Arts::SimpleSoundServer::null();
-    d->globalEvents = new KConfig(locate("config", "eventsrc"), true, false);
+    d->globalEvents = new KConfig(locate("config", "eventsrc"), true );
     loadConfig();
 }
 
