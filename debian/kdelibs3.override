@@ -24,6 +24,7 @@ kdelibs3: binary-without-manpage lnusertemp
 kdelibs3: binary-without-manpage make_driver_db_cups
 kdelibs3: binary-without-manpage make_driver_db_lpd
 kdelibs3: binary-without-manpage settheme
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/ca/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/ca/entities/underArtisticLicense.docbook
 extra-license-file usr/share/apps/ksgmltools/ca/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/ca/entities/underX11License.docbook
