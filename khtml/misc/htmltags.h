@@ -5,7 +5,7 @@ htmltags.in by maketags, do not edit */
 #ifndef KHTML_TAGS_H
 #define KHTML_TAGS_H
 
-#include "dom_string.h"
+#include "dom/dom_string.h"
 
 DOM::DOMString getTagName(unsigned short id);
 #define ID_A 1
@@ -112,5 +112,6 @@ DOM::DOMString getTagName(unsigned short id);
 #define ID_TEXT 102
 #define ID_COMMENT 103
 #define ID_CLOSE_TAG 103
+#define ID_LAST_TAG 2*103
 
 #endif

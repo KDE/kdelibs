@@ -5,7 +5,7 @@ htmlattrs.in by makeattrs, do not edit */
 #ifndef HTML_ATTRS_H
 #define HTML_ATTRS_H
 
-#include "dom_string.h"
+#include "dom/dom_string.h"
 using namespace DOM;
 
 #define ATTR_ABBR 1

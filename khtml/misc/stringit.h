@@ -26,10 +26,11 @@
 #ifndef KHTMLSTRING_H
 #define KHTMLSTRING_H
 
-#include "dom_string.h"
-using namespace DOM;
+#include "dom/dom_string.h"
 
 #include <qstring.h>
+
+using namespace DOM;
 
 namespace khtml
 {
@@ -59,7 +60,7 @@ public:
     }
 public:
     void push(const QChar& c) { /* assert(pushedChar.isNull());*/  pushedChar = c; }
-    
+
     const QChar& operator*() const  { return pushedChar.isNull() ? *s : pushedChar; }
     const QChar* operator->() const { return pushedChar.isNull() ? s : &pushedChar; }
 

@@ -572,7 +572,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
     // do not chang the hack with the update list unless you know what you are doing.
     // When removing this hack, directory listings as eg produced by apache will
     // get *really* slow
-    QList<CachedObjectClient> updateList;
+    QPtrList<CachedObjectClient> updateList;
     CachedObjectClient *c;
 
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
@@ -655,7 +655,6 @@ void CachedImage::movieStatus(int status)
 
                 // monochrome alphamasked images are usually about 10000 times
                 // faster to draw, so this is worth the hack
-#if QT_VERSION >= 300
                 if ( p && monochrome && p->depth() > 1 ) {
                     QPixmap* pix = new QPixmap;
                     pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
@@ -665,7 +664,6 @@ void CachedImage::movieStatus(int status)
                     p = pix;
                     monochrome = false;
                 }
-#endif
             }
 
 	    CachedObjectClient *c;
@@ -1041,7 +1039,7 @@ int Loader::numRequests( DocLoader* dl ) const
 {
     int res = 0;
 
-    QListIterator<Request> pIt( m_requestsPending );
+    QPtrListIterator<Request> pIt( m_requestsPending );
     for (; pIt.current(); ++pIt )
         if ( pIt.current()->m_docLoader == dl )
             res++;
@@ -1058,7 +1056,7 @@ void Loader::cancelRequests( DocLoader* dl )
 {
     //kdDebug( 6060 ) << "void Loader::cancelRequests()" << endl;
     //kdDebug( 6060 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
-    QListIterator<Request> pIt( m_requestsPending );
+    QPtrListIterator<Request> pIt( m_requestsPending );
     while ( pIt.current() )
     {
         if ( pIt.current()->m_docLoader == dl )
@@ -1110,7 +1108,7 @@ KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 
 
 QDict<CachedObject> *Cache::cache = 0;
-QList<DocLoader>* Cache::docloader = 0;
+QPtrList<DocLoader>* Cache::docloader = 0;
 Cache::LRUList *Cache::lru = 0;
 Loader *Cache::m_loader = 0;
 
@@ -1130,7 +1128,7 @@ void Cache::init()
         lru = new LRUList;
 
     if ( !docloader )
-        docloader = new QList<DocLoader>;
+        docloader = new QPtrList<DocLoader>;
 
     if ( !nullPixmap )
         nullPixmap = new QPixmap;

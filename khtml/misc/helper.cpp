@@ -26,7 +26,7 @@
 #include <qpainter.h>
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kstaticdeleter.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -210,7 +210,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     {
         // CSS like rgb(r, g, b) style
         DOMString rgb = name.mid(4, name.length()-5);
-        QList<Length> *l = rgb.implementation()->toLengthList();
+        QPtrList<Length> *l = rgb.implementation()->toLengthList();
         if(l->count() != 3)
         {
 	    // transparent in case of an invalid color.
