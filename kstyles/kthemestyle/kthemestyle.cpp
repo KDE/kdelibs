@@ -1138,14 +1138,14 @@ void KThemeStyle::drawControl( ControlElement element,
                     // Text shadow
                     for ( i = 0; i < 2; i++ )
                         drawItem( p, QRect( x + i + 1, y + 1, w, h ), AlignCenter | ShowPrefix,
-                                  button->colorGroup(), button->isEnabled(), button->pixmap(),
+                                  button->colorGroup(), button->isEnabled(), NULL,
                                   button->text(), -1,
                                   active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
 
                     // Normal Text
                     for ( i = 0; i < 2; i++ )
                         drawItem( p, QRect( x + i, y, w, h ), AlignCenter | ShowPrefix,
-                                  button->colorGroup(), true, button->pixmap(),
+                                  button->colorGroup(), true, i == 0 ? button->pixmap() : NULL,
                                   button->text(), -1,
                                   active ? &button->colorGroup().light() : &button->colorGroup().buttonText() );
                 }
