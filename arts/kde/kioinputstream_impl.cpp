@@ -30,8 +30,8 @@
 
 using namespace Arts;
 
-const unsigned int KIOInputStream_impl::PACKET_COUNT = 8;
-const unsigned int KIOInputStream_impl::PACKET_SIZE = 8192;
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 1;
+const unsigned int KIOInputStream_impl::PACKET_SIZE = 1024;
 
 KIOInputStream_impl::KIOInputStream_impl()
 {
@@ -46,6 +46,8 @@ KIOInputStream_impl::KIOInputStream_impl()
 
 KIOInputStream_impl::~KIOInputStream_impl()
 {
+	if(m_job != 0)
+	    m_job->kill();
 }
 
 void KIOInputStream_impl::streamStart()
