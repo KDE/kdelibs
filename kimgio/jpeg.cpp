@@ -396,6 +396,7 @@ void kimgio_jpeg_read(QImageIO * iio)
 	}
 	// Decompress 24-bit
     } else {
+	    int r = 0, g = 0;
 	while (cinfo.output_scanline < cinfo.output_height) {
 	    ui_row = (unsigned int *)
 		image.scanLine(cinfo.output_scanline);
@@ -404,7 +405,12 @@ void kimgio_jpeg_read(QImageIO * iio)
 	    jpeg_read_scanlines(&cinfo, buffer, 1);
 
 	    for (col = 0; col < cinfo.output_width; col++)
-		*ui_row++ = qRgb(*uc_row++, *uc_row++, *uc_row++);
+		    r = *uc_row++;
+		    g = *uc_row++;
+
+		*ui_row++ = qRgb( r, g, *uc_row);
+
+		uc_row++;
 	}
     }
 
