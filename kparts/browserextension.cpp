@@ -336,6 +336,7 @@ public:
   QValueList<DelayedRequest> m_requests;
   bool m_urlDropHandlingEnabled;
   KBitArray m_actionStatus;
+  QMap<int, QString> m_actionText;
   BrowserInterface *m_browserInterface;
 };
 
@@ -375,6 +376,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
            this, SLOT( slotOpenURLRequest( const KURL &, const KParts::URLArgs & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
+  connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
+           this, SLOT( slotSetActionText( const char *, const QString& ) ) );
 }
 
 BrowserExtension::~BrowserExtension()
@@ -525,6 +528,27 @@ bool BrowserExtension::isActionEnabled( const char * name ) const
 {
     int actionNumber = (*s_actionNumberMap)[ name ];
     return d->m_actionStatus[ actionNumber ];
+}
+
+void BrowserExtension::slotSetActionText( const char * name, const QString& text )
+{
+    kdDebug() << "BrowserExtension::slotSetActionText " << name << " " << text << endl;
+    ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
+    if ( it != s_actionNumberMap->end() )
+    {
+        d->m_actionText[ it.data() ] = text;
+    }
+    else
+        kdWarning() << "BrowserExtension::slotSetActionText unknown action " << name << endl;
+}
+
+QString BrowserExtension::actionText( const char * name ) const
+{
+    int actionNumber = (*s_actionNumberMap)[ name ];
+    QMap<int, QString>::ConstIterator it = d->m_actionText.find( actionNumber );
+    if ( it != d->m_actionText.end() )
+        return *it;
+    return QString::null;
 }
 
 // for compatibility

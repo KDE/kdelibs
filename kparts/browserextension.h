@@ -164,13 +164,13 @@ struct KPARTS_EXPORT URLArgs
    * @since 3.4
    */
   void setForcesNewWindow( bool forcesNewWindow );
-  
+
   /**
    * Whether the URL specifies to be opened in a new window
    * @since 3.4
    */
   bool forcesNewWindow() const;
-  
+
   URLArgsPrivate *d;
 };
 
@@ -413,6 +413,14 @@ public:
    */
   bool isActionEnabled( const char * name ) const;
 
+  /**
+   * @return the text of an action, if it was set explicitely by the part.
+   * When the setActionText signal is emitted, the browserextension
+   * stores the text of the action internally, so that it's possible
+   * to query later for the text of the action, using this method.
+   */
+  QString actionText( const char * name ) const;
+
   typedef QMap<QCString,QCString> ActionSlotMap;
   /**
    * Returns a map containing the action names as keys and corresponding
@@ -473,6 +481,14 @@ signals:
    * See class documentation for the list of standard actions.
    */
   void enableAction( const char * name, bool enabled );
+
+  /**
+   * Change the text of a standard action held by the browser.
+   * This can be used to change "Paste" into "Paste Image" for instance.
+   *
+   * See class documentation for the list of standard actions.
+   */
+  void setActionText( const char * name, const QString& text );
 
   /**
    * Asks the host (browser) to open @p url.
@@ -662,6 +678,7 @@ private slots:
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
   void slotEmitOpenURLRequestDelayed();
   void slotEnableAction( const char *, bool );
+  void slotSetActionText( const char*, const QString& );
 
 private:
   KParts::ReadOnlyPart *m_part;
