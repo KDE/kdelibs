@@ -92,23 +92,20 @@ int KDEsuClient::connect()
 QCString KDEsuClient::escape(QCString str)
 {
     QCString copy = str;
-
     int n = 0;
-    while ((n = copy.find("\\", n)) != -1) 
+    while ((n = copy.find("\\", n)) != -1)
     {
-	copy.insert(n, '\\');
-	n += 2;
+        copy.insert(n, '\\');
+        n += 2;
     }
     n = 0;
-    while ((n = copy.find("\"", n)) != -1) 
+    while ((n = copy.find("\"", n)) != -1)
     {
-	copy.insert(n, '\\');
-	n += 2;
+        copy.insert(n, '\\');
+        n += 2;
     }
-
     copy.prepend("\"");
     copy.append("\"");
-
     return copy;
 }
 
@@ -119,10 +116,10 @@ int KDEsuClient::command(QCString cmd, QCString *result)
 
     if (send(sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
 	return -1;
-    
+
     char buf[1024];
     int nbytes = recv(sockfd, buf, 1023, 0);
-    if (nbytes <= 0) 
+    if (nbytes <= 0)
     {
 	kdWarning(900) << k_lineinfo << "no reply from daemon\n";
 	return -1;
@@ -130,7 +127,7 @@ int KDEsuClient::command(QCString cmd, QCString *result)
     buf[nbytes] = '\000';
 
     QCString reply = buf;
-    if (reply.left(2) != "OK") 
+    if (reply.left(2) != "OK")
 	return -1;
 
     if (result)
@@ -190,18 +187,17 @@ int KDEsuClient::delCommand(QCString key, QCString user)
     cmd += "\n";
     return command(cmd);
 }
-
-int KDEsuClient::setVar(QCString key, QCString value, int timeout, 
-	QCString group)
+int KDEsuClient::setVar(QCString key, QCString value, int timeout,
+                        QCString group)
 {
     QCString cmd = "SET ";
     cmd += escape(key);
     cmd += " ";
     cmd += escape(value);
     cmd += " ";
-    cmd += QCString().setNum(timeout);
-    cmd += " ";
     cmd += escape(group);
+    cmd += " ";
+    cmd += QCString().setNum(timeout);
     cmd += "\n";
     return command(cmd);
 }
@@ -216,6 +212,49 @@ QCString KDEsuClient::getVar(QCString key)
     return reply;
 }
 
+QValueList<QCString> KDEsuClient::getKeys(QCString group)
+{
+    QCString cmd = "GETK ";
+    cmd += escape(group);
+    cmd += "\n";
+    QCString reply;
+    command(cmd, &reply);
+    int index=0, pos;
+    QValueList<QCString> list;
+    if( !reply.isEmpty() )
+    {
+        kdDebug(900) << "Found a matching entry: " << reply << endl;
+        while (1)
+        {
+            pos = reply.find( '\007', index );
+            if( pos == -1 )
+            {
+                if( index == 0 )
+                    list.append( reply );
+                else
+                    list.append( reply.mid(index) );
+                break;
+            }
+            else
+            {
+                list.append( reply.mid(index, pos-index) );
+            }
+            index = pos+1;
+        }
+    }
+    return list;
+}
+
+bool KDEsuClient::findGroup(QCString group)
+{
+    QCString cmd = "CHKG ";
+    cmd += escape(group);
+    cmd += "\n";
+    if( command(cmd) == -1 )
+        return false;
+    return true;
+}
+
 int KDEsuClient::delVar(QCString key)
 {
     QCString cmd = "DELV ";
@@ -228,6 +267,14 @@ int KDEsuClient::delGroup(QCString group)
 {
     QCString cmd = "DELG ";
     cmd += escape(group);
+    cmd += "\n";
+    return command(cmd);
+}
+
+int KDEsuClient::delVars(QCString special_key)
+{
+    QCString cmd = "DELS ";
+    cmd += escape(special_key);
     cmd += "\n";
     return command(cmd);
 }
@@ -252,11 +299,11 @@ bool KDEsuClient::isServerSGID()
     }
 
     struct stat sbuf;
-    if (stat(QFile::encodeName(daemon), &sbuf) < 0) 
+    if (stat(QFile::encodeName(daemon), &sbuf) < 0)
     {
 	kdWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;
-    } 
+    }
     return (sbuf.st_mode & S_ISGID);
 }
 

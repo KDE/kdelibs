@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * client.h: client to access kdesud.
@@ -20,6 +20,7 @@
 #include <sys/un.h>
 
 #include <qcstring.h>
+#include <qvaluelist.h>
 
 /**
  * A client class to access kdesud, the KDE su daemon. Kdesud can assist in 
@@ -45,7 +46,7 @@ public:
     ~KDEsuClient();
 
     /**
-     * Lets kdesud execute a command. If the daemon does not have a password 
+     * Lets kdesud execute a command. If the daemon does not have a password
      * for this command, this will fail and you need to call @ref #setPass().
      *
      * @param command The command to execute.
@@ -90,7 +91,7 @@ public:
      * Set a persistent variable.
      * @param key The name of the variable.
      * @param value Its value.
-     * @param timeout The timeout in seconds for this key. Zero means 
+     * @param timeout The timeout in seconds for this key. Zero means
      * no timeout.
      * @param group Make the key part of a group. See @ref #delGroup.
      * @return zero on success, -1 on failure.
@@ -105,11 +106,46 @@ public:
     QCString getVar(QCString key);
 
     /**
+     * Gets all the keys that are membes of the given group.
+     * @param group the group name of the variables.
+     * @return a list of the keys in the group.
+     */
+    QValueList<QCString> getKeys(QCString group);
+
+    /**
+     * Returns true if the specified group exists is
+     * cached.
+     *
+     * @param grpkey the group key
+     * @return true if the group is found
+     */
+    bool findGroup(QCString group);
+
+    /**
      * Delete a persistent variable.
      * @param key The name of the variable.
      * @return zero on success, -1 on failure.
      */
     int delVar(QCString key);
+
+    /**
+     * Delete all persistent variables with the given key.
+     *
+     * A specicalized variant of @ref delVar(QCString) that
+     * removes all subsets of the cached varaibles given by
+     * @p key. In order for cached keys to be deleted by this
+     * function, the value given to the @p group argument of
+     * the @ref setVar function must be a subset of the @p key
+     * argument used for the same function and the key given
+     * to here must be a superset and a subset the same group
+     * and key variables mentioned above respectively.  NOTE:
+     * simply giving the value of the group key will not work.
+     * You have to use @ref delGroup under that circumstance.
+     *
+     * @param special_key the name of the variable.
+     * @return zero on success, -1 on failure.
+     */
+    int delVars(QCString special_key);
 
     /**
      * Delete all persistent variables in a group.
@@ -143,6 +179,7 @@ private:
 
     int command(QCString cmd, QCString *result=0L);
     QCString escape(QCString str);
+
 };
 
 #endif
