@@ -110,10 +110,9 @@ int main( int argc, char **argv )
   KApplication app;
 
   QString text = "This file is part of the KDE project.\n"
-"\n"
-"    This library is free software; you can redistribute it and/or\n"
-"    modify it under the terms of the GNU Library General Public\n"
-"    License version 2, as published by the Free Software Foundation.\n"
+"This library is free software; you can redistribute it and/or\n"
+"modify it under the terms of the GNU Library General Public\n"
+"License version 2, as published by the Free Software Foundation.\n"
 "\n"
 "    This library is distributed in the hope that it will be useful,\n"
 "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -124,10 +123,11 @@ int main( int argc, char **argv )
 "    along with this library; see the file COPYING.LIB.  If not, write to\n"
 "    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
 "    Boston, MA 02111-1307, USA.";
-  KReplaceTest test( QStringList::split( '\n', text ) );
+  KReplaceTest test( QStringList::split( '\n', text, true ) );
 
   test.replace( "GNU", "KDE", /*KReplaceDialog::PromptOnReplace*/ 0 );
   test.replace( "free", "*free*", 0 );
+  test.replace( "This", "THIS*", KFindDialog::FindBackwards );
 
   test.print();
   //return app.exec();
