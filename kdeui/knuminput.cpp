@@ -36,7 +36,7 @@
 #endif
 #include <cassert>
 #include <cmath>
-using std::round;
+#include <math.h>
 using std::abs;
 using std::floor;
 using std::log10;
@@ -45,6 +45,8 @@ using std::min;
 using std::max;
 using std::swap;
 
+// glibc 2.1 compatibility
+inline double round(double d) { return rint(d); }
 
 #include <qlabel.h>
 #include <qlineedit.h>
