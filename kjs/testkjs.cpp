@@ -63,9 +63,9 @@ int main(int argc, char **argv)
 
     // create interpreter
     Interpreter interp(global);
-    global.put(interp.globalExec(),"debug",new TestFunctionImp());
+    global.put(interp.globalExec(),"debug", Object(new TestFunctionImp()));
     // add "print" for compatibility with the mozilla js shell
-    global.put(interp.globalExec(),"print",new TestFunctionImp());
+    global.put(interp.globalExec(),"print", Object(new TestFunctionImp()));
 
     // add debug() function
     //  kjs->enableDebug();
