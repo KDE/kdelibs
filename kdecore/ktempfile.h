@@ -93,6 +93,7 @@ public:
 
    /**
     * The name of the file.
+    * This is the full path and name of the file.
     **/
    QString name() const;
    
