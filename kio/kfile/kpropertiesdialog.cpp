@@ -275,7 +275,7 @@ void KPropertiesDialog::showFileSharingPage()
 {
   if (d->fileSharePage) {
      showPage( pageIndex( d->fileSharePage));
-  }            
+  }
 }
 
 void KPropertiesDialog::setFileSharingPage(QWidget* page) {
@@ -1020,7 +1020,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
        QPushButton *button = properties->actionButton(KDialogBase::Ok);
        if (button)
           button->setFocus();
-    }    
+    }
   }
 }
 
@@ -1108,7 +1108,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
                          .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18n("1 file","%n files",totalFiles)) 
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
@@ -1123,8 +1123,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
-			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) 
-        .arg(i18n("1 file","%n files",totalFiles)) 
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
@@ -1207,11 +1207,11 @@ void KFilePropsPlugin::applyChanges()
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
-      
+
       QString newFileName = KIO::encodeFileName(n);
       if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
          newFileName += ".desktop";
-         
+
       // Tell properties. Warning, this changes the result of properties->kurl() !
       properties->rename( newFileName );
 
@@ -1581,10 +1581,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
   /**** Group: Ownership ****/
-  gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
+  gl = new QGridLayout (gb->layout(), 4, 3);
   gl->addRowSpacing(0, 10);
 
   /*** Set Owner ***/
@@ -1744,10 +1746,12 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   QGridLayout *gl;
 
   // Group: Access Permissions
-  gb = new QGroupBox ( i18n("Access Permissions"), &dlg );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   dlg.setMainWidget(gb);
 
-  gl = new QGridLayout (gb, 6, 6, 15);
+  gl = new QGridLayout (gb->layout(), 6, 6);
   gl->addRowSpacing(0, 10);
 
   l = new QLabel(i18n("Class"), gb);
@@ -2834,7 +2838,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   }
   else
     m_systrayBool = false;
-    
+
   m_origCommandStr = commandStr;
   QString pathStr = config.readPathEntry( "Path" );
   m_terminalBool = config.readBoolEntry( "Terminal" );
