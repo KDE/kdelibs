@@ -97,6 +97,12 @@ void KURLRequester::setURL( const KURL& url )
 }
 
 
+KURL KURLRequester::url() const
+{
+    return myEdit->text();
+};
+
+
 void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();

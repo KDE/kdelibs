@@ -83,7 +83,7 @@ public:
      * @returns the current url in the lineedit. May be malformed, if the user
      * entered something weird.
      */
-    KURL 		url() const { return myEdit->text(); }
+    KURL 		url() const;
 
     /**
      * Enables/disables showing file:/ in the lineedit, when a local file has
