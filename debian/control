@@ -107,7 +107,7 @@ Package: libarts1-dev
 Architecture: any
 Section: devel
 Replaces: libarts-dev
-Depends: libarts1 (= ${Source-Version}) | libarts1-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
+Depends: libarts1 (= ${Source-Version}) | libarts1-alsa (= ${Source-Version}), libarts-bin (= ${Source-Version}), libc6-dev, libaudiofile-dev
 Suggests: kdelibs4-dev, libasound2-dev
 Conflicts: libarts-dev
 Description: aRts Sound system (development files)
@@ -136,7 +136,7 @@ Description: aRts Sound system (kde/midi binaries)
 Package: libkmid0-dev
 Architecture: any
 Section: devel
-Depends: libkmid0 (= ${Source-Version}) | libkmid0-alsa (= ${Source-Version}) , kdelibs4-dev
+Depends: libkmid0 (= ${Source-Version}) | libkmid0-alsa (= ${Source-Version}) , libkmid-bin (= ${Source-version}), kdelibs4-dev
 Description: aRts Sound system (midi development files)
  aRts sound system.
  .
