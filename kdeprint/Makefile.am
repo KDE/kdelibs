@@ -103,5 +103,5 @@ updatedir = $(kde_datadir)/kconf_update
 
 messages: rc.cpp
 	$(EXTRACTRC) `find . -name "*.rc" -o -name "*.ui" | grep -v /cupsdconf` >> rc.cpp
-	$(XGETTEXT) `find . -name "*.cpp" | grep -v /cupsdconf` -p $(podir)/kdeprint.pot
+	$(XGETTEXT) `find . -name "*.cpp" | grep -v /cupsdconf` -o $(podir)/kdeprint.pot
 
