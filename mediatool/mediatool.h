@@ -189,6 +189,7 @@ typedef struct
   uint8		sync_id;	/* This is for helping with KAudio->snyc() */
   EventCounter	posnew;		/* Event counter: Notification of pos_new change */
   uint32	pos_new;	/* Wished play position */
+  uint32        pos_new_m;      /* Wished play position 1/1000 (milli) */
 } MdCh_KEYS;
 
 
@@ -203,6 +204,7 @@ typedef struct
   uint32	pos_max;	/* Max. play position (eg: num events)	*/
   char		songname[LEN_NAME+1];
   uint8		sync_id;	/* This is for helping with KAudio->snyc() */
+  uint32        pos_current_m;  /* Curr. play position (milli)		*/
 } MdCh_STAT;
 
 
