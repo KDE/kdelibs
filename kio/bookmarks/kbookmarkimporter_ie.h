@@ -26,6 +26,7 @@
 
 /**
  * A class for importing IE bookmarks
+ * @deprecated
  */
 class KIEBookmarkImporter : public QObject
 {

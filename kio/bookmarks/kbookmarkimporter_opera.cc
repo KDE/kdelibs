@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kbookmarkimporter_opera.h"
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -28,92 +27,76 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#define LINELIMIT 4096
-
-// TODO - what sort of url's can we get???
-// QTextCodec * codec = QTextCodec::codecForName("UTF-8");
-// Q_ASSERT(codec);
-// if (!codec)
-//   return;
+#include "kbookmarkimporter.h"
+#include "kbookmarkimporter_opera.h"
 
 void KOperaBookmarkImporter::parseOperaBookmarks( )
 {
-   QString URL = QString::null;
-   QString NAME = QString::null;
-   QString TYPE = QString::null;
+   QFile file(m_fileName);
+   if(!file.open(IO_ReadOnly)) {
+      return;
+   }
 
-   QFile f(m_fileName);
+   int lineno = 0;
+   QString url, name, type;
+   QCString line(4096);
 
-   if(f.open(IO_ReadOnly)) {
-
-      QCString s(4096);
-
-      int lineno = 0;
-
-      while(f.readLine(s.data(), LINELIMIT)>=0) {
-
-        lineno++;
-
-        if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than LINELIMIT. Skipping.
-        {
-            kdWarning() << "IE bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
+   while ( file.readLine(line.data(), 4096) >=0 ) {
+      lineno++;
+    
+      // skip lines that didn't fit in buffer and first two headers lines 
+      if ( line[line.length()-1] != '\n' || lineno <= 2 )
+          continue;
+    
+      QString currentLine = line.stripWhiteSpace();
+    
+      // end of data block
+      if (currentLine.isEmpty()) {
+         if (type.isNull())
             continue;
-        }
-        if (lineno <= 2) continue; // skip first two header lines
+         else if ( type == "URL")
+            emit newBookmark( name, url.latin1(), "" );
+         else if (type == "FOLDER" )
+            emit newFolder( name, false, "" ); 
 
-        QString currentLine = s.stripWhiteSpace();
-        // kdWarning() << currentLine << endl;
-
-        if ( currentLine == "" ) {
-
-           if ( TYPE != QString::null 
-             && TYPE == "URL" 
-           ) {
-              emit newBookmark( NAME, URL.latin1(), QString("") );
-              TYPE = QString::null;
-              NAME = QString::null;
-              URL = QString::null;
-           } else if ( 
-                TYPE != QString::null
-             && TYPE == "FOLDER" ) 
-           {
-              emit newFolder( NAME, false, "" ); 
-              TYPE = QString::null;
-              NAME = QString::null;
-              URL = QString::null;
-           }
-           
-        } else if (currentLine == "-") {
-           emit endFolder();
-
-        } else {
-           QString tag;
-
-           if ( tag = "#", currentLine.startsWith( tag ) ) {
-              TYPE = currentLine.remove( 0, tag.length() );
-              // kdWarning() << "TYPE == " << TYPE << endl;
-
-           } else 
-           if ( tag = "NAME=", currentLine.startsWith( tag ) ) {
-              NAME = currentLine.remove( 0, tag.length() );
-              // convertEntities?
-              // kdWarning() << "NAME == " << NAME << endl;
-
-           } else 
-           if ( tag = "URL=", currentLine.startsWith( tag ) ) {
-              URL = currentLine.remove( 0, tag.length() );
-              // kdWarning() << "URL == " << URL << endl;
-           }
-        }
-     }
+         type = QString::null;
+         name = QString::null;
+         url = QString::null;
+         
+      // end of folder
+      } else if (currentLine == "-") {
+         emit endFolder();
+    
+      // data block line
+      } else {
+         QString tag;
+         if ( tag = "#", currentLine.startsWith( tag ) )
+            type = currentLine.remove( 0, tag.length() );
+         else if ( tag = "NAME=", currentLine.startsWith( tag ) )
+            name = currentLine.remove( 0, tag.length() );
+         else if ( tag = "URL=", currentLine.startsWith( tag ) )
+            url = currentLine.remove( 0, tag.length() );
+      }
    }
 
 }
 
-QString KOperaBookmarkImporter::operaBookmarksFile( )
+QString KOperaBookmarkImporter::operaBookmarksFile()
 {
-    return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.opera", 
-                                         i18n("*.adr|Opera bookmark files (*.adr)") );
+   static KOperaBookmarkImporterImpl importer;
+   return importer.findDefaultLocation();
+}
+
+void KOperaBookmarkImporterImpl::parse() {
+   KOperaBookmarkImporter importer(m_fileName);
+   importer.parseOperaBookmarks();
+}
+
+QString KOperaBookmarkImporterImpl::findDefaultLocation(bool) const
+{
+   return KFileDialog::getOpenFileName( 
+               QDir::homeDirPath() + "/.opera", 
+               i18n("*.adr|Opera bookmark files (*.adr)") );
 }
 
 #include "kbookmarkimporter_opera.moc"

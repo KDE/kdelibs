@@ -26,8 +26,7 @@
 
 /**
  * A class for importing Opera bookmarks
- * KEditBookmarks uses it to insert bookmarks into its DOM tree,
- * and KActionMenu uses it to create actions directly. (TODO)
+ * @deprecated
  */
 class KOperaBookmarkImporter : public QObject
 {
@@ -42,33 +41,26 @@ public:
     static QString operaBookmarksFile();
 
 signals:
-
-    /**
-     * Notify about a new bookmark
-     * Use "html" for the icon
-     */
     void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-
-    /**
-     * Notify about a new folder
-     * Use "bookmark_folder" for the icon
-     */
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
-
-    /**
-     * Notify about a new separator
-     */
     void newSeparator();
-
-    /**
-     * Tell the outside world that we're going down
-     * one menu
-     */
     void endFolder();
 
 protected:
     QString m_fileName;
 
+};
+
+/**
+ * A class for importing Opera bookmarks
+ * @since 3.2
+ */
+class KOperaBookmarkImporterImpl : public KBookmarkImporterBase
+{
+public:
+    KOperaBookmarkImporterImpl() { }
+    virtual void parse();
+    virtual QString findDefaultLocation(bool forSaving = false) const;
 };
 
 #endif
