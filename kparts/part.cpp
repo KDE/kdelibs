@@ -282,6 +282,7 @@ public:
     m_showProgressInfo = true;
     m_saveOk = false;
     m_waitForSave = false;
+    m_duringSaveAs = false;
   }
   ~ReadOnlyPartPrivate()
   {
@@ -289,9 +290,11 @@ public:
 
   KIO::FileCopyJob * m_job;
   KIO::FileCopyJob * m_uploadJob;
+  KURL m_originalURL;
   bool m_showProgressInfo : 1;
   bool m_saveOk : 1;
   bool m_waitForSave : 1;
+  bool m_duringSaveAs : 1;
 };
 
 }
@@ -551,7 +554,8 @@ bool ReadWritePart::saveAs( const KURL & kurl )
       kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
       return false;
   }
-  KURL oldURL = m_url;
+  d->m_duringSaveAs = true;
+  d->m_originalURL = m_url;
   m_url = kurl; // Store where to upload in saveToURL
   // Local file
   if ( m_url.isLocalFile() )
@@ -578,8 +582,12 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (result)
     emit setWindowCaption( m_url.prettyURL() );
   else
-    m_url = oldURL;
-      
+  {  
+    m_url = d->m_originalURL;    
+    d->m_duringSaveAs = false;
+    d->m_originalURL = KURL();
+  }
+        
   return result;    
 }
 
@@ -592,6 +600,8 @@ bool ReadWritePart::saveToURL()
     // if m_url is a local file there won't be a temp file -> nothing to remove
     assert( !m_bTemp );
     d->m_saveOk = true;
+    d->m_duringSaveAs = false;
+    d->m_originalURL = KURL();
     return true; // Nothing to do
   }
   else
@@ -625,6 +635,8 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
     unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
     QString error = d->m_uploadJob->errorString();
     d->m_uploadJob = 0;
+    if (d->m_duringSaveAs)
+      m_url = d->m_originalURL;
     emit canceled( error );
   }
   else
@@ -634,6 +646,8 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
     emit completed();
     d->m_saveOk = true;
   }
+  d->m_duringSaveAs = false;
+  d->m_originalURL = KURL();
   if (d->m_waitForSave)
   {
      qApp->exit_loop();
