@@ -36,6 +36,71 @@ class KURLPrivate;
  *   protocol:/user:password\@hostname:port/path/to/file.ext#reference
  * \endcode
  *
+ * KURL handles escaping of URLs. This means that the specification
+ * of a full URL will differ from the corresponding string that would specify a
+ * local file or directory in file-operations like fopen. This is because an URL
+ * doesn't allow certain characters and escapes them. (e.g. '#'->"%23", space->"%20")
+ * (In a URL the hash-character '#' is used to specify a "reference", i.e. the position
+ * within a document).
+ *
+ * The constructor KURL(const QString&) expects a string properly escaped,
+ * or at least non-ambiguous.
+ * For instance a local file or directory "/bar/#foo#" would have the URL
+ * file:/bar/%23foo%23.
+ * If you have the absolute path and need the URL-escaping you should create
+ * KURL via the default-constructor and then call setPath(const QString&).
+ * \code
+ *     KURL kurl;
+ *     kurl.setPath("/bar/#foo#");
+ *     QString url = kurl.url();    // -> "file:/bar/%23foo%23"
+ * \endcode
+ *
+ * If you have the URL of a local file or directory and need the absolute path,
+ * you would use path().
+ * \code
+ *    KURL url( "file:/bar/%23foo%23" ); 
+ *    ...
+ *    if ( url.isLocalFile() )
+ *       QString path = url.path();       // -> "/bar/#foo#"
+ * \endcode
+ *
+ * The other way round: if the user can enter a string, that can be either a
+ * path or a URL, then you need to use KURL::fromPathOrURL() to build a KURL.
+ *
+ * This must also be considered, when you have separated directory and file
+ * strings and need to put them together.
+ * While you can simply concatenate normal path strings, you must take care if
+ * the directory-part is already an escaped URL.
+ * (This might be needed if the user specifies a relative path, and your
+ * program supplies the rest from elsewhere.)
+ *
+ * Wrong:
+ * \code
+ *    QString dirUrl = "file:/bar/";
+ *    QString fileName = "#foo#";
+ *    QString invalidURL = dirUrl + fileName;   // -> "file:/bar/#foo#" won't behave like you would expect. 
+ * \endcode
+ * Instead you should use addPath():
+ * Right:
+ * \code
+ *    KURL url( "file:/bar/" );
+ *    QString fileName = "#foo#";
+ *    url.addPath( fileName );
+ *    QString validURL = url.url();    // -> "file:/bar/%23foo%23"
+ * \endcode
+ *
+ * Also consider that some URLs contain the password, but this shouldn't be
+ * visible. Your program should use prettyURL() every time it displays a
+ * URL, whether in the GUI or in debug output or...
+ *
+ * \code
+ *    KURL url( "ftp://name:password@ftp.faraway.org/bar/%23foo%23");
+ *    QString visibleURL = url.prettyURL(); // -> "ftp://name@ftp.faraway.org/bar/%23foo%23"
+ * \endcode
+ * Note that prettyURL() doesn't change the character escapes (like "%23").
+ * Otherwise the URL would be invalid and the user wouldn't be able to use it in another
+ * context.
+ *
  * KURL has some restrictions regarding the path
  * encoding. KURL works internally with the decoded path and
  * and encoded query. For example,
