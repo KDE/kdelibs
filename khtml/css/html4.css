@@ -523,6 +523,7 @@ frame {
 }
 
 nobr {
+        display: block;
         -konq-wrap-mode: -konq-none;
 }
 
