@@ -52,6 +52,8 @@ public slots:
     void setNormalSize();
     void setDoubleSize();
 
+    void resizeNotify( int width, int height );
+
 protected slots:
     void fullscreenActivated();
     void halfSizeActivated();
@@ -65,10 +67,9 @@ signals:
 private:
     void init(void);
     QWidget *fullscreenWidget;
-    bool embedded;
-    bool enabled;
     int videoWidth;
     int videoHeight;
+    Arts::VideoPlayObject poVideo;
 };
 
 #endif

@@ -24,57 +24,6 @@
 #include <klocale.h>
 #include "kvideowidget.h"
 
-#define VPO_ADD_WINDOW		1
-#define VPO_DESTROY_NOTIFY	2
-#define VPO_DISABLE_NOTIFY	3
-#define VPO_ENABLE_NOTIFY	4
-#define VPO_ENABLE_WINDOW	5
-#define VPO_RELEASE_WINDOW	6
-#define VPO_RESIZE_NOTIFY	7
-
-
-static void sendEvent( Window window, long message, long arg1 = 0, long arg2 = 0 )
-{
-    XEvent event;
-    Atom atom = XInternAtom( qt_xdisplay(), "VPO_X11_COMM", False );
-
-    // Send X11 client message
-    memset( &event, 0, sizeof(event) );
-
-    event.type			= ClientMessage;
-    event.xclient.window	= window;
-    event.xclient.message_type	= atom;
-    event.xclient.format	= 32;
-    event.xclient.data.l[0]	= message;
-    event.xclient.data.l[1]	= arg1;
-    event.xclient.data.l[2]	= arg2;
-    XSendEvent( qt_xdisplay(), window, False, ExposureMask, &event );
-
-    XFlush( qt_xdisplay() );
-}
-
-static void releaseWinId( Window window )
-{
-    XTextProperty prop;
-    Atom atom = XInternAtom( qt_xdisplay(), "VPO_X11_COMM", False );
-
-    // Wait until the Window is released by the VideoPlayObject
-    while (XGetTextProperty( qt_xdisplay(), window, &prop, atom ))
-    {
-	sendEvent( window, VPO_RELEASE_WINDOW );
-
-	// Do not consume 100% CPU (wait 50ms)
-#	ifdef HAVE_USLEEP
-	usleep(50000);
-#	else
-	struct timespec ts;
-	ts.tv_sec  = 0;
-	ts.tv_nsec = 50000000;
-	nanosleep( &ts, NULL );
-#	endif
-    }
-}
-
 
 class KFullscreenVideoWidget : public KVideoWidget
 {
@@ -107,20 +56,11 @@ void KFullscreenVideoWidget::windowActivationChange( bool )
 
 bool KFullscreenVideoWidget::x11Event( XEvent *event )
 {
-    Atom atom = XInternAtom( qt_xdisplay(), "VPO_X11_COMM", False );
-
-    if (event->type == ClientMessage && event->xclient.message_type == atom)
+    if (event->type == ClientMessage &&
+	event->xclient.message_type ==
+		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
     {
-	switch (event->xclient.data.l[0])
-	{
-	case VPO_DESTROY_NOTIFY:
-	case VPO_DISABLE_NOTIFY:
-	    setEraseColor( black );
-	    break;
-	case VPO_ENABLE_NOTIFY:
-	    setBackgroundMode( NoBackground );
-	    break;
-	}
+	videoWidget->resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
     return false;
 }
@@ -144,13 +84,11 @@ KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
 void KVideoWidget::init(void)
 {
     setMinimumSize(0, 0);
-    setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
-    emit adaptSize(0, 0);
+    setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
     setFocusPolicy( ClickFocus );
 
     fullscreenWidget = 0;
-    embedded	     = false;
-    enabled	     = false;
+    poVideo	     = Arts::VideoPlayObject::null();
     videoWidth	     = 0;
     videoHeight	     = 0;
 
@@ -175,65 +113,60 @@ void KVideoWidget::init(void)
 
 KVideoWidget::~KVideoWidget()
 {
+    if (isEmbedded())
+    {
+	poVideo.x11WindowId( -1 );
+	poVideo = Arts::VideoPlayObject::null();
+    }
+
     if (fullscreenWidget)
     {
 	delete fullscreenWidget;
     }
-
-    releaseWinId( winId() );
 }
 
 void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 {
     if (vpo.isNull())
     {
-	if (embedded)
+	if (isEmbedded())
 	{
-	    releaseWinId( winId() );
-
-	    if (fullscreenWidget)
-	    {
-		releaseWinId( fullscreenWidget->winId() );
-	    }
-
-	    embedded = false;
-
-	    setBackgroundMode( PaletteBackground );
-	    repaint();
+	    poVideo.x11WindowId( -1 );
+	    poVideo = Arts::VideoPlayObject::null();
 	}
+
+	setBackgroundMode( PaletteBackground );
+	repaint();
 
 	// Resize GUI
 	videoWidth  = 0;
 	videoHeight = 0;
-	setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
 	if (isHalfSize() || isNormalSize() || isDoubleSize())
 	    emit adaptSize( 0, 0 );
     }
     else
     {
-	embedded = true;
+	if (isEmbedded())
+	{
+	    poVideo.x11WindowId( -1 );
+	}
+
+	poVideo = vpo;
 
 	// Don't reset fullscreen mode for video playlists
 	if (fullscreenWidget)
 	{
-	    vpo.x11WindowId( fullscreenWidget->winId() );
+	    poVideo.x11WindowId( fullscreenWidget->winId() );
+	    fullscreenWidget->setBackgroundMode( NoBackground );
+
+	    setEraseColor( black );
 	}
-
-	vpo.x11WindowId( winId() );
-
-	// Re-enable video widget
-	if (fullscreenWidget)
+	else
 	{
-	    sendEvent( fullscreenWidget->winId(), VPO_ENABLE_WINDOW );
+	    poVideo.x11WindowId( winId() );
+	    setBackgroundMode( NoBackground );
 	}
-	else if (enabled)
-	{
-	    sendEvent( winId(), VPO_ENABLE_WINDOW );
-	}
-
-	setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-	emit adaptSize(videoWidth, videoHeight);
     }
 }
 
@@ -271,7 +204,7 @@ QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
 
 bool KVideoWidget::isEmbedded()
 {
-    return embedded;
+    return !poVideo.isNull();
 }
 
 bool KVideoWidget::isFullscreen()
@@ -373,45 +306,36 @@ void KVideoWidget::resizeEvent( QResizeEvent *event )
     }
 }
 
+void KVideoWidget::resizeNotify( int width, int height )
+{
+    videoWidth = width;
+    videoHeight = height;
+
+    if (isHalfSize())
+	emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
+    else if (isNormalSize())
+	emit adaptSize( videoWidth, videoHeight );
+    else if (isDoubleSize())
+	emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
+}
+
 bool KVideoWidget::x11Event( XEvent *event )
 {
-    Atom atom = XInternAtom( qt_xdisplay(), "VPO_X11_COMM", False );
-
-    if (event->type == ClientMessage && event->xclient.message_type == atom)
+    if (event->type == ClientMessage &&
+	event->xclient.message_type ==
+		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
     {
-	switch (event->xclient.data.l[0])
-	{
-	case VPO_RESIZE_NOTIFY:
-	    videoWidth  = event->xclient.data.l[1];
-	    videoHeight = event->xclient.data.l[2];
-
-	    if (isHalfSize())
-		emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
-	    else if (isNormalSize())
-		emit adaptSize( videoWidth, videoHeight );
-	    else if (isDoubleSize())
-		emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
-	    break;
-	case VPO_DESTROY_NOTIFY:
-	    setEraseColor( black );
-	    embedded = false;
-	    break;
-	case VPO_ENABLE_NOTIFY:
-	    setBackgroundMode( NoBackground );
-	    enabled = true;
-	    break;
-	case VPO_DISABLE_NOTIFY:
-	    setEraseColor( black );
-	    enabled = false;
-	    break;
-	}
+	resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
     return false;
 }
 
 void KVideoWidget::fullscreenActivated()
 {
-    if (isFullscreen() && !fullscreenWidget)
+    if (isFullscreen() == (fullscreenWidget != 0))
+	return;
+
+    if (isFullscreen())
     {
 	fullscreenWidget = new KFullscreenVideoWidget( this );
 
@@ -427,18 +351,22 @@ void KVideoWidget::fullscreenActivated()
 	fullscreenWidget->showFullScreen();
 	fullscreenWidget->setFocus();
 
-	// Add fullscreen window
-	sendEvent( winId(), VPO_ADD_WINDOW, fullscreenWidget->winId(), true );
+	if (isEmbedded())
+	{
+	    poVideo.x11WindowId( fullscreenWidget->winId() );
+	    fullscreenWidget->setBackgroundMode( NoBackground );
+	}
     }
     else
     {
-	if (fullscreenWidget)
+	if (isEmbedded())
 	{
-	    delete fullscreenWidget;
-	    fullscreenWidget = 0;
+	    poVideo.x11WindowId( winId() );
+	    setBackgroundMode( NoBackground );
 	}
 
-	sendEvent( winId(), VPO_ENABLE_WINDOW );
+	delete fullscreenWidget;
+	fullscreenWidget = 0;
     }
 }
 
