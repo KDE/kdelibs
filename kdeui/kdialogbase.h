@@ -113,7 +113,7 @@ class KDialogBaseTile;
  * then you can define a main widget by using @ref setMainWidget(). You
  * only need to set the minimum size of that widget and the dialog will
  * resize itself to fit this minimum size.  The dialog is resizeable, but
- * can not be made smaller than its minimum size.
+ * cannot be made smaller than its minimum size.
  *
  * @sect Layout:
  *
@@ -791,19 +791,19 @@ class KDialogBase : public KDialog
      * ignored if smaller than the dialog's minimum size.
      *
      * @param s Startup size.
-     * @param noResize If @p true the dialog can not be resized.
+     * @param noResize If @p true the dialog cannot be resized.
      */
     void setInitialSize( const QSize &s, bool noResize=false );
 
     /**
-     * Convenience method. Addd a size to the default minimum size of a
+     * Convenience method. Add a size to the default minimum size of a
      * dialog.
      *
      * This method should only be called right before @ref show() or
      * @ref exec().
      *
      * @param s  Size added to minimum size.
-     * @param noResize If @p true the dialog can not be resized.
+     * @param noResize If @p true the dialog cannot be resized.
      */
     void incInitialSize( const QSize &s, bool noResize=false );
 
