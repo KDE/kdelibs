@@ -54,11 +54,12 @@ AC_DEFUN(KDE_REPLACE_ROOT,
 
 AC_DEFUN(AC_CREATE_KFSSTND,
 [
-AC_MSG_CHECKING(for KDE paths)
 AC_REQUIRE([AC_CHECK_RPATH])
 AC_REQUIRE([AC_CHECK_BOOL])
 
 if test "$1" = "default"; then
+
+  AC_MSG_CHECKING(for KDE paths)
 
   if test -z "$kde_htmldir"; then
     kde_htmldir="\$(prefix)/share/doc/HTML"
@@ -105,6 +106,7 @@ else
 
 AC_CACHE_VAL(kde_cv_all_paths,
 [
+AC_MSG_CHECKING([for kde headers installed])
 AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF
 #include <stdio.h>
@@ -138,14 +140,29 @@ if test -n "$qt_libraries"; then
   KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $qt_libraries $KDE_EXTRA_RPATH"
 fi
 
+ac_compile='${CXX-g++} -c $CXXFLAGS $all_includes $CPPFLAGS conftest.$ac_ext'
+if AC_TRY_EVAL(ac_compile); then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_ERROR([your system is not able to compile a small KDE application!
+Check, if you installed the KDE header files correctly.])
+fi
+
+AC_MSG_CHECKING([for kde libraries installed])
 ac_link='/bin/sh ./libtool --mode=link ${CXX-g++} -o conftest $CXXFLAGS $all_includes $CPPFLAGS $LDFLAGS $all_libraries conftest.$ac_ext $LIBS -lkdecore -lqt -lXext -lX11 $LIBSOCKET $KDE_TEST_RPATH 1>&5'
 
-if AC_TRY_EVAL(ac_link) && test -s conftest 
-then
-  eval `./conftest 2>&5`
-  ./conftest 2> /dev/null >&5 # make an echo for config.log
-  kde_have_all_paths=yes
+if AC_TRY_EVAL(ac_link) && test -s conftest; then 
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_ERROR([your system fails at linking a small KDE application!
+Check, if your compiler is installed correctly and if you have used the
+same compiler to compile qt and kdelibs as you did use now])
 fi
+
+AC_MSG_CHECKING(for KDE paths)
+eval `./conftest 2>&5`
+./conftest 2> /dev/null >&5 # make an echo for config.log
+kde_have_all_paths=yes
 
 AC_LANG_CPLUSPLUS
 
@@ -180,7 +197,8 @@ if test -z "$kde_htmldir" || test -z "$kde_appsdir" ||
    test -z "$kde_partsdir" || test "$kde_have_all_paths" != "yes"; then
   AC_MSG_RESULT(problems)
   kde_have_all_paths=no
-  AC_MSG_ERROR([configure can not run a little KDE program to test the environment.
+  AC_MSG_ERROR([configure could not run a little KDE program to test the environment. 
+Since it had compiled and linked before, it must be a strange problem on your system.
 Look at config.log for details. If you are not able to fix this, please contact Stephan Kulow <coolo@kde.org>.])
 else
   AC_MSG_RESULT(done)
