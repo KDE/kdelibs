@@ -2491,9 +2491,9 @@ void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
     if (td==d->activeDockPriority[0]) return;
     if (d->activeDockPriority[0]==0) {
         d->activeDockPriority[0]=td;
-        d->focusList=new KMdiFocusList(this);
-        if (m_pMdi)  d->focusList->addWidgetTree(m_pMdi);
-        if (m_documentTabWidget) d->focusList->addWidgetTree(m_documentTabWidget);
+//        d->focusList=new KMdiFocusList(this);
+//        if (m_pMdi)  d->focusList->addWidgetTree(m_pMdi);
+//        if (m_documentTabWidget) d->focusList->addWidgetTree(m_documentTabWidget);
         return;
     }
     int offset=0;
@@ -2514,11 +2514,13 @@ void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
             break;
         }
     }
+/*    
     if (d->activeDockPriority[0]==0) {
         if (d->focusList) d->focusList->restore();
         delete d->focusList;
         d->focusList=0;
     }
+*/    
 }
 
 void KMdiMainFrm::prevToolViewInDock() {
