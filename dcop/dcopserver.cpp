@@ -78,26 +78,6 @@ static Bool HostBasedAuthProc ( char* /*hostname*/)
     return only_local; // no host based authentication
 }
 
-#ifdef XSM_HACK
-// SM DUMMY
-#include <X11/SM/SMlib.h>
-
-static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
-{
-    return 0;
-};
-
-static void registerXSM()
-{
-    char 	errormsg[256];
-    if (!SmsInitialize (const_cast<char *>("SAMPLE-SM"), const_cast<char *>("1.0"),
-			NewClientProc, NULL,
-			HostBasedAuthProc, 256, errormsg))
-	{
-	    qFatal("register xsm failed");
-	}
-}
-#endif
 extern "C" {
 extern IceWriteHandler _KDE_IceWriteHandler;
 extern IceIOErrorHandler _KDE_IceIOErrorHandler;
@@ -883,8 +863,12 @@ if (opcode == DCOPCall)
     }
 }
 
-IcePaVersionRec DCOPVersions[] = {
+IcePaVersionRec DCOPServerVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
+};
+
+IcePoVersionRec DUMMYVersions[] = {
+    { DCOPVersionMajor, DCOPVersionMinor, 0 }
 };
 
 typedef struct DCOPServerConnStruct *DCOPServerConn;
@@ -977,17 +961,22 @@ DCOPServer::DCOPServer(bool _only_local)
 
     dcopSignals = new DCOPSignals;
 
-#ifdef XSM_HACK
     extern int _KDE_IceLastMajorOpcode; // from libICE
     if (_KDE_IceLastMajorOpcode < 1 )
-	registerXSM();
-#endif
+        IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    1, DUMMYVersions,
+				    DCOPAuthCount, const_cast<char **>(DCOPAuthNames),
+				    DCOPClientAuthProcs, 0);
+    if (_KDE_IceLastMajorOpcode < 1 )
+	qWarning("DCOPServer Error: incorrect major opcode!");
 
     the_server = this;
     if (( majorOpcode = IceRegisterForProtocolReply (const_cast<char *>("DCOP"),
 						     const_cast<char *>(DCOPVendorString),
 						     const_cast<char *>(DCOPReleaseString),
-						     1, DCOPVersions,
+						     1, DCOPServerVersions,
 						     1, const_cast<char **>(DCOPAuthNames),
 						     DCOPServerAuthProcs,
 						     HostBasedAuthProc,

@@ -165,35 +165,6 @@ QCString dcopServerFile()
 
 const char* DCOPClientPrivate::serverAddr = 0;
 
-#ifdef XSM_HACK
-// SM DUMMY
-#include <X11/SM/SMlib.h>
-static Bool HostBasedAuthProc ( char* /*hostname*/)
-{
-    /* we don't need any security here, as this is only a hack to
-     * get the protocol number we want for DCOP.  We don't use the SM
-     * connection in any way */
-    return true;
-}
-static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
-{
-    return 0;
-};
-
-static void registerXSM()
-{
-    char 	errormsg[256];
-    if (!SmsInitialize (const_cast<char *>("SAMPLE-SM"), const_cast<char *>("1.0"),
-			NewClientProc, NULL,
-			HostBasedAuthProc, 256, errormsg))
-	{
-	    qFatal("register xsm failed");
-	}
-    qWarning("Registering XSM.. why??");
-}
-#endif
-
-
 static void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  );
 
 /**
@@ -394,7 +365,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 
 
 
-static IcePoVersionRec DCOPVersions[] = {
+static IcePoVersionRec DCOPClientVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
@@ -493,16 +464,21 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if ( isAttached() )
 	detach();
 
-#ifdef XSM_HACK
     extern int _KDE_IceLastMajorOpcode; // from libICE
     if (_KDE_IceLastMajorOpcode < 1 )
-	registerXSM();
-#endif
+        IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    1, DCOPClientVersions,
+				    DCOPAuthCount, const_cast<char **>(DCOPAuthNames),
+				    DCOPClientAuthProcs, 0);
+    if (_KDE_IceLastMajorOpcode < 1 )
+	qWarning("DCOPClient Error: incorrect major opcode!");
 
     if ((d->majorOpcode = IceRegisterForProtocolSetup(const_cast<char *>("DCOP"),
 						      const_cast<char *>(DCOPVendorString),
 						      const_cast<char *>(DCOPReleaseString),
-						      1, DCOPVersions,
+						      1, DCOPClientVersions,
 						      DCOPAuthCount,
 						      const_cast<char **>(DCOPAuthNames),
 						      DCOPClientAuthProcs, 0L)) < 0) {
