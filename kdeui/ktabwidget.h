@@ -39,7 +39,7 @@ public:
       Set the tab of the given widget to \a color.
     */
     void setTabColor( QWidget *, const QColor& color );
-    QColor tabColor( QWidget * ) const;
+    const QColor &tabColor( QWidget * ) const;
 
     /*!
       If \a enable is TRUE, tab reordering with middle button will be enabled.
@@ -64,9 +64,9 @@ public:
 public slots:
     /*!
       Move a widget's tab from first to second specified index and emit
-      signal movedTab( const int, const int ) afterwards.
+      signal movedTab( int, int ) afterwards.
     */
-    virtual void moveTab( const int, const int );
+    virtual void moveTab( int, int );
 
 signals:
     /*!
@@ -105,7 +105,7 @@ signals:
       A tab was moved from first to second index. This signal is only
       possible after you have called setTabReorderingEnabled( true ).
     */
-    void movedTab( const int, const int );
+    void movedTab( int, int );
 
     /*!
       A double left mouse button click was performed over the widget.
@@ -129,12 +129,12 @@ protected:
     virtual void dropEvent( QDropEvent * );
 
 protected slots:
-    virtual void receivedDropEvent( const int, QDropEvent * );
-    virtual void initiateDrag( const int );
-    virtual void contextMenu( const int, const QPoint & );
-    virtual void mouseDoubleClick( const int );
-    virtual void mouseMiddleClick( const int );
-    virtual void closeRequest( const int );
+    virtual void receivedDropEvent( int, QDropEvent * );
+    virtual void initiateDrag( int );
+    virtual void contextMenu( int, const QPoint & );
+    virtual void mouseDoubleClick( int );
+    virtual void mouseMiddleClick( int );
+    virtual void closeRequest( int );
 
 private:
     bool isEmptyTabbarSpace( const QPoint & );

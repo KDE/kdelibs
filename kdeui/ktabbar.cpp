@@ -211,7 +211,7 @@ void KTabBar::setTabColor( int id, const QColor& color )
     }
 }
 
-QColor KTabBar::tabColor( int id  ) const
+const QColor &KTabBar::tabColor( int id  ) const
 {
     if ( mTabColors.contains( id ) )
         return mTabColors[id];

@@ -36,7 +36,7 @@ class KTabBar: public QTabBar
 public:
     KTabBar( QWidget* parent=0, const char* name=0 );
 
-    QColor tabColor( int ) const;
+    const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
 
     void setTabReorderingEnabled( bool enable );
@@ -46,14 +46,14 @@ public:
     inline bool hoverCloseButton() const;
 
 signals:
-    void contextMenu( const int, const QPoint & );
-    void mouseDoubleClick( const int );
-    void mouseMiddleClick( const int );
-    void initiateDrag( const int );
+    void contextMenu( int, const QPoint & );
+    void mouseDoubleClick( int );
+    void mouseMiddleClick( int );
+    void initiateDrag( int );
     void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
-    void receivedDropEvent( const int, QDropEvent * );
-    void moveTab( const int, const int );
-    void closeRequest( const int );
+    void receivedDropEvent( int, QDropEvent * );
+    void moveTab( int, int );
+    void closeRequest( int );
 
 protected:
     virtual void mouseDoubleClickEvent( QMouseEvent *e );

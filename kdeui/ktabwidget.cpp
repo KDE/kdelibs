@@ -29,14 +29,14 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     setTabBar( new KTabBar(this, "tabbar") );
     setAcceptDrops( true );
 
-    connect(tabBar(), SIGNAL(contextMenu( const int, const QPoint & )), SLOT(contextMenu( const int, const QPoint & )));
-    connect(tabBar(), SIGNAL(mouseDoubleClick( const int )), SLOT(mouseDoubleClick( const int )));
-    connect(tabBar(), SIGNAL(mouseMiddleClick( const int )), SLOT(mouseMiddleClick( const int )));
-    connect(tabBar(), SIGNAL(initiateDrag( const int )), SLOT(initiateDrag( const int )));
+    connect(tabBar(), SIGNAL(contextMenu( int, const QPoint & )), SLOT(contextMenu( int, const QPoint & )));
+    connect(tabBar(), SIGNAL(mouseDoubleClick( int )), SLOT(mouseDoubleClick( int )));
+    connect(tabBar(), SIGNAL(mouseMiddleClick( int )), SLOT(mouseMiddleClick( int )));
+    connect(tabBar(), SIGNAL(initiateDrag( int )), SLOT(initiateDrag( int )));
     connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
-    connect(tabBar(), SIGNAL(receivedDropEvent( const int, QDropEvent * )), SLOT(receivedDropEvent( const int, QDropEvent * )));
-    connect(tabBar(), SIGNAL(moveTab( const int, const int )), SLOT(moveTab( const int, const int )));
-    connect(tabBar(), SIGNAL(closeRequest( const int )), SLOT(closeRequest( const int )));
+    connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
+    connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
+    connect(tabBar(), SIGNAL(closeRequest( int )), SLOT(closeRequest( int )));
 }
 
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
@@ -45,7 +45,7 @@ void KTabWidget::setTabColor( QWidget *w, const QColor& color )
     ( (KTabBar*)tabBar() )->setTabColor( t->identifier(), color );
 }
 
-QColor KTabWidget::tabColor( QWidget *w ) const
+const QColor &KTabWidget::tabColor( QWidget *w ) const
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
     return ( (KTabBar*)tabBar() )->tabColor( t->identifier() );
@@ -95,32 +95,32 @@ void KTabWidget::mousePressEvent( QMouseEvent *e )
     QTabWidget::mousePressEvent( e );
 }
 
-void KTabWidget::receivedDropEvent( const int index, QDropEvent *e )
+void KTabWidget::receivedDropEvent( int index, QDropEvent *e )
 {
     emit( receivedDropEvent( page( index ), e ) );
 }
 
-void KTabWidget::initiateDrag( const int index )
+void KTabWidget::initiateDrag( int index )
 {
     emit( initiateDrag( page( index ) ) );
 }
 
-void KTabWidget::contextMenu( const int index, const QPoint &p )
+void KTabWidget::contextMenu( int index, const QPoint &p )
 {
     emit( contextMenu( page( index ), p ) );
 }
 
-void KTabWidget::mouseDoubleClick( const int index )
+void KTabWidget::mouseDoubleClick( int index )
 {
     emit( mouseDoubleClick( page( index ) ) );
 }
 
-void KTabWidget::mouseMiddleClick( const int index )
+void KTabWidget::mouseMiddleClick( int index )
 {
     emit( mouseMiddleClick( page( index ) ) );
 }
 
-void KTabWidget::moveTab( const int from, const int to )
+void KTabWidget::moveTab( int from, int to )
 {
     QString tablabel = label( from );
     QWidget *w = page( from );
@@ -171,7 +171,7 @@ bool KTabWidget::hoverCloseButton() const
     return ( (KTabBar*)tabBar() )->hoverCloseButton();
 }
 
-void KTabWidget::closeRequest( const int index )
+void KTabWidget::closeRequest( int index )
 {
     emit( closeRequest( page( index ) ) );
 }
