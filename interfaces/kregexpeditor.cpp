@@ -1,5 +1,4 @@
 #include "kregexpeditor.h"
-#include "kregexpeditorfactory.h"
 #include <ktrader.h>
 #include <kservice.h>
 #include <klibloader.h>
@@ -23,8 +22,8 @@ KRegExpEditor* KRegExpEditor::createEditor( QWidget* parent, const char* name )
   KLibFactory *factory = KLibLoader::self()->factory( service->library().latin1() );
   ASSERT( factory );
   
-  KRegExpEditorFactory* fac = dynamic_cast<KRegExpEditorFactory*>(factory);
-  return fac->create( parent, name );
+  QObject *obj = factory->create( parent, name, "KRegExpEditor" );
+  return dynamic_cast<KRegExpEditor *>( obj );
 }
 
 #include "kregexpeditor.moc"

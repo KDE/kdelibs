@@ -22,10 +22,12 @@ Q_OBJECT
 public:
   static KRegExpEditor* createEditor( QWidget* parent, const char* name = 0);
   virtual QString regexp() = 0;
-  virtual bool canUndo() const = 0;
-  virtual bool canRedo() const = 0;
 
-  //  static const QString version;
+
+signals:
+  void canUndo( bool );
+  void canRedo( bool );
+  void changes( bool );
 
 protected:
   KRegExpEditor( QWidget *parent, const char *name = 0 );
@@ -33,6 +35,7 @@ protected:
 public slots:
   virtual void slotRedo() = 0;
   virtual void slotUndo() = 0;
+  virtual void slotSetRegexp( QString regexp ) = 0;
 
 };
 
