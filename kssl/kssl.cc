@@ -40,13 +40,14 @@
 class KSSLPrivate {
 public:
   KSSLPrivate() {
-
+    lastInitTLS = false;
   }
 
   ~KSSLPrivate() {
 
   }
 
+  bool lastInitTLS;
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
   #ifdef HAVE_SSL
     SSL *m_ssl;
@@ -72,6 +73,37 @@ KSSL::~KSSL() {
 }
 
 
+bool KSSL::TLSInit() {
+#ifdef HAVE_SSL
+  kdDebug() << "KSSL TLS initialize" << endl;
+  if (m_bInit) return false;
+
+  if (m_bAutoReconfig)
+    m_cfg->load();
+
+  d->m_meth = TLSv1_client_method();
+  d->lastInitTLS = true;
+
+  OpenSSL_add_ssl_algorithms();
+  OpenSSL_add_all_algorithms();
+  d->m_ctx=SSL_CTX_new(d->m_meth);
+  if (d->m_ctx == NULL) {
+    return false;
+  }
+
+  // set cipher list
+  QString clist = m_cfg->getCipherList();
+  if (!clist.isEmpty())
+    SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
+
+  m_bInit = true;
+return true;
+#else
+return false;
+#endif
+}
+
+
 bool KSSL::initialize() {
 #ifdef HAVE_SSL
   kdDebug() << "KSSL initialize" << endl;
@@ -84,6 +116,8 @@ bool KSSL::initialize() {
   //        This logic here makes v2 a "default" if no other SSL
   //        version is turned on.  IMHO this is the safest one to
   //        use as the default anyways, so I'm not changing it yet.
+  d->lastInitTLS = m_cfg->tlsv1();
+
   if (m_cfg->tlsv1())
     d->m_meth = TLSv1_client_method();
   else if (m_cfg->sslv2() && m_cfg->sslv3())
@@ -138,30 +172,9 @@ bool KSSL::reInitialize() {
 
 bool KSSL::setVerificationLogic() {
 #if 0
-  // FIXME: this has to work like the one in ksslcertificate.cc
-  kdDebug() << "KSSL verification logic" << endl;
 #ifdef HAVE_SSL
-// FIXME - check return code
-  SSL_set_verify_result(d->m_ssl, X509_V_OK);
-  SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
-
-  QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
-
-  if (qsl.isEmpty()) {
-    kdDebug() << "KSSL verification logic -- path lookup FAILED!" << endl;
-    return false;
-  }
-
-  QString _j = *(qsl.begin())+"caroot/";
-  kdDebug() << "KSSL verification logic -- path is " << _j << endl;
-
-  if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, _j.ascii())) {
-// FIXME: recover here
-    kdDebug() << "KSSL verification logic -- FAILED!" << endl;
-    return false;
-  }
-
-  return true;
+  //  SSL_set_verify_result(d->m_ssl, X509_V_OK);
+  //  SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
 #endif
 #endif
   return true;
@@ -179,7 +192,7 @@ int KSSL::connect(int sock) {
   if (!setVerificationLogic())
     return -1;
 
-  if (!m_cfg->tlsv1())
+  if (!d->lastInitTLS)
     SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
 
   rc = SSL_set_fd(d->m_ssl, sock);

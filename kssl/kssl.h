@@ -37,6 +37,11 @@ public:
   static bool doesSSLWork();
 
   bool initialize();
+  /**
+   * This is used for apps which do STARTTLS or something similar.
+   * It creates a TLS method regardless of the user's settings.
+   */
+  bool TLSInit();
   void close();
   bool reInitialize();
 
