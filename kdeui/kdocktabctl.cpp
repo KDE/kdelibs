@@ -523,9 +523,9 @@ void KDockTabBarPainter::drawBuffer()
     paint.setFont( parentWidget()->font() );
 
     if ( mainData->at(k)->enabled ){
-      if ( (int)k == curTab )
-        paint.setPen( colorGroup().buttonText() );
-      else
+//      if ( (int)k == curTab )
+//        paint.setPen( colorGroup().buttonText() );
+//      else
         paint.setPen( mainData->at(k)->textColor );
       paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
     } else {
