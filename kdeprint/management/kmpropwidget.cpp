@@ -46,13 +46,13 @@ KMPropWidget::~KMPropWidget()
 void KMPropWidget::slotChange()
 {
 	KMTimer::self()->hold();
-	bool	value = requestChange();
-	if (!value)
+	int	value = requestChange();
+	if (value == -1)
 	{
 		KMessageBox::error(this, i18n("<qt>Unable to change printer properties. Error received from manager:<p>%1</p></qt>").arg(KMManager::self()->errorMsg()));
 		KMManager::self()->setErrorMsg(QString::null);
 	}
-	KMTimer::self()->release(value);
+	KMTimer::self()->release((value == 1));
 }
 
 void KMPropWidget::setPrinterBase(KMPrinter *p)
@@ -69,7 +69,11 @@ void KMPropWidget::configureWizard(KMWizard*)
 {
 }
 
-bool KMPropWidget::requestChange()
+// return status:
+//   -1 : error
+//    0 : nothing to be done (cancelled)
+//    1 : success
+int KMPropWidget::requestChange()
 {
 	if (m_printer)
 	{
@@ -77,8 +81,8 @@ bool KMPropWidget::requestChange()
 		configureWizard(&dlg);
 		dlg.setPrinter(m_printer);
 		if (dlg.exec())
-			return KMFactory::self()->manager()->modifyPrinter(m_printer,dlg.printer());
+			return (KMFactory::self()->manager()->modifyPrinter(m_printer,dlg.printer()) ? 1 : -1);
 	}
-	return false;
+	return 0;
 }
 #include "kmpropwidget.moc"

@@ -49,7 +49,7 @@ public slots:
 	void slotChange();
 
 protected:
-	virtual bool requestChange();
+	virtual int requestChange();
 	virtual void configureWizard(KMWizard*);
 
 protected:
