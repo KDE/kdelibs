@@ -931,7 +931,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
     dir->setAutoUpdate( true );
 
-    connect( dir, SIGNAL(started( const QString& )), SLOT(slotStarted()));
+    connect( dir, SIGNAL(started( const KURL& )), SLOT(slotStarted()));
     connect( dir, SIGNAL(newItems(const KFileItemList &)),
              SLOT(insertNewFiles(const KFileItemList &)));
     connect( dir, SIGNAL(completed()), SLOT(slotIOFinished()));
