@@ -68,7 +68,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 {
    m_sycoca_mmap = 0;
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
-   if (d->database != 0) delete d->database;
+   delete d->database;
+   d->database = 0L;
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
@@ -249,12 +250,18 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
       // Check if new database already available
       if ( !openDatabase(false /* no dummy one*/) )
       {
-         kdDebug(7011) << "findFactory: we have no database.... launching kdeinit" << endl;
-         KProcess proc;
-         proc << locate("exe","kdeinit");
-         proc.start( KProcess::Block );
-         // Ok, the new database should be here now, open it.
-         openDatabase();
+         static bool triedLaunchingKdeinit = false;
+         if (!triedLaunchingKdeinit) // try only once
+         {
+           triedLaunchingKdeinit = true;
+           kdDebug(7011) << "findFactory: we have no database.... launching kdeinit" << endl;
+           KProcess proc;
+           proc << locate("exe","kdeinit");
+           proc.start( KProcess::Block );
+           // Ok, the new database should be here now, open it.
+         }
+         if (!openDatabase(false))
+            return 0L; // Still no database - maybe kdeinit was already running and it's too early
       }
    }
    checkVersion(); // rewind and check
@@ -266,7 +273,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
       //kdDebug(7011) << QString("KSycoca::findFactory : found factory %1").arg(aId) << endl;
       if (aId == 0)
       {
-         kdError(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!\n" << endl;
+         kdError(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!" << endl;
          break;
       }
       (*m_str) >> aOffset;

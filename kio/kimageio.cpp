@@ -49,7 +49,7 @@ KImageIOFormat::KImageIOFormat( const QString &path)
    rPaths = config.readListEntry("rPaths");
 }
 
-KImageIOFormat::KImageIOFormat( QDataStream& _str, int offset) : 
+KImageIOFormat::KImageIOFormat( QDataStream& _str, int offset) :
 	KSycocaEntry( _str, offset)
 {
    bLibLoaded = false;
@@ -58,7 +58,7 @@ KImageIOFormat::KImageIOFormat( QDataStream& _str, int offset) :
    load( _str );
 }
 
-KImageIOFormat::~KImageIOFormat() 
+KImageIOFormat::~KImageIOFormat()
 {
 }
 
@@ -83,7 +83,7 @@ KImageIOFormat::save( QDataStream& _str)
         << mSuffices << mMimetype << mLib << mPattern << rPaths;
 }
 
-void 
+void
 KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
 {
    if (!bLibLoaded)
@@ -106,7 +106,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       {
          funcName = "kimgio_"+mType.lower()+"_read";
          lt_ptr_t func = lt_dlsym(libhandle, funcName.ascii());
- 
+
          if (func == NULL) {
             iio->setStatus(1); // error
             qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
@@ -117,14 +117,14 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       {
          funcName = "kimgio_"+mType.lower()+"_write";
          lt_ptr_t func = lt_dlsym(libhandle, funcName.ascii());
- 
+
          if (func == NULL) {
             iio->setStatus(1); // error
             qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
          }
          mWriteFunc = (void (*)(QImageIO *))func;
       }
-      
+
    }
    if (read)
       if (mReadFunc)
@@ -156,18 +156,24 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
         // Add rPaths.
         for(QStringList::Iterator it = rPath.begin();
             it != rPath.end(); ++it)
-           lt_dladdsearchdir( (*it).ascii());  
+           lt_dladdsearchdir( (*it).ascii());
      }
      load();
   }
   else
-  {
-     // Build database
-     if (!formatList)
-     {
+    if (KSycoca::self()->isBuilding())
+    {
+      // Build database
+      if (!formatList)
+      {
         formatList = new KImageIOFormatList();
-     }
-  }
+      }
+    } else
+    {
+      // We have no database at all
+      _self = 0L;
+      delete this;
+    }
 }
 
 QString
@@ -177,7 +183,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
   QString allPatterns;
   QString wildCard("*.");
   QString seperator("|");
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -191,17 +197,17 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
              it != suffices.end();
              ++it)
         {
-           if (!pattern.isEmpty()) 
+           if (!pattern.isEmpty())
               pattern += " ";
            pattern = pattern + wildCard+(*it);
-           if (!allPatterns.isEmpty()) 
+           if (!allPatterns.isEmpty())
               allPatterns += " ";
            allPatterns = allPatterns + wildCard +(*it);
         }
         if (!pattern.isEmpty())
         {
            pattern = pattern + seperator + format->mPattern;
-           patterns.append(pattern); 
+           patterns.append(pattern);
         }
      }
   }
@@ -213,7 +219,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
   return pattern;
 }
 
-void 
+void
 KImageIOFactory::readImage( QImageIO *iio)
 {
    (void) self(); // Make sure we exist
@@ -223,7 +229,7 @@ KImageIOFactory::readImage( QImageIO *iio)
    fprintf(stderr, "KImageIO: readImage() format = %s\n", fm );
 
    KImageIOFormat *format = 0;
-   for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+   for( KImageIOFormatList::ConstIterator it = formatList->begin();
         it != formatList->end();
         ++it )
    {
@@ -235,12 +241,12 @@ KImageIOFactory::readImage( QImageIO *iio)
    {
       iio->setStatus(1); // error
       return;
-   } 
+   }
 
    format->callLibFunc( true, iio);
 }
 
-void 
+void
 KImageIOFactory::writeImage( QImageIO *iio)
 {
    (void) self(); // Make sure we exist
@@ -250,7 +256,7 @@ KImageIOFactory::writeImage( QImageIO *iio)
    fprintf(stderr, "KImageIO: writeImage() format = %s\n", fm );
 
    KImageIOFormat *format = 0;
-   for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+   for( KImageIOFormatList::ConstIterator it = formatList->begin();
         it != formatList->end();
         ++it )
    {
@@ -262,7 +268,7 @@ KImageIOFactory::writeImage( QImageIO *iio)
    {
       iio->setStatus(1); // error
       return;
-   } 
+   }
 
    format->callLibFunc( false, iio);
 }
@@ -280,9 +286,9 @@ KImageIOFactory::load()
 
       // Since Qt doesn't allow us to unregister image formats
       // we have to make sure not to add them a second time.
-      // This typically happens when the sycoca database was updated 
+      // This typically happens when the sycoca database was updated
       // we need to reread it.
-      for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+      for( KImageIOFormatList::ConstIterator it = formatList->begin();
            it != formatList->end();
            ++it )
       {
@@ -308,9 +314,9 @@ KImageIOFactory::load()
             writeFunc = writeImage;
          else
             writeFunc = 0;
-         QImageIO::defineIOHandler( format->mType.ascii(), 
+         QImageIO::defineIOHandler( format->mType.ascii(),
                                     format->mHeader.ascii(),
-                                    format->mFlags.ascii(), 
+                                    format->mFlags.ascii(),
                                     readFunc, writeFunc);
       }
       formatList->append( format );
@@ -330,7 +336,7 @@ KImageIOFactory::~KImageIOFactory()
   // the sycoca database updates (Such event deletes this factory)
 }
 
-KSycocaEntry* 
+KSycocaEntry*
 KImageIOFactory::createEntry(int offset)
 {
    KImageIOFormat *format = 0;
@@ -357,8 +363,8 @@ void KImageIO::registerFormats()
    (void) KImageIOFactory::self();
 }
 
-QString 
-KImageIO::pattern(Mode _mode) 
+QString
+KImageIO::pattern(Mode _mode)
 {
   if (_mode == Reading)
      return KImageIOFactory::self()->mReadPattern;
@@ -368,8 +374,8 @@ KImageIO::pattern(Mode _mode)
 
 bool KImageIO::canWrite(const QString& type)
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -382,8 +388,8 @@ bool KImageIO::canWrite(const QString& type)
 
 bool KImageIO::canRead(const QString& type)
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -395,9 +401,9 @@ bool KImageIO::canRead(const QString& type)
 }
 
 QStringList KImageIO::types(Mode _mode ) {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
   QStringList types;
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -412,8 +418,8 @@ QStringList KImageIO::types(Mode _mode ) {
 
 QString KImageIO::suffix(const QString& type)
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -427,13 +433,13 @@ QString KImageIO::suffix(const QString& type)
 
 QString KImageIO::type(const QString& filename)
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
   QString suffix = filename;
   int dot = suffix.findRev('.');
   if (dot >= 0)
     suffix = suffix.mid(dot + 1);
 
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -447,9 +453,9 @@ QString KImageIO::type(const QString& filename)
 
 QStringList KImageIO::mimeTypes( Mode _mode )
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
   QStringList mimeList;
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -464,8 +470,8 @@ QStringList KImageIO::mimeTypes( Mode _mode )
 
 bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
 {
-  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList; 
-  for( KImageIOFormatList::ConstIterator it = formatList->begin(); 
+  KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
+  for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
   {
@@ -474,7 +480,7 @@ bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
      {
         if (((_mode == Reading) && format->bRead) ||
             ((_mode == Writing) && format->bWrite))
-           return true; 
+           return true;
      }
   }
 
