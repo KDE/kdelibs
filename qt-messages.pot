@@ -1,114 +1,36 @@
-#: sql/drivers/tds/qsql_tds.cpp:476
-msgid "Could not open database connection"
+#: attic/qtmultilineedit.cpp:2130
+msgid "Undo"
 msgstr ""
 
-#: sql/drivers/tds/qsql_tds.cpp:481
-msgid "Could not open database"
+#: attic/qtmultilineedit.cpp:2131
+msgid "Redo"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:883
-msgid "Delete this record?"
+#: attic/qtmultilineedit.cpp:2134
+msgid "Cut"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:884 sql/qsqlmanager_p.cpp:890
-#: sql/qsqlmanager_p.cpp:926
-msgid "Yes"
+#: attic/qtmultilineedit.cpp:2135
+msgid "Copy"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:885 sql/qsqlmanager_p.cpp:891
-#: sql/qsqlmanager_p.cpp:927
-msgid "No"
+#: attic/qtmultilineedit.cpp:2136
+msgid "Paste"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:889
-msgid "Save edits?"
+#: attic/qtmultilineedit.cpp:2138
+msgid "Paste special..."
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 dialogs/qinputdialog.cpp:155
-#: dialogs/qprogressdialog.cpp:250 dialogs/qtabdialog.cpp:847
-#: dialogs/qwizard.cpp:179 sql/qsqlmanager_p.cpp:892
-msgid "Cancel"
+#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2103
+#: widgets/qtextedit.cpp:4047
+msgid "Clear"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:924
-msgid "Confirm"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:925
-msgid "Cancel your edits?"
-msgstr ""
-
-#: sql/qdatatable.cpp:262
-msgid "True"
-msgstr ""
-
-#: sql/qdatatable.cpp:263
-msgid "False"
-msgstr ""
-
-#: sql/qdatatable.cpp:692
-msgid "Insert"
-msgstr ""
-
-#: sql/qdatatable.cpp:693
-msgid "Update"
-msgstr ""
-
-#: sql/qdatatable.cpp:694
-msgid "Delete"
-msgstr ""
-
-#: dialogs/qerrormessage.cpp:125
-msgid "&Show this message again"
-msgstr ""
-
-#: dialogs/qerrormessage.cpp:127
-msgid "&OK"
-msgstr ""
-
-#: dialogs/qmessagebox.cpp:547
-msgid ""
-"<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
-"toolkit for cross-platform GUI &amp; application development.</p><p>Qt "
-"provides single-source portability across Windows 95/98/NT4/ME/2000, "
-"Mac&nbsp;OS&nbsp;X, Linux, Solaris, HP-UX and many other versions of Unix "
-"with X11.<br>Qt is also available for embedded devices.</p><p>Qt is a "
-"Trolltech product. See <tt>http://www.trolltech.com/qt/</tt> for more "
-"information.</p>"
-msgstr ""
-
-#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:153
-#: dialogs/qmessagebox.cpp:1362 dialogs/qtabdialog.cpp:194
-#: dialogs/qtabdialog.cpp:1063
-msgid "OK"
-msgstr ""
-
-#: dialogs/qwizard.cpp:180
-msgid "< Back"
-msgstr ""
-
-#: dialogs/qwizard.cpp:181
-msgid "Next >"
-msgstr ""
-
-#: dialogs/qwizard.cpp:182
-msgid "Finish"
-msgstr ""
-
-#: dialogs/qtabdialog.cpp:748 dialogs/qwizard.cpp:183
-msgid "Help"
-msgstr ""
-
-#: dialogs/qfontdialog.cpp:289 dialogs/qtabdialog.cpp:703
-msgid "Apply"
-msgstr ""
-
-#: dialogs/qtabdialog.cpp:795
-msgid "Defaults"
-msgstr ""
-
-#: dialogs/qdialog.cpp:427
-msgid "What's This?"
+#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2106
+#: widgets/qlineedit.cpp:2108 widgets/qtextedit.cpp:4051
+#: widgets/qtextedit.cpp:4053
+msgid "Select All"
 msgstr ""
 
 #: dialogs/qfontdialog.cpp:166
@@ -119,8 +41,8 @@ msgstr ""
 msgid "Font st&yle"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:182 workspace/qworkspace.cpp:250
-#: workspace/qworkspace.cpp:264
+#: dialogs/qfontdialog.cpp:182 workspace/qworkspace.cpp:255
+#: workspace/qworkspace.cpp:269
 msgid "&Size"
 msgstr ""
 
@@ -148,8 +70,20 @@ msgstr ""
 msgid "Scr&ipt"
 msgstr ""
 
+#: dialogs/qfontdialog.cpp:289 dialogs/qmessagebox.cpp:1385
+msgid "OK"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:289
+msgid "Apply"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:300 sql/qsqlmanager_p.cpp:892
+msgid "Cancel"
+msgstr ""
+
 #: dialogs/qfontdialog.cpp:300 widgets/qtitlebar.cpp:113
-#: workspace/qworkspace.cpp:1045
+#: workspace/qworkspace.cpp:1077
 msgid "Close"
 msgstr ""
 
@@ -157,83 +91,27 @@ msgstr ""
 msgid "Select Font"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2130
-msgid "Undo"
+#: dialogs/qmessagebox.cpp:550
+msgid ""
+"<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
+"toolkit for cross-platform GUI &amp; application development.</p><p>Qt "
+"provides single-source portability across Windows 95/98/NT4/ME/2000, "
+"Mac&nbsp;OS&nbsp;X, Linux, Solaris, HP-UX and many other versions of Unix "
+"with X11.<br>Qt is also available for embedded devices.</p><p>Qt is a "
+"Trolltech product. See <tt>http://www.trolltech.com/qt/</tt> for more "
+"information.</p>"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2131
-msgid "Redo"
+#: dialogs/qdialog.cpp:427
+msgid "What's This?"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2134
-msgid "Cut"
-msgstr ""
-
-#: attic/qtmultilineedit.cpp:2135
-msgid "Copy"
-msgstr ""
-
-#: attic/qtmultilineedit.cpp:2136
-msgid "Paste"
-msgstr ""
-
-#: attic/qtmultilineedit.cpp:2138
-msgid "Paste special..."
-msgstr ""
-
-#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2103
-#: widgets/qtextedit.cpp:3988
-msgid "Clear"
-msgstr ""
-
-#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2106
-#: widgets/qlineedit.cpp:2108 widgets/qtextedit.cpp:3992
-#: widgets/qtextedit.cpp:3994
-msgid "Select All"
-msgstr ""
-
-#: workspace/qworkspace.cpp:248
-msgid "&Restore"
-msgstr ""
-
-#: workspace/qworkspace.cpp:249 workspace/qworkspace.cpp:263
-msgid "&Move"
-msgstr ""
-
-#: workspace/qworkspace.cpp:251
-msgid "Mi&nimize"
-msgstr ""
-
-#: workspace/qworkspace.cpp:252
-msgid "Ma&ximize"
-msgstr ""
-
-#: workspace/qworkspace.cpp:255 workspace/qworkspace.cpp:271
-msgid "&Close"
-msgstr ""
-
-#: workspace/qworkspace.cpp:265
-msgid "Stay on &Top"
-msgstr ""
-
-#: workspace/qworkspace.cpp:269 workspace/qworkspace.cpp:1204
-msgid "Sh&ade"
-msgstr ""
-
-#: workspace/qworkspace.cpp:822 workspace/qworkspace.cpp:965
-msgid "%1 - [%2]"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1021
-msgid "Minimize"
-msgstr ""
-
-#: workspace/qworkspace.cpp:1033
-msgid "Restore Down"
-msgstr ""
-
-#: workspace/qworkspace.cpp:1202
-msgid "&Unshade"
+#: kernel/qapplication.cpp:2257
+msgid ""
+"_: QT_LAYOUT_DIRECTION\n"
+"Translate this string to the string 'LTR' in left-to-right languages or to "
+"'RTL' in right-to-left languages (such as Hebrew and Arabic) to get proper "
+"widget layout."
 msgstr ""
 
 #: kernel/qnetworkprotocol.cpp:890
@@ -262,16 +140,36 @@ msgstr ""
 msgid "F%1"
 msgstr ""
 
-#: widgets/qheader.cpp:1349 widgets/qheader.cpp:1351
+#: widgets/qheader.cpp:1351 widgets/qheader.cpp:1353
 #, c-format
 msgid "%1"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2104
+#: widgets/qlineedit.cpp:2095 widgets/qtextedit.cpp:4035
+msgid "&Undo"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2096 widgets/qtextedit.cpp:4036
+msgid "&Redo"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2099 widgets/qtextedit.cpp:4041
+msgid "Cu&t"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2100 widgets/qtextedit.cpp:4042
+msgid "&Copy"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2101 widgets/qtextedit.cpp:4044
+msgid "&Paste"
+msgstr ""
+
+#: widgets/qmainwindow.cpp:2105
 msgid "Line up"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2106
+#: widgets/qmainwindow.cpp:2107
 msgid "Customize..."
 msgstr ""
 
@@ -291,30 +189,108 @@ msgstr ""
 msgid "Normalize"
 msgstr ""
 
+#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1053
+msgid "Minimize"
+msgstr ""
+
 #: widgets/qtitlebar.cpp:108
 msgid "Maximize"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2095 widgets/qtextedit.cpp:3976
-msgid "&Undo"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2096 widgets/qtextedit.cpp:3977
-msgid "&Redo"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2099 widgets/qtextedit.cpp:3982
-msgid "Cu&t"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2100 widgets/qtextedit.cpp:3983
-msgid "&Copy"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2101 widgets/qtextedit.cpp:3985
-msgid "&Paste"
-msgstr ""
-
 #: widgets/qwhatsthis.cpp:417
 msgid "What's this?"
+msgstr ""
+
+#: workspace/qworkspace.cpp:253
+msgid "&Restore"
+msgstr ""
+
+#: workspace/qworkspace.cpp:254 workspace/qworkspace.cpp:268
+msgid "&Move"
+msgstr ""
+
+#: workspace/qworkspace.cpp:256
+msgid "Mi&nimize"
+msgstr ""
+
+#: workspace/qworkspace.cpp:257
+msgid "Ma&ximize"
+msgstr ""
+
+#: workspace/qworkspace.cpp:260 workspace/qworkspace.cpp:276
+msgid "&Close"
+msgstr ""
+
+#: workspace/qworkspace.cpp:270
+msgid "Stay on &Top"
+msgstr ""
+
+#: workspace/qworkspace.cpp:274 workspace/qworkspace.cpp:1244
+msgid "Sh&ade"
+msgstr ""
+
+#: workspace/qworkspace.cpp:845 workspace/qworkspace.cpp:997
+msgid "%1 - [%2]"
+msgstr ""
+
+#: workspace/qworkspace.cpp:1065
+msgid "Restore Down"
+msgstr ""
+
+#: workspace/qworkspace.cpp:1242
+msgid "&Unshade"
+msgstr ""
+
+#: sql/drivers/tds/qsql_tds.cpp:476
+msgid "Could not open database connection"
+msgstr ""
+
+#: sql/drivers/tds/qsql_tds.cpp:481
+msgid "Could not open database"
+msgstr ""
+
+#: sql/qdatatable.cpp:262
+msgid "True"
+msgstr ""
+
+#: sql/qdatatable.cpp:263
+msgid "False"
+msgstr ""
+
+#: sql/qdatatable.cpp:707
+msgid "Insert"
+msgstr ""
+
+#: sql/qdatatable.cpp:708
+msgid "Update"
+msgstr ""
+
+#: sql/qdatatable.cpp:709
+msgid "Delete"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:883
+msgid "Delete this record?"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:884 sql/qsqlmanager_p.cpp:890
+#: sql/qsqlmanager_p.cpp:926
+msgid "Yes"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:885 sql/qsqlmanager_p.cpp:891
+#: sql/qsqlmanager_p.cpp:927
+msgid "No"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:889
+msgid "Save edits?"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:924
+msgid "Confirm"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:925
+msgid "Cancel your edits?"
 msgstr ""
