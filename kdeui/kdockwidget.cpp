@@ -1838,6 +1838,8 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 
   KDockWidget* www = (KDockWidget*)w;
   if ( www->sDocking == (int)KDockWidget::DockNone ) return 0L;
+  if( !www->widget )
+    return 0L;
 
   KDockWidget::DockPosition curPos = KDockWidget::DockDesktop;
   QPoint cpos  = www->mapFromGlobal( pos );
