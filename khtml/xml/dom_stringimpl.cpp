@@ -34,7 +34,7 @@
 using namespace DOM;
 using namespace khtml;
 
-#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
 template class QList<Length>;
