@@ -1225,19 +1225,19 @@ int RenderTableSection::layoutRows( int toAdd )
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
 	int totalHeight = rowPos[totalRows] + toAdd;
-// 	qDebug("layoutRows: totalHeight = %d",  totalHeight );
+//	qDebug("layoutRows: totalHeight = %d",  totalHeight );
 
         int dh = toAdd;
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-	    if ( grid[r].height.isVariable() )
+            if ( grid[r].height.isVariable() && !emptyRow(r))
 		numVariable++;
 	    else if ( grid[r].height.isPercent() )
 		totalPercent += grid[r].height.value();
 	}
 	if ( totalPercent ) {
-// 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
+//	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
 	    // try to satisfy percent
 	    int add = 0;
 	    if ( totalPercent > 100 )
@@ -1252,7 +1252,7 @@ int RenderTableSection::layoutRows( int toAdd )
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
-// 		    qDebug( "adding %d to row %d", toAdd, r );
+//		    qDebug( "adding %d to row %d", toAdd, r );
 		}
 		if ( r < totalRows-1 )
 		    rh = rowPos[r+2] - rowPos[r+1];
@@ -1260,20 +1260,20 @@ int RenderTableSection::layoutRows( int toAdd )
 	    }
 	}
 	if ( numVariable ) {
-	    // distribute over variable cols
-// 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
+	    // distribute over non-empty variable rows
+//	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
 	    int add = 0;
-	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( numVariable > 0 && grid[r].height.isVariable() ) {
-		    int toAdd = dh/numVariable;
+            int toAdd = dh/numVariable;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if ( grid[r].height.isVariable() && !emptyRow(r)) {
 		    add += toAdd;
-		    dh -= toAdd;
 		}
                 rowPos[r+1] += add;
 	    }
-	}
+            dh -= add;
+        }
         if (dh>0 && rowPos[totalRows]) {
-	    // if some left overs, distribute equally.
+	    // if some left overs, distribute weighted.
             int tot=rowPos[totalRows];
             int add=0;
             int prev=rowPos[0];
@@ -1283,7 +1283,29 @@ int RenderTableSection::layoutRows( int toAdd )
                 prev=rowPos[r+1];
                 rowPos[r+1]+=add;
             }
+            dh -= add;
         }
+        if (dh > totalRows) {
+            // distribute to tables with all empty rows
+            int add=0;
+            int toAdd = dh/totalRows;
+            for ( int r = 0; r < totalRows; r++ ) {
+                add += toAdd;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        // Finally distribute round-off values
+        if (dh > 0) {
+            // There is not enough for every row
+            int add=0;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if (add < dh) add++;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        assert (dh == 0);
     }
 
     int leftOffset = borderLeft() + hspacing;
@@ -1478,6 +1500,19 @@ void RenderTableSection::clearGrid()
     while ( rows-- ) {
 	delete grid[rows].row;
     }
+}
+
+bool RenderTableSection::emptyRow(int rowNum) {
+    Row &r = *grid[rowNum].row;
+    const int s = r.size();
+    RenderTableCell *cell;
+    for(int i=0; i<s; i++) {
+        cell = r[i];
+        if (!cell || cell==(RenderTableCell*)-1)
+            continue;
+        return false;
+    }
+    return true;
 }
 
 RenderObject* RenderTableSection::removeChildNode(RenderObject* child)

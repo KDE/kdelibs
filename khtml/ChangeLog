@@ -1,10 +1,18 @@
+2004-11-17  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * render/render_table.{h,cpp}: Improve distribution of excess height
+
+2004-11-17  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * render/render_table.cpp: Respect margins when calculating width to be distributed.
+
 2004-11-16  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_replaced.{cpp,h} (cancelPendingResize): allow
         canceling of scheduled widget resizes, to avoid flicker when we
         had to perform temporary layouts.
 
-        * rendering/render_table.cpp (calcRowHeight): displace resetting layout of cells with 
+        * rendering/render_table.cpp (calcRowHeight): displace resetting layout of cells with
         percent children here and mark those dirty, or we might get zero-height widgets on resize
         (cf. map24.com)
         (layout): ditto.
@@ -14,7 +22,15 @@
 
         * rendering/break_lines.cpp (khtml): adding patch by Otto Pattara to support
         libthai for correct line breaks
-        
+
+2004-11-15  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Fix odd spacing in gmail-composer and zeg-shop.de
+
+        * render/render_box.h: Change auxillary box-size functions to protected
+        * render/render_table.cpp: Calculate percentage heights based on containing box
+        rather than viewport, by merging code with renderBox.
+
 2004-11-09  Germain Garand  <germain@ebooksfrance.org>
 
         fix globeandmail.com famlily of crashes (#65715)
