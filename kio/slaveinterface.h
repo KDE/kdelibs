@@ -62,7 +62,8 @@ class SlaveInterfacePrivate;
    CMD_REPARSECONFIGURATION = 'O',
    CMD_META_DATA = 'P',
    CMD_SYMLINK = 'Q',
-   CMD_SUBURL = 'R'	// Inform the slave about the url it is streaming on.
+   CMD_SUBURL = 'R',	// Inform the slave about the url it is streaming on.
+   CMD_MESSAGEBOXANSWER = 'S'
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -82,7 +83,8 @@ class SlaveInterfacePrivate;
    INF_NEED_PASSWD,
    INF_INFOMESSAGE,
    INF_META_DATA,
-   INF_NETWORK_STATUS
+   INF_NETWORK_STATUS,
+   INF_MESSAGEBOX
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -167,21 +169,8 @@ protected:
     virtual bool dispatch();
     virtual void dispatch( int _cmd, const QByteArray &data );
 
-    /**
-     * Call this when requesting for a login and password.
-     *
-     * This function is only different from the above only because
-     * it takes one more extra argument, the name of the host, so
-     * that any authorization can kept around for a whole session.
-     *
-     * @param head and i18n'ed message to explain the dialog box
-     * @param user user name, in and out
-     * @param pass password, in and out
-     * @param key the string to be used to cache the password.
-     *
-     * @return true on ok, false on cancel
-     */
     void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ = QString::null );
+    void messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
 
     // I need to identify the slaves
     void requestNetwork( const QString &, const QString &);

@@ -22,6 +22,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include "slavebase.h"
+
 #include <config.h>
 
 #include <sys/time.h>
@@ -279,21 +281,21 @@ void SlaveBase::mimeType( const QString &_type)
     while(true)
     {
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
-           kdDebug(7007) << "SlaveBase: mimetype: read error" << endl;
+           kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            ::exit(255);
        }
-       if ( (cmd == CMD_META_DATA) || 
+       if ( (cmd == CMD_META_DATA) ||
             (cmd == CMD_SUBURL) )
        {
           dispatch( cmd, data );
           continue; // Disguised goto
        };
-       break; 
+       break;
     }
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.)
 // Something else is basically an error
-    kdDebug(7007) << "mimetype: reading " << cmd << endl;
+    kdDebug(7019) << "mimetype: reading " << cmd << endl;
     assert( (cmd == CMD_NONE) || (cmd == CMD_GET) );
 }
 
@@ -321,23 +323,15 @@ bool SlaveBase::requestNetwork(const QString& host)
     KIO_DATA << host << d->slaveid;
     m_pConnection->send( MSG_NET_REQUEST, data );
 
-    int cmd;
-    if ( m_pConnection->read( &cmd, data ) == -1 ) {
-        return true;
-    }
-    kdDebug(7007) << "reading " << cmd << endl;
-    if (cmd != INF_NETWORK_STATUS) {
-        if (cmd != CMD_NONE)
-            dispatch( cmd, data );
-        return true;
-    } else {
+    if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) )
+    {
         bool status;
         QDataStream stream( data, IO_ReadOnly );
         stream >> status;
-        kdDebug(7007) << "got " << status << endl;
+        kdDebug(7019) << "got " << status << endl;
         return status;
-    }
-    return true;
+    } else
+        return false;
 }
 
 void SlaveBase::dropNetwork(const QString& host)
@@ -360,11 +354,11 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
     if (!_ready) {
 	pendingListEntries.append(entry);
-	
+
 	if (pendingListEntries.count() > listEntryCurrentSize) {
-	
+
             gettimeofday(&tp, 0);
-	
+
             long diff = ((tp.tv_sec - listEntry_sec) * 1000000 +
                          tp.tv_usec - listEntry_usec) / 1000;
 
@@ -391,7 +385,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    kdDebug(7007) << "listEntries " << list.count() << endl;
+    kdDebug(7019) << "listEntries " << list.count() << endl;
 
     KIO_DATA << list.count();
     UDSEntryListConstIterator it = list.begin();
@@ -414,13 +408,13 @@ void SlaveBase::sigpipe_handler (int)
     // TODO: maybe access the only instance of SlaveBase and call abort() on it
     // Default implementation of abort would exit(1), but specific slaves can
     // abort in a nicer way and be ready for more invocations
-    kdDebug(7007) << "SIGPIPE" << endl;
+    kdDebug(7019) << "SIGPIPE" << endl;
     exit(1);
 }
 
 void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)
 {
-    kdDebug( 7007 ) << "setHost( host = " << host << ")" << endl;
+    kdDebug( 7019 ) << "setHost( host = " << host << ")" << endl;
 }
 
 void SlaveBase::openConnection(void)
@@ -476,23 +470,47 @@ bool SlaveBase::dispatch()
 
 bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, const QString& key )
 {
-    kdDebug(7007) << "openPassDlg " << head << endl;
+    kdDebug(7019) << "openPassDlg " << head << endl;
     KIO_DATA << key << head << user << pass;
     m_pConnection->send( INF_NEED_PASSWD, data );
-    int cmd;
-    if ( m_pConnection->read( &cmd, data ) == -1 ) {
-        return false;
-    }
-    kdDebug(7007) << "reading " << cmd << endl;
-    if (cmd != CMD_USERPASS) {
-        if (cmd != CMD_NONE)
-            dispatch( cmd, data );
-        return false;
-    } else {
+    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data ) == CMD_USERPASS ) {
         QDataStream stream( data, IO_ReadOnly );
         stream >> user >> pass;
-        kdDebug(7007) << "got " << cmd << " " << user << "  [password hidden]" << endl;
+        kdDebug(7019) << "got " << user << "  [password hidden]" << endl;
         return true;
+    } else
+        return false;
+}
+
+int SlaveBase::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+    kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
+    KIO_DATA << type << text << caption << buttonYes << buttonNo;
+    m_pConnection->send( INF_MESSAGEBOX, data );
+    if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) )
+    {
+        QDataStream stream( data, IO_ReadOnly );
+        int answer;
+        stream >> answer;
+        kdDebug(7019) << "got messagebox answer" << answer << endl;
+        return answer;
+    } else
+        return 0; // communication failure
+}
+
+int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data )
+{
+    int cmd;
+    for (;;)
+    {
+        if ( m_pConnection->read( &cmd, data ) == -1 )
+            return 0;
+        if ( cmd == expected1 || cmd == expected2 )
+            return cmd;
+        if ( cmd == CMD_SLAVE_STATUS || cmd == CMD_REPARSECONFIGURATION || cmd == CMD_META_DATA )
+            dispatch( cmd, data );
+        else
+            kdWarning() << "Got cmd " << cmd << " while waiting for an answer!" << endl;
     }
 }
 
@@ -505,7 +523,7 @@ int SlaveBase::readData( QByteArray &buffer)
    if (result == -1)
       return -1;
 
-   kdDebug(7007) << "readData: cmd = " << cmd << ", length = " << result << " " << endl;
+   kdDebug(7019) << "readData: cmd = " << cmd << ", length = " << result << " " << endl;
 
    if (cmd != MSG_DATA)
       return -1;
@@ -550,12 +568,12 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_PUT: {
 	int permissions;
 	Q_INT8 iOverwrite, iResume;
-	
+
 	stream >> url >> iOverwrite >> iResume >> permissions;
-	
+
 	bool overwrite = ( iOverwrite != 0 );
 	bool resume = ( iResume != 0 );
-	
+
 	put( url, permissions, overwrite, resume);
     }
     break;
@@ -651,7 +669,7 @@ bool SlaveBase::checkCachedAuthentication(QString& user, QString& passwd, int& a
     QCString auth = client.getVar( (realm + "-auth").utf8() );
     auth_type = auth.isNull() ? 0 : auth.toInt();
 
-    kdDebug(7007) << "Got cached info: key=" << realm << ", user=" << user << ", password=[hidden], path=" << valid_path << endl;
+    kdDebug(7019) << "Got cached info: key=" << realm << ", user=" << user << ", password=[hidden], path=" << valid_path << endl;
 
     return true;
 }
@@ -674,7 +692,7 @@ void SlaveBase::cacheAuthentication(const KURL& url, const QString& user, const 
     else
       path = url.directory();
 
-    kdDebug(7007) << "Caching: key=" << key << ", user=" << user << ", password=[hidden], path=" << path << endl;			
+    kdDebug(7019) << "Caching: key=" << key << ", user=" << user << ", password=[hidden], path=" << path << endl;
     QCString auth;
     auth.setNum(auth_type);
     client.setVar( (key + "-user").utf8(), user.utf8() );

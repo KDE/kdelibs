@@ -2,6 +2,8 @@
    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                       David Faure <faure@kde.org>
 
+#include "uiserver.h"
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -41,6 +43,7 @@
 #include "kio/passdlg.h"
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
+#include "slavebase.h" // for QuestionYesNo etc.
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -743,7 +746,7 @@ void UIServer::slotSelection() {
 
 QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& key )
 {
-    kdDebug( 7024 ) << "User " << user.utf8() << "Header " << head.utf8() << "Key " << key.utf8() << endl;
+    kdDebug( 7024 ) << "User " << user << "Header " << head << "Key " << key << endl;
     QByteArray packedArgs;
     QDataStream stream( packedArgs, IO_WriteOnly );
     bool isCached = false;
@@ -797,6 +800,31 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     }
     stream << Q_UINT8(0) << QString::null << QString::null;
     return packedArgs;
+}
+
+int UIServer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+    switch (type) {
+        case KIO::SlaveBase::QuestionYesNo:
+            return KMessageBox::questionYesNo( 0L, // parent ?
+                                               text, caption, buttonYes, buttonNo );
+        case KIO::SlaveBase::WarningYesNo:
+            return KMessageBox::warningYesNo( 0L, // parent ?
+                                              text, caption, buttonYes, buttonNo );
+        case KIO::SlaveBase::WarningContinueCancel:
+            return KMessageBox::warningContinueCancel( 0L, // parent ?
+                                              text, caption, buttonYes );
+        case KIO::SlaveBase::WarningYesNoCancel:
+            return KMessageBox::warningYesNo( 0L, // parent ?
+                                              text, caption, buttonYes, buttonNo );
+        case KIO::SlaveBase::Information:
+            KMessageBox::information( 0L, // parent ?
+                                      text, caption );
+            return 1; // whatever
+        default:
+            kdWarning() << "UIServer::messageBox unknown type " << type << endl;
+            return 0;
+    }
 }
 
 QByteArray UIServer::open_RenameDlg( int id,

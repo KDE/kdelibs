@@ -177,18 +177,37 @@ public:
     /**
      * Call this when requesting for a login and password.
      *
-     * This function is only different from the above only because
-     * it takes one more extra argument, the name of the host, so
-     * that any authorization can kept around for a whole session.
-     *
      * @param head and i18n'ed message to explain the dialog box
      * @param user user name, in and out
      * @param pass password, in and out
      * @param key the string to be used to cache the password.
+     * This can be for example the host, so that any authorization
+     * can kept around for a whole session, or realm etc.
      *
      * @return true on ok, false on cancel
      */
     bool openPassDlg( const QString& /*head*/, QString& /*user*/, QString& /*pass*/, const QString& /*key*/ = QString::null );
+
+    enum { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5 };
+    /**
+     * Call this to show a message box from the slave (it will in fact be handled
+     * by kio_uiserver, so that the progress info dialog for the slave is hidden
+     * while this message box is shown)
+     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     * @param text Message string. May contain newlines.
+     * @param caption Message box title.
+     * @param buttonYes The text for the first button.
+     *                  The default is i18n("&Yes").
+     * @param buttonNo  The text for the second button.
+     *                  The default is i18n("&No").
+     * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
+     *       and for Information, none is used.
+     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     */
+    int messageBox( int type, const QString &text,
+                    const QString &caption = QString::null,
+                    const QString &buttonYes = QString::null,
+                    const QString &buttonNo = QString::null );
 
     /**
      * Sets meta-data to be send to the application before the first
@@ -456,6 +475,12 @@ protected:
      * A slave should call this function every time it disconnect from a host.
      * */
     void dropNetwork(const QString& host = QString::null);
+
+    /**
+     * Wait for an answer to our request, until we get @p expected1 or @p expected2
+     * @return the cmd, and the data in @p data
+     */
+    int waitForAnswer( int expected1, int expected2, QByteArray & data );
 
 protected:
     /**

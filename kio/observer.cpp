@@ -194,7 +194,7 @@ bool Observer::authorize( QString& user, QString& pass ,const QString& head, con
     kdDebug(7007) << "Call was ok" << endl;
     QDataStream stream( resultArgs, IO_ReadOnly );
     Q_UINT8 authorized;
-    QString u, p;	  	
+    QString u, p;
     stream >> authorized >> u >> p;
     if( authorized )
     {
@@ -205,7 +205,14 @@ bool Observer::authorize( QString& user, QString& pass ,const QString& head, con
   }
   else
     kdDebug(7007) << "Call was not OK" << endl;
-  return false;		
+  return false;
+}
+
+int Observer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+    int result = m_uiserver->messageBox( type, text, caption, buttonYes, buttonNo );
+    kdDebug(7007) << "Observer::messageBox got result " << result << endl;
+    return result;
 }
 
 RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
@@ -253,7 +260,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
     QDataStream stream( replyData, IO_ReadOnly );
     QByteArray res;
     stream >> res;
-    
+
     QDataStream stream2( res, IO_ReadOnly );
     Q_UINT8 result;
     stream2 >> result >> newDest;

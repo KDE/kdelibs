@@ -92,6 +92,11 @@ public:
   bool authorize( QString& /*user*/, QString& /*pass*/, const QString& /*head*/, const QString& /*key*/ );
 
   /**
+   * Popup a message box. See @ref SlaveBase.
+   */
+  int messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo);
+
+  /**
    * See renamedlg.h
    */
   KIO::RenameDlg_Result open_RenameDlg( KIO::Job * job,

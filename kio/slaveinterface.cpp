@@ -82,7 +82,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	{
 	    uint count;
 	    stream >> count;
-	
+
 	    UDSEntryList list;
 	    UDSEntry entry;
 	    for (uint i = 0; i < count; i++) {
@@ -90,7 +90,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 		list.append(entry);
 	    }
 	    emit listEntries(list);
-	
+
 	}
 	break;
     case MSG_RESUME:
@@ -120,17 +120,17 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_PROCESSED_SIZE:
 	stream >> ul;
-	
+
 	emit processedSize( ul );
 	break;
     case INF_SPEED:
 	stream >> ul;
-	
+
 	emit speed( ul );
 	break;
     case INF_GETTING_FILE:
 	stream >> str1;
-	
+
 	emit gettingFile( str1 );
 	break;
     case INF_ERROR_PAGE:
@@ -140,20 +140,20 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
       {
 	KURL url;
 	stream >> url;
-	
+
 	emit redirection( url );
       }
       break;
     case INF_MIME_TYPE:
 	stream >> str1;
-	
+
 	emit mimeType( str1 );
         if (!m_pConnection->suspended())
-            m_pConnection->sendnow( CMD_NONE, QByteArray() );		
+            m_pConnection->sendnow( CMD_NONE, QByteArray() );
 	break;
     case INF_WARNING:
 	stream >> str1;
-	
+
 	emit warning( str1 );
 	break;
     case INF_NEED_PASSWD: {
@@ -161,6 +161,14 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	QString key, user, pass;
 	stream >> key >> str1 >> user >> pass;
 	openPassDlg(str1, user, pass, key);
+	break;
+    }
+    case INF_MESSAGEBOX: {
+	kdDebug(7007) << "needs a msg box" << endl;
+	QString text, caption, buttonYes, buttonNo;
+        int type;
+	stream >> type >> text >> caption >> buttonYes >> buttonNo;
+	messageBox(type, text, caption, buttonYes, buttonNo);
 	break;
     }
     case INF_INFOMESSAGE: {
@@ -225,8 +233,20 @@ void SlaveInterface::openPassDlg( const QString& head, const QString& user, cons
         m_pConnection->sendnow( CMD_USERPASS, packedArgs );
     }
     else
-        m_pConnection->sendnow( CMD_NONE, packedArgs );		
+        m_pConnection->sendnow( CMD_NONE, packedArgs );
 
+}
+
+void SlaveInterface::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+    kdDebug(7007) << "messageBox " << type << " " << text << " - " << caption << endl;
+    QByteArray packedArgs;
+    QDataStream stream( packedArgs, IO_WriteOnly );
+    // TODO find a way to get hold of the job or its ID...
+    int result = Observer::self()->messageBox( type, text, caption, buttonYes, buttonNo );
+    kdDebug(7007) << "result=" << result << endl;
+    stream << result;
+    m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
 }
 
 void SlaveInterface::sigpipe_handler(int)

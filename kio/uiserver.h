@@ -236,6 +236,11 @@ k_dcop:
   QByteArray authorize( const QString& /*user*/, const QString& /*head*/, const QString& /*key*/ );
 
   /**
+   * Popup a message box
+   */
+  int messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
+
+  /**
    * See renamedlg.h
    * @return serialized answer: (RenameDlg_Result result, QString newDest)
    */
