@@ -52,6 +52,7 @@
 #include "kapp.h"
 #include "kinstance.h"
 #include "ktempfile.h"
+#include "kstddirs.h"
 
 
 KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
@@ -68,15 +69,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
       fileExtension = ".tmp";
    if (filePrefix.isEmpty())
    {
-      QCString tmpDir = getenv("TMPDIR");
-      if (tmpDir.isEmpty())
-         filePrefix = QFile::decodeName(_PATH_TMP);
-      else
-         filePrefix = QFile::decodeName(tmpDir);
-      if (filePrefix.right(1) != "/")
-         filePrefix += "/";
-
-      filePrefix += KGlobal::instance()->instanceName();
+      filePrefix = locateLocal("tmp", KGlobal::instance()->instanceName());
    }
    (void) create(filePrefix, fileExtension, mode);
 }
