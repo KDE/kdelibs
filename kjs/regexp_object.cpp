@@ -41,7 +41,7 @@ using namespace KJS;
 RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
                                        FunctionPrototypeImp *funcProto)
-  : ObjectImp(Object(objProto))
+  : ObjectImp(objProto)
 {
   Value protect(this);
   setInternalValue(String(""));

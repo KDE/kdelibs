@@ -32,7 +32,7 @@ namespace KJS {
 
   class DateInstanceImp : public ObjectImp {
   public:
-    DateInstanceImp(const Object &proto);
+    DateInstanceImp(ObjectImp *proto);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

@@ -36,7 +36,7 @@ using namespace KJS;
 
 const ClassInfo BooleanInstanceImp::info = {"Boolean", 0, 0, 0};
 
-BooleanInstanceImp::BooleanInstanceImp(const Object &proto)
+BooleanInstanceImp::BooleanInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
 {
 }
@@ -48,7 +48,7 @@ BooleanInstanceImp::BooleanInstanceImp(const Object &proto)
 BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
                                          ObjectPrototypeImp *objectProto,
                                          FunctionPrototypeImp *funcProto)
-  : BooleanInstanceImp(Object(objectProto))
+  : BooleanInstanceImp(objectProto)
 {
   Value protect(this);
   // The constructor will be added later by InterpreterImp::InterpreterImp()
@@ -116,8 +116,7 @@ bool BooleanObjectImp::implementsConstruct() const
 // ECMA 15.6.2
 Object BooleanObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object proto = exec->interpreter()->builtinBooleanPrototype();
-  Object obj(new BooleanInstanceImp(proto));
+  Object obj(new BooleanInstanceImp(exec->interpreter()->builtinBooleanPrototype().imp()));
 
   Boolean b;
   if (args.size() > 0)

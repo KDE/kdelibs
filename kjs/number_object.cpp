@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -37,7 +36,7 @@ using namespace KJS;
 
 const ClassInfo NumberInstanceImp::info = {"Number", 0, 0, 0};
 
-NumberInstanceImp::NumberInstanceImp(const Object &proto)
+NumberInstanceImp::NumberInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
 {
 }
@@ -48,7 +47,7 @@ NumberInstanceImp::NumberInstanceImp(const Object &proto)
 NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
                                        FunctionPrototypeImp *funcProto)
-  : NumberInstanceImp(Object(objProto))
+  : NumberInstanceImp(objProto)
 {
   Value protect(this);
   setInternalValue(Number(0));
@@ -159,7 +158,7 @@ bool NumberObjectImp::implementsConstruct() const
 // ECMA 15.7.1
 Object NumberObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object proto = exec->interpreter()->builtinNumberPrototype();
+  ObjectImp *proto = exec->interpreter()->builtinNumberPrototype().imp();
   Object obj(new NumberInstanceImp(proto));
 
   Number n;

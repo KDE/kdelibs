@@ -63,7 +63,7 @@ using namespace KJS;
 
 const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
 
-DateInstanceImp::DateInstanceImp(const Object &proto)
+DateInstanceImp::DateInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
 {
 }
@@ -126,7 +126,7 @@ const ClassInfo DatePrototypeImp::info = {"Date", 0, &dateTable, 0};
 
 DatePrototypeImp::DatePrototypeImp(ExecState *,
                                    ObjectPrototypeImp *objectProto)
-  : DateInstanceImp(Object(objectProto))
+  : DateInstanceImp(objectProto)
 {
   Value protect(this);
   setInternalValue(Number(NaN));
@@ -414,7 +414,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
   }
 
   Object proto = exec->interpreter()->builtinDatePrototype();
-  Object ret(new DateInstanceImp(proto));
+  Object ret(new DateInstanceImp(proto.imp()));
   ret.setInternalValue(timeClip(value));
   return ret;
 }

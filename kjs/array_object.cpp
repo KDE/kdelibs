@@ -39,7 +39,7 @@ using namespace KJS;
 
 const ClassInfo ArrayInstanceImp::info = {"Array", 0, 0, 0};
 
-ArrayInstanceImp::ArrayInstanceImp(const Object &proto)
+ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
 {
 }
@@ -128,7 +128,7 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 // ECMA 15.4.4
 ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
                                      ObjectPrototypeImp *objProto)
-  : ArrayInstanceImp(Object(objProto))
+  : ArrayInstanceImp(objProto)
 {
   Value protect(this);
   setInternalValue(Null());
@@ -514,7 +514,7 @@ bool ArrayObjectImp::implementsConstruct() const
 // ECMA 15.4.2
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object result(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype()));
+  Object result(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp()));
 
   unsigned int len;
   ListIterator it = args.begin();

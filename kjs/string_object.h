@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifndef _STRING_OBJECT_H_
@@ -30,7 +29,7 @@ namespace KJS {
 
   class StringInstanceImp : public ObjectImp {
   public:
-    StringInstanceImp(const Object &proto);
+    StringInstanceImp(ObjectImp *proto);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

@@ -42,19 +42,7 @@ using namespace KJS;
 
 // ------------------------------ Object ---------------------------------------
 
-Object::Object() : Value()
-{
-}
-
-Object::Object(ObjectImp *v) : Value(v)
-{
-}
-
 Object::Object(const Object &v) : Value(v)
-{
-}
-
-Object::~Object()
 {
 }
 
@@ -202,6 +190,13 @@ ObjectImp::ObjectImp(const Object &proto)
   : _prop(0), _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
 {
   //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
+  _scope = ListImp::empty();
+  _prop = new PropertyMap();
+}
+
+ObjectImp::ObjectImp(ObjectImp *proto)
+  : _proto(proto), _internalValue(0L)
+{
   _scope = ListImp::empty();
   _prop = new PropertyMap();
 }

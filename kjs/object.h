@@ -75,12 +75,13 @@ namespace KJS {
    */
   class Object : public Value {
   public:
-    Object();
+    Object() { }
     explicit Object(ObjectImp *v);
     Object(const Object &v);
-    virtual ~Object();		// TODO: make non-virtual
 
     Object& operator=(const Object &v);
+
+    ObjectImp *imp() const;
 
     virtual const ClassInfo *classInfo() const; // TODO: make non-virtual
     bool inherits(const ClassInfo *cinfo) const;
@@ -353,6 +354,7 @@ namespace KJS {
      * @param proto The prototype
      */
     ObjectImp(const Object &proto);
+    ObjectImp(ObjectImp *proto);
 
     /**
      * Creates a new ObjectImp with a prototype of Null()
@@ -607,6 +609,10 @@ namespace KJS {
      */
     static const char * const * const errorNames;
   };
+
+  inline Object::Object(ObjectImp *v) : Value(v) { }
+
+  inline ObjectImp *Object::imp() const { return static_cast<ObjectImp*>(rep); }
 
 }; // namespace
 

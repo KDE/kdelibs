@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifndef _ARRAY_OBJECT_H_
@@ -30,7 +29,7 @@ namespace KJS {
 
   class ArrayInstanceImp : public ObjectImp {
   public:
-    ArrayInstanceImp(const Object &proto);
+    ArrayInstanceImp(ObjectImp *proto);
 
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual void putDirect(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);

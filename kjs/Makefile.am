@@ -45,7 +45,7 @@ if include_VERSION_SCRIPT
 VSCRIPT = -Wl,--version-script=$(srcdir)/libkjs.map
 endif
 
-libkjs_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(VSCRIPT) \
+libkjs_la_LDFLAGS = -version-info 4:0:2 -no-undefined $(VSCRIPT) \
           $(USER_LDFLAGS) $(all_libraries)
 libkjs_la_LIBADD = -lm $(LIBPCRE)
 

@@ -40,11 +40,6 @@ using namespace KJS;
 
 // ------------------------------ Context --------------------------------------
 
-Context::Context(ContextImp *c)
-{
-  rep = c;
-}
-
 Context::Context(const Context &c)
 {
   rep = c.rep;
@@ -56,18 +51,9 @@ Context& Context::operator=(const Context &c)
   return *this;
 }
 
-Context::~Context()
-{
-}
-
 bool Context::isNull() const
 {
   return (rep == 0);
-}
-
-ContextImp *Context::imp() const
-{
-  return rep;
 }
 
 const List Context::scopeChain() const

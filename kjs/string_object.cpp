@@ -37,7 +37,7 @@ using namespace KJS;
 
 const ClassInfo StringInstanceImp::info = {"String", 0, 0, 0};
 
-StringInstanceImp::StringInstanceImp(const Object &proto)
+StringInstanceImp::StringInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
 {
   setInternalValue(String(""));
@@ -85,7 +85,7 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
 // ECMA 15.5.4
 StringPrototypeImp::StringPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto)
-  : StringInstanceImp(Object(objProto))
+  : StringInstanceImp(objProto)
 {
   Value protect(this);
   // The constructor will be added later, after StringObjectImp has been built
@@ -528,7 +528,7 @@ bool StringObjectImp::implementsConstruct() const
 // ECMA 15.5.2
 Object StringObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object proto = exec->interpreter()->builtinStringPrototype();
+  ObjectImp *proto = exec->interpreter()->builtinStringPrototype().imp();
   Object obj(new StringInstanceImp(proto ));
 
   UString s;

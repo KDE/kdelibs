@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifndef _KJS_INTERPRETER_H_
@@ -55,13 +54,12 @@ namespace KJS {
    */
   class Context {
   public:
-    Context(ContextImp *);
+    Context(ContextImp *i) : rep(i) { }
     Context(const Context &c);
     Context& operator=(const Context &c);
-    virtual ~Context();
 
     bool isNull() const;
-    ContextImp *imp() const;
+    ContextImp *imp() const { return rep; }
 
     /**
      * Returns the scope chain for this execution context. This is used for
@@ -215,7 +213,6 @@ namespace KJS {
      * Returns the builtin "Array" object.
      */
     Object builtinArray() const;
-
 
     /**
      * Returns the builtin "Boolean" object.
