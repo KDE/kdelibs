@@ -122,6 +122,15 @@ extern "C"
 int snprintf(char *str, size_t n, char const *fmt, ...);
 #endif
 
+/* Bloody HP-UX (10.20) headers don't define all the res_xxx functions,
+   although they are there.  */
+#if defined(hpux) && defined(HAVE_RES_INIT)
+#ifdef __cplusplus
+extern "C"
+#endif
+void res_init (void);
+#endif
+
 #if !defined(HAVE_SETENV)
 #ifdef __cplusplus  
 extern "C" 
