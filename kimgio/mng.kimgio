@@ -2,9 +2,6 @@
 Type=MNG
 Header=
 Name=MNG Image
-Name[br]=Skeudenn MNG
-Name[da]=MNG-billede
-Name[sv]=MNG-bild
 Read=true
 Write=true
 Suffices=mng,MNG

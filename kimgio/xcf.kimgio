@@ -2,13 +2,6 @@
 Type=XCF
 Header=^gimp xcf
 Name=GIMP Image
-Name[br]=Skeudenn GIMP
-Name[da]=GIMP-billede
-Name[fr]=Image GIMP
-Name[ga]=Íomhá GIMP
-Name[ms]=Imej GIMP
-Name[sv]=GIMP-bild
-Name[xx]=xxGIMP Imagexx
 Read=true
 Write=false
 Suffices=xcf,XCF
