@@ -629,7 +629,9 @@ void RenderObject::setStyle(RenderStyle *style)
 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
-    if ( d >= RenderStyle::Position && m_parent ) {
+    qDebug("setStyle: diff = %d", d );
+    if ( d >= RenderStyle::Position ) {//  && m_parent ) { //this doesn't work when resetting from display=none
+	qDebug("triggering relayout");
 	setMinMaxKnown(false);
 	setLayouted(false);
     }
