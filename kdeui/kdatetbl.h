@@ -21,12 +21,7 @@
 #define KDATETBL_H
 
 #include <qvalidator.h>
-#if QT_VERSION < 300
-#include <qtableview.h>
-#else
-#include <qttableview.h>
-#define QTableView QtTableView
-#endif
+#include <qgridview.h>
 #include <qlineedit.h>
 #include <qdatetime.h>
 #include <qsize.h>
@@ -37,7 +32,7 @@
 * @version $Id$
 * @author Tim Gilman, Mirko Boehm
 */
-class KDateInternalMonthPicker : public QTableView
+class KDateInternalMonthPicker : public QGridView
 {
   Q_OBJECT
 protected:
@@ -63,14 +58,14 @@ protected:
   /** Set up the painter. */
   void setupPainter(QPainter *p);
   /** The resize event. */
-  void resizeEvent(QResizeEvent*);
+  void viewportResizeEvent(QResizeEvent*);
   /** Paint a cell. This simply draws the month names in it. */
   void paintCell(QPainter* painter, int row, int col);
   /** Catch mouse click and move events to paint a rectangle around the item.*/
-  void mousePressEvent(QMouseEvent *e);
-  void mouseMoveEvent(QMouseEvent *e);
+  void contentsMousePressEvent(QMouseEvent *e);
+  void contentsMouseMoveEvent(QMouseEvent *e);
   /** Emit monthSelected(int) when a cell has been released. */
-  void mouseReleaseEvent(QMouseEvent *e);
+  void contentsMouseReleaseEvent(QMouseEvent *e);
     
 private:
   class KDateInternalMonthPrivate;
@@ -174,7 +169,7 @@ public:
  * @version $Id$
  * @author Tim Gilman, Mirko Boehm
  */
-class KDateTable : public QTableView
+class KDateTable : public QGridView
 {
     Q_OBJECT
 public:
@@ -197,9 +192,9 @@ protected:
     /** Paint a cell. */
     virtual void paintCell(QPainter*, int, int);
     /** Handle the resize events. */
-    virtual void resizeEvent(QResizeEvent *);
+    virtual void viewportResizeEvent(QResizeEvent *);
     /** React on mouse clicks that select a date. */
-    virtual void mousePressEvent(QMouseEvent *);
+    virtual void contentsMousePressEvent(QMouseEvent *);
     /** The font size of the displayed text. */
     int fontsize;
     /** The currently selected date. */
