@@ -415,7 +415,7 @@ int KAction::plug( QWidget *w, int index )
       bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), d->m_enabled, d->m_plainText,
                          index, instance );
-      
+
       bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
     }
 
@@ -2343,7 +2343,6 @@ public:
   KActionCollectionPrivate()
   {
     m_dctHighlightContainers.setAutoDelete( true );
-    // m_keyDict.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
   }
@@ -2383,14 +2382,14 @@ KActionCollection::~KActionCollection()
 void KActionCollection::childEvent( QChildEvent* ev )
 {
   QObject::childEvent( ev );
-  /*
-  if ( ev->inserted() && ev->child()->inherits( "KAction" ) )
-    insert( static_cast<KAction*>( ev->child() ) );
-  else if ( ev->removed() )
+  if ( ev->removed() )
+  {
     // We can not emit a removed signal here since the
     // actions destructor did already run :-(
-    d->m_actionDict.remove( static_cast<KAction*>( ev->child() ) );
-    */
+    QCString n = ev->child()->name();
+    d->m_actionDict.remove( n );
+    d->m_keyMap.remove( n );
+  }
 }
 
 void KActionCollection::insert( KAction* action )
