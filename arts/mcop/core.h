@@ -332,15 +332,15 @@ protected:
 		_InterfaceRepo_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_InterfaceRepo_base(InterfaceRepo_base::_create());
-	}
+	virtual void _create();
 	inline InterfaceRepo_base *_InterfaceRepo_base() {
 		if(_InterfaceRepo_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _InterfaceRepo_redirect;	}
+		return _InterfaceRepo_redirect;
+	}
+
 public:
 	inline InterfaceRepo() : _InterfaceRepo_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~InterfaceRepo() { _assign_InterfaceRepo_base(0); }
+	virtual ~InterfaceRepo();
 	inline InterfaceRepo(const SubClass &s) : _InterfaceRepo_redirect(0) {
 		_assign_InterfaceRepo_base(InterfaceRepo_base::_create(s.string()));
 	}
@@ -348,15 +348,24 @@ public:
 		_assign_InterfaceRepo_base(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true)));
 	}
 	inline InterfaceRepo(InterfaceRepo& target) : _InterfaceRepo_redirect(0) {
-		_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
+		if (target._InterfaceRepo_redirect)
+			_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
 	}
-	inline InterfaceRepo& operator=(InterfaceRepo& target) {		_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
+	inline InterfaceRepo& operator=(InterfaceRepo& target) {		if (target._InterfaceRepo_redirect)
+			_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
 		return *this;
 	}
 	inline InterfaceRepo(InterfaceRepo_base *target) : _InterfaceRepo_redirect(0) {
-		_assign_InterfaceRepo_base(target->_copy());
+		if (target) _assign_InterfaceRepo_base(target->_copy());
 	}
 	inline InterfaceRepo& operator=(InterfaceRepo_base *target) {
+		if (target) _assign_InterfaceRepo_base(target->_copy());
+		return *this;
+	}
+	inline InterfaceRepo(InterfaceRepo_var target) : _InterfaceRepo_redirect(0) {
+		_assign_InterfaceRepo_base(target->_copy());
+	}
+	inline InterfaceRepo& operator=(InterfaceRepo_var target) {
 		_assign_InterfaceRepo_base(target->_copy());
 		return *this;
 	}
@@ -419,15 +428,15 @@ protected:
 		_FlowSystemSender_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_FlowSystemSender_base(FlowSystemSender_base::_create());
-	}
+	virtual void _create();
 	inline FlowSystemSender_base *_FlowSystemSender_base() {
 		if(_FlowSystemSender_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystemSender_redirect;	}
+		return _FlowSystemSender_redirect;
+	}
+
 public:
 	inline FlowSystemSender() : _FlowSystemSender_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~FlowSystemSender() { _assign_FlowSystemSender_base(0); }
+	virtual ~FlowSystemSender();
 	inline FlowSystemSender(const SubClass &s) : _FlowSystemSender_redirect(0) {
 		_assign_FlowSystemSender_base(FlowSystemSender_base::_create(s.string()));
 	}
@@ -435,15 +444,24 @@ public:
 		_assign_FlowSystemSender_base(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true)));
 	}
 	inline FlowSystemSender(FlowSystemSender& target) : _FlowSystemSender_redirect(0) {
-		_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
+		if (target._FlowSystemSender_redirect)
+			_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
 	}
-	inline FlowSystemSender& operator=(FlowSystemSender& target) {		_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
+	inline FlowSystemSender& operator=(FlowSystemSender& target) {		if (target._FlowSystemSender_redirect)
+			_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
 		return *this;
 	}
 	inline FlowSystemSender(FlowSystemSender_base *target) : _FlowSystemSender_redirect(0) {
-		_assign_FlowSystemSender_base(target->_copy());
+		if (target) _assign_FlowSystemSender_base(target->_copy());
 	}
 	inline FlowSystemSender& operator=(FlowSystemSender_base *target) {
+		if (target) _assign_FlowSystemSender_base(target->_copy());
+		return *this;
+	}
+	inline FlowSystemSender(FlowSystemSender_var target) : _FlowSystemSender_redirect(0) {
+		_assign_FlowSystemSender_base(target->_copy());
+	}
+	inline FlowSystemSender& operator=(FlowSystemSender_var target) {
 		_assign_FlowSystemSender_base(target->_copy());
 		return *this;
 	}
@@ -503,15 +521,15 @@ protected:
 		_FlowSystemReceiver_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create());
-	}
+	virtual void _create();
 	inline FlowSystemReceiver_base *_FlowSystemReceiver_base() {
 		if(_FlowSystemReceiver_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystemReceiver_redirect;	}
+		return _FlowSystemReceiver_redirect;
+	}
+
 public:
 	inline FlowSystemReceiver() : _FlowSystemReceiver_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~FlowSystemReceiver() { _assign_FlowSystemReceiver_base(0); }
+	virtual ~FlowSystemReceiver();
 	inline FlowSystemReceiver(const SubClass &s) : _FlowSystemReceiver_redirect(0) {
 		_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create(s.string()));
 	}
@@ -519,15 +537,24 @@ public:
 		_assign_FlowSystemReceiver_base(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true)));
 	}
 	inline FlowSystemReceiver(FlowSystemReceiver& target) : _FlowSystemReceiver_redirect(0) {
-		_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
+		if (target._FlowSystemReceiver_redirect)
+			_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
 	}
-	inline FlowSystemReceiver& operator=(FlowSystemReceiver& target) {		_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
+	inline FlowSystemReceiver& operator=(FlowSystemReceiver& target) {		if (target._FlowSystemReceiver_redirect)
+			_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
 		return *this;
 	}
 	inline FlowSystemReceiver(FlowSystemReceiver_base *target) : _FlowSystemReceiver_redirect(0) {
-		_assign_FlowSystemReceiver_base(target->_copy());
+		if (target) _assign_FlowSystemReceiver_base(target->_copy());
 	}
 	inline FlowSystemReceiver& operator=(FlowSystemReceiver_base *target) {
+		if (target) _assign_FlowSystemReceiver_base(target->_copy());
+		return *this;
+	}
+	inline FlowSystemReceiver(FlowSystemReceiver_var target) : _FlowSystemReceiver_redirect(0) {
+		_assign_FlowSystemReceiver_base(target->_copy());
+	}
+	inline FlowSystemReceiver& operator=(FlowSystemReceiver_var target) {
 		_assign_FlowSystemReceiver_base(target->_copy());
 		return *this;
 	}
@@ -597,15 +624,15 @@ protected:
 		_FlowSystem_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_FlowSystem_base(FlowSystem_base::_create());
-	}
+	virtual void _create();
 	inline FlowSystem_base *_FlowSystem_base() {
 		if(_FlowSystem_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _FlowSystem_redirect;	}
+		return _FlowSystem_redirect;
+	}
+
 public:
 	inline FlowSystem() : _FlowSystem_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~FlowSystem() { _assign_FlowSystem_base(0); }
+	virtual ~FlowSystem();
 	inline FlowSystem(const SubClass &s) : _FlowSystem_redirect(0) {
 		_assign_FlowSystem_base(FlowSystem_base::_create(s.string()));
 	}
@@ -613,15 +640,24 @@ public:
 		_assign_FlowSystem_base(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true)));
 	}
 	inline FlowSystem(FlowSystem& target) : _FlowSystem_redirect(0) {
-		_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
+		if (target._FlowSystem_redirect)
+			_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
 	}
-	inline FlowSystem& operator=(FlowSystem& target) {		_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
+	inline FlowSystem& operator=(FlowSystem& target) {		if (target._FlowSystem_redirect)
+			_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
 		return *this;
 	}
 	inline FlowSystem(FlowSystem_base *target) : _FlowSystem_redirect(0) {
-		_assign_FlowSystem_base(target->_copy());
+		if (target) _assign_FlowSystem_base(target->_copy());
 	}
 	inline FlowSystem& operator=(FlowSystem_base *target) {
+		if (target) _assign_FlowSystem_base(target->_copy());
+		return *this;
+	}
+	inline FlowSystem(FlowSystem_var target) : _FlowSystem_redirect(0) {
+		_assign_FlowSystem_base(target->_copy());
+	}
+	inline FlowSystem& operator=(FlowSystem_var target) {
 		_assign_FlowSystem_base(target->_copy());
 		return *this;
 	}
@@ -634,7 +670,8 @@ public:
 	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->connectObject(sourceObject, sourcePort, destObject, destPort);}
 	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
 	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _FlowSystem_base()->queryFlags(node, port);}
-	inline FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender& sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_var sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -690,15 +727,15 @@ protected:
 		_GlobalComm_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_GlobalComm_base(GlobalComm_base::_create());
-	}
+	virtual void _create();
 	inline GlobalComm_base *_GlobalComm_base() {
 		if(_GlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _GlobalComm_redirect;	}
+		return _GlobalComm_redirect;
+	}
+
 public:
 	inline GlobalComm() : _GlobalComm_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~GlobalComm() { _assign_GlobalComm_base(0); }
+	virtual ~GlobalComm();
 	inline GlobalComm(const SubClass &s) : _GlobalComm_redirect(0) {
 		_assign_GlobalComm_base(GlobalComm_base::_create(s.string()));
 	}
@@ -706,15 +743,24 @@ public:
 		_assign_GlobalComm_base(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true)));
 	}
 	inline GlobalComm(GlobalComm& target) : _GlobalComm_redirect(0) {
-		_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
+		if (target._GlobalComm_redirect)
+			_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
 	}
-	inline GlobalComm& operator=(GlobalComm& target) {		_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
+	inline GlobalComm& operator=(GlobalComm& target) {		if (target._GlobalComm_redirect)
+			_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
 		return *this;
 	}
 	inline GlobalComm(GlobalComm_base *target) : _GlobalComm_redirect(0) {
-		_assign_GlobalComm_base(target->_copy());
+		if (target) _assign_GlobalComm_base(target->_copy());
 	}
 	inline GlobalComm& operator=(GlobalComm_base *target) {
+		if (target) _assign_GlobalComm_base(target->_copy());
+		return *this;
+	}
+	inline GlobalComm(GlobalComm_var target) : _GlobalComm_redirect(0) {
+		_assign_GlobalComm_base(target->_copy());
+	}
+	inline GlobalComm& operator=(GlobalComm_var target) {
 		_assign_GlobalComm_base(target->_copy());
 		return *this;
 	}
@@ -775,15 +821,15 @@ protected:
 		_GlobalComm_redirect = base;
 		_autoCreate = false;
 	}
-virtual void _create() {
-		_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create());
-	}
+	virtual void _create();
 	inline TmpGlobalComm_base *_TmpGlobalComm_base() {
 		if(_TmpGlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
-		return _TmpGlobalComm_redirect;	}
+		return _TmpGlobalComm_redirect;
+	}
+
 public:
 	inline TmpGlobalComm() : GlobalComm(), _TmpGlobalComm_redirect(0) { /* nothing to be done*/ }
-	inline virtual ~TmpGlobalComm() { _assign_TmpGlobalComm_base(0); }
+	virtual ~TmpGlobalComm();
 	inline TmpGlobalComm(const SubClass &s) : GlobalComm(), _TmpGlobalComm_redirect(0) {
 		_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create(s.string()));
 	}
@@ -791,15 +837,24 @@ public:
 		_assign_TmpGlobalComm_base(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true)));
 	}
 	inline TmpGlobalComm(TmpGlobalComm& target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
+		if (target._TmpGlobalComm_redirect)
+			_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
 	}
-	inline TmpGlobalComm& operator=(TmpGlobalComm& target) {		_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
+	inline TmpGlobalComm& operator=(TmpGlobalComm& target) {		if (target._TmpGlobalComm_redirect)
+			_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
 		return *this;
 	}
 	inline TmpGlobalComm(TmpGlobalComm_base *target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		_assign_TmpGlobalComm_base(target->_copy());
+		if (target) _assign_TmpGlobalComm_base(target->_copy());
 	}
 	inline TmpGlobalComm& operator=(TmpGlobalComm_base *target) {
+		if (target) _assign_TmpGlobalComm_base(target->_copy());
+		return *this;
+	}
+	inline TmpGlobalComm(TmpGlobalComm_var target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
+		_assign_TmpGlobalComm_base(target->_copy());
+	}
+	inline TmpGlobalComm& operator=(TmpGlobalComm_var target) {
 		_assign_TmpGlobalComm_base(target->_copy());
 		return *this;
 	}

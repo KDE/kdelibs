@@ -927,6 +927,10 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
+void InterfaceRepo::_create() {
+	_assign_InterfaceRepo_base(InterfaceRepo_base::_create());
+}
+InterfaceRepo::~InterfaceRepo() { _assign_InterfaceRepo_base(0); }
 FlowSystemSender_base *FlowSystemSender_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
@@ -1020,6 +1024,10 @@ FlowSystemSender_skel::FlowSystemSender_skel()
 {
 }
 
+void FlowSystemSender::_create() {
+	_assign_FlowSystemSender_base(FlowSystemSender_base::_create());
+}
+FlowSystemSender::~FlowSystemSender() { _assign_FlowSystemSender_base(0); }
 FlowSystemReceiver_base *FlowSystemReceiver_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
@@ -1120,6 +1128,10 @@ FlowSystemReceiver_skel::FlowSystemReceiver_skel()
 {
 }
 
+void FlowSystemReceiver::_create() {
+	_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create());
+}
+FlowSystemReceiver::~FlowSystemReceiver() { _assign_FlowSystemReceiver_base(0); }
 FlowSystem_base *FlowSystem_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
@@ -1397,6 +1409,10 @@ FlowSystem_skel::FlowSystem_skel()
 {
 }
 
+void FlowSystem::_create() {
+	_assign_FlowSystem_base(FlowSystem_base::_create());
+}
+FlowSystem::~FlowSystem() { _assign_FlowSystem_base(0); }
 GlobalComm_base *GlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
@@ -1557,6 +1573,10 @@ GlobalComm_skel::GlobalComm_skel()
 {
 }
 
+void GlobalComm::_create() {
+	_assign_GlobalComm_base(GlobalComm_base::_create());
+}
+GlobalComm::~GlobalComm() { _assign_GlobalComm_base(0); }
 TmpGlobalComm_base *TmpGlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
@@ -1638,6 +1658,10 @@ TmpGlobalComm_skel::TmpGlobalComm_skel()
 {
 }
 
+void TmpGlobalComm::_create() {
+	_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create());
+}
+TmpGlobalComm::~TmpGlobalComm() { _assign_TmpGlobalComm_base(0); }
 static IDLFileReg IDLFileReg_core("core",
     "IDLFile:010000000000000000040000000c0000004865616465724d61676963000100"
     "00000b0000004d434f505f4d41474943004d434f500c0000004d657373616765547970"

@@ -223,7 +223,7 @@ string formatMultiLineString(string s, string indent)
  * else
  */
 string createTypeCode(string type, const string& name, long model,
-		string indent = "")
+		string indent = "", int wrapperMode = 0)
 {
 	string result = "";
 
@@ -492,14 +492,20 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + "result->writeLong("+name+");\n";
 	} else if(isInterface(type)) {
 		// the "object class" is called Object
-		if(type == "object")
+		if(type == "object") {
 			type = "Object";
+			wrapperMode = false;
+		}
 
 		if(model==MODEL_MEMBER)		result = type+"_var";
 		//if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
-		if(model==MODEL_ARG)		result = type+"_base *";
+		if(model==MODEL_ARG) switch (wrapperMode) {
+			case 1: result = type + "&"; break;
+			case 2: result = type + "_var"; break;
+			default: result = type + "_base *";
+		}
 		//if(model==MODEL_ARG_SEQ)	result = "const std::vector<"+type+">&";
-		if(model==MODEL_RESULT)		result = type+"_base *";
+		if(model==MODEL_RESULT)		result = type+(wrapperMode?"":"_base *");
 		//if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
 			result = "readObject(stream,"+name+")";
@@ -810,12 +816,12 @@ void doStructSource(FILE *source)
 	}
 }
 
-string createReturnCode(MethodDef *md)
+string createReturnCode(MethodDef *md, int wrapperMode = 0)
 {
-	return createTypeCode(md->type,"",MODEL_RESULT);
+	return createTypeCode(md->type,"",MODEL_RESULT,"",wrapperMode);
 }
 
-string createParamList(MethodDef *md)
+string createParamList(MethodDef *md, int wrapperMode = 0)
 {
 	string result;
 	int first = 0;
@@ -824,7 +830,7 @@ string createParamList(MethodDef *md)
 	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
 	{
 		ParamDef *pd = *pi;
-		string p = createTypeCode(pd->type,pd->name,MODEL_ARG);
+		string p = createTypeCode(pd->type,pd->name,MODEL_ARG,"",wrapperMode);
 
 		if(first != 0) result += ", ";
 		first++;
@@ -1247,12 +1253,9 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t}\n");
 
 		/*
-		   create operation for auto create
+		   create operation for auto create. virtual => in the .cc
 		*/
-		fprintf(header,"virtual void _create() {\n");
-		fprintf(header,"\t\t_assign_%s_base(%s_base::_create());\n",
-								d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t}\n");
+		fprintf(header,"\tvirtual void _create();\n");
 
 		/*
 		   access to the _redirect_%s var, which also dynamically creates
@@ -1262,21 +1265,20 @@ void doInterfacesHeader(FILE *header)
 								d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t\tif(_%s_redirect == 0 && _autoCreate) _create();"
 					"  // lazy on-demand creation\n", d->name.c_str());
-		fprintf(header,"\t\treturn _%s_redirect;",
+		fprintf(header,"\t\treturn _%s_redirect;\n",
 								d->name.c_str());
 		fprintf(header,"\t}\n");
 
-		fprintf(header,"public:\n");
+		fprintf(header,"\npublic:\n");
 
 		/* empty constructor: do nothing */
 
 		fprintf(header,"\tinline %s()%s { /* nothing to be done*/ }\n",
 			d->name.c_str(), parentConstructorsInit.c_str());
 
+		// Virtual destructor moved in the .cc
 		/* destructor - take care of reference counting */
-
-		fprintf(header,"\tinline virtual ~%s() { _assign_%s_base(0); }\n",
-			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\tvirtual ~%s();\n", d->name.c_str());
 
 		/* constructor from subclass - create here */
 		fprintf(header,"\tinline %s(const SubClass &s)%s {\n",
@@ -1297,14 +1299,16 @@ void doInterfacesHeader(FILE *header)
 		/* constructor from other "smartwrapper" */
 		fprintf(header,"\tinline %s(%s& target)%s {\n",
 			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\t_assign_%s_base(target._%s_base()->_copy());\n",
+		fprintf(header,"\t\tif (target._%s_redirect)\n", d->name.c_str());
+		fprintf(header,"\t\t\t_assign_%s_base(target._%s_base()->_copy());\n",
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t}\n");
 
-		/* assignment to other "smartwrapper" */
+		/* assignment from other "smartwrapper" */
 		fprintf(header,"\tinline %s& operator=(%s& target) {",
 			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\t_assign_%s_base(target._%s_base()->_copy());\n",
+		fprintf(header,"\t\tif (target._%s_redirect)\n", d->name.c_str());
+		fprintf(header,"\t\t\t_assign_%s_base(target._%s_base()->_copy());\n",
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
@@ -1312,12 +1316,29 @@ void doInterfacesHeader(FILE *header)
 		/* constructor from base object */
 		fprintf(header,"\tinline %s(%s_base *target)%s {\n",
 			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+		fprintf(header,"\t\tif (target)"); // NB: Watch that potential segfault!
+		fprintf(header," _assign_%s_base(target->_copy());\n",
 			d->name.c_str());
 		fprintf(header,"\t}\n");
 
 		/* assigment from base object */
 		fprintf(header,"\tinline %s& operator=(%s_base *target) {\n",
+			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\t\tif (target)"); // NB: Watch that potential segfault!
+		fprintf(header," _assign_%s_base(target->_copy());\n",
+			d->name.c_str());
+		fprintf(header,"\t\treturn *this;\n");
+		fprintf(header,"\t}\n");
+
+		/* constructor from var object */
+		fprintf(header,"\tinline %s(%s_var target)%s {\n",
+			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+			d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/* assigment from var object */
+		fprintf(header,"\tinline %s& operator=(%s_var target) {\n",
 			d->name.c_str(), d->name.c_str());
 		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
 			d->name.c_str());
@@ -1374,8 +1395,9 @@ void doInterfacesHeader(FILE *header)
 		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
 		{
 			MethodDef *md = *mi;
-			string rc = createReturnCode(md);
-			string params = createParamList(md);
+			string rc = createReturnCode(md, 1);
+			string params = createParamList(md, 1);
+			string paramsVar = createParamList(md, 2);
 			string callparams = createCallParamList(md);
 
 			// map constructor methods to the real things
@@ -1386,10 +1408,25 @@ void doInterfacesHeader(FILE *header)
 					params.c_str(),	parentConstructorsInit.c_str(),
 					d->name.c_str(),d->name.c_str(),d->name.c_str(),
 					callparams.c_str());
+				// Generate _var overloads if necessary
+				if (params != paramsVar) {
+					fprintf(header,"\tinline %s(%s)%s {"
+						"_assign_%s_base(%s_base::_create()); "
+						"_%s_base()->constructor(%s);}\n",d->name.c_str(),
+						paramsVar.c_str(),	parentConstructorsInit.c_str(),
+						d->name.c_str(),d->name.c_str(),d->name.c_str(),
+						callparams.c_str());
+				}
 			} else {
 				fprintf(header,"\tinline %s %s(%s) {return _%s_base()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
 					d->name.c_str(),md->name.c_str(), callparams.c_str());
+				// Generate _var overloads if necessary
+				if (params != paramsVar) {
+					fprintf(header,"\tinline %s %s(%s) {return _%s_base()->%s(%s);}\n",
+						rc.c_str(),	md->name.c_str(), paramsVar.c_str(),
+						d->name.c_str(),md->name.c_str(), callparams.c_str());
+				}
 			}
 		}
 		fprintf(header,"};\n\n");
@@ -1686,7 +1723,18 @@ void doInterfacesSource(FILE *source)
 				}
 			}
 		}
-		
+
+		// SmartWrapper stuff
+		/*
+		   create operation for auto create
+		*/
+		fprintf(source,"void %s::_create() {\n", d->name.c_str());
+		fprintf(source,"\t_assign_%s_base(%s_base::_create());\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(source,"}\n");
+		/* destructor - take care of reference counting */
+		fprintf(source,"%s::~%s() { _assign_%s_base(0); }\n",
+			d->name.c_str(), d->name.c_str(), d->name.c_str());
 		if (haveStreams(d)) {
 			// Component virtual
 			fprintf(source,"ScheduleNode *%s::node()"
