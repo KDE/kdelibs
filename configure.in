@@ -40,7 +40,7 @@ AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h stri
 
 dnl Checks for libraries.
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
-AC_BASE_PATH_KDE dnl kdelibs is a special case
+AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
 AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
