@@ -832,7 +832,7 @@ void KFileDialog::setSelection(const QString& url)
 	u = KURL(ops->url(),  url);
 
     if (u.isMalformed()) { // if it still is
-        warning("%s is not a correct argument for setSelection!", url);
+        warning("%s is not a correct argument for setSelection!", url.ascii());
 	return;
     }
 
