@@ -190,6 +190,7 @@ public:
    * You can set more than one filter by separating them with whitespace, e.g
    * "*.cpp *.h".
    * Call setNameFilter( QString::null ) to disable filtering.
+   * Note: the direcory is not automatically reloaded.
    *
    * @see #matchesFilter
    */
@@ -199,7 +200,7 @@ public:
    * @returns the current name filter, as set via @ref setNameFilter()
    */
   const QString& nameFilter() const;
-    
+
   /**
    * @returns true if @p name matches a filter in the list,
    * otherwise fale.
