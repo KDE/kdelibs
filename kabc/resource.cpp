@@ -7,10 +7,12 @@ using namespace KABC;
 Resource::Resource( AddressBook *ab ) :
   mAddressBook( ab )
 {
+    mAddressBook->addResource( this );
 }
 
 Resource::~Resource()
 {
+    mAddressBook->removeResource( this );
 }
 
 bool Resource::open()
@@ -27,9 +29,8 @@ Ticket *Resource::requestSaveTicket()
   return 0;
 }
 
-bool Resource::load( AddressBook *ab )
+bool Resource::load()
 {
-  mAddressBook = ab;
   return true;
 }
 
@@ -41,11 +42,6 @@ bool Resource::save( Ticket * )
 Ticket *Resource::createTicket( Resource *resource )
 {
   return new Ticket( resource );
-}
-
-void Resource::setAddressBook( AddressBook *ab )
-{
-  mAddressBook = ab;
 }
 
 QString Resource::identifier()

@@ -193,13 +193,6 @@ AddressBook::~AddressBook()
   delete d;
 }
 
-bool AddressBook::addResource( Resource *resource )
-{
-  if ( !resource->open() ) return false;
-  mResources.append( resource );
-  return true;
-}
-
 bool AddressBook::load()
 {
   kdDebug(5700) << "AddressBook::load()" << endl;
@@ -209,7 +202,7 @@ bool AddressBook::load()
   Resource *r;
   for( r = mResources.first(); r; r = mResources.next() ) {
       // kdDebug() << " Tick" << endl;
-    if ( !r->load( this ) ) return false;
+    if ( !r->load() ) return false;
   }
 
   return true;
@@ -439,4 +432,16 @@ QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
     s >> ab.d->mAddressees;
 
     return s;
+}
+
+bool AddressBook::addResource( Resource *resource )
+{
+  if ( !resource->open() ) return false;
+  mResources.append( resource );
+  return true;
+}
+
+bool AddressBook::removeResource( Resource *resource )
+{
+  return mResources.remove( resource );
 }

@@ -42,10 +42,9 @@ class Resource {
   
     virtual Ticket *requestSaveTicket();
   
-    virtual bool load( AddressBook * );
+    virtual bool load();
     virtual bool save( Ticket * );
 
-    void setAddressBook( AddressBook * );
     AddressBook *addressBook() { return mAddressBook; }
 
     virtual QString identifier();

@@ -43,6 +43,7 @@ class AddressBook : public QObject
 
     friend QDataStream &operator<<( QDataStream &, const AddressBook & );
     friend QDataStream &operator>>( QDataStream &, AddressBook & );
+    friend class Resource;
 
   public:
     /**
@@ -113,11 +114,6 @@ class AddressBook : public QObject
       @see save()
     */
     Ticket *requestSaveTicket( Resource *resource=0 );
-    
-    /**
-      Add address book resource.
-    */
-    bool addResource( Resource * );
     
     /**
       Load address book from file.
@@ -248,6 +244,17 @@ class AddressBook : public QObject
 
     struct AddressBookData;
     AddressBookData *d;
+
+  protected:
+    /**
+      Add address book resource.
+    */
+    bool addResource( Resource * );
+
+    /**
+      Remove address book resource.
+    */
+    bool removeResource( Resource * );
 };
 
 QDataStream &operator<<( QDataStream &, const AddressBook & );

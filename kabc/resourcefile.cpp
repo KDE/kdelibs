@@ -91,13 +91,11 @@ void ResourceFile::close()
 {
 }
 
-bool ResourceFile::load( AddressBook *ab )
+bool ResourceFile::load()
 {
   kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
-  setAddressBook( ab );
-  
-  return mFormat->load( ab, this, mFileName );
+  return mFormat->load( addressBook(), this, mFileName );
 }
 
 bool ResourceFile::save( Ticket *ticket )
@@ -191,7 +189,7 @@ void ResourceFile::checkFile()
 
   if ( result == 0 && ( mChangeTime != s.st_ctime ) ) {
     mChangeTime  = s.st_ctime;
-    load( addressBook() );
+    load();
     addressBook()->emitAddressBookChanged();
   }
 }

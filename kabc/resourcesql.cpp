@@ -79,7 +79,7 @@ void ResourceSql::close()
     mDb->close();
 }
 
-bool ResourceSql::load( AddressBook *ab )
+bool ResourceSql::load()
 {
     QSqlQuery query( "select addressId, name, familyName, givenName, "
 	    "additionalName, prefix, suffix, nickname, birthday, "
@@ -170,11 +170,9 @@ bool ResourceSql::load( AddressBook *ab )
 			customsQuery.value( 2 ).toString());
 	}
 
-	ab->insertAddressee( addr );
+	addressBook()->insertAddressee( addr );
     }
  
-    setAddressBook( ab );
-  
     return true;
 }
 

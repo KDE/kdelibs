@@ -22,7 +22,7 @@ public:
   
     Ticket *requestSaveTicket();
 
-    bool load( AddressBook * );
+    bool load();
     bool save( Ticket * );
 
     QString identifier() const;
