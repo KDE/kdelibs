@@ -26,7 +26,7 @@ kab_LIBS = -lkdecore -lkdeui -lqt
 kfile_FILES= *.h
 kfile_LIBS= -lkio -lkdecore -lkdeui -lqt
 
-kspell_FILES = kspell.h
+kspell_FILES = *.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
 
 khtml_FILES = *.h
