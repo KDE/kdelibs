@@ -1,6 +1,13 @@
 [Desktop Entry]
 Comment=Shared library
-Icon=exec
+Comment[cs]=Sdílená knihovna
+Comment[de]=Bibliotheksdateien
+Comment[eo]=Komuna funkcibiblioteko
+Comment[fi]=Jaettu kirjasto
+Comment[hu]=Megosztott könyvtár
+Comment[no]=Delt bibliotek
+Comment[sl]=Deljena knjižnica
+Icon=filesystems/exec
 Type=MimeType
 MimeType=application/x-sharedlib
 Patterns=

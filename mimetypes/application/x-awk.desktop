@@ -1,6 +1,13 @@
 [Desktop Entry]
 Comment=AWK script
-Icon=terminal
+Comment[cs]=Skript programu awk
+Comment[de]=AWK-Skript
+Comment[eo]=QWK-skripto
+Comment[fi]=AWK-skripti
+Comment[hu]=AWK szkript
+Comment[no]=AWK-skript
+Comment[sl]=Skript za AWK
+Icon=apps/terminal
 Type=MimeType
 MimeType=application/x-awk
 Patterns=

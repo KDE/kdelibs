@@ -1,17 +1,13 @@
 [Desktop Entry]
 Comment=Desktop config file
-Comment[ca]=Fitxer de configuració de l'escriptori
-Comment[de]=Konfigurationsdatei für die Arbeitsfläche
+Comment[cs]=KonfiguraÄnÃ­ soubor pracovnÃ­ plochy
+Comment[de]=Konfigurationsdatei fÃ¼r die ArbeitsflÃ¤che
 Comment[eo]=Labortabula agordo-dosiero
-Comment[fi]=Työpöydän asetustiedosto
-Comment[fr]=Fichier de configuration du bureau
-Comment[hu]=Munkaasztal konfigurációs fájl
-Comment[ja]=¥Ç¥¹¥¯¥È¥Ã¥×ÀßÄê¥Õ¥¡¥¤¥ë
-Comment[mi]=Munkaasztal konfigurációs fájl
-Comment[no_NY]=Skrivebordsoppsett-fil
-Comment[sr]=Fajl sa konfiguracijom desktopa
-Comment[sv]=Skrivbordsinställningsfil
-Icon=exec
+Comment[fi]=TyÃ¶pÃ¶ydÃ¤n asetustiedosto
+Comment[hu]=Munkaasztal konfigurÃ¡ciÃ³s fÃ¡jl
+Comment[no]=Konfigurasjonsfil til skrivebord
+Comment[sl]=Nastavitvena datoteka namizja
+Icon=filesystems/exec
 Type=MimeType
 MimeType=application/x-desktop
 Patterns=*.desktop;*.kdelnk;
