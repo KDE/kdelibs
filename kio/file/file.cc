@@ -1086,6 +1086,8 @@ void FileProtocol::slotListDir( const char *_url )
     return;
   }
 
+  QValueList<KUDSEntry> entries;
+
   KUDSEntry entry;
   KUDSAtom atom;
   while ( ( ep = readdir( dp ) ) != 0L ) {
@@ -1178,10 +1180,22 @@ void FileProtocol::slotListDir( const char *_url )
     atom.m_uds = UDS_CREATION_TIME;
     atom.m_long = buff.st_ctime;
     entry.append( atom );
-    listEntry( entry );
+//    listEntry( entry );
+    entries.append( entry );
   }
   
   closedir( dp );
+  
+  totalFiles( entries.count() );
+  
+  QValueList<KUDSEntry>::Iterator it = entries.begin();
+  QValueList<KUDSEntry>::Iterator end = entries.end();
+  int i = 0;
+  for (; it != end; ++it )
+  {
+    listEntry( *it );
+    processedFiles( ++i );
+  }
   
   m_cmd = CMD_NONE;
 
