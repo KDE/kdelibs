@@ -485,16 +485,43 @@ bool KSSLCertificate::isValid() {
 }
 
 
+int KSSLCertificate::purposeToOpenSSL(KSSLCertificate::KSSLPurpose p) const {
+int rc = 0;
+
+	if (p & KSSLCertificate::SSLServer || p == KSSLCertificate::Any) {
+		p |= X509_PURPOSE_SSL_SERVER;
+		p |= X509_PURPOSE_NS_SSL_SERVER;
+	}
+
+	if (p & KSSLCertificate::SSLClient || p == KSSLCertificate::Any) {
+		p |= X509_PURPOSE_SSL_CLIENT;
+	}
+
+	if (p & KSSLCertificate::SMIMEEncrypt || p == KSSLCertificate::Any) {
+		p |= X509_PURPOSE_SMIME_ENCRYPT;
+	}
+
+	if (p & KSSLCertificate::SMIMESign || p == KSSLCertificate::Any) {
+		p |= X509_PURPOSE_SMIME_SIGN;
+	}
+
+return rc;	
+}
+
+
+// For backward compatibility
+KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
+	return validate(KSSLCertificate::SSLServer);
+}
+
+
 //
 // See apps/verify.c in OpenSSL for the source of most of this logic.
 //
 
 // CRL files?  we don't do that yet
 
-// This is for verifying certificate FILES (.pem), not remote presentations
-// of certificates.
-
-KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
+KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLPurpose purpose) {
 
 #ifdef HAVE_SSL
   X509_STORE *certStore;
@@ -505,7 +532,6 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
   if (!d->m_cert) return KSSLCertificate::Unknown;
 
   if (d->m_stateCached) {
-    // kdDebug(7029) << "KSSL returning a cached value" << d->m_stateCached << endl;
     return d->m_stateCache;
   }
 
@@ -523,7 +549,6 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     struct stat sb;
     QString _j = (*j)+"ca-bundle.crt";
     if (-1 == stat(_j.ascii(), &sb)) continue;
-    //kdDebug(7029) << "KSSL Certificate Root directory found: " << _j << endl;
 
     certStore = d->kossl->X509_STORE_new();
     if (!certStore)
@@ -533,13 +558,11 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
     certLookup = d->kossl->X509_STORE_add_lookup(certStore, d->kossl->X509_LOOKUP_file());
     if (!certLookup) {
-      // kdDebug(7029) << "KSSL error adding lookup file" << endl;
       ksslv = KSSLCertificate::Unknown;
       d->kossl->X509_STORE_free(certStore);
       continue;
     }
 
-    //kdDebug(7029) << "KSSL about to load file" << endl;
     if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
       // error accessing directory and loading pems
       kdDebug(7029) << "KSSL couldn't read CA root: " << _j << endl;
@@ -560,7 +583,6 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
       continue;
     }
 
-    //kdDebug(7029) << "KSSL Initializing the certificate store context" << endl;
     d->kossl->X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
     if (d->_chain.isValid())
       d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
@@ -568,13 +590,11 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     //kdDebug(7029) << "KSSL setting CRL.............." << endl;
     // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 
-    d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, X509_PURPOSE_SSL_SERVER);
+    d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, purposeToOpenSSL(purpose));
 
-    //kdDebug(7029) << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
     int errcode = certStoreCTX->error;
-    //kdDebug(7029) << "KSSL freeing" << endl;
     d->kossl->X509_STORE_CTX_free(certStoreCTX);
     d->kossl->X509_STORE_free(certStore);
     // end of checking code

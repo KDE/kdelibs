@@ -85,6 +85,9 @@ public:
                         Revoked, Untrusted, SignatureFailed,
                         Rejected, PrivateKeyFailed };
 
+  enum KSSLPurpose { None=0, SSLServer=1, SSLClient=2, 
+		     SMIMESign=4, SMIMEEncrypt=8, Any=0xffff };
+
   QString toString();
 
   QString getSubject() const;
@@ -110,6 +113,7 @@ public:
 
   bool isValid();
   KSSLValidation validate();
+  KSSLValidation validate(KSSLPurpose p);
   KSSLValidation revalidate();
   KSSLCertChain& chain();
 
@@ -129,6 +133,7 @@ public:
 
 private:
   KSSLCertificatePrivate *d;
+  int purposeToOpenSSL(KSSLPurpose p) const; 
 
 
 protected:
