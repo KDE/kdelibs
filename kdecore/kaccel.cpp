@@ -896,13 +896,44 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 
 		// If keySym requires Shift or ModeSwitch to activate,
 		//  then add the flags.
-		keySymXMods( keySymX, &keyCombQt, &keyModX );
+		if( keySymX != XK_Sys_Req && keySymX != XK_Break )
+			keySymXMods( keySymX, &keyCombQt, &keyModX );
 	}
 
-	// Hack: for some reason, X defines both keycodes 92 & 111 as being
-	//  Print.  It seems that 111 is usually the correct code.
-	if( keyCodeX == 92 && keySymX == XK_Print && XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
-		keyCodeX = 111;
+	// Take care of complications:
+	//  The following keys will not have been correctly interpreted,
+	//   because their shifted values are not activated with the
+	//   Shift key, but rather something else.  They are also
+	//   defined twice under different keycodes.
+	//  keycode 111 & 92:  Print Sys_Req -> Sys_Req = Alt+Print
+	//  keycode 110 & 114: Pause Break   -> Break = Ctrl+Pause
+	if( (keyCodeX == 92 || keyCodeX == 111) &&
+	    XKeycodeToKeysym( qt_xdisplay(), 92, 0 ) == XK_Print &&
+	    XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
+	{
+		// If Alt is pressed, then we need keycode 92, keysym XK_Sys_Req
+		if( keyModX & keyModXAlt() ) {
+			keyCodeX = 92;
+			keySymX = XK_Sys_Req;
+		}
+		// Otherwise, keycode 111, keysym XK_Print
+		else {
+			keyCodeX = 111;
+			keySymX = XK_Print;
+		}
+	}
+	else if( (keyCodeX == 110 || keyCodeX == 114) &&
+	    XKeycodeToKeysym( qt_xdisplay(), 110, 0 ) == XK_Pause &&
+	    XKeycodeToKeysym( qt_xdisplay(), 114, 0 ) == XK_Pause )
+	{
+		if( keyModX & keyModXCtrl() ) {
+			keyCodeX = 114;
+			keySymX = XK_Break;
+		} else {
+			keyCodeX = 110;
+			keySymX = XK_Pause;
+		}
+	}
 
 	if( pKeySymX )	*pKeySymX = keySymX;
 	if( pKeyCodeX )	*pKeyCodeX = keyCodeX;
@@ -913,10 +944,25 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 
 uint KAccel::keyCodeXToKeySymX( uchar keyCodeX, uint keyModX )
 {
-	// I don't know where it's documented, but Mode_shift sometimes sets the 13th bit in 'state'.
-	int index = ((keyModX & ShiftMask) ? 1 : 0) +
-		((keyModX & (0x2000 | keyModXModeSwitch())) ? 2 : 0);
-	return XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index );
+	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 0 );
+
+	// Alt+Print = Sys_Req
+	if( keySymX == XK_Print ) {
+		if( keyModX & keyModXAlt() && XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 1 ) == XK_Sys_Req )
+			keySymX = XK_Sys_Req;
+	}
+	// Ctrl+Pause = Break
+	else if( keySymX == XK_Pause ) {
+		if( keyModX & keyModXCtrl() && XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 1 ) == XK_Break )
+			keySymX = XK_Break;
+	} else {
+		// I don't know where it's documented, but Mode_shift sometimes sets the 13th bit in 'state'.
+		int index = ((keyModX & ShiftMask) ? 1 : 0) +
+			((keyModX & (0x2000 | keyModXModeSwitch())) ? 2 : 0);
+		keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index );
+	}
+
+	return keySymX;
 }
 
 void KAccel::keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX )
@@ -1001,6 +1047,13 @@ uint KAccel::keySymXToKeyQt( uint keySymX, uint keyModX )
 				break;
 			}
 		}
+	}
+
+	if( !keyCombQt ) {
+		if( keySymX == XK_Sys_Req )
+			keyCombQt = Qt::Key_Print | Qt::ALT;
+		else if( keySymX == XK_Break )
+			keyCombQt = Qt::Key_Pause | Qt::CTRL;
 	}
 
 	if( keyCombQt ) {
@@ -1089,10 +1142,40 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 		}
 	}
 
-	// Hack: for some reason, X defines both keycodes 92 & 111 as being
-	//  Print.  It seems that 111 is usually the correct code.
-	if( keyCodeX == 92 && keySymX == XK_Print && XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
-		keyCodeX = 111;
+	// Take care of complications:
+	//  The following keys will not have been correctly interpreted,
+	//   because their shifted values are not activated with the
+	//   Shift key, but rather something else.  They are also
+	//   defined twice under different keycodes.
+	//  keycode 111 & 92:  Print Sys_Req -> Sys_Req = Alt+Print
+	//  keycode 110 & 114: Pause Break   -> Break = Ctrl+Pause
+	if( (keyCodeX == 92 || keyCodeX == 111) &&
+	    XKeycodeToKeysym( qt_xdisplay(), 92, 0 ) == XK_Print &&
+	    XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
+	{
+		// If Alt is pressed, then we need keycode 92, keysym XK_Sys_Req
+		if( keyModX & keyModXAlt() ) {
+			keyCodeX = 92;
+			keySymX = XK_Sys_Req;
+		}
+		// Otherwise, keycode 111, keysym XK_Print
+		else {
+			keyCodeX = 111;
+			keySymX = XK_Print;
+		}
+	}
+	else if( (keyCodeX == 110 || keyCodeX == 114) &&
+	    XKeycodeToKeysym( qt_xdisplay(), 110, 0 ) == XK_Pause &&
+	    XKeycodeToKeysym( qt_xdisplay(), 114, 0 ) == XK_Pause )
+	{
+		if( keyModX & keyModXCtrl() ) {
+			keyCodeX = 114;
+			keySymX = XK_Break;
+		} else {
+			keyCodeX = 110;
+			keySymX = XK_Pause;
+		}
+	}
 
 	if( pKeySymX )	*pKeySymX = keySymX;
 	if( pKeyCodeX ) *pKeyCodeX = keyCodeX;
