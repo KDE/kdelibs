@@ -101,6 +101,9 @@ static const SymName g_rgSymNames[] = {
 	{ XK_Scroll_Lock,  I18N_NOOP("ScrollLock") },
 	{ XK_Prior,        I18N_NOOP("PageUp") },
 	{ XK_Next,         I18N_NOOP("PageDown") },
+#ifdef sun
+	{ XK_F22,          I18N_NOOP("Print") },
+#endif
 	{ 0, 0 }
 };
 
@@ -118,7 +121,11 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_Insert,     XK_Insert },
 	{ Qt::Key_Delete,     XK_Delete },
 	{ Qt::Key_Pause,      XK_Pause },
+#ifdef sun
+	{ Qt::Key_Print,      XK_F22 },
+#else
 	{ Qt::Key_Print,      XK_Print },
+#endif
 	{ Qt::Key_SysReq,     XK_Sys_Req },
 	{ Qt::Key_Home,       XK_Home },
 	{ Qt::Key_End,        XK_End },
@@ -353,7 +360,7 @@ bool Sym::initQt( int keyQt )
 	}
 
 	m_sym = 0;
-	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt && 
+	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
 		kdDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
@@ -409,7 +416,7 @@ QString Sym::toString( bool bUserSpace ) const
 	// If it's a unicode character,
 	if( m_sym == 0 )
 		return QString::null;
-		
+
 	else if( m_sym < 0x3000 ) {
 		QChar c = QChar(m_sym).upper();
 		// Print all non-space characters directly when output is user-visible.
@@ -424,7 +431,7 @@ QString Sym::toString( bool bUserSpace ) const
 		if( m_sym == g_rgSymNames[i].sym )
 			return bUserSpace ? i18n(g_rgSymNames[i].psName) : QString(g_rgSymNames[i].psName);
 	}
-	
+
 	// Get X-name
 	QString s = XKeysymToString( m_sym );
 	capitalizeKeyname( s );
