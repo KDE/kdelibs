@@ -37,7 +37,7 @@ KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QStr
 	levent->sound=sound;
 	levent->file=file;
 	levent->client=client;
-//	KApplication::startServiceByDesktopName("knotify");
+	KApplication::startServiceByDesktopName("knotify");
 }
 
 KNotifyClient::~KNotifyClient()
