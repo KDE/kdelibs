@@ -40,7 +40,7 @@
 #include "kjanuswidget.h"
 #include <klistview.h>
 
-class IconListItem : public QListBoxItem
+class KJanusWidget::IconListItem : public QListBoxItem
 {
   public:
     IconListItem( QListBox *listbox, const QPixmap &pixmap,
@@ -925,8 +925,8 @@ void KJanusWidget::IconListBox::setShowAll( bool showAll )
 
 
 
-IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap,
-			    const QString &text )
+KJanusWidget::IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap,
+                                          const QString &text )
   : QListBoxItem( listbox )
 {
   mPixmap = pixmap;
@@ -939,14 +939,14 @@ IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap,
 }
 
 
-int IconListItem::expandMinimumWidth( int width )
+int KJanusWidget::IconListItem::expandMinimumWidth( int width )
 {
   mMinimumWidth = QMAX( mMinimumWidth, width );
   return( mMinimumWidth );
 }
 
 
-const QPixmap &IconListItem::defaultPixmap()
+const QPixmap &KJanusWidget::IconListItem::defaultPixmap()
 {
   static QPixmap *pix=0;
   if( pix == 0 )
@@ -971,7 +971,7 @@ const QPixmap &IconListItem::defaultPixmap()
 }
 
 
-void IconListItem::paint( QPainter *painter )
+void KJanusWidget::IconListItem::paint( QPainter *painter )
 {
   QFontMetrics fm = painter->fontMetrics();
   //int wt = fm.boundingRect(text()).width();
@@ -986,7 +986,7 @@ void IconListItem::paint( QPainter *painter )
   }
 }
 
-int IconListItem::height( const QListBox *lb ) const
+int KJanusWidget::IconListItem::height( const QListBox *lb ) const
 {
   if( text().isEmpty() == true )
   {
@@ -999,7 +999,7 @@ int IconListItem::height( const QListBox *lb ) const
 }
 
 
-int IconListItem::width( const QListBox *lb ) const
+int KJanusWidget::IconListItem::width( const QListBox *lb ) const
 {
   int wt = lb->fontMetrics().boundingRect(text()).width()+10;
   int wp = mPixmap.width() + 10;

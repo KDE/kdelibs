@@ -467,6 +467,7 @@ class KJanusWidget : public QWidget
     QMap<QString, QStringList> mChildrenNames;
     QMap<QString, QWidget *> mChildPages;
 
+    class IconListItem;
     class KJanusWidgetPrivate;
     KJanusWidgetPrivate *d;
 };
