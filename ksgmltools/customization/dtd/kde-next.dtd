@@ -63,6 +63,7 @@
 <!-- Make ID compulsory for qandasets; cannot be done in redeclaration
      files; new declaration is in next "Modifications" section -->
 <!ENTITY % qandset.attlist "IGNORE">
+<!ENTITY % qandadiv.attlist "IGNORE">
 
 
 <!-- ============================================================= -->
@@ -86,9 +87,13 @@
      much simpler) -->
 <!ATTLIST QandASet 
                 DefaultLabel (qanda|number|none) #IMPLIED 
-                %common.idreq.attrib; 
+                %common.idreq.attrib;   -- changed --
                 %qandset.role.attrib; 
                 %local.qandset.attrib;>
+<!ATTLIST QandADiv
+		%idreq.common.attrib;   -- changed --
+		%qandadiv.role.attrib;
+		%local.qandadiv.attrib;>
 
 
 <!-- ============================================================= -->
