@@ -44,10 +44,17 @@ public:
 		ReplyToAddress,
 		Organization,
 		OutServer,
+		OutServerLogin,
+		OutServerPass,
+		OutServerType,
+		OutServerCommand,
+		OutServerTLS,
 		InServer,
 		InServerLogin,
 		InServerPass,
-		InServerType
+		InServerType,
+		InServerMBXType,
+		InServerTLS
 	};
 
 	enum Extension {

@@ -74,23 +74,51 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 			break;
 		}
 		case OutServer: {
-			return p->m_pConfig->readEntry("Outgoing");
+			return p->m_pConfig->readEntry("OutgoingServer");
+			break;
+		}
+		case OutServerLogin: {
+			return p->m_pConfig->readEntry("OutgoingUserName");
+			break;
+		}
+		case OutServerPass: {
+			return p->m_pConfig->readEntry("OutgoingPassword");
+			break;
+		}
+		case OutServerType: {
+			return p->m_pConfig->readEntry("OutgoingServerType");
+			break;
+		}
+		case OutServerCommand: {
+			return p->m_pConfig->readEntry("OutgoingCommand");
+			break;
+		}
+		case OutServerTLS: {
+			return ((p->m_pConfig->readBoolEntry("OutgoingServerTLS")) ? QString("true") : QString("false") );
 			break;
 		}
 		case InServer: {
-			return p->m_pConfig->readEntry("Incoming");
+			return p->m_pConfig->readEntry("IncomingServer");
 			break;
 		}
 		case InServerLogin: {
-			return p->m_pConfig->readEntry("UserName");
+			return p->m_pConfig->readEntry("IncomingUserName");
 			break;
 		}
 		case InServerPass: {
-			return p->m_pConfig->readEntry("Password");
+			return p->m_pConfig->readEntry("IncomingPassword");
 			break;
 		}
 		case InServerType: {
-			return p->m_pConfig->readEntry("ServerType");
+			return p->m_pConfig->readEntry("IncomingServerType");
+			break;
+		}
+		case InServerMBXType: {
+			return p->m_pConfig->readEntry("IncomingServerMBXType");
+			break;
+		}
+		case InServerTLS: {
+			return ((p->m_pConfig->readBoolEntry("IncomingServerTLS")) ? QString("true") : QString("false") );
 			break;
 		}
 	};
@@ -125,23 +153,51 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 			break;
 		}
 		case OutServer: {
-			p->m_pConfig->writeEntry("Outgoing", v);
+			p->m_pConfig->writeEntry("OutgoingServer", v);
+			break;
+		}
+		case OutServerLogin: {
+			p->m_pConfig->writeEntry("OutgoingUserName", v);
+			break;
+		}
+		case OutServerPass: {
+			p->m_pConfig->writeEntry("OutgoingPassword", v);
+			break;
+		}
+		case OutServerType: {
+			p->m_pConfig->writeEntry("OutgoingServerType", v);
+			break;
+		}
+		case OutServerCommand: {
+			p->m_pConfig->writeEntry("OutgoingCommand", v);
+			break;
+		}
+		case OutServerTLS: {
+			p->m_pConfig->writeEntry("OutgoingServerTLS", (v == "true") ? true : false );
 			break;
 		}
 		case InServer: {
-			p->m_pConfig->writeEntry("Incoming", v);
+			p->m_pConfig->writeEntry("IncomingServer", v);
 			break;
 		}
 		case InServerLogin: {
-			p->m_pConfig->writeEntry("UserName", v);
+			p->m_pConfig->writeEntry("IncomingUserName", v);
 			break;
 		}
 		case InServerPass: {
-			p->m_pConfig->writeEntry("Password", v);
+			p->m_pConfig->writeEntry("IncomingPassword", v);
 			break;
 		}
 		case InServerType: {
-			p->m_pConfig->writeEntry("ServerType", v);
+			p->m_pConfig->writeEntry("IncomingServerType", v);
+			break;
+		}
+		case InServerMBXType: {
+			p->m_pConfig->writeEntry("IncomingServerMBXType", v);
+			break;
+		}
+		case InServerTLS: {
+			p->m_pConfig->writeEntry("IncomingServerTLS", (v == "true") ? true : false );
 			break;
 		}
 	};
