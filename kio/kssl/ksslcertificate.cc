@@ -1008,7 +1008,7 @@ QString cert;
 s >> cert >> qsl;
 
 	if (r.setCert(cert) && !qsl.isEmpty())
-		r.chain().setChain(qsl);
+		r.chain().setCertChain(qsl);
 
 return s;
 }

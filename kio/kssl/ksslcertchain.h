@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,36 +36,110 @@ class QStringList;
 
 #include <ksslcertificate.h>
 
+/**
+ * KDE Certificate Chain Representation Class
+ *
+ * This class provides a representation for an X.509 certificate chain.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL, KSSLCertificate, KSSLPeerInfo
+ * @short KDE X.509 Certificate Chain
+ */
 class KSSLCertChain {
 friend class KSSL;
 friend class KSSLPeerInfo;
 
 public:
-  KSSLCertChain();
-  ~KSSLCertChain();
+	/**
+	 *  Construct a KSSLCertChain object
+	 */
+	KSSLCertChain();
 
-  bool isValid();
+	/**
+	 *  Destroy this KSSLCertChain object
+	 */
+	~KSSLCertChain();
 
-  KSSLCertChain *replicate();
-  void setChain(void *stack_of_x509);
+	/**
+	 *  Determine if this represents a valid certificate chain
+	 *
+	 *  @return true if it is a valid certificate chain
+	 */
+	bool isValid();
+
+	/**
+	 *  Do a deep copy of the certificate chain.
+	 *
+	 *  @return pointer to a new certificate chain object
+	 *
+	 *  This is an expensive operation, and you are responsible for deleting
+	 *  the returned object yourself.
+	 */
+	KSSLCertChain *replicate();
+
+	/**
+	 *  Set the raw chain from OpenSSL
+	 *  @internal
+	 */
+	void setChain(void *stack_of_x509);
+
 #if QT_VERSION < 300
-  void setChain(QList<KSSLCertificate>& chain);
+	void setChain(QList<KSSLCertificate>& chain);
 #else
-  void setChain(QPtrList<KSSLCertificate>& chain);
+	/**
+	 *  Set the certificate chain as a pointer list of KSSL certificates.
+	 *
+	 *  @param chain the certificate chain
+	 *  @see KSSLCertificate
+	 */
+	void setChain(QPtrList<KSSLCertificate>& chain);
 #endif
-  void setChain(QStringList chain);
-#if QT_VERSION < 300
-  QList<KSSLCertificate> getChain();
-#else
-  QPtrList<KSSLCertificate> getChain();
-#endif
-  int depth();
-  void *rawChain() { return _chain; }
 
+	/**
+	 *  Set the certificate chain as a list of base64 encoded X.509
+	 *  certificates.
+	 *
+	 *  @param chain the certificate chain
+	 *  @deprecated
+	 */
+	void setChain(QStringList chain);
+
+	/**
+	 *  Set the certificate chain as a list of base64 encoded X.509
+	 *  certificates.
+	 *
+	 *  @param chain the certificate chain
+	 */
+	void setCertChain(const QStringList& chain);
+
+#if QT_VERSION < 300
+	QList<KSSLCertificate> getChain();
+#else
+	/**
+	 *  Obtain a copy of the certificate chain.
+	 *
+	 *  @return a deep copy of the certificate chain.
+	 *  @see KSSLCertificate
+	 */
+	QPtrList<KSSLCertificate> getChain();
+#endif
+
+	/**
+	 *  Determine the number of entries (depth) of the chain.
+	 *
+	 *  @return the number of entries in the certificate chain
+	 */
+	int depth();
+
+	/**
+	 *  Read the raw chain in OpenSSL format
+	 *  @internal
+	 */
+	void *rawChain() { return _chain; }
 
 private:
-  KSSLCertChainPrivate *d;
-  void *_chain;
+	KSSLCertChainPrivate *d;
+	void *_chain;
 };
 
 

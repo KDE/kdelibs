@@ -188,9 +188,13 @@ _chain = NULL;
 
 
 void KSSLCertChain::setChain(QStringList chain) {
+	setCertChain(chain);
+}
+
+void KSSLCertChain::setCertChain(const QStringList& chain) {
     QPtrList<KSSLCertificate> cl;
     cl.setAutoDelete(true);
-    for (QStringList::Iterator s = chain.begin(); s != chain.end(); ++s) {
+    for (QStringList::ConstIterator s = chain.begin(); s != chain.end(); ++s) {
        KSSLCertificate *c = KSSLCertificate::fromString((*s).local8Bit());
        if (c) {
           cl.append(c);

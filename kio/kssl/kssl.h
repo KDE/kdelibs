@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,92 +29,239 @@ class KSSLPrivate;
 class KSSLCertificate;
 class KSSLPKCS12;
 
+/**
+ * KDE SSL Wrapper Class
+ *
+ * This class implements KDE's SSL support by wrapping OpenSSL.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KExtendedSocket, TCPSlaveBase
+ * @short KDE SSL Class
+ */
 class KSSL {
-
 public:
-  KSSL(bool init = true);
+	/**
+	 *  Construct a KSSL object
+	 *
+	 *  @param init Set this to false if you do not want this class to
+	 *         immediately initialize OpenSSL.
+	 */
+	KSSL(bool init = true);
 
-  ~KSSL();
+	/**
+	 *  Destroy this KSSL object
+	 *
+	 *  Does not close any socket.
+	 */
+	~KSSL();
 
-  static bool doesSSLWork();
+	/**
+	 *  Determine if SSL is available and works.
+	 *
+	 *  @return true is SSL is available and usable
+	 */
+	static bool doesSSLWork();
 
+	/**
+	 *  Initialize OpenSSL.
+	 *
+	 *  @return true on success
+	 *
+	 *  This will do nothing if it is already initialized.
+	 *  @see #reInitialize
+	 */
+	bool initialize();
 
-  bool initialize();
+	/**
+	 *  This is used for applicationss which do STARTTLS or something
+	 *  similar. It creates a TLS method regardless of the user's settings.
+	 *
+	 *  @return true if TLS is successfully initialized
+	 */
+	bool TLSInit();
 
-  /**
-   * This is used for apps which do STARTTLS or something similar.
-   * It creates a TLS method regardless of the user's settings.
-   */
-  bool TLSInit();
+	/**
+	 *  Close the SSL session.
+	 */
+	void close();
 
-  void close();
-  bool reInitialize();
+	/**
+	 *  Reinitialize OpenSSL.
+	 *
+	 *  @return true on success
+	 *
+	 *  This is not generally needed unless you are reusing the KSSL object
+	 *  for a new session.
+	 *  @see #initialize
+	 */
+	bool reInitialize();
 
-  bool reconfig();
-  void setAutoReconfig(bool ar);
+	/**
+	 *  Trigger a reread of KSSL configuration and @ref reInitialize() KSSL.
+	 *
+	 *  @return true on successful reinitalizations
+	 *
+	 *  If you @ref setAutoReconfig() to false, then this will simply
+	 *  @ref reInitialize() and not read in the new configuration.
+	 *  @see #setAutoReconfig
+	 */
+	bool reconfig();
 
-  /**
-   * This will reseed the PRNG with the EGD if the EGD is configured and
-   * enabled.  You don't need to call this yourself normally.
-   */
-  int seedWithEGD();
+	/**
+	 *  Enable or disable automatic reconfiguration on @ref initialize().
+	 *
+	 *  @param ar Set to false in order to disable auto-reloading of the
+	 *         KSSL configuration during @ref initialize().
+	 *
+	 *  By default, KSSL will read its configuration on initialize().  You
+	 *  might want to disable this for performance reasons.
+	 */
+	void setAutoReconfig(bool ar);
 
-  /**
-   * Set a new KSSLSettings instance as the settings.
-   * This deletes the current instance of KSSLSettings.
-   */
-  bool setSettings(KSSLSettings *settings);
+	/**
+	 *  This will reseed the pseudo-random number generator with the EGD
+	 *  (entropy gathering daemon) if the EGD is configured and enabled.
+	 *  You don't need to call this yourself normally.
+	 *
+	 *  @return 0 on success
+	 */
+	int seedWithEGD();
 
-  /**
-   * @return the current settings instance
-   * One is built by the constructor, so this will never return 0L.
-   */
-  KSSLSettings * settings() { return m_cfg; }
+	/**
+	 *  Set a new KSSLSettings instance as the settings. This deletes the
+	 *  current instance of KSSLSettings.
+	 *
+	 *  @param settings A new, valid settings object.
+	 *
+	 *  @return true on success
+	 */
+	bool setSettings(KSSLSettings *settings);
 
-  /**
-   * @return true if the certificate was properly set to the session.
-   * Use this to set the certificate to send to the server.
-   * Do NOT delete the KSSLPKCS12 object until you are done with the session.
-   * It is not defined when KSSL will be done with this.
-   */
-  bool setClientCertificate(KSSLPKCS12 *pkcs);
+	/**
+	 *  One is built by the constructor, so this will only return a NULL
+	 *  pointer if you set one with @ref setSettings().
+	 *
+	 *  @return the current settings instance
+	 */
+	KSSLSettings * settings() { return m_cfg; }
 
-  /**
-   * Set the status of the connection with respect to proxies.
-   * realIP is the IP address of the host you're connecting to
-   * realPort is the port of the host you're connecting to
-   * proxy is the IP or hostname of the proxy server
-   */
-  // DEPRECATED
-  void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
+	/**
+	 *  Use this to set the certificate to send to the server.
+	 *  Do NOT delete the KSSLPKCS12 object until you are done with the
+	 *  session. It is not defined when KSSL will be done with this.
+	 *
+	 *  @param pkcs the valid PKCS#12 object to send.
+	 *
+	 *  @return true if the certificate was properly set to the session.
+	 */
+	bool setClientCertificate(KSSLPKCS12 *pkcs);
 
-  void setPeerHost(QString realHost = QString::null);
+	/**
+	 *  Set the status of the connection with respect to proxies.
+	 *
+	 *  @param realIP is the IP address of the host you're connecting to
+	 *  @param realPort is the port of the host you're connecting to
+	 *  @param proxy is the IP or hostname of the proxy server
+	 *  @deprecated
+	 */
+	void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
 
-  int connect(int sock);
-  int accept(int sock);
+	/**
+	 *  Set the peer hostname to be used for certificate verification.
+	 *
+	 *  @param realHost the remote hostname as the user believes to be
+	 *         connecting to
+	 */
+	void setPeerHost(QString realHost = QString::null);
 
-  int read(void *buf, int len);
-  int peek(void *buf, int len);  // standard peek method
-  int write(const void *buf, int len);
+	/**
+	 *  Connect the SSL session to the remote host using the provided
+	 *  socket descriptor.
+	 *
+	 *  @param sock the socket descriptor to connect with.  This must be
+	 *         an already connected socket.
+	 *  @return 1 on success, 0 on error setting the file descriptor,
+	 *          -1 on other error.
+	 */
+	int connect(int sock);
 
-  int pending();
+	/**
+	 *  Connect the SSL session to the remote host using the provided
+	 *  socket descriptor.  This is for use with an SSL server application.
+	 *
+	 *  @param sock the socket descriptor to connect with.  This must be
+	 *         an already connected socket.
+	 *  @return 1 on success, 0 on error setting the file descriptor,
+	 *          -1 on other error.
+	 */
+	int accept(int sock);
 
-  KSSLConnectionInfo& connectionInfo();
-  KSSLPeerInfo& peerInfo();
+	/**
+	 *  Read data from the remote host via SSL.
+	 *
+	 *  @param buf the buffer to read the data into.
+	 *  @param len the maximum length of data to read.
+	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
+	 */
+	int read(void *buf, int len);
+
+	/**
+	 *  Peek at available data from the remote host via SSL.
+	 *
+	 *  @param buf the buffer to read the data into.
+	 *  @param len the maximum length of data to read.
+	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
+	 */
+	int peek(void *buf, int len);
+
+	/**
+	 *  Write data to the remote host via SSL.
+	 *
+	 *  @param buf the buffer to read the data from.
+	 *  @param len the length of data to send from the buffer.
+	 *  @return the number of bytes written, 0 on an exception,
+	 *          or -1 on error.
+	 */
+	int write(const void *buf, int len);
+
+	/**
+	 *  Determine if data is waiting to be read.
+	 *
+	 *  @return -1 on error, 0 if no data is waiting, > 0 if data is waiting.
+	 */
+	int pending();
+
+	/**
+	 *  Obtain a reference to the connection information.
+	 *
+	 *  @return a reference to the connection information,
+	 *          valid after connected
+	 *  @see KSSLConnectionInfo
+	 */
+	KSSLConnectionInfo& connectionInfo();
+
+	/**
+	 *  Obtain a reference to the information about the peer.
+	 *
+	 *  @return a reference to the peer information,
+	 *          valid after connected
+	 *  @see KSSLPeerInfo
+	 */
+	KSSLPeerInfo& peerInfo();
 
 private:
-  static bool m_bSSLWorks;
-  bool m_bInit;
-  bool m_bAutoReconfig;
-  KSSLSettings *m_cfg;
-  KSSLConnectionInfo m_ci;
-  KSSLPeerInfo m_pi;
+	static bool m_bSSLWorks;
+	bool m_bInit;
+	bool m_bAutoReconfig;
+	KSSLSettings *m_cfg;
+	KSSLConnectionInfo m_ci;
+	KSSLPeerInfo m_pi;
 
-  KSSLPrivate *d;
+	KSSLPrivate *d;
 
-  void setConnectionInfo();
-  void setPeerInfo();
-  bool setVerificationLogic();
+	void setConnectionInfo();
+	void setPeerInfo();
+	bool setVerificationLogic();
 };
 
 

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 George Staikos <staikos@kde.org>
+   Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -47,6 +47,14 @@ class KOpenSSLProxyPrivate;
 
 #include <kstaticdeleter.h>
 
+/**
+ * Dynamically load and wrap OpenSSL.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL
+ * @short KDE OpenSSL Wrapper
+ * @internal
+ */
 class KOpenSSLProxy {
 friend class KStaticDeleter<KOpenSSLProxy>;
 public:
