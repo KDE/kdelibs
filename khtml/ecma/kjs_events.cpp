@@ -81,7 +81,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
       if ( m_hackThisObj.isValid() )
         thisObj = m_hackThisObj;
       else
-        kdDebug(6070) << "Null 'this' object! evt=" << evt.type().string() << " currentTarget==" << evt.currentTarget().handle() << endl;
+        kdDebug(6070) << "WARNING: Null 'this' object! evt=" << evt.type().string() << " currentTarget==" << evt.currentTarget().handle() << endl;
     }
 
     Window *window = static_cast<Window*>(win.imp());
@@ -246,7 +246,7 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
   case CancelBubble: // MSIE extension
     return Boolean(event.handle()->propagationStopped());
   default:
-    kdDebug(6070) << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -424,7 +424,7 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     // NS-compatibility
     return Number(static_cast<DOM::UIEvent>(event).which());
   default:
-    kdDebug(6070) << "Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
     return Undefined();
   }
 }
@@ -554,7 +554,7 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case RelatedTarget:
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   default:
-    kdDebug(6070) << "Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -635,7 +635,7 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
   case NumPad:
     return Boolean(static_cast<DOM::TextEvent>(event).numPad());
   default:
-    kdDebug(6070) << "Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -738,7 +738,7 @@ Value DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
   case AttrChange:
     return Number((unsigned int)static_cast<DOM::MutationEvent>(event).attrChange());
   default:
-    kdDebug(6070) << "Unhandled token in DOMMutationEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }

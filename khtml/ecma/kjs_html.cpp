@@ -320,7 +320,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
       // This gets some code going on IE-specific pages.
       // The script object isn't really simple to implement though
       // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
-      kdDebug(6070) << "KJS::HTMLDocument document.scripts called - not implemented" << endl;
+      kdDebug(6070) << "WARNING: KJS::HTMLDocument document.scripts called - not implemented" << endl;
       Object obj( new ObjectImp() );
       obj.put( exec, lengthPropertyName, Number(0) );
       return obj;
@@ -451,7 +451,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
     body.setDir(val);
     break;
   default:
-    kdDebug(6070) << "HTMLDocument::putValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: HTMLDocument::putValueProperty unhandled token " << token << endl;
   }
 }
 
@@ -2964,7 +2964,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
     element.setInnerText(str);
     return;
   default:
-    kdDebug(6070) << "KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
+    kdDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
   }
 }
 
@@ -3072,7 +3072,7 @@ Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
   // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
   /*if( thisObj.imp() != this )
   {
-    kdDebug(6070) << "thisObj.imp() != this in HTMLCollection::tryCall" << endl;
+    kdDebug(6070) << "WARNING: thisObj.imp() != this in HTMLCollection::tryCall" << endl;
     KJS::printInfo(exec,"KJS::HTMLCollection::tryCall thisObj",thisObj,-1);
     KJS::printInfo(exec,"KJS::HTMLCollection::tryCall this",Value(this),-1);
   }*/
@@ -3365,7 +3365,7 @@ Value Image::getValueProperty(ExecState *, int token) const
       return m_onLoadListener->listenerObj();
     return Undefined();
   default:
-    kdDebug(6070) << "Image::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: Image::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -3394,7 +3394,7 @@ void Image::putValueProperty(ExecState *exec, int token, const Value& value, int
     m_onLoadListener->ref();
     break;
   default:
-    kdDebug(6070) << "Image::putValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: Image::putValueProperty unhandled token " << token << endl;
   }
 }
 

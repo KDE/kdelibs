@@ -162,7 +162,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
     return Number(clipped.width());
   }
   default:
-    kdDebug(6070) << "Screen::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: Screen::getValueProperty unhandled token " << token << endl;
     return Undefined();
   }
 }
@@ -488,7 +488,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         return getDOMEvent(exec,*m_evt);
       else {
 #ifdef KJS_VERBOSE
-        kdDebug(6070) << "window(" << this << "," << m_part->name() << ").event, no event!" << endl;
+        kdDebug(6070) << "WARNING: window(" << this << "," << m_part->name() << ").event, no event!" << endl;
 #endif
         return Undefined();
       }
@@ -904,7 +904,7 @@ bool Window::checkIsSafeScript(KHTMLPart *activePart) const
     return true;
   }
 
-  kdDebug(6070) << "JavaScript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
+  kdDebug(6070) << "WARNING: JavaScript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
   // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
@@ -1544,7 +1544,7 @@ WindowQObject::WindowQObject(Window *w)
   //kdDebug(6070) << "WindowQObject::WindowQObject " << this << endl;
   part = parent->m_part;
   if ( !part )
-      kdDebug(6070) << "null part in " << k_funcinfo << endl;
+      kdDebug(6070) << "WARNING: null part in " << k_funcinfo << endl;
   else
       connect( part, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );
@@ -1969,7 +1969,7 @@ Value History::getValueProperty(ExecState *, int token) const
     return Number( length.toUInt() );
   }
   default:
-    kdDebug(6070) << "Unhandled token in History::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in History::getValueProperty : " << token << endl;
     return Undefined();
   }
 }

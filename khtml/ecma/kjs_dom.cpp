@@ -341,7 +341,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     }
   }
   default:
-    kdDebug(6070) << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
     break;
   }
 
@@ -436,7 +436,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
     break;
   default:
-    kdDebug(6070) << "DOMNode::putValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMNode::putValueProperty unhandled token " << token << endl;
   }
 }
 
@@ -630,7 +630,7 @@ Value DOMNodeList::tryCall(ExecState *exec, Object &, const List &args)
   if (ok)
     return getDOMNode(exec,list.item(u));
 
-  kdDebug(6070) << "KJS::DOMNodeList::tryCall " << s.qstring() << " not implemented" << endl;
+  kdDebug(6070) << "WARNING: KJS::DOMNodeList::tryCall " << s.qstring() << " not implemented" << endl;
   return Undefined();
 }
 
@@ -719,7 +719,7 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
     static_cast<DOM::Attr>(node).setValue(value.toString(exec).string());
     return;
   default:
-    kdDebug(6070) << "DOMAttr::putValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMAttr::putValueProperty unhandled token " << token << endl;
   }
 }
 
@@ -824,7 +824,7 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
     return Undefined();
     }
   default:
-    kdDebug(6070) << "DOMDocument::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMDocument::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -982,7 +982,7 @@ Value DOMElement::tryGet(ExecState *exec, const Identifier &propertyName) const
     case Style:
       return getDOMCSSStyleDeclaration(exec,element.style());
     default:
-      kdDebug(6070) << "Unhandled token in DOMElement::tryGet : " << entry->value << endl;
+      kdDebug(6070) << "WARNING: Unhandled token in DOMElement::tryGet : " << entry->value << endl;
       break;
     }
   }
@@ -1134,7 +1134,7 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   case InternalSubset: // DOM2
     return getString(type.internalSubset());
   default:
-    kdDebug(6070) << "DOMDocumentType::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMDocumentType::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1245,7 +1245,7 @@ Value DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) con
   case Sheet:
     return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
   default:
-    kdDebug(6070) << "DOMProcessingInstruction::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMProcessingInstruction::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1282,7 +1282,7 @@ Value DOMNotation::getValueProperty(ExecState *, int token) const
   case SystemId:
     return getString(static_cast<DOM::Notation>(node).systemId());
   default:
-    kdDebug(6070) << "DOMNotation::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMNotation::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1313,7 +1313,7 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
   case NotationName:
     return getString(static_cast<DOM::Entity>(node).notationName());
   default:
-    kdDebug(6070) << "DOMEntity::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMEntity::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1466,7 +1466,7 @@ Value NodeConstructor::getValueProperty(ExecState *, int token) const
   case NOTATION_NODE:
     return Number((unsigned int)DOM::Node::NOTATION_NODE);
   default:
-    kdDebug(6070) << "NodeConstructor::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: NodeConstructor::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 #endif
@@ -1548,7 +1548,7 @@ Value DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
   case INVALID_ACCESS_ERR:
     return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
   default:
-    kdDebug(6070) << "DOMExceptionConstructor::getValueProperty unhandled token " << token << endl;
+    kdDebug(6070) << "WARNING: DOMExceptionConstructor::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 #endif
@@ -1632,7 +1632,7 @@ Value DOMCharacterData::getValueProperty(ExecState *, int token) const
   case Length:
     return Number(data.length());
  default:
-   kdDebug(6070) << "Unhandled token in DOMCharacterData::getValueProperty : " << token << endl;
+   kdDebug(6070) << "WARNING: Unhandled token in DOMCharacterData::getValueProperty : " << token << endl;
    return Value();
   }
 }
