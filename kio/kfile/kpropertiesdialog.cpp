@@ -2641,6 +2641,9 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
            this, SIGNAL( changed() ) );
   connect( unmounted, SIGNAL( iconChanged( QString ) ),
            this, SIGNAL( changed() ) );
+
+  connect( device, SIGNAL( textChanged( const QString & ) ),
+           this, SLOT( slotDeviceChanged() ) );
 }
 
 KDevicePropsPlugin::~KDevicePropsPlugin()
@@ -2655,8 +2658,19 @@ KDevicePropsPlugin::~KDevicePropsPlugin()
 
 void KDevicePropsPlugin::slotActivated( int index )
 {
+  // Update mountpoint so that it matches the device that was selected in the combo
   device->setEditText( m_devicelist[index] );
   mountpoint->setText( d->mountpointlist[index] );
+}
+
+void KDevicePropsPlugin::slotDeviceChanged()
+{
+  // Update mountpoint so that it matches the typed device
+  int index = m_devicelist.findIndex( device->currentText() );
+  if ( index != -1 )
+    mountpoint->setText( d->mountpointlist[index] );
+  else
+    mountpoint->setText( QString::null );
 }
 
 bool KDevicePropsPlugin::supports( KFileItemList _items )

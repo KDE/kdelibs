@@ -635,6 +635,7 @@ public:
 
 private slots:
   void slotActivated( int );
+  void slotDeviceChanged();
 
 private:
   QComboBox* device;
