@@ -37,6 +37,7 @@ div, ID_DIV
 dl, ID_DL
 dt, ID_DT
 em, ID_EM
+embed, ID_EMBED
 fieldset, ID_FIELDSET
 font, ID_FONT
 form, ID_FORM
@@ -66,6 +67,7 @@ listing, ID_LISTING
 map, ID_MAP
 menu, ID_MENU
 meta, ID_META
+noembed, ID_NOEMBED
 noframes, ID_NOFRAMES
 noscript, ID_NOSCRIPT
 object, ID_OBJECT

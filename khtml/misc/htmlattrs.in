@@ -44,6 +44,7 @@ frame
 frameborder
 headers
 height
+hidden
 href
 hreflang
 hspace
@@ -88,6 +89,8 @@ onsubmit
 onunload
 oversrc
 plain
+pluginpage
+pluginurl
 profile
 prompt
 readonly

@@ -55,6 +55,7 @@ frame, ATTR_FRAME
 frameborder, ATTR_FRAMEBORDER
 headers, ATTR_HEADERS
 height, ATTR_HEIGHT
+hidden, ATTR_HIDDEN
 href, ATTR_HREF
 hreflang, ATTR_HREFLANG
 hspace, ATTR_HSPACE
@@ -99,6 +100,8 @@ onsubmit, ATTR_ONSUBMIT
 onunload, ATTR_ONUNLOAD
 oversrc, ATTR_OVERSRC
 plain, ATTR_PLAIN
+pluginpage, ATTR_PLUGINPAGE
+pluginurl, ATTR_PLUGINURL
 profile, ATTR_PROFILE
 prompt, ATTR_PROMPT
 readonly, ATTR_READONLY

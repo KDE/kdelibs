@@ -27,6 +27,7 @@ div
 dl
 dt
 em
+embed
 fieldset
 font
 form
@@ -56,6 +57,7 @@ listing
 map
 menu
 meta
+noembed
 noframes
 noscript
 object
