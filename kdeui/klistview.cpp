@@ -500,17 +500,6 @@ void KListView::focusInEvent( QFocusEvent *fe )
 {
  //   kdDebug()<<"KListView::focusInEvent()"<<endl;
   QListView::focusInEvent( fe );
-
-  if ((d->selectedBySimpleMove)
-      && (d->selectionMode == Konqueror)
-      && (fe->reason()!=QFocusEvent::Popup)
-      && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0))
-  {
-      currentItem()->setSelected(true);
-      currentItem()->repaint();
-      emit selectionChanged();
-  };
 }
 
 void KListView::focusOutEvent( QFocusEvent *fe )
@@ -519,17 +508,6 @@ void KListView::focusOutEvent( QFocusEvent *fe )
   cleanItemHighlighter();
 
   d->autoSelect.stop();
-
-  if ((d->selectedBySimpleMove)
-      && (d->selectionMode == Konqueror)
-      && (fe->reason()!=QFocusEvent::Popup)
-      && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0))
-  {
-      currentItem()->setSelected(false);
-      currentItem()->repaint();
-      emit selectionChanged();
-  };
 
   QListView::focusOutEvent( fe );
 }
