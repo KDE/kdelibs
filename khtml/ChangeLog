@@ -1,5 +1,8 @@
 2004-06-02  Zack Rusin  <zack@kde.org>
 
+        * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in 
+        XML documents (try to avoid FOUC)
+
         * xml/xml_tokenizer.{h,cpp}: Added pushNode(), popNode() and
         currenNode() methods. Removed m_currentNode memeber and switched
         node construction to a stack based ones. Try to attach to the 

@@ -375,8 +375,10 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 // ### FIXME charset
                 if (m_cachedSheet) m_cachedSheet->deref(this);
                 m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
-                if (m_cachedSheet)
+                if (m_cachedSheet) {
                     m_cachedSheet->ref( this );
+                    getDocument()->addPendingSheet();
+                }
             }
 
         }
@@ -399,7 +401,7 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;
 
-    getDocument()->updateStyleSelector();
+    getDocument()->styleSheetLoaded();
 }
 
 void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)
