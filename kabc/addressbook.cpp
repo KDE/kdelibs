@@ -443,13 +443,11 @@ AddressBook::ConstIterator AddressBook::begin() const
 AddressBook::Iterator AddressBook::end()
 {
   KRES::Manager<Resource>::ActiveIterator resIt = d->mManager->activeEnd();
-  --resIt;
-  Resource *res = (*resIt);
 
-  if ( !res ) { // no resource available
+  if ( resIt == d->mManager->activeBegin() || ! *(--resIt) ) { // no resource available
     d->end.d->mIt = Resource::Iterator();
   } else {
-    d->end.d->mIt = res->end();
+    d->end.d->mIt = (*resIt)->end();
   }
 
   return d->end;
@@ -458,13 +456,11 @@ AddressBook::Iterator AddressBook::end()
 AddressBook::ConstIterator AddressBook::end() const
 {
   KRES::Manager<Resource>::ActiveIterator resIt = d->mManager->activeEnd();
-  --resIt;
-  Resource *res = (*resIt);
 
-  if ( !res ) { // no resource available
+  if ( resIt == d->mManager->activeBegin() || ! *(--resIt) ) { // no resource available
     d->end.d->mIt = Resource::Iterator();
   } else {
-    d->end.d->mIt = res->end();
+    d->end.d->mIt = (*resIt)->end();
   }
 
   return d->end;
