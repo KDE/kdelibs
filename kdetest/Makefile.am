@@ -34,7 +34,8 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kquickhelptest kurltest kformulatest \
-		kcharselecttest kstddirstest khtmltest kopenwithtest
+		kcharselecttest kstddirstest khtmltest \
+		kopenwithtest kaboutdialogtest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -53,6 +54,8 @@ METASOURCES = kconfigtest.moc \
 LDADD =  $(LIB_KDEUI)
 
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
+kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
+kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE)
