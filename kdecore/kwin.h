@@ -50,7 +50,7 @@
  * setSystemTrayWindowFor() only.
  *
  * @short Class for interaction with the windowmanager.
- * @authors Matthias Ettrich (ettrich@kde.org)
+ * @author Matthias Ettrich (ettrich@kde.org)
 */
 class KWin
 {
@@ -165,18 +165,18 @@ public:
     static void setOnDesktop( WId win, int desktop);
 
     /**
-     * Sets the strut of window @p win to @p left, @right, @top, @bottom.
+     * Sets the strut of window @p win to @p left, @p right, @p top, @p bottom.
      *
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
 
     /**
-     * Convienence function to access the current desktop.  See NETRootInfo.
+     * Convenience function to access the current desktop.  See NETRootInfo.
      */
     static int currentDesktop();
 
     /**
-     * Convienence function to access the number of desktops. See
+     * Convenience function to access the number of desktops. See
      * NETRootInfo.
      */
     static int numberOfDesktops();
