@@ -1508,7 +1508,7 @@ private:
     KToolBarMenuActionPrivate *d;
 protected slots:
     virtual void slotActivated();
-
+    void singleBarToggled(bool);
 
 };
 

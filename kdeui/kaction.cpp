@@ -2763,7 +2763,7 @@ void KToolBarMenuAction::clear()
 
 void KToolBarMenuAction::addToolbar(KToolBar *bar)
 {
-	bool oldcount=d->toolbarActionMap.count();
+	uint oldcount=d->toolbarActionMap.count();
 	KToggleToolBarAction *act;
 	d->toolbarActionMap.insert(bar,act=new KToggleToolBarAction(
                 bar->name(), i18n("Show %1").arg(bar->label()),
@@ -2772,6 +2772,7 @@ void KToolBarMenuAction::addToolbar(KToolBar *bar)
 	if (oldcount==0)
 	{
 		setText(i18n("Show %1").arg(d->toolbarActionMap.begin().key()->label()));
+		connect(act,SIGNAL(toggled(bool)),this,SLOT(singleBarToggled(bool)));
 		act->plug(d->popup);
 		for (int i=0;i<containerCount();i++)
 		{
@@ -2838,6 +2839,7 @@ int KToolBarMenuAction::plug( QWidget* widget, int index )
 		id=menu->insertItem(text(),-1,index);
 		menu->setItemChecked(id,d->toolbarActionMap.begin().data()->isChecked());
 		menu->connectItem(id,d->toolbarActionMap.begin().data(),SLOT(slotActivated()));
+		
 	}
 	else 
 	{
@@ -2853,6 +2855,28 @@ int KToolBarMenuAction::plug( QWidget* widget, int index )
 
     return containerCount() - 1;
   } else return -1;
+}
+
+
+void KToolBarMenuAction::singleBarToggled(bool)
+{
+	if (d->toolbarActionMap.count()==1)
+	{
+		bool checked=d->toolbarActionMap.begin().data()->isChecked();
+                for (int i=0;i<containerCount();i++)
+                {
+                        if ( container(i)->inherits("QPopupMenu") )
+                        {
+
+                                QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
+                                int id=itemId(i);
+                                int pos=menu->indexOf(id);
+				menu->setItemChecked(id,checked);
+                        }
+                }
+	
+	}
+	
 }
 
 void KToolBarMenuAction::slotActivated()
