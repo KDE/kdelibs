@@ -40,6 +40,14 @@
 
 template class QList<KProcess>;
 
+extern "C" {
+#ifdef __sgi__
+static void theSigCHLDHandler();
+#else
+static void theSigCHLDHandler(int signal);
+#endif
+}
+
 KProcessController *KProcessController::theKProcessController = 0;
 
 KProcessController::KProcessController()
@@ -81,6 +89,7 @@ KProcessController::KProcessController()
   sigaction( SIGPIPE, &act, 0L);
 }
 
+extern "C" {
 #ifdef __sgi__
 void KProcessController::theSigCHLDHandler()
 #else
@@ -109,7 +118,7 @@ void KProcessController::theSigCHLDHandler(int )
 
   errno = saved_errno;
 }
-
+}
 
 
 void KProcessController::slotDoHousekeeping(int )

@@ -93,6 +93,7 @@ KApplication* KApplication::KApp = 0L;
 
 template class QList<KSessionManaged>;
 
+extern "C" {
 static int kde_xio_errhandler( Display * )
 {
   return kapp->xioErrhandler();
@@ -105,6 +106,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
     if ( err->error_code != BadWindow )
 	qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
     return 0;
+}
 }
 
 /*
@@ -822,7 +824,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             }
             else{
                 KStyle* (*alloc_ptr)();
-                alloc_ptr = (KStyle* (*)())alloc_func;
+                alloc_ptr = (KStyle* (*)())(alloc_func);
                 pKStyle = alloc_ptr();
                 if(pKStyle){
                     setStyle(pKStyle);
