@@ -1728,6 +1728,8 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
     if ( d->oldPos == QMainWindow::Minimized )
         rebuildLayout();
     d->oldPos = (QMainWindow::ToolBarDock)barPos();
+    if ( parentWidget()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
 }
 
 void KToolBar::loadState( const QDomElement &element )
