@@ -704,7 +704,10 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 	}
 
 #if BIDI_DEBUG > 1
-        kdDebug(6041) << "directions: dir=" << dir << " current=" << dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << endl;
+        kdDebug(6041) << "pos=" << current.pos << " sor=" << sor.pos << " directions: dir=" << dir << " current=" << dirCurrent
+                      << " last=" << status.last << " eor=" << eor.pos << "/" << status.eor
+                      << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir
+                      << " level =" << (int)context->level << endl;
 #endif
         switch(dirCurrent) {
 
@@ -795,7 +798,8 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
                 case QChar::DirON:
                     if( !(status.eor == QChar::DirR) && !(status.eor == QChar::DirAL) ) {
                         //last stuff takes embedding dir
-                        if(context->dir == QChar::DirR || status.lastStrong == QChar::DirR) {
+                        if(context->dir == QChar::DirR
+                           || status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL) {
                             appendRun();
                             dir = QChar::DirR;
                             eor = current;
@@ -904,7 +908,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
                     break;
                 case QChar::DirCS:
                     if(status.eor == QChar::DirAN) {
-                        eor = current; status.eor = QChar::DirR; break;
+                        eor = current; break;
                     }
                 case QChar::DirES:
                 case QChar::DirET:
