@@ -555,6 +555,12 @@ class Addressee
     QStringList customs() const;
 
     /**
+      Parse full email address. The result is given back in fullName and email.
+    */
+    static void parseEmailAddress( const QString &rawEmail, QString &fullName,
+                                   QString &email );
+
+    /**
       Debug output.
     */
     void dump() const;
