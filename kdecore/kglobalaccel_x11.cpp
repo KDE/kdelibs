@@ -225,13 +225,13 @@ void KGlobalAccelPrivate::x11MappingNotify()
 
 bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
-	// Will this cause a locking up of the keyboard if
-	//  gm_bKeyEventsEnabled == true?  Should we ungrab keyboard before
-	//  returning?
-	if( !gm_bKeyEventsEnabled || QWidget::keyboardGrabber() )
-		return false;
-
-	XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
+    
+	 // do not change this line unless you really really know what you do (Matthias)
+	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() )
+	    XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
+    
+	if( !gm_bKeyEventsEnabled )
+	    return false;
 
 	// TODO: Don't do conversion -- search in m_mapKeyToAction directly.
 	KKeyNative key( pEvent );
@@ -248,6 +248,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	// Search for which accelerator activated this event:
 	if( !m_mapKeyToAction.contains( spec ) )
 		return false;
+
 	KAccelAction* pAction = m_mapKeyToAction[spec].pAction;
 
 	if( !pAction ) {
