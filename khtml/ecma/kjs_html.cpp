@@ -212,7 +212,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recu
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
     return true;
-  return recursive && DOMDocument::hasProperty(exec, p, true);
+  return DOMDocument::hasProperty(exec, p, recursive);
 }
 
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
@@ -368,7 +368,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "rev")             return getString(link.rev());
       else if (p == "target")          return getString(link.target());
       else if (p == "type")            return getString(link.type());
-      else if (p == "sheet")           return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
+      else if (p == "sheet")           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
     break;
     case ID_TITLE: {
@@ -401,7 +401,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       if      (p == "disabled")        return Boolean(style.disabled());
       else if (p == "media")           return getString(style.media());
       else if (p == "type")            return getString(style.type());
-      else if (p == "sheet")           return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
+      else if (p == "sheet")           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
     break;
     case ID_BODY: {
@@ -984,7 +984,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName,
     if (!tmp.isA(UndefinedType)) {
       return true;
     }
-    return recursive && DOMElement::hasProperty(exec, propertyName, true);
+    return DOMElement::hasProperty(exec, propertyName, recursive);
 }
 
 String KJS::HTMLElement::toString(ExecState *exec) const

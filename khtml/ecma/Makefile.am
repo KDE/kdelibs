@@ -41,7 +41,8 @@ kjs_html_la_METASOURCES = AUTO
 hashtables:
 	cd $(srcdir); \
 	../../kjs/create_hash_table kjs_dom.cpp > kjs_dom.lut.h; \
-	../../kjs/create_hash_table kjs_html.cpp > kjs_html.lut.h
+	../../kjs/create_hash_table kjs_html.cpp > kjs_html.lut.h; \
+	../../kjs/create_hash_table kjs_css.cpp > kjs_css.lut.h
 
 # interactive test program
 #check_PROGRAMS = testecma

@@ -750,7 +750,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
       if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
         result = Undefined(); // throw exception?
       else
-        result = getDOMCSSStyleDeclaration(doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).value().string()));
+        result = getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).value().string()));
     }
     break;
 // case DOMDocument::DefaultView // TODO
@@ -819,7 +819,7 @@ Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
     case TagName:
       return getString(element.tagName());
     case Style:
-      return getDOMCSSStyleDeclaration(element.style());
+      return getDOMCSSStyleDeclaration(exec,element.style());
     default:
       kdWarning() << "Unhandled token in DOMElement::tryGet : " << entry->value << endl;
       break;
@@ -922,7 +922,7 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
 /*    case DOMDOMImplementation::CreateDocumentType: // new for DOM2 - not yet in khtml
     case DOMDOMImplementation::CreateDocument: // new for DOM2 - not yet in khtml*/
     case DOMDOMImplementation::CreateCSSStyleSheet:
-      result = getDOMStyleSheet(implementation.createCSSStyleSheet(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
+      result = getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
       break;
     default:
       result = Undefined();
@@ -1072,7 +1072,7 @@ Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &propertyN
   return DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
 }
 
-Value DOMProcessingInstruction::getValue(ExecState *, int token) const
+Value DOMProcessingInstruction::getValue(ExecState *exec, int token) const
 {
   switch (token) {
   case Target:
@@ -1080,7 +1080,7 @@ Value DOMProcessingInstruction::getValue(ExecState *, int token) const
   case Data:
     return getString(static_cast<DOM::ProcessingInstruction>(node).data());
   case Sheet:
-    return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
+    return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
   default:
     kdWarning() << "DOMProcessingInstruction::getValue unhandled token " << token << endl;
     return Value();

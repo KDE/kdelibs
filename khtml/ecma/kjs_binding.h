@@ -102,45 +102,6 @@ namespace KJS {
   QVariant ValueToVariant(ExecState* exec, const Value& val);
 
   /**
-   * We need a modified version of lookupGet because
-   * we call tryGet instead of get, in DOMObjects.
-   */
-  template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupGet(ExecState *exec, const UString &propertyName,
-                                  const HashTable* table, const ThisImp* thisObj)
-  {
-    const HashEntry* entry = Lookup::findEntry(table, propertyName);
-
-    if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::tryGet(exec, propertyName);
-
-    //fprintf(stderr, "DOMObjectLookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
-    if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry);
-    return thisObj->getValue(exec, entry->value);
-  }
-
-  /**
-   * Simplified version of DOMObjectLookupGet in case there are only functions.
-   * Using this instead of DOMObjectLookupGet prevents 'this' from implementing a dummy getValue.
-   */
-  template <class FuncImp, class ParentImp>
-  inline Value DOMObjectLookupGetFunction(ExecState *exec, const UString &propertyName,
-                         const HashTable* table, const ObjectImp* thisObj)
-  {
-    const HashEntry* entry = Lookup::findEntry(table, propertyName);
-
-    if (!entry) // not found, forward to parent
-      return static_cast<const ParentImp *>(thisObj)->ParentImp::tryGet(exec, propertyName);
-
-    if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry);
-
-    fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
-    return Undefined();
-  };
-
-  /**
    * Simplified version of DOMObjectLookupGet in case there are no
    * functions, only "values".
    */
