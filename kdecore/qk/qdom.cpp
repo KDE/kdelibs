@@ -4,6 +4,11 @@
 #include "qtextstream.h"
 #include "qiodevice.h"
 #include "qpixmap.h"
+#include "config.h"
+
+#ifdef HAVE_TEMPLATE_REPOSITORY
+template class QDict <QDOM_NodePrivate>;
+#endif
 
 #include <string.h>
 #include <stdlib.h>

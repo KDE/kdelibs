@@ -13,6 +13,11 @@
 #include "qtl.h"
 #include "qtooltip.h"
 #include "qobjectlist.h"
+#include "config.h"
+
+#ifdef HAVE_TEMPLATE_REPOSITORY
+template class QList<QAction>;
+#endif
 
 // NOT REVISED
 
