@@ -408,8 +408,10 @@ Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
             {
                 // Write compressed data to underlying device
                 int size = filter->device()->writeBlock( d->buffer.data(), towrite );
-                if ( size != towrite )
+                if ( size != towrite ) {
                     kdWarning(7005) << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
+                    return 0; // indicate an error (happens on disk full)
+                }
                 //else
                     //kdDebug(7005) << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
             }
