@@ -253,7 +253,7 @@ bool KHTMLPart::openURL( const KURL &url )
   connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
            SLOT( slotData( KIO::Job*, const QByteArray &)));
 
-  //connect( job, SIGNAL( sigRedirection( int, const char * ) ), this, SLOT( slotRedirection( int, const char * ) ) );
+  connect( d->m_job, SIGNAL(redirection(const KURL&) ), SLOT( slotRedirection(const KURL&) ) );
 
   d->m_bComplete = false;
 
@@ -435,7 +435,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_workingURL = KURL();
   }
 
-//  printf("SLOTDATA %d\n",data.size());
+//  printf("data %s",data.data());
 
   write( data.data(), data.size() );
 }
@@ -626,10 +626,20 @@ void KHTMLPart::scheduleRedirection( int delay, const KURL &url )
 
 void KHTMLPart::slotRedirect()
 {
+  kdDebug(300) << "KHTMLPart::slotRedirect()" << endl;
+
   KURL u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = KURL();
   urlSelected( u.url() );
+}
+
+void KHTMLPart::slotRedirection(const KURL& url)
+{
+  // the slave told us that we got redirected
+  kdDebug(300) << "redirection by KIO to " << url.url() << endl;
+
+  d->m_workingURL = url;
 }
 
 // ####

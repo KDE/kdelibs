@@ -387,6 +387,7 @@ protected slots:
   void slotFinished( KIO::Job* );
 
   void slotRedirect();
+  void slotRedirection(const KURL&);
 
   virtual void slotViewDocumentSource();
   virtual void slotViewFrameSource();
