@@ -33,7 +33,7 @@
 
 static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
-static QSize rangeToSize(const QString& s)
+QSize rangeToSize(const QString& s)
 {
 	QString	range = s;
 	int	p(-1);
