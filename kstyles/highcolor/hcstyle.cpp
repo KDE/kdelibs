@@ -1294,7 +1294,9 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if(toolbar->width() > toolbar->height()){
                 // See if we are top row. Buttons are offset a few pixels
                 // but not visibly.
-                if(btn->y() <= 3){
+                if(!vSmall)
+                    p->fillRect(x, y, w, h, g.background());
+                else if(btn->y() <= 3){
                     if(toolbar->height() <= 24)
                         p->drawTiledPixmap(x, y, w, h, *vSmall);
                     else if(toolbar->height() <= 34)
@@ -1316,7 +1318,9 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             }
             // vertical toolbar
             else{
-                if(btn->x() <= 3){
+                if(!vSmall)
+                    p->fillRect(x, y, w, h, g.background());
+                else if(btn->x() <= 3){
                     if(toolbar->width() <= 34)
                         p->drawTiledPixmap(x, y, w, h, *hMed);
                     else
