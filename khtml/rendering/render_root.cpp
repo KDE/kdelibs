@@ -66,33 +66,23 @@ void RenderRoot::layout(bool deep)
 {
     if (deep)
     	RenderFlow::layout(true);
-
-    // resize so that body height >= viewport height
-/*    if (style()->htmlHacks())
+	
+    if (m_height < m_view->visibleHeight())
+    	m_height=m_view->visibleHeight();
+    
+    if (firstChild())
     {
-    	RenderObject* child = firstChild();
-	if (!deep)
-	{
-	    setLayouted(false);
-	    child->setLayouted(false);
-	    if (child->firstChild())
-	    	child->firstChild()->setLayouted(false);
-	    layout(true);
-	}
-	
-        if (m_height < m_view->visibleHeight())
-    	    m_height=m_view->visibleHeight();
-	
-	int h = m_height;
-	if (child)
-	{
-    	    h -= child->marginTop()+child->marginBottom();
-    	    child->setHeight(h);
-    	    child = child->firstChild();
-    	    if (child)	
-    		child->setHeight(h - child->marginTop()+child->marginBottom());
-	}
-    }*/
+    	int h;
+    	h = firstChild()->lowestPosition();
+	if (h>m_height)
+	    m_height=h;
+    	if (firstChild()->firstChild())
+    	{
+    	    h = firstChild()->firstChild()->lowestPosition();
+    	    if (h>m_height)
+	    	m_height=h;
+    	}	    
+    }
 
 }
 
@@ -130,7 +120,7 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 
 void RenderRoot::updateSize()
 {
-    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     setMinMaxKnown(false);
     calcMinMaxWidth();
     if(m_width < m_minWidth) m_width = m_minWidth;
@@ -141,7 +131,7 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight()" << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
 
@@ -266,18 +256,33 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
     QColor c = m_style->backgroundColor();
-    if (!c.isValid())
+    CachedImage* ci = m_style->backgroundImage();
+    if (!ci)
+    {
+    	if (firstChild())
+    	    ci = firstChild()->style()->backgroundImage();
+	if (firstChild()->firstChild() && !ci)
+    	    ci = firstChild()->firstChild()->style()->backgroundImage();
+    }
+    
+    if (!ci && !c.isValid())
     {
     	if (firstChild())
     	    c = firstChild()->style()->backgroundColor();
 	if (firstChild()->firstChild() && !c.isValid())
     	    c = firstChild()->firstChild()->style()->backgroundColor();
     }
+    
+    QPixmap px;
+    if (ci)
+    	px = ci->pixmap();    
 
     int w = m_view->visibleWidth();
     int h = m_view->visibleHeight();	
 
-    if(c.isValid())
+    if(!px.isNull())
+    	p->drawTiledPixmap(0, 0, w, h, px);
+    else if(c.isValid())
 	p->fillRect(_tx + m_view->contentsX(),
 	    _ty + m_view->contentsY(), w, h, c);
 

@@ -93,6 +93,8 @@ public:
 
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
+    
+    virtual int lowestPosition();
 
 protected:
 

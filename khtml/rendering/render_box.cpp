@@ -181,6 +181,13 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 
 void RenderBox::setPixmap(const QPixmap &, CachedObject *)
 {
+    if (style()->htmlHacks() && parent())
+    {
+    	if (parent()->isRoot())
+	    parent()->repaint();
+	if (parent()->parent()->isRoot())
+	    parent()->parent()->repaint();
+    }
     repaint();	//repaint bg when it gets loaded
 }
 

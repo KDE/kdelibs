@@ -344,6 +344,8 @@ public:
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
     virtual void resetContainingBlock();
+    
+    virtual int lowestPosition() {return 0;}
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

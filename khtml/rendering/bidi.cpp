@@ -112,7 +112,7 @@ bool BiDiIterator::atEnd()
 const QChar &BiDiIterator::current()
 {
     static const QChar nbsp = QChar(0xA0);
-    if(!obj || !obj->isText()) return nbsp; // non breaking space
+    if(!obj || !obj->isText()) return ' '; // non breaking space
     return obj->text()[pos];
 }
 

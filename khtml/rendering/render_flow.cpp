@@ -163,7 +163,11 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
     {
 	int h = m_height;
 	if(specialObjects && floatBottom() > h) h = floatBottom();
-	if((_ty > _y + _h) || (_ty + h < _y)) return;
+	if((_ty > _y + _h) || (_ty + h < _y)) 
+	{
+//	    kdDebug( 6040 ) << "cut!" << endl;
+	    return;
+	}
     }
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
@@ -190,7 +194,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	QListIterator<SpecialObject> it(*specialObjects);
 	for ( ; (r = it.current()); ++it )
 	{
-    	    if (!r->noPaint)
+    	    if (r->node->containingBlock()==this)
 	    {
 		RenderObject *o = r->node;	
 		o->print(p, _x, _y, _w, _h, _tx , _ty);
@@ -203,7 +207,9 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     while(child != 0)
     {
 	if(!child->isFloating() && !child->isPositioned())
+	{
 	    child->print(p, _x, _y, _w, _h, _tx, _ty);
+	}
 	child = child->nextSibling();
     }
 
@@ -529,7 +535,6 @@ RenderFlow::insertPositioned(RenderObject *o)
 
     if (!f) f = new SpecialObject;
 
-    f->noPaint=false;
     if (o->isRelPositioned())
     	f->type = SpecialObject::RelPositioned;
     else
@@ -564,7 +569,6 @@ RenderFlow::insertFloat(RenderObject *o)
 
     if(!f) f = new SpecialObject;
 
-    f->noPaint=false;
     f->startY = -1;
     f->endY = -1;
     f->width = o->width() + o->marginLeft() + o->marginRight();
@@ -584,7 +588,7 @@ RenderFlow::insertFloat(RenderObject *o)
     {
     	RenderObject* obj = parent();
      	while ( obj && obj->childrenInline() ) obj=obj->parent();
-    	if (obj && obj->isFlow() && f->noPaint == false)
+    	if (obj && obj->isFlow() )
 	{
 	    RenderFlow* par = static_cast<RenderFlow*>(obj);
 	
@@ -606,7 +610,6 @@ RenderFlow::insertFloat(RenderObject *o)
 	    SpecialObject* so = new SpecialObject(*f);
 	    so->startY = so->startY + m_y;
 	    so->endY = so->endY + m_y;
-	    so->noPaint = true;
 	    par->specialObjects->append(so);
 	}
     }
@@ -638,7 +641,7 @@ void RenderFlow::positionNewFloats()
 	RenderObject *o = f->node;
 	int _height = o->height() + o->marginTop() + o->marginBottom();
 	
-	if (f->noPaint)
+	if (f->node->containingBlock()!=this)
 	{
 	    f = specialObjects->next();
 	    continue;
@@ -788,6 +791,19 @@ RenderFlow::floatBottom()
 }
 
 int
+RenderFlow::lowestPosition()
+{
+    if (!specialObjects) return m_height;
+    int bottom=m_height;
+    SpecialObject* r;	
+    QListIterator<SpecialObject> it(*specialObjects);
+    for ( ; (r = it.current()); ++it )
+	if (r->endY>bottom)
+	    bottom=r->endY;
+    return bottom;
+}
+
+int
 RenderFlow::leftBottom()
 {
     if (!specialObjects) return 0;
@@ -880,7 +896,6 @@ RenderFlow::clearFloats()
 		special->width = r->width;
 		special->node = r->node;
 		special->type = r->type;
-		special->noPaint = true; // previous paragraph paints it
 		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
 		kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
@@ -1093,21 +1108,24 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     	newChild->setYPos(-500000);
     }
 
-    switch (newChild->style()->position())
+    if (!newChild->isText())
     {
-    	case RELATIVE:
-	case FIXED:	
-    	    setContainsPositioned(true);
-	    break;
-	case ABSOLUTE:
+	switch (newChild->style()->position())
 	{
-//	    kdDebug( 6040 ) << "absolute found" << endl;
-	    setContainsPositioned(true);	
-    	    RenderObject::addChild(newChild,beforeChild);
-	    return;
-	}
-	default: ;
+	    case RELATIVE:
+	    case FIXED:	
+    		setContainsPositioned(true);
+		break;
+	    case ABSOLUTE:
+	    {
+//		kdDebug( 6040 ) << "absolute found" << endl;
+		setContainsPositioned(true);	
+    		RenderObject::addChild(newChild,beforeChild);
+		return;
+	    }
+	    default: ;
 
+	}
     }
 
 
