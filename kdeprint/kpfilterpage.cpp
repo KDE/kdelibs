@@ -145,6 +145,7 @@ void KPFilterPage::slotRemoveClicked()
 		delete m_view->selectedItem();
 		m_activefilters.remove(idname);
 		checkFilterChain();
+		slotItemSelected(m_view->currentItem());
 	}
 }
 
