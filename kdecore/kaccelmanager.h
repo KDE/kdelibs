@@ -23,7 +23,7 @@
 
 
 class QWidget;
-
+class QString;
 
 /**
  * KDE Accelerator manager.
