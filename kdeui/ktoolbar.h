@@ -1029,7 +1029,7 @@ private:
     Id2WidgetMap id2widget;
     KToolBarPrivate *d;
     KPopupMenu *context;
-    QPtrList<QWidget> widgets, inserted /*to be removed*/;
+    QPtrList<QWidget> widgets;
     QTimer *layoutTimer;
     QGuardedPtr<QWidget> stretchableWidget, rightAligned;
 
