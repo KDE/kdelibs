@@ -152,8 +152,8 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
     }
     else
     {
-        result.sprintf("$Version=\"%d\"; ", mProtocolVersion);
-        result += mName + "=" + mValue + "";
+        result.sprintf("$Version=%d; ", mProtocolVersion); // Without quotes
+        result += mName + "=" + mValue;
         if (!mPath.isEmpty())
             result += "; $Path=\""+ mPath + "\"";
         if (!mDomain.isEmpty())
@@ -371,38 +371,38 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     }
     
 
-    int protVersion = 1;
     int cookieCount = 0;
 
-    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
+    for(int protVersion=0; protVersion <= 1; ++protVersion)
     {
-       // Use first cookie to determine protocol version
-       if (cookieCount == 0)
+       for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
        {
-          protVersion = cookie->protocolVersion();
-       }
-       if (useDOMFormat)
-       {
-          if (cookieCount > 0)
-             cookieStr += "; ";
-          cookieStr += cookie->cookieStr(true);
-       }
-       else if (protVersion == 0)
-       {
-          if (cookieCount == 0)
-             cookieStr += "Cookie: ";
+          if (cookie->protocolVersion() != protVersion)
+             continue;
+
+          if (useDOMFormat)
+          {
+             if (cookieCount > 0)
+                cookieStr += "; ";
+             cookieStr += cookie->cookieStr(true);
+          }
+          else if (protVersion == 0)
+          {
+             if (cookieCount == 0)
+                cookieStr += "Cookie: ";
+             else
+                cookieStr += "; ";
+             cookieStr += cookie->cookieStr(false);
+          }
           else
-             cookieStr += "; ";
-          cookieStr += cookie->cookieStr(false);
+          {
+             if (cookieCount > 0)
+                cookieStr += "\r\n";
+             cookieStr += "Cookie: ";
+             cookieStr += cookie->cookieStr(false);
+          }
+          cookieCount++;
        }
-       else
-       {
-          if (cookieCount > 0)
-             cookieStr += "\r\n";
-          cookieStr += "Cookie: ";
-          cookieStr += cookie->cookieStr(false);
-       }
-       cookieCount++;
     }
     
     return cookieStr;
@@ -637,6 +637,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                                        long windowId)
 {
     KHttpCookieList cookieList;
+    KHttpCookieList cookieList2;
     KHttpCookiePtr lastCookie = 0;
     const char *cookieStr = cookie_headers.data();
     QString Name;
@@ -664,7 +665,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             cookieStr += 13;
             crossDomain = true;
         }
-        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
+        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0) 
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
@@ -681,15 +682,23 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             cookieList.append(cookie);
             lastCookie = cookie;
         }
-        else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
+        else if (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0)
         {
-            // Does anyone invent his own headers these days?
-            // Read the fucking RFC guys! This header is not there!
-            //
-            // Update: rfc2965 defines Set-Cookie2: You wonder why they
-            // didn't use the version field instead.
-            cookieStr +=12;
-            // Continue with lastCookie
+            // Attempt to follow rfc2965
+            cookieStr = parseNameValue(cookieStr+12, Name, Value, true);
+
+            // Host = FQDN
+            // Default domain = ""
+            // Default path according to rfc2965
+
+            KHttpCookie *cookie = new KHttpCookie(fqdn, "", defaultPath, Name, Value);
+            if (windowId)
+               cookie->mWindowIds.append(windowId);
+            cookie->mCrossDomain = crossDomain;
+
+            // Insert cookie in chain
+            cookieList2.append(cookie);
+            lastCookie = cookie;
         }
         else
         {
@@ -709,7 +718,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         while ((*cookieStr == ';') || (*cookieStr == ' '))
         {
             cookieStr++;
-
+            
             // Name-Value pair follows
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
@@ -757,6 +766,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         // Skip ';' or '\n'
         cookieStr++;
     }
+
+    // RFC2965 cookies come last so that they override netscape cookies.
+    while( (lastCookie = cookieList2.take(0)) )
+       cookieList.append(lastCookie);
 
     return cookieList;
 }
