@@ -589,3 +589,31 @@ which can be found in kdebase. The hidden dialog on C+S+F12 has disappeared.
 Also, consider using nana for assertions and debugger checks (see nana/*.h).
 (faure@kde.org)
 
+
+//////////////////////////////////////////////////////////////////////
+// * KFileDialog - General Stuff
+
+The new (rewritten) KFileDialog (KFD) is a lot more like the new QFileDialog
+but still looks quite different. Normally you may want to use the static
+methods provided for convenience (getOpenFileName and getSaveFileName).
+If you need special features you can configure the dialog extensively. Just
+create an object and use the different methods. 
+Werner Trobin <wtrobin@carinthia.com>
+
+
+//////////////////////////////////////////////////////////////////////
+// * KFileDialog - Preview Mode
+
+There is also a new preview mode which is quite different to the one we had in
+the KDE 1.x KFD. There are no preview modules you have to register but there
+is a single method you can use to set a preview widget. This widget has to
+inherit QWidget and you have to implement a slot (showPreview(const KURL &)) 
+in this class. This slot is called each time the selected file/dir changes.
+In this slot you have to react appropriate (i.e. show the preview :). The
+easiest way this can be done is to derive your class from QWidgetStack and 
+add a Object (derived from QWidget) for each file type. In the showPreview
+method you just raise the matching widget. If you can't find an appropriate
+widget just hide() the widget stack.
+If you need some "inspiration" on how that could be done, please have a look
+at koffice/lib/kofficecore/koFilterManager.cc (PreviewStack).
+Werner Trobin <wtrobin@carinthia.com>
