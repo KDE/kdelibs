@@ -16,6 +16,12 @@ khtmlw has been replaced with khtml.
 - KHTMLWidget::setDefaultFontBase() has been replaced by setFontSizes().
   See khtml.h for more information. Examples of its use can be found in
   kdehelp, konqueror, kmail.
+- khtml uses Qstring's instead of char *'s now. This means, that most
+  of the api has changed. In all functions:
+     const char * -> QString 
+     QStrList -> QStringList
+  The only exception for the moment is KHTMLWidget::write(), but
+  a QString version will be added soon.
 - Don't forget to change the link-flags! (-lkhtml instead of -lkhtmlw)
 
 
