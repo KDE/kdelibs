@@ -1,5 +1,5 @@
 /*
-This file is part of KDE 
+This file is part of KDE
 
   Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
 
@@ -27,11 +27,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "kcookieserver.h"
 #include <kcmdlineargs.h>
+#include <dcopclient.h>
 #include <klocale.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-static const char *description = 
+static const char *description =
 	I18N_NOOP("HTTP Cookie Daemon");
 
 static const char *version = "1.0";
@@ -55,12 +56,13 @@ int main(int argc, char *argv[])
    if (!KCookieServer::start())
    {
       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-      if (!args->isSet("shutdown") && !args->isSet("remove-all") && 
+      if (!args->isSet("shutdown") && !args->isSet("remove-all") &&
           !args->isSet("reload-config") && !args->isSet("remove"))
          printf("KCookieJar already running.\n");
       exit(0);
    }
    KCookieServer server;
    server.disableSessionManagement();
+   server.dcopClient()->setDaemonMode( true );
    return server.exec(); // keep running
 }
