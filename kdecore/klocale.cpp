@@ -217,7 +217,10 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   QStringList langlist = config->readListEntry("Language", ':');
 
-  langlist.prepend( QFile::decodeName(getenv("KDE_LANG")) );
+  QStringList kdelangs = QStringList::split(':', QFile::decodeName(getenv("KDE_LANG")) );
+  for ( QStringList::Iterator kit = kdelangs.begin(); kit != kdelangs.end(); ++kit ) 
+    langlist.prepend( *kit );
+
   // same order as setlocale use
   langlist << QFile::decodeName(getenv("LC_MESSAGES"));
   langlist << QFile::decodeName(getenv("LC_ALL"));
