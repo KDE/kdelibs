@@ -127,13 +127,16 @@ protected:
    * has changed which plugins are enabled) you need to add the new plugins to
    * the KXMLGUIFactory:
    * \code
-   * QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
-   * QPtrListIterator<KParts::Plugin> it( plugins );
-   * KParts::Plugin * plugin;
-   * while( ( plugin = it.current() ) != 0 )
+   * if( factory() )
    * {
-   *   ++it;
-   *   factory()->addClient(  plugin );
+   *   QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
+   *   QPtrListIterator<KParts::Plugin> it( plugins );
+   *   KParts::Plugin * plugin;
+   *   while( ( plugin = it.current() ) != 0 )
+   *   {
+   *     ++it;
+   *     factory()->addClient(  plugin );
+   *   }
    * }
    * \endcode
    */
