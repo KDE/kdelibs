@@ -62,7 +62,8 @@
                 <xsd:element name="include" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
                 <xsd:element name="kcfgfile" >
                     <xsd:complexType>
-                        <xsd:attribute name="name" type="xsd:string"/>
+                        <xsd:attribute name="name" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="arg" type="xsd:boolean" use="optional"/>
                     </xsd:complexType>
                 </xsd:element>
                 <xsd:element name="group" maxOccurs="unbounded" >
