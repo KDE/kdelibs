@@ -765,10 +765,12 @@ void KHTMLView::closeChildDialogs()
     {
         KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
         if ( dlgbase ) {
-            kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
-            // close() ends up calling QButton::animateClick, which isn't immediate
-            // we need something the exits the event loop immediately (#49068)
-            dlgbase->cancel();
+            if ( dlgbase->testWFlags( WShowModal ) ) {
+                kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
+                // close() ends up calling QButton::animateClick, which isn't immediate
+                // we need something the exits the event loop immediately (#49068)
+                dlgbase->cancel();
+            }
         }
         else
         {
@@ -1647,7 +1649,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    bool sv = !d->contentsMoving && ::qt_cast<QScrollView *>(c);
-		    
+
 		    // QScrollView needs fast repaints
 		    if ( sv && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
@@ -2863,7 +2865,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
 #endif
 
     d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
-    
+
     if (asap && !parsing)
         unscheduleRelayout();
 
