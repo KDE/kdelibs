@@ -100,12 +100,12 @@ static Window *nwindup(Window *w1, int n) {
 
 
 static void refdec_nri(NETRootInfoPrivate *p) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr, "decrementing NETRootInfoPrivate::ref (%d)\n", p->ref - 1);
 #endif
 
     if (! --p->ref) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 	fprintf(stderr, "\tno more references, deleting\n");
 #endif
 
@@ -122,12 +122,12 @@ static void refdec_nri(NETRootInfoPrivate *p) {
 
 
 static void refdec_nwi(NETWinInfoPrivate *p) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr, "decrementing NETWinInfoPrivate::ref (%d)\n", p->ref - 1);
 #endif
 
     if (! --p->ref) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 	fprintf(stderr, "\tno more references, deleting\n");
 #endif
 
@@ -333,7 +333,7 @@ template class RArray<NETRect>;
 NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
 			 unsigned long pr, int sc)
 {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::NETRootInfo: using window manager constructor\n");
 #endif
 
@@ -418,14 +418,14 @@ NETRootInfo::~NETRootInfo() {
 
 void NETRootInfo::activate() {
     if (role == WindowManager) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 	fprintf(stderr,
 		"NETRootInfo::activate: setting supported properties on root\n");
 #endif
 	// force support for Supported and SupportingWMCheck for window managers
 	setSupported(p->protocols | Supported | SupportingWMCheck);
     } else {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::activate: updating client information\n");
 #endif
 	update(p->protocols);
@@ -441,7 +441,7 @@ void NETRootInfo::setClientList(Window *wins, unsigned int num) {
     if (p->clients) delete [] p->clients;
     p->clients = nwindup(wins, num);
 
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setClientList: setting list with %ld windows\n",
 	    p->clients_count);
 #endif
@@ -459,7 +459,7 @@ void NETRootInfo::setClientListStacking(Window *wins, unsigned int num) {
     if (p->stacking) delete [] p->stacking;
     p->stacking = nwindup(wins, num);
 
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::SetClientListStacking: setting list with %ld windows\n",
 	    p->clients_count);
 #endif
@@ -556,7 +556,7 @@ void NETRootInfo::setDesktopName(Q_UINT32 desk, const char *name) {
 	} else
 	    *propp++ = '\0';
 
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setDesktopName(%d, '%s')\n"
 	    "desktop_names (atom %ld:\n",
@@ -632,7 +632,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
     p->protocols = pr;
 
     if (role != WindowManager) {
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::setSupported - role != WindowManager\n");
 #endif
 
@@ -725,7 +725,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
     XChangeProperty(p->display, p->root, net_supporting_wm_check, XA_WINDOW, 32,
 	 	    PropModeReplace, (unsigned char *) &(p->supportwindow), 1);
 
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setSupported: _NET_SUPPORTING_WM_CHECK = 0x%lx on 0x%lx\n"
 	    "                         : _NET_WM_NAME = '%s' on 0x%lx\n",
@@ -1046,7 +1046,7 @@ void NETRootInfo::update(unsigned long dirty) {
 		    if (p->stacking)
 			delete [] p->stacking;
 
-#ifdef    DEBUG
+#ifdef    NETWMDEBUG
 		    fprintf(stderr,"NETRootInfo::update: ClientStacking updated, "
 			    "have %ld clients\n", nitems_ret);
 #endif
