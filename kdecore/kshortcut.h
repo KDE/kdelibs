@@ -24,6 +24,7 @@
 #include <qstring.h>
 
 class QKeyEvent;
+class KKeyNative;
 
 /**********************************************************************
 * A KKey object represents a single key with possible modifiers

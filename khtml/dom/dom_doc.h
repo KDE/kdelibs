@@ -63,6 +63,7 @@ class CSSStyleDeclaration;
 class HTMLFrameElement;
 class HTMLIFrameElement;
 class HTMLObjectElement;
+class HTMLDocument;
 
 /**
  * The <code> DOMImplementation </code> interface provides a number of

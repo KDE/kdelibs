@@ -57,6 +57,7 @@ namespace DOM {
     class CommentImpl;
     class DocumentFragmentImpl;
     class DocumentImpl;
+    class DocumentType;
     class DocumentTypeImpl;
     class ElementImpl;
     class EntityReferenceImpl;
