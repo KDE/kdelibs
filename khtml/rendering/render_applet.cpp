@@ -53,22 +53,48 @@ RenderApplet::RenderApplet(QScrollView *view,
     if ( context ) {
         setQWidget( new KJavaAppletWidget(context, view->viewport()) );
         processArguments(args);
-        ((KJavaAppletWidget*) m_widget)->create();
+        static_cast<KJavaAppletWidget*>(m_widget)->create();
     }
-
-    m_layoutPerformed = FALSE;
 }
 
 RenderApplet::~RenderApplet()
 {
 }
 
-void RenderApplet::layout()
+short RenderApplet::intrinsicWidth() const
 {
-    if(m_layoutPerformed)
+    // ###
+    return 10;
+}
+
+int RenderApplet::intrinsicHeight() const
+{
+    // ###
+    return 10;
+}
+
+void RenderApplet::calcMinMaxWidth()
+{
+    if(minMaxKnown())
         return;
 
-    KJavaAppletWidget *tmp = ((KJavaAppletWidget*) m_widget);
+    calcWidth();
+    m_maxWidth = m_minWidth = m_width;
+
+    setMinMaxKnown();
+}
+
+void RenderApplet::layout()
+{
+    if(layouted())
+        return;
+
+    if(!minMaxKnown())
+        calcMinMaxWidth();
+
+    calcHeight();
+
+    KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
     if ( tmp ) {
         NodeImpl *child = m_applet->firstChild();
 
@@ -80,26 +106,20 @@ void RenderApplet::layout()
             }
             child = child->nextSibling();
         }
-
+        m_widget->resize(m_width, m_height);
         tmp->showApplet();
     }
 
-    m_layoutPerformed = TRUE;
+    setLayouted();
 }
 
 void RenderApplet::processArguments(QMap<QString, QString> args)
 {
-    KJavaAppletWidget *tmp = (KJavaAppletWidget*) m_widget;
+    KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
 
     if ( tmp ) {
         tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
         tmp->setAppletClass( args[QString::fromLatin1("code") ] );
-
-        m_width = args[QString::fromLatin1("width") ].toInt();
-        m_minWidth = m_maxWidth = m_width;
-        m_height = args[QString::fromLatin1("height") ].toInt();
-        tmp->resize( m_width, m_height );
-
         if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
             tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
         if( !args[QString::fromLatin1("name") ].isNull() )
@@ -112,23 +132,50 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     }
 }
 
-
-RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
+RenderEmptyApplet::RenderEmptyApplet(QScrollView *view)
   : RenderWidget( view )
 {
     // init RenderObject attributes
     setInline(true);
 
-    setQWidget(
-        new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),
-                   view->viewport())
-        );
-
-    ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
-
-    m_width = sz.width();
-    m_minWidth = m_maxWidth = m_width;
-    m_height = sz.height();
-    m_widget->resize( sz );
+    QLabel* label = new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"), view->viewport());
+    setQWidget(label);
+    label->setAlignment( Qt::AlignCenter );
 }
 
+short RenderEmptyApplet::intrinsicWidth() const
+{
+    return (m_widget ? m_widget->sizeHint().width() : 0);
+}
+
+int RenderEmptyApplet::intrinsicHeight() const
+{
+    return (m_widget ? m_widget->sizeHint().height() : 0);
+}
+
+void RenderEmptyApplet::calcMinMaxWidth()
+{
+    if(minMaxKnown())
+        return;
+
+    calcWidth();
+    m_maxWidth = m_minWidth = m_width;
+
+    setMinMaxKnown();
+}
+
+void RenderEmptyApplet::layout()
+{
+    if(layouted())
+        return;
+
+    if(!minMaxKnown())
+        calcMinMaxWidth();
+
+    calcHeight();
+
+    if(m_widget)
+        m_widget->resize(m_width, m_height);
+
+    setLayouted();
+}

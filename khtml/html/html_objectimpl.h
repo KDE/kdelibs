@@ -62,8 +62,6 @@ protected:
     DOMStringImpl *name;
     DOMStringImpl *code;
     DOMStringImpl *archive;
-    int width;
-    int height;
 
     KHTMLView *view;
     khtml::VAlign valign;

@@ -50,7 +50,6 @@ HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
     code = 0;
     name = 0;
     archive = 0;
-    width = height = 0;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
@@ -96,10 +95,10 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
         name->ref();
         break;
     case ATTR_WIDTH:
-        width = attr->val()->toInt();
+        addCSSProperty(CSS_PROP_WIDTH, attr->value());
         break;
     case ATTR_HEIGHT:
-        height = attr->val()->toInt();
+        addCSSProperty(CSS_PROP_HEIGHT, attr->value());
         break;
     case ATTR_ALIGN:
         // vertical alignment with respect to the current baseline of the text
@@ -151,9 +150,6 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
       if(archive)
           args.insert( "archive", QString(archive->s, archive->l) );
 
-      args.insert( "width", QString::number(width) );
-      args.insert( "height", QString::number(height) );
-
       if(!view->part()->baseURL().isEmpty())
         args.insert( "baseURL", view->part()->baseURL().url() );
       else
@@ -162,7 +158,7 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
       f = new RenderApplet(view, args, this);
   }
   else
-      f = new RenderEmptyApplet(view, QSize(width, height));
+      f = new RenderEmptyApplet(view);
 
   if(f)
   {

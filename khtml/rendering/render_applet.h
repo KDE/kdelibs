@@ -43,22 +43,27 @@ public:
     virtual const char *renderName() const { return "RenderApplet"; }
 
     virtual void layout();
+    virtual void calcMinMaxWidth();
+    virtual short intrinsicWidth() const;
+    virtual int intrinsicHeight() const;
 
 private:
     void processArguments( QMap<QString, QString> args );
 
     HTMLElementImpl *m_applet;
-    bool m_layoutPerformed;
 };
 
 class RenderEmptyApplet : public RenderWidget
 {
 public:
-  RenderEmptyApplet(QScrollView *view, QSize sz);
+    RenderEmptyApplet(QScrollView *view);
 
-  virtual const char *renderName() const { return "RenderEmptyApplet"; }
+    virtual const char *renderName() const { return "RenderEmptyApplet"; }
 
-  virtual void layout() {};
+    virtual void calcMinMaxWidth();
+    virtual short intrinsicWidth() const;
+    virtual int intrinsicHeight() const;
+    virtual void layout();
 };
 
 };
