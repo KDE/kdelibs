@@ -761,6 +761,11 @@ void InterpreterImp::globalClear()
 }
 
 InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
+  : m_interpreter(interp),
+    global(glob),
+    dbg(0),
+    m_compatMode(Interpreter::NativeMode),
+    recursion(0)
 {
   // add this interpreter to the global chain
   // as a root set for garbage collection
@@ -775,16 +780,10 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     globalInit();
   }
 
-  m_interpreter = interp;
-  global = glob;
   globExec = new ExecState(m_interpreter,0);
-  dbg = 0;
-  m_compatMode = Interpreter::NativeMode;
 
   // initialize properties of the global object
   initGlobalObject();
-
-  recursion = 0;
 }
 
 void InterpreterImp::initGlobalObject()
