@@ -23,6 +23,7 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
 <LI><A HREF="#kparts">Changes in kparts</A></LI>
 <LI><A HREF="#kspell">Changes in kspell</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
+<LI><A HREF="#kfile">Changes in kfile</A></LI>
 <LI><A HREF="#kcontrol">KDE Control Center</A></LI>
 </UL>
 
@@ -205,6 +206,12 @@ The preferred means of defining a shortcut, however, is to use <b>KAction</b>.
 		</table></li-->
 </ul>
 
+<H4>KIconLoader, KIconTheme</H4>
+Methods now use KIcon::Group and KIcon::Context instead of int as types for group and context arguments.
+The change should affect only code using hardcoded numeric values instead of using the proper enum constants.
+This applies to classes KIconLoader, KIconTheme and (in kio and kfile) KMimeType, KService, KIconDialog, KIconButton,
+KURLBar and KURLBarItem.
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
@@ -283,6 +290,23 @@ KThemeBase and KThemeStyle have been ported over to the new QStyle/KStyle API
 present in Qt3/KDE3. KThemeBase is no longer in kdeui, but in kstyles/kthemestyle
 as its use is basically limited to KThemeStyle.
 
+<H4>KAction, KToolBar, KToolBarButton and icons</H4>
+The prefered way for specifying icons is passing the icon names (and the icons will be loaded by KIconLoader),
+instead of using QIconSet or QPixmap. This results in always using the correct icon size and allows delayed
+on-demand icon loading.
+<p>
+Method KAction::hasIconSet() has been renamed to KAction::hasIcon(), the old name will still work unless KDE_NO_COMPAT is defined.
+KAction::iconSet() now has an argument specifying icon group, the old KAction::iconSet() is still available unless KDE_NO_COMPAT
+is defined and returns KIcon::Small iconset, just like in KDE2.
+<p>
+KToolBarButton methods setPixmap(), setDefaultPixmap(), setDisabledPixmap(), setDefaultIcon() and setDisabledIcon() are deprecated.
+Use KToolBarButton::setIcon() (prefered) or KToolBarButton::setIconSet() instead.
+
+<H4>KAction and derived classes</H4>
+The protected set* methods have been renamed to update* and they now take only one argument (i.e. setText(int, const QString&)
+is now updateText(int) ). Because the former second argument was always the value of the a corresponding data member, you
+can simply call the accessor method (i.e. in updateText() call text() to get the text).
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kio">Changes in kio</A></H3>
@@ -350,6 +374,10 @@ as its use is basically limited to KThemeStyle.
 Those two classes are deprecated, no need to create a KFileOpenWithHandler anymore.
 The merging of libkio, libksycoca, libkfile and libkssl into a single libkio has
 allowed to fix this dependency problem: KRun can now use the OpenWith dialog directly.
+
+<H4>KMimeType, KService</H4>
+Methods now use KIcon::Group and KIcon::Context instead of int as types for group and context arguments.
+The change should affect only code using hardcoded numeric values instead of using the proper enum constants.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -432,7 +460,8 @@ disable this use a #define KDE_NO_COMPAT.
 <H3><A NAME="kfile">Changes in kfile</A></H3>
 The kfile-library, as used by the KFileDialog provides classes for directory browsing widgets.
 Those classes gained some new features, some parts were merged with other existing classes
-and in some cases the API was cleaned up/fixed.
+and in some cases the API was cleaned up/fixed. The library is now built as part of libkio
+library (there's no need to modify Makefiles which use $LIB_KFILE instead of hardcoding -lkfile).
 <p>
 Even if the list of changes is long, the affected code base should be relatively small, as most
 parts are rarely used outside of kfile.
@@ -520,6 +549,10 @@ have been merged into the new method activate( const KFileItem * ).
 
 <br><br>
 Carsten Pfeiffer <A HREF="mailto:pfeiffer@kde.org">pfeiffer@kde.org</A>
+
+<H4>KIconDialog, KIconButton, KURLBar, KURLBarItem</H4>
+Methods now use KIcon::Group and KIcon::Context instead of int as types for group and context arguments.
+The change should affect only code using hardcoded numeric values instead of using the proper enum constants.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 <p>
