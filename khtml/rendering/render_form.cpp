@@ -70,8 +70,6 @@ void RenderFormElement::calcMinMaxWidth()
 {
     layout(false);
 
-    //kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
-
     m_minWidth = m_width;
     m_maxWidth = m_width;
 }
@@ -113,6 +111,8 @@ void RenderButton::layout(bool)
     m_width = s.width();
 
     RenderFormElement::layout(false);
+
+    setLayouted();
 }
 
 // ------------------------------------------------------------------------------
@@ -325,7 +325,10 @@ void RenderLineEdit::layout(bool)
     } else
         s = QSize( w + 4, h + 4 );
 
+    edit->blockSignals(true);
     edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
+    edit->blockSignals(false);
+
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
     if (input->maxLength() > 0)
 	edit->setMaxLength(input->maxLength());
@@ -335,6 +338,7 @@ void RenderLineEdit::layout(bool)
     m_width = s.width();
 
     RenderFormElement::layout(false);
+    setLayouted();
 }
 
 void RenderLineEdit::slotTextChanged(const QString &string)
@@ -418,7 +422,9 @@ void RenderFileButton::layout( bool )
     } else
         s = QSize( w + 4, h + 4 );
 
+    m_edit->blockSignals(true);
     m_edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->filename().string());
+    m_edit->blockSignals(false);
     m_edit->setMaxLength(input->maxLength());
 
     m_edit->setReadOnly(m_element->readOnly());
@@ -427,6 +433,7 @@ void RenderFileButton::layout( bool )
     m_width  = s.width();
 
     RenderFormElement::layout(false);
+    setLayouted();
 }
 
 void RenderFileButton::slotReturnPressed()
@@ -691,6 +698,7 @@ void RenderSelect::layout( bool )
     }
 
     RenderFormElement::layout(false);
+    setLayouted();
 }
 
 void RenderSelect::close()
@@ -701,7 +709,6 @@ void RenderSelect::close()
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-        kdDebug( 6040 ) << "Restoring SelectElem state=" << state << endl;
         restoreState( state );
     }
     setLayouted(false);
@@ -973,7 +980,9 @@ void RenderTextArea::layout( bool )
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
     w->setReadOnly(m_element->readOnly());
+    w->blockSignals(true);
     w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string());
+    w->blockSignals(false);
 
     QFontMetrics m = w->fontMetrics();
     QSize size( QMAX(f->cols(), 1)*m.maxWidth() + w->frameWidth()*5 +
@@ -985,6 +994,8 @@ void RenderTextArea::layout( bool )
 
     m_width  = size.width();
     m_height = size.height();
+
+    setLayouted();
 
     RenderFormElement::layout(false);
 }
