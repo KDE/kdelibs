@@ -24,14 +24,17 @@
 #define _KWIDGET_H
 
 #include <stdlib.h>
-#include <qwidget.h>
 #include <qlist.h>
-#include <ktoolbar.h>
+#include <qpopupmenu.h>
+#include <qwidget.h>
 #include <kstatusbar.h>
+#include <ktoolbar.h>
 
+class QMessageBox;
+class KAboutDialog;
 class KConfig;
-class KTMLayout;
 class KMenuBar;
+class KTMLayout;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -308,6 +311,17 @@ public:
      */
     bool restore(int number);
 
+    /**
+     * Get the standard help menu.
+     *
+     * @param aboutAppText User definable string that is used in the 
+     *        appication specific dialog box. Note: The help menu will
+     *        not open this dialog box if you don't define a string.
+     *
+     * @return a standard help menu
+     */
+    QPopupMenu* helpMenu( const QString &aboutAppText=QString::null );
+
 protected:
     /**
      * Default implementation calls @ref #updateRects if main widget
@@ -435,6 +449,9 @@ public slots:
      */
     virtual void setPlainCaption( const QString &caption );
 
+    void aboutKDE( void );
+    void aboutApp( void );
+
 protected slots:
 
    /**
@@ -443,6 +460,8 @@ protected slots:
     * This is handled by Qt layout management.
     */
    virtual void updateRects();
+
+   void appHelpActivated(); 
 
 private slots:
    /**
@@ -500,7 +519,12 @@ private:
     */
    bool localKill;
 
+
    KTMLayout* layoutMgr;
+
+   KAboutDialog *mAboutKDE;
+   QMessageBox  *mAboutApp;
+   QString      mAppAboutText; // The text for the about box
 
 protected:
 
