@@ -19,82 +19,7 @@
 /*
  * $Id$
  *
- * $Log$
- * Revision 1.15  2000/01/17 19:07:59  bieker
- * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
- * yet).
- *
- * Revision 1.14  1999/12/11 18:37:12  faure
- * ../../../kdelibs/kdeui/kmessagebox.cpp:118: warning: control reaches
- * end of non-void function `KMessageBox::questionYesNo(QWidget *,
- * const QString &, const QStr...
- *
- * Better read warnings... You broke the return value...
- *
- * Revision 1.13  1999/12/11 17:20:36  antlarr
- * Changed the QStringList questionYesNo method name to questionYesNoList
- * Also reimplemented the original questionYesNo to call questionYesNoList with
- * an empty list which reduces the sources and keeps the look
- * I've changed the only two places that used this to reflect the changes:
- * the KMessageBox test and Konqueror
- *
- * Revision 1.12  1999/12/09 07:08:00  antlarr
- * Fixed the layout of the message boxes, now the text and icon are always
- * centered in the dialog. The solution was to add setStretch calls, but
- * then there was a problem as you cannot use a setStretch in a QHBox
- * (in general, in a widget with an "autoAdd" to layout), so I
- * had to turn every QHBox in a QWidget/QHBoxLayout pair.
- *
- * Revision 1.11  1999/11/27 21:30:47  antlarr
- * Added a new questionYesNo which displays a "question" dialog with a listbox
- * to show information to the user (see the mail in kde-core-devel for more info)
- *
- * Revision 1.10  1999/11/14 19:34:22  espensa
- * Changed default title from "Question" to "Warning" so that
- * we get what the docs say we should get for the following boxes:
- * KMessageBox::warningContinueCancel(...)
- * KMessageBox::warningYesNo(...)
- *
- * Revision 1.9  1999/11/11 15:03:41  waba
- * WABA:
- * * Uses KDialogBase for implementation
- * * Some additions according to the KDE Style Guide
- *
- * Revision 1.8  1999/10/09 00:08:29  kalle
- * The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
- *
- * Revision 1.7  1999/09/23 18:27:45  espensa
- * Changed to the new kapp->makeStdCaption() for creating captions.
- * Result: More maintainable code and libkdeui size was reduced by
- * approx 6000 bytes :-) Note: The about dialog is not changed.
- *
- * Revision 1.6  1999/09/12 13:35:04  espensa
- * I have had problems getting the action button to be properly underlined.
- * The changes should fix this once and for all. There were errors in the
- * "box->setButtonText()" (index errors)
- *
- * One minor typo removed in kmessagebox.h as well.
- *
- * Revision 1.5  1999/08/24 13:16:17  waba
- * WABA: Adding enums, fixing default for warningYesNo
- *
- * Revision 1.4  1999/08/16 15:38:32  waba
- * WABA: Make dialogs fixed size.
- *
- * Revision 1.3  1999/08/15 10:50:30  kulow
- * adding KMessageBox::about which uses the KDE icon instead of the Qt Information
- * icon - very cool! :)
- *
- * Revision 1.2  1999/07/26 07:27:04  kulow
- * it's OK
- *
- * Revision 1.1  1999/07/25 19:38:57  waba
- * WABA: Added some i18n'ed qmessagebox'es for convenience
- *
- *
  */
-
-
 #include <qcheckbox.h>
 #include <qhbox.h>
 #include <qlabel.h>
@@ -109,7 +34,7 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-
+#include <qlayout.h>
 
  /** 
   * Easy MessageBox Dialog. 

@@ -26,6 +26,7 @@
 #include <qdir.h>
 #include <qpainter.h>
 #include <qwmatrix.h>
+#include <qlayout.h>
 
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -39,6 +40,8 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kapp.h>
+#include <kiconloader.h>
 
 //
 //----------------------------------------------------------------------
