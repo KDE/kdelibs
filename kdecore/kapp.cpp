@@ -20,6 +20,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.93  1998/02/24 21:16:22  kulow
+// remove kde_minidir, since this is somehow stupid (I hard coded it in the
+// Makefiles as icondir/mini now) and added kde_sounddir
+// This is even source incompatible, but it hasn't been used, so it should
+// work after some little changes I will make
+//
 // Revision 1.92  1998/02/24 20:07:45  kalle
 // Added F1 accelerator to standard help menu
 //
@@ -1257,7 +1263,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  if( filename.isEmpty() )
 	    filename = aAppName + "/index.html";
 
-	  QString path = KApplication::kde_htmldir().copy();
+	 QString path = KApplication::kde_htmldir().copy() + "/";
 
          // first try the locale setting
          QString file = path + klocale->language() + '/' + filename;
