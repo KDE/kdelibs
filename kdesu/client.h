@@ -12,7 +12,7 @@
  * client.h: client to access kdesud.
  */
 
-#ifndef __KDE_su_Cleint_h_Included__
+#ifndef __KDE_su_Client_h_Included__
 #define __KDE_su_Client_h_Included__
 
 #include <sys/types.h>
