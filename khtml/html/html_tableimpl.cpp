@@ -658,6 +658,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 	QString str;
 	str.sprintf("%dpx solid black", border);
 	addCSSProperty(CSS_PROP_BORDER, str, false);
+	break;
     }
     case ATTR_ROWSPAN:
 	// ###
