@@ -120,6 +120,7 @@ Icon		icon to display in file manager, menus, etc.	string		NO	YES
 		the icon MAY specify a specific path to
 		override common search directories
 MiniIcon	small icon for window manager, menus, etc.	string		NO	NO
+Hidden		if true, pretend this entry doesn't exist.	boolean		NO	NO
 Path		if entry is type Application, the working	string		NO	YES
 		directory to run the program in	
 Terminal	whether the program runs in a terminal window	boolean (2)	NO	YES
