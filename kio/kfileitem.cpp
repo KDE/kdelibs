@@ -91,7 +91,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   init( _determineMimeTypeOnDemand );
 }
 
-KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
+KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand ) :
   m_entry(), // warning !
   m_url( _url ),
   m_bIsLocalURL( _url.isLocalFile() ),
@@ -102,8 +102,6 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_bLink( false ),
   m_bMarked( false )
 {
-  if ( _urlIsDirectory && !m_strText.isEmpty() )
-      m_url.addPath( m_strText );
   init( _determineMimeTypeOnDemand );
 }
 

@@ -66,12 +66,9 @@ public:
    *
    * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
    *       should be determined immediately or on demand
-   * @param _urlIsDirectory specifies if the url is just the directory of the
-   *       fileitem and the filename from the UDSEntry should be used.
    */
   KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url,
-	     bool _determineMimeTypeOnDemand = false,
-	     bool _urlIsDirectory = false );
+	     bool _determineMimeTypeOnDemand = false );
 
   /**
    * Create an item representing a file, for which the mimetype is already known
@@ -167,7 +164,7 @@ public:
    * If @param lowerCase is true, the name will be returned in lower case,
    * which is useful to speed up sorting by name, case insensitively.
    */
-  const QString& name( bool lowerCase = false ) const { 
+  const QString& name( bool lowerCase = false ) const {
       if ( !lowerCase )
 	  return m_strName;
       else
@@ -175,7 +172,7 @@ public:
 	      m_strLowerCaseName = m_strName.lower();
       return m_strLowerCaseName;
   }
-    
+
   /**
    * @return the mimetype of the file item
    */
@@ -317,7 +314,7 @@ protected:
    * The filename in lower case (to speed up sorting)
    */
   mutable QString m_strLowerCaseName;
-    
+
 private:
   /**
    * Marked : see @ref #mark()
