@@ -12,9 +12,6 @@
             <height>36</height>
         </rect>
     </property>
-    <property name="caption">
-        <string>KShortcutDialogSimple</string>
-    </property>
     <grid>
         <property name="name">
             <cstring>unnamed</cstring>
