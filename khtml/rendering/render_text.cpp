@@ -1389,7 +1389,7 @@ short RenderText::width() const
 void RenderText::repaint(bool immediate)
 {
     RenderObject *cb = containingBlock();
-    if(cb != this)
+    if(cb)
         cb->repaint(immediate);
 }
 

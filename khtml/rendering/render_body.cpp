@@ -83,7 +83,7 @@ void RenderBody::paintBoxDecorations(QPainter *p,int, int _y,
 void RenderBody::repaint(bool immediate)
 {
     RenderObject *cb = containingBlock();
-    if(cb != this)
+    if(cb)
 	cb->repaint(immediate);
 }
 
