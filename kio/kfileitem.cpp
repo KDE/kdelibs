@@ -92,6 +92,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
 
         case KIO::UDS_MIME_TYPE:
           m_pMimeType = KMimeType::mimeType((*it).m_str);
+          d->bMimeTypeKnown = true;
           break;
 
         case KIO::UDS_GUESSED_MIME_TYPE:
