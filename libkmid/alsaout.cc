@@ -315,7 +315,8 @@ void AlsaOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
 #ifdef HAVE_LIBASOUND
   map->pitchBender(chn,lsb,msb);
-  chnbender[chn]=(msb << 8) | (lsb & 0xFF);
+  chnbender[chn]=((short)msb<<7) | (lsb & 0x7F);
+  chnbender[chn]=chnbender[chn]-0x2000;
 
   eventInit(di->ev);
   snd_seq_ev_set_pitchbend(di->ev,map->channel(chn), chnbender[chn]);
