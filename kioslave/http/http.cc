@@ -84,7 +84,7 @@ int main( int argc, char **argv )
 {
   KInstance instance( "kio_http" );
 
-  kdebug( KDEBUG_INFO, 7103, "Starting %d", getpid());
+  kDebugInfo(7103, "Starting %d", getpid());
 
   if (argc != 2)
   {
@@ -99,7 +99,7 @@ int main( int argc, char **argv )
   HTTPProtocol http( &parent );
   http.dispatchLoop();
 
-  kdebug( KDEBUG_INFO, 7103, "Done" );
+  kDebugInfo(7103, "Done" );
 }
 #endif
 
@@ -147,12 +147,12 @@ const char *create_digest_auth (const char *header, const char *user, const char
       p += 7;
       while( p[i] != '"' ) i++;
       realm.assign( p, i );
-      kdebug( KDEBUG_INFO, 7103, "Realm is :%s:", realm.c_str());
+      kDebugInfo( 7103, "Realm is :%s:", realm.c_str());
     } else if (strncasecmp(p, "algorith=\"", 10)==0) {
       p+=10;
       while (p[i] != '"' ) i++;
       algorithm.assign(p, i);
-      kdebug( KDEBUG_INFO, 7103, "Algorithm is :%s:", algorithm.c_str());
+      kDebugInfo( 7103, "Algorithm is :%s:", algorithm.c_str());
     } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
       p+=11;
       while (p[i] != '"') i++;
@@ -297,7 +297,7 @@ int verify_callback (int, X509_STORE_CTX *)
 
 /*****************************************************************************/
 
-HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol ) 
+HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
   : SlaveBase( _conn )
 {
   m_protocol = protocol;
@@ -311,7 +311,7 @@ HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
   {
-     kdebug( KDEBUG_INFO, 7103, "Can't connect with DCOP server.");
+     kDebugInfo( 7103, "Can't connect with DCOP server.");
   }
 
   m_bCanResume = true; // most of http servers support resuming ?
@@ -367,7 +367,7 @@ void HTTPProtocol::initSSL() {
   SSLeay_add_ssl_algorithms();
   ctx=SSL_CTX_new(meth);
   if (ctx == NULL) {
-    kdebug( KDEBUG_INFO, 7103, "We've got a problem!");
+    kDebugInfo( 7103, "We've got a problem!");
     fflush(stderr);
   }
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
@@ -472,7 +472,7 @@ void HTTPProtocol::http_openConnection()
 	} else
 	  port = DEFAULT_HTTP_PORT;
       } else {
-	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data()); 
+	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data());
 	port = 80;
       }
   }
@@ -502,41 +502,41 @@ void HTTPProtocol::http_openConnection()
   if (m_sock)
   {
      bool closeDown = false;
-     kdebug( KDEBUG_INFO, 7103, "http_open: connection still active (%d)", getpid());
+     kDebugInfo( 7103, "http_open: connection still active (%d)", getpid());
      if (!m_state.do_proxy && !m_request.do_proxy)
      {
         if (m_state.hostname != m_request.hostname)
         {
            closeDown = true;
-           kdebug( KDEBUG_INFO, 7103, "keep_alive: host does not match. (%s vs %s)",
+           kDebugInfo( 7103, "keep_alive: host does not match. (%s vs %s)",
                    m_state.hostname.ascii(), m_request.hostname.ascii());
         }
         else if (m_state.port != m_request.port)
         {
            closeDown = true;
-           kdebug( KDEBUG_INFO, 7103, "keep_alive: port does not match. (%d vs %d)",
+           kDebugInfo( 7103, "keep_alive: port does not match. (%d vs %d)",
 	           m_state.port, m_request.port);
         }
         else if (m_state.user != m_request.user)
         {
            closeDown = true;
-           kdebug( KDEBUG_INFO, 7103, "keep_alive: user does not match. (%s vs %s)",
+           kDebugInfo( 7103, "keep_alive: user does not match. (%s vs %s)",
                    m_state.user.ascii(), m_request.user.ascii());
         }
         else if (m_state.passwd != m_request.passwd)
         {
            closeDown = true;
-           kdebug( KDEBUG_INFO, 7103, "keep_alive: paswd does not match.");
+           kDebugInfo( 7103, "keep_alive: paswd does not match.");
         }
      }
      else if (m_request.do_proxy && m_state.do_proxy)
      {
         // Keep the connection to the proxy.
      }
-     else 
+     else
      {
         closeDown = true;
-        kdebug( KDEBUG_INFO, 7103, "keep_alive: proxy setting changed.");
+        kDebugInfo( 7103, "keep_alive: proxy setting changed.");
      }
      if (closeDown)
         http_closeConnection();
@@ -547,7 +547,7 @@ void HTTPProtocol::http_openConnection()
   m_state.port = m_request.port;
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
-  m_state.do_proxy = m_request.do_proxy; 
+  m_state.do_proxy = m_request.do_proxy;
 }
 
 
@@ -610,7 +610,7 @@ bool HTTPProtocol::http_open()
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
   {
-    kdebug( KDEBUG_INFO, 7103, "http_open: making new connection (%d)", getpid());
+    kDebugInfo( 7103, "http_open: making new connection (%d)", getpid());
     m_bKeepAlive = false;
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
@@ -621,7 +621,7 @@ bool HTTPProtocol::http_open()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-      kdebug( KDEBUG_INFO, 7103, "http_open 0");
+      kDebugInfo( 7103, "http_open 0");
       // yep... open up a connection to the proxy instead of our host
       if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
@@ -662,25 +662,25 @@ bool HTTPProtocol::http_open()
 
   // determine if this is a POST or GET method
   switch( m_request.method) {
-  case HTTP_GET: 
+  case HTTP_GET:
       header = "GET ";
       break;
-  case HTTP_PUT: 
+  case HTTP_PUT:
       header = "PUT ";
       moreData = true;
       break;
-  case HTTP_POST: 
+  case HTTP_POST:
       header = "POST ";
       moreData = true;
       break;
-  case HTTP_HEAD: 
+  case HTTP_HEAD:
       header = "HEAD ";
       break;
-  case HTTP_DELETE: 
-      header = "DELETE "; 
+  case HTTP_DELETE:
+      header = "DELETE ";
       break;
   }
-  
+
   // format the URI
   char c_buffer[64];
   memset(c_buffer, 0, 64);
@@ -692,7 +692,7 @@ bool HTTPProtocol::http_open()
   }
 
   // Let the path be "/" if it is empty ( => true )
-  { 
+  {
      QString encoded = m_request.path;
      if (encoded.isEmpty())
         encoded = "/";
@@ -700,7 +700,7 @@ bool HTTPProtocol::http_open()
         KURL::encode(encoded);
      if (!m_request.query.isEmpty())
         encoded += "?" + m_request.query;
-     
+
      header += encoded;
   }
 
@@ -723,7 +723,7 @@ bool HTTPProtocol::http_open()
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
-    kdebug( KDEBUG_INFO, 7103, "kio_http : Range = %s", c_buffer);
+    kDebugInfo( 7103, "kio_http : Range = %s", c_buffer);
   }
 
   if ( m_request.reload ) { /* No caching for reload */
@@ -777,7 +777,7 @@ bool HTTPProtocol::http_open()
 
   // the proxy might need authorization of it's own. do that now
   if( m_state.do_proxy ) {
-    kdebug( KDEBUG_INFO, 7103, "http_open 3");
+    kDebugInfo( 7103, "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
 	header += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
@@ -795,12 +795,12 @@ bool HTTPProtocol::http_open()
   if (!moreData)
      header += "\r\n";  /* end header */
 
-  kdebug( KDEBUG_INFO, 7103, "Sending header: \n===\n%s\n===", header.ascii());
+  kDebugInfo( 7103, "Sending header: \n===\n%s\n===", header.ascii());
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header, header.length()) == (ssize_t) header.length());
   if (!sendOk) {
-    kdebug( KDEBUG_INFO, 7103, "Connection broken! (%s)", m_state.hostname.ascii());
+    kDebugInfo( 7103, "Connection broken! (%s)", m_state.hostname.ascii());
     if (m_bKeepAlive)
     {
        // With a Keep-Alive connection this can happen.
@@ -865,7 +865,7 @@ bool HTTPProtocol::readHeader()
   gets(buffer, sizeof(buffer)-1);
   if (eof())
   {
-     kdebug(KDEBUG_INFO, 7103, "readHeader: EOF while waiting for header start.");
+     kDebugInfo( 7103, "readHeader: EOF while waiting for header start.");
      if (m_bKeepAlive) // Try to reestablish connection.
      {
         http_closeConnection();
@@ -890,11 +890,11 @@ bool HTTPProtocol::readHeader()
     // if there was only a newline then continue
     if (!len)
     {
-      kdebug( KDEBUG_INFO, 7103, "Got header (%d): --empty--", getpid());
+      kDebugInfo( 7103, "Got header (%d): --empty--", getpid());
       continue;
     }
 
-    kdebug( KDEBUG_INFO, 7103, "Got header (%d): \"%s\"", getpid(), buffer);
+    kDebugInfo( 7103, "Got header (%d): \"%s\"", getpid(), buffer);
 
     // are we allowd to resume?  this will tell us
     if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
@@ -1037,7 +1037,7 @@ bool HTTPProtocol::readHeader()
       if (strncasecmp(buffer, "Connection:", 11) == 0) {
 	if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
 	  m_bKeepAlive = false;
-          kdebug( KDEBUG_INFO, 7103, "KeepAlive = false");
+          kDebugInfo( 7103, "KeepAlive = false");
 	} else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
 #ifdef DO_SSL
           // Don't do persistant connections with SSL.
@@ -1046,7 +1046,7 @@ bool HTTPProtocol::readHeader()
 #else
           m_bKeepAlive = true;
 #endif
-          kdebug( KDEBUG_INFO, 7103, "KeepAlive = true");
+          kDebugInfo( 7103, "KeepAlive = true");
 	}
 	
       }
@@ -1135,9 +1135,9 @@ bool HTTPProtocol::readHeader()
   }
 
   if (m_bCachedWrite)
-    kdebug( KDEBUG_INFO, 7103, "Cache, adding \"%s\"", m_request.url.url().ascii());
+    kDebugInfo( 7103, "Cache, adding \"%s\"", m_request.url.url().ascii());
   else
-    kdebug( KDEBUG_INFO, 7103, "Cache, not adding \"%s\"", m_request.url.url().ascii());
+    kDebugInfo( 7103, "Cache, not adding \"%s\"", m_request.url.url().ascii());
 
   return true;
 }
@@ -1159,7 +1159,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     if ( m_cmd != CMD_COPY )
       m_iSize = 0;
   } else {
-    kdebug( KDEBUG_INFO, 7103, "Unknown encoding encountered.  Please write code. Pid = %d Encoding = \"%s\"", getpid(), encoding.ascii());
+    kDebugInfo( 7103, "Unknown encoding encountered.  Please write code. Pid = %d Encoding = \"%s\"", getpid(), encoding.ascii());
     fflush(stderr);
     abort();
   }
@@ -1180,8 +1180,8 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     f = AUTH_Digest;
     strAuth = strdup(p);
   } else {
-    kdebug( KDEBUG_INFO, 7103, "Invalid Authorization type requested");
-    kdebug( KDEBUG_INFO, 7103, "buffer: %s", p);
+    kDebugInfo( 7103, "Invalid Authorization type requested");
+    kDebugInfo( 7103, "buffer: %s", p);
     fflush(stderr);
     abort();
   }
@@ -1261,7 +1261,7 @@ void HTTPProtocol::http_close()
      if (m_bCachedWrite)
      {
         QString filename = m_state.cef + ".new";
-        kdebug( KDEBUG_INFO, 7103, "deleting cache entry: %s", filename.ascii());
+        kDebugInfo( 7103, "deleting cache entry: %s", filename.ascii());
         unlink( filename.ascii());
         return;
      }
@@ -1269,12 +1269,12 @@ void HTTPProtocol::http_close()
   if (!m_bKeepAlive)
      http_closeConnection();
   else
-     kdebug( KDEBUG_INFO, 7103, "http_close: keep alive");
+     kDebugInfo( 7103, "http_close: keep alive");
 }
 
 void HTTPProtocol::http_closeConnection()
 {
-  kdebug( KDEBUG_INFO, 7103, "http_closeConnection: closing (%d)", getpid());
+  kDebugInfo( 7103, "http_closeConnection: closing (%d)", getpid());
   m_bKeepAlive = false; // Just in case.
   if ( m_fsocket )
     fclose( m_fsocket );
@@ -1361,7 +1361,7 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
 	} else
 	  port = DEFAULT_HTTP_PORT;
       } else {
-	kdebug( KDEBUG_INFO, 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data()); 
+	kDebugInfo( 7103, "Got a weird protocol (%s), assuming port is 80", m_protocol.data());
 	port = 80;
       }
   }
@@ -1411,7 +1411,7 @@ void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
 
   if (!http_open())
      return;
-  
+
   if (!readHeader())
      return;
 
@@ -1439,7 +1439,7 @@ void HTTPProtocol::put( const QString& path, int, bool, bool)
 
   if (!http_open())
      return;
-  
+
   if (!readHeader())
      return;
 
@@ -1467,7 +1467,7 @@ void HTTPProtocol::post( const QString& path, const QString& query)
 
   if (!http_open())
      return;
-  
+
   if (!readHeader())
      return;
 
@@ -1480,7 +1480,7 @@ void HTTPProtocol::post( const QString& path, const QString& query)
 
 void HTTPProtocol::mimetype( const QString& path )
 {
-  kdebug( KDEBUG_INFO, 7103, "http: mimetype(%s)", path.ascii());
+  kDebugInfo( 7103, "http: mimetype(%s)", path.ascii());
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
 
@@ -1496,11 +1496,11 @@ void HTTPProtocol::mimetype( const QString& path )
 
   if (!http_open())
      return;
-  
+
   if (!readHeader())
      return;
 
-  kdebug( KDEBUG_INFO, 7103, "http: mimetype = %s",  m_strMimeType.ascii());
+  kDebugInfo( 7103, "http: mimetype = %s",  m_strMimeType.ascii());
 
   http_close();
   finished();
@@ -1525,7 +1525,7 @@ void HTTPProtocol::special( const QByteArray &data)
        assert(0);
    }
 }
-   
+
 
 
 
@@ -1619,7 +1619,7 @@ int HTTPProtocol::readChunked()
 
   if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
   {
-    kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk header");
+    kDebugInfo( 7103, "gets() failure on Chunk header");
     return -1;
   }
   // We could have got the CRLF of the previous chunk.
@@ -1628,14 +1628,14 @@ int HTTPProtocol::readChunked()
   {
      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
      {
-        kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk header");
+        kDebugInfo( 7103, "gets() failure on Chunk header");
         return -1;
      }
   }
-  kdebug(KDEBUG_INFO, 7103, "Chunk header = \"%s\"", m_bufReceive.data());
+  kDebugInfo( 7103, "Chunk header = \"%s\"", m_bufReceive.data());
   if (eof())
   {
-     kdebug(KDEBUG_INFO, 7103, "EOF on Chunk header");
+     kDebugInfo( 7103, "EOF on Chunk header");
      return -1;
   }
 
@@ -1643,7 +1643,7 @@ int HTTPProtocol::readChunked()
   if ((chunkSize < 0) || (chunkSize > MAX_CHUNK_SIZE))
      return -1;
 
-  kdebug(KDEBUG_INFO, 7103, "Chunk size = %d bytes", chunkSize);
+  kDebugInfo( 7103, "Chunk size = %d bytes", chunkSize);
 
   if (chunkSize == 0)
   {
@@ -1653,10 +1653,10 @@ int HTTPProtocol::readChunked()
       // Skip trailer of last chunk.
       if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
       {
-        kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk trailer");
+        kDebugInfo( 7103, "gets() failure on Chunk trailer");
         return -1;
       }
-      kdebug(KDEBUG_INFO, 7103, "Chunk trailer = \"%s\"", m_bufReceive.data());
+      kDebugInfo( 7103, "Chunk trailer = \"%s\"", m_bufReceive.data());
     }
     while (strlen(m_bufReceive.data()) != 0);
 
@@ -1678,7 +1678,7 @@ int HTTPProtocol::readChunked()
 
      int bytesReceived = read( m_bufReceive.data()+totalBytesReceived, bytesToReceive );
 
-     kdebug(KDEBUG_INFO, 7103, "Read from chunk got %d bytes", bytesReceived);
+     kDebugInfo( 7103, "Read from chunk got %d bytes", bytesReceived);
 
      if (bytesReceived == -1)
         return -1; // Failure.
@@ -1686,7 +1686,7 @@ int HTTPProtocol::readChunked()
      totalBytesReceived += bytesReceived;
      bytesToReceive -= bytesReceived;
 
-     kdebug(KDEBUG_INFO, 7103, "Chunk has %d bytes, %d bytes to go",
+     kDebugInfo( 7103, "Chunk has %d bytes, %d bytes to go",
 	totalBytesReceived, bytesToReceive);
   }
   while(bytesToReceive > 0);
@@ -1721,7 +1721,7 @@ int HTTPProtocol::readUnlimited()
 {
   if (m_bKeepAlive)
   {
-     kdebug(KDEBUG_WARN, 7103, "Unbounded datastream on a Keep Alive connection!");
+     kDebugWarning(7103, "Unbounded datastream on a Keep Alive connection!");
      m_bKeepAlive = false;
   }
   m_bufReceive.resize(4096);
@@ -1901,13 +1901,13 @@ bool HTTPProtocol::readBody( )
     }
 
     if (m_sContentMD5.left(f) != enc_digest) {
-      kdebug( KDEBUG_INFO, 7103, "MD5 checksum mismatch : got %s , calculated %s", debugString(m_sContentMD5.left(f)),enc_digest);
+      kDebugInfo( 7103, "MD5 checksum mismatch : got %s , calculated %s", debugString(m_sContentMD5.left(f)),enc_digest);
       error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
     } else {
-      kdebug( KDEBUG_INFO, 7103, "MD5 checksum present, and hey it matched what I calculated.");
+      kDebugInfo( 7103, "MD5 checksum present, and hey it matched what I calculated.");
     }
   } else {
-    kdebug( KDEBUG_INFO, 7103, "No MD5 checksum found.  Too Bad.");
+    kDebugInfo( 7103, "No MD5 checksum found.  Too Bad.");
   }
 
   fflush(stderr);
@@ -1948,7 +1948,7 @@ HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader)
    if (!m_dcopClient->send("kcookiejar", "kcookiejar",
 	"addCookies(QString, QCString)", params))
    {
-      kdebug( KDEBUG_WARN, 7103, "Can't communicate with cookiejar!" );
+      kDebugWarning( 7103, "Can't communicate with cookiejar!" );
    }
 }
 
@@ -1962,7 +1962,7 @@ HTTPProtocol::findCookies( const QString &url)
    if (!m_dcopClient->call("kcookiejar", "kcookiejar",
 	"findCookies(QString)", params, replyType, reply))
    {
-      kdebug( KDEBUG_WARN, 7103, "Can't communicate with cookiejar!" );
+      kDebugWarning(7103, "Can't communicate with cookiejar!" );
       return QString::null;
    }
 
@@ -2120,7 +2120,7 @@ HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 {
    if (fwrite( buffer, nbytes, 1, m_fcache) != 1)
    {
-      kdebug( KDEBUG_WARN, 7103, "writeCacheEntry: writing %d bytes failed.", nbytes );
+      kDebugWarning(7103, "writeCacheEntry: writing %d bytes failed.", nbytes );
       fclose(m_fcache);
       m_fcache = 0;
       QString filename = m_state.cef + ".new";
@@ -2139,12 +2139,12 @@ HTTPProtocol::closeCacheEntry()
    {
       if (::rename( filename.ascii(), m_state.cef.ascii()) == 0)
       {
-         kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: cache written correctly! (%s)", m_state.cef.ascii());
+         kDebugWarning(7103, "closeCacheEntry: cache written correctly! (%s)", m_state.cef.ascii());
          return; // Success
       }
-      kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: error renaming cache entry.");
+      kDebugWarning(7103, "closeCacheEntry: error renaming cache entry.");
    }
-   kdebug( KDEBUG_WARN, 7103, "closeCacheEntry: error closing cache entry.");
+   kDebugWarning(7103, "closeCacheEntry: error closing cache entry.");
 }
 
 void
@@ -2196,4 +2196,4 @@ extern "C" {
     SlaveBase *init_https() {
         return new HTTPProtocol(0, "https");
     }
-}     
+}

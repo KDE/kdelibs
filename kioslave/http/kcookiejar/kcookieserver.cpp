@@ -4,7 +4,7 @@
     Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License 
+    modify it under the terms of the GNU General Public License
     version 2 as published by the Free Software Foundation.
 
     This software is distributed in the hope that it will be useful,
@@ -43,7 +43,7 @@ public:
    QString url;
 };
 
-template class  QList<CookieRequest>; 
+template class  QList<CookieRequest>;
 
 class RequestList : public QList<CookieRequest>
 {
@@ -51,7 +51,7 @@ public:
    RequestList() : QList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer() 
+KCookieServer::KCookieServer()
   : KUniqueApplication()
 {
    mCookieJar = new KCookieJar;
@@ -87,7 +87,7 @@ KCookieServer::~KCookieServer()
 }
 
 
-bool 
+bool
 KCookieServer::process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData)
 {
@@ -96,21 +96,21 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QDataStream stream(data, IO_ReadOnly);
         QString arg1;
         stream >> arg1;
-        kdebug(KDEBUG_INFO, 7104, "got findCookies( %s )", arg1.ascii());
+        kDebugInfo(7104, "got findCookies( %s )", arg1.ascii());
         if (cookiesPending(arg1))
         {
-           kdebug(KDEBUG_INFO, 7104, "Blocked on pending cookies.");
+           kDebugInfo( 7104, "Blocked on pending cookies.");
            CookieRequest *request = new CookieRequest;
            request->transaction = dcopClient()->beginTransaction();
            request->url = arg1;
            mRequestList->append( request );
            return true; // Talk to you later :-)
         }
-        QString res = mCookieJar->findCookies(arg1); 
+        QString res = mCookieJar->findCookies(arg1);
         QDataStream stream2(replyData, IO_WriteOnly);
         stream2 << res;
         replyType = "QString";
-        kdebug(KDEBUG_INFO, 7104, "result = %s", res.ascii());
+        kDebugInfo( 7104, "result = %s", res.ascii());
         return true;
     }
     else if (fun == "addCookies(QString,QCString)")
@@ -119,8 +119,8 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QString arg1;
         QCString arg2;
         stream >> arg1 >> arg2;
-        kdebug(KDEBUG_INFO, 7104, "got addCookies(%s, %s)", arg1.ascii(), arg2.data());
-        addCookies(arg1, arg2); 
+        kDebugInfo( 7104, "got addCookies(%s, %s)", arg1.ascii(), arg2.data());
+        addCookies(arg1, arg2);
         replyType = "void";
         return true;
     }
@@ -128,7 +128,7 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
     {
         return true;
     }
-    kdebug(KDEBUG_INFO, 7104, "Ignoring unknown DCOP function \"%s\"", fun.data());
+    kDebugInfo( 7104, "Ignoring unknown DCOP function \"%s\"", fun.data());
     return false;
 }
 
@@ -148,7 +148,7 @@ KCookieServer::cookiesPending( const QString &url )
        if (cookie->match( domain, fqdn, path))
           return true;
   }
-  return false;  
+  return false;
 }
 
 void
@@ -170,7 +170,7 @@ KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
        while (cookie);
        mAdvicePending = false;
     }
-    
+
 }
 
 void KCookieServer::checkCookies(KCookie *cookie, bool queue)
@@ -195,14 +195,14 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
                 }
                 else
                 {
-                    kdebug(KDEBUG_INFO, 7104, "Asking user for advice for cookie from %s", cookie->host().ascii());
-                    mPendingCookies->prepend(cookie);  
+                    kDebugInfo( 7104, "Asking user for advice for cookie from %s", cookie->host().ascii());
+                    mPendingCookies->prepend(cookie);
                     KCookieWin *kw = new KCookieWin( 0L, cookie);
 	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
 	            delete kw;
-                    mPendingCookies->take(0);  
+                    mPendingCookies->take(0);
 	            // Save the cookie config if it has changed
-	            mCookieJar->saveConfig( kapp->config() ); 
+	            mCookieJar->saveConfig( kapp->config() );
                 }
 	    }
 	    advice = userAdvice;
@@ -210,19 +210,19 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
         switch(advice)
         {
         case KCookieAccept:
-            kdebug(KDEBUG_INFO, 7104, "Accepting cookie from %s", cookie->host().ascii());
+            kDebugInfo( 7104, "Accepting cookie from %s", cookie->host().ascii());
             mCookieJar->addCookie(cookie);
 	    break;
 	
 	case KCookieReject:
         default:
-            kdebug(KDEBUG_INFO, 7104, "Rejecting cookie from %s", cookie->host().ascii());
-            delete cookie; 
+            kDebugInfo( 7104, "Rejecting cookie from %s", cookie->host().ascii());
+            delete cookie;
 	    break;
         }
         cookie = next_cookie;
         if (!cookie && !queue)
-        {    
+        {
 	   // Check if there are cookies on the pending list from the
 	   // same host.
 	   for( cookie = mPendingCookies->first();
@@ -232,7 +232,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
                if (cookie->host() == host)
                   break;
            }
-           if (cookie) 
+           if (cookie)
            {
                // Found a matching cookie, remove it from the pending list.
                cookie = mPendingCookies->take();
@@ -248,7 +248,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
         {
            QCString replyType;
            QByteArray replyData;
-           QString res = mCookieJar->findCookies( request->url ); 
+           QString res = mCookieJar->findCookies( request->url );
            QDataStream stream2(replyData, IO_WriteOnly);
            stream2 << res;
            replyType = "QString";
@@ -274,8 +274,8 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-   kdebug(KDEBUG_INFO, 7104, "Saving cookie stuff!\n");
-   
+   kDebugInfo( 7104, "Saving cookie stuff!\n");
+
    delete mTimer;
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
