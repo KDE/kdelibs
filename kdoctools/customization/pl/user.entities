@@ -6,3 +6,10 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY Alt			"<keycap>Alt</keycap>">
+<!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
+<!ENTITY kcontrol       	"<application>Centrum sterowania &kde;</application>">
+<!ENTITY kcontrolcenter 	"<application>Centrum sterowania &kde;</application>">
+<!ENTITY khelpcenter    	"<application>Centrum pomocy &kde;</application>">
+<!ENTITY Shift			"<keycap>Shift</keycap>">                                  <!-- English: &Shift -->
+<!ENTITY Tab			"<keycap>Tab</keycap>">                                  <!-- English: &Tab -->
