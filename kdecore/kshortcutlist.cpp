@@ -30,8 +30,9 @@ bool KShortcutList::isGlobal( uint ) const
 
 int KShortcutList::index( const QString& sName ) const
 {
-        for( int i = 0;
-             i < count();
+	uint nSize = count();
+        for( uint i = 0;
+             i < nSize;
              ++i )
             if( name( i ) == sName )
                 return i;
