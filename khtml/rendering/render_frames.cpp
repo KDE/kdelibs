@@ -21,7 +21,7 @@
  *
  * $Id$
  */
-//#define DEBUG_LAYOUT
+#define DEBUG_LAYOUT
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
@@ -82,15 +82,15 @@ RenderFrameSet::~RenderFrameSet()
 void RenderFrameSet::layout( )
 {
 
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", layouted=" << layouted() << endl;
-#endif
-
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
     {
         m_width = m_view->visibleWidth();
         m_height = m_view->visibleHeight();
     }
+
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", height=" << height() << endl;
+#endif
 
     int remainingWidth = m_width - (m_frameset->totalCols()-1)*m_frameset->border();
     if(remainingWidth<0) remainingWidth=0;
@@ -113,6 +113,7 @@ void RenderFrameSet::layout( )
 
     if(m_rows)
     {
+	kdDebug(6040) << "more than one row!!!" << endl;
         for(i = 0; i< m_frameset->totalRows(); i++)
         {
             kdDebug( 6031 ) << "setting row " << i << endl;
@@ -208,10 +209,10 @@ void RenderFrameSet::layout( )
             int cols = m_frameset->totalCols();
             for(i = 0; i< m_frameset->totalCols(); i++)
             {
-                int toAdd = remainingHeight/cols;
+                int toAdd = remainingWidth/cols;
                 cols--;
-                m_rowHeight[i] += toAdd;
-                remainingHeight -= toAdd;
+                m_colWidth[i] += toAdd;
+                remainingWidth -= toAdd;
             }
         }
 
@@ -304,6 +305,7 @@ void RenderFrameSet::positionFrames()
     {
     //      HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
       child->setPos( xPos, yPos );
+      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl; 
       child->setSize( m_colWidth[c], m_rowHeight[r] );
 
       child->layout( );
