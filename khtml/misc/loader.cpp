@@ -642,7 +642,6 @@ void CachedImage::movieStatus(int status)
                             solid = true;
                             break;
                         }
-
                 isFullyTransparent = (!solid);
             }
         }
@@ -990,7 +989,7 @@ void Loader::servePendingRequests()
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-  KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);   
+  KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
 
   if (!req->object->accept().isEmpty())
       job->addMetaData("accept", req->object->accept());
@@ -1000,13 +999,13 @@ void Loader::servePendingRequests()
           r.setPath( "/" );
 
       job->addMetaData("referrer", r.url());
-      
+
       if (req->m_docLoader->part()->restored())
       {
 //          kdDebug() << "USING NON-VALIDATING CACHE!"<< endl;
-          job->addMetaData("cache","Cache");   
-      } 
-                    
+          job->addMetaData("cache","Cache");
+      }
+
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );

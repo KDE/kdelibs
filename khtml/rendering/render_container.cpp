@@ -76,7 +76,6 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case MARKER:
         case TABLE:
         case INLINE_TABLE:
-        case KONQ_RULER:
         case TABLE_COLUMN:
             break;
         case TABLE_COLUMN_GROUP:

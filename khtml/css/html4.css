@@ -122,10 +122,9 @@ CENTER {
 }  
       
 HR  { 
-	/* display: -konq-ruler; */
         display: block; 
-	margin-top: 5px; 
-	margin-bottom: 5px; 
+        margin-top: 12px; 
+        margin-bottom: 12px; 
         border-style: inset;
         border-width: 1px;
         margin-left: 1px; /* will be overwritten by ALIGN */ 

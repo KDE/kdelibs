@@ -535,7 +535,7 @@ enum EFontVariant {
 //------------------------------------------------
 
 enum EDisplay {
-    INLINE, BLOCK, LIST_ITEM, RUN_IN, COMPACT, MARKER, KONQ_RULER,
+    INLINE, BLOCK, LIST_ITEM, RUN_IN, COMPACT, MARKER,
     TABLE, INLINE_TABLE, TABLE_ROW_GROUP,
     TABLE_HEADER_GROUP, TABLE_FOOTER_GROUP, TABLE_ROW,
     TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_CELL,
@@ -828,7 +828,7 @@ public:
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
-    void setFont(const QFont & v) { 
+    void setFont(const QFont & v) {
 	if (!(inherited->font == v)) {
 	    inherited.access()->font = v;
 	    inherited.access()->fontMetrics = v;

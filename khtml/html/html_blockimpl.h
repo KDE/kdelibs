@@ -68,6 +68,7 @@ public:
 
     virtual NodeImpl::Id id() const;
     virtual void parseAttribute(AttributeImpl *);
+    virtual void attach();
 
 protected:
     bool noShade : 1;

@@ -27,7 +27,6 @@
 #include "rendering/render_table.h"
 #include "rendering/render_list.h"
 #include "rendering/render_root.h"
-#include "rendering/render_hr.h"
 #include "xml/dom_elementimpl.h"
 #include "misc/htmlhashes.h"
 #include <kdebug.h>
@@ -55,9 +54,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case RUN_IN:
     case COMPACT:
     case MARKER:
-        break;
-    case KONQ_RULER:
-        o = new RenderHR(node);
         break;
     case TABLE:
     case INLINE_TABLE:
