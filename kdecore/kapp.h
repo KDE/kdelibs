@@ -23,10 +23,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.1pre"
+#define KDE_VERSION_STRING "1.1"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 3
 
 #include <kconfig.h>
 
@@ -715,6 +715,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.60  1998/12/06 08:56:10  garbanzo
+// Typo police.
+//
 // Revision 1.59  1998/12/06 08:43:47  garbanzo
 // Oh hell, it looks ok at the bottom.  I hope nobody gets their tighty
 // whitites in a knot.
