@@ -177,7 +177,7 @@ protected slots:
 protected:
 
     /** Virtual function that can be overridden to provide password
-     * checking in derived classes. It should return @p if the
+     * checking in derived classes. It should return @p true if the
      * password is valid, @p false otherwise. */
     virtual bool checkPassword(const char *) { return true; }
 
