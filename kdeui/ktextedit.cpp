@@ -179,7 +179,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         e->ignore();
         return;
     }
-
+    
     QTextEdit::keyPressEvent( e );
 }
 
@@ -195,6 +195,11 @@ void KTextEdit::deleteWordForward()
     removeSelection();
     moveCursor( MoveWordForward, true );
     removeSelectedText();
+}
+
+void KTextEdit::slotAllowTab()
+{
+setTabChangesFocus(!tabChangesFocus());
 }
 
 QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
@@ -213,12 +218,9 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
       menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
       menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
       menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
-    }
-
-    if ( !isReadOnly() ) {
 
         menu->insertSeparator();
-        int id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
+        id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
                                    this, SLOT( checkSpelling() ) );
 
         if( text().isEmpty() )
@@ -227,6 +229,9 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
         id = menu->insertItem( i18n( "Auto Spell Check" ),
                                this, SLOT( toggleAutoSpellCheck() ) );
         menu->setItemChecked(id, d->checkSpellingEnabled);
+	menu->insertSeparator();
+	id=menu->insertItem(i18n("Allow Tabulations"),this,SLOT(slotAllowTab()));
+	menu->setItemChecked(id, !tabChangesFocus());
     }
 
     return menu;

@@ -87,6 +87,7 @@ public:
     bool checkSpellingEnabled() const;
 
     void highLightWord( unsigned int length, unsigned int pos );
+    
 
 public slots:
     /**
@@ -153,6 +154,7 @@ private slots:
     void spellCheckerCorrected( const QString &, const QString &, unsigned int );
     void spellCheckerFinished();
     void toggleAutoSpellCheck();
+    void slotAllowTab();
 
 private:
     void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );
