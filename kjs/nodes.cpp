@@ -1755,7 +1755,10 @@ Value VarDeclNode::evaluate(ExecState *exec) const
 #endif
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
-  variable.put(exec, ident, val, DontDelete | Internal);
+  if (exec->_context->type() == EvalCode)
+    variable.put(exec, ident, val, Internal);
+  else
+    variable.put(exec, ident, val, DontDelete | Internal);
 
   return String(ident.ustring());
 }
@@ -1764,7 +1767,7 @@ void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
   if ( !variable.hasProperty( exec, ident ) ) // already declared ?
-    variable.put(exec,ident, Undefined(), DontDelete);
+    variable.put(exec,ident, Undefined(), exec->_context->type() == EvalCode ? None : DontDelete);
   //else warning "variable %1 hides argument"
 }
 
@@ -2964,7 +2967,10 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
   func.put(exec, lengthPropertyName, Number(plen), ReadOnly|DontDelete|DontEnum);
 
-  ctx->variableObject().put(exec,ident,func,Internal);
+  if (exec->_context->type() == EvalCode)
+    ctx->variableObject().put(exec,ident,func,Internal);
+  else
+    ctx->variableObject().put(exec,ident,func,DontDelete|Internal);
 
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope

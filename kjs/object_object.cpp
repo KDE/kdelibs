@@ -26,6 +26,7 @@
 #include "operations.h"
 #include "object_object.h"
 #include "function_object.h"
+#include "lookup.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -38,10 +39,19 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
   : ObjectImp() // [[Prototype]] is Null()
 {
   Value protect(this);
-  putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
-  putDirect(toLocaleStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString, 0),
-	    DontEnum);
-  putDirect(valueOfPropertyName,  new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
+  putDirect(toStringPropertyName,
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(toLocaleStringPropertyName,
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString, 0), DontEnum);
+  putDirect(valueOfPropertyName, 
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
+  putDirect("hasOwnProperty",
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::HasOwnProperty,1),DontEnum);
+  putDirect("isPrototypeOf",
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::IsPrototypeOf,1),DontEnum);
+  putDirect("propertyIsEnumerable",
+	    new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::PropertyIsEnumerable,1),DontEnum);
+
 #ifndef KJS_PURE_ECMA // standard compliance location is the Global object
   // see http://www.devguru.com/Technologies/ecmascript/quickref/object.html
   put(exec, "eval",
@@ -49,7 +59,6 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
       DontEnum);
 #endif
 }
-
 
 // ------------------------------ ObjectProtoFuncImp --------------------------------
 
@@ -70,12 +79,52 @@ bool ObjectProtoFuncImp::implementsCall() const
 
 // ECMA 15.2.4.2 + 15.2.4.3
 
-Value ObjectProtoFuncImp::call(ExecState */*exec*/, Object &thisObj, const List &/*args*/)
+Value ObjectProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (id == ValueOf)
-    return thisObj;
-  else /* ToString or ToLocaleString */
+  switch (id) {
+  case ToString:
+    // fall through
+  case ToLocaleString:
     return String("[object "+thisObj.className()+"]");
+  case ValueOf:
+    return thisObj;
+  case HasOwnProperty: {
+    // Same as hasProperty() but without checking the prototype
+    Identifier propertyName(args[0].toString(exec));
+    Value tempProto(thisObj.imp()->prototype());
+    thisObj.imp()->setPrototype(Value());
+    bool exists = thisObj.hasProperty(exec,propertyName);
+    thisObj.imp()->setPrototype(tempProto);
+    return Value(exists ? BooleanImp::staticTrue : BooleanImp::staticFalse);
+  }
+  case IsPrototypeOf: {
+    Value v = args[0];
+    for (; v.isValid() && v.isA(ObjectType); v = Object::dynamicCast(v).prototype()) {
+      if (v.imp() == thisObj.imp())
+	return Value(BooleanImp::staticTrue);
+    }
+    return Value(BooleanImp::staticFalse);
+  }
+  case PropertyIsEnumerable: {
+    Identifier propertyName(args[0].toString(exec));
+    ObjectImp *obj = static_cast<ObjectImp*>(thisObj.imp());
+
+    int attributes;
+    ValueImp *v = obj->_prop.get(propertyName,attributes);
+    if (v)
+      return Value((attributes & DontEnum) ?
+		   BooleanImp::staticFalse : BooleanImp::staticTrue);
+
+    if (propertyName == specialPrototypePropertyName)
+      return Value(BooleanImp::staticFalse);
+
+    const HashEntry *entry = obj->findPropertyHashEntry(propertyName);
+    return Value((entry && !(entry->attr & DontEnum)) ?
+		 BooleanImp::staticTrue : BooleanImp::staticFalse);
+  }
+  }
+
+  return Undefined();
 }
 
 // ------------------------------ ObjectObjectImp --------------------------------

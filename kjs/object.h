@@ -356,6 +356,7 @@ namespace KJS {
   inline Object Value::toObject(ExecState *exec) const { return rep->dispatchToObject(exec); }
   
   class ObjectImp : public ValueImp {
+    friend class ObjectProtoFuncImp;
   public:
     /**
      * Creates a new ObjectImp with the specified prototype

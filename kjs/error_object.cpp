@@ -30,6 +30,15 @@
 
 using namespace KJS;
 
+// ------------------------------ NumberInstanceImp ----------------------------
+
+const ClassInfo ErrorInstanceImp::info = {"Error", 0, 0, 0};
+
+ErrorInstanceImp::ErrorInstanceImp(ObjectImp *proto)
+  : ObjectImp(proto)
+{
+}
+
 // ------------------------------ ErrorPrototypeImp ----------------------------
 
 // ECMA 15.9.4
@@ -99,8 +108,8 @@ bool ErrorObjectImp::implementsConstruct() const
 // ECMA 15.9.3
 Object ErrorObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object proto = Object::dynamicCast(exec->interpreter()->builtinErrorPrototype());
-  ObjectImp *imp = new ObjectImp(proto);
+  ObjectImp *proto = exec->interpreter()->builtinErrorPrototype().imp();
+  ObjectImp *imp = new ErrorInstanceImp(proto);
   Object obj(imp);
 
   if (!args.isEmpty() && args[0].type() != UndefinedType) {

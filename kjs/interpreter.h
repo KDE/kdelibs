@@ -431,6 +431,8 @@ namespace KJS {
     friend class FunctionImp;
     friend class GlobalFuncImp;
     friend class TryNode;
+    friend class VarDeclNode;
+    friend class FuncDeclNode;
   public:
     /**
      * Returns the interpreter associated with this execution state

@@ -62,6 +62,8 @@ namespace KJS  {
 
     void setLines(int l0, int l1) { line0 = l0; line1 = l1; }
 
+    CodeType type() const { return codeType; }
+
   private:
     InterpreterImp *_interpreter;
     ContextImp *_callingContext;

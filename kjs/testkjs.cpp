@@ -32,14 +32,35 @@ using namespace KJS;
 
 class TestFunctionImp : public ObjectImp {
 public:
-  TestFunctionImp() : ObjectImp() {}
+  TestFunctionImp(int i, int length);
   virtual bool implementsCall() const { return true; }
   virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+
+  enum { Print, Debug, Quit };
+
+private:
+  int id;
 };
+
+TestFunctionImp::TestFunctionImp(int i, int length) : ObjectImp(), id(i)
+{
+  putDirect(lengthPropertyName,length,DontDelete|ReadOnly|DontEnum);
+}
 
 Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
-  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+  switch (id) {
+  case Print:
+  case Debug:
+    fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+    return Undefined();
+  case Quit:
+    exit(0);
+    return Undefined();
+  default:
+    break;
+  }
+
   return Undefined();
 }
 
@@ -77,9 +98,11 @@ int main(int argc, char **argv)
     // create interpreter
     Interpreter interp(global);
     // add debug() function
-    global.put(interp.globalExec(), "debug", Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), "debug", Object(new TestFunctionImp(TestFunctionImp::Debug,1)));
     // add "print" for compatibility with the mozilla js shell
-    global.put(interp.globalExec(), "print", Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), "print", Object(new TestFunctionImp(TestFunctionImp::Print,1)));
+    // add "quit" for compatibility with the mozilla js shell
+    global.put(interp.globalExec(), "quit", Object(new TestFunctionImp(TestFunctionImp::Quit,0)));
     // add "version" for compatibility with the mozilla js shell 
     global.put(interp.globalExec(), "version", Object(new VersionFunctionImp()));
 
