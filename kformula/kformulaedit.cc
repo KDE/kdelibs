@@ -72,7 +72,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
   redo.setAutoDelete(TRUE);
 
-  QFont f("charter", DEFAULT_FONT_SIZE);
+  QFont f("utopia", DEFAULT_FONT_SIZE);
 
   setFont(f); //just default
   clipText.sprintf("");
@@ -143,6 +143,8 @@ void KFormulaEdit::setText(QString text)
   cacheState = ALL_DIRTY;
   while(undo.remove());
   while(redo.remove());
+  if(sendSizeHint) emit sizeHint( form->size());
+  cursorPos = 0;
   redraw();
 }
 
@@ -292,7 +294,6 @@ QString KFormulaEdit::uglyForm() const
     if(ugly[i] == QChar(POWER)) ugly[i] = '^';
     else if(ugly[i] == QChar(SUB)) ugly[i] = '_';
     else if(ugly[i] == QChar(DIVIDE)) ugly[i] = '/';
-    else if(ugly[i] == QChar(SLASH)) ugly[i] = '/';
     else if(ugly[i] == L_GROUP) ugly[i] = '(';
     else if(ugly[i] == R_GROUP) ugly[i] = ')';
   }
@@ -302,11 +303,89 @@ QString KFormulaEdit::uglyForm() const
 
 //-----------------------SET UGLY FORM----------------------
 //tries to take an ugly form and make it into a kformulaedit string
-//not done yet.
 void KFormulaEdit::setUglyForm(QString ugly)
 {
-  //int i;
+  int i;
+
   //search for absolute value:
+  i = ugly.find("abs(", 0, FALSE); // case insensitive
+  while(i != -1) {
+    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an abs
+      int tmp = KFormula::findMatch( ugly, i + 3);
+      ugly.replace(i, 4, QString(L_GROUP) + R_GROUP + QChar(ABS) + L_GROUP); // abs( --> {}|{
+      ugly[tmp] = R_GROUP;
+    }
+
+    i = ugly.find("abs(", i + 1, FALSE);
+  }
+
+  //search for square roots:
+  i = ugly.find("sqrt(", 0, FALSE); // case insensitive
+  while(i != -1) {
+    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an sqrt
+      ugly[ KFormula::findMatch( ugly, i + 4) ] = R_GROUP;
+      ugly.replace(i, 5, QString(L_GROUP) + R_GROUP + QChar(SQRT) + L_GROUP); // abs( --> {}|{
+    }
+
+    i = ugly.find("sqrt(", i + 1, FALSE);
+  }
+
+  //search for brackets:
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == '[') {
+      ugly[ KFormula::findMatch(ugly, i) ] = R_GROUP;
+      ugly.remove(i, 1);
+      ugly.insert(i, QString(L_GROUP) + R_GROUP + QChar(BRACKET) + L_GROUP);
+      i += 4;
+    }
+  }
+
+  //look for division:
+  i = ugly.find(")/("); //if it doesn't have parentheses around it, it will be a slash not a fraction.
+  while(i != -1) {
+    ugly[ KFormula::findMatch(ugly, i) ] = L_GROUP;
+    ugly[i] = R_GROUP;
+    ugly[i + 1] = QChar(DIVIDE);
+    ugly[ KFormula::findMatch(ugly, i + 2) ] = R_GROUP;
+    ugly[i + 2] = L_GROUP;
+
+    i = ugly.find(")/(", i + 1);
+  }
+
+  //the quest for power (and subscript):
+  i = ugly.find("^("); // it will just remain a caret if it has no parentheses
+  while(i != -1) {
+    ugly[ KFormula::findMatch(ugly, i + 1) ] = R_GROUP;
+    ugly[i + 1] = L_GROUP;
+    ugly[i] = QChar(POWER);
+
+    i = ugly.find("^(", i + 1);
+  }
+
+  i = ugly.find("_("); // it will just remain an underscore if it has no parentheses
+  while(i != -1) {
+    ugly[ KFormula::findMatch(ugly, i + 1) ] = R_GROUP;
+    ugly[i + 1] = L_GROUP;
+    ugly[i] = QChar(SUB);
+
+    i = ugly.find("_(", i + 1);
+  }
+
+  //finally, take care of all the remaining parentheses:
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == '(') {
+      ugly[i] = L_GROUP;
+      ugly.insert(i + 1, QString(R_GROUP) + QChar(PAREN) + L_GROUP);
+      i += 3;
+    }
+    if(ugly[i] == ')') ugly[i] = R_GROUP;
+  }
+
+  //and set the result to be the formula:
+  
+  setText(ugly);
+
+  return;
 
 }
 
@@ -777,7 +856,7 @@ void KFormulaEdit::toggleCursor()
   cacheState = ALL_DIRTY; undo.push( &((new QString(oldText))-> \
 				     insert(oldc, QChar(CURSOR))) ); \
   while(redo.remove()); }
-#define UPDATE_SIZE if ( sendSizeHint ) emit sizeHint( form->size() );
+#define UPDATE_SIZE if ( sendSizeHint ) { emit sizeHint( form->size() );  emit formulaChanged( uglyForm() ); }
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 {

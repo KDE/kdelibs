@@ -60,10 +60,11 @@ public:
    * If turned on, the signal @ref #sizeHint is emitted everytime
    * the formula gets a new size.
    */
-  void enableSizeHintSignal( bool );
+  void enableSizeHintSignal( bool b) { sendSizeHint = b; }
 
 signals:
   void sizeHint( QSize );
+  void formulaChanged( const QString & );
 
 protected:
   QArray<_cursorInfo> cursorCache;

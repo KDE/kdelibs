@@ -293,9 +293,11 @@ void box::calculate(QPainter &p, int setFontsize)
 	if(type == LSUB || type == LSUP) tmp = b2;
 
 	while(tmp->type == POWER || tmp->type == SUB ||
-	      tmp->type == LSUB || tmp->type == LSUP) {
+	      tmp->type == LSUB || tmp->type == LSUP ||
+	      tmp->type == ABOVE || tmp->type == BELOW) {
 
-	  if((tmp->type == POWER || tmp->type == SUB) &&
+	  if((tmp->type == POWER || tmp->type == SUB ||
+	      tmp->type == ABOVE || tmp->type == BELOW) &&
 	     tmp->b1 != NULL && tmp->type != type) {
 	    tmp = tmp->b1;
 	    continue;

@@ -104,39 +104,48 @@ void KFormula::initStrings(void)
 }
 
 //-----------------------------FIND MATCH--------------------------
-//static--finds the matching L_GROUP or R_GROUP
+//static--finds the matching delimiter
 int KFormula::findMatch(QString s, int pos)
 {
   int level = 0;
+  QChar lchar, rchar;
+
+  if(s[pos] == L_GROUP || s[pos] == R_GROUP) { lchar = L_GROUP; rchar = R_GROUP; }
+  else if(s[pos] == '(' || s[pos] == ')') { lchar = '('; rchar = ')'; }
+  else if(s[pos] == '[' || s[pos] == ']') { lchar = '['; rchar = ']'; }
+  else if(s[pos] == '{' || s[pos] == '}') { lchar = '{'; rchar = '}'; }
 
   if(pos < 0 || pos >= (int)s.length()) return -1;
 
-  if(s[pos] == L_GROUP) { // look for the matching R_GROUP to the right
+  if(s[pos] == lchar) { // look for the matching R_GROUP to the right
     while(pos < (int)s.length()) {
-      if(s[pos] == L_GROUP) level++;
-      if(s[pos] == R_GROUP) level--;
+      if(s[pos] == lchar) level++;
+      if(s[pos] == rchar) level--;
 
       if(level == 0) return pos;
 
       pos++;
     }
 
+    kdebug(KDEBUG_ERROR, 0, "Mismatched delimeters.  String = %s", s.ascii());
     return -1;
   }
   
-  if(s[pos] == R_GROUP) { // find the L_GROUP to the left
+  if(s[pos] == rchar) { // find the L_GROUP to the left
     while(pos >= 0) {
-      if(s[pos] == L_GROUP) level--;
-      if(s[pos] == R_GROUP) level++;
+      if(s[pos] == lchar) level--;
+      if(s[pos] == rchar) level++;
 
       if(level == 0) return pos;
 
       pos--;
     }
 
+    kdebug(KDEBUG_ERROR, 0, "Mismatched delimeters.  String = %s", s.ascii());
     return -1;
   }
 
+  kdebug(KDEBUG_ERROR, 0, "Bad delimeters.  String = %s", s.ascii());
   return -1;
 }
 
@@ -506,7 +515,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     //and insert cats after spaces
     for(i = 0; i < (int)text.length() - 1; i++)
       {
-	if(text[i].isDigit() &&
+	if(text[i].isDigit() && !special().contains(text[i + 1]) &&
 	   text[i + 1].isLetter()) {
 	  text.insert(i + 1, QChar(CAT));
 	  INSERTED(i + 1);
@@ -559,7 +568,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     }
 
   //now parenthesize everything in reverse order (think about it).
-  //After this, "x+y*z^{2}" becomes "{x}+{{y}*{{z}^{{2}}}}"
+  //After this, "x+y*z^{2}" becomes "{x}+{{y}*{{z}^{2}}}"
 
   //equal and gt lt signs have lowest priority
   for(i = (int)text.length() - 1; i >= 0; i--) {
