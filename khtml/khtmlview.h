@@ -156,7 +156,7 @@ public:
     /**
      * ensure the display is up to date
      */
-    void layout();
+    void layout(); // KDE 4.0: make private
 
 signals:
     void cleared();
