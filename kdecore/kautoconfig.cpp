@@ -367,6 +367,16 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
     }
 
     bool parseTheChildren = true;
+#ifndef NDEBUG
+    if(d->ignoreTheseWidgets[childWidget->className()] == 0 &&
+		    childWidget->name(0) == NULL){
+      // Without a name the widget is just skipped over.
+      kdDebug(180) << "KAutoConfig::retrieveSettings, widget with "
+        "NULL name.  className: " << childWidget->className() << endl;
+    }
+#endif
+    
+    
     if( d->ignoreTheseWidgets[childWidget->className()] == 0 &&  
       childWidget->name(0) != NULL )
     {
@@ -403,7 +413,9 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
         else if(trackChanges &&
           changedMap.find(childWidget->className()) == changedMap.end())
         {
-          kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown changed "
+          // Without a signal kautoconfigdialog could incorectly 
+	  // enable/disable the buttons
+	  kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown changed "
            "signal for widget:" << childWidget->className() << endl;
         }
 #endif
@@ -412,8 +424,10 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
 #ifndef NDEBUG
       else
       { 
-          kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown widget:" 
-           << childWidget->className() << endl;
+        // If kautoconfig doesn't know how to get/set the widget's value 
+	// nothing can be done to it and it is skipped. 
+	kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown widget:" 
+          << childWidget->className() << endl;
       }
 #endif
     }
