@@ -67,20 +67,12 @@ namespace KParts
  * page at some URL) is the following:
  *
  * <pre>
- * QString url = "http://www.kde.org";
+ * KURL url = "http://www.kde.org";
  * KHTMLPart *w = new KHTMLPart();
  * w->openURL(url);
  * w->view()->resize(500, 400);
  * w->show();
  * </pre>
- *
- * By default the Widget behaves as a full browser, so clicking on some link
- * on the page you just opened will lead yu to that page. This is inconvenient,
- * if you want to use the widget to display for example formatted emails, but
- * don't want the widget to open the site in this window in case someone
- * clicks on an embedded link. In this case just use
- * @ref setFollowsLinks(false). You will then get a Signal @ref urlClicked()
- * instead of KHTMLPart following the links directly.
  *
  * By default Java and JavaScript support is disabled. You can enable it by
  * using the @ref enableJava() and @ref enableJScript() methods.
@@ -118,113 +110,163 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
 public:
+  /**
+   * Constructs a new KHTMLPart.
+   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data (DOM document) , and the KHTMLView, derived
+   * from @ref QScrollview, in which the document content is rendered in.
+   * You can specify two different parent objects for a KHTMLPart, one parent for the KHTMLPart document and on parent for the KHTMLView.
+   * If the second @p parent argument is 0L, then @p parentWidget is used as parent for both objects, the part and the view.
+   */
   KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0, QObject *parent = 0, const char *name = 0 );
+  /**
+   * Destructor
+   */
   virtual ~KHTMLPart();
 
+  /**
+   * Reimplemented from @ref KParts::ReadOnlyPart::openURL . Opens the specified url @p url .
+   */
   virtual bool openURL( const KURL &url );
 
+  /**
+   * Stops loading the document and kills all data requests (for images, etc.)
+   */
   virtual bool closeURL();
 
+  /**
+   * Retrieve a reference to the DOM document.
+   */
   DOM::HTMLDocument htmlDocument() const;
+
+  /**
+   * Retrieve a pointer to the @ref KParts::BrowserExtension 
+   */
   KHTMLPartBrowserExtension *browserExtension() const;
+
+  /**
+   * Retrieve a pointer to the html document's view.
+   */
   KHTMLView *view() const;
 
+  /**
+   * Enable/disable Javascript support.
+   */
   void enableJScript( bool enable );
+
+  /**
+   * Return if Javascript support is enabled/disabled.
+   */
   bool jScriptEnabled() const;
+
   KJSProxy *jScript();
   void executeScript( const QString &script );
 
+  /**
+   * Enable/disable Java applet support.
+   */
   void enableJava( bool enable );
+
+  /**
+   * Return if Java applet support is enabled/disabled.
+   */
   bool javaEnabled() const;
 
   /**
    * should images be loaded automatically? Default is true.
    * (not implemented at the moment)
    */
-    void autoloadImages( bool enable );
-    bool autoloadImages() const;
+  void autoloadImages( bool enable );
+  bool autoloadImages() const;
 
 
 
-    /**
-     * Clears the widget and prepares it for new content.
-     * If you want @ref url() to return
-     * for example "file:/tmp/test.html", you can use the following code:
-     * <PRE>
-     * view->begin( QString("file:/tmp/test.html" ) );
-     * </PRE>
-     *
-     * @param _url is the url of the document to be displayed.  Even if you
-     * are generating the HTML on the fly, it may be useful to specify
-     * a directory so that any pixmaps are found.
-     * @param _dx is the initial horizontal scrollbar value. Usually you don't
-     * want to use this.
-     * @param _dy is the initial vertical scrollbar value. Usually you don't
-     * want to use this.
-     *
-     * All child frames and the old document are removed if you call this method.
-     */	
+  /**
+   * Clears the widget and prepares it for new content.
+   * If you want @ref url() to return
+   * for example "file:/tmp/test.html", you can use the following code:
+   * <PRE>
+   * view->begin( KURL("file:/tmp/test.html" ) );
+   * </PRE>
+   *
+   * @param url is the url of the document to be displayed.  Even if you
+   * are generating the HTML on the fly, it may be useful to specify
+   * a directory so that any pixmaps are found.
+   * @param xOffset is the initial horizontal scrollbar value. Usually you don't
+   * want to use this.
+   * @param yOffset is the initial vertical scrollbar value. Usually you don't
+   * want to use this.
+   *
+   * All child frames and the old document are removed if you call this method.
+   */	
   virtual void begin( const KURL &url, int xOffset = 0, int yOffset = 0 );
 
-    /**
-     * Writes another part of the HTML code to the widget. You may call
-     * this function many times in sequence. But remember: The less calls
-     * the faster the widget is.
-     *
-     * The html code is send through a decoder, which decodes the stream to
-     * unicode.
-     *
-     * The len parameter is needed for streams encoded in utf-16, since these
-     * can have \0 chars in them. In case the encoding you're using isn't
-     * utf-16, you can safely leave out the length parameter.
-     *
-     * Attention: Don't mix calls to write( const char *) with calls
-     * to write( const QString & ). The result might not be what you want.
-     */
-    virtual void write( const char *str, int len = -1 );
+  /**
+   * Writes another part of the HTML code to the widget. You may call
+   * this function many times in sequence. But remember: The less calls
+   * the faster the widget is.
+   *
+   * The html code is send through a decoder, which decodes the stream to
+   * unicode.
+   *
+   * The len parameter is needed for streams encoded in utf-16, since these
+   * can have \0 chars in them. In case the encoding you're using isn't
+   * utf-16, you can safely leave out the length parameter.
+   *
+   * Attention: Don't mix calls to write( const char *) with calls
+   * to write( const QString & ). The result might not be what you want.
+   */
+  virtual void write( const char *str, int len = -1 );
 
-    /**
-     * Writes another part of the HTML code to the widget. You may call
-     * this function many times in sequence. But remember: The less calls
-     * the faster the widget is.
-     */
-    virtual void write( const QString &str );
+  /**
+   * Writes another part of the HTML code to the widget. You may call
+   * this function many times in sequence. But remember: The less calls
+   * the faster the widget is.
+   */
+  virtual void write( const QString &str );
 
-    /**
-     * Call this after your last call to @ref #write.
-     */
+  /**
+   * Call this after your last call to @ref #write.
+   */
   virtual void end();
 
-    /**
-     * Print current HTML page layouted for the printer.
-     * (not implemented at the moment)
-     */
-    //    void print(QPainter *, int pageHeight, int pageWidth);
+  /**
+   * Print current HTML page layouted for the printer.
+   * (not implemented at the moment)
+   */
+  //    void print(QPainter *, int pageHeight, int pageWidth);
 
-    /**
-     * Mainly used internally. Sets the document's base URL
-     */
+  /**
+   * Mainly used internally. Sets the document's base URL
+   */
   void setBaseURL( const KURL &url );
-    /**
-     * @return the base URL of this document
-     *
-     * The base url is ususally set by an <base url=...> tag in the document head.
-     */
+
+  /**
+   * @return the base URL of this document
+   *
+   * The base url is ususally set by an <base url=...> tag in the document head.
+   */
   KURL baseURL() const;
 
-    /**
-     * Mainly used internally. Sets the document's base target.
-     */
-    void setBaseTarget( const QString &target );
-    /**
-     * @return the base target of this document
-     * The base target is ususally set by an <base target=...>
-     * tag in the document head.
-     */
+  /**
+   * Mainly used internally. Sets the document's base target.
+   */
+  void setBaseTarget( const QString &target );
+
+  /**
+   * @return the base target of this document
+   * The base target is ususally set by an <base target=...>
+   * tag in the document head.
+   */
   QString baseTarget() const;
 
+  /**
+   * @internal
+   */
   KURL completeURL( const QString &url, const QString &target = QString::null );
 
+  /**
+   * @internal
+   */
   void scheduleRedirection( int delay, const KURL &url );
 
   /**
@@ -251,7 +293,6 @@ public:
    * page
    */
   void setUserStyleSheet(const QString &styleSheet);
-
 
   /**
    * Sets point sizes to be associated with the HTML-sizes used in
@@ -298,11 +339,11 @@ public:
    */
   void setFixedFont( const QString &name );
 
-    /**
-     * Find the anchor named '_name'. If the anchor is found, the widget
-     * scrolls to the closest position. Returns TRUE if the anchor has
-     * been found.
-     */
+  /**
+   * Find the anchor named '_name'. If the anchor is found, the widget
+   * scrolls to the closest position. Returns TRUE if the anchor has
+   * been found.
+   */
   bool gotoAnchor( const QString &name );
 
   /**
@@ -332,10 +373,10 @@ public:
    */
   virtual QString selectedText() const;
 
-    /**
-     * @returns the selected part of the HTML
-     */
-    DOM::Range selection() const;
+  /**
+   * @returns the selected part of the HTML
+   */
+  DOM::Range selection() const;
 
   /**
    * Has the user selected anything?  Call @ref #selectedText to
@@ -345,78 +386,199 @@ public:
    */
   bool hasSelection() const;
 
+  /**
+   * Convenience method to show the document's view. Equivalent to widget()->show() or view()->show() .
+   */
   void show();
+  
+  /**
+   * Convenience method to hide the document's view. Equivalent to widget()->hide() or view()->hide() .
+   */
   void hide();
 
+  /**
+   * @internal
+   */
   KParts::PartManager *partManager();
 
+  /**
+   * Save the KHTMLPart's complete state (including child frame objects) to the provided QDataStream. 
+   * You can use this method to provide history functionality.
+   *
+   * This is called from the @ref saveState method of the @ref browserExtension .
+   */
   virtual void saveState( QDataStream &stream );
+  /**
+   * Restore the KHTMLPart's previously saved state (including child frame objects) from the provided
+   * QDataStream. See @ref saveState.
+   *
+   * This is called from the @ref restoreState method of the @ref browserExtension .
+   */
   virtual void restoreState( QDataStream &stream );
 
+  /**
+   * @returns the Node, currently under the mouse
+   */
+  DOM::Node nodeUnderMouse() const;
 
-    /**
-     * @returns the Node, currently under the mouse
-     */
-    DOM::Node nodeUnderMouse() const;
-
-    /**
-     * @internal
-     */
-    const khtml::Settings *settings() const;
-
+  /**
+   * @internal
+   */
+  const khtml::Settings *settings() const;
 
 
 signals:
+  /**
+   * This signal is emitted if the cursor is moved over an URL.
+   */
   void onURL( const QString &url );
-    void popupMenu(const QString &url, const QPoint &point);
+ 
+  /**
+   * This signal is emitted when the user clicks the right mouse button on the document.
+   */
+  void popupMenu(const QString &url, const QPoint &point);
 
 protected:
+  /**
+   * Internal empty reimplementation of @ref KParts::ReadOnlyPart::openFile .
+   */
   virtual bool openFile();
 
+  /**
+   * @internal
+   */
   virtual void overURL( const QString &url );
+  /**
+   * @internal
+   */
   virtual void urlSelected( const QString &url, int button = 0, const QString &_target = QString::null );
 
+  /**
+   * @internal
+   */
   virtual void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName );
 
+  /**
+   * @internal
+   */
   virtual void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType );
 
+  /**
+   * @internal
+   */
   virtual void requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
+  /**
+   * @internal
+   */
   virtual void processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
+  /**
+   * @internal
+   */
   virtual void submitForm( const char *action, const QString &url, const QCString &formData, const QString &target );
 
+  /**
+   * @internal
+   */
   virtual void popupMenu( const QString &url );
 
-  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
+  /**
+   * @internal
+   */
+  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, 
+					    const QString &mimetype, QStringList &serviceTypes );
 
-    virtual bool keyPressHook(QKeyEvent *) { return false; }
-    virtual bool keyReleaseHook(QKeyEvent*) { return false; }
+  /**
+   * @internal
+   */
+  virtual bool keyPressHook(QKeyEvent *) { return false; }
+  /**
+   * @internal
+   */
+  virtual bool keyReleaseHook(QKeyEvent*) { return false; }
 
-    virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
-    virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
-    virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
-    virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
-    virtual void drawContentsHook(QPainter *) {}
+  /**
+   * @internal
+   */
+  virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
+  /**
+   * @internal
+   */
+  virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
+  /**
+   * @internal
+   */
+  virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
+  /**
+   * @internal
+   */
+  virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
+  /**
+   * @internal
+   */
+  virtual void drawContentsHook(QPainter *) {}
 
 protected slots:
+  /**
+   * @internal
+   */
   void slotData( KIO::Job*, const QByteArray &data );
+  /**
+   * @internal
+   */
   void slotFinished( KIO::Job* );
 
+  /**
+   * @internal
+   */
   void slotRedirect();
+  /**
+   * @internal
+   */
   void slotRedirection(const KURL&);
 
+  /**
+   * @internal
+   */
   virtual void slotViewDocumentSource();
+  /**
+   * @internal
+   */
   virtual void slotViewFrameSource();
+  /**
+   * @internal
+   */
   virtual void slotSaveBackground();
+  /**
+   * @internal
+   */
   virtual void slotSaveDocument();
+  /**
+   * @internal
+   */
   virtual void slotSaveFrame();
+  /**
+   * @internal
+   */
   virtual void slotSetEncoding();
 
 private slots:
+  /**
+   * @internal
+   */
   void updateActions();
+  /**
+   * @internal
+   */
   void slotChildStarted( KIO::Job *job );
+  /**
+   * @internal
+   */
   void slotChildCompleted();
+  /**
+   * @internal
+   */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
 private:
@@ -433,6 +595,10 @@ private:
   KHTMLPartPrivate *d;
 };
 
+/**
+ * This is the BrowserExtension for a @ref KHTMLPart document. Please see the KParts documentation for
+ * more information about the BrowserExtension.
+ */
 class KHTMLPartBrowserExtension : public KParts::BrowserExtension
 {
   Q_OBJECT
