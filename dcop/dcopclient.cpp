@@ -29,9 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 
-//#define INT32 QINT32
-
-
+#define QT_CLEAN_NAMESPACE
 #include <qtextstream.h>
 #include <qfile.h>
 #include <qsocketnotifier.h>
