@@ -426,10 +426,9 @@ QStringList *KIconTheme::_theme_list = 0L;
 QString KIconTheme::current()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (_theme != 0L)
-        return *_theme;
+    if (_theme == 0L)
+	_theme = new QString();
 
-    _theme = new QString();
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver(config, "Icons");
     *_theme = config->readEntry("Theme",defaultThemeName());
