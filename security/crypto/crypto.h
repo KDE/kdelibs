@@ -130,6 +130,48 @@ private:
 
 
 
+class HostAuthItem : public QListViewItem
+{
+public:
+    HostAuthItem(QListView *view, QString host, QString name, KCryptoConfig *module ) : QListViewItem(view, QString::null ) {
+                               _name = name;  _host = host;
+                               m_module = module;
+                               setText(0, _host);
+                               setText(1, _name);
+                                              }
+    ~HostAuthItem() {}
+
+    void setAction(KSSLCertificateHome::KSSLAuthAction aa) {
+                 _aa = aa;
+                               switch (aa) {
+                               case KSSLCertificateHome::AuthSend:
+                                 setText(2, i18n("Send"));
+                                break;
+                               case KSSLCertificateHome::AuthDont:
+                                 setText(2, i18n("Don't Send"));
+                                break;
+                               case KSSLCertificateHome::AuthPrompt:
+                                 setText(2, i18n("Prompt"));
+                                break;
+                               }
+    }
+    KSSLCertificateHome::KSSLAuthAction getAction() const { return _aa; }
+    QString configName() const { return _host; }
+    QString getCertName() const { return _name; }
+
+protected:
+
+private:
+    QString _host;
+    QString _name;
+    KSSLCertificateHome::KSSLAuthAction _aa;
+    KCryptoConfig *m_module; // just to call configChanged()
+};
+
+
+
+
+
 class KCryptoConfig : public KCModule
 {
   Q_OBJECT
@@ -179,8 +221,14 @@ public slots:
   void slotYourPass();
   void slotYourCertSelect();
 
+  void slotNewHostAuth();
+  void slotRemoveHostAuth();
+  void slotAuthItemChanged();
 
 private:
+
+  void setAuthCertLists();
+
   QTabWidget *tabs;
   QWidget *tabSSL, *tabOSSL;
 
@@ -241,7 +289,7 @@ private:
 
 
   KConfig *config;
-  KSimpleConfig *policies, *pcerts;
+  KSimpleConfig *policies, *pcerts, *authcfg;
 };
 
 #endif
