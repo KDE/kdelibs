@@ -322,6 +322,8 @@ KJSO Location::get(const UString &p) const
     str = url.protocol();
   else if (p == "search")
     str = url.query();
+  else if (p == "[[==]]")
+    return toString();
   else if (p == "replace")
     return Function(new LocationFunc(part, LocationFunc::Replace));
   else
@@ -337,6 +339,16 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "href")
     part->scheduleRedirection(0, str);
   /* TODO: remaining location properties */
+}
+
+KJSO Location::toPrimitive(Type) const
+{
+  return toString();
+}
+
+String Location::toString() const
+{
+  return String(part->url().prettyURL());
 }
 
 Completion LocationFunc::tryExecute(const List &args)
