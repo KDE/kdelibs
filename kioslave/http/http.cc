@@ -2025,7 +2025,9 @@ bool HTTPProtocol::httpOpen()
   if ( !m_bIsTunneled && m_bNeedTunnel )
   {
     setEnableSSLTunnel( true );
-    header = QString("CONNECT %1:%2 HTTP/1.1"
+    // We send a HTTP 1.0 header since some proxies refuse HTTP 1.1 and we don't
+    // need any HTTP 1.1 capabilities for CONNECT - Waba
+    header = QString("CONNECT %1:%2 HTTP/1.0"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
     // Identify who you are to the proxy server!
