@@ -92,9 +92,10 @@ void KPasswordEdit::erase()
 
 
 void KPasswordEdit::keyPressEvent(QKeyEvent *e)
-{    
+{
     switch (e->key()) {
     case Key_Return:
+    case Key_Enter:
     case Key_Escape:
 	e->ignore();
 	break;
@@ -120,7 +121,7 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 }
 
 void KPasswordEdit::showPass()
-{    
+{
     QString tmp;
 
     switch (m_EchoMode) {
@@ -142,7 +143,7 @@ void KPasswordEdit::showPass()
  * Password dialog.
  */
 
-KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep, 
+KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
 	int extraBttn)
     : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
 	    Ok, true)
@@ -155,7 +156,7 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
     KConfigGroupSaver saver(cfg, "Passwords");
     if (m_Keep && cfg->readBoolEntry("Keep", false))
 	m_Keep++;
-    
+
     m_pMain = new QWidget(this);
     setMainWidget(m_pMain);
     m_pGrid = new QGridLayout(m_pMain, 10, 3, 10, 0);
@@ -199,7 +200,7 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
     m_pEdit->setMinimumWidth(size.width());
     h_lay->addWidget(m_pEdit, 12);
     h_lay->addStretch(4);
-    
+
     // Row 4: Password editor #2 or keep password checkbox
 
     if ((m_Type == Password) && m_Keep) {
@@ -220,7 +221,7 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
 	lbl->setText(i18n("&Verify:"));
 	lbl->setFixedSize(lbl->sizeHint());
 	m_pGrid->addWidget(lbl, 9, 0, AlignLeft);
-    
+
 	h_lay = new QHBoxLayout();
 	m_pGrid->addLayout(h_lay, 9, 2);
 	m_pEdit2 = new KPasswordEdit(m_pMain);
@@ -283,12 +284,12 @@ void KPasswordDialog::slotOk()
 	if (strcmp(m_pEdit->password(), m_pEdit2->password())) {
 	    KMessageBox::sorry(this, i18n("You entered two different "
 		    "passwords. Please try again."));
-	    erase(); 
+	    erase();
 	    return;
 	}
     }
     if (!checkPassword(m_pEdit->password())) {
-	erase(); 
+	erase();
 	return;
     }
     accept();
@@ -308,7 +309,7 @@ void KPasswordDialog::slotKeep(bool keep)
 
 
 // static
-int KPasswordDialog::getPassword(QCString &password, QString prompt, 
+int KPasswordDialog::getPassword(QCString &password, QString prompt,
 	int *keep)
 {
     bool enableKeep = keep && *keep;
