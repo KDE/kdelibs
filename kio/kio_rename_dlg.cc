@@ -10,6 +10,7 @@
 #include <kapp.h>
 #include <k2url.h>
 
+
 KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
 			   RenameDlg_Mode _mode, bool _modal ) :
   QDialog ( parent, "" , _modal )
@@ -19,16 +20,6 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   src = _src;
   dest = _dest;
 
-  string prel = dest;
-
-  if ( ProtocolManager::self()->getMarkPartial() )
-    prel += ".part";
-
-  K2URL d( prel.c_str() );
-  QFileInfo info;
-  info.setFile( d.path() );
-  offset = info.size();
-    
   b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;
     
   setCaption( i18n( "Information" ) );
@@ -293,7 +284,7 @@ void KIORenameDlg::b7Pressed()
     emit result( this, 7, src.c_str(), dest.c_str() );
 }
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new, unsigned long& _offset )
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new )
 {
   if ( kapp == 0L )
   {
@@ -305,8 +296,20 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
   KIORenameDlg dlg( 0L, _src, _dest, _mode, true );
   int i = dlg.exec();
   _new = dlg.newName();
-  _offset = dlg.getOffset();
+
   return (RenameDlg_Result)i;
+}
+
+unsigned long getOffset( string dest ) {
+
+  if ( ProtocolManager::self()->getMarkPartial() )
+    dest += ".part";
+
+  K2URL d( dest.c_str() );
+  QFileInfo info;
+  info.setFile( d.path() );
+
+  return info.size();
 }
 
 #include "kio_rename_dlg.moc"

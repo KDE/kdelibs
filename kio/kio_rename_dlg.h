@@ -21,7 +21,6 @@ public:
   ~KIORenameDlg();
     
   const char* newName() { return m_pLineEdit->text(); }
-  unsigned long getOffset() { return offset; }
 
 protected:
   QPushButton *b0, *b1, *b2, *b3, *b4, *b5, *b6, *b7;
@@ -32,7 +31,6 @@ protected:
   string dest;
     
   bool modal;
-  unsigned long offset;
 
 public slots:
   void b0Pressed();
@@ -48,7 +46,10 @@ signals:
   void result( QWidget* _widget, int _button, const char* _src, const char* _data );
 };
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new, unsigned long& _offset);
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new );
+
+unsigned long getOffset( string dest );
+
 
 #endif
 
