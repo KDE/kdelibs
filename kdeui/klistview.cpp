@@ -213,7 +213,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
  *	tabOrderedRename functionality.
  */
 
-int nextCol (KListView *pl, QListViewItem *pi, int start, int dir)
+static int nextCol (KListView *pl, QListViewItem *pi, int start, int dir)
 {
 	if (pi)
 	{
@@ -226,7 +226,7 @@ int nextCol (KListView *pl, QListViewItem *pi, int start, int dir)
 	return -1;
 }
 
-QListViewItem *prevItem (QListViewItem *pi)
+static QListViewItem *prevItem (QListViewItem *pi)
 {
 	QListViewItem *pa = pi->itemAbove();
 
@@ -239,7 +239,7 @@ QListViewItem *prevItem (QListViewItem *pi)
 	return NULL;
 }
 
-QListViewItem *lastQChild (QListViewItem *pi)
+static QListViewItem *lastQChild (QListViewItem *pi)
 {
 	if (pi)
 	{
