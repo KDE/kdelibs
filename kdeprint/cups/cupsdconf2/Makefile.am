@@ -31,5 +31,5 @@ cupsdconfdatadir   = $(kde_datadir)/kdeprint
 # Translations
 messages:
 	perl cupsdcomment.pl < cupsd.conf.template > cupsd.conf.template.cpp
-	$(XGETTEXT) $(libcupsdconf_la_SOURCES) main.cpp cupsd.conf.template.cpp -o $(podir)/cupsdconf.pot
+	$(XGETTEXT) *.cpp -o $(podir)/cupsdconf.pot
 	rm -f cupsd.conf.template.cpp
