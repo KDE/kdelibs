@@ -28,19 +28,23 @@ SGMLDECL "kde.dcl"
 
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "dtd/kde.dtd"
+PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V2.0//EN"
+       "dtd/kde.dtd"
 PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
        "dtd/kde-next.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/kde-rdbhier2.elements"
+PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"
+       "dtd/kde-rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
        "dtd/kde-rdbpool.elements"
 PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
-       "dtd/kde-genent.entities"
+       "entities/kde-genent.entities"
 
 		      -- General KDE Entities --
 
 PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
-       "dtd/kde-prologue.entities"
+       "entities/kde-prologue.entities"
 
 		  -- DocBook Modular Style Sheets --
 
@@ -51,8 +55,8 @@ PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
 
 		     -- Various external files --
 
--- only the docbook files are in entities, the others are in
-   kdelibs/doc/common --
+-- only DocBook SGML files are in entities, the others are in
+   kdelibs/doc/common or in kdelibs/licenses --
 
 PUBLIC "-//GNU//DOCUMENT GNU General Public License V2//EN"
        "entities/gpl-license"
@@ -66,19 +70,17 @@ PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
        "entities/fdl-license"
 PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
        "entities/fdl-license.html"
--- decide on distinction notice and full licence (and adapt files 
-   accordingly) --
 PUBLIC "-//KDE//DOCUMENT X11 License//EN"
-       "entities/x11-license.docbook"
+       "entities/x11-license"
 PUBLIC "-//KDE//DOCUMENT X11 License (HTML)//EN"
        "entities/x11-license.html"
 PUBLIC "-//KDE//DOCUMENT BSD License//EN"
-       "entities/bsd-license.docbook"
+       "entities/bsd-license"
 PUBLIC "-//KDE//DOCUMENT BSD License (HTML)//EN"
        "entities/bsd-license.html"
 PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
-       "entities/artistic-license.docbook"
-PUBLIC "-//KDE//DOCUMENT Artistic License (HTML)//EN"
+       "entities/artistic-license"
+PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
        "entities/artistic-license.html"
 
 CATALOG ca/catalog
