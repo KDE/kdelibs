@@ -1,3 +1,6 @@
+/*
+ * (C) Copyright 1999, Daniel M. Duley <mosfet@kde.org>
+ */
 #ifndef __KSTYLE_H
 #define __KSTYLE_H
 
@@ -42,6 +45,12 @@ public:
                                     const QColorGroup &g, QBrush *fill);
     // this isn't a drawXXX method due to KProgress implementation
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
+    /**
+     * Internal method for use in the new OpenParts implementation. You should
+     * not override this but drawKToolBar instead.
+     */
+    virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, QBrush *fill=NULL);
 };
 
 #endif

@@ -1,3 +1,6 @@
+/*
+ * (C) Copyright 1999, Daniel M. Duley <mosfet@kde.org>
+ */
 #include <kstyle.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
@@ -7,6 +10,9 @@
 #endif
 
 #include <qmenudata.h>
+
+// lame default implementations of KStyle drawing methods. These are meant
+// to be overridden in new styles.
 
 void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool horizontal,
@@ -200,6 +206,13 @@ void KStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
 void KStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
 {
     bg = g.brush(QColorGroup::Base);
+}
+
+void KStyle::drawOPToolBar(QPainter *p, int x, int y, int w, int h,
+                           const QColorGroup &g, QBrush *fill)
+{
+    QBrush brush = fill ? *fill : g.brush(QColorGroup::Button);
+    qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
 }
 
 #include "kstyle.moc"
