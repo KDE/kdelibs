@@ -535,14 +535,12 @@ Imp::Imp()
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
-  /* TODO: use a chain struct */
-  internal = (ImpInternal*)Collector::current();
 }
 
 Imp::~Imp()
 {
 #ifdef KJS_DEBUG_MEM
-  assert(Collector::current() && Collector::current()->collecting);
+  assert(Collector::collecting);
   count--;
 #endif
 
@@ -798,6 +796,17 @@ KJSO Imp::defaultValue(Type hint) const
 
 void Imp::mark(Imp*)
 {
+  ref();
+
+  if (proto && proto->refcount == 0)
+    proto->mark();
+
+  struct Property *p = prop;
+  while (p) {
+    if (p->object.imp() && p->object.imp()->refcount == 0)
+      p->object.imp()->mark();
+    p = p->next;
+  }
 }
 
 void Imp::setPrototype(const KJSO& p)
@@ -821,7 +830,7 @@ void Imp::operator delete(void*, size_t)
   // Do nothing. So far.
 }
 
-ObjectImp::ObjectImp(Class c) : cl(c) { }
+ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
 
 ObjectImp::ObjectImp(Class c, const KJSO &v) : cl(c), val(v.imp()) { }
 
@@ -877,6 +886,12 @@ Object ObjectImp::toObject() const
 
 void ObjectImp::mark(Imp*)
 {
+  // mark objects from the base
+  Imp::mark();
+
+  // mark internal value, if any and it has not been visited yet
+  if (val && val->refcount == 0)
+    val->mark();
 }
 
 HostImp::~HostImp() { }

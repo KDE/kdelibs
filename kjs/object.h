@@ -398,7 +398,7 @@ namespace KJS {
     /**
      * @internal Reserved for mark & sweep garbage collection
      */
-    virtual void mark(Imp*);
+    virtual void mark(Imp *imp = 0L);
 
     Type type() const { return typeInfo()->type; }
     /**
@@ -435,8 +435,10 @@ namespace KJS {
     // reference counting mechanism
     inline Imp* ref() { refcount++; return this; }
     inline bool deref() { return (!--refcount); }
+  public:      
     unsigned int refcount;
 
+  private:      
     Property *prop;
     Imp *proto;
     static const TypeInfo info;

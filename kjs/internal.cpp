@@ -197,9 +197,25 @@ ReferenceImp::ReferenceImp(const KJSO& b, const UString& p)
 {
 }
 
+void ReferenceImp::mark(Imp*)
+{
+  Imp::mark();
+  Imp *im = base.imp();
+  if (im && im->refcount == 0)
+    im->mark();
+}
+
 CompletionImp::CompletionImp(Compl c, const KJSO& v, const UString& t)
   : comp(c), val(v), tar(t)
 {
+}
+
+void CompletionImp::mark(Imp*)
+{
+  Imp::mark();
+  Imp *im = val.imp();
+  if (im && im->refcount == 0)
+    im->mark();
 }
 
 RegExpImp::RegExpImp()
@@ -280,6 +296,20 @@ Context::~Context()
   scopeChain->deref();
 
 #endif
+}
+
+void Context::mark()
+{
+  assert(thisVal);
+  if (thisVal->refcount == 0)
+    thisVal->mark();
+  if (activation.imp() && activation.imp()->refcount == 0)
+    activation.imp()->mark();
+  if (variable.imp() && variable.imp()->refcount == 0)
+    variable.imp()->mark();
+  if (errObj.imp() && errObj.imp()->refcount == 0)
+    errObj.imp()->mark();
+  /* TODO: scopeChain ? */
 }
 
 Context *Context::current()
@@ -392,6 +422,7 @@ ActivationImp::~ActivationImp()
 }
 
 KJScriptImp* KJScriptImp::curr = 0L;
+KJScriptImp* KJScriptImp::hook = 0L;
 
 KJScriptImp::KJScriptImp()
   : initialized(false),
@@ -413,6 +444,18 @@ KJScriptImp::~KJScriptImp()
   lex = 0L;
 }
 
+void KJScriptImp::mark()
+{
+  assert(glob.imp());
+  glob.imp()->mark();
+  if (exVal && exVal->refcount == 0)
+    exVal->mark();
+  if (retVal && retVal->refcount == 0)
+    retVal->mark();
+  if (con)
+    con->mark();
+}
+
 KJScriptImp* KJScriptImp::current()
 {
   return curr;
@@ -426,7 +469,17 @@ void KJScriptImp::init()
   retVal = 0L;
 
   if (!initialized) {
-    collector = Collector::init();
+    // add this interpreter to the global chain
+    // as a root set for garbage collection
+    if (hook) {
+      prev = hook;
+      next = hook->next;
+      hook->next->prev = this;
+      hook->next = this;
+    } else {
+      hook = next = prev = this;
+    }
+
     glob.init();
     con = new Context();
     firstNode = 0L;
@@ -434,8 +487,7 @@ void KJScriptImp::init()
     recursion = 0;
     errMsg = "";
     initialized = true;
-  } else
-    Collector::attach(collector);
+  }
 }
 
 void KJScriptImp::clear()
@@ -449,10 +501,14 @@ void KJScriptImp::clear()
     retVal = 0L;
 
     delete con; con = 0L;
-    Collector::attach(collector);
+    // remove from global chain (see init())
+    next->prev = prev;
+    prev->next = next;
+    hook = next;
+    if (hook == this)
+      hook = 0L;
+
     Collector::collect();
-    Collector::detach();
-    delete collector; collector = 0L;
 
     initialized = false;
   }
@@ -461,9 +517,11 @@ void KJScriptImp::clear()
 bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
 {
   init();
-  
+
   if (recursion > 0) {
+#ifndef NDEBUG
     fprintf(stderr, "Blocking recursive JS call.\n");
+#endif
     return false;
   }
 
@@ -472,9 +530,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   int parseError = kjsyyparse();
 
   if (parseError) {
-#ifndef NDEBUG      
+#ifndef NDEBUG
     fprintf(stderr, "JavaScript parse error.\n");
-#endif    
+#endif
     /* TODO: either clear everything or keep previously
        parsed function definitions */
     //    Node::deleteAllNodes();

@@ -19,6 +19,7 @@
 
 #include "collector.h"
 #include "object.h"
+#include "internal.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -53,54 +54,22 @@ CollectorBlock::CollectorBlock(int s)
 CollectorBlock::~CollectorBlock()
 {
   delete [] mem;
+  mem = 0L;
 }
 
-Collector* Collector::curr = 0L;
-int Collector::count = 0;
-
-Collector::Collector()
-  : root(0L),
-    filled(0)
-{
-  count++;
+CollectorBlock* Collector::root = 0L;
+CollectorBlock* Collector::currentBlock = 0L;
+int Collector::filled = 0;
 #ifdef KJS_DEBUG_MEM
-  collecting = false;
+bool Collector::collecting = false;
 #endif
-}
-
-Collector::~Collector()
-{
-  privateCollect();
-#ifdef KJS_DEBUG_MEM
-  assert(count == 0);
-#endif
-  
-  delete root;
-
-  if (curr == this)
-    curr = 0L;
-  count--;
-}
-
-Collector* Collector::init()
-{
-  return (curr = new Collector());
-}
 
 void* Collector::allocate(size_t s)
 {
-  if (!curr)
-    init();
-
   if (s == 0)
     return 0L;
-  
-  return curr->share(malloc(s));
-}
 
-void* Collector::share(void *m)
-{
-  assert(m);
+  void *m = malloc(s);
 
   if (!root) {
     root = new CollectorBlock(BlockSize);
@@ -108,17 +77,27 @@ void* Collector::share(void *m)
   }
 
   CollectorBlock *block = currentBlock;
+  if (!block)
+    block = root;
 
-  assert(block->filled <= block->size);
+  // search for a block with space left
+  while (block->next && block->filled == block->size)
+    block = block->next;
+
   if (block->filled >= block->size) {
 #ifdef KJS_DEBUG_MEM
     printf("allocating new block of size %d\n", block->size);
 #endif
     CollectorBlock *tmp = new CollectorBlock(BlockSize);
     block->next = tmp;
-    block = currentBlock = tmp;
+    tmp->prev = block;
+    block = tmp;
   }
-  void **r = block->mem + block->filled;
+  currentBlock = block;
+  // look for a free spot in the block
+  void **r = block->mem;
+  while (*r)
+    r++;
   *r = m;
   filled++;
   block->filled++;
@@ -126,35 +105,55 @@ void* Collector::share(void *m)
   return m;
 }
 
+/**
+ * Mark-sweep garbage collection.
+ */
 void Collector::collect()
-{
-  if (!curr)
-    return;
-
-  curr->privateCollect();
-}
-
-void Collector::privateCollect()
 {
 #ifdef KJS_DEBUG_MEM
   printf("collecting %d objects total\n", Imp::count);
   collecting = true;
 #endif
 
+  // MARK: first set all ref counts to 0 ....
   CollectorBlock *block = root;
   while (block) {
 #ifdef KJS_DEBUG_MEM
     printf("cleaning block filled %d out of %d\n", block->filled, block->size);
 #endif
     Imp **r = (Imp**)block->mem;
-    for (int i = 0; i < block->filled; i++, r++)
-      if (*r) {
+    assert(r);
+    for (int i = 0; i < block->size; i++, r++)
+      if (*r)
+	(*r)->refcount = 0;
+    block = block->next;
+  }
+  // ... increase counter for all referenced objects recursively
+  // starting out from the set of root objects
+  if (KJScriptImp::hook) {
+    KJScriptImp *scr = KJScriptImp::hook;
+    do {
+      scr->mark();
+      scr = scr->next;
+    } while (scr != KJScriptImp::hook);
+  }
+
+  // SWEEP: delete everything with a zero refcount (garbage)
+  block = root;
+  while (block) {
+    Imp **r = (Imp**)block->mem;
+    int del = 0;
+    for (int i = 0; i < block->size; i++, r++) {
+      if (*r && ((*r)->refcount == 0)) {
 	// emulate 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
 	*r = 0L;
-	filled--;
+	del++;
       }
+    }
+    filled -= del;
+    block->filled -= del;
     block = block->next;
   }
 
@@ -162,11 +161,20 @@ void Collector::privateCollect()
   block = root;
   while (block) {
     CollectorBlock *next = block->next;
-    delete block;
+    if (block->filled == 0) {
+      if (block->prev)
+	block->prev->next = next;
+      if (block == root)
+	root = next;
+      if (next)
+	next->prev = block->prev;
+      if (block == currentBlock) // we don't want a dangling pointer
+	currentBlock = 0L;
+      assert(block != root);
+      delete block;
+    }
     block = next;
   }
-
-  root = 0L;
 
 #ifdef KJS_DEBUG_MEM
   collecting = false;

@@ -32,7 +32,6 @@ namespace KJS {
   class String;
   class Object;
   class RegExp;
-  class Collector;
   class Node;
   class ProgramNode;
 
@@ -120,6 +119,7 @@ namespace KJS {
   public:
     ReferenceImp(const KJSO& b, const UString& p);
     virtual ~ReferenceImp() { }
+    virtual void mark(Imp*);
     KJSO getBase() const { return base; }
     UString getPropertyName() const { return prop; }
 
@@ -134,6 +134,7 @@ namespace KJS {
   public:
     CompletionImp(Compl c, const KJSO& v, const UString& t);
     virtual ~CompletionImp() { }
+    virtual void mark(Imp*);
     Compl completion() const { return comp; }
     KJSO value() const { return val; }
     UString target() const { return tar; }
@@ -203,6 +204,7 @@ namespace KJS {
     Context(CodeType type = GlobalCode, Context *callingContext = 0L,
 	       FunctionImp *func = 0L, const List *args = 0L, Imp *thisV = 0L);
     virtual ~Context();
+    void mark();
     static Context *current();
     static void setCurrent(Context *c);
     const List *pScopeChain() const { return scopeChain; }
@@ -259,9 +261,11 @@ namespace KJS {
     friend class Lexer;
     friend class Context;
     friend class Global;
+    friend class Collector;
   public:
     KJScriptImp();
     ~KJScriptImp();
+    void mark();
     static KJScriptImp *current();
     static void setException(Imp *e) { assert(curr); curr->exVal = e; }
     static Imp *exception() { assert(curr); return curr->exVal; }
@@ -275,11 +279,11 @@ namespace KJS {
   public:
     ProgramNode *progNode;
     Node *firstNode;
+    KJScriptImp *next, *prev;
   private:
-    static KJScriptImp *curr;
+    static KJScriptImp *curr, *hook;
     bool initialized;
     Lexer *lex;
-    Collector *collector;
     Context *con;
     Global glob;
     int errType;

@@ -677,7 +677,7 @@ bool Lexer::scanRegExp()
   while (1) {
     if (isLineTerminator() || current == 0)
       return false;
-    else if (current != '/')
+    else if (current != '/') /* TODO: recognize \/ */
       record16(current);
     else {
       pattern = UString(buffer16, pos16);
