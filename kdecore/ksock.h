@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  1998/03/26 22:06:41  torben
+ * Torben: Little bug fix in copy constructor
+ *
  * Revision 1.15  1998/01/24 11:13:58  kulow
  * changed the order of the header files
  *
@@ -97,6 +100,11 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#ifdef NULL
+#undef NULL
+#endif
+#define NULL 0
 
 #include <sys/types.h>
 #include <sys/socket.h> 
