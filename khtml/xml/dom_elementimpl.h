@@ -224,7 +224,7 @@ public:
     
     bool restyleLate() { return m_restyleLate; };
     void setRestyleLate(bool b=true) { m_restyleLate = b; };
-    void setRestyleSelfLate() { m_restyleLate = true; };
+    void setRestyleSelfLate() { m_restyleSelfLate = true; };
     void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
 
 protected:
