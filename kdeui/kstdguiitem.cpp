@@ -119,7 +119,7 @@ KGuiItem KStdGuiItem::saveAs()
 KGuiItem KStdGuiItem::apply()
 {
   return KGuiItem( i18n( "&Apply" ), "apply", i18n( "Apply changes" ),
-                   i18n( "When clicking <b>Apply<b>, the settings will be "
+                   i18n( "When clicking <b>Apply</b>, the settings will be "
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
                          "Use this to try different settings." ) );
