@@ -282,6 +282,10 @@ namespace KJS {
      * Remove the element at the end of the list.
      */
     void removeLast();
+    /*
+     * Remove obj from list.
+     */
+    void remove(const KJSO &obj);
     /**
      * Remove all elements from the list.
      */

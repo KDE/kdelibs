@@ -201,6 +201,20 @@ void List::removeLast()
   erase(hook->prev);
 }
 
+void List::remove(const KJSO &obj)
+{
+  if (obj.isNull())
+    return;
+  ListNode *n = hook->next;
+  while (n != hook) {
+    if (n->member.imp() == obj.imp()) {
+      erase(n);
+      return;
+    }
+    n = n->next;
+  }
+}
+
 void List::clear()
 {
   ListNode *n = hook->next;
