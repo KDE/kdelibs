@@ -408,9 +408,8 @@ DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent
     edit->setText( _value );
     edit->setFocus();
 
-    int w = label->width()+20;
-    if ( w < 200 ) w = 200; // A minimum width
-    setGeometry( x(), y(), w, 110 );
+    setMinimumSize ( 200, 40+edit->height()+10+ok->height()+10 );
+    setGeometry( x(), y(), label->width()+20, 110 );
 }
 
 void DlgLocation::resizeEvent(QResizeEvent *e)
