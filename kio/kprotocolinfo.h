@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <ksycocaentry.h>
+#include <ksycocatype.h>
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.
