@@ -541,9 +541,9 @@ bool KHTMLPart::closeURL()
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bReloading = false;
 
+  KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_bParsing )
   {
-    KHTMLPageCache::self()->cancelFetch(this);
     kdDebug( 6050 ) << " was still parsing... calling end " << endl;
     slotFinishedParsing();
     d->m_bParsing = false;
