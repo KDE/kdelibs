@@ -70,7 +70,7 @@ class KToolBarPrivate
 public:
   KToolBarPrivate()
   {
-    m_iconSize     = KIconLoader::Medium;
+    m_iconSize     = KIconLoader::Small;
     m_iconText     = KToolBar::IconOnly;
     m_position     = KToolBar::Top;
     m_highlight    = true;
@@ -87,7 +87,7 @@ public:
     m_maxHorWidth   = -1;
     m_maxVerHeight  = -1;
 
-    m_approxItemSize = 26;
+    m_approxItemSize = 22;
     m_enableContext  = true;
   }
   ~KToolBarPrivate()
@@ -169,7 +169,7 @@ void KToolBar::init()
   context->insertItem( i18n("Text position"), mode );
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon size"), size );
-  context->setItemChecked(CONTEXT_MEDIUM, true);
+  context->setItemChecked(CONTEXT_SMALL, true);
 
   // set some more defaults
   fullSizeMode  = true;
@@ -234,9 +234,9 @@ void KToolBar::slotReadConfig()
   // now get the size conditionally
   if (d->m_honorStyle || name() == "mainToolBar")
     iconsize = (KIconLoader::Size)config->readNumEntry(attrSize,
-                                                       KIconLoader::Medium);
+                                                       KIconLoader::Small);
   else
-    iconsize = KIconLoader::Medium;
+    iconsize = KIconLoader::Small;
 
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
@@ -259,15 +259,15 @@ void KToolBar::slotReadConfig()
   // but we can make some guesses now
   switch (iconsize)
   {
-  case KIconLoader::Small:
-    d->m_approxItemSize = 20;
+  case KIconLoader::Medium:
+    d->m_approxItemSize = 28;
     break;
   case KIconLoader::Large:
-    d->m_approxItemSize = 36;
+    d->m_approxItemSize = 38;
     break;
-  case KIconLoader::Medium:
+  case KIconLoader::Small:
   default:
-    d->m_approxItemSize = 26;
+    d->m_approxItemSize = 22;
     break;
   }
  
@@ -1533,7 +1533,7 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
     d->m_items->append (item);
   else
     d->m_items->insert(_index, item);
-  item->resize(_size, 26);
+  item->resize(_size, 20);
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
@@ -1593,7 +1593,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, 26);
+  item->resize(size, 20);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1624,7 +1624,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, 26);
+  item->resize(size, 20);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -1655,7 +1655,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
   combo->setAutoResize(false);
-  item->resize(size, 26);
+  item->resize(size, 20);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
@@ -2150,10 +2150,10 @@ void KToolBar::setIconSize(KIconLoader::Size size, bool update)
     switch (size)
     {
     case KIconLoader::Small:
+    default:
       context->setItemChecked(CONTEXT_SMALL, true);
       break;
     case KIconLoader::Medium:
-    default:
       context->setItemChecked(CONTEXT_MEDIUM, true);
       break;
     case KIconLoader::Large:

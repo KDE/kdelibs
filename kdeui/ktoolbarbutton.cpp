@@ -66,7 +66,7 @@ public:
     m_text        = QString::null;
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
-    m_iconSize    = KIconLoader::Medium;
+    m_iconSize    = KIconLoader::Small;
     m_delayTimer  = 0L;
     m_popup       = 0L;
   }
@@ -200,8 +200,8 @@ void KToolBarButton::modeChange()
 
   // we'll go with the size of our pixmap (plus a bit of padding) as
   // the default size...
-  int pix_width  = activePixmap.width() + 8;
-  int pix_height = activePixmap.height() + 8;
+  int pix_width  = activePixmap.width() + 6;
+  int pix_height = activePixmap.height() + 6;
 
   // handle the simplest case (Icon only) now so we don't do an
   // unneccesary object instantiation and the like
@@ -238,7 +238,7 @@ void KToolBarButton::modeChange()
     break;
 
   case KToolBar::IconTextBottom:
-    mysize = QSize((text_width + 10 > pix_width) ? text_width + 10 : pix_width, pix_height + text_height + 4);
+    mysize = QSize((text_width + 10 > pix_width) ? text_width + 10 : pix_width, pix_height + text_height + 3);
     break;
 
   default:
@@ -277,14 +277,14 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
   // if our pixmap is null, then try to load the "unknown" icon
   if (tmp_pixmap.isNull())
   {
-    tmp_pixmap = BarIcon("unknown", KIconLoader::Medium);
+    tmp_pixmap = BarIcon("unknown", KIconLoader::Small);
 
     // if it's still null, then we wing it
     if (tmp_pixmap.isNull())
     {
-      defaultPixmap.resize(22, 22);
-      activePixmap.resize(22, 22);
-      disabledPixmap.resize(22, 22);
+      defaultPixmap.resize(16, 16);
+      activePixmap.resize(16, 16);
+      disabledPixmap.resize(16, 16);
       return;
     }
   }
