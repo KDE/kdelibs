@@ -27,9 +27,8 @@ Author: Ralph Mor, X Consortium
 #define _ICELIBINT_H_
 
 #include "config.h"
-#include <X11/Xos.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#include <X11/Xos.h> // schroder
+#include <X11/Xos.h> // schroder
 #include <X11/Xfuncs.h> // schroder
 #include <X11/Xmd.h> //schroder
 #else
