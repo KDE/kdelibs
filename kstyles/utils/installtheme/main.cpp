@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         }
     }
 
-    QSettings cache;
+    KConfig cache("kthemestylerc");
 
 #if 0
 //Doesn't seem to work with present Qt..
@@ -77,13 +77,16 @@ int main(int argc, char **argv)
 #endif
 
     QStringList themeNames; //A list of names, each occuring once - the keys of the themes map..
+
     for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); i++)
     {
-        cache.writeEntry("/kthemestyle/"+i.key().lower()+"/file",QFileInfo(i.data()).fileName());
+        cache.setGroup(i.key().lower());
+        cache.writeEntry("file",QFileInfo(i.data()).fileName());
         themeNames.push_back(i.key());
     }
 
-    cache.writeEntry("/kthemestyle/themes", themeNames);
+    cache.setGroup("General");
+    cache.writeEntry("themes", themeNames.join("^e"));
 
     return 0;
 }
