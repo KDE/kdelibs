@@ -148,15 +148,8 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
 
 void HTMLDocumentImpl::detach()
 {
-    NodeImpl *b = body();
-    if (b) {
-        if ( b->id() == ID_FRAMESET )
-            static_cast<HTMLFrameSetElementImpl*>( b )->m_loaded = false;
-        else if ( b->id() == ID_BODY )
-            static_cast<HTMLBodyElementImpl*>( b )->m_loaded = false;
-
-        b->dispatchWindowEvent(EventImpl::UNLOAD_EVENT,false,false);
-    }
+    if ( view() && view()->part() )
+        view()->part()->emitUnloadEvent();
 
     DocumentImpl::detach();
 }

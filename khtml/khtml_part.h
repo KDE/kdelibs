@@ -142,6 +142,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;
   friend class DOM::DocumentImpl;
+  friend class DOM::HTMLDocumentImpl;
+  
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
@@ -1038,6 +1040,7 @@ private:
 
   void checkEmitLoadEvent();
   void emitLoadEvent();
+  void emitUnloadEvent();
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

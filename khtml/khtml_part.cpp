@@ -1634,30 +1634,25 @@ void KHTMLPart::checkEmitLoadEvent()
 
 void KHTMLPart::emitLoadEvent()
 {
-  kdDebug(6050) << "KHTMLPart::emitLoadEvent " << this << endl;
+  d->m_bLoadEventEmitted = true;
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
 
-    if ( hdoc->body() ) {
-      if ( hdoc->body()->id() == ID_BODY ) {
-        HTMLBodyElementImpl* hbody = static_cast<HTMLBodyElementImpl*>( hdoc->body() );
-        if ( !hbody->m_loaded ) {
-          hbody->m_loaded = true;
-          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-        }
-      }
-      else if ( hdoc->body()->id() == ID_FRAMESET ) {
-        HTMLFrameSetElementImpl* hbody = static_cast<HTMLFrameSetElementImpl*>( hdoc->body() );
-        if ( !hbody->m_loaded ) {
-          hbody->m_loaded = true;
-          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-        }
-      }
-      else
-        assert ( false );
+    if ( hdoc->body() )
+        hdoc->body()->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+  }
+}
+
+void KHTMLPart::emitUnloadEvent()
+{
+  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
+    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
+
+    if ( hdoc->body() && d->m_bLoadEventEmitted ) {
+      hdoc->body()->dispatchWindowEvent( EventImpl::UNLOAD_EVENT, false, false );
+      d->m_bLoadEventEmitted = false;
     }
   }
-  d->m_bLoadEventEmitted = true;
 }
 
 const KHTMLSettings *KHTMLPart::settings() const

@@ -66,9 +66,6 @@ protected:
     CSSStyleSheetImpl *m_styleSheet;
     DOMString bgImage;
     DOMString bgColor;
-    
-public:
-    bool m_loaded;
 };
 
 // -------------------------------------------------------------------------
@@ -158,9 +155,6 @@ protected:
     bool frameBorderSet : 1;
     bool noresize : 1;
     bool m_resizing : 1;  // is the user resizing currently
-
-public:
-    bool m_loaded : 1 ;
 };
 
 // -------------------------------------------------------------------------
