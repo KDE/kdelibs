@@ -232,22 +232,32 @@ static void setup_tty( const char* tty )
 }
 
 // from kdecore/netwm.cpp
-static int get_current_desktop( Display* disp )
+static void get_current_desktop_and_timestamp( Display* disp,
+    int& desktop, long& timestamp )
 {
 #ifdef Q_WS_X11 // Only X11 supports multiple desktops
+    unsigned char data[ 1 ];
+    XSelectInput( disp, DefaultRootWindow( disp ), PropertyChangeMask );
+    // only touch the property to get PropertyNotify with timestamp
+    XChangeProperty( disp, DefaultRootWindow( disp ), net_current_desktop, XA_CARDINAL,
+        32, PropModeAppend, data, 0 );
     Atom type_ret;
     int format_ret;
     unsigned char *data_ret;
     unsigned long nitems_ret, unused;
+    desktop = 0; // no desktop by default
     if( XGetWindowProperty( disp, DefaultRootWindow( disp ), net_current_desktop,
         0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret, &nitems_ret, &unused, &data_ret )
 	    == Success)
     {
 	if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
-	    return *((long *) data_ret) + 1;
+	    desktop = *((long *) data_ret) + 1;
     }
+    XEvent ev;
+    XWindowEvent( disp, DefaultRootWindow( disp ), PropertyChangeMask, &ev );
+    timestamp = ev.xproperty.time;
+    XSelectInput( disp, DefaultRootWindow( disp ), NoEventMask );
 #endif
-    return 0;
 }
 
 // var has to be e.g. "DISPLAY=", i.e. with =
@@ -280,9 +290,13 @@ static void init_startup_info( KStartupInfoId& id, const char* bin,
         return;
     X11_startup_notify_fd = XConnectionNumber( X11_startup_notify_display );
     KStartupInfoData data;
-    int desktop = get_current_desktop( X11_startup_notify_display );
+    int desktop;
+    long timestamp;
+    get_current_desktop_and_timestamp( X11_startup_notify_display,
+        desktop, timestamp );
     data.setDesktop( desktop );
     data.setBin( bin );
+    data.setTimestamp( timestamp );
     KStartupInfo::sendStartupX( X11_startup_notify_display, id, data );
     XFlush( X11_startup_notify_display );
 }
