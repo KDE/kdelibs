@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -215,18 +215,21 @@ QByteArray HTMLFormElementImpl::formData()
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
             //kdDebug(6030) << "adding name " << current->name().string() << endl;
-            if ( lst.count() == 1 ) {
-                // hack for isindex element
-                enc_string += encodeCString(*lst.begin());
-            } else {
-                ASSERT(!(lst.count()&1));
+            ASSERT(!(lst.count()&1));
 
-                khtml::encodingList::Iterator it;
-                for( it = lst.begin(); it != lst.end(); ++it )
+            khtml::encodingList::Iterator it;
+            for( it = lst.begin(); it != lst.end(); ++it )
+            {
+                if (!m_multipart)
                 {
-                    if (!m_multipart)
-                    {
-                        if(enc_string.length())
+                    // handle ISINDEX / <input name=isindex> special
+                    // but only if its the first entry
+                    if ( enc_string.isEmpty() && *it == "isindex" ) {
+                        ++it;
+                        enc_string += encodeCString( *it );
+                    }
+                    else {
+                        if(!enc_string.isEmpty())
                             enc_string += '&';
 
                         enc_string += encodeCString(*it);
@@ -234,43 +237,43 @@ QByteArray HTMLFormElementImpl::formData()
                         ++it;
                         enc_string += encodeCString(*it);
                     }
-                    else
+                }
+                else
+                {
+                    QCString hstr("--");
+                    hstr += m_boundary.string().latin1();
+                    hstr += "\r\n";
+                    hstr += "Content-Disposition: form-data; name=\"";
+                    hstr += (*it).data();
+                    hstr += "\"";
+
+                    // if the current type is FILE, then we also need to
+                    // include the filename
+                    if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                     {
-                        QCString hstr("--");
-                        hstr += m_boundary.string().latin1();
-                        hstr += "\r\n";
-                        hstr += "Content-Disposition: form-data; name=\"";
-                        hstr += (*it).data();
-                        hstr += "\"";
+                        QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
+                        QString onlyfilename = path.mid(path.findRev('/')+1);
 
-                        // if the current type is FILE, then we also need to
-                        // include the filename
-                        if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
-                            static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
+                        hstr += ("; filename=\"" + onlyfilename + "\"\r\n").ascii();
+                        if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
                         {
-                            QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
-                            QString onlyfilename = path.mid(path.findRev('/')+1);
-
-                            hstr += ("; filename=\"" + onlyfilename + "\"\r\n").ascii();
-                            if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
-                            {
-                                hstr += "Content-Type: ";
-                                KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
-                                hstr += ptr->name().ascii();
-                            }
+                            hstr += "Content-Type: ";
+                            KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
+                            hstr += ptr->name().ascii();
                         }
-
-                        hstr += "\r\n\r\n";
-                        ++it;
-
-                        // append body
-                        unsigned int old_size = form_data.size();
-                        form_data.resize( old_size + hstr.length() + (*it).size() + 1);
-                        memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
-                        memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
-                        form_data[form_data.size()-2] = '\r';
-                        form_data[form_data.size()-1] = '\n';
                     }
+
+                    hstr += "\r\n\r\n";
+                    ++it;
+
+                    // append body
+                    unsigned int old_size = form_data.size();
+                    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
+                    memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
+                    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
+                    form_data[form_data.size()-2] = '\r';
+                    form_data[form_data.size()-1] = '\n';
                 }
             }
         }
@@ -940,7 +943,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
         {
         case TEXT:
         case PASSWORD:
-            case ISINDEX:
+        case ISINDEX:
             m_render = new RenderLineEdit(view, this);
             break;
         case CHECKBOX:
@@ -1006,11 +1009,10 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)
 {
     // image generates its own name's
-    if (_name.isEmpty() && m_type != IMAGE && m_type != ISINDEX) return false;
+    if (_name.isEmpty() && m_type != IMAGE) return false;
 
     // IMAGE needs special handling later
-    if(m_type != IMAGE && m_type != ISINDEX)
-        encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    if(m_type != IMAGE) encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
 
     switch (m_type) {
         case HIDDEN:
@@ -2042,6 +2044,7 @@ void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
 void HTMLIsIndexElementImpl::attach(KHTMLView* v)
 {
     HTMLInputElementImpl::attach(v);
+    _name = "isindex";
     // ### fix this, this is just a crude hack
     setValue(m_prompt);
 }

@@ -758,7 +758,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             case ID_TABLE:
                 popBlock(ID_TABLE); // end the table
                 handled = true;      // ...and start a new one
-                break;                
+                break;
             default:
                 e = new HTMLTableRowElementImpl(document);
                 insertNode(e);
@@ -975,7 +975,6 @@ NodeImpl *KHTMLParser::getElement(Token *t)
             n = 0;
         } else
             flat = true;
-        //n = new HTMLIsIndexElementImpl(document, form);
         break;
     case ID_LABEL:
         n = new HTMLLabelElementImpl(document);
@@ -1395,12 +1394,12 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     if(t->attrs)
         a = t->attrs->getIdItem(ATTR_PROMPT);
     if(a)
-        text = a->value();
-    if( text.isNull() )
+        text = a->value() + " ";
+    else
         text =  i18n("This is a searchable index. Enter search keywords: ");
     child = new TextImpl(document, text);
     n->addChild( child );
-    child = new HTMLInputElementImpl(document, myform);
+    child = new HTMLIsIndexElementImpl(document, myform);
     static_cast<ElementImpl *>(child)->setAttribute(ATTR_TYPE, "khtml_isindex");
     n->addChild( child );
     child = new HTMLHRElementImpl( document );
