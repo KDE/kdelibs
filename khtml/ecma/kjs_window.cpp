@@ -540,12 +540,12 @@ Value Window::get(ExecState *exec, const UString &p) const
         return Undefined();
     case Onclick:
       if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT);
+        return getListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
       else
         return Undefined();
     case Ondblclick:
       if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+        return getListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
       else
         return Undefined();
     case Ondragdrop:
@@ -745,11 +745,11 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     case Onclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
+        setListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT,value);
       return;
     case Ondblclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
+        setListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT,value);
       return;
     case Ondragdrop:
       if (isSafeScript(exec))

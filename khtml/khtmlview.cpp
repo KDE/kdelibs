@@ -315,7 +315,8 @@ void KHTMLView::init()
     _height = 0;
 
     setAcceptDrops(true);
-    resizeContents(visibleWidth(), visibleHeight());
+    QSize s = viewportSize(4095, 4095);
+    resizeContents(s.width(), s.height());
 }
 
 void KHTMLView::clear()
@@ -913,9 +914,8 @@ bool KHTMLView::focusNextPrevChild( bool next )
     }
 
     // If we get here, there is no next/previous child to go to, so pass up to the next/previous child in our parent
-    if (m_part->parentPart() && m_part->parentPart()->view()) {
+    if (m_part->parentPart() && m_part->parentPart()->view())
         return m_part->parentPart()->view()->focusNextPrevChild(next);
-    }
 
     return QWidget::focusNextPrevChild(next);
 }
@@ -1088,28 +1088,10 @@ void KHTMLView::focusNextPrevNode(bool next)
 	  //return;
 	}
     }
+
     // Set focus node on the document
     m_part->xmlDocImpl()->setFocusNode(newFocusNode);
     emit m_part->nodeActivated(Node(newFocusNode));
-
-#if 0
-    if (newFocusNode) {
-
-        // this does not belong here. it should run a query on the tree (Dirk)
-        // I'll fix this very particular part of the code soon when I cleaned
-        // up the positioning code
-        // If the newly focussed node is a link, notify the part
-
-        HTMLAnchorElementImpl *anchor = 0;
-        if ((newFocusNode->id() == ID_A || newFocusNode->id() == ID_AREA))
-            anchor = static_cast<HTMLAnchorElementImpl *>(newFocusNode);
-
-        if (anchor && !anchor->areaHref().isNull())
-            m_part->overURL(anchor->areaHref().string(), 0);
-        else
-            m_part->overURL(QString(), 0);
-    }
-#endif
 }
 
 void KHTMLView::setMediaType( const QString &medium )
@@ -1523,25 +1505,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
             swallowEvent = true;
 	me->deref();
 
-	// Special case: If it's a click event, we also send the KHTML_CLICK or KHTML_DBLCLICK event. This is not part
-	// of the DOM specs, but is used for compatibility with the traditional onclick="" and ondblclick="" attributes,
-	// as there is no way to tell the difference between single & double clicks using DOM (only the click count is
-	// stored, which is not necessarily the same)
 	if (eventId == EventImpl::CLICK_EVENT) {
-	    me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
-				    true,cancelable,m_part->xmlDocImpl()->defaultView(),
-				    detail,screenX,screenY,clientX,clientY,
-				    ctrlKey,altKey,shiftKey,metaKey,
-				    button,0);
-
-	    me->ref();
-	    if (defaultHandled)
-		me->setDefaultHandled();
-	    targetNode->dispatchEvent(me,exceptioncode,true);
-            if (me->defaultHandled() || me->defaultPrevented())
-                swallowEvent = true;
-	    me->deref();
-
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else

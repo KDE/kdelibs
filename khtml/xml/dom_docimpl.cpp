@@ -1630,7 +1630,7 @@ DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
-    if (!_name) return 0;
+    if (!_name || !_name->l) return 0;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
     NodeImpl::Id id = 0;

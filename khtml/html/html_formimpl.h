@@ -484,6 +484,10 @@ public:
 
     HTMLSelectElementImpl *getSelect() const;
 
+    virtual NodeImpl *addChild( NodeImpl* newChild );
+    void recalcSelectOptions();
+
+
 protected:
     DOMString m_value;
     bool m_selected;

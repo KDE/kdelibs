@@ -73,16 +73,6 @@ EventImpl::~EventImpl()
         m_target->deref();
 }
 
-DOMString EventImpl::type() const
-{
-    return m_type;
-}
-
-NodeImpl *EventImpl::target() const
-{
-    return m_target;
-}
-
 void EventImpl::setTarget(NodeImpl *_target)
 {
     if (m_target)
@@ -92,52 +82,11 @@ void EventImpl::setTarget(NodeImpl *_target)
         m_target->ref();
 }
 
-NodeImpl *EventImpl::currentTarget() const
-{
-    return m_currentTarget;
-}
-
-void EventImpl::setCurrentTarget(NodeImpl *_currentTarget)
-{
-    m_currentTarget = _currentTarget;
-}
-
-unsigned short EventImpl::eventPhase() const
-{
-    return m_eventPhase;
-}
-
-void EventImpl::setEventPhase(unsigned short _eventPhase)
-{
-    m_eventPhase = _eventPhase;
-}
-
-bool EventImpl::bubbles() const
-{
-    return m_canBubble;
-}
-
-bool EventImpl::cancelable() const
-{
-    return m_cancelable;
-}
-
 DOMTimeStamp EventImpl::timeStamp()
 {
     QDateTime epoch(QDate(1970,1,1),QTime(0,0));
     // ### kjs does not yet support long long (?) so the value wraps around
     return epoch.secsTo(m_createTime)*1000+m_createTime.time().msec();
-}
-
-void EventImpl::stopPropagation()
-{
-    m_propagationStopped = true;
-}
-
-void EventImpl::preventDefault()
-{
-    if (m_cancelable)
-	m_defaultPrevented = true;
 }
 
 void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg)
@@ -280,9 +229,9 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
 	case SCROLL_EVENT:
 	    return "scroll";
 	// khtml extensions
-	case KHTML_DBLCLICK_EVENT:
+	case KHTML_ECMA_DBLCLICK_EVENT:
             return "dblclick";
-	case KHTML_CLICK_EVENT:
+	case KHTML_ECMA_CLICK_EVENT:
             return "click";
 	case KHTML_DRAGDROP_EVENT:
             return "khtml_dragdrop";
@@ -304,18 +253,7 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
     }
 }
 
-void EventImpl::setDefaultHandled()
-{
-    m_defaultHandled = true;
-}
-
 // -----------------------------------------------------------------------------
-
-UIEventImpl::UIEventImpl()
-{
-    m_view = 0;
-    m_detail = 0;
-}
 
 UIEventImpl::UIEventImpl(EventId _id, bool canBubbleArg, bool cancelableArg,
 		AbstractViewImpl *viewArg, long detailArg)
@@ -331,16 +269,6 @@ UIEventImpl::~UIEventImpl()
 {
     if (m_view)
         m_view->deref();
-}
-
-AbstractViewImpl *UIEventImpl::view() const
-{
-    return m_view;
-}
-
-long UIEventImpl::detail() const
-{
-    return m_detail;
 }
 
 void UIEventImpl::initUIEvent(const DOMString &typeArg,
@@ -411,56 +339,6 @@ MouseEventImpl::~MouseEventImpl()
 {
     if (m_relatedTarget)
 	m_relatedTarget->deref();
-}
-
-long MouseEventImpl::screenX() const
-{
-    return m_screenX;
-}
-
-long MouseEventImpl::screenY() const
-{
-    return m_screenY;
-}
-
-long MouseEventImpl::clientX() const
-{
-    return m_clientX;
-}
-
-long MouseEventImpl::clientY() const
-{
-    return m_clientY;
-}
-
-bool MouseEventImpl::ctrlKey() const
-{
-    return m_ctrlKey;
-}
-
-bool MouseEventImpl::shiftKey() const
-{
-    return m_shiftKey;
-}
-
-bool MouseEventImpl::altKey() const
-{
-    return m_altKey;
-}
-
-bool MouseEventImpl::metaKey() const
-{
-    return m_metaKey;
-}
-
-unsigned short MouseEventImpl::button() const
-{
-    return m_button;
-}
-
-NodeImpl *MouseEventImpl::relatedTarget() const
-{
-    return m_relatedTarget;
 }
 
 void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
@@ -752,21 +630,6 @@ void TextEventImpl::initModifier(unsigned long modifierArg,
       m_modifier &= (modifierArg ^ 0xFFFFFFFF);
 }
 
-bool             TextEventImpl::inputGenerated() const
-{
-  return m_inputGenerated;
-}
-
-unsigned long    TextEventImpl::keyVal() const
-{
-  return m_keyVal;
-}
-
-DOMString        TextEventImpl::outputString() const
-{
-  return m_outputString;
-}
-
 // -----------------------------------------------------------------------------
 
 MutationEventImpl::MutationEventImpl()
@@ -815,31 +678,6 @@ MutationEventImpl::~MutationEventImpl()
 	m_attrName->deref();
 }
 
-Node MutationEventImpl::relatedNode() const
-{
-    return m_relatedNode;
-}
-
-DOMString MutationEventImpl::prevValue() const
-{
-    return m_prevValue;
-}
-
-DOMString MutationEventImpl::newValue() const
-{
-    return m_newValue;
-}
-
-DOMString MutationEventImpl::attrName() const
-{
-    return m_attrName;
-}
-
-unsigned short MutationEventImpl::attrChange() const
-{
-    return m_attrChange;
-}
-
 void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
 					  bool canBubbleArg,
 					  bool cancelableArg,
@@ -875,24 +713,3 @@ void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
     m_attrChange = attrChangeArg;
 }
 
-// -----------------------------------------------------------------------------
-
-RegisteredEventListener::RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-{
-    id = _id;
-    listener = _listener;
-    useCapture = _useCapture;
-    listener->ref();
-}
-
-RegisteredEventListener::~RegisteredEventListener()
-{
-    listener->deref();
-}
-
-bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
-{
-    return (id == other.id &&
-	    listener == other.listener &&
-	    useCapture == other.useCapture);
-}

@@ -140,7 +140,7 @@ void Event::stopPropagation()
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    impl->stopPropagation();
+    impl->stopPropagation(true);
 }
 
 void Event::preventDefault()

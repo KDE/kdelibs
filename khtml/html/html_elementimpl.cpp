@@ -109,11 +109,11 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
 // standard events
     case ATTR_ONCLICK:
-	setHTMLEventListener(EventImpl::KHTML_CLICK_EVENT,
+	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONDBLCLICK:
-	setHTMLEventListener(EventImpl::KHTML_DBLCLICK_EVENT,
+	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEDOWN:

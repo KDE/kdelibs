@@ -918,8 +918,9 @@ void KHTMLPart::clear()
 
   // do not dereference the document before the jscript and view are cleared, as some destructors
   // might still try to access the document.
-  if ( d->m_doc )
+  if ( d->m_doc ) {
     d->m_doc->deref();
+  }
   d->m_doc = 0;
 
   delete d->m_decoder;
@@ -1110,7 +1111,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
       }
       d->m_bHTTPRefresh = true;
     }
-    
+
     // Support Content-Location per section 14.14 of RFC 2616.
     QString baseURL = d->m_job->queryMetaData ("content-location");
     if (!baseURL.isEmpty())
@@ -1623,6 +1624,7 @@ void KHTMLPart::checkCompleted()
   checkEmitLoadEvent(); // if we didn't do it before
 
   // check that the view has not been moved by the user
+
   if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 )
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
                                  d->m_extension->urlArgs().yOffset );
@@ -1728,22 +1730,20 @@ KURL KHTMLPart::completeURL( const QString &url )
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
-    if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url))
-    {
+  if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect ) {
+    if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url)) {
       kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << m_url.prettyURL() << " to " << url << " REJECTED!" << endl;
       return;
     }
 
-    if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
-    {
-       d->m_delayRedirect = delay;
-       d->m_redirectURL = url;
-       d->m_redirectLockHistory = doLockHistory;
-       if ( d->m_bComplete ) {
-         d->m_redirectionTimer.stop();
-         d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
-       }
+    d->m_delayRedirect = delay;
+    d->m_redirectURL = url;
+    d->m_redirectLockHistory = doLockHistory;
+    if ( d->m_bComplete ) {
+      d->m_redirectionTimer.stop();
+      d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
     }
+  }
 }
 
 void KHTMLPart::slotRedirect()
@@ -1781,7 +1781,7 @@ void KHTMLPart::slotRedirect()
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
 {
   // the slave told us that we got redirected
-  // kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
+  //kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
   emit d->m_extension->setLocationBarURL( url.prettyURL() );
   d->m_workingURL = url;
 }
@@ -3842,7 +3842,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
   // nth node is active. value is set in checkCompleted()
   stream >> d->m_focusNodeNumber;
   d->m_focusNodeRestored = false;
-  kdDebug(6050)<<"new focus Node number is:"<<d->m_focusNodeNumber<<endl;
 
   stream >> d->m_cacheId;
 
@@ -3990,6 +3989,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.xOffset = xOffset;
     args.yOffset = yOffset;
     args.docState = docState;
+
+    d->m_view->resizeContents( wContents,  hContents);
+    d->m_view->setContentsPos( xOffset, yOffset );
+
     d->m_extension->setURLArgs( args );
     if (!KHTMLPageCache::self()->isValid(d->m_cacheId))
     {

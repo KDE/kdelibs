@@ -506,45 +506,27 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     }
     --it;
 
-    // ok, now bubble up again (only non-capturing event handlers will be called)
-    // ### recalculate the node chain here? (e.g. if target node moved in document by previous event handlers)
-    // no. the DOM specs says:
-    // The chain of EventTargets from the event target to the top of the tree
-    // is determined before the initial dispatch of the event.
-    // If modifications occur to the tree during event processing,
-    // event flow will proceed based on the initial state of the tree.
-    //
-    // since the initial dispatch is before the capturing phase,
-    // there's no need to recalculate the node chain.
-    // (tobias)
-
     if (evt->bubbles()) {
+        evt->stopPropagation(false);
+        NodeImpl* propagationSentinel = 0;
+
         evt->setEventPhase(Event::BUBBLING_PHASE);
         for (; it.current() && !evt->propagationStopped(); --it) {
+            if (evt->propagationStopped()) propagationSentinel = it.current();
             evt->setCurrentTarget(it.current());
             it.current()->handleLocalEvents(evt,false);
         }
-    }
 
-    evt->setCurrentTarget(0);
-    evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
-                           // anything about the default event handler phase.
-    if (evt->bubbles()) {
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
+        evt->setCurrentTarget(0);
+        evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
+        for (it.toLast(); it.current() && it.current() != propagationSentinel &&
+                 !evt->defaultPrevented() && !evt->defaultHandled(); --it)
+            it.current()->defaultEventHandler(evt);
 
-        it.toLast();
-        for (; it.current() && !evt->propagationStopped() && !evt->defaultPrevented() && !evt->defaultHandled(); --it)
-                    it.current()->defaultEventHandler(evt);
+        if (evt->id() == EventImpl::CLICK_EVENT && !evt->defaultPrevented())
+            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, static_cast<UIEventImpl*>(evt)->detail());
     }
-
-    // In the case of a mouse click, also send a DOMActivate event, which causes things like form submissions
-    // to occur. Note that this only happens for _real_ mouse clicks (for which we get a KHTML_CLICK_EVENT or
-    // KHTML_DBLCLICK_EVENT), not the standard DOM "click" event that could be sent from js code.
-    if (!evt->defaultPrevented())
-        if (evt->id() == EventImpl::KHTML_CLICK_EVENT)
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 1);
-        else if (evt->id() == EventImpl::KHTML_DBLCLICK_EVENT)
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 2);
 
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
     DocumentPtr *doc = document;
@@ -712,8 +694,12 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
             it.current()->listener->handleEvent(ev);
+        // ECMA legacy hack
+        if (it.current()->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT &&
+            ( ( static_cast<MouseEventImpl*>(evt)->detail() == 1 && it.current()->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+              ( static_cast<MouseEventImpl*>(evt)->detail() > 1 && it.current()->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) ) )
+            it.current()->listener->handleEvent(ev);
     }
-
 }
 
 void NodeImpl::defaultEventHandler(EventImpl *)

@@ -1316,9 +1316,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
     if ( !m_disabled )
     {
         if (evt->isMouseEvent() &&
-            ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
-            m_type == IMAGE
-            && m_render) {
+            evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
             // record the mouse position for when we get the DOMActivate event
             MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
             int offsetX, offsetY;
@@ -1773,6 +1771,8 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 
 void HTMLSelectElementImpl::recalcListItems()
 {
+    qDebug("HTMLSelectElementImpl::recalcListItems");
+
     NodeImpl* current = firstChild();
     m_listItems.resize(0);
     HTMLOptionElementImpl* foundSelected = 0;
@@ -2003,6 +2003,24 @@ DOMString HTMLOptionElementImpl::text() const
 	    return firstChild()->nodeValue();
     }
     return "";
+}
+
+NodeImpl* HTMLOptionElementImpl::addChild(NodeImpl* newChild)
+{
+    recalcSelectOptions();
+    qDebug("HTMLOptionElementImpl::addChild");
+
+
+    return HTMLGenericFormElementImpl::addChild(newChild);
+}
+
+void HTMLOptionElementImpl::recalcSelectOptions()
+{
+    NodeImpl *select = parentNode();
+    while (select && select->id() != ID_SELECT)
+        select = select->parentNode();
+    if (select)
+        static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
 long HTMLOptionElementImpl::index() const

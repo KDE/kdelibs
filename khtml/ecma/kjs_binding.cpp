@@ -180,9 +180,8 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   {
     int id = m_evt->handle()->id();
     bool eventOk = ( // mouse events
-      id == DOM::EventImpl::CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
-      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_DBLCLICK_EVENT ||
-      id == DOM::EventImpl::KHTML_CLICK_EVENT ||
+      id == DOM::EventImpl::KHTML_ECMA_CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
+      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT ||
       // keyboard events
       id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
       id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
