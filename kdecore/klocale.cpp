@@ -33,6 +33,7 @@
 #include "kconfig.h"
 #include "kdebug.h"
 #include "klocale.h"
+#include "kcharsets.h"
 
 /**
   * Stephan: I don't want to put this in an extra header file, since
@@ -164,6 +165,8 @@ QString KLocale::weekDayName (int i, bool _short) const
   return QString::null;
 }
 
+extern void qt_set_locale_codec( QTextCodec *codec );
+
 KLocale::KLocale( const QString& _catalogue )
   : _inited(false), _codec( 0 )
 {
@@ -173,7 +176,24 @@ KLocale::KLocale( const QString& _catalogue )
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
       chset = config->readEntry(QString::fromLatin1("Charset"));
     }
-    if (chset.isNull()) chset = QString::fromLatin1("iso-8859-1");
+
+    if (chset.isNull())
+    {
+        chset = QString::fromLatin1("iso-8859-1");
+        qt_set_locale_codec(QTextCodec::codecForMib(4)); // latin-1
+        // ### we should default to Qt's default, as thats always more intelligent
+    }
+    else
+    {
+        bool ok;
+        QTextCodec* nc = KGlobal::charsets()->codecForName(chset, ok);
+        // if !ok, we have a problem. it will return latin-1 then, but thats
+        // obviously not what the user wants
+        if(!ok)
+            qWarning("** Warning: charset %s is not known. using ISO 8859-1 instead.", chset.latin1());
+
+        qt_set_locale_codec(nc);
+    }
 
     catalogues = new QStrList(true);
 
@@ -192,8 +212,6 @@ KLocale::KLocale( const QString& _catalogue )
     initFormat(config);
 }
 
-extern void qt_set_locale_codec( QTextCodec *codec );        
-
 void KLocale::setEncodingLang(const QString &_lang)
 {
   _codec = 0;
@@ -205,15 +223,13 @@ void KLocale::setEncodingLang(const QString &_lang)
     {
       char buf[256];
       f.readLine(buf, 256);
-      _codec = QTextCodec::codecForName( buf );
+      _codec = KGlobal::charsets()->codecForName( buf );
       f.close();
     }
   }
-  // default to 8 bit unicode
+  // default to UTF8
   if (!_codec)
-    _codec = QTextCodec::codecForName( "UTF-8" );
-
-  qt_set_locale_codec(_codec);
+      _codec = QTextCodec::codecForName( "UTF-8" );
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)
