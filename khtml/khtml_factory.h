@@ -34,7 +34,7 @@ class KHTMLPart;
 namespace DOM
 {
   class DocumentImpl;
-};
+}
 
 class KHTMLFactory : public KParts::Factory
 {
