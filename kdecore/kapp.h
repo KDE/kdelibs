@@ -130,30 +130,30 @@ class KCharsets;
 * @version $Id$
 #include <qapp.h>
 #include <qfile.h>
+#include <qpopmenu.h>
+#include <qstrlist.h>
+
+#define kapp KApplication::getKApplication()
+
 /** 
-* Constructor. Pass command-line arguments. 
+* A base class for all KDE applications.
 *
-* A KConfig object is
-* created that contains an application-specific config file whose
-* name is "~/." + argv[0] + "rc". This constructor should be considered
-* obsolete. The state of the application-specific config file may be
-* queried afterwards with getConfigState(). 
-*/
+* KApplication provides the application with KDE defaults such as
 * accelerators, common menu entries, a KConfig object
 * etc. KApplication installs a signal handler for the SIGCHLD signal
-/** 
-* Constructor. Pass command-line arguments. 
+* in order to avoid zombie children. If you want to catch this signal
+* yourself or don't want it to be caught at all, you have set a new
+* signal handler (or SIG_IGN) after KApplication's constructor has
+* run. 
 *
-* A KConfig object is
-* created that contains an application-specific config file whose
-* name is "~/." + rAppName + "rc". The state of the application-specific 
-* config file may be queried afterwards with getConfigState(). 
-*/
+* @short A base class for all KDE applications.
+* @author Matthias Kalle Dalheimer <kalle@kde.org>
+* @version $Id$
 */ 
 class KApplication : public QApplication
-/** 
-* Destructor 
-*/
+{
+  Q_OBJECT
+public:
   /** 
 	* Constructor. Pass command-line arguments. 
 	*
@@ -161,63 +161,63 @@ class KApplication : public QApplication
 	* created that contains an application-specific config file whose
 	* name is "~/." + argv[0] + "rc". This constructor should be considered
 	* obsolete. The state of the application-specific config file may be
-/** 
-* Return the current application object.
-*
-* This is similar to the global QApplication pointer qApp. It allows access
-* to the single global KApplication object, since more than one cannot be
-* created in the same application. It saves the trouble of having to pass
-* the pointer to it explicitly to every function that may require it.
-*/
-	* created that contains an application-specific config file whose
-	* name is "~/." + rAppName + "rc". The state of the application-specific 
-/** 
-* Return the logical application name as set in the constructor.
-*/
+	* queried afterwards with getConfigState(). 
+	*/
+  KApplication( int& argc, char** argv );
 
   /** 
-/** 
-* Retrieve the application config object. 
-*
-* @return a pointer to the application's global KConfig object.
-* @see KConfig
-*/
+	* Constructor. Pass command-line arguments. 
+	*
+	* A KConfig object is
+	* created that contains an application-specific config file whose
+	* name is "~/." + rAppName + "rc". The state of the application-specific 
+	* config file may be queried afterwards with getConfigState(). 
+	*/
+  KApplication( int& argc, char** argv, const QString& rAppName );
+
+  /** 
+	* Destructor 
+	*/
+  virtual ~KApplication();
+
+  /** A global event filter for KApplication.
+	* Filters out Ctrl-Alt-F12 for KDebug.
 	*/
   virtual bool eventFilter( QObject*, QEvent* );
-/** 
-* Retrieve the application session config object. 
-*
-* @return a pointer to the application's instance specific KConfig object.
-* @see KConfig
-*/
+
+  /** 
+	* Return the current application object.
+	*
+	* This is similar to the global QApplication pointer qApp. It allows access
+	* to the single global KApplication object, since more than one cannot be
 	* created in the same application. It saves the trouble of having to pass
 	* the pointer to it explicitly to every function that may require it.
-/** 
-* Is the application restored from the session manager? 
-*
-* @ In this case the getSessionConfig()-object probably contains 
-* @ important data.
-*/
+	*/
+  static KApplication* getKApplication() { return KApp; }
+
+  /** 
+	* Return the logical application name as set in the constructor.
+	*/
   const QString& appName() const { return aAppName; }
   
-/** 
-* Enable session management
-*
-* @ If userdefined = True then the WmCommand can be defined with setWmCommand.
-* @ Note that you do not get an instance specific config object with
-* @ getSessionConfig() in this case!
-* @
-* @ Session management will apply to the top widget.
-*/
+  /** 
+	* Retrieve the application config object. 
+	*
+	* @return a pointer to the application's global KConfig object.
+	* @see KConfig
+	*/
+  KConfig* getConfig() const { return pConfig; }
+
+  /** 
 	* Retrieve the application session config object. 
 	*
-/** 
-* Set the WmCommand for the session manager.
-*
-* @ This has an effekt if either session management is disabled (then it
-* @ is used for pseudo session managemt) or ith session management is
-* @ enabled with userdefined=True.
-*/
+	* @return a pointer to the application's instance specific KConfig object.
+	* @see KConfig
+	*/
+  KConfig* getSessionConfig();
+
+  /** 
+	* Is the application restored from the session manager? 
 	*
 	* @ In this case the getSessionConfig()-object probably contains 
 	* @ important data.
@@ -227,7 +227,7 @@ class KApplication : public QApplication
   /** 
 	* Enable session management
 	*
-	QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
+	* @ If userdefined = True then the WmCommand can be defined with setWmCommand.
 	* @ Note that you do not get an instance specific config object with
 	* @ getSessionConfig() in this case!
 	* @
@@ -283,55 +283,126 @@ class KApplication : public QApplication
   /**
 	* Get the mini-icon for the application.
 	* @return a QPixmap with the icon.
-/** 
-* Possible return values for getConfigState().
-*
-* @see #getConfigState
-*/
+	* @see QPixmap
+	*/
+  QPixmap getMiniIcon() const
+	{ return aMiniIconPixmap; }
+
 
   /** Sets the top widget of the application . This widget will
     * be used for communication with the session manager.
-/** 
-* Retrieve the state of the app-config object. 
-*
-* Possible return values
-* are APPCONFIG_NONE (the application-specific config file could not be
-* opened neither read-write nor read-only), APPCONFIG_READONLY (the
-* application-specific config file is opened read-only, but not
-* read-write) and APPCONFIG_READWRITE (the application-specific config
-* file is opened read-write).
-*
-* @see #ConfigState
-*/
+    * You must not call this function manually if you are using
+    * the KTopLevelWidget.
+    */
+  void setTopWidget( QWidget *topWidget );
+
+  QWidget* topWidget() const
+    {
+      return pTopWidget;
+    }
+
+  
+  /*obsolete, will disappear (Matthias) */
   void registerTopWidget();
   /* obsolete, will dissappear (Matthias) */
-/**
-* Invoke the kdehelp HTML help viewer. 
-*
-* @param aFilename	The filename that is to be loaded. Its location
-*			is computed automatically according to the KFSSTND. 
-*			If aFilename is empty, the logical appname with .html 
-*			appended to it is used.
-* @param aTopic		This allows context-sensitive help. Its value
-*			will be appended to the filename, prefixed with
-*			a "#" (hash) character.
-*/
+  void unregisterTopWidget();
+
+  /** 
+	* Possible return values for getConfigState().
+	*
+	* @see #getConfigState
+	*/
+  enum ConfigState { APPCONFIG_NONE, APPCONFIG_READONLY, 
+					 APPCONFIG_READWRITE };
+
+  /** 
 	* Retrieve the state of the app-config object. 
 	*
-/** 
-* Get the KDE base dir. 
-*
-* This is the value of the KDEDIR
-* environment variable if it is set in the process' environment,
-* the compile time default of, if this was not present, either,
-* /usr/local/kde. 
-*/
+	* Possible return values
+	* are APPCONFIG_NONE (the application-specific config file could not be
+	* opened neither read-write nor read-only), APPCONFIG_READONLY (the
+	* application-specific config file is opened read-only, but not
+	* read-write) and APPCONFIG_READWRITE (the application-specific config
+	* file is opened read-write).
+	*
+	* @see #ConfigState
+	*/
   ConfigState getConfigState() const { return eConfigState; }
+
+  /**
+	* Invoke the kdehelp HTML help viewer. 
+	*
+	* @param aFilename	The filename that is to be loaded. Its location
+	*			is computed automatically according to the KFSSTND. 
+	*			If aFilename is empty, the logical appname with .html 
+	*			appended to it is used.
+	* @param aTopic		This allows context-sensitive help. Its value
+	*			will be appended to the filename, prefixed with
+	*			a "#" (hash) character.
+	*/
+  void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
+
+  /** 
+	* Get the KDE base dir. 
+	*
+	* This is the value of the KDEDIR
+	* environment variable if it is set in the process' environment,
+	* the compile time default of, if this was not present, either,
+	* /usr/local/kde. 
+	* @return the KDE base dir
+	*/
+  static QString kdedir();
+
+
+  /**
+	* Returns the directory where KDE stores its HTML documentation
+	* @return the name of the directory
+	*/
+  static const QString& kde_htmldir();
+
+  /**
+	* Returns the directory where KDE applications store their specific data
+	* @return the name of the directory
+	*/
+  static const QString& kde_appsdir();
+
+  /**
+	* Returns the directory where KDE icons are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_icondir();
+
+  /** 
+	* Returns the directory where common data is stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_datadir();
+
+  /**
+	* Returns the directory where locale-specific information (like
+	* translated on-screen messages are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_localedir();
+
+  /**
+	* Returns the directory where cgi scripts are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_cgidir();
+
+  /**
+	* Returns the directory where mini icons are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_minidir();
 
   /**
 	* Returns the directory where toolbar icons are stored
 	* @return the name of the directory
 	*/
+  static const QString& kde_toolbardir();
+
   /**
 	* Returns the directory where wallpapers are stored
   static const QString& kde_partsdir();
@@ -343,35 +414,35 @@ class KApplication : public QApplication
 	*/
   static const QString& kde_configdir();
 
-/** 
-* Find a file using standard KDE search paths. 
-*
-* Possible search paths
-* include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
-* file. If file is not found, isEmpty() will return True
-*/
+    
+ /**
+	* Returns the directory where mimetypes are stored
+	* @return the name of the directory
+	*/
+  static const QString& kde_mimedir();
+
   /**
 	* Get the local KDE base dir
-/** 
-* Get the KDE font list.
-*
-* This method allows you to get the KDE font 
-* list which was composed by the user with kfontmanager. Usually you should 
-* work only with those fonts in your kapplication. 
-*  
-*  @return true on success.
-*/
+	*
+	* This is usually $HOME/.kde
+	*
+	* @return the name of the directory
+	*/
+  static QString localkdedir();
+
+
+  /**
 	* Get the local KDE config dir
 	*
 	* This is usually $HOME/.kde/share/config
-/**
-* Return a text for the window caption.
-*
-* This would be set either by
-* "-caption", otherwise it will be equivalent to the name of the
-* executable.
-*/
-   const char* getCaption() const;
+	*/
+  static QString localconfigdir();
+
+  /** 
+	* Find a file using standard KDE search paths. 
+	*
+	* Possible search paths
+	* include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
 	* file. If file is not found, isEmpty() will return True
 	*/
   static QString findFile( const char *file );
@@ -404,65 +475,65 @@ class KApplication : public QApplication
 	* document.
 	* @return A new filename for auto-saving. You have to free() this
 	* yourself, otherwise you have a memory leak!
-  * An X11 atom used for IPC
-  */
+	*/
+  const char* tempSaveName( const char* pFilename );
 
   /** Check if there is an auto-save file for the document you want to
-  * An X11 atom used for IPC
-  */
+	* open.
+	*
 	* @param pFilename The full path to the document you want to open.
 	* @param bRecover  This gets set to true if there was a recover
-  * An X11 atom used for IPC
-  */
+	* file.
+	* @return The full path of the file to open. You must free() this
 	* pointer yourself, otherwise you have a memory leak.
 	*/
-  * An X11 atom used for IPC
-  */
+  const char* checkRecoverFile( const char* pFilename, bool& bRecover );
+
 
   /**
-  * An X11 atom used for IPC
-  */
+	* Returns true if the KLocale object for this application has already 
+	* been constructed
 	*
 	* @return whether the KLocale object has already been constructed
 	*/
-  * Get the X11 display
-  */
-  /**
-	* An X11 atom used for IPC
-  * Used by KDNDDropZone to register
-  */
-  /**
-	* An X11 atom used for IPC
-  * Used by KDNDDropZone during shutdown
-  */
-  /**
-	* An X11 atom used for IPC
-  * Set the DropZone which reveives root drop events.
-  */
+  bool localeConstructed() const { return bLocaleConstructed; }
+	
   /**
 	* An X11 atom used for IPC
 	*/
-/**
-* List of all DropZones.
-*/
+  Atom getDndSelectionAtom() { return DndSelection; }
+  /**
+	* An X11 atom used for IPC
+	*/
+  Atom getDndProtocolAtom() { return DndProtocol; }    
+  /**
+	* An X11 atom used for IPC
+	*/
+  Atom getDndEnterProtocolAtom() { return DndEnterProtocol; }    
+  /**
+	* An X11 atom used for IPC
+	*/
+  Atom getDndLeaveProtocolAtom() { return DndLeaveProtocol; }    
+  /**
+	* An X11 atom used for IPC
 	*/
   Atom getDndRootProtocolAtom() { return DndRootProtocol; }    
-/** 
-* The last drop zone the mouse was over.
-*
-* If we get a DndLeaveProtocol we must inform 'lastEnteredDropZone'
-* that the mouse left the DropZone.
-*/
+
+  /**
+	* Get the X11 display
+	*/
+  Display *getDisplay() { return display; }
+  /**
 	* Used by KDNDDropZone to register
 	*/
-/**
-* The DropZone which receives root drop events.
-*/
+  virtual void addDropZone( KDNDDropZone *_z ) { dropZones.append( _z ); }
+  /**
+	* Used by KDNDDropZone during shutdown
 	*/
   virtual void removeDropZone( KDNDDropZone *_z ) { dropZones.remove( _z ); }
-/**
-* Used to catch X11 events
-*/
+  /**
+	* Set the DropZone which reveives root drop events.
+	*/
   virtual void setRootDropZone( KDNDDropZone *_z ) { rootDropZone = _z; }
 
 protected:
@@ -480,9 +551,9 @@ protected:
   KDNDDropZone *lastEnteredDropZone;
 
   /**
-/**
-* The X11 display
-*/
+	* The DropZone which receives root drop events.
+	*/
+  KDNDDropZone *rootDropZone;
 
   /**
 	* Used to catch X11 events
@@ -492,8 +563,8 @@ protected:
   /**
 	* Two X11 atoms used for session management
 	*/
-private slots:
-  void appHelpActivated();
+  Atom WM_SAVE_YOURSELF;
+  Atom WM_PROTOCOLS;
 
   /**
 	* X11 atoms used for IPC
@@ -555,31 +626,31 @@ private:
   void buildSearchPaths();
   void appendSearchPath( const char *path );
 
-signals:
-/** 
-* KApplication has changed its Palette due to a KDisplay request.
-*
-* Normally, widgets will update their palettes automatically, but you
-* should connect to this to program special behaviour.
-*/
+  virtual void kdisplaySetPalette();
+  virtual void kdisplaySetStyle();
+  virtual void kdisplaySetFont();
+  virtual void kdisplaySetStyleAndFont();
+  virtual void readSettings();
+  void resizeAll();
+  virtual void KApplication::applyGUIStyle(GUIStyle newstyle);
 
 public:
-/** 
-* KApplication has changed its GUI Style due to a KDisplay request.
-*
-* Normally, widgets will update their styles automatically (as they would
-* respond to an explicit setGUIStyle() call), but you should connect to
-* this to program special behaviour.
-*/
+
+  QColor inactiveTitleColor;
+  QColor inactiveTextColor;
+  QColor activeTitleColor;
+  QColor activeTextColor;
+  QColor backgroundColor;
+  QColor textColor;
   QColor selectColor;
   QColor selectTextColor;
-/**
-* KApplication has changed its Font due to a KDisplay request.
-*
-* Normally widgets will update their fonts automatically, but you should
-* connect to this to monitor global font changes, especially if you are
-* using explicit fonts.
-*/
+  QColor windowColor;
+  QColor windowTextColor;
+  int contrast;
+  QFont generalFont;
+  GUIStyle applicationStyle;
+
+  signals:
   /** 
 	* KApplication has changed its Palette due to a KDisplay request.
 	*

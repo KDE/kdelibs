@@ -291,7 +291,7 @@ void KApplication::init()
 		}
 	  else
 		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
-		    PropModeReplace, (unsigned char *)&data, 1);
+		  eConfigState = APPCONFIG_READONLY;
   
   pCharsets = new KCharsets();
 		}
@@ -373,12 +373,12 @@ KConfig* KApplication::getSessionConfig() {
   QString num;
   int i = 0;
   do {
-  if( bAboutQtMenu )
+    i++;
     num.setNum(i);
-	  id = pMenu->insertItem( klocale->translate( "About Qt" ) );
-	  pMenu->connectItem( id, this, SLOT( aboutQt() ) );
+    aSessionConfigName = aConfigName + "." + num;
+  } while (QFile::exists(aSessionConfigName));
   QFile aConfigFile(aSessionConfigName);
-	*/
+  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
   if( bSuccess ){
     aConfigFile.close();
     pSessionConfig = new KConfig(0L, aSessionConfigName);
@@ -393,13 +393,13 @@ void KApplication::enableSessionManagement(bool userdefined){
   bSessionManagement = True;
   bSessionManagementUserDefined = userdefined;
   if (topWidget()){
-					  "The KDE Desktop Environment was written by "
-					  "the KDE team.\n\n"
-					  "Please send bug reports to kde-bugs@kde.org.\n\n\n"
-					  "KDE was developed with Qt, a cross-platform GUI library.\n\n"
-					  "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
-					  "Qt may be used freely to develop free software on the X Window System.\n"
-					  )
+    KWM::enableSessionManagement(topWidget()->winId());
+  }
+}
+
+void KApplication::setWmCommand(const char* s){
+  int id = pMenu->insertItem( klocale->translate( "Help" ) );
+  if (topWidget() && !bSessionManagement)
     KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 }
 
@@ -530,10 +530,10 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 			  pConfig->writeEntry( "ErrorOutput", pDialog->errorOutput() );
 			  pConfig->writeEntry( "ErrorFilename", pDialog->errorFile() );
 			  pConfig->writeEntry( "ErrorShow", pDialog->errorShow() );
-	if (argv[i+1][0] == '/')
-	  aMiniIconPixmap = aIconPixmap;
-	else
-	  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
+			  pConfig->writeEntry( "FatalOutput", pDialog->fatalOutput() );
+			  pConfig->writeEntry( "FatalFilename", pDialog->fatalFile() );
+			  pConfig->writeEntry( "FatalShow", pDialog->fatalShow() );
+  char *parameter_strings[4] = { "-caption", "-icon", "-miniicon", "-restore" };
   int parameter_count = 4;
 
 			  bAreaCalculated = false;
@@ -552,30 +552,30 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
   return FALSE; // process event further
 }
 
-	aSessionName = argv[i+1];
-	QString aSessionConfigName;
-	if (argv[i+1][0] == '/')
-	  aSessionConfigName = argv[i+1];
-	else {
-	  char* pHome;
-	  if( (pHome = getenv( "HOME" )) )
-	    aSessionConfigName = pHome;
-	  else
-	    aSessionConfigName = "."; // use current dir if $HOME is not set
-	  aSessionConfigName += "/.kde/share/config/";
-	  aSessionConfigName += argv[i+1];
-	}
-	if (QFile::exists(aSessionConfigName)){
-	  QFile aConfigFile(aSessionConfigName);
-	  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
-	  if( bSuccess ){
-	    aConfigFile.close();
-	    pSessionConfig = new KConfig(0L, aSessionConfigName);
-	    if (pSessionConfig){
-	      bIsRestored = True;
-	    }
-	  }
-	}
+
+void KApplication::parseCommandLine( int& argc, char** argv )
+{
+  enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
+  char *parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
+
+  aDummyString2 = " ";
+  int i = 1;
+  parameter_code parameter;
+  while( i < argc ) {
+    parameter = unknown;
+    
+    for ( int p = 0 ; parameter_strings[p]; p++)
+      if ( !strcmp( argv[i], parameter_strings[p]) ) {
+        parameter = static_cast<parameter_code>(p + 1);
+        break;
+      }
+    
+    if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
+      argc -= 1;
+      break; // jump out of the while loop
+    }
+    
+    switch (parameter) {
     case caption:
       aCaption = argv[i+1];
       aDummyString2 += parameter_strings[caption-1];
@@ -641,7 +641,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 
   }
 
-			                     // save their data 
+  if (aIconPixmap.isNull()){
     aIconPixmap = getIconLoader()->loadApplicationIcon( aAppName + ".xpm");
   }
   if (aMiniIconPixmap.isNull()){
@@ -649,27 +649,27 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
   }
 
 }
-				if (argv()[0][0]=='/')
-				  aCommand = argv()[0];
-				else {
-				  char* s = new char[1024];
-				  aCommand=(getcwd(s, 1024));
-				  aCommand+="/";
-				  delete [] s;
-				  aCommand+=aAppName;
-				}
+
+KApplication::~KApplication()
+{
+  removeEventFilter( this );
+  
+  delete kKeys; // must be done before "delete pConfig"
+
+  if( pIconLoader )
+    delete pIconLoader;
     
   if( pLocale )
     delete pLocale;
 
   delete pCharsets;
-						 aCommand);
+
   delete pSearchPaths;
 
   delete pConfig;
 
   // Carefully shut down the process controller: It is very likely
-						 aCommand);
+  // that we receive a SIGCHLD while the destructor is running
   // (since we are in the process of shutting down, an opportunity
   // at which child process are being killed). So we first mark
   // the controller deleted (so that the SIGCHLD handler thinks it
@@ -855,7 +855,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			{
 			  // If we entered another drop zone, tell the drop zone we left about it
 			  if ( lastEnteredDropZone != 0L && lastEnteredDropZone != result )
-		  return fullPath;
+				lastEnteredDropZone->leave();
 		  
 			  // Notify the drop zone over which the pointer is right now.
 			  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
@@ -876,11 +876,11 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 void KApplication::applyGUIStyle(GUIStyle newstyle) {
   QApplication::setStyle( applicationStyle );
-    // Torben
-    // We want to search the local files with highest priority
-    QString tmp( getenv( "HOME" ) );
-    tmp += "./kde";
-    appendSearchPath( tmp );
+
+  // get list of toplevels
+  QWidgetList *wl = QApplication::topLevelWidgets();
+  QWidgetListIt wl_it( *wl );
+
   // foreach toplevel ...
   tmp += "./kde";
     QWidget *w = wl_it.current();
@@ -920,7 +920,7 @@ QString KApplication::findFile( const char *file )
 
   fullPath.resize( 0 );
 
- appendSearchPath( kdedir().data() );
+  return fullPath;
 }
 
 
@@ -931,7 +931,7 @@ const char* KApplication::getCaption() const
   else
 	return aAppName;
 }
-		  return;
+
 
 void KApplication::buildSearchPaths()
 {
@@ -940,203 +940,203 @@ void KApplication::buildSearchPaths()
   QString tmp( getenv( "HOME" ) );
   tmp += "/.kde";
   appendSearchPath( tmp );
-	// use the global config files
-        KConfig* config = getConfig();
-        config->reparseConfiguration();
+    
+  // add paths from "[KDE Setup]:Path=" config file entry
+  getConfig()->setGroup( "KDE Setup" );
   QString kdePathRc = getConfig()->readEntry( "Path" );
-	QString str;
+
   if ( !kdePathRc.isNull() )
     {
       char *start, *end, *workPath = new char [ kdePathRc.length() + 1 ];
 	  strcpy( workPath, kdePathRc );
-	config->setGroup( "Color Scheme");
-	// this default is the KDE standard grey
-	str = config->readEntry( "InactiveTitleBarColor", "#C0C0C0" );
-	inactiveTitleColor.setNamedColor( str );
-		  if ( end )
-		    *end = '\0';
-	str = config->readEntry( "InactiveTitleTextColor", "#808080" );
-	inactiveTextColor.setNamedColor( str );
-		}
-	  delete [] workPath;
-	str = config->readEntry( "ActiveTitleBarColor", "#000080" );
-	activeTitleColor.setNamedColor( str );
-  // add paths in the KDEPATH environment variable
-  const char *kdePathEnv = getenv( "KDEPATH" );
-	str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
-	activeTextColor.setNamedColor( str );
-	  char *start, *end, *workPath = new char [ strlen( kdePathEnv ) + 1 ];
-	  strcpy( workPath, kdePathEnv );
-	str = config->readEntry( "TextColor", "#000000" );
-	textColor.setNamedColor( str );
+	  start = workPath;
+	  while ( start )
 		{
 	  	  end = strchr( start, ':' );
-	str = config->readEntry( "BackgroundColor", "#C0C0C0" );
-	backgroundColor.setNamedColor( str );
+		  if ( end )
+		    *end = '\0';
 		  appendSearchPath( start );
 		  start = end ? end + 1 : end;
-	str = config->readEntry( "SelectColor", "#000080" );
-	selectColor.setNamedColor( str );
+		}
+	  delete [] workPath;
     }
 
-	str = config->readEntry( "SelectTextColor", "#FFFFFF" );
-	selectTextColor.setNamedColor( str );
+  // add paths in the KDEPATH environment variable
+  const char *kdePathEnv = getenv( "KDEPATH" );
+  if ( kdePathEnv )
+    {
+	  char *start, *end, *workPath = new char [ strlen( kdePathEnv ) + 1 ];
+	  strcpy( workPath, kdePathEnv );
+	  start = workPath;
+	  while ( start )
+		{
+	  	  end = strchr( start, ':' );
+		  if ( end )
+		    *end = '\0';
+		  appendSearchPath( start );
+		  start = end ? end + 1 : end;
+		}
+	  delete [] workPath;
+    }
+
+  appendSearchPath( kdedir().data() );
+}
 
 void KApplication::appendSearchPath( const char *path )
-	str = config->readEntry( "WindowColor", "#FFFFFF" );
-	windowColor.setNamedColor( str );
+{
+  QStrListIterator it( *pSearchPaths );
 
   // return if this path has already been added
-	str = config->readEntry( "WindowTextColor", "#000000" ); 
-	windowTextColor.setNamedColor( str );
+  while ( it.current() )
+    {
 	  if ( !strcmp( it.current(), path ) )
-	str = config->readEntry( "Contrast", "7" );
-	contrast = atoi( str );
+		return;
+	  ++it;
     }
 
   pSearchPaths->append( path );
 }
-	generalFont = QFont("helvetica", 12, QFont::Normal);
+
 void KApplication::readSettings()
-	config->setGroup( "General Font" );
+{
   // use the global config files
-	int num = config->readNumEntry( "Charset",-1 );
-	if ( num>=0 )
-		generalFont.setCharSet((QFont::CharSet)num);
+  KConfig* config = getConfig();
+  config->reparseConfiguration();
+
   QString str;
-	str = config->readEntry( "Family" );
-	if ( !str.isNull() )
-		generalFont.setFamily(str.data());
 	
-	str = config->readEntry( "Point Size" );
-		if ( !str.isNull() )
-		generalFont.setPointSize(atoi(str.data()));
+	// Read the color scheme group from config file
+	// If unavailable set color scheme to KDE default
+	
+  config->setGroup( "Color Scheme");
+  // this default is the KDE standard grey
+  str = config->readEntry( "InactiveTitleBarColor", "#C0C0C0" );
   inactiveTitleColor.setNamedColor( str );
-	str = config->readEntry( "Weight" );
-		if ( !str.isNull() )
+
+	// this default is Qt darkGrey
   str = config->readEntry( "InactiveTitleTextColor", "#808080" );
   inactiveTextColor.setNamedColor( str );
-	str = config->readEntry( "Italic" );
-		if ( !str.isNull() )
-			if ( atoi(str.data()) != 0 )
-				generalFont.setItalic(True);
+  int num = config->readNumEntry( "Charset",-1 );
+  if ( num>=0 )
+	generalFont.setCharSet((QFont::CharSet)num);
+	// this default is Qt white
   str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
   activeTextColor.setNamedColor( str );
 
-	config->setGroup( "GUI Style" );
-	str = config->readEntry( "Style" );
-	if ( !str.isNull() )
+	// this default is Qt black
+  str = config->readEntry( "TextColor", "#000000" );
+  textColor.setNamedColor( str );
 
-		if( str == "Windows 95" )
-			applicationStyle=WindowsStyle;
-		else
-			applicationStyle=MotifStyle;
+	// this default is the KDE standard grey
+  str = config->readEntry( "BackgroundColor", "#C0C0C0" );
+  backgroundColor.setNamedColor( str );
+
 	// this default is Qt darkBlue
-			applicationStyle=MotifStyle;	
+  str = config->readEntry( "SelectColor", "#000080" );
   selectColor.setNamedColor( str );
 
 	// this default is Qt white
   str = config->readEntry( "SelectTextColor", "#FFFFFF" );
   selectTextColor.setNamedColor( str );
-	// WARNING : QApplication::setPalette() produces inconsistent results.
-	// There are 3 problems :-
-	// 1) You can't change select colors
-	// 2) You need different palettes to apply the same color scheme to
-	//		different widgets !!
-	// 3) Motif style needs a different palette to Windows style.
+
+	// this default is Qt white
+  str = config->readEntry( "WindowColor", "#FFFFFF" );
+  windowColor.setNamedColor( str );
+
+	// this default is Qt black
   str = config->readEntry( "Charset","iso-8859-1" );
-	int highlightVal, lowlightVal;
+  if ( !str.isNull() ){
 
-	highlightVal=100+(2*contrast+4)*16/10;
-	lowlightVal=100+(2*contrast+4)*10;
+	pCharsets->setQFont(generalFont);
+  }	
 	//	Read the font specification from config.
-	// printf("contrast = %d\n", contrast);
+	// 	Initialize fonts to default first or it won't work !!
 		
-	if ( applicationStyle==MotifStyle ) {
-		QColorGroup disabledgrp( textColor, backgroundColor, 
-    							backgroundColor.light(highlightVal),
-    							backgroundColor.dark(lowlightVal), 
-    							backgroundColor.dark(120),
-                        	darkGray, windowColor );
+  generalFont = QFont("helvetica", 12, QFont::Normal);
 
-    	QColorGroup colgrp( textColor, backgroundColor, 
-    							backgroundColor.light(highlightVal),
-    							backgroundColor.dark(lowlightVal), 
-    							backgroundColor.dark(120),
-                        	textColor, windowColor );
+  config->setGroup( "General Font" );
+	
+  str = config->readEntry( "Charset","default" );
+  if ( !str.isNull() && str!="default" && KCharset(str).ok())
+ 	pCharsets->setDefault(str);
+  else
+        pCharsets->setDefault(klocale->charset());
+  pCharsets->setQFont(generalFont);
+	
+  str = config->readEntry( "Family" );
   if ( !str.isNull() )
-    	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
+	generalFont.setFamily(str.data());
 	
   str = config->readEntry( "Point Size" );
   if ( !str.isNull() )
 	generalFont.setPointSize(atoi(str.data()));
-    } else {
-    	QColorGroup disabledgrp( textColor, backgroundColor, 
-    							backgroundColor.light(150),
-    							backgroundColor.dark(), 
-    							backgroundColor.dark(120),
-                        	darkGray, windowColor );
+	
+  str = config->readEntry( "Weight" );
+  if ( !str.isNull() )
+	generalFont.setWeight(atoi(str.data()));
+		
+  str = config->readEntry( "Italic" );
+  if ( !str.isNull() )
+	if ( atoi(str.data()) != 0 )
+	  generalFont.setItalic(True);
 
-    	QColorGroup colgrp( textColor, backgroundColor, 
-    							backgroundColor.light(150),
-    							backgroundColor.dark(), 
-    							backgroundColor.dark(120),
-                        	textColor, windowColor );
+	// Finally, read GUI style from config.
+	
   config->setGroup( "GUI Style" );
-    	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
+  str = config->readEntry( "Style" );
   if ( !str.isNull() )
 	{
 	  if( str == "Windows 95" )
 		applicationStyle=WindowsStyle;
-	}
+	  else
 		applicationStyle=MotifStyle;
 	} else
 	  applicationStyle=MotifStyle;	
 	
-    QApplication::setFont( generalFont, TRUE );
-    // setFont() works every time for me !
+}
+
 void KApplication::kdisplaySetPalette()
-    emit kdisplayFontChanged();    
-	emit appearanceChanged();
-    resizeAll();
+{
+  // WARNING : QApplication::setPalette() produces inconsistent results.
+  // There are 3 problems :-
   // 1) You can't change select colors
   // 2) You need different palettes to apply the same color scheme to
   //		different widgets !!
   // 3) Motif style needs a different palette to Windows style.
 	
-    QApplication::setStyle( applicationStyle );
+  int highlightVal, lowlightVal;
 	
-    emit kdisplayStyleChanged();
-	emit appearanceChanged();
-    resizeAll();
+  highlightVal=100+(2*contrast+4)*16/10;
+  lowlightVal=100+(2*contrast+4)*10;
+	
   // printf("contrast = %d\n", contrast);
 	
   if ( applicationStyle==MotifStyle ) {
 	QColorGroup disabledgrp( textColor, backgroundColor, 
 							 backgroundColor.light(highlightVal),
-    QApplication::setStyle( applicationStyle );
-    QApplication::setFont( generalFont, TRUE );
+							 backgroundColor.dark(lowlightVal), 
+							 backgroundColor.dark(120),
 							 darkGray, windowColor );
-    emit kdisplayStyleChanged();
-    emit kdisplayFontChanged();
-	emit appearanceChanged();
-    // 	setStyle() works pretty well but may not change the style of combo
-    //	boxes.
+
+	QColorGroup colgrp( textColor, backgroundColor, 
+						backgroundColor.light(highlightVal),
+						backgroundColor.dark(lowlightVal), 
+						backgroundColor.dark(120),
 						textColor, windowColor );
-	resizeAll();
+
 	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
 
 	emit kdisplayPaletteChanged();
 	emit appearanceChanged();
 
-	// send a resize event to all windows so that they can resize children
-	QWidgetList *widgetList = QApplication::topLevelWidgets();
-	QWidgetListIt it( *widgetList );
+  } else {
+	QColorGroup disabledgrp( textColor, backgroundColor, 
+							 backgroundColor.light(150),
 							 backgroundColor.dark(), 
-	while ( it.current() )
+							 backgroundColor.dark(120),
 							 darkGray, windowColor );
-		it.current()->resize( it.current()->size() );
-		++it;
+
+	QColorGroup colgrp( textColor, backgroundColor, 
 						backgroundColor.light(150),
 						backgroundColor.dark(), 
 						backgroundColor.dark(120),
@@ -1145,49 +1145,144 @@ void KApplication::kdisplaySetPalette()
 	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
 
 	emit kdisplayPaletteChanged();
-    if ( fork() == 0 )	
+	emit appearanceChanged();
 
-	if( filename.isEmpty() )
+}
 
 void KApplication::kdisplaySetFont()
-	QString path = KApplication::kdedir();
-	path.append("/share/doc/HTML/default/");
-	path.append(filename);
+{   
+  QApplication::setFont( generalFont, TRUE );
+  // setFont() works every time for me !
   QApplication::setStyle( applicationStyle );
-	if( !topic.isEmpty() )
-	{
-	    path.append( "#" );
-	    path.append(topic);
-	}
+  emit appearanceChanged();
+ 
+  resizeAll();
+}	
 
-	/* Since this is a library, we must conside the possibilty that
-	 * we are being used by a suid root program. These next two
-	 * lines drop all privileges.
-	 */
-	setuid( getuid() );
-	setgid( getgid() );
-	char* shell = "/bin/sh";
-	if (getenv("SHELL"))
-	  shell = getenv("SHELL");
-	path.prepend("kdehelp ");
-	execl(shell, shell, "-c", path.data(), 0L);
-	exit( 1 );
+
+void KApplication::kdisplaySetStyle()
+{   
+  // QApplication::setStyle( applicationStyle );
+  QApplication::setStyle( applicationStyle );
+  emit appearanceChanged();
+  resizeAll();
+}	
+
+
+  // 	setStyle() works pretty well but may not change the style of combo
+  //	boxes.
+
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
   applyGUIStyle(applicationStyle);
   QApplication::setFont( generalFont, TRUE );
   applyGUIStyle(applicationStyle);   
     
-  QString kdedir = getenv("KDEDIR");
+	  QString path = KApplication::kdedir();
   emit kdisplayFontChanged();
-  if (kdedir.isEmpty())
+  emit appearanceChanged();
+  
+  resizeAll();
+}	
 
-	kdedir = KDEDIR;
+
 void KApplication::resizeAll()
-    kdedir = "/usr/local/kde";
+{
   // send a resize event to all windows so that they can resize children
+  QWidgetList *widgetList = QApplication::topLevelWidgets();
+  QWidgetListIt it( *widgetList );
+
+  while ( it.current() )
+	{
 	  it.current()->resize( it.current()->size() );
-	return kdedir;
+	  ++it;
+	}
+}
+
+  return kdedir;
+
+
+void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
+
+{
+	    // filename = aAppName + '/' + aAppName + ".html";
+  if ( fork() == 0 )	
+  
+	  path.append("/share/doc/HTML/default/");
+	  path.append(filename);
+         if( !QFileInfo( file ).exists() )
+               // not found: use the default
+               file = path + "default/" + filename;
+		  path.append( "#" );
+		  path.append(topic);
+		{
+                 file.append( "#" );
+                 file.append(topic);
+		}
+  return kdedir.copy();
+{
+  static QString kdedir;
+
+  if (kdedir.isEmpty()) {
+	kdedir = getenv("KDEDIR");
+	if (kdedir.isEmpty()) {
+
+#ifdef KDEDIR
+	  kdedir = KDEDIR;
+#else
+	  kdedir = "/usr/local/kde";
+#endif
+	}
+  }
+
+#ifdef TEST_KDEDIR
+  static QString testdir;
+
+  if (testdir.isEmpty()) // make a deep copy. MML, but just for debugging
+      testdir = kdedir.data();
+  
+  if (testdir != kdedir) {
+      QString tmp;
+      tmp.sprintf("Application %s overwrote KDEDIR\n"
+		  "Value has been reset now, but please report this error!\n"
+		  "Application wrote %s", kapp->appName().data(), kdedir.data());
+      kdedir = testdir.data();
+      QMessageBox::critical(0, "Fatal Error", tmp.data());
+  }
+#endif
+  return kdedir;
+}
+
+
+/* maybe we could read it out of a config file, but 
+   this can be added later */
+const QString& KApplication::kde_htmldir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_HTMLDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_appsdir()
+{
+  static QString dir;
+  if (dir.isNull())
+	dir = KDE_APPSDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_icondir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_ICONDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_datadir()
+{
+  static QString dir;
   if (dir.isNull()) 
 	dir = KDE_DATADIR;
   return dir;
@@ -1330,7 +1425,6 @@ const char* KApplication::tempSaveName( const char* pFilename )
 
   return qstrdup( aFilename.data() );
 }
-
 
 
 const char* KApplication::checkRecoverFile( const char* pFilename, 
