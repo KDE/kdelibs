@@ -267,6 +267,7 @@ bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _all
 
   if ( _allow_multiple )
   {
+    kDebugArea( 7010, "Allow Multiple" );
     argv = new char*[ _urls.count() + 3 ];
     argv[ 0 ] = (char *)kfmexec.ascii();
 
@@ -287,10 +288,11 @@ bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _all
   }
   else
   {
+    kDebugArea( 7010, "Not multiple" );
     QStringList::Iterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
     {
-      argv = new char*[ 3 ];
+      argv = new char*[ 4 ];
       argv[ 0 ] = (char *)kfmexec.data();
       argv[ 1 ] = (char *)app.ascii();
       argv[ 2 ] = (char *)(*it).ascii();
