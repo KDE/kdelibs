@@ -164,6 +164,7 @@ KDE_InterceptXMapRequest(Display * d, Window w)
 
   /* Find symbols *********************************************************/
 
+  lt_dlinit();
   libX11Handle = lt_dlopen("libX11.so");
 
   if (NULL == libX11Handle)
