@@ -126,7 +126,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
       KFileTreeViewItem *newKFTVI = new KFileTreeViewItem( m_currParent,
                                                            currItem,
                                                            this);
-      currItem->setExtraData( currItem, newKFTVI );
+      currItem->setExtraData( this, newKFTVI );
 
       /* Now try to find out if there are children for dirs in the treeview */
       /* This stats a directory on the local file system and checks the */
@@ -137,7 +137,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 QString filename = url.directory( false, true ) + url.filename();
 	 kdDebug(1201) << "Doing stat on " << filename << endl;
 	 /* do the stat trick of Carsten. The problem is, that the hardlink
-	 *  count do only cound directory links. Thus, this method only seem
+	 *  count only contains directory links. Thus, this method only seem
          * to work in dir-only mode */
 	 struct stat statBuf;
 	 if( stat( QFile::encodeName( filename ), &statBuf ) == 0 )
@@ -152,6 +152,10 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	    {
 	       newKFTVI->setExpandable(false);
 	    }
+	 }
+	 else
+	 {
+	    kdDebug(1201) << "stat of " << filename << " failed !" << endl;
 	 }
       }
       ++it;
@@ -209,7 +213,6 @@ void KFileTreeBranch::slCompleted()
 	 if( ! m_nextChild )
 	 {
 	    /* This happens if there is no child at all */
-	    m_recurseChildren = false;
 	    kdDebug( 1201 ) << "No children to recuse" << endl;
 	 }
 	 else

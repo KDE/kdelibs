@@ -86,6 +86,8 @@ public:
     */
    void         setName( const QString n ) { m_name = n; };
 
+   QPixmap& pixmap(){ return(m_rootIcon); }
+   
 public slots:
    void populate( );
    void populate( const KURL&, KFileTreeViewItem* );
