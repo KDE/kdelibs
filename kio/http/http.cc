@@ -1836,6 +1836,7 @@ bool HTTPProtocol::readBody( )
      } else {
        speed(0);
      }
+     data( QByteArray() );
      return true;
   }
 
@@ -1984,6 +1985,7 @@ bool HTTPProtocol::readBody( )
   } else {
     speed(0);
   }
+  data( QByteArray() );
   return true;
 }
 
