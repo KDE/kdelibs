@@ -38,7 +38,7 @@ class EscpFactory : public KLibFactory
 public:
 	EscpFactory(QObject *parent = 0, const char *name = 0) : KLibFactory(parent, name) {}
 protected:
-	QObject* createObject(QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList& args = QStringList())
+	QObject* createObject(QObject *parent = 0, const char *name = 0, const char * /*classname*/ = "QObject", const QStringList& args = QStringList())
 	{
 		KDialogBase	*dlg = new KDialogBase(static_cast<QWidget*>(parent), name, true, i18n("EPSON InkJet Printer Utilities"), KDialogBase::Close);
 		EscpWidget	*w = new EscpWidget(dlg);
