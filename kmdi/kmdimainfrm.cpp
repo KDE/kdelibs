@@ -1072,14 +1072,18 @@ bool KMdiMainFrm::eventFilter(QObject * /*obj*/, QEvent *e )
 /**
  * close all views
  */
-#ifdef __GNUC__
-#warning fixme ?
-#endif
 void KMdiMainFrm::closeAllViews()
 {
-   for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
-      w->close();
-   }
+  //save the children first to a list, as removing invalidates our iterator
+  QValueList<KMdiChildView *> children;
+  for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
+     children.append(w);
+  }
+  QValueListIterator<KMdiChildView *> childIt;
+  for (childIt = children.begin(); childIt != children.end(); ++childIt)
+  {
+     (*childIt)->close(); 
+  } 
 }
 
 
