@@ -26,9 +26,9 @@ namespace KIO {
   /** HTTP / DAV method **/
   enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
                     HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
-                    DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH, 
+                    DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH,
+                    DAV_SUBSCRIBE, DAV_UNSUBSCRIBE, DAV_POLL, DAV_NOTIFY,
                     HTTP_UNKNOWN = -1};
-
 
 };
 

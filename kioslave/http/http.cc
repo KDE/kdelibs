@@ -2026,10 +2026,23 @@ bool HTTPProtocol::httpOpen()
       davData = true;
       m_request.bCachedWrite = false;
       break;
+  case DAV_SUBSCRIBE:
+      header = "SUBSCRIBE ";
+      m_request.bCachedWrite = false;
+      break;
+  case DAV_UNSUBSCRIBE:
+      header = "UNSUBSCRIBE ";
+      m_request.bCachedWrite = false;
+      break;
+  case DAV_POLL:
+      header = "POLL ";
+      m_request.bCachedWrite = false;
+      break;
   case HTTP_UNKNOWN:
       error (ERR_UNSUPPORTED_ACTION, QString::null);
       return false;
   }
+  // DAV_POLL; DAV_NOTIFY
 
   if ( !m_bIsTunneled && m_bNeedTunnel )
   {
