@@ -43,6 +43,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
 
+#include <kdebug.h>
+
 #include "ktip.h"
 
 
@@ -68,15 +70,15 @@ void KTipDatabase::loadTips(const QString &tipFile)
 
     if (fileName.isEmpty())
     {
-	kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
+        kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
         return;
     }
 
     QFile file(fileName);
     if (!file.open(IO_ReadOnly))
     {
-	kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
-	return;
+        kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
+        return;
     }
 
     tips.clear();
@@ -86,11 +88,11 @@ void KTipDatabase::loadTips(const QString &tipFile)
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
-	QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
-	tips.append(tip);
+        QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
+        tips.append(tip);
     }
 
-    file.close();    
+    file.close();
 }
 
 
