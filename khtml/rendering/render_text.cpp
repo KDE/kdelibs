@@ -848,7 +848,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
         // Now calculate startPos and endPos, for painting selection.
         // We paint selection while endPos > 0
-        int endPos, startPos;
+        int endPos = 0, startPos = 0;
         if (!isPrinting && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
