@@ -115,13 +115,6 @@ bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHin
     return true;
 }
 
-
-DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
-{
-    int id = getPropertyID(propertyName.string().lower().ascii(), propertyName.length());
-    return removeProperty(id);
-}
-
 DOMString CSSStyleDeclarationImpl::removeProperty(int id)
 {
     if(!m_lstValues) return DOMString();
@@ -138,14 +131,6 @@ DOMString CSSStyleDeclarationImpl::removeProperty(int id)
 	    m_node->setChanged(true);
     }
     return value;
-}
-
-DOMString CSSStyleDeclarationImpl::getPropertyPriority( const DOMString &propertyName )
-{
-    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
-    if(getPropertyPriority(id))
-	return DOMString("important");
-    return DOMString();
 }
 
 bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )

@@ -75,7 +75,7 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
     if ( inside && usemap.length() > 0 &&
-         ( ! (m_render && style() && style()->visibility() == HIDDEN) ) )
+         ( ! (m_render && m_render->style()->visibility() == HIDDEN) ) )
     {
         RenderObject* p = m_render->parent();
         while( p && p->isAnonymousBox() )
@@ -194,19 +194,20 @@ DOMString HTMLImageElementImpl::altText() const
     return alt;
 }
 
-RenderObject *HTMLImageElementImpl::createRenderer()
-{
-    return new RenderImage(this);
-}
-
 void HTMLImageElementImpl::attach()
 {
-    HTMLElementImpl::attach();
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode() && parentNode()->renderer());
 
-    if (m_render) {
-        static_cast<RenderImage*>(m_render)->setAlt(altText());
-        static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
-    }
+    m_render = new RenderImage(this);
+    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+    parentNode()->renderer()->addChild(m_render, nextRenderer());
+
+    NodeBaseImpl::attach();
+
+    static_cast<RenderImage*>(m_render)->setAlt(altText());
+    static_cast<RenderImage*>(m_render)->setImageUrl(m_imageURL,getDocument()->docLoader());
 }
 
 void HTMLImageElementImpl::recalcStyle( StyleChange ch )

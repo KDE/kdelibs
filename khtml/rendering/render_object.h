@@ -64,7 +64,7 @@ class RenderObject : public CachedObjectClient
 {
 public:
 
-    RenderObject();
+    RenderObject(DOM::NodeImpl* node);
     virtual ~RenderObject();
 
     RenderObject *parent() const { return m_parent; }
@@ -96,10 +96,12 @@ private:
 
 public:
     virtual const char *renderName() const { return "RenderObject"; }
+#ifndef NDEBUG
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
-    static RenderObject *createObject(DOM::NodeImpl* node);
+    static RenderObject *createObject(DOM::NodeImpl* node, RenderStyle* style);
 
     // some helper functions...
     virtual bool childrenInline() const { return false; }
@@ -135,9 +137,12 @@ public:
     bool hasFirstLine() const { return m_hasFirstLine; }
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
-    RenderRoot* root() const;
 
-    /**
+    RenderRoot* root() const;
+    // don't even think about making this method virtual!
+    DOM::NodeImpl* element() const { return m_node; }
+
+   /**
      * returns the object containing this one. can be different from parent for
      * positioned elements
      */
@@ -185,7 +190,7 @@ public:
     void scheduleRelayout();
 
     // for discussion of lineHeight see CSS2 spec
-    virtual int lineHeight( bool firstLine ) const;
+    virtual short lineHeight( bool firstLine ) const;
     // for the vertical-align property of inline elements
     // the difference between this objects baseline position and the lines baseline position.
     virtual short verticalPositionHint( bool firstLine ) const;
@@ -379,6 +384,7 @@ protected:
 
 private:
     RenderStyle* m_style;
+    DOM::NodeImpl* m_node;
     RenderObject *m_parent;
     RenderObject *m_previous;
     RenderObject *m_next;

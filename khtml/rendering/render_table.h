@@ -71,7 +71,7 @@ public:
         Box    = 0x0f
     };
 
-    RenderTable();
+    RenderTable(DOM::NodeImpl* node);
     ~RenderTable();
 
     virtual const char *renderName() const { return "RenderTable"; }
@@ -128,7 +128,9 @@ public:
     void setNeedsCellsRecalc();
     void recalcCells();
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 public:
     /*
@@ -261,7 +263,7 @@ protected:
 class RenderTableSection : public RenderContainer
 {
 public:
-    RenderTableSection();
+    RenderTableSection(DOM::NodeImpl* node);
     ~RenderTableSection();
 
     virtual const char *renderName() const { return "RenderTableSection"; }
@@ -274,12 +276,16 @@ public:
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
-    virtual int lineHeight(bool) const { return 0; }
+    virtual short width() const { return RenderContainer::width(); }
+
+    virtual short lineHeight(bool) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     RenderTable *table;
@@ -291,7 +297,7 @@ protected:
 class RenderTableRow : public RenderContainer
 {
 public:
-    RenderTableRow();
+    RenderTableRow(DOM::NodeImpl* node);
     ~RenderTableRow();
 
     virtual const char *renderName() const { return "RenderTableRow"; }
@@ -309,18 +315,22 @@ public:
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
-    virtual int lineHeight( bool ) const { return 0; }
+    virtual short width() const { return RenderContainer::width(); }
+
+    virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
 
     virtual void close();
 
     virtual void repaint();
-    
+
     virtual void layout();
 
     virtual void setTable(RenderTable *t) { table = t; }
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     RenderTable *table;
@@ -335,7 +345,7 @@ protected:
 class RenderTableCell : public RenderFlow
 {
 public:
-    RenderTableCell();
+    RenderTableCell(DOM::NodeImpl* node);
     ~RenderTableCell();
 
     virtual const char *renderName() const { return "RenderTableCell"; }
@@ -391,8 +401,10 @@ public:
 
     virtual short baselinePosition( bool = false ) const;
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
-    
+#endif
+
     bool widthChanged() {
 	bool retval = m_widthChanged;
 	m_widthChanged = false;
@@ -415,7 +427,7 @@ protected:
     int _bottomExtra;
     bool nWrap : 1;
     bool m_widthChanged : 1;
-    
+
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
 
@@ -428,7 +440,7 @@ protected:
 class RenderTableCol : public RenderContainer
 {
 public:
-    RenderTableCol();
+    RenderTableCol(DOM::NodeImpl* node);
     ~RenderTableCol();
 
     virtual const char *renderName() const { return "RenderTableCol"; }
@@ -440,17 +452,20 @@ public:
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
     khtml::Length width();
+    virtual short width() const { return RenderContainer::width(); }
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
     virtual unsigned int width(int, int) const { return 0;}
-    virtual int lineHeight( bool ) const { return 0; }
+    virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     RenderTable *table;
@@ -469,7 +484,7 @@ protected:
 class RenderTableCaption : public RenderFlow
 {
 public:
-    RenderTableCaption();
+    RenderTableCaption(DOM::NodeImpl*);
     ~RenderTableCaption();
 
     virtual const char *renderName() const { return "RenderTableCaption"; }

@@ -57,8 +57,8 @@ template class QMemArray<LengthType>;
 #define END_FOR_EACH } }
 
 
-RenderTable::RenderTable()
-    : RenderFlow()
+RenderTable::RenderTable(DOM::NodeImpl* node)
+    : RenderFlow(node)
 {
 
     tCaption = 0;
@@ -196,7 +196,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
             o = beforeChild;
         else {
 //          kdDebug( 6040 ) << "creating anonymous table section" << endl;
-            o = new RenderTableSection();
+            o = new RenderTableSection(0 /* anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_ROW_GROUP);
@@ -1730,6 +1730,7 @@ void RenderTable::recalcCells()
     recalcColInfos();
 }
 
+#ifndef NDEBUG
 void RenderTable::dump(QTextStream *stream, QString ind) const
 {
     *stream << " totalCols=" << totalCols;
@@ -1753,11 +1754,12 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 
     RenderFlow::dump(stream,ind);
 }
+#endif
 
 // --------------------------------------------------------------------------
 
-RenderTableSection::RenderTableSection()
-    : RenderContainer()
+RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
+    : RenderContainer(node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1789,7 +1791,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
             row = beforeChild;
         else {
             kdDebug( 6040 ) << "creating anonymous table row" << endl;
-            row = new RenderTableRow();
+            row = new RenderTableRow(0 /* anonymous table */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_ROW);
@@ -1811,17 +1813,19 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     RenderContainer::addChild(child,beforeChild);
 }
 
+#ifndef NDEBUG
 void RenderTableSection::dump(QTextStream *stream, QString ind) const
 {
     *stream << " nrows=" << nrows;
 
     RenderContainer::dump(stream,ind);
 }
+#endif
 
 // -------------------------------------------------------------------------
 
-RenderTableRow::RenderTableRow()
-    : RenderContainer()
+RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
+    : RenderContainer(node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1870,7 +1874,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
             cell = static_cast<RenderTableCell *>(beforeChild);
         else {
 //          kdDebug( 6040 ) << "creating anonymous table cell" << endl;
-            cell = new RenderTableCell();
+            cell = new RenderTableCell(0 /* anonymous object */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_CELL);
@@ -1901,6 +1905,7 @@ void RenderTableRow::repaint()
     if ( table ) table->repaint();
 }
 
+#ifndef NDEBUG
 void RenderTableRow::dump(QTextStream *stream, QString ind) const
 {
     *stream << " rIndex = " << rIndex;
@@ -1908,6 +1913,7 @@ void RenderTableRow::dump(QTextStream *stream, QString ind) const
 
     RenderContainer::dump(stream,ind);
 }
+#endif
 
 void RenderTableRow::layout()
 {
@@ -1931,8 +1937,8 @@ void RenderTableRow::layout()
 
 // -------------------------------------------------------------------------
 
-RenderTableCell::RenderTableCell()
-  : RenderFlow()
+RenderTableCell::RenderTableCell(DOM::NodeImpl* node)
+  : RenderFlow(node)
 {
   _col = -1;
   _row = -1;
@@ -2109,6 +2115,7 @@ void RenderTableCell::repaint()
     if ( m_table ) m_table->repaint();
 }
 
+#ifndef NDEBUG
 void RenderTableCell::dump(QTextStream *stream, QString ind) const
 {
     *stream << " _row=" << _row;
@@ -2120,12 +2127,12 @@ void RenderTableCell::dump(QTextStream *stream, QString ind) const
 
     RenderFlow::dump(stream,ind);
 }
-
+#endif
 
 // -------------------------------------------------------------------------
 
-RenderTableCol::RenderTableCol()
-    : RenderContainer()
+RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
+    : RenderContainer(node)
 {
     // init RenderObject attributes
     setInline(true);   // our object is not Inline
@@ -2170,6 +2177,7 @@ Length RenderTableCol::width()
         return style()->width();
 }
 
+#ifndef NDEBUG
 void RenderTableCol::dump(QTextStream *stream, QString ind) const
 {
     *stream << " _span=" << _span;
@@ -2178,11 +2186,12 @@ void RenderTableCol::dump(QTextStream *stream, QString ind) const
 
     RenderContainer::dump(stream,ind);
 }
+#endif
 
 // -------------------------------------------------------------------------
 
-RenderTableCaption::RenderTableCaption()
-  : RenderFlow()
+RenderTableCaption::RenderTableCaption(DOM::NodeImpl* node)
+  : RenderFlow(node)
 {
 }
 

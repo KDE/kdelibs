@@ -86,7 +86,8 @@ int main(int argc, char *argv[])
     toolBar.insertBefore( e, toolBar.firstChild() );
 
     (void)new KAction( "Reload", "reload", Qt::Key_F5, dummy, SLOT( reload() ), doc->actionCollection(), "reload" );
-    (void)new KAction( "Print", "print", 0, doc->browserExtension(), SLOT( print() ), doc->actionCollection(), "print" );
+    KAction* kprint = new KAction( "Print", "print", 0, doc->browserExtension(), SLOT( print() ), doc->actionCollection(), "print" );
+    kprint->setEnabled(true);
 
     toplevel->guiFactory()->addClient( doc );
 

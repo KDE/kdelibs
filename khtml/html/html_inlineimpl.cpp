@@ -65,7 +65,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
     // ### ev->noHref obsolete now ? ( Dirk )
     if ( inside && ev->url.isNull() && !ev->noHref
-         && m_render && style()->visibility() != HIDDEN )
+         && m_render && m_render->style()->visibility() != HIDDEN )
     {
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
         // set the url
@@ -224,9 +224,16 @@ void HTMLBRElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-RenderObject *HTMLBRElementImpl::createRenderer()
+void HTMLBRElementImpl::attach()
 {
-    return new RenderBR();
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+    assert(parentNode()->renderer());
+
+    m_render = new RenderBR(this);
+    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+    parentNode()->renderer()->addChild(m_render, nextRenderer());
 }
 
 // -------------------------------------------------------------------------

@@ -44,7 +44,7 @@ class RenderFlow : public RenderBox
 {
 
 public:
-    RenderFlow();
+    RenderFlow(DOM::NodeImpl* node);
 
     virtual ~RenderFlow();
 
@@ -87,8 +87,10 @@ public:
     int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
+#ifndef NDEBUG
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
     virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 
@@ -155,10 +157,10 @@ protected:
         RenderObject* node;
         int startY;
         int endY;
-        Type type; // left or right aligned
         short left;
         short width;
         short count;
+        Type type; // left or right aligned
         bool noPaint;
 
         bool operator==(const SpecialObject& ) const

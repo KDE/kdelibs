@@ -52,13 +52,12 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_render(0),
       m_regdListeners( 0 ),
       m_tabIndex( 0 ),
-      m_hasEvents( false ),
       m_hasId( false ),
       m_hasClass( false ),
       m_hasStyle( false ),
       m_pressed( false ),
       m_mouseInside( false ),
-      m_attached( false ),
+      m_attached(false),
       m_changed( false ),
       m_hasChangedChild( false ),
       m_inDocument( false ),
@@ -73,8 +72,9 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
 
 NodeImpl::~NodeImpl()
 {
-    if (m_regdListeners)
-        delete m_regdListeners;
+    if (m_render)
+        detach();
+    delete m_regdListeners;
     if (document)
         document->deref();
     if (m_previous)
@@ -152,13 +152,6 @@ bool NodeImpl::hasChildNodes(  ) const
 {
   return false;
 }
-
-#if 0
-bool NodeImpl::hasAttributes(  ) const
-{
-  return false;
-}
-#endif
 
 void NodeImpl::normalize ()
 {
@@ -277,19 +270,12 @@ QString NodeImpl::recursive_toHTML(bool start) const
         // print attributes
         if( nodeType() == Node::ELEMENT_NODE )
         {
-            ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
-            AttrImpl *attr;
-            if(el->namedAttrMap) {
-                NamedNodeMapImpl *attrs = el->namedAttrMap;
-            unsigned long lmap = attrs->length();
+            const ElementImpl *el = static_cast<const ElementImpl *>(this);
+            NamedNodeMap attrs = el->attributes();
+            unsigned long lmap = attrs.length();
             for( unsigned int j=0; j<lmap; j++ )
-            {
-                attr = static_cast<AttrImpl*>(attrs->item(j));
-                me += " " + attr->nodeName().string() + "=\"" + escapeHTML( attr->nodeValue().string() ) + "\"";
-                }
-            }
+                me += " " + attrs.item(j).nodeName().string() + "=\"" + attrs.item(j).nodeValue().string() + "\"";
         }
-
         // print ending bracket of start tag
         if( firstChild() == 0 )     // if element has no endtag
                 me += " />\n";
@@ -362,46 +348,10 @@ void NodeImpl::setChanged(bool b)
 
 bool NodeImpl::isInline() const
 {
-    khtml::RenderStyle* s = style();
-    if (s) return s->display() == khtml::INLINE;
+    if (m_render) return m_render->style()->display() == khtml::INLINE;
     return !isElementNode();
 }
 
-void NodeImpl::printTree(int indent)
-{
-    QString ind;
-    QString s;
-    ind.fill(' ', indent);
-
-    if(isElementNode()) {
-        s = ind + "<" + nodeName().string();
-
-        const ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
-        NamedNodeMap attrs = el->attributes();
-        unsigned long lmap = attrs.length();
-        for( unsigned int j=0; j<lmap; j++ )
-            s += " " + attrs.item(j).nodeName().string() + "=\"" + attrs.item(j).nodeValue().string() + "\"";
-        if(!firstChild())
-            s += " />";
-        else
-            s += ">";
-    }
-    else if (!isTextNode())
-        s = ind + "<?" + nodeName().string() + " " + nodeValue().string() + "?>";
-    else
-        s = ind + "'" + nodeValue().string() + "'";
-
-    kdDebug() << s << endl;
-
-    NodeImpl *child = firstChild();
-    while( child )
-    {
-        child->printTree(indent+2);
-        child = child->nextSibling();
-    }
-    if(isElementNode() && firstChild())
-        kdDebug() << ind << "</" << nodeName().string() << ">" << endl;
-}
 
 unsigned long NodeImpl::nodeIndex() const
 {
@@ -929,15 +879,14 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     return ch;
 }
 
+#ifndef NDEBUG
 void NodeImpl::dump(QTextStream *stream, QString ind) const
 {
     // ### implement dump() for all appropriate subclasses
 
-    if (m_hasEvents) { *stream << " hasEvents"; }
     if (m_hasId) { *stream << " hasId"; }
     if (m_hasClass) { *stream << " hasClass"; }
     if (m_hasStyle) { *stream << " hasStyle"; }
-    if (!m_attached) { *stream << " !attached"; }
     if (m_specified) { *stream << " specified"; }
     if (m_focused) { *stream << " focused"; }
     if (m_active) { *stream << " active"; }
@@ -956,6 +905,7 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
         child = child->nextSibling();
     }
 }
+#endif
 
 bool NodeImpl::deleteMe()
 {
@@ -966,20 +916,21 @@ void NodeImpl::init()
 {
 }
 
-RenderObject *NodeImpl::createRenderer()
-{
-    return 0;
-}
-
 void NodeImpl::attach()
 {
-    // ### assert(!attached());
+    assert(!attached());
+    assert(!m_render || (m_render->style() && m_render->parent()));
     m_attached = true;
 }
 
 void NodeImpl::detach()
 {
-    // ### assert(attached());
+//    assert(m_attached);
+
+    if ( m_render )
+        m_render->detach();
+
+    m_render = 0;
     m_attached = false;
 }
 
@@ -1107,7 +1058,6 @@ NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc)
     : NodeImpl(doc)
 {
     _first = _last = 0;
-    m_style = 0;
 }
 
 
@@ -1127,8 +1077,6 @@ NodeBaseImpl::~NodeBaseImpl()
         if(n->deleteMe())
             delete n;
     }
-    if (m_style)
-        m_style->deref();
 }
 
 
@@ -1351,8 +1299,6 @@ void NodeBaseImpl::removeChildren()
         n->setParent(0);
         if (n->attached())
 	    n->detach();
-        n->setRenderer( 0 );
-        n->setStyle( 0 );
         if(n->deleteMe())
             delete n;
     }
@@ -1509,58 +1455,6 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     return this;
 }
 
-#if 0
-void NodeBaseImpl::applyChanges(bool top, bool force)
-{
-    if (!m_render) {
-        setChanged(false);
-        return;
-    }
-
-    unsigned short ow = m_style->outlineWidth();
-
-    if (top)
-        recalcStyle();
-
-    // a style change can influence the children, so we just go
-    // through them and trigger an appplyChanges there too
-    NodeImpl *n = _first;
-    while(n) {
-        n->applyChanges(false,force || changed());
-        n = n->nextSibling();
-    }
-
-    if ( !m_render ) {
-        setChanged(false);
-        return;
-    }
-
-    m_render->calcMinMaxWidth();
-
-    if ( top ) {
-        if ( force ) {
-            // force a relayout of this part of the document
-            m_render->updateSize();
-            // force a repaint of this part.
-            // ### if updateSize() changes any size, it will already force a
-            // repaint, so we might do double work here...
-            m_render->repaint();
-        }
-        else {
-            // ### FIX ME
-            ow = kMax(ow, m_style->outlineWidth());
-            RenderObject *cb = m_render->containingBlock();
-            if (cb && cb != m_render)
-                cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
-            else
-                m_render->repaint();
-        }
-    }
-
-    setChanged(false);
-}
-#endif
-
 bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
                                      int _tx, int _ty,
                                      MouseEvent *ev)
@@ -1580,8 +1474,8 @@ bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
 	m_active = false;
     }
 
-    if ( (oldinside != inside && m_style->hasHover()) ||
-	 ( oldactive != m_active && m_style->hasActive() ) )
+    if ( renderer() &&  ( (oldinside != inside && renderer()->style()->hasHover()) ||
+                          (oldactive != m_active && renderer()->style()->hasActive() ) ) )
         recalcStyle( Inherit );
 
     return inside;
@@ -1745,16 +1639,6 @@ QRect NodeBaseImpl::getRect() const
         return QRect( QPoint( xPos, yPos ), QSize() );
 
     return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
-}
-
-void NodeBaseImpl::setStyle(khtml::RenderStyle *style)
-{
-    RenderStyle *oldStyle = m_style;
-    m_style = style;
-    if (m_style)
-        m_style->ref();
-    if (oldStyle)
-        oldStyle->deref();
 }
 
 void NodeBaseImpl::setFocus(bool received)

@@ -789,15 +789,15 @@ void DocumentImpl::recalcStyle( StyleChange change )
 //     qDebug("recalcStyle(%p)", this);
 //     QTime qt;
 //     qt.start();
-    if ( change == Force ) {
-        RenderStyle *oldStyle = m_style;
-        if ( oldStyle ) oldStyle->ref();
+    if( !m_render ) goto bail_out;
 
-        if( !m_render ) return;
-        setStyle(new RenderStyle());
-        m_style->setDisplay(BLOCK);
-        m_style->setVisuallyOrdered( visuallyOrdered );
-	// ### make the font stuff _really_ work!!!!
+    if ( change == Force ) {
+        RenderStyle* oldStyle = m_render->style();
+        if ( oldStyle ) oldStyle->ref();
+        RenderStyle* _style = new RenderStyle();
+        _style->setDisplay(BLOCK);
+        _style->setVisuallyOrdered( visuallyOrdered );
+        // ### make the font stuff _really_ work!!!!
 
         QFont f = KGlobalSettings::generalFont();
         if (m_view) {
@@ -818,15 +818,18 @@ void DocumentImpl::recalcStyle( StyleChange change )
         }
 
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
-        m_style->setFont(f);
-
+        _style->setFont(f);
         if ( parseMode() != Strict )
-            m_style->setHtmlHacks(true); // enable html specific rendering tricks
-        StyleChange ch = diff( m_style, oldStyle );
+            _style->setHtmlHacks(true); // enable html specific rendering tricks
+
+        StyleChange ch = diff( _style, oldStyle );
         if(m_render && ch != NoChange)
-            m_render->setStyle(m_style);
+            m_render->setStyle(_style);
         if ( change != Force )
             change = ch;
+
+        if (oldStyle)
+            oldStyle->deref();
     }
 
     NodeImpl *n;
@@ -844,6 +847,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
 	renderer()->repaint();
     }
 
+bail_out:
     setChanged( false );
     setHasChangedChild( false );
     setDocumentChanged( false );
@@ -878,6 +882,8 @@ void DocumentImpl::updateDocumentsRendering()
 
 void DocumentImpl::attach()
 {
+    assert(!attached());
+
     if ( m_view )
         setPaintDevice( m_view );
 
@@ -887,10 +893,14 @@ void DocumentImpl::attach()
 #endif
 
     // Create the rendering tree
-    m_render = new RenderRoot(m_view);
+    m_render = new RenderRoot(this, m_view);
     recalcStyle( Force );
 
+    RenderObject* render = m_render;
+    m_render = 0;
+
     NodeBaseImpl::attach();
+    m_render = render;
 }
 
 void DocumentImpl::detach()
@@ -911,8 +921,8 @@ void DocumentImpl::detach()
 void DocumentImpl::setVisuallyOrdered()
 {
     visuallyOrdered = true;
-    if(!m_style) return;
-    m_style->setVisuallyOrdered(true);
+    if (m_render)
+        m_render->style()->setVisuallyOrdered(true);
 }
 
 void DocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)

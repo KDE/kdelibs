@@ -31,7 +31,7 @@ namespace khtml {
 class RenderHR : public RenderBox
 {
 public:
-    RenderHR();
+    RenderHR(DOM::NodeImpl* node);
     virtual ~RenderHR();
 
     virtual const char *renderName() const { return "RenderHR"; }
@@ -42,10 +42,12 @@ public:
 
     void print(QPainter *p, int _x, int _y, int _w, int _h,
                int _tx, int _ty);
-    
+
     virtual void layout();
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     short m_length;

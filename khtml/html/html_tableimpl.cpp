@@ -739,18 +739,16 @@ void HTMLTableCellElementImpl::init()
     }
 }
 
-RenderObject *HTMLTableCellElementImpl::createRenderer()
+void HTMLTableCellElementImpl::attach()
 {
-    RenderObject *render = RenderObject::createObject(this);
+    HTMLElementImpl::attach();
 
-    if(render && render->style()->display() == TABLE_CELL) {
-        RenderTableCell *cell = static_cast<RenderTableCell *>(render);
+    if(m_render && m_render->style()->display() == TABLE_CELL) {
+        RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
         cell->setRowSpan(rSpan);
         cell->setColSpan(cSpan);
         cell->setNoWrap(m_nowrap);
     }
-
-    return render;
 }
 
 // -------------------------------------------------------------------------

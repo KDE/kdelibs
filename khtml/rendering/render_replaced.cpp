@@ -39,8 +39,8 @@ using namespace khtml;
 using namespace DOM;
 
 
-RenderReplaced::RenderReplaced()
-    : RenderBox()
+RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
+    : RenderBox(node)
 {
     // init RenderObject attributes
     setReplaced(true);
@@ -106,7 +106,7 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-int RenderReplaced::lineHeight( bool ) const
+short RenderReplaced::lineHeight( bool ) const
 {
     return height()+marginTop()+marginBottom();
 }
@@ -124,11 +124,13 @@ void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
 
 // -----------------------------------------------------------------------------
 
-RenderWidget::RenderWidget(KHTMLView *view)
-        : RenderReplaced()
+RenderWidget::RenderWidget(DOM::NodeImpl* node)
+        : RenderReplaced(node)
 {
     m_widget = 0;
-    m_view = view;
+    // a replaced element doesn't support being anonymous
+    assert(node);
+    m_view = node->getDocument()->view();
     m_paintingSelf = false;
     m_ignorePaintEvents = false;
     m_widgetShown = false;
@@ -142,6 +144,7 @@ RenderWidget::RenderWidget(KHTMLView *view)
 void RenderWidget::detach()
 {
     remove();
+
     if ( m_widget ) {
         if ( m_view )
             m_view->removeChild( m_widget );

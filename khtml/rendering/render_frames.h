@@ -26,12 +26,11 @@
 
 #include "rendering/render_replaced.h"
 #include "xml/dom_nodeimpl.h"
-
+#include "html/html_baseimpl.h"
 class KHTMLView;
 
 namespace DOM
 {
-  class HTMLFrameSetElementImpl;
   class HTMLFrameElementImpl;
   class HTMLElementImpl;
   class MouseEventImpl;
@@ -45,7 +44,7 @@ class RenderFrameSet : public RenderBox
 {
   friend class DOM::HTMLFrameSetElementImpl;
 public:
-  RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view );
+  RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet );
 
   virtual ~RenderFrameSet();
 
@@ -61,13 +60,14 @@ public:
   bool userResize( DOM::MouseEventImpl *evt );
   bool canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type );
 
-  DOM::HTMLFrameSetElementImpl *frameSetImpl() const { return m_element; }
+    DOM::HTMLFrameSetElementImpl *element() const
+    { return static_cast<DOM::HTMLFrameSetElementImpl*>(RenderObject::element()); }
 
+#ifndef NDEBUG
   virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 private:
-    KHTMLView *m_view;
-    DOM::HTMLFrameSetElementImpl* m_element;
     int *m_rowHeight;
     int *m_colWidth;
     bool *m_hSplitVar; // is this split variable?
@@ -85,7 +85,7 @@ class RenderPart : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
-    RenderPart( KHTMLView *view );
+    RenderPart(DOM::HTMLElementImpl* node);
 
     virtual const char *renderName() const { return "RenderPart"; }
 
@@ -115,17 +115,15 @@ class RenderFrame : public khtml::RenderPart
 {
     Q_OBJECT
 public:
-    RenderFrame( KHTMLView *view, DOM::HTMLFrameElementImpl *frame );
+    RenderFrame( DOM::HTMLFrameElementImpl *frame );
 
     virtual const char *renderName() const { return "RenderFrame"; }
 
-    DOM::HTMLFrameElementImpl *frameImpl() const { return m_element; }
+    DOM::HTMLFrameElementImpl *element() const
+    { return static_cast<DOM::HTMLFrameElementImpl*>(RenderObject::element()); }
 
 public slots:
     void slotViewCleared();
-
-private:
-    DOM::HTMLFrameElementImpl* m_element;
 };
 
 // I can hardly call the class RenderObject ;-)
@@ -133,7 +131,7 @@ class RenderPartObject : public khtml::RenderPart
 {
     Q_OBJECT
 public:
-    RenderPartObject( KHTMLView *view, DOM::HTMLElementImpl *o );
+    RenderPartObject( DOM::HTMLElementImpl * );
 
     virtual const char *renderName() const { return "RenderPartObject"; }
 
@@ -148,9 +146,6 @@ public slots:
     void slotViewCleared();
 private slots:
     void slotPartLoadingErrorNotify();
-
-private:
-    DOM::HTMLElementImpl* m_element;
 };
 
 };

@@ -47,8 +47,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *token);
-
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 
 protected:
     khtml::VAlign valign;
@@ -67,7 +66,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
 
     QString url;
@@ -91,7 +89,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *token);
 
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void detach();
 

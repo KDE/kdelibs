@@ -139,6 +139,8 @@ void HTMLLIElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLLIElementImpl::attach()
 {
+    assert(!attached());
+
     HTMLElementImpl::attach();
 
     // If we are first, and the OL has a start attr.

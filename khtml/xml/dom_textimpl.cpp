@@ -21,7 +21,7 @@
  */
 
 #include "dom/dom_exception.h"
-
+#include "css/cssstyleselector.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
@@ -224,12 +224,14 @@ void CharacterDataImpl::checkCharDataOperation( const unsigned long offset, int 
     }
 }
 
+#ifndef NDEBUG
 void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
 {
     *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
 
     NodeImpl::dump(stream,ind);
 }
+#endif
 
 // ---------------------------------------------------------------------------
 
@@ -349,31 +351,17 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/)
 
 void TextImpl::attach()
 {
-    if (!m_render) {
-        RenderObject *r = parentNode()->renderer();
-        if( r && style() ) {
-	    m_render = new RenderText(str);
-	    m_render->setStyle( style() );
-	    r->addChild(m_render, nextRenderer());
-        }
+    assert(parentNode() && parentNode()->isElementNode());
+
+    ElementImpl* element = static_cast<ElementImpl*>(parentNode());
+    if (!m_render && element->renderer()) {
+        khtml::RenderStyle* _style = getDocument()->styleSelector()->styleForElement(element);
+        m_render = new RenderText(this, str);
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
 
     CharacterDataImpl::attach();
-}
-
-void TextImpl::detach()
-{
-    CharacterDataImpl::detach();
-
-    if ( m_render )
-        m_render->detach();
-
-    m_render = 0;
-}
-
-khtml::RenderStyle *TextImpl::style() const
-{
-    return parentNode() ? parentNode()->style() : 0;
 }
 
 khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
@@ -405,7 +393,7 @@ void TextImpl::recalcStyle( StyleChange change )
     if (change != NoChange && parentNode()) {
 // 	qDebug("DomText::recalcStyle");
 	if(m_render)
-	    m_render->setStyle(parentNode()->style());
+	    m_render->setStyle(parentNode()->renderer()->style());
     }
     if ( changed() && m_render && m_render->isText() )
 	static_cast<RenderText*>(m_render)->setText(str);

@@ -192,7 +192,7 @@ public:
     virtual Id id() const { return _id; }
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 
 protected:
     int _row;

@@ -114,8 +114,8 @@ static QString toHebrew( int number ) {
 
 // -------------------------------------------------------------------------
 
-RenderListItem::RenderListItem()
-    : RenderFlow()
+RenderListItem::RenderListItem(DOM::NodeImpl* node)
+    : RenderFlow(node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -256,7 +256,7 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker()
-    : RenderBox(), m_listImage(0), m_value(-1)
+    : RenderBox(0), m_listImage(0), m_value(-1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline

@@ -35,7 +35,7 @@ namespace khtml {
 class RenderBody : public RenderFlow
 {
 public:
-    RenderBody(DOM::HTMLBodyElementImpl* view);
+    RenderBody(DOM::HTMLBodyElementImpl* node);
     virtual ~RenderBody();
 
     virtual bool isBody() const { return true; }
@@ -51,9 +51,6 @@ protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
                                      int _w, int _h, int _tx, int _ty);
     bool scrollbarsStyled;
-
-private:
-    DOM::HTMLBodyElementImpl* m_element;
 };
 
 }; // end namespace

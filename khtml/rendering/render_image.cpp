@@ -44,11 +44,10 @@ using namespace khtml;
 // -------------------------------------------------------------------------
 
 RenderImage::RenderImage(HTMLElementImpl *_element)
-    : RenderReplaced()
+    : RenderReplaced(_element)
 {
     image = 0;
     berrorPic = false;
-    m_element = _element;
     loadEventSent = false;
 
     setIntrinsicWidth( 0 );
@@ -90,7 +89,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         int ih = p.height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
-        if ( !alt.isEmpty() && !m_element->getAttribute( ATTR_ALT ).isNull()) {
+        if ( !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
             QFontMetrics fm = fontMetrics( style()->font() );
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
@@ -321,6 +320,6 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
     if (image == finishedObj && !loadEventSent) {
         loadEventSent = true;
-        m_element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+        element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
 }

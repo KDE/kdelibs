@@ -25,8 +25,8 @@
 using namespace khtml;
 
 
-RenderBR::RenderBR()
-    : RenderText(new DOM::DOMStringImpl(QChar('\n')))
+RenderBR::RenderBR(DOM::NodeImpl* node)
+    : RenderText(node, new DOM::DOMStringImpl(QChar('\n')))
 {
     m_hasReturn = true;
 }

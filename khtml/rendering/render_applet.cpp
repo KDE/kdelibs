@@ -25,7 +25,9 @@
 
 #include <kdebug.h>
 
-#include "render_applet.h"
+#include "rendering/render_applet.h"
+#include "rendering/render_root.h"
+#include "xml/dom_docimpl.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 
@@ -40,16 +42,14 @@
 using namespace khtml;
 using namespace DOM;
 
-RenderApplet::RenderApplet(KHTMLView *view,
-                           QMap<QString, QString> args, HTMLElementImpl *applet)
-    : RenderWidget(view)
+RenderApplet::RenderApplet(HTMLElementImpl *applet, QMap<QString, QString> args )
+    : RenderWidget(applet)
 {
     // init RenderObject attributes
     setInline(true);
-    m_element = applet;
 
     KJavaAppletContext *context = 0;
-    KHTMLView *_view = static_cast<KHTMLView*>(view);
+    KHTMLView *_view = applet->getDocument()->view();
     if ( _view ) {
         KHTMLPart *part = _view->part();
         context = part->createJavaContext();
@@ -57,7 +57,7 @@ RenderApplet::RenderApplet(KHTMLView *view,
 
     if ( context ) {
         //kdDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
-        setQWidget( new KJavaAppletWidget(context, view->viewport()) );
+        setQWidget( new KJavaAppletWidget(context, _view->viewport()) );
         processArguments(args);
     }
 }
@@ -100,7 +100,7 @@ void RenderApplet::layout()
 
     KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
     if ( tmp ) {
-        NodeImpl *child = m_element->firstChild();
+        NodeImpl *child = element()->firstChild();
 
         while(child) {
 
@@ -142,13 +142,13 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     }
 }
 
-RenderEmptyApplet::RenderEmptyApplet(KHTMLView *view)
-  : RenderWidget( view )
+RenderEmptyApplet::RenderEmptyApplet(DOM::NodeImpl* node)
+  : RenderWidget(node)
 {
     // init RenderObject attributes
     setInline(true);
 
-    QLabel* label = new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"), view->viewport());
+    QLabel* label = new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"), node->getDocument()->view()->viewport());
     label->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     setQWidget(label);
 }

@@ -53,8 +53,8 @@ static inline int collapseMargins(int a, int b)
 }
 
 
-RenderFlow::RenderFlow()
-    : RenderBox()
+RenderFlow::RenderFlow(DOM::NodeImpl* node)
+    : RenderBox(node)
 {
     m_childrenInline = true;
     m_pre = false;
@@ -1198,7 +1198,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 	    //kdDebug( 6040 ) << "first letter" << endl;
 
-	    RenderFlow* firstLetter = new RenderFlow();
+	    RenderFlow* firstLetter = new RenderFlow(0 /* anonymous box */);
 	    pseudoStyle->setDisplay( INLINE );
 	    firstLetter->setStyle(pseudoStyle);
 
@@ -1215,7 +1215,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 		//kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
 		newTextChild->setText(oldText->substring(length,oldText->l-length));
 
-		RenderText* letter = new RenderText(oldText->substring(0,length));
+		RenderText* letter = new RenderText(0 /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
@@ -1317,7 +1317,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *newBox = new RenderFlow();
+            RenderFlow *newBox = new RenderFlow(0 /* anonymous box */);
             newBox->setStyle(newStyle);
             newBox->setIsAnonymousBox(true);
 
@@ -1392,7 +1392,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *box = new RenderFlow();
+            RenderFlow *box = new RenderFlow(0 /* anonymous box */);
             box->setStyle(newStyle);
             box->setIsAnonymousBox(true);
             // ### the children have a wrong style!!!
@@ -1446,6 +1446,7 @@ bool RenderFlow::containsPoint(int _x, int _y, int _tx, int _ty)
 }
 // ###
 
+#ifndef NDEBUG
 void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);
@@ -1491,7 +1492,7 @@ void RenderFlow::dump(QTextStream *stream, QString ind) const
 
     RenderBox::dump(stream,ind);
 }
-
+#endif
 
 #undef DEBUG
 #undef DEBUG_LAYOUT

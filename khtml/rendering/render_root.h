@@ -33,7 +33,7 @@ namespace khtml {
 class RenderRoot : public RenderFlow
 {
 public:
-    RenderRoot(KHTMLView *view);
+    RenderRoot(DOM::NodeImpl* node, KHTMLView *view);
     virtual ~RenderRoot();
 
     virtual const char *renderName() const { return "RenderRoot"; }

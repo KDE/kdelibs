@@ -59,6 +59,8 @@ public:
 
     // tag == -1 means apply to all elements (Selector = *)
 
+    unsigned int specificity();
+
     /* how the attribute value has to match.... Default is Exact */
     enum Match
     {
@@ -81,17 +83,17 @@ public:
 	SubSelector
     };
 
-    Relation relation 	: 2;
-    Match 	 match 	: 4;
-    bool	nonCSSHint : 1;
-    unsigned int 	pseudoId : 3;
+    DOM::DOMString value;
+    CSSSelector *tagHistory;
     int          attr;
     int          tag;
-    DOM::DOMString value;
 
-    CSSSelector *tagHistory;
+    Relation relation     : 2;
+    Match 	 match         : 4;
+    bool	nonCSSHint : 1;
+    unsigned int pseudoId : 3;
 
-    unsigned int specificity();
+
 };
 
     // a style class which has a parent (almost all have)

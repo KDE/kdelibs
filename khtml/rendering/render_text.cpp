@@ -149,7 +149,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
-FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, int lineHeight)
+FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, short lineHeight)
 {
     //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
     //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
@@ -246,8 +246,8 @@ int TextSlaveArray::findFirstMatching(Item d) const
 
 // -------------------------------------------------------------------------------------
 
-RenderText::RenderText(DOMStringImpl *_str)
-    : RenderObject()
+RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
+    : RenderObject(node)
 {
     // init RenderObject attributes
     setRenderText();   // our object inherits from RenderText
@@ -771,7 +771,7 @@ int RenderText::height() const
     return retval;
 }
 
-int RenderText::lineHeight( bool firstLine ) const
+short RenderText::lineHeight( bool firstLine ) const
 {
     if ( firstLine )
  	return RenderObject::lineHeight( firstLine );

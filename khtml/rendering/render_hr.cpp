@@ -36,8 +36,8 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderHR::RenderHR()
-    : RenderBox()
+RenderHR::RenderHR(DOM::NodeImpl* node)
+    : RenderBox(node)
 {
     // init RenderObject attributes
     setInline( false );
@@ -145,6 +145,7 @@ void RenderHR::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
+#ifndef NDEBUG
 void RenderHR::dump(QTextStream *stream, QString ind) const
 {
     if (hr_shade)
@@ -152,4 +153,4 @@ void RenderHR::dump(QTextStream *stream, QString ind) const
 
     RenderBox::dump(stream,ind);
 }
-
+#endif

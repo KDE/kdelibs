@@ -84,10 +84,12 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-RenderObject *HTMLAppletElementImpl::createRenderer()
+void HTMLAppletElementImpl::attach()
 {
-    if (getAttribute(ATTR_CODE).isNull())
-	return 0;
+    if (!parentNode()->renderer() || getAttribute(ATTR_CODE).isNull()) {
+        NodeBaseImpl::attach();
+        return;
+    }
 
     KHTMLView *view = getDocument()->view();
 
@@ -109,14 +111,20 @@ RenderObject *HTMLAppletElementImpl::createRenderer()
 	    args.insert( "archive", archive.string() );
 
 	args.insert( "baseURL", getDocument()->baseURL() );
-	return new RenderApplet(view, args, this);
+        m_render = new RenderApplet(this, args);
     }
-    else {
-	return new RenderEmptyApplet(view);
-    }
-#else
-    return 0;
+    else
+        // ### remove me. we should never show an empty applet, instead
+        // render the alternative content given by the webpage
+        m_render = new RenderEmptyApplet(this);
 #endif
+
+    if (m_render) {
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
+
+    NodeBaseImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -195,27 +203,24 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
   }
 }
 
-RenderObject *HTMLEmbedElementImpl::createRenderer()
-{
-    KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled())
-    {
-	if ( parentNode()->id()!=ID_OBJECT )
-	{
-	    return new RenderPartObject( w, this );
-	}
-	else
-	    parentNode()->renderer()->setStyle(m_style);
-    }
-    return 0;
-}
-
 void HTMLEmbedElementImpl::attach()
 {
-    HTMLElementImpl::attach();
+    assert(!attached());
+    assert(!m_render);
 
-    if (m_render)
-	static_cast<RenderPartObject*>(m_render)->updateWidget();
+    KHTMLView* w = getDocument()->view();
+    if (w->part()->pluginsEnabled()) {
+        if (parentNode()->id() != ID_OBJECT)
+            m_render = new RenderPartObject(this);
+    }
+
+    if (m_render) {
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+        static_cast<RenderPartObject*>(m_render)->updateWidget();
+    }
+
+    NodeBaseImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -286,21 +291,20 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
     return 0;
 }
 
-RenderObject *HTMLObjectElementImpl::createRenderer()
-{
-    KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled()) {
-	needWidgetUpdate = false;
-	return new RenderPartObject( w, this );
-    }
-    else {
-	return 0;
-    }
-}
-
 void HTMLObjectElementImpl::attach()
 {
-  HTMLElementImpl::attach();
+    assert(!attached());
+    assert(!m_render);
+
+    KHTMLView* w = getDocument()->view();
+    if (w->part()->pluginsEnabled()) {
+        needWidgetUpdate = false;
+        m_render = new RenderPartObject(this);
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
+
+    NodeBaseImpl::attach();
 
   // ### do this when we are actually finished loading instead
   dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);

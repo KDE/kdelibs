@@ -36,8 +36,8 @@
 
 using namespace khtml;
 
-RenderContainer::RenderContainer()
-    : RenderObject()
+RenderContainer::RenderContainer(DOM::NodeImpl* node)
+    : RenderObject(node)
 {
     m_first = 0;
     m_last = 0;
@@ -113,9 +113,9 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             table = static_cast<RenderTable *>(beforeChild);
         else {
             //kdDebug( 6040 ) << "creating anonymous table" << endl;
-            table = new RenderTable;
+            table = new RenderTable(0 /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(m_style);
+            newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE);
             table->setStyle(newStyle);
             table->setIsAnonymousBox(true);
@@ -192,12 +192,12 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
     {
         if (pseudo->contentType()==RenderStyle::CONTENT_TEXT)
         {
-            RenderObject* po = new RenderFlow();
+            RenderObject* po = new RenderFlow(0 /* anonymous box */);
             po->setStyle(pseudo);
 
             addChild(po, beforeChild);
 
-            RenderText* t = new RenderText(pseudo->contentText());
+            RenderText* t = new RenderText(0 /*anonymous object */, pseudo->contentText());
             t->setStyle(pseudo);
 
 //            kdDebug() << DOM::DOMString(pseudo->contentText()).string() << endl;

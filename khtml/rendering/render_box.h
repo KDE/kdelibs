@@ -38,7 +38,7 @@ class RenderBox : public RenderContainer
 // should contain all border and padding handling
 
 public:
-    RenderBox();
+    RenderBox(DOM::NodeImpl* node);
     virtual ~RenderBox();
 
     virtual const char *renderName() const { return "RenderBox"; }

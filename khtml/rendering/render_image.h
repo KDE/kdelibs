@@ -25,16 +25,12 @@
 #define RENDER_IMAGE_H
 
 #include "html/dtd.h"
-#include "render_replaced.h"
+#include "html/html_elementimpl.h"
+#include "rendering/render_replaced.h"
 #include "dom/dom_string.h"
 
 #include <qmap.h>
 #include <qpixmap.h>
-
-namespace DOM {
-
-    class HTMLElementImpl;
-}
 
 namespace khtml {
 
@@ -57,6 +53,9 @@ public:
     virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
     QPixmap pixmap() const { return pix; }
+    // don't even think about making this method virtual!
+    DOM::HTMLElementImpl* element() const
+    { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
 
     void setImageUrl(DOM::DOMString url, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
@@ -85,7 +84,6 @@ private:
     DOM::DOMString alt;
 
     CachedImage *image;
-    DOM::HTMLElementImpl* m_element;
     bool berrorPic : 1;
     bool loadEventSent : 1;
 };

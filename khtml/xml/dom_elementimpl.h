@@ -177,9 +177,7 @@ public:
     // State of the element.
     virtual QString state() { return QString::null; }
 
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
-    virtual void detach();
     virtual void recalcStyle( StyleChange = NoChange );
 
     virtual void setFocus(bool = true);
@@ -199,7 +197,9 @@ public:
     void dispatchAttrRemovalEvent(AttributeImpl *attr);
     void dispatchAttrAdditionEvent(AttributeImpl *attr);
 
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     void createAttributeMap() const;

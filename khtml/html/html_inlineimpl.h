@@ -51,7 +51,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-typedef enum { BRNone=0, BRLeft, BRRight, BRAll} BRClear;
+//typedef enum { BRNone=0, BRLeft, BRRight, BRAll} BRClear;
 
 class HTMLBRElementImpl : public HTMLElementImpl
 {
@@ -61,7 +61,7 @@ public:
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 };
 
 // -------------------------------------------------------------------------

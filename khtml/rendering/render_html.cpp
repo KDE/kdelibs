@@ -20,8 +20,9 @@
  *
  * $Id$
  */
-#include "render_html.h"
-#include "render_root.h"
+#include "rendering/render_html.h"
+#include "rendering/render_root.h"
+#include "html/html_elementimpl.h"
 
 #include "khtmlview.h"
 
@@ -29,8 +30,8 @@
 
 using namespace khtml;
 
-RenderHtml::RenderHtml()
-    : RenderFlow()
+RenderHtml::RenderHtml(DOM::HTMLElementImpl* node)
+    : RenderFlow(node)
 {
 }
 

@@ -37,9 +37,8 @@
 using namespace DOM;
 using namespace khtml;
 
-RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
+RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* style)
 {
-    RenderStyle* style = node->style();
     RenderObject *o = 0;
     switch(style->display())
     {
@@ -47,41 +46,41 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
         break;
     case INLINE:
     case BLOCK:
-        o = new RenderFlow();
+        o = new RenderFlow(node);
         break;
     case LIST_ITEM:
-        o = new RenderListItem();
+        o = new RenderListItem(node);
         break;
     case RUN_IN:
     case COMPACT:
     case MARKER:
         break;
     case KONQ_RULER:
-        o = new RenderHR();
+        o = new RenderHR(node);
         break;
     case TABLE:
     case INLINE_TABLE:
         // ### set inline/block right
         //kdDebug( 6040 ) << "creating RenderTable" << endl;
-        o = new RenderTable();
+        o = new RenderTable(node);
         break;
     case TABLE_ROW_GROUP:
     case TABLE_HEADER_GROUP:
     case TABLE_FOOTER_GROUP:
-        o = new RenderTableSection();
+        o = new RenderTableSection(node);
         break;
     case TABLE_ROW:
-        o = new RenderTableRow();
+        o = new RenderTableRow(node);
         break;
     case TABLE_COLUMN_GROUP:
     case TABLE_COLUMN:
-        o = new RenderTableCol();
+        o = new RenderTableCol(node);
         break;
     case TABLE_CELL:
-        o = new RenderTableCell();
+        o = new RenderTableCell(node);
         break;
     case TABLE_CAPTION:
-        o = new RenderTableCaption();
+        o = new RenderTableCaption(node);
         break;
     }
     if(o) o->setStyle(style);
@@ -89,7 +88,8 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
 }
 
 
-RenderObject::RenderObject()
+RenderObject::RenderObject(DOM::NodeImpl* node)
+    : CachedObjectClient(), m_node(node)
 {
     m_style = 0;
 
@@ -174,12 +174,12 @@ RenderObject *RenderObject::containingBlock() const
     // the case below should never happen...
     if(!o) {
         if(!isRoot()) {
-            //KHTMLAssert ( false );
+#ifndef NDEBUG
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
-            KHTMLAssert(0);
+#endif
         }
         return const_cast<RenderObject *>(this);
     } else
@@ -516,6 +516,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
     if(parent()) parent()->repaintRectangle(x, y, w, h, f);
 }
 
+#ifndef NDEBUG
 void RenderObject::printTree(int indent) const
 {
     QString ind;
@@ -575,6 +576,7 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
 	child = child->nextSibling();
     }
 }
+#endif
 
 void RenderObject::selectionStartEnd(int& spos, int& epos)
 {
@@ -835,7 +837,7 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
     return vpos;
 }
 
-int RenderObject::lineHeight( bool firstLine ) const
+short RenderObject::lineHeight( bool firstLine ) const
 {
     Length lh;
     if( firstLine && hasFirstLine() ) {
@@ -893,6 +895,9 @@ void RenderObject::recalcMinMaxWidths()
 
     RenderObject *child = firstChild();
     while( child ) {
+        // gcc sucks. if anybody knows a trick to get rid of the
+        // warning without adding an extra (unneeded) initialisation,
+        // go ahead
 	int cmin, cmax;
 	bool test = false;
 	if ( ( m_minMaxKnown && child->m_recalcMinMax ) || !child->m_minMaxKnown ) {

@@ -48,10 +48,8 @@ public:
     void addCSSLength(int id, const DOMString &value);
     void addCSSProperty(int id, const DOMString &value);
     void addCSSProperty(int id, int value);
-    void addCSSProperty(const DOMString &property);
     DOMString getCSSProperty( int id );
     void removeCSSProperty(int id);
-    void removeCSSProperty(const DOMString &id);
 
     DOMString innerHTML() const;
     DOMString innerText() const;

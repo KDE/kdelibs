@@ -41,8 +41,8 @@ using namespace khtml;
 
 #define TABLECELLMARGIN -0x4000
 
-RenderBox::RenderBox()
-    : RenderContainer()
+RenderBox::RenderBox(DOM::NodeImpl* node)
+    : RenderContainer(node)
 {
     m_minWidth = -1;
     m_maxWidth = -1;

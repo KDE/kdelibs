@@ -72,7 +72,7 @@ protected:
 class RenderListItem : public RenderFlow
 {
 public:
-    RenderListItem();
+    RenderListItem(DOM::NodeImpl*);
     virtual ~RenderListItem();
 
     virtual const char *renderName() const { return "RenderListItem"; }

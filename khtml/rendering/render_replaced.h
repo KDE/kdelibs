@@ -34,14 +34,14 @@ namespace khtml {
 class RenderReplaced : public RenderBox
 {
 public:
-    RenderReplaced();
+    RenderReplaced(DOM::NodeImpl* node);
     virtual ~RenderReplaced() {}
 
     virtual const char *renderName() const { return "RenderReplaced"; }
 
     virtual bool isRendered() const { return true; }
 
-    virtual int lineHeight( bool firstLine) const;
+    virtual short lineHeight( bool firstLine) const;
     virtual short baselinePosition( bool firstLine ) const;
 
     virtual void calcMinMaxWidth();
@@ -68,7 +68,7 @@ class RenderWidget : public QObject, public RenderReplaced, public DOM::DomShare
 {
     Q_OBJECT
 public:
-    RenderWidget(KHTMLView *view);
+    RenderWidget(DOM::NodeImpl* node);
     virtual ~RenderWidget();
 
     virtual void setStyle(RenderStyle *style);
@@ -86,14 +86,15 @@ public:
 
     bool sendWidgetEvent(QEvent *event);
     QWidget *widget() const { return m_widget; }
+    KHTMLView* view() const { return m_view; }
 
 public slots:
     void slotWidgetDestructed();
 
 protected:
     void setQWidget(QWidget *widget);
-    KHTMLView *m_view;
     QWidget *m_widget;
+    KHTMLView* m_view;
 
     bool m_paintingSelf : 1;
     bool m_ignorePaintEvents : 1;

@@ -32,11 +32,10 @@
 using namespace khtml;
 using namespace DOM;
 
-RenderBody::RenderBody(HTMLBodyElementImpl* _element)
-    : RenderFlow()
+RenderBody::RenderBody(HTMLBodyElementImpl* element)
+    : RenderFlow(element)
 {
     scrollbarsStyled = false;
-    m_element = _element;
 }
 
 RenderBody::~RenderBody()
@@ -47,7 +46,7 @@ void RenderBody::setStyle(RenderStyle* style)
 {
 //     qDebug("RenderBody::setStyle()");
     RenderFlow::setStyle(style);
-    m_element->getDocument()->setTextColor( DOMString( style->color().name() ) );
+    element()->getDocument()->setTextColor( DOMString( style->color().name() ) );
     scrollbarsStyled = false;
 }
 

@@ -58,7 +58,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -88,7 +88,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void detach();
 
@@ -129,7 +128,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -181,12 +180,10 @@ class HTMLHtmlElementImpl : public HTMLElementImpl
 {
 public:
     HTMLHtmlElementImpl(DocumentPtr *doc);
-
     ~HTMLHtmlElementImpl();
 
     virtual Id id() const;
-
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
 };
 
 
@@ -202,7 +199,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *attr);
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );
 

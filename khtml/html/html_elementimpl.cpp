@@ -90,7 +90,9 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         // ### the inline sheet ay contain more than 1 property!
         // stylesheet info
         setHasStyle();
-        addCSSProperty(attr->value());
+        if(!m_styleDecls) createDecl();
+        m_styleDecls->setProperty(attr->value());
+        setChanged();
         break;
     case ATTR_TABINDEX:
         indexstring=getAttribute(ATTR_TABINDEX);
@@ -102,8 +104,6 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_DIR:
         addCSSProperty(CSS_PROP_DIRECTION, attr->value());
-        break;
-        // BiDi info
         break;
 // standard events
     case ATTR_ONCLICK:
@@ -164,18 +164,21 @@ void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString
 {
     if(!m_styleDecls) createDecl();
     m_styleDecls->setProperty(property, value, false, nonCSSHint);
+    setChanged();
 }
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();
     m_styleDecls->setProperty(id, value, false, true);
+    setChanged();
 }
 
 void HTMLElementImpl::addCSSProperty(int id, int value)
 {
     if(!m_styleDecls) createDecl();
     m_styleDecls->setProperty(id, value, false, true);
+    setChanged();
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
@@ -193,17 +196,13 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
         }
         if ( l != v->l ) {
             m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true );
+            setChanged();
             return;
         }
     }
 
     m_styleDecls->setLengthProperty(id, value, false, true);
-}
-
-void HTMLElementImpl::addCSSProperty(const DOMString &property)
-{
-    if(!m_styleDecls) createDecl();
-    m_styleDecls->setProperty(property);
+    setChanged();
 }
 
 void HTMLElementImpl::removeCSSProperty(int id)
@@ -212,14 +211,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
         return;
     m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->removeProperty(id);
-}
-
-void HTMLElementImpl::removeCSSProperty( const DOMString &id )
-{
-    if(!m_styleDecls)
-        return;
-    m_styleDecls->setParent(getDocument()->elementSheet());
-    m_styleDecls->removeProperty(id);
+    setChanged();
 }
 
 DOMString HTMLElementImpl::getCSSProperty( int id )

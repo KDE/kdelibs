@@ -27,10 +27,6 @@
 #include "xml/dom_nodeimpl.h"
 #include "dom/dom_string.h"
 
-namespace khtml {
-    class RenderStyle;
-}
-
 namespace DOM {
 
     class DocumentImpl;
@@ -62,7 +58,9 @@ public:
 
     DOMStringImpl *string() { return str; }
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
 protected:
     // note: since DOMStrings are shared, str should always be copied when making
@@ -114,9 +112,7 @@ public:
 
     virtual bool isTextNode() const { return true; }
     virtual Id id() const;
-    virtual khtml::RenderStyle *style() const;
     virtual void attach();
-    virtual void detach();
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
     virtual void recalcStyle( StyleChange = NoChange );

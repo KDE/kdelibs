@@ -490,8 +490,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     m_part->executeScheduledScript();
 
     QCursor c = KCursor::arrowCursor();
-    if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
-      khtml::RenderStyle* style = mev.innerNode.handle()->style();
+    if ( !mev.innerNode.isNull() && mev.innerNode.handle()->renderer() ) {
+      khtml::RenderStyle* style = mev.innerNode.handle()->renderer()->style();
       if ((style->cursor() == CURSOR_AUTO) && (style->cursorImage())
 	    && !(style->cursorImage()->pixmap().isNull())) {
         /* First of all it works: Check out http://www.iam.unibe.ch/~schlpbch/cursor.html
@@ -1344,5 +1344,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 void KHTMLView::scheduleRelayout()
 {
     if ( d->timerId ) return;
+    // yeah, timeout == 0 is stupid. we will change that later, but
+    // for now we want to see everything
     d->timerId = startTimer( 0 );
 }

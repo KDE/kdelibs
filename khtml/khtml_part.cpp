@@ -1017,14 +1017,16 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
 void KHTMLPart::slotDebugDOMTree()
 {
-  if ( d->m_doc )
-    d->m_doc->printTree();
+  if ( d->m_doc && d->m_doc->firstChild() )
+    qDebug("%s", d->m_doc->firstChild()->toHTML().latin1());
 }
 
 void KHTMLPart::slotDebugRenderTree()
 {
+#ifndef NDEBUG
   if ( d->m_doc )
     d->m_doc->renderer()->printTree();
+#endif
 }
 
 void KHTMLPart::setAutoloadImages( bool enable )
@@ -1426,7 +1428,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
 
   d->m_doc->ref();
-  d->m_doc->attach( );
+  if (!d->m_doc->attached())
+    d->m_doc->attach( );
   d->m_doc->setURL( m_url.url() );
   // We prefer m_baseURL over m_url because m_url changes when we are
   // about to load a new page.
@@ -2553,7 +2556,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
       // but: shouldn't we support this javascript hack for iframes aswell?
       khtml::RenderFrame* rf = static_cast<khtml::RenderFrame*>(frame);
       assert(rf);
-      QVariant res = executeScript( DOM::Node(rf->frameImpl()), url.right( url.length() - 11) );
+      QVariant res = executeScript( DOM::Node(rf->element()), url.right( url.length() - 11) );
       if ( res.type() == QVariant::String ) {
         KURL myurl;
         myurl.setProtocol("javascript");

@@ -117,11 +117,8 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     }
 
     m_attribute->setValue(v.implementation());
-    if (m_element) {
+    if (m_element)
         m_element->parseAttribute(m_attribute);
-        // ###
-        m_element->setChanged(true);
-    }
 }
 
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
@@ -169,9 +166,6 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
 
 ElementImpl::~ElementImpl()
 {
-    if (m_render)
-        detach();
-
     if(namedAttrMap) {
         namedAttrMap->detachFromElement();
         namedAttrMap->deref();
@@ -236,8 +230,6 @@ void ElementImpl::setAttribute(NodeImpl::Id id, DOMStringImpl* value, int &excep
     else if (old && value) {
         old->setValue(value);
         parseAttribute(old);
-        // ###
-        setChanged(this);
     }
 }
 
@@ -257,7 +249,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
     }
 }
 
-NodeImpl *ElementImpl::cloneNode ( bool deep)
+NodeImpl *ElementImpl::cloneNode(bool deep)
 {
     // ### we loose the namespace here ... FIXME
     ElementImpl *clone = getDocument()->createElement(tagName());
@@ -311,101 +303,97 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
-RenderObject *ElementImpl::createRenderer()
-{
-    return RenderObject::createObject(this);
-}
-
 void ElementImpl::attach()
 {
-    if (!m_render)
-    {
-#if SPEED_DEBUG < 2
-        setStyle(getDocument()->styleSelector()->styleForElement(this));
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+
 #if SPEED_DEBUG < 1
-        if(parentNode() && parentNode()->renderer()) {
-            m_render = createRenderer();
-            if(m_render) {
-                m_render->setStyle(m_style);
-                parentNode()->renderer()->addChild(m_render, nextRenderer());
-            }
-        }
-#endif
-#endif
+    if (parentNode()->renderer()) {
+        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+        _style->ref();
+        m_render = RenderObject::createObject(this, _style);
+        if(m_render)
+            parentNode()->renderer()->addChild(m_render, nextRenderer());
+        _style->deref();
     }
+#endif
 
     NodeBaseImpl::attach();
 }
 
-void ElementImpl::detach()
-{
-    NodeBaseImpl::detach();
-
-    if ( m_render )
-        m_render->detach();
-
-    m_render = 0;
-}
-
 void ElementImpl::recalcStyle( StyleChange change )
 {
-    if ( m_style ) {
-	// ### should go away and be done in renderobject
-	bool needsUpdate = false;
-  	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
-	if ( change >= Inherit || changed() ) {
-	    EDisplay oldDisplay = m_style ? m_style->display() : INLINE;
+    // ### should go away and be done in renderobject
+    RenderStyle* _style = m_render ? m_render->style() : 0;
+    bool needsUpdate = false;
+    const char* debug;
+    switch(change) {
+    case NoChange: debug = "NoChange";
+        break;
+    case NoInherit: debug= "NoInherit";
+        break;
+    case Inherit: debug = "Inherit";
+        break;
+    case Force: debug = "Force";
+        break;
+    }
+    qDebug("recalcStyle(%d: %s)[%p: %s]", change, debug, this, tagName().string().latin1());
+    if ( change >= Inherit || changed() ) {
+        EDisplay oldDisplay = _style ? _style->display() : NONE;
 
-	    int dynamicState = StyleSelector::None;
-	    if ( m_mouseInside )
-		dynamicState |= StyleSelector::Hover;
-	    if ( m_focused )
-		dynamicState |= StyleSelector::Focus;
-	    if ( m_active )
-		dynamicState |= StyleSelector::Active;
+        int dynamicState = StyleSelector::None;
+        if ( m_mouseInside )
+            dynamicState |= StyleSelector::Hover;
+        if ( m_focused )
+            dynamicState |= StyleSelector::Focus;
+        if ( m_active )
+            dynamicState |= StyleSelector::Active;
 
-	    RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this, dynamicState);
-	    StyleChange ch = diff( m_style, newStyle );
-	    if ( ch != NoChange ) {
-		setStyle( newStyle );
+        RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this, dynamicState);
+        newStyle->ref();
+        StyleChange ch = diff( _style, newStyle );
+        if ( ch != NoChange ) {
+            if (oldDisplay != newStyle->display()) {
+                // ### doesn't this already take care of changing the style
+                // for all children?
+                if (attached()) detach();
+                // ### uuhm, suboptimal. style gets calculated again
+                attach();
+                needsUpdate = true;
+            }
+            if( m_render && newStyle ) {
+                //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().latin1());
+                m_render->setStyle(newStyle);
+                needsUpdate = true;
+            }
+        }
+        newStyle->deref();
 
-		if (oldDisplay != m_style->display()) {
-		    // ### doesn't this already take care of changing the style
-		    // for all children?
-		    detach();
-		    attach();
-		    needsUpdate = true;
-		}
-		if( m_render && m_style ) {
-//  		    qDebug("--> setting style on render element bgcolor=%s", m_style->backgroundColor().name().latin1());
-		    m_render->setStyle(m_style);
-		    needsUpdate = true;
-		}
-	    }
-	    if ( change != Force )
-		change = ch;
-	}
+        if ( change != Force )
+            change = ch;
+    }
 
-	NodeImpl *n;
-	for (n = _first; n; n = n->nextSibling()) {
+    NodeImpl *n;
+    for (n = _first; n; n = n->nextSibling()) {
 // 	    qDebug("    (%p) calling recalcStyle on child %s, change=%d", this, n->isElementNode() ? ((ElementImpl *)n)->tagName().string().latin1() : n->isTextNode() ? "text" : "unknown", change );
-	    if ( change >= Inherit || n->isTextNode() ||
-		 n->hasChangedChild() || n->changed() )
-		n->recalcStyle( change );
-	}
+        if ( change >= Inherit || n->isTextNode() ||
+             n->hasChangedChild() || n->changed() )
+            n->recalcStyle( change );
+    }
 
-	// ### should go away and be done by the renderobjects in
-	// a more intelligent way
-	if ( needsUpdate && m_render && !parentNode()->changed() ) {
-	    RenderObject *r = m_render;
-	    if ( !m_render->layouted() ) {
-		if ( m_render->isInline() )
-		    r = m_render->containingBlock();
-		r->setMinMaxKnown( false );
-		r->setLayouted( false );
-	    }
-	    r->repaint();
-	}
+    // ### should go away and be done by the renderobjects in
+    // a more intelligent way
+    if ( needsUpdate && m_render && !parentNode()->changed() ) {
+        RenderObject *r = m_render;
+        if ( !m_render->layouted() ) {
+            if ( m_render->isInline() )
+                r = m_render->containingBlock();
+            r->setMinMaxKnown( false );
+            r->setLayouted( false );
+        }
+        r->repaint();
     }
     setChanged( false );
     setHasChangedChild( false );
@@ -551,6 +539,7 @@ void ElementImpl::dispatchAttrAdditionEvent(AttributeImpl *attr)
 //                                         attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
+#ifndef NDEBUG
 void ElementImpl::dump(QTextStream *stream, QString ind) const
 {
     if (namedAttrMap) {
@@ -563,6 +552,7 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 
     NodeBaseImpl::dump(stream,ind);
 }
+#endif
 
 // -------------------------------------------------------------------------
 
@@ -798,8 +788,6 @@ NamedAttrMapImpl& NamedAttrMapImpl::operator=(const NamedAttrMapImpl& other)
     for(uint i = 0; i < len; i++)
         element->parseAttribute(attrs[i]);
 
-    // ###
-    element->setChanged(true);
     return *this;
 }
 
@@ -820,8 +808,6 @@ void NamedAttrMapImpl::addAttribute(AttributeImpl *attr)
     // Note that element may be null here if we are called from insertAttr() during parsing
     if (element) {
         element->parseAttribute(attr);
-        // ###
-        element->setChanged(true);
         element->dispatchAttrAdditionEvent(attr);
         element->dispatchSubtreeModifiedEvent();
     }
@@ -864,11 +850,8 @@ void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
     if (attr->_value) {
         attr->_value->deref();
         attr->_value = 0;
-        if (element) {
+        if (element)
             element->parseAttribute(attr);
-            // ###
-            element->setChanged(true);
-        }
     }
     if (element) {
         element->dispatchAttrRemovalEvent(attr);

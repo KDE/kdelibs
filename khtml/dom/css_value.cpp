@@ -82,17 +82,21 @@ CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName
     return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue( propertyName );
 }
 
-DOMString CSSStyleDeclaration::removeProperty( const DOMString &propertyName )
+DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
 {
-    if(!impl) return DOMString();
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( propertyName );
+    int id = getPropertyID(property.string().ascii(), property.length());
+    if(!impl || !id) return DOMString();
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( id );
     return DOMString();
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
 {
-    if(!impl) return DOMString();
-    return impl->getPropertyPriority(propertyName);
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if(!impl || !id) return DOMString();
+    if (impl->getPropertyPriority(id))
+        return DOMString("important");
+    return DOMString();
 }
 
 void CSSStyleDeclaration::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )

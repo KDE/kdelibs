@@ -263,7 +263,6 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange );
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -376,7 +375,7 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     // get the actual listbox index of the optionIndexth option
@@ -506,7 +505,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void init();
-    virtual khtml::RenderObject *createRenderer();
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
     DOMString value();

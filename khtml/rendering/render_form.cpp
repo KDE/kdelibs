@@ -45,14 +45,12 @@
 
 using namespace khtml;
 
-RenderFormElement::RenderFormElement(KHTMLView *view,
-                                     HTMLGenericFormElementImpl *element)
-    : RenderWidget(view)
+RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
+    : RenderWidget(element)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
 
-    m_element = element;
     m_clickCount = 0;
     m_state = 0;
     m_button = 0;
@@ -88,7 +86,7 @@ int RenderFormElement::calcReplacedHeight() const
 
 void RenderFormElement::updateFromElement()
 {
-    m_widget->setEnabled(!m_element->disabled());
+    m_widget->setEnabled(!element()->disabled());
 
     QColor color = style()->color();
     QColor backgroundColor = style()->backgroundColor();
@@ -179,9 +177,8 @@ void RenderFormElement::slotClicked()
         ref();
         QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
-        m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-
-        m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+        element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+        element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
         m_isDoubleClick = false;
         deref();
     }
@@ -189,9 +186,8 @@ void RenderFormElement::slotClicked()
 
 // -------------------------------------------------------------------------
 
-RenderButton::RenderButton(KHTMLView *view,
-                           HTMLGenericFormElementImpl *element)
-    : RenderFormElement(view, element)
+RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
+    : RenderFormElement(element)
 {
 }
 
@@ -202,11 +198,10 @@ short RenderButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-RenderCheckBox::RenderCheckBox(KHTMLView *view,
-                               HTMLInputElementImpl *element)
-    : RenderButton(view, element)
+RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
+    : RenderButton(element)
 {
-    QCheckBox* b = new QCheckBox(view->viewport());
+    QCheckBox* b = new QCheckBox(view()->viewport());
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -230,21 +225,22 @@ void RenderCheckBox::calcMinMaxWidth()
 
 void RenderCheckBox::updateFromElement()
 {
-    static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+    widget()->setChecked(element()->checked());
+
+    RenderButton::updateFromElement();
 }
 
 void RenderCheckBox::slotStateChanged(int state)
 {
-    m_element->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
+    element()->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
 }
 
 // -------------------------------------------------------------------------------
 
-RenderRadioButton::RenderRadioButton(KHTMLView *view,
-                                     HTMLInputElementImpl *element)
-    : RenderButton(view, element)
+RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
+    : RenderButton(element)
 {
-    QRadioButton* b = new QRadioButton(view->viewport());
+    QRadioButton* b = new QRadioButton(view()->viewport());
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -253,20 +249,14 @@ RenderRadioButton::RenderRadioButton(KHTMLView *view,
 
 void RenderRadioButton::updateFromElement()
 {
-    if (m_widget) {
-        static_cast<QRadioButton*>(m_widget)->
-            setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
-    }
-}
+    widget()->setChecked(element()->checked());
 
-void RenderRadioButton::setChecked(bool checked)
-{
-    static_cast<QRadioButton *>(m_widget)->setChecked(checked);
+    RenderButton::updateFromElement();
 }
 
 void RenderRadioButton::slotClicked()
 {
-    m_element->setAttribute(ATTR_CHECKED,"");
+    element()->setAttribute(ATTR_CHECKED,"");
 
     // emit mouseClick event etc
     RenderButton::slotClicked();
@@ -288,10 +278,10 @@ void RenderRadioButton::calcMinMaxWidth()
 // -------------------------------------------------------------------------------
 
 
-RenderSubmitButton::RenderSubmitButton(KHTMLView *view, HTMLInputElementImpl *element)
-    : RenderButton(view, element)
+RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
+    : RenderButton(element)
 {
-    QPushButton* p = new QPushButton(view->viewport());
+    QPushButton* p = new QPushButton(view()->viewport());
     setQWidget(p);
     p->setMouseTracking(true);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -301,8 +291,7 @@ void RenderSubmitButton::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
-        defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
+    QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
     value = value.stripWhiteSpace();
     QString raw;
     for(unsigned int i = 0; i < value.length(); i++) {
@@ -341,19 +330,17 @@ short RenderSubmitButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-// ### remove this class and just use RenderImage instead for <input type="image">
 RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
     : RenderImage(element)
 {
-    m_element = element;
     // ### support DOMActivate event when clicked
 }
 
 
 // -------------------------------------------------------------------------------
 
-RenderResetButton::RenderResetButton(KHTMLView *view, HTMLInputElementImpl *element)
-    : RenderSubmitButton(view, element)
+RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
+    : RenderSubmitButton(element)
 {
 }
 
@@ -364,8 +351,8 @@ QString RenderResetButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
-RenderPushButton::RenderPushButton(KHTMLView *view, HTMLInputElementImpl *element)
-    : RenderSubmitButton(view, element)
+RenderPushButton::RenderPushButton(HTMLInputElementImpl *element)
+    : RenderSubmitButton(element)
 {
 }
 
@@ -405,10 +392,10 @@ bool LineEditWidget::event( QEvent *e )
 
 // -----------------------------------------------------------------------------
 
-RenderLineEdit::RenderLineEdit(KHTMLView *view, HTMLInputElementImpl *element)
-    : RenderFormElement(view, element)
+RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
+    : RenderFormElement(element)
 {
-    LineEditWidget *edit = new LineEditWidget(view->viewport());
+    LineEditWidget *edit = new LineEditWidget(view()->viewport());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
@@ -416,8 +403,7 @@ RenderLineEdit::RenderLineEdit(KHTMLView *view, HTMLInputElementImpl *element)
         edit->setEchoMode( QLineEdit::Password );
 
     if ( element->autoComplete() ) {
-        QStringList completions =
-            static_cast<KHTMLView *>(view)->formCompletionItems(element->name().string());
+        QStringList completions = view()->formCompletionItems(element->name().string());
         if (completions.count()) {
             edit->completionObject()->setItems(completions);
             edit->setContextMenuEnabled(true);
@@ -430,7 +416,7 @@ RenderLineEdit::RenderLineEdit(KHTMLView *view, HTMLInputElementImpl *element)
 void RenderLineEdit::slotReturnPressed()
 {
     // don't submit the form when return was pressed in a completion-popup
-    KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
+    KCompletionBox *box = widget()->completionBox(false);
     if ( box && box->isVisible() && box->currentItem() != -1 )
 	return;
 
@@ -439,18 +425,16 @@ void RenderLineEdit::slotReturnPressed()
     // hand (can't remember which) - David
     handleFocusOut();
 
-    HTMLFormElementImpl* fe = m_element->form();
+    HTMLFormElementImpl* fe = element()->form();
     if ( fe )
-	fe->prepareSubmit();
+        fe->prepareSubmit();
 }
 
 void RenderLineEdit::handleFocusOut()
 {
-    // ###
-    LineEditWidget* edit = static_cast<LineEditWidget*>( m_widget );
-    if ( edit && edit->edited() ) {
-        m_element->onChange();
-        edit->setEdited( false );
+    if ( widget() && widget()->edited() ) {
+        element()->onChange();
+        widget()->setEdited( false );
     }
 }
 
@@ -461,14 +445,11 @@ void RenderLineEdit::calcMinMaxWidth()
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
 
-    KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
-    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
-
-    int size = input->size();
+    int size = element()->size();
 
     int h = fm.height();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    if ( edit->frame() ) {
+    if ( widget()->frame() ) {
         h += 8;
         // ### this is not really portable between all styles.
         // I think one should try to find a generic solution which
@@ -489,32 +470,27 @@ void RenderLineEdit::calcMinMaxWidth()
     RenderFormElement::calcMinMaxWidth();
 }
 
-void RenderLineEdit::layout()
+void RenderLineEdit::updateFromElement()
 {
-    KHTMLAssert( !layouted() );
+    widget()->blockSignals(true);
+    int pos = widget()->cursorPosition();
+    widget()->setText(element()->value().string());
+    widget()->setCursorPosition(pos);
+    widget()->blockSignals(false);
 
-    KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
-    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
-    edit->blockSignals(true);
-    int pos = edit->cursorPosition();
-    edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
-    edit->setCursorPosition(pos);
-    edit->blockSignals(false);
-
-    int ml = input->maxLength();
+    int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
-    edit->setMaxLength( ml );
-    edit->setEdited( false );
-    edit->setReadOnly(m_element->readOnly());
+    widget()->setMaxLength( ml );
+    widget()->setEdited( false );
 
-    RenderFormElement::layout();
+    RenderFormElement::updateFromElement();
 }
 
 void RenderLineEdit::slotTextChanged(const QString &string)
 {
     // don't use setValue here!
-    static_cast<HTMLInputElementImpl*>(m_element)->m_value = string;
+    element()->m_value = string;
 }
 
 void RenderLineEdit::select()
@@ -524,18 +500,17 @@ void RenderLineEdit::select()
 
 // ---------------------------------------------------------------------------
 
-RenderFieldset::RenderFieldset(KHTMLView *view,
-                               HTMLGenericFormElementImpl *element)
-    : RenderFormElement(view, element)
+RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
+    : RenderFormElement(element)
 {
 }
 
 // -------------------------------------------------------------------------
 
-RenderFileButton::RenderFileButton(KHTMLView *view, HTMLInputElementImpl *element)
-    : RenderFormElement(view, element)
+RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
+    : RenderFormElement(element)
 {
-    QHBox *w = new QHBox(view->viewport());
+    QHBox *w = new QHBox(view()->viewport());
 
     m_edit = new LineEditWidget(w);
 
@@ -559,8 +534,7 @@ void RenderFileButton::calcMinMaxWidth()
 
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
-    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
-    int size = input->size();
+    int size = element()->size();
 
     int h = fm.height();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17);
@@ -583,7 +557,7 @@ void RenderFileButton::calcMinMaxWidth()
 void RenderFileButton::handleFocusOut()
 {
     if ( m_edit && m_edit->edited() ) {
-        m_element->onChange();
+        element()->onChange();
         m_edit->setEdited( false );
     }
 }
@@ -593,41 +567,34 @@ void RenderFileButton::slotClicked()
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
     if (!file_name.isNull()) {
         // ### truncate if > maxLength
-        static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(file_name));
+        element()->setFilename(DOMString(file_name));
         m_edit->setText(file_name);
     }
 }
 
-void RenderFileButton::layout( )
+void RenderFileButton::updateFromElement()
 {
-    KHTMLAssert(!layouted());
-
-    // this is largely taken from the RenderLineEdit layout
-    QFontMetrics fm = fontMetrics( m_edit->font() );
-    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
-
     m_edit->blockSignals(true);
-    m_edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->filename().string());
+    m_edit->setText(element()->filename().string());
     m_edit->blockSignals(false);
-    int ml = input->maxLength();
+    int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
     m_edit->setMaxLength( ml );
     m_edit->setEdited( false );
-    m_edit->setReadOnly(m_element->readOnly());
 
-    RenderFormElement::layout();
+    RenderFormElement::updateFromElement();
 }
 
 void RenderFileButton::slotReturnPressed()
 {
-    if (m_element->form())
-	m_element->form()->prepareSubmit();
+    if (element()->form())
+	element()->form()->prepareSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
 {
-    static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(string));
+    static_cast<HTMLInputElementImpl*>(element())->setFilename(DOMString(string));
 }
 
 void RenderFileButton::select()
@@ -638,18 +605,16 @@ void RenderFileButton::select()
 
 // -------------------------------------------------------------------------
 
-RenderLabel::RenderLabel(KHTMLView *view,
-                         HTMLGenericFormElementImpl *element)
-    : RenderFormElement(view, element)
+RenderLabel::RenderLabel(HTMLGenericFormElementImpl *element)
+    : RenderFormElement(element)
 {
 
 }
 
 // -------------------------------------------------------------------------
 
-RenderLegend::RenderLegend(KHTMLView *view,
-                           HTMLGenericFormElementImpl *element)
-    : RenderFormElement(view, element)
+RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
+    : RenderFormElement(element)
 {
 }
 
@@ -709,8 +674,8 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 
 // -------------------------------------------------------------------------
 
-RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
-    : RenderFormElement(view, element)
+RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
+    : RenderFormElement(element)
 {
     m_ignoreSelectEvents = false;
     m_multiple = element->multiple();
@@ -720,9 +685,15 @@ RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
     if(m_useListBox)
         setQWidget(createListBox());
     else
-	setQWidget(createComboBox());
+        setQWidget(createComboBox());
 }
 
+void RenderSelect::updateFromElement()
+{
+    // ### remove me, quick hack
+    setMinMaxKnown(false);
+    setLayouted(false);
+}
 
 void RenderSelect::calcMinMaxWidth()
 {
@@ -735,7 +706,7 @@ void RenderSelect::calcMinMaxWidth()
     setLayouted( false );
     setMinMaxKnown( false );
     // ### end FIXME
-    
+
     RenderFormElement::calcMinMaxWidth();
 }
 
@@ -748,8 +719,6 @@ void RenderSelect::layout( )
     // first selected one)
 
     // ### reconnect mouse signals when we change widget type
-
-    HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
     m_ignoreSelectEvents = true;
 
     // change widget type
@@ -758,8 +727,8 @@ void RenderSelect::layout( )
     unsigned oldSize = m_size;
     bool oldListbox = m_useListBox;
 
-    m_multiple = f->multiple();
-    m_size = f->size();
+    m_multiple = element()->multiple();
+    m_size = element()->size();
     m_useListBox = (m_multiple || m_size > 1);
 
     if (oldMultiple != m_multiple || oldSize != m_size) {
@@ -780,11 +749,9 @@ void RenderSelect::layout( )
         m_optionsChanged = true;
     }
 
-    HTMLSelectElementImpl *select = static_cast<HTMLSelectElementImpl*>(m_element);
-
     // update contents listbox/combobox based on options in m_element
     if ( m_optionsChanged ) {
-        QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+        QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
         if(m_useListBox)
@@ -872,7 +839,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-    QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
 
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
@@ -886,7 +853,7 @@ void RenderSelect::layout( )
 
 void RenderSelect::close()
 {
-    static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
+    element()->recalcListItems();
 
     RenderFormElement::close();
 }
@@ -897,7 +864,7 @@ void RenderSelect::slotSelected(int index)
 
     KHTMLAssert( !m_useListBox );
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -935,7 +902,7 @@ void RenderSelect::slotSelected(int index)
         }
     }
 
-    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
+    element()->onChange();
 }
 
 
@@ -943,7 +910,7 @@ void RenderSelect::slotSelectionChanged()
 {
     if ( m_ignoreSelectEvents ) return;
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -951,7 +918,7 @@ void RenderSelect::slotSelectionChanged()
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
                 ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
 
-    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
+    element()->onChange();
 }
 
 
@@ -962,7 +929,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new KListBox(m_view->viewport());
+    KListBox *lb = new KListBox(view()->viewport());
     lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
@@ -975,14 +942,14 @@ KListBox* RenderSelect::createListBox()
 
 ComboBoxWidget *RenderSelect::createComboBox()
 {
-    ComboBoxWidget *cb = new ComboBoxWidget(m_view->viewport());
+    ComboBoxWidget *cb = new ComboBoxWidget(view()->viewport());
     connect(cb, SIGNAL(activated(int)), this, SLOT(slotSelected(int)));
     return cb;
 }
 
 void RenderSelect::updateSelection()
 {
-    QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
@@ -1016,16 +983,15 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KEdit(parent)
+    : QTextEdit(parent)
 {
-    // ### correct scrollbar modes?
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-        setWordWrap(QMultiLineEdit::WidgetWidth);
+        setWordWrap(QTextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
-        setVScrollBarMode( Auto );
+        setVScrollBarMode( AlwaysOn );
     }
     else {
-        setWordWrap(QMultiLineEdit::NoWrap);
+        setWordWrap(QTextEdit::NoWrap);
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
@@ -1052,7 +1018,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return KEdit::event( e );
+    return QTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
@@ -1060,10 +1026,10 @@ bool TextAreaWidget::event( QEvent *e )
 // ### allow contents to be manipulated via DOM - will require updating
 // of text node child
 
-RenderTextArea::RenderTextArea(KHTMLView *view, HTMLTextAreaElementImpl *element)
-    : RenderFormElement(view, element)
+RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
+    : RenderFormElement(element)
 {
-    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
+    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
@@ -1071,20 +1037,19 @@ RenderTextArea::RenderTextArea(KHTMLView *view, HTMLTextAreaElementImpl *element
 
 RenderTextArea::~RenderTextArea()
 {
-    HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>( m_element );
-
-    if ( e->m_dirtyvalue ) {
-        e->m_value = text();
-        e->m_dirtyvalue = false;
+    if ( element()->m_dirtyvalue ) {
+        element()->m_value = text();
+        element()->m_dirtyvalue = false;
     }
 }
 
 void RenderTextArea::handleFocusOut()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    if ( w && w->edited() ) {
-        m_element->onChange();
-        w->setEdited( false );
+    if ( w && element()->m_dirtyvalue ) {
+        element()->m_value = text();
+        element()->m_dirtyvalue = false;
+        element()->onChange();
     }
 }
 
@@ -1093,12 +1058,13 @@ void RenderTextArea::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
     QFontMetrics m = fontMetrics(style()->font());
-    QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
+    qDebug("scrollbar sizehint: %d", w->verticalScrollBar()->sizeHint().width());
+
+    QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                QMAX(f->rows(), 1)*m.height() + w->frameWidth()*3 +
-                (w->wordWrap() == QMultiLineEdit::NoWrap ?
+                QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +
+                (w->wordWrap() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 
@@ -1113,25 +1079,22 @@ void RenderTextArea::layout( )
     KHTMLAssert( !layouted() );
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    w->setReadOnly(m_element->readOnly());
+    w->setReadOnly(element()->readOnly());
     w->blockSignals(true);
     int line, col;
     w->getCursorPosition( &line, &col );
-    w->setText(f->value().string());
+    w->setText(element()->value().string());
     w->setCursorPosition( line, col );
     w->blockSignals(false);
-    w->setEdited(false);
+    element()->m_dirtyvalue = false;
 
     RenderFormElement::layout();
 }
 
 void RenderTextArea::close( )
 {
-    HTMLTextAreaElementImpl *e = static_cast<HTMLTextAreaElementImpl*>(m_element);
-
-    e->setValue( e->defaultValue() );
+    element()->setValue( element()->defaultValue() );
 
     RenderFormElement::close();
 }
@@ -1139,12 +1102,25 @@ void RenderTextArea::close( )
 QString RenderTextArea::text()
 {
     QString txt;
-    HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>(m_element);
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
 
-    if(e->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
-        for(int i=0; i < w->numLines(); i++)
-            txt += w->textLine(i) + QString::fromLatin1("\n");
+    if(element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
+        // yeah, QTextEdit has no accessor for getting the visually wrapped text
+        for (int p=0; p < w->paragraphs(); ++p) {
+            int pl = w->paragraphLength(p);
+            int ll = 0;
+            int lindex = w->lineOfChar(p, 0);
+            QString paragraphText = w->text(p);
+            for (int l = 0; l < pl; ++l) {
+                if (lindex != w->lineOfChar(p, l)) {
+                    paragraphText.insert(l+ll++, QString::fromLatin1("\n"));
+                    lindex = w->lineOfChar(p, l);
+                }
+            }
+            txt += paragraphText;
+            if (p < w->paragraphs() - 1)
+                txt += QString::fromLatin1("\n");
+        }
     }
     else
         txt = w->text();
@@ -1154,7 +1130,7 @@ QString RenderTextArea::text()
 
 void RenderTextArea::slotTextChanged()
 {
-    static_cast<HTMLTextAreaElementImpl*>( m_element )->m_dirtyvalue = true;
+    element()->m_dirtyvalue = true;
 }
 
 void RenderTextArea::select()

@@ -514,10 +514,16 @@ void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLGenericFormElementImpl::attach()
 {
-    HTMLElementImpl::attach();
+    assert(!attached());
 
-    if (m_render)
+    if (m_render) {
+        assert(m_render->style() == 0);
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
         m_render->updateFromElement();
+    }
+
+    NodeBaseImpl::attach();
 }
 
 HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
@@ -994,54 +1000,28 @@ void HTMLInputElementImpl::init()
     m_defaultValue = m_value;
 }
 
-RenderObject *HTMLInputElementImpl::createRenderer()
+void HTMLInputElementImpl::attach()
 {
-    KHTMLView *view = getDocument()->view();
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+
     switch(m_type)
     {
     case TEXT:
     case PASSWORD:
-    case ISINDEX:
-	return new RenderLineEdit(view, this);
-	break;
-    case CHECKBOX:
-	return new RenderCheckBox(view, this);
-	break;
-    case RADIO:
-	return new RenderRadioButton(view, this);
-	break;
-    case SUBMIT:
-	return new RenderSubmitButton(view, this);
-	break;
-    case IMAGE:
-    {
-	return new RenderImageButton(this);
-	setHasEvents(); // ### remove?
-	break;
-    }
-    case RESET:
-	return new RenderResetButton(view, this);
-	break;
-    case FILE:
-	return new RenderFileButton(view, this);
-	break;
-    case HIDDEN:
-	return 0;
-	break;
-    case BUTTON:
-	return new RenderPushButton(view, this);
-	break;
+    case ISINDEX:      m_render = new RenderLineEdit(this);   break;
+    case CHECKBOX:  m_render = new RenderCheckBox(this); break;
+    case RADIO:        m_render = new RenderRadioButton(this); break;
+    case SUBMIT:      m_render = new RenderSubmitButton(this); break;
+    case IMAGE:       m_render =  new RenderImageButton(this); break;
+    case RESET:      m_render = new RenderResetButton(this);   break;
+    case FILE:         m_render =  new RenderFileButton(this);    break;
+    case BUTTON:  m_render = new RenderPushButton(this);
+    case HIDDEN:   break;
     }
 
-    return 0;
-}
-
-void HTMLInputElementImpl::attach()
-{
     HTMLGenericFormElementImpl::attach();
-
-    if (m_render)
-        m_render->updateFromElement();
 
     if (m_render && m_type == IMAGE) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
@@ -1164,7 +1144,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
         {
             // can't submit file on GET
             // don't submit if display: none or display: hidden
-            if(!multipart || !renderer() || style()->visibility() != khtml::VISIBLE)
+            if(!multipart || !renderer() || renderer()->style()->visibility() != khtml::VISIBLE)
                 return false;
 
             QString local;
@@ -1207,12 +1187,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
                     return true;
                 }
-                else
-                {
-                    KMessageBox::error(0L, i18n("Cannot open downloaded file.\nSubmit a bug report."));
-                    KIO::NetAccess::removeTempFile( local );
-                    return false;
-                }
+                return false;
             }
             else {
                 KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
@@ -1267,12 +1242,12 @@ void HTMLInputElementImpl::setValue(DOMString val)
     case TEXT:
     case PASSWORD:
         m_value = (val.isNull() ? DOMString("") : val);
-        setChanged(true);
+        setChanged();
         break;
     case FILE:
         // sorry, can't change this!
         m_value = m_filename;
-        setChanged(true);
+        setChanged();
         break;
     default:
         setAttribute(ATTR_VALUE,val);
@@ -1341,10 +1316,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
 bool HTMLInputElementImpl::isEditable()
 {
-    if ((m_type == TEXT) || (m_type == PASSWORD) || (m_type == ISINDEX) || (m_type == FILE))
-	return true;
-    else
-	return true;
+    return ((m_type == TEXT) || (m_type == PASSWORD) || (m_type == ISINDEX) || (m_type == FILE));
 }
 
 // -------------------------------------------------------------------------
@@ -1633,9 +1605,11 @@ void HTMLSelectElementImpl::init()
 	recalcListItems(); // useful if we already have contents (e.g. setInnerHTML instead of normal parsing)
 }
 
-RenderObject *HTMLSelectElementImpl::createRenderer()
+void HTMLSelectElementImpl::attach()
 {
-    return new RenderSelect(getDocument()->view(), this);
+    assert(!attached());
+    m_render = new RenderSelect(this);
+    HTMLGenericFormElementImpl::attach();
 }
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
@@ -2100,9 +2074,13 @@ void HTMLTextAreaElementImpl::init()
     addCSSProperty(CSS_PROP_COLOR, "text");
 }
 
-RenderObject *HTMLTextAreaElementImpl::createRenderer()
+void HTMLTextAreaElementImpl::attach()
 {
-    return new RenderTextArea(getDocument()->view(), this);
+    assert(!attached());
+    assert(!m_render);
+
+    m_render = new RenderTextArea(this);
+    HTMLGenericFormElementImpl::attach();
 }
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)

@@ -22,7 +22,7 @@
  */
 #include "dom/dom_exception.h"
 #include "dom/html_misc.h"
-
+#include "css/cssparser.h"
 #include "html/html_miscimpl.h" // HTMLCollectionImpl
 
 #include "misc/htmlhashes.h"
@@ -119,10 +119,10 @@ void HTMLElement::setClassName( const DOMString &value )
 
 void HTMLElement::removeCSSProperty( const DOMString &property )
 {
-    if(impl) {
-	HTMLElementImpl *e = ((HTMLElementImpl *)impl);
-	e->removeCSSProperty( property );
-	e->setChanged( true );
+    int id = getPropertyID(property.string().lower().ascii(), property.length());
+    if(id && impl) {
+        HTMLElementImpl *e = ((HTMLElementImpl *)impl);
+        e->removeCSSProperty(id);
     }
 }
 
@@ -131,7 +131,6 @@ void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &va
     if(impl) {
 	HTMLElementImpl *e = ((HTMLElementImpl *)impl);
 	e->addCSSProperty( property, value );
-	e->setChanged( true );
     }
 }
 

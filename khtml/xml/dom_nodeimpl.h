@@ -188,16 +188,9 @@ public:
                                                    DOM::Node & /*node*/, int & /*offset*/ )
                                                    { return khtml::SelectionPointBefore; }
 
-    virtual void setStyle(khtml::RenderStyle *) {}
-    virtual khtml::RenderStyle *style() const { return 0; }
-
-
-    //virtual DOM::CSSStyleDeclarationImpl *styleRules() { return 0; }
-
     // for LINK and STYLE
     virtual void sheetLoaded() {}
 
-    bool hasEvents() const  { return m_hasEvents; }
     bool hasID() const      { return m_hasId; }
     bool hasClass() const   { return m_hasClass; }
     bool hasStyle() const   { return m_hasStyle; }
@@ -209,7 +202,6 @@ public:
     bool hasChangedChild() const { return m_hasChangedChild; }
     bool inDocument() const { return m_inDocument; }
     bool styleElement() const { return m_styleElement; }
-    void setHasEvents(bool b=true) { m_hasEvents = b; }
     void setHasID(bool b=true) { m_hasId = b; }
     void setHasClass(bool b=true) { m_hasClass = b; }
     void setHasStyle(bool b=true) { m_hasStyle = b; }
@@ -230,7 +222,6 @@ public:
     virtual bool isSelectable() const { return false; };
 
     bool isInline() const;
-    virtual void printTree(int indent=0);
     virtual QString toHTML() const;
     QString recursive_toHTML(bool start = false) const;
 
@@ -295,7 +286,6 @@ public:
 
     DocumentPtr *docPtr() const { return document; }
 
-    void setRenderer(khtml::RenderObject *object) { m_render = object; }
     khtml::RenderObject *renderer() const { return m_render; }
     khtml::RenderObject *nextRenderer();
 
@@ -303,7 +293,9 @@ public:
     void checkAddChild(NodeImpl *newChild, int &exceptioncode);
     bool isAncestor( NodeImpl *other );
     virtual bool childAllowed( NodeImpl *newChild );
+#ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
+#endif
 
     /**
      * Performs any necessary initialization of the element based on attributes that have been set during parsing. This
@@ -317,14 +309,6 @@ public:
 
     // -----------------------------------------------------------------------------
     // Integration with rendering tree
-
-    /**
-     * Creates a rendering object for this node. The object will be inserted into the rendering tree under this
-     * node's parent, and as such is used to provide a visual representation of the node to the user.
-     *
-     * @return A newly created RenderObject for this node
-     */
-    virtual khtml::RenderObject *createRenderer();
 
     /**
      * Attaches this node to the rendering tree. This calculates the style to be applied to the node and creates an
@@ -407,7 +391,6 @@ protected:
     unsigned short m_tabIndex : 15;
     bool m_hasTabIndex  : 1;
 
-    bool m_hasEvents : 1;
     bool m_hasId : 1;
     bool m_hasClass : 1;
     bool m_hasStyle : 1;
@@ -415,15 +398,15 @@ protected:
     bool m_mouseInside : 1;
     bool m_attached : 1;
     bool m_changed : 1;
-
     bool m_hasChangedChild : 1;
+
     bool m_inDocument : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
 
-    // 2 bits unused
+    // 3 bits unused
 };
 
 // this is the full Node Implementation with parents and children.
@@ -455,9 +438,6 @@ public:
     virtual NodeListImpl *getElementsByTagNameNS ( DOMStringImpl* namespaceURI,
                                                    DOMStringImpl* localName );
 
-    virtual void setStyle(khtml::RenderStyle *style);
-    virtual khtml::RenderStyle *style() const { return m_style; }
-
     virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
     bool getLowerRightCorner(int &xPos, int &yPos) const;
@@ -477,14 +457,16 @@ public:
 protected:
     NodeImpl *_first;
     NodeImpl *_last;
-    khtml::RenderStyle* m_style;
 
     // helper functions for inserting children:
 
+    // ### this should vanish. do it in dom/ !
     // check for same source document:
     bool checkSameDocument( NodeImpl *newchild, int &exceptioncode );
     // check for being child:
     bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
+    // ###
+
     // find out if a node is allowed to be our child
     void dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode );
     void dispatchChildRemovalEvents( NodeImpl *child, int &exceptioncode );
