@@ -40,7 +40,9 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmimemagic.h>
+#include <krun.h>
 #include <kstddirs.h>
+#include <kurlrequester.h>
 #include <dcopclient.h>
 #include <kmimetype.h>
 #include <klistview.h>
@@ -344,25 +346,13 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   topLayout->addWidget(label);
 
   QBoxLayout* l = new QHBoxLayout(topLayout);
-  /*
-  edit = new KLineEdit( this );
-  edit->setMinimumWidth(200);
-  l->addWidget(edit);
-
-  completion = new KURLCompletion();
-  connect ( edit, SIGNAL (completion(const QString&)), completion, SLOT (make_completion()));
-  connect ( edit, SIGNAL (rotateDown()), completion, SLOT (make_rotation()));
-  // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
-  connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT ( insert(const QString&)));
-  */
 
   edit = new KURLRequester( _value, this );
   l->addWidget(edit);
 
-  //TODO edit->completion->setMode( KURLCompletion::ExeCompletion );
-
-  //edit->setCompletionObject( completion );
-  //edit->setAutoDeleteCompletionObject( true );
+  KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
+  edit->lineEdit()->setCompletionObject( comp );
+  edit->lineEdit()->setAutoDeleteCompletionObject( true );
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
 
@@ -407,7 +397,6 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
 KOpenWithDlg::~KOpenWithDlg()
 {
-    // delete completion; not needed anymore as KLineEdit takes care this now!!
 }
 
 // ----------------------------------------------------------------------

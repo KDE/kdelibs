@@ -1,6 +1,6 @@
 // "$Id$"
 /* This file is part of the KDE libraries
-    Copyright (C) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2000 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,16 +25,13 @@
 #include <qdialog.h>
 
 #include <kapp.h>
-//#include <klineedit.h>
-#include <kurlrequester.h>
 #include <kurl.h>
-#include <kurlcompletion.h>
 #include <klistview.h>
 
-#include <krun.h>
 #include <kservice.h>
 
 class KApplicationTree;
+class KURLRequester;
 
 class QCheckBox;
 class QPushButton;
@@ -82,9 +79,6 @@ public slots:
     void slotOK();
 
 protected:
-    //KLineEdit *edit;
-    //KURLCompletion * completion;
-
     KURLRequester * edit;
     QString m_command;
 
