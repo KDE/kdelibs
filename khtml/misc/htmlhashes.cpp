@@ -19,18 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 #include "htmlhashes.h"
-
-// workaround for a compiler bug ### remove me!
-#ifdef _AIX
-#define register
-#endif
-
 #include "htmltags.c"
 #include "htmlattrs.c"
-
-#ifdef _AIX
-#undef register
-#endif
 
 int khtml::getTagID(const char *tagStr, int len)
 {
