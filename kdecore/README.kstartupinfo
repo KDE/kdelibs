@@ -212,7 +212,7 @@ There are 3 types of messages :
 	  - only PID and HOSTNAME entries
 
 
-Text entries in the mesasges :
+Text entries in the messages :
 ------------------------------
 
 Every entry is of the form <name>=<value>. Value may be either a number
