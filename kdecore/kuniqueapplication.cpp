@@ -51,10 +51,12 @@
 #include <netwm.h> // schroder
 #include <X11/Xlib.h> // schroder
 #define DISPLAY "DISPLAY"
-#elsif defined Q_WS_QWS
-#define DISPLAY "QWS_DISPLAY"
 #else
-#define DISPLAY "DISPLAY"
+#  ifdef Q_WS_QWS
+#    define DISPLAY "QWS_DISPLAY"
+#  else
+#    define DISPLAY "DISPLAY"
+#  endif
 #endif
 
 bool KUniqueApplication::s_nofork = false;
