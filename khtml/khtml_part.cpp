@@ -99,6 +99,8 @@ namespace khtml
       enum Type { Frame, IFrame, Object };
 
       ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
+      
+      ~ChildFrame() {  delete (KHTMLRun*) m_run; }
 
     RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
