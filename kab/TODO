@@ -6,37 +6,22 @@ below. Send the mail to mirko@kde.org
 Thanks.
 PS: I am still looking for volunteers who try writing the import filters. 
     Most often I do not have the different other addressbook programs myselfes.
+PS1: This TODO list deals with tasks to add to the KDE addressbook
+library. If you want the application to be extended, read kdeutils/kab/TODO.
 --------------------------------------------------------------------------------
 ° [done] change mail addresses to an unlimited list with selection before
          sending an email
-° [currently not planned] allow user to add custom fields
+° [done] allow user to add custom fields
 ° [partly implemented] a searchable keyword field
-° automatic menus for kmail and ktalk
-° [done for HTML] add export methods
-° add import methods:
-  - Netscape messenger
-  - Microsoft outlook
-  - bbdb
-  - Pine
-  - Corel 8 - Suite address book 
-  - Time & Chaos
-  - what else?
+° automatic menus for kmail and ktalk -> a matter of the applications
+° [done for HTML in KDE 1.1] add export methods
 ° [done, even more flexible] 
   enhance the telephone numbers section, using home/work/..., 
   fixed/mobile, and so on
-° [done] better dialog to enter the birthday, especially directly
 ° [done] some functions in the main display, like clickable parts 
   (email/talk addresses, possibly telephony support?),
-° configurable sorting order (already prepared)
-° create and add Max Berger's Qoutlook importer tool
-° add telephony support where the telephone number is automatically dialed
-  using the modem, the user can pick up his telephone after the connection 
-  is created
-  HELP WANTED: Does anybody know how to do that?
-° send mail to a bunch of people at once using the keywords and the search 
-  functionality. 
 ° [done] IMPORTANT: Possibility to use different files and, most important, 
   common addressbooks for different people.
 --------------------------------------------------------------------------------
-                                                     Mirko Sucker, January 2000.
+                                                     Mirko Sucker, June 2000.
 
