@@ -38,6 +38,10 @@
 #include <math.h>
 #include <algorithm>
 
+using std::min;
+using std::max;
+using std::swap;
+
 // glibc 2.1 compatibility
 inline double round(double d) { return rint(d); }
 
