@@ -336,19 +336,6 @@ DCOPClient *KApplication::dcopClient()
   if (pDCOPClient)
     return pDCOPClient;
 
-  // create an instance specific DCOP client object
-  // if dcopserver lockfile not present, start the server.
-  // GJ: Do we really want to do this?
-  QCString fName(::getenv("DCOPSERVER"));
-  if (fName.isEmpty()) {
-    fName = ::getenv("HOME");
-    fName += "/.DCOPserver";
-    if (::access(fName.data(), R_OK) == -1) {
-      QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
-      my_system(srv.latin1());
-    }
-  }
-
   pDCOPClient = new DCOPClient();
   connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
 	  SLOT(dcopFailure(const QString &)));
@@ -637,15 +624,28 @@ void KApplication::aboutQt(){
 
 void KApplication::dcopFailure(const QString &msg)
 {
-  QString msgStr(i18n("There was some error setting up inter-process\n"
+  static int failureCount = 0;
+  failureCount++;
+  if (failureCount == 1)
+  {
+     // Try to launch kdeinit.
+     QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+     my_system(srv.latin1());
+     return;
+  }
+  if (failureCount == 2)
+  {
+     QString msgStr(i18n("There was some error setting up inter-process\n"
 		      "communications for KDE.  The message returned\n"
 		      "by the system was:\n\n"));
-  msgStr += msg;
-  msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
+     msgStr += msg;
+     msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
 
-  QMessageBox::critical(kapp->mainWidget(),
+     QMessageBox::critical(kapp->mainWidget(),
 			i18n("DCOP communications error (%1)").arg(kapp->caption()),
 			msgStr, i18n("OK"));
+     return;
+  }
 }
 
 void KApplication::parseCommandLine( int& argc, char** argv )
