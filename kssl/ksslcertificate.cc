@@ -608,7 +608,7 @@ QStringList qsl;
 QList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
 
       for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
-         kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
          qsl << c->toString();
       }
 
