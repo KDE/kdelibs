@@ -13,6 +13,7 @@ BUILDDIR = $(shell pwd)
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
+tmp = $(shell pwd)/debian/kdelibs3
 
 build: build-stamp
 
@@ -32,22 +33,24 @@ build-stamp:
 	--disable-cups
 
 	$(MAKE)
+	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
 
 	touch build-stamp
 
 debian-clean:
 	dh_testdir
-	-rm -f build-stamp
+	-rm -f build-stamp indep-stamp
 	dh_clean
 
 clean: debian-clean
-	-rm -f debian/debiandirs
+	-rm -rf debian/debiandirs debian/install-tmp
 	if test -d CVS; then \
 	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
 	fi
 	-$(MAKE) distclean
 
-binary-indep:	build
+binary-indep:	build-stamp indep-stamp
+indep-stamp:
 	dh_testdir
 	dh_testroot
 	dh_clean -i
@@ -77,23 +80,26 @@ binary-indep:	build
 	dh_gencontrol -i
 	dh_md5sums -i
 	dh_builddeb -i
-
+	touch indep-stamp
 
 binary-arch:  build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
+	-rm -rf debian/kdelibs3
+	install -d debian/kdelibs3
+	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs
 	install -d debian/kdelibs3/usr/share/applnk
 	install -d debian/kdelibs3/etc/pam.d
 	install -d debian/kdelibs3/etc/kde2
 	install -d debian/kdelibs3/usr/share/lintian/overrides
 	install -d debian/libkmid-alsa/usr/bin
-	$(MAKE) DESTDIR=`pwd`/debian/kdelibs3/ install
 	$(MAKE) -C arts/ clean
 	$(MAKE) -C libkmid/ clean
-	./configure $(configkde) --with-alsa --without-ssl \
-		--includedir=/usr/include/kde --enable-cups
+	-rm config.cache kdeprint/Makefile
+	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+		--includedir=/usr/include/kde 
 	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
 	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
@@ -108,7 +114,7 @@ binary-arch:  build
 	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
 	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
 	# messy cleanup
-	-rm -rf debian/libarts-alsa/usr/include build-stamp
+	-rm -rf debian/libarts-alsa/usr/include
 	-rm -rf debian/libkmid-alsa/usr/include
 	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
 	-rm -f `find debian/libkmid-alsa/usr/lib -type l -name "*.so"`
