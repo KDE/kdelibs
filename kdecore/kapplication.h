@@ -1056,7 +1056,12 @@ public:
   /**
       @internal
     */
-  int xioErrhandler();
+  int xErrhandler( Display*, void* );
+
+  /**
+      @internal
+    */
+  int xioErrhandler( Display* );
 
   /**
    * @internal

@@ -144,20 +144,16 @@ template class QPtrList<KSessionManaged>;
 
 #ifdef Q_WS_X11
 extern "C" {
-static int kde_xio_errhandler( Display * )
+static int kde_xio_errhandler( Display * dpy )
 {
-  return kapp->xioErrhandler();
+  return kapp->xioErrhandler( dpy );
 }
 
 static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 {
-    char errstr[256];
-    XGetErrorText( dpy, err->error_code, errstr, 256 );
-    if ( err->error_code != BadWindow )
-        kdDebug() << "KDE detected X Error: " << errstr << " " << err->error_code
-		<< "\n  Major opcode:  " << err->request_code << endl;
-    return 0;
+  return kapp->xErrhandler( dpy, err );
 }
+
 }
 #endif
 
@@ -184,7 +180,9 @@ public:
 	overrideStyle( QString::null ),
 	startup_id( "0" ),
 	m_KAppDCOPInterface( 0L ),
-	session_save( false )
+	session_save( false ),
+        oldXErrorHandler( NULL ),
+        oldXIOErrorHandler( NULL )
   {
   }
 
@@ -207,6 +205,8 @@ public:
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
+  int (*oldXErrorHandler)(Display*,XErrorEvent*);
+  int (*oldXIOErrorHandler)(Display*);
 
   class URLActionRule
   {
@@ -588,14 +588,26 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
 }
 #endif
 
-int KApplication::xioErrhandler()
+int KApplication::xioErrhandler( Display* dpy )
 {
     if(kapp)
     {
         emit shutDown();
-        exit( 1 );
+        d->oldXIOErrorHandler( dpy );
     }
-  return 0;
+    exit( 1 );
+    return 0;
+}
+
+int KApplication::xErrhandler( Display* dpy, void* err_ )
+{ // no idea how to make forward decl. for XErrorEvent
+    XErrorEvent* err = static_cast< XErrorEvent* >( err_ );
+    if(kapp)
+    {
+        // add KDE specific stuff here
+        d->oldXErrorHandler( dpy, err );
+    }
+    return 0;
 }
 
 void KApplication::iceIOErrorHandler( _IceConn *conn )
@@ -696,8 +708,8 @@ void KApplication::init(bool GUIenabled)
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
-    XSetErrorHandler( kde_x_errhandler );
-    XSetIOErrorHandler( kde_xio_errhandler );
+    d->oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
+    d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
@@ -1411,6 +1423,10 @@ KApplication::~KApplication()
 
   KProcessController::deref();
 
+  if ( d->oldXErrorHandler != NULL )
+      XSetErrorHandler( d->oldXErrorHandler );
+  if ( d->oldXIOErrorHandler != NULL )
+      XSetIOErrorHandler( d->oldXIOErrorHandler );
   if ( d->oldIceIOErrorHandler != NULL )
       IceSetIOErrorHandler( d->oldIceIOErrorHandler );
 
