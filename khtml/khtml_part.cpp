@@ -3364,6 +3364,7 @@ DOM::Range KHTMLPart::selection() const
 	r.setStart( d->m_selectionStart.parentNode(), o_start + d->m_startOffset );
     }
  
+    int o_end = 0;
     n = d->m_selectionEnd.handle();
     if(!n->parentNode()) {
         r.setEnd( d->m_selectionEnd, d->m_endOffset );	 
@@ -3372,11 +3373,11 @@ DOM::Range KHTMLPart::selection() const
     } else if(!n->renderer()->isReplaced() && !n->renderer()->isBR()) {
 	r.setEnd( d->m_selectionEnd, d->m_endOffset );
     } else {    
-        int o_end = 0;
         while ((n = n->previousSibling()))
             o_end++;
 	r.setEnd( d->m_selectionEnd.parentNode(), o_end + d->m_endOffset );
     }
+
     return r;
 }
 

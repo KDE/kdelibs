@@ -864,6 +864,10 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     bool in_li = false; //whether we have an li in the text, without an ol/ul
     int depth_difference = 0;
     int lowest_depth_difference = 0; 
+
+    if( m_startContainer == m_endContainer && m_startOffset >= m_endOffset)
+	return text;
+    
     while(n) {
         /* First, we could have an tag <tagname key=value>otherstuff</tagname> */
 	if(n->nodeType() == DOM::Node::ELEMENT_NODE) {
@@ -893,13 +897,37 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	    if(n == m_endContainer) {
 		    break;
 	    }
-        }   
-        if (n->parentNode() == m_endContainer && !n->nextSibling()) {
+        }
+        if(n->parentNode() == m_endContainer && !n->nextSibling()) {
             break;
         }
+
         //if (n == m_endContainer) break;
         NodeImpl *next = n->firstChild();
-        if (!next) next = n->nextSibling();
+	if(next) {
+	    if(n == m_startContainer) {
+                //This is the start of our selection, so we have to move to where we have started selecting.
+		//For example, if 'n' is "hello <img src='hello.png'> how are you? <img src='goodbye.png'>"
+		//then this has four children.  If our selection started on the image, then we need to start from there.
+		int current_offset = 0;
+		while(current_offset < m_startOffset && next) {
+		    next = next->nextSibling();
+		    current_offset++;
+		}
+	    }
+	} else {
+            next = n->nextSibling();
+		
+	    if(n->parentNode() == m_endContainer) {
+	        int current_offset = 1;
+	        NodeImpl *it = n;
+	        while((it = it->previousSibling())) current_offset++;
+
+	        if(current_offset >= m_endOffset) {
+	            break;
+	        }
+	    }
+	}
 
         while( !next && n->parentNode() ) {
             n = n->parentNode();
