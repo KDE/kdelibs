@@ -56,6 +56,7 @@ protected slots:
 	void slotExtensionClicked();
 	void slotToggleFilter(bool);
 	void slotHelp();
+	void slotOutputFileSelected(const QString&);
 
 protected:
 	bool checkOutputFile();

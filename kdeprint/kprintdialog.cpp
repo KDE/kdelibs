@@ -192,6 +192,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_extbtn, SIGNAL(clicked()), SLOT(slotExtensionClicked()));
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
+	connect(d->m_file, SIGNAL(urlSelected(const QString&)), SLOT(slotOutputFileSelected(const QString&)));
 
 	KConfig	*config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
@@ -609,6 +610,19 @@ void KPrintDialog::slotToggleFilter(bool on)
 void KPrintDialog::slotHelp()
 {
 	kapp->invokeHelp(QString::null, "kdeprint");
+}
+
+void KPrintDialog::slotOutputFileSelected(const QString& txt)
+{
+	KMPrinter	*prt = KMFactory::self()->manager()->findPrinter(d->m_printers->currentText());
+	if (prt && prt->isSpecial())
+	{
+		QString	ext("."+prt->option("kde-special-extension"));
+		if (ext.length() > 1 && txt.right(ext.length()) != ext)
+		{
+			d->m_file->lineEdit()->setText(txt+ext);
+		}
+	}
 }
 
 #include "kprintdialog.moc"
