@@ -366,6 +366,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
                        text, QStringList(),
                        dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
+    if ( result==KDialogBase::Cancel ) return Cancel;
     res = (result==KDialogBase::Yes ? Yes : No);
 
     if (checkboxResult)
