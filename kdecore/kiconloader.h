@@ -76,7 +76,6 @@ class KIconEffect;
  * "User".
  *
  */
- //KDE 4.0: remove "toolbar" from the searched directories for "User" icons.
 class KIconLoader
 {
 public:
