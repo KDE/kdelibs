@@ -64,6 +64,13 @@ public:
     void setHoverCloseButton( bool enable );
     inline bool hoverCloseButton() const;
 
+    /*!
+      If \a delayed is true, a close button will be shown on mouse hover
+      over tab icons immediately else after double mouse double click delay.
+    */
+    void setHoverCloseButtonDelayed( bool delayed );
+    inline bool hoverCloseButtonDelayed() const;
+
 public slots:
     /*!
       Move a widget's tab from first to second specified index and emit

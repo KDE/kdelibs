@@ -35,7 +35,8 @@
 KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
       mHoverCloseButtonTab( 0 ), mDragSwitchTab( 0 ), mHoverCloseButton( 0 ),
-      mHoverCloseButtonEnabled( false ), mTabReorderingEnabled( false )
+      mHoverCloseButtonEnabled( false ), mHoverCloseButtonDelayed( true ),
+      mTabReorderingEnabled( false )
 {
     setAcceptDrops( true );
     setMouseTracking( true );
@@ -186,7 +187,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
 #endif
             }
             else {
-                xoff = 5;
+                xoff = 7;
                 yoff = 0;
             }
             rect.moveLeft( t->rect().left() + 2 + xoff );
@@ -203,10 +204,12 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 mHoverCloseButton->setIconSet( KGlobal::iconLoader()->loadIcon("fileclose", KIcon::Toolbar, KIcon::SizeSmall, KIcon::ActiveState) );
                 mHoverCloseButton->setGeometry( rect );
                 QToolTip::add(mHoverCloseButton,i18n("Close this tab"));
-                mHoverCloseButton->setEnabled(false);
                 mHoverCloseButton->setFlat(true);
                 mHoverCloseButton->show();
-                mEnableCloseButtonTimer->start( QApplication::doubleClickInterval()*2, true );
+                if ( mHoverCloseButtonDelayed ) {
+                  mHoverCloseButton->setEnabled(false);
+                  mEnableCloseButtonTimer->start( QApplication::doubleClickInterval(), true );
+                }
                 mHoverCloseButtonTab = t;
                 connect( mHoverCloseButton, SIGNAL( clicked() ), SLOT( closeButtonClicked() ) );
                 return;
@@ -376,6 +379,16 @@ void KTabBar::setHoverCloseButton( bool button )
 bool KTabBar::hoverCloseButton() const
 {
     return mHoverCloseButtonEnabled;
+}
+
+void KTabBar::setHoverCloseButtonDelayed( bool delayed )
+{
+    mHoverCloseButtonDelayed = delayed;
+}
+
+bool KTabBar::hoverCloseButtonDelayed() const
+{
+    return mHoverCloseButtonDelayed;
 }
 
 void KTabBar::onLayoutChange()

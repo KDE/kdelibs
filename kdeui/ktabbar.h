@@ -43,12 +43,15 @@ public:
     const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
     virtual void removeTab( QTab * );
-    
+
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
     void setHoverCloseButton( bool );
     bool hoverCloseButton() const;
+
+    void setHoverCloseButtonDelayed( bool );
+    bool hoverCloseButtonDelayed() const;
 
 signals:
     void contextMenu( int, const QPoint & );
@@ -87,6 +90,7 @@ private:
     QTimer *mEnableCloseButtonTimer, *mActivateDragSwitchTabTimer;
 
     bool mHoverCloseButtonEnabled;
+    bool mHoverCloseButtonDelayed;
     bool mTabReorderingEnabled;
 
     KTabBarPrivate * d;

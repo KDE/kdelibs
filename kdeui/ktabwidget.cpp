@@ -190,6 +190,16 @@ bool KTabWidget::hoverCloseButton() const
     return static_cast<KTabBar*>(tabBar())->hoverCloseButton();
 }
 
+void KTabWidget::setHoverCloseButtonDelayed( bool delayed )
+{
+    static_cast<KTabBar*>(tabBar())->setHoverCloseButtonDelayed( delayed );
+}
+
+bool KTabWidget::hoverCloseButtonDelayed() const
+{
+    return static_cast<KTabBar*>(tabBar())->hoverCloseButtonDelayed();
+}
+
 void KTabWidget::closeRequest( int index )
 {
     emit( closeRequest( page( index ) ) );
