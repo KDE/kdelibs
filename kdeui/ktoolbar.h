@@ -952,12 +952,14 @@ protected:
     void childEvent( QChildEvent *e );
     void showEvent( QShowEvent *e );
     void resizeEvent( QResizeEvent *e );
-
+    bool event( QEvent *e );
+    
 private slots:
     void rebuildLayout();
     void slotReadConfig ();
     void slotIconChanged(int);
-
+    void slotRepaint();
+    
 private:
     void init();
     void doConnections( KToolBarButton *button );

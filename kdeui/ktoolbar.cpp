@@ -1434,8 +1434,9 @@ void KToolBar::show()
 
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
+    setUpdatesEnabled( FALSE );
     QToolBar::resizeEvent( e );
-//     repaint( FALSE );
+    QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
 }
 
 void KToolBar::slotIconChanged(int group)
@@ -1577,6 +1578,19 @@ void KToolBar::slotReadConfig()
 	emit modechange(); // tell buttons what happened
     if (isVisible ())
 	updateGeometry();
+}
+
+bool KToolBar::event( QEvent *e )
+{
+    if ( e->type() == QEvent::LayoutHint )
+	QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
+    return QToolBar::event( e );
+}
+
+void KToolBar::slotRepaint()
+{
+    setUpdatesEnabled( TRUE );
+    repaint( FALSE );
 }
 
 #include "ktoolbar.moc"

@@ -688,10 +688,11 @@ void KTMainWindow::saveToolBars()
     }
 }
 
-void KTMainWindow::paintEvent( QPaintEvent *e )
+void KTMainWindow::paintEvent( QPaintEvent * )
 {
     // do nothing
 }
+
 
 #include "ktmainwindow.moc"
 
