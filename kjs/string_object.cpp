@@ -66,7 +66,7 @@ Completion StringObjectFunc::execute(const List &args)
 {
   UString s;
   if (args.size()) {
-    UChar *buf = new UChar(args.size());
+    UChar *buf = new UChar[args.size()];
     UChar *p = buf;
     ListIterator it = args.begin();
     while (it != args.end()) {
@@ -77,7 +77,7 @@ Completion StringObjectFunc::execute(const List &args)
     s = UString(buf, args.size(), false);
   } else
     s = "";
-  
+
   return Completion(Normal, String(s));
 }
 
@@ -251,7 +251,7 @@ Completion StringProtoFunc::execute(const List &args)
     u = s.value();
     u2 = a0.toString().value();
     i = p0 = 0;
-    /* TODO: regexps with backtracking, special cases */    
+    /* TODO: regexps with backtracking, special cases */
     while ((pos = u.find(u2, p0)) >= 0) {
       result.put(UString::from(i), String(u.substr(p0, pos-p0)));
       p0 = pos + u2.size();
