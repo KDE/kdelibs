@@ -193,6 +193,7 @@ const ClassInfo KJS::HTMLDocument::info =
   lastModified		HTMLDocument::LastModified	DontDelete|ReadOnly
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
+  dir			HTMLDocument::Dir		DontDelete
 #potentially obsolete array properties
 # layers
 # plugins
@@ -293,6 +294,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return Number(part->view() ? part->view()->visibleWidth() : 0);
     case Width:
       return Number(part->view() ? part->view()->visibleWidth() : 0);
+    case Dir:
+      return String(body.dir());
     }
   }
   if (DOMDocument::hasProperty(exec, propertyName, true))
@@ -347,6 +350,9 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
     break;
   case VlinkColor:
     body.setVLink(value.toString(exec).string());
+    break;
+  case Dir:
+    body.setDir(value.toString(exec).string());
     break;
   default:
     kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
