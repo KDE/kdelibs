@@ -81,6 +81,8 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
     case QMessageBox::Critical:
         icon_name = "messagebox_critical";
         break;
+    default:
+        break;
     }
 
    QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, KIcon::NoGroup, KIcon::SizeMedium, KIcon::DefaultState, 0, true);
