@@ -532,10 +532,17 @@ void KColorPatch::dropEvent( QDropEvent *event)
      }
 }
 
+class KPaletteTable::KPaletteTablePrivate
+{
+public:
+    QMap<QString,QColor> m_namedColorMap;
+};
 
 KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	: QWidget( parent ), mMinWidth(minWidth), mCols(cols)
 {
+  d = new KPaletteTablePrivate;
+  
   cells = 0;
   mPalette = 0;
   i18n_customColors = i18n("* Custom Colors *");
@@ -580,6 +587,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 KPaletteTable::~KPaletteTable()
 {
    delete mPalette;
+   delete d;
 }
 
 QString
@@ -652,7 +660,14 @@ KPaletteTable::readNamedColor( void )
 	{
 	  continue;
 	}
-	list.append( i18n("color", name.latin1() ) );
+
+        const QColor color ( red, green, blue );
+        if ( color.isValid() )
+        {
+            const QString colorName( i18n("color", name.latin1() ) );
+            list.append( colorName );
+            d->m_namedColorMap[ colorName ] = color;
+        }
       }
     }
 
@@ -825,7 +840,7 @@ KPaletteTable::slotColorCellDoubleClicked( int col )
 void
 KPaletteTable::slotColorTextSelected( const QString &colorText )
 {
-  emit colorSelected( QColor (colorText), colorText );
+  emit colorSelected( d->m_namedColorMap[ colorText ], colorText );
 }
 
 
