@@ -84,6 +84,9 @@ class KXMLGUIFactory
    */
   void removeClient( KXMLGUIClient *client );
 
+  void plugActionList( KXMLGUIClient *client, const QString &name, const QList<KAction> &actionList );
+  void unplugActionList( KXMLGUIClient *client, const QString &name );
+
   /**
    * Returns a list of all clients currently added to this factory
    */
@@ -127,6 +130,9 @@ class KXMLGUIFactory
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder );
 
   KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName );
+
+  void plugActionListRecursive( KXMLGUIContainerNode *node );
+  void unplugActionListRecursive( KXMLGUIContainerNode *node );
 
   KXMLGUIClient *m_client;
   KXMLGUIBuilder *m_builder;

@@ -189,6 +189,9 @@ public:
    */
   void reloadXML();
 
+  void plugActionList( const QString &name, const QList<KAction> &actionList );
+  void unplugActionList( const QString &name );
+
 protected:
   /**
    * Set the instance (@ref KInstance) for this part.

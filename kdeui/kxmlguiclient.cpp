@@ -542,3 +542,19 @@ KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const
 {
   return d->m_builder;
 }
+
+void KXMLGUIClient::plugActionList( const QString &name, const QList<KAction> &actionList )
+{
+  if ( !d->m_factory )
+    return;
+  
+  d->m_factory->plugActionList( this, name, actionList );
+}
+
+void KXMLGUIClient::unplugActionList( const QString &name )
+{
+  if ( !d->m_factory )
+    return;
+  
+  d->m_factory->unplugActionList( this, name );
+}
