@@ -72,11 +72,13 @@ namespace KIO {
         virtual ~Job();
 
         /**
-        * Abort job
+        * Abort this job.
         * This kills all subjobs and deletes the job
-        * @param quietly if true, Job will emit signal @ref result
-        * Should only be set to false when the user kills the job
-        * (from kio_uiserver), not when you want to abort a job.
+        * @param quietly if false, Job will emit signal @ref result
+        * and ask kio_uiserver to close the progress window.
+        * @p quietly is set to true for subjobs. Whether applications
+        * should call with true or false depends on whether they rely
+        * on result being emitted or not.
         */
         virtual void kill( bool quietly = true );
 
