@@ -188,7 +188,7 @@ HighColorStyle::~HighColorStyle()
 
 void HighColorStyle::polish(QWidget* widget)
 {
-	// Put in order of highest occurance to maximise hit rate
+	// Put in order of highest occurrence to maximise hit rate
 	if (widget->inherits("QPushButton")) {
 		widget->installEventFilter(this);
 	} else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {

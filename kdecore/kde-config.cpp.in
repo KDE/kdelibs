@@ -131,7 +131,7 @@ int main(int argc, char **argv)
             "sound", I18N_NOOP("Application sounds"),
             "templates", I18N_NOOP("Templates"),
             "wallpaper", I18N_NOOP("Wallpapers"),
-            "tmp", I18N_NOOP("Temporary files (specfic for both current host and current user)"),
+            "tmp", I18N_NOOP("Temporary files (specific for both current host and current user)"),
             "socket", I18N_NOOP("UNIX Sockets (specific for both current host and current user)"),
             0, 0
         };

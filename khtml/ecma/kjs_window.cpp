@@ -1713,7 +1713,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
 
   // we are potentially fetching a reference to a another Window object here.
   // i.e. we may be accessing objects from another interpreter instance.
-  // Therefore we have to be a bit careful with memory managment.
+  // Therefore we have to be a bit careful with memory management.
   if (frame && frame->inherits("KHTMLPart")) {
     KHTMLPart *khtml = static_cast<KHTMLPart*>(frame);
     return Window::retrieve(khtml);

@@ -365,7 +365,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
     }
   }
 
-  // if an exception occured, propogate it back to the previous execution object
+  // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
     exec->_exception = newExec.exception();
 

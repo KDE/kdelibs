@@ -135,7 +135,7 @@ QString KGuiItem::plainText() const {
     for (int pos = 0; pos < len; pos++)
     {
         //We pass through any non-ampersand character,
-        //and any ampersand that's preceeded by an ampersand
+        //and any ampersand that's preceded by an ampersand
         if (data[pos] != '&' || (pos >= 1 && data[pos-1] == '&') )
             stripped[resultLength++] = data[pos];
     }

@@ -263,7 +263,7 @@ void SlaveBase::dispatchLoop()
         {
           dispatch(cmd, data);
         }
-        else // some error occured, perhaps no more application
+        else // some error occurred, perhaps no more application
         {
           // When the app exits, should the slave be put back in the pool ?
           if (mConnectedToApp && !mPoolSocket.isEmpty())
@@ -1064,11 +1064,11 @@ bool SlaveBase::pingCacheDaemon() const
 {
     // TODO: Ping kded / kpasswdserver
     KDEsuClient client;
-    int sucess = client.ping();
-    if( sucess == -1 )
+    int success = client.ping();
+    if( success == -1 )
     {
-        sucess = client.startServer();
-        if( sucess == -1 )
+        success = client.startServer();
+        if( success == -1 )
         {
             kdDebug(7019) << "Cannot start a new deamon!!" << endl;
             return false;

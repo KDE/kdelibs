@@ -186,7 +186,7 @@ ContentLine::_parse()
 
 		split = str.find("=");
 		if (split < 0 ) {
-			vDebug("No '=' in paramter.");
+			vDebug("No '=' in parameter.");
 			continue;
 		}
 		

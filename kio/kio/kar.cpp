@@ -96,7 +96,7 @@ bool KAr::openArchive( int mode )
         QCString name;
         int date, uid, gid, mode, size;
 
-        dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundry
+        dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundary
 
         if ( dev->readBlock (ar_header.data(), 60) != 60 ) { // Read ar header
             kdWarning(7042) << "Couldn't read header" << endl;

@@ -240,7 +240,7 @@ void KHTMLPartBrowserExtension::updateEditActions()
 
 void KHTMLPartBrowserExtension::extensionProxyActionEnabled( const char *action, bool enable )
 {
-    // only forward enableAction calls for actions we actually do foward
+    // only forward enableAction calls for actions we actually do forward
     if ( strcmp( action, "cut" ) == 0 ||
          strcmp( action, "copy" ) == 0 ||
          strcmp( action, "paste" ) == 0 ) {

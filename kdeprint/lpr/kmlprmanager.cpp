@@ -398,7 +398,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 		{
 			QString	sd = entry->field("sd");
 			// first try to save the printcap file, and if
-			// successfull, remove the spool directory
+			// successful, remove the spool directory
 			m_entries.take(prt->printerName());
 			bool	status = savePrintcapFile();
 			if (status)

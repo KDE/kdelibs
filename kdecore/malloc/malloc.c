@@ -2103,7 +2103,7 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     and consolidated sets of chunks, which is what these bins hold, so
     they can be found quickly.  All procedures maintain the invariant
     that no consolidated chunk physically borders another one, so each
-    chunk in a list is known to be preceeded and followed by either
+    chunk in a list is known to be preceded and followed by either
     inuse chunks or the ends of memory.
 
     Chunks in bins are kept in size order, with ties going to the
@@ -5404,10 +5404,10 @@ History:
         Wolfram Gloger (Gloger@lrz.uni-muenchen.de).
       * Use last_remainder in more cases.
       * Pack bins using idea from  colin@nyx10.cs.du.edu
-      * Use ordered bins instead of best-fit threshhold
+      * Use ordered bins instead of best-fit threshold
       * Eliminate block-local decls to simplify tracing and debugging.
       * Support another case of realloc via move into top
-      * Fix error occuring when initial sbrk_base not word-aligned.
+      * Fix error occurring when initial sbrk_base not word-aligned.
       * Rely on page size for units instead of SBRK_UNIT to
         avoid surprises about sbrk alignment conventions.
       * Add mallinfo, mallopt. Thanks to Raymond Nijssen
@@ -5749,7 +5749,7 @@ posix_memalign (void **memptr, size_t alignment, size_t size)
 
 #else
 /* Some linkers (Solaris 2.6) don't like empty archives, but for
-   easier Makefile's we want to link against libklmalloc.la everytime,
+   easier Makefile's we want to link against libklmalloc.la every time,
    so simply make it non-empty.  */
 void __kdemalloc_dummy_function ()
 {

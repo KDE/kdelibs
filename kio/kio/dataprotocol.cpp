@@ -77,7 +77,7 @@ const QChar charset_str[] = { 'c','h','a','r','s','e','t' };
 const QChar us_ascii_str[] = { 'u','s','-','a','s','c','i','i' };
 const QChar base64_str[] = { 'b','a','s','e','6','4' };
 
-/** returns the position of the first occurrance of any of the given characters
+/** returns the position of the first occurrence of any of the given characters
   * @p c1 to @p c3 or buf.length() if none is contained.
   * @param buf buffer where to look for c
   * @param begin zero-indexed starting position

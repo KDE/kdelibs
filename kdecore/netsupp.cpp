@@ -1173,7 +1173,7 @@ int inet_pton(int af, const char *cp, void *buf)
 	{
 	  if (has_v4 && inet_pton(AF_INET, p, addr + n) != 0)
 	    {
-	      // successfull v4 convertion
+	      // successful v4 convertion
 	      addr[n] = ntohs(addr[n]);
 	      n++;
 	      addr[n] = ntohs(addr[n]);

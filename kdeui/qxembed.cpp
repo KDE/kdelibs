@@ -903,7 +903,7 @@ void QXEmbed::windowChanged( WId )
   client will be embedded in the window that is passed as
   \c -embed command line argument.
 
-  The function returns TRUE on sucess or FALSE if no such command line
+  The function returns TRUE on success or FALSE if no such command line
   parameter is specified.
 
   \sa embedClientIntoWindow()

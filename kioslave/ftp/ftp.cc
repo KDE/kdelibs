@@ -400,7 +400,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
 /**
  * Called by @ref openConnection. It logs us in.
  * @ref m_initialPath is set to the current working directory
- * if logging on was successfull.
+ * if logging on was successful.
  *
  * @return true on success.
  */

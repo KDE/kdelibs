@@ -486,7 +486,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 	return;
     }
 
-    // Call successfull. Send back replyType and replyData.
+    // Call successful. Send back replyType and replyData.
     replyStream << d->appId << fromApp << replyType << replyData.size();
 
 

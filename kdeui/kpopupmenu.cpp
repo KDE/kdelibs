@@ -385,7 +385,7 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
                 // underline the currently selected item
                 changeItem(j, underlineText(d->originalText, d->keySeq.length()));
 
-                // remeber what's going on
+                // remember what's going on
                 d->lastHitIndex = i;
 
                 // start/restart the clear timer

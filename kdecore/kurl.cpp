@@ -320,7 +320,7 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
       cdUp++;
     else
     {
-      // Ignore any occurances of '.'
+      // Ignore any occurrences of '.'
       // This includes entries that simply do not make sense like /..../
       if ( (len || !cleanDirSeparator) &&
            (len != 1 || path[pos+1] != '.' ) )
@@ -1834,7 +1834,7 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
       if ( value.isEmpty() )
 	result.insert( name, QString::fromLatin1("") );
       else {
-	// ### why is decoding name not neccessary?
+	// ### why is decoding name not necessary?
 	value.replace( '+', ' ' ); // + in queries means space
 	result.insert( name, decode_string( value, encoding_hint ) );
       }

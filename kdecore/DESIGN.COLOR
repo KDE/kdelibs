@@ -132,7 +132,7 @@ are equally readable.
 
 An application may offer the user an option to change the color of
 certain aspects of the application. It should be noted that an
-application specfic color setting can cause unexpected results when
+application specific color setting can cause unexpected results when
 the user changes its color scheme. The application specific color may
 look ugly in combination with other color schemes or the resulting UI
 may even become unreadable. Therefor applications specific colors

@@ -24,7 +24,7 @@ void Driver::test()
 {
 	// This is written like this to allow the potentially ASYNC calls to be syncronized
 	// Just sleeping would mean that no errors were reported until much later
-	// I could improve it, so that we don't sleep after a syncronous call, but I will
+	// I could improve it, so that we don't sleep after a synchronous call, but I will
 	// leave it for later
 	
 	std::cerr  << __PRETTY_FUNCTION__ << " count: " << count << '\n';

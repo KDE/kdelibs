@@ -643,7 +643,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      close(d.fd[0]);
      if (launcher && (d.result == 0))
      {
-        // Trader launched successfull
+        // Trader launched successful
         d.launcher_pid = d.fork;
      }
   }

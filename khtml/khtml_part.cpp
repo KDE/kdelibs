@@ -2870,7 +2870,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;
     }
-   // Is this check neccessary at all? (Frerich)
+   // Is this check necessary at all? (Frerich)
 #if 0
     else if (u.protocol() == QString::fromLatin1("http")) {
         DOM::Node hrefNode = nodeUnderMouse().parentNode();

@@ -291,7 +291,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
-// Default implementation, overriden in KHTMLRun
+// Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
 {
     simpleSave( url, suggestedFilename );

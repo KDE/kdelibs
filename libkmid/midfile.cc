@@ -418,7 +418,7 @@ void parsePatchesUsed(MidiTrack **tracks,MidiFileInfo *info,int gm)
 }
 
 int fsearch(FILE *fh,const char *text,long *ptr)
-  // Search for "text" throught the fh file and then returns :
+  // Search for "text" through the fh file and then returns :
   // text MUST BE smaller than 256 characters
   //   0 if not was found 
   //   1 if it was found and in ptr (if !=NULL) the position where text begins.

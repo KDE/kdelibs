@@ -196,7 +196,7 @@ void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear)
 
 void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h)
 {
-    // using a bunch of QRect lines seems much more efficent than bitmaps or
+    // using a bunch of QRect lines seems much more efficient than bitmaps or
     // point arrays, even tho it uses more statements
     r += QRect(x+6, y+0, w-12, h);
     r += QRect(x+5, y+1, 1, h-2); // left

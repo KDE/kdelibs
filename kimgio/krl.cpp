@@ -79,7 +79,7 @@ void kimgio_krl_read( QImageIO *iio )
 		}
 		SWAP_BYTES( *(unsigned short *)currptr );
 
-// It's not enought to delete the two least significant bits, because krl
+// It's not enough to delete the two least significant bits, because krl
 // doesn't use the whole range of colours all the time and we want a quality
 // image, so we have to scale the used colour range
 		*ptr = (Q_INT16)((((unsigned short)*currptr)-min)*255.0/(max-min));

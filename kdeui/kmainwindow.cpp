@@ -88,7 +88,7 @@ public:
         KConfig* config = KApplication::kApplication()->sessionConfig();
         if ( KMainWindow::memberList->first() ){
             // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
-            // hook is usefull for better document orientation
+            // hook is useful for better document orientation
             KMainWindow::memberList->first()->saveGlobalProperties(config);
         }
 

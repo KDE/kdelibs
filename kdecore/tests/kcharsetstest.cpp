@@ -6,7 +6,7 @@
 int main()
 {
     QString input( "&lt;Hello &amp;World&gt;" );
-    QString ouput = KCharsets::resolveEntities( input );
-    assert( ouput == "<Hello &World>" );
+    QString output = KCharsets::resolveEntities( input );
+    assert( output == "<Hello &World>" );
     return 0;
 }

@@ -109,7 +109,7 @@ struct KFileDialogPrivate
     QString completionHack;
 
     // now following all kind of widgets, that I need to rebuild
-    // the geometry managment
+    // the geometry management
     QBoxLayout *boxLayout;
     QWidget *mainWidget;
 

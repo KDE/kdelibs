@@ -126,19 +126,19 @@ void testMisc() {
 
   // test remove() doesn't crash with empty list
   map = new PropertyMap();
-  map->remove("nonexistant");
+  map->remove("nonexistent");
   delete map;
   printf("PASS: remove() doesn't crash with empty list\n");
 
   // test get() doesn't crash with empty list
   map = new PropertyMap();
-  map->get("nonexistant");
+  map->get("nonexistent");
   delete map;
   printf("PASS: get() doesn't crash with empty list\n");
 
   // test get() returns 0 on an empty list
   map = new PropertyMap();
-  if (map->get("nonexistant") == 0)
+  if (map->get("nonexistent") == 0)
     printf("PASS: get() returns 0 on an empty list\n");
   else
     printf("FAIL: get() returns 0 on an empty list\n");

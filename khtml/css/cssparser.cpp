@@ -1322,7 +1322,7 @@ bool CSSParser::parseFont( bool important )
 	int id = value->id;
 	if ( id ) {
 	    if ( id == CSS_VAL_NORMAL ) {
-		// do nothing, it's the inital value for all three
+		// do nothing, it's the initial value for all three
 	    }
 	    /*
 	      else if ( id == CSS_VAL_INHERIT ) {

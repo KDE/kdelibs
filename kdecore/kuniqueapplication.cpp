@@ -229,7 +229,7 @@ KUniqueApplication::start()
      ::close(fd[0]);
 
      if (result != 0)
-        ::exit(result); // Error occured in child.
+        ::exit(result); // Error occurred in child.
 
      dc = new DCOPClient();
      if (!dc->attach())

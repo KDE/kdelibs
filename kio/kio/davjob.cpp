@@ -67,7 +67,7 @@ void DavJob::slotFinished()
   // kdDebug() << m_str_response << endl;
 
   if ( ! m_response.setContent( m_str_response, true ) ) {
-    // An error occured parsing the XML response
+    // An error occurred parsing the XML response
     QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
     m_response.appendChild( root );
 

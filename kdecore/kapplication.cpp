@@ -377,7 +377,7 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
 
 // FIXME: remove this when we've get a better method of
 // customizing accelerator handling -- hopefully in Qt.
-// For now, this is set whenever an accelerator is overriden
+// For now, this is set whenever an accelerator is overridden
 // in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
 extern bool kde_g_bKillAccelOverride;
 

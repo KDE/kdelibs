@@ -98,7 +98,7 @@ KMFactory::KMFactory()
 	m_printconfig = 0;
 #if QT_VERSION >= 230
 	// Qt's default behaviour, to generate EPS in some cases and not in others, sucks.
-	// This is fixed in Qt 3.0, but for Qt 2.x we need to disable it explicitely.
+	// This is fixed in Qt 3.0, but for Qt 2.x we need to disable it explicitly.
 	// If this is a problem for anyone, we can add a public method to set this flag.
 	// (David Faure, doing as advised by Lars Knoll)
 	qt_generate_epsf( false );

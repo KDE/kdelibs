@@ -99,7 +99,7 @@ KFileMetaInfoItem::KFileMetaInfoItem( const KFileMimeTypeInfo::ItemInfo* mti,
 
 KFileMetaInfoItem::KFileMetaInfoItem( const KFileMetaInfoItem& item )
 {
-    // operator= does everything that's neccessary
+    // operator= does everything that's necessary
     d = Data::makeNull();
     *this = item;
 }
@@ -332,7 +332,7 @@ void KFileMetaInfo::init( const KURL& url, const QString& mimeType,
 
 KFileMetaInfo::KFileMetaInfo( const KFileMetaInfo& original )
 {
-    // operator= does everything that's neccessary
+    // operator= does everything that's necessary
     d = Data::makeNull();
     *this = original;
 }
@@ -1056,7 +1056,7 @@ KFileMetaInfoGroup::KFileMetaInfoGroup( const QString& name,
 
 KFileMetaInfoGroup::KFileMetaInfoGroup( const KFileMetaInfoGroup& original )
 {
-    // operator= does everything that's neccessary
+    // operator= does everything that's necessary
     d = Data::makeNull();
     *this = original;
 }

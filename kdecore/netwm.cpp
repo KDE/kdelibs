@@ -423,7 +423,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 	} else {
             if (buffer)
                free(buffer);
-	    return; // Some error occured cq. property didn't exist.
+	    return; // Some error occurred cq. property didn't exist.
 	}
     }
     while (after_ret > 0);

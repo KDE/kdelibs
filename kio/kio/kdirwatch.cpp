@@ -279,7 +279,7 @@ void KDirWatchPrivate::slotActivated()
 }
 
 /* In DNOTIFY mode, only entries which are marked dirty are scanned.
- * We first need to mark all yet nonexistant, but possible created
+ * We first need to mark all yet nonexistent, but possible created
  * entries as dirty...
  */
 void KDirWatchPrivate::Entry::propagate_dirty()

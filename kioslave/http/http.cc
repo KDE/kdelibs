@@ -1601,10 +1601,10 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
       // remote side closed connection ?
       if ( n == 0 )
         break;
-      // a valid exception(s) occured, let's retry...
+      // a valid exception(s) occurred, let's retry...
       if (n < 0 && ((errno == EINTR) || (errno == EAGAIN)))
         continue;
-      // some other error occured ?
+      // some other error occurred ?
       return -1;
     }
 
@@ -2424,7 +2424,7 @@ bool HTTPProtocol::readHeader()
   int len = 0;
   char buffer[4097];
   bool cont = false;
-  bool cacheValidated = false; // Revalidation was successfull
+  bool cacheValidated = false; // Revalidation was successful
   bool mayCache = true;
   bool hasCacheDirective = false;
   bool bCanResume = false;
@@ -2758,7 +2758,7 @@ bool HTTPProtocol::readHeader()
       kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
 
       // If we still have text, then it means we have a mime-type with a
-      // paramter (eg: charset=iso-8851) ; so let's get that...
+      // parameter (eg: charset=iso-8851) ; so let's get that...
       if (*pos)
       {
         start = ++pos;
@@ -3844,7 +3844,7 @@ void HTTPProtocol::slotData(const QByteArray &d)
  * is called either as a response to a client's KIOJob::dataEnd()
  * (meaning that the client is done sending data) or by 'httpOpen()'
  * (if we are in the process of a PUT/POST request). It can also be
- * called by a webDAV function, to recieve stat/list/property/etc.
+ * called by a webDAV function, to receive stat/list/property/etc.
  * data; in this case the data is stored in m_bufWebDavData.
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
@@ -3928,7 +3928,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (m_bChunked)
     m_iBytesLeft = NO_SIZE;
 
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
 
   // Main incoming loop...  Gather everything while we can...
   bool cpMimeBuffer = false;

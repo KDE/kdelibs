@@ -126,11 +126,11 @@ bool SessionData::AuthDataList::pingCacheDaemon()
 {
   Q_ASSERT(m_kdesuClient);
 
-  int sucess = m_kdesuClient->ping();
-  if( sucess == -1 )
+  int success = m_kdesuClient->ping();
+  if( success == -1 )
   {
-    sucess = m_kdesuClient->startServer();
-    if( sucess == -1 )
+    success = m_kdesuClient->startServer();
+    if( success == -1 )
         return false;
   }
   return true;

@@ -1719,7 +1719,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 
     // if complete...
     if (d->complete)
-        // ...repaint immediatly
+        // ...repaint immediately
         time = 20;
     else
     {
@@ -1728,7 +1728,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
             time = 300;
         else
             // not complete, not parsing, extend the timer if it exists
-            // otherwise, repaint immediatly
+            // otherwise, repaint immediately
             time = d->repaintTimerId ? 400 : 20;
     }
 

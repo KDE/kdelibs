@@ -2315,7 +2315,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         c->writeEntry( cname+":curTab", ((KDockTabGroup*)obj->widget)->currentPageIndex() );
 
         nameList.append( obj->name() );
-        findList.append( obj->name() ); // not realy need !!!
+        findList.append( obj->name() ); // not really need !!!
         //debug("  Save %s", nList.current());
         nList.remove(nListIt);
         nListIt=nList.begin();

@@ -21,6 +21,14 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2002/08/21 03:08:05  orlovich
+ *
+ * Cleanup:
+ * 1. Don't read uninitialized variables all over the place
+ * 2. Make tiny mark distance setting actually matter.
+ * 3. Remove dead code that did nothing other than read uninitialized variables and write out
+ * somoe other ones noone actually used -- mark 3 methods with no effect as deprecated.
+ *
  * Revision 1.16  2002/03/04 00:51:51  lunakl
  * Keep BC changes (the patch is almost 100KiB of boring stuff
  * ... anybody willing to review? ;) ).

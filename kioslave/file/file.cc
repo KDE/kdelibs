@@ -630,7 +630,7 @@ void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwr
         }
         else
         {
-            // Some error occured while we tried to symlink
+            // Some error occurred while we tried to symlink
             error( KIO::ERR_CANNOT_SYMLINK, dest.path() );
             return;
         }

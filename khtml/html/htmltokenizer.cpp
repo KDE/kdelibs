@@ -1490,7 +1490,7 @@ void HTMLTokenizer::finish()
         if ( !food.isEmpty() )
             write(food, true);
     }
-    // this indicates we will not recieve any more data... but if we are waiting on
+    // this indicates we will not receive any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
     if (cachedScript.isEmpty() && !m_executingScript && !onHold)

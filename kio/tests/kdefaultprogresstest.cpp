@@ -10,7 +10,7 @@ int main(int argc, char **argv)
     KApplication app(argc, argv, "kdefaultprogresstest");
 
     DefaultProgress* dlg = new DefaultProgress();
-    KURL src("http://this.host.doesnt.exist/this/dir/neither/andthisfileneither");
+    KURL src("http://this.host.doesn't.exist/this/dir/neither/andthisfileneither");
     KURL dest("file:/tmp/dest");
     dlg->slotCopying( 0L, src, dest );
     dlg->slotTotalSize( 0L, 12000 );

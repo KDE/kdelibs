@@ -713,7 +713,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                     r.setRect( r.x(), r.y() + ( r.height() - 12 ) / 2, r.width(), 12 );
                 }
                 r.rect( &x, &y, &w, &h );
-                // Handles pixmapped arrows. A little inefficent because you can specify
+                // Handles pixmapped arrows. A little inefficient because you can specify
                 // some as pixmaps and some as default types.
                 WidgetType widget;
                 switch ( pe )

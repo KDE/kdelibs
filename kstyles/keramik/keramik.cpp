@@ -316,7 +316,7 @@ void KeramikStyle::polish(QApplication* app)
 
 void KeramikStyle::polish(QWidget* widget)
 {
-	// Put in order of highest occurance to maximise hit rate
+	// Put in order of highest occurrence to maximise hit rate
 	if ( widget->inherits( "QPushButton" )  || widget->inherits( "QComboBox" ) )
 	{
 		widget->installEventFilter(this);

@@ -153,7 +153,7 @@ void MarginPreview::paintEvent(QPaintEvent *)
 		margbox_.setBottom(m-1);
 		p.drawLine(box_.left(),m,box_.right(),m);
 
-		// fill usefull area
+		// fill useful area
 		p.fillRect(margbox_,QColor(220,220,220));
 	}
 }

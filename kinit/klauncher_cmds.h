@@ -84,7 +84,7 @@ typedef struct
 /*
  * LAUNCHER_SHELL
  *
- * Start a new process and use given enviroment.
+ * Start a new process and use given environment.
  * Starts app-startup notification.
  *
  * long argc: number of arguments
@@ -143,7 +143,7 @@ typedef struct
 /*
  * LAUNCHER_KWRAPPER
  *
- * Start a new process, use given enviroment, pass signals and output.
+ * Start a new process, use given environment, pass signals and output.
  * Starts app-startup notification.
  *
  * long argc: number of arguments

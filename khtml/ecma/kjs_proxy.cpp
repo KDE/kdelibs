@@ -115,7 +115,7 @@ KJSProxyImpl::~KJSProxyImpl()
 QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
                                 const QString&str, const DOM::Node &n, Completion *completion) {
   // evaluate code. Returns the JS return value or an invalid QVariant
-  // if there was none, an error occured or the type couldn't be converted.
+  // if there was none, an error occurred or the type couldn't be converted.
 
   initScript();
   // inlineCode is true for <a href="javascript:doSomething()">

@@ -227,7 +227,7 @@ void KMdiDockContainer::tabClicked(int t)
 			KDockWidget *tmpDw=static_cast<KDockWidget*>(m_ws->widget(t)->qt_cast("KDockWidget"));
 			if (tmpDw) {
 				if (tmpDw->getWidget()) tmpDw->getWidget()->setFocus();
-			} else kdDebug()<<"Something really wierd is going on"<<endl;
+			} else kdDebug()<<"Something really weird is going on"<<endl;
 		} else
 			kdDebug()<<"KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
 

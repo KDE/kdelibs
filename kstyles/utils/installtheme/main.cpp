@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         if (config.readEntry( "widgetStyle" ) == "basicstyle.la")
         {
             //OK, emit a style entry...
-            if (!themes.contains(name)) //Only add first occurence, i.e. user local one.
+            if (!themes.contains(name)) //Only add first occurrence, i.e. user local one.
                 themes[name] = file;
         }
     }
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 	}
 #endif
 
-    QStringList themeNames; //A list of names, each occuring once - the keys of the themes map..
+    QStringList themeNames; //A list of names, each occurring once - the keys of the themes map..
 
     for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); i++)
     {

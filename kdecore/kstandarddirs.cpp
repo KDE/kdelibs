@@ -885,7 +885,7 @@ QString KStandardDirs::saveLocation(const char *type,
        }
        if (dirs)
        {
-          // Check for existance of typed directory + suffix
+          // Check for existence of typed directory + suffix
           if (strncmp(type, "xdgdata-", 8) == 0)
              pPath = new QString(realPath(localxdgdatadir() + dirs->last()));
           else if (strncmp(type, "xdgconf-", 8) == 0)

@@ -24,7 +24,7 @@
 // KColorDialog::getColor() so that in contains a parent argument. This
 // improves centering capability.
 //
-// layout managment added Oct 1997 by Mario Weilguni
+// layout management added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 //
 

@@ -138,7 +138,7 @@ struct magic {
 #define LEDATE    12
 	VALUETYPE value;        /* either number or string */
 	unsigned long mask;     /* mask before comparison with value */
-	char nospflag;          /* supress space character */
+	char nospflag;          /* suppress space character */
 
 	/* NOTE: this string is suspected of overrunning - find it! */
 	char desc[MAXDESC];     /* description */

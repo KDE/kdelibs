@@ -451,7 +451,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
         applyResourceGroup( &config, i );
     applyMiscResourceGroup( &config );
 
-    // initalize defaults that may not be read
+    // initialize defaults that may not be read
     for ( i = 0; i < WIDGETS; ++i )
         loaded[ i ] = false;
     btnXShift = btnYShift = focus3DOffset = 0;
@@ -1306,7 +1306,7 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
                                      config->readNumEntry( base + "PixmapBWidth", 0 ) );
     }
 
-    // Various widget specific settings. This was more efficent when bunched
+    // Various widget specific settings. This was more efficient when bunched
     // together in the misc group, but this makes an easier to read config.
     if ( i == SliderGroove )
         prop[ "SmallGroove" ] = QString::number(
@@ -1524,7 +1524,7 @@ void KThemeBase::readResourceGroup( int i, QString *pixnames, QString *brdnames,
     if ( pbPixmaps[ i ] && !pbDuplicate[ i ] )
         generateBorderPix( i );
 
-    // Various widget specific settings. This was more efficent when bunched
+    // Various widget specific settings. This was more efficient when bunched
     // together in the misc group, but this makes an easier to read config.
     if ( i == SliderGroove )
         roundedSlider = readNumEntry( prop, "SmallGroove", false );
