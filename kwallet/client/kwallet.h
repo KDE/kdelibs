@@ -31,6 +31,7 @@
 
 
 class DCOPClient;
+class DCOPRef;
 
 namespace KWallet {
 
@@ -66,6 +67,7 @@ class Wallet {
 		QString _name;
 		bool _open;
 		DCOPClient *_dcopClient;
+		DCOPRef *_kwalletdRef;
 };
 
 };

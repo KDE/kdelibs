@@ -21,6 +21,7 @@
 #include "kwallet.h"
 #include <kdebug.h>
 #include <dcopclient.h>
+#include <dcopref.h>
 
 #include <assert.h>
 
@@ -30,6 +31,8 @@ using namespace KWallet;
 Wallet::Wallet(const QString& name) : _name(name), _dcopClient(new DCOPClient) {
 	_open = false;
 	_dcopClient->attach();
+	_kwalletdRef = new DCOPRef("kded", "kwalletd");
+	_kwalletdRef->setDCOPClient(_dcopClient);
 }
 
 
@@ -38,61 +41,38 @@ Wallet::~Wallet() {
 		// FIXME: Discard changes
 	}
 
+	delete _kwalletdRef;
 	delete _dcopClient;
 }
 
 
 int Wallet::open(const QByteArray& password) {
-	if (!_dcopClient->isAttached())
-		return -100;
-
 	if (_open) {
 		return -1;
 	}
 
-	QByteArray data, retval;
-	QCString rettype;
-	QDataStream arg(data, IO_WriteOnly);
-	arg << _name;
-	arg << password;
-	bool rc = _dcopClient->call("kded", "kwalletd",
-				"open(const QString&, const QByteArray&)",
-				data, rettype, retval, true);
-
-	if (rc && rettype == "int") {
-		QDataStream retStream(retval, IO_ReadOnly);
-		int drc;
-		retStream >> drc;
+	DCOPReply r = _kwalletdRef->call("open", _name, password);
+	if (r.isValid()) {
+		int drc ;
+		r.get(drc);
 		if (drc == 0) {
 			_open = true;
 		}
 		return drc;
 	}
 	return -99;
-}
+  }
 
 	
 int Wallet::close(const QByteArray& password) {
-	if (!_dcopClient->isAttached())
-		return -100;
-
 	if (!_open) {
 		return -1;
 	}
 
-	QByteArray data, retval;
-	QCString rettype;
-	QDataStream arg(data, IO_WriteOnly);
-	arg << _name;
-	arg << password;
-	bool rc = _dcopClient->call("kded", "kwalletd",
-				"close(const QString&, const QByteArray&)",
-				data, rettype, retval, true);
-
-	if (rc && rettype == "int") {
-		QDataStream retStream(retval, IO_ReadOnly);
+	DCOPReply r = _kwalletdRef->call("close", _name, password);
+	if (r.isValid()) {
 		int drc;
-		retStream >> drc;
+		r.get(drc);
 		if (drc == 0) {
 			_open = false;
 		}
@@ -108,20 +88,10 @@ const QString& Wallet::walletName() const {
 
 
 bool Wallet::isOpen() {
-	if (!_dcopClient->isAttached())
-		return false;
-	QByteArray data, retval;
-	QCString rettype;
-	QDataStream arg(data, IO_WriteOnly);
-	arg << _name;
-	bool rc = _dcopClient->call("kded", "kwalletd",
-				"isOpen(const QString&)",
-				data, rettype, retval, true);
-
-	if (rc && rettype == "bool") {
-		QDataStream retStream(retval, IO_ReadOnly);
+	DCOPReply r = _kwalletdRef->call("isOpen", _name);
+	if (r.isValid()) {
 		bool drc;
-		retStream >> drc;
+		r.get(drc);
 		_open = drc;
 		return drc;
 	}
