@@ -116,8 +116,10 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 	       contextId, appletId,
 	       name.latin1(), clazzName.latin1(),
 	       baseURL.latin1(), 
-               codeBase.isNull() ? "null" : codeBase.latin1(),
-               jarFile.isNull() ? "null" : jarFile.latin1(),
+               (codeBase.isNull() || codeBase.isEmpty())
+	           ? "null" : codeBase.latin1(),
+               (jarFile.isNull() || jarFile.isEmpty())
+                   ? "null" : jarFile.latin1(),
                size.width(), size.height() );
     process->send( s );
 
