@@ -788,7 +788,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
                     ->addCSSProperty(CSS_PROP_DISPLAY, "none");
             inBody = false;
         }
-        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML) )
+        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML) 
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
