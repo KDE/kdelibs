@@ -60,9 +60,9 @@ class TextColumnInterface
       * @see substituteChar()
       */
     virtual void setSubstituteChar( QChar SC ) = 0;
-    /** sets the encoding of the text column. Default is KHE::LocalEncoding.
+    /** sets the encoding of the text column.
       * If the encoding is not available the format will not be changed.
-      * Default is LocalEncoding.
+      * Default is @c LocalEncoding.
       * @param C the new encoding
       * @see encoding()
       */
@@ -70,19 +70,16 @@ class TextColumnInterface
 
 
   public: // get methods
-    /** returns true if "unprintable" chars (value<32) are displayed in the text column
-      * with their corresponding character, default is false
-      * @return @c true if displayed, @c false otherwise
+    /** @return @c true if "unprintable" chars (value<32) are displayed in the text column
+      * with their corresponding character, @c false otherwise
       * @see setShowUnprintable()
       */
     virtual bool showUnprintable() const = 0;
-    /** returns the actually used substitute character for "unprintable" chars, 
-      * default is '.' 
-      * @return the char
+    /** @return the currently used substitute character for "unprintable" chars.
       * @see setSubstituteChar()
       */
     virtual QChar substituteChar() const = 0;
-    /** 
+    /** @return the currently used encoding
       * @see setEncoding()
       */
     virtual KEncoding encoding()   const = 0;

@@ -68,8 +68,8 @@ class HexColumnInterface
 
 
   public: // get methods
-    /** @return the current ResizeStyle
-      * @see setResizeStyle
+    /** @return the current resize style
+      * @see setResizeStyle()
       */
     virtual KResizeStyle resizeStyle() const = 0;
     /** @return the current number of bytes per line
@@ -77,11 +77,11 @@ class HexColumnInterface
       */
     virtual int noOfBytesPerLine()     const = 0;
 
-    /** @return the the current coding
-      * @see setCoding
+    /** @return the current coding
+      * @see setCoding()
       */
     virtual KCoding coding()        const = 0;
-    /** @return the spacing between bytes (in pixels) 
+    /** @return the spacing between bytes (in pixels)
       * @see setByteSpacingWidth()
       */
     virtual int byteSpacingWidth()  const = 0;
@@ -90,8 +90,8 @@ class HexColumnInterface
       * @see setNoOfGroupedBytes()
       */
     virtual int noOfGroupedBytes()  const = 0;
-    /** @return the spacing between groups of bytes (in pixels) 
-      * @see setGroupSpacingWidth
+    /** @return the spacing between groups of bytes (in pixels)
+      * @see setGroupSpacingWidth()
       */
     virtual int groupSpacingWidth() const = 0;
 
@@ -102,42 +102,48 @@ class HexColumnInterface
 
 
   public: // set methods
-    /** sets the resizestyle for the hex column. Default is KHE::FullSizeUsage 
+    /** sets the resize style for the hex column.
+      * Default is @c FullSizeUsage
       * @param Style new style
       * @see resizeStyle()
       */
     virtual void setResizeStyle( KResizeStyle Style ) = 0;
-    /** sets the number of bytes per line, switching the resize style to KHE::NoResize 
+    /** sets the number of bytes per line, switching the resize style to @c NoResize
+      * Default is 16.
       * @param NoCpL new number of bytes per line
       * @see noOfBytesPerLine()
       */
     virtual void setNoOfBytesPerLine( int NoCpL ) = 0;
 
-    /** sets the format of the hex column. Default is KHE::HexadecimalCoding.
-      * If the coding is not available the format will not be changed. 
+    /** sets the format of the hex column.
+      * If the coding is not available the format will not be changed.
+      * Default is @c HexadecimalCoding.
       * @param C
       * @see coding()
       */
     virtual void setCoding( KCoding C ) = 0;
-    /** sets the spacing between the bytes 
+    /** sets the spacing between the bytes.
+      * Default is 3.
       * @param BSW new spacing between bytes (in pixels)
       * @see byteSpacingWidth()
       */
     virtual void setByteSpacingWidth( int BSW ) = 0;
 
-    /** sets the numbers of grouped bytes, 0 means no grouping, 
-      * Default is 4 
+    /** sets the numbers of grouped bytes, 0 means no grouping.
+      * Default is 4.
       * @param NoGB new number of bytes per group
       * @see noOfGroupedBytes()
       */
     virtual void setNoOfGroupedBytes( int NoGB ) = 0;
-    /** sets the spacing between the groups 
+    /** sets the spacing between the groups.
+      * Default is 9.
       * @param GSW new spacing width (in pixels)
       * @see groupSpacingWidth()
       */
     virtual void setGroupSpacingWidth( int GSW ) = 0;
 
-    /** sets the spacing in the middle of a binary byte
+    /** sets the spacing in the middle of a binary encoded byte.
+      * Default is 1.
       * @param BGW spacing in the middle of a binary (in pixels)
       * @see binaryGapWidth()
       */
