@@ -289,6 +289,10 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
         case 'k':
           subs = substitution(option, _service, quote);
           break;
+          
+        case '%':
+          subs.append("%");
+          break;
      }
 
      if (subs.count() == 1)
@@ -367,6 +371,9 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
             subs = substitution(option, _service, false);
             if (!subs.isEmpty())
                sub = subs[0];
+            break;
+          case '%':
+            sub = "%";
             break;
         }
 
