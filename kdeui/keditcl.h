@@ -48,7 +48,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-#include <knumlineedit.h>
+#include <knuminput.h>
 
 class QLineEdit;
 class KApplication;
@@ -63,7 +63,7 @@ public:
 	KEdGotoLine( QWidget *parent = 0, const char *name = 0 );
 
 	int getLineNumber();
-	KIntLineEdit *lineNum;
+	KIntNumInput *lineNum;
 
 private:
 	QPushButton *ok;

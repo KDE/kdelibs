@@ -24,6 +24,8 @@
  
   */
 
+#include <limits.h> // for INT_MAX
+
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qapplication.h>
@@ -907,7 +909,8 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name)
 	: QDialog( parent, name, TRUE )
 {
 	frame = new QGroupBox( i18n("Goto Line"), this );
-	lineNum = new KIntLineEdit( this );
+	lineNum = new KIntNumInput(QString::null, 1, INT_MAX, 1,
+                               1, QString::null, 10, false, this );
 	this->setFocusPolicy( QWidget::StrongFocus );
 	connect(lineNum, SIGNAL(returnPressed()), this, SLOT(accept()));
 
@@ -935,11 +938,12 @@ void KEdGotoLine::resizeEvent(QResizeEvent *)
 
 void KEdGotoLine::focusInEvent( QFocusEvent *)
 {
+#warning fixme
     lineNum->setFocus();
-    lineNum->selectAll();
+//    lineNum->selectAll();
 }
 
 int KEdGotoLine::getLineNumber()
 {
-	return lineNum->getValue();
+	return lineNum->value();
 }
