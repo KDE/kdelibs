@@ -215,10 +215,7 @@ void KProcess::detach()
     KProcessController::theKProcessController->addProcess(pid_);
     runs = false;
     pid_ = 0; // deny that the process has ever run
-    // Clean up open fd's and socket notifiers.
-    closeStdin();
-    closeStdout();
-    closeStderr();
+    commClose(); // Clean up open fd's and socket notifiers.
   }
 }
 
