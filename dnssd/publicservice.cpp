@@ -169,9 +169,9 @@ const KURL PublicService::toInvitation(const QString& host)
 	KURL url;
 	url.setProtocol("invitation");
 	if (host.isEmpty()) { // select best address
-		unsigned long s_addr = publicIP();
-		if (!s_addr) return KURL();
-		KNetwork::KIpAddress addr(s_addr);
+		unsigned long s_address = publicIP();
+		if (!s_address) return KURL();
+		KNetwork::KIpAddress addr(s_address);
 		url.setHost(addr.toString());
 	} else 	url.setHost(host);
 	//FIXME: if there is no public interface, select any non-loopback
