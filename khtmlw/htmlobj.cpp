@@ -620,7 +620,7 @@ bool HTMLTextMaster::fitLine( bool startOfLine,
  
     // Turn all text over to our slave.
     HTMLTextSlave *text_slave = new HTMLTextSlave( this, 
-    						   startPos, strLen);
+    						   startPos, strLen-startPos);
 
     text_slave->setNext(next());
     setNext(text_slave);
