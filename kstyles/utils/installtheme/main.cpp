@@ -33,38 +33,38 @@
 #include <kstandarddirs.h>
 
 const char* desc = I18N_NOOP("KDE Tool to build a cache list of all pixmap themes installed");
-const char * ver = "0.9";
+const char * ver = "0.9.1";
 
 int main(int argc, char **argv)
 {
-	KCmdLineArgs::init(argc, argv, "kinstalltheme", desc, ver);
-	KApplication qapp;
+    KCmdLineArgs::init(argc, argv, "kinstalltheme", desc, ver);
+    KApplication qapp;
 
     KGlobal::dirs()->addResourceType("themercs", KGlobal::dirs()->kde_default("data")+QString("kstyle/themes"));
-	QStringList themercs = KGlobal::dirs()->findAllResources("themercs","*.themerc");
+    QStringList themercs = KGlobal::dirs()->findAllResources("themercs","*.themerc");
 
-	QMap <QString, QString> themes; //Name->file mapping..
+    QMap <QString, QString> themes; //Name->file mapping..
 
-	for (QStringList::iterator i = themercs.begin(); i!=themercs.end(); i++)
-	{
-         QString file=*i;
-         KSimpleConfig config(file, true);
-         config.setGroup("Misc");
-         QString name = config.readEntry("Name");
-         if (name.isEmpty())
-		 	name = QFileInfo(name).baseName();
+    for (QStringList::iterator i = themercs.begin(); i!=themercs.end(); i++)
+    {
+        QString file=*i;
+        KSimpleConfig config(file, true);
+        config.setGroup("Misc");
+        QString name = config.readEntry("Name");
+        if (name.isEmpty())
+            name = QFileInfo(name).baseName();
 
-		config.setGroup( "KDE" );
+        config.setGroup( "KDE" );
 
-		if (config.readEntry("WidgetStyle").endsWith("[Pixmap]") || (config.readEntry( "widgetStyle" ) == "basicstyle.la") )
-		{
-			//OK, emit a style entry...
-			if (!themes.contains(name)) //Only add first occurence, i.e. user local one.
-				themes[name] = file;
-		}
-	}
+        if (config.readEntry("WidgetStyle").endsWith("[Pixmap]") || (config.readEntry( "widgetStyle" ) == "basicstyle.la") )
+        {
+            //OK, emit a style entry...
+            if (!themes.contains(name)) //Only add first occurence, i.e. user local one.
+                themes[name] = file;
+        }
+    }
 
-	QSettings cache;
+    QSettings cache;
 
 #if 0
 //Doesn't seem to work with present Qt..
@@ -76,14 +76,14 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	QStringList themeNames; //A list of names, each occuring once - the keys of the themes map..
-	for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); i++)
-	{
-		cache.writeEntry("/kthemestyle/"+i.key().lower()+"/file",i.data());
-		themeNames.push_back(i.key());
-	}
+    QStringList themeNames; //A list of names, each occuring once - the keys of the themes map..
+    for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); i++)
+    {
+        cache.writeEntry("/kthemestyle/"+i.key().lower()+"/file",QFileInfo(i.data()).fileName());
+        themeNames.push_back(i.key());
+    }
 
-	cache.writeEntry("/kthemestyle/themes", themeNames);
+    cache.writeEntry("/kthemestyle/themes", themeNames);
 
     return 0;
 }
