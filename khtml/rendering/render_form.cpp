@@ -1081,6 +1081,7 @@ void RenderTextArea::calcMinMaxWidth()
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
+    w->setTabStopWidth(8 * m.width(" "));
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +
