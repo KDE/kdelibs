@@ -207,8 +207,6 @@ public:
     virtual bool isSelectable() const { return false; }
 
     virtual bool isInline() const;
-    virtual QString toHTML() const;
-    QString recursive_toHTML(bool start = false) const;
 
     virtual void getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height);
     virtual QRect getRect() const;

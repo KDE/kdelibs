@@ -405,7 +405,7 @@ unsigned long Node::index() const
 QString Node::toHTML()
 {
     if (!impl) return QString::null;
-    return impl->toHTML();
+    return impl->toString().string();
 }
 
 void Node::applyChanges()

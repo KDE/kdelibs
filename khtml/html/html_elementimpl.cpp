@@ -434,7 +434,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
 
 DOMString HTMLElementImpl::innerHTML() const
 {
-    return toHTML();
+    return toString();
 }
 
 DOMString HTMLElementImpl::innerText() const

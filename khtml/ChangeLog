@@ -1,3 +1,15 @@
+2004-06-10  Zack Rusin  <zack@kde.org>
+
+        * xml/dom_textimpl.cpp (escapeHTML): Move from dom_elementimpl.cpp,
+        and use it to espace text nodes in here
+        * xml/dom_elementimpl.cpp: propely handle attributes,
+        * dom/dom_doc.cpp (toHTML): deprecate in favor of toString and
+        implement in terms of toString,
+        * dom/html_elementimpl.h (innerHTML): implement in terms of
+        toString,
+        * xml/dom_nodeimpl.{h,cpp}: remove the toHTML and recursive_toHTML
+        methods, 
+
 2004-06-09  Zack Rusin  <zack@kde.org>
 
         * xml/dom_nodeimpl.h, xml/dom_xmlimpl.{h,cpp},

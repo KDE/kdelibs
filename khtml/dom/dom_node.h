@@ -866,7 +866,7 @@ public:
      * @internal returns the index of a node
      */
     unsigned long index() const;
-    QString toHTML();
+    QString toHTML() KDE_DEPRECATED;
     void applyChanges();
     /**
      * @deprecated without substitution since 3.2

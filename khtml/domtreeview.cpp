@@ -73,7 +73,7 @@ void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
 	    val.truncate( 20 );
 	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), val);
     }
-    
+
     if(node.handle())
     {
 	m_itemdict.insert(node.handle(), cur_item);
@@ -93,6 +93,5 @@ void DOMTreeView::slotItemClicked(QListViewItem *cur_item)
     DOM::Node *handle = m_nodedict[cur_item];
     if(handle) {
 	emit part->setActiveNode(*handle);
-        //kdDebug() << handle->toHTML() << endl;
     }
 }

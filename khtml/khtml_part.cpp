@@ -1093,7 +1093,7 @@ bool KHTMLPart::pluginsEnabled() const
 void KHTMLPart::slotDebugDOMTree()
 {
   if ( d->m_doc && d->m_doc->firstChild() )
-    qDebug("%s", d->m_doc->firstChild()->toHTML().latin1());
+    qDebug("%s", d->m_doc->firstChild()->toString().string().latin1());
 }
 
 void KHTMLPart::slotDebugScript()
@@ -3975,7 +3975,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     }
     child->m_liveconnect = KParts::LiveConnectExtension::childObject( part );
   }
-  else if ( child->m_frame && child->m_part && 
+  else if ( child->m_frame && child->m_part &&
             child->m_frame->widget() != child->m_part->widget() )
     child->m_frame->setWidget( child->m_part->widget() );
 

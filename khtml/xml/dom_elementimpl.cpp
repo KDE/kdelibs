@@ -217,7 +217,7 @@ DOMString AttrImpl::toString() const
     // maybe easier to just use text value and ignore existing
     // entity refs?
 
-    if (firstChild() != NULL) {
+    if ( firstChild() ) {
 	result += "=\"";
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
@@ -225,6 +225,11 @@ DOMString AttrImpl::toString() const
 	}
 
 	result += "\"";
+    } else if ( !nodeValue().isEmpty() ){
+        //remove the else once the AttributeImpl changes are merged
+        result += "=\"";
+        result += nodeValue();
+        result += "\"";
     }
 
     return result;
