@@ -1192,7 +1192,7 @@ bool HTTPProtocol::readHeader()
       }
     }
     // In fact we should do redirection only if we got redirection code
-    else if (strncmp(buffer, "Location:", 9) == 0 ) {
+    else if (strncasecmp(buffer, "Location:", 9) == 0 ) {
       locationStr = trimLead(buffer+9);
     }
 
@@ -1363,10 +1363,10 @@ void HTTPProtocol::configAuth(const char *p, bool b)
   int i;
 
   while( *p == ' ' ) p++;
-  if ( strncmp( p, "Basic", 5 ) == 0 ) {
+  if ( strncasecmp( p, "Basic", 5 ) == 0 ) {
     f = AUTH_Basic;
     p += 5;
-  } else if (strncmp (p, "Digest", 6) ==0 ) {
+  } else if (strncasecmp (p, "Digest", 6) ==0 ) {
     p += 6;
     f = AUTH_Digest;
     strAuth = strdup(p);
