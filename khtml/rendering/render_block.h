@@ -57,7 +57,7 @@ public:
     virtual void setOverflowHeight(int h) { m_overflowHeight = h; }
     virtual void setOverflowWidth(int w) { m_overflowWidth = w; }
 
-    virtual bool isSelfCollapsingBlock() const { return m_height == 0; }
+    virtual bool isSelfCollapsingBlock() const;
     virtual bool isTopMarginQuirk() const { return m_topMarginQuirk; }
     virtual bool isBottomMarginQuirk() const { return m_bottomMarginQuirk; }
 

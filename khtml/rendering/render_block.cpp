@@ -71,6 +71,7 @@ void RenderBlock::setStyle(RenderStyle* _style)
 {
     RenderFlow::setStyle(_style);
     setInline(false);
+    setReplaced( style()->display() == INLINE_BLOCK );
 
     m_pre = ( _style->whiteSpace() == PRE );
 
@@ -96,6 +97,10 @@ void RenderBlock::setStyle(RenderStyle* _style)
 
 void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
 {
+    // Make sure we don't append things after :after-generated content if we have it.
+    if ( !beforeChild && lastChild() && lastChild()->style()->styleType() == RenderStyle::AFTER )
+        beforeChild = lastChild();
+
     setLayouted(false);
 
     bool madeBoxesNonInline = FALSE;
@@ -370,6 +375,40 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         // Nuke the now-empty block.
         anonBlock->detach();
     }
+}
+
+bool RenderBlock::isSelfCollapsingBlock() const
+{
+    // We are not self-collapsing if we
+    // (a) have a non-zero height according to layout (an optimization to avoid wasting time)
+    // (b) are a table,
+    // (c) have border/padding,
+    // (d) have a min-height
+    if (m_height > 0 ||
+        isTable() || (borderBottom() + paddingBottom() + borderTop() + paddingTop()) != 0 ||
+        style()->minHeight().value() > 0)
+        return false;
+
+    // If the height is 0 or auto, then whether or not we are a self-collapsing block depends
+    // on whether we have content that is all self-collapsing or not.
+    if (style()->height().isVariable() ||
+        (style()->height().isFixed() && style()->height().value() == 0)) {
+        // If the block has inline children, see if we generated any line boxes.  If we have any
+        // line boxes, then we can't be self-collapsing, since we have content.
+        if (childrenInline())
+            return !firstLineBox();
+
+        // Whether or not we collapse is dependent on whether all our normal flow children
+        // are also self-collapsing.
+        for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
+            if (child->isFloatingOrPositioned())
+                continue;
+            if (!child->isSelfCollapsingBlock())
+                return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 void RenderBlock::layout()
@@ -1827,7 +1866,7 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
             if (!o->noPaint && !o->node->layer())
                 inBox |= o->node->nodeAtPoint(info, _x, _y,
                                               stx+o->left + o->node->marginLeft() - o->node->xPos(),
-                                              sty+o->startY + o->node->marginTop() - o->node->yPos(), hitTestAction ) ;
+                                              sty+o->startY + o->node->marginTop() - o->node->yPos(), HitTestAll ) ;
     }
 
     inBox |= RenderFlow::nodeAtPoint(info, _x, _y, _tx, _ty, hitTestAction, inBox);
@@ -1972,6 +2011,22 @@ static int getBorderPaddingMargin(RenderObject* child, bool endOfInline)
     return result;
 }
 
+static void stripTrailingSpace(bool pre,
+                               int& inlineMax, int& inlineMin,
+                               RenderObject* trailingSpaceChild)
+{
+    if (!pre && trailingSpaceChild && trailingSpaceChild->isText()) {
+        // Collapse away the trailing space at the end of a block.
+        RenderText* t = static_cast<RenderText *>(trailingSpaceChild);
+        const Font *f = t->htmlFont( false );
+        QChar space[1]; space[0] = ' ';
+        int spaceWidth = f->width(space, 1, 0);
+        inlineMax -= spaceWidth;
+        if (inlineMin > inlineMax)
+            inlineMin = inlineMax;
+    }
+}
+
 void RenderBlock::calcInlineMinMaxWidth()
 {
     int inlineMax=0;
@@ -1988,6 +2043,7 @@ void RenderBlock::calcInlineMinMaxWidth()
     normal = oldnormal = style()->whiteSpace() == NORMAL;
 
     InlineMinMaxIterator childIterator(this, this);
+    bool addedTextIndent = false; // Only gets added in once.
     while (RenderObject* child = childIterator.next())
     {
         normal = child->style()->whiteSpace() == NORMAL;
@@ -2060,7 +2116,7 @@ void RenderBlock::calcInlineMinMaxWidth()
             }
 
             if (!child->isRenderInline() && !child->isText()) {
-                // Case (2). Inline replaced elements.
+                // Case (2). Inline replaced elements and floats.
                 // Go ahead and terminate the current line as far as
                 // minwidth is concerned.
                 childMin += child->minWidth();
@@ -2069,6 +2125,15 @@ void RenderBlock::calcInlineMinMaxWidth()
                 if (normal || oldnormal) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
+                }
+
+                // Add in text-indent.  This is added in only once.
+                int ti = 0;
+                if ( !addedTextIndent ) {
+                    addedTextIndent = true;
+                    ti = style()->textIndent().minWidth( cw );
+                    childMin+=ti;
+                    childMax+=ti;
                 }
 
                 // Add our width to the max.
@@ -2087,9 +2152,10 @@ void RenderBlock::calcInlineMinMaxWidth()
 
                 // We are no longer stripping whitespace at the start of
                 // a line.
-                if (!child->isFloating())
+                if (!child->isFloating()) {
                     stripFrontSpaces = false;
-                trailingSpaceChild = 0;
+                   trailingSpaceChild = 0;
+                }
             }
             else if (child->isText())
             {
@@ -2108,15 +2174,24 @@ void RenderBlock::calcInlineMinMaxWidth()
                 t->trimmedMinMaxWidth(beginMin, beginWS, endMin, endWS, hasBreakableChar,
                                       hasBreak, beginMax, endMax,
                                       childMin, childMax, stripFrontSpaces);
+
+                // This text object is insignificant and will not be rendered.  Just
+                // continue.
+                if (!hasBreak && childMax == 0) continue;
+
                 if (stripFrontSpaces)
                     trailingSpaceChild = child;
                 else
                     trailingSpaceChild = 0;
 
-                // Add in text-indent.
-                int ti = cstyle->textIndent().minWidth(cw);
-                childMin+=ti; beginMin += ti;
-                childMax+=ti; beginMax += ti;
+                // Add in text-indent.  This is added in only once.
+                int ti = 0;
+                if (!addedTextIndent) {
+                    addedTextIndent = true;
+                    ti = style()->textIndent().minWidth(cw);
+                    childMin+=ti; beginMin += ti;
+                    childMax+=ti; beginMax += ti;
+                }
 
                 // If we have no breakable characters at all,
                 // then this is the easy case. We add ourselves to the current
@@ -2173,16 +2248,7 @@ void RenderBlock::calcInlineMinMaxWidth()
         oldnormal = normal;
     }
 
-    if (trailingSpaceChild && trailingSpaceChild->isText() && !m_pre) {
-        // Collapse away the trailing space at the end of a block.
-        RenderText* t = static_cast<RenderText *>(trailingSpaceChild);
-        const Font *f = t->htmlFont( false );
-        QChar space[1]; space[0] = ' ';
-        int spaceWidth = f->width(space, 1, 0);
-        inlineMax -= spaceWidth;
-        if (inlineMin > inlineMax)
-            inlineMin = inlineMax;
-    }
+    stripTrailingSpace(m_pre, inlineMax, inlineMin, trailingSpaceChild);
 
     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
     if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
@@ -2201,50 +2267,38 @@ void RenderBlock::calcBlockMinMaxWidth()
     while(child != 0)
     {
         // positioned children don't affect the minmaxwidth
-        if (child->isPositioned())
-        {
+        if (child->isPositioned()) {
             child = child->nextSibling();
             continue;
         }
 
-        int margin=0;
-        //  auto margins don't affect minwidth
-
         Length ml = child->style()->marginLeft();
         Length mr = child->style()->marginRight();
 
-        if (style()->textAlign() == KONQ_CENTER)
-        {
-            if (ml.isFixed()) margin+=ml.value();
-            if (mr.isFixed()) margin+=mr.value();
-        }
-        else
-        {
-            // Call calcWidth on the child to ensure that our margins are
-            // up to date.  This method can be called before the child has actually
-            // calculated its margins (which are computed inside calcWidth).
-            child->calcWidth();
+        // Call calcWidth on the child to ensure that our margins are
+        // up to date.  This method can be called before the child has actually
+        // calculated its margins (which are computed inside calcWidth).
+        if (ml.isPercent() || mr.isPercent())
+            calcWidth();
 
-            if (!(ml.isVariable()) && !(mr.isVariable()))
-            {
-                if (!(child->style()->width().isVariable()))
-                {
-                    if (child->style()->direction()==LTR)
-                        margin = child->marginLeft();
-                    else
-                        margin = child->marginRight();
-                }
-                else
-                    margin = child->marginLeft()+child->marginRight();
+        // A margin basically has three types: fixed, percentage, and auto (variable).
+        // Auto margins simply become 0 when computing min/max width.
+        // Fixed margins can be added in as is.
+        // Percentage margins are computed as a percentage of the width we calculated in
+        // the calcWidth call above.  In this case we use the actual cached margin values on
+        // the RenderObject itself.
+        int margin = 0;
+        if (ml.isFixed())
+            margin += ml.value();
+        else if (ml.isPercent())
+            margin += child->marginLeft();
 
-            }
-            else if (!ml.isVariable())
-                margin = child->marginLeft();
-            else if (!mr.isVariable())
-                margin = child->marginRight();
-        }
+        if (mr.isFixed())
+            margin += mr.value();
+        else if (mr.isPercent())
+            margin += child->marginRight();
 
-        if (margin<0) margin=0;
+        if (margin < 0) margin = 0;
 
         int w = child->minWidth() + margin;
         if(m_minWidth < w) m_minWidth = w;
