@@ -45,17 +45,17 @@ class KComboBox::KComboBoxPrivate
 {
 public:
     KComboBoxPrivate() {
-      origCursorPos = -1;
       hasReference= false;
       handleURLDrops= true;
+      showMultipleMatches = false;
       ignoreDoubleKeyEvents = true;
       completionBox= 0;
       popupMenu= 0;
       subMenu= 0;
     }
-    int origCursorPos;
     bool hasReference;
     bool handleURLDrops;
+    bool showMultipleMatches;
     bool ignoreDoubleKeyEvents;
 
     QString prevText;
@@ -159,20 +159,12 @@ void KComboBox::setCompletedText( const QString& text, bool marked )
 {
     if ( m_pEdit )
     {
-        if ( marked )
-        {
-            int curpos = ( d->origCursorPos != -1 ) ?
-                              d->origCursorPos :  currentText().length();
-            m_pEdit->validateAndSet( text, curpos, curpos, text.length() );
-        }
-        else
-        {
-            if ( text != currentText() ) // no need to flicker
-            {
-                int curpos = text.length();
-                m_pEdit->validateAndSet( text, curpos, curpos, curpos );
-            }
-        }
+      QString txt = currentText();
+      if ( text != txt )
+      {
+        int curpos = marked ? txt.length():text.length();
+        m_pEdit->validateAndSet( text, curpos, curpos, text.length() );
+      }
     }
 }
 
@@ -180,8 +172,7 @@ void KComboBox::setCompletedText( const QString& text )
 {
     KGlobalSettings::Completion mode = completionMode();
     bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                    mode == KGlobalSettings::CompletionMan ||
-                    mode == KGlobalSettings::CompletionPopup );
+                    mode == KGlobalSettings::CompletionMan );
     setCompletedText( text, marked );
 }
 
@@ -202,13 +193,11 @@ void KComboBox::makeCompletion( const QString& txt )
             else
                 setCompletedItems( comp->allMatches() );
         }
-/*
         else if ( mode == KGlobalSettings::CompletionShell &&
-                  comp->hasMultipleMatches(true) )
+                  d->showMultipleMatches )
         {
             setCompletedItems( comp->allMatches() );
         }
-*/
         else
         {
             // all other completion modes
@@ -309,6 +298,7 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
             else if ( mode == KGlobalSettings::CompletionShell )
             {
                 int key = (keys[TextCompletion] == 0) ? KStdAccel::key(KStdAccel::TextCompletion):keys[TextCompletion];
+                d->showMultipleMatches = false;
                 if ( KStdAccel::isEqual( e, key ) )
                 {
                     // Emit completion if there is a completion object present,
@@ -316,6 +306,8 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                     // cursor is at the end of the string.
                     QString txt = currentText();
                     int len = txt.length();
+                    d->showMultipleMatches = (d->prevText == txt);
+                    d->prevText = txt;
                     if ( m_pEdit->cursorPosition() == len && len !=0 )
                     {
                         kdDebug() << "Shell completion: " << txt << endl;
@@ -593,7 +585,6 @@ void KComboBox::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            //d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( currentText() );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
@@ -675,7 +666,6 @@ void KComboBox::hideCompletionBox()
 {
     if ( d->completionBox )
     {
-        d->origCursorPos = -1;
         d->completionBox->hide();
         d->completionBox->clear();
         d->prevText = QString::null;

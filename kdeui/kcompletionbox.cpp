@@ -110,6 +110,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     pageDown();
                     ev->accept();
                     return true;
+/*
                 case Key_Home: {
                     // shift/ctrl involved -> let our parent handle that!
                     bool ours = (ev->state() == 0 && currentItem() != -1);
@@ -127,6 +128,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     }
                     return ours;
                 }
+*/
                 case Key_Escape:
                     cancelled();
                     ev->accept();

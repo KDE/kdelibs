@@ -47,16 +47,16 @@ public:
       hasReference= false;
       grabReturnKeyEvents= false;
       handleURLDrops= true;
-      origCursorPos = -1;
+      showMultipleMatches = false;
       completionBox= 0;
       popupMenu= 0;
       subMenu= 0;
     }
-    int origCursorPos;
     bool hasReference;
-    bool handleURLDrops;    
+    bool handleURLDrops;
+    bool showMultipleMatches;
     bool grabReturnKeyEvents;
-   
+
     QString prevText;
     QPopupMenu* subMenu;
     QPopupMenu* popupMenu;
@@ -109,28 +109,19 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
-    if ( marked )
-    {
-        int curpos = (d->origCursorPos != -1) ?
-                          d->origCursorPos : text().length();
-        validateAndSet( t, curpos, curpos, t.length() );
-    }
-    else
-    {
-      if ( t != text() ) // no need to flicker
-      {
-        int curpos = t.length();
-        validateAndSet( t, curpos, curpos, curpos );
-      }
-    }
+  QString txt = text();
+  if ( t != txt )
+  {
+    int curpos = marked ? txt.length(): t.length();
+    validateAndSet( t, curpos, curpos, t.length() );
+  }
 }
 
 void KLineEdit::setCompletedText( const QString& text )
 {
     KGlobalSettings::Completion mode = completionMode();
     bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                    mode == KGlobalSettings::CompletionMan ||
-                    mode == KGlobalSettings::CompletionPopup );
+                    mode == KGlobalSettings::CompletionMan );
     setCompletedText( text, marked );
 }
 
@@ -164,13 +155,11 @@ void KLineEdit::makeCompletion( const QString& txt )
         else
             setCompletedItems( comp->allMatches() );
     }
-/*
     else if ( mode == KGlobalSettings::CompletionShell &&
-              comp->hasMultipleMatches(true) )
+              d->showMultipleMatches )
     {
         setCompletedItems( comp->allMatches() );
     }
-*/
     else
     {
         // All other completion modes
@@ -239,6 +228,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         else if ( mode == KGlobalSettings::CompletionShell )
         {
             // Handles completion.
+            d->showMultipleMatches = false;
             int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
             if ( KStdAccel::isEqual( e, key ) )
             {
@@ -246,6 +236,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 // and the cursor is at the end of the string.
                 QString txt = text();
                 int len = txt.length();
+                d->showMultipleMatches = (d->prevText == txt);
+                d->prevText = txt;
                 if ( cursorPosition() == len && len != 0 )
                 {
                     kdDebug() << "Shell Completion: " << txt << endl;
@@ -495,7 +487,6 @@ void KLineEdit::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            //d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( text() );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
@@ -563,7 +554,6 @@ void KLineEdit::hideCompletionBox()
 {
     if ( d->completionBox )
     {
-        d->origCursorPos = -1;
         d->completionBox->hide();
         d->completionBox->clear();
         d->prevText = QString::null;
