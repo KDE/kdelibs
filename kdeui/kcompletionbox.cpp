@@ -25,7 +25,6 @@
 #include <qevent.h>
 #include <qstyle.h>
 
-#include <kglobalsettings.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
@@ -89,11 +88,8 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
     if ( !item )
         return;
 
-    if ( !KGlobalSettings::singleClick() )
-    {
     hide();
     emit activated( item->text() );
-}
 }
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
@@ -393,15 +389,12 @@ void KCompletionBox::slotItemClicked( QListBoxItem *item )
     if ( item )
     {
         if ( d->down_workaround ) {
-        d->down_workaround = false;
-        emit highlighted( item->text() );
+            d->down_workaround = false;
+            emit highlighted( item->text() );
         }
     
-        if ( KGlobalSettings::singleClick() )
-        {
-            hide();
-            emit activated( item->text() );
-        }
+        hide();
+        emit activated( item->text() );
     }
 }
 
