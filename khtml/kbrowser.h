@@ -32,7 +32,7 @@
 #include <qstring.h>
 #include <qstrlist.h>
 #include <qobject.h>
-
+#include <kio_interface.h>
 #include <khtmlview.h>
 
 class QPainter;
@@ -65,7 +65,7 @@ protected:
 /**
  * If you derive from KBrowser you must overload the method @ref #createFrame
  */
-class KBrowser : public KHTMLView
+class KBrowser : public KHTMLView, public KIO
 {
   Q_OBJECT
 

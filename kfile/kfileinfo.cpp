@@ -39,7 +39,7 @@
 #include <klocale.h>
 #include "config-kfile.h"
 
-KFileInfo::KFileInfo(const UDSEntry &e)
+KFileInfo::KFileInfo(const KUDSEntry &e)
 {
     myIsDir = false;
     myIsFile = true;

@@ -418,3 +418,16 @@ requires you to include <ktoolbarradiogroup.h>
 
 The functions keyToString() and stringToKey() which were previously
 declared globally in kaccel.h are now static methods in KAccel.
+
+////////////////////////////////////////////////////////////////////////
+// * KIO
+
+All of the UDS_XXX and ERR_XXX constants are now in the KIO class. This
+class is just a namespace, so you can either inherit from it, or reference
+the constants as KIO::UDS_XXX. The names of all of the classes have been
+changed to start with a 'k', this prevents namespace pollution. This should
+not cause too many problems as most of the KIO classes now inherit the
+namespace. Finally you should not longer include userpaths.h, it has been
+renamed to kuserpaths.h, the old include will work for a while, but you
+will get a warning message. If you have any questions about the changes
+then mail me (rich@kde.org).

@@ -6,14 +6,14 @@
 
 #include <iostream.h>
 
-IOJob::IOJob( Connection *_conn ) : IOProtocol( _conn )
+KIOJobBase::KIOJobBase( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
   m_cmd = CMD_NONE;
   m_bIsReady = false;
   m_bError = false;
 }
 
-bool IOJob::unmount( const char *_point )
+bool KIOJobBase::unmount( const char *_point )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_UNMOUNT;
@@ -21,10 +21,10 @@ bool IOJob::unmount( const char *_point )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::unmount( _point );
+  return KIOConnectionSignals::unmount( _point );
 }
 
-bool IOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
+bool KIOJobBase::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MOUNT;
@@ -32,10 +32,10 @@ bool IOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char *
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::mount( _ro, _fstype, _dev, _point );
+  return KIOConnectionSignals::mount( _ro, _fstype, _dev, _point );
 }
 
-bool IOJob::testDir( const char *_url )
+bool KIOJobBase::testDir( const char *_url )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_TESTDIR;
@@ -43,10 +43,10 @@ bool IOJob::testDir( const char *_url )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::testDir( _url );
+  return KIOConnectionSignals::testDir( _url );
 }
 
-bool IOJob::copy( QStringList& _source, const char *_dest )
+bool KIOJobBase::copy( QStringList& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MCOPY;
@@ -54,10 +54,10 @@ bool IOJob::copy( QStringList& _source, const char *_dest )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::copy( _source, _dest );
+  return KIOConnectionSignals::copy( _source, _dest );
 }
 
-bool IOJob::copy( const char* _source, const char *_dest )
+bool KIOJobBase::copy( const char* _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_COPY;
@@ -65,10 +65,10 @@ bool IOJob::copy( const char* _source, const char *_dest )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::copy( _source, _dest );
+  return KIOConnectionSignals::copy( _source, _dest );
 }
 
-bool IOJob::move( QStringList& _source, const char *_dest )
+bool KIOJobBase::move( QStringList& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MMOVE;
@@ -76,10 +76,10 @@ bool IOJob::move( QStringList& _source, const char *_dest )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::move( _source, _dest );
+  return KIOConnectionSignals::move( _source, _dest );
 }
 
-bool IOJob::move( const char* _source, const char *_dest )
+bool KIOJobBase::move( const char* _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MOVE;
@@ -87,10 +87,10 @@ bool IOJob::move( const char* _source, const char *_dest )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::move( _source, _dest );
+  return KIOConnectionSignals::move( _source, _dest );
 }
 
-bool IOJob::del( QStringList& _source )
+bool KIOJobBase::del( QStringList& _source )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MDEL;
@@ -98,10 +98,10 @@ bool IOJob::del( QStringList& _source )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::del( _source );
+  return KIOConnectionSignals::del( _source );
 }
 
-bool IOJob::del( const char *_url )
+bool KIOJobBase::del( const char *_url )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_DEL;
@@ -109,10 +109,10 @@ bool IOJob::del( const char *_url )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::del( _url );
+  return KIOConnectionSignals::del( _url );
 }
 
-bool IOJob::listDir( const char *_url )
+bool KIOJobBase::listDir( const char *_url )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_LIST;
@@ -120,10 +120,10 @@ bool IOJob::listDir( const char *_url )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::listDir( _url );
+  return KIOConnectionSignals::listDir( _url );
 }
 
-bool IOJob::get( const char *_url )
+bool KIOJobBase::get( const char *_url )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_GET;
@@ -131,10 +131,10 @@ bool IOJob::get( const char *_url )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::get( _url );
+  return KIOConnectionSignals::get( _url );
 }
 
-bool IOJob::getSize( const char* _url )
+bool KIOJobBase::getSize( const char* _url )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_GET_SIZE;
@@ -142,10 +142,10 @@ bool IOJob::getSize( const char* _url )
   m_bIsReady = false;
   m_bError = false;
 
-  return ConnectionSignals::getSize( _url );
+  return KIOConnectionSignals::getSize( _url );
 }
 
-bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
+bool KIOJobBase::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_PUT;
@@ -153,10 +153,10 @@ bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, int
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::put( _url, _mode, _overwrite, _resume, _size );
+  return KIOConnectionSignals::put( _url, _mode, _overwrite, _resume, _size );
 }
 
-bool IOJob::mkdir( const char *_url, int _mode )
+bool KIOJobBase::mkdir( const char *_url, int _mode )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_MKDIR;
@@ -164,28 +164,28 @@ bool IOJob::mkdir( const char *_url, int _mode )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::mkdir( _url, _mode );
+  return KIOConnectionSignals::mkdir( _url, _mode );
 }
 
-bool IOJob::data( const void *_p, int _len )
+bool KIOJobBase::data( const void *_p, int _len )
 {
   assert( m_cmd == CMD_PUT && m_bIsReady );
   
-  return ConnectionSignals::data( _p, _len );
+  return KIOConnectionSignals::data( _p, _len );
 }
 
-void IOJob::slotReady()
+void KIOJobBase::slotReady()
 {
   m_bIsReady = true;
 }
 
-void IOJob::slotFinished()
+void KIOJobBase::slotFinished()
 {
   m_cmd = CMD_NONE;
   m_bIsReady = false;
 }
   
-void IOJob::slotError( int _errid, const char *_txt )
+void KIOJobBase::slotError( int _errid, const char *_txt )
 {
   m_bError = true;
   m_iError = _errid;

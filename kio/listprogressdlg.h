@@ -8,18 +8,6 @@
 
 class QTimer;
 
-// Field constants
-#define TB_OPERATION       0
-#define TB_LOCAL_FILENAME  1
-#define TB_RESUME          2
-#define TB_COUNT           3
-#define TB_PROGRESS        4
-#define TB_TOTAL           5
-#define TB_SPEED           6
-#define TB_REMAINING_TIME  7
-#define TB_ADDRESS         8
-
-
 class KIOListBox : public KTabListBox
 {
   Q_OBJECT
@@ -33,11 +21,25 @@ public:
 
   virtual void readConfig(void);
   virtual void writeConfig(void);
-  
+
+  /**
+   * Field constants
+   */
+  enum KIOListBoxFields {
+    TB_OPERATION = 0,
+    TB_LOCAL_FILENAME = 1,
+    TB_RESUME = 2,
+    TB_COUNT = 3,
+    TB_PROGRESS = 4,
+    TB_TOTAL = 5,
+    TB_SPEED = 6,
+    TB_REMAINING_TIME = 7,
+    TB_ADDRESS = 8
+  };
 };
 
 
-class KIOListProgressDlg : public KTMainWindow
+class KIOListProgressDlg : public KTMainWindow, KIO
 {
   Q_OBJECT
 

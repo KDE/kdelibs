@@ -13,24 +13,154 @@
 #include "kio_interface.h"
 
 #include <kdebug.h>
+#include <kapp.h>
+#include <klocale.h>
+
+QString KIO::kioErrorString( int _errid, const char *_errortext )
+{
+  QString result;
+  
+  switch( _errid )
+    {
+    case  ERR_CANNOT_OPEN_FOR_READING:
+      result = i18n( "Could not read\n%1" ).arg( _errortext );      
+      break;
+    case  ERR_CANNOT_OPEN_FOR_WRITING:
+      result = i18n( "Could not write to\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CANNOT_LAUNCH_PROCESS:
+      result = i18n( "Could not start process\n%1" ).arg( _errortext );
+      break;
+    case  ERR_INTERNAL:
+      result = i18n( "Internal Error\nPlease send a full bugreport at http://bugs.kde.org\n\n%1" ).arg( _errortext );
+      break;
+    case  ERR_MALFORMED_URL:
+      result = i18n( "Malformed URL\n%1" ).arg( _errortext );
+      break;
+    case  ERR_UNSUPPORTED_PROTOCOL:
+      result = i18n( "The protocol %1\n is not supported" ).arg( _errortext );
+      break;
+    case  ERR_NO_SOURCE_PROTOCOL:
+      result = i18n( "The protocol %1\nis only a filter protocol.\n").arg( _errortext );
+      break;
+    case  ERR_UNSUPPORTED_ACTION:
+      result = i18n( "Unsupported action\n%1" ).arg( _errortext );
+      break;
+    case  ERR_DOES_NOT_EXIST:
+      result = i18n( "The file or directory\n%1\ndoes not exist" ).arg( _errortext );
+      break;
+    case  ERR_IS_DIRECTORY:
+      result = i18n( "%1\n is a directory,\nbut a file was expected" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_MKDIR:
+      result = i18n( "Could not make directory\n%1" ).arg( _errortext );
+      break;
+    case  ERR_DOES_ALREADY_EXIST:
+      result = i18n( "The file or directory\n%1\ndoes already exist" ).arg( _errortext );
+      break;
+    case  ERR_ACCESS_DENIED:
+      result = i18n( "Access denied to\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CANNOT_ENTER_DIRECTORY:
+      result = i18n( "Could not enter directory\n%1" ).arg( _errortext );
+      break;
+    case  ERR_PROTOCOL_IS_NOT_A_FILESYSTEM:
+      result = i18n( "The protocol %1\ndoes not implement a directory service" ).arg( _errortext );
+      break;
+    case  ERR_CYCLIC_LINK:
+      result = i18n( "Found a cyclic link in\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CANNOT_CHMOD:
+      result = i18n( "Could not change permissions for\n%1" ).arg( _errortext );
+      break;
+    case  ERR_WRITE_ACCESS_DENIED:
+      result = i18n( "Access denied\nCould not write to\n%1" ).arg( _errortext );
+      break;
+    case  ERR_USER_CANCELED:
+      result = i18n( "Action has been\ncanceled by the user\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CYCLIC_COPY:
+      result = i18n( "Found a cyclic link while copying\n%1" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_CREATE_SOCKET:
+      result = i18n( "Could not create socket for accessing\n%1" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_CONNECT:
+      result = i18n( "Could not connect to host\n%1" ).arg( _errortext );
+      break;
+    case  ERR_UNKNOWN_HOST:
+      result = i18n( "Unknown host\n%1" ).arg( _errortext );
+      break;
+    case  ERR_UNKNOWN_PROXY_HOST:
+      result = i18n( "Unknown proxy host\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CONNECTION_BROKEN:
+      result = i18n( "Connection to host\n%1\nis broken" ).arg( _errortext );
+      break;
+    case  ERR_NOT_FILTER_PROTOCOL:
+      result = i18n( "The protocol %1\nis not a filter protocol" ).arg( _errortext );
+      break;
+    case  ERR_IS_FILE:
+      result = i18n( "%1\nis a file,\nbut a directory was expected" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_MOUNT:
+      result = i18n( "Could not mount device.\nThe reported error was:\n\n%1" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_UNMOUNT:
+      result = i18n( "Could not unmount device.\nThe reported error was:\n\n%1" ).arg( _errortext );
+      break;
+    case  ERR_SLAVE_DIED:
+      result = i18n( "The process for the\n%1 protocol\ndied unexpectedly" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_STAT:
+      result = i18n( "Could not access\n%1" ).arg( _errortext );
+      break;
+    case  ERR_CANNOT_RESUME:
+      result = i18n( "Could not resume file %1" ).arg( _errortext );
+      break;
+    case  ERR_CANNOT_DELETE:
+      result = i18n( "Could not delete file %1" ).arg( _errortext );
+      break;
+    case  ERR_COULD_NOT_LOGIN:
+      result = i18n( "Could not login into %1" ).arg ( _errortext );
+      break;
+    case  ERR_COULD_NOT_AUTHENTICATE:
+      result = i18n( "Athorization failed, %1 authentication not supported" ).arg( _errortext );
+      break;
+    case  ERR_WARNING:
+      result = i18n( "Warning: %1" ).arg( _errortext );
+      break;
+    case  ERR_CHECKSUM_MISMATCH:
+      if (_errortext)
+        result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg(_errortext);
+      else
+        result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg("document");
+      break;
+    default:
+      result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg(_errid ).arg(_errortext);
+      break;
+    }
+
+  return result;
+}
 
 /**********************************************************
  *
- * ConnectionSignals
+ * KIOConnectionSignals
  *
  **********************************************************/
 
-ConnectionSignals::ConnectionSignals( Connection *_conn )
+KIOConnectionSignals::KIOConnectionSignals( KIOConnection *_conn )
 {
   m_pConnection = _conn;
 }
 
-void ConnectionSignals::setConnection( Connection *_conn )
+void KIOConnectionSignals::setConnection( KIOConnection *_conn )
 {
   m_pConnection = _conn;
 }
 
-bool ConnectionSignals::testDir( const char *_url )
+bool KIOConnectionSignals::testDir( const char *_url )
 {
   assert( m_pConnection );
   
@@ -42,7 +172,7 @@ bool ConnectionSignals::testDir( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::get( const char *_url )
+bool KIOConnectionSignals::get( const char *_url )
 {
   assert( m_pConnection );
   
@@ -54,7 +184,7 @@ bool ConnectionSignals::get( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::getSize( const char *_url )
+bool KIOConnectionSignals::getSize( const char *_url )
 {
   assert( m_pConnection );
   
@@ -66,7 +196,7 @@ bool ConnectionSignals::getSize( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
+bool KIOConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
 {
   assert( m_pConnection );
 
@@ -82,7 +212,7 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool 
   return true;
 }
 
-bool ConnectionSignals::copy( QStringList& _source, const char *_dest )
+bool KIOConnectionSignals::copy( QStringList& _source, const char *_dest )
 {
   assert( m_pConnection );
   
@@ -99,7 +229,7 @@ bool ConnectionSignals::copy( QStringList& _source, const char *_dest )
   return true;
 }
 
-bool ConnectionSignals::copy( const char *_source, const char *_dest )
+bool KIOConnectionSignals::copy( const char *_source, const char *_dest )
 {
   assert( m_pConnection );
 
@@ -115,7 +245,7 @@ bool ConnectionSignals::copy( const char *_source, const char *_dest )
   return true;
 }
 
-bool ConnectionSignals::source( const char *_url )
+bool KIOConnectionSignals::source( const char *_url )
 {
   assert( m_pConnection );
   
@@ -127,7 +257,7 @@ bool ConnectionSignals::source( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::move( QStringList& _source, const char *_dest )
+bool KIOConnectionSignals::move( QStringList& _source, const char *_dest )
 {
   assert( m_pConnection );
 
@@ -145,7 +275,7 @@ bool ConnectionSignals::move( QStringList& _source, const char *_dest )
   return true;
 }
 
-bool ConnectionSignals::move( const char *_source, const char *_dest )
+bool KIOConnectionSignals::move( const char *_source, const char *_dest )
 {
   assert( m_pConnection );
 
@@ -162,7 +292,7 @@ bool ConnectionSignals::move( const char *_source, const char *_dest )
   return true;
 }
 
-bool ConnectionSignals::del( QStringList& _source )
+bool KIOConnectionSignals::del( QStringList& _source )
 {
   assert( m_pConnection );
 
@@ -176,7 +306,7 @@ bool ConnectionSignals::del( QStringList& _source )
   return true;
 }
 
-bool ConnectionSignals::del( const char *_url )
+bool KIOConnectionSignals::del( const char *_url )
 {
   assert( m_pConnection );
 
@@ -189,7 +319,7 @@ bool ConnectionSignals::del( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::listDir( const char *_url )
+bool KIOConnectionSignals::listDir( const char *_url )
 {
   assert( m_pConnection );
   
@@ -201,7 +331,7 @@ bool ConnectionSignals::listDir( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::mkdir( const char *_url, int _mode )
+bool KIOConnectionSignals::mkdir( const char *_url, int _mode )
 {
   assert( m_pConnection );
 
@@ -216,7 +346,7 @@ bool ConnectionSignals::mkdir( const char *_url, int _mode )
   return true;
 }
 
-bool ConnectionSignals::data( const void *_buffer, int _len )
+bool KIOConnectionSignals::data( const void *_buffer, int _len )
 {
   assert( m_pConnection );
 
@@ -224,7 +354,7 @@ bool ConnectionSignals::data( const void *_buffer, int _len )
   return true;
 }
 
-bool ConnectionSignals::dataEnd()
+bool KIOConnectionSignals::dataEnd()
 {
   assert( m_pConnection );
 
@@ -232,7 +362,7 @@ bool ConnectionSignals::dataEnd()
   return true;
 }
 
-bool ConnectionSignals::error( int _errid, const char *_text )
+bool KIOConnectionSignals::error( int _errid, const char *_text )
 {
   assert( m_pConnection );
   int l = strlen( _text );
@@ -242,7 +372,7 @@ bool ConnectionSignals::error( int _errid, const char *_text )
   return true;
 }
 
-bool ConnectionSignals::ready()
+bool KIOConnectionSignals::ready()
 {
   assert( m_pConnection );
 
@@ -250,7 +380,7 @@ bool ConnectionSignals::ready()
   return true;
 }
 
-bool ConnectionSignals::finished()
+bool KIOConnectionSignals::finished()
 {
   assert( m_pConnection );
 
@@ -258,7 +388,7 @@ bool ConnectionSignals::finished()
   return true;
 }
 
-bool ConnectionSignals::renamed( const char *_new )
+bool KIOConnectionSignals::renamed( const char *_new )
 {
   assert( m_pConnection );
   
@@ -270,7 +400,7 @@ bool ConnectionSignals::renamed( const char *_new )
   return true;
 }
 
-bool ConnectionSignals::canResume( bool _resume )
+bool KIOConnectionSignals::canResume( bool _resume )
 {
   assert( m_pConnection );
 
@@ -280,7 +410,7 @@ bool ConnectionSignals::canResume( bool _resume )
   return true;
 }
 
-bool ConnectionSignals::totalSize( unsigned long _bytes )
+bool KIOConnectionSignals::totalSize( unsigned long _bytes )
 {
   assert( m_pConnection );
   
@@ -289,7 +419,7 @@ bool ConnectionSignals::totalSize( unsigned long _bytes )
   return true;
 }
 
-bool ConnectionSignals::totalFiles( unsigned long _files )
+bool KIOConnectionSignals::totalFiles( unsigned long _files )
 {
   assert( m_pConnection );
   
@@ -298,7 +428,7 @@ bool ConnectionSignals::totalFiles( unsigned long _files )
   return true;
 }
 
-bool ConnectionSignals::totalDirs( unsigned long _dirs )
+bool KIOConnectionSignals::totalDirs( unsigned long _dirs )
 {
   assert( m_pConnection );
   
@@ -307,7 +437,7 @@ bool ConnectionSignals::totalDirs( unsigned long _dirs )
   return true;
 }
 
-bool ConnectionSignals::processedSize( unsigned long _bytes )
+bool KIOConnectionSignals::processedSize( unsigned long _bytes )
 {
   assert( m_pConnection );
   
@@ -316,7 +446,7 @@ bool ConnectionSignals::processedSize( unsigned long _bytes )
   return true;
 }
 
-bool ConnectionSignals::processedFiles( unsigned long _files )
+bool KIOConnectionSignals::processedFiles( unsigned long _files )
 {
   assert( m_pConnection );
   
@@ -325,7 +455,7 @@ bool ConnectionSignals::processedFiles( unsigned long _files )
   return true;
 }
 
-bool ConnectionSignals::processedDirs( unsigned long _dirs )
+bool KIOConnectionSignals::processedDirs( unsigned long _dirs )
 {
   assert( m_pConnection );
   
@@ -334,7 +464,7 @@ bool ConnectionSignals::processedDirs( unsigned long _dirs )
   return true;
 }
 
-bool ConnectionSignals::scanningDir( const char *_dir )
+bool KIOConnectionSignals::scanningDir( const char *_dir )
 {
   assert( m_pConnection );
   
@@ -346,7 +476,7 @@ bool ConnectionSignals::scanningDir( const char *_dir )
   return true;
 }
 
-bool ConnectionSignals::speed( unsigned long _bytes_per_second )
+bool KIOConnectionSignals::speed( unsigned long _bytes_per_second )
 {
   assert( m_pConnection );
   
@@ -355,7 +485,7 @@ bool ConnectionSignals::speed( unsigned long _bytes_per_second )
   return true;
 }
 
-bool ConnectionSignals::copyingFile( const char *_from, const char *_to )
+bool KIOConnectionSignals::copyingFile( const char *_from, const char *_to )
 {
   assert( m_pConnection );
 
@@ -371,7 +501,7 @@ bool ConnectionSignals::copyingFile( const char *_from, const char *_to )
   return true;
 }
 
-bool ConnectionSignals::makingDir( const char *_dir )
+bool KIOConnectionSignals::makingDir( const char *_dir )
 {
   assert( m_pConnection );
   
@@ -383,7 +513,7 @@ bool ConnectionSignals::makingDir( const char *_dir )
   return true;
 }
 
-bool ConnectionSignals::gettingFile( const char *_url )
+bool KIOConnectionSignals::gettingFile( const char *_url )
 {
   assert( m_pConnection );
   
@@ -395,7 +525,7 @@ bool ConnectionSignals::gettingFile( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::deletingFile( const char *_url )
+bool KIOConnectionSignals::deletingFile( const char *_url )
 {
   assert( m_pConnection );
   
@@ -407,7 +537,7 @@ bool ConnectionSignals::deletingFile( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::redirection( const char *_url )
+bool KIOConnectionSignals::redirection( const char *_url )
 {
   assert( m_pConnection );
   
@@ -419,14 +549,14 @@ bool ConnectionSignals::redirection( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::errorPage()
+bool KIOConnectionSignals::errorPage()
 {
   assert( m_pConnection );
   m_pConnection->send( INF_ERROR_PAGE, 0L, 0 );
   return true;
 }
 
-bool ConnectionSignals::mimeType( const char *_type )
+bool KIOConnectionSignals::mimeType( const char *_type )
 {
   assert( m_pConnection );
   
@@ -438,7 +568,7 @@ bool ConnectionSignals::mimeType( const char *_type )
   return true;
 }
 
-bool ConnectionSignals::unmount( const char *_point )
+bool KIOConnectionSignals::unmount( const char *_point )
 {
   assert( m_pConnection );
   
@@ -450,7 +580,7 @@ bool ConnectionSignals::unmount( const char *_point )
   return true;
 }
 
-bool ConnectionSignals::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
+bool KIOConnectionSignals::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
 {
   assert( m_pConnection );
 
@@ -480,13 +610,13 @@ bool ConnectionSignals::mount( bool _ro, const char *_fstype, const char* _dev, 
   return true;
 }
 
-bool ConnectionSignals::listEntry( UDSEntry& _entry )
+bool KIOConnectionSignals::listEntry( KUDSEntry& _entry )
 {
   int size = 0;
   char *p = m_pConnection->buffer();
   sprintf( p, "%8x_", _entry.count() );
   size += 9;
-  UDSEntry::Iterator it = _entry.begin();
+  KUDSEntry::Iterator it = _entry.begin();
   for( ; it != _entry.end(); it++ ) {
     // char *x = p + size;
 
@@ -510,7 +640,7 @@ bool ConnectionSignals::listEntry( UDSEntry& _entry )
   return true;  
 }
 
-bool ConnectionSignals::isDirectory()
+bool KIOConnectionSignals::isDirectory()
 {
   assert( m_pConnection );
 
@@ -518,7 +648,7 @@ bool ConnectionSignals::isDirectory()
   return true;
 }
 
-bool ConnectionSignals::isFile()
+bool KIOConnectionSignals::isFile()
 {
   assert( m_pConnection );
 
@@ -528,39 +658,40 @@ bool ConnectionSignals::isFile()
 
 /**********************************************************
  *
- * ConnectionSlots
+ * KIOConnectionSlots
  *
  **********************************************************/
 
-ConnectionSlots::ConnectionSlots( Connection *_conn )
+KIOConnectionSlots::KIOConnectionSlots( KIOConnection *_conn )
 {
   m_pConnection = _conn;
 }
 
-void ConnectionSlots::setConnection( Connection *_conn )
+void KIOConnectionSlots::setConnection( KIOConnection *_conn )
 {
   m_pConnection = _conn;
 }
 
-void ConnectionSlots::dispatchLoop()
+void KIOConnectionSlots::dispatchLoop()
 {
   while( dispatch() );
 }
 
-bool ConnectionSlots::dispatch()
+bool KIOConnectionSlots::dispatch()
 {
   assert( m_pConnection );
 
-  int cmd = 0, len = 0;
+  int cmd;
+  int len = 0;
   char *p = static_cast<char*>( m_pConnection->read( &cmd, &len ) );
   if ( !p )
     return false;
   
-  dispatch( cmd, p, len );
+  dispatch( (KIOCommand) cmd, p, len );
   return true;
 }
 
-void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
+void KIOConnectionSlots::dispatch( KIOCommand _cmd, void *_p, int _len )
 {
   switch( _cmd )
     {
@@ -701,14 +832,14 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case MSG_LIST_ENTRY:
       {
-	UDSEntry entry;
+	KUDSEntry entry;
 	int size = 9;
 	char *p = (char*)_p;
 	while( *p == ' ' ) p++;
 	int count = strtol( p, 0L, 16 );
 	for( int i = 0; i < count; i++ )
 	{
-	  UDSAtom atom;
+	  KUDSAtom atom;
 	  char *p = (char*)_p + size;
 	  while( *p == ' ' ) p++;
 	  atom.m_uds = strtoul( p, 0L, 16 );
@@ -789,7 +920,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
     }
 }
 
-void ConnectionSlots::slotDel (const char *_url)
+void KIOConnectionSlots::slotDel (const char *_url)
 {
   QStringList lst;
   lst.append( _url );
@@ -800,21 +931,21 @@ void ConnectionSlots::slotDel (const char *_url)
 
 /**********************************************************
  *
- * IOProtocol
+ * KIOProtocol
  *
  **********************************************************/
 
-IOProtocol::IOProtocol( Connection *_conn ) : ConnectionSignals( _conn ), ConnectionSlots( _conn )
+KIOProtocol::KIOProtocol( KIOConnection *_conn ) : KIOConnectionSignals( _conn ), KIOConnectionSlots( _conn )
 {
 }
 
-void IOProtocol::setConnection( Connection* _conn )
+void KIOProtocol::setConnection( KIOConnection* _conn )
 {
-  ConnectionSignals::setConnection( _conn );
-  ConnectionSlots::setConnection( _conn );
+  KIOConnectionSignals::setConnection( _conn );
+  KIOConnectionSlots::setConnection( _conn );
 }
 
-void IOProtocol::sigsegv_handler (int)
+void KIOProtocol::sigsegv_handler (int)
 {
   // Debug and printf should be avoided because they might
   // call malloc.. and get in a nice recursive malloc loop
@@ -822,7 +953,7 @@ void IOProtocol::sigsegv_handler (int)
   exit(1);
 }
 
-void IOProtocol::sigchld_handler (int)
+void KIOProtocol::sigchld_handler (int)
 {
   int pid, status;
 

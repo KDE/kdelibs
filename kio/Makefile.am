@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
-libkio_la_SOURCES = userpaths.cc kio_connection.cc kio_base.cc kio_rename_dlg.cc \
+libkio_la_SOURCES = kuserpaths.cc kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_filter.cc kio_dlg.cc kio_skip_dlg.cc kio_interface.cc \
 	kio_pass_dlg.cc kautomount.cc \
 	kio_simpleprogress_dlg.cc kio_littleprogress_dlg.cc kio_listprogress_dlg.cc \
@@ -47,7 +47,7 @@ include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	krun.h kdirwatch.h kmimemagic.h kservices.h kmimetypes.h \
 	kio_cache.h kio_netaccess.h kpixmapcache.h kuserprofile.h \
 	kio_error.h kregfactories.h kio_job.h kregistry.h \
-	kio_paste.h kio_openwith.h userpaths.h \
+	kio_paste.h kio_openwith.h userpaths.h kuserpaths.h \
 	kservicetype.h ktar.h ktypecode.h  kio_dns.h
 
 magic_DATA = magic

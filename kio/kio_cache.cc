@@ -553,25 +553,25 @@ QString KIOCache::localKey(const KIOCacheEntry *entry)
 
 /**************************************************
  *
- * CachedKIOJob
+ * KIOCachedJob
  *
  **************************************************/
 
-CachedKIOJob::CachedKIOJob() : KIOJob()
+KIOCachedJob::KIOCachedJob() : KIOJob()
 {
   m_bLookInCache = true;
   m_pCurrentDoc = 0L;
   m_step = STEP_NONE;
 }
 
-CachedKIOJob::~CachedKIOJob()
+KIOCachedJob::~KIOCachedJob()
 {
   kdebug( KDEBUG_INFO, 7002, "RUNNING destructor %p", this );
   if ( m_pCurrentDoc )
     delete m_pCurrentDoc;
 }
 
-void CachedKIOJob::get( const char *_url, bool _reload )
+void KIOCachedJob::get( const char *_url, bool _reload )
 {
   // Get the document from cache if possible
   if ( m_bLookInCache && !_reload && KIOCache::isValid( _url ) )
@@ -595,7 +595,7 @@ void CachedKIOJob::get( const char *_url, bool _reload )
   KIOJob::get( _url );
 }
 
-void CachedKIOJob::slotFinished()
+void KIOCachedJob::slotFinished()
 {
   if ( !m_pCurrentDoc )
   {
@@ -623,7 +623,7 @@ void CachedKIOJob::slotFinished()
   KIOJob::slotFinished();
 }
     
-void CachedKIOJob::slotData( void *_data, int _len )
+void KIOCachedJob::slotData( void *_data, int _len )
 {
   kdebug( KDEBUG_INFO, 7002, "#### CACHE ADD 1" );
 
@@ -637,7 +637,7 @@ void CachedKIOJob::slotData( void *_data, int _len )
   kdebug( KDEBUG_INFO, 7002, "#### CACHE ADD 3" );
 }
     
-void CachedKIOJob::slotRedirection( const char *_url )
+void KIOCachedJob::slotRedirection( const char *_url )
 {
   if ( m_pCurrentDoc )
     m_pCurrentDoc->setRedirection( _url );
@@ -645,7 +645,7 @@ void CachedKIOJob::slotRedirection( const char *_url )
   KIOJob::slotRedirection( _url );
 }
 
-void CachedKIOJob::slotMimeType( const char *_mime )
+void KIOCachedJob::slotMimeType( const char *_mime )
 {
   if ( m_pCurrentDoc )
     m_pCurrentDoc->setMimeType( _mime );
@@ -653,7 +653,7 @@ void CachedKIOJob::slotMimeType( const char *_mime )
   KIOJob::slotMimeType( _mime );
 }
 
-void CachedKIOJob::slotError( int _errid, const char* _errortext )
+void KIOCachedJob::slotError( int _errid, const char* _errortext )
 {
   if ( m_pCurrentDoc )
   {
@@ -665,7 +665,7 @@ void CachedKIOJob::slotError( int _errid, const char* _errortext )
   KIOJob::slotError( _errid, _errortext );
 }
 
-void CachedKIOJob::slotTimeout()
+void KIOCachedJob::slotTimeout()
 {
   kdebug( KDEBUG_INFO, 7002, "#### TIMER 1" );
   

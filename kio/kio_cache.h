@@ -478,7 +478,7 @@ private:
  * change in future.
  */
 
-class CachedKIOJob : public KIOJob
+class KIOCachedJob : public KIOJob
 {
     Q_OBJECT
 public:
@@ -490,8 +490,8 @@ public:
     /**
      * Constructs a new job. Overloaded from @ref KIOJob
      */
-    CachedKIOJob();
-    ~CachedKIOJob();
+    KIOCachedJob();
+    ~KIOCachedJob();
   
     /**
       * Calling forceReload(TRUE) (or forceReload() for convenience)
@@ -568,5 +568,19 @@ protected:
     QTimer m_timer;
     Step m_step;
 };
+
+#ifndef NO_KIO_COMPATABILITY
+
+/**
+ * For backwards compatability, do NOT rely on the presence
+ * of this typedef, convert your code to use KIOCachedJob instead.
+ * To check if your code is ok, try compiling with NO_KIO_COMPATABILITY
+ * defined.
+ */
+typedef KIOCachedJob CachedKIOJob;
+
+#warning "KIO Compability is enabled, define NO_KIO_COMPATABILTY to test your code"
+
+#endif // NO_KIO_COMPATABILITY
 
 #endif

@@ -3,3 +3,6 @@
 	* pngr.cpp (kimgio_png_write): Removed text after #else and #endif.  The
 	text should either be commented or made part of an #elif.
 
+1999 Oct 5 Richard Moore <rich@kde.org>
+
+	* Added EPS output filter from ksnapshot

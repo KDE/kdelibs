@@ -3,11 +3,11 @@
 
 #include "kio_interface.h"
 
-class IOJob : public IOProtocol
+class KIOJobBase : public KIOProtocol
 {
 public:
-  IOJob( Connection *_conn );
-  virtual ~IOJob() { }
+  KIOJobBase( KIOConnection *_conn );
+  virtual ~KIOJobBase() { }
   
   virtual bool get( const char *_url );
   virtual bool getSize( const char *_url );
@@ -54,5 +54,6 @@ protected:
   int m_iError;
   QString m_strError;
 };
+
 
 #endif

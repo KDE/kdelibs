@@ -36,7 +36,7 @@ int KIOJob::s_id = 1;
 QMap<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
 KIOListProgressDlg* KIOJob::m_pListProgressDlg = 0L;
 
-KIOJob::KIOJob(const char *name) : QObject(0, name), IOJob( 0L )
+KIOJob::KIOJob(const char *name) : QObject(0, name), KIOJobBase( 0L )
 {
   m_id = ++s_id;
 
@@ -262,7 +262,7 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
     m_pDialog = createDialog( buffer.ascii() );
   }
   
-  return IOJob::mount( _ro, _fstype, _dev, _point );  
+  return KIOJobBase::mount( _ro, _fstype, _dev, _point );  
 }
 
 
@@ -282,7 +282,7 @@ bool KIOJob::unmount( const char *_point )
     m_pDialog = createDialog( buffer.ascii() );
   }
   
-  return IOJob::unmount( _point );  
+  return KIOJobBase::unmount( _point );  
 }
 
 
@@ -306,9 +306,9 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
   createGUI();
 
   if ( _move )
-    return IOJob::move( _source, _dest );
+    return KIOJobBase::move( _source, _dest );
   else
-    return IOJob::copy( _source, _dest );
+    return KIOJobBase::copy( _source, _dest );
 }
 
 
@@ -352,9 +352,9 @@ bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move )
   createGUI();
 
   if ( _move )
-    return IOJob::move( _source, _dest );
+    return KIOJobBase::move( _source, _dest );
   else
-    return IOJob::copy( _source, _dest );
+    return KIOJobBase::copy( _source, _dest );
 }
 
 
@@ -389,7 +389,7 @@ bool KIOJob::del( const char *_source )
   
   createGUI();
 
-  return IOJob::del( _source );
+  return KIOJobBase::del( _source );
 }
 
 
@@ -434,7 +434,7 @@ bool KIOJob::del( QStringList& _source )
   
   createGUI();
 
-  return IOJob::del( _source );
+  return KIOJobBase::del( _source );
 }
 
 
@@ -459,7 +459,7 @@ bool KIOJob::testDir( const char *_url )
 
   createGUI();
 
-  return IOJob::testDir( _url );
+  return KIOJobBase::testDir( _url );
 }
 
 
@@ -484,7 +484,7 @@ bool KIOJob::get( const char *_url )
 
   createGUI();
 
-  return IOJob::get( _url );
+  return KIOJobBase::get( _url );
 }
 
 
@@ -516,7 +516,7 @@ bool KIOJob::getSize( const char *_url )
     return false;
   }
 
-  return IOJob::getSize( _url );
+  return KIOJobBase::getSize( _url );
 }
 
 bool KIOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume,
@@ -541,7 +541,7 @@ bool KIOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume,
 
   createGUI();
 
-  return IOJob::put( _url, _mode, _overwrite, _resume, _len);
+  return KIOJobBase::put( _url, _mode, _overwrite, _resume, _len);
 }
 
 bool KIOJob::mkdir( const char *_url, int _mode )
@@ -560,7 +560,7 @@ bool KIOJob::mkdir( const char *_url, int _mode )
   
   createGUI();
   
-  return IOJob::mkdir( _url, _mode );
+  return KIOJobBase::mkdir( _url, _mode );
 }
 
 void KIOJob::cont()
@@ -597,7 +597,7 @@ bool KIOJob::listDir( const char *_url )
     return false;
   }
 
-  return IOJob::listDir( _url );
+  return KIOJobBase::listDir( _url );
 }
 
 
@@ -643,7 +643,7 @@ void KIOJob::slotData( void *_p, int _len )
 }
 
 
-void KIOJob::slotListEntry( const UDSEntry& _entry )
+void KIOJob::slotListEntry( const KUDSEntry& _entry )
 {
   emit sigListEntry( m_id, _entry );
 }
@@ -716,7 +716,7 @@ void KIOJob::slotError( int _errid, const char *_txt )
     return;
   }
 
-  IOJob::slotError( _errid, _txt );
+  KIOJobBase::slotError( _errid, _txt );
   
   // If someone tries to delete us because we emitted sigError
   // he wont have look. One only stores the id of the job. And since
@@ -964,7 +964,7 @@ void KIOJob::slotCancel()
 }
 
 
-void KIOJob::connectSlave( Slave *_s )
+void KIOJob::connectSlave( KIOSlave *_s )
 {
   setConnection( _s );
   m_pNotifier = new QSocketNotifier( _s->inFD(), QSocketNotifier::Read, this );
@@ -972,9 +972,9 @@ void KIOJob::connectSlave( Slave *_s )
 }
 
 
-Slave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _error_text )
+KIOSlave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _error_text )
 {
-  Slave *s = KIOSlavePool::self()->slave( _protocol );
+  KIOSlave *s = KIOSlavePool::self()->slave( _protocol );
   if ( s )
   {
     m_pSlave = s;
@@ -993,7 +993,7 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _error_
     return 0L;
   }
   
-  s = new Slave( exec.data() );
+  s = new KIOSlave( exec.data() );
   if ( s->pid() == -1 )
   {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -1008,14 +1008,14 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _error_
 }
 
 
-Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
+KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
 			    const char *_user, const char *_pass,
 			    int& _error, QString& _error_text )
 {
   // no host, nor user, nor pass : wrong method
   if (!_host && !_user && !_pass) return createSlave( _protocol, _error, _error_text );
 
-  Slave *s = KIOSlavePool::self()->slave( _protocol, _host, _user, _pass );
+  KIOSlave *s = KIOSlavePool::self()->slave( _protocol, _host, _user, _pass );
   debug("KIOJob::createSlave : Slave got");
   if ( s )
   {
@@ -1039,7 +1039,7 @@ Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
     return 0L;
   }
   
-  s = new Slave( exec.data() );
+  s = new KIOSlave( exec.data() );
   if ( s->pid() == -1 )
   {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -1135,21 +1135,21 @@ QString KIOJob::convertSize( int size ) { // !!! internationalization
 KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
 
-Slave* KIOSlavePool::slave( const char *_protocol )
+KIOSlave* KIOSlavePool::slave( const char *_protocol )
 {
   QMap<QString,Entry>::Iterator it = m_mapSlaves.find( _protocol );
   if ( it == m_mapSlaves.end() )
     return 0L;
 
-  Slave *s = (*it).m_pSlave;
+  KIOSlave *s = (*it).m_pSlave;
   m_mapSlaves.remove( it );
 
   return s;
 }
 
 
-Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
-			    const char *_user, const char *_pass)
+KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
+			       const char *_user, const char *_pass)
 {
   QMap<QString,Entry>::Iterator it = m_mapSlaves.begin();
 
@@ -1172,14 +1172,14 @@ Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
     kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
   }
 
-  Slave *s = (*it).m_pSlave;
+  KIOSlave *s = (*it).m_pSlave;
   m_mapSlaves.remove( it );
 
   return s;
 }
 
 
-void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol, const char *_host,
+void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char *_host,
 			     const char *_user, const char *_pass )
 {
   if ( m_mapSlaves.count() == 6 )

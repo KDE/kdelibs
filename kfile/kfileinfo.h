@@ -39,13 +39,13 @@ class QFileInfo;
   * @author rich@kde.org
   * @version $Id$
   */
-class KFileInfo {
+class KFileInfo : public KIO {
 
 public:
     /**
       * Construct a KFileInfo object from a KDirEntry.
       */
-    KFileInfo(const UDSEntry &);
+    KFileInfo(const KUDSEntry &);
 
     /**
       * Constructs a KFileInfo object from a QFileInfo.

@@ -23,23 +23,23 @@
 
 #include "kio_connection.h"
 
-Connection::Connection( int _in_fd, int _out_fd, size_t _buf_len )
+KIOConnection::KIOConnection( int _in_fd, int _out_fd, size_t _buf_len )
 {
   init( _in_fd, _out_fd, _buf_len );
 }
 
-Connection::Connection()
+KIOConnection::KIOConnection()
 {
   m_fin = m_fout = 0L;
   m_pBuffer = 0L;
 }
 
-size_t Connection::defaultBufferSize()
+size_t KIOConnection::defaultBufferSize()
 {
 	return 0xFFFF;
 }
 
-void Connection::init( int _in_fd, int _out_fd , size_t _buf_len)
+void KIOConnection::init( int _in_fd, int _out_fd , size_t _buf_len)
 {
   m_in = _in_fd;
   m_out = _out_fd;
@@ -51,7 +51,7 @@ void Connection::init( int _in_fd, int _out_fd , size_t _buf_len)
   m_iBufferSize = _buf_len;
 }
 
-Connection::~Connection()
+KIOConnection::~KIOConnection()
 {
   if (m_fin)
     fclose(m_fin);
@@ -62,7 +62,7 @@ Connection::~Connection()
     free(m_pBuffer);
 }
 
-int Connection::send( int _cmd, const void *_p, int _len )
+int KIOConnection::send( int _cmd, const void *_p, int _len )
 {
   static char buffer[ 64 ];
   sprintf( buffer, "%4x_%2x_", _len, _cmd );
@@ -86,7 +86,7 @@ int Connection::send( int _cmd, const void *_p, int _len )
   return 1;
 }
 
-void* Connection::read( int* _cmd, int* _len )
+void* KIOConnection::read( int* _cmd, int* _len )
 {
   static char buffer[ 8 ];
 
@@ -151,8 +151,8 @@ again1:
   return m_pBuffer;
 }
 
-Slave::Slave( const char *_cmd ) 
-	: Connection()
+KIOSlave::KIOSlave( const char *_cmd ) 
+	: KIOConnection()
 {
   // Indicate an error;
   m_pid = -1;
@@ -183,16 +183,16 @@ Slave::Slave( const char *_cmd )
   close( recv_in );
   close( send_out );
 
-  init( recv_out, send_in, Connection::defaultBufferSize() );
+  init( recv_out, send_in, KIOConnection::defaultBufferSize() );
 }
 
-Slave::~Slave()
+KIOSlave::~KIOSlave()
 {
   cerr <<  "KILLING SLAVE xb " << m_pid << endl;
   kill( m_pid, SIGTERM );
 }
 
-int Slave::buildPipe( int *_recv, int *_send )
+int KIOSlave::buildPipe( int *_recv, int *_send )
 {
   int pipe_fds[2];
   if( pipe( pipe_fds ) != -1 )

@@ -1,15 +1,16 @@
 #ifndef __filter_h__
 #define __filter_h__
 
-class Filter
+class KIOFilter
 {
 public:
-  
-  // If arguments is given it needs to be null terminated (well
-  // the last element of the array needs to be null, otherwise
-  // odd things WILL happen.
-  Filter( const char *_cmd, const char **arguments=0 );
-  virtual ~Filter();
+  /**
+   * If the arguments parameter is specified, it must be a null
+   * terminated list. ie. the last element of the array should 
+   * be null. 
+   */
+  KIOFilter( const char *_cmd, const char **arguments=0 );
+  virtual ~KIOFilter();
  
   int pid() { return m_pid; }
  

@@ -30,6 +30,7 @@
 #include <string>
 #include <qcstring.h>
 #include <qstring.h>
+#include <kio_interface.h>
 
 class KURL;
 
@@ -47,7 +48,7 @@ struct FtpEntry
 };
 
 
-class Ftp
+class Ftp : public KIO
 {
 private:
   /**

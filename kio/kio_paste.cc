@@ -36,7 +36,7 @@ bool isClipboardEmpty()
 void pasteClipboard( const char *_dest_url )
 {
   if ( KURL::split( _dest_url ).isEmpty() ) {
-    kioErrorDialog( ERR_MALFORMED_URL, _dest_url );
+    kioErrorDialog( KIO::ERR_MALFORMED_URL, _dest_url );
     return;
   }
   
@@ -95,7 +95,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
     
     FILE *f = fopen( u.path().ascii(), "wb" );
     if ( f == 0L ) {
-      kioErrorDialog( ERR_WRITE_ACCESS_DENIED, u.path().ascii() );
+      kioErrorDialog( KIO::ERR_WRITE_ACCESS_DENIED, u.path().ascii() );
       return;
     }
 

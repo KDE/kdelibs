@@ -35,9 +35,8 @@ class QDialog;
 *
 * @short A main class for doing IO operations.
 */ 
-class KIOJob : public QObject, public IOJob
+class KIOJob : public QObject, public KIOJobBase
 {
-
   Q_OBJECT
 
 public:
@@ -205,7 +204,7 @@ public:
   virtual void slotMakingDir( const char *_dir );
   virtual void slotGettingFile( const char *_url );
   virtual void slotDeletingFile( const char *_url );
-  virtual void slotListEntry( const UDSEntry& _entry );
+  virtual void slotListEntry( const KUDSEntry& _entry );
   virtual void slotMimeType( const char *_type );
   virtual void slotRedirection( const char *_url );
 
@@ -260,7 +259,7 @@ signals:
    */
   void sigCanceled( int id );
 
-  void sigListEntry( int id, const UDSEntry& entry );
+  void sigListEntry( int id, const KUDSEntry& entry );
   void sigMimeType( int id, const char *mimetype );
 
   /**
@@ -378,7 +377,7 @@ protected:
    */
   void clean();
 
-  void connectSlave( Slave *_s );
+  void connectSlave( KIOSlave *_s );
 
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
@@ -389,7 +388,7 @@ protected:
    *
    * @return @ref m_pSlave on success or 0L on failure.
    */
-  Slave* createSlave( const char *_protocol, int& _error, QString & _error_text );
+  KIOSlave* createSlave( const char *_protocol, int& _error, QString & _error_text );
 
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
@@ -400,8 +399,8 @@ protected:
    *
    * @return @ref m_pSlave on success or 0L on failure.
    */
-  Slave* createSlave(  const char *_protocol, const char *_host, const char *_user,
-		       const char *_pass, int& _error, QString& _error_text );
+  KIOSlave* createSlave(  const char *_protocol, const char *_host, const char *_user,
+			  const char *_pass, int& _error, QString& _error_text );
 
   QDialog* createDialog( const char *_text );
   
@@ -422,7 +421,7 @@ protected:
 
   QDialog *m_pDialog;
   
-  Slave* m_pSlave;
+  KIOSlave* m_pSlave;
   QSocketNotifier* m_pNotifier;
   QString m_strSlaveProtocol;
   QString m_strSlaveHost;
@@ -472,11 +471,11 @@ public:
 
   KIOSlavePool() { }
   
-  Slave* slave( const char *_protocol );
-  Slave* slave( const char *_protocol, const char *_host, const char *_user,
+  KIOSlave* slave( const char *_protocol );
+  KIOSlave* slave( const char *_protocol, const char *_host, const char *_user,
 		const char *_pass);
 
-  void addSlave( Slave *_slave, const char *_protocol, const char *_host,
+  void addSlave( KIOSlave *_slave, const char *_protocol, const char *_host,
 		 const char *_user, const char *_pass );
   
   static KIOSlavePool* self();
@@ -488,7 +487,7 @@ protected:
   struct Entry
   {
     time_t m_time;
-    Slave* m_pSlave;
+    KIOSlave* m_pSlave;
     QString m_host;
     QString m_user;
     QString m_pass;

@@ -26,7 +26,7 @@
 
 #include <kdebug.h>
 
-Filter::Filter( const char *_cmd , const char **arguments)
+KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
 {
   unsigned int i=0;
   // Indicate an error;
@@ -62,7 +62,7 @@ Filter::Filter( const char *_cmd , const char **arguments)
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execvp( argv[0], argv );
-    fprintf( stderr, "Filter Slave: exec failed for %s ...!\n", _cmd );
+    fprintf( stderr, "KIOFilter Slave: exec failed for %s ...!\n", _cmd );
     _exit( 0 );
   }
   close( recv_in );
@@ -72,7 +72,7 @@ Filter::Filter( const char *_cmd , const char **arguments)
   fcntl( send_in, F_SETFL, O_NONBLOCK );
 }
 
-Filter::~Filter()
+KIOFilter::~KIOFilter()
 {
   if ( recv_out != -1 )
     close( recv_out );
@@ -80,7 +80,7 @@ Filter::~Filter()
     close( send_in );
 }
 
-int Filter::buildPipe( int *_recv, int *_send )
+int KIOFilter::buildPipe( int *_recv, int *_send )
 {
   int pipe_fds[2];
   if( pipe( pipe_fds ) != -1 )
@@ -92,7 +92,7 @@ int Filter::buildPipe( int *_recv, int *_send )
   return 0;
 }
 
-bool Filter::send( void *_p, int _len )
+bool KIOFilter::send( void *_p, int _len )
 {
   int written = 0;
 
@@ -162,7 +162,7 @@ bool Filter::send( void *_p, int _len )
   return true;
 }
 
-bool Filter::finish()
+bool KIOFilter::finish()
 {
   close( send_in );
   send_in = -1;
@@ -186,7 +186,7 @@ bool Filter::finish()
   return true;
 }
 
-void Filter::emitData( void *_p, int _len )
+void KIOFilter::emitData( void *_p, int _len )
 {
   assert( 0 );
   fwrite( _p, 1, _len, stderr );

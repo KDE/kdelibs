@@ -9,11 +9,12 @@
   * This class provides a simple means for IPC between two applications
   * via a pipe.
   */
-class Connection
+class KIOConnection
 {
 public:
-  Connection( int _in_fd, int _out_fd, size_t _buf_len = defaultBufferSize());
-  virtual ~Connection();
+  KIOConnection();
+  KIOConnection( int _in_fd, int _out_fd, size_t _buf_len = defaultBufferSize());
+  virtual ~KIOConnection();
   
   int inFD() { return m_in; }
   int outFD() { return m_out; }
@@ -53,11 +54,11 @@ protected:
   size_t m_iBufferSize;
 };
 
-class Slave : public Connection
+class KIOSlave : public KIOConnection
 {
 public:
-  Slave( const char *_cmd );
-  ~Slave();
+  KIOSlave( const char *_cmd );
+  ~KIOSlave();
  
   int pid() { return m_pid; }
   

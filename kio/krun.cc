@@ -346,7 +346,7 @@ void KRun::init()
       if ( stat( url.path().ascii(), &buff ) == -1 )
       {
 	// HACK: Use general error message function ( yet to do )
-	kioErrorDialog( ERR_DOES_NOT_EXIST, m_strURL.ascii() );
+	kioErrorDialog( KIO::ERR_DOES_NOT_EXIST, m_strURL.ascii() );
 	m_bFault = true;
 	m_bFinished = true;
 	m_timer.start( 0, true );
@@ -490,7 +490,7 @@ void KRun::slotFinished( int /* _id */ )
 
 void KRun::slotError( int, int _errid, const char *_errortext )
 {
-  if ( _errid == ERR_WARNING )
+  if ( _errid == KIO::ERR_WARNING )
     return; //let's ingore warnings for now
 
   kdebug( KDEBUG_ERROR, 7010,"######## ERROR %d %s", _errid, _errortext );
