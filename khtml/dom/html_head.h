@@ -332,7 +332,7 @@ class HTMLScriptElementImpl;
  * SCRIPT element definition </a> in HTML 4.0.
  *
  */
-class HTMLScriptElement : public HTMLElement
+class KHTML_EXPORT HTMLScriptElement : public HTMLElement
 {
 public:
     HTMLScriptElement();
@@ -446,7 +446,7 @@ class HTMLStyleElementImpl;
  * STYLE element definition </a> in HTML 4.0.
  *
  */
-class HTMLStyleElement : public HTMLElement
+class KHTML_EXPORT HTMLStyleElement : public HTMLElement
 {
 public:
     HTMLStyleElement();
@@ -519,7 +519,7 @@ class HTMLTitleElementImpl;
  * TITLE element definition </a> in HTML 4.0.
  *
  */
-class HTMLTitleElement : public HTMLElement
+class KHTML_EXPORT HTMLTitleElement : public HTMLElement
 {
 public:
     HTMLTitleElement();

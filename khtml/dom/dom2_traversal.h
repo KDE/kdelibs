@@ -29,6 +29,7 @@
 #include <dom/dom_node.h>
 #include <dom/dom_misc.h>
 
+#include <kdelibs_export.h>
 
 namespace DOM {
 class Node;
@@ -335,7 +336,7 @@ protected:
  * how deeply nested the structure of the original document.
  *
  */
-class TreeWalker
+class KHTML_EXPORT TreeWalker
 {
     friend class Document;
     friend class TreeWalkerImpl;

@@ -121,7 +121,7 @@ class DOMString;
  *  An \c Entity node does not have any parent.
  *
  */
-class Entity : public Node
+class KHTML_EXPORT Entity : public Node
 {
 public:
     Entity();
@@ -185,7 +185,7 @@ protected:
  * evaluation.
  *
  */
-class EntityReference : public Node
+class KHTML_EXPORT EntityReference : public Node
 {
     friend class Document;
 public:
@@ -219,7 +219,7 @@ class DOMString;
  *  A \c Notation node does not have any parent.
  *
  */
-class Notation : public Node
+class KHTML_EXPORT Notation : public Node
 {
 public:
     Notation();
@@ -256,7 +256,7 @@ protected:
  * processor-specific information in the text of the document.
  *
  */
-class ProcessingInstruction : public Node
+class KHTML_EXPORT ProcessingInstruction : public Node
 {
     friend class Document;
 public:

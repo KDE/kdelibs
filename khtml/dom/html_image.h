@@ -44,7 +44,7 @@ class DOMString;
  * AREA element definition </a> in HTML 4.0.
  *
  */
-class HTMLAreaElement : public HTMLElement
+class KHTML_EXPORT HTMLAreaElement : public HTMLElement
 {
 public:
     HTMLAreaElement();
@@ -182,7 +182,7 @@ class HTMLImageElementImpl;
  * IMG element definition </a> in HTML 4.0.
  *
  */
-class HTMLImageElement : public HTMLElement
+class KHTML_EXPORT HTMLImageElement : public HTMLElement
 {
 public:
     HTMLImageElement();
@@ -390,7 +390,7 @@ class DOMString;
  * MAP element definition </a> in HTML 4.0.
  *
  */
-class HTMLMapElement : public HTMLElement
+class KHTML_EXPORT HTMLMapElement : public HTMLElement
 {
 public:
     HTMLMapElement();
