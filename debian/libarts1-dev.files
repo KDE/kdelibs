@@ -11,5 +11,5 @@ usr/lib/kde3/libartscbackend.so
 usr/lib/kde3/libartsdsp.so
 usr/lib/kde3/libkmedia2_idl.so
 usr/lib/kde3/libkmedia2.so
-usr/include/kde3/arts/*
-usr/include/kde3/artsc/*
+usr/include/kde/arts/*
+usr/include/kde/artsc/*
