@@ -1725,7 +1725,7 @@ void KConfigBase::revertToDefault(const QString &key)
   putData(aEntryKey, entry, true); // Revert
 }
 
-bool KConfigBase::hasDefault(const QString &key)
+bool KConfigBase::hasDefault(const QString &key) const
 {
   KEntryKey aEntryKey(mGroup, key.utf8());
   aEntryKey.bDefault = true;

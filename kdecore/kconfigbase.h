@@ -1727,7 +1727,7 @@ public:
    * from the dynamically determined default, the application will
    * follow changes the changes of the default.
    */
-  bool hasDefault(const QString &key);
+  bool hasDefault(const QString &key) const;
 
 protected:
   /**
