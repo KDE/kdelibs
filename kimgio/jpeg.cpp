@@ -17,22 +17,21 @@
 #include<assert.h>
 #include<sys/types.h>
 
+// need to define this to prevent clash with jpeglib
+#define QT_CLEAN_NAMESPACE
+
 #include"qimage.h"
 #include"qdatastream.h"
 #include"qcolor.h"
 #include"qpixmap.h"
 #include"jpeg.h"
 
-//
-// Hack to fix INT16 redefinition problem
-//
+// this is just stupid. jpeg should handle this itself.
+#define HAVE_PROTOTYPES 
 
-#define XMD_H
-typedef short INT16;
 extern "C" {
 #include<jpeglib.h>
 }
-#undef XMD_H
 
 //////
 // Plug-in source manager for IJG JPEG compression/decompression library
@@ -175,7 +174,7 @@ void kimgio_jpeg_read(QImageIO * iio)
     if (cinfo.quantize_colors == TRUE || cinfo.out_color_space != JCS_RGB) {
 	while (cinfo.output_scanline < cinfo.output_height) {
 	    uc_row_index = image.scanLine(cinfo.output_scanline);
-	    uc_row = buffer[0];
+	    uc_row = (unsigned char *)buffer[0];
 
 	    jpeg_read_scanlines(&cinfo, buffer, 1);
 
@@ -187,7 +186,7 @@ void kimgio_jpeg_read(QImageIO * iio)
 	while (cinfo.output_scanline < cinfo.output_height) {
 	    ui_row = (unsigned int *)
 		image.scanLine(cinfo.output_scanline);
-	    uc_row = buffer[0];
+	    uc_row = (unsigned char *)buffer[0];
 
 	    jpeg_read_scanlines(&cinfo, buffer, 1);
 
