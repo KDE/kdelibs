@@ -24,6 +24,7 @@
 #include <kstddirs.h>
 #include <kcharsets.h>
 #include <kaccel.h>
+#include <klocale.h>
 #include <qfontinfo.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
@@ -229,7 +230,7 @@ void KGlobalSettings::initStatic()
     KConfigGroupSaver cgs( config, "Paths" );
 
     // Desktop Path
-    *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
+    *s_desktopPath = QDir::homeDirPath() + "/" + i18n("Desktop") + "/";
     *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
     if ( (*s_desktopPath)[0] != '/' )
       s_desktopPath->prepend( QDir::homeDirPath() + "/" );
@@ -238,14 +239,14 @@ void KGlobalSettings::initStatic()
 	*s_desktopPath += "/";
 
     // Trash Path
-    *s_trashPath = *s_desktopPath + "Trash/";
+    *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
 	*s_trashPath += "/";
 
     // Autostart Path
-    *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
+    *s_autostartPath = KGlobal::dirs()->localkdedir() + i18n("Autostart") + "/";
     *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
     if ( (*s_autostartPath)[0] != '/' )
       s_autostartPath->prepend( QDir::homeDirPath() + "/" );
