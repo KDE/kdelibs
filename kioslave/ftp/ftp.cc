@@ -705,12 +705,13 @@ bool Ftp::ftpOpenPASVDataConnection()
   // Make hostname
   host.sprintf("%d.%d.%d.%d", i[0], i[1], i[2], i[3]);
   // port number is given in network byte order
-  ks.setAddress(host, ntohs(i[5] << 8 | i[4]));
+	int port = i[4] << 8 | i[5];
+  ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
 
   if (ks.connect() < 0)
     {
-      kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << ntohs(i[5] << 8 | i[4]) << endl;
+      kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << port << endl;
       return false;
     }
 
