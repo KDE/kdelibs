@@ -16,6 +16,7 @@
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
+#include <kpopupmenu.h>
 #include <qmultilineedit.h>
 #include "kwindowtest.h"
 
@@ -152,7 +153,7 @@ setAutoSaveSettings();
     tb->alignItemRight (6);
 
     // Another toolbar
-    tb1 = new KToolBar (this, QMainWindow::Top); // this one is normal and has separators
+    tb1 = new KToolBar(this, QMainWindow::DockTop); // this one is normal and has separators
 
 
     pix = BarIcon("filenew");
