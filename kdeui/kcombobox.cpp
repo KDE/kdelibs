@@ -303,7 +303,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 	
 	// handle rotation
 	if ( mode != KGlobalSettings::CompletionNone ) {
-	    
+	
             // Handles previousMatch.
             int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
             if ( KStdAccel::isEqual( e, key ) )
@@ -327,7 +327,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             }
         }
     }
-    
+
     // read-only combobox
     else if ( !m_pEdit )
     {
@@ -455,7 +455,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             }
         }
         else if(type == QEvent::Drop)
-        { 
+        {
             QDropEvent *e = static_cast<QDropEvent *>( ev );
             KURL::List urlList;
             if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
@@ -466,7 +466,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 {
                     if(!dropText.isEmpty())
                         dropText+=' ';
-            
+
                     dropText += (*it).prettyURL();
                 }
 
@@ -725,6 +725,13 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     // going up in the history, rotating when reaching QListBox::count()
     if ( KStdAccel::isEqual( e, KStdAccel::rotateUp() ) ) {
         myIterateIndex++;
+	
+	// skip duplicates/empty items
+	while ( myIterateIndex < count()-1 && 
+		(currentText() == text( myIterateIndex ) || 
+		 text( myIterateIndex ).isEmpty()) )
+	    myIterateIndex++;
+	
         if ( myIterateIndex >= count() ) {
             myRotated = true;
             myIterateIndex = -1;
@@ -744,6 +751,14 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     // the text that was in the lineedit before Up was called.
     else if ( KStdAccel::isEqual( e, KStdAccel::rotateDown() ) ) {
         myIterateIndex--;
+
+	// skip duplicates/empty items
+	while ( myIterateIndex >= 0 && 
+		(currentText() == text( myIterateIndex ) || 
+		 text( myIterateIndex ).isEmpty()) )
+	    myIterateIndex--;
+	
+	
         if ( myIterateIndex < 0 ) {
             if ( myRotated && myIterateIndex == -2 ) {
                 myRotated = false;
@@ -773,8 +788,6 @@ void KHistoryCombo::slotReset()
 {
     myIterateIndex = -1;
     myRotated = false;
-    // clearEdit(); // FIXME, use a timer for that? slotReset is called
-    // before addToHistory() so we can't clear the edit here :-/
 }
 
 
