@@ -370,6 +370,62 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
 }
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
+{  
+  QStringList list = KProtocolManager::userAgentList();
+  QString user_agent = DEFAULT_USERAGENT_STRING;
+  int host_len = hostname.length();
+
+  if ( list.count() > 0 )
+  {
+    QStringList::ConstIterator it(list.begin());
+    for( ; it != list.end(); ++it)
+    {
+      QStringList split;
+      int pos = (*it).find("::"); 
+      if ( pos == -1 )
+      {
+        pos = (*it).find(':');
+        if ( pos != -1 )
+        {
+          split.append((*it).left(pos));
+          split.append((*it).mid(pos+1));
+        }
+      }
+      else
+        split = QStringList::split("::", (*it));
+      /*        
+	Ignore entries with the following conditions:	  
+	    1.) Old wildcard entry "*"
+	    2.) Any similar but not equal domain match.  That is there
+	        is an entry, for example, for "developer.kde.org" while
+	        the requested url is "www.kde.org".  Though both end with
+	        the same domain name they are not really a match since the
+	        UA string is set for a very specific domain. On the other
+	        hand ".kde.org" or "kde.org" will work fine.
+	    3.) A match that starts with a leading "." when only one of it
+	        is present.  This is to effectively eliminate a ".com" or
+	        ".net" or a ".org" entry which will be the same thing as the
+	        older QRegExp matching and the default entry. (DA)
+      */
+      QString match = split[0];
+      int match_len = match.length();
+      if ( match.isEmpty() || split[1].isEmpty() || match_len > host_len ||
+           (match.contains( '.' ) == 1 && match[0] == '.') )
+        continue;
+      
+      // We look for a reverse domain name match...
+      int rev_match = match.findRev(hostname, -1, false) + host_len;
+      if ( rev_match == match_len )
+      {
+        user_agent = split[1];
+	break;
+      }
+    }
+  }
+  return user_agent;
+}
+
+QStringList KProtocolManager::userAgentList()
 {
   KConfig *cfg = config();
   // NOTE: Please, please DO NOT remove this check before
@@ -378,84 +434,17 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
   if( cfg->hasGroup("UserAgent") )
     cfg->setGroup( "UserAgent" );
   else
-    cfg->setGroup( "Browser Settings/UserAgent" );
-
-  int entries = cfg->readNumEntry( "EntriesCount", 0 );
-  QStringList list;
-  for( int i = 0; i < entries; i++ )
-  {
-      QString key = QString( "Entry%1" ).arg( i );
-      list.append( cfg->readEntry( key, "" ) );
-  }
-
-  QString user_agent = DEFAULT_USERAGENT_STRING;
-
-  if ( list.count() == 0 )
-    return user_agent;
-
-  // Now, we need to do our pattern matching on the host name.
-  QStringList::ConstIterator it(list.begin());
-  for( ; it != list.end(); ++it)
-  {
-    QStringList split;
-    int pos = (*it).find("::"); 
-    if ( pos == -1 )
-    {
-      pos = (*it).find(':');
-      if ( pos != -1 )
-      {
-        split.append((*it).left(pos));
-        split.append((*it).mid(pos+1));
-      }
-    }
-    else
-    {
-       split = QStringList::split("::", (*it));
-    }
-
-    // if our user agent is null, we go to the next one
-    if ( split[1].isNull() )
-      continue;
-
-    QRegExp regexp(split[0], true, true);
-
-    // we also make sure our regexp is valid
-    if ( !regexp.isValid() )
-      continue;
-
-    // we look for a match
-    if ( regexp.match( hostname ) > -1 )
-    {
-      user_agent = split[1];
-
-      // if the match was for '*', we keep trying.. otherwise, we are
-      // done
-      if ( split[0] != "*" )
-        break;
-    }
-  }
-
-  return user_agent;
-}
-
-QStringList KProtocolManager::userAgentList()
-{
-  KConfig *cfg = config();
-
-  if( cfg->hasGroup("UserAgent") )
-    cfg->setGroup( "UserAgent" );
-  else
     cfg->setGroup("Browser Settings/UserAgent");
-
+  
+  QString entry;
   QStringList settingsList;
   int entries = cfg->readNumEntry( "EntriesCount", 0 );
   for( int i = 0; i < entries; i++ )
   {
-    QString entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
-    if ( entry.startsWith("*:Mozilla/5.0 (compatible; Konqueror/") ) // update version number
-      settingsList.append( "*:" + DEFAULT_USERAGENT_STRING );
-    else
-      settingsList.append( entry );
+    entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
+	// Ignore wildcard matches...
+	if( !entry.isEmpty() && !entry.startsWith("*") )
+      settingsList.append(entry);
   }
   return settingsList;
 }
