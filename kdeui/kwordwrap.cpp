@@ -17,6 +17,7 @@
 */
 
 #include "kwordwrap.h"
+#include <kdebug.h>
 #include <qpainter.h>
 
 class KWordWrapPrivate {
@@ -49,18 +50,31 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     int y = 0;
     int w = r.width();
     int textwidth = 0;
+    bool isBreakable = false;
+    bool wasBreakable = false; // value of isBreakable for last char (i-1)
+    bool isParens = false; // true if one of ({[
+    bool wasParens = false; // value of isParens for last char (i-1)
 
     for ( int i = 0 ; i < len; ++i )
     {
         QChar c = str[i];
         int ww = fm.charWidth( str, i );
+
+        isParens = ( c == '(' || c == '[' || c == '{' );
         // isBreakable is true when we can break _after_ this character.
-        bool isBreakable = ( c.isSpace() || c.isPunct() || c.isSymbol() )
-                           && ( c != '(' && c != '[' && c != '{' );
+        isBreakable = ( c.isSpace() || c.isPunct() || c.isSymbol() ) & !isParens;
+
+        // Special case for '(', '[' and '{': we want to break before them
         if ( !isBreakable && i < len-1 ) {
-            QChar nextc = str[i+1];
+            QChar nextc = str[i+1]; // look at next char
             isBreakable = ( nextc == '(' || nextc == '[' || nextc == '{' );
         }
+        // Special case for '/': after normal chars it's breakable (e.g. inside a path),
+        // but after another breakable char it's not (e.g. "mounted at /foo")
+        // Same thing after a parenthesis (e.g. "dfaure [/fool]")
+        if ( c == '/' && (wasBreakable || wasParens) )
+            isBreakable = false;
+
         /*kdDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
                   << " x=" << x << " ww=" << ww << " w=" << w
                   << " lastBreak=" << lastBreak << " isBreakable=" << isBreakable << endl;*/
@@ -80,6 +94,8 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             textwidth = QMAX( textwidth, thisLineWidth );
             x = 0;
             y += height;
+            wasBreakable = true;
+            wasParens = false;
             if ( lastBreak != -1 )
             {
                 // Breakable char was found, restart from there
@@ -93,6 +109,8 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             lineWidth = x + ww;
         }
         x += ww;
+        wasBreakable = isBreakable;
+        wasParens = isParens;
     }
     textwidth = QMAX( textwidth, x );
     kw->m_lineWidths.append( x );

@@ -26,8 +26,11 @@
 
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)
- * That means: not letting a letter alone on the last line,
- * breaking at punctuation signs, etc.
+ * That means:
+ * @li not letting a letter alone on the last line,
+ * @li breaking at punctuation signs (not only at spaces)
+ * @li improved handling of (), [] and {}
+ * @li improved handling of '/' (e.g. for paths)
  *
  * Usage: call the static method, @ref formatText, with the text to
  * wrap and the constraining rectangle etc., it will return an instance of KWordWrap
@@ -36,6 +39,7 @@
  *
  * This design allows to call the word-wrap algorithm only when the text changes
  * and not every time we want to know the bounding rect or draw the text.
+ * @author David Faure <faure@kde.org>
  */
 class KWordWrap
 {
