@@ -1174,7 +1174,6 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       // Check if we're retrieving an element (by index or by name)
       bool ok;
       uint u = propertyName.toULong(&ok);
-      qDebug("accessing item: %d", u);
 
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
@@ -2015,7 +2014,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
 {
   KJS_CHECK_THIS( HTMLElement, thisObj );
 
+#ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLElementFunction::tryCall " << endl;
+#endif
   DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
 
   switch (element.elementId()) {
