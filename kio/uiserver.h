@@ -236,6 +236,9 @@ k_dcop:
   /**
    * Popup a message box.
    * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+   *   This enum is defined in slavebase.h, it currently is:
+   *   QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3,
+   *   WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6
    * @param text Message string. May contain newlines.
    * @param caption Message box title.
    * @param buttonYes The text for the first button.
