@@ -260,7 +260,12 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, QA
         if ( ( itAppend.isNull() && elemName.isNull() ) ||
              ( itAppend == elemName ) )
         {
-          base.insertBefore( newChild, currElement );
+          // first, see if this new element matches a standard one in
+          // the global file.  if it does, then we skip it as it will
+          // be merged in, later
+          QDomElement matchingElement = findMatchingElement( newChild, base );
+          if ( matchingElement.isNull() )
+            base.insertBefore( newChild, currElement );
         }
       }
 
