@@ -900,7 +900,7 @@ int KToolBar::iconSize() const
 {
     if ( !d->m_iconSize ) // default value?
 		return iconSizeDefault();
-    
+
 	return d->m_iconSize;
 }
 
@@ -908,7 +908,7 @@ int KToolBar::iconSizeDefault() const
 {
 	if (!::qstrcmp(QObject::name(), "mainToolBar"))
 		return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
-            
+
 	return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
 }
 
@@ -1632,7 +1632,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     return applySettings(config,_configGroup,false);
 }
 
-void KToolBar::applySettings(KConfig *config, const QString &_configGroup,bool force)
+void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool force)
 {
     //kdDebug(220) << name() << " applySettings group=" << _configGroup << endl;
 
@@ -1745,9 +1745,29 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
         kmw->setSettingsDirty();
 }
 
+static KToolBar::Dock stringToDock( const QString& attrPosition )
+{
+    KToolBar::Dock dock = KToolBar::DockTop;
+    if ( !attrPosition.isEmpty() ) {
+        if ( attrPosition == "top" )
+            dock = KToolBar::DockTop;
+        else if ( attrPosition == "left" )
+            dock = KToolBar::DockLeft;
+        else if ( attrPosition == "right" )
+            dock = KToolBar::DockRight;
+        else if ( attrPosition == "bottom" )
+            dock = KToolBar::DockBottom;
+        else if ( attrPosition == "floating" )
+            dock = KToolBar::DockTornOff;
+        else if ( attrPosition == "flat" )
+            dock = KToolBar::DockMinimized;
+    }
+    return dock;
+}
+
+
 void KToolBar::loadState( const QDomElement &element )
 {
-    //kdDebug(220) << name() << " loadState " << this << endl;
     QMainWindow *mw = mainWindow();
 
     if ( !mw )
@@ -1767,25 +1787,37 @@ void KToolBar::loadState( const QDomElement &element )
             setFullSize( attrFullWidth == "true" );
     }
 
-    Dock dock = DockTop;
+    /*
+      This method is called in order to load toolbar settings from XML.
+      However this can be used in two rather different cases:
+      - for the initial loading of the app's XML. In that case the settings
+        are only the defaults, the user's KConfig settings will override them
+        (KDE4 TODO: how about saving those user settings into the local XML file instead?
+        Then this whole thing would be simpler, no KConfig settings to apply afterwards.
+        OTOH we'd have to migrate those settings when the .rc version increases,
+        like we do for shortcuts)
+
+      - for later re-loading when switching between parts in KXMLGUIFactory.
+        In that case the XML contains the final settings, not the defaults.
+        We do need the defaults, and the toolbar might have been completely
+        deleted and recreated meanwhile. So we store the app-default settings
+        into the XML.
+     */
+    bool loadingAppDefaults = true;
+    if ( element.hasAttribute( "offsetDefault" ) )
     {
-        QCString attrPosition = element.attribute( "position" ).lower().latin1();
-        //kdDebug(220) << name() << " loadState attrPosition=" << attrPosition << endl;
-        if ( !attrPosition.isEmpty() ) {
-            if ( attrPosition == "top" )
-                dock = DockTop;
-            else if ( attrPosition == "left" )
-                dock = DockLeft;
-            else if ( attrPosition == "right" )
-                dock = DockRight;
-            else if ( attrPosition == "bottom" )
-                dock = DockBottom;
-            else if ( attrPosition == "floating" )
-                dock = DockTornOff;
-            else if ( attrPosition == "flat" )
-                dock = DockMinimized;
-        }
+        // this isn't the first time, so the defaults have been saved into the (in-memory) XML
+        loadingAppDefaults = false;
+        d->OffsetDefault = element.attribute( "offsetDefault" ).toInt();
+        d->NewLineDefault = element.attribute( "newlineDefault" ) == "true";
+        d->HiddenDefault = element.attribute( "hiddenDefault" ) == "true";
+        d->IconSizeDefault = element.attribute( "iconSizeDefault" ).toInt();
+        d->PositionDefault = element.attribute( "positionDefault" );
+        d->IconTextDefault = element.attribute( "iconTextDefault" );
     }
+    //kdDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
+
+    Dock dock = stringToDock( element.attribute( "position" ).lower() );
 
     {
         QCString attrIconText = element.attribute( "iconText" ).lower().latin1();
@@ -1806,16 +1838,15 @@ void KToolBar::loadState( const QDomElement &element )
             if (d->m_honorStyle)
                 setIconText( iconTextSetting() );
             else
-                setIconText( d->IconTextDefault);
+                setIconText( d->IconTextDefault );
 	}
     }
 
-    {
-        QString attrIconSize = element.attribute( "iconSize" ).lower();
-        if ( !attrIconSize.isEmpty() )
-            d->IconSizeDefault = attrIconSize.toInt();
-        setIconSize( d->IconSizeDefault );
-    }
+    QString attrIconSize = element.attribute( "iconSize" ).lower();
+    int iconSize = d->IconSizeDefault;
+    if ( !attrIconSize.isEmpty() )
+        iconSize = attrIconSize.toInt();
+    setIconSize( iconSize );
 
     int index = -1; // append by default. This is very important, otherwise
     // with all 0 indexes, we keep reversing the toolbars.
@@ -1825,43 +1856,57 @@ void KToolBar::loadState( const QDomElement &element )
             index = attrIndex.toInt();
     }
 
+    int offset = d->OffsetDefault;
+    bool newLine = d->NewLineDefault;
+    bool hidden = d->HiddenDefault;
+
     {
-        QString attrOffset = element.attribute( "offset" ).lower();
+        QString attrOffset = element.attribute( "offset" );
         if ( !attrOffset.isEmpty() )
-            d->OffsetDefault = attrOffset.toInt();
+            offset = attrOffset.toInt();
     }
 
     {
         QString attrNewLine = element.attribute( "newline" ).lower();
         if ( !attrNewLine.isEmpty() )
-            d->NewLineDefault = attrNewLine == "true";
+            newLine = attrNewLine == "true";
     }
 
     {
         QString attrHidden = element.attribute( "hidden" ).lower();
-        if ( !attrHidden.isEmpty() )
-            d->HiddenDefault = attrHidden  == "true";
+        if ( !attrHidden.isEmpty() ) {
+            hidden = attrHidden  == "true";
+        }
     }
 
-    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, d->NewLineDefault, d->OffsetDefault );
-    mw->addDockWindow( this, dock, d->NewLineDefault );
-    mw->moveDockWindow( this, dock, d->NewLineDefault, index, d->OffsetDefault );
+    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, newLine, offset );
+    mw->addDockWindow( this, dock, newLine );
+    mw->moveDockWindow( this, dock, newLine, index, offset );
 
     // Apply the highlight button setting
     d->m_highlight = highlightSetting();
 
-    // Apply transparent-toolbar-moving setting (ok, this is global to the mainwindow,
-    // but we do it only if there are toolbars...)
-    if ( transparentSetting() != !mw->opaqueMoving() )
-        mw->setOpaqueMoving( !transparentSetting() );
-
-    if ( d->HiddenDefault )
+    if ( hidden )
         hide();
     else
         show();
 
-    getAttributes( d->PositionDefault, d->IconTextDefault, index );
-    //kdDebug(220) << name() << " loadState IconTextDefault=" << d->IconTextDefault << endl;
+    if ( loadingAppDefaults )
+    {
+        getAttributes( d->PositionDefault, d->IconTextDefault, index );
+        //kdDebug(220) << name() << " loadState IconTextDefault=" << d->IconTextDefault << endl;
+        d->OffsetDefault = offset;
+        d->NewLineDefault = newLine;
+        d->HiddenDefault = hidden;
+        d->IconSizeDefault = iconSize;
+    }
+    //kdDebug(220) << name() << " loadState hidden=" << hidden << endl;
+
+    // Apply transparent-toolbar-moving setting (ok, this is global to the mainwindow,
+    // but we do it only if there are toolbars...)
+    // KDE4: move to KMainWindow
+    if ( transparentSetting() != !mw->opaqueMoving() )
+        mw->setOpaqueMoving( !transparentSetting() );
 }
 
 int KToolBar::dockWindowIndex()
@@ -1938,7 +1983,17 @@ void KToolBar::saveState( QDomElement &current )
     if ( isHidden() )
         current.setAttribute( "hidden", "true" );
     d->modified = true;
-    //kdDebug(220) << name() << " saveState: saving index=" << index << " iconText=" << icontext << endl;
+
+    // TODO if this method is used by more than KXMLGUIBuilder, e.g. to save XML settings to *disk*,
+    // then the stuff below shouldn't always be done.
+    current.setAttribute( "offsetDefault", d->OffsetDefault );
+    current.setAttribute( "newlineDefault", d->NewLineDefault );
+    current.setAttribute( "hiddenDefault", d->HiddenDefault ? "true" : "false" );
+    current.setAttribute( "iconSizeDefault", d->IconSizeDefault );
+    current.setAttribute( "positionDefault", d->PositionDefault );
+    current.setAttribute( "iconTextDefault", d->IconTextDefault );
+
+    //kdDebug(220) << name() << " saveState: saving index=" << index << " iconText=" << icontext << " hidden=" << isHidden() << endl;
 }
 
 // Called by KMainWindow::finalizeGUI
