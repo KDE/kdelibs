@@ -95,7 +95,7 @@ METASOURCES = AUTO
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h \
         slaveinterface.h \
-        global.h passdlg.h netaccess.h job.h \
+        global.h passdlg.h netaccess.h job.h scheduler.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
