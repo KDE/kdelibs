@@ -150,6 +150,8 @@ Drawbacks:
 * We rely on default configuration files being properly installed. 
 * The user can break applications by making improper modifications to these 
 files.
+* Settings such as the default high score user name (the person who is currently
+logged in) or the current system background which is determined at run time.
 
 
 Plan B
