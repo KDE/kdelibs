@@ -393,6 +393,7 @@ protected slots:
      * signal.
      */
     virtual void slotSelected( QListBoxItem * );
+    
     /**
      * Called when a url was dropped onto the bar to show a
      * @ref KURLBarItemDialog.
@@ -400,6 +401,8 @@ protected slots:
     virtual void slotDropped( QDropEvent * );
 
 private:
+    void slotSelected( int button, QListBoxItem * );
+    
     KURLBarListBox *m_listBox;
     int m_iconSize;
 
