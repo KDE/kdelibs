@@ -227,11 +227,11 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
 	return false;
   
   if ( !init_sockaddr( _host, _port) )
-    printf("SOCKET Destructor %x\n",this);
+	{
 	  ::close( sock );
 	  sock = -1;
     printf("SOCKET Destructor %p\n",this);
-	printf("Deleteing Socket notifier '%x'\n",readNotifier);
+
 	  return false;
 	}
 	printf("Deleteing Socket notifier '%p'\n",readNotifier);
