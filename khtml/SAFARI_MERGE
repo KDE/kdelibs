@@ -136,8 +136,3 @@ Needs other stuff before it can be applied:
 - dom_textimpl.cpp: setNodeValue: whitespace nuking needs merged!!
 
 - xml_tokenizer.cpp/.h: completely skipped. unfinished work. 
-
-- dom_docimpl.cpp: micro optimisation regarding if() clause.  Checking
-  .isEmpty() checks both .isNull() and == "", and it's cheaper than string
-  compares.
-
