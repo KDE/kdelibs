@@ -64,18 +64,26 @@ class KWalletD : public KDEDModule {
 		// Remove this folder
 		virtual bool removeFolder(int handle, const QString& folder);
 
+		// List of entries in this folder
+		virtual QStringList entryList(int handle, const QString& folder);
+
 		// Read an entry.  If the entry does not exist, it just
 		// returns an empty result.  It is your responsibility to check
 		// hasEntry() first.
 		virtual QByteArray readEntry(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString,QString> readMap(int handle, const QString& folder, const QString& key);
 		virtual QString readPassword(int handle, const QString& folder, const QString& key);
 
 		// Write an entry.  rc=0 on success.
 		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value);
+		virtual int writeMap(int handle, const QString& folder, const QString& key, const QMap<QString,QString>& value);
 		virtual int writePassword(int handle, const QString& folder, const QString& key, const QString& value);
 
 		// Does the entry exist?
 		virtual bool hasEntry(int handle, const QString& folder, const QString& key);
+
+		// What type is the entry?
+		virtual long entryType(int handle, const QString& folder, const QString& key);
 
 		// Remove an entry.  rc=0 on success.
 		virtual int removeEntry(int handle, const QString& folder, const QString& key);
@@ -92,6 +100,7 @@ class KWalletD : public KDEDModule {
 		void invalidateHandle(int handle);
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
+		QMap<QString,QCString> _passwords;
 };
 
 
