@@ -9,6 +9,7 @@
 #include <kdesktopfile.h>
 #include <kstddirs.h>
 #include <kstdaccel.h>
+#include <kdebug.h>
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -20,7 +21,7 @@ ScriptLoader::ScriptLoader(KMainWindow *parent) : QObject (parent)
 	m_scripts.clear();
   	m_theAction = new KSelectAction ( i18n("KDE Scripts"),
 		0,
-		m_parent,
+		this,
 		SLOT(runAction()),
 		m_parent->actionCollection(),
 		"scripts");
@@ -37,7 +38,10 @@ KSelectAction * ScriptLoader::getScripts()
 	// Get the avaliable scripts for this application.
 	QStringList pluginList = "";
 	// Find plugins
-	QDir d(locate( "scripts", kapp->name()));
+	QString searchPath = kapp->name();
+	searchPath += "/scripts/";
+	QDir d(locate( "data", searchPath));
+	kdDebug() << "loading plugin from " << locate( "data", searchPath) << endl;
 	const QFileInfoList *fileList = d.entryInfoList("*.desktop");
 	QFileInfoListIterator it ( *fileList );
 	QFileInfo *fi;
@@ -48,11 +52,18 @@ KSelectAction * ScriptLoader::getScripts()
 		if(KDesktopFile::isDesktopFile(fi->absFilePath()))
 		{
 			KDesktopFile desktop((fi->absFilePath()), true);
-			m_scripts.append(KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( desktop.readType() ));
-			m_scripts.current()->setScript(desktop.readURL());
-			if(m_parent != 0)
-				m_scripts.current()->setParent(m_parent);
-			pluginList.append(desktop.readName());
+			kdDebug () << "Trying to load script type: " << desktop.readType() << endl;
+			KScriptInterface *tmpIface = KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>(desktop.readType() );
+			if( tmpIface != 0 )
+			{
+				m_scripts.append(tmpIface);			
+				m_scripts.current()->setScript(desktop.readURL());
+				if(m_parent != 0)
+					m_scripts.current()->setParent(m_parent);
+				pluginList.append(desktop.readName());
+			}
+			else
+				kdDebug() << desktop.readName() << " could not be loaded!" << endl;
 		}
 		++it;
 	}

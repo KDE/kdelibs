@@ -1,10 +1,11 @@
 #ifndef __scriptinterface_h__
 #define __scriptinterface_h__
 #include <qobject.h>
+#include <kparts/plugin.h>
 
 class QString;
 
-class KScriptInterface : public QObject
+class KScriptInterface :  public KParts::Plugin
 {
 	Q_OBJECT
 public:
@@ -29,6 +30,7 @@ public:
 public slots:
 	virtual void runScript() = 0;
 	virtual void stopScript() =0;
+	virtual bool status() =0;
 
 signals:
 	/**
