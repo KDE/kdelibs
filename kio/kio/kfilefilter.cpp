@@ -86,7 +86,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 
         QPtrListIterator<QRegExp> it( m_nameFilters );
         for ( ; it.current(); ++it ) {
-            if ( it.current()->search( name ) != -1 ) { // match!
+            if ( it.current()->exactMatch( name ) ) { // match! 
                 ok = true;
                 break;
             }
