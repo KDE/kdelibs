@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
+#include <locale.h>
 
 #include "kjs.h"
 #include "date_object.h"
@@ -59,7 +60,7 @@ namespace KJS {
 	   GetFullYear, GetMonth, GetDate, GetDay, GetHours, GetMinutes,
 	   GetSeconds, GetMilliSeconds, GetTimezoneOffset, SetTime,
 	   SetMilliSeconds, SetSeconds, SetMinutes, SetHours, SetDate,
-	   SetMonth, SetFullYear,
+	   SetMonth, SetFullYear, ToUTCString,
 	   // non-normative properties (Appendix B)
 	   GetYear, SetYear, toGMTString };
   private:
@@ -184,7 +185,7 @@ KJSO DatePrototype::get(const UString &p) const
 {
   int id;
 
-  if (p == "toString")
+  if (p == "toString" || p == "toUTCString")
     id = DateProtoFunc::ToString;
   else if (p == "toDateString")
     id = DateProtoFunc::ToDateString;
@@ -252,6 +253,9 @@ Completion DateProtoFunc::execute(const List &)
 {
   KJSO result;
   UString s;
+  const int bufsize=50;
+  char timebuffer[bufsize];
+  char *oldlocale = setlocale(LC_TIME,NULL);
   Object thisObj = Object::dynamicCast(thisValue());
   KJSO v = thisObj.internalValue();
   double milli = v.toNumber().value();
@@ -269,11 +273,26 @@ Completion DateProtoFunc::execute(const List &)
     break;
   case ToDateString:
   case ToTimeString:
+    setlocale(LC_TIME,"C");
+    if (id == DateProtoFunc::ToDateString) {
+      strftime(timebuffer, bufsize, "%x",t);
+    } else {
+      strftime(timebuffer, bufsize, "%X",t);
+    }
+    setlocale(LC_TIME,oldlocale);
+    result = String(timebuffer);
+    break;
   case ToLocaleString:
+    strftime(timebuffer, bufsize, "%c", t);
+    result = String(timebuffer);
+    break;
   case ToLocaleDateString:
+    strftime(timebuffer, bufsize, "%x", t);
+    result = String(timebuffer);
+    break;
   case ToLocaleTimeString:
-    /* TODO */
-    result = Undefined();
+    strftime(timebuffer, bufsize, "%X", t);
+    result = String(timebuffer);
     break;
   case ValueOf:
     result = Number(milli);
@@ -309,7 +328,11 @@ Completion DateProtoFunc::execute(const List &)
     result = Number(t->tm_sec);
     break;
   case GetMilliSeconds:
+    result = Undefined();
+    break;
   case GetTimezoneOffset:
+    result = Number(timezone / 3600);
+    break;
   case SetTime:
   case SetMilliSeconds:
   case SetSeconds:
