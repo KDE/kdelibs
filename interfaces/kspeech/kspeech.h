@@ -211,7 +211,7 @@
      client->attach();
      if (!client->isApplicationRegistered("kttsd")) {
          QString error;
-         if (KApplication::startServiceByName("KTTSD", QStringList(), &error))
+         if (KApplication::startServiceByDesktopName("kttsd", QStringList(), &error))
              cout << "Starting KTTSD failed with message " << error << endl;
      }
    @endverbatim
