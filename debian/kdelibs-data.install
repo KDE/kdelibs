@@ -21,6 +21,7 @@ debian/tmp/usr/share/mimelnk/application/msword.desktop
 debian/tmp/usr/share/mimelnk/application/octet-stream.desktop
 debian/tmp/usr/share/mimelnk/application/ogg.desktop
 debian/tmp/usr/share/mimelnk/application/pdf.desktop
+debian/tmp/usr/share/mimelnk/application/pgp.desktop
 debian/tmp/usr/share/mimelnk/application/pgp-encrypted.desktop
 debian/tmp/usr/share/mimelnk/application/pgp-keys.desktop
 debian/tmp/usr/share/mimelnk/application/pgp-signature.desktop
