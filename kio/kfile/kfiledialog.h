@@ -158,7 +158,7 @@ public:
 		QWidget *parent, const char *name,
 		bool modal, QWidget* widget);
 
-      
+
     /**
      * Destructs the file dialog.
      */
@@ -173,7 +173,7 @@ public:
      * @returns The list of selected URLs.
      */
     KURL::List selectedURLs() const;
-    
+
     /**
      * @returns the currently shown directory.
      */
@@ -809,7 +809,7 @@ protected:
      * Reimplemented to animate the cancel button.
      */
     virtual void keyPressEvent( QKeyEvent *e );
-    
+
     /**
       * Perform basic initialization tasks. Called by constructors.
       * @since 3.1
@@ -935,6 +935,7 @@ private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
 
+    void setLocationText( const QString& text );
     void updateLocationWhatsThis();
 
     void appendExtension(KURL &url);

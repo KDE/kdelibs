@@ -361,8 +361,7 @@ void KFileDialog::slotOk()
                     files.append( name );
                     ++it;
                 }
-                locationEdit->setEditText( files );
-                locationEdit->lineEdit()->setEdited( false );
+                setLocationText( files );
                 return;
             }
         }
@@ -695,9 +694,7 @@ void KFileDialog::fileHighlighted(const KFileItem *i)
         d->url = i->url();
 
         if ( !locationEdit->hasFocus() ) { // don't disturb while editing
-            locationEdit->setCurrentItem( 0 );
-            locationEdit->setEditText( i->name() );
-            locationEdit->lineEdit()->setEdited( false );
+            setLocationText( i->name() );
         }
         emit fileHighlighted(d->url.url());
     }
@@ -718,9 +715,7 @@ void KFileDialog::fileSelected(const KFileItem *i)
             return;
 
         d->url = i->url();
-        locationEdit->setCurrentItem( 0 );
-        locationEdit->setEditText( i->name() );
-        locationEdit->lineEdit()->setEdited( false );
+        setLocationText( i->name() );
     }
     else {
         multiSelectionChanged();
@@ -752,12 +747,21 @@ void KFileDialog::multiSelectionChanged()
         text.append( begin ).append( item->name() ).append( '\"' );
         ++it;
     }
+    
+    setLocationText( text.stripWhiteSpace() );
+}
+
+void KFileDialog::setLocationText( const QString& text )
+{
+    // setCurrentItem() will cause textChanged() being emitted,
+    // so slotLocationChanged() will be called. Make sure we don't clear
+    // the KDirOperator's view-selection in there 
     disconnect( locationEdit, SIGNAL( textChanged( const QString& ) ),
-             this, SLOT( slotLocationChanged( const QString& ) ) );
+                this, SLOT( slotLocationChanged( const QString& ) ) );
     locationEdit->setCurrentItem( 0 );
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
-    locationEdit->setEditText( text.stripWhiteSpace() );
+    locationEdit->setEditText( text );
 }
 
 static QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
@@ -1214,6 +1218,8 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
+//     #warning FIXME: http URLs, e.g. from KURLCombo
+
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
@@ -1238,8 +1244,7 @@ void KFileDialog::setSelection(const QString& url)
             filename = u.fileName();
             kdDebug(kfile_area) << "filename " << filename << endl;
             d->selection = filename;
-            locationEdit->setCurrentItem( 0 );
-            locationEdit->setEditText( filename );
+            setLocationText( filename );
 
             // tell the line edit that it has been edited
             // otherwise we won't know this was set by the user
