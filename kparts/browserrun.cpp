@@ -116,7 +116,7 @@ void BrowserRun::scanFile()
   if ( m_part )
   {
       QString proto = m_part->url().protocol().lower();
-      
+
       if (proto == "https" || proto == "webdavs") {
           m_args.metaData().insert("main_frame_request", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "TRUE" );
@@ -125,12 +125,12 @@ void BrowserRun::scanFile()
           m_args.metaData().insert("ssl_activate_warnings", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "FALSE" );
       }
-      
+
       // Set the PropagateHttpHeader meta-data if it has not already been set...
       if (!m_args.metaData().contains("PropagateHttpHeader"))
           m_args.metaData().insert("PropagateHttpHeader", "TRUE");
   }
- 
+
   KIO::TransferJob *job;
   if ( m_args.doPost() && m_strURL.protocol().startsWith("http"))
   {
@@ -333,7 +333,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
 
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
-        KStdGuiItem::saveAs(), KStdGuiItem::open(),
+        KStdGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "fileopen"),
         QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }

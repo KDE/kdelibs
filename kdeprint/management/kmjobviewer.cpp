@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -179,11 +179,13 @@ void KMJobViewer::addToManager()
 		loadPrinters();
 		QPtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
-			m_manager->addPrinter(it.current()->printerName(), (KMJobManager::JobType)m_type);
+			m_manager->addPrinter(it.current()->printerName(), (KMJobManager::JobType)m_type, it.current()->isSpecial());
 	}
 	else if (!m_prname.isEmpty())
 	{
-		m_manager->addPrinter(m_prname, (KMJobManager::JobType)m_type);
+		KMPrinter *prt = KMManager::self()->findPrinter( m_prname );
+		bool isSpecial = ( prt ? prt->isSpecial() : false );
+		m_manager->addPrinter(m_prname, (KMJobManager::JobType)m_type, isSpecial);
 	}
 }
 
@@ -341,7 +343,7 @@ void KMJobViewer::initActions()
 	slotSelectionChanged();
 }
 
-void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all)
+void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all, bool use_specials)
 {
 	loadPrinters();
 	menu->clear();
@@ -355,7 +357,8 @@ void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all)
 	}
 	for (; it.current(); ++it, i++)
 	{
-		if (!it.current()->instanceName().isEmpty())
+		if ( !it.current()->instanceName().isEmpty() ||
+				( it.current()->isSpecial() && !use_specials ) )
 			continue;
 		menu->insertItem(SmallIcon(it.current()->pixmap()), it.current()->printerName(), i);
 	}
@@ -364,13 +367,13 @@ void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all)
 void KMJobViewer::slotShowMoveMenu()
 {
 	QPopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
-	buildPrinterMenu(menu, false);
+	buildPrinterMenu(menu, false, false);
 }
 
 void KMJobViewer::slotShowPrinterMenu()
 {
 	QPopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
-	buildPrinterMenu(menu, true);
+	buildPrinterMenu(menu, true, true);
 }
 
 void KMJobViewer::updateJobs()
@@ -524,8 +527,10 @@ void KMJobViewer::loadPrinters()
 	QPtrListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
 	for (;it.current();++it)
 	{
-		// keep only real printers (no instance, no implicit)
-		if ((it.current()->isPrinter() || it.current()->isClass(false)) && (it.current()->name() == it.current()->printerName()))
+		// keep only real printers (no instance, no implicit) and special printers
+		if ((it.current()->isPrinter() || it.current()->isClass(false) || 
+					( it.current()->isSpecial() && it.current()->isValid() ) )
+				&& (it.current()->name() == it.current()->printerName()))
 			m_printers.append(it.current());
 	}
 }
@@ -721,7 +726,7 @@ void KMJobViewer::slotDropped( QDropEvent *e, QListViewItem* )
 	for ( KURL::List::ConstIterator it = uris.begin();
 	      it != uris.end(); ++it)
 	{
-		if ( KIO::NetAccess::download( *it, target ) )
+		if ( KIO::NetAccess::download( *it, target, 0 ) )
 			files << target;
 	}
 

@@ -264,8 +264,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     if (codebase.isEmpty ())
         codebase = khtml_codebase;
 
-    if (width > 0 && height > 0)
+    if (width > 0 && height > 0) {
         m_view->resize (width, height);
+        applet->setSize( QSize( width, height ) );
+    }
     applet->setBaseURL (baseurl);
     // check codebase first
     KURL kbaseURL( baseurl );
@@ -359,7 +361,8 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
     // delay showApplet if size is unknown and m_view not shown
     if (applet->size().width() > 0 || m_view->isVisible())
         w->showApplet ();
-    emit started (0L);
+    if (!applet->failed ())
+        emit started (0L);
     return url.isValid ();
 }
 

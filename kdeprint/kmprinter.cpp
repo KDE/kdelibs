@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -157,10 +157,27 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 	//	- ask for output file (if needed) using default extension.
 	if (isSpecial())
 	{
-		printer->setPrintProgram(option("kde-special-command"));
 		if (option("kde-special-file") == "1")
 		{
-			KFileDialog *dialog = new KFileDialog (QString::fromLatin1("print.")+option("kde-special-extension"),
+			// build-up default filename/directory
+			QString fName = printer->docFileName(), ext = option( "kde-special-extension" );
+			if ( fName.isEmpty() )
+				fName = ( printer->docName() + "." + ext );
+			else
+			{
+				int p = fName.findRev( '.' );
+				if ( p == -1 )
+					fName.append( "." ).append( ext );
+				else
+				{
+					fName.truncate( p+1 );
+					fName.append( ext );
+				}
+			}
+			fName.prepend( "/" ).prepend( printer->docDirectory() );
+
+			// build-up file dialog
+			KFileDialog *dialog = new KFileDialog (fName,
 								QString::null,
 								parent,
 								"filedialog",
@@ -168,7 +185,6 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 			dialog->setOperationMode (KFileDialog::Saving);
 
 			QString	mimetype = option("kde-special-mimetype");
-			QString	ext = option("kde-special-extension");
 
 			if (!mimetype.isEmpty())
 			{
@@ -191,6 +207,8 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 				return false;
 			}
 		}
+		printer->setOption( "kde-isspecial", "1" );
+		printer->setOption( "kde-special-command", option( "kde-special-command" ) );
 	}
 
 	return true;

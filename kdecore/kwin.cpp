@@ -1044,12 +1044,11 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
     QString result;
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if ( XGetTextProperty( qt_xdisplay(), win, &tp, atom ) != 0 && tp.value != NULL ) {
-        if ( tp.encoding == XA_STRING )
-            result = QString::fromLocal8Bit( (const char*) tp.value );
-        else if ( XmbTextPropertyToTextList( qt_xdisplay(), &tp, &text, &count) == Success &&
+        if ( XmbTextPropertyToTextList( qt_xdisplay(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
-        }
+        } else if ( tp.encoding == XA_STRING )
+            result = QString::fromLocal8Bit( (const char*) tp.value );
         if( text != NULL )
             XFreeStringList( text );
         XFree( tp.value );

@@ -40,7 +40,8 @@ kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
 
 EXTRA_DIST = $(kde_mime_DATA)
 
-update_DATA = kioslave.upd useragent.pl proxytype.pl
+update_DATA = kioslave.upd
+update_SCRIPTS = useragent.pl proxytype.pl
 updatedir = $(kde_datadir)/kconf_update
 
 servicetype_DATA = renamedlgplugin.desktop
@@ -49,7 +50,7 @@ servicetypedir = $(kde_servicetypesdir)
 kded_DATA = kpasswdserver.desktop
 kdeddir = $(kde_servicesdir)/kded
 
-dataprotocol_DATA = data.protocol mailto.protocol mms.protocol
+dataprotocol_DATA = data.protocol mms.protocol
 dataprotocoldir = $(kde_servicesdir)
 
 dummy.cpp:

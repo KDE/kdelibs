@@ -48,7 +48,7 @@ public:
     InlineTextBox(RenderObject *obj)
     	:InlineBox(obj),
     	// ### necessary as some codepaths (<br>) do *not* initialize these (LS)
-    	m_start(0), m_len(0)
+    	m_start(0), m_len(0), m_reversed(false), m_toAdd(0)
     {
     }
 
@@ -66,21 +66,17 @@ private:
     void* operator new(size_t sz) throw();
 
 public:
+    void setSpaceAdd(int add) { m_width -= m_toAdd; m_toAdd = add; m_width += m_toAdd; }
+    int spaceAdd() { return m_toAdd; }
 
     virtual bool isInlineTextBox() const { return true; }
 
-    void paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int decoration, bool begin, bool end);
-    void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, int curr, int count);
+    void paintDecoration(QPainter *pt, const Font *f, int _tx, int _ty, int decoration);
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
 
-    /**
-     * if this text box was rendered _ty pixels below the upper edge
-     * of a view, would the _y -coordinate be inside the vertical range
-     * of this object's representation?
-     */
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
@@ -101,7 +97,7 @@ public:
      *	the width is to be determined
      * @return the width in pixels
      */
-    int width(int pos) const;
+    int widthFromStart(int pos) const;
 
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.
@@ -158,10 +154,7 @@ public:
     virtual void setStyle(RenderStyle *style);
 
 
-    virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintAction);
-    virtual void paintObject( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintAction);
+    virtual void paint( PaintInfo& i, int tx, int ty );
 
     void deleteTextBoxes();
     void detach();
@@ -183,7 +176,7 @@ public:
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }
     unsigned int stringLength() const { return str->l; } // non virtual implementation of length()
-    virtual void position(InlineBox* box, int from, int len, bool reverse, int spaceAdd);
+    virtual void position(InlineBox* box, int from, int len, bool reverse);
 
     virtual unsigned int width(unsigned int from, unsigned int len, const Font *f) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
@@ -214,8 +207,8 @@ public:
     // defaults to 0.
     int minXPos() const;
 
-    virtual int xPos() const;
-    virtual int yPos() const;
+    virtual int inlineXPos() const;
+    virtual int inlineYPos() const;
 
     bool hasReturn() const { return m_hasReturn; }
 
@@ -250,26 +243,17 @@ public:
      * still point to a valid position.
      */
     virtual long minOffset() const;
+
     /** returns the highest possible value the caret offset may have to
      * still point to a valid position.
      */
     virtual long maxOffset() const;
 
-    /** returns the forced minimum offset
-     */
-    long forcedMinOffset() const { return m_minOfs; }
-    /** sets the forced minimum offset
-     *
-     * The forced minimum offset specifies the character into the DOM string
-     * at which position this render object starts to represent the string.
-     */
-    void setForcedMinOffset(long ofs) { m_minOfs = (short)ofs; }
-
     /** returns the number of inline text boxes
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
@@ -306,8 +290,6 @@ protected: // members
 
     ushort m_startMin : 8;
     ushort m_endMin : 8;
-    short m_minOfs : 8;		// forced minimum offset
-    // all 32 bits used
 };
 
 inline const RenderText* InlineTextBox::renderText() const

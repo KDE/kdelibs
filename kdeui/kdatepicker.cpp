@@ -117,6 +117,10 @@ void KDatePicker::init( const QDate &dt )
   selectYear = new QToolButton(d->tb);
   monthForward = new QToolButton(d->tb);
   yearForward = new QToolButton(d->tb);
+  QWidget *dummy = new QWidget(d->tb);
+  dummy->setName("kde toolbar widget");
+  d->tb->setStretchableWidget(dummy);
+
   line = new KLineEdit(this);
   val = new KDateValidator(this);
   table = new KDateTable(this);

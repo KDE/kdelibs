@@ -600,6 +600,22 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
     return image;
 }
 
+/**
+Types for MMX and SSE packing of colors, for safe constraints
+*/
+namespace {
+
+struct KIE4Pack
+{
+    Q_UINT16 data[4];
+};
+
+struct KIE8Pack
+{
+    Q_UINT16 data[8];
+};
+
+}
 
 //======================================================================
 //
@@ -614,7 +630,6 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
  * less expensive than doing a float operation on the 3 color components of
  * each pixel. (mosfet)
  */
-
 QImage& KImageEffect::intensity(QImage &image, float percent)
 {
     if (image.width() == 0 || image.height() == 0) {
@@ -640,12 +655,12 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     if(haveMMX)
     {
         Q_UINT16 p = Q_UINT16(256.0f*(percent));
-        Q_UINT16 mult[4]={p,p,p,0};
+        KIE4Pack mult = {{p,p,p,0}};
 
         __asm__ __volatile__(
         "pxor %%mm7, %%mm7\n\t"                // zero mm7 for unpacking
         "movq  (%0), %%mm6\n\t"                // copy intensity change to mm6
-        : : "r"(mult) );
+        : : "r"(&mult), "m"(mult));
 
         unsigned int rem = pixels % 4;
         pixels -= rem;
@@ -1050,22 +1065,22 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
 
-        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 256,
-                                    alpha, alpha, alpha, 256 };
+        KIE8Pack packedalpha = { { alpha, alpha, alpha, 256,
+                                      alpha, alpha, alpha, 256 } };
 
         Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
         Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
         Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
 
-        Q_UINT16 packedcolor[8] = { blue, green, red, 0,
-                                    blue, green, red, 0 };
+        KIE8Pack packedcolor = { { blue, green, red, 0,
+                                      blue, green, red, 0 } };
 
         // Prepare the XMM5, XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
         "pxor        %%xmm7,  %%xmm7\n\t" // Zero out XMM7 for unpacking
         "movdqu        (%0),  %%xmm6\n\t" // Set up (1 - alpha) * 256 in XMM6
         "movdqu        (%1),  %%xmm5\n\t" // Set up color * alpha * 256 in XMM5
-        : : "r"(packedalpha), "r"(packedcolor) );
+        : : "r"(&packedalpha), "r"(&packedcolor), "m"(packedcolor), "m"(packedalpha) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
@@ -1153,19 +1168,19 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
-        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, 256 };
+        KIE4Pack packedalpha = { { alpha, alpha, alpha, 256 } };
 
         Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
         Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
         Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
 
-        Q_UINT16 packedcolor[4] = { blue, green, red, 0 };
+        KIE4Pack packedcolor = { { blue, green, red, 0 } };
 
         __asm__ __volatile__(
         "pxor        %%mm7,    %%mm7\n\t"       // Zero out MM7 for unpacking
         "movq         (%0),    %%mm6\n\t"       // Set up (1 - alpha) * 256 in MM6
         "movq         (%1),    %%mm5\n\t"       // Set up color * alpha * 256 in MM5
-        : : "r"(packedalpha), "r"(packedcolor) );
+        : : "r"(&packedalpha), "r"(&packedcolor), "m"(packedcolor), "m"(packedalpha) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
@@ -1292,14 +1307,14 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 #ifdef USE_SSE2_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
         Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
-        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 0,
-                                    alpha, alpha, alpha, 0 };
+        KIE8Pack packedalpha = { { alpha, alpha, alpha, 0,
+                                   alpha, alpha, alpha, 0 } };
 
         // Prepare the XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
         "pxor      %%xmm7, %%xmm7\n\t" // Zero out XMM7 for unpacking
         "movdqu      (%0), %%xmm6\n\t" // Set up alpha * 256 in XMM6
-        : : "r"(packedalpha) );
+        : : "r"(&packedalpha), "m"(packedalpha) );
 
         Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
         Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
@@ -1387,13 +1402,13 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
         Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
-        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, 0 };
+        KIE4Pack packedalpha = { { alpha, alpha, alpha, 0 } };
 
         // Prepare the MM6 and MM7 registers for blending and unpacking
         __asm__ __volatile__(
         "pxor       %%mm7,   %%mm7\n\t"      // Zero out MM7 for unpacking
         "movq        (%0),   %%mm6\n\t"      // Set up alpha * 256 in MM6
-        : : "r"(packedalpha) );
+        : : "r"(&packedalpha), "m"(packedalpha) );
 
         Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
         Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );

@@ -134,7 +134,7 @@ unsigned int CSSSelector::specificity() const
     if ( nonCSSHint )
         return 0;
 
-    int s = ((tag == 0xffff) ? 0 : 1);
+    int s = ((( tag & NodeImpl_IdLocalMask ) == 0xffff) ? 0 : 1);
     switch(match)
     {
     case Id:

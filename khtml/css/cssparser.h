@@ -122,7 +122,6 @@ namespace DOM {
 	CSSValueListImpl *parseFontFamily();
 	CSSPrimitiveValueImpl *parseColor();
 
-	int yyparse( void );
     public:
 	bool strict;
 	bool important;
@@ -136,7 +135,6 @@ namespace DOM {
 	int maxParsedProperties;
 	bool inParseShortHand;
 	unsigned int defaultNamespace;
-
 	static CSSParser *currentParser;
 
 	// tokenizer methods and data
@@ -146,6 +144,8 @@ namespace DOM {
 	unsigned short *text( int *length);
 	int lex();
     private:
+	int yyparse();
+        void runParser(int length);
 
 	unsigned short *data;
 	unsigned short *yytext;
@@ -153,6 +153,7 @@ namespace DOM {
 	unsigned short yy_hold_char;
 	int yy_last_accepting_state;
 	unsigned short *yy_last_accepting_cpos;
+        int block_nesting;
 	int yyleng;
 	int yyTok;
 	int yy_start;

@@ -3,6 +3,7 @@ AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdeprint -I$(top_builddir)/kdeprint -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint_management.la
+kde_module_LTLIBRARIES = libkdeprint_management_module.la
 kdeinit_LTLIBRARIES = kaddprinterwizard.la
 bin_PROGRAMS = 
 
@@ -27,6 +28,10 @@ libkdeprint_management_la_SOURCES = \
 libkdeprint_management_la_LDFLAGS = $(all_libraries) -version-info 6:0:2 -no-undefined
 libkdeprint_management_la_LIBADD = ../libkdeprint.la
 libkdeprint_management_la_METASOURCES = AUTO
+
+libkdeprint_management_module_la_SOURCES = kdeprint_management_module.cpp
+libkdeprint_management_module_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN) -no-undefined
+libkdeprint_management_module_la_LIBADD = libkdeprint_management.la
 
 kdeprint_HEADERS = kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h
 kdeprintdir = $(includedir)/kdeprint

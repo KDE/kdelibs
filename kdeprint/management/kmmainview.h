@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -108,6 +108,7 @@ protected:
 	void removePluginActions();
 	void createMessageWindow( const QString&, int delay = 500 );
 	void destroyMessageWindow();
+	void reset( const QString& msg = QString::null, bool useDelay = true, bool holdTimer = true );
 
 private:
 	KMPrinterView	*m_printerview;
@@ -125,5 +126,7 @@ private:
 	KMainWindowPrivate *d;
 	KToolBar *m_menubar;
 };
+
+int kdeprint_management_add_printer_wizard( QWidget* parent );
 
 #endif

@@ -341,7 +341,7 @@ public:
    * @param data the data to examine
    * @param accuracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
-   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
+   * @return a pointer to the KMimeType. application/octet-stream's KMimeType if the
    *         type can not be found this way.
    */
   static Ptr findByContent( const QByteArray &data, int *accuracy=0 );
@@ -356,7 +356,7 @@ public:
    * @param fileName the path to the file
    * @param accuracy If not a null pointer, *accuracy is set to the
    *          accuracy of the match (which is in the range 0..100)
-   * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
+   * @return a pointer to the KMimeType. application/octet-stream's KMimeType if the
    *         type can not be found this way.
    */
   static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );

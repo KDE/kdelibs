@@ -1,8 +1,83 @@
-kdelibs (4:3.1.92-1) unstable; urgency=low
+kdelibs (4:3.2.1-1) unstable; urgency=low
 
-  * New upstream release (KDE 3.2 Alpha 2).
+  * New upstream release.
+  * Added kdelibs4 Depends xbase-clients. (Closes: #232348)
 
- -- Christopher L Cheney <ccheney@debian.org>  Wed, 03 Oct 2003 23:00:00 +0100
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 04 Mar 2004 22:00:00 -0600
+
+kdelibs (4:3.2.0-0pre1v1) experimental; urgency=low
+
+  * New upstream release.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Tue, 17 Feb 2004 01:00:00 -0600
+
+kdelibs (4:3.1.95-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Wed, 21 Jan 2004 21:00:00 -0600
+
+kdelibs (4:3.1.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added libtool arm patch.
+  * Corrected meinproc manpage. (Closes: #220883)
+  * Added --enable-dnotify to configure (Closes: #206976)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sat, 10 Jan 2004 14:00:00 -0600
+
+kdelibs (4:3.1.4-3) unstable; urgency=low
+
+  * Added Replaces to kdelibs-data for arson, k3b. (Closes: #214534)
+  * Move meinproc to kdelibs-bin so that khelpcenter glossary works.
+    (Closes: #214815)
+  * Restore generation of system.kdeglobals. (Closes: #216463)
+  * Remove symlink /usr/share/config -> /etc/kde3.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Tue,  4 Nov 2003 22:00:00 -0600
+
+kdelibs (4:3.1.4-2) unstable; urgency=low
+
+  * Added patch to update autotools files.
+  * Added patch to remove pedantic-errors from KDE_CHECK_FUNC_EXT since it
+    causes configure checks to fail due to #line numbers being > 32767.
+  * Added patch to make KStandardDirs::addKDEDefaults look in /usr/local as
+    well.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sun,  5 Oct 2003 18:00:00 -0500
+
+kdelibs (4:3.1.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sat, 27 Sep 2003 02:00:00 -0500
+
+kdelibs (4:3.1.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Tue, 29 Jul 2003 20:00:00 -0500
+
+kdelibs (4:3.1.2-2.1) unstable; urgency=low
+
+  * NMU
+  * kdelibs4-dev Depends: libxml2-utils.
+    Closes: #196222, #196958, #199044, #200483, #200484
+
+ -- LaMont Jones <lamont@debian.org>  Wed,  9 Jul 2003 15:26:11 -0600
+
+kdelibs (4:3.1.2-2) unstable; urgency=low
+
+  * Add xlibs-pic to kdelibs-dev Depends. (Closes: #193863)
+  * Add libssl-dev to kdelibs-dev Depends. (Closes: #180542)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 19 May 2003 12:00:00 -0500
+
+kdelibs (4:3.1.2-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #185697, #192616, #192931)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sun, 18 May 2003 01:00:00 -0500
 
 kdelibs (4:3.1.1-1) unstable; urgency=low
 
@@ -24,6 +99,33 @@ kdelibs (4:3.1.0-1) unstable; urgency=low
   * Split arts out of kdelibs source.
 
  -- Christopher L Cheney <ccheney@debian.org>  Sat, 01 Feb 2003 01:00:00 -0600
+
+kdelibs (4:2.2.2-14) unstable; urgency=low
+
+  * And a quick update to send it to unstable; no changes from -13.woody.3.
+
+ -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:29:31 +1000
+
+kdelibs (4:2.2.2-13.woody.8) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Apply the following patches from upstream:
+    - post-2.2.2-kdelibs-http.patch (CAN-2003-0459)
+    - post-2.2.2-kdelibs-kio-2.diff (CAN-2003-0370)
+    - post-2.2.2-kdelibs-kssl-2.diff (CAN-2003-0370)
+  * These address the issues described in:
+    - http://www.kde.org/info/security/advisory-20030602-1.txt
+    - An upcoming KDE advisory regarding CAN-2003-0370
+
+ -- Matt Zimmerman <mdz@debian.org>  Thu, 24 Jul 2003 12:57:56 -0400
+
+kdelibs (4:2.2.2-13.woody.7) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Applied upstream patch so ghostscript won't execute arbitrary commands
+    hidden inside of postscript files.
+
+ -- Martin Schulze <joey@infodrom.org>  Thu, 10 Apr 2003 12:05:36 +0200
 
 kdelibs (4:2.2.2-13.woody.6) stable-security; urgency=high
 
@@ -55,16 +157,11 @@ kdelibs (4:2.2.2-13.woody.4) stable-security; urgency=high
 
  -- Martin Schulze <joey@infodrom.org>  Fri, 22 Nov 2002 11:42:59 +0100
 
-kdelibs (4:2.2.2-14) unstable; urgency=low
-
-  * And a quick update to send it to unstable; no changes from -13.woody.3.
-
- -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:29:31 +1000
-
 kdelibs (4:2.2.2-13.woody.3) stable-security; urgency=high
 
-  * Sigh. Another DSA.
+  * Non-maintainer upload authored by security team (Joey)
   * Fixes cross-site scripting vulnerability in KHTML.
+    (http://www.kde.org/info/security/advisory-20020908-2.txt)
 
  -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:24:35 +1000
 

@@ -25,6 +25,7 @@
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
 #include <khtmlview.h>
+#include <khtml_part.h>
 #include <kdebug.h>
 
 using namespace KJS;
@@ -306,7 +307,7 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
       return DOM::NodeFilter::FILTER_REJECT;
 
   KHTMLPart *part = view->part();
-  KJSProxy *proxy = KJSProxy::proxy( part );
+  KJSProxy *proxy = part->jScript();
   if (proxy) {
     ExecState *exec = proxy->interpreter()->globalExec();
     Object acceptNodeFunc = Object::dynamicCast( filter.get(exec, "acceptNode") );

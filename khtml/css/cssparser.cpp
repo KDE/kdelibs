@@ -22,7 +22,7 @@
  */
 
 //#define CSS_DEBUG
-// #define TOKEN_DEBUG
+//#define TOKEN_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -95,6 +95,7 @@ CSSParser::CSSParser( bool strictParsing )
 
     defaultNamespace = 0xffff;
 
+    data = 0;
     valueList = 0;
     rule = 0;
     id = 0;
@@ -125,6 +126,25 @@ CSSParser::~CSSParser()
 
 }
 
+void CSSParser::runParser(int length)
+{
+    data[length-1] = 0;
+    data[length-2] = 0;
+    data[length-3] = ' ';
+
+    yyTok = -1;
+    block_nesting = 0;
+    yy_hold_char = 0;
+    yyleng = 0;
+    yytext = yy_c_buf_p = data;
+    yy_hold_char = *yy_c_buf_p;
+
+    CSSParser *old = currentParser;
+    currentParser = this;
+    cssyyparse( this );
+    currentParser = old;
+}
+
 void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
     styleElement = sheet;
@@ -132,21 +152,11 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
     int length = string.length() + 3;
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     memcpy( data, string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-1] = 0;
-    data[length-2] = 0;
-    data[length-3] = ' ';
-    yy_hold_char = 0;
-    yyleng = 0;
-    yytext = yy_c_buf_p = data;
-    yy_hold_char = *yy_c_buf_p;
 
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << ">>>>>>> start parsing style sheet" << endl;
 #endif
-    CSSParser *old = currentParser;
-    currentParser = this;
-    cssyyparse( this );
-    currentParser = old;
+    runParser(length);
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "<<<<<<< done parsing style sheet" << endl;
 #endif
@@ -161,24 +171,15 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
 
     const char khtml_rule[] = "@-khtml-rule{";
     int length = string.length() + 4 + strlen(khtml_rule);
+    assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_rule); i++ )
         data[i] = khtml_rule[i];
     memcpy( data + strlen( khtml_rule ), string.unicode(), string.length()*sizeof( unsigned short) );
     // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
-    data[length-1] = 0;
-    data[length-2] = 0;
-    data[length-3] = ' ';
     data[length-4] = '}';
-    yy_hold_char = 0;
-    yyleng = 0;
-    yytext = yy_c_buf_p = data;
-    yy_hold_char = *yy_c_buf_p;
 
-    CSSParser *old = currentParser;
-    currentParser = this;
-    cssyyparse( this );
-    currentParser = old;
+    runParser(length);
 
     CSSRuleImpl *result = rule;
     rule = 0;
@@ -198,28 +199,19 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 
     const char khtml_value[] = "@-khtml-value{";
     int length = string.length() + 4 + strlen(khtml_value);
+    assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_value); i++ )
         data[i] = khtml_value[i];
     memcpy( data + strlen( khtml_value ), string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-1] = 0;
-    data[length-2] = 0;
-    data[length-3] = ' ';
     data[length-4] = '}';
     // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
-    yy_hold_char = 0;
-    yyleng = 0;
-    yytext = yy_c_buf_p = data;
-    yy_hold_char = *yy_c_buf_p;
 
     id = _id;
     important = _important;
     nonCSSHint = _nonCSSHint;
 
-    CSSParser *old = currentParser;
-    currentParser = this;
-    cssyyparse( this );
-    currentParser = old;
+    runParser(length);
 
     delete rule;
     rule = 0;
@@ -249,26 +241,16 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
 
     const char khtml_decls[] = "@-khtml-decls{";
     int length = string.length() + 4 + strlen(khtml_decls);
+    assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_decls); i++ )
         data[i] = khtml_decls[i];
     memcpy( data + strlen( khtml_decls ), string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-1] = 0;
-    data[length-2] = 0;
-    data[length-3] = ' ';
     data[length-4] = '}';
-    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
-    yy_hold_char = 0;
-    yyleng = 0;
-    yytext = yy_c_buf_p = data;
-    yy_hold_char = *yy_c_buf_p;
 
     nonCSSHint = _nonCSSHint;
 
-    CSSParser *old = currentParser;
-    currentParser = this;
-    cssyyparse( this );
-    currentParser = old;
+    runParser(length);
 
     delete rule;
     rule = 0;
@@ -378,11 +360,13 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     case CSSPrimitiveValue::CSS_PC:
         b = (unitflags & FLength);
         break;
+    case CSSPrimitiveValue::CSS_MS:
+    case CSSPrimitiveValue::CSS_S:
+        b = (unitflags & FTime);
+        break;
     case CSSPrimitiveValue::CSS_DEG:
     case CSSPrimitiveValue::CSS_RAD:
     case CSSPrimitiveValue::CSS_GRAD:
-    case CSSPrimitiveValue::CSS_MS:
-    case CSSPrimitiveValue::CSS_S:
     case CSSPrimitiveValue::CSS_HZ:
     case CSSPrimitiveValue::CSS_KHZ:
     case CSSPrimitiveValue::CSS_DIMENSION:
@@ -407,8 +391,10 @@ bool CSSParser::parseValue( int propId, bool important )
     if ( id == CSS_VAL_INHERIT ) {
         addProperty( propId, new CSSInheritedValueImpl(), important );
         return true;
+    } else if (id == CSS_VAL_INITIAL) {
+        addProperty(propId, new CSSInitialValueImpl(), important);
+        return true;
     }
-
     bool valid_primitive = false;
     CSSValueImpl *parsedValue = 0;
 
@@ -799,13 +785,6 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = ( validUnit( value, FLength, strict&(!nonCSSHint) ) );
         break;
 
-    case CSS_PROP_MARKER_OFFSET:        // <length> | auto | inherit
-        if ( id == CSS_VAL_AUTO )
-            valid_primitive = true;
-        else
-            valid_primitive = validUnit( value, FLength, strict&(!nonCSSHint) );
-        break;
-
     case CSS_PROP_LETTER_SPACING:       // normal | <length> | inherit
     case CSS_PROP_WORD_SPACING:         // normal | <length> | inherit
         if ( id == CSS_VAL_NORMAL )
@@ -998,49 +977,10 @@ bool CSSParser::parseValue( int propId, bool important )
             // ['background-color' || 'background-image' ||'background-repeat' ||
         // 'background-attachment' || 'background-position'] | inherit
     {
-#ifdef CSS_DEBUG_BCKGR
-        kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
-#endif
-#ifndef NDEBUG
-        uint old_numParsed = numParsedProperties;
-#endif
-        // The CSS 2.1 specs require the browser to set all possible expanded
-        // properties to their initial value before the right side is parsed
-        addProperty( CSS_PROP_BACKGROUND_IMAGE,
-                     new CSSImageValueImpl(),
-                     important );
-        addProperty( CSS_PROP_BACKGROUND_REPEAT,
-                     new CSSPrimitiveValueImpl( CSS_VAL_REPEAT ),
-                     important );
-        addProperty( CSS_PROP_BACKGROUND_ATTACHMENT,
-                     new CSSPrimitiveValueImpl( CSS_VAL_SCROLL ),
-                     important );
-        // the background-position part is tricky. mozilla returns 0% 0% as part of the
-        // list. We do not have any backgroundPosition value - but sites relying on that
-        // have to be proofed to exist before we change the binding for that ;/
-        addProperty( CSS_PROP_BACKGROUND_POSITION_X,
-                     new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE ),
-                     important );
-        addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
-                     new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE ),
-                     important );
-        addProperty( CSS_PROP_BACKGROUND_COLOR,
-                     new CSSPrimitiveValueImpl( CSS_VAL_TRANSPARENT ),
-                     important );
-
-        // dirk says we should asure that the code doesn't break
-        // because addProperty changes behaviour
-        assert( numParsedProperties - old_numParsed == 6 );
-
         const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
                                     CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
                                     CSS_PROP_BACKGROUND_COLOR };
-        bool ret = parseShortHand(properties, 5, important);
-        if ( !ret ) { // if it failed, we need to remove all again
-            for ( int i = 0; i < 6; i++ ) // 6 here as we have _X + _Y
-                delete parsedProperties[--numParsedProperties];
-        }
-        return ret;
+        return parseShortHand(properties, 5, important);
     }
     case CSS_PROP_BORDER:
          // [ 'border-width' || 'border-style' || <color> ] | inherit
@@ -1213,6 +1153,13 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
             return false;
         }
     }
+
+    // Fill in any remaining properties with the initial value.
+    for (int i = 0; i < numProperties; ++i) {
+        if (!fnd[i])
+            addProperty(properties[i], new CSSInitialValueImpl(), important);
+    }
+
     inParseShortHand = false;
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "parsed shorthand" << endl;
@@ -1487,9 +1434,9 @@ bool CSSParser::parseFont( bool important )
         value = valueList->next();
         if ( !value )
             goto invalid;
-    } else {
-        font->lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
     }
+    if ( !font->lineHeight )
+        font->lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
 //     kdDebug( 6080 ) << "  got line height current=" << valueList->currentValue << endl;
     // font family must come now
@@ -1497,13 +1444,13 @@ bool CSSParser::parseFont( bool important )
 
     if ( valueList->current() || !font->family )
         goto invalid;
-//     kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
+    //kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
 
     addProperty( CSS_PROP_FONT, font, important );
     return true;
 
  invalid:
-//     kdDebug(6080) << "   -> invalid" << endl;
+    //kdDebug(6080) << "   -> invalid" << endl;
     delete font;
     return false;
 }
@@ -1736,7 +1683,8 @@ static inline int yyerror( const char *str ) {
 
 #include "parser.h"
 
-int DOM::CSSParser::lex( void *_yylval ) {
+int DOM::CSSParser::lex( void *_yylval )
+{
     YYSTYPE *yylval = (YYSTYPE *)_yylval;
     int token = lex();
     int length;
@@ -1746,6 +1694,19 @@ int DOM::CSSParser::lex( void *_yylval ) {
     qDebug("CSSTokenizer: got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
 #endif
     switch( token ) {
+    case '{':
+        block_nesting++;
+        break;
+    case '}':
+        if ( block_nesting )
+            block_nesting--;
+        break;
+    case END:
+        if ( block_nesting ) {
+            block_nesting--;
+            return '}';
+        }
+        break;
     case S:
     case SGML_CD:
     case INCLUDES:
@@ -1958,6 +1919,7 @@ typedef unsigned int YY_CHAR;
 #define YY_RULE_SETUP
 #define INITIAL 0
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
+#define YY_START ((yy_start - 1) / 2)
 #define yyterminate() yyTok = END; return yyTok
 #define YY_FATAL_ERROR(a) qFatal(a)
 #define BEGIN yy_start = 1 + 2 *

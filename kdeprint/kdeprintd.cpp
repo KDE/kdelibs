@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -124,12 +124,12 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 		if ( !url.isLocalFile() )
 		{
 			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + kapp->randomString( 8 ) );
-			command.replace( re.pos( 0 ), re.matchedLength(), KProcess::quote( tmpFilename ) );
+			command.replace( re, KProcess::quote( tmpFilename ) );
 			proc->setOutput( re.cap( 1 ) );
 			proc->setTempOutput( tmpFilename );
 		}
 		else
-			command.replace( re.pos( 0 ), re.matchedLength(), KProcess::quote( re.cap( 1 ) ) );
+			command.replace( re, KProcess::quote( re.cap( 1 ) ) );
 	}
 
 	if ( checkFiles( command, files ) )

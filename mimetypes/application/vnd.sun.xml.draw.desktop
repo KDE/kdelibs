@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Drawing
+Comment[ar]=مستند OpenOffice.org Drawing
 Comment[az]=OpenOffice.org Rəsmi
 Comment[be]=Малюнак OpenOffice.org
 Comment[bg]=Документ на OpenOffice.org Draw
@@ -21,8 +22,11 @@ Comment[fr]=Dessin OpenOffice.org
 Comment[gl]=Debuxo de OpenOffice.org
 Comment[he]=ציור של OpenOffice.org
 Comment[hi]=ओपनआफिस.ऑर्ग ड्राइंग
+Comment[hr]=OpenOffice.org crtež
 Comment[hu]=OpenOffice.org rajz
+Comment[is]=OpenOffice.org teikning
 Comment[it]=Disegno OpenOffice.org
+Comment[ja]=OpenOffice.org ドローイング
 Comment[lt]=OpenOffice.org piešinys
 Comment[mn]=OpenOffice.org Зураглал
 Comment[nb]=OpenOffice tegning
@@ -37,6 +41,7 @@ Comment[se]=OpenOffice.org-sárgun
 Comment[sk]=Kresba OpenOffice.org
 Comment[sl]=Risanje OpenOffice.org
 Comment[sr]=OpenOffice.org-ов цртеж
+Comment[sr@Latn]=OpenOffice.org-ov crtež
 Comment[sv]=OpenOffice.org-teckning
 Comment[ta]=ழ-ஓப்பன்ஆபீஸ் வரைபடம்
 Comment[tr]=OpenOffice.org Çizimi

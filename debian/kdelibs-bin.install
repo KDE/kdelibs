@@ -1,3 +1,5 @@
+debian/local/freedesktop-desktop-entry-spec-apps        etc/menu-methods/
+debian/local/freedesktop-desktop-entry-spec-dirs        etc/menu-methods/
 debian/tmp/usr/bin/artsmessage
 debian/tmp/usr/bin/cupsdconf
 debian/tmp/usr/bin/cupsdoprint
@@ -15,6 +17,7 @@ debian/tmp/usr/bin/kab2kabc
 debian/tmp/usr/bin/kaddprinterwizard
 debian/tmp/usr/bin/kbuildsycoca
 debian/tmp/usr/bin/kconf_update
+debian/tmp/usr/bin/kconfig_compiler
 debian/tmp/usr/bin/kcookiejar
 debian/tmp/usr/bin/kde-config
 debian/tmp/usr/bin/kde-menu
@@ -33,7 +36,6 @@ debian/tmp/usr/bin/kio_http_cache_cleaner
 debian/tmp/usr/bin/kio_uiserver
 debian/tmp/usr/bin/kioexec
 debian/tmp/usr/bin/kioslave
-debian/tmp/usr/bin/kgrantpty
 debian/tmp/usr/bin/klauncher
 debian/tmp/usr/bin/kmailservice
 debian/tmp/usr/bin/kpac_dhcp_helper
@@ -46,14 +48,35 @@ debian/tmp/usr/bin/kwrapper
 debian/tmp/usr/bin/lnusertemp
 debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
+debian/tmp/usr/bin/meinproc
 debian/tmp/usr/bin/preparetips
-debian/tmp/usr/lib/libkdeinit_dcopserver.*
-debian/tmp/usr/lib/libkdeinit_kaddprinterwizard.*
-debian/tmp/usr/lib/libkdeinit_kbuildsycoca.*
-debian/tmp/usr/lib/libkdeinit_kconf_update.*
-debian/tmp/usr/lib/libkdeinit_kcookiejar.*
-debian/tmp/usr/lib/libkdeinit_kded.*
-debian/tmp/usr/lib/libkdeinit_kio_http_cache_cleaner.*
-debian/tmp/usr/lib/libkdeinit_kio_uiserver.*
-debian/tmp/usr/lib/libkdeinit_klauncher.*
-
+debian/tmp/usr/lib/kde3/cupsdconf.la
+debian/tmp/usr/lib/kde3/cupsdconf.so
+debian/tmp/usr/lib/kde3/dcopserver.la
+debian/tmp/usr/lib/kde3/dcopserver.so
+debian/tmp/usr/lib/kde3/kaddprinterwizard.la
+debian/tmp/usr/lib/kde3/kaddprinterwizard.so
+debian/tmp/usr/lib/kde3/kbuildsycoca.la
+debian/tmp/usr/lib/kde3/kbuildsycoca.so
+debian/tmp/usr/lib/kde3/kconf_update.la
+debian/tmp/usr/lib/kde3/kconf_update.so
+debian/tmp/usr/lib/kde3/kcookiejar.la
+debian/tmp/usr/lib/kde3/kcookiejar.so
+debian/tmp/usr/lib/kde3/kded.la
+debian/tmp/usr/lib/kde3/kded.so
+debian/tmp/usr/lib/kde3/kio_http_cache_cleaner.la
+debian/tmp/usr/lib/kde3/kio_http_cache_cleaner.so
+debian/tmp/usr/lib/kde3/kio_uiserver.la
+debian/tmp/usr/lib/kde3/kio_uiserver.so
+debian/tmp/usr/lib/kde3/klauncher.la
+debian/tmp/usr/lib/kde3/klauncher.so
+debian/tmp/usr/lib/libkdeinit_cupsdconf.so
+debian/tmp/usr/lib/libkdeinit_dcopserver.so
+debian/tmp/usr/lib/libkdeinit_kaddprinterwizard.so
+debian/tmp/usr/lib/libkdeinit_kbuildsycoca.so
+debian/tmp/usr/lib/libkdeinit_kconf_update.so
+debian/tmp/usr/lib/libkdeinit_kcookiejar.so
+debian/tmp/usr/lib/libkdeinit_kded.so
+debian/tmp/usr/lib/libkdeinit_kio_http_cache_cleaner.so
+debian/tmp/usr/lib/libkdeinit_kio_uiserver.so
+debian/tmp/usr/lib/libkdeinit_klauncher.so

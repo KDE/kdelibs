@@ -127,7 +127,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   setupEditActions();
   setupCodeFolding();
   setupCodeCompletion();
-  
+
   // enable the plugins of this view
   m_doc->enableAllPluginsGUI (this);
 
@@ -151,9 +151,9 @@ KateView::~KateView()
 {
   if (!m_doc->singleViewMode())
     m_doc->disableAllPluginsGUI (this);
-  
+
   m_doc->removeView( this );
-    
+
   delete m_viewInternal;
   delete m_codeCompletion;
 
@@ -334,9 +334,9 @@ void KateView::setupActions()
 
   connect(m_setDynWrapIndicators, SIGNAL(activated(int)), this, SLOT(setDynWrapIndicators(int)));
   QStringList list2;
-  list2.append("&Off");
-  list2.append("Follow &Line Numbers");
-  list2.append("&Always On");
+  list2.append(i18n("&Off"));
+  list2.append(i18n("Follow &Line Numbers"));
+  list2.append(i18n("&Always On"));
   m_setDynWrapIndicators->setItems(list2);
 
   a= toggleAction=m_toggleFoldingMarkers = new KToggleAction(
@@ -568,7 +568,7 @@ void KateView::setupEditActions()
   else
     slotLostFocus();
 
-  m_editActions->readShortcutSettings();
+  m_editActions->readShortcutSettings( "Katepart Shortcuts" );
 }
 
 void KateView::setupCodeFolding()
@@ -598,7 +598,8 @@ void KateView::slotCollapseLocal()
   int realLine = m_doc->foldingTree()->collapseOne(cursorLine());
   if (realLine != -1)
     // TODO rodda: fix this to only set line and allow internal view to chose column
-    setCursorPosition(realLine, cursorColumn());
+    // Explicitly call internal because we want this to be registered as an internal call
+    setCursorPositionInternal(realLine, cursorColumn(), tabWidth(), false);
 }
 
 void KateView::slotExpandLocal()
@@ -652,7 +653,7 @@ void KateView::slotStatusMsg ()
     ovrstr = i18n(" R/O ");
 
   uint r = cursorLine() + 1;
-  uint c = cursorColumn();
+  uint c = cursorColumn() + 1;
 
   QString s1 = i18n(" Line: %1").arg(KGlobal::locale()->formatNumber(r, 0));
   QString s2 = i18n(" Col: %1").arg(KGlobal::locale()->formatNumber(c, 0));
@@ -685,7 +686,8 @@ void KateView::reloadFile()
   m_doc->reloadFile();
 
   if (m_doc->numLines() >= cl)
-    setCursorPosition( cl, cc );
+    // Explicitly call internal function because we want this to be registered as a non-external call
+    setCursorPositionInternal( cl, cc, tabWidth(), false );
 }
 
 void KateView::slotUpdate()
@@ -750,7 +752,7 @@ void KateView::contextMenuEvent( QContextMenuEvent *ev )
   ev->accept();
 }
 
-bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth )
+bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bool calledExternally )
 {
   TextLine::Ptr l = m_doc->kateTextLine( line );
 
@@ -765,7 +767,7 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth )
     if (line_str[z] == QChar('\t')) x += tabwidth - (x % tabwidth); else x++;
   }
 
-  m_viewInternal->updateCursor( KateTextCursor( line, x ), false, true );
+  m_viewInternal->updateCursor( KateTextCursor( line, x ), false, true, calledExternally );
 
   return true;
 }
@@ -1092,7 +1094,7 @@ void KateView::updateConfig ()
   if (m_startingUp)
     return;
 
-  m_editActions->readShortcutSettings();
+  m_editActions->readShortcutSettings( "Katepart Shortcuts" );
 
   // dyn. word wrap & markers
   if (m_hasWrap != config()->dynWordWrap()) {
@@ -1172,7 +1174,7 @@ void KateView::updateFoldingConfig ()
   m_viewInternal->leftBorder->setFoldingMarkersOn(doit);
   m_toggleFoldingMarkers->setChecked( doit );
   m_toggleFoldingMarkers->setEnabled( m_doc->highlight() && m_doc->highlight()->allowsFolding() );
-  
+
   QStringList l;
 
   l << "folding_toplevel" << "folding_expandtoplevel"
@@ -1256,8 +1258,18 @@ void KateView::slotHlChanged()
 
   if (actionCollection()->action("tools_uncomment"))
     actionCollection()->action("tools_uncomment")->setEnabled( ok );
-    
+
   // show folding bar if "view defaults" says so, otherwise enable/disable only the menu entry
   updateFoldingConfig ();
+}
+
+uint KateView::cursorColumn()
+{
+  uint r = m_doc->currentColumn(m_viewInternal->getCursor());
+  if ( !( m_doc->config()->configFlags() & KateDocumentConfig::cfWrapCursor ) &&
+       m_viewInternal->getCursor().col() > m_doc->textLine( m_viewInternal->getCursor().line() ).length()  )
+    r += m_viewInternal->getCursor().col() - m_doc->textLine( m_viewInternal->getCursor().line() ).length();
+
+  return r;
 }
 // kate: space-indent on; indent-width 2; replace-tabs on;

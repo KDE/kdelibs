@@ -1,3 +1,4 @@
+// -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 2; -*-
 /*  This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 
@@ -164,7 +165,7 @@ private:
    * @return true if the command was accepted by the server.
    */
   bool ftpOpenCommand( const char *command, const QString & path, char mode,
-                       int errorcode, unsigned long offset = 0 );
+                       int errorcode, KIO::fileoffset_t offset = 0 );
 
   /**
    * The counterpart to openCommand.

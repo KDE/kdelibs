@@ -80,6 +80,7 @@ int SuProcess::exec(const char *password, int check)
 	args += m_User;
     args += "-c";
     args += QCString(__KDE_BINDIR) + "/kdesu_stub";
+    args += "-";
 
     QCString command = __PATH_SU;
     if (::access(__PATH_SU, X_OK) != 0)

@@ -28,6 +28,9 @@
 #include <kdebug.h>
 
 #include <kio/kprotocolmanager.h>
+#include <kio/kmimetype.h>
+#include <kio/kservice.h>
+#include <kio/ktrader.h>
 #include "kjs_navigator.h"
 #include "kjs/lookup.h"
 #include "kjs_binding.h"
@@ -232,51 +235,66 @@ PluginBase::PluginBase(ExecState *exec)
         plugins->setAutoDelete( true );
         mimes->setAutoDelete( true );
 
-        // read configuration
-        KConfig c(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
-        unsigned num = (unsigned int)c.readNumEntry("number");
         // FIXME: add domain support here
         KConfig kc("konquerorrc", true);
-        bool enabled = KConfigGroup(&kc, "Java/JavaScript Settings").readBoolEntry("EnablePlugins", true);
-        for ( unsigned n = 0; enabled && n < num; n++ ) {
+        if (!KConfigGroup(&kc, "Java/JavaScript Settings").readBoolEntry("EnablePlugins", true))
+            return; // plugins disabled
 
-            c.setGroup( QString::number(n) );
-            PluginInfo *plugin = new PluginInfo;
+        // read in using KTrader
+        KTrader::OfferList offers = KTrader::self()->query("Browser/View");
+        KTrader::OfferList::iterator it;
+        for ( it = offers.begin(); it != offers.end(); ++it ) {
 
-            plugin->name = c.readEntry("name");
-            plugin->file = c.readPathEntry("file");
-            plugin->desc = c.readEntry("description");
+            QVariant pluginsinfo = (**it).property( "X-KDE-BrowserView-PluginsInfo" );
+            if ( !pluginsinfo.isValid() ) {
+                // <backwards compatible>
+                if ((**it).library() == QString("libnsplugin"))
+                    pluginsinfo = QVariant("nsplugins/pluginsinfo");
+                else
+                // </backwards compatible>
+                    continue;
+            }
+            // read configuration
+            KConfig kc( locate ("data", pluginsinfo.toString()) );
+            unsigned num = (unsigned int) kc.readNumEntry("number");
+            for ( unsigned n = 0; n < num; n++ ) {
+                kc.setGroup( QString::number(n) );
+                PluginInfo *plugin = new PluginInfo;
 
-            //kdDebug(6070) << "plugin : " << plugin->name << " - " << plugin->desc << endl;
+                plugin->name = kc.readEntry("name");
+                plugin->file = kc.readPathEntry("file");
+                plugin->desc = kc.readEntry("description");
 
-            plugins->append( plugin );
+                plugins->append( plugin );
 
-            // get mime types from string
-            QStringList types = QStringList::split( ';', c.readEntry("mime") );
-            QStringList::Iterator type;
-            for ( type=types.begin(); type!=types.end(); ++type ) {
+                // get mime types from string
+                QStringList types = QStringList::split( ';', kc.readEntry("mime") );
+                QStringList::Iterator type;
+                for ( type=types.begin(); type!=types.end(); ++type ) {
 
-                // get mime information
-                QStringList tokens = QStringList::split(':', *type, true);
-                if ( tokens.count() < 3 ) // we need 3 items
-                  continue;
+                    // get mime information
+                    QStringList tokens = QStringList::split(':', *type, true);
+                    if ( tokens.count() < 3 ) // we need 3 items
+                        continue;
 
-                MimeClassInfo *mime = new MimeClassInfo;
-                QStringList::Iterator token = tokens.begin();
-                mime->type = (*token).lower();
-                //kdDebug(6070) << "mime->type=" << mime->type << endl;
-                ++token;
+                    MimeClassInfo *mime = new MimeClassInfo;
+                    QStringList::Iterator token = tokens.begin();
+                    mime->type = (*token).lower();
+                    //kdDebug(6070) << "mime->type=" << mime->type << endl;
+                    ++token;
 
-                mime->suffixes = *token;
-                ++token;
+                    mime->suffixes = *token;
+                    ++token;
 
-                mime->desc = *token;
-                ++token;
+                    mime->desc = *token;
+                    ++token;
 
-                mime->plugin = plugin;
+                    mime->plugin = plugin;
 
-                mimes->append( mime );
-                plugin->mimes.append( mime );
+                    mimes->append( mime );
+                    plugin->mimes.append( mime );
+
+                }
             }
         }
     }

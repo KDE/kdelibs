@@ -23,7 +23,6 @@
 #include <kssl.h>
 
 #include <qlayout.h>
-#include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
 #include <qlistview.h>
@@ -36,7 +35,8 @@
 #include <kglobalsettings.h>
 #include <kseparator.h>
 #include <kdebug.h>
-
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 
 class KSSLCertDlg::KSSLCertDlgPrivate {
 private:
@@ -65,7 +65,7 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
 
    grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, this), 6, 6, 0, 5);
 
-   _ok = new QPushButton(i18n("&Continue"), this);
+   _ok = new KPushButton(KStdGuiItem::cont(), this);
    grid->addWidget(_ok, 7, 5);
    connect(_ok, SIGNAL(clicked()), SLOT(accept()));
 

@@ -424,7 +424,7 @@ public:
 
    void setSwitching( const bool switching ) { m_bSwitching = switching; }
    bool switching(void) const { return m_bSwitching; }
-
+   
 public slots:
    /** addWindow demands a KMdiChildView. This method wraps every QWidget in such an object and
        this way you can every widget put under MDI control.
@@ -629,6 +629,11 @@ protected:
    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
    QStringList prepareIdealToTabs(KDockWidget* container);
    void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
+
+   /**
+   * Returns the tabwidget used in IDEAl and Tabbed modes. Returns 0 in other modes.
+   */
+   class KTabWidget * tabWidget() const;
 
 
 protected slots: // Protected slots

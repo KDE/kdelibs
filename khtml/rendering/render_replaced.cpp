@@ -59,26 +59,6 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
     m_intrinsicHeight = 150;
 }
 
-void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
-                            int _tx, int _ty, PaintAction paintAction)
-{
-    if (paintAction != PaintActionForeground)
-        return;
-
-    // not visible or not even once layouted?
-    if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
-
-    _tx += m_x;
-    _ty += m_y;
-
-    if((_ty > _y + _h) || (_ty + m_height < _y)) return;
-
-    if(shouldPaintBackgroundOrBorder())
-        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
 void RenderReplaced::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown());
@@ -87,24 +67,22 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    int width = calcReplacedWidth();
-
-    if (!isWidget())
-        width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    m_width = calcReplacedWidth();
+    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
     if ( style()->width().isPercent() || style()->height().isPercent() ) {
         m_minWidth = 0;
-        m_maxWidth = width;
+        m_maxWidth = m_width;
     }
     else
-        m_minWidth = m_maxWidth = width;
+        m_minWidth = m_maxWidth = m_width;
 
     setMinMaxKnown();
 }
 
-void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
+void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
 {
-    setPos( box->xPos() + marginLeft(), box->yPos() + marginTop() );
+    setPos( box->xPos(), box->yPos() );
 }
 
 // -----------------------------------------------------------------------------
@@ -116,6 +94,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
     m_view = node->getDocument()->view();
+    m_resizePending = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -125,7 +104,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
 
 void RenderWidget::detach()
 {
-    kdDebug( 6040 ) << "RenderWidget::detach( " << this << " )" << endl;
     remove();
 
     if ( m_widget ) {
@@ -164,11 +142,12 @@ public:
 void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
-         // its bigger )
+    // its bigger )
     h = kMin( h, 3072 );
     w = kMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
+        m_resizePending = !strcmp(m_widget->name(), "__khtml");
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -180,8 +159,10 @@ void  RenderWidget::resizeWidget( int w, int h )
 bool RenderWidget::event( QEvent *e )
 {
     if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
+        m_resizePending = false;
         QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
         m_widget->resize( re->w,  re->h );
+        repaint();
     }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
     if ( ::qt_cast<KHTMLView *>( m_widget ) )
@@ -189,6 +170,10 @@ bool RenderWidget::event( QEvent *e )
     return true;
 }
 
+void RenderWidget::flushWidgetResizes() //static
+{
+    QApplication::sendPostedEvents( 0, QWidgetResizeEvent::Type );
+}
 
 void RenderWidget::setQWidget(QWidget *widget)
 {
@@ -222,6 +207,8 @@ void RenderWidget::setQWidget(QWidget *widget)
         }
         m_view->setWidgetVisible(this, false);
         m_view->addChild( m_widget, 0, -500000);
+        if ( m_widget ) m_widget->hide();
+        m_resizePending = false;
     }
 }
 
@@ -309,6 +296,8 @@ void RenderWidget::updateFromElement()
 
 void RenderWidget::slotWidgetDestructed()
 {
+    if (m_view)
+       m_view->setWidgetVisible(this, false);
     m_widget = 0;
 }
 
@@ -327,17 +316,19 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setShouldPaintBackgroundOrBorder(false);
 }
 
-void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx, int _ty,
-                               PaintAction paintAction)
+void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    if (!m_widget || !m_view || paintAction != PaintActionForeground)
+    if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)
         return;
 
     // not visible or not even once layouted
-    if (style()->visibility() != VISIBLE || m_y <=  -500000) {
-        m_widget->hide();
+    if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending )
         return;
-    }
+
+    _tx += m_x;
+    _ty += m_y; 
+
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
 
     // add offset for relative positioning
     if(isRelPositioned())
@@ -382,7 +373,7 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
-    paintWidget(p, m_widget, x, y, w, h, _tx, _ty);
+    paintWidget(paintInfo, m_widget, _tx, _ty);
 }
 
 #include <private/qinternal_p.h>
@@ -416,8 +407,9 @@ static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
 }
 
 
-void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int, int tx, int ty)
+void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 {
+    QPainter* p = pI.p;
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
 
@@ -434,6 +426,22 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
         // This still doesn't work nicely for textareas. Probably need
         // to fix qtextedit for that.
         // KHTMLView::eventFilter()
+        if (pI.p->device()->isExtDev())
+        {
+           QScrollView *sv = dynamic_cast<QScrollView *>(widget);
+           if (sv && sv->viewport())
+           {
+              QWidget *w = sv->viewport();
+              bool dsbld = QSharedDoubleBuffer::isDisabled();
+              QSharedDoubleBuffer::setDisabled(true);
+              QPixmap pm = copyWidget(tx, ty, p, w);
+              QSharedDoubleBuffer::setDisabled(dsbld);
+              p->drawPixmap(tx, ty, pm);
+              p->setPen(Qt::black);
+              p->setBrush(Qt::NoBrush);
+              p->drawRect(tx, ty, pm.width(), pm.height());
+           }
+        }
 #if 0
         QPaintEvent e( widget->rect(), false );
         QApplication::sendEvent( widget, &e );
@@ -601,8 +609,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
         break;
     }
-    case EventImpl::KHTML_KEYDOWN_EVENT:
-    case EventImpl::KHTML_KEYUP_EVENT: {
+    case EventImpl::KEYDOWN_EVENT:
+    case EventImpl::KEYUP_EVENT: {
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
@@ -690,7 +698,7 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
     return SelectionPointInside;
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 {
     RenderReplaced::dump(stream,ind);

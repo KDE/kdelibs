@@ -347,6 +347,7 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     // case 4: containers A & B are siblings, or children of siblings
     // ### we need to do a traversal here instead
     NodeImpl *cmnRoot = commonAncestorContainer(containerA,containerB);
+    if (!cmnRoot) return -1; // Whatever...
     NodeImpl *childA = containerA;
     while (childA->parentNode() != cmnRoot)
         childA = childA->parentNode();

@@ -67,10 +67,8 @@ public:
 
     RenderBlock* createAnonymousBlock();
 
-    void paintLineBoxBackgroundBorder(QPainter *p, int _x, int _y,
-                        int _w, int _h, int _tx, int _ty, PaintAction paintAction);
-    void paintLineBoxDecorations(QPainter *p, int _x, int _y,
-                                 int _w, int _h, int _tx, int _ty, PaintAction paintAction);
+    void paintLineBoxBackgroundBorder(PaintInfo& pI, int _tx, int _ty);
+    void paintLineBoxDecorations(PaintInfo& p, int _tx, int _ty);
 
     virtual void repaint(bool immediate = false);
 

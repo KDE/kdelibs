@@ -268,6 +268,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
 	    if( btn->isDefault())
 		btn->setFocus();
 
+    if ( (options & KMessageBox::Notify) != 0 )
     sendNotification( text, strlist, icon, dialog->topLevelWidget()->winId());
     
     if (KMessageBox_queue)

@@ -38,7 +38,7 @@ class TableLayout
 {
 public:
     TableLayout( RenderTable *t ) : table( t ) {}
-    virtual ~TableLayout() {};
+    virtual ~TableLayout() {}
 
     virtual void calcMinMaxWidth() = 0;
     virtual void layout() = 0;

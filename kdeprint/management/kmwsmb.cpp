@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -37,6 +37,7 @@ KMWSmb::KMWSmb(QWidget *parent, const char *name)
 	m_nextpage = KMWizard::Driver;
 
 	m_view = new SmbView(this,"SmbView");
+	m_loginlabel = new QLabel( this );
 	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "viewmag"), this);
 	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "stop"), this);
 	m_abort->setEnabled(false);
@@ -61,6 +62,7 @@ KMWSmb::KMWSmb(QWidget *parent, const char *name)
 	lay1->addWidget(m_work,0,1);
 	lay1->addWidget(m_server,1,1);
 	lay1->addWidget(m_printer,2,1);
+	lay3->addWidget( m_loginlabel );
 	lay3->addStretch(1);
 	lay3->addWidget(m_scan);
 	lay3->addWidget(m_abort);
@@ -92,7 +94,9 @@ void KMWSmb::initPrinter(KMPrinter *printer)
 {
 	if (printer)
 	{
-		m_view->setLoginInfos(printer->option("kde-login"),printer->option("kde-password"));
+		QString login = printer->option( "kde-login" );
+		m_view->setLoginInfos(login,printer->option("kde-password"));
+		m_loginlabel->setText( i18n( "Login: %1" ).arg( login.isEmpty() ? i18n( "<anonymous>" ) : login ) );
 	}
 }
 

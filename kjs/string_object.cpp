@@ -329,12 +329,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         if (pos == -1)
           break;
         len = mstr.size();
-        // special case of empty match
-        if (len == 0 && lastIndex > 0) {
-          pos = lastIndex + 1;
-          if (pos > s.size())
-            break;
-        }
 
         UString rstr;
         // Prepare replacement
@@ -373,7 +367,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         }
         lastIndex = pos + rstr.size();
         s = s.substr(0, pos) + rstr + s.substr(pos + len);
-        //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,u=%s\n",pos,len,lastIndex,u.ascii());
+        //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,s=%s\n",pos,len,lastIndex,s.ascii());
       } while (global);
 
       result = String(s);

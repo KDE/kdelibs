@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -90,9 +90,9 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
         sep2->setFixedHeight(15);
 
-        QPushButton     *ok_ = new QPushButton(i18n("OK"), this);
-        QPushButton     *cancel_ = new QPushButton(i18n("Cancel"), this);
-        QPushButton     *apply_ = new QPushButton(i18n("Apply"), this);
+        QPushButton     *ok_ = new KPushButton(KStdGuiItem::ok(), this);
+        QPushButton     *cancel_ = new KPushButton(KStdGuiItem::cancel(), this);
+        QPushButton     *apply_ = new KPushButton(KStdGuiItem::apply(), this);
         QPushButton     *help_ = new QPushButton(i18n("Short Help"), this);
         connect(ok_, SIGNAL(clicked()), SLOT(slotOk()));
         connect(cancel_, SIGNAL(clicked()), SLOT(slotCancel()));

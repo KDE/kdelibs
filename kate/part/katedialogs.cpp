@@ -227,22 +227,22 @@ IndentConfigTab::IndentConfigTab(QWidget *parent)
   QWhatsThis::add(indentationWidth, i18n("The number of spaces to indent with."));
 
   reload ();
-  
+
   //
   // after initial reload, connect the stuff for the changed () signal
   //
-  
+
   connect(m_indentMode, SIGNAL(activated(int)), this, SLOT(slotChanged()));
-  
+
   connect( opt[0], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[1], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[2], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[3], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[4], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[5], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
-    
+
   connect(indentationWidth, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
-  
+
   connect(rb1, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(rb3, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
@@ -275,7 +275,7 @@ void IndentConfigTab::apply ()
 
   KateDocumentConfig::global()->setConfigFlags (KateDocumentConfig::cfTabIndentsMode, 2 == m_tabs->id (m_tabs->selected()));
   KateDocumentConfig::global()->setConfigFlags (KateDocumentConfig::cfTabInsertsTab, 1 == m_tabs->id (m_tabs->selected()));
-  
+
   KateDocumentConfig::global()->configEnd ();
 }
 
@@ -309,18 +309,18 @@ SelectConfigTab::SelectConfigTab(QWidget *parent)
   m_tabs->insert( rb1=new QRadioButton( i18n("&Normal"), m_tabs ), 0 );
   m_tabs->insert( rb2=new QRadioButton( i18n("&Persistent"), m_tabs ), 1 );
 
-  
+
   layout->addStretch();
 
   QWhatsThis::add(rb1, i18n("Selections will be overwritten by typed text and will be lost on cursor movement."));
   QWhatsThis::add(rb2, i18n("Selections will stay even after cursor movement and typing."));
 
   reload ();
-  
+
   //
   // after initial reload, connect the stuff for the changed () signal
   //
-  
+
   connect(rb1, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 }
@@ -506,7 +506,7 @@ void EditConfigTab::apply ()
   KateViewConfig::global()->setAutoCenterLines(QMAX(0, e4->value()));
   KateViewConfig::global()->setTextToSearchMode(e5->currentItem());
   KateDocumentConfig::global()->setPageUpDownMovesCursor(e6->isChecked());
-  
+
   KateDocumentConfig::global()->configEnd ();
   KateViewConfig::global()->configEnd ();
 }
@@ -554,7 +554,7 @@ ViewDefaultsConfig::ViewDefaultsConfig(QWidget *parent)
   m_folding=new QCheckBox(i18n("Show &folding markers (if available)"), gbFold );
   m_collapseTopLevel = new QCheckBox( i18n("Collapse toplevel folding nodes"), gbFold );
   m_collapseTopLevel->hide ();
-  
+
   blay->addWidget(gbFold);
 
   QVGroupBox *gbBar = new QVGroupBox(i18n("Left Border"), this);
@@ -592,11 +592,11 @@ ViewDefaultsConfig::ViewDefaultsConfig(QWidget *parent)
   QWhatsThis::add(rb2,i18n("Each new bookmark will be added to the bottom, independently from where it is placed in the document."));
 
   reload();
-  
+
   //
   // after initial reload, connect the stuff for the changed () signal
   //
-  
+
   connect(m_dynwrap, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(m_dynwrapIndicatorsCombo, SIGNAL(activated(int)), this, SLOT(slotChanged()));
   connect(m_dynwrapAlignLevel, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
@@ -667,9 +667,10 @@ void EditKeyConfiguration::showEvent ( QShowEvent * )
   {
     (new QVBoxLayout(this))->setAutoAdd(true);
     KateView* view = (KateView*)m_doc->views().at(0);
-    m_keyChooser = new KKeyChooser( view->editActionCollection(), this, false );
+    m_ac = view->editActionCollection();
+    m_keyChooser = new KKeyChooser( m_ac, this, false );
     connect( m_keyChooser, SIGNAL( keyChange() ), this, SLOT( slotChanged() ) );
-    m_keyChooser->show ();
+    m_keyChooser->show();
 
     m_ready = true;
   }
@@ -681,7 +682,8 @@ void EditKeyConfiguration::apply()
 {
   if (m_ready)
   {
-    m_keyChooser->save();
+    m_keyChooser->commitChanges();
+    m_ac->writeShortcutSettings( "Katepart Shortcuts" );
   }
 }
 //END EditKeyConfiguration
@@ -747,11 +749,11 @@ SaveConfigTab::SaveConfigTab( QWidget *parent )
         "Enter the suffix to add to the backup file names" ) );
 
   reload();
-  
+
   //
   // after initial reload, connect the stuff for the changed () signal
   //
-    
+
   connect(m_encoding, SIGNAL(activated(int)), this, SLOT(slotChanged()));
   connect(m_eol, SIGNAL(activated(int)), this, SLOT(slotChanged()));
   connect(replaceTabs, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
@@ -800,7 +802,7 @@ void SaveConfigTab::apply()
   KateDocumentConfig::global()->setEncoding(KGlobal::charsets()->encodingForName(m_encoding->currentText()));
 
   KateDocumentConfig::global()->setEol(m_eol->currentItem());
-  
+
   KateDocumentConfig::global()->configEnd ();
 }
 
@@ -857,15 +859,15 @@ class KatePartPluginListItem : public QCheckListItem
   public:
     KatePartPluginListItem(bool checked, uint i, const QString &name, QListView *parent);
     uint pluginIndex () const { return index; }
-  
-  protected:        
+
+  protected:
     void stateChange(bool);
-    
+
   private:
     uint index;
     bool silentStateChange;
 };
-         
+
 KatePartPluginListItem::KatePartPluginListItem(bool checked, uint i, const QString &name, QListView *parent)
   : QCheckListItem(parent, name, CheckBox)
   , index(i)
@@ -912,10 +914,10 @@ PluginConfigPage::PluginConfigPage (QWidget *parent) : KateConfigPage (parent, "
     KatePartPluginListItem *item = new KatePartPluginListItem(KateDocumentConfig::global()->plugin(i), i, (KateFactory::self()->plugins())[i]->name(), listView);
     item->setText(0, (KateFactory::self()->plugins())[i]->name());
     item->setText(1, (KateFactory::self()->plugins())[i]->comment());
-    
+
     m_items.append (item);
   }
-  
+
   connect(listView, SIGNAL(stateChange(KatePartPluginListItem *, bool)), this, SLOT(slotChanged()));
 }
 
@@ -928,12 +930,12 @@ void PluginConfigPage::apply ()
   // nothing changed, no need to apply stuff
   if (!changed())
     return;
-    
+
   KateDocumentConfig::global()->configStart ();
-    
+
   for (uint i=0; i < m_items.count(); i++)
     KateDocumentConfig::global()->setPlugin (m_items.at(i)->pluginIndex(), m_items.at(i)->isOn());
-  
+
   KateDocumentConfig::global()->configEnd ();
 }
 //END
@@ -1254,7 +1256,7 @@ HlDownloadDialog::HlDownloadDialog(QWidget *parent, const char *name, bool modal
   connect(getIt,SIGNAL(data(KIO::Job *, const QByteArray &)),
     this, SLOT(listDataReceived(KIO::Job *, const QByteArray &)));
 //        void data( KIO::Job *, const QByteArray &data);
-
+  resize(450, 400);
 }
 
 HlDownloadDialog::~HlDownloadDialog(){}

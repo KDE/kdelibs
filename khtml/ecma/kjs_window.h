@@ -122,7 +122,7 @@ namespace KJS {
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScreenTop, ScreenLeft,
            ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
-           Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
+           Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, XMLHttpRequest,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
            Print, AddEventListener, RemoveEventListener, SideBar,
            Onabort, Onblur,

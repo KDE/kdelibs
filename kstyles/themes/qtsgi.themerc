@@ -1,6 +1,7 @@
 [Misc]
 Name=SGI
 Name[bn]=এস-জি-আই
+Name[hi]=एसजीआई
 Name[nl]=SIG
 Name[xx]=xxSGIxx
 Comment=Built-in SGI style
@@ -54,6 +55,7 @@ Comment[se]=Sisahuksejuvvon SGI-stiila
 Comment[sk]=Zabudovaný SGI štýl
 Comment[sl]=Vgrajeni slog SGI
 Comment[sr]=Уграђени SGI стил
+Comment[sr@Latn]=Ugrađeni SGI stil
 Comment[sv]=Inbyggd SGI-stil
 Comment[ta]=உள்ளமைந்த SGI பாணி
 Comment[tg]=Аз нав сохтани  SGI сабк

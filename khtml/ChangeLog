@@ -1,3 +1,95 @@
+2004-05-06 Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
+
+	* html/htmlparser.cpp (class KHTMLParser): fixed a memory leak
+	whenever the parser is used on a DocumentFragment
+	(i.e. when setting innerHTML via JavaScript).
+
+2004-02-09  David Faure  <faure@kde.org>
+
+	* ecma/kjs_events.h (clear): set listener object to Null(), not to an invalid Object(),
+	which will crash when the listener is stored in another frame (#61467). Maybe it would be better
+	to really remove the event listener in this case, but this is hard to do efficiently.
+
+	* ecma/kjs_html.cpp (getValueProperty): s/getString/String/ for meta attributes,
+        fixes http://www.accorhotels.com/fr/fidelisation/travelplus/tp_pros_adh_form.shtml
+
+2004-02-07  Harri Porten  <porten@kde.org>
+
+	* rendering/render_layer.cpp (sortByZOrder): compile fix for non-gcc
+	compilers
+
+2004-01-29  David Faure  <faure@kde.org>
+
+	* ecma/kjs_window.cpp (get): update frame sizes before returning value for
+	innerWidth/innerHeight, in case the window was just resized (#73528, regtest ecma/window.js)
+
+2004-01-22  David Faure  <faure@kde.org>
+
+	* xml/dom_nodeimpl.cpp (setNodeValue): Don't throw NO_MODIFICATION_ALLOWED_ERR from
+	there, DOMTS-Core-Level1's hc_nodevalue03 says createEntityReference().setNodeValue()
+	should simply do nothing.
+
+	* dom/dom_element.cpp (removeAttributeNode): Fixed logic for NOT_FOUND_ERR.
+	(setAttributeNode): removed tests for WRONG_DOCUMENT_ERR and 
+	INUSE_ATTRIBUTE_ERR, the latter being incorrect and both being already
+	done by setNamedItem
+
+	* xml/dom_elementimpl.cpp (setNamedItem): if attribute exists already,
+	return it, to fix DOMTS-Core-level1 test hc_elementreplaceattributewithself
+
+2004-01-22  Leo Savernik <l.savernik@aon.at>
+
+	* khtml_part.cpp (checkCompleted): do not explicitly set focus to
+	the document if m_focusNodeNumber is not set (fixes dict.leo.org)
+
+2004-01-21  Stephan Kulow  <coolo@kde.org>
+
+	* html/html_formimpl.h: handle malformed forms different than
+	wellformed
+
+2004-01-21  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp (layoutBlockChildren): use maxTopMargin
+        again, for correct margin-top determination (#67527)
+
+2004-01-20  Dirk Mueller  <mueller@kde.org>
+
+	* css/cssstyleselector.cpp (applyRule): Implement handling of 
+	empty-cells.
+
+	 * css/cssstyleselector.cpp (applyRule): remove superfluous setZIndex(0)
+	after setHasAutoZIndex, which breaks auto. 
+
+2004-01-19  Dirk Mueller  <mueller@kde.org>
+
+       * rendering/render_object.cpp (getVerticalPosition): improve
+       logic (#65121).
+
+2004-01-19  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_style.h: providing an initial property
+	function for every css property and using it in macros 
+	from cssselector.cpp to unify the handling of short hand
+	properties (based on safari patch)
+
+       * css/cssstyleselector.cpp (parseValue): unify handling
+       of inherited css properties (based on safari patch)
+
+2004-01-18  Dirk Mueller  <mueller@kde.org>
+
+	* khtmlpart_p.h (class KHTMLPartPrivate): experimental:
+	copy encoding information from parent frame. helps on
+	http://www.pfl.ru/ when manually setting the correct encoding.
+
+	* rendering/render_container.cpp (addChild): make sure
+	that a RenderTableCol object is correctly nested inside
+	a table (#59766).
+
+	* xml/dom_elementimpl.cpp (recalcStyle): fix tree corruption 
+	when recalcStyle() happens to be invoked in the wrong moment.
+
+	* html/html_baseimpl.cpp (setLocation): fix KURL() casting issue.
+
 2004-01-16  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_image.cpp: remove some asserts that

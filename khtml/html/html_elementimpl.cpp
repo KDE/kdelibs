@@ -228,7 +228,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseup"));
         break;
     case ATTR_ONKEYDOWN:
-        setHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT,
+        setHTMLEventListener(EventImpl::KEYDOWN_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeydown"));
 	break;
     case ATTR_ONKEYPRESS:
@@ -236,7 +236,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeypress"));
 	break;
     case ATTR_ONKEYUP:
-        setHTMLEventListener(EventImpl::KHTML_KEYUP_EVENT,
+        setHTMLEventListener(EventImpl::KEYUP_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeyup"));
         break;
     case ATTR_ONFOCUS:
@@ -299,7 +299,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
         while (i < l && s[i].isDigit())
             ++i;
 
-        int v = QConstString(s, i).string().toInt();
+        int v = kMin( kMax( QConstString(s, i).string().toInt(), -8192 ), 8191 ) ;
         const char* suffix = "px";
         if (!numOnly || multiLength) {
             // look if we find a % or *
@@ -348,8 +348,10 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
     if(!m_styleDecls) createDecl();
 
     // this is the only case no color gets applied in IE.
-    if ( !c.length() )
+    if ( !c.length() ) {
+	removeCSSProperty(id);
 	return;
+    }
 
     if ( m_styleDecls->setProperty(id, c, false, true) )
 	return;

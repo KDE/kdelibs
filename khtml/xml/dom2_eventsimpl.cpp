@@ -169,6 +169,13 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
 	return RESIZE_EVENT;
     else if (type == "scroll")
 	return SCROLL_EVENT;
+    else if ( type == "keydown" )
+        return KEYDOWN_EVENT;
+    else if ( type == "keyup" )
+        return KEYUP_EVENT;
+    else if ( type == "readystatechange" )
+        return KHTML_READYSTATECHANGE_EVENT;
+
     // ignore: KHTML_DBLCLICK_EVENT
     // ignore: KHTML_CLICK_EVENT
     return UNKNOWN_EVENT;
@@ -177,85 +184,109 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
 DOMString EventImpl::idToType(EventImpl::EventId id)
 {
     switch (id) {
-	case DOMFOCUSIN_EVENT:
-	    return "DOMFocusIn";
-	case DOMFOCUSOUT_EVENT:
-	    return "DOMFocusOut";
-	case DOMACTIVATE_EVENT:
-	    return "DOMActivate";
-	case CLICK_EVENT:
-	    return "click";
-	case MOUSEDOWN_EVENT:
-	    return "mousedown";
-	case MOUSEUP_EVENT:
-	    return "mouseup";
-	case MOUSEOVER_EVENT:
-	    return "mouseover";
-	case MOUSEMOVE_EVENT:
-	    return "mousemove";
-	case MOUSEOUT_EVENT:
-	    return "mouseout";
-	case DOMSUBTREEMODIFIED_EVENT:
-	    return "DOMSubtreeModified";
-	case DOMNODEINSERTED_EVENT:
-	    return "DOMNodeInserted";
-	case DOMNODEREMOVED_EVENT:
-	    return "DOMNodeRemoved";
-	case DOMNODEREMOVEDFROMDOCUMENT_EVENT:
-	    return "DOMNodeRemovedFromDocument";
-	case DOMNODEINSERTEDINTODOCUMENT_EVENT:
-	    return "DOMNodeInsertedIntoDocument";
-	case DOMATTRMODIFIED_EVENT:
-	    return "DOMAttrModified";
-	case DOMCHARACTERDATAMODIFIED_EVENT:
-	    return "DOMCharacterDataModified";
-	case LOAD_EVENT:
-	    return "load";
-	case UNLOAD_EVENT:
-	    return "unload";
-	case ABORT_EVENT:
-	    return "abort";
-	case ERROR_EVENT:
-	    return "error";
-	case SELECT_EVENT:
-	    return "select";
-	case CHANGE_EVENT:
-	    return "change";
-	case SUBMIT_EVENT:
-	    return "submit";
-	case RESET_EVENT:
-	    return "reset";
-	case FOCUS_EVENT:
-	    return "focus";
-	case BLUR_EVENT:
-	    return "blur";
-	case RESIZE_EVENT:
-	    return "resize";
-	case SCROLL_EVENT:
-	    return "scroll";
-	// khtml extensions
-	case KHTML_ECMA_DBLCLICK_EVENT:
-            return "dblclick";
-	case KHTML_ECMA_CLICK_EVENT:
-            return "click";
-	case KHTML_DRAGDROP_EVENT:
-            return "khtml_dragdrop";
-	case KHTML_ERROR_EVENT:
-            return "khtml_error";
-	case KHTML_KEYDOWN_EVENT:
-            return "khtml_keydown";
-	case KHTML_KEYPRESS_EVENT:
-            return "khtml_keypress";
-	case KHTML_KEYUP_EVENT:
-            return "khtml_keyup";
-	case KHTML_MOVE_EVENT:
-            return "khtml_move";
-        case KHTML_ORIGCLICK_MOUSEUP_EVENT:
-            return "khtml_origclick_mouseup_event";
-	default:
-	    return DOMString();
-	    break;
+    case DOMFOCUSIN_EVENT:
+        return "DOMFocusIn";
+    case DOMFOCUSOUT_EVENT:
+        return "DOMFocusOut";
+    case DOMACTIVATE_EVENT:
+        return "DOMActivate";
+    case CLICK_EVENT:
+        return "click";
+    case MOUSEDOWN_EVENT:
+        return "mousedown";
+    case MOUSEUP_EVENT:
+        return "mouseup";
+    case MOUSEOVER_EVENT:
+        return "mouseover";
+    case MOUSEMOVE_EVENT:
+        return "mousemove";
+    case MOUSEOUT_EVENT:
+        return "mouseout";
+    case DOMSUBTREEMODIFIED_EVENT:
+        return "DOMSubtreeModified";
+    case DOMNODEINSERTED_EVENT:
+        return "DOMNodeInserted";
+    case DOMNODEREMOVED_EVENT:
+        return "DOMNodeRemoved";
+    case DOMNODEREMOVEDFROMDOCUMENT_EVENT:
+        return "DOMNodeRemovedFromDocument";
+    case DOMNODEINSERTEDINTODOCUMENT_EVENT:
+        return "DOMNodeInsertedIntoDocument";
+    case DOMATTRMODIFIED_EVENT:
+        return "DOMAttrModified";
+    case DOMCHARACTERDATAMODIFIED_EVENT:
+        return "DOMCharacterDataModified";
+    case LOAD_EVENT:
+        return "load";
+    case UNLOAD_EVENT:
+        return "unload";
+    case ABORT_EVENT:
+        return "abort";
+    case ERROR_EVENT:
+        return "error";
+    case SELECT_EVENT:
+        return "select";
+    case CHANGE_EVENT:
+        return "change";
+    case SUBMIT_EVENT:
+        return "submit";
+    case RESET_EVENT:
+        return "reset";
+    case FOCUS_EVENT:
+        return "focus";
+    case BLUR_EVENT:
+        return "blur";
+    case RESIZE_EVENT:
+        return "resize";
+    case SCROLL_EVENT:
+        return "scroll";
+    case KHTML_ECMA_DBLCLICK_EVENT:
+        return "dblclick";
+    case KHTML_ECMA_CLICK_EVENT:
+        return "click";
+    case KEYDOWN_EVENT:
+        return "keydown";
+    case KEYUP_EVENT:
+        return "khtml_keyup";
+
+    //khtml extensions
+    case KHTML_DRAGDROP_EVENT:
+        return "khtml_dragdrop";
+    case KHTML_ERROR_EVENT:
+        return "khtml_error";
+    case KHTML_KEYPRESS_EVENT:
+        return "keypress";
+    case KHTML_MOVE_EVENT:
+        return "khtml_move";
+    case KHTML_ORIGCLICK_MOUSEUP_EVENT:
+        return "khtml_origclick_mouseup_event";
+    case KHTML_READYSTATECHANGE_EVENT:
+        return "readystatechange";
+
+    default:
+        return DOMString();
+        break;
     }
+}
+
+bool EventImpl::isUIEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isMouseEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isMutationEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isTextEvent() const
+{
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -293,6 +324,11 @@ void UIEventImpl::initUIEvent(const DOMString &typeArg,
     m_detail = detailArg;
 }
 
+bool UIEventImpl::isUIEvent() const
+{
+    return true;
+}
+
 // -----------------------------------------------------------------------------
 
 MouseEventImpl::MouseEventImpl()
@@ -301,6 +337,8 @@ MouseEventImpl::MouseEventImpl()
     m_screenY = 0;
     m_clientX = 0;
     m_clientY = 0;
+    m_pageX = 0;
+    m_pageY = 0;
     m_ctrlKey = false;
     m_altKey = false;
     m_shiftKey = false;
@@ -320,6 +358,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 			       long screenYArg,
 			       long clientXArg,
 			       long clientYArg,
+                               long pageXArg,
+                               long pageYArg,
 			       bool ctrlKeyArg,
 			       bool altKeyArg,
 			       bool shiftKeyArg,
@@ -334,6 +374,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
     m_screenY = screenYArg;
     m_clientX = clientXArg;
     m_clientY = clientYArg;
+    m_pageX = pageXArg;
+    m_pageY = pageYArg;
     m_ctrlKey = ctrlKeyArg;
     m_altKey = altKeyArg;
     m_shiftKey = shiftKeyArg;
@@ -355,16 +397,13 @@ MouseEventImpl::~MouseEventImpl()
 
 void MouseEventImpl::computeLayerPos()
 {
-    m_layerX = m_clientX;
-    m_layerY = m_clientY;
+    m_layerX = m_pageX;
+    m_layerY = m_pageY;
 
     DocumentImpl* doc = view()->document();
     if (doc) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
-
-        int x = doc->view()->contentsX();
-        int y = doc->view()->contentsY();
-        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX + x, m_clientY + y);
+        doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
         while (node && !node->renderer())
@@ -406,6 +445,13 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_screenY = screenYArg;
     m_clientX = clientXArg;
     m_clientY = clientYArg;
+    m_pageX   = clientXArg;
+    m_pageY   = clientYArg;
+    KHTMLView* v;
+    if ( view()->document() && ( v = view()->document()->view() ) ) {
+        m_pageX += v->contentsX();
+        m_pageY += v->contentsY();
+    }
     m_ctrlKey = ctrlKeyArg;
     m_altKey = altKeyArg;
     m_shiftKey = shiftKeyArg;
@@ -415,9 +461,15 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     if (m_relatedTarget)
 	m_relatedTarget->ref();
 
+
     // ### make this on-demand. its soo sloooow
     computeLayerPos();
     m_qevent = 0;
+}
+
+bool MouseEventImpl::isMouseEvent() const
+{
+    return true;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -428,7 +480,7 @@ TextEventImpl::TextEventImpl()
 }
 
 TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *view)
-  : UIEventImpl(KHTML_KEYDOWN_EVENT,true,true,view,0)
+  : UIEventImpl(KEYDOWN_EVENT,true,true,view,0)
 {
   qKeyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
   // Events are supposed to be accepted by default in Qt!
@@ -439,9 +491,9 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
   if( keypress )
     m_id = KHTML_KEYPRESS_EVENT;
   else if( key->type() == QEvent::KeyPress )
-    m_id = KHTML_KEYDOWN_EVENT;
+    m_id = KEYDOWN_EVENT;
   else if( key->type() == QEvent::KeyRelease )
-    m_id = KHTML_KEYUP_EVENT;
+    m_id = KEYUP_EVENT;
 
   m_detail = key->count();
 
@@ -674,6 +726,11 @@ void TextEventImpl::initModifier(unsigned long modifierArg,
       m_modifier &= (modifierArg ^ 0xFFFFFFFF);
 }
 
+bool TextEventImpl::isTextEvent() const
+{
+    return true;
+}
+
 // -----------------------------------------------------------------------------
 
 MutationEventImpl::MutationEventImpl()
@@ -757,3 +814,7 @@ void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
     m_attrChange = attrChangeArg;
 }
 
+bool MutationEventImpl::isMutationEvent() const
+{
+    return true;
+}

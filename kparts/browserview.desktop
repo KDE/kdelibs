@@ -26,7 +26,7 @@ Name[fi]=Selainnäkymä
 Name[fr]=Affichage du navigateur
 Name[gl]=Vista de Navegador
 Name[he]=תצוגת דפדפן
-Name[hi]=ब्राउजर दर्शन
+Name[hi]=ब्राउज़र दर्शन
 Name[hr]=Pogled za pretragu
 Name[hu]=Böngészőnézet
 Name[id]=View Browser
@@ -54,6 +54,7 @@ Name[se]=Fierpmádatlogana čájeheapmi
 Name[sk]=Prehliadač
 Name[sl]=Pogled brskalnika
 Name[sr]=Претраживачев приказ
+Name[sr@Latn]=Pretraživačev prikaz
 Name[sv]=Surfvy
 Name[ta]=உலாவிக் காட்சி
 Name[tg]=Намуди Хониши Парешон
@@ -131,4 +132,11 @@ Type=bool
 # (like Cervisia) to be reactivated (possibly on another directory) next time
 # (famous bug).
 [PropertyDef::X-KDE-BrowserView-Built-Into]
+Type=QString
+
+# If the part has a plugin for KHTML Javascript's window.navigator.plugins
+# array, it should create a plugin info file and set this propery to the
+# file path here. The path should be relative to KDE's data dir
+# ($KDEDIR/share/apps)
+[PropertyDef::X-KDE-BrowserView-PluginsInfo]
 Type=QString

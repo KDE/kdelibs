@@ -47,6 +47,9 @@
 <!ENTITY traducteurCharlesDemartigny     '<othercredit role="translator"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurCharlesDemartigny      '<othercredit role="reviewer"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurSimonDepiets     '<othercredit role="translator"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurYvesDessertine     '<othercredit role="translator"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -61,6 +64,9 @@
 
 <!ENTITY traducteurGuillaumeDuweltzRebert     '<othercredit role="translator"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGuillaumeDuweltzRebert      '<othercredit role="relecteur"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurSamiFantar    '<othercredit role="translator"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurSamiFantar     '<othercredit role="reviewer"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurNilsSergioFernandez    '<othercredit role="translator"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurNilsSergioFernandez     '<othercredit role="reviewer"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -95,6 +101,9 @@
 <!ENTITY traducteurAnneMarieMahfouf   '<othercredit role="translator"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurAnneMarieMahfouf   '<othercredit role="reviewer"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurPatrickMichelon   '<othercredit role="translator"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurPatrickMichelon   '<othercredit role="reviewer"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurPierre-EmmanuelMuller   '<othercredit role="translator"><firstname>Pierre-Emmanuel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPierre-EmmanuelMuller   '<othercredit role="reviewer"><firstname>Pierre-Emmanel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -111,7 +120,7 @@
 <!ENTITY relecteurLaurentRathle      '<othercredit role="relecteur"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurDamienRaudeMorvan     '<othercredit role="translator"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY relecteurtraducteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -138,11 +147,13 @@
 <!ENTITY InesDelafond      'Ines Delafond <email>ines@delafond.org</email>'>
 <!ENTITY CecileDelafond    'Cécile Delafond <email>cecile@delafond.org</email>'>
 <!ENTITY CharlesDemartigny 'Charles Demartigny <email>charles@demartigny.com</email>'>
+<!ENTITY SimonDepiets    'Simon Depiets <email>2df@tuxfamily.org</email>'>
 <!ENTITY YvesDessertine    'Yves Dessertine <email>yves.d@hrnet.fr</email>'>
 <!ENTITY ChristopheDioux   'Christophe Dioux <email>chdioux@club-internet.fr</email>'>
 <!ENTITY PhillipDucharme   'Phillip Ducharme <email>philip.ducharme@hermes.usherb.ca</email>'>
 <!ENTITY HeleneDuwelzRebert 'Hélène Duwelz-Rebert <email>helened@herbalife.com</email>'>
 <!ENTITY GuillaumeDuwelzRebert 'Guillaume Duwelz-Rebert <email>gduwelz-rebert.cs@clearstream.com</email>'>
+<!ENTITY SamiFantar          'Sami Fantar <email>sami.fantar@laposte.net</email>'>
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rönningen <email>nilsfernandez@yahoo.fr</email>'>
 <!ENTITY FredericFoiry       'Frédéric Foiry <email>frederic.foiry@wanadoo.fr</email>'>
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
@@ -154,6 +165,7 @@
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
 <!ENTITY ChristopheLefebvre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>a-m.mahfouf@lineone.net</email>'>
+<!ENTITY PatrickMichelon  'Patrick Michelon <email>patrick.michelon@free.fr</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
 <!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>

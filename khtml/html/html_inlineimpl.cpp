@@ -51,7 +51,7 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    bool keydown = evt->id() == EventImpl::KHTML_KEYDOWN_EVENT;
+    bool keydown = evt->id() == EventImpl::KEYDOWN_EVENT;
 
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
@@ -98,10 +98,17 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
                 if(r && e)
                 {
-                    int absx, absy;
+                    KHTMLView* v = getDocument()->view();
+                    int x = e->clientX();
+                    int y = e->clientY();
+                    int absx = 0;
+                    int absy = 0;
+                    if ( v ) {
+                        x += v->contentsX();
+                        y += v->contentsY();
+                    }
                     r->absolutePosition(absx, absy);
-                    int x(e->clientX() - absx), y(e->clientY() - absy);
-                    url += QString("?%1,%2").arg( x ).arg( y );
+                    url += QString("?%1,%2").arg( x - absx ).arg( y - absy );
                 }
                 else {
                     evt->setDefaultHandled();
@@ -153,6 +160,12 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 }
 
 
+void HTMLAnchorElementImpl::click()
+{
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
+}
+
 void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -167,6 +180,8 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_TITLE:
     case ATTR_REL:
 	break;
+    case ATTR_ACCESSKEY:
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -240,8 +255,9 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
             int size;
             switch (num)
             {
-            case -1:
+            case -2:
             case  1: size = CSS_VAL_X_SMALL;  break;
+            case -1:
             case  2: size = CSS_VAL_SMALL;    break;
             case  0: // treat 0 the same as 3, because people
                      // expect it to be between -1 and +1

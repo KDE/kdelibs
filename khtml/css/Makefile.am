@@ -24,7 +24,8 @@ YACC=bison
 noinst_LTLIBRARIES = libkhtmlcss.la
 libkhtmlcss_la_SOURCES = \
 	css_stylesheetimpl.cpp css_ruleimpl.cpp css_valueimpl.cpp css_base.cpp \
-	cssparser.cpp cssstyleselector.cpp csshelper.cpp parser.cpp
+	cssparser.cpp cssstyleselector.cpp csshelper.cpp parser.cpp \
+	css_renderstyledeclarationimpl.cpp
 
 #libkhtmlcss_la_LDFLAGS = -no-undefined 
 libkhtmlcss_la_METASOURCES = AUTO
@@ -32,7 +33,8 @@ libkhtmlcss_la_METASOURCES = AUTO
 noinst_HEADERS = \
 	css_extensionsimpl.h  css_stylesheetimpl.h  cssparser.h \
 	css_ruleimpl.h css_valueimpl.h css_base.h \
-	cssstyleselector.h csshelper.h parser.h
+	cssstyleselector.h csshelper.h parser.h   \
+	css_renderstyledeclarationimpl.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/libltdl -I$(top_srcdir) \
@@ -48,7 +50,7 @@ EXTRA_DIST = parser.y
 
 parser: $(srcdir)/parser.y
 	cd $(srcdir); \
-	$(YACC) -d -p cssyy parser.y && mv parser.tab.c parser.cpp; \
+	$(YACC) -v -d -p cssyy parser.y && mv parser.tab.c parser.cpp; \
 	if test -f parser.tab.h; then \
 	if cmp -s parser.tab.h parser.h; then rm -f parser.tab.h; \
 	else mv parser.tab.h parser.h; fi \

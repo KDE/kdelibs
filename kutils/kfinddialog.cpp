@@ -233,10 +233,10 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     }
     else
     {
-       setButtonOKText(i18n("&Find"),
+       setButtonOK( KGuiItem(i18n("&Find"),"find",
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
-                         "above is searched for within the document.</qt>"));
+                         "above is searched for within the document.</qt>")) );
     }
 }
 

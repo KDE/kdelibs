@@ -25,6 +25,10 @@
 #include <qgroupbox.h>
 #include <qlayout.h>
 
+#include <kglobalsettings.h>
+#include <kiconloader.h>
+#include <qpushbutton.h>
+
 #include "resource.h"
 #include "addressbook.h"
 
@@ -40,7 +44,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
-    
+
   QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
   groupBox->setTitle( i18n( "Resources" ) );
 
@@ -52,9 +56,14 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
 
   KButtonBox *buttonBox = new KButtonBox( this );
 
-  buttonBox->addStretch();    
-  buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  buttonBox->addStretch();
+  QPushButton* ok = buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
+  QPushButton* cancel = buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  if (KGlobalSettings::showIconsOnPushButtons()) {
+    ok->setIconSet( SmallIconSet("button_ok") );
+    cancel->setIconSet( SmallIconSet("button_cancel") );
+  }
+
   buttonBox->layout();
 
   mainLayout->addWidget( buttonBox );

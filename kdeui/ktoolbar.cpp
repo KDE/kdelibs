@@ -23,6 +23,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
+
 #ifdef KDE_USE_FINAL
 #undef Always
 #include <qdockwindow.h>
@@ -40,8 +42,6 @@
 #include <qobjectlist.h>
 #include <qtimer.h>
 #include <qstyle.h>
-
-#include <config.h>
 
 #include "klineedit.h"
 #include "kseparator.h"
@@ -1128,7 +1128,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     //kdDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
 
-    if(!config->hasDefault("IconText") && icontext == d->IconTextDefault )
+    if(d->m_honorStyle && icontext == d->IconTextDefault && !config->hasDefault("IconText") )
     {
       //kdDebug(220) << name() << "                reverting icontext to default" << endl;
       config->revertToDefault("IconText");
@@ -1304,11 +1304,14 @@ void KToolBar::rebuildLayout()
 void KToolBar::childEvent( QChildEvent *e )
 {
     if ( e->child()->isWidgetType() ) {
-        QWidget * w = (QWidget*)e->child();
+        QWidget * w = dynamic_cast<QWidget *>(e->child());
+        if (!w || (::qstrcmp( "qt_dockwidget_internal", w->name()) == 0))
+        {
+           QToolBar::childEvent( e );
+           return;
+        }
         if ( e->type() == QEvent::ChildInserted ) {
-            if ( !dynamic_cast<QPopupMenu *>(e->child()) && // e->child() is not a QPopupMenu
-                 ::qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
-
+            if ( !dynamic_cast<QPopupMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
                 if ( !widget2id.contains( w ) )
@@ -1463,7 +1466,18 @@ void KToolBar::resizeEvent( QResizeEvent *e )
     setUpdatesEnabled( false );
     QToolBar::resizeEvent( e );
     if (b)
-       d->repaintTimer.start( 100, true );
+    {
+      if (layoutTimer->isActive())
+      {
+         // Wait with repainting till layout is complete.
+         d->repaintTimer.start( 100, true );
+      }
+      else
+      {
+         // Repaint now
+         slotRepaint();
+      }
+    }
 }
 
 void KToolBar::slotIconChanged(int group)
@@ -1822,7 +1836,10 @@ void KToolBar::loadState( const QDomElement &element )
 	{
 	    //kdDebug(220) << name() << " loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
             // Use global setting
-            setIconText( iconTextSetting() );
+            if (d->m_honorStyle) 
+                setIconText( iconTextSetting() );
+            else
+                setIconText( d->IconTextDefault);
 	}
     }
 
@@ -2014,10 +2031,13 @@ KPopupMenu *KToolBar::contextMenu()
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
   QValueList<int> avSizes;
-  if (!::qstrcmp(QObject::name(), "mainToolBar"))
-      avSizes = theme->querySizes( KIcon::MainToolbar);
-  else
-      avSizes = theme->querySizes( KIcon::Toolbar);
+  if (theme)
+  {
+      if (!::qstrcmp(QObject::name(), "mainToolBar"))
+          avSizes = theme->querySizes( KIcon::MainToolbar);
+      else
+          avSizes = theme->querySizes( KIcon::Toolbar);
+  }
 
   d->iconSizes = avSizes;
 

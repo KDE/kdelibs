@@ -43,6 +43,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "marshall.cpp"
 
+#if defined Q_WS_X11
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#endif
+
 typedef QMap<QString, QString> UserList;
 
 static DCOPClient* dcop = 0;
@@ -345,6 +350,9 @@ void showHelp( int exitCode = 0 )
 	 << "  --all-sessions  Send to all sessions found. Only works with the --user" << endl
 	 << "                  and --all-users options." << endl
 	 << "  --list-sessions List all active KDE session for a user or all users." << endl
+	 << "  --no-user-time  Don't update the user activity timestamp in the called" << endl
+	 << "                  application (for usage in scripts running" << endl
+	 << "                  in the background)." << endl
 	 << endl;
 
     exit( exitCode );
@@ -417,11 +425,36 @@ QStringList dcopSessionList( const QString &user, const QString &home )
     return result;
 }
 
+void sendUserTime( const char* app )
+{
+#if defined Q_WS_X11
+    static unsigned long time = 0;
+    if( time == 0 )
+    {
+        Display* dpy = XOpenDisplay( NULL );
+        if( dpy != NULL )
+        {
+            Window w = XCreateSimpleWindow( dpy, DefaultRootWindow( dpy ), 0, 0, 1, 1, 0, 0, 0 );
+            XSelectInput( dpy, w, PropertyChangeMask );
+            unsigned char data[ 1 ];
+            XChangeProperty( dpy, w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
+            XEvent ev;
+            XWindowEvent( dpy, w, PropertyChangeMask, &ev );
+            time = ev.xproperty.time;
+            XDestroyWindow( dpy, w );
+        }
+    }
+    DCOPRef( app, "MainApplication-Interface" ).call( "updateUserTimestamp", time );
+#else
+// ...
+#endif
+}
+
 /**
  * Do the actual DCOP call
  */
 int runDCOP( QCStringList args, UserList users, Session session,
-              const QString sessionName, bool readStdin )
+              const QString sessionName, bool readStdin, bool updateUserTime )
 {
     bool DCOPrefmode=false;
     QCString app;
@@ -668,6 +701,8 @@ int runDCOP( QCStringList args, UserList users, Session session,
 		break;
 	    case 3:
 	    default:
+                if( updateUserTime )
+                    sendUserTime( app );
 		if( readStdin )
 		{
 		    QCStringList::Iterator replaceArg = params.end();
@@ -723,6 +758,7 @@ int main( int argc, char** argv )
     QString user;
     Session session = DefaultSession;
     QString sessionName;
+    bool updateUserTime = true;
 
     cin_.setEncoding( QTextStream::Locale );
 
@@ -789,6 +825,11 @@ int main( int argc, char** argv )
 	    session = AllSessions;
 	    numOptions ++;
 	}
+        else if( strcmp( argv[ pos ], "--no-user-time" ) == 0 )
+        {
+            updateUserTime = false;
+            numOptions ++;
+        }
 	else if( argv[ pos ][ 0 ] == '-' )
 	{
 	    cerr_ << "Unknown command-line option '" << argv[ pos ]
@@ -870,7 +911,7 @@ int main( int argc, char** argv )
     else if( !user.isEmpty() )
 	users[ user ] = userList()[ user ];
 
-    int retval = runDCOP( args, users, session, sessionName, readStdin );
+    int retval = runDCOP( args, users, session, sessionName, readStdin, updateUserTime );
 
     return retval;
 }

@@ -192,10 +192,11 @@ public:
 
 signals:
     /**
-     * This signal is emitted when the embedded window has been destroyed.
+     * This signal is emitted when the embedded window has been lost (destroyed or reparented away)
      *
      * @see embeddedWinId()
      */
+    // KDE4 rename to embeddedWindowLost()
     void embeddedWindowDestroyed();
 
 protected:

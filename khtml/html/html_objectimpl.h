@@ -67,6 +67,7 @@ public:
 
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
+    void slotRenderAlternative();
 
 private:
     KParts::LiveConnectExtension *liveconnect;

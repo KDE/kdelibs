@@ -283,6 +283,8 @@ public:
 
     QString selectWordUnderCursor();
 
+    QPopupMenu *createPopupMenu( const QPoint& pos );
+
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
       * QMultiLineEdit widget.

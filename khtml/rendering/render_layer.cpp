@@ -234,8 +234,12 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
 
     child->setParent(this);
 
-    // Dirty the z-order list in which we are contained.
-    child->stackingContext()->dirtyZOrderLists();
+    // Dirty the z-order list in which we are contained.  The stackingContext() can be null in the
+    // case where we're building up generated content layers.  This is ok, since the lists will start
+    // off dirty in that case anyway.
+    RenderLayer* stackingContext = child->stackingContext();
+    if (stackingContext)
+        stackingContext->dirtyZOrderLists();
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
@@ -579,7 +583,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
     }
 }
 
-void RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
+void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
 {
 #ifdef APPLE_CHANGES
     if (m_hBar)
@@ -587,22 +591,21 @@ void RenderLayer::paintScrollbars(QPainter* p, const QRect& damageRect)
     if (m_vBar)
         m_vBar->paint(p, damageRect);
 #else
+    if (!m_object->element())
+       return;
+
     QScrollView* scrollView = m_object->element()->getDocument()->view();
     if (m_hBar) {
 	int x = m_hBar->x();
 	int y = m_hBar->y();
 	scrollView->viewportToContents(x, y, x, y);
-	RenderWidget::paintWidget(p, m_hBar,
-				  damageRect.x(), damageRect.y(), damageRect.width(), damageRect.height(),
-				  x, y);
+	RenderWidget::paintWidget(pI, m_hBar, x, y);
     }
     if (m_vBar) {
 	int x = m_vBar->x();
 	int y = m_vBar->y();
 	scrollView->viewportToContents(x, y, x, y);
-	RenderWidget::paintWidget(p, m_vBar,
-				  damageRect.x(), damageRect.y(), damageRect.width(), damageRect.height(),
-				  x, y);
+	RenderWidget::paintWidget(pI, m_vBar, x, y);
     }
 #endif
 }
@@ -674,10 +677,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             setClip(p, paintDirtyRect, damageRect);
 
             // Paint the background.
-            renderer()->paint(p, damageRect.x(), damageRect.y(),
-                              damageRect.width(), damageRect.height(),
-                              x - renderer()->xPos(), y - renderer()->yPos(),
-                              PaintActionElementBackground);
+            RenderObject::PaintInfo paintInfo(p, damageRect, PaintActionElementBackground);
+            renderer()->paint(paintInfo,
+                              x - renderer()->xPos(), y - renderer()->yPos());
 
             // Position our scrollbars.
             positionScrollbars(layerBounds);
@@ -685,7 +687,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             // Our scrollbar widgets paint exactly when we tell them to, so that they work properly with
             // z-index.  We paint after we painted the background/border, so that the scrollbars will
             // sit above the background/border.
-            paintScrollbars(p, damageRect);
+            paintScrollbars(paintInfo);
 
             // Restore the clip.
             restoreClip(p, paintDirtyRect, damageRect);
@@ -706,20 +708,17 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         // Set up the clip used when painting our children.
         setClip(p, paintDirtyRect, clipRectToApply);
 
+        RenderObject::PaintInfo paintInfo(p, clipRectToApply, PaintActionSelection);
+
         if (selectionOnly)
-            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
-                              clipRectToApply.width(), clipRectToApply.height(),
-                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionSelection);
+            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
         else {
-            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
-                              clipRectToApply.width(), clipRectToApply.height(),
-                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionChildBackgrounds);
-            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
-                              clipRectToApply.width(), clipRectToApply.height(),
-                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionFloat);
-            renderer()->paint(p, clipRectToApply.x(), clipRectToApply.y(),
-                              clipRectToApply.width(), clipRectToApply.height(),
-                              x - renderer()->xPos(), y - renderer()->yPos(), PaintActionForeground);
+            paintInfo.phase = PaintActionChildBackgrounds;
+            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            paintInfo.phase = PaintActionFloat;
+            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            paintInfo.phase = PaintActionForeground;
+            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
         }
 
         // Now restore our clip.
@@ -763,7 +762,9 @@ bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     int stx = m_x;
     int sty = m_y;
 
+#ifdef __GNUC__
 #warning HACK
+#endif
     if (renderer()->isCanvas()) {
         stx += static_cast<RenderCanvas*>(renderer())->view()->contentsX();
         sty += static_cast<RenderCanvas*>(renderer())->view()->contentsY();
@@ -775,7 +776,7 @@ bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     // Now determine if the result is inside an anchor.
     DOM::NodeImpl* node = info.innerNode();
     while (node) {
-        if (node->hasAnchor())
+        if (node->hasAnchor() && !info.URLElement())
             info.setURLElement(node);
         node = node->parentNode();
     }
@@ -1024,8 +1025,8 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
 // Sort the buffer from lowest z-index to highest.  The common scenario will have
 // most z-indices equal, so we optimize for that case (i.e., the list will be mostly
 // sorted already).
-static void sortByZOrder(QPtrVector<RenderLayer::RenderLayer>* buffer,
-                         QPtrVector<RenderLayer::RenderLayer>* mergeBuffer,
+static void sortByZOrder(QPtrVector<RenderLayer>* buffer,
+                         QPtrVector<RenderLayer>* mergeBuffer,
                          uint start, uint end)
 {
     if (start >= end)
@@ -1153,8 +1154,7 @@ void RenderLayer::collectLayers(QPtrVector<RenderLayer>*& posBuffer, QPtrVector<
     }
 }
 
-#ifndef NDEBUG
-
+#ifdef ENABLE_DUMP
 #ifndef KDE_USE_FINAL
 static QTextStream &operator<<(QTextStream &ts, const QRect &r)
 {

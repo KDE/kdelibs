@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -103,7 +103,7 @@ protected:
 	void triggerRefresh();
 	void addToManager();
 	void removeFromManager();
-	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false);
+	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false, bool use_specials = false);
 	void updateCaption();
 	void updateStatusBar();
 

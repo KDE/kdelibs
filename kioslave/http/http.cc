@@ -2295,7 +2295,7 @@ bool HTTPProtocol::httpOpen()
 
 #ifdef DO_GZIP
     if (m_request.allowCompressedPage)
-      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n";
 #endif
 
     if (!m_request.charsets.isEmpty())
@@ -2655,7 +2655,7 @@ bool HTTPProtocol::readHeader()
     // calling application later
     m_responseHeader << QString::fromLatin1(buf);
 
-    if ((strncasecmp(buf, "HTTP/", 5) == 0) ||
+    if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
     {
       if (strncasecmp(buf, "ICY ", 4) == 0)
@@ -2686,7 +2686,10 @@ bool HTTPProtocol::readHeader()
       if (m_responseCode)
         m_prevResponseCode = m_responseCode;
 
-      m_responseCode = atoi(buf+9);
+      const char* rptr = buf;
+      while ( *rptr && *rptr > ' ' )
+          ++rptr;
+      m_responseCode = atoi(rptr);
 
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
@@ -3455,6 +3458,13 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
+     else if (m_strMimeType == "application/postscript")
+     {
+        // LEONB: Adding another exception for psgz files.
+        // Could we use the mimelnk files instead of hardcoding all this?
+        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
+     }
      else if ( (m_request.allowCompressedPage &&
                 m_strMimeType == "text/html")
                 ||
@@ -3513,12 +3523,14 @@ bool HTTPProtocol::readHeader()
      m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
 
-  // Prefer application/x-tgz over application/x-gzip
+  // Prefer application/x-tgz or x-gzpostscript over application/x-gzip.
   else if (m_strMimeType == "application/x-gzip")
   {
      if ((m_request.url.path().right(7) == ".tar.gz") ||
          (m_request.url.path().right(4) == ".tar"))
         m_strMimeType = QString::fromLatin1("application/x-tgz");
+     if ((m_request.url.path().right(6) == ".ps.gz"))
+        m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
   }
 
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
@@ -3977,6 +3989,14 @@ void HTTPProtocol::slotData(const QByteArray &_d)
       m_bEOD = true;
       return;
    }
+   
+   if (m_iContentLeft != NO_SIZE)
+   {
+      if (m_iContentLeft >= _d.size())
+         m_iContentLeft -= _d.size();
+      else
+         m_iContentLeft = NO_SIZE;
+   }
 
    QByteArray d = _d;
    if ( !m_dataInternal )
@@ -4105,6 +4125,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     char buffer[ MAX_IPC_SIZE ];
 
+    m_iContentLeft = NO_SIZE;
+
     // Jippie! It's already in the cache :-)
     while (!feof(m_request.fcache) && !ferror(m_request.fcache))
     {
@@ -4135,6 +4157,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     m_iBytesLeft = m_iSize - sz;
   else
     m_iBytesLeft = NO_SIZE;
+
+  m_iContentLeft = m_iBytesLeft;
 
   if (m_bChunked)
     m_iBytesLeft = NO_SIZE;
@@ -4208,12 +4232,18 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        bytesReceived = readUnlimited();
 
     // make sure that this wasn't an error, first
-//    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: "
-//                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: "
-//                  << m_bChunked << " BytesLeft: "<<m_iBytesLeft<<endl;
-
+    // kdDebug(7113) << "(" << (int) m_pid << ") readBody: bytesReceived: "
+    //              << (int) bytesReceived << " m_iSize: " << (int) m_iSize << " Chunked: "
+    //              << (int) m_bChunked << " BytesLeft: "<< (int) m_iBytesLeft << endl;
     if (bytesReceived == -1)
     {
+      if (m_iContentLeft == 0)
+      {
+         // gzip'ed data sometimes reports a too long content-length.
+         // (The length of the unzipped data)
+         m_iBytesLeft = 0;
+         break;
+      }
       // Oh well... log an error and bug out
       kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1 sz=" << (int)sz
                     << " Connnection broken !" << endl;

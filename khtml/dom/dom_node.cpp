@@ -74,9 +74,10 @@ Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    if (!arg.impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
     Node r = impl->setNamedItem(arg.impl, false,
-                       arg.handle()->nodeName().implementation(), exceptioncode);
+                       arg.impl->nodeName().implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;

@@ -55,6 +55,8 @@ int main(int argc, char **argv)
 	cmd << "-e";
         if ( url.protocol() == "telnet" )
             cmd << "telnet";
+        else if ( url.protocol() == "ssh" )
+            cmd << "ssh";
         else if ( url.protocol() == "rlogin" )
             cmd << "rlogin";
         else {
@@ -75,13 +77,26 @@ int main(int argc, char **argv)
 		cmd << url.user();
 	}
 
+        QString host;
         if (!url.host().isEmpty())
-           cmd << url.host(); // telnet://host
+           host = url.host(); // telnet://host
         else if (!url.path().isEmpty())
-           cmd << url.path(); // telnet:host
+           host = url.path(); // telnet:host
+
+        if (host.isEmpty() || host.startsWith("-"))
+        {
+            kdError() << "Invalid hostname " << host << endl;
+            return 2;
+        }
+
+        cmd << host;
         
-	if (url.port())
+	if (url.port()){
+            if ( url.protocol() == "ssh" )
+		cmd << "-p" << QString::number(url.port());
+	    else
 		cmd << QString::number(url.port());
+	}
 
 	app.kdeinitExec("konsole", cmd);
 

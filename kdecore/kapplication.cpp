@@ -132,6 +132,7 @@
 #include "kappdcopiface.h"
 
 bool kde_have_kipc = true; // magic hook to disable kipc in kdm
+bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
@@ -140,18 +141,23 @@ bool KApplication::s_dcopClientNeedsPostInit = false;
 
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
-#if KDE_IS_VERSION( 3, 2, 90 )
+#if KDE_IS_VERSION( 3, 2, 91 )
 #warning Obsolete, remove.
 // remove atom_KdeNetUserTime related stuff (l.lunak@kde.org)
 #endif
 static Atom atom_KdeNetUserTime;
 static Atom kde_net_wm_user_time     = 0;
-#if KDE_IS_VERSION( 3, 2, 90 )
+#if KDE_IS_VERSION( 3, 2, 91 )
 #warning This should be in Qt already, check.
 // remove things related to qt_x_user_time that should be in Qt by now (l.lunak@kde.org)
 #endif
 Time   qt_x_user_time = CurrentTime;
 extern Time qt_x_time;
+static Atom kde_xdnd_drop;
+
+// duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
+// replaced by unpatched one
+bool qt_qclipboard_bailout_hack = false;
 
 template class QPtrList<KSessionManaged>;
 
@@ -491,7 +497,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
-        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !event->spontaneous())
+        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
@@ -606,6 +612,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
     installSigpipeHandler();
     parseCommandLine( );
     init(GUIenabled);
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 #ifdef Q_WS_X11
@@ -719,6 +726,9 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &kde_net_wm_user_time;
       names[n++] = (char *) "_NET_WM_USER_TIME";
+      
+      atoms[n] = &kde_xdnd_drop;
+      names[n++] = (char *) "XdndDrop";
 
       XInternAtoms( qt_xdisplay(), names, n, false, atoms_return );
 
@@ -744,7 +754,7 @@ void KApplication::init(bool GUIenabled)
   (void) KGlobal::locale();
 
   KConfig* config = KGlobal::config();
-  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
+  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
   // For brain-dead configurations where the user's local config file is not writable.
   // * We use kdialog to warn the user, so we better not generate warnings from
   //   kdialog itself.
@@ -1557,6 +1567,39 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    }
 	}
 	break;
+        case ClientMessage:
+        {
+#if KDE_IS_VERSION( 3, 2, 91 )
+#warning This should be already in Qt, check.
+#endif
+        // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
+        // to KDesktop -> the dialog asking for filename doesn't get activated. This is because
+        // Qt-3.2.x doesn't have concept of qt_x_user_time at all, and Qt-3.3.0b1 passes the timestamp
+        // in the XdndDrop message in incorrect field (and doesn't update qt_x_user_time either).
+        // Patch already sent, future Qt version should have this fixed.
+            if( _event->xclient.message_type == kde_xdnd_drop )
+                { // if the message is XdndDrop
+                if( _event->xclient.data.l[ 1 ] == 1 << 24     // and it's broken the way it's in Qt-3.2.x
+                    && _event->xclient.data.l[ 2 ] == 0
+                    && _event->xclient.data.l[ 4 ] == 0
+                    && _event->xclient.data.l[ 3 ] != 0 )
+                    {
+                    if( qt_x_user_time == 0 
+                        || ( _event->xclient.data.l[ 3 ] - qt_x_user_time ) < 100000U )
+                        { // and the timestamp looks reasonable
+                        qt_x_user_time = _event->xclient.data.l[ 3 ]; // update our qt_x_user_time from it
+                        }
+                    }
+                else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
+                    {
+                    if( qt_x_user_time == 0
+                        || ( _event->xclient.data.l[ 2 ] - qt_x_user_time ) < 100000U )
+                        { // the timestamp looks reasonable
+                        qt_x_user_time = _event->xclient.data.l[ 2 ]; // update our qt_x_user_time from it
+                        }
+                    }
+                }
+        }
 	default: break;
     }
 
@@ -1664,8 +1707,15 @@ void KApplication::updateUserTimestamp( unsigned long time )
         time = ev.xproperty.time;
         XDestroyWindow( qt_xdisplay(), w );
     }
-    qt_x_user_time = time;
+    if( qt_x_user_time == 0
+        || time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+        qt_x_user_time = time;
 #endif
+}
+
+unsigned long KApplication::userTimestamp() const
+{
+    return qt_x_user_time;
 }
 
 void KApplication::invokeEditSlot( const char *slot )
@@ -2022,7 +2072,7 @@ void KApplication::invokeHelp( const QString& anchor,
    QString error;
    if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, true))
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
        {
            kdWarning() << "Could not launch help:\n" << error << endl;
            return;
@@ -2052,7 +2102,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
    QString error;
    if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", false))
        {
            kdWarning() << "Could not launch help:\n" << error << endl;
            return;
@@ -2127,7 +2177,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
        || command.endsWith("/kmail"))
-     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
@@ -2632,14 +2682,27 @@ bool KApplication::authorizeKAction(const char *action)
    return authorize(action_prefix + action);
 }
 
-bool KApplication::authorizeControlModule(const QString &/*menuId*/)
+bool KApplication::authorizeControlModule(const QString &menuId)
 {
-   return true;
+   if (menuId.isEmpty())
+      return true;
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   return config->readBoolEntry(menuId, true);
 }
 
 QStringList KApplication::authorizeControlModules(const QStringList &menuIds)
 {
-   return menuIds;
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   QStringList result;
+   for(QStringList::ConstIterator it = menuIds.begin();
+       it != menuIds.end(); ++it)
+   {
+      if (config->readBoolEntry(*it, true))
+         result.append(*it);
+   }
+   return result;
 }
 
 void KApplication::initUrlActionRestrictions()
@@ -2785,7 +2848,7 @@ uint KApplication::mouseState()
 void KApplication::installSigpipeHandler()
 {
     struct sigaction act;
-    act.sa_handler = sigpipeHandler;
+    act.sa_handler = SIG_IGN;
     sigemptyset( &act.sa_mask );
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );

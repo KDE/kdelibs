@@ -14,31 +14,68 @@
 <!ENTITY Jogchum.Reitsma    '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Otto.Bruggeman     '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>bruggie@home.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Douwe.vanderSchaaf '<othercredit role="translator"><firstname>Douwe</firstname><surname>van der Schaaf</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Rinse.devries31      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.1</contrib></othercredit>'>
-<!ENTITY Rinse.devries32      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.2</contrib></othercredit>'>
-<!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
+<!ENTITY Richard.Voss       '<othercredit role="translator"><firstname>Richard</firstname><surname>Voss</surname><affiliation><address><email>richard@nergenshuizen.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rinse.Devries      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>rinse@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Bram.Schoenmakers  '<othercredit role="translator"><firstname>Bram</firstname><surname>Schoenmakers</surname><affiliation><address><email>bram_s@softhome.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Tijmen.Baarda      '<othercredit role="translator"><firstname>Tijmen</firstname><surname>Baarda</surname><affiliation><address><email>tijmenbaarda@tijgerweb.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Jo.Vermeulen       '<othercredit role="translator"><firstname>Jo</firstname><surname>Vermeulen</surname><affiliation><address><email>jo@lumumba.luc.ac.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Frank.Mulder       '<othercredit role="translator"><firstname>Frank</firstname><surname>Mulder</surname><affiliation><address><email>frank@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Jaap.Woldringh     '<othercredit role="translator"><firstname>Jaap</firstname><surname>Woldringh</surname><affiliation><address><email>jjh.woldringh@planet.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Tom.Albers         '<othercredit role="translator"><firstname>Tom</firstname><surname>Albers</surname><affiliation><address><email>toma@omat.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rob.Lalau          '<othercredit role="translator"><firstname>Rob</firstname><surname>La Lau</surname><affiliation><address><email>rob@OhReally.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Fabrice.Mous       '<othercredit role="translator"><firstname>Fabrice</firstname><surname>Mous</surname><affiliation><address><email>fabrice@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Sicco.Ens          '<othercredit role="translator"><firstname>Sicco</firstname><surname>Ens</surname><affiliation><address><email>sicco.ens@vlinderstichting.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Marc.Heyvaert      '<othercredit role="translator"><firstname>Marc</firstname><surname>Heyvaert</surname><affiliation><address><email>marc_heyvaert@yahoo.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
 <!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
-<!ENTITY vertaling.douwe   "<para>Dit document is vertaald naar het Nederlands door &Douwe.vanderSchaaf;.</para>">
-<!ENTITY vertaling.floris  "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
-<!ENTITY vertaling.jogchum "<para>Dit document is vertaald naar het Nederlands door &Jogchum.Reitsma;.</para>">
-<!ENTITY vertaling.michel  "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
-<!ENTITY vertaling.niels   "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
-<!ENTITY vertaling.otto    "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
-<!ENTITY vertaling.rinse31 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries31;.</para>">
-<!ENTITY vertaling.rinse32 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries32;.</para>">
+<!ENTITY vertaling.bram    "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
+<!ENTITY vertaling.douwe   "<para>Dit document is vertaald in het Nederlands door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY vertaling.floris  "<para>Dit document is vertaald in het Nederlands door &Floris.Lambrechts;.</para>">
+<!ENTITY vertaling.frank   "<para>Dit document is vertaald in het Nederlands door &Frank.Mulder;.</para>">
+<!ENTITY vertaling.jaap    "<para>Dit document is vertaald in het Nederlands door &Jaap.Woldringh;.</para>">
+<!ENTITY vertaling.jo      "<para>Dit document is vertaald in het Nederlands door &Jo.Vermeulen;.</para>">
+<!ENTITY vertaling.jogchum "<para>Dit document is vertaald in het Nederlands door &Jogchum.Reitsma;.</para>">
+<!ENTITY vertaling.michel  "<para>Dit document is vertaald in het Nederlands door &Michel.Fontes;.</para>">
+<!ENTITY vertaling.niels   "<para>Dit document is vertaald in het Nederlands door &Niels.Reedijk;.</para>">
+<!ENTITY vertaling.otto    "<para>Dit document is vertaald in het Nederlands door &Otto.Bruggeman;.</para>">
+<!ENTITY vertaling.richard "<para>Dit document is vertaald in het Nederlands door &Richard.Voss;.</para>">
+<!ENTITY vertaling.rinse   "<para>Dit document is vertaald in het Nederlands door &Rinse.Devries;.</para>">
+<!ENTITY vertaling.rob     "<para>Dit document is vertaald in het Nederlands door &Rob.Lalau;.</para>">
+<!ENTITY vertaling.tijmen  "<para>Dit document is vertaald in het Nederlands door &Tijmen.Baarda;.</para>">
+<!ENTITY vertaling.tom     "<para>Dit document is vertaald in het Nederlands door &Tom.Albers;.</para>">
+<!ENTITY vertaling.fabrice "<para>Dit document is vertaald in het Nederlands door &Fabrice.Mous;.</para>">
+<!ENTITY vertaling.sicco   "<para>Dit document is vertaald in het Nederlands door &Sicco.Ens;.</para>">
+<!ENTITY vertaling.marc    "<para>Dit document is vertaald in het Nederlands door &Marc.Heyvaert;.</para>">
 
+<!-- Gebruiken als template voor nieuwe vertalers/nalezers
+<!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY vertaling.xxx "<para>Dit document is vertaald in het Nederlands door &xxx;.</para>">
+<!ENTITY nagelezen.xxx "<para>De vertaling werd nagelezen door &xxx;.</para>">
+-->
+
+<!-- Entities voor nalezers (voor CREDITS_FOR_TRANSLATORS)-->
+<!ENTITY nagelezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
 <!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
+<!ENTITY nagelezen.frank   "<para>De vertaling werd nagelezen door &Frank.Mulder;.</para>">
+<!ENTITY nagelezen.jaap    "<para>De vertaling werd nagelezen door &Jaap.Woldringh;.</para>">
+<!ENTITY nagelezen.jo      "<para>De vertaling werd nagelezen door &Jo.Vermeulen;.</para>">
 <!ENTITY nagelezen.jogchum "<para>De vertaling werd nagelezen door &Jogchum.Reitsma;.</para>">
 <!ENTITY nagelezen.michel  "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
 <!ENTITY nagelezen.niels   "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
 <!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
-<!ENTITY nagelezen.rinse31 "<para>De vertaling werd nagelezen door &Rinsedevries.31;.</para>">
-<!ENTITY nagelezen.rinse32 "<para>De vertaling werd nagelezen door &Rinsedevries.32;.</para>">
+<!ENTITY nagelezen.richard "<para>De vertaling werd nagelezen door &Richard.Voss;.</para>">
+<!ENTITY nagelezen.rinse   "<para>De vertaling werd nagelezen door &Rinse.Devries;.</para>">
+<!ENTITY nagelezen.rob     "<para>De vertaling werd nagelezen door &Rob.Lalau;.</para>">
+<!ENTITY nagelezen.tijmen  "<para>De vertaling werd nagelezen door &Tijmen.Baarda;.</para>">
+<!ENTITY nagelezen.tom     "<para>De vertaling werd nagelezen door &Tom.Albers;.</para>">
+<!ENTITY nagelezen.fabrice "<para>De vertaling werd nagelezen door &Fabrice.Mous;.</para>">
+<!ENTITY nagelezen.sicco   "<para>De vertaling werd nagelezen door &Sicco.Ens;.</para>">
+<!ENTITY nagelezen.marc    "<para>De vertaling werd nagelezen door &Marc.Heyvaert;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
@@ -55,15 +92,22 @@
 </inlinemediaobject>
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
+<!ENTITY kmenu   "<guimenu>K</guimenu>-menu">
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
+<!ENTITY Esc     "<keycap>Escape</keycap>">
+<!ENTITY Enter   "<keycap>Enter</keycap>">
+<!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
+<!ENTITY OS      "<abbrev>O.S.</abbrev>">
+<!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
+<!ENTITY cdrom   "<abbrev>cd-rom</abbrev>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
 <!ENTITY kcontrolcenter "<application>KDE Configuratiecentrum</application>">
 <!ENTITY kcc     "<application>KDE Configuratiecentrum</application>">
 <!ENTITY khc     "<application>KDE Helpcentrum</application>">
+<!ENTITY kic     "<application>KDE Informatiecentrum</application>">
 

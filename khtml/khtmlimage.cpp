@@ -79,7 +79,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     if ( encodingAction )
     {
         encodingAction->unplugAll();
-        delete encodingAction;
+        delete encodingAction;      
     }
     KAction *viewSourceAction= actionCollection()->action( "viewDocumentSource" );
     if ( viewSourceAction )
@@ -96,8 +96,12 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     }
 
     // forward important signals from the khtml part
+    
+    // forward opening requests to parent frame (if existing)
+    KHTMLPart *p = ::qt_cast<KHTMLPart *>(parent);
+    KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
     connect(m_khtml->browserExtension(), SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)),
-    		m_ext, SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)));
+    		be, SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)));
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
              const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
@@ -277,10 +281,16 @@ bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
       case QEvent::DragEnter:
       case QEvent::DragMove:
       case QEvent::DragLeave:
-      case QEvent::Drop:
-        // simply forward all dnd events to the part widget,
+      case QEvent::Drop: {
+        // find out if this part is embedded in a frame, and send the
+	// event to its outside widget
+	KHTMLPart *p = ::qt_cast<KHTMLPart *>(parent());
+	if (p)
+	    return QApplication::sendEvent(p->widget(), e);
+        // otherwise simply forward all dnd events to the part widget,
 	// konqueror will handle them properly there
         return QApplication::sendEvent(widget(), e);
+      }
       default: ;
     }
     return false;

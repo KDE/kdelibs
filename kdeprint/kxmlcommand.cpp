@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -608,6 +608,8 @@ void KXmlCommandManager::preload()
 		for (QStringList::Iterator it=d->m_cmdlist.begin(); it!=d->m_cmdlist.end(); ++it)
 		{
 			KXmlCommand	*xmlCmd = loadCommand(*it);
+			if (!xmlCmd) continue; // Error!
+
 			QStringList	inputMime = xmlCmd->inputMimeTypes();
 			for (QStringList::ConstIterator mime=inputMime.begin(); mime!=inputMime.end(); ++mime)
 			{
@@ -653,7 +655,7 @@ QStringList KXmlCommandManager::commandListWithDescription()
 
 QString KXmlCommandManager::selectCommand(QWidget *parent)
 {
-	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management" );
+	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management_module" );
 	if ( !lib )
 	{
 		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ).arg( KLibLoader::self()->lastErrorMessage() ) );
@@ -682,13 +684,16 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 	preload();
 
 	int	pos(0);
-	KXmlCommand	*f1 = command(filtername), *f2(0);
+	KXmlCommand	*f1 = command(filtername), *f2 = 0;
 	if (f1 && f1->inputMimeTypes().count() > 0)
 	{
 		QString	mimetype = f1->inputMimeTypes()[0];
 		for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it, pos++)
 		{
 			f2 = command(*it);
+			if (!f2)
+				return -1; // Shouldn't happen
+
 			if (f2->acceptMimeType(f1->mimeType()) && f1->acceptMimeType(mimetype))
 			{
 				list.insert(it, filtername);

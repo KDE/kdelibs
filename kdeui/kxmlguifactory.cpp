@@ -322,7 +322,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     {
         const QPtrList<KXMLGUIClient> *children = client->childClients();
         QPtrListIterator<KXMLGUIClient> childIt( *children );
-        for (; childIt.current(); ++childIt )
+        childIt.toLast();
+        for (; childIt.current(); --childIt )
             removeClient( childIt.current() );
     }
 

@@ -29,6 +29,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qhbox.h>
+#include <qpopupmenu.h>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -37,6 +38,7 @@
 #include <knotifyclient.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 
 #include "keditcl.h"
 
@@ -690,7 +692,7 @@ public:
 
 KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
-		modal ? User1|Cancel : User1|Close, User1, false, i18n("&Find") )
+		modal ? User1|Cancel : User1|Close, User1, false, KGuiItem( i18n("&Find"), "find") )
 {
   setWFlags( WType_TopLevel );
 
@@ -822,7 +824,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Replace"),
 		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close,
                 User3, false,
-		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
+		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
 {
   setWFlags( WType_TopLevel );
 
@@ -1068,11 +1070,11 @@ QString KEdit::selectWordUnderCursor( )
 {
     int parag;
     int pos;
-    
+
     getCursorPosition(&parag, &pos);
-    
+
     QString txt = text(parag);
-    
+
     // Find start
     int start = pos;
     while( start > 0 )
@@ -1082,7 +1084,7 @@ QString KEdit::selectWordUnderCursor( )
           break;
        start--;
     }
-    
+
     // Find end
     int end = pos;
     int len = txt.length();
@@ -1097,3 +1099,19 @@ QString KEdit::selectWordUnderCursor( )
     return txt.mid(start, end-start);
 }
 
+QPopupMenu *KEdit::createPopupMenu( const QPoint& pos )
+{
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
+    QPopupMenu *menu = QMultiLineEdit::createPopupMenu( pos );
+
+    int id = menu->idAt(0);
+    menu->changeItem( id - IdUndo, SmallIcon("undo"), menu->text( id - IdUndo) );
+    menu->changeItem( id - IdRedo, SmallIcon("redo"), menu->text( id - IdRedo) );
+    menu->changeItem( id - IdCut, SmallIcon("editcut"), menu->text( id - IdCut) );
+    menu->changeItem( id - IdCopy, SmallIcon("editcopy"), menu->text( id - IdCopy) );
+    menu->changeItem( id - IdPaste, SmallIcon("editpaste"), menu->text( id - IdPaste) );
+    menu->changeItem( id - IdClear, SmallIcon("editclear"), menu->text( id - IdClear) );
+
+    return menu;
+}

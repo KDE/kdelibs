@@ -1,4 +1,3 @@
-debian/checkXML.1
-debian/dcopidl.1
-debian/dcopidl2cpp.1
-debian/meinproc.1
+debian/man/checkXML.1
+debian/man/dcopidl.1
+debian/man/dcopidl2cpp.1

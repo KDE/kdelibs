@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *
  *  This library is free software; you can redistribute it and/or
@@ -135,7 +135,7 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 	else
 	{
 		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
-		return (KMessageBox::warningYesNo(parent, msg, QString::null, i18n("Print"), i18n("Cancel")) == KMessageBox::Yes);
+		return (KMessageBox::warningYesNo(parent, msg, QString::null, KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel()) == KMessageBox::Yes);
 	}
 }
 
@@ -151,11 +151,11 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	// create main view and actions
 	setMainWidget(d->mainwidget_);
 	if (previewOnly)
-		new KAction(i18n("Close"), "fileclose", Qt::Key_Return, this, SLOT(reject()), d->actions_, "close_print");
+		KStdAction::close(this, SLOT(reject()), d->actions_, "close_print");
 	else
 	{
 		new KAction(i18n("Print"), "fileprint", Qt::Key_Return, this, SLOT(accept()), d->actions_, "continue_print");
-		new KAction(i18n("Cancel"), "stop", Qt::Key_Escape, this, SLOT(reject()), d->actions_, "stop_print");
+		new KAction(KStdGuiItem::cancel(), Qt::Key_Escape, this, SLOT(reject()), d->actions_, "stop_print");
 	}
 
 }
@@ -315,7 +315,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else if (!previewOnly)
 	{
-		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString::null, i18n("Print"), i18n("Cancel"), "continuePrinting") == KMessageBox::Yes);
+		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString::null, KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
 	}
 	else
 		return false;

@@ -314,10 +314,12 @@ public final class KJASAppletStub
             active = false;
             app.stop();
             stateChange(STOPPED);
-            // kill the windowClosing listener(s)
-            WindowListener[] wl = frame.getWindowListeners();
-            for (int i = 0; wl != null && i < wl.length; i++)
-                frame.removeWindowListener(wl[i]);
+            if (Main.java_version > 1.399) {
+                // kill the windowClosing listener(s)
+                WindowListener[] wl = frame.getWindowListeners();
+                for (int i = 0; wl != null && i < wl.length; i++)
+                    frame.removeWindowListener(wl[i]);
+            }
             frame.hide();
         }
     }
@@ -376,6 +378,19 @@ public final class KJASAppletStub
             }
         };
         destroyThread.start();
+    }
+
+    static void waitForDestroyThreads()
+    {
+        Thread [] ts = new Thread[Thread.activeCount() + 5];
+        int len = Thread.enumerate(ts);
+        for (int i = 0; i < len; i++)
+            if (ts[i].getName() != null && 
+                ts[i].getName().equals("applet destroy thread")) {
+                try {
+                    ts[i].join(10000);
+                } catch (InterruptedException ie) {}
+            }
     }
 
     /**

@@ -791,7 +791,7 @@ static struct lt_user_dlloader sys_shl = {
 
 /* --- LOADLIBRARY() INTERFACE LOADER --- */
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__) || defined(__CYGWIN__)
 
 /* dynamic linking for Win32 */
 
@@ -1309,7 +1309,7 @@ lt_dlinit ()
 #if HAVE_SHL_LOAD
       errors += lt_dlloader_add (lt_dlloader_next (0), &sys_shl, "dlopen");
 #endif
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__) || defined(__CYGWIN__)
       errors += lt_dlloader_add (lt_dlloader_next (0), &sys_wll, "dlopen");
 #endif
 #ifdef __BEOS__

@@ -61,6 +61,9 @@ class KConfigSkeleton;
  * have a loadSettings() type slot to read settings and perform any
  * necessary changes.
  *
+ * Please note that using the setMainWidgetmethod inherited from KDialogBase
+ * currently yields broken behaviour at runtime; use addPage instead.
+ *
  * @see KConfigSkeleton
  * @since 3.2
  */
@@ -83,7 +86,7 @@ signals:
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
    * This signal is useful when using KConfigDialog to configure
-   * items in a list.  When emits the main class would then know what
+   * items in a list.  When emitted the main class would then know what
    * item in the list was actually changed.
    * @param dialogName the name of the dialog.
    */
@@ -91,14 +94,14 @@ signals:
 
 public:
   /**
-   * @param parent - The parent object of this object.  Even though the class
+   * @param parent - The parent of this object.  Even though the class
    * deletes itself the parent should be set so the dialog can be centered
    * with the application on the screen.
    *
    * @param name - The name of this object.  The name is used in determining if
-   * there can be more then one dialog at a time.  Use names such as:
+   * there can be more than one dialog at a time.  Use names such as:
    * "Font Settings" or "Color Settings" and not just "Settings" in
-   * applications where there are more then one dialog.
+   * applications where there are more than one dialog.
    *
    * @param dialogType - Type used in creating the dialog.  @see KDialogBase
    *
@@ -111,11 +114,13 @@ public:
    * used in determining if the settings dialog already exists before creating
    * a new KConfigDialog object.
    */
+  // KDE4: Add the "separator" parameter as in KDialogBase
+  //       Make "dialogType" an int
   KConfigDialog( QWidget *parent, const char *name,
                  KConfigSkeleton *config,
-		 KDialogBase::DialogType dialogType = KDialogBase::IconList,
-		 int dialogButtons = KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help,
-		 KDialogBase::ButtonCode defaultButton = Ok,
+		 DialogType dialogType = IconList,
+		 int dialogButtons = Default|Ok|Apply|Cancel|Help,
+		 ButtonCode defaultButton = Ok,
 		 bool modal=false );
 
   /**
@@ -139,6 +144,7 @@ public:
    *        mode. If empty, the itemName text is used when needed.
    * @param manage - Whether KConfigDialogManager should manage the page or not.
    */
+  // KDE4: Add a default value for itemName & pixmapName
   void addPage( QWidget *page, const QString &itemName,
 		                  const QString &pixmapName,
 				  const QString &header=QString::null,
@@ -206,7 +212,6 @@ protected:
    */
   virtual bool isDefault() { return true; }
   
-
 protected slots:
   /**
    * Updates the Apply and Default buttons.

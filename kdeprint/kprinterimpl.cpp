@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *
  *  This library is free software; you can redistribute it and/or
@@ -350,6 +350,12 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	for (uint i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
+		if (!filter)
+		{
+			// TODO: better error message
+			printer->setErrorMessage(i18n("<p>Error while reading filter description for <b>%1</b>. Empty command line received.</p>").arg(flist[i]));
+			return -1; // Error
+		}
 		if (i == 0)
 			inputMimeTypes = filter->inputMimeTypes();
 
@@ -454,7 +460,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 	{
 		if ( !printer->option( "kde-special-command" ).isEmpty() )
 		{
-			KXmlCommand *cmd = KXmlCommandManager::self()->loadCommand( printer->option( "kde-special-command" ) );
+			KXmlCommand *cmd = KXmlCommandManager::self()->loadCommand( printer->option( "kde-special-command" ), true );
 			if ( cmd )
 			{
 				mimeTypes = cmd->inputMimeTypes();

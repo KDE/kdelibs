@@ -355,6 +355,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // Closing of fd[1] indicates that the execvp() succeeded!
         fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
+        if (!commSetupDoneC())
+          kdDebug(175) << "Could not finish comm setup in child!" << endl;
+
         // reset all signal handlers
         struct sigaction act;
         sigemptyset(&act.sa_mask);
@@ -362,9 +365,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
         act.sa_flags = 0;
         for (int sig = 1; sig < NSIG; sig++)
           sigaction(sig, &act, 0L);
-
-        if (!commSetupDoneC())
-          kdDebug(175) << "Could not finish comm setup in child!" << endl;
 
         if (d->priority)
             setpriority(PRIO_PROCESS, 0, d->priority);

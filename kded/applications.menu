@@ -25,11 +25,15 @@
 		<Directory>kde-unknown.directory</Directory>
 		<OnlyUnallocated/>
 		<Include>
-			<!-- Don't list non-KDE core applications -->
-			<Not><And>
-			<Category>Core</Category>
-			<Not><Category>KDE</Category></Not>
-			</And></Not>
+			<Not>
+				<!-- Don't list non-KDE core applications -->
+				<And>
+					<Category>Core</Category>
+					<Not><Category>KDE</Category></Not>
+				</And>
+				<!-- Don't list SUSE's YaST in here -->
+				<Category>X-SuSE-YaST</Category>
+			</Not>
 		</Include>
 	</Menu>
 	<Menu>
@@ -55,7 +59,10 @@
 			<Include>
 				<And>
 				<Category>Education</Category>
+				<Or>
+				<Category>Languages</Category>
 				<Category>X-KDE-Edu-Language</Category>
+				</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -76,9 +83,11 @@
 				<And>
 				<Category>Education</Category>
 				<Not>
+				<Category>Languages</Category>
 				<Category>X-KDE-Edu-Language</Category>
 				<Category>Math</Category>
 				<Category>Science</Category>
+				<Category>Teaching</Category>
 				<Category>X-KDE-Edu-Teaching</Category>
 				</Not>
 				</And>
@@ -100,7 +109,10 @@
 			<Include>
 				<And>
 				<Category>Education</Category>
+				<Or>
+				<Category>Teaching</Category>
 				<Category>X-KDE-Edu-Teaching</Category>
+				</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -205,6 +217,10 @@
 			</And>
 		</Include>
 		<Menu>
+			<Name>Terminal</Name>
+			<Directory>kde-internet-terminal.directory</Directory>
+		</Menu>
+		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
 			<Include>
@@ -283,6 +299,10 @@
 			<Name>ScreenSavers</Name>
 			<Directory>kde-system-screensavers.directory</Directory>
 		</Menu>
+		<Menu>
+			<Name>Terminal</Name>
+			<Directory>kde-system-terminal.directory</Directory>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Toys</Name>
@@ -300,6 +320,10 @@
 			<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
+		<Menu>
+			<Name>XUtilities</Name>
+			<Directory>kde-utilities-xutils.directory</Directory>
+		</Menu>
 		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>

@@ -35,7 +35,7 @@
 
    $Id$
 -->
-<language name="Perl" version="1.09" kateversion="2.2" section="Scripts" extensions="*.pl;*.pm" mimetype="application/x-perl;text/x-perl">
+<language name="Perl" version="1.10" kateversion="2.2" section="Scripts" extensions="*.pl;*.pm" mimetype="application/x-perl;text/x-perl">
   <highlighting>
     <list name="keywords">
       <item> if </item>
@@ -655,7 +655,7 @@
         <DetectChar attribute="Pattern Internal Operator" context="#stay" char="^" />
         <Detect2Chars attribute="Pattern Character Class" context="#stay" char="\" char1="\" />
         <Detect2Chars attribute="Pattern Character Class" context="#stay" char="\" char1="]" />
-        <RangeDetect attribute="Pattern Character Class" context="#stay" char="[" char1="]" />
+        <RegExpr attribute="Pattern Character Class" context="#stay" String="\[:^?[a-z]+:\]" />
         <DetectChar attribute="Pattern Internal Operator" context="#pop" char="]" />
       </context>
       <context name="comment" attribute="Comment" lineEndContext="#pop">

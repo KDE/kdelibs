@@ -45,9 +45,9 @@ class QPaintDevice;
 class QTextCodec;
 class QPaintDeviceMetrics;
 class KHTMLView;
-class Tokenizer;
 
 namespace khtml {
+    class Tokenizer;
     class CSSStyleSelector;
     class DocLoader;
     class CSSStyleSelectorList;
@@ -179,7 +179,7 @@ public:
      * This method returns true if all top-level stylesheets have loaded (including
      * any @imports that they may be loading).
      */
-    bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0; }
+    bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0 || m_ignorePendingStylesheets; }
 
     /**
      * Increments the number of pending sheets.  The <link> elements
@@ -220,12 +220,13 @@ public:
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
                                     NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
 
-    TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter &filter,
-                            bool entityReferenceExpansion);
+    TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
+                            bool entityReferenceExpansion, int &exceptioncode);
 
     virtual void recalcStyle( StyleChange = NoChange );
     static QPtrList<DocumentImpl> * changedDocuments;
     virtual void updateRendering();
+    void updateLayout();
     static void updateDocumentsRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
 
@@ -267,8 +268,8 @@ public:
     QString printStyleSheet() const { return m_printSheet; }
 
     CSSStyleSheetImpl* elementSheet();
-    virtual Tokenizer *createTokenizer();
-    Tokenizer *tokenizer() { return m_tokenizer; }
+    virtual khtml::Tokenizer *createTokenizer();
+    khtml::Tokenizer *tokenizer() { return m_tokenizer; }
 
     QPaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
     QPaintDevice *paintDevice() const { return m_paintDevice; }
@@ -404,6 +405,8 @@ public:
      */
     NodeImpl *previousFocusNode(NodeImpl *fromNode);
 
+    ElementImpl* findAccessKeyElement(QChar c);
+
     int nodeAbsIndex(NodeImpl *node);
     NodeImpl *nodeWithAbsIndex(int absIndex);
 
@@ -429,7 +432,7 @@ protected:
     QStringList m_state;
 
     khtml::DocLoader *m_docLoader;
-    Tokenizer *m_tokenizer;
+    khtml::Tokenizer *m_tokenizer;
     KURL m_url;
     KURL m_baseURL;
     QString m_baseTarget;
@@ -446,6 +449,7 @@ protected:
     // We use this count of pending sheets to detect when we can begin attaching
     // elements.
     int m_pendingStylesheets;
+    bool m_ignorePendingStylesheets;
 
     CSSStyleSheetImpl *m_elemSheet;
 
@@ -530,8 +534,8 @@ public:
     ~DocumentTypeImpl();
 
     // DOM methods & attributes for DocumentType
-    NamedNodeMapImpl *entities() const { return m_entities; }
-    NamedNodeMapImpl *notations() const { return m_notations; }
+    NamedNodeMapImpl *entities() const;
+    NamedNodeMapImpl *notations() const;
 
     DOMString name() const { return m_qualifiedName; }
     DOMString publicId() const { return m_publicId; }
@@ -551,8 +555,8 @@ public:
 
 protected:
     DOMImplementationImpl *m_implementation;
-    NamedNodeMapImpl* m_entities;
-    NamedNodeMapImpl* m_notations;
+    mutable NamedNodeMapImpl* m_entities;
+    mutable NamedNodeMapImpl* m_notations;
 
     DOMString m_qualifiedName;
     DOMString m_publicId;

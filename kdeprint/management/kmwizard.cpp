@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -72,7 +72,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);
 	KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
-	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
+	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));

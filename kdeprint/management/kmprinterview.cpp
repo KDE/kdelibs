@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -61,6 +61,14 @@ void KMPrinterView::setPrinterList(QPtrList<KMPrinter> *list)
 	if (m_type == KMPrinterView::Tree || list == 0)
 		m_listview->setPrinterList(list);
 	m_listset = ( list != 0 );
+}
+
+void KMPrinterView::setPrinter( KMPrinter *p )
+{
+	if ( m_type == KMPrinterView::Tree )
+		m_listview->setPrinter( p );
+	else
+		m_iconview->setPrinter( p );
 }
 
 void KMPrinterView::setViewType(ViewType t)

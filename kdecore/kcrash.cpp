@@ -127,10 +127,10 @@ KCrash::defaultCrashHandler (int sig)
 
         // Close dcop connections
   DCOPClient::emergencyClose();
-  // Close all remaining file descriptors
+  // Close all remaining file descriptors except for stdin/stdout/stderr
   struct rlimit rlp;
   getrlimit(RLIMIT_NOFILE, &rlp);
-  for (int i = 0; i < (int)rlp.rlim_cur; i++)
+  for (int i = 3; i < (int)rlp.rlim_cur; i++)
     close(i);
 
   bool shuttingDown = false;

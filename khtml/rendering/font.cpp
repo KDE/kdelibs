@@ -98,6 +98,7 @@ inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
+    if (!str) return;
     QConstString cstr = QConstString(str, slen);
     QString qstr = cstr.string();
     // hack for fonts that don't have a welldefined nbsp

@@ -266,7 +266,14 @@ void KURLRequester::slotOpenDialog()
 
     if ( dlg->exec() == QDialog::Accepted )
     {
-	setURL( dlg->selectedURL().prettyURL() );
+        if ( dlg->selectedURL().isLocalFile() )
+        {
+            setURL( dlg->selectedURL().path() );
+        }
+        else
+        {
+            setURL( dlg->selectedURL().prettyURL() );
+        }
         emit urlSelected( d->url() );
     }
 }

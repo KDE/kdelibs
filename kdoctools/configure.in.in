@@ -60,7 +60,7 @@ if test -n "$HELP_SUBDIR"; then
   fi
 fi
 
-AC_DEFUN(KDOCTOOLS_CHECK_BZIP2,
+AC_DEFUN([KDOCTOOLS_CHECK_BZIP2],
 [
 AC_REQUIRE([AC_FIND_BZIP2])
 AC_MSG_CHECKING([for present bzip2 support])

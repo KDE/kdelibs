@@ -140,6 +140,7 @@ class StdAddressBook : public AddressBook
     StdAddressBook( bool asynchronous );
 
     void init( bool asynchronous );
+    bool saveAll();
 
   private:
     static StdAddressBook *mSelf;

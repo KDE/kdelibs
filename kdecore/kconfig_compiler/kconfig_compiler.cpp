@@ -809,6 +809,7 @@ int main( int argc, char **argv )
       QDomNode n2;
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
+        if ( e2.tagName() != "entry" ) continue;
         CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
         else {
@@ -1070,7 +1071,7 @@ int main( int argc, char **argv )
 
   if ( !nameSpace.isEmpty() ) h << "}" << endl << endl;
 
-  h << "#endif" << endl;
+  h << "#endif" << endl << endl;
 
 
   header.close();

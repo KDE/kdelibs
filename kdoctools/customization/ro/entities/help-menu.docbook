@@ -9,8 +9,8 @@
 <guimenuitem>Cuprins...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invocă Sistemul de ajutor KDE</action> 
-ce afişează paginiile de ajutor ale &kappname;. (acest document).</para></listitem>
+<listitem><para><action>Invocă Centrul de ajutor KDE</action>
+ce afişează paginile de ajutor ale acestei aplicaţii. (acest document).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -24,7 +24,7 @@ ce afişează paginiile de ajutor ale &kappname;. (acest document).</para></list
 </term>
 <listitem><para><action>Schimbă cursorul mouse-ului într-o combinaţie formată
 dintr-o săgeată şi un semn de întrebare.</action>  Dacă daţi clic pe
-itemi ai &kappname; va fi afişată o fereastră de ajutor (dacă există
+itemi ai acestei aplicaţii va fi afişată o fereastră de ajutor (dacă există
 una pentru acel item particular) care explică funcţia itemului.</para></listitem>
 </varlistentry>
 
@@ -34,8 +34,8 @@ una pentru acel item particular) care explică funcţia itemului.</para></listit
 <guimenu>Ajutor</guimenu>
 <guimenuitem>Raportează erori...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Deschide dialogul de raportare a erorilor</action> 
-unde puteţi comunica eroarea întîmpinată sau să înregistraţi 
+<listitem><para><action>Deschide dialogul de raportare a erorilor</action>
+unde puteţi comunica eroarea întîmpinată sau să înregistraţi
 <quote>o dorinţă</quote>.</para></listitem>
 </varlistentry>
 

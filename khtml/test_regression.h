@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #ifndef TEST_REGRESSION_H
@@ -123,33 +122,51 @@ class RegressionTest : public QObject
   Q_OBJECT
 public:
 
-    RegressionTest(KHTMLPart *part, const QString &baseDir,
-		   bool _genOutput);
+    RegressionTest(KHTMLPart *part, const QString &baseDir, const QString &outputDir,
+		   bool _genOutput, bool runJS, bool runHTML);
+    ~RegressionTest();
 
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
-    void getPartDOMOutput( QTextStream &outputStream );
+    void getPartDOMOutput( QTextStream &outputStream, KHTMLPart* part, uint indent );
+    void dumpRenderTree( QTextStream &outputStream, KHTMLPart* part );
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    bool runTests(QString relPath = "", bool mustExist = false);
-    bool reportResult(bool passed, const QString & description = QString::null);
-    void createMissingDirs(QString path);
+    bool checkPaintdump( const QString& againstFilename);
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
+    bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
+    bool reportResult( bool passed, const QString & description = QString::null );
+    void createMissingDirs(const QString &path);
+
+    QImage renderToImage();
+    bool imageEqual( const QImage &lhs, const QImage &rhs );
+    void createLink( const QString& test, int failures );
+    void doJavascriptReport( const QString &test );
+    void doFailureReport( const QString& test, int failures );
 
     KHTMLPart *m_part;
     QString m_baseDir;
+    QString m_outputDir;
     bool m_genOutput;
     QString m_currentBase;
 
+    QString m_currentOutput;
     QString m_currentCategory;
     QString m_currentTest;
+    QPixmap* m_paintBuffer;
 
     bool m_getOutput;
-    int m_passes;
-    int m_failures;
+    bool m_runJS;
+    bool m_runHTML;
+    int m_passes_work;
+    int m_passes_fail;
+    int m_failures_work;
+    int m_failures_fail;
     int m_errors;
     bool saw_failure;
     bool ignore_errors;
+    int m_known_failures;
 
     static RegressionTest *curr;
 
@@ -160,6 +177,7 @@ private:
 
 private slots:
     void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+    void resizeTopLevelWidget( int, int );
 
 };
 

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -41,7 +41,7 @@ public:
 };
 
 PortValidator::PortValidator(QWidget *parent, const char *name)
-: QIntValidator(1, 9999, parent, name)
+: QIntValidator(1, 65535, parent, name)
 {
 }
 

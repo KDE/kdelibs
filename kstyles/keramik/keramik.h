@@ -126,7 +126,6 @@ private:
 	bool isFormWidget          (const QWidget*   widget) const;
 
 	///Configuration settings
-	bool highlightLineEdits;
 	bool animateProgressBar;
 	bool highlightScrollBar;
 

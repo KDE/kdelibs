@@ -19,6 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kio/job.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -52,7 +54,6 @@ extern "C" {
 #include <errno.h>
 
 #include "slave.h"
-#include "kio/job.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kmimemagic.h"
@@ -1081,10 +1082,10 @@ class PostErrorJob : public TransferJob
 {
 public:
 
-  PostErrorJob(const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
+  PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
       : TransferJob(KURL(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
-    m_error = KIO::ERR_POST_DENIED;
+    m_error = _error;
     m_errorText = url;
   }
 
@@ -1092,11 +1093,7 @@ public:
 
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
-    bool valid = true;
-
-    // filter out non https? protocols
-    if ((url.protocol() != "http") && (url.protocol() != "https" ))
-        valid = false;
+    int _error = 0;
 
     // filter out some malicious ports
     static const int bad_ports[] = {
@@ -1164,11 +1161,11 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     for (int cnt=0; bad_ports[cnt]; ++cnt)
         if (url.port() == bad_ports[cnt])
         {
-            valid = false;
+            _error = KIO::ERR_POST_DENIED;
             break;
         }
 
-    if( !valid )
+    if( _error )
     {
 	static bool override_loaded = false;
 	static QValueList< int >* overriden_ports = NULL;
@@ -1183,17 +1180,12 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 	     it != overriden_ports->end();
 	     ++it )
 	    if( overriden_ports->contains( url.port()))
-		valid = true;
+		_error = 0;
     }
 
-
-    // if request is not valid, return an invalid transfer job
-    if (!valid)
-    {
-        KIO_ARGS << (int)1 << url;
-        TransferJob * job = new PostErrorJob(url.url(), packedArgs, postData, showProgressInfo);
-        return job;
-    }
+    // filter out non https? protocols
+    if ((url.protocol() != "http") && (url.protocol() != "https" ))
+        _error = KIO::ERR_POST_DENIED;
 
     bool redirection = false;
     KURL _url(url);
@@ -1201,6 +1193,17 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     {
       redirection = true;
       _url.setPath("/");
+    }
+
+    if (!_error && !kapp->authorizeURLAction("open", KURL(), _url))
+        _error = KIO::ERR_ACCESS_DENIED;
+
+    // if request is not valid, return an invalid transfer job
+    if (_error)
+    {
+        KIO_ARGS << (int)1 << url;
+        TransferJob * job = new PostErrorJob(_error, url.prettyURL(), packedArgs, postData, showProgressInfo);
+        return job;
     }
 
     // Send http post command (1), decoded path and encoded query
@@ -1866,6 +1869,22 @@ void ListJob::start(Slave *slave)
     SimpleJob::start(slave);
 }
 
+class CopyJob::CopyJobPrivate
+{
+public:
+    CopyJobPrivate() {
+        m_defaultPermissions = false;
+    }
+    // This is the dest URL that was initially given to CopyJob
+    // It is copied into m_dest, which can be changed for a given src URL
+    // (when using the RENAME dialog in slotResult),
+    // and which will be reset for the next src URL.
+    KURL m_globalDest;
+    // The state info about that global dest
+    CopyJob::DestinationState m_globalDestinationState;
+    // See setDefaultPermissions
+    bool m_defaultPermissions;
+};
 
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
@@ -1877,6 +1896,10 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0)
 {
+    d = new CopyJobPrivate;
+    d->m_globalDest = dest;
+    d->m_globalDestinationState = destinationState;
+
     if ( showProgressInfo ) {
         connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
@@ -1885,6 +1908,24 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
                  Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
     }
     QTimer::singleShot(0, this, SLOT(slotStart()));
+    /**
+       States:
+       STATE_STATING for the dest
+       STATE_STATING for each src url (statNextSrc)
+            for each: if dir -> STATE_LISTING (filling 'dirs' and 'files')
+            but if direct rename possible: STATE_RENAMING instead.
+       STATE_CREATING_DIRS (createNextDir, iterating over 'dirs')
+            if conflict: STATE_CONFLICT_CREATING_DIRS
+       STATE_COPYING_FILES (copyNextFile, iterating over 'files')
+            if conflict: STATE_CONFLICT_COPYING_FILES
+       STATE_DELETING_DIRS (deleteNextDir) (if moving)
+       done.
+    */
+}
+
+CopyJob::~CopyJob()
+{
+    delete d;
 }
 
 void CopyJob::slotStart()
@@ -1932,7 +1973,6 @@ void CopyJob::slotResultStating( Job *job )
                 info.uDest.addPath( srcurl.fileName() );
 
             files.append( info );
-            ++m_currentStatSrc;
             statNextSrc();
             return;
         }
@@ -1963,11 +2003,13 @@ void CopyJob::slotResultStating( Job *job )
             destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
             //kdDebug(7007) << "CopyJob::slotResultStating dest is dir:" << bDir << endl;
         }
+        if ( m_dest == d->m_globalDest )
+            d->m_globalDestinationState = destinationState;
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
 
         // After knowing what the dest is, we can start stat'ing the first src.
-        statNextSrc();
+        statCurrentSrc();
         return;
     }
     // We were stating the current source URL
@@ -2023,6 +2065,8 @@ void CopyJob::slotResultStating( Job *job )
             // (This even works with other src urls in the list, since the
             //  dir has effectively been created)
             destinationState = DEST_IS_DIR;
+            if ( m_dest == d->m_globalDest )
+                d->m_globalDestinationState = destinationState;
         }
 
         startListing( srcurl );
@@ -2030,7 +2074,6 @@ void CopyJob::slotResultStating( Job *job )
     else
     {
         //kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
-        ++m_currentStatSrc;
         statNextSrc();
     }
 }
@@ -2166,6 +2209,14 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void CopyJob::statNextSrc()
 {
+    m_dest = d->m_globalDest;
+    destinationState = d->m_globalDestinationState;
+    ++m_currentStatSrc;
+    statCurrentSrc();
+}
+
+void CopyJob::statCurrentSrc()
+{
     if ( m_currentStatSrc != m_srcList.end() )
     {
         m_currentSrcURL = (*m_currentStatSrc);
@@ -2202,7 +2253,6 @@ void CopyJob::statNextSrc()
                 }
             }
             files.append( info ); // Files and any symlinks
-            ++m_currentStatSrc;
             statNextSrc(); // we could use a loop instead of a recursive call :)
         }
         // If moving, before going for the full stat+[list+]copy+del thing, try to rename
@@ -2242,7 +2292,6 @@ void CopyJob::statNextSrc()
             // if the file system doesn't support deleting, we do not even stat
             if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
-		++m_currentStatSrc;
                 statNextSrc(); // we could use a loop instead of a recursive call :)
                 return;
             }
@@ -2313,23 +2362,31 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 m_skipList.append( oldURL.path( 1 ) );
                 skip( oldURL );
                 dirs.remove( it ); // Move on to next dir
-            } else if ( m_bOverwriteAll ) { // overwrite all => just skip
-                emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
-                dirs.remove( it ); // Move on to next dir
-            } else
-            {
-                assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
-                subjobs.remove( job );
-                assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            } else {
+                // Did the user choose to overwrite already?
+                bool bOverwrite = m_bOverwriteAll;
+                QString destFile = (*it).uDest.path();
+                QStringList::Iterator sit = m_overwriteList.begin();
+                for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
+                    if ( *sit == destFile.left( (*sit).length() ) )
+                        bOverwrite = true;
+                if ( bOverwrite ) { // overwrite => just skip
+                    emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
+                    dirs.remove( it ); // Move on to next dir
+                } else {
+                    assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
+                    subjobs.remove( job );
+                    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-                // We need to stat the existing dir, to get its last-modification time
-                KURL existingDest( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
-                Scheduler::scheduleJob(newJob);
-                kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
-                state = STATE_CONFLICT_CREATING_DIRS;
-                addSubjob(newJob);
-                return; // Don't move to next dir yet !
+                    // We need to stat the existing dir, to get its last-modification time
+                    KURL existingDest( (*it).uDest );
+                    SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
+                    Scheduler::scheduleJob(newJob);
+                    kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
+                    state = STATE_CONFLICT_CREATING_DIRS;
+                    addSubjob(newJob);
+                    return; // Don't move to next dir yet !
+                }
             }
         }
         else
@@ -2413,7 +2470,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
 
             // Change the current one and strip the trailing '/'
-            (*it).uDest = newUrl.path( -1 );
+            (*it).uDest.setPath( newUrl.path( -1 ) );
             newPath = newUrl.path( 1 ); // With trailing slash
             QValueList<CopyInfo>::Iterator renamedirit = it;
             ++renamedirit;
@@ -2458,24 +2515,26 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             skip( (*it).uSource );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         case R_OVERWRITE:
             m_overwriteList.append( existingDest );
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
             emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.remove( it );
+            m_processedDirs++;
             break;
         default:
             assert( 0 );
     }
     state = STATE_CREATING_DIRS;
-    m_processedDirs++;
     //emit processedDirs( this, m_processedDirs );
     createNextDir();
 }
@@ -2509,7 +2568,7 @@ void CopyJob::createNextDir()
     if ( !udir.isEmpty() ) // any dir to create, finally ?
     {
         // Create the directory - with default permissions so that we can put files into it
-        // TODO : change permissions once all is finished
+        // TODO : change permissions once all is finished; but for stuff coming from CDROM it sucks...
         KIO::SimpleJob *newjob = KIO::mkdir( udir, -1 );
         Scheduler::scheduleJob(newjob);
 
@@ -2709,6 +2768,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             // Move on to next file
             skip( (*it).uSource );
             files.remove( it );
+            m_processedFiles++;
             break;
        case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
@@ -2721,7 +2781,6 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             assert( 0 );
     }
     state = STATE_COPYING_FILES;
-    m_processedFiles++;
     //emit processedFiles( this, m_processedFiles );
     copyNextFile();
 }
@@ -2755,6 +2814,7 @@ void CopyJob::copyNextFile()
         // Do we set overwrite ?
         bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
         QString destFile = (*it).uDest.path();
+        kdDebug(7007) << "copying " << destFile << endl;
         if ( (*it).uDest == (*it).uSource )
             bOverwrite = false;
         else
@@ -2891,7 +2951,7 @@ void CopyJob::copyNextFile()
             KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             moveJob->setSourceSize64( (*it).size );
             newjob = moveJob;
-            //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
+            //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource << " to " << (*it).uDest << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
@@ -2901,15 +2961,15 @@ void CopyJob::copyNextFile()
         {
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
-            // But for files coming from TAR, we want to preserve permissions -> we use default perms only if from remote
-            // The real fix would be KProtocolInfo::inputType(protocol) == T_FILESYSTEM, but we can't access ksycoca from here !
-            bool remoteSource = !(*it).uSource.isLocalFile() && ((*it).uSource.protocol() != "tar"); // HACK
-            int permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
+            bool remoteSource = !KProtocolInfo::supportsListing((*it).uSource);
+            int permissions = (*it).permissions;
+            if ( d->m_defaultPermissions || ( remoteSource && (*it).uDest.isLocalFile() ) )
+                permissions = -1;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize64( (*it).size );
             newjob = copyJob;
-            //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
+            //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
         }
@@ -2945,8 +3005,8 @@ void CopyJob::deleteNextDir()
         if ( !m_bOnlyRenames )
         {
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
-            KURL url( m_dest );
-            if ( destinationState != DEST_IS_DIR || m_asMethod )
+            KURL url( d->m_globalDest );
+            if ( d->m_globalDestinationState != DEST_IS_DIR || m_asMethod )
                 url.setPath( url.directory() );
             //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
             allDirNotify.FilesAdded( url );
@@ -3063,20 +3123,38 @@ void CopyJob::slotResult( Job *job )
             }
             if ( err )
             {
-                m_currentSrcURL=*m_currentStatSrc;
-                m_currentDestURL=m_dest;
+                // This code is similar to CopyJob::slotResultConflictCopyingFiles
+                // but here it's about the base src url being moved/renamed
+                // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
+                // It also means we already stated the dest, here.
+                // On the other hand we haven't stated the src yet (we skipped doing it
+                // to save time, since it's not necessary to rename directly!)...
 
+                Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
+
+                // Existing dest?
                 if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
                 {
                     if (m_reportTimer)
                         m_reportTimer->stop();
 
                     QString newPath;
-                    RenameDlg_Mode mode = M_SINGLE;
+                    // Offer overwrite only if the existing thing is a file
+                    // If src==dest, use "overwrite-itself"
+                    RenameDlg_Mode mode = (RenameDlg_Mode)
+                        ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
+                            ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
+                    // I won't use M_MULTI or M_SKIP there. It's too ambiguous:
+                    // we are in the middle of the stat phase, so it's hard to know
+                    // if it will apply to the already-stated-dirs that will be copied later,
+                    // and/oor to the to-be-stated src urls that might be in the same case...
+                    mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+                    // we lack mtime info for both the src (not stated)
+                    // and the dest (stated but this info wasn't stored)
                     RenameDlg_Result r = Observer::self()->open_RenameDlg( this,
                                          err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                          m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
-                                         m_currentDestURL.prettyURL(0, KURL::StripFileProtocol),
+                                         dest.prettyURL(0, KURL::StripFileProtocol),
                                          mode, newPath );
                     if (m_reportTimer)
                         m_reportTimer->start(REPORT_TIMEOUT,false);
@@ -3091,33 +3169,41 @@ void CopyJob::slotResult( Job *job )
                         }
                         case R_RENAME:
                         {
+                            // Set m_dest to the chosen destination
+                            // This is only for this src url; the next one will revert to d->m_globalDest
                             m_dest.setPath( newPath );
                             KIO::Job* job = KIO::stat( m_dest, false, 2, false );
                             state = STATE_STATING;
                             destinationState = DEST_NOT_STATED;
                             addSubjob(job);
-                            break;
+                            return;
                         }
+                        case R_OVERWRITE:
+                            // Add to overwrite list
+                            // Note that we add dest, not m_dest.
+                            // This ensures that when moving several urls into a dir (m_dest),
+                            // we only overwrite for the current one, not for all.
+                            // When renaming a single file (m_asMethod), it makes no difference.
+                            kdDebug(7007) << "adding to overwrite list: " << dest.path() << endl;
+                            m_overwriteList.append( dest.path() );
+                            break;
                         default:
                             //assert( 0 );
                             break;
                     }
                 }
-                else
-                {
-                    kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
-                    //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
-                    KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
-                    state = STATE_STATING;
-                    addSubjob(job);
-                    m_bOnlyRenames = false;
-                }
+
+                kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+                //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
+                KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
+                state = STATE_STATING;
+                addSubjob(job);
+                m_bOnlyRenames = false;
             }
             else
             {
                 //kdDebug(7007) << "Renaming succeeded, move on" << endl;
                 emit copyingDone( this, *m_currentStatSrc, dest, true, true );
-                ++m_currentStatSrc;
                 statNextSrc();
             }
         }
@@ -3134,7 +3220,6 @@ void CopyJob::slotResult( Job *job )
             subjobs.remove( job );
             assert ( subjobs.isEmpty() );
 
-            ++m_currentStatSrc;
             statNextSrc();
             break;
         case STATE_CREATING_DIRS:
@@ -3155,6 +3240,11 @@ void CopyJob::slotResult( Job *job )
         default:
             assert( 0 );
     }
+}
+
+void KIO::CopyJob::setDefaultPermissions( bool b )
+{
+    d->m_defaultPermissions = b;
 }
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )

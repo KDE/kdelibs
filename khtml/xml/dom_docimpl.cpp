@@ -75,6 +75,7 @@
 #include <kio/job.h>
 
 #include <stdlib.h>
+#include "dom_docimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -96,10 +97,20 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version.isEmpty() || version == "1.0" || version == "null"))
+        (version.isEmpty() || version == "1.0" || version == "2.0" || version == "null"))
         return true;
-    else
-        return false;
+
+    // ## Do we support Core Level 3 ?
+    if ((lower == "core" ) &&
+        (version.isEmpty() || version == "2.0" || version == "null"))
+        return true;
+
+    if ((lower == "events" || lower == "uievents" ||
+         lower == "mouseevents" || lower == "mutationevents" ||
+         lower == "htmlevents" || lower == "textevents" ) &&
+        (version.isEmpty() || version == "2.0" || version == "3.0" || version == "null"))
+        return true;
+    return false;
 }
 
 DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
@@ -267,6 +278,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
+    m_ignorePendingStylesheets = false;
     m_usesDescendantRules = false;
     m_async = true;
     m_hadLoadError = false;
@@ -886,11 +898,15 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long
     return new NodeIteratorImpl(root,whatToShow,filter,entityReferenceExpansion);
 }
 
-TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter &/*filter*/,
-                                bool /*entityReferenceExpansion*/)
+TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
+                                bool entityReferenceExpansion, int &exceptioncode)
 {
-    // ###
-    return new TreeWalkerImpl;
+    if (!root) {
+        exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+        return 0;
+    }
+
+    return new TreeWalkerImpl( root, whatToShow, filter, entityReferenceExpansion );
 }
 
 void DocumentImpl::setDocumentChanged(bool b)
@@ -942,7 +958,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( paintDeviceMetrics() );
-        if ( parseMode() != Strict )
+        if ( inCompatMode() )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
         StyleChange ch = diff( _style, oldStyle );
@@ -1009,6 +1025,24 @@ void DocumentImpl::updateDocumentsRendering()
         if (it->isDocumentChanged())
             it->updateRendering();
     }
+}
+
+void DocumentImpl::updateLayout()
+{
+    bool oldIgnore = m_ignorePendingStylesheets;
+
+    if (!haveStylesheetsLoaded()) {
+        m_ignorePendingStylesheets = true;
+        updateStyleSelector();
+    }
+
+    updateRendering();
+
+    // Only do a layout if changes have occurred that make it necessary.
+    if (m_view && renderer() && !renderer()->layouted())
+        m_view->layout();
+
+    m_ignorePendingStylesheets = oldIgnore;
 }
 
 void DocumentImpl::attach()
@@ -1078,9 +1112,9 @@ void DocumentImpl::clearSelection()
         static_cast<RenderCanvas*>(m_render)->clearSelection();
 }
 
-Tokenizer *DocumentImpl::createTokenizer()
+khtml::Tokenizer *DocumentImpl::createTokenizer()
 {
-    return new XMLTokenizer(docPtr(),m_view);
+    return new khtml::XMLTokenizer(docPtr(),m_view);
 }
 
 void DocumentImpl::setPaintDevice( QPaintDevice *dev )
@@ -1420,6 +1454,23 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
     }
 }
 
+ElementImpl* DocumentImpl::findAccessKeyElement(QChar c)
+{
+    c = c.upper();
+    for( NodeImpl* n = this;
+         n != NULL;
+         n = n->traverseNextNode()) {
+        if( n->isElementNode()) {
+            ElementImpl* en = static_cast< ElementImpl* >( n );
+            DOMString s = en->getAttribute( ATTR_ACCESSKEY );
+            if( s.length() == 1
+                && s[ 0 ].upper() == c )
+                return en;
+        }
+    }
+    return NULL;
+}
+
 int DocumentImpl::nodeAbsIndex(NodeImpl *node)
 {
     assert(node->getDocument() == this);
@@ -1453,23 +1504,16 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         if ( pos == -1 )
             pos = str.find(QRegExp("[ \t]"));
 
+        bool ok = false;
+	int delay = kMax( 0, content.implementation()->toInt(&ok) );
+        if ( !ok && str.length() && str[0] == '.' )
+            ok = true;
+
         if (pos == -1) // There can be no url (David)
         {
-            bool ok = false;
-            int delay = 0;
-	    delay = content.implementation()->toInt(&ok);
             if(ok)
                 v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
-            int delay = 0;
-            int fract = pos;
-            bool ok = false;
-            if ( (fract = str.find('.') ) < 0 || fract > pos)
-                fract = pos;
-	    DOMStringImpl* s = content.implementation()->substring(0, fract);
-	    delay = s->toInt(&ok);
-	    delete s;
-
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             str = str.mid(pos);
@@ -1481,7 +1525,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                 str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
             QString newURL = getDocument()->completeURL( str );
-            if ( ok || !fract)
+            if ( ok )
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL().url());
         }
     }
@@ -2071,7 +2115,7 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
         return new MouseEventImpl();
     else if (eventType == "MutationEvents")
         return new MutationEventImpl();
-    else if (eventType == "HTMLEvents")
+    else if (eventType == "HTMLEvents" || eventType == "Events")
         return new EventImpl();
     else {
         exceptioncode = DOMException::NOT_SUPPORTED_ERR;
@@ -2347,6 +2391,24 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
     return 0;
+}
+
+NamedNodeMapImpl * DocumentTypeImpl::entities() const
+{
+    if ( !m_entities ) {
+        m_entities = new GenericRONamedNodeMapImpl( docPtr() );
+        m_entities->ref();
+    }
+    return m_entities;
+}
+
+NamedNodeMapImpl * DocumentTypeImpl::notations() const
+{
+    if ( !m_notations ) {
+        m_notations = new GenericRONamedNodeMapImpl( docPtr() );
+        m_notations->ref();
+    }
+    return m_notations;
 }
 
 #include "dom_docimpl.moc"

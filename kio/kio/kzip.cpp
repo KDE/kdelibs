@@ -551,7 +551,7 @@ bool KZip::openArchive( int mode )
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
-                if (os_madeby != 3) access |= S_IFDIR | 0111;
+                if (os_madeby != 3) access = S_IFDIR | 0755;
 		else Q_ASSERT(access & S_IFDIR);
             }
 
@@ -565,7 +565,7 @@ bool KZip::openArchive( int mode )
             KArchiveEntry* entry;
             if ( isdir )
             {
-                QString path = QDir::cleanDirPath( name.left( pos ) );
+                QString path = QDir::cleanDirPath( name );
                 KArchiveEntry* ent = rootDir()->entry( path );
                 if ( ent && ent->isDirectory() )
                 {
@@ -648,7 +648,8 @@ bool KZip::closeArchive()
 
     for ( ; it.current() ; ++it )
     {	//set crc and compressed size in each local file header
-        device()->at( it.current()->headerStart() + 14 );
+        if ( !device()->at( it.current()->headerStart() + 14 ) )
+            return false;
 	//kdDebug(7040) << "closearchive setcrcandcsize: filename: "
 	//    << it.current()->path()
 	//    << " encoding: "<< it.current()->encoding() << endl;
@@ -671,7 +672,8 @@ bool KZip::closeArchive()
         buffer[10] = char(myusize >> 16);
         buffer[11] = char(myusize >> 24);
 
-        device()->writeBlock( buffer, 12 );
+        if ( device()->writeBlock( buffer, 12 ) != 12 )
+            return false;
     }
     device()->at( atbackup );
 
@@ -757,8 +759,10 @@ bool KZip::closeArchive()
 	extfield[8] = char(time >> 24);
 
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
-        device()->writeBlock( buffer, bufferSize );
+        bool ok = ( device()->writeBlock( buffer, bufferSize ) == bufferSize );
         delete[] buffer;
+        if ( !ok )
+            return false;
     }
     Q_LONG centraldirendoffset = device()->at();
     //kdDebug(7040) << "closearchive: centraldirendoffset: " << centraldirendoffset << endl;
@@ -803,7 +807,8 @@ bool KZip::closeArchive()
     buffer[ 20 ] = 0; //zipfile comment length
     buffer[ 21 ] = 0;
 
-    device()->writeBlock( buffer, 22);
+    if ( device()->writeBlock( buffer, 22 ) != 22 )
+        return false;
 
     //kdDebug(7040) << "kzip.cpp reached." << endl;
     return true;
@@ -860,7 +865,10 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     }
 
     // set right offset in zip.
-    device()->at( d->m_offset );
+    if ( !device()->at( d->m_offset ) ) {
+        kdWarning(7040) << "prepareWriting_impl: cannot seek in ZIP file. Disk full?" << endl;
+        return false;
+    }
 
     // delete entries in the filelist with the same filename as the one we want
     // to save, so that we don´t have duplicate file entries when viewing the zip
@@ -1128,7 +1136,6 @@ bool KZip::writeData_impl(const char * c, uint i)
 
     Q_LONG written = d->m_currentDev->writeBlock( c, i );
     //kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
-    Q_ASSERT( written == (Q_LONG)i );
     return written == (Q_LONG)i;
 }
 

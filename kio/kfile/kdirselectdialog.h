@@ -24,10 +24,12 @@
 #include <kurl.h>
 
 class QVBoxLayout;
+class QPopupMenu;
 class KConfig;
 class KFileTreeBranch;
 class KFileTreeView;
 class KFileTreeViewItem;
+class KToggleAction;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
@@ -98,6 +100,8 @@ private slots:
     void slotURLActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
+    void slotContextMenu( KListView *, QListViewItem *, const QPoint & );
+    void slotShowHiddenFilesToggled();
 
 private:
     void readConfig( KConfig *config, const QString& group );
@@ -106,6 +110,8 @@ private:
     KFileTreeBranch * createBranch( const KURL& url );
 
     KFileTreeView *m_treeView;
+    QPopupMenu *m_contextMenu;
+    KToggleAction *m_showHiddenFiles;
     bool m_localOnly;
 
 protected:

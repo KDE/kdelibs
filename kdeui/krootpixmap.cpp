@@ -20,6 +20,7 @@
 #include <kimageeffect.h>
 #include <kpixmapio.h>
 #include <kwinmodule.h>
+#include <kwin.h>
 #include <kdebug.h>
 #include <netwm.h>
 #include <dcopclient.h>
@@ -66,6 +67,7 @@ void KRootPixmap::init()
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
+    m_pWidget->installEventFilter(this);
 }
 
 KRootPixmap::~KRootPixmap()
@@ -159,6 +161,12 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 
 void KRootPixmap::desktopChanged( int desk )
 {
+    if( !m_pWidget->isVisible())
+        return; // not visible, no need to update
+    QWidget* widget = m_pWidget->topLevelWidget();
+    if( !widget->testWFlags( WX11BypassWM )
+        && !KWin::windowInfo( widget->winId(), NET::WMDesktop ).isOnCurrentDesktop())
+        return; // not on current desktop -> not visible, no need to update
     repaint(true);
 }
 
@@ -183,6 +191,7 @@ void KRootPixmap::repaint(bool force)
 	(m_pWidget->height() < m_Rect.height())
        )
     {
+        m_Rect = QRect(p1, p2);
  	updateBackground( m_pPixmap );
 	return;
     }

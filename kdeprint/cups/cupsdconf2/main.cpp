@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -30,7 +30,7 @@ static KCmdLineOptions options[] =
 	KCmdLineLastOption
 };
 
-int main(int argc, char *argv[])
+extern "C" int kdemain(int argc, char *argv[])
 {
 	KCmdLineArgs::init(argc,argv,"cupsdconf",
 			   I18N_NOOP("A CUPS configuration tool"),

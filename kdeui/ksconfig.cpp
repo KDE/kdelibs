@@ -23,7 +23,6 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -33,6 +32,8 @@
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 
 #include "ksconfig.h"
 
@@ -155,7 +156,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 
   if( addHelpButton == true )
   {
-    QPushButton *pushButton = new QPushButton( i18n("&Help"), this );
+    QPushButton *pushButton = new KPushButton( KStdGuiItem::help(), this );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
     glay->addWidget(pushButton, 5, 2);
   }

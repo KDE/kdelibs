@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@
 #include <kguiitem.h>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, QString::null, KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KGuiItem(i18n("&Save"), "filesave")),
+: KDialogBase(parent, name, true, QString::null, KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KStdGuiItem::save()),
   m_printer(p), m_driver(0), m_current(0)
 {
 	m_pages.setAutoDelete(false);

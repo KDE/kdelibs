@@ -77,7 +77,10 @@ public:
 	m_inline(_inline),
         node(_node),
         next(_next)
-        {}
+        { node->ref(); }
+
+    ~HTMLStackElem()
+        { node->deref(); }
 
     int       id;
     int       level;
@@ -143,8 +146,7 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
 
     reset();
 
-    current = i;
-    current->ref();
+    setCurrent(i);
 
     inBody = true;
 }
@@ -442,8 +444,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 for (unsigned long l = 0; map && l < map->length(); ++l) {
                     NodeImpl::Id attrId = map->idAt(l);
                     DOMStringImpl *attrValue = map->valueAt(l);
-                    changed = !bmap->getValue(attrId);
-                    bmap->setValue(attrId,attrValue);
+                    if ( !bmap->getValue(attrId) ) {
+                        bmap->setValue(attrId,attrValue);
+                        changed = true;
+                    }
                 }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
@@ -1033,8 +1037,10 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
-    case ID_NOBR:
     case ID_WBR:
+    case ID_NOBR:
+        if ( t->tid == ID_NOBR || t->tid == ID_WBR )
+            popBlock( t->tid );
     case ID_BDO:
         n = new HTMLGenericElementImpl(document, t->tid);
         break;
@@ -1184,9 +1190,8 @@ void KHTMLParser::popOneBlock()
     HTMLStackElem *Elem = blockStack;
 
     // we should never get here, but some bad html might cause it.
-#ifndef PARSER_DEBUG
     if(!Elem) return;
-#else
+#ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
@@ -1210,6 +1215,9 @@ void KHTMLParser::popOneBlock()
         --inPre;
 
     m_inline = Elem->m_inline;
+
+    if (current->id() == ID_FORM && form && haveMalformedTable)
+        form->setMalformed(true);
 
     setCurrent( Elem->node );
 

@@ -314,7 +314,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
         "<b>%i</b>: for the numeric event ID.");
     QWhatsThis::add( m_execute, whatsThis );
     QWhatsThis::add( m_executePath, whatsThis );
-    
+
     showAdvanced( false );
 
     slotEventChanged( 0L ); // disable widgets by default
@@ -780,7 +780,7 @@ void KNotifyWidget::resetDefaults( bool ask )
                                    i18n("This will cause the notifications "
                                         "to be reset to their defaults!"),
                                                 i18n("Are You Sure?"),
-                                                i18n("Continue"))
+                                                KStdGuiItem::cont())
              != KMessageBox::Continue)
             return;
     }

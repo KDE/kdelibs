@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -46,8 +46,7 @@ CupsdSplash::CupsdSplash(QWidget *parent, const char *name)
 	kupslogo_->setAlignment(Qt::AlignCenter);
 
 	QLabel	*helptxt_ = new QLabel(this);
-	helptxt_->setText(i18n(
-				"<p>This tool will help you to configure graphically the server of the CUPS printing system. "
+	helptxt_->setText(i18n( "<p>This tool will help you to configure graphically the server of the CUPS printing system. "
 				"The available options are grouped into sets of related topics and can be accessed "
 				"quickly through the icon view located on the left. Each option has a default value that is "
 				"shown if it has not been previously set. This default value should be OK in most cases.</p><br>"

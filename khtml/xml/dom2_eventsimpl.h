@@ -77,16 +77,19 @@ public:
 	BLUR_EVENT,
 	RESIZE_EVENT,
 	SCROLL_EVENT,
+        // keyboard events
+	KEYDOWN_EVENT,
+	KEYUP_EVENT,
 	// khtml events (not part of DOM)
 	KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
 	KHTML_ECMA_CLICK_EVENT, // for html onclick
 	KHTML_DRAGDROP_EVENT,
 	KHTML_ERROR_EVENT,
-	KHTML_KEYDOWN_EVENT,
-	KHTML_KEYPRESS_EVENT,
-	KHTML_KEYUP_EVENT,
+        KHTML_KEYPRESS_EVENT,
 	KHTML_MOVE_EVENT,
-	KHTML_ORIGCLICK_MOUSEUP_EVENT
+	KHTML_ORIGCLICK_MOUSEUP_EVENT,
+        // XMLHttpRequest events
+        KHTML_READYSTATECHANGE_EVENT
     };
 
     EventImpl();
@@ -110,14 +113,13 @@ public:
 
     void initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg);
 
-    virtual bool isUIEvent() { return false; }
-    virtual bool isMouseEvent() { return false; }
-    virtual bool isTextEvent() { return false; }
-    virtual bool isMutationEvent() { return false; }
-    virtual DOMString eventModuleName() { return ""; }
+    virtual bool isUIEvent() const;
+    virtual bool isMouseEvent() const;
+    virtual bool isMutationEvent() const;
+    virtual bool isTextEvent() const;
 
-    virtual bool propagationStopped() { return m_propagationStopped; }
-    virtual bool defaultPrevented() { return m_defaultPrevented; }
+    bool propagationStopped() const { return m_propagationStopped; }
+    bool defaultPrevented() const { return m_defaultPrevented; }
 
     static EventId typeToId(DOMString type);
     static DOMString idToType(EventId id);
@@ -136,9 +138,9 @@ protected:
     bool m_propagationStopped;
     bool m_defaultPrevented;
     bool m_defaultHandled;
-    EventId m_id;
+    EventId m_id : 6;
+    unsigned short m_eventPhase : 2;
     NodeImpl *m_currentTarget; // ref > 0 maintained externally
-    unsigned short m_eventPhase;
     NodeImpl *m_target;
     QDateTime m_createTime;
     DOMString m_message;
@@ -149,7 +151,7 @@ protected:
 class UIEventImpl : public EventImpl
 {
 public:
-    UIEventImpl() : m_view(0), m_detail(0) {};
+    UIEventImpl() : m_view(0), m_detail(0) {}
     UIEventImpl(EventId _id,
 		bool canBubbleArg,
 		bool cancelableArg,
@@ -163,8 +165,8 @@ public:
 		     bool cancelableArg,
 		     const AbstractView &viewArg,
 		     long detailArg);
-    virtual bool isUIEvent() { return true; }
-    virtual DOMString eventModuleName() { return "UIEvents"; }
+    virtual bool isUIEvent() const;
+
 protected:
     AbstractViewImpl *m_view;
     long m_detail;
@@ -184,6 +186,8 @@ public:
 		   long screenYArg,
 		   long clientXArg,
 		   long clientYArg,
+                   long pageXArg,
+                   long pageYArg,
 		   bool ctrlKeyArg,
 		   bool altKeyArg,
 		   bool shiftKeyArg,
@@ -198,7 +202,9 @@ public:
     long clientX() const { return m_clientX; }
     long clientY() const { return m_clientY; }
     long layerX() const { return m_layerX; } // non-DOM extension
-    long layerY() const { return m_layerX; } // non-DOM extension
+    long layerY() const { return m_layerY; } // non-DOM extension
+    long pageX() const { return m_pageX; } // non-DOM extension
+    long pageY() const { return m_pageY; } // non-DOM extension
     bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
@@ -224,8 +230,7 @@ public:
 			bool metaKeyArg,
 			unsigned short buttonArg,
 			const Node &relatedTargetArg);
-    virtual bool isMouseEvent() { return true; }
-    virtual DOMString eventModuleName() { return "MouseEvents"; }
+    virtual bool isMouseEvent() const;
 
     QMouseEvent *qEvent() const { return m_qevent; }
 protected:
@@ -235,6 +240,8 @@ protected:
     long m_clientY;
     long m_layerX;
     long m_layerY;
+    long m_pageX;
+    long m_pageY;
     bool m_ctrlKey : 1;
     bool m_altKey  : 1;
     bool m_shiftKey : 1;
@@ -339,17 +346,16 @@ public:
     bool             numPad() const { return m_numPad; }
     DOMString        outputString() const { return m_outputString; }
 
-  virtual DOMString eventModuleName() { return "TextEvents"; }
-  virtual bool isTextEvent() { return true; }
+  virtual bool isTextEvent() const;
 
  QKeyEvent *qKeyEvent;
 
 private:
   unsigned long m_keyVal;
   unsigned long m_virtKeyVal;
-  bool m_inputGenerated;
   DOMString m_outputString;
   bool m_numPad;
+  bool m_inputGenerated;
   // bitfield containing state of modifiers. not part of the dom.
   unsigned long    m_modifier;
 };
@@ -381,8 +387,7 @@ public:
 			   const DOMString &newValueArg,
 			   const DOMString &attrNameArg,
 			   unsigned short attrChangeArg);
-    virtual bool isMutationEvent() { return true; }
-    virtual DOMString eventModuleName() { return "MutationEvents"; }
+    virtual bool isMutationEvent() const;
 protected:
     NodeImpl *m_relatedNode;
     DOMStringImpl *m_prevValue;
@@ -395,17 +400,17 @@ protected:
 class RegisteredEventListener {
 public:
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-        : id(_id), listener(_listener), useCapture(_useCapture) { listener->ref(); }
+        : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
 
-    ~RegisteredEventListener() { listener->deref(); }
+    ~RegisteredEventListener() { listener->deref(); listener = 0; }
 
     bool operator==(const RegisteredEventListener &other)
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
 
 
-    EventImpl::EventId id;
-    EventListener *listener;
+    EventImpl::EventId id : 6;
     bool useCapture;
+    EventListener *listener;
 private:
     RegisteredEventListener( const RegisteredEventListener & );
     RegisteredEventListener & operator=( const RegisteredEventListener & );

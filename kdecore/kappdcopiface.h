@@ -60,8 +60,7 @@ k_dcop:
 	
 	void quit();
 
-	
-	
+	void updateUserTimestamp( ulong time );
 
 private:
 	KApplication *m_KApplication;

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 
 class SmbView;
 class QLineEdit;
+class QLabel;
 
 class KMWSmb : public KMWizardPage
 {
@@ -43,6 +44,7 @@ protected slots:
 protected:
 	SmbView	*m_view;
 	QLineEdit	*m_work, *m_server, *m_printer;
+	QLabel *m_loginlabel;
 };
 
 #endif

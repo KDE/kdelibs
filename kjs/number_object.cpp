@@ -158,6 +158,8 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       // unless someone finds a precise rule.
       char s[2048 + 3];
       double x = v.toNumber(exec);
+      if (isNaN(x) || isInf(x))
+        return String(UString::from(x));
       // apply algorithm on absolute value. add sign later.
       bool neg = false;
       if (x < 0.0) {

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <klocale.h>
+#include <qvalidator.h>
 
 #include <cups/http.h>
 
@@ -33,12 +34,14 @@ KMWIpp::KMWIpp(QWidget *parent, const char *name)
 	m_ID = KMWizard::IPP;
 	m_title = i18n("Remote IPP server");
 	m_nextpage = KMWizard::IPPSelect;
+	lineEdit( 1 )->setValidator( new QIntValidator( this ) );
 
 	setInfo(i18n("<p>Enter the information concerning the remote IPP server "
 		     "owning the targeted printer. This wizard will poll the server "
 		     "before continuing.</p>"));
 	setLabel(0,i18n("Host:"));
 	setLabel(1,i18n("Port:"));
+	setText( 1, QString::fromLatin1( "631" ) );
 }
 
 bool KMWIpp::isValid(QString& msg)

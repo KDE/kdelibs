@@ -793,25 +793,36 @@ extern "C" int kdemain(int argc, char **argv)
    if( checkstamps && incremental )
    {
        QString path = sycocaPath()+"stamp";
+       QCString qPath = QFile::encodeName(path);
+       cSycocaPath = qPath.data(); // Delete timestamps on crash
        QFile ksycocastamp(path);
        if( ksycocastamp.open( IO_ReadOnly ))
        {
            QDataStream str( &ksycocastamp );
-           str >> filestamp;
-           str >> oldresourcedirs;
-           if( oldresourcedirs != KBuildSycoca::existingResourceDirs())
-               checkstamps = false;
+           if (!str.atEnd())
+               str >> filestamp;
            if (!str.atEnd())
            {
-              QStringList extraResourceDirs;
-              str >> extraResourceDirs;
-              oldresourcedirs += extraResourceDirs;
+               str >> oldresourcedirs;
+               if( oldresourcedirs != KBuildSycoca::existingResourceDirs())
+                   checkstamps = false;
+           }
+           else
+           {
+               checkstamps = false;
+           }
+           if (!str.atEnd())
+           {
+               QStringList extraResourceDirs;
+               str >> extraResourceDirs;
+               oldresourcedirs += extraResourceDirs;
            }
        }
        else
        {
            checkstamps = false;
        }
+       cSycocaPath = 0;
    }
 
    newTimestamp = (Q_UINT32) time(0);

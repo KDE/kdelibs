@@ -111,13 +111,17 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    mode_t tmp = 0;
    mode_t umsk = umask(tmp);
    umask(umsk);
-   chmod(nme, mode&(~umsk));
+   fchmod(mFd, mode&(~umsk));
 
    // Success!
    bOpen = true;
 
    // Set uid/gid (necessary for SUID programs)
-   chown(nme, getuid(), getgid());
+   fchown(mFd, getuid(), getgid());
+
+   // Set close on exec
+   fcntl(mFd, F_SETFD, FD_CLOEXEC);
+   
    return true;
 }
 

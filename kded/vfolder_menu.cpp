@@ -334,10 +334,10 @@ VFolderMenu::addApplication(const QString &id, KService *service)
 void
 VFolderMenu::buildApplicationIndex(bool unusedOnly)
 {
-   QDictIterator<appsInfo> it( m_appsInfoDict );
-   for( ; it.current(); ++it )
+   QPtrList<appsInfo>::ConstIterator appsInfo_it =  m_appsInfoList.begin();
+   for( ; appsInfo_it != m_appsInfoList.end(); ++appsInfo_it )
    {
-      appsInfo *info = it.current();
+      appsInfo *info = *appsInfo_it;
       info->dictCategories.clear();
       for(QDictIterator<KService> it( info->applications );
           it.current(); )
@@ -370,19 +370,20 @@ VFolderMenu::buildApplicationIndex(bool unusedOnly)
 }
 
 void
-VFolderMenu::createAppsInfo(const QString &name)
+VFolderMenu::createAppsInfo()
 {
    if (m_appsInfo) return;
-   
+
    m_appsInfo = new appsInfo;
    m_appsInfoStack.prepend(m_appsInfo);
-   m_appsInfoDict.replace(name, m_appsInfo);
+   m_appsInfoList.append(m_appsInfo);
+   m_currentMenu->apps_info = m_appsInfo;
 }
 
 void
-VFolderMenu::loadAppsInfo(const QString &menuName)
+VFolderMenu::loadAppsInfo()
 {
-   m_appsInfo = m_appsInfoDict.find(menuName);
+   m_appsInfo = m_currentMenu->apps_info;
    if (!m_appsInfo)
       return; // No appsInfo for this menu
    
@@ -393,9 +394,9 @@ VFolderMenu::loadAppsInfo(const QString &menuName)
 }
 
 void
-VFolderMenu::unloadAppsInfo(const QString &menuName)
+VFolderMenu::unloadAppsInfo()
 {
-   m_appsInfo = m_appsInfoDict.find(menuName);
+   m_appsInfo = m_currentMenu->apps_info;
    if (!m_appsInfo)
       return; // No appsInfo for this menu
    
@@ -1180,7 +1181,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
          QDomElement e = n.toElement(); // try to convert the node to an element.
          if (e.tagName() == "AppDir")
          {
-            createAppsInfo(name);
+            createAppsInfo();
             QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
             
             registerDirectory(dir);
@@ -1189,7 +1190,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
          }
          else if (e.tagName() == "KDELegacyDirs")
          {
-            createAppsInfo(name);
+            createAppsInfo();
             if (!kdeLegacyDirsDone)
             {
 kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
@@ -1206,7 +1207,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
          }
          else if (e.tagName() == "LegacyDir")
          {
-            createAppsInfo(name);
+            createAppsInfo();
             QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
             
             QString prefix = e.attributes().namedItem("prefix").toAttr().value();
@@ -1244,7 +1245,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
       }
    }
 
-   loadAppsInfo(name); // Update the scope wrt the list of applications
+   loadAppsInfo(); // Update the scope wrt the list of applications
    
    if (((pass == 1) && !onlyUnallocated) || ((pass == 2) && onlyUnallocated))
    {
@@ -1270,7 +1271,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
          else if (e.tagName() == "Exclude")
          {
             QDict<KService> items;
-            
+
             QDomNode n2 = e.firstChild();
             while( !n2.isNull() ) {
                QDomElement e2 = n2.toElement(); 
@@ -1357,7 +1358,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
    
    }
 
-   unloadAppsInfo(name); // Update the scope wrt the list of applications
+   unloadAppsInfo(); // Update the scope wrt the list of applications
 
    while (m_directoryDirs.count() > oldDirectoryDirsCount)
       m_directoryDirs.pop_front();
@@ -1444,6 +1445,13 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    m_forcedLegacyLoad = false;
    m_legacyLoaded = false;
    m_appsInfo = 0;
+
+   QStringList dirs = KGlobal::dirs()->resourceDirs("xdgconf-menu");
+   for(QStringList::ConstIterator it=dirs.begin();
+       it != dirs.end(); ++it)
+   {
+      registerDirectory(*it);
+   }
 
    loadMenu(file);
 

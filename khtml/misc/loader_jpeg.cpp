@@ -66,7 +66,9 @@ extern "C" {
         khtml_error_mgr* myerr = (khtml_error_mgr*) cinfo->err;
         char buffer[JMSG_LENGTH_MAX];
         (*cinfo->err->format_message)(cinfo, buffer);
+#ifdef JPEG_DEBUG
         qWarning("%s", buffer);
+#endif
         longjmp(myerr->setjmp_buffer, 1);
     }
 }
@@ -87,7 +89,7 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     bool do_progressive;
 
 public:
-    khtml_jpeg_source_mgr();
+    khtml_jpeg_source_mgr() KDE_NO_EXPORT;
 };
 
 
@@ -113,6 +115,7 @@ extern "C" {
             src->buffer[0] = (JOCTET) 0xFF;
             src->buffer[1] = (JOCTET) JPEG_EOI;
             src->bytes_in_buffer = 2;
+            src->next_input_byte = (JOCTET *) src->buffer;
 #ifdef BUFFER_DEBUG
             qDebug("...returning true!");
 #endif

@@ -478,9 +478,13 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   d->ok = b->addButton(  i18n ( "&OK" ) );
   d->ok->setDefault( true );
+  if (KGlobalSettings::showIconsOnPushButtons())
+    d->ok->setIconSet( SmallIconSet("button_ok") );
   connect(  d->ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
   QPushButton* cancel = b->addButton(  i18n( "&Cancel" ) );
+  if (KGlobalSettings::showIconsOnPushButtons())
+    cancel->setIconSet( SmallIconSet("button_cancel") );
   connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
 
   b->layout();
@@ -654,7 +658,7 @@ void KOpenWithDlg::slotOK()
     accept();
     return;
   }
-    
+
   if (!bRemember && !d->saveNewApps)
   {
     // Create temp service
@@ -668,8 +672,8 @@ void KOpenWithDlg::slotOK()
     }
     accept();
     return;
-  }  
-  
+  }
+
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
@@ -689,7 +693,7 @@ void KOpenWithDlg::slotOK()
     newPath = KService::newServicePath(false /* hidden */, serviceName, &menuId);
     kdDebug(250) << "Creating new service " << serviceName << " ( " << newPath << " ) " << endl;
   }
-  
+
   int maxPreference = 1;
   if (!qServiceType.isEmpty())
   {

@@ -5,12 +5,12 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Abi</guimenu>
+<guimenuitem>Sisukord...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Käivitab KDE abisüsteemi</action> ja avab 
+&kappname; abimaterjali (käesoleva käsiraamatu).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +18,41 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Abi</guimenu>
+<guimenuitem>Mis see on?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Muudab hiirekursori noole ja küsimärgi 
+kombinatsiooniks.</action>  Klõpsates nüüd mõnel &kappname; elemendil,
+avaneb väike abiaken (kui see on antud elemendi kohta olemas), mis selgitab
+elemendi funktsiooni.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Abi</guimenu>
+<guimenuitem>Saada vearaport...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Avab vearaporti dialoogi</action>, mille abil saab
+teada anda veast või esitada oma <quote>soov</quote> millegi parandamiseks.</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Abi</guimenu>
+<guimenuitem>&kappname; info</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Näitab versiooni ja infot autori
+kohta.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Abi</guimenu>
+<guimenuitem>KDE info</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Näitab KDE versiooni ja muud olulisemat
+põhiinfot.</action></para></listitem>
 </varlistentry>
 </variablelist>

@@ -24,7 +24,6 @@
 #include <kssl.h>
 
 #include <qlayout.h>
-#include <qpushbutton.h>
 #include <qframe.h>
 #include <qlabel.h>
 #include <qscrollview.h>
@@ -41,6 +40,9 @@
 //#include <kstandarddirs.h>
 //#include <krun.h>
 #include <kcombobox.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
+
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
 #include "ksslsigners.h"
@@ -104,13 +106,14 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
 
     QPushButton *button;
 
+    bool buttonicon =  KGlobalSettings::showIconsOnPushButtons();
     if (KSSL::doesSSLWork()) {
-      button = new QPushButton(i18n("C&ryptography Configuration..."), this);
+      button = new QPushButton(buttonicon ? SmallIcon("configure") : QPixmap(0), i18n("C&ryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
 
-    button = new QPushButton(i18n("&Close"), this);
+    button = new KPushButton(KStdGuiItem::close(), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
     buttonLayout->addWidget( button );
 

@@ -51,15 +51,12 @@
 #include <qclipboard.h>
 #include <qpixmap.h>
 
-static const int TimeMarkerEvent = 4321;
-
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   : QWidget (view, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )
   , editSessionNumber (0)
   , editIsRunning (false)
   , m_view (view)
   , m_doc (doc)
-  , m_scrollTranslateHack(0)
   , cursor (doc, true, 0, 0, this)
   , possibleTripleClick (false)
   , m_dummy (0)
@@ -364,7 +361,7 @@ void KateViewInternal::scrollNextLine()
 KateTextCursor KateViewInternal::maxStartPos(bool changed)
 {
   m_usePlainLines = true;
-  
+
   if (m_cachedMaxStartPos.line() == -1 || changed)
   {
     KateTextCursor end(m_doc->numVisLines() - 1, m_doc->lineLength(m_doc->getRealLine(m_doc->numVisLines() - 1)));
@@ -381,12 +378,12 @@ KateTextCursor KateViewInternal::maxStartPos(bool changed)
   }
 
   m_usePlainLines = false;
-  
+
   return m_cachedMaxStartPos;
 }
 
 // c is a virtual cursor
-void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
+void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExternally)
 {
   if (!force && ((!m_view->dynWordWrap() && c.line() == (int)startLine()) || c == startPos()))
     return;
@@ -425,15 +422,12 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
 
     Q_ASSERT(lines >= 0);
 
-    if (QABS(viewLinesScrolled) < lines)
+    if (!calledExternally && QABS(viewLinesScrolled) < lines)
     {
       updateView(false, viewLinesScrolled);
 
       int scrollHeight = -(viewLinesScrolled * m_view->renderer()->fontHeight());
       int scrollbarWidth = style().scrollBarExtent().width();
-
-      // Post time-marking event
-      qApp->postEvent(this, new QCustomEvent(QEvent::User + TimeMarkerEvent));
 
       //
       // updates are for working around the scrollbar leaving blocks in the view
@@ -443,9 +437,6 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
 
       leftBorder->scroll(0, scrollHeight);
       leftBorder->update(0, leftBorder->height()+scrollHeight-scrollbarWidth, leftBorder->width(), 2*scrollbarWidth);
-
-      // Turning on translations
-      m_scrollTranslateHack = scrollHeight;
 
       return;
     }
@@ -783,7 +774,7 @@ void KateViewInternal::paintText (int x, int y, int width, int height, bool pain
  * this function ensures a certain location is visible on the screen.
  * if endCol is -1, ignore making the columns visible.
  */
-void KateViewInternal::makeVisible (const KateTextCursor& c, uint endCol, bool force, bool center)
+void KateViewInternal::makeVisible (const KateTextCursor& c, uint endCol, bool force, bool center, bool calledExternally)
 {
   //kdDebug() << "MakeVisible start [" << startPos().line << "," << startPos().col << "] end [" << endPos().line << "," << endPos().col << "] -> request: [" << c.line << "," << c.col << "]" <<endl;// , new start [" << scroll.line << "," << scroll.col << "] lines " << (linesDisplayed() - 1) << " height " << height() << endl;
     // if the line is in a folded region, unfold all the way up
@@ -793,12 +784,12 @@ void KateViewInternal::makeVisible (const KateTextCursor& c, uint endCol, bool f
   if ( force )
   {
     KateTextCursor scroll = c;
-    scrollPos(scroll, force);
+    scrollPos(scroll, force, calledExternally);
   }
   else if (center && (c < startPos() || c > endPos()))
   {
     KateTextCursor scroll = viewLineOffset(c, -int(linesDisplayed()) / 2);
-    scrollPos(scroll);
+    scrollPos(scroll, false, calledExternally);
   }
   else if ( c > viewLineOffset(endPos(), -m_minLinesVisible) )
   {
@@ -808,19 +799,19 @@ void KateViewInternal::makeVisible (const KateTextCursor& c, uint endCol, bool f
       if (scrollbarVisible(scroll.line()))
         scroll.setLine(scroll.line() + 1);
 
-    scrollPos(scroll);
+    scrollPos(scroll, false, calledExternally);
   }
   else if ( c < viewLineOffset(startPos(), m_minLinesVisible) )
   {
     KateTextCursor scroll = viewLineOffset(c, -m_minLinesVisible);
-    scrollPos(scroll);
+    scrollPos(scroll, false, calledExternally);
   }
   else
   {
     // Check to see that we're not showing blank lines
     KateTextCursor max = maxStartPos();
     if (startPos() > max) {
-      scrollPos(max, max.col());
+      scrollPos(max, max.col(), calledExternally);
     }
   }
 
@@ -1263,7 +1254,7 @@ LineRange KateViewInternal::range(int realLine, const LineRange* previous)
 
 LineRange KateViewInternal::currentRange()
 {
-  Q_ASSERT(m_view->dynWordWrap());
+//   Q_ASSERT(m_view->dynWordWrap());
 
   return range(cursor);
 }
@@ -1292,7 +1283,7 @@ LineRange KateViewInternal::nextRange()
 
 LineRange KateViewInternal::range(const KateTextCursor& realCursor)
 {
-  Q_ASSERT(m_view->dynWordWrap());
+//   Q_ASSERT(m_view->dynWordWrap());
 
   LineRange thisRange;
   bool first = true;
@@ -1307,7 +1298,7 @@ LineRange KateViewInternal::range(const KateTextCursor& realCursor)
 
 LineRange KateViewInternal::range(uint realLine, int viewLine)
 {
-  Q_ASSERT(m_view->dynWordWrap());
+//   Q_ASSERT(m_view->dynWordWrap());
 
   LineRange thisRange;
   bool first = true;
@@ -1946,7 +1937,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& newCursor, bool ke
     m_doc->clearSelection();
 }
 
-void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force, bool center )
+void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force, bool center, bool calledExternally )
 {
   TextLine::Ptr l = textLine( newCursor.line() );
 
@@ -1958,7 +1949,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
       if ( l && ! l->isVisible() )
         m_doc->foldingTree()->ensureVisible( newCursor.line() );
 
-      makeVisible ( displayCursor, displayCursor.col(), false, center );
+      makeVisible ( displayCursor, displayCursor.col(), false, center, calledExternally );
     }
 
     return;
@@ -1974,7 +1965,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
   displayCursor.setPos (m_doc->getVirtualLine(cursor.line()), cursor.col());
 
   cXPos = m_view->renderer()->textWidth( cursor );
-  makeVisible ( displayCursor, displayCursor.col(), false, center );
+  makeVisible ( displayCursor, displayCursor.col(), false, center, calledExternally );
 
   updateBracketMarks();
 
@@ -2232,10 +2223,6 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
       stopDragScroll();
       break;
 
-    case QEvent::User + TimeMarkerEvent:
-      m_scrollTranslateHack = 0;
-      break;
-
     default:
       break;
   }
@@ -2408,12 +2395,10 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
       if ( !isTargetSelected( e->pos() ) )
         placeCursor( e->pos() );
 
-      if (leftBorder->positionToArea( e->pos() ) != KateIconBorder::IconBorder)
-      {
-        // popup is a qguardedptr now
-        if (m_view->popup())
-          m_view->popup()->popup( mapToGlobal( e->pos() ) );
-      }
+      // popup is a qguardedptr now
+      if (m_view->popup())
+        m_view->popup()->popup( mapToGlobal( e->pos() ) );
+
       e->accept ();
       break;
 
@@ -2558,29 +2543,6 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 
 void KateViewInternal::paintEvent(QPaintEvent *e)
 {
-  static bool forgetNext = false;
-
-  if (!forgetNext && m_scrollTranslateHack) {
-    // Have to paint both the requested area and the scrolled area due to race conditions...
-    QRect updateR = e->rect();
-
-    // Translate area by scroll amount
-    updateR.moveBy(0, m_scrollTranslateHack);
-
-    // Restrict to area that may have been obscured at the time
-    updateR = updateR.intersect(QRect(0, m_scrollTranslateHack < 0 ? 0 : m_scrollTranslateHack, width(), m_scrollTranslateHack < 0 ? height() + m_scrollTranslateHack : height()));
-
-    // Subtract region that's about to be redrawn anyway
-    if (updateR.intersects(e->rect()))
-      updateR = QRegion(updateR).subtract(e->region()).boundingRect();
-
-    // Send off the request to repaint immediately
-    forgetNext = true;
-    repaint(updateR.x(), updateR.y(), updateR.width(), updateR.height(), false);
-  }
-
-  forgetNext = false;
-
   paintText(e->rect().x(), e->rect().y(), e->rect().width(), e->rect().height());
 }
 
@@ -2588,20 +2550,17 @@ void KateViewInternal::resizeEvent(QResizeEvent* e)
 {
   bool expandedHorizontally = width() > e->oldSize().width();
   bool expandedVertically = height() > e->oldSize().height();
+  bool heightChanged = height() != e->oldSize().height();
 
   m_madeVisible = false;
 
-  if (height() != e->oldSize().height()) {
+  if (heightChanged) {
     setAutoCenterLines(m_autoCenterLines, false);
-  }
-
-  if (height() != e->oldSize().height())
     m_cachedMaxStartPos.setPos(-1, -1);
+  }
 
   if (m_view->dynWordWrap()) {
     bool dirtied = false;
-
-    int currentViewLine = displayViewLine(displayCursor, true);
 
     for (uint i = 0; i < lineRanges.count(); i++) {
       // find the first dirty line
@@ -2613,13 +2572,9 @@ void KateViewInternal::resizeEvent(QResizeEvent* e)
       }
     }
 
-    if (dirtied || expandedVertically) {
+    if (dirtied || heightChanged) {
       updateView(true);
       leftBorder->update();
-
-      // keep the cursor on-screen if it was previously
-      if (currentViewLine >= 0)
-        makeVisible(displayCursor, displayCursor.col());
     }
 
     if (width() < e->oldSize().width()) {
@@ -2858,6 +2813,9 @@ void KateViewInternal::wheelEvent(QWheelEvent* e)
         scrollNextPage();
     } else {
       scrollViewLines(-((e->delta() / 120) * QApplication::wheelScrollLines()));
+      // maybe a menu was opened or a bubbled window title is on us -> we shall erase it
+      update();
+      leftBorder->update();
     }
 
   } else if (!m_columnScroll->isHidden()) {
@@ -2960,7 +2918,7 @@ void KateViewInternal::editEnd(int editTagLineStart, int editTagLineEnd, bool ta
     m_madeVisible = false;
     updateCursor ( cursor, true );
   }
-  else
+  else if ( m_view->isActive() )
   {
     makeVisible(displayCursor, displayCursor.col());
   }

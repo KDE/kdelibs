@@ -133,7 +133,7 @@ void KLineEdit::init()
                       mode == KGlobalSettings::CompletionPopupAuto ||
                       mode == KGlobalSettings::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
-    
+
     QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
@@ -172,8 +172,9 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
     if ( !d->autoSuggest )
       return;
-      
+
     QString txt = text();
+
     if ( t != txt )
     {
         int start = marked ? txt.length() : t.length();
@@ -286,10 +287,8 @@ void KLineEdit::setReadOnly(bool readOnly)
 
 void KLineEdit::setSqueezedText( const QString &text)
 {
-    bool enableSqueezedText = d->enableSqueezedText;
-    d->enableSqueezedText = true;
+    setEnableSqueezedText(true);
         setText(text);
-    d->enableSqueezedText = enableSqueezedText;
 }
 
 void KLineEdit::setEnableSqueezedText( bool enable )
@@ -310,7 +309,7 @@ void KLineEdit::setText( const QString& text )
         setSqueezedText();
          return;
    }
-    
+
     QLineEdit::setText( text );
 }
 
@@ -322,8 +321,8 @@ void KLineEdit::setSqueezedText()
        QFontMetrics fm(fontMetrics());
        int labelWidth = size().width() - 2*frameWidth() - 2;
        int textWidth = fm.width(fullText);
-    
-    if (textWidth > labelWidth) 
+
+    if (textWidth > labelWidth)
     {
           // start with the dots only
           QString squeezedText = "...";
@@ -334,11 +333,11 @@ void KLineEdit::setSqueezedText()
           squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
           squeezedWidth = fm.width(squeezedText);
 
-      if (squeezedWidth < labelWidth) 
+      if (squeezedWidth < labelWidth)
       {
              // we estimated too short
              // add letters while text < label
-          do 
+          do
           {
                 letters++;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
@@ -346,12 +345,12 @@ void KLineEdit::setSqueezedText()
              } while (squeezedWidth < labelWidth);
              letters--;
              squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-      } 
-      else if (squeezedWidth > labelWidth) 
+      }
+      else if (squeezedWidth > labelWidth)
       {
              // we estimated too long
              // remove letters while text > label
-          do 
+          do
           {
                letters--;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
@@ -359,12 +358,12 @@ void KLineEdit::setSqueezedText()
              } while (squeezedWidth > labelWidth);
           }
 
-      if (letters < 5) 
+      if (letters < 5)
       {
              // too few letters added -> we give up squeezing
           QLineEdit::setText(fullText);
-      } 
-      else 
+      }
+      else
       {
           QLineEdit::setText(squeezedText);
              d->squeezedStart = letters;
@@ -374,15 +373,15 @@ void KLineEdit::setSqueezedText()
           QToolTip::remove( this );
           QToolTip::add( this, fullText );
 
-    } 
-    else 
+    }
+    else
     {
       QLineEdit::setText(fullText);
 
           QToolTip::remove( this );
           QToolTip::hide();
        }
-    
+
        setCursorPosition(0);
     }
 
@@ -410,25 +409,24 @@ void KLineEdit::copy() const
       QApplication::clipboard()->setText( t );
       connect( QApplication::clipboard(), SIGNAL(selectionChanged()), this,
                SLOT(clipboardChanged()) );
+      return;
    }
-   else
-   {
+
       QLineEdit::copy();
    }
-}
 
 void KLineEdit::resizeEvent( QResizeEvent * ev )
 {
     if (!d->squeezedText.isEmpty())
-        setSqueezedText();    
-    
+        setSqueezedText();
+
     QLineEdit::resizeEvent(ev);
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
-    
+
     if ( KStdAccel::copy().contains( key ) )
     {
         copy();
@@ -493,7 +491,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
-    
+
 
     // Filter key-events if EchoMode is normal and
     // completion mode is not set to CompletionNone
@@ -502,8 +500,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->state() == NoButton || e->state() == ShiftButton
-                           || e->state() == Keypad);
+        bool noModifier = (e->state() == NoButton ||
+                           e->state() == ShiftButton ||
+                           e->state() == Keypad);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionPopupAuto ||
@@ -540,8 +539,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
                 // Don't swallow the Escape press event for the case
                 // of dialogs, which have Escape associated to Cancel
-                QLineEdit::keyPressEvent ( e );
-
+                e->ignore();
                 return;
             }
 
@@ -551,7 +549,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
-            if ( !keycode.isNull() && (keycode.unicode()->isPrint() ||
+            if ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
                 e->key() == Key_Backspace || e->key() == Key_Delete ) )
             {
                 bool hasUserSelection=d->userSelection;
@@ -574,7 +572,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     cursorNotAtEnd=true;
                 }
 
+                d->disableRestoreSelection = true;
                 QLineEdit::keyPressEvent ( e );
+                d->disableRestoreSelection = false;
+
                 QString txt = text();
                 int len = txt.length();
                 if ( !hasSelectedText() && len /*&& cursorPosition() == len */)
@@ -606,6 +607,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
                     e->accept();
                 }
+
                 return;
             }
 
@@ -631,7 +633,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // as if there was no selection. After processing the key event, we
             // can set the new autocompletion again.
             if (hadSelection && !hasUserSelection && start>cPos &&
-               ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
+               ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
                  e->key() == Key_Backspace || e->key() == Key_Delete ) )
             {
                 del();
@@ -641,7 +643,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             uint selectedLength=selectedText().length();
 
+            d->disableRestoreSelection = true;
             QLineEdit::keyPressEvent ( e );
+            d->disableRestoreSelection = false;
 
             if (( selectedLength != selectedText().length() ) && !hasUserSelection )
                 slotRestoreSelectionColors(); // and set userSelection to true
@@ -650,7 +654,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             int len = txt.length();
 
             if ( txt != old_txt && len/* && ( cursorPosition() == len || force )*/ &&
-                 ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                 ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
                    e->key() == Key_Backspace || e->key() == Key_Delete) )
             {
                 if ( e->key() == Key_Backspace )
@@ -798,6 +802,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     if ( possibleTripleClick && e->button() == Qt::LeftButton )
     {
         selectAll();
+        e->accept();
         return;
     }
     QLineEdit::mousePressEvent( e );
@@ -810,11 +815,21 @@ void KLineEdit::tripleClickTimeout()
 
 QPopupMenu *KLineEdit::createPopupMenu()
 {
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
     // Return if popup menu is not enabled !!
     if ( !m_bEnableMenu )
         return 0;
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
+
+    int id = popup->idAt(0);
+    popup->changeItem( id - IdUndo, SmallIcon("undo"), popup->text( id - IdUndo) );
+    popup->changeItem( id - IdRedo, SmallIcon("redo"), popup->text( id - IdRedo) );
+    popup->changeItem( id - IdCut, SmallIcon("editcut"), popup->text( id - IdCut) );
+    popup->changeItem( id - IdCopy, SmallIcon("editcopy"), popup->text( id - IdCopy) );
+    popup->changeItem( id - IdPaste, SmallIcon("editpaste"), popup->text( id - IdPaste) );
+    popup->changeItem( id - IdClear, SmallIcon("editclear"), popup->text( id - IdClear) );
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
@@ -953,7 +968,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 bool trap = d->completionBox && d->completionBox->isVisible();
 
                 bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->state() == NoButton || 
+                                          (e->state() == NoButton ||
                                            e->state() == Keypad));
 
                 // Qt will emit returnPressed() itself if we return false
@@ -1027,7 +1042,9 @@ void KLineEdit::makeCompletionBox()
 void KLineEdit::userCancelled(const QString & cancelText)
 {
     if ( completionMode() != KGlobalSettings::CompletionPopupAuto )
+    {
       setText(cancelText);
+    }
     else if (hasSelectedText() )
     {
       if (d->userSelection)
@@ -1204,6 +1221,14 @@ void KLineEdit::setTextWorkaround( const QString& text )
 {
     setText( text );
     end( false ); // force cursor at end
+}
+
+QString KLineEdit::originalText() const
+{
+    if ( d->enableSqueezedText && isReadOnly() )
+        return d->squeezedText;
+
+    return text();
 }
 
 void KLineEdit::virtual_hook( int id, void* data )

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -49,8 +49,9 @@ public:
 	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
 	struct JobFilter
 	{
-		JobFilter() { m_type[0] = m_type[1] = 0; }
+		JobFilter() { m_type[0] = m_type[1] = 0; m_isspecial = false; }
 		int	m_type[2];
+		bool m_isspecial;
 	};
 
 	KMJobManager(QObject *parent = 0, const char *name = 0);
@@ -58,7 +59,7 @@ public:
 
 	static KMJobManager* self();
 
-	void addPrinter(const QString& pr, JobType type = ActiveJobs);
+	void addPrinter(const QString& pr, JobType type = ActiveJobs, bool isSpecial = false);
 	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();
 	QDict<JobFilter>* filter();

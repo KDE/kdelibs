@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -141,11 +141,11 @@ void QInputBox::init(int numlines)
 		main_->addSpacing(10);
 	}
 
-	okbtn_ = new QPushButton(i18n("OK"), this);
+	okbtn_ = new KPushButton(KStdGuiItem::ok(), this);
 	connect(okbtn_, SIGNAL(clicked()), SLOT(accept()));
 	okbtn_->setDefault(true);
 
-	cancelbtn_ = new QPushButton(i18n("Cancel"), this);
+	cancelbtn_ = new KPushButton(KStdGuiItem::cancel(), this);
 	connect(cancelbtn_, SIGNAL(clicked()), SLOT(reject()));
 
 	QHBoxLayout	*btnlayout_ = new QHBoxLayout(0, 0, 10);

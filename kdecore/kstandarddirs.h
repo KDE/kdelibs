@@ -77,6 +77,7 @@ class KStandardDirsPrivate;
  * @li exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
  * @li html - HTML documentation.
  * @li icon - Icons, see KIconLoader.
+ * @li kcfg - Configuration meta information files used by KConfig XT.
  * @li lib - Libraries.
  * @li locale - Translation files for KLocale.
  * @li mime - Mime types.
@@ -594,6 +595,20 @@ public:
 	void checkConfig() const;
 	void applyDataRestrictions(const QString &) const;
 	void createSpecialResource(const char*);
+
+        // Like their publi counter parts but with an extra priority argument
+        // If priority is true, the directory is added directly after
+        // $KDEHOME/$XDG_DATA_HOME/$XDG_CONFIG_HOME
+	void addPrefix( const QString& dir, bool priority );
+	void addXdgConfigPrefix( const QString& dir, bool priority );
+	void addXdgDataPrefix( const QString& dir, bool priority );
+
+	// If priority is true, the directory is added before any other,
+	// otherwise after
+	bool addResourceType( const char *type,
+			      const QString& relativename, bool priority );
+	bool addResourceDir( const char *type,
+			     const QString& absdir, bool priority);
 };
 
 /**

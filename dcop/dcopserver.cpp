@@ -931,6 +931,7 @@ static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
     return 1;
 }
 
+static int pipeOfDeath[2];
 
 static void sighandler(int sig)
 {
@@ -939,8 +940,7 @@ static void sighandler(int sig)
 	return;
     }
 
-    qApp->quit();
-    //exit(0);
+    write(pipeOfDeath[1], "x", 1);
 }
 
 DCOPServer::DCOPServer(bool _suicide)
@@ -1006,9 +1006,12 @@ DCOPServer::DCOPServer(bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
-            // Create a link named like the old-style (KDE 2.x) naming
-            QCString compatName = DCOPClient::dcopServerFileOld();
-            ::symlink(fName,compatName);
+	    if (QCString(getenv("DCOPAUTHORITY")).isEmpty())
+	    {
+                // Create a link named like the old-style (KDE 2.x) naming
+                QCString compatName = DCOPClient::dcopServerFileOld();
+                ::symlink(fName,compatName);
+            }
 	}
 
 #if 0
@@ -1572,7 +1575,8 @@ extern "C" int kdemain( int argc, char* argv[] )
     // check if we are already running
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
-    if (isRunning(DCOPClient::dcopServerFileOld()))
+    if (QCString(getenv("DCOPAUTHORITY")).isEmpty() &&
+        isRunning(DCOPClient::dcopServerFileOld()))
     {
        // Make symlink for compatibility
        QCString oldFile = DCOPClient::dcopServerFileOld();
@@ -1629,6 +1633,8 @@ extern "C" int kdemain( int argc, char* argv[] )
 	    return 0; // get rid of controlling terminal
     }
 
+    pipe(pipeOfDeath);
+
     signal(SIGHUP, sighandler);
     signal(SIGTERM, sighandler);
     signal(SIGPIPE, SIG_IGN);
@@ -1636,7 +1642,10 @@ extern "C" int kdemain( int argc, char* argv[] )
     putenv(strdup("SESSION_MANAGER="));
 
     QApplication a( argc, argv, false );
-
+    
+    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
+    a.connect(&DEATH, SIGNAL(activated(int)), SLOT(quit()));
+    
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 

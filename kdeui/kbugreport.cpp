@@ -131,7 +131,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     glay->addWidget( tmpLabel, row, 1 );
     QWhatsThis::add( tmpLabel, qwtstr );
 
-    setButtonOK( KGuiItem( i18n("&Send"), i18n( "Send bug report." ),
+    setButtonOK( KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
 
   }
@@ -421,7 +421,7 @@ void KBugReport::slotCancel()
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
-             i18n( "Close Message" ), i18n( "&Discard" ), i18n("&Continue") );
+             i18n( "Close Message" ), KStdGuiItem::discard(), KStdGuiItem::cont() );
     if( rc == KMessageBox::No )
       return;
   }

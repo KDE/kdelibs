@@ -2,23 +2,30 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 <xsl:template match="releaseinfo" mode="titlepage.mode">
-  <br/>
   <xsl:call-template name="gentext">
     <xsl:with-param name="key">revision</xsl:with-param>
   </xsl:call-template>
   <xsl:text> </xsl:text>
   <span class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
-    <br/>
+    <xsl:text> (</xsl:text>
+	<xsl:apply-templates mode="titlepage.mode" select="../date"/>
+    <xsl:text>)</xsl:text>
   </span>
 </xsl:template>
 
 <xsl:template match="author" mode="titlepage.mode">
-  <h3 class="{name(.)}"><!--Documentation by--> <!-- to internationalise -->
+  <p class="{name(.)}"><!--Documentation by--> <!-- to internationalise -->
     <xsl:call-template name="person.name"/>
     <xsl:text> </xsl:text>
 	<xsl:apply-templates mode="titlepage.mode" select="./affiliation"/>
-  </h3>
+  </p>
+</xsl:template>
+
+<xsl:template match="date" mode="titlepage.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+  </span>
 </xsl:template>
 
 <!-- Reduces affiliation to emailaddress -->
@@ -37,16 +44,22 @@
   </xsl:call-template>
 </xsl:template>
 
-<!-- other things to be added: add date phrase: Last updated -->
-
-<xsl:template match="othercredit" mode="titlepage.mode">
-  <p class="{name(.)}">
-  <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
-  <xsl:text>: </xsl:text>
-  <a><!-- removed the name="./@id" attribute: it was wrong and I don't understand what it's supposed to do -->
+  <xsl:template match="othercredit" mode="titlepage.mode">
+    <span class="{name(.)}">
+      <xsl:choose>
+	<xsl:when test="./contrib">
+	  <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
+	</xsl:when>
+	<xsl:when test="not(./contrib)">
+	  <span style="text-transform: capitalize">
+	    <xsl:apply-templates mode="titlepage.mode" select="@role"/>
+	  </span>
+	</xsl:when>
+      </xsl:choose>
+      <xsl:text>: </xsl:text>
     <xsl:call-template name="person.name"/>
-  </a>
-  </p>
+    <br />
+  </span>
 </xsl:template>
 
 <xsl:template match="contrib" mode="titlepage.mode">

@@ -93,6 +93,9 @@ public:
     void submit();
     void reset();
 
+    void setMalformed(bool malformed) { m_malformed = malformed; }
+    bool isMalformed() const { return m_malformed; }
+
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
 
@@ -110,6 +113,7 @@ private:
     bool m_insubmit : 1;
     bool m_doingsubmit : 1;
     bool m_inreset : 1;
+    bool m_malformed : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -191,6 +195,7 @@ public:
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     void activate();
     virtual void attach();
+    void click();
 
 protected:
     DOMString m_value;

@@ -53,6 +53,12 @@
     if (!(group->variable == value)) \
         group.access()->variable = value;
 
+#ifndef ENABLE_DUMP
+#ifndef NDEBUG
+#define ENABLE_DUMP 1
+#endif
+#endif
+
 namespace DOM {
     class DOMStringImpl;
 }
@@ -589,37 +595,37 @@ private:
 protected:
     void setBitDefaults()
     {
-	inherited_flags.f._empty_cells = SHOW;
-	inherited_flags.f._caption_side = CAPTOP;
-	inherited_flags.f._list_style_type = DISC;
-	inherited_flags.f._list_style_position = OUTSIDE;
-	inherited_flags.f._visibility = VISIBLE;
-	inherited_flags.f._text_align = TAAUTO;
-	inherited_flags.f._text_transform = TTNONE;
-	inherited_flags.f._text_decorations = TDNONE;
-	inherited_flags.f._cursor_style = CURSOR_AUTO;
-	inherited_flags.f._direction = LTR;
-	inherited_flags.f._border_collapse = true;
-	inherited_flags.f._white_space = NORMAL;
+        inherited_flags.f._empty_cells = initialEmptyCells();
+        inherited_flags.f._caption_side = initialCaptionSide();
+	inherited_flags.f._list_style_type = initialListStyleType();
+	inherited_flags.f._list_style_position = initialListStylePosition();
+	inherited_flags.f._visibility = initialVisibility();
+	inherited_flags.f._text_align = initialTextAlign();
+	inherited_flags.f._text_transform = initialTextTransform();
+	inherited_flags.f._text_decorations = initialTextDecoration();
+	inherited_flags.f._cursor_style = initialCursor();
+	inherited_flags.f._direction = initialDirection();
+	inherited_flags.f._border_collapse = initialBorderCollapse();
+	inherited_flags.f._white_space = initialWhiteSpace();
 	inherited_flags.f._visuallyOrdered = false;
 	inherited_flags.f._htmlHacks=false;
 	inherited_flags.f._user_input = UI_NONE;
 
-	noninherited_flags.f._display = INLINE;
-	noninherited_flags.f._bg_repeat = REPEAT;
-	noninherited_flags.f._bg_attachment = true; // scroll
-	noninherited_flags.f._overflow = OVISIBLE;
-	noninherited_flags.f._vertical_align = BASELINE;
-	noninherited_flags.f._clear = CNONE;
-	noninherited_flags.f._position = STATIC;
-	noninherited_flags.f._floating = FNONE;
-	noninherited_flags.f._table_layout = TAUTO;
-	noninherited_flags.f._flowAroundFloats=false;
+        noninherited_flags.f._display = initialDisplay();
+	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
+	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
+	noninherited_flags.f._overflow = initialOverflow();
+	noninherited_flags.f._vertical_align = initialVerticalAlign();
+	noninherited_flags.f._clear = initialClear();
+	noninherited_flags.f._position = initialPosition();
+	noninherited_flags.f._floating = initialFloating();
+	noninherited_flags.f._table_layout = initialTableLayout();
+	noninherited_flags.f._flowAroundFloats= initialFlowAroundFloats();
 	noninherited_flags.f._styleType = NOPSEUDO;
 	noninherited_flags.f._affectedByHover = false;
 	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
-	noninherited_flags.f._unicodeBidi = UBNormal;
+	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
     }
 
 public:
@@ -787,6 +793,12 @@ public:
     void setMinHeight(Length v) { SET_VAR(box,min_height,v) }
     void setMaxHeight(Length v) { SET_VAR(box,max_height,v) }
 
+    void resetBorderTop() { SET_VAR(surround, border.top, BorderValue()) }
+    void resetBorderRight() { SET_VAR(surround, border.right, BorderValue()) }
+    void resetBorderBottom() { SET_VAR(surround, border.bottom, BorderValue()) }
+    void resetBorderLeft() { SET_VAR(surround, border.left, BorderValue()) }
+    void resetOutline() { SET_VAR(background, outline, BorderValue()) }
+
     void setBorderLeftWidth(unsigned short v)   {  SET_VAR(surround,border.left.width,v) }
     void setBorderLeftStyle(EBorderStyle v)     {  SET_VAR(surround,border.left.style,v) }
     void setBorderLeftColor(const QColor & v)   {  SET_VAR(surround,border.left.color,v) }
@@ -866,11 +878,13 @@ public:
     void setListStyleImage(CachedImage *v) {  SET_VAR(inherited,style_image,v)}
     void setListStylePosition(EListStylePosition v) { inherited_flags.f._list_style_position = v; }
 
+    void resetMargin() { SET_VAR(surround, margin, LengthBox(Fixed)) }
     void setMarginTop(Length v)     {  SET_VAR(surround,margin.top,v) }
     void setMarginBottom(Length v)  {  SET_VAR(surround,margin.bottom,v) }
     void setMarginLeft(Length v)    {  SET_VAR(surround,margin.left,v) }
     void setMarginRight(Length v)   {  SET_VAR(surround,margin.right,v) }
 
+    void resetPadding() { SET_VAR(surround, padding, LengthBox(Variable)) }
     void setPaddingTop(Length v)    {  SET_VAR(surround,padding.top,v) }
     void setPaddingBottom(Length v) {  SET_VAR(surround,padding.bottom,v) }
     void setPaddingLeft(Length v)   {  SET_VAR(surround,padding.left,v) }
@@ -900,7 +914,7 @@ public:
 
 
     ContentData* contentData() const { return content; }
-
+    bool contentDataEquivalent(RenderStyle* otherStyle);
     void setContent(DOM::DOMStringImpl* s, bool add);
     void setContent(CachedObject* o, bool add);
 
@@ -909,9 +923,56 @@ public:
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
     Diff diff( const RenderStyle *other ) const;
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     QString createDiff( const RenderStyle &parent ) const;
 #endif
+
+    // Initial values for all the properties
+    static bool initialBackgroundAttachment() { return true; }
+    static EBackgroundRepeat initialBackgroundRepeat() { return REPEAT; }
+    static bool initialBorderCollapse() { return false; }
+    static EBorderStyle initialBorderStyle() { return BNONE; }
+    static ECaptionSide initialCaptionSide() { return CAPTOP; }
+    static EClear initialClear() { return CNONE; }
+    static EDirection initialDirection() { return LTR; }
+    static EDisplay initialDisplay() { return INLINE; }
+    static EEmptyCell initialEmptyCells() { return SHOW; }
+    static EFloat initialFloating() { return FNONE; }
+    static EListStylePosition initialListStylePosition() { return OUTSIDE; }
+    static EListStyleType initialListStyleType() { return DISC; }
+    static EOverflow initialOverflow() { return OVISIBLE; }
+    static EPosition initialPosition() { return STATIC; }
+    static ETableLayout initialTableLayout() { return TAUTO; }
+    static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
+    static ETextTransform initialTextTransform() { return TTNONE; }
+    static EVisibility initialVisibility() { return VISIBLE; }
+    static EWhiteSpace initialWhiteSpace() { return NORMAL; }
+    static Length initialBackgroundXPosition() { return Length(); }
+    static Length initialBackgroundYPosition() { return Length(); }
+    static short initialBorderHorizontalSpacing() { return 0; }
+    static short initialBorderVerticalSpacing() { return 0; }
+    static ECursor initialCursor() { return CURSOR_AUTO; }
+    static QColor initialColor() { return Qt::black; }
+    static CachedImage* initialBackgroundImage() { return 0; }
+    static CachedImage* initialListStyleImage() { return 0; }
+    static unsigned short initialBorderWidth() { return 3; }
+    static int initialLetterWordSpacing() { return 0; }
+    static Length initialSize() { return Length(); }
+    static Length initialMinSize() { return Length(0, Fixed); }
+    static Length initialMaxSize() { return Length(UNDEFINED, Fixed); }
+    static Length initialOffset() { return Length(); }
+    static Length initialMargin() { return Length(Fixed); }
+    static Length initialPadding() { return Length(Variable); }
+    static Length initialTextIndent() { return Length(Fixed); }
+    static EVerticalAlign initialVerticalAlign() { return BASELINE; }
+    static int initialWidows() { return 2; }
+    static int initialOrphans() { return 2; }
+    static Length initialLineHeight() { return Length(-100, Percent); }
+    static ETextAlign initialTextAlign() { return TAAUTO; }
+    static ETextDecoration initialTextDecoration() { return TDNONE; }
+    static bool initialFlowAroundFloats() { return false; }
+    static int initialOutlineOffset() { return 0; }
+    static float initialOpacity() { return 1.0f; }
 };
 
 

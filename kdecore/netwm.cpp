@@ -259,7 +259,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_USER_TIME",
 	    "_NET_WM_HANDLED_ICONS",
             "_NET_STARTUP_ID",
-            "_NET_AM_ALLOWED_ACTIONS",
+            "_NET_WM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -2716,6 +2716,15 @@ void NETWinInfo::setStrut(NETStrut strut) {
 void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     if (p->mapping_state_dirty)
 	updateWMState();
+
+    // setState() needs to know the current state, so read it even if not requested
+    if( ( p->properties[ PROTOCOLS ] & WMState ) == 0 ) {
+        p->properties[ PROTOCOLS ] |= WMState;
+        unsigned long props[ PROPERTIES_SIZE ] = { WMState, 0 };
+        assert( PROPERTIES_SIZE == 2 ); // add elements above
+        update( props );
+        p->properties[ PROTOCOLS ] &= ~WMState;
+    }
 
     if (role == Client && p->mapping_state != Withdrawn) {
 

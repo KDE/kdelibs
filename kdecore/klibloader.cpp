@@ -518,12 +518,16 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     if (wrap->lib) {
       disconnect( wrap->lib, SIGNAL( destroyed() ),
                   this, SLOT( slotLibraryDestroyed() ) );
-      delete wrap->lib;
-      wrap->lib = 0L;
+      KLibrary* to_delete = wrap->lib;
+      wrap->lib = 0L; // unset first, because KLibrary dtor can cause
+      delete to_delete; // recursive call to close_pending()
     }
   }
 
-  if (d->unload_mode == KLibLoaderPrivate::DONT_UNLOAD) return;
+  if (d->unload_mode == KLibLoaderPrivate::DONT_UNLOAD) {
+    d->pending_close.clear();
+    return;
+  }
 
   bool deleted_one = false;
   while ((wrap = d->loaded_stack.first())) {

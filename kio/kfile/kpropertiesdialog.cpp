@@ -65,6 +65,7 @@ extern "C" {
 #include <qgroupbox.h>
 #include <qwhatsthis.h>
 #include <qtooltip.h>
+#include <qstyle.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -109,6 +110,17 @@ extern "C" {
 #include "kpropertiesmimetypebase.h"
 
 #include "kpropertiesdialog.h"
+
+static QString nameFromFileName(QString nameStr)
+{
+   if ( nameStr.endsWith(".desktop") )
+      nameStr.truncate( nameStr.length() - 8 );
+   if ( nameStr.endsWith(".kdelnk") )
+      nameStr.truncate( nameStr.length() - 7 );
+   // Make it human-readable (%2F => '/', ...)
+   nameStr = KIO::decodeFileName( nameStr );
+   return nameStr;
+}
 
 mode_t KFilePermissionsPropsPlugin::fperm[3][4] = {
         {S_IRUSR, S_IWUSR, S_IXUSR, S_ISUID},
@@ -608,8 +620,10 @@ public:
   bool bMultiple;
   bool bIconChanged;
   bool bKDesktopMode;
+  bool bDesktopFile;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
+  QString oldFileName;
   KLineEdit* m_lined;
 };
 
@@ -620,6 +634,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
   d->bKDesktopMode = (QCString(qApp->name()) == "kdesktop"); // nasty heh?
+  d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
   // We set this data from the first item, and we'll
@@ -677,9 +692,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
     }
+    d->oldFileName = filename;
 
-    bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
-    if ( d->bKDesktopMode && isDesktopFile ) {
+    // Make it human-readable
+    filename = nameFromFileName( filename );
+
+    if ( d->bKDesktopMode && d->bDesktopFile ) {
         KDesktopFile config( properties->kurl().path(), true /* readonly */ );
         if ( config.hasKey( "Name" ) ) {
             filename = config.readName();
@@ -687,9 +705,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
 
     oldName = filename;
-
-    // Make it human-readable (%2F => '/', ...)
-    filename = KIO::decodeFileName( filename );
 
     QString path;
 
@@ -716,7 +731,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
 
     if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
-        isDesktopFile ||
+        d->bDesktopFile ||
         KBindingPropsPlugin::supports(properties->items())) {
 
       determineRelativePath( path );
@@ -781,9 +796,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !isDevice && !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
-    iconButton->setFixedSize(70, 70);
+    int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
+    iconButton->setFixedSize(bsize, bsize);
     iconButton->setStrictIconSize(false);
-    iconButton->setIconType(KIcon::Desktop, KIcon::Device);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
     QString iconStr = KMimeType::findByURL( properties->kurl(),
@@ -791,17 +806,23 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                                                           isLocal );
     if ( bDesktopFile && isLocal )
     {
-      KSimpleConfig config( properties->kurl().path() );
+      KDesktopFile config( properties->kurl().path(), true );
       config.setDesktopGroup();
       iconStr = config.readEntry( "Icon" );
-    }
+      if ( config.hasDeviceType() )
+	iconButton->setIconType( KIcon::Desktop, KIcon::Device );
+      else
+	iconButton->setIconType( KIcon::Desktop, KIcon::Application );
+    } else
+      iconButton->setIconType( KIcon::Desktop, KIcon::FileSystem );
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(QString) ),
              this, SLOT( slotIconChanged() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
-    iconLabel->setFixedSize(70, 70);
+    int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
+    iconLabel->setFixedSize(bsize, bsize);
     iconLabel->setPixmap( DesktopIcon( iconStr ) );
     iconArea = iconLabel;
   }
@@ -1003,7 +1024,9 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 void KFilePropsPlugin::slotEditFileType()
 {
   QString keditfiletype = QString::fromLatin1("keditfiletype");
-  KRun::runCommand( keditfiletype + " " + KProcess::quote(d->mimeType),
+  KRun::runCommand( keditfiletype
+                    + " --parent " + QString::number( properties->topLevelWidget()->winId())
+                    + " " + KProcess::quote(d->mimeType),
                     keditfiletype, keditfiletype /*unused*/);
 }
 
@@ -1156,7 +1179,7 @@ void KFilePropsPlugin::applyChanges()
 
   if (nameArea->inherits("QLineEdit"))
   {
-    QString n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
+    QString n = ((QLineEdit *) nameArea)->text();
     // Remove trailing spaces (#4345)
     while ( n[n.length()-1].isSpace() )
       n.truncate( n.length() - 1 );
@@ -1173,8 +1196,13 @@ void KFilePropsPlugin::applyChanges()
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
+      
+      QString newFileName = KIO::encodeFileName(n);
+      if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
+         newFileName += ".desktop";
+         
       // Tell properties. Warning, this changes the result of properties->kurl() !
-      properties->rename( n );
+      properties->rename( newFileName );
 
       // Update also relative path (for apps and mimetypes)
       if ( !m_sRelativePath.isEmpty() )
@@ -1225,7 +1253,6 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
   assert( properties->item() );
   assert( !properties->item()->url().isEmpty() );
-  bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
 
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
@@ -1234,7 +1261,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     newURL.setPath( locateLocal("mime", m_sRelativePath) );
     properties->updateUrl( newURL );
   }
-  else if (isDesktopFile && !m_sRelativePath.isEmpty())
+  else if (d->bDesktopFile && !m_sRelativePath.isEmpty())
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
     KURL newURL;
@@ -1243,11 +1270,11 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     properties->updateUrl( newURL );
   }
 
-  if ( d->bKDesktopMode && isDesktopFile ) {
+  if ( d->bKDesktopMode && d->bDesktopFile ) {
       // Renamed? Update Name field
-      if ( oldName != properties->kurl().fileName() || m_bFromTemplate ) {
+      if ( d->oldFileName != properties->kurl().fileName() || m_bFromTemplate ) {
           KDesktopFile config( properties->kurl().path() );
-          QString nameStr = properties->kurl().fileName();
+          QString nameStr = nameFromFileName(properties->kurl().fileName());
           config.writeEntry( "Name", nameStr );
           config.writeEntry( "Name", nameStr, true, false, true );
       }
@@ -2360,12 +2387,7 @@ void KURLPropsPlugin::applyChanges()
   // but distributions can. Update the Name field in that case.
   if ( config.hasKey("Name") )
   {
-    // ### duplicated from KApplicationPropsPlugin
-    QString nameStr = properties->kurl().fileName();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
+    QString nameStr = nameFromFileName(properties->kurl().fileName());
     config.writeEntry( "Name", nameStr );
     config.writeEntry( "Name", nameStr, true, false, true );
 
@@ -2566,8 +2588,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      QString device = mp->mountedFrom();
      kdDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType()<<endl;
 
-     if (device.startsWith("/") && (mountPoint != "-") &&
-         (mountPoint != "none") && !mountPoint.isEmpty())
+     if ((mountPoint != "-") && (mountPoint != "none") && !mountPoint.isEmpty()
+          && device != "none")
      {
         devices.append( device + QString::fromLatin1(" (")
                         + mountPoint + QString::fromLatin1(")") );
@@ -2611,7 +2633,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   layout->addMultiCellWidget(sep, 4, 4, 0, 2);
 
   unmounted = new KIconButton( d->m_frame );
-  unmounted->setFixedSize(70, 70);
+  int bsize = 66 + 2 * unmounted->style().pixelMetric(QStyle::PM_ButtonMargin);
+  unmounted->setFixedSize(bsize, bsize);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 5, 0);
 
@@ -2868,7 +2891,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
   {
      mw->listView->setRootIsDecorated(true);
-     mw->listView->setSelectionMode(QListView::Multi);
+     mw->listView->setSelectionMode(QListView::Extended);
      mw->listView->setAllColumnsShowFocus(true);
      mw->listView->setFullWidth(true);
      mw->listView->setMinimumSize(500,400);
@@ -3734,13 +3757,8 @@ void KApplicationPropsPlugin::applyChanges()
 
   QString nameStr = nameEdit ? nameEdit->text() : QString::null;
   if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
-  {
-    nameStr = properties->kurl().fileName();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
-  }
+    nameStr = nameFromFileName(properties->kurl().fileName());
+
   config.writeEntry( "Name", nameStr );
   config.writeEntry( "Name", nameStr, true, false, true );
 

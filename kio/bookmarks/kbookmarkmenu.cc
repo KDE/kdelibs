@@ -260,15 +260,15 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
   //
   // TODO rename these, but, message freeze... umm...
 
-  if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
+//  if (bookmark.isGroup()) {
+    id = contextMenu->insertItem( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
-  }
+/*  }
   else
   {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
-  }
+  }*/
 }
 
 void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, int val )
@@ -281,7 +281,7 @@ void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, in
     id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
-    id = contextMenu->insertItem( i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
     id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
@@ -292,7 +292,7 @@ void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, in
     id = contextMenu->insertItem( i18n( "Copy Link Location" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
-    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
     id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
@@ -383,7 +383,7 @@ void RMB::slotRMBActionRemove( int val )
                  : i18n("Are you sure you wish to remove this bookmark?"),
           folder ? i18n("Bookmark Folder Removal")
                  : i18n("Bookmark Removal"),
-          i18n("Remove"), i18n("Cancel"))
+          KGuiItem( i18n("Remove"), "editdelete"), KStdGuiItem::cancel())
         != KMessageBox::Yes
      )
     return;
@@ -805,16 +805,21 @@ void KBookmarkEditFields::setLocation(const QString &str)
 /********************************************************************/
 
 // TODO - make the dialog use Properties as a title when in Modify mode... (dirk noticed the bug...)
-KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
-                                         QWidget * parent, const char * name, const QString& caption)
+KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
+                                         QWidget * parent, const char * name, const QString& caption )
   : KDialogBase(parent, name, true, caption,
                 (editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel),
                 Ok, false, KGuiItem()),
-    m_folderTree(0), m_mgr(mgr), m_editType(editType)
+    m_folderTree(0), m_mgr(mgr), m_editType(editType), m_address(address)
 {
   setButtonOK( KGuiItem((editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" )) );
-  if (editType == InsertionMode)
+  if (editType == InsertionMode) {
     setButtonText( User1, i18n( "New Folder..." ) );
+    if (KGlobalSettings::showIconsOnPushButtons()) {
+      actionButton( User1 )->setIconSet( SmallIcon( "folder_new" ) );
+      actionButton( Ok )->setIconSet( SmallIcon( "bookmark_add" ) );
+    }
+  }
 
   bool folder = url.isNull();
 
@@ -832,7 +837,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 
   if ( editType == InsertionMode )
   {
-    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name, m_address );
     connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ),
              this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
     vbox->addWidget( m_folderTree );
@@ -897,21 +902,26 @@ void KBookmarkEditDialog::slotUser1()
 /********************************************************************/
 /********************************************************************/
 
-static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group )
+static void fillGroup( QListView* listview, KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group, bool expandOpenGroups = true, const QString& address = QString::null )
 {
   bool noSubGroups = true;
   KBookmarkFolderTreeItem * lastItem = 0L;
+  KBookmarkFolderTreeItem * item = 0L;
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
     if ( bk.isGroup() )
     {
       KBookmarkGroup grp = bk.toGroup();
-      KBookmarkFolderTreeItem * item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
-      fillGroup( item, grp );
-      if ( grp.isOpen() )
+      item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
+      fillGroup( listview, item, grp, expandOpenGroups, address );
+      if ( expandOpenGroups && grp.isOpen() )
         item->setOpen( true );
       lastItem = item;
       noSubGroups = false;
+    }
+    if (bk.address() == address) {
+      listview->setCurrentItem( lastItem );
+      listview->ensureItemVisible( item );
     }
   }
   if ( noSubGroups ) {
@@ -919,7 +929,7 @@ static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup grou
   }
 }
 
-QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name )
+QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name, const QString& address )
 {
   QListView *listview = new QListView( parent, name );
 
@@ -932,23 +942,21 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
   listview->setResizeMode( QListView::AllColumns );
   listview->setMinimumSize( 60, 100 );
 
-  fillTree( listview, mgr );
+  fillTree( listview, mgr, address );
 
   return listview;
 }
 
-void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr )
+void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, const QString& address )
 {
   listview->clear();
-
+  
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
-  fillGroup( rootItem, root );
-  rootItem->setOpen( true );
-
-  listview->setFocus();
   listview->setCurrentItem( rootItem );
   rootItem->setSelected( true );
+  fillGroup( listview, rootItem, root, (address == root.groupAddress() || address == QString::null) ? true : false, address );
+  rootItem->setOpen( true );
 }
 
 static KBookmarkFolderTreeItem* ft_cast( QListViewItem *i )

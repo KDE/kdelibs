@@ -81,7 +81,10 @@ KateViewConfig *KateViewConfig::s_global = 0;
 KateRendererConfig *KateRendererConfig::s_global = 0;
 
 KateDocumentConfig::KateDocumentConfig ()
- : m_configFlags (0),
+ : m_tabWidth (8),
+   m_indentationWidth (2),
+   m_wordWrapAt (80),
+   m_configFlags (0),
    m_plugins (KateFactory::self()->plugins().count()),
    m_tabWidthSet (true),
    m_indentationWidthSet (true),

@@ -30,6 +30,7 @@ public:
     KFileFilterComboPrivate() {
         hasAllSupportedFiles = false;
         defaultFilter = i18n("*|All Files");
+        isMimeFilter = false;
     }
 
     // when we have more than 3 mimefilters and no default-filter,
@@ -37,6 +38,8 @@ public:
     // instead we show "All supported files". We have to translate
     // that back to the list of mimefilters in currentFilter() tho.
     bool hasAllSupportedFiles;
+    // true when setMimeFilter was called
+    bool isMimeFilter;
     QString lastFilter;
     QString defaultFilter;
 };
@@ -84,6 +87,7 @@ void KFileFilterCombo::setFilter(const QString& filter)
     }
 
     d->lastFilter = currentText();
+    d->isMimeFilter = false;
 }
 
 QString KFileFilterCombo::currentFilter() const
@@ -91,8 +95,7 @@ QString KFileFilterCombo::currentFilter() const
     QString f = currentText();
     if (f == text(currentItem())) { // user didn't edit the text
 	f = *filters.at(currentItem());
-        int mime = f.contains( '/' );
-        if ( mime > 0 || (currentItem() == 0 && d->hasAllSupportedFiles) ) {
+        if ( d->isMimeFilter || (currentItem() == 0 && d->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }
     }
@@ -149,6 +152,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     }
 
     d->lastFilter = currentText();
+    d->isMimeFilter = true;
 }
 
 void KFileFilterCombo::slotFilterChanged()

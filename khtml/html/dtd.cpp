@@ -110,7 +110,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     3, // ID_MARQUEE
     5, // ID_MENU
     0, // ID_META
-    1, // ID_NOBR
+    4, // ID_NOBR
    10,// ID_NOEMBED
    10,// ID_NOFRAMES
     3, // ID_NOSCRIPT
@@ -148,7 +148,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_U
     5, // ID_UL
     1, // ID_VAR
-    1, // ID_WBR
+    4, // ID_WBR
     5, // ID_XMP
     0, // ID_TEXT
 };
@@ -589,6 +589,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LEGEND:
     case ID_Q:
     case ID_A:
+    case ID_NOBR:
+    case ID_WBR:
         // _1 *
         return check_array(childID, tag_list_1);
     case ID_P:
@@ -620,8 +622,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // BODY: _1 * + _2
         if( check_array(childID, tag_list_1) ) return true;
         return check_array(childID, tag_list_2);
-    case ID_NOBR:
-    case ID_WBR:
     case ID_ADDRESS:
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
@@ -726,8 +726,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_TFOOT:
     case ID_TBODY:
         // THEAD: TR +
-        // allowing script here breaks spiegel.de. Some bug elsewhere. FIXME
-        if(childID == ID_TR /*|| ID_SCRIPT*/) return true;
+        if(childID == ID_TR || childID == ID_SCRIPT) return true;
         return false;
     case ID_COLGROUP:
         // COLGROUP: COL *
@@ -908,174 +907,3 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     }
 }
 
-
-#if 0
-
-
-struct attr_priv {
-    attr_priv() { id = len = 0, val = 0; }
-    attr_priv(ushort i, const QChar *v, ushort l)
-    { id =i; len = l, val = v; }
-    ushort id;
-    const QChar *val;
-    ushort len;
-};
-
-DOMString find_attr(ushort id, const attr_priv *attrs)
-{
-    int i = 0;
-    while(attrs[i].id != 0)
-    {
-        if(attrs[i].id == id)
-            return DOMString(attrs[i].val, attrs[i].len);
-        i++;
-    }
-    return DOMString();
-}
-
-static const QChar value_1_0 [] = { 'N','O','N','E' };
-
-attr_priv attr_list_1[] = {
-    attr_priv(ATTR_CLEAR, value_1_0, 4)
-};
-
-static const QChar value_2_0 [] = { 'R','E','C','T' };
-
-attr_priv attr_list_2[] = {
-    attr_priv(ATTR_SHAPE, value_2_0, 4)
-};
-
-static const QChar value_3_0 [] = { 'R','E','C','T' };
-
-attr_priv attr_list_3[] = {
-    attr_priv(ATTR_SHAPE, value_3_0, 4)
-};
-
-static const QChar value_4_0 [] = { 'D','A','T','A' };
-
-attr_priv attr_list_4[] = {
-    attr_priv(ATTR_VALUETYPE, value_4_0, 4)
-};
-
-static const QChar value_5_0 [] = { 'G','E','T' };
-static const QChar value_5_1 [] = { 'A','P','P','L','I','C','A','T','I','O','N','/','X','-','W','W','W','-','F','O','R','M','-','U','R','L','E','N','C','O','D','E','D' };
-
-attr_priv attr_list_5[] = {
-    attr_priv(ATTR_METHOD, value_5_0, 3),
-    attr_priv(ATTR_ENCTYPE, value_5_1, 33)
-};
-
-static const QChar value_6_0 [] = { 'T','E','X','T' };
-
-attr_priv attr_list_6[] = {
-    attr_priv(ATTR_TYPE, value_6_0, 4)
-};
-
-static const QChar value_7_0 [] = { 'S','U','B','M','I','T' };
-
-attr_priv attr_list_7[] = {
-    attr_priv(ATTR_TYPE, value_7_0, 6)
-};
-
-static const QChar value_8_0 [] = { '1' };
-
-attr_priv attr_list_8[] = {
-    attr_priv(ATTR_SPAN, value_8_0, 1)
-};
-
-static const QChar value_9_0 [] = { '1' };
-
-attr_priv attr_list_9[] = {
-    attr_priv(ATTR_SPAN, value_9_0, 1)
-};
-
-static const QChar value_10_0 [] = { '1' };
-static const QChar value_10_1 [] = { '1' };
-
-attr_priv attr_list_10[] = {
-    attr_priv(ATTR_ROWSPAN, value_10_0, 1),
-    attr_priv(ATTR_COLSPAN, value_10_1, 1)
-};
-
-static const QChar value_11_0 [] = { '1' };
-static const QChar value_11_1 [] = { 'A','U','T','O' };
-
-attr_priv attr_list_11[] = {
-    attr_priv(ATTR_FRAMEBORDER, value_11_0, 1),
-    attr_priv(ATTR_SCROLLING, value_11_1, 4)
-};
-
-static const QChar value_12_0 [] = { '1' };
-static const QChar value_12_1 [] = { 'A','U','T','O' };
-
-attr_priv attr_list_12[] = {
-    attr_priv(ATTR_FRAMEBORDER, value_12_0, 1),
-    attr_priv(ATTR_SCROLLING, value_12_1, 4)
-};
-
-static const QChar value_13_0 [] = { '-','/','/','W','3','C','/','/','D','T','D' };
-static const QChar value_13_1 [] = { 'T','R','A','N','S','I','T','I','O','N','A','L','/','/','E','N' };
-
-attr_priv attr_list_13[] = {
-    attr_priv(ATTR_VERSION, value_13_0, 11),
-    attr_priv(ATTR_HTML, value_13_1, 16)
-};
-
-DOMString DOM::findDefAttrNone(ushort)
-{
-    return DOMString();
-};
-DOMString DOM::findDefAttrBR(ushort id)
-{
-    return find_attr(id, attr_list_1);
-}
-DOMString DOM::findDefAttrA(ushort id)
-{
-    return find_attr(id, attr_list_2);
-}
-DOMString DOM::findDefAttrAREA(ushort id)
-{
-    return find_attr(id, attr_list_3);
-}
-DOMString DOM::findDefAttrPARAM(ushort id)
-{
-    return find_attr(id, attr_list_4);
-}
-DOMString DOM::findDefAttrFORM(ushort id)
-{
-    return find_attr(id, attr_list_5);
-}
-DOMString DOM::findDefAttrINPUT(ushort id)
-{
-    return find_attr(id, attr_list_6);
-}
-DOMString DOM::findDefAttrBUTTON(ushort id)
-{
-    return find_attr(id, attr_list_7);
-}
-DOMString DOM::findDefAttrCOLGROUP(ushort id)
-{
-    return find_attr(id, attr_list_8);
-}
-DOMString DOM::findDefAttrCOL(ushort id)
-{
-    return find_attr(id, attr_list_9);
-}
-DOMString DOM::findDefAttrTH(ushort id)
-{
-    return find_attr(id, attr_list_10);
-}
-DOMString DOM::findDefAttrFRAME(ushort id)
-{
-    return find_attr(id, attr_list_11);
-}
-DOMString DOM::findDefAttrIFRAME(ushort id)
-{
-    return find_attr(id, attr_list_12);
-}
-DOMString DOM::findDefAttrHTML(ushort id)
-{
-    return find_attr(id, attr_list_13);
-}
-
-#endif

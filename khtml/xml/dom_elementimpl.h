@@ -183,7 +183,7 @@ public:
     virtual void attach();
     virtual void recalcStyle( StyleChange = NoChange );
 
-    virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {};
+    virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {}
     virtual bool isSelectable() const;
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );

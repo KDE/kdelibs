@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -112,8 +112,13 @@ const char* getPasswordCB(const char* prompt)
 					if ( c != NULL )
 					{
 						*c = '\0';
+						/* retrieve password sequence number */
 						pwd_asked = atoi( ++c );
+						/* update CUPS with current username */
 						cupsSetUser( _user );
+						/* copy password to a non temporary location */
+						strlcpy( passwd, _passwd, BUFSIZE2 );
+						_passwd = passwd;
 					}
 					else
 						_passwd = NULL;
@@ -125,6 +130,10 @@ const char* getPasswordCB(const char* prompt)
 	else
 		return NULL;
 
+	/* erase buffer containing unencrypted password, for security */
+	memset( buf, 0, 256 );
+
+	/* if OK, _passwd should point to global passwd variable, otherwise it should be NULL */
 	return _passwd;
 }
 
@@ -235,6 +244,9 @@ int main(int argc, char* argv[])
 #endif
 	/* print files */
 	jobID = cupsPrintFiles(printer, num_files, files, jobname, num_options, options);
+	/* erase unemcrypted password for security */
+	memset( passwd, 0, BUFSIZE2 );
+	/* check job creation status */
 	if (jobID <= 0)
 		error(ippErrorString(cupsLastError()));
 

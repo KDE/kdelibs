@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,7 +24,6 @@
 #include <qtimer.h>
 #include <qprogressbar.h>
 #include <qlabel.h>
-#include <qpushbutton.h>
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <klocale.h>
@@ -36,6 +35,8 @@
 #include <kseparator.h>
 #include <kactivelabel.h>
 #include <qwhatsthis.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 
 #include <cups/cups.h>
 #include <ctype.h>
@@ -52,7 +53,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
-	m_cancel = new QPushButton(i18n("&Cancel"), this);
+	m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
 	m_bar = new QProgressBar(this);

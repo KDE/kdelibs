@@ -46,7 +46,7 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
         User3 | User2 | User1 | Close,
         User3,
         false,
-        i18n("&All"), i18n("&Skip"), i18n("&Yes"))
+        i18n("&All"), i18n("&Skip"), KStdGuiItem::yes())
 {
     m_mainLabel = new QLabel( this );
     setMainWidget( m_mainLabel );

@@ -38,22 +38,28 @@ margin: 0;
 }
 
 .legalnotice, .copyright {
-font-size: xx-small;
+padding: 0;
+margin: 0;
 }
 
 .abstract {
 font-weight: bolder;
-padding-left: 2em;
-padding-right: 2em;
+padding-right: 1em;
 }
 
-.sect1, .chapter, .toc, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary {
-padding: 2em;
+.toc {
+padding-left: 1em;
+}
+
+.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary {
+padding: 1em;
 }
 
 .author {
-line-height: 1em;
+color: rgb(82,80,82);
 font-weight: bolder;
+padding: 0;
+margin: 0;
 }
 
 .othercredit {
@@ -65,8 +71,8 @@ padding: 0em;
 }
 
 .titlepage {
-padding-left: 2em;
-padding-right: 2em;
+padding-left: 1em;
+padding-right: 1em;
 }
 
 /* Links in Navigation */
@@ -152,6 +158,7 @@ background: url('help:/common/kde_logo_bg.png') transparent repeat;
 /* A little bit of padding makes the tables for keybindings etc much easier to read */
 
 TABLE { padding: 5px; } 
+DL { margin-top: 0em; margin-bottom: 0.5em; }
 DT { margin-top: 1em; }
 DIV.toc DT { margin-top: 0px; }
 DIV.SCREENSHOT { margin-bottom: 1em;

@@ -97,7 +97,7 @@ QByteArray KDESasl::getCramMd5Response(const QByteArray &aChallenge)
   if (secret.size() > 64)
   {
     KMD5 md5(secret);
-    secret.duplicate((const char*)md5.rawDigest(), 16);
+    secret.duplicate((const char*)(&(md5.rawDigest()[0])), 16);
     len = 16;
   }
   secret.resize(64);

@@ -28,6 +28,8 @@ in this Software without prior written authorization from the X Consortium.
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
 
+#include <string.h>
+
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/Xtrans.h"

@@ -319,6 +319,12 @@ void KJavaProcess::killJVM()
    javaProcess->kill();
 }
 
+void KJavaProcess::flushBuffers()
+{
+    while ( !d->BufferList.isEmpty() )
+        slotSendData(0);
+}
+
 /*  In this method, read one command and send it to the d->appletServer
  *  then return, so we don't block the event handling
  */

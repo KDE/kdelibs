@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -156,7 +156,7 @@ void KMConfigFonts::slotRemove()
 
 void KMConfigFonts::slotUp()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem(0);
+	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemAbove())
 		return;
 	nitem = new QListViewItem(m_fontpath, citem->itemAbove()->itemAbove(), citem->text(0));
@@ -166,7 +166,7 @@ void KMConfigFonts::slotUp()
 
 void KMConfigFonts::slotDown()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem(0);
+	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemBelow())
 		return;
 	nitem = new QListViewItem(m_fontpath, citem->itemBelow(), citem->text(0));
