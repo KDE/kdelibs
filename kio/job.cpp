@@ -221,6 +221,7 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
         return;
     }
+
     if (m_url.hasSubURL())
     {
 kdDebug(7007) << "Original URL = "  << m_url.url() << endl;
@@ -1865,6 +1866,9 @@ void CopyJob::copyNextFile()
                         else
                             config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
                         config.sync();
+                        files.remove( it );
+                        copyNextFile();
+                        return;
                     }
                     else
                     {
