@@ -842,6 +842,7 @@ bool Window::isSafeScript(ExecState *exec) const
   if ( actDomain == thisDomain )
     return true;
   kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
+  return false;
 }
 
 void Window::setListener(ExecState *exec, int eventId, Value func)
