@@ -397,7 +397,7 @@ KRuler::setRulerMetricStyle(KRuler::MetricStyle style)
     setShowBigMarks(true);
     setShowEndMarks(true);
 
-    setValuePerMediumMark(50);
+    update(contentsRect());
     setPixelPerMark(10.0);
 
     break;
@@ -413,7 +413,7 @@ KRuler::setRulerMetricStyle(KRuler::MetricStyle style)
     setShowBigMarks(true);
     setShowEndMarks(true);
 
-    setValuePerBigMark(1);
+    update(contentsRect());
     setPixelPerMark(9.0);
 
     break;
@@ -430,7 +430,7 @@ KRuler::setRulerMetricStyle(KRuler::MetricStyle style)
     setShowBigMarks(true);
     setShowEndMarks(true);
 
-    setValuePerBigMark(10);
+    update(contentsRect());
     setPixelPerMark(3.0);
   }
   switch (style) {
