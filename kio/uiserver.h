@@ -176,6 +176,7 @@ public:
   virtual ~UIServer();
 
 k_dcop:
+
   /**
    * Signal a new job
    * @param the DCOP application id of the job's parent application
@@ -204,6 +205,18 @@ k_dcop:
   void creatingDir( int id, KURL dir );
 
   void canResume( int id, unsigned int can_resume );
+
+  /**
+   * Invoke this method to request autorization info from the user
+   * or query the password daemon to see if one is stored.
+   *
+   * @param user  the username to be authenticated
+   * @param head  the resource the requires authorization
+   * @param host  the host name/address requesting the authorization
+   *
+   * @return serialized autorization info: (bool authorized, QString user, QString password)
+   */
+  QByteArray authorize( const QString& user, const QString& head, const QString& hostname );
 
 protected slots:
 
