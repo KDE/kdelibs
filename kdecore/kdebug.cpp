@@ -60,9 +60,9 @@ template class QList<KDebugEntry>;
 class KDebugEntry
 {
 public:
-  KDebugEntry (int n, QString d) {number=n; descr=d;}
-  unsigned int number;
-  QString descr;
+    KDebugEntry (int n, QString d) {number=n; descr=d;}
+    unsigned int number;
+    QString descr;
 };
 
 static QList<KDebugEntry> *KDebugCache;
@@ -72,8 +72,10 @@ static KStaticDeleter< QList<KDebugEntry> > kdd;
 
 static QString getDescrFromNum(unsigned short _num)
 {
-  if (!KDebugCache)
-      KDebugCache = kdd.setObject(new QList<KDebugEntry>);
+    if (!KDebugCache) {
+        KDebugCache = kdd.setObject(new QList<KDebugEntry>);
+        KDebugCache->setAutoDelete(true);
+    }
 
   for ( KDebugEntry *ent = KDebugCache->first();
 		  ent != 0; ent = KDebugCache->next()) {
