@@ -32,13 +32,36 @@ using namespace KIO;
 
 #define KIO_DATA_POLL_INTERVAL 0
 
+// don't forget to sync DISPATCH_DECL in dataslave.h
+#define DISPATCH_IMPL(type) \
+	void DataSlave::dispatch_##type() { \
+	  if (_suspended) { \
+	    QueueStruct q(Queue_##type); \
+	    dispatchQueue.push_back(q); \
+	    if (!timer->isActive()) timer->start(KIO_DATA_POLL_INTERVAL); \
+	  } else \
+	    type(); \
+	}
+
+// don't forget to sync DISPATCH_DECL1 in dataslave.h
+#define DISPATCH_IMPL1(type, paramtype, paramname) \
+	void DataSlave::dispatch_##type(paramtype paramname) { \
+	  if (_suspended) { \
+	    QueueStruct q(Queue_##type); \
+	    q.paramname = paramname; \
+	    dispatchQueue.push_back(q); \
+	    if (!timer->isActive()) timer->start(KIO_DATA_POLL_INTERVAL); \
+	  } else \
+	    type(paramname); \
+	}
+
+
 DataSlave::DataSlave() :
 	Slave(true, 0, "data", QString::null)
 {
   _suspended = false;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), SLOT(dispatchNext()));
-  timer->start(KIO_DATA_POLL_INTERVAL);
 }
 
 DataSlave::~DataSlave() {
@@ -64,16 +87,19 @@ void DataSlave::resume() {
 }
 
 void DataSlave::dispatchNext() {
-  if (dispatchQueue.empty()) return;
+  if (dispatchQueue.empty()) {
+    timer->stop();
+    return;
+  }
 
   const QueueStruct &q = dispatchQueue.front();
   //kdDebug() << this << k_funcinfo << "dispatching " << q.type << " " << dispatchQueue.size() << " left" << endl;
   switch (q.type) {
-    case QueueMimeType:		mimeType(q.s); break;
-    case QueueTotalSize:	totalSize(q.size); break;
-    case QueueSendMetaData:	sendMetaData(); break;
-    case QueueData:		data(q.ba); break;
-    case QueueFinished:		finished(); break;
+    case Queue_mimeType:	mimeType(q.s); break;
+    case Queue_totalSize:	totalSize(q.size); break;
+    case Queue_sendMetaData:	sendMetaData(); break;
+    case Queue_data:		data(q.ba); break;
+    case Queue_finished:	finished(); break;
   }/*end switch*/
 
   dispatchQueue.pop_front();
@@ -165,5 +191,14 @@ void DataSlave::virtual_hook( int id, void* data ) {
       KIO::Slave::virtual_hook( id, data );
   }
 }
+
+DISPATCH_IMPL1(mimeType, const QString &, s)
+DISPATCH_IMPL1(totalSize, KIO::filesize_t, size)
+DISPATCH_IMPL(sendMetaData)
+DISPATCH_IMPL1(data, const QByteArray &, ba)
+DISPATCH_IMPL(finished)
+
+#undef DISPATCH_IMPL
+#undef DISPATCH_IMPL1
 
 #include "dataslave.moc"
