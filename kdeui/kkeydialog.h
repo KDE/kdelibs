@@ -78,16 +78,12 @@ public slots:
      * Set all keys to their default values (bindings).
      **/
     void allDefault();
-    /**
-     * Synchronize the viewed split list with the currently used key codes.
-     **/
-    void listSync();
 
 protected slots:
 
-    void toChange( int _index );
+    void toChange( QListViewItem *item );
     void changeKey();
-    void updateAction( int _index );
+    void updateAction( QListViewItem *item );
     void defaultKey();
     void noKey();
     void keyMode( int _mode );
@@ -106,8 +102,8 @@ protected:
 
 protected:
 
-    QString item( int keyCode, const QString& entryKey ) const;
-    bool isKeyPresent();
+    QListViewItem *item( int keyCode, const QString& entryKey ) const;
+    bool isKeyPresent(int kcode );
     void setKey( int kCode );
 
     KKeyChooserPrivate *d;

@@ -69,7 +69,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kcolorbtn.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
-		moc_kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
+		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
 		klineeditdlg.cpp kthemebase.cpp ksharedpixmap.cpp \
 		kcharselect.cpp kcolordrag.cpp qxembed.cpp \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
@@ -85,12 +85,10 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp
 
-noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h
+noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h
 
 libkdeui_la_METASOURCES = AUTO
 
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
 
-moc_kkeydialog.cpp: kkeydialog.cpp
-	$(MOC) -f$(srcdir)/kkeydialog.cpp -o moc_kkeydialog.cpp $(srcdir)/kkeydialog.cpp
