@@ -28,7 +28,7 @@ class TestApp : public KUniqueApplication
 public:
    TestApp(int argc, char *argv[])
 	: KUniqueApplication(argc, argv, "TestApp") { }
-   int newInstance( QValueList<QCString> params );
+   virtual int newInstance( QValueList<QCString> params );
 };
 
 
