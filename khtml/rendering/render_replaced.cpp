@@ -120,7 +120,9 @@ void RenderWidget::printObject(QPainter *, int, int, int, int, int _tx, int _ty)
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
+    bool oldMouseTracking = m_widget->hasMouseTracking();
     m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
+    m_widget->setMouseTracking(oldMouseTracking);
 
     m_widget->show();
 }
@@ -158,7 +160,9 @@ void RenderWidget::placeWidget(int xPos, int yPos)
         relativePositionOffset(xPos, yPos);
 
     if(!(m_widget && m_view)) return;
+    bool oldMouseTracking = m_widget->hasMouseTracking();
     m_view->addChild(m_widget,  xPos+borderLeft()+paddingLeft(), yPos+borderTop()+paddingTop());
+    m_widget->setMouseTracking(oldMouseTracking);
 }
 
 short RenderWidget::intrinsicWidth() const
