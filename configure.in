@@ -22,6 +22,7 @@ AC_CHECK_FLAGS
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
+test $CCC = "" && CCC="xlc DCC"
 AC_PROG_CXX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
