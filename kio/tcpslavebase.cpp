@@ -532,7 +532,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
                 KSSLCertificateHome::setDefaultCertificate(certname, d->host,
-                                                           false, false);
+                                                           true, false);
          }
       }
       d->pkcs = pkcs;
