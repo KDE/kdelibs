@@ -301,6 +301,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 
         d->popupMenu = contextMenuInternal();
         initPopup();
+        emit aboutToShowContextMenu( d->popupMenu );
         int result = d->popupMenu->exec( e->globalPos() );
 
         if ( result == Cut )
@@ -557,11 +558,6 @@ void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
                this, SLOT( setCompletedItems( const QStringList& )));
 
     KCompletionBase::setCompletionObject( comp, hsig );
-}
-
-QPopupMenu* KLineEdit::contextMenu()
-{
-    return d->popupMenu;
 }
 
 QPopupMenu* KLineEdit::contextMenuInternal()

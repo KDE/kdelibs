@@ -403,7 +403,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         if ( type == QEvent::AccelOverride )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-            KeyBindingMap keys = getKeyBindings();            
+            KeyBindingMap keys = getKeyBindings();
             int tc_key = ( keys[TextCompletion] == 0 ) ?
                            KStdAccel::key(KStdAccel::TextCompletion) :
                            keys[TextCompletion];
@@ -468,6 +468,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
                 d->popupMenu = contextMenuInternal();
                 initPopup();
+                emit aboutToShowContextMenu( d->popupMenu );
                 int result = d->popupMenu->exec( e->globalPos() );
 
                 if ( result == Cut )
@@ -691,11 +692,6 @@ void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
     KCompletionBase::setCompletionObject( comp, hsig );
 }
 
-QPopupMenu* KComboBox::contextMenu()
-{
-    return d->popupMenu;
-}
-
 QPopupMenu* KComboBox::contextMenuInternal()
 {
 
@@ -720,8 +716,6 @@ QPopupMenu* KComboBox::contextMenuInternal()
     d->popupMenu->insertSeparator();
     d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
     d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
-    connect ( d->popupMenu, SIGNAL(aboutToShow()),
-              SIGNAL(aboutToShowContextMenu()) );
     return d->popupMenu;
 }
 
@@ -777,8 +771,8 @@ void KHistoryCombo::init( bool useCompletion )
     myRotated = false;
     myPixProvider = 0L;
 
-    connect( this, SIGNAL(aboutToShowContextMenu()),
-             SLOT(addContextMenuItems()) );
+    connect( this, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
+             SLOT(addContextMenuItems(QPopupMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
 }
@@ -826,11 +820,13 @@ void KHistoryCombo::clearHistory()
         completionObject()->clear();
 }
 
-void KHistoryCombo::addContextMenuItems()
+void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
 {
-    contextMenu()->insertSeparator();
-    contextMenu()->insertItem( i18n("Empty contents"),
-                               this, SLOT( slotClear()));
+    if ( menu )
+    {
+        menu->insertSeparator();
+        menu->insertItem( i18n("Empty contents"), this, SLOT( slotClear()));
+    }
 }
 
 void KHistoryCombo::addToHistory( const QString& item )

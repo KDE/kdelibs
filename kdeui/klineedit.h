@@ -278,23 +278,6 @@ public:
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
 
-    /**
-     * Returns a pointer to the on demand context (popup) menu.
-     *
-     * This method provides access to the on demand context menu
-     * such that you can add or modify the entries in it before it
-     * is displayed.
-     *
-     * Carefully note that the context menu is created and destroyed
-     * on demand.  That means this function will only return a valid
-     * popup menu if and only if it is called from withing a SLOT that
-     * is connected to the @ref aboutToShowContextMenu() signal!
-     * Otherwise, this function will always return NULL pointer.
-     *
-     * @return the context menu if one is present, a NULL object otherwise.
-     */
-    QPopupMenu* contextMenu();
-
 signals:
 
     /**
@@ -335,15 +318,18 @@ signals:
     void completionModeChanged( KGlobalSettings::Completion );
 
     /**
-     * Emitted whenever the context menu is about to be displayed.
+     * Emitted before the context menu is displayed.
      *
-     * IMPORTANT NOTE: the only way you can add your own entries into
-     * the context menu is by connecting to this signal and then
-     * calling @ref contextMenu() to get an instance of the popup menu.
+     * The signal allows you to add your own entries into the
+     * the context menu that is created on demand.
      *
-     * See @ref contextMenu() for details.
+     * NOTE: Do not store the pointer to the QPopupMenu
+     * provided through since it is created and deleted
+     * on demand.
+     *
+     * @param the context menu about to be displayed
      */
-    void aboutToShowContextMenu();
+    void aboutToShowContextMenu( QPopupMenu* );
 
 public slots:
 
