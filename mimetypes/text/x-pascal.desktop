@@ -37,6 +37,7 @@ Comment[pt]=Programa em Pascal
 Comment[pt_BR]=Arquivo-fonte do Pascal
 Comment[ro]=Fişier sursă Pascal
 Comment[ru]=Программа на Паскале
+Comment[se]=Pascal-gáldofiila
 Comment[sk]=Zdrojový kód Pascal
 Comment[sl]=Izvirna koda pascal
 Comment[sr]=Pascal изворни код
@@ -55,7 +56,7 @@ Comment[zu]=Ifayela Lemvelaphi ye-Pascal
 Icon=source_p
 Type=MimeType
 MimeType=text/x-pascal
-Patterns=*.p;*.pas;
+Patterns=*.p;*.pas;*.pp;*.dpr;*.DPR;*.PP;*.PAS;*.P
 X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
