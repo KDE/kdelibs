@@ -854,7 +854,7 @@ QByteArray UIServer::open_RenameDlg( int id,
   QByteArray data;
   QDataStream stream( data, IO_WriteOnly );
   stream << Q_UINT8(result) << newDest;
-  if ( item )
+  if ( item && result != KIO::R_CANCEL )
     setItemVisible( item, true );
   return data;
 }
@@ -869,7 +869,7 @@ int UIServer::open_SkipDlg( int id,
     setItemVisible( item, false );
   kdDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
   KIO::SkipDlg_Result result = KIO::open_SkipDlg( (bool)multi, error_text );
-  if ( item )
+  if ( item && result != KIO::S_CANCEL )
     setItemVisible( item, true );
   return (KIO::SkipDlg_Result) result;
 }
