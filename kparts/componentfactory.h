@@ -350,7 +350,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, constraint );
+            KTrader::OfferList offers = KTrader::self()->query( serviceType, "KParts/ReadOnlyPart", constraint, QString::null );
             if ( offers.isEmpty() )
             {
                 if ( error )
