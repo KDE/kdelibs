@@ -34,7 +34,7 @@ $(BUILDDIR)/build-stamp:
 	../configure --prefix=/opt/kde2pre --enable-debug \
 	--disable-rpath --with-qt-dir=/usr/lib/qt2beta \
 	--with-micodir=/usr --with-pythondir=/usr
-#	--includedir=\$$(prefix)/include/kde \
+#	--includedir=/usr/include/kde \
 #	--libdir=/usr/X11R6/lib  
 	
 	make -C $(BUILDDIR)
@@ -80,7 +80,7 @@ binary-arch:  build
 	dh_testroot
 	dh_clean 
 	dh_installdirs
-	make -C $(BUILDDIR) prefix=`pwd`/debian/tmp/opt/kde2pre install
+	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp install
 
 	perl -w debian/kderules 
 	dh_movefiles 

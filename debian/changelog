@@ -1,3 +1,9 @@
+kdelibs (4:2.0-19990312-cvs-2) experimental; urgency=low
+
+  * use DESTDIR
+
+ -- Stephan Kulow <coolo@kde.org>  Sat, 13 Mar 1999 23:11:16 +0100
+
 kdelibs (4:2.0-19990312-cvs-1) experimental; urgency=low
 
   * new upstream version with corba support libraries integrated
