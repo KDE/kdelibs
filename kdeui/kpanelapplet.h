@@ -29,6 +29,7 @@ class QPopupMenu;
 
 #include <qframe.h>
 #include <kdemacros.h>
+#include <kconfig.h>
 
 /**
  * Implement a panel applet.
