@@ -429,6 +429,33 @@ void ContainerNode::reset()
         client->setFactory( 0L );
 }
 
+int ContainerNode::calcMergingIndex( const QString &mergingName, 
+                                     MergingIndexList::Iterator &it,
+                                     BuildState &state,
+                                     bool ignoreDefaultMergingIndex )
+{
+    MergingIndexList::Iterator mergingIt;
+
+    if ( mergingName.isEmpty() )
+        mergingIt = findIndex( state.clientName );
+    else
+        mergingIt = findIndex( mergingName );
+
+    MergingIndexList::Iterator mergingEnd = mergingIndices.end();
+    it = mergingEnd;
+
+    if ( ( mergingIt == mergingEnd && state.currentDefaultMergingIt == mergingEnd ) ||
+         ignoreDefaultMergingIndex )
+        return index;
+
+    if ( mergingIt != mergingEnd )
+        it = mergingIt;
+    else
+        it = state.currentDefaultMergingIt;
+
+    return (*it).value;
+}
+
 BuildHelper::BuildHelper( BuildState &state, ContainerNode *node, 
                           KXMLGUIFactory *_factory )
     : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ), 
@@ -447,7 +474,8 @@ BuildHelper::BuildHelper( BuildState &state, ContainerNode *node,
     }
 
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt, false );
+    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt, 
+                                  m_state, /*ignoreDefaultMergingIndex*/ false );
 }
 
 void BuildHelper::build( const QDomElement &element )
@@ -503,7 +531,7 @@ void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isAct
     int idx;
     if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely
                      // cached running merging index values.
-        idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+        idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
     else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
         // if we don't have a current merging index, then we want to append our action
         idx = parentNode->index;
@@ -617,9 +645,8 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name )
     // "inside" another <Merge> tag from a previously build client, then we have to use the
     // "parent's" index. That's why we call calcMergingIndex here.
     MergingIndex newIdx;
-    newIdx.value = m_factory->calcMergingIndex( parentNode,
-                                                QString::null /* ### allow group for <merge/> ? */ ,
-                                                mIt, ignoreDefaultMergingIndex );
+    newIdx.value = parentNode->calcMergingIndex( QString::null /* ### allow group for <merge/> ? */ ,
+                                                  mIt, m_state, ignoreDefaultMergingIndex );
     newIdx.mergingName = mergingName;
     newIdx.clientName = m_state.clientName;
 
@@ -635,8 +662,8 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name )
 
     // re-calculate the running default and client merging indices.
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                 ignoreDefaultMergingIndex );
+    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+                                  m_state, ignoreDefaultMergingIndex );
 }
 
 void BuildHelper::processContainerElement( const QDomElement &e, const QString &tag,
@@ -656,8 +683,8 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         // re-calculate current default merging indices and client merging indices,
         // as they have changed in the recursive invocation.
         m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-        m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                     ignoreDefaultMergingIndex );
+        parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+                                      m_state, ignoreDefaultMergingIndex );
     }
     else
     {
@@ -673,7 +700,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
         int idx;
         if ( haveGroup )
-            idx = m_factory->calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+            idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
             else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
                 idx = parentNode->index;
         else
@@ -722,8 +749,8 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
         // and re-calculate running values, for better performance
         m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-        m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
-                                     ignoreDefaultMergingIndex );
+        parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
+                                      m_state, ignoreDefaultMergingIndex );
     }
 }
 

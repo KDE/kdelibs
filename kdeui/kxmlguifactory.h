@@ -163,9 +163,6 @@ class KXMLGUIFactory : public QObject
 
  private:
 
-  int calcMergingIndex( KXMLGUI::ContainerNode *node, const QString &mergingName,
-                        QValueList<KXMLGUI::MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
-
   QWidget *findRecursive( KXMLGUI::ContainerNode *node, bool tag );
 
   QPtrList<QWidget> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );

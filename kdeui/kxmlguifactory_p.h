@@ -149,6 +149,11 @@ struct ContainerNode
     void unplugClient( ContainerClient *client );
 
     void reset();
+
+    int calcMergingIndex( const QString &mergingName,
+                          MergingIndexList::Iterator &it,
+                          BuildState &state,
+                          bool ignoreDefaultMergingIndex );
 };
 
 typedef QPtrList<ContainerNode> ContainerNodeList;

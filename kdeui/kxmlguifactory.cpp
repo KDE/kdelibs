@@ -380,40 +380,6 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
     parent->removeChild( container );
 }
 
-/*
- * Calculate a merging index. In fact it's more like "find a good merging index" .
- * Returns the actual index value (for the plug() call for example) and also return
- * the corresponding MergingIndex in the it argument.
- */
-int KXMLGUIFactory::calcMergingIndex( KXMLGUI::ContainerNode *node, 
-                                      const QString &mergingName,
-                                      QValueList<KXMLGUI::MergingIndex>::Iterator &it,
-                                      bool ignoreDefaultMergingIndex )
-{
-    MergingIndexList::Iterator mergingIt;
-
-    // if we are not looking for a special merging name (like a group or an actionlist name) ,
-    // then use the client's name, to get the match between <Merge name="blah" /> and the client name.
-    if ( mergingName.isEmpty() )
-        mergingIt = node->findIndex( d->clientName );
-    else
-        mergingIt = node->findIndex( mergingName );
-
-    MergingIndexList::Iterator mergingEnd = node->mergingIndices.end();
-    it = mergingEnd;
-
-    if ( ( mergingIt == mergingEnd && d->currentDefaultMergingIt == mergingEnd ) ||
-         ignoreDefaultMergingIndex )
-        return node->index;
-
-    if ( mergingIt != mergingEnd )
-        it = mergingIt;
-    else
-        it = d->currentDefaultMergingIt;
-
-    return (*it).value;
-}
-
 QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
 {
     if ( ( ( !tag && node->name == d->m_containerName ) ||
