@@ -979,8 +979,8 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     clue->print( painter, _pe->rect().x() - x_offset,
 	    _pe->rect().y() + y_offset - topBorder,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
-    
-    if ( bIsSelected )
+
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
 	QPen pen = painter->pen();
 	painter->setPen( black );
@@ -4987,7 +4987,7 @@ void KHTMLWidget::slotScrollVert( int _val )
 
     bDrawBackground = true;
 
-    if (bIsSelected)
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
         ofs = 2;
     }
@@ -5046,7 +5046,7 @@ void KHTMLWidget::slotScrollHorz( int _val )
     
     bDrawBackground = true;
 
-    if (bIsSelected)
+    if (bIsSelected && htmlView && htmlView->getFrameBorder() == 0)
     {
         ofs = 2;
     }
@@ -5353,6 +5353,13 @@ void KHTMLWidget::setSelected( bool _active )
     return;
   
   bIsSelected = _active;
+
+  // If the frame is not supposed to have a border, do not draw the selection
+  // rectangle.
+  if (htmlView && htmlView->getFrameBorder() == 0)
+  {
+      return;
+  }
 
   if ( _active )
   {
