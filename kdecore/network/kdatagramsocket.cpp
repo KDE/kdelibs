@@ -34,6 +34,15 @@
 
 using namespace KNetwork;
 
+/*
+ * TODO:
+ *
+ * don't use signals and slots to track state changes: use stateChanging
+ *
+ * find out why readyRead isn't emitted.
+ *
+ */
+
 KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
   : KClientSocketBase(parent, name), d(0L)
 {
@@ -199,7 +208,10 @@ void KDatagramSocket::lookupFinishedPeer()
     if (connect(*it))
       {
 	// weee, we connected
-	setState(Connected);
+
+	setState(Connected);	// this sets up signals
+	//setupSignals();	// setState sets up the signals
+
 	emit stateChanged(Connected);
 	emit connected(*it);
 	return;
@@ -224,6 +236,7 @@ bool KDatagramSocket::doBind()
     if (bind(*it))
       {
 	// bound
+	setupSignals();
 	return true;
       }
 
@@ -232,6 +245,27 @@ bool KDatagramSocket::doBind()
   copyError();
   emit gotError(error());
   return false;
+}
+
+void KDatagramSocket::setupSignals()
+{
+  QSocketNotifier *n = socketDevice()->readNotifier();
+  if (n)
+    {
+      n->setEnabled(emitsReadyRead());
+      QObject::connect(n, SIGNAL(activated(int)), this, SLOT(slotReadActivity()));
+    }
+  else
+    return;
+
+  n = socketDevice()->writeNotifier();
+  if (n)
+    {
+      n->setEnabled(emitsReadyWrite());
+      QObject::connect(n, SIGNAL(activated(int)), this, SLOT(slotWriteActivity()));
+    }
+  else
+    return;
 }
 
 #include "kdatagramsocket.moc"

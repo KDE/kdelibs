@@ -263,6 +263,7 @@ private slots:
 
 private:
   bool doBind();
+  void setupSignals();
 
   KDatagramSocketPrivate *d;
 };

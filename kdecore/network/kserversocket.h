@@ -352,6 +352,7 @@ protected:
 
 private:
   bool doBind();
+  bool doListen();
 
 private:
   KServerSocket(const KServerSocket&);
