@@ -876,6 +876,9 @@ protected:
 
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
+   *
+   * FIXME KDE 4.0: Make this method const so it can be called from an
+   * acceptDrag method without ugly casts
    */
   virtual void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
