@@ -82,7 +82,7 @@
          arts_warning ("file %s: line %d: assertion failed: (%s)",  	\
             __FILE__, __LINE__, #expr);									\
 	     return;														\
-	   }
+	   }		\
 	 } while(0)
 
 #define arts_return_val_if_fail(expr,val)								\
