@@ -364,13 +364,13 @@ public:
      * returns whether the action is plugged into the given container with the given, container specific, id (often
      * menu or toolbar id ) .
      */
-    virtual bool isPlugged( QWidget *container, int id ) const;
+    virtual bool isPlugged( const QWidget *container, int id ) const;
 
     /**
      * returns whether the action is plugged into the given container with the given, container specific, representative
      * container widget item.
      */
-    virtual bool isPlugged( QWidget *container, QWidget *_representative ) const;
+    virtual bool isPlugged( const QWidget *container, const QWidget *_representative ) const;
 
     QWidget* container( int index );
     QWidget* representative( int index ) const;
@@ -439,7 +439,7 @@ protected:
     QPopupMenu* popupMenu( int index ) const;
     int menuId( int index ) const;
     void removeContainer( int index );
-    int findContainer( QWidget* widget ) const;
+    int findContainer( const QWidget* widget ) const;
 
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
