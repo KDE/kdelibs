@@ -1084,7 +1084,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // First get current time - we need the current year
                     time_t currentTime = time( 0L );
                     struct tm * tmptr = gmtime( &currentTime );
-                    kdebug( KDEBUG_INFO, 7102, "Current time :%s", asctime( tmptr ) );
+                    //kdebug( KDEBUG_INFO, 7102, "Current time :%s", asctime( tmptr ) );
                     // Reset time fields
                     tmptr->tm_sec = 0;
                     tmptr->tm_min = 0;
@@ -1121,7 +1121,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                         kdebug( KDEBUG_WARN, 7102, "Can't parse third field %s", p_date_3 );
                     }
 
-                    kdebug( KDEBUG_INFO, 7102, asctime( tmptr ) );
+                    //kdebug( KDEBUG_INFO, 7102, asctime( tmptr ) );
                     de.date = mktime( tmptr );
 		    return( &de );
 		  }
