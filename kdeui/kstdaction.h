@@ -151,7 +151,8 @@ namespace KStdAction
 		TipofDay, ///< @since 3.1
 
 		// Another settings menu item
-		ConfigureNotifications
+		ConfigureNotifications,
+		Clear ///< @since 3.2
 	};
 
 	/**
@@ -286,6 +287,13 @@ namespace KStdAction
 	* position.
 	*/
 	KAction *paste(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Clear the content of the focus widget
+	* @since 3.2
+	*/
+	KAction *clear(const QObject *recvr, const char *slot,
 		KActionCollection* parent, const char *name = 0 );
 
 	/**

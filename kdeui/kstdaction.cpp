@@ -153,6 +153,8 @@ KAction *copy( const QObject *recvr, const char *slot, KActionCollection* parent
 	{ return KStdAction::create( Copy, name, recvr, slot, parent ); }
 KAction *paste( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( Paste, name, recvr, slot, parent ); }
+KAction *clear( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return KStdAction::create( Clear, name, recvr, slot, parent ); }
 KAction *selectAll( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( SelectAll, name, recvr, slot, parent ); }
 KAction *deselect( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
