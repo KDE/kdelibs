@@ -23,6 +23,7 @@
 #define __KCMODULE_H__
 
 #include <qwidget.h>
+#include <kaboutdata.h>
 
 class KCModulePrivate;
 
@@ -134,6 +135,13 @@ public:
   virtual QString quickHelp() { return QString::null; };
 
   /**
+   * Returns a the KAboutData for this module
+   * This is generally only called for the KBugReport.
+   * Override and have it return a pointer to a constant
+   **/
+  virtual const KAboutData *aboutData() const { return 0; }
+
+  /**
    * Realizes the settings in the config files.
    *
    * This method may be called during system startup to apply the
@@ -191,8 +199,8 @@ signals:
 private:
 
   int _btn;
-
   KCModulePrivate *d;
+
 };
 
 #endif
