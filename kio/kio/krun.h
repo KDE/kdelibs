@@ -28,7 +28,6 @@
 #include <qstring.h>
 #include <kurl.h>
 #include <kstartupinfo.h>
-#include <kdemacros.h>
 
 class KProcess;
 class KService;

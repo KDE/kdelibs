@@ -20,7 +20,7 @@
 
 #include <qiodevice.h>
 #include <qstring.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QFile;
 class KFilterBase;

@@ -26,7 +26,6 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <kio/global.h>
-#include <kdemacros.h>
 
 class QStringList;
 class QWidget;

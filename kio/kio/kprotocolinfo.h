@@ -21,11 +21,11 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qdatastream.h>
+
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
-#include <kdemacros.h>
-#include <qdatastream.h>
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.

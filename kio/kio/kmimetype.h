@@ -26,13 +26,11 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 #include <qpixmap.h>
+
 #include <kicontheme.h>
-
 #include <kurl.h>
-#include <kdemacros.h>
-
-#include "ksycocatype.h"
-#include "kservicetype.h"
+#include <ksycocatype.h>
+#include <kservicetype.h>
 
 class KSimpleConfig;
 /**

@@ -21,9 +21,8 @@
 #ifndef _KSSLCERTDLG_H
 #define _KSSLCERTDLG_H
 
-#include <kdialog.h>
 #include <qstringlist.h>
-#include <kdemacros.h>
+#include <kdialog.h>
 
 class QWidget;
 class QCheckBox;

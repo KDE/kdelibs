@@ -30,7 +30,6 @@
 #include <qstringlist.h>
 
 #include <kurl.h>
-#include <kdemacros.h>
 
 class KURIFilterPrivate;
 class KURIFilterDataPrivate;

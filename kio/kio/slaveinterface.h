@@ -26,8 +26,6 @@
 #include <qobject.h>
 
 #include <kurl.h>
-#include <kdemacros.h>
-
 #include <kio/global.h>
 #include <kio/authinfo.h>
 #include <kdatastream.h>

@@ -22,9 +22,6 @@
 #ifndef __kio_jobclasses_h__
 #define __kio_jobclasses_h__
 
-#include <kurl.h>
-#include <kdemacros.h>
-
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qstring.h>
@@ -34,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <kurl.h>
 #include <kio/global.h>
 
 class Observer;

@@ -24,7 +24,6 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <kconfig.h>
-#include <kdemacros.h>
 
 class KSSLSettingsPrivate;
 

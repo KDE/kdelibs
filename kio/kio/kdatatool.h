@@ -26,7 +26,6 @@
 
 #include <kaction.h>
 #include <kservice.h>
-#include <kdemacros.h>
 
 class KDataTool;
 class QPixmap;

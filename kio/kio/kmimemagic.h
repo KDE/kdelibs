@@ -31,7 +31,7 @@
 #define KMIMEMAGIC_H
 
 #include <qstring.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class KMimeMagic; // see below (read this one first)
 

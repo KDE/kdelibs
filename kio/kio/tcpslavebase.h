@@ -25,12 +25,10 @@
 #define _TCP_SLAVEBASE_H
 
 #include <sys/types.h>
-
 #include <stdio.h>
 
 #include <kextsock.h>
 #include <kio/slavebase.h>
-#include <kdemacros.h>
 
 
 namespace KIO {
