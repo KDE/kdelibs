@@ -13,8 +13,13 @@ KInstance::KInstance( const QCString& name )
     : _name( name )
 {
     ASSERT(!name.isEmpty());
-    if (!KGlobal::_instance)
+    if (!KGlobal::_instance) {
       KGlobal::_instance = this;
+      isGlobalInstance = true;
+    } 
+    else
+      isGlobalInstance = false;
+
     _iconLoader = 0;
     _config = 0;
     _dirs = 0;
@@ -28,6 +33,9 @@ KInstance::~KInstance()
     _config = 0;
     delete _dirs;
     _dirs = 0;
+
+    if (isGlobalInstance)
+        KGlobal::_instance = 0;
 }
 
 

@@ -50,6 +50,7 @@ protected:
      *  Copy Constructor is not allowed
      */
     KInstance( const KInstance& );
+    bool    isGlobalInstance;
     
 public:
     mutable KStandardDirs	*_dirs;
