@@ -274,7 +274,7 @@ KComboBox * KURLRequester::comboBox() const
 void KURLRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
-    KURL u( QDir::homeDirPath() + '/', url() );
+    KURL u( QDir::currentDirPath() + '/', url() );
     (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
 }
 
