@@ -87,7 +87,7 @@ class KHTMLView : public QScrollView
     friend class khtml::CSSStyleSelector;
     friend class KJS::WindowFunc;
     friend void khtml::applyRule(DOM::CSSProperty *prop);
-   
+
 
 public:
     /**
@@ -153,6 +153,8 @@ public:
      * ensure the display is up to date
      */
     void layout();
+
+    bool eventFilter( QObject *o, QEvent *e );
 
 signals:
     void cleared();
