@@ -2,8 +2,9 @@
 Type=MimeType
 MimeType=application/x-x509-ca-cert
 Icon=lock
-Patterns=*.der;*.cer;*.crt;*.cert;*.pem
+Patterns=*.der;*.cer;*.crt;*.cert;*.pem;
 Comment=DER, PEM, or Netscape encoded X.509 certificate
-Comment[xxx]=xx
+Comment[da]=DER, PEM, eller Netscape-indkodet X.509-certifikat
+Comment[hu]=DER, PEM vagy Netscape-formátumú X.509 tanúsítvány
 X-KDE-AutoEmbed=true
 
