@@ -42,7 +42,9 @@
 class KCompletionBox : public KListBox
 {
     Q_OBJECT
-
+    Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
+    Q_PROPERTY(QString cancelledText READ cancelledText WRITE setCancelledText)
+    
 public:
     /**
      * Constructs a KCompletionBox.
@@ -84,6 +86,27 @@ public slots:
     virtual void popup();
 
     /**
+     * Makes this widget (when visible) capture Tab-key events to traverse the
+     * items in the dropdown list.
+     *
+     * Default off, as it conflicts with the usual behavior of Tab to traverse
+     * widgets. It is useful for cases like Konqueror's Location Bar, though.
+     *
+     * @see #isTabHandling
+     */
+    void setTabHandling( bool enable );
+    
+    /**
+     * @returns true if this widget is handling Tab-key events to traverse the
+     * items in the dropdown list, otherwise false.
+     *
+     * Default is false.
+     *
+     * @see #setTabHandling
+     */
+    bool isTabHandling() const;
+
+    /**
      * Sets the text to be emitted if the user chooses not to
      * pick from the available matches.
      *
@@ -95,6 +118,11 @@ public slots:
      */
     void setCancelledText( const QString& );
 
+    /**
+     * @returns the text set via @ref setCancelledText() or QString::null.
+     */
+    QString cancelledText() const;
+    
     /**
      * Move the selection one line down or select the first item if nothing is selected yet.
      */

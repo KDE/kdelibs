@@ -31,6 +31,7 @@ class KCompletionBox::KCompletionBoxPrivate
 public:
     QWidget *m_parent; // necessary to set the focus back
     QString cancelText;
+    bool tabHandling;
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
@@ -38,6 +39,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent = parent;
+    d->tabHandling = false;
 
     setFocusPolicy( NoFocus );
     setColumnMode( 1 );
@@ -85,15 +87,16 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-/*
                     case Key_Tab:
-                        if ( ev->state() & ShiftButton )
-                            up();
-                        else if ( !ev->state() )
-                            down(); // Only on TAB!!
-                        ev->accept();
-                        return true;
-*/
+                        if ( d->tabHandling ) {
+                            if ( ev->state() & ShiftButton )
+                                up();
+                            else if ( !ev->state() )
+                                down(); // Only on TAB!!
+                            ev->accept();
+                            return true;
+                        }
+                        break;
                     case Key_Down:
                         down();
                         ev->accept();
@@ -269,9 +272,24 @@ void KCompletionBox::end()
     setCurrentItem( count() -1 );
 }
 
+void KCompletionBox::setTabHandling( bool enable )
+{
+    d->tabHandling = enable;
+}
+
+bool KCompletionBox::isTabHandling() const
+{
+    return d->tabHandling;
+}
+
 void KCompletionBox::setCancelledText( const QString& text )
 {
     d->cancelText = text;
+}
+
+QString KCompletionBox::cancelledText() const
+{
+    return d->cancelText;
 }
 
 void KCompletionBox::cancelled()
