@@ -168,7 +168,7 @@ for (chn=0;chn<16;chn++)
     chnPatchChange(chn,0);
     chnPressure(chn,127);
     chnPitchBender(chn, 0x00, 0x40);
-    chnController(chn, CTL_MAIN_VOLUME,127);
+    chnController(chn, CTL_MAIN_VOLUME,110);
     chnController(chn, CTL_EXT_EFF_DEPTH, 0);
     chnController(chn, CTL_CHORUS_DEPTH, 0);
     chnController(chn, 0x4a, 127);

@@ -384,7 +384,7 @@ while (playing)
 
     if (calloutput)
 	{
-	sync();
+	midi->sync();
 	output();
 	};
     
