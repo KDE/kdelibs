@@ -1805,7 +1805,7 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 bool KHTMLPart::gotoAnchor( const QString &name )
 {
-  if (!m_doc)
+  if (!d->m_doc)
     return false;
 
   HTMLCollectionImpl *anchors =
