@@ -101,7 +101,7 @@ KFileAudioPreview::~KFileAudioPreview()
 
 void KFileAudioPreview::showPreview( const KURL &url )
 {
-    if ( !d->player || url.isMalformed() )
+    if ( !d->player || !url.isValid() )
         return;
 
     KMimeType::Ptr mt = KMimeType::findByURL( url );
