@@ -142,7 +142,6 @@ namespace KStdAction
 
 		// Settings Menu
 		ShowMenubar, ShowToolbar, ShowStatusbar,
-		FullScreen, ///< @since 3.2 
 		SaveOptions, KeyBindings,
 		Preferences, ConfigureToolbars,
 
@@ -152,6 +151,7 @@ namespace KStdAction
 
 		// Another settings menu item
 		ConfigureNotifications,
+		FullScreen, ///< @since 3.2 
 		Clear ///< @since 3.2
 	};
 
