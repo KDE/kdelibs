@@ -73,15 +73,14 @@
 <!-- FDLNotice is defined in lang.entities (why?) -->
 
 <!-- KDE index generation
-     To use: set addindex to INCLUDE
-     Scripts should generate the index in docindex.docbook in the same directory
+     Set addindex to IGNORE to stop index generation
+     Indices are generated on the fly, so no intermediate file is needed
  -->
-<!ENTITY % addindex "IGNORE"><!-- In some respects this INCLUDE would be better -->
+<!ENTITY % addindex "INCLUDE">
 <![%addindex;[
-<!-- without FPIs, this is nearly impossible to use -->
-<!ENTITY documentation.index SYSTEM "docindex.docbook">
+<!ENTITY documentation.index "<index></index>">
 ]]>
-<!ENTITY documentation.index "<!-- -->">
+<!ENTITY documentation.index "">
 
 <!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">
@@ -351,7 +350,7 @@
 <!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
 
-<!-- to be localised -->
+<!-- Kind of obsolete: to be localised -->
 <!-- do NOT remove these without a version number change in the fpi! -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
