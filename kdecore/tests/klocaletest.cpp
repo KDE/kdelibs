@@ -36,6 +36,18 @@ bool check(QString txt, QString a, QString b)
   return true;
 }
 
+bool checkDate(QString txt, QDate a, QDate b)
+{
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a.toString() << "' against expected value '" << b.toString() << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a.toString() << "' against expected value '" << b.toString() << "'... " << "KO !" << endl;
+    exit(1);
+  }
+  return true;
+}
+
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )
 {
@@ -107,6 +119,12 @@ int main( int argc, char ** argv )
   num = KGlobal::locale()->readNumber( "12,0000000,000", &ok ); check("readNumber(12,0000000,000)",ok?"yes":"no","no");
   num = KGlobal::locale()->readNumber( "12,0000000", &ok ); check("readNumber(12,0000000)",ok?"yes":"no","no");
   num = KGlobal::locale()->readNumber( "12,146,131.12", &ok ); check("readNumber(12,146,131.12)",ok?"yes":"no","yes");
+
+  QDate date;
+  date.setYMD( 2002, 5, 3 );
+  checkDate("readDate( 3, 5, 2002 )",date,KGlobal::locale()->readDate( KGlobal::locale()->formatDate( date ) ) );
+  date = QDate::currentDate();
+  checkDate("readDate( QDate::currentDate() )",date,KGlobal::locale()->readDate( KGlobal::locale()->formatDate( date ) ) );
 
   kdDebug() << "setLanguage C\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
