@@ -87,7 +87,7 @@ bool KSSLCertChain::isValid() {
 
 KSSLCertChain *KSSLCertChain::replicate() {
 KSSLCertChain *x = new KSSLCertChain;
-QList<KSSLCertificate> ch = getChain();
+QPtrList<KSSLCertificate> ch = getChain();
 
   x->setChain(ch);   // this will do a deep copy for us
   ch.setAutoDelete(true);
@@ -103,8 +103,8 @@ return 0;
 }
 
 
-QList<KSSLCertificate> KSSLCertChain::getChain() {
-QList<KSSLCertificate> cl;
+QPtrList<KSSLCertificate> KSSLCertChain::getChain() {
+QPtrList<KSSLCertificate> cl;
 if (!_chain) return cl;
 #ifdef HAVE_SSL
 STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
@@ -122,7 +122,7 @@ return cl;
 }
 
 
-void KSSLCertChain::setChain(QList<KSSLCertificate>& chain) {
+void KSSLCertChain::setChain(QPtrList<KSSLCertificate>& chain) {
 #ifdef HAVE_SSL
   if (_chain) sk_X509_free((STACK_OF(X509) *) _chain);
   _chain = NULL;
@@ -152,7 +152,7 @@ _chain = NULL;
 
 
 void KSSLCertChain::setChain(QStringList chain) {
-    QList<KSSLCertificate> cl;
+    QPtrList<KSSLCertificate> cl;
     cl.setAutoDelete(true);
     for (QStringList::Iterator s = chain.begin(); s != chain.end(); ++s) {
        KSSLCertificate *c = KSSLCertificate::fromString((*s).local8Bit());

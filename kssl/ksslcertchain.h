@@ -21,7 +21,7 @@
 #ifndef _KSSLCERTCHAIN_H
 #define _KSSLCERTCHAIN_H
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QString;
 class QCString;
@@ -48,9 +48,9 @@ public:
 
   KSSLCertChain *replicate();
   void setChain(void *stack_of_x509);
-  void setChain(QList<KSSLCertificate>& chain);
+  void setChain(QPtrList<KSSLCertificate>& chain);
   void setChain(QStringList chain);
-  QList<KSSLCertificate> getChain();
+  QPtrList<KSSLCertificate> getChain();
   int depth();
   void *rawChain() { return _chain; }
 

@@ -69,7 +69,7 @@
 #include "ksslcertificatecache.h"
 #include "ksslcertchain.h"
 #include "ksslcertificate.h"
-#include <qlist.h>
+#include <qptrlist.h>
 #include <ksimpleconfig.h>
 
 #include <sys/types.h>
@@ -112,7 +112,7 @@ public:
 
 class KSSLCertificateCache::KSSLCertificateCachePrivate {
   public:
-  QList<KSSLCNode> certList;
+  QPtrList<KSSLCNode> certList;
   KSimpleConfig *cfg;
   KOSSL *kossl;
 
@@ -155,7 +155,7 @@ void KSSLCertificateCache::saveToDisk() {
       d->cfg->writeEntry("Permanent", node->permanent);
       // Also write the chain
       QStringList qsl;
-      QList<KSSLCertificate> cl = node->cert->chain().getChain();
+      QPtrList<KSSLCertificate> cl = node->cert->chain().getChain();
       for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
          //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
          qsl << c->toString();
