@@ -21,7 +21,7 @@
 
 #include <kstddirs.h>
 #include <kglobal.h>
-#include <kapp.h>
+
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 #include <qdir.h>
@@ -44,7 +44,7 @@ KConfig *KProtocolManager::config()
      qAddPostRoutine(KProtocolManager::reparseConfiguration);
      _config = new KConfig("kioslaverc", false, false);
   }
-  return _config; 
+  return _config;
 }
 
 int KProtocolManager::readTimeout()
@@ -256,8 +256,8 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
   }
 
   // Keep this in sync with kdebase/kcontrol/kio/defaults.h !!!
-  QString user_agent = QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)");
-  
+  QString user_agent = DEFAULT_USERAGENT_STRING;
+
   if ( list.count() == 0 )
     return user_agent;
 
@@ -290,4 +290,42 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
   }
 
   return user_agent;
+}
+
+QStringList KProtocolManager::userAgentList()
+{
+  KConfig *cfg = config();
+
+  if( cfg->hasGroup("UserAgent") )
+    cfg->setGroup( "UserAgent" );
+  else
+    cfg->setGroup("Browser Settings/UserAgent");
+
+  QStringList settingsList;
+  int entries = cfg->readNumEntry( "EntriesCount", 0 );
+  for( int i = 0; i < entries; i++ )
+  {
+    QString entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
+    if (entry.left(37) == "*:Mozilla/4.0 (compatible; Konqueror/") // update version number
+      settingsList.append( DEFAULT_USERAGENT_STRING );
+    else
+      settingsList.append( entry );
+  }
+  return settingsList;
+}
+
+void KProtocolManager::setUserAgentList( const QStringList& agentList )
+{
+  KConfig *cfg = config();
+
+  cfg->setGroup("UserAgent");
+
+  int count = agentList.count();
+  int i = 0;
+  cfg->writeEntry( "EntriesCount", count );
+  for( QStringList::ConstIterator it = agentList.begin(); it != agentList.end() ; ++it )
+  {
+      cfg->writeEntry( QString("Entry%1").arg(i++), *it );
+  }
+  cfg->sync();
 }

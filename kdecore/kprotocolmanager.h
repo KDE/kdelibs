@@ -18,7 +18,10 @@
 #ifndef __kprotocolmanager_h__
 #define __kprotocolmanager_h__
 
-#include <qstring.h>
+#include <qstringlist.h>
+#include <kapp.h>
+
+#define DEFAULT_USERAGENT_STRING QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)")
 
 class KConfig;
 
@@ -26,7 +29,7 @@ class KConfig;
  * Information about I/O (Internet, etc.) settings.
  *
  * KProtocolManager has a heap of static functions that
- * allow you to read and write IO related KDE settings. 
+ * allow you to read and write IO related KDE settings.
  * These include proxies, resuming, timeouts.
  *
  * However, please note that these settings apply to all applications.
@@ -183,7 +186,7 @@ public:
    *
    */
   static void setNoProxyFor( const QString& _noproxy );
-  
+
   static void reparseConfiguration();
 
   /**
@@ -194,10 +197,30 @@ public:
    * @return specified userAgent string
    */
   static QString userAgentForHost( const QString& /*hostname*/ );
-  
+
+  /**
+   * Sets the list of userAgent.
+   *
+   * This function is intended to be used to set
+   * the different agent string to be used when
+   * connecting to sites. The default string is:
+   *
+   *    Mozilla/4.0 (compatible; Konqueror $KDE_VERSION; X11)
+   *
+   * @param list the list of user agent strings to use.
+   */
+  static void setUserAgentList( const QStringList& /*agentlist*/ );
+
+  /**
+   * Returns the list of user agents.
+   *
+   * @return the list of user agent strings.
+   */
+  static QStringList userAgentList();
+
 private:
-  static KConfig *config();  
-  
+  static KConfig *config();
+
   static KConfig *_config;
 };
 
