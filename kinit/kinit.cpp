@@ -106,7 +106,6 @@ static void close_fds()
    if (d.launcher_pid)
    {
       close(d.launcher[0]);
-      close(d.launcher[1]);
       d.launcher_pid = 0;
    }
    if (d.wrapper)
@@ -269,6 +268,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
         close(d.fd[1]);
 
         d.launcher_func = (int (*)(int)) d.sym;
+        close(d.launcher[0]); // Close non-used socket.
 
         exit( d.launcher_func( d.launcher[1] )); /* Launch! */
      }
@@ -279,6 +279,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
      close(d.fd[1]);
      if (launcher)
      {
+        close(d.launcher[1]);
         d.launcher_pid = d.fork;
      }
      bool exec = false;
@@ -538,19 +539,11 @@ static void WaitPid( pid_t waitForPid)
   }
 }
 
-static void kill_launcher()
+static void launcher_died()
 {
-/*   pid_t pid; */
-   /* This is bad. Best thing we can do is to kill the launcher. */
-   fprintf(stderr, "kdeinit: Communication error with launcher. Killing launcher!\n");
-   if (d.launcher_pid)
-   {
-     close(d.launcher[0]);
-     close(d.launcher[1]);
-
-     kill(d.launcher_pid, SIGTERM);
-   }
-   d.launcher_pid = 0;
+   /* This is bad. */
+   fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
+   ::exit(255);
    return;
 }
 
@@ -569,7 +562,7 @@ static void handle_launcher_request(int sock = -1)
    if (result != 0)
    {
       if (launcher)
-         kill_launcher();
+         launcher_died();
       return;
    }
 
@@ -581,7 +574,7 @@ static void handle_launcher_request(int sock = -1)
        if (result != 0)
        {
            if (launcher)
-               kill_launcher();
+               launcher_died();
            free(request_data);
            return;
        }
