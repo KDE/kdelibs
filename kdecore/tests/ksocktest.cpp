@@ -102,4 +102,8 @@ main(int argc, char *argv[])
 
    KSocketAddress* addr = KExtendedSocket::peerAddress( sock2->fd() );
    check( "peerAddress:", addr->nodeName().latin1(), "213.203.58.36" );
+
+   check( "isEqual:", addr->isEqual(KInetSocketAddress("213.203.58.36", 80)) ? "TRUE" : "FALSE", "TRUE");
+   check( "isEqual:", addr->isEqual(KInetSocketAddress("213.203.58.36", 8080)) ? "TRUE" : "FALSE", "FALSE");
+   check( "isEqual:", addr->isCoreEqual(KInetSocketAddress("213.203.58.36", 8080)) ? "TRUE" : "FALSE", "TRUE");
 }
