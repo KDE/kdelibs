@@ -34,7 +34,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	vnd.ms-asf.desktop x-msdos-program.desktop \
 	starwriter.desktop starcalc.desktop starimpress.desktop \
 	vnd.sun.xml.impress.desktop vnd.sun.xml.writer.desktop \
-	x-magicpoint.desktop x-kugarmixed.desktop
+	x-magicpoint.desktop x-kugarmixed.desktop x-vnd.kde.kexi.desktop
 
 datadir = $(kde_mimedir)/application
 
