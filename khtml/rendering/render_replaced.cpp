@@ -52,7 +52,7 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
     m_intrinsicHeight = 150;
 }
 
-void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
+void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
     // not visible or nont even once layouted?
@@ -70,9 +70,9 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 	clipped = true;
     }
 
-    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+    if(hasSpecialObjects()) paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 
     // overflow: hidden
     // restore clip region
@@ -312,7 +312,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setSpecialObjects(false);
 }
 
-void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
+void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
 {
     if (!m_widget || !m_view)
 	return;

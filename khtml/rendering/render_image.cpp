@@ -175,7 +175,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
+void RenderImage::paintObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
@@ -188,7 +188,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !root()->printImages())
+    if (khtml::printpainter && !root()->paintImages())
         return;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
@@ -285,7 +285,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
         }
     }
     if(style()->outlineWidth())
-        printOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::layout()

@@ -344,7 +344,7 @@ void RenderTable::setCellWidths()
     }
 }
 
-void RenderTable::print( QPainter *p, int _x, int _y,
+void RenderTable::paint( QPainter *p, int _x, int _y,
                                   int _w, int _h, int _tx, int _ty)
 {
 
@@ -359,7 +359,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if (!overhangingContents() && !isRelPositioned() && !isPositioned())
     {
@@ -375,21 +375,21 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
     if(style()->visibility() == VISIBLE)
-	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     RenderObject *child = firstChild();
     while( child ) {
 	if ( child->isTableSection() || child == tCaption )
-	    child->print( p, _x, _y, _w, _h, _tx, _ty );
+	    child->paint( p, _x, _y, _w, _h, _tx, _ty );
 	child = child->nextSibling();
     }
 
     if ( specialObjects )
-	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
+	paintSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
 
 
     // overflow: hidden
@@ -1093,7 +1093,7 @@ int RenderTableSection::layoutRows( int toAdd )
 }
 
 
-void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
+void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
 				int tx, int ty)
 {
     unsigned int totalRows = grid.size();
@@ -1102,7 +1102,7 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
     tx += m_x;
     ty += m_y;
 
-    // check which rows and cols are visible and only print these
+    // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
@@ -1141,9 +1141,9 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 		    continue;
 
 #ifdef TABLE_PRINT
-		kdDebug( 6040 ) << "printing cell " << r << "/" << c << endl;
+		kdDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->print( p, x, y, w, h, tx, ty);
+		cell->paint( p, x, y, w, h, tx, ty);
 	    }
 	}
     }
@@ -1415,12 +1415,12 @@ static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 }
 #endif
 
-void RenderTableCell::print(QPainter *p, int _x, int _y,
+void RenderTableCell::paint(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
 #endif
 
     if (!layouted()) return;
@@ -1432,7 +1432,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
         || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
@@ -1440,7 +1440,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 }
 
 
-void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
+void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
     int w = width();
@@ -1491,10 +1491,10 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     int mh = end - my;
 
     if ( bg || c.isValid() )
-	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+	paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-        printBorder(p, _tx, _ty, w, h, style());
+        paintBorder(p, _tx, _ty, w, h, style());
 }
 
 

@@ -565,10 +565,10 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
         return !!maxw;
 }
 
-void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
+void RenderFieldset::paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -586,17 +586,17 @@ void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
     int end = QMIN( _y + _h,  _ty + h );
     int mh = end - my;
 
-    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if ( style()->hasBorder() ) {
 	if ( legend )
-	    printBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
+	    paintBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
 	else
-	    printBorder(p, _tx, _ty, w, h, style());
+	    paintBorder(p, _tx, _ty, w, h, style());
     }
 }
 
-void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
+void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
                                             const RenderStyle* style, int lx, int lw)
 {
 

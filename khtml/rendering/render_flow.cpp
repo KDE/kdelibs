@@ -178,12 +178,12 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
     return SelectionPointAfter;
 }
 
-void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
+void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h,
                                  int _tx, int _ty)
 {
 
 #ifdef DEBUG_LAYOUT
-//    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::print() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paint() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
 #endif
 
     if(!isInline())
@@ -204,10 +204,10 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
         }
     }
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderFlow::printObject(QPainter *p, int _x, int _y,
+void RenderFlow::paintObject(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
     if(isRelPositioned())
@@ -220,18 +220,18 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	clipped = true;
     }
 
-    // 1. print background, borders etc
+    // 1. paint background, borders etc
     if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
-        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 2. print contents
+    // 2. paint contents
     for ( RenderObject* child = firstChild(); child; child = child->nextSibling() )
         if(!child->isSpecial())
-            child->print(p, _x, _y, _w, _h, _tx, _ty);
+            child->paint(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 3. print floats and other non-flow objects
+    // 3. paint floats and other non-flow objects
     if(specialObjects)
-	printSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
+	paintSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
 
     // overflow: hidden
     // restore clip region
@@ -240,7 +240,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     }
 
     if(!isInline() && !childrenInline() && style()->outlineWidth())
-        printOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
     if ( style() && style()->visibility() == VISIBLE ) {
@@ -255,17 +255,17 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 }
 
-void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+void RenderFlow::paintSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
 {
     SpecialObject* r;
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
-        // A special object may be registered with several different objects... so we only print the
+        // A special object may be registered with several different objects... so we only paint the
         // object if we are its containing block
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
-           r->node->print(p, x, y, w, h, tx , ty);
+           r->node->paint(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
-	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
+	    r->node->paint(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
 			   ty + r->startY - r->node->yPos() + r->node->marginTop() );
  	}
 #ifdef FLOAT_DEBUG
@@ -1393,7 +1393,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         }
     }
 
-    // prevent non-layouted elements from getting printed by pushing them far above the top of the
+    // prevent non-layouted elements from getting painted by pushing them far above the top of the
     // page
     if (!newChild->isInline())
         newChild->setPos(newChild->xPos(), -500000);

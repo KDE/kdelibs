@@ -97,7 +97,7 @@ m_floating( false ),
 m_positioned( false ),
 m_overhangingContents( false ),
 m_relPositioned( false ),
-m_printSpecial( false ),
+m_paintSpecial( false ),
 
 m_isAnonymous( false ),
 m_recalcMinMax( false ),
@@ -443,7 +443,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         p->setRasterOp(Qt::CopyROP);
 }
 
-void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
+void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
 {
     const QColor& tc = style->borderTopColor();
     const QColor& bc = style->borderBottomColor();
@@ -507,7 +507,7 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
     }
 }
 
-void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style)
+void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style)
 {
     int ow = style->outlineWidth();
     if(!ow) return;
@@ -533,9 +533,9 @@ void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
 }
 
-void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty)
 {
-    printObject(p, x, y, w, h, tx, ty);
+    paintObject(p, x, y, w, h, tx, ty);
 }
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
@@ -642,7 +642,7 @@ void RenderObject::setStyle(RenderStyle *style)
     m_floating = false;
     m_positioned = false;
     m_relPositioned = false;
-    m_printSpecial = false;
+    m_paintSpecial = false;
     // no support for changing the display type dynamically... object must be
     // detached and re-attached as a different type
     //m_inline = true;

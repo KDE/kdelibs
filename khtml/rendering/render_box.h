@@ -44,7 +44,7 @@ public:
     virtual const char *renderName() const { return "RenderBox"; }
 
     virtual void setStyle(RenderStyle *style);
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
+    virtual void paint(QPainter *p, int _x, int _y, int _w, int _h,
                        int _tx, int _ty);
 
     virtual void close();
@@ -98,9 +98,9 @@ public:
     void relativePositionOffset(int &tx, int &ty);
 
 protected:
-    virtual void printBoxDecorations(QPainter *p,int _x, int _y,
+    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
                                        int _w, int _h, int _tx, int _ty);
-    void printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h);
+    void paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h);
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
     virtual int borderTopExtra() { return 0; }
