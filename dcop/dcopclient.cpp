@@ -495,6 +495,8 @@ DCOPClient::~DCOPClient()
 
 void DCOPClient::setServerAddress(const QCString &addr)
 {
+    QCString env = "DCOPSERVER=" + addr;
+    putenv(strdup(env.data()));
     delete [] DCOPClientPrivate::serverAddr;
     DCOPClientPrivate::serverAddr = qstrdup( addr.data() );
 }
