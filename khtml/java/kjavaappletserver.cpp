@@ -523,7 +523,8 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
         if (retval && type >= 0) {
             rid = frame->args[1].toInt(&retval);
             value = frame->args[2];
-        }
+        } else
+            retval = false;
     } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
         d->jsstack = frame->up; // FIXME: if(d->jsstack != frame)
@@ -555,8 +556,7 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
 
     bool retval = frame->ready;
     if (retval) {
-        if (!frame->args[0].toInt(&retval))
-            retval = false;
+        retval = frame->args[0].toInt(&retval);
     } else {
         kdError(6100) << "Error: timeout on Java member return data" << endl;
         d->jsstack = frame->up;
@@ -594,7 +594,8 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
             rid = frame->args[1].toInt(&retval);
             if (retval)
                 value = frame->args[2];
-        }
+        } else
+            retval = false;
     } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
         d->jsstack = frame->up;
