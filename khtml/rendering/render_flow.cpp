@@ -30,10 +30,10 @@
 
 #include <kglobal.h>
 
-#include "render_flow.h"
-#include "render_text.h"
-#include "render_table.h"
-
+#include "rendering/render_flow.h"
+#include "rendering/render_text.h"
+#include "rendering/render_table.h"
+#include "rendering/render_root.h"
 
 #include <kdebug.h>
 #include <assert.h>
@@ -1323,7 +1323,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
-            newBox->setPos(newBox->xPos(), -100000);
+            newBox->setPos(newBox->xPos(), -500000);
 
 	    newChild->setLayouted( false );
 	    newChild->setMinMaxKnown( false );
@@ -1385,7 +1385,6 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
         if ((!child->isInline() && boxFirst != child) ||
             (!next && (boxFirst->isInline())) ||
             child == box2Start) {
-
             // Create a new anonymous box containing all children starting from boxFirst
             // and up to (but not including) boxLast, and put it in place of the children
             RenderStyle *newStyle = new RenderStyle();
@@ -1409,12 +1408,10 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             }
             box->appendChildNode(removeChildNode(boxLast));
             box->close();
-            box->setPos(box->xPos(), -100000);
+            box->setPos(box->xPos(), -500000);
             box->setLayouted(false);
-        }
-
-        if (!child->isInline())
             boxFirst = boxLast = next;
+        }
 
         child = next;
     }
