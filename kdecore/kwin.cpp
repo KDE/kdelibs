@@ -358,12 +358,16 @@ void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 
 int KWin::currentDesktop()
 {
+    if (!qt_xdisplay())
+      return 0;
     NETRootInfo info( qt_xdisplay(), NET::CurrentDesktop );
     return info.currentDesktop();
 }
 
 int KWin::numberOfDesktops()
 {
+    if (!qt_xdisplay())
+      return 0;
     NETRootInfo info( qt_xdisplay(), NET::NumberOfDesktops );
     return info.numberOfDesktops();
 }
