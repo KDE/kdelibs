@@ -334,7 +334,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::Yes, KDialogBase::No,
+                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
 
@@ -365,7 +365,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
-                       KDialogBase::Yes, KDialogBase::Cancel,
+                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "questionYesNoCancel", true, true,
                        buttonYes, buttonNo);
 
@@ -397,7 +397,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::No, KDialogBase::No,
+                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonYes, buttonNo);
 
@@ -428,7 +428,7 @@ KMessageBox::warningYesNoList(QWidget *parent, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::No, KDialogBase::No,
+                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNoList", true, true,
                        buttonYes, buttonNo);
 
@@ -469,7 +469,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::Yes, KDialogBase::No,
+                       (options & Dangerous) ? KDialogBase::No : KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonContinue, KStdGuiItem::cancel() );
 
@@ -500,7 +500,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
-                       KDialogBase::Yes, KDialogBase::Cancel,
+                       (options & Dangerous) ? KDialogBase::Cancel : KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "warningYesNoCancel", true, true,
                        buttonYes, buttonNo);
 

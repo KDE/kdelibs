@@ -70,11 +70,13 @@ public:
  /**
   * @li Notify Emit a KNotifyClient event (Not yet implemented)
   * @li AllowLink The message may contain links.
+  * @li Dangerous The action to be confirmed by the dialog is a potentially destructive one
   */
  enum OptionsType
  {
    Notify = 1,
-   AllowLink = 2
+   AllowLink = 2,
+   Dangerous = 4
  };
 
  /**
