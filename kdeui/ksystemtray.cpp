@@ -240,7 +240,7 @@ void KSystemTray::minimizeRestore( bool restore )
     QWidget* pw = parentWidget();
     if( !pw )
 	return;
-    KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
+    KWin::WindowInfo info = KWin::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
     if ( restore )
     {
 #ifndef Q_WS_QWS //FIXME
