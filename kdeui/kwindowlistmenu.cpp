@@ -140,6 +140,21 @@ KWindowListMenu::~KWindowListMenu()
 
 }
 
+static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfoList& list )
+{
+    WId group = info->groupLeader();
+    if( group == 0 )
+    {
+        return info->transientFor() == qt_xrootwin();
+    }
+    for( QPtrListIterator< KWin::WindowInfo > it( list );
+         it.current() != NULL;
+         ++it )
+        if( (*it)->groupLeader() == group )
+            return false;
+    return true;
+}
+
 void KWindowListMenu::init()
 {
     int i, d;
@@ -177,7 +192,9 @@ void KWindowListMenu::init()
 
 	for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
              it != kwin_module->windows().end(); ++it) {
-	    KWin::WindowInfo info = KWin::windowInfo( *it );
+	    KWin::WindowInfo info = KWin::windowInfo( *it,
+                NET::WMDesktop | NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
+                NET::WM2GroupLeader | NET::WM2TransientFor );
 	    if ((info.desktop() == d) || (d == cd && info.onAllDesktops()))
                 list.inSort(new KWin::WindowInfo(info));
         }
@@ -188,8 +205,9 @@ void KWindowListMenu::init()
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
-            if ( (windowType == NET::Normal || windowType == NET::Unknown) &&
-                 !(info->state() & NET::SkipTaskbar) ) {
+            if ( (windowType == NET::Normal || windowType == NET::Unknown
+                    || (windowType == NET::Dialog && standaloneDialog( info, list )))
+                && !(info->state() & NET::SkipTaskbar) ) {
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
                 if (items == 1 && nd > 1)
