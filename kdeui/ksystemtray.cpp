@@ -187,33 +187,24 @@ void KSystemTray::toggleMinimizeRestore()
 
     KWin::Info info = KWin::info( pw->winId() );
     bool visible = (info.mappingState == NET::Visible);
-    if ( visible && !pw->isActiveWindow() ) // may be obscured -> raise it
+    // hack for KWin's non-compliant WM_STATE handling
+    visible = visible && ( info.desktop == KWin::currentDesktop());
+    // SELI using !pw->isActiveWindow() should be enough here,
+    // but it doesn't work - e.g. with kscd, the "active" window
+    // is the widget docked in Kicker
+    if ( visible && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
     {
-        KWinModule mod;
-        if ( mod.stackingOrder().last() != pw->winId() )
-        {
-            if ( info.desktop == KWin::currentDesktop() )
-            {
-                KWin::setActiveWindow( pw->winId() );
-                return;
-            }
-            else
-                visible = false;
-        }
+        KWin::setActiveWindow( pw->winId() );
+        return;
     }
 
     if ( !visible )
     {
-        if ( info.mappingState != NET::Iconic )
-        {
-            pw->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
 #ifndef Q_WS_QWS //FIXME
-            pw->move( info.geometry.topLeft() );
-#endif
-            pw->show();
-#ifndef Q_WS_QWS //FIXME
-        }
-        KWin::deIconifyWindow( pw->winId() );
+	// TODO what to do with OnAllDesktops windows? (#32783)
+	KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
+        pw->move( info.geometry.topLeft() ); // avoid placement policies
+        pw->show();
 	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
