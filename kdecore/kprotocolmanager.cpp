@@ -221,6 +221,18 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   return it.data().supportsMoving;
 }
 
+bool KProtocolManager::mimetypeFastMode( const QString& _protocol ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  return it.data().mimetypeFastMode;
+}
+
 QStringList KProtocolManager::protocols() const
 {
   QStringList res;
