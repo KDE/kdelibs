@@ -323,7 +323,10 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
         if (match == KIcon::MatchExact)
             return icon;
 	else
+        {
 	    delta = dw;
+	    if (delta==0) return icon; // We won't find a better match anyway
+        }
     }
     return icon;
 }
