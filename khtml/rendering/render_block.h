@@ -41,7 +41,7 @@ public:
     virtual bool isBlockFlow() const { return !isInline() && !isTable(); }
     virtual bool isInlineFlow() const { return isInline() && !isReplaced(); }
     virtual bool isInlineBlockOrInlineTable() const { return isInline() && isReplaced(); }
-    
+
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual void setChildrenInline(bool b) { m_childrenInline = b; }
     void makeChildrenNonInline(RenderObject* insertionPoint = 0);
@@ -84,17 +84,18 @@ public:
 
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
     virtual void removeChild(RenderObject *oldChild);
-        
+
     virtual void setStyle(RenderStyle* _style);
-    
+
     virtual void layout();
+    void layoutBlock( bool relayoutChildren );
     void layoutBlockChildren( bool relayoutChildren );
     void layoutInlineChildren( bool relayoutChildren );
 
     void layoutPositionedObjects( bool relayoutChildren );
     void insertPositionedObject(RenderObject *o);
     void removePositionedObject(RenderObject *o);
-    
+
     // the implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end);
     BidiIterator findNextLineBreak(BidiIterator &start);
@@ -103,14 +104,14 @@ public:
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed);
     void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     // end bidi.cpp functions
-    
+
     virtual void paint(QPainter *, int x, int y, int w, int h,
                        int tx, int ty, PaintAction paintAction);
     virtual void paintObject(QPainter *, int x, int y, int w, int h,
                              int tx, int ty, PaintAction paintAction);
     void paintFloats(QPainter *p, int _x, int _y,
                      int _w, int _h, int _tx, int _ty, bool paintSelection = false);
-    
+
 
     void insertFloatingObject(RenderObject *o);
     void removeFloatingObject(RenderObject *o);
@@ -120,13 +121,13 @@ public:
     void clearFloats();
     bool checkClear(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
-    
+
     virtual bool containsFloats() { return m_floatingObjects!=0; }
     virtual bool containsFloat(RenderObject* o);
 
     virtual bool hasOverhangingFloats() { return floatBottom() > m_height; }
     void addOverHangingFloats( RenderBlock *block, int xoffset, int yoffset, bool child = false );
-    
+
     int nearestFloatBottom(int height) const;
     int floatBottom() const;
     inline int leftBottom();
@@ -154,19 +155,19 @@ public:
 
     virtual int getBaselineOfFirstLineBox();
     virtual InlineFlowBox* getFirstLineBox();
-    
+
     // overrides RenderObject
     virtual bool requiresLayer() { return !isTableCell() &&
         (isPositioned() || isRelPositioned() || style()->overflow()==OHIDDEN); }
-    
+
 #ifndef NDEBUG
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
-    
+
 protected:
     void newLine();
-    
+
 protected:
     struct FloatingObject {
         enum Type {
@@ -192,11 +193,11 @@ protected:
         Type type : 1; // left or right aligned
         bool noPaint : 1;
     };
-    
+
 protected:
     QPtrList<FloatingObject>* m_floatingObjects;
     QPtrList<RenderObject>* m_positionedObjects;
-    
+
     bool m_childrenInline : 1;
     bool m_pre            : 1;
     bool m_firstLine      : 1; // used in inline layouting
@@ -213,7 +214,7 @@ protected:
     // for now is spillage out of the bottom and the right, which are the common cases).
     // XXX Generalize to work with top and left as well.
     int m_overflowHeight;
-    int m_overflowWidth;    
+    int m_overflowWidth;
 };
 
 }; // namespace

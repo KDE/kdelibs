@@ -387,6 +387,13 @@ void RenderBlock::removeChild(RenderObject *oldChild)
 
 void RenderBlock::layout()
 {
+    // Table cells call layoutBlock directly, so don't add any logic here.  Put code into
+    // layoutBlock().
+    layoutBlock(false);
+}
+
+void RenderBlock::layoutBlock(bool relayoutChildren)
+{
     //    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
     //     QTime t;
     //     t.start();

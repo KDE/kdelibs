@@ -256,6 +256,9 @@ void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
         _ty += m_y;
     }
 
+    if (style()->hidesOverflow() && m_layer)
+        m_layer->subtractScrollOffset(_tx, _ty);
+
     // check if we need to do anything at all...
     if(!isInline() && !overhangingContents() && !isRelPositioned() && !isPositioned() ) {
         int h = m_height;
@@ -405,6 +408,20 @@ void RenderFlow::layout()
     m_overflowHeight = m_height = 0;
     m_clearStatus = CNONE;
 
+    if (m_layer && style()->scrollsOverflow()) {
+        // For overflow:scroll blocks, ensure we have both scrollbars in place always.
+        if (style()->overflow() == OSCROLL) {
+            m_layer->setHasHorizontalScrollbar(true);
+            m_layer->setHasVerticalScrollbar(true);
+        }
+
+        // Move the scrollbars aside during layout.  The layer will move them back when it
+        // does painting or event handling.
+#ifdef APPLE_CHANGES
+        m_layer->moveScrollbarsAside();
+#endif
+    }
+
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
         layoutInlineChildren( relayoutChildren );
@@ -448,6 +465,11 @@ void RenderFlow::layout()
         m_overflowWidth = kMax(m_overflowWidth, m_width);
         m_overflowHeight = kMax(m_overflowHeight, m_height);
     }
+
+    // Update our scrollbars if we're overflow:auto/scroll now that we know if
+    // we overflow or not.
+    if (style()->scrollsOverflow() && m_layer)
+        m_layer->checkScrollbarsAfterLayout();
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 

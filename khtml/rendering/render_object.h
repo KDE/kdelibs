@@ -128,7 +128,7 @@ public:
 	{ return QRect(0,0,0,0); }
     virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
     bool hasClip() { return isPositioned() &&  style()->hasClip(); }
-    bool hasOverflowClip() { return style()->overflow() == OHIDDEN; }
+    bool hasOverflowClip() { return style()->hidesOverflow(); }
 
     // Linear tree traversal
     RenderObject *objectBelow() const;
@@ -179,6 +179,11 @@ public:
 
     bool isRoot() const;
     // some helper functions...
+    virtual bool isRenderBlock() const { return false; }
+    virtual bool isRenderInline() const { return false; }
+    virtual bool isInlineFlow() const { return false; }
+    virtual bool isBlockFlow() const { return false; }
+    virtual bool isInlineBlockOrInlineTable() const { return false; }
     virtual bool childrenInline() const { return false; }
     virtual bool isFlow() const { return false; }
 
@@ -415,6 +420,16 @@ public:
     virtual int offsetTop() const;
     virtual RenderObject* offsetParent() const;
 
+    // More IE extensions.  clientWidth and clientHeight represent the interior of an object
+    // excluding border and scrollbar.
+    short clientWidth() const;
+    short clientHeight() const;
+
+    // scrollWidth/scrollHeight will be the same as clientWidth/clientHeight unless the
+    // object has overflow:hidden/scroll/auto specified and also has overflow.
+    short scrollWidth() const;
+    short scrollHeight() const;
+
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }
     virtual short marginLeft() const { return 0; }
@@ -581,6 +596,7 @@ private:
 
     void arenaDelete(RenderArena *arena, void *objectBase);
 
+    friend class RenderLayer;
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderCanvas;

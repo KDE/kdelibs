@@ -284,7 +284,7 @@ public:
 // Random visual rendering model attributes. Not inherited.
 
 enum EOverflow {
-    OVISIBLE, OHIDDEN, SCROLL, AUTO
+    OVISIBLE, OHIDDEN, OSCROLL, OAUTO
 };
 
 enum EVerticalAlign {
@@ -598,7 +598,7 @@ protected:
 
 	noninherited_flags.f._display = INLINE;
 	noninherited_flags.f._bg_repeat = REPEAT;
-	noninherited_flags.f._bg_attachment = SCROLL;
+	noninherited_flags.f._bg_attachment = true; // scroll
 	noninherited_flags.f._overflow = OVISIBLE;
 	noninherited_flags.f._vertical_align = BASELINE;
 	noninherited_flags.f._clear = CNONE;
@@ -685,6 +685,9 @@ public:
     const QColor &  	    outlineColor() const {  return background->outline.color; }
 
     EOverflow overflow() const { return  noninherited_flags.f._overflow; }
+    bool hidesOverflow() const { return overflow() != OVISIBLE; }
+    bool scrollsOverflow() const { return overflow() == OSCROLL || overflow() == OAUTO; }
+
     EVisibility visibility() const { return inherited_flags.f._visibility; }
     EVerticalAlign verticalAlign() const { return  noninherited_flags.f._vertical_align; }
     Length verticalAlignLength() const { return box->vertical_align; }
@@ -859,7 +862,7 @@ public:
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { inherited_flags.f._cursor_style = c; }
-    
+
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     bool htmlHacks() const { return inherited_flags.f._htmlHacks; }

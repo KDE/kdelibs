@@ -33,7 +33,7 @@ namespace KJS {
 
 static const struct HashEntry DOMNodeTableEntries[] = {
    { "offsetTop", DOMNode::OffsetTop, DontDelete|ReadOnly, 0, 0 },
-   { "onload", DOMNode::OnLoad, DontDelete, 0, 0 },
+   { "onload", DOMNode::OnLoad, DontDelete, 0, &DOMNodeTableEntries[65] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -69,18 +69,18 @@ static const struct HashEntry DOMNodeTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "attributes", DOMNode::Attributes, DontDelete|ReadOnly, 0, &DOMNodeTableEntries[59] },
    { "onkeydown", DOMNode::OnKeyDown, DontDelete, 0, 0 },
-   { "onkeyup", DOMNode::OnKeyUp, DontDelete, 0, 0 },
+   { "onkeyup", DOMNode::OnKeyUp, DontDelete, 0, &DOMNodeTableEntries[66] },
    { "ondblclick", DOMNode::OnDblClick, DontDelete, 0, &DOMNodeTableEntries[63] },
    { "parentElement", DOMNode::ParentElement, DontDelete|ReadOnly, 0, 0 },
    { "onchange", DOMNode::OnChange, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "scrollLeft", DOMNode::ScrollLeft, DontDelete|ReadOnly, 0, 0 },
+   { "scrollLeft", DOMNode::ScrollLeft, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "nodeType", DOMNode::NodeType, DontDelete|ReadOnly, 0, 0 },
    { "nextSibling", DOMNode::NextSibling, DontDelete|ReadOnly, 0, &DOMNodeTableEntries[60] },
    { "onkeypress", DOMNode::OnKeyPress, DontDelete, 0, &DOMNodeTableEntries[57] },
-   { "onmousedown", DOMNode::OnMouseDown, DontDelete, 0, &DOMNodeTableEntries[65] },
+   { "onmousedown", DOMNode::OnMouseDown, DontDelete, 0, &DOMNodeTableEntries[67] },
    { "onmouseup", DOMNode::OnMouseUp, DontDelete, 0, 0 },
    { "onclick", DOMNode::OnClick, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -96,11 +96,13 @@ static const struct HashEntry DOMNodeTableEntries[] = {
    { "offsetHeight", DOMNode::OffsetHeight, DontDelete|ReadOnly, 0, 0 },
    { "offsetParent", DOMNode::OffsetParent, DontDelete|ReadOnly, 0, 0 },
    { "clientWidth", DOMNode::ClientWidth, DontDelete|ReadOnly, 0, 0 },
-   { "scrollTop", DOMNode::ScrollTop, DontDelete|ReadOnly, 0, 0 },
+   { "scrollTop", DOMNode::ScrollTop, DontDelete, 0, 0 },
+   { "scrollWidth", DOMNode::ScrollWidth, DontDelete|ReadOnly, 0, 0 },
+   { "scrollHeight", DOMNode::ScrollHeight, DontDelete|ReadOnly, 0, 0 },
    { "sourceIndex", DOMNode::SourceIndex, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMNodeTable = { 2, 66, DOMNodeTableEntries, 53 };
+static const struct HashTable DOMNodeTable = { 2, 68, DOMNodeTableEntries, 53 };
 
 } // namespace
 

@@ -45,9 +45,12 @@
 #include <kdebug.h>
 #include <assert.h>
 #include "khtmlview.h"
-#include "render_box.h"
+#include "render_block.h"
 #include "render_arena.h"
 #include "xml/dom_docimpl.h"
+
+#include <qscrollbar.h>
+#include <qstyle.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -57,6 +60,11 @@ static bool inRenderLayerDetach;
 static bool inRenderLayerElementDetach;
 static bool inRenderZTreeNodeDetach;
 #endif
+
+void RenderScrollMediator::slotValueChanged()
+{
+    m_layer->updateScrollPositionFromScrollbars();
+}
 
 RenderLayer::RenderLayer(RenderObject* object)
 : m_object( object ),
@@ -68,7 +76,14 @@ m_last( 0 ),
 m_height( 0 ),
 m_y( 0 ),
 m_x( 0 ),
-m_width( 0 )
+m_width( 0 ),
+m_scrollX( 0 ),
+m_scrollY( 0 ),
+m_scrollWidth( 0 ),
+m_scrollHeight( 0 ),
+m_hBar( 0 ),
+m_vBar( 0 ),
+m_scrollMediator( 0 )
 {
 }
 
@@ -77,10 +92,18 @@ RenderLayer::~RenderLayer()
     // Child layers will be deleted by their corresponding render objects, so
     // our destructor doesn't have to do anything.
     m_parent = m_previous = m_next = m_first = m_last = 0;
+    delete m_hBar;
+    delete m_vBar;
+    delete m_scrollMediator;
 }
 
 void RenderLayer::updateLayerPosition()
 {
+    // The canvas is sized to the docWidth/Height over in RenderCanvas::layout, so we
+    // don't need to ever update our layer position here.
+    if (renderer()->isCanvas())
+        return;
+
     int x = m_object->xPos();
     int y = m_object->yPos();
 
@@ -98,10 +121,21 @@ void RenderLayer::updateLayerPosition()
     if (m_object->isRelPositioned())
         static_cast<RenderBox*>(m_object)->relativePositionOffset(x, y);
 
+    // Subtract our parent's scroll offset.
+    if (parent())
+        parent()->subtractScrollOffset(x, y);
+
     setPos(x,y);
 
-    setWidth(m_object->overflowWidth());
-    setHeight(m_object->overflowHeight());
+    setWidth(m_object->width());
+    setHeight(m_object->height());
+
+    if (!m_object->style()->hidesOverflow()) {
+        if (m_object->overflowWidth() > m_object->width())
+            setWidth(m_object->overflowWidth());
+        if (m_object->overflowHeight() > m_object->height())
+            setHeight(m_object->overflowHeight());
+    }
 }
 
 RenderLayer*
@@ -228,7 +262,7 @@ RenderLayer::convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y)
 
     if (m_object->style()->position() == FIXED) {
         // Add in the offset of the view.  We can obtain this by calling
-        // absolutePosition() on the RenderRoot.
+        // absolutePosition() on the RenderCanvas.
         int xOff, yOff;
         m_object->absolutePosition(xOff, yOff, true);
         x += xOff;
@@ -248,6 +282,255 @@ RenderLayer::convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y)
 
     x += xPos();
     y += yPos();
+}
+
+void
+RenderLayer::scrollOffset(int& x, int& y)
+{
+    x += scrollXOffset();
+    y += scrollYOffset();
+}
+
+void
+RenderLayer::subtractScrollOffset(int& x, int& y)
+{
+    x -= scrollXOffset();
+    y -= scrollYOffset();
+}
+
+void
+RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
+{
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    int maxX = m_scrollWidth - m_object->clientWidth();
+    int maxY = m_scrollHeight - m_object->clientHeight();
+    if (x > maxX) x = maxX;
+    if (y > maxY) y = maxY;
+
+    // FIXME: Eventually, we will want to perform a blit.  For now never
+    // blit, since the check for blitting is going to be very
+    // complicated (since it will involve testing whether our layer
+    // is either occluded by another layer or clipped by an enclosing
+    // layer or contains fixed backgrounds, etc.).
+    m_scrollX = x;
+    m_scrollY = y;
+    qDebug("scrolled to %d %d", x, y);
+
+    // FIXME: Fire the onscroll DOM event.
+
+    // Just schedule a full repaint of our object.
+    m_object->repaint();
+
+    if (updateScrollbars) {
+        if (m_hBar)
+            m_hBar->setValue(m_scrollX);
+        if (m_vBar)
+            m_vBar->setValue(m_scrollY);
+    }
+}
+
+void
+RenderLayer::updateScrollPositionFromScrollbars()
+{
+    bool needUpdate = false;
+    int newX = m_scrollX;
+    int newY = m_scrollY;
+
+    if (m_hBar) {
+        newX = m_hBar->value();
+        if (newX != m_scrollX)
+           needUpdate = true;
+    }
+
+    if (m_vBar) {
+        newY = m_vBar->value();
+        if (newY != m_scrollY)
+           needUpdate = true;
+    }
+
+    if (needUpdate)
+        scrollToOffset(newX, newY, false);
+}
+
+void
+RenderLayer::setHasHorizontalScrollbar(bool hasScrollbar)
+{
+    if (hasScrollbar && !m_hBar) {
+        QScrollView* scrollView = m_object->element()->getDocument()->view();
+        m_hBar = new QScrollBar(Qt::Horizontal, scrollView);
+        scrollView->addChild(m_hBar, 0, -50000);
+	m_hBar->show();
+        if (!m_scrollMediator)
+            m_scrollMediator = new RenderScrollMediator(this);
+        m_scrollMediator->connect(m_hBar, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
+    }
+    else if (!hasScrollbar && m_hBar) {
+        delete m_hBar;
+        m_hBar = 0;
+    }
+}
+
+void
+RenderLayer::setHasVerticalScrollbar(bool hasScrollbar)
+{
+    if (hasScrollbar && !m_vBar) {
+        QScrollView* scrollView = m_object->element()->getDocument()->view();
+        m_vBar = new QScrollBar(Qt::Vertical, scrollView);
+        scrollView->addChild(m_vBar, 0, -50000);
+	m_vBar->show();
+        if (!m_scrollMediator)
+            m_scrollMediator = new RenderScrollMediator(this);
+        m_scrollMediator->connect(m_vBar, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
+    }
+    else if (!hasScrollbar && m_vBar) {
+        delete m_vBar;
+        m_vBar = 0;
+    }
+}
+
+int
+RenderLayer::verticalScrollbarWidth()
+{
+    if (!m_vBar)
+        return 0;
+
+    return m_vBar->width();
+}
+
+int
+RenderLayer::horizontalScrollbarHeight()
+{
+    if (!m_hBar)
+        return 0;
+
+    return m_hBar->height();
+}
+
+void
+RenderLayer::moveScrollbarsAside()
+{
+    QScrollView* scrollView = m_object->element()->getDocument()->view();
+    if (m_hBar)
+         scrollView->addChild(m_hBar, 0, -50000);
+    if (m_vBar)
+         scrollView->addChild(m_vBar, 0, -50000);
+}
+
+void
+RenderLayer::positionScrollbars(const QRect& _absBounds)
+{
+    QRect absBounds = _absBounds;
+    QScrollView* scrollView = m_object->element()->getDocument()->view();
+    absBounds.addCoords(m_object->borderLeft(), m_object->borderTop(),
+			-m_object->borderRight(), -m_object->borderBottom());
+
+    if (!absBounds.isValid() || (!m_vBar && !m_hBar))
+	return;
+
+    QScrollBar *b = m_hBar;
+    if (!m_hBar)
+	b = m_vBar;
+    int width = b->style().pixelMetric(QStyle::PM_ScrollBarExtent);
+
+    if (m_vBar) {
+        m_vBar->resize(width, absBounds.height() - (m_hBar ? width : 0) + 1);
+        scrollView->addChild(m_vBar, absBounds.right()-width + 1,
+			     absBounds.y());
+    }
+
+    if (m_hBar) {
+        m_hBar->resize(absBounds.width() - (m_vBar ? width : 0) + 1,
+                       width);
+        scrollView->addChild(m_hBar, absBounds.x(),
+			     absBounds.bottom() - width + 1);
+    }
+}
+
+#define LINE_STEP   10
+#define PAGE_KEEP   40
+
+void
+RenderLayer::checkScrollbarsAfterLayout()
+{
+    updateLayerPosition();
+
+    int rightPos = m_object->rightmostPosition();
+    int bottomPos = m_object->lowestPosition();
+
+    int clientWidth = m_object->clientWidth();
+    int clientHeight = m_object->clientHeight();
+    m_scrollWidth = clientWidth;
+    m_scrollHeight = clientHeight;
+
+    if (rightPos - m_object->borderLeft() > m_scrollWidth)
+        m_scrollWidth = rightPos - m_object->borderLeft();
+    if (bottomPos - m_object->borderTop() > m_scrollHeight)
+        m_scrollHeight = bottomPos - m_object->borderTop();
+
+    bool needHorizontalBar = rightPos > m_width;
+    bool needVerticalBar = bottomPos > m_height;
+
+    bool haveHorizontalBar = m_hBar;
+    bool haveVerticalBar = m_vBar;
+
+    // overflow:scroll should just enable/disable.
+    if (m_object->style()->overflow() == OSCROLL) {
+        m_hBar->setEnabled(needHorizontalBar);
+        m_vBar->setEnabled(needVerticalBar);
+    }
+
+    // overflow:auto may need to lay out again if scrollbars got added/removed.
+    bool scrollbarsChanged = (m_object->style()->overflow() == OAUTO) &&
+        (haveHorizontalBar != needHorizontalBar || haveVerticalBar != needVerticalBar);
+    if (scrollbarsChanged) {
+        setHasHorizontalScrollbar(needHorizontalBar);
+        setHasVerticalScrollbar(needVerticalBar);
+
+        m_object->setLayouted(false);
+#if 0
+	// ##############
+	if (m_object->isRenderBlock())
+            static_cast<RenderBlock*>(m_object)->layoutBlock(true);
+        else
+#endif
+            m_object->layout();
+    }
+
+    // Set up the range (and page step/line step).
+    if (m_hBar) {
+        int pageStep = (clientWidth-PAGE_KEEP);
+        if (pageStep < 0) pageStep = clientWidth;
+        m_hBar->setSteps(LINE_STEP, pageStep);
+#ifdef APPLE_CHANGES
+        m_hBar->setKnobProportion(clientWidth, m_scrollWidth);
+#else
+        m_hBar->setRange(0, m_scrollWidth-clientWidth);
+	qDebug("hbar: setting range to %d", m_scrollWidth-clientWidth);
+#endif
+    }
+    if (m_vBar) {
+        int pageStep = (clientHeight-PAGE_KEEP);
+        if (pageStep < 0) pageStep = clientHeight;
+        m_vBar->setSteps(LINE_STEP, pageStep);
+#ifdef APPLE_CHANGES
+        m_vBar->setKnobProportion(clientHeight, m_scrollHeight);
+#else
+	qDebug("vbar: setting range to %d", m_scrollHeight-clientHeight);
+        m_vBar->setRange(0, m_scrollHeight-clientHeight);
+#endif
+    }
+}
+
+void
+RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
+{
+#ifdef APPLE_CHANGES
+    if (m_hBar)
+        m_hBar->paint(p, QRect(x, y, w, h));
+    if (m_vBar)
+        m_vBar->paint(p, QRect(x, y, w, h));
+#endif
 }
 
 void
@@ -304,11 +587,20 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h, bool selectionOnly)
             }
 
             // A clip is in effect.  The clip is never allowed to clip our render object's
-            // background or borders.  Go ahead and draw those now without our clip (that will
+            // background, borders or scrollbars.  Go ahead and draw those now without our clip (that will
             // be used for our children) in effect.
             elt->layer->renderer()->paintBoxDecorations(p, x, y, w, h,
                                 elt->absBounds.x(),
                                 elt->absBounds.y());
+
+            // Position our scrollbars prior to painting.
+            elt->layer->positionScrollbars(elt->absBounds);
+
+#ifdef APPLE_CHANGES
+            // Our scrollbar widgets paint exactly when we tell them to, so that they work properly with
+            // z-index.
+            elt->layer->paintScrollbars(p, x, y, w, h);
+#endif
         }
 
         if (elt->clipRect != currRect) {
@@ -335,24 +627,27 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h, bool selectionOnly)
             }
         }
 
+        if (currRect.isEmpty())
+            continue;
+
         if (selectionOnly) {
-            elt->layer->renderer()->paint(p, x, y, w, h,
-                                          elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                          elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                          PaintActionSelection);
+	    elt->layer->renderer()->paint(p, x, y, w, h,
+					  elt->absBounds.x() - elt->layer->renderer()->xPos(),
+					  elt->absBounds.y() - elt->layer->renderer()->yPos(),
+					  PaintActionSelection);
         } else {
-            elt->layer->renderer()->paint(p, x, y, w, h,
-                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                        PaintActionBackground);
-            elt->layer->renderer()->paint(p, x, y, w, h,
-                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                        PaintActionFloat);
-            elt->layer->renderer()->paint(p, x, y, w, h,
-                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                        PaintActionForeground);
+	    elt->layer->renderer()->paint(p, x, y, w, h,
+					  elt->absBounds.x() - elt->layer->renderer()->xPos(),
+					  elt->absBounds.y() - elt->layer->renderer()->yPos(),
+					  PaintActionBackground);
+	    elt->layer->renderer()->paint(p, x, y, w, h,
+					  elt->absBounds.x() - elt->layer->renderer()->xPos(),
+					  elt->absBounds.y() - elt->layer->renderer()->yPos(),
+					  PaintActionFloat);
+	    elt->layer->renderer()->paint(p, x, y, w, h,
+					  elt->absBounds.x() - elt->layer->renderer()->xPos(),
+					  elt->absBounds.y() - elt->layer->renderer()->yPos(),
+					  PaintActionForeground);
         }
     }
 
@@ -414,13 +709,11 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     for (int i = count-1; i >= 0; i--) {
         RenderLayerElement* elt = layerList.at(i);
 
-        // Elements add in their own positions as a translation
-        // factor.  This forces us to subtract that out, so that when
-        // it's added back in, we get the right bounds.  This is
-        // really disgusting (that paint only sets up the right paint
+        // Elements add in their own positions as a translation factor.  This forces
+        // us to subtract that out, so that when it's added back in, we get the right
+        // bounds.  This is really disgusting (that paint only sets up the right paint
         // position after you call into it). -dwh
-
-	//printf("Painting // layer at %d %d\n", elt->absBounds.x(), elt->absBounds.y());
+        //printf("Painting layer at %d %d\n", elt->absBounds.x(), elt->absBounds.y());
 
         inside = elt->layer->renderer()->nodeAtPoint(info, x, y,
                                       elt->absBounds.x() - elt->layer->renderer()->xPos(),
@@ -500,11 +793,11 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
             QRect newOverflowClip = m_object->getOverflowClipRect(x,y);
             overflowClipRect  = newOverflowClip.intersect(overflowClipRect);
             clipRectToApply = clipRectToApply.intersect(newOverflowClip);
+            if (m_object->isPositioned() || m_object->isRelPositioned())
+                posClipRect = newOverflowClip.intersect(posClipRect);
         }
         if (m_object->hasClip()) {
             QRect newPosClip = m_object->getClipRect(x,y);
-            if (m_object->hasOverflowClip())
-                newPosClip = newPosClip.intersect(m_object->getOverflowClipRect(x,y));
             posClipRect = newPosClip.intersect(posClipRect);
             overflowClipRect = overflowClipRect.intersect(posClipRect);
             clipRectToApply = clipRectToApply.intersect(newPosClip);
@@ -692,7 +985,7 @@ void RenderLayer::RenderZTreeNode::constructLayerList(QPtrVector<RenderLayerElem
         current->constructLayerList(mergeTmpBuffer, buffer);
     uint endIndex = buffer->count();
 
-    if (autoZIndex)
+    if (autoZIndex || !(endIndex-startIndex))
         return; // We just had to collect the kids.  We don't apply a sort to them, since
                 // they will actually be layered in some ancestor layer's stacking context.
 
@@ -701,7 +994,7 @@ void RenderLayer::RenderZTreeNode::constructLayerList(QPtrVector<RenderLayerElem
     // Now set all of the elements' z-indices to match the parent's explicit z-index, so that
     // they will be layered properly in the ancestor layer's stacking context.
     for (uint i = startIndex; i < endIndex; i++) {
-        RenderLayerElement* elt = buffer->at(i);
+        RenderLayerElement *elt = buffer->at(i);
         elt->zindex = explicitZIndex;
     }
 }
@@ -754,10 +1047,14 @@ void RenderLayer::RenderZTreeNode::operator delete(void* ptr, size_t sz)
 
 void RenderLayer::RenderZTreeNode::detach(RenderArena* renderArena)
 {
-    if (next)
-        next->detach(renderArena);
-    if (child)
-        child->detach(renderArena);
+    assert(!next);
+
+    RenderZTreeNode *n;
+    for (RenderZTreeNode *c = child; c; c = n) {
+        n = c->next;
+        c->next = 0;
+        c->detach(renderArena);
+    }
     if (layerElement)
         layerElement->detach(renderArena);
 
@@ -785,3 +1082,6 @@ QPtrVector<RenderLayer::RenderLayerElement> RenderLayer::elementList(RenderZTree
 
     return list;
 }
+
+
+#include "render_layer.moc"

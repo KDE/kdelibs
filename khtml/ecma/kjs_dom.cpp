@@ -22,6 +22,7 @@
 #include <khtmlview.h>
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_layer.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmltags.h" // ID_*
@@ -145,8 +146,10 @@ bool DOMNode::toBoolean(ExecState *) const
   offsetParent	DOMNode::OffsetParent		DontDelete|ReadOnly
   clientWidth	DOMNode::ClientWidth		DontDelete|ReadOnly
   clientHeight	DOMNode::ClientHeight		DontDelete|ReadOnly
-  scrollLeft	DOMNode::ScrollLeft		DontDelete|ReadOnly
-  scrollTop	DOMNode::ScrollTop		DontDelete|ReadOnly
+  scrollLeft	DOMNode::ScrollLeft		DontDelete
+  scrollTop	DOMNode::ScrollTop		DontDelete
+  scrollWidth   DOMNode::ScrollWidth            DontDelete|ReadOnly
+  scrollHeight  DOMNode::ScrollHeight           DontDelete|ReadOnly
   sourceIndex	DOMNode::SourceIndex		DontDelete|ReadOnly
 @end
 */
@@ -246,6 +249,8 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case OffsetParent:
   case ClientWidth:
   case ClientHeight:
+  case ScrollWidth:
+  case ScrollHeight:
   case ScrollLeft:
   case ScrollTop:
   {
@@ -303,25 +308,39 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       if (!rend)
         return Undefined();
       // "Width of the object including padding, but not including margin, border, or scroll bar."
-      return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
+      return Number(rend->clientWidth() );
     case ClientHeight:
       if (!rend)
         return Undefined();
       // "Height of the object including padding, but not including margin, border, or scroll bar."
-      return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
+      return Number(rend->clientHeight() );
+    case ScrollWidth:
+        return rend ? static_cast<Value>(Number(rend->scrollWidth()) ) : Value(Undefined());
+    case ScrollHeight:
+        return rend ? static_cast<Value>(Number(rend->scrollHeight()) ) : Value(Undefined());
     case ScrollLeft: {
-      int x, y;
-      if ( rend && v && rend->absolutePosition( x, y ) )
-        return Number(-x + v->contentsX());
-      else
-        return Undefined();
+      // #### unify for canvas and layers.
+      if (rend && rend->isCanvas()) {
+	int x, y;
+	if ( rend && v && rend->absolutePosition( x, y ) )
+	  return Number(-x + v->contentsX());
+	else
+	  return Undefined();
+      } else {
+	return Number(rend && rend->layer() ? rend->layer()->scrollXOffset() : 0);
+     }
     }
     case ScrollTop: {
-      int x, y;
-      if ( rend && v && rend->absolutePosition( x, y ) )
-        return Number(-y + v->contentsY());
-      else
-        return Undefined();
+      // #### unify for canvas and layers.
+      if (rend && rend->isCanvas()) {
+	int x, y;
+	if ( rend && v && rend->absolutePosition( x, y ) )
+	  return Number(-y + v->contentsY());
+	else
+	  return Undefined();
+      } else {
+	return Number(rend && rend->layer() ? rend->layer()->scrollYOffset() : 0);
+      }
     }
     }
   }
@@ -335,7 +354,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       unsigned long i = 0;
       DOM::Node n = all.firstItem();
       for ( ; !n.isNull() && n != node; n = all.nextItem() )
-        ++i;
+	++i;
       Q_ASSERT( !n.isNull() ); // node not in document.all !?
       return Number(i);
     }
@@ -347,6 +366,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
 
   return Undefined();
 }
+
 
 void DOMNode::tryPut(ExecState *exec, const Identifier& propertyName, const Value& value, int attr)
 {
@@ -435,6 +455,18 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
   case OnUnload:
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
     break;
+  case ScrollTop: {
+    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+    if (rend && rend->layer())
+        rend->layer()->scrollToYOffset(value.toInt32(exec));
+    break;
+  }
+  case ScrollLeft: {
+    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+    if (rend && rend->layer())
+      rend->layer()->scrollToXOffset(value.toInt32(exec));
+    break;
+  }
   default:
     kdDebug(6070) << "WARNING: DOMNode::putValueProperty unhandled token " << token << endl;
   }

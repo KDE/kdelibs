@@ -168,6 +168,9 @@ void RenderBox::paint(QPainter *p, int _x, int _y, int _w, int _h,
     _tx += m_x;
     _ty += m_y;
 
+    if (style()->hidesOverflow() && m_layer)
+        m_layer->subtractScrollOffset(_tx, _ty);
+
     // default implementation. Just pass things through to the children
     RenderObject *child = firstChild();
     while(child != 0)

@@ -50,16 +50,31 @@
 
 #include "render_object.h"
 #include <qptrvector.h>
+class QScrollBar;
 
 namespace khtml {
-    class RenderFlow;
     class RenderStyle;
     class RenderTable;
     class CachedObject;
-    class RenderRoot;
+    class RenderCanvas;
     class RenderText;
     class RenderFrameSet;
     class RenderObject;
+    class RenderScrollMediator;
+
+class RenderScrollMediator: public QObject
+{
+    Q_OBJECT
+public:
+    RenderScrollMediator(RenderLayer* layer)
+    :m_layer(layer) {}
+
+public slots:
+    void slotValueChanged();
+
+private:
+    RenderLayer* m_layer;
+};
 
 class RenderLayer
 {
@@ -91,6 +106,8 @@ public:
     int yPos() const { return m_y; }
     short width() const { return m_width; }
     int height() const { return m_height; }
+    short scrollWidth() const { return m_scrollWidth; }
+    int scrollHeight() const { return m_scrollHeight; }
 
     void setWidth( int width ) {
         m_width = width;
@@ -102,6 +119,27 @@ public:
         m_x = xPos;
         m_y = yPos;
     }
+
+    // Scrolling methods for layers that can scroll their overflow.
+    void scrollOffset(int& x, int& y);
+    void subtractScrollOffset(int& x, int& y);
+    short scrollXOffset() { return m_scrollX; }
+    int scrollYOffset() { return m_scrollY; }
+    void scrollToOffset(int x, int y, bool updateScrollbars = true);
+    void scrollToXOffset(int x) { scrollToOffset(x, m_scrollY); }
+    void scrollToYOffset(int y) { scrollToOffset(m_scrollX, y); }
+    void setHasHorizontalScrollbar(bool hasScrollbar);
+    void setHasVerticalScrollbar(bool hasScrollbar);
+    QScrollBar* horizontalScrollbar() { return m_hBar; }
+    QScrollBar* verticalScrollbar() { return m_vBar; }
+    int verticalScrollbarWidth();
+    int horizontalScrollbarHeight();
+    void moveScrollbarsAside();
+    void positionScrollbars(const QRect& absBounds);
+    void paintScrollbars(QPainter* p, int x, int y, int w, int h);
+    void checkScrollbarsAfterLayout();
+    void slotValueChanged(int);
+    void updateScrollPositionFromScrollbars();
 
     void updateLayerPosition();
 
@@ -160,6 +198,7 @@ public:
     // (more on this below).
     //
     struct RenderLayerElement {
+
       RenderLayer* layer;
       QRect absBounds; // Our bounds in absolute coordinates relative to the root.
       QRect backgroundClipRect; // Clip rect used for our background/borders.
@@ -323,7 +362,20 @@ protected:
     int m_y;
     short m_x;
     short m_width;
+
+    // Our scroll offsets if the view is scrolled.
+    short m_scrollX;
+    int m_scrollY;
+
+    // The width/height of our scrolled area.
+    short m_scrollWidth;
+    short m_scrollHeight;
+
+    // For layers with overflow, we have a pair of scrollbars.
+    QScrollBar* m_hBar;
+    QScrollBar* m_vBar;
+    RenderScrollMediator* m_scrollMediator;
 };
 
-} // namespace
+}; // namespace
 #endif
