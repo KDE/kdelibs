@@ -33,32 +33,44 @@
 /**
  * A combined button, line-edit and a popup list widget.
  *
- * This widget inherits from QComboBox and enhances it with the following
- * added functionalities : a built-in hook into @ref a KCompletion object
- * which provides automatic & manual completion as well as the ability to
- * change which keyboard key is used for this feature.  Furthermore, since
- * it inherits form QComboBox it can be used as a drop-in replacement where
- * the above functionalities are needed and/or useful.
+ * This widget inherits from QComboBox and enhances it
+ * with the following functionalities : a built-in @ref
+ * KCompletion object which provides automatic & manual
+ * completion, the ability to change which keyboard key
+ * is used to activate this feature and rotation signals
+ * that can be used to iterate through some type of list.
+ * They key-bindings for the rotation feature are also
+ * configurable and can be interchanged between system and
+ * local settings easily.
  *
- * KComboBox emits a few more additional signals than @ref QComboBox, the
- * main ones being the @ref comepltion and the @ref rotation signal.  The
- * completion signal is intended to be connected to a slot that will assist
- * the user in filling out the remaining text while the rotation signals,
- * both @ref rotateUp and @ref rotateDown, are intended to be used to transverse
- * through some kind of list in opposing directions.  The @ref returnPressed
- * signals are emitted when the user presses the return key.
+ * Also since this widget inherits form QComboBox it can
+ * easily be used as a drop-in replacement where the above
+ * functionalities are needed and/or useful.
  *
- * By default both the completion and rotation signals are automatically handled
- * by this widget.  If you do not need these features, simply use the appropriate
- * accessor methods to shut them off.  See also @ref setHandleCompletion and @ref
- * setHandleRotation for details.
+ * KComboBox emits a few more additional signals than @ref
+ * QComboBox, the main ones being the @ref comepltion and
+ * the @ref rotation signal.  The completion signal is
+ * intended to be connected to a slot that will assist the
+ * user in filling out the remaining text while the rotation
+ * signals, both @ref rotateUp and @ref rotateDown, are intended
+ * to be used to transverse through some kind of list in opposing
+ * directions.  The @ref returnPressed signals are emitted when
+ * the user presses the return key.
  *
- * The default key-binding for completion and rotation is determined from the
- * global settings in @ref KStdAccel.  However, these values can be set locally to
- * override the global settings.  Simply invoking @ref useGlobalSettings then
- * allows you to immediately default the bindings back to the global settings
- * again.  You can also default the key-bindings by simply invoking the @ref
- * setXXXKey method without any argumet.
+ * By default both the completion and rotation signals are
+ * automatically handled by this widget.  If you do not need
+ * these features, simply use the appropriate accessor methods
+ * to shut them off.  Alternatively, you can change this default
+ * behavior when you first create this widget by setting a flag
+ * to false.  See the constructor's description for details.
+ *
+ * The default key-binding for completion and rotation is
+ * determined from the global settings in @ref KStdAccel.
+ * However, these values can be set locally to override the
+ * global settings.  Simply invoking @ref useGlobalSettings then
+ * allows you to immediately default the bindings back to the global
+ * settings again.  You can also default the key-bindings by simply
+ * invoking the @ref setXXXKey method without any argumet.
  *
  * @sect Example:
  *
@@ -79,8 +91,8 @@
  * combo->setHandleCompletion();
  * combo->setHandleRotation();
  *
- * Alternatively you could also tell the combobox to handle the signals and then
- * change the reference :
+ * Alternatively you could also tell the combobox to handle the
+ * signals and then change the reference :
  *
  * KComboBox *combo = new KComboBox( this,"mywidget", true );
  * KURLCompletion *comp = new KURLCompletion();
@@ -91,9 +103,10 @@
  *
  * combo->setEnableContextMenu();
  *
- * Of course @ref setCompletionObject can also be used to assign the base
- * KCompletion class as the comepltion object.  This is specailly important
- * when you share a single completion object across multiple widgets.
+ * Of course @ref setCompletionObject can also be used to assign
+ * the base KCompletion class as the comepltion object.  This is
+ * specailly important when you share a single completion object
+ * across multiple widgets.
  *
  * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@earthlink.net>
