@@ -261,7 +261,7 @@ void KToolBar::slotReadConfig()
   // 'mainToolBar', we will also try to read in [barname Toolbar style]
   bool highlight;
   int transparent;
-  IconText icontext;
+  QString icontext;
   int iconsize;
   QString position;
 
@@ -277,9 +277,9 @@ void KToolBar::slotReadConfig()
   // we read in the IconText property *only* if we intend on actually
   // honoring it
   if (d->m_honorStyle)
-    icontext = (IconText)config->readNumEntry(attrIconText, IconOnly);
+    icontext = config->readEntry(attrIconText, "IconOnly");
   else
-    icontext = IconOnly;
+    icontext = "IconOnly";
 
   // Use the default icon size for toolbar icons. This is not specified in
   // the [Toolbar style] section but in the [Icons] section.
@@ -298,7 +298,7 @@ void KToolBar::slotReadConfig()
     transparent = config->readBoolEntry(attrTrans, transparent);
 
     // now we always read in the IconText property
-    icontext = (IconText)config->readNumEntry(attrIconText, icontext);
+    icontext = config->readEntry(attrIconText, "icontext");
 
     // now get the size: FIXME: Sizes are not yet saved.
     // iconsize = config->readNumEntry(attrSize, iconsize);
@@ -312,10 +312,20 @@ void KToolBar::slotReadConfig()
 
   bool doUpdate = false;
 
+  IconText icon_text;
+  if ( icontext == "IconTextRight" )
+    icon_text = IconTextRight;
+  else if ( icontext == "IconTextBottom" )
+    icon_text = IconTextBottom;
+  else if ( icontext == "TextOnly" )
+    icon_text = TextOnly;
+  else
+    icon_text = IconOnly;
+
   // check if the icon/text has changed
-  if (icontext != d->m_iconText)
+  if (icon_text != d->m_iconText)
   {
-    setIconText(icontext, false);
+    setIconText(icon_text, false);
     doUpdate = true;
   }
 
