@@ -356,7 +356,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
 
   m_bIsTunneled = false;
 
-  kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << m_request.hostname << 
+  kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << m_request.hostname <<
     " (" << m_request.encoded_hostname << ")" <<endl;
 }
 
@@ -371,7 +371,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return false;
   }
-  
+
   if (u.path().isEmpty())
   {
      KURL newUrl(u);
@@ -1640,10 +1640,10 @@ char *HTTPProtocol::gets (char *s, int size)
     read(mybuf, 1);
     if (m_bEOF)
       break;
-      
+
     if (m_rewindCount < sizeof(m_rewindBuf))
        m_rewindBuf[m_rewindCount++] = *mybuf;
-    
+
     if (*mybuf == '\r') // Ignore!
       continue;
 
@@ -2441,7 +2441,7 @@ bool HTTPProtocol::readHeader()
      error( ERR_SERVER_TIMEOUT , m_state.hostname );
      return false;
   }
-  
+
   setRewindMarker();
 
   gets(buffer, sizeof(buffer)-1);
@@ -3712,7 +3712,7 @@ int HTTPProtocol::readChunked()
   if ((m_iBytesLeft == 0) || (m_iBytesLeft == NO_SIZE))
   {
      setRewindMarker();
-     
+
      m_bufReceive.resize(4096);
 
      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
@@ -5096,7 +5096,41 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     case HTTP_DELETE:
         info.method = "DELETE";
         break;
+    case DAV_PROPFIND:
+        info.method = "PROPFIND";
+        break;
+    case DAV_PROPPATCH:
+        info.method = "PROPPATCH";
+        break;
+    case DAV_MKCOL:
+        info.method = "MKCOL";
+        break;
+    case DAV_COPY:
+        info.method = "COPY";
+        break;
+    case DAV_MOVE:
+        info.method = "MOVE";
+        break;
+    case DAV_LOCK:
+        info.method = "LOCK";
+        break;
+    case DAV_UNLOCK:
+        info.method = "UNLOCK";
+        break;
+    case DAV_SEARCH:
+        info.method = "SEARCH";
+        break;
+    case DAV_SUBSCRIBE:
+        info.method = "SUBSCRIBE";
+        break;
+    case DAV_UNSUBSCRIBE:
+        info.method = "UNSUBSCRIBE";
+        break;
+    case DAV_POLL:
+        info.method = "POLL";
+        break;
     default:
+        error( ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail, please report bug!"));
         break;
   }
 
