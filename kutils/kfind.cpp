@@ -25,6 +25,7 @@
 #include <kmessagebox.h>
 #include <qlabel.h>
 #include <qregexp.h>
+#include <qstylesheet.h>
 #include <qguardedptr.h>
 #include <kdebug.h>
 
@@ -373,7 +374,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(m_pattern);
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(QStyleSheet::escape(m_pattern));
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -393,7 +394,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( numMatches() )
             message = i18n( "1 match found.", "%n matches found.", numMatches() );
         else
-            message = i18n("No matches found for '<b>%1</b>'.").arg(m_pattern);
+            message = i18n("No matches found for '<b>%1</b>'.").arg(QStyleSheet::escape(m_pattern));
     }
     else
     {
