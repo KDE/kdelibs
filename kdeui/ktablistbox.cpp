@@ -768,6 +768,7 @@ void KTabListBox::mousePressEvent(QMouseEvent* e)
   {
     mMouseStart = e->pos();
     mMouseCol = findCol(e->pos().x());
+    if (mMouseCol < 0) return;
     mMouseColWidth = colList[mMouseCol]->width();
     colXPos(mMouseCol, &mMouseColLeft);
     repaint();
