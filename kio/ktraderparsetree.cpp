@@ -417,16 +417,36 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
   if ( !m_pRight->eval( &c2 ) )
     return false;
 
-  if ( c1.type == ParseContext::T_NUM && c2.type == ParseContext::T_NUM_SEQ )
-  {
-    _context->b = ( c2.numSeq.find( c1.i ) != c2.numSeq.end() );
-    return true;
+  if ( (c1.type == ParseContext::T_NUM) && 
+       (c2.type == ParseContext::T_SEQ) && 
+       ((*(c2.seq.begin())).type() == QVariant::Int)) {
+      
+      QValueList<QVariant>::ConstIterator it = c2.seq.begin();
+      QValueList<QVariant>::ConstIterator end = c2.seq.end();
+      _context->b = false;
+      for (; it != end; it++)
+	  if ((*it).type() == QVariant::Int &&
+	      (*it).toInt() == c1.i) {
+	      _context->b = true;
+	      break;
+	  }
+      return true;
   }
 
-  if ( c1.type == ParseContext::T_DOUBLE && c2.type == ParseContext::T_DOUBLE_SEQ )
-  {
-    _context->b = ( c2.doubleSeq.find( c1.f ) != c2.doubleSeq.end() );
-    return true;
+  if ( c1.type == ParseContext::T_DOUBLE && 
+       c2.type == ParseContext::T_SEQ && 
+       (*(c2.seq.begin())).type() == QVariant::Double) {
+
+      QValueList<QVariant>::ConstIterator it = c2.seq.begin();
+      QValueList<QVariant>::ConstIterator end = c2.seq.end();
+      _context->b = false;
+      for (; it != end; it++)
+	  if ((*it).type() == QVariant::Double &&
+	      (*it).toDouble() == c1.i) {
+	      _context->b = true;
+	      break;
+	  }
+      return true;
   }
 
   if ( c1.type == ParseContext::T_STRING && c2.type == ParseContext::T_STR_SEQ )
@@ -472,16 +492,10 @@ bool ParseTreeID::eval( ParseContext *_context ) const
     return true;
   }
 
-  if ( prop->type() == QVariant::IntList )
+  if ( prop->type() == QVariant::List )
   {
-    _context->numSeq = prop->toIntList();
-    return true;
-  }
-
-  if ( prop->type() == QVariant::DoubleList )
-  {
-    _context->doubleSeq = prop->toDoubleList();
-    _context->type = ParseContext::T_DOUBLE_SEQ;
+    _context->seq = prop->toList();
+    _context->type = ParseContext::T_SEQ;
     return true;
   }
 

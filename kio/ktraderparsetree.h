@@ -89,15 +89,14 @@ public:
 
   bool initMaxima( const QString& _prop);
 
-  enum Type { T_STRING = 1, T_DOUBLE = 2, T_NUM = 3, T_BOOL = 4, T_NUM_SEQ = 5,
-	      T_STR_SEQ = 6, T_DOUBLE_SEQ = 7 };
+  enum Type { T_STRING = 1, T_DOUBLE = 2, T_NUM = 3, T_BOOL = 4,
+	      T_STR_SEQ = 5, T_SEQ = 6 };
 
   QString str;
   int i;
   double f;
   bool b;
-  QValueList<int> numSeq;
-  QValueList<double> doubleSeq;
+  QValueList<QVariant> seq;
   QStringList strSeq;
   Type type;
 

@@ -150,11 +150,11 @@ QString KConfigBase::readEntry( const QString& aKey,
 QVariant KConfigBase::readPropertyEntry( const QString& aKey,
 					  QVariant::Type type ) const
 {
-  QValueList<int> intList;
-  QValueList<double> doubleList;
+  QValueList<QVariant> list;
   QStringList strList;
   QStringList::ConstIterator it;
   QStringList::ConstIterator end;
+  QVariant tmp;
 
   switch( type )
     {
@@ -164,28 +164,18 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
       return QVariant( readEntry( aKey ) );
     case QVariant::StringList:
       return QVariant( readListEntry( aKey ) );
-    case QVariant::IntList:
-
+    case QVariant::List:
       strList = readListEntry( aKey );
 
       it = strList.begin();
       end = strList.end();
 
-      for (; it != end; ++it )
-        intList.append( (*it).toInt() );
+      for (; it != end; ++it ) {
+	  tmp.setValue(*it);
+	  list.append( tmp );
+      }
+      return QVariant( list );
 
-      return QVariant( intList );
-    case QVariant::DoubleList:
-
-      strList = readListEntry( aKey );
-
-      it = strList.begin();
-      end = strList.end();
-
-      for (; it != end; ++it )
-        doubleList.append( (*it).toDouble() );
-
-      return QVariant( doubleList );
     case QVariant::Font:
       return QVariant( readFontEntry( aKey ) );
     case QVariant::Pixmap:
@@ -730,12 +720,10 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
 			       bool bPersistent,
 			       bool bGlobal, bool bNLS )
 {
-  QValueList<int> intList;
-  QValueList<int>::ConstIterator iIt;
-  QValueList<int>::ConstIterator iEnd;
-  QValueList<double> doubleList;
-  QValueList<double>::ConstIterator dIt;
-  QValueList<double>::ConstIterator dEnd;
+  QValueList<QVariant> list;
+  QValueList<QVariant>::ConstIterator it;
+  QValueList<QVariant>::ConstIterator end;
+
   QStringList strList;
 
   switch( prop.type() )
@@ -749,30 +737,18 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
     case QVariant::StringList:
       writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
       break;
-    case QVariant::IntList:
+    case QVariant::List:
 
-      intList = prop.toIntList();
-      iIt = intList.begin();
-      iEnd = intList.end();
+	list = prop.toList();
+	it = list.begin();
+	end = list.end();
 
-      for (; iIt != iEnd; ++iIt )
-        strList.append( QString::number( *iIt ) );
+	for (; it != end; ++it )
+	    strList.append( (*it).toString() );
 	
-      writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
-
-      break;
-    case QVariant::DoubleList:
-
-      doubleList = prop.toDoubleList();
-      dIt = doubleList.begin();
-      dEnd = doubleList.end();
-
-      for (; dIt != dEnd; ++dIt )
-        strList.append( QString::number( *dIt ) );
+	writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
 	
-      writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
-
-      break;
+	break;
     case QVariant::Font:
       writeEntry( pKey, prop.toFont(), bPersistent, bGlobal, bNLS );
       break;
