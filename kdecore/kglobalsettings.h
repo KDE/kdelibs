@@ -279,7 +279,7 @@ private:
     static QFont *_taskbarFont;
     static QColor * kde2Gray;
     static QColor * kde2Blue;
-    static QColor * kde2LightGray;
+    static QColor * kde2AlternateColor;
     static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;
