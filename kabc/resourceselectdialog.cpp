@@ -88,6 +88,21 @@ Resource *ResourceSelectDialog::getResource( AddressBook *ab, QWidget *parent )
   QPtrList<Resource> resources = ab->resources();
   if ( resources.count() == 1 ) return resources.first();
 
+  Resource *found = 0;
+  Resource *r = resources.first();
+  while( r ) {
+    if ( !r->readOnly() ) {
+      if ( found ) {
+        found = 0;
+        break;
+      } else {
+        found = r;
+      }
+    }
+    r = resources.next();
+  }
+  if ( found ) return found;
+
   ResourceSelectDialog dlg( ab, parent );
   if ( dlg.exec() == KDialog::Accepted ) return dlg.resource();
   else return 0;
