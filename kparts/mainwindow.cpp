@@ -3,21 +3,9 @@
 #include <kparts/part.h>
 #include <kparts/plugin.h>
 
-#include <qdom.h>
-#include <qmenubar.h>
-#include <qaction.h>
 #include <qapplication.h>
-#include <qdatastream.h>
-#include <qobjectlist.h>
 
-#include <kaction.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kinstance.h>
-#include <kmenubar.h>
-#include <kstddirs.h>
-#include <ktoolbar.h>
 
 using namespace KParts;
 
