@@ -21,12 +21,12 @@ INCLUDES= -I../kdecore -I../kdeui -I../kfmlib $(QT_INCLUDES) $(X_INCLUDES)
 
 lib_LTLIBRARIES  = libkfile.la
 
-DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
+DISTCLEANFILES = kfilebookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
 	kcombiview.moc kpreview.moc kfilepreview.moc kfileinfocontents.moc \
 	kfilefilter.moc
 
-include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
+include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
 	xview.h kfilesimpleview.h kfilefilter.h
@@ -34,7 +34,7 @@ include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h debug.h
 
 kfstest_SOURCES =  kfstest.cpp
-libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
+libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
 	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp \
@@ -55,9 +55,9 @@ check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
 kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)
 
-bookmark.cpp:bookmark.moc
-bookmark.moc: bookmark.h
-	$(MOC) bookmark.h -o bookmark.moc
+kfilebookmark.cpp:kfilebookmark.moc
+kfilebookmark.moc: kfilebookmark.h
+	$(MOC) kfilebookmark.h -o kfilebookmark.moc
 
 kdir.cpp:kdir.moc
 kdir.moc: kdir.h

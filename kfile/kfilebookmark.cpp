@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1996, 1997, 1998 Martin R. Jones <mjones@kde.org>
-      
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -24,21 +24,21 @@
 //
 
 #include <qfile.h>
-#include "bookmark.h"
-#include "bookmark.moc"
+#include "kfilebookmark.h"
+#include "kfilebookmark.moc"
 
 #include <klocale.h>
 #include <kapp.h>
 
 //-----------------------------------------------------------------------------
 
-KBookmark::KBookmark()
+KFileBookmark::KFileBookmark()
 {
 	children.setAutoDelete( true );
 	type = URL;
 }
 
-KBookmark::KBookmark( const char *_text, const char *_url )
+KFileBookmark::KFileBookmark( const char *_text, const char *_url )
 {
 	children.setAutoDelete( true );
 	text = _text;
@@ -46,9 +46,9 @@ KBookmark::KBookmark( const char *_text, const char *_url )
 	type = URL;
 }
 
-void KBookmark::clear()
+void KFileBookmark::clear()
 {
-	KBookmark *bm;
+	KFileBookmark *bm;
 
 	for ( bm = getChildren().first(); bm != NULL; bm = getChildren().next() )
 	{
@@ -60,11 +60,11 @@ void KBookmark::clear()
 
 //-----------------------------------------------------------------------------
 
-KBookmarkManager::KBookmarkManager()
+KFileBookmarkManager::KFileBookmarkManager()
 {
 }
 
-void KBookmarkManager::read( const char *filename )
+void KFileBookmarkManager::read( const char *filename )
 {
 	QFile file( filename );
 
@@ -140,14 +140,14 @@ void KBookmarkManager::read( const char *filename )
 
 // parser based on HTML widget parser
 //
-const char *KBookmarkManager::parse( BookmarkTokenizer *ht, KBookmark *parent,
+const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *parent,
 	const char *_end )
 {
-	KBookmark *bm = parent;
+	KFileBookmark *bm = parent;
 	QString text;
 	const char *str;
 
-	parent->setType( KBookmark::Folder );
+	parent->setType( KFileBookmark::Folder );
 
 	while ( ht->hasMoreTokens() )
 	{
@@ -167,7 +167,7 @@ const char *KBookmarkManager::parse( BookmarkTokenizer *ht, KBookmark *parent,
 			}
 			else if ( strncasecmp( str, "<dt>", 4 ) == 0 )
 			{
-				bm = new KBookmark;
+				bm = new KFileBookmark;
 				parent->getChildren().append( bm );
 			}
 			else if ( strncasecmp( str, "<a ", 3 ) == 0 )
@@ -230,7 +230,7 @@ const char *KBookmarkManager::parse( BookmarkTokenizer *ht, KBookmark *parent,
 
 // write bookmarks file
 //
-void KBookmarkManager::write( const char *filename )
+void KFileBookmarkManager::write( const char *filename )
 {
 	QFile file( filename );
 
@@ -257,14 +257,14 @@ void KBookmarkManager::write( const char *filename )
 
 // write the contents of a folder (recursive)
 //
-void KBookmarkManager::writeFolder( QTextStream &stream, KBookmark *parent )
+void KFileBookmarkManager::writeFolder( QTextStream &stream, KFileBookmark *parent )
 {
-	KBookmark *bm;
+	KFileBookmark *bm;
 
 	for ( bm = parent->getChildren().first(); bm != NULL;
 			bm = parent->getChildren().next() )
 	{
-		if ( bm->getType() == KBookmark::URL )
+		if ( bm->getType() == KFileBookmark::URL )
 		{
 			stream << "<DT><A HREF=\"" << bm->getURL() << "\">"
 				<< bm->getText() << "</A>" << endl;
@@ -279,22 +279,22 @@ void KBookmarkManager::writeFolder( QTextStream &stream, KBookmark *parent )
 	}
 }
 
-KBookmark *KBookmarkManager::getBookmark( int id )
+KFileBookmark *KFileBookmarkManager::getBookmark( int id )
 {
 	int currId = 0;
 
 	return findBookmark( &root, id, currId );
 }
 
-KBookmark *KBookmarkManager::findBookmark( KBookmark *parent, int id,
+KFileBookmark *KFileBookmarkManager::findBookmark( KFileBookmark *parent, int id,
 	int &currId )
 {
-	KBookmark *bm;
+	KFileBookmark *bm;
 
 	for ( bm = parent->getChildren().first(); bm != NULL;
 			bm = parent->getChildren().next() )
 	{
-		if ( bm->getType() == KBookmark::URL )
+		if ( bm->getType() == KFileBookmark::URL )
 		{
 			if ( currId == id )
 				return bm;
@@ -302,7 +302,7 @@ KBookmark *KBookmarkManager::findBookmark( KBookmark *parent, int id,
 		}
 		else
 		{
-			KBookmark *retbm;
+			KFileBookmark *retbm;
 			if ( ( retbm = findBookmark( bm, id, currId ) ) != NULL )
 				return retbm;
 		}
@@ -311,15 +311,15 @@ KBookmark *KBookmarkManager::findBookmark( KBookmark *parent, int id,
 	return NULL;
 }
 
-void KBookmarkManager::add( const char *_text, const char *_url )
+void KFileBookmarkManager::add( const char *_text, const char *_url )
 {
-	root.getChildren().append( new KBookmark( _text, _url ) );
+	root.getChildren().append( new KFileBookmark( _text, _url ) );
 
 	emit changed();
 }
 
 // rich
-bool KBookmarkManager::remove(int i)
+bool KFileBookmarkManager::remove(int i)
 {
   bool result= false;
   if (i >= 0) {
@@ -331,9 +331,9 @@ bool KBookmarkManager::remove(int i)
 }
 
 // rich
-void KBookmarkManager::rename(int i, const char *s)
+void KFileBookmarkManager::rename(int i, const char *s)
 {
-  KBookmark *b;
+  KFileBookmark *b;
 
   if (i > 0) {
     b= root.getChildren().at(i);
@@ -343,9 +343,9 @@ void KBookmarkManager::rename(int i, const char *s)
 }
 
 // rich
-bool KBookmarkManager::moveUp(int i)
+bool KFileBookmarkManager::moveUp(int i)
 {
-  KBookmark *b;
+  KFileBookmark *b;
   bool result= false;
 
   if (i > 0) {
@@ -358,9 +358,9 @@ bool KBookmarkManager::moveUp(int i)
 }
 
 // rich
-bool KBookmarkManager::moveDown(int i)
+bool KFileBookmarkManager::moveDown(int i)
 {
-  KBookmark *b;
+  KFileBookmark *b;
   uint j= i;
   bool result= false;
 
@@ -374,13 +374,13 @@ bool KBookmarkManager::moveDown(int i)
 }
 
 // rich
-void KBookmarkManager::reread()
+void KFileBookmarkManager::reread()
 {
   read(myFilename);
 }
 
 // rich
-void KBookmarkManager::write()
+void KFileBookmarkManager::write()
 {
   write(myFilename);
 }

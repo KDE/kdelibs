@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1996, 1997, 1998 Martin R. Jones <mjones@kde.org>
-      
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -30,13 +30,13 @@
 #include <qtextstream.h>
 #include "booktoken.h"
 
-class KBookmark
+class KFileBookmark
 {
 public:
 	enum { URL, Folder };
 
-	KBookmark();
-	KBookmark( const char *_text, const char *_url );
+	KFileBookmark();
+	KFileBookmark( const char *_text, const char *_url );
 
 	void clear();
 
@@ -48,20 +48,20 @@ public:
 	const char *getURL()	{	return url; }
 	int getType()	{	return type; }
 
-	QList<KBookmark> &getChildren() 	{ return children; }
+	QList<KFileBookmark> &getChildren() 	{ return children; }
 
 private:
 	QString text;
 	QString url;
 	int type;
-	QList<KBookmark> children;
+	QList<KFileBookmark> children;
 };
 
-class KBookmarkManager : public QObject
+class KFileBookmarkManager : public QObject
 {
 	Q_OBJECT
 public:
-	KBookmarkManager();
+	KFileBookmarkManager();
 
 	void setTitle( const char *t )
 		{	title = t; }
@@ -81,19 +81,19 @@ public:
 	 */
 	void write();
 
-	KBookmark *getBookmark( int id );
-	KBookmark *getRoot()	{	return &root; }
+	KFileBookmark *getBookmark( int id );
+	KFileBookmark *getRoot()	{	return &root; }
 
 private:
-	const char *parse( BookmarkTokenizer *ht, KBookmark *parent, const char *_end);
-	void	writeFolder( QTextStream &stream, KBookmark *parent );
-	KBookmark *findBookmark( KBookmark *parent, int id, int &currId );
+	const char *parse( BookmarkTokenizer *ht, KFileBookmark *parent, const char *_end);
+	void	writeFolder( QTextStream &stream, KFileBookmark *parent );
+	KFileBookmark *findBookmark( KFileBookmark *parent, int id, int &currId );
 
 signals:
 	void changed();
 
 private:
-	KBookmark root;
+	KFileBookmark root;
 	QString title;
 	// rich
         QString myFilename;

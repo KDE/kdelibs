@@ -38,8 +38,8 @@ class QPopupMenu;
 class QCheckBox;
 class QComboBox;
 class KCombo;
-class KBookmarkManager;
-class KBookmark;
+class KFileBookmarkManager;
+class KFileBookmark;
 class QStrIList;
 class QLineEdit;
 class KDir;
@@ -242,7 +242,7 @@ protected:
 
     KFileFilter *filterWidget;
 
-    KBookmarkManager *bookmarks;
+    KFileBookmarkManager *bookmarks;
     QStrList history;
     KDir *dir;
 
@@ -366,7 +366,7 @@ protected slots:
       */
     void addToBookmarks();
     void bookmarksChanged();
-    void fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id );
+    void fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id );
 
 private:
     //

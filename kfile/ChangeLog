@@ -1,3 +1,10 @@
+Mon Dec 14 23:00:41 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfilebookmark.cpp: renamed class KBookmark to KFileBookmark to 
+	avoid problems with KFM's KBookmark class. Renamed bookmark.* to
+	kfilebookmark.*, too and changed all occurrences of bookmark.* to
+	kfilebookmark.* (especially all the .po-files)
+
 Wed Dec  2 15:59:13 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfilesimpleview.cpp: Fixed some more keyboard navigation bugs.

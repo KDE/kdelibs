@@ -144,6 +144,7 @@ fi
 AC_SUBST(EXTRA_SUBDIRS)
 
 AC_OUTPUT(Makefile \
+	kio/Makefile \
 	kdecore/Makefile \
 	kdeui/Makefile \
 	kimgio/Makefile \
