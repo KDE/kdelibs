@@ -729,47 +729,50 @@ QString KLocale::formatDate(const QDate &pDate) const
     return rst;
 }
 
-QString KLocale::formatTime(const QTime &pTime) const
+QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
-    QString rst(_timefmt);
-
-    int i = -1;
-    while ( (i = rst.findRev('%', i)) != -1 )
-        switch ( rst.at(i + 1).latin1() )
-        {
-        case 'H':
-                rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
-		continue;
-        case 'k':
-                rst.replace(i, 2, QString().sprintf("%2d", pTime.hour()));
-		continue;
-        case 'I':
-                rst.replace(i, 2, QString().sprintf("%02d", pTime.hour() % 12?pTime.hour() % 12 : 12));
-		continue;
-        case 'l':
-                rst.replace(i, 2, QString().sprintf("%2d", (pTime.hour() - 1) % 12 + 1));
-		continue;
-        case 'M':
-                rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
-		continue;
-        case 'S':
-                rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
-		continue;
-        case 'p':
-                rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
-		continue;
-        case '%':
-                rst.remove(i, 1);
-		continue;
-        case 'n':
-                rst.replace(i, 2, "\n");
-		continue;
-        case 't':
-                rst.replace(i, 2, "\t");
-		continue;
-        }
-
-    return rst;
+  QString rst(_timefmt);
+  
+  int i = -1;
+  while ( (i = rst.findRev('%', i)) != -1 )
+    switch ( rst.at(i + 1).latin1() )
+      {
+      case 'H':
+	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
+	continue;
+      case 'k':
+	rst.replace(i, 2, QString().sprintf("%2d", pTime.hour()));
+	continue;
+      case 'I':
+	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour() % 12?pTime.hour() % 12 : 12));
+	continue;
+      case 'l':
+	rst.replace(i, 2, QString().sprintf("%2d", (pTime.hour() - 1) % 12 + 1));
+	continue;
+      case 'M':
+	rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
+	continue;
+      case 'S':
+	if (includeSecs)
+	  rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
+	else
+	  rst.replace(i-1, 3, "");
+	continue;
+      case 'p':
+	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
+	continue;
+      case '%':
+	rst.remove(i, 1);
+	continue;
+      case 'n':
+	rst.replace(i, 2, "\n");
+	continue;
+      case 't':
+	rst.replace(i, 2, "\t");
+	continue;
+      }
+  
+  return rst;
 }
 
 

@@ -217,8 +217,11 @@ public:
     /**
      * Return a string formatted to the current locale's conventions
      * regarding times.
+     * 
+     * @param includeSecs if true, seconds are included in the output,
+     *        otherwise only hours and minutes are formatted.
      */
-    QString formatTime(const QTime &pTime) const;
+    QString formatTime(const QTime &pTime, bool includeSecs = false) const;
 
     /**
      * Return a string formatted to the current locale's conventions
