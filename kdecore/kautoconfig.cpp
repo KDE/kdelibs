@@ -195,3 +195,4 @@ void KAutoConfig::parseChildren(const QWidget *widget,
   }
 }
 
+#include "kautoconfig.moc"
