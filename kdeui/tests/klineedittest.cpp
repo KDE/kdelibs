@@ -1,6 +1,7 @@
-#include <klined.h>
 #include <qpushbutton.h>
+
 #include <kapp.h>
+#include <klineedit.h>
 #include <kcompletion.h>
 
 int main ( int argc, char **argv)
@@ -10,6 +11,12 @@ int main ( int argc, char **argv)
     QWidget * w = new QWidget( );
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
     l->enableCompletion();
+    // Shows of the value of the returnPressed signals with the QString argument.
+    // We simply insert the entered items into the completion object.
+    QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
+    // Un-comment the the code below to stop KLineEdit from handling rotation
+    // signals internally.
+    // l->setHandleRotationSignals( false );
     l->resize(500,30);
     l->setFocus();
     QPushButton * push = new QPushButton( "Exit", w );
