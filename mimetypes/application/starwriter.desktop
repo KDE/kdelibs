@@ -48,6 +48,7 @@ Comment[se]=StarOffice Writer-dokumeanta
 Comment[sk]=Dokument StarOffice Writer
 Comment[sl]=Dokument StarOffice Writer
 Comment[sr]=StarOffice Writer-ов документ
+Comment[sr@Latn]=StarOffice Writer-ov dokument
 Comment[sv]=StarOffice Writer-dokument
 Comment[ta]=ஸ்டார்ஆபீஸ் ரைட்டர் ஆவணம்
 Comment[tg]=Хуҷҷати StarOffice Writer
@@ -60,3 +61,6 @@ Comment[xx]=xxStarOffice Writer Documentxx
 Comment[zh_CN]=StarOffice Writer 文档
 Comment[zh_TW]=StarOffice Writer 文件
 Comment[zu]=Umbhali Wohlu lwamafayela e-StarOffice
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.sdw

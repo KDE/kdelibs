@@ -48,6 +48,7 @@ Comment[se]=StarOffice Impress-ovdanbuktojupmi
 Comment[sk]=Prezentácia StarOffice Impress
 Comment[sl]=Predstavitev StarOffice Impress
 Comment[sr]=StarOffice Impress-ова презентација
+Comment[sr@Latn]=StarOffice Impress-ova prezentacija
 Comment[sv]=StarOffice Impress-presentation
 Comment[ta]=ஸ்டார்ஆபீஸ் இம்ப்ரெஸ் அளிக்கை
 Comment[tr]=StarOffice Impress Sunumu
@@ -58,3 +59,6 @@ Comment[xx]=xxStarOffice Impress Presentationxx
 Comment[zh_CN]=StarOffice Impress 演示文稿
 Comment[zh_TW]=StarOffice Impress 簡報
 Comment[zu]=Ukunikezwa kwe-StarOffice Impress
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.sdd

@@ -48,6 +48,7 @@ Comment[se]=StarOffice Calc-tabealla
 Comment[sk]=Tabuľkový procesor StarOffice Calc
 Comment[sl]=Preglednica StarOffice Calc
 Comment[sr]=StarOffice Calc-ова табела
+Comment[sr@Latn]=StarOffice Calc-ova tabela
 Comment[sv]=StarOffice Calc-kalkylark
 Comment[ta]=ஸ்டார்ஆபீஸ் கல்க் விரிதாள்
 Comment[tr]=StarOffice Calc Hesap Tablosu
@@ -57,3 +58,6 @@ Comment[ven]=U phadaladza ha bammbiri la Calc ya StarOffice
 Comment[xx]=xxStarOffice Calc Spreadsheetxx
 Comment[zh_CN]=StarOffice Calc 电子表格
 Comment[zh_TW]=StarOffice Calc 電子表格
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.sdc
