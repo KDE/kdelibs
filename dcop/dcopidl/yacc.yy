@@ -75,25 +75,22 @@ void yyerror( const char *s )
 
 /*1*/
 main
-	: /*empty*/
-	  {
-	  }
-	| includes class
-	  {
-	  }
-	| class
+	: includes
 	  {
 	  }
 	;
 	
 includes
-	: T_INCLUDE
+	: T_INCLUDE includes
           {
 		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
 	  }
-	| T_INCLUDE includes
-          {
-		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
+	| T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
+	  {
+		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
+	  }
+	| T_CLASS T_IDENTIFIER T_SEMICOLON includes
+	  {
 	  }
 	;
 
@@ -120,23 +117,10 @@ class_header
 	| T_COLON T_PUBLIC super_classes
 	  {
 		$$ = $3;
-		qDebug("You must inherit virtual");
-		exit(1);
 	  }
 	| T_LEFT_CURLY_BRACKET
 	  {
-		qDebug("You must inherit from DCOPObject");
-		exit(1);
-	  }
-	;
-
-class
-	: T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
-	  {
-		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
-	  }
-	| T_CLASS T_IDENTIFIER T_SEMICOLON class
-	  {
+		$$ = new QString( "" );
 	  }
 	;
 
