@@ -1836,9 +1836,21 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   }
 
   int x = 0, y = 0;
+  int gox, dummy;
   HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
+
   a->getUpperLeftCorner(x, y);
-  d->m_view->setContentsPos(x-50, y-50);
+  if (x <= d->m_view->contentsX())
+    gox = x - 10;
+  else {
+    gox = d->m_view->contentsX();
+    if ( x + 10 > d->m_view->contentsX()+d->m_view->visibleWidth()) {
+      a->getLowerRightCorner(x, dummy);
+      gox = x - d->m_view->visibleWidth() + 10;
+    }
+  }
+
+  d->m_view->setContentsPos(gox, y-20);
 
   return true;
 }
