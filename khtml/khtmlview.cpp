@@ -897,7 +897,7 @@ void KHTMLView::print()
     if(printer->setup(this)) {
         QApplication::setOverrideCursor( waitCursor );
         // set up KPrinter
-        printer->setFullPage(false);
+        printer->setFullPage(true);
         printer->setCreator("KDE 3.0 HTML Library");
         QString docname = m_part->xmlDocImpl()->URL();
         if ( !docname.isEmpty() )
@@ -910,6 +910,7 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
+        m_part->xmlDocImpl()->updateStyleSheets();
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -978,6 +979,7 @@ void KHTMLView::print()
         root->setPrintingMode(false);
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
+        m_part->xmlDocImpl()->updateStyleSheets();
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();

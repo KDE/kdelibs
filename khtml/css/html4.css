@@ -44,10 +44,19 @@ script {
  * generic block level elements
  */
 
-body {
-	display: block;
-	margin: 10px;
-} 
+@media print {
+	body {
+		display: block;
+		margin: 2cm;
+	}
+}
+
+@media screen {
+	body {
+		display: block;
+		margin: 10px;
+	}
+}
 
 p {
 	display: block;

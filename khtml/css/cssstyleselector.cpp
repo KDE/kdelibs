@@ -63,6 +63,7 @@ using namespace DOM;
 #include <qintcache.h>
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
+CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
@@ -80,6 +81,7 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
 {
     strictParsing = _strictParsing;
     if(!defaultStyle) loadDefaultStyle(view ? view->part()->settings() : 0);
+    mMedium = view ? view->mediaType() : "all";
 
     selectors = 0;
     selectorCache = 0;
@@ -92,7 +94,7 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, view ? view->mediaType() : "all" );
+        userStyle->append( userSheet, mMedium );
     }
 
     // add stylesheets from document
@@ -103,7 +105,7 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
     for ( ; it.current(); ++it ) {
         if ( it.current()->isCSSStyleSheet() ) {
             authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ),
-                                 view ? view->mediaType() : "all" );
+                                 mMedium );
         }
     }
 
@@ -132,9 +134,10 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
     if(!defaultStyle) loadDefaultStyle();
+    mMedium = sheet->doc()->view()->mediaType();
 
     authorStyle = new CSSStyleSelectorList();
-    authorStyle->append( sheet, sheet->doc()->view()->mediaType() );
+    authorStyle->append( sheet, mMedium );
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -147,7 +150,8 @@ CSSStyleSelector::~CSSStyleSelector()
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
-    authorStyle->append( sheet, sheet->doc()->view()->mediaType() );
+    mMedium = sheet->doc()->view()->mediaType();
+    authorStyle->append( sheet, mMedium );
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
@@ -173,14 +177,19 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
     defaultStyle = new CSSStyleSelectorList();
     defaultStyle->append( defaultSheet );
+
+    defaultPrintStyle = new CSSStyleSelectorList();
+    defaultPrintStyle->append( defaultSheet, "print" );
     //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
 }
 
 void CSSStyleSelector::clear()
 {
     delete defaultStyle;
+    delete defaultPrintStyle;
     delete defaultSheet;
     defaultStyle = 0;
+    defaultPrintStyle = 0;
     defaultSheet = 0;
 }
 
@@ -627,7 +636,11 @@ void CSSStyleSelector::buildLists()
     QList<CSSSelector> selectorList;
     CSSOrderedPropertyList propertyList;
 
-    if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList, Default, Default );
+    if(mMedium == "print" && defaultPrintStyle)
+      defaultPrintStyle->collect( &selectorList, &propertyList, Default,
+        Default );
+    else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
+      Default, Default );
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
     if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
 

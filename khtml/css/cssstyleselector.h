@@ -147,6 +147,7 @@ namespace khtml
 	
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
+	static CSSStyleSelectorList *defaultPrintStyle;
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
@@ -172,6 +173,7 @@ namespace khtml
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
 	QArray<CSSOrderedProperty> inlineProps;
+	QString mMedium;
     };
 
     /*
