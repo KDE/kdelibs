@@ -2,14 +2,14 @@
 
 INCLUDES=	$(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
-LDADD	=	$(LIB_KIO) 
+LDADD	=	$(LIB_KIO)
 
 ####### Files
 
 bin_PROGRAMS = kio_ftp
 
 kio_ftp_SOURCES = main.cc ftp.cc
-noinst_HEADERS = ftp.h
+noinst_HEADERS = main.h ftp.h
 
 messages:
 
