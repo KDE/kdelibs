@@ -47,25 +47,13 @@ using namespace KJS;
 
 QPtrDict<Window> *window_dict = 0L;
 
-Window *KJS::newWindow(KHTMLPart *p, bool own)
+Window *KJS::newWindow(KHTMLPart *p)
 {
   Window *w;
   if (!window_dict)
     window_dict = new QPtrDict<Window>;
   else if ((w = window_dict->find(p)) != 0L)
     return w;
-
-  // we want Window objects to belong to the respective part.
-  // this triggers the creation of JS interpreter and catches
-  // it's (recursive) call to this function.
-  static KHTMLPart *lastQuery = 0L;
-  if (lastQuery == 0L && !own) {
-    lastQuery = p;
-    WindowFunc::initJScript(p);
-    lastQuery = 0L;
-    if ((w = window_dict->find(p)) != 0L)
-      return w;
-  }
 
   w = new Window(p);
   window_dict->insert(p, w);
