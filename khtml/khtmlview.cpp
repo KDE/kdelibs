@@ -579,15 +579,15 @@ void KHTMLView::setMarginHeight(int h)
 
 void KHTMLView::layout()
 {
-    d->layoutSchedulingEnabled=false;
-
     if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
         if ( !root ) return;
 
-         if (document->isHTMLDocument()) {
+        d->layoutSchedulingEnabled=false;
+
+        if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
                  QScrollView::setVScrollBarMode(AlwaysOff);
@@ -600,7 +600,7 @@ void KHTMLView::layout()
              }
              else if (!d->tooltip)
                  d->tooltip = new KHTMLToolTip( this, d );
-         }
+        }
 
         _height = visibleHeight();
         _width = visibleWidth();
