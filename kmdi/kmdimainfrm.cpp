@@ -277,7 +277,9 @@ void KMdiMainFrm::resizeEvent(QResizeEvent *e)
       if( e->oldSize().height() != e->size().height()) {
          return;
       }
-   DockMainWindow::resizeEvent(e);
+   KMdiDockMainWindow::resizeEvent(e);
+   if (!m_mdiGUIClient) return;
+	   setSysButtonsAtMenuPosition();
 }
 
 //================ setMinimumSize ===============//
