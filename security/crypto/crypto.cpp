@@ -396,7 +396,6 @@ QString whatstr;
   whatstr = i18n("This list box shows which site and person certificates KDE"
                 " knows about.  You can easily manage them from here.");
   QWhatsThis::add(otherSSLBox, whatstr);
-//  otherSSLBox->setSelectionMode(QListView::Single);
   otherSSLBox->addColumn(i18n("Organization"));
   otherSSLBox->addColumn(i18n("Common Name"));
   grid->addMultiCellWidget(otherSSLBox, 0, 7, 0, 4);
@@ -404,14 +403,23 @@ QString whatstr;
   otherSSLExport = new QPushButton(i18n("&Export..."), tabOtherSSLCert);
   connect(otherSSLExport, SIGNAL(clicked()), SLOT(slotExportCert()));
   grid->addWidget(otherSSLExport, 0, 5);
+  whatstr = i18n("This button allows you to export the selected certificate"
+                " to a file of various formats.");
+  QWhatsThis::add(otherSSLExport, whatstr);
 
   otherSSLRemove = new QPushButton(i18n("&Remove..."), tabOtherSSLCert);
   connect(otherSSLRemove, SIGNAL(clicked()), SLOT(slotRemoveCert()));
   grid->addWidget(otherSSLRemove, 1, 5);
+  whatstr = i18n("This button removes the selected certificate"
+                " from the certificate cache.");
+  QWhatsThis::add(otherSSLRemove, whatstr);
 
   otherSSLVerify = new QPushButton(i18n("&Verify..."), tabOtherSSLCert);
   connect(otherSSLVerify, SIGNAL(clicked()), SLOT(slotVerifyCert()));
   grid->addWidget(otherSSLVerify, 2, 5);
+  whatstr = i18n("This button tests the selected certificate"
+                " for validity.");
+  QWhatsThis::add(otherSSLVerify, whatstr);
 
       otherSSLExport->setEnabled(false);
       otherSSLVerify->setEnabled(false);
@@ -422,6 +430,10 @@ QString whatstr;
   oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(""));
   grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
   grid->addMultiCellWidget(oIssuer, 9, 13, 3, 5);
+  whatstr = i18n("This is the information known about the owner of the certificate.");
+  QWhatsThis::add(oSubject, whatstr);
+  whatstr = i18n("This is the information known about the issuer of the certificate.");
+  QWhatsThis::add(oIssuer, whatstr);
 
   grid->addWidget(new QLabel(i18n("Valid From:"), tabOtherSSLCert), 14, 0);
   grid->addWidget(new QLabel(i18n("Valid Until:"), tabOtherSSLCert), 15, 0);
@@ -429,6 +441,10 @@ QString whatstr;
   grid->addWidget(validFrom, 14, 1);
   validUntil = new QLabel(tabOtherSSLCert);
   grid->addWidget(validUntil, 15, 1);
+  whatstr = i18n("The certificate is valid starting at this date.");
+  QWhatsThis::add(validFrom, whatstr);
+  whatstr = i18n("The certificate is valid until this date.");
+  QWhatsThis::add(validUntil, whatstr);
 
   grid->addWidget(new QLabel(i18n("Cache..."), tabOtherSSLCert), 16, 0);
   cachePerm = new QRadioButton(i18n("Permanentl&y"), tabOtherSSLCert);
@@ -443,6 +459,12 @@ QString whatstr;
   grid->addWidget(untilDate, 18, 1);
   untilDate->setEnabled(false);
   connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
+  whatstr = i18n("Select here to make the cache entry permanent.");
+  QWhatsThis::add(cachePerm, whatstr);
+  whatstr = i18n("Select here to make the cache entry temporary.");
+  QWhatsThis::add(cacheUntil, whatstr);
+  whatstr = i18n("The date and time until the certificate cache entry should expire.");
+  QWhatsThis::add(untilDate, whatstr);
 
   policyGroup = new QVButtonGroup(i18n("Policy"), tabOtherSSLCert);
   policyAccept = new QRadioButton(i18n("A&ccept"), policyGroup);
@@ -451,6 +473,12 @@ QString whatstr;
   policyGroup->setEnabled(false);
   grid->addMultiCellWidget(policyGroup, 14, 17, 3, 5);
   connect(policyGroup, SIGNAL(clicked(int)), SLOT(slotPolicyChanged(int)));
+  whatstr = i18n("Select this to always accept this certificate.");
+  QWhatsThis::add(policyAccept, whatstr);
+  whatstr = i18n("Select this to always reject this certificate.");
+  QWhatsThis::add(policyReject, whatstr);
+  whatstr = i18n("Select this if you wish to be prompted for action when receiving this certificate.");
+  QWhatsThis::add(policyPrompt, whatstr);
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
