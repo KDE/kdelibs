@@ -1,0 +1,21 @@
+Coding Style
+============
+
+- No Tabs.
+- Indent with 2 spaces.
+- Put Spaces between brackets and arguments of functions.
+- For if, else, while and similar statements put the brackets on the same line
+  as the statement.
+
+- Put classes in files, which have the same name as the class, but only lower-case letters.
+- Designer-generated files should have a name classname_base.ui and should contain a class called
+  ClassnameBase.
+- Classes inheriting from designer-generated classes have the same name as the generated class, but 
+  without the Base suffix.
+
+- For class, variable, function names seperate multiple words by upper-casing the words precedeed
+  by other words.
+- Class names start with an upper-case letter.
+- Function names start with a lower-case letter.
+- Variable names start with a lower-case letter.
+- Member variables of a class start with "m" followed by an upper-case letter.

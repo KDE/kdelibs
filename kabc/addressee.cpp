@@ -28,6 +28,8 @@
 
 using namespace KABC;
 
+bool matchBinaryPattern( int value, int pattern, int max );
+
 struct Addressee::AddresseeData : public KShared
 {
   QString uid;
@@ -456,7 +458,7 @@ QString Addressee::carPhoneLabel()
 
 QString Addressee::isdnLabel()
 {
-  return i18n("ISDN");
+  return i18n("Isdn");
 }
 
 
@@ -930,13 +932,18 @@ void Addressee::removePhoneNumber( const PhoneNumber &phoneNumber )
 
 PhoneNumber Addressee::phoneNumber( int type ) const
 {
+  PhoneNumber phoneNumber( "", type );
   PhoneNumber::List::ConstIterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
-    if ( (*it).type() == type ) {
-      return *it;
+    if ( matchBinaryPattern( (*it).type(), type, PhoneNumber::Pager ) ) {
+      if ( (*it).type() & PhoneNumber::Pref )
+        return (*it);
+      else if ( phoneNumber.number().isEmpty() )
+        phoneNumber = (*it);
     }
   }
-  return PhoneNumber( QString(), type );
+
+  return phoneNumber;
 }
 
 PhoneNumber::List Addressee::phoneNumbers() const
@@ -950,7 +957,7 @@ PhoneNumber::List Addressee::phoneNumbers( int type ) const
 
   PhoneNumber::List::ConstIterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
-    if ( (*it).type() == type ) {
+    if ( matchBinaryPattern( (*it).type(), type, PhoneNumber::Pager ) ) {
       list.append( *it );
     }
   }
@@ -1156,13 +1163,18 @@ void Addressee::removeAddress( const Address &address )
 
 Address Addressee::address( int type ) const
 {
+  Address address( type );
   Address::List::ConstIterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
-    if ( (*it).type() == type ) {
-      return *it;
+    if ( matchBinaryPattern( (*it).type(), type, Address::Pref ) ) {
+      if ( (*it).type() & Address::Pref )
+        return (*it);
+      else if ( address.isEmpty() )
+        address = (*it);
     }
   }
-  return Address( type );
+
+  return address;
 }
 
 Address::List Addressee::addresses() const
@@ -1176,7 +1188,7 @@ Address::List Addressee::addresses( int type ) const
 
   Address::List::ConstIterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
-    if ( (*it).type() == type ) {
+    if ( matchBinaryPattern( (*it).type(), type , Address::Pref ) ) {
       list.append( *it );
     }
   }
@@ -1454,4 +1466,20 @@ QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
   a.mData->empty = false;
 
   return s;
+}
+
+bool matchBinaryPattern( int value, int pattern, int max )
+{
+  int counter = 0;
+  while ( 1 ) {
+    if ( ( pattern & ( 1 << counter ) ) && !( value & ( 1 << counter ) ) )
+      return false;
+
+    if ( ( 1 << counter ) == max )
+      break;
+
+    counter++;
+  }
+
+  return true;
 }
