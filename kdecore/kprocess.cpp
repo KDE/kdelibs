@@ -168,7 +168,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 	// Matthias
 	if (run_mode == DontCare) 
-	  setpgrp();
+          setpgid(0,0);
 	
 	execvp(process, arglist);
 	exit(-1);
