@@ -209,6 +209,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    mSlaveValgrind = getenv("KDE_SLAVE_VALGRIND");
    if (!mSlaveValgrind.isEmpty())
    {
+      mSlaveValgrindSkin = getenv("KDE_SLAVE_VALGRIND_SKIN");
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", mSlaveValgrind.data());
    }
    klauncher_header request_header;
@@ -1265,6 +1266,9 @@ KLauncher::requestSlave(const QString &protocol,
        arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name)));
        arg_list.prepend(QFile::encodeName(locate("exe", "kioslave")));
        name = "valgrind";
+       if (!mSlaveValgrindSkin.isEmpty()) {
+           arg_list.prepend(QCString("--skin=") + mSlaveValgrindSkin);
+       }
     }
 
     KLaunchRequest *request = new KLaunchRequest;
