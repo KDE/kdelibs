@@ -304,6 +304,35 @@ public:
   QString readPathEntry( const char *pKey, const QString & aDefault = QString::null ) const;
 
   /**
+   * Reads a list of string paths.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it as a list of paths. This means, dollar expansion is activated
+   * for this value, so that e.g. $HOME gets expanded.
+   *
+   * @param pKey The key to search for.
+   * @param sep  The list separator (default is ",").
+   * @return The list. Empty if the entry does not exist.
+   * @since 3.2
+   */
+  QStringList readPathListEntry( const QString& pKey, char sep = ',' ) const;
+
+  /**
+   * Reads a list of string paths.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it as a list of paths. This means, dollar expansion is activated
+   * for this value, so that e.g. $HOME gets expanded.
+   *
+   * @param pKey The key to search for.
+   * @param sep  The list separator (default is ",").
+   * @return The list. Empty if the entry does not exist.
+   * @since 3.2
+   */
+  QStringList readPathListEntry( const char *pKey, char sep = ',' ) const;
+
+
+  /**
    * Reads a numerical value.
    *
    * Read the value of an entry specified by @p pKey in the current group
@@ -1404,6 +1433,55 @@ public:
   void writePathEntry( const char *pKey, const QString & path,
                        bool bPersistent = true, bool bGlobal = false,
                        bool bNLS = false );
+
+  /**
+   * @ref writePathEntry() overridden to accept a list of paths (strings).
+   *
+   * It is checked whether the paths are located under $HOME. If so each of 
+   * the paths are written out with the user's home-directory replaced with
+   * $HOME. The paths should be read back with @ref readPathListEntry()
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writePathEntry()
+   * @see  readPathListEntry()
+   * @since 3.2
+   */
+  void writePathEntry( const QString& pKey, const QStringList &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+  /**
+   * @ref writePathEntry() overridden to accept a list of paths (strings).
+   *
+   * It is checked whether the paths are located under $HOME. If so each of 
+   * the paths are written out with the user's home-directory replaced with
+   * $HOME. The paths should be read back with @ref readPathListEntry()
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writePathEntry()
+   * @see  readPathListEntry()
+   * @since 3.2
+   */
+  void writePathEntry( const char *pKey, const QStringList &rValue,
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
 
   /**
