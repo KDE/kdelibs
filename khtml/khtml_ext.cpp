@@ -116,10 +116,13 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
     {
         disconnect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
                     this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
-        disconnect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
-                    this, SLOT( extensionProxyEditableWidgetFocused() ) );
-        disconnect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
-                    this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+        if ( m_extensionProxy->inherits( "KHTMLPartBrowserExtension" ) )
+        {
+            disconnect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
+                        this, SLOT( extensionProxyEditableWidgetFocused() ) );
+            disconnect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
+                        this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+        }
     }
 
     m_extensionProxy = proxy;
@@ -128,10 +131,13 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
     {
         connect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
                  this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
-        connect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
-                    this, SLOT( extensionProxyEditableWidgetFocused() ) );
-        connect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
-                    this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+        if ( m_extensionProxy->inherits( "KHTMLPartBrowserExtension" ) )
+        {
+            connect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
+                     this, SLOT( extensionProxyEditableWidgetFocused() ) );
+            connect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
+                     this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+        }
 
         enableAction( "cut", m_extensionProxy->isActionEnabled( "cut" ) );
         enableAction( "copy", m_extensionProxy->isActionEnabled( "copy" ) );
