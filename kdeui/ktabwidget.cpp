@@ -118,7 +118,7 @@ void KTabWidget::wheelEvent( QWheelEvent *e )
     QPoint point( e->pos() );
     QSize size( tabBar()->sizeHint() );
     if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) )
-        wheelDelta( e->delta() );
+         wheelDelta( e->delta() );
 }
 
 void KTabWidget::wheelDelta( int delta )
@@ -220,10 +220,15 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
     if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
         // QTabWidget::cornerWidget isn't const even it doesn't write any data ;(
         KTabWidget *that = const_cast<KTabWidget*>(this);
+        QWidget *rightcorner = that->cornerWidget( TopRight );
+        if ( rightcorner ) {
+            if ( point.x()>=width()-rightcorner->width() )
+                return false;
+        }
         QWidget *leftcorner = that->cornerWidget( TopLeft );
         if ( leftcorner ) {
             if ( point.x()<=leftcorner->width() )
-                return true;
+                return false;
             point.setX( point.x()-size.height() );
         }
         if ( tabPosition()==Bottom )
