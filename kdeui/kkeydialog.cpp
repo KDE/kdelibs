@@ -738,7 +738,10 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
 {
-	// Search for shortcut conflicts with other actions in the
+    if ( cut.toString().isEmpty())
+	       return false;
+
+		// Search for shortcut conflicts with other actions in the
 	//  lists we're configuring.
 	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
 		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
