@@ -49,15 +49,13 @@ class KIOConnection
 
     static void setData(String jobid, int code, byte [] data) {
         KIOConnection job = (KIOConnection) jobs.get(jobid);
-        if (job == null)
+        if (job == null || !job.setData(code, data))
             Main.info("KIO KJASHttpURLConnection gone (timedout/closed)");
-        else {
-            job.setData(code, data);
+        else
             Thread.yield();
-        }
     }
 
-    class KJASOutputStream extends OutputStream {
+    private class KJASOutputStream extends OutputStream {
         KJASOutputStream() {
         }
         public void write(int b) throws IOException {
@@ -82,7 +80,7 @@ class KIOConnection
         }
     }
 
-    class KJASInputStream extends InputStream {
+    private class KJASInputStream extends InputStream {
 
         KJASInputStream() {
         }
@@ -129,14 +127,13 @@ class KIOConnection
     protected boolean finished = false;           // all data has arived
     protected boolean onhold = false;             // KIO job is suspended
     protected boolean request_data = false;       // need data for put job
-    protected boolean removed = false;            // removed from jobs table
     private KJASOutputStream out = null;
     private KJASInputStream in = null;
     private byte [] in_buf = null;                // current input buffer
     private int in_bufpos = 0;                    // position in buffer
     private boolean in_eof = false;               // all data is read
 
-    KIOConnection(URL u) {
+    protected KIOConnection(URL u) {
         url = u;
     }
     protected void checkConnected() throws IOException {
@@ -146,11 +143,10 @@ class KIOConnection
     protected boolean haveError() {
         return errorcode != 0;
     }
-    synchronized void setData(int code, byte [] d) {
-        if (removed) {     // job could be removed after entering the monitor
-            Main.info("KIO KJASHttpURLConnection gone (timedout/closed)");
-            return;
-        }
+    synchronized protected boolean setData(int code, byte [] d) {
+        // is job still there when entering the monitor
+        if (jobs.get(jobid) == null) 
+            return false;
         if (connect_status == CONNECT_WAIT)
             connect_status = CONNECTED;
         switch (code) {
@@ -160,7 +156,6 @@ class KIOConnection
                 finished = true;
                 onhold = false;
                 jobs.remove(jobid);
-                removed = true;
                 Main.debug ("KIO FINISHED (" + jobid + ") " + data.size());
                 break;
             case DATA:
@@ -188,6 +183,7 @@ class KIOConnection
                 break;
         }
         notifyAll();
+        return true;
     }
 
     private synchronized boolean getData(boolean mayblock) throws IOException {
@@ -225,11 +221,11 @@ class KIOConnection
         }
         return getData(false);
     }
-    synchronized protected int inAvailable() throws IOException {
+    synchronized private int inAvailable() throws IOException {
         if (in_eof)
             return 0;
         checkConnected();
-        if (in_buf == null)
+        if (!getData(false))
             return 0;
         int total = in_buf.length - in_bufpos;
         ListIterator it = data.listIterator(0);
@@ -237,7 +233,7 @@ class KIOConnection
             total += ((byte []) it.next()).length;
         return total;
     }
-    synchronized void sendData(byte [] d, boolean force) throws IOException {
+    synchronized private void sendData(byte [] d, boolean force) throws IOException {
         Main.debug ("KIO sendData(" + jobid + ") force:" + force + " request_data:" + request_data);
         if (d != null)
             data.addLast(d);
@@ -279,7 +275,7 @@ class KIOConnection
 	//(new Exception()).printStackTrace();
         Main.debug ("KIO connect " + url);
         errorcode = 0;
-        finished = in_eof = removed = false;
+        finished = in_eof = false;
         jobid = String.valueOf(id++);
         jobs.put(jobid, this);
         if (doInput)
@@ -303,7 +299,6 @@ class KIOConnection
         }
         connect_status = NOT_CONNECTED;
         jobs.remove(jobid);
-        removed = true;
         if (isconnected) {
             if (!finished)
                 Main.protocol.sendDataCmd(jobid, STOP);
@@ -329,7 +324,6 @@ class KIOConnection
         if (!finished) {
             Main.protocol.sendDataCmd(jobid, STOP);
             jobs.remove(jobid);
-            removed = true;
         }
         notifyAll();
     }
@@ -360,7 +354,7 @@ final class KIOHttpConnection extends KIOConnection
     protected boolean haveError() {
         return responseCode != 404 && (responseCode < 0 || responseCode >= 400);
     }
-    public synchronized void setData(int code, byte [] d) {
+    protected synchronized boolean setData(int code, byte [] d) {
         switch (code) {
             case HEADERS:
                 StringTokenizer tokenizer = new StringTokenizer(new String(d), "\n");
@@ -382,12 +376,12 @@ final class KIOHttpConnection extends KIOConnection
                     int epos = token.indexOf(' ', spos + 1);
                     if (epos < 0) break;
                     responseCode = Integer.parseInt(token.substring(spos+1, epos));
-                    responseMessage = token.substring(epos);
+                    responseMessage = token.substring(epos+1);
                     Main.debug ("KIO responsecode=" + responseCode);
                 }
                 break;
         }
-        super.setData(code, d);
+        return super.setData(code, d);
     }
 }
 
@@ -434,6 +428,7 @@ final class KJASHttpURLConnection extends HttpURLConnection
         return ((String []) kioconnection.headers.get(n))[0];
     }
     public int getResponseCode() throws IOException {
+        Main.debug ("KIO getResponseCode");
         responseMessage = kioconnection.responseMessage;
         return kioconnection.responseCode;
     }
