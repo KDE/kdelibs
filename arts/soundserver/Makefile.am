@@ -62,9 +62,9 @@ kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 
 kmedia2.cc: kmedia2.h
 
-artsversion.h: $(top_srcdir)/arts/soundserver/artsversion-new.h
-	(cmp -s $(top_srcdir)/arts/soundserver/artsversion-new.h artsversion.h \
-	  || cp $(top_srcdir)/arts/soundserver/artsversion-new.h artsversion.h) 
+artsversion.h: $(top_builddir)/arts/soundserver/artsversion-new.h
+	(cmp -s $(top_builddir)/arts/soundserver/artsversion-new.h artsversion.h \
+	  || cp $(top_builddir)/arts/soundserver/artsversion-new.h artsversion.h) 
 
 artscat.cc: soundserver.h
 artsd.cc: soundserver.h
@@ -73,7 +73,7 @@ artsshell.cc: soundserver.h
 wavplayobject_impl.cc: soundserver.h
 simplesoundserver_impl.cc: soundserver.h
 soundserver_impl.cc: soundserver.h
-soundserverv2_impl.cc: soundserver.h
+soundserverv2_impl.cc: soundserver.h artsversion.h
 
 bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
 
