@@ -539,8 +539,8 @@ RenderBlock *RenderObject::containingBlock() const
                !o->isRoot() && !o->isCanvas())
             o = o->parent();
     } else {
-        while(o && ( ( o->isInline() && !o->isReplaced() ) ||
-              o->isTableRow() || o->isTableSection() || o->isTableCol() ) )
+        while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
+                       o->isTableCol() || o->isFrameSet() ) )
             o = o->parent();
     }
     // this is just to make sure we return a valid element.
