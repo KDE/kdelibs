@@ -40,9 +40,6 @@ public:
     virtual bool isSelectable() const { return m_hasAnchor; }
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
-    virtual bool prepareMouseEvent( int x, int y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev);
     virtual void defaultEventHandler(EventImpl *evt);
 protected:
     bool m_hasTarget : 1;
@@ -73,31 +70,6 @@ public:
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLModElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLModElementImpl(DocumentPtr *doc, ushort tagid);
-    ~HTMLModElementImpl();
-
-    virtual Id id() const;
-
-protected:
-    ushort _id;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLQuoteElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLQuoteElementImpl(DocumentPtr *doc);
-    ~HTMLQuoteElementImpl();
-
-    virtual Id id() const;
 };
 
 }; //namespace

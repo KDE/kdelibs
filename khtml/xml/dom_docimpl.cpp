@@ -609,7 +609,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // ins/del
     case ID_DEL:
     case ID_INS:
-        n = new HTMLModElementImpl(docPtr(), id);
+        n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
 // anchor
@@ -672,7 +672,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         n = new HTMLBRElementImpl(docPtr());
         break;
     case ID_Q:
-        n = new HTMLQuoteElementImpl(docPtr());
+        n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
 // elements with no special representation in the DOM
@@ -863,10 +863,12 @@ void DocumentImpl::updateRendering()
     kdDebug() << "UPDATERENDERING: "<<endl;
 
     StyleChange change = NoChange;
+#if 0
     if ( m_styleSelectorDirty ) {
 	recalcStyleSelector();
 	change = Force;
     }
+#endif
     recalcStyle( change );
 
     kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
@@ -891,11 +893,6 @@ void DocumentImpl::attach()
 
     if ( m_view )
         setPaintDevice( m_view );
-
-#if 0 // Nonsense! (Dirk)
-    // Create a style selector based on all of the stylesheets in the document
-    updateStyleSelector();
-#endif
 
     // Create the rendering tree
     m_render = new RenderRoot(this, m_view);
@@ -1369,15 +1366,34 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
 }
 
-bool DocumentImpl::prepareMouseEvent( int _x, int _y,
-                                      int, int,
-                                      MouseEvent *ev )
+bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
 {
     NodeImpl *n = documentElement();
-    if ( n )
-        return n->prepareMouseEvent( _x, _y, 0, 0, ev );
-    else
-        return false;
+    if ( m_render ) {
+        assert(m_render->isRoot());
+        RenderObject::NodeInfo renderInfo(false, ev->type == MousePress);
+        bool isInside = m_render->nodeAtPoint(renderInfo, _x, _y, 0, 0);
+        ev->innerNode = renderInfo.innerNode();
+
+        if (renderInfo.URLElement()) {
+            assert(renderInfo.URLElement()->isElementNode());
+            ElementImpl* e =  static_cast<ElementImpl*>(renderInfo.URLElement());
+            DOMString href = khtml::parseURL(e->getAttribute(ATTR_HREF));
+            DOMString target = e->getAttribute(ATTR_TARGET);
+
+            if (!target.isNull() && !href.isNull())
+                ev->url = DOMString("target://") + target + DOMString("/#") + href;
+            else
+                ev->url = href;
+        }
+
+        updateRendering();
+
+        return isInside;
+    }
+
+
+    return false;
 }
 
 // DOM Section 1.1.1
@@ -1641,11 +1657,11 @@ void DocumentImpl::updateStyleSelector()
 #if 0
 
     m_styleSelectorDirty = true;
-    if ( renderer() ) {
-	renderer()->setLayouted( false );
-	renderer()->setMinMaxKnown( false );
-    }
 #endif
+    if ( renderer() ) {
+        renderer()->setLayouted( false );
+        renderer()->setMinMaxKnown( false );
+    }
 }
 
 void DocumentImpl::recalcStyleSelector()

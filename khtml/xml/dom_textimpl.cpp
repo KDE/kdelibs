@@ -351,6 +351,8 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/)
 
 void TextImpl::attach()
 {
+    assert(!m_render);
+    assert(!attached());
     assert(parentNode() && parentNode()->isElementNode());
 
     ElementImpl* element = static_cast<ElementImpl*>(parentNode());

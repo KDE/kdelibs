@@ -26,6 +26,8 @@
 #include "xml/dom_stringimpl.h"
 #include "xml/dom_nodeimpl.h"
 
+#include <kdebug.h>
+
 using namespace DOM;
 
 EventImpl::EventImpl()
@@ -66,9 +68,9 @@ EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
 EventImpl::~EventImpl()
 {
     if (m_type)
-	m_type->deref();
+        m_type->deref();
     if (m_target)
-	m_target->deref();
+        m_target->deref();
 }
 
 DOMString EventImpl::type() const
@@ -84,10 +86,10 @@ NodeImpl *EventImpl::target() const
 void EventImpl::setTarget(NodeImpl *_target)
 {
     if (m_target)
-	m_target->deref();
+        m_target->deref();
     m_target = _target;
     if (m_target)
-	m_target->ref();
+        m_target->ref();
 }
 
 NodeImpl *EventImpl::currentTarget() const
@@ -321,14 +323,14 @@ UIEventImpl::UIEventImpl(EventId _id, bool canBubbleArg, bool cancelableArg,
 {
     m_view = viewArg;
     if (m_view)
-	m_view->ref();
+        m_view->ref();
     m_detail = detailArg;
 }
 
 UIEventImpl::~UIEventImpl()
 {
     if (m_view)
-	m_view->deref();
+        m_view->deref();
 }
 
 AbstractViewImpl *UIEventImpl::view() const

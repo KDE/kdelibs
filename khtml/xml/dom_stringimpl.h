@@ -28,8 +28,6 @@
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"
 
-#include <qptrlist.h>
-
 class QChar;
 
 namespace DOM {
@@ -69,7 +67,7 @@ public:
         return QConstString(s,len).string().toInt(ok);
     };
 
-    QPtrList<khtml::Length> *toLengthList() const;
+    khtml::Length* toLengthArray(int& len) const;
     bool isLower() const;
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;

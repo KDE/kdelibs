@@ -909,7 +909,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // ins/del
     case ID_DEL:
     case ID_INS:
-        n = new HTMLModElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
 
 // anchor
@@ -981,7 +981,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLBRElementImpl(document);
         break;
     case ID_Q:
-        n = new HTMLQuoteElementImpl(document);
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
 
 // elements with no special representation in the DOM

@@ -33,7 +33,7 @@
 #include <dom/html_element.h>
 
 namespace DOM {
-
+class HTMLGenericElementImpl;
 class HTMLAnchorElementImpl;
 class DOMString;
 
@@ -543,7 +543,7 @@ public:
     HTMLModElement(const Node &other) : HTMLElement()
          {(*this)=other;}
 protected:
-    HTMLModElement(HTMLModElementImpl *impl);
+    HTMLModElement(HTMLElementImpl *impl);
 public:
 
     HTMLModElement & operator = (const HTMLModElement &other);
@@ -601,7 +601,7 @@ public:
     HTMLQuoteElement(const Node &other) : HTMLElement()
          {(*this)=other;}
 protected:
-    HTMLQuoteElement(HTMLQuoteElementImpl *impl);
+    HTMLQuoteElement(HTMLGenericElementImpl *impl);
 public:
 
     HTMLQuoteElement & operator = (const HTMLQuoteElement &other);

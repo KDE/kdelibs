@@ -49,17 +49,21 @@ class KHTMLView;
 #endif
 
 namespace DOM {
+    class HTMLAreaElementImpl;
     class DOMString;
     class NodeImpl;
+    class ElementImpl;
     class EventImpl;
 };
 
 namespace khtml {
-
+    class RenderFlow;
     class RenderStyle;
     class RenderTable;
     class CachedObject;
     class RenderRoot;
+    class RenderText;
+    class RenderFrameSet;
 
 /**
  * Base Class for all rendering tree objects.
@@ -134,6 +138,7 @@ public:
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool isText() const  { return m_isText; }
     bool isInline() const { return m_inline; }  // inline object
+    bool mouseInside() const { return m_mouseInside; }
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
     bool hasSpecialObjects() const { return m_printSpecial; }
     bool layouted() const   { return m_layouted; }
@@ -159,7 +164,7 @@ public:
 	if(!b) {
 	    RenderObject *o = m_parent;
 	    RenderObject *root = this;
-	    while( o ) { // ### && o->m_layouted ) {
+	    while( o ) {
 		o->m_layouted = false;
 		root = o;
 		o = o->m_parent;
@@ -187,6 +192,7 @@ public:
     void setRelPositioned(bool b=true) { m_relPositioned = b; }
     void setFloating(bool b=true) { m_floating = b; }
     void setInline(bool b=true) { m_inline = b; }
+    void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setSpecialObjects(bool b=true) { m_printSpecial = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
@@ -256,8 +262,41 @@ public:
     // repaint and do not need a relayout
     virtual void updateFromElement() {};
 
-    // The corresponding closing element has been parsed.
+    // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }
+
+    // does a query on the rendertree and finds the innernode
+    // and overURL for the given position
+    // if readonly == false, it will recalc hover styles accordingly
+    class NodeInfo
+    {
+        friend class RenderImage;
+        friend class RenderFlow;
+        friend class RenderText;
+        friend class RenderObject;
+        friend class RenderFrameSet;
+        friend class DOM::HTMLAreaElementImpl;
+    public:
+        NodeInfo(bool readonly, bool active)
+            : m_innerNode(0), m_innerURLElement(0), m_readonly(readonly), m_active(active)
+            { }
+
+        DOM::NodeImpl* innerNode() const { return m_innerNode; }
+        DOM::NodeImpl* URLElement() const { return m_innerURLElement; }
+        bool readonly() const { return m_readonly; }
+        bool active() const { return m_active; }
+
+    private:
+        void setInnerNode(DOM::NodeImpl* n) { m_innerNode = n; }
+        void setURLElement(DOM::NodeImpl* n) { m_innerURLElement = n; }
+
+        DOM::NodeImpl* m_innerNode;
+        DOM::NodeImpl* m_innerURLElement;
+        bool m_readonly;
+        bool m_active;
+    };
+
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
@@ -312,7 +351,7 @@ public:
     virtual short maxWidth() const { return 0; }
 
     RenderStyle* style() const { return m_style; }
-    RenderStyle* style( bool firstLine ) const { 
+    RenderStyle* style( bool firstLine ) const {
 	RenderStyle *s = m_style;
 	if( firstLine && hasFirstLine() ) {
 	    RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
@@ -372,12 +411,10 @@ public:
 
     virtual void detach();
 
-    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
-
     const QFont &font(bool firstLine) const {
 	return style( firstLine )->font();
     }
-    
+
     const QFontMetrics &fontMetrics(bool firstLine) const {
 	return style( firstLine )->fontMetrics();
     }
@@ -427,7 +464,7 @@ private:
     bool m_inline                    : 1;
 
     bool m_replaced                  : 1;
-    bool m_containsOverhangingFloats : 1;
+    bool m_mouseInside : 1;
     bool m_hasFirstLine              : 1;
     bool m_isSelectionBorder          : 1;
 

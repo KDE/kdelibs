@@ -28,6 +28,7 @@
 #include "khtml_part.h"
 
 #include <kstringhandler.h>
+#include <kglobal.h>
 #include <kdebug.h>
 
 #include "rendering/render_image.h"
@@ -66,41 +67,6 @@ HTMLImageElementImpl::~HTMLImageElementImpl()
 NodeImpl::Id HTMLImageElementImpl::id() const
 {
     return ID_IMG;
-}
-
-bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
-                                              int _tx, int _ty,
-                                              MouseEvent *ev )
-{
-    //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
-    bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
-    if ( inside && usemap.length() > 0 &&
-         ( ! (m_render && m_render->style()->visibility() == HIDDEN) ) )
-    {
-        RenderObject* p = m_render->parent();
-        while( p && p->isAnonymousBox() )
-        {
-            //kdDebug( 6030 ) << "parent is anonymous!" << endl;
-            // we need to add the offset of the anonymous box
-            _tx += p->xPos();
-            _ty += p->yPos();
-            p = p->parent();
-        }
-
-        //cout << "usemap: " << usemap.string() << endl;
-        HTMLMapElementImpl* map;
-        DocumentImpl* doc = getDocument();
-
-        if(doc && doc->isHTMLDocument() &&
-           (map = static_cast<HTMLDocumentImpl*>(doc)->getMap(usemap)))
-        {
-            //kdDebug( 6030 ) << "have map" << endl;
-            return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
-                                      _y-renderer()->yPos()-_ty,
-                                      renderer()->width(), renderer()->height(), ev);
-        }
-    }
-    return inside;
 }
 
 void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
@@ -242,7 +208,7 @@ NodeImpl::Id HTMLMapElementImpl::id() const
 
 bool
 HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
-                                  MouseEvent *ev )
+                                  RenderObject::NodeInfo& info)
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
@@ -262,7 +228,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
         {
             //cout << "area found " << endl;
             HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
-            if (area->mapMouseEvent(x_,y_,width_,height_,ev))
+            if (area->mapMouseEvent(x_,y_,width_,height_, info))
                 return true;
         }
         NodeImpl *child = current->firstChild();
@@ -309,7 +275,8 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
 HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
     : HTMLAnchorElementImpl(doc)
 {
-    coords=0L;
+    m_coords=0;
+    m_coordsLen = 0;
     nohref = false;
     shape = Unknown;
     lasth = lastw = -1;
@@ -317,7 +284,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
 {
-    delete coords;
+    if (m_coords) delete [] m_coords;
 }
 
 NodeImpl::Id HTMLAreaElementImpl::id() const
@@ -340,10 +307,14 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
             shape = Rect;
         break;
     case ATTR_COORDS:
-        coords = attr->val()->toLengthList();
+        if (m_coords) delete [] m_coords;
+        m_coords = attr->val()->toLengthArray(m_coordsLen);
         break;
     case ATTR_NOHREF:
         nohref = attr->val() != 0;
+        break;
+    case ATTR_TARGET:
+        m_hasTarget = attr->val() != 0;
         break;
     case ATTR_ALT:
         break;
@@ -354,11 +325,9 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-bool
-HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
-                                   MouseEvent *ev)
+bool HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
+                                   RenderObject::NodeInfo& info)
 {
-    //cout << "area:mapMouseEvent " << endl;
     bool inside = false;
     if (width_ != lastw || height_ != lasth)
     {
@@ -368,23 +337,9 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     if (region.contains(QPoint(x_,y_)))
     {
         inside = true;
-        ev->innerNode = this;
-        if(isNoref())
-            ev->noHref = true;
-        else {
-            DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
-            if(m_hasTarget && m_hasAnchor)
-            {
-                DOMString s = DOMString("target://") + getAttribute(ATTR_TARGET) + DOMString("/#")
-                              + DOMString(href);
-                ev->url = s;
-            }
-            else
-                ev->url = href;
-        }
+        info.setInnerNode(this);
+        info.setURLElement(this);
     }
-    // dynamic HTML...
-    // ### if(inside || mouseInside()) mouseEventHandler(ev, inside);
 
     return inside;
 }
@@ -404,7 +359,7 @@ QRect HTMLAreaElementImpl::getRect() const
 QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
 {
     QRegion region;
-    if (!coords)
+    if (!m_coords)
         return region;
 
     // added broken HTML support (Dirk): some pages omit the SHAPE
@@ -412,56 +367,29 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
     // what the HTML author tried to tell us.
 
     // a Poly needs at least 3 points (6 coords), so this is correct
-    // just ignore poly's with 2 points or less, because
-    // QRegion will anyway crash on them.
-    if ((shape==Poly || shape==Unknown) && coords->count() > 4)
-    {
-        //cout << " poly " << endl;
-        bool xcoord=true;
-        int xx = 0, yy = 0; // shut up egcs...
-        int i=0;
-
-        QPtrListIterator<Length> it(*coords);
-        QPointArray points(it.count()/2);
-        for ( ; it.current(); ++it ) {
-            Length* len = it.current();
-            if (xcoord)
-            {
-                xx = len->minWidth(width_);
-                xcoord = false;
-            } else {
-                yy = len->minWidth(height_);
-                xcoord = true;
-                points.setPoint(i,xx,yy);
-                i++;
-            }
-        }
+    if ((shape==Poly || shape==Unknown) && m_coordsLen > 4) {
+        // make sure its even
+        int len = m_coordsLen >> 1;
+        QPointArray points(len);
+        for (int i = 0; i < len; ++i)
+            points.setPoint(i, m_coords[(i<<1)].minWidth(width_),
+                            m_coords[(i<<1)+1].minWidth(height_));
         region = QRegion(points);
     }
-    else if (shape==Circle && coords->count()>=3 || shape==Unknown && coords->count() == 3)
-    {
-        //cout << " circle " << endl;
-        int cx = coords->at(0)->minWidth(width_);
-        int cy = coords->at(1)->minWidth(height_);
-        int r1 = coords->at(2)->minWidth(width_);
-        int r2 = coords->at(2)->minWidth(height_);
-        int r  = QMIN(r1, r2);
-
-        region = QRegion(cx-r, cy-r, 2*r, 2*r,QRegion::Ellipse);
+    else if (shape==Circle && m_coordsLen>=3 || shape==Unknown && m_coordsLen == 3) {
+        int r = kMin(m_coords[2].minWidth(width_), m_coords[2].minWidth(height_));
+        region = QRegion(m_coords[0].minWidth(width_)-r,
+                         m_coords[1].minWidth(height_)-r, 2*r, 2*r,QRegion::Ellipse);
     }
-    else if (shape==Rect && coords->count()>=4 || shape==Unknown && coords->count() == 4)
-    {
-        //cout << " rect " << endl;
-        int x0 = coords->at(0)->minWidth(width_);
-        int y0 = coords->at(1)->minWidth(height_);
-        int x1 = coords->at(2)->minWidth(width_);
-        int y1 = coords->at(3)->minWidth(height_);
+    else if (shape==Rect && m_coordsLen>=4 || shape==Unknown && m_coordsLen == 4) {
+        int x0 = m_coords[0].minWidth(width_);
+        int y0 = m_coords[1].minWidth(height_);
+        int x1 = m_coords[2].minWidth(width_);
+        int y1 = m_coords[3].minWidth(height_);
         region = QRegion(x0,y0,x1-x0,y1-y0);
     }
-    else /*if (shape==Default || shape == Unknown)*/ {
-        //cout << "default/unknown" << endl;
+    else
         region = QRegion(0,0,width_,height_);
-    }
 
     return region;
 }

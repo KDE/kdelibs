@@ -40,7 +40,9 @@
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <qtimer.h>
+#include <qpainter.h>
 #include <qcursor.h>
 
 #include <assert.h>
@@ -54,24 +56,13 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet)
   // init RenderObject attributes
     setInline(false);
 
-  // another one for bad html
-  // handle <frameset cols="*" rows="100, ...">
-  if ( element()->m_rows && element()->m_cols ) {
-      // lets see if one of them is relative
-      if ( element()->m_rows->count() == 1 && element()->m_rows->at( 0 )->isRelative() ) {
-          delete element()->m_rows;
-          element()->m_rows = 0;
-      }
-      if ( element()->m_cols->count() == 1 && element()->m_cols->at( 0 )->isRelative() ) {
-          delete element()->m_cols;
-          element()->m_cols = 0;
-      }
+  for (int k = 0; k < 2; ++k) {
+      m_gridLen[k] = -1;
+      m_gridDelta[k] = 0;
+      m_gridLayout[k] = 0;
   }
 
-  m_rowHeight = 0;
-  m_colWidth = 0;
-
-  m_resizing = false;
+  m_resizing = m_clientresizing= false;
 
   m_hSplit = -1;
   m_vSplit = -1;
@@ -82,17 +73,26 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet)
 
 RenderFrameSet::~RenderFrameSet()
 {
-  if ( m_rowHeight ) {
-    delete [] m_rowHeight;
-    m_rowHeight = 0;
-  }
-  if ( m_colWidth ) {
-    delete [] m_colWidth;
-    m_colWidth = 0;
-  }
+    for (int k = 0; k < 2; ++k) {
+        if (m_gridLayout[k]) delete [] m_gridLayout[k];
+        if (m_gridDelta[k]) delete [] m_gridDelta[k];
+    }
+  if (m_hSplitVar)
+      delete [] m_hSplitVar;
+  if (m_vSplitVar)
+      delete [] m_vSplitVar;
+}
 
-  delete [] m_hSplitVar;
-  delete [] m_vSplitVar;
+bool RenderFrameSet::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+{
+    RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
+
+    bool inside = m_resizing || canResize(_x, _y);
+
+    if ( inside && element() && !element()->noResize() && !info.readonly())
+        info.setInnerNode(element());
+
+    return inside || m_clientresizing;
 }
 
 void RenderFrameSet::layout( )
@@ -110,207 +110,103 @@ void RenderFrameSet::layout( )
     kdDebug( 6040 ) << renderName() << "(FrameSet)::layout( ) width=" << width() << ", height=" << height() << endl;
 #endif
 
-    int remainingWidth = m_width - (element()->totalCols()-1)*element()->border();
-    if(remainingWidth<0) remainingWidth=0;
-    int remainingHeight = m_height - (element()->totalRows()-1)*element()->border();
-    if(remainingHeight<0) remainingHeight=0;
-    int widthAvailable = remainingWidth;
-    int heightAvailable = remainingHeight;
+    int remainingLen[2];
+    remainingLen[1] = m_width - (element()->totalCols()-1)*element()->border();
+    if(remainingLen[1]<0) remainingLen[1]=0;
+    remainingLen[0] = m_height - (element()->totalRows()-1)*element()->border();
+    if(remainingLen[0]<0) remainingLen[0]=0;
 
-    if(m_rowHeight) delete [] m_rowHeight;
-    if(m_colWidth) delete [] m_colWidth;
-    m_rowHeight = new int[element()->totalRows()];
-    m_colWidth = new int[element()->totalCols()];
+    int availableLen[2];
+    availableLen[0] = remainingLen[0];
+    availableLen[1] = remainingLen[1];
 
-    int i;
-    int totalRelative = 0;
-    int colsRelative = 0;
-    int rowsRelative = 0;
-    int rowsPercent = 0;
-    int colsPercent = 0;
-    int remainingRelativeWidth = 0;
-
-    if(element()->m_rows)
-    {
-	// another one for bad html. If all rows have a fixed width, convert the numbers to percentages.
-	bool allFixed = true;
-	int totalFixed = 0;
-	for(i = 0; i< element()->totalRows(); i++) {
-	    if(!(element()->m_rows->at(i)->type == Fixed))
-		allFixed = false;
-	    else
-		totalFixed += element()->m_rows->at(i)->value;
-	}
-	if ( allFixed && totalFixed ) {
-	    for(i = 0; i< element()->totalRows(); i++) {
-	 	element()->m_rows->at(i)->type = Percent;
-		element()->m_rows->at(i)->value = element()->m_rows->at(i)->value *100 / totalFixed;
-	    }
-	}
-
-        // first distribute the available width for fixed rows, then handle the
-        // percentage ones, to fix html like <framesrc rows="123,100%,123"> and
-        // finally relative
-
-        for(i = 0; i< element()->totalRows(); i++)
-        {
-             if(element()->m_rows->at(i)->type == Fixed)
-            {
-                m_rowHeight[i] = QMAX(element()->m_rows->at(i)->width(heightAvailable), 14);
-                if( m_rowHeight[i] > remainingHeight )
-                    m_rowHeight[i] = remainingHeight;
-                 remainingHeight -= m_rowHeight[i];
-            }
-            else if(element()->m_rows->at(i)->type == Relative)
-            {
-                totalRelative += element()->m_rows->at(i)->value;
-                rowsRelative++;
-            }
-        }
-
-        for(i = 0; i< element()->totalRows(); i++)
-        {
-             if(element()->m_rows->at(i)->type == Percent)
-            {
-                m_rowHeight[i] = QMAX(element()->m_rows->at(i)->width(heightAvailable), 14);
-                if( m_rowHeight[i] > remainingHeight )
-                    m_rowHeight[i] = remainingHeight;
-                 remainingHeight -= m_rowHeight[i];
-                 rowsPercent++;
-            }
-        }
-
-        // ###
-        if(remainingHeight < 0) remainingHeight = 0;
-
-        if ( !totalRelative && rowsRelative )
-          remainingRelativeWidth = remainingHeight/rowsRelative;
-
-        for(i = 0; i< element()->totalRows(); i++)
-         {
-            if(element()->m_rows->at(i)->type == Relative)
-            {
-                if ( totalRelative )
-                  m_rowHeight[i] = element()->m_rows->at(i)->value*remainingHeight/totalRelative;
-                else
-                  m_rowHeight[i] = remainingRelativeWidth;
-                remainingHeight -= m_rowHeight[i];
-                totalRelative--;
-            }
-        }
-
-        // support for totally broken frame declarations
-        if(remainingHeight)
-        {
-            // just distribute it over all columns...
-            int rows = element()->totalRows();
-            if ( rowsPercent )
-                rows = rowsPercent;
-            for(i = 0; i< element()->totalRows(); i++) {
-                if( !rowsPercent || element()->m_rows->at(i)->type == Percent ) {
-                    int toAdd = remainingHeight/rows;
-                    rows--;
-                    m_rowHeight[i] += toAdd;
-                    remainingHeight -= toAdd;
-                }
-            }
+    if (m_gridLen[0] != element()->totalRows() || m_gridLen[1] != element()->totalCols()) {
+        // number of rows or cols changed
+        // need to zero out the deltas
+        m_gridLen[0] = element()->totalRows();
+        m_gridLen[1] = element()->totalCols();
+        for (int k = 0; k < 2; ++k) {
+            if (m_gridDelta[k]) delete [] m_gridDelta[k];
+            m_gridDelta[k] = new int[m_gridLen[k]];
+            if (m_gridLayout[k]) delete [] m_gridLayout[k];
+            m_gridLayout[k] = new int[m_gridLen[k]];
+            for (int i = 0; i < m_gridLen[k]; ++i)
+                m_gridDelta[k][i] = 0;
         }
     }
-    else
-        m_rowHeight[0] = m_height;
 
-    if(element()->m_cols)
-    {
-	// another one for bad html. If all cols have a fixed width, convert the numbers to percentages.
-	// also reproduces IE and NS behaviour.
-	bool allFixed = true;
-	int totalFixed = 0;
-	for(i = 0; i< element()->totalCols(); i++) {
-	    if(!(element()->m_cols->at(i)->type == Fixed))
-		allFixed = false;
-	    else
-		totalFixed += element()->m_cols->at(i)->value;
-	}
-	if ( allFixed && totalFixed) {
-	    for(i = 0; i< element()->totalCols(); i++) {
-		element()->m_cols->at(i)->type = Percent;
-		element()->m_cols->at(i)->value = element()->m_cols->at(i)->value * 100 / totalFixed;
-	    }
-	}
+    for (int k = 0; k < 2; ++k) {
+        int totalRelative = 0;
+        int totalFixed = 0;
+        int totalPercent = 0;
+        int countRelative = 0;
+        int countPercent = 0;
+        int gridLen = m_gridLen[k];
+        int* gridDelta = m_gridDelta[k];
+        khtml::Length* grid =  k ? element()->m_cols : element()->m_rows;
+        int* gridLayout = m_gridLayout[k];
 
-        totalRelative = 0;
-        remainingRelativeWidth = 0;
-
-        // first distribute the available width for fixed columns, then handle the
-        // percentage ones, to fix html like <framesrc cols="123,100%,123"> and
-        // finally relative
-
-        for(i = 0; i< element()->totalCols(); i++)
-        {
-            if (element()->m_cols->at(i)->type == Fixed)
-            {
-                m_colWidth[i] = QMAX(element()->m_cols->at(i)->width(widthAvailable), 14);
-                if( m_colWidth[i] > remainingWidth )
-                    m_colWidth[i] = remainingWidth;
-                remainingWidth -= m_colWidth[i];
-            }
-            else if(element()->m_cols->at(i)->type == Relative)
-            {
-                totalRelative += element()->m_cols->at(i)->value;
-                colsRelative++;
-            }
-        }
-
-        for(i = 0; i< element()->totalCols(); i++)
-        {
-            if(element()->m_cols->at(i)->type == Percent)
-            {
-                m_colWidth[i] = QMAX(element()->m_cols->at(i)->width(widthAvailable), 14);
-                if( m_colWidth[i] > remainingWidth )
-                    m_colWidth[i] = remainingWidth;
-                remainingWidth -= m_colWidth[i];
-                colsPercent++;
-            }
-        }
-        // ###
-        if(remainingWidth < 0) remainingWidth = 0;
-
-        if ( !totalRelative && colsRelative )
-          remainingRelativeWidth = remainingWidth/colsRelative;
-
-        for(i = 0; i < element()->totalCols(); i++)
-        {
-            if(element()->m_cols->at(i)->type == Relative)
-            {
-                if ( totalRelative )
-                  m_colWidth[i] = element()->m_cols->at(i)->value*remainingWidth/totalRelative;
-                else
-                  m_colWidth[i] = remainingRelativeWidth;
-                remainingWidth -= m_colWidth[i];
-                totalRelative--;
-            }
-        }
-
-        // support for totally broken frame declarations
-        if(remainingWidth)
-        {
-            // just distribute it over all columns...
-            int cols = element()->totalCols();
-            if ( colsPercent )
-                cols = colsPercent;
-            for(i = 0; i< element()->totalCols(); i++) {
-                if( !colsPercent || element()->m_cols->at(i)->type == Percent ) {
-                    int toAdd = remainingWidth/cols;
-                    cols--;
-                    m_colWidth[i] += toAdd;
-                    remainingWidth -= toAdd;
+        if (grid) {
+            // first distribute the available width for fixed rows, then handle the
+            // percentage ones and distribute remaining over relative
+            for(int i = 0; i< gridLen; ++i)
+                if (grid[i].isFixed()) {
+                    gridLayout[i] = kMin(grid[i].value > 0 ? grid[i].value : 0, remainingLen[k]);
+                    remainingLen[k] -= gridLayout[i];
+                    totalFixed += gridLayout[i];
                 }
-            }
-        }
+                else if(grid[i].isRelative()) {
+                    totalRelative += grid[i].value > 1 ? grid[i].value : 1;
+                    countRelative++;
+                }
 
+            for(int i = 0; i < gridLen; i++)
+                if(grid[i].isPercent()) {
+                    gridLayout[i] = kMin(kMax(grid[i].width(availableLen[k]), 0), remainingLen[k]);
+                    remainingLen[k] -= gridLayout[i];
+                    totalPercent += grid[i].value;
+                    countPercent++;
+                }
+
+            assert(remainingLen[k] >= 0);
+
+            if (countRelative) {
+                int remaining = remainingLen[k];
+                for (int i = 0; i < gridLen; ++i)
+                    if (grid[i].isRelative()) {
+                        gridLayout[i] = ((grid[i].value > 1 ? grid[i].value : 1) * remaining) / totalRelative;
+                        remainingLen[k] -= gridLayout[i];
+                    }
+            }
+
+            // distribute the rest
+            if (remainingLen[k]) {
+                LengthType distributeType = countPercent ? Percent : Fixed;
+                int total = countPercent ? totalPercent : totalFixed;
+                for (int i = 0; i < gridLen; ++i)
+                    if (grid[i].type == distributeType) {
+                        int toAdd = (remainingLen[k] * grid[i].value) / total;
+                        gridLayout[i] += toAdd;
+                    }
+            }
+
+            // now we have the final layout, distribute the delta over it
+            bool worked = true;
+            for (int i = 0; i < gridLen; ++i) {
+                if (gridLayout[i] && gridLayout[i] + gridDelta[i] <= 0)
+                    worked = false;
+                gridLayout[i] += gridDelta[i];
+            }
+            // now the delta's broke something, undo it and reset deltas
+            if (!worked)
+                for (int i = 0; i < gridLen; ++i) {
+                    gridLayout[i] -= gridDelta[i];
+                    gridDelta[i] = 0;
+                }
+        }
+        else
+            gridLayout[0] = remainingLen[k];
     }
-    else
-        m_colWidth[0] = m_width;
 
     positionFrames();
 
@@ -371,6 +267,7 @@ void RenderFrameSet::layout( )
         }
 
     }
+    RenderContainer::layout();
  end2:
     setLayouted();
 }
@@ -396,18 +293,16 @@ void RenderFrameSet::positionFrames()
     {
       child->setPos( xPos, yPos );
 #ifdef DEBUG_LAYOUT
-      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
+      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_gridLayout[1][c] << "/" << m_gridLayout[0][r] << ")" << endl;
 #endif
-      bool relayout = (m_colWidth[c] != child->width()) || (m_rowHeight[r] != child->height());
-      child->setWidth( m_colWidth[c] );
-      child->setHeight( m_rowHeight[r] );
       // has to be resized and itself resize its contents
-      if (relayout || !layouted()) {
+      if ((m_gridLayout[1][c] != child->width()) || (m_gridLayout[0][r] != child->height())) {
+          child->setWidth( m_gridLayout[1][c] );
+          child->setHeight( m_gridLayout[0][r] );
           child->setLayouted(false);
-          child->layout( );
       }
 
-      xPos += m_colWidth[c] + element()->border();
+      xPos += m_gridLayout[1][c] + element()->border();
       child = child->nextSibling();
 
       if ( !child )
@@ -415,7 +310,7 @@ void RenderFrameSet::positionFrames()
 
     }
 
-    yPos += m_rowHeight[r] + element()->border();
+    yPos += m_gridLayout[0][r] + element()->border();
   }
 
   // all the remaining frames are hidden to avoid ugly
@@ -431,6 +326,8 @@ void RenderFrameSet::positionFrames()
 
 bool RenderFrameSet::userResize( MouseEventImpl *evt )
 {
+    if (!layouted()) return false;
+
   bool res = false;
   int _x = evt->clientX();
   int _y = evt->clientY();
@@ -446,7 +343,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     //bool resizePossible = true;
 
     // check if we're over a horizontal or vertical boundary
-    int pos = m_colWidth[0];
+    int pos = m_gridLayout[1][0];
     for(int c = 1; c < element()->totalCols(); c++)
     {
       if(_x >= pos && _x <= pos+element()->border())
@@ -458,10 +355,10 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
         res = true;
         break;
       }
-      pos += m_colWidth[c] + element()->border();
+      pos += m_gridLayout[1][c] + element()->border();
     }
 
-    pos = m_rowHeight[0];
+    pos = m_gridLayout[0][0];
     for(int r = 1; r < element()->totalRows(); r++)
     {
       if( _y >= pos && _y <= pos+element()->border())
@@ -474,7 +371,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
         res = true;
         break;
       }
-      pos += m_rowHeight[r] + element()->border();
+      pos += m_gridLayout[0][r] + element()->border();
     }
 #ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
@@ -487,30 +384,30 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     }
     else if( m_vSplit != -1 )
     {
-      cursor = Qt::splitHCursor;
+      cursor = Qt::sizeHorCursor;
     }
     else if( m_hSplit != -1 )
     {
-      cursor = Qt::splitVCursor;
+      cursor = Qt::sizeVerCursor;
     }
 
     if(evt->id() == EventImpl::MOUSEDOWN_EVENT)
     {
-      m_resizing = true;
+        setResizing(true);
       KApplication::setOverrideCursor(cursor);
       m_vSplitPos = _x;
       m_hSplitPos = _y;
+      m_oldpos = -1;
     }
     else
         root()->view()->viewport()->setCursor(cursor);
 
   }
 
-  // ### need to draw a nice movin indicator for the resize.
   // ### check the resize is not going out of bounds.
   if(m_resizing && evt->id() == EventImpl::MOUSEUP_EVENT)
   {
-    m_resizing = false;
+    setResizing(false);
     KApplication::restoreOverrideCursor();
 
     if(m_vSplit != -1 )
@@ -519,8 +416,8 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       kdDebug( 6031 ) << "split xpos=" << _x << endl;
 #endif
       int delta = m_vSplitPos - _x;
-      m_colWidth[m_vSplit] -= delta;
-      m_colWidth[m_vSplit+1] += delta;
+      m_gridDelta[1][m_vSplit] -= delta;
+      m_gridDelta[1][m_vSplit+1] += delta;
     }
     if(m_hSplit != -1 )
     {
@@ -528,36 +425,67 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       kdDebug( 6031 ) << "split ypos=" << _y << endl;
 #endif
       int delta = m_hSplitPos - _y;
-      m_rowHeight[m_hSplit] -= delta;
-      m_rowHeight[m_hSplit+1] += delta;
+      m_gridDelta[0][m_hSplit] -= delta;
+      m_gridDelta[1][m_hSplit+1] += delta;
     }
 
-    positionFrames( );
+    // this just schedules the relayout
+    // important, otherwise the moving indicator is not correctly erased
+    setLayouted(false);
+  }
+
+  if (m_resizing || evt->id() == EventImpl::MOUSEUP_EVENT) {
+      QPainter paint( root()->view() );
+      paint.setPen( Qt::gray );
+      paint.setBrush( Qt::gray );
+      paint.setRasterOp( Qt::XorROP );
+      QRect r(xPos(), yPos(), width(), height());
+      const int rBord = 3;
+      int sw = element()->border();
+      int p = m_resizing ? (m_hSplit ? _x : _y) : -1;
+      if (m_hSplit) {
+          if ( m_oldpos >= 0 )
+              paint.drawRect( m_oldpos + sw/2 - rBord , r.y(),
+                              2*rBord, r.height() );
+          if ( p >= 0 )
+              paint.drawRect( p  + sw/2 - rBord, r.y(), 2*rBord, r.height() );
+      } else {
+          if ( m_oldpos >= 0 )
+              paint.drawRect( r.x(), m_oldpos + sw/2 - rBord,
+                              r.width(), 2*rBord );
+          if ( p >= 0 )
+              paint.drawRect( r.x(), p + sw/2 - rBord, r.width(), 2*rBord );
+      }
+      m_oldpos = p;
   }
 
   return res;
 }
 
-bool RenderFrameSet::canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type )
+void RenderFrameSet::setResizing(bool e)
 {
-   if(m_resizing || type == DOM::NodeImpl::MousePress)
-     return true;
+      m_resizing = e;
+      for (RenderObject* p = parent(); p; p = p->parent())
+          if (p->isFrameSet()) static_cast<RenderFrameSet*>(p)->m_clientresizing = m_resizing;
+}
 
-  if ( type != DOM::NodeImpl::MouseMove )
+bool RenderFrameSet::canResize( int _x, int _y )
+{
+    // if we're not layouted, the gridLayout doesn't contain useful data
+    if (!layouted()) return false;
+
+    // check if we're over a horizontal or vertical boundary
+    int pos = m_gridLayout[1][0];
+    for(int c = 1; c < element()->totalCols(); c++)
+        if(_x >= pos && _x <= pos+element()->border())
+            return true;
+
+    pos = m_gridLayout[0][0];
+    for(int r = 1; r < element()->totalRows(); r++)
+        if( _y >= pos && _y <= pos+element()->border())
+            return true;
+
     return false;
-
-  // check if we're over a horizontal or vertical boundary
-  int pos = m_colWidth[0];
-  for(int c = 1; c < element()->totalCols(); c++)
-    if(_x >= pos && _x <= pos+element()->border())
-      return true;
-
-  pos = m_rowHeight[0];
-  for(int r = 1; r < element()->totalRows(); r++)
-    if( _y >= pos && _y <= pos+element()->border())
-      return true;
-
-  return false;
 }
 
 #ifndef NDEBUG
@@ -610,11 +538,17 @@ bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const
 
 short RenderPart::intrinsicWidth() const
 {
+    if (widget() && widget()->inherits("QScrollView"))
+        return static_cast<QScrollView*>(widget())->contentsWidth();
+
     return 300;
 }
 
 int RenderPart::intrinsicHeight() const
 {
+    if (widget() && widget()->inherits("QScrollView"))
+        return static_cast<QScrollView*>(widget())->contentsHeight();
+
     return 200;
 }
 
@@ -670,7 +604,7 @@ void RenderPartObject::updateWidget()
 
   setMinMaxKnown(false);
   setLayouted(false);
-  
+
   // ### this should be constant true - move iframe to somewhere else
   if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED) {
 
@@ -902,8 +836,6 @@ void RenderPartObject::layout( )
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
-
-    //qDebug("RenderPartObject::layout()");
 
     short m_oldwidth = m_width;
     int m_oldheight = m_height;

@@ -678,13 +678,6 @@ void RenderBox::calcVerticalMargins()
     m_marginBottom = bm.minWidth(cw);
 }
 
-bool RenderBox::containsPoint(int _x, int _y, int _tx, int _ty)
-{
-    return ((_y >= _ty) && (_y < _ty + m_height) &&
-	    (_x >= _tx) && (_x < _tx + m_width));
-}
-
-
 void RenderBox::calcAbsoluteHorizontal()
 {
     const int AUTO = -666666;

@@ -93,7 +93,8 @@ public:
     virtual int   calcReplacedHeight() const;
 
     void calcVerticalMargins();
-    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
+
+    void relativePositionOffset(int &tx, int &ty);
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
@@ -103,8 +104,6 @@ protected:
 
     virtual int borderTopExtra() { return 0; }
     virtual int borderBottomExtra() { return 0; }
-
-    void relativePositionOffset(int &tx, int &ty);
 
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();

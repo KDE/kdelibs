@@ -170,9 +170,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             // if we're already layouted, apply the calculated space to the
             // widget immediately
             if (layouted()) {
-                setLayouted(false);
-                RenderWidget::layout();
-                setLayouted();
+                m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                                  m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
             }
             else
                 setPos(xPos(), -500000);

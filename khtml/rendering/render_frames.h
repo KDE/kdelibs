@@ -58,7 +58,10 @@ public:
   bool resizing() const { return m_resizing; }
 
   bool userResize( DOM::MouseEventImpl *evt );
-  bool canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type );
+  bool canResize( int _x, int _y);
+  void setResizing(bool e);
+
+  bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
     DOM::HTMLFrameSetElementImpl *element() const
     { return static_cast<DOM::HTMLFrameSetElementImpl*>(RenderObject::element()); }
@@ -68,8 +71,11 @@ public:
 #endif
 
 private:
-    int *m_rowHeight;
-    int *m_colWidth;
+    int m_oldpos;
+    int m_gridLen[2];
+    int* m_gridDelta[2];
+    int* m_gridLayout[2];
+
     bool *m_hSplitVar; // is this split variable?
     bool *m_vSplitVar;
 
@@ -79,6 +85,7 @@ private:
     int m_vSplitPos;
 
     bool m_resizing;
+    bool m_clientresizing;
 };
 
 class RenderPart : public khtml::RenderWidget

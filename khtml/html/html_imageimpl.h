@@ -26,6 +26,7 @@
 
 #include "html/html_inlineimpl.h"
 #include "misc/khtmllayout.h"
+#include "rendering/render_object.h"
 
 #include <qregion.h>
 
@@ -45,16 +46,14 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
 
-    virtual bool prepareMouseEvent( int _x, int _y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev );
-
     virtual void attach();
 
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     QImage currentImage() const;
 
     DOMString altText() const;
+
+    DOMString imageMap() const { return usemap; }
 
 protected:
     DOMString usemap;
@@ -78,17 +77,17 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 
     bool isDefault() const { return shape==Default; }
-    bool isNoref() const { return nohref && !m_hasAnchor; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
-                       MouseEvent *ev );
+                       khtml::RenderObject::NodeInfo& info);
 
     virtual QRect getRect() const;
 
 protected:
     QRegion getRegion(int width_, int height) const;
     QRegion region;
-    QPtrList<khtml::Length>* coords;
+    khtml::Length* m_coords;
+    int m_coordsLen;
     int lastw, lasth;
     Shape shape  : 3;
     bool nohref  : 1;
@@ -111,7 +110,7 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
-                       MouseEvent *ev );
+                       khtml::RenderObject::NodeInfo& info);
 private:
 
     QString name;

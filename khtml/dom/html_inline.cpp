@@ -487,8 +487,13 @@ HTMLModElement::HTMLModElement(const HTMLModElement &other) : HTMLElement(other)
 {
 }
 
-HTMLModElement::HTMLModElement(HTMLModElementImpl *impl) : HTMLElement(impl)
+HTMLModElement::HTMLModElement(HTMLElementImpl *_impl)
+    : HTMLElement()
 {
+    if (_impl && (_impl->id() == ID_INS || _impl->id() == ID_DEL))
+        impl = _impl;
+    else
+        impl = 0;
 }
 
 HTMLModElement &HTMLModElement::operator = (const Node &other)
@@ -545,8 +550,13 @@ HTMLQuoteElement::HTMLQuoteElement(const HTMLQuoteElement &other) : HTMLElement(
 {
 }
 
-HTMLQuoteElement::HTMLQuoteElement(HTMLQuoteElementImpl *impl) : HTMLElement(impl)
+HTMLQuoteElement::HTMLQuoteElement(HTMLGenericElementImpl *_impl)
+    : HTMLElement()
 {
+    if (_impl && _impl->id() == ID_Q)
+        impl = _impl;
+    else
+        impl = 0;
 }
 
 HTMLQuoteElement &HTMLQuoteElement::operator = (const Node &other)

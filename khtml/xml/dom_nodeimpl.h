@@ -150,39 +150,19 @@ public:
     struct MouseEvent
     {
         MouseEvent( int _button, MouseEventType _type,
-                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _noHref = false )
+                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0)
             {
                 button = _button; type = _type;
                 url = _url;
                 innerNode = _innerNode;
-                currentZIndex = -1;
-                zIndex = -1;
-                noHref = _noHref;
             }
 
         int button;
         MouseEventType type;
         DOMString url; // url under mouse or empty
         Node innerNode;
-        int zIndex; // used to select the one most on top
-        int currentZIndex; // temporary variable to avoid passing a param around
-        bool noHref; // whether anchor should be blocked by a map element
-        int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
+        int nodeAbsX, nodeAbsY;
     };
-
-    /*
-     * Called whenever we are getting ready to handle a mouse event.
-     * Does not actually perform any actions e.g. rollovers - this
-     * is handled in eventDefault()
-     *
-     * This fills in ev with appropriate info such as innerNode, url etc.
-     *
-     * Returns true if the mouse is within this node (or it's children),
-     * false otherwise
-     */
-    virtual bool prepareMouseEvent( int /*_x*/, int /*_y*/,
-                                    int /*_tx*/, int /*_ty*/,
-                                    MouseEvent */*ev*/ );
 
     virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
                                                    DOM::Node & /*node*/, int & /*offset*/ )
@@ -196,7 +176,6 @@ public:
     bool hasStyle() const   { return m_hasStyle; }
     bool pressed() const    { return m_pressed; }
     bool active() const     { return m_active; }
-    bool mouseInside() const { return m_mouseInside; }
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
     bool hasChangedChild() const { return m_hasChangedChild; }
@@ -207,7 +186,6 @@ public:
     void setHasClass(bool b=true) { m_hasClass = b; }
     void setHasStyle(bool b=true) { m_hasStyle = b; }
     void setPressed(bool b=true) { m_pressed = b; }
-    void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setHasChangedChild( bool b = true ) { m_hasChangedChild = b; }
     void setInDocument(bool b=true) { m_inDocument = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
@@ -396,19 +374,18 @@ protected:
     bool m_hasClass : 1;
     bool m_hasStyle : 1;
     bool m_pressed : 1;
-    bool m_mouseInside : 1;
     bool m_attached : 1;
     bool m_changed : 1;
     bool m_hasChangedChild : 1;
-
     bool m_inDocument : 1;
+
     bool m_hasAnchor : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
 
-    // 2 bits unused
+    // 3 bits unused
 };
 
 // this is the full Node Implementation with parents and children.
@@ -443,10 +420,6 @@ public:
     virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
     bool getLowerRightCorner(int &xPos, int &yPos) const;
-
-    virtual bool prepareMouseEvent( int x, int y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev);
 
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);

@@ -60,10 +60,6 @@ public:
     virtual void init();
     virtual void attach();
 
-    virtual bool prepareMouseEvent( int _x, int _y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev );
-
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
 
 protected:
@@ -129,9 +125,6 @@ public:
     virtual void init();
     virtual void attach();
 
-    virtual bool prepareMouseEvent( int _x, int _y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev );
     virtual void defaultEventHandler(EventImpl *evt);
 
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
@@ -148,8 +141,8 @@ public:
     virtual void recalcStyle( StyleChange ch );
 
 protected:
-    QPtrList<khtml::Length> *m_rows;
-    QPtrList<khtml::Length> *m_cols;
+    khtml::Length* m_rows;
+    khtml::Length* m_cols;
 
     int m_totalRows;
     int m_totalCols;

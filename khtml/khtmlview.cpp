@@ -108,10 +108,10 @@ public:
 	scrollingSelf = false;
 	timerId = 0;
         repaintTimerId = 0;
-        complete = false;    
+        complete = false;
         firstRelayout = true;
         layoutSchedulingEnabled = true;
-        updateRect = QRect();    
+        updateRect = QRect();
     }
 
     QPainter *tp;
@@ -142,13 +142,13 @@ public:
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
     int timerId;
-    
+
     int repaintTimerId;
-    bool complete;     
+    bool complete;
     bool firstRelayout;
     bool layoutSchedulingEnabled;
-    QRect updateRect;   
-    
+    QRect updateRect;
+
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -202,7 +202,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
-    viewport()->setBackgroundMode(NoBackground);    
+    viewport()->setBackgroundMode(NoBackground);
 
     KImageIO::registerFormats();
 
@@ -249,11 +249,11 @@ void KHTMLView::init()
 void KHTMLView::clear()
 {
 
-    
+
 //    viewport()->erase();
-    
+
     setStaticBackground(true);
-    
+
     d->reset();
     killTimers();
     emit cleared();
@@ -263,7 +263,7 @@ void KHTMLView::clear()
         QScrollView::setVScrollBarMode(d->prevScrollbarVisible?AlwaysOn:Auto);
     else
         QScrollView::setVScrollBarMode(d->vmode);
-        
+
     resizeContents(visibleWidth(), visibleHeight());
 }
 
@@ -299,7 +299,7 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 }
 
 // this is to get rid of a compiler virtual overload mismatch warning. do not remove
-void KHTMLView::drawContents( QPainter* p)
+void KHTMLView::drawContents( QPainter*)
 {
 }
 
@@ -310,8 +310,6 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
-
-
     if ( d->paintBuffer->width() < visibleWidth() )
         d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
 
@@ -376,10 +374,10 @@ void KHTMLView::layout()
         //qt.start();
         root->setMinMaxKnown(false);
         root->setLayouted(false);
-        // avoid recursing into relayouts because of scrollbar-flicker        
-     
+        // avoid recursing into relayouts because of scrollbar-flicker
+
         root->layout();
-                
+
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
@@ -415,9 +413,10 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     d->isDoubleClick = false;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
 
-    if (d->clickCount > 0 && d->clickX == xm && d->clickY == ym) // ### support mouse threshold
+    if (d->clickCount > 0 &&
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	d->clickCount++;
     else {
 	d->clickCount = 1;
@@ -453,7 +452,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     d->isDoubleClick = true;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
@@ -493,7 +492,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -505,67 +504,66 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
 
-    QCursor c = KCursor::arrowCursor();
-    if ( !mev.innerNode.isNull() && mev.innerNode.handle()->renderer() ) {
-      khtml::RenderStyle* style = mev.innerNode.handle()->renderer()->style();
-      if ((style->cursor() == CURSOR_AUTO) && (style->cursorImage())
-	    && !(style->cursorImage()->pixmap().isNull())) {
+    khtml::RenderStyle* style = (mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+                                 mev.innerNode.handle()->renderer()->style()) ? mev.innerNode.handle()->renderer()->style() : 0;
+    QCursor c;
+    if (style && style->cursor() == CURSOR_AUTO && style->cursorImage()
+        && !(style->cursorImage()->pixmap().isNull())) {
         /* First of all it works: Check out http://www.iam.unibe.ch/~schlpbch/cursor.html
-	*
-	* But, I don't know what exactly we have to do here: rescale to 32*32, change to monochrome..
-	*/
-    	//kdDebug( 6000 ) << "using custom cursor" << endl;
-	const QPixmap p = style->cursorImage()->pixmap();
-	// ### fix
-	c = QCursor(p);
-      } else {
-        switch ( style->cursor() ) {
-        case CURSOR_AUTO:
-            if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
-                c = m_part->urlCursor();
-            break;
-        case CURSOR_CROSS:
-            c = KCursor::crossCursor();
-            break;
-        case CURSOR_POINTER:
-            c = m_part->urlCursor();
-            break;
-        case CURSOR_MOVE:
-            c = KCursor::sizeAllCursor();
-            break;
-        case CURSOR_E_RESIZE:
-        case CURSOR_W_RESIZE:
-            c = KCursor::sizeHorCursor();
-            break;
-        case CURSOR_N_RESIZE:
-        case CURSOR_S_RESIZE:
-            c = KCursor::sizeVerCursor();
-            break;
-        case CURSOR_NE_RESIZE:
-        case CURSOR_SW_RESIZE:
-            c = KCursor::sizeBDiagCursor();
-            break;
-        case CURSOR_NW_RESIZE:
-        case CURSOR_SE_RESIZE:
-            c = KCursor::sizeFDiagCursor();
-            break;
-        case CURSOR_TEXT:
-            c = KCursor::ibeamCursor();
-            break;
-        case CURSOR_WAIT:
-            c = KCursor::waitCursor();
-            break;
-        case CURSOR_HELP:
-            c = KCursor::whatsThisCursor();
-            break;
-        case CURSOR_DEFAULT:
-            break;
-        }
-      }
+         *
+         * But, I don't know what exactly we have to do here: rescale to 32*32, change to monochrome..
+         */
+        //kdDebug( 6000 ) << "using custom cursor" << endl;
+        const QPixmap p = style->cursorImage()->pixmap();
+        // ### fix
+        c = QCursor(p);
     }
+
+    switch ( style ? style->cursor() : CURSOR_AUTO) {
+    case CURSOR_AUTO:
+        if ( mev.url.length() && m_part->settings()->changeCursor() )
+            c = m_part->urlCursor();
+        break;
+    case CURSOR_CROSS:
+        c = KCursor::crossCursor();
+        break;
+    case CURSOR_POINTER:
+        c = m_part->urlCursor();
+        break;
+    case CURSOR_MOVE:
+        c = KCursor::sizeAllCursor();
+        break;
+    case CURSOR_E_RESIZE:
+    case CURSOR_W_RESIZE:
+        c = KCursor::sizeHorCursor();
+        break;
+    case CURSOR_N_RESIZE:
+    case CURSOR_S_RESIZE:
+        c = KCursor::sizeVerCursor();
+        break;
+    case CURSOR_NE_RESIZE:
+    case CURSOR_SW_RESIZE:
+        c = KCursor::sizeBDiagCursor();
+        break;
+    case CURSOR_NW_RESIZE:
+    case CURSOR_SE_RESIZE:
+        c = KCursor::sizeFDiagCursor();
+        break;
+    case CURSOR_TEXT:
+        c = KCursor::ibeamCursor();
+        break;
+    case CURSOR_WAIT:
+        c = KCursor::waitCursor();
+        break;
+    case CURSOR_HELP:
+        c = KCursor::whatsThisCursor();
+        break;
+    case CURSOR_DEFAULT:
+        break;
+    }
+
     QWidget *vp = viewport();
-    if ( vp->cursor().handle() != c.handle() )
-    {
+    if ( vp->cursor().handle() != c.handle() ) {
         if( c.handle() == KCursor::arrowCursor().handle())
             vp->unsetCursor();
         else
@@ -575,9 +573,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     d->prevMouseY = ym;
 
     if (!swallowEvent) {
-	khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
-	QApplication::sendEvent( m_part, &event );
+        khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+        event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
+        QApplication::sendEvent( m_part, &event );
     }
 }
 
@@ -598,7 +596,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     //kdDebug( 6000 ) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
@@ -736,7 +734,7 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
     int ym = _ce->y();
 
     DOM::NodeImpl::MouseEvent mev( _ce->state(), DOM::NodeImpl::MouseMove ); // ### not a mouse event!
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
 
     NodeImpl *targetNode = mev.innerNode.handle();
     if (targetNode && targetNode->renderer() && targetNode->renderer()->isWidget()) {
@@ -859,8 +857,8 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 	scrollY = contentsHeight() - visibleHeight() - contentsY();
 
     scrollBy(scrollX, scrollY);
-    
-    
+
+
 
     // generate abs(scroll.)
     if (scrollX<0)
@@ -1224,7 +1222,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
 	    NodeImpl::MouseEvent mev( _mouse->stateAfter(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
-	    m_part->xmlDocImpl()->prepareMouseEvent( d->prevMouseX, d->prevMouseY, 0, 0, &mev );
+	    m_part->xmlDocImpl()->prepareMouseEvent( d->prevMouseX, d->prevMouseY, &mev );
 	    oldUnder = mev.innerNode.handle();
 	}
 
@@ -1356,9 +1354,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if (e->timerId()==d->timerId)
     {
-
-        //kdDebug() << "scheduled layout " << d->timerId  << endl;        
-
         d->firstRelayout = false;        
         killTimer(d->timerId);        
         
@@ -1386,7 +1381,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
     setStaticBackground(d->useSlowRepaints);
 
-                
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
     updateContents( d->updateRect );
@@ -1431,7 +1425,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
     {
         if (parsing)
             // not complete and still parsing
-            time = 300;   
+            time = 300;
         else
             // not complete, not parsing, extend the timer if it exists
             // otherwise, repaint immediatly
@@ -1455,16 +1449,16 @@ void KHTMLView::complete()
 //     kdDebug() << "KHTMLView::complete()" << endl;
  
     d->complete = true;
-       
+
     // is there a relayout pending?
     if (d->timerId)
     {
 //         kdDebug() << "requesting relayout now" << endl;
         // do it now
         killTimer(d->timerId);
-        d->timerId = startTimer( 0 );           
+        d->timerId = startTimer( 0 );
     }
-        
+
     // is there a repaint pending?
     if (d->repaintTimerId)
     {

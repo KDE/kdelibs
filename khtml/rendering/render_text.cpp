@@ -24,8 +24,9 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
-#include "render_text.h"
-#include "break_lines.h"
+#include "rendering/render_text.h"
+#include "rendering/break_lines.h"
+#include "xml/dom_nodeimpl.h"
 
 #include "misc/loader.h"
 
@@ -333,21 +334,35 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     return s;
 }
 
-bool RenderText::containsPoint(int _x, int _y, int _tx, int _ty)
+bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
+    assert(parent());
+
+    _tx -= paddingLeft() + borderLeft();
+    _ty -= borderTop() + paddingTop();
+
     int height = m_lineHeight + borderTop() + paddingTop() +
                  borderBottom() + paddingBottom();
 
+    bool inside = false;
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
     while(s) {
         if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
-           (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) )
-            return true;
+           (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) ) {
+            inside = true;
+            break;
+        }
 
         s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
     }
-    return false;
+
+    bool oldinside = mouseInside();
+    setMouseInside(inside);
+    if (mouseInside() != inside && element())
+        element()->setChanged();
+
+    return inside;
 }
 
 FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offset)
@@ -580,7 +595,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     if(minx > s->m_x)  minx = s->m_x;
                     int newmaxx = s->m_x+s->m_width;
                     //if (parent()->isInline() && si==0) newmaxx-=paddingLeft();
-                    if (parent()->isInline() && si==m_lines.count()-1) newmaxx-=paddingRight();
+                    if (parent()->isInline() && si==int(m_lines.count())-1) newmaxx-=paddingRight();
                     if(maxx < newmaxx) maxx = newmaxx;
                 }
                 else {
@@ -591,7 +606,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     minx = s->m_x;
                     maxx = s->m_x+s->m_width;
                     //if (parent()->isInline() && si==0) maxx-=paddingLeft();
-                    if (parent()->isInline() && si==m_lines.count()-1) maxx-=paddingRight();
+                    if (parent()->isInline() && si==int(m_lines.count())-1) maxx-=paddingRight();
                 }
             }
 #ifdef BIDI_DEBUG

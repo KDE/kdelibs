@@ -354,9 +354,7 @@ bool HTMLInputElement::defaultChecked() const
 void HTMLInputElement::setDefaultChecked( bool _defaultChecked )
 {
     if(impl)
-    {
 	((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, _defaultChecked ? "" : 0);
-    }
 }
 
 HTMLFormElement HTMLInputElement::form() const

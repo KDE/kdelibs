@@ -92,7 +92,7 @@ public:
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
 
-    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
 protected:
 

@@ -210,25 +210,21 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     {
         // CSS like rgb(r, g, b) style
         DOMString rgb = name.mid(4, name.length()-5);
-        QPtrList<Length> *l = rgb.implementation()->toLengthList();
-        if(l->count() != 3)
-        {
-	    // transparent in case of an invalid color.
+        int count;
+        khtml::Length* l = rgb.implementation()->toLengthArray(count);
+        if (count != 3)
+            // transparent in case of an invalid color.
             color = QColor();
-        } else {
-	    int r = l->at(0)->isUndefined() ? 0 : l->at(0)->width(255);
-	    if(r < 0) r = 0;
-	    if(r > 255) r = 255;
-	    int g = l->at(1)->isUndefined() ? 0 : l->at(1)->width(255);
-	    if(g < 0) g = 0;
-	    if(g > 255) g = 255;
-	    int b = l->at(2)->isUndefined() ? 0 : l->at(2)->width(255);
-	    if(b < 0) b = 0;
-	    if(b > 255) b = 255;
-
-	    color.setRgb(r, g, b);
-	}
-        delete l;
+        else {
+            int c[3];
+            for (int i = 0; i < 3; ++i) {
+                c[i] = l[i].width(255);
+                if (c[i] < 0) c[i] = 0;
+                if (c[i] > 255) c[i] = 255;
+            }
+            color.setRgb(c[0], c[1], c[2]);
+        }
+        delete [] l;
     }
     else
     {

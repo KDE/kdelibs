@@ -33,7 +33,7 @@
 #include "html/dtd.h"
 #include "html/htmlparser.h"
 
-#include "rendering/render_object.h"
+#include "rendering/render_root.h"
 #include "misc/htmlhashes.h"
 #include "css/css_valueimpl.h"
 #include "css/css_stylesheetimpl.h"
@@ -327,6 +327,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 {
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
+#if 0
     const char* debug;
     switch(change) {
     case NoChange: debug = "NoChange";
@@ -339,11 +340,12 @@ void ElementImpl::recalcStyle( StyleChange change )
         break;
     }
     qDebug("recalcStyle(%d: %s)[%p: %s]", change, debug, this, tagName().string().latin1());
+#endif
     if ( change >= Inherit || changed() ) {
         EDisplay oldDisplay = _style ? _style->display() : NONE;
 
         int dynamicState = StyleSelector::None;
-        if ( m_mouseInside )
+        if ( m_render && m_render->mouseInside() )
             dynamicState |= StyleSelector::Hover;
         if ( m_focused )
             dynamicState |= StyleSelector::Focus;

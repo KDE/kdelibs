@@ -57,30 +57,6 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
     return ID_A;
 }
 
-bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
-                                               int _tx, int _ty,
-                                               MouseEvent *ev)
-{
-    bool inside = HTMLElementImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev);
-
-    // ### ev->noHref obsolete now ? ( Dirk )
-    if ( inside && ev->url.isNull() && !ev->noHref
-         && m_render && m_render->style()->visibility() != HIDDEN )
-    {
-        //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
-        // set the url
-        DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
-        if(m_hasTarget && m_hasAnchor)
-            ev->url = DOMString("target://") + getAttribute(ATTR_TARGET) +
-                      DOMString("/#") + href;
-        else
-            ev->url = href;
-    }
-
-    return inside;
-}
-
-
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
@@ -165,11 +141,11 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlButton;
 	    }
 
-            evt->setDefaultHandled();
             getDocument()->view()->resetCursor();
             getDocument()->view()->part()->
                 urlSelected( url, button, state, utarget );
         }
+        evt->setDefaultHandled();
     }
     HTMLElementImpl::defaultEventHandler(evt);
 }
@@ -236,7 +212,7 @@ void HTMLBRElementImpl::attach()
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
-    m_attached = true;
+    NodeImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -300,35 +276,4 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-// -------------------------------------------------------------------------
-
-HTMLModElementImpl::HTMLModElementImpl(DocumentPtr *doc, ushort tagid) : HTMLElementImpl(doc)
-{
-    _id = tagid;
-}
-
-HTMLModElementImpl::~HTMLModElementImpl()
-{
-}
-
-NodeImpl::Id HTMLModElementImpl::id() const
-{
-    return _id;
-}
-
-// -------------------------------------------------------------------------
-
-HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLQuoteElementImpl::~HTMLQuoteElementImpl()
-{
-}
-
-NodeImpl::Id HTMLQuoteElementImpl::id() const
-{
-    return ID_Q;
-}
 

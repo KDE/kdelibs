@@ -64,6 +64,8 @@ public:
 
     virtual void notifyFinished(CachedObject *finishedObj);
 
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+
 private:
     /*
      * Pointer to the image

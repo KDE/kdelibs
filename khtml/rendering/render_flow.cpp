@@ -25,18 +25,16 @@
 //#define BOX_DEBUG
 //#define FLOAT_DEBUG
 
-
+#include <kdebug.h>
+#include <assert.h>
 #include <qpainter.h>
-
 #include <kglobal.h>
 
 #include "rendering/render_flow.h"
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
 #include "rendering/render_root.h"
-
-#include <kdebug.h>
-#include <assert.h>
+#include "xml/dom_nodeimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -421,7 +419,6 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    child->layout();
 
         int chPos = xPos + child->marginLeft();
-
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
@@ -808,11 +805,11 @@ int RenderFlow::rightmostPosition() const
 
     RenderObject *c;
     for (c = firstChild(); c; c = c->nextSibling()) {
-	if (!c->isPositioned() && !c->isFloating()) {
-	    int childRight = c->xPos() + c->rightmostPosition();
-	    if (childRight > right)
-		right = childRight;
-	}
+        if (!c->isPositioned() && !c->isFloating()) {
+            int childRight = c->xPos() + c->rightmostPosition();
+            if (childRight > right)
+                right = childRight;
+        }
     }
 
     if (specialObjects) {
@@ -1427,21 +1424,23 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
     setLayouted(false);
 }
 
-// ### uuuhhh.. nasty. Go away! Now! (Dirk)
-bool RenderFlow::containsPoint(int _x, int _y, int _tx, int _ty)
+bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
-    if (isFloating() || isPositioned())
-        return RenderBox::containsPoint(_x, _y, _tx, _ty);
+    bool inBox = false;
+    if (specialObjects) {
+        SpecialObject* o;
+        QPtrListIterator<SpecialObject> it(*specialObjects);
+        for (it.toLast(); (o = it.current()); --it) {
+            if (o->node->containingBlock() == this &&
+                (inBox = o->node->nodeAtPoint(info, _x, _y, _tx, _ty)))
+                break;
+        }
+    }
 
-    if (!RenderBox::containsPoint(_x,_y,_tx,_ty))
-       return false;
-
-    if (isRelPositioned())
-        relativePositionOffset(_x, _y);
-
-    return ((_x >= _tx+leftOffset(_y-_ty)) && (_x <= _tx+rightOffset(_y-_ty)));
+    inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
+    return inBox;
 }
-// ###
+
 
 #ifndef NDEBUG
 void RenderFlow::printTree(int indent) const
@@ -1458,7 +1457,11 @@ void RenderFlow::printTree(int indent) const
         {
             QString s;
             s.fill(' ', indent);
-            kdDebug() << s << renderName() << ":     special -> (" << r->startY << " - " << r->endY << ")" << endl;
+            kdDebug() << s << renderName() << ":  " <<
+                (r->type == SpecialObject::FloatLeft ? "FloatLeft" : (r->type == SpecialObject::FloatRight ? "FloatRight" : "Positioned"))  <<
+                "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" <<
+                (r->noPaint ? " noPaint" : " ") << "width: " << r->width <<
+                endl;
         }
     }
 }

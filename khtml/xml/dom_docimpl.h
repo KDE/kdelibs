@@ -168,7 +168,7 @@ public:
     void updateStyleSelector();
 
     void recalcStyleSelector();
-    
+
     QString nextState();
 
     // Query all registered elements for their state
@@ -262,10 +262,7 @@ public:
     // internal
     NodeImpl *findElement( Id id );
 
-    // overrides NodeImpl
-    virtual bool prepareMouseEvent( int x, int y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev );
+     bool prepareMouseEvent( int x, int y, MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );

@@ -28,7 +28,8 @@
 #include "rendering/render_list.h"
 #include "rendering/render_root.h"
 #include "rendering/render_hr.h"
-#include "xml/dom_nodeimpl.h"
+#include "xml/dom_elementimpl.h"
+#include "misc/htmlhashes.h"
 #include <kdebug.h>
 #include <qpainter.h>
 #include "khtmlview.h"
@@ -112,7 +113,7 @@ m_isText( false ),
 m_inline( true ),
 
 m_replaced( false ),
-m_containsOverhangingFloats( false ),
+m_mouseInside( false ),
 m_hasFirstLine( false ),
 m_isSelectionBorder( false )
 {
@@ -124,7 +125,7 @@ RenderObject::~RenderObject()
         m_style->backgroundImage()->deref(this);
 
     if (m_style)
-	m_style->deref();
+        m_style->deref();
 }
 
 
@@ -520,30 +521,25 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
 
 #ifndef NDEBUG
 
-QString RenderObject::information() const 
+QString RenderObject::information() const
 {
-    int childcount = 0;
-    for(RenderObject* c = firstChild(); c; c = c->nextSibling())
-        childcount++;
     QString str;
     QTextStream ts( &str, IO_WriteOnly );
     ts << renderName()
-	<< (childcount ?
-	    (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
-	    : QString::null)
 	<< "(" << (style() ? style()->refCount() : 0) << ")"
-	<< ": " << (void*)this
-	<< " il=" << (int)isInline()
-	<< " ci=" << (int) childrenInline()
-	<< " fl=" << (int)isFloating()
-	<< " rp=" << (int)isReplaced()
-	<< " an=" << (int)isAnonymousBox()
-	<< " ps=" << (int)isPositioned()
-	<< " oc=" << (int)overhangingContents()
-	<< " lt=" << (int)layouted()
-	<< " mk=" << (int)minMaxKnown()
-	<< " rmm=" << (int)m_recalcMinMax
-	<< " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+       << ": " << (void*)this << "  ";
+    if (isInline()) ts << "il ";
+    if (childrenInline()) ts << "ci ";
+    if (isFloating()) ts << "fl ";
+    if (isAnonymousBox()) ts << "an ";
+    if (isRelPositioned()) ts << "rp ";
+    if (isPositioned()) ts << "ps ";
+    if (overhangingContents()) ts << "oc ";
+    if (layouted()) ts << "lt ";
+    if (m_recalcMinMax) ts << "rmm ";
+    if (mouseInside()) ts << "mi";
+    if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
+    ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 	<< (isTableCell() ?
 	    ( QString::fromLatin1(" [row=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
@@ -561,12 +557,9 @@ void RenderObject::printTree(int indent) const
 {
     QString ind;
     ind.fill(' ', indent);
-    int childcount = 0;
-    for(RenderObject* c = firstChild(); c; c = c->nextSibling())
-        childcount++;
 
-    kdDebug()    << ind << information() << endl;
-    
+    kdDebug() << ind << information() << endl;
+
     RenderObject *child = firstChild();
     while( child != 0 )
     {
@@ -795,9 +788,42 @@ void RenderObject::detach()
     delete this;
 }
 
-bool RenderObject::containsPoint(int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/)
+bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
-    return false;
+    int tx = _tx + xPos();
+    int ty = _ty + yPos();
+    if (isRelPositioned())
+        static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
+
+    bool inside = style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
+                  (_x >= tx) && (_x < tx + width()));
+
+    for (RenderObject* child = firstChild(); child; child = child->nextSibling())
+        if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
+            inside = true;
+
+    if (inside && element()) {
+        if (!info.innerNode())
+            info.setInnerNode(element());
+        if (element()->hasAnchor() && !info.URLElement())
+            info.setURLElement(element());
+    }
+
+    if (!info.readonly()) {
+        // lets see if we need a new style
+        bool oldinside = mouseInside();
+        setMouseInside(inside);
+        if (element()) {
+            bool oldactive = element()->active();
+            if (oldactive != (inside && info.active() && element() == info.innerNode()))
+                element()->setActive(inside && info.active() && element() == info.innerNode());
+            if ( ((oldinside != mouseInside()) && style()->hasHover()) ||
+                 ((oldactive != element()->active()) && style()->hasActive()))
+                element()->setChanged();
+        }
+    }
+
+    return inside;
 }
 
 short RenderObject::verticalPositionHint( bool firstLine ) const

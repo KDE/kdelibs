@@ -717,6 +717,7 @@ void RenderSelect::calcMinMaxWidth()
 void RenderSelect::layout( )
 {
     KHTMLAssert(!layouted());
+    KHTMLAssert(minMaxKnown());
 
     // ### maintain selection properly between type/size changes, and work
     // out how to handle multiselect->singleselect (probably just select

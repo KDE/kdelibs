@@ -189,15 +189,6 @@ void HTMLBodyElementImpl::attach()
     NodeBaseImpl::attach();
 }
 
-
-bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, MouseEvent *ev)
-{
-    bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
-    if(!inside)
-	ev->innerNode = this;
-    return !inside;
-}
-
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
@@ -353,7 +344,7 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
 {
     if ( !m_render ) return 0;
 
-    RenderPartObject* render = static_cast<RenderPartObject*>( m_render );
+    RenderPart* render = static_cast<RenderPart*>( m_render );
 
     if(render->widget() && render->widget()->inherits("KHTMLView"))
         return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
@@ -382,8 +373,10 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-    delete m_rows;
-    delete m_cols;
+    if (m_rows)
+        delete [] m_rows;
+    if (m_cols)
+        delete [] m_cols;
 }
 
 NodeImpl::Id HTMLFrameSetElementImpl::id() const
@@ -396,17 +389,17 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ROWS:
-        delete m_rows;
-        m_rows = attr->val()->toLengthList();
-        m_totalRows = m_rows->count();
+        if (!attr->val()) break;
+        if (m_rows) delete [] m_rows;
+        m_rows = attr->val()->toLengthArray(m_totalRows);
         setChanged();
-        break;
+    break;
     case ATTR_COLS:
-        delete m_cols;
-        m_cols = attr->val()->toLengthList();
-        m_totalCols = m_cols->count();
+        if (!attr->val()) break;
+        delete [] m_cols;
+        m_cols = attr->val()->toLengthArray(m_totalCols);
         setChanged();
-        break;
+    break;
     case ATTR_FRAMEBORDER:
         // false or "no" or "0"..
         if ( attr->value().toInt() == 0 ) {
@@ -468,43 +461,12 @@ void HTMLFrameSetElementImpl::attach()
     NodeBaseImpl::attach();
 }
 
-bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
-                                                 int _tx, int _ty,
-                                                 MouseEvent *ev )
-{
-    _x-=_tx;
-    _y-=_ty;
-
-    NodeImpl *child = _first;
-    while(child)
-    {
-        if(child->id() == ID_FRAMESET)
-            if(child->prepareMouseEvent( _x, _y, _tx, _ty, ev )) return true;
-        child = child->nextSibling();
-    }
-
-    if(noresize) return true;
-
-    if ( !m_render || !m_render->layouted() )
-    {
-      kdDebug( 6030 ) << "ugh, not layouted or not attached?!" << endl;
-      return true;
-    }
-    if ( m_render->style()->visibility() == HIDDEN )
-      return true;
-
-    if (static_cast<khtml::RenderFrameSet *>(m_render)->canResize( _x, _y, ev->type )) {
-        ev->innerNode = Node(this);
-        return true;
-    }
-    else
-        return false;
-}
-
 void HTMLFrameSetElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->isMouseEvent())
+    if (evt->isMouseEvent() && !noresize && m_render)
         static_cast<khtml::RenderFrameSet *>(m_render)->userResize(static_cast<MouseEventImpl*>(evt));
+
+    evt->setDefaultHandled();
     HTMLElementImpl::defaultEventHandler(evt);
 }
 
@@ -525,9 +487,11 @@ khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, i
 
 void HTMLFrameSetElementImpl::detach()
 {
+    if(attached())
+        // ### send the event when we actually get removed from the doc instead of here
+        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+
     HTMLElementImpl::detach();
-    // ### send the event when we actually get removed from the doc instead of here
-    dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 }
 
 void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )

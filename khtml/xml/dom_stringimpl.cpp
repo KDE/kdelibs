@@ -35,8 +35,6 @@ using namespace khtml;
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
-template class QPtrList<Length>;
-
 DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
 {
     if(str && len)
@@ -209,7 +207,7 @@ Length DOMStringImpl::toLength() const
     return parseLength(s,l);
 }
 
-QPtrList<Length> *DOMStringImpl::toLengthList() const
+khtml::Length* DOMStringImpl::toLengthArray(int& len) const
 {
     QString str(s, l);
     int pos = 0;
@@ -227,19 +225,17 @@ QPtrList<Length> *DOMStringImpl::toLengthList() const
     }
     str = str.simplifyWhiteSpace();
 
-    QPtrList<Length> *list = new QPtrList<Length>;
-    list->setAutoDelete(true);
+    len = str.contains(' ') + 1;
+    khtml::Length* r = new khtml::Length[len];
+    int i = 0;
     while((pos2 = str.find(' ', pos)) != -1)
     {
-        Length *l = new Length(parseLength((QChar *) str.unicode()+pos, pos2-pos));
-        list->append(l);
+        r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
         pos = pos2+1;
     }
+    r[i] = parseLength((QChar *) str.unicode()+pos, str.length()-pos);
 
-    Length *l = new Length(parseLength((QChar *) str.unicode()+pos, str.length()-pos));
-    list->append(l);
-
-    return list;
+    return r;
 }
 
 bool DOMStringImpl::isLower() const

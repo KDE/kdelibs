@@ -40,7 +40,7 @@
 #include "html/html_imageimpl.h"
 #include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
-#include "xml/dom_docimpl.h"
+#include "html/html_documentimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -309,6 +309,28 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
         loadEventSent = true;
         element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
+}
+
+bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+{
+    bool inside = RenderReplaced::nodeAtPoint(info, _x, _y, _tx, _ty);
+
+    if (inside && element()) {
+        int tx = _tx + m_x;
+        int ty = _ty + m_y;
+        if (isRelPositioned())
+            relativePositionOffset(tx, ty);
+
+        HTMLImageElementImpl* i = element()->id() == ID_IMG ? static_cast<HTMLImageElementImpl*>(element()) : 0;
+        HTMLMapElementImpl* map;
+        if (i && i->getDocument()->isHTMLDocument() &&
+            (map = static_cast<HTMLDocumentImpl*>(i->getDocument())->getMap(i->imageMap()))) {
+            // we're a client side image map
+            inside = map->mapMouseEvent(_x - tx, _y - ty, contentWidth(), contentHeight(), info);
+        }
+    }
+
+    return inside;
 }
 
 void RenderImage::updateFromElement()
