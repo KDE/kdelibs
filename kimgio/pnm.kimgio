@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=PNM-Pictures
+Name[ca]=Dibuixos PNM
 Name[cs]=Obrázky ve formátu PNM
 Name[da]=PNM-Billeder
 Name[de]=PNM-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens PNM
 Name[pt_BR]=Figuras PNM
 Name[ro]=Imagini PNM
 Name[sl]=Slike PNM
+Name[sr]=PNM-Slike
 Name[sv]=PNM-bilder
 Read=true
 Write=true

@@ -2,6 +2,7 @@
 Type=XPM
 Header=
 Name=XWindow Pixmaps
+Name[ca]=Pixmaps de XWindow
 Name[cs]=XWindow pixmapy
 Name[da]=XWindow pixmaps
 Name[de]=XWindow-Pixmaps
@@ -18,6 +19,7 @@ Name[pt]=Bitmaps do XWindow
 Name[pt_BR]=Pixmaps XWindow
 Name[ro]=Pixmap-uri XWindow
 Name[sl]=Pikčaste slike za Xwindow
+Name[sr]=XWindow Pixmape
 Name[sv]=Xwindow pixmappar
 Read=true
 Write=true

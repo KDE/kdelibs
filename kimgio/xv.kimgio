@@ -3,6 +3,7 @@ Type=XV
 Header=^P7 332
 Flags=T
 Name=XView format
+Name[ca]=Format XView
 Name[cs]=XView formát
 Name[de]=XView-Format
 Name[eo]=XView-formato

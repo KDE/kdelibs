@@ -2,6 +2,7 @@
 Type=JPEG
 Header=
 Name=JPEG-Pictures
+Name[ca]=Dibuixos JPEG
 Name[cs]=Obrázky ve formátu JPEG
 Name[da]=JPEG-Billeder
 Name[de]=JPEG-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens JPEG
 Name[pt_BR]=Figuras JPEG
 Name[ro]=Imagini JPEG
 Name[sl]=Slike JPEG
+Name[sr]=JPEG-Slike
 Name[sv]=JPEG-bilder
 Read=true
 Write=true

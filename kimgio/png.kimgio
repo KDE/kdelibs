@@ -2,6 +2,7 @@
 Type=PNG
 Header=
 Name=PNG-Pictures
+Name[ca]=Dibuixos PNG
 Name[cs]=Obrázky ve formátu PNG
 Name[da]=PNG-Billeder
 Name[de]=PNG-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens PNG
 Name[pt_BR]=Figuras PNG
 Name[ro]=Imagini PNG
 Name[sl]=Slike PNG
+Name[sr]=PNG-Slike
 Name[sv]=PNG-bilder
 Read=true
 Write=true

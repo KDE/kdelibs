@@ -2,6 +2,7 @@
 Type=XBM
 Header=
 Name=XWindow Bitmaps
+Name[ca]=Bitmaps de XWindow
 Name[cs]=XWindow bitmapy
 Name[de]=XWindow-Bitmaps
 Name[eo]=XFenestraj bildoj
@@ -17,6 +18,7 @@ Name[pt]=Pixmaps do XWindow
 Name[pt_BR]=Bitmaps XWindow
 Name[ro]=Bitmap-uri XWindow
 Name[sl]=Bitne slike za Xwindow
+Name[sr]=XWindow Bitmape
 Name[sv]=XWindow bitmappar
 Read=true
 Write=true

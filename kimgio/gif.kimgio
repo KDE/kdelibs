@@ -2,6 +2,7 @@
 Type=GIF
 Header=
 Name=GIF-Pictures
+Name[ca]=Dibuixos GIF
 Name[cs]=Obrázky ve formátu GIF
 Name[da]=GIF-Billeder
 Name[de]=GIF-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens GIF
 Name[pt_BR]=Figuras GIF
 Name[ro]=Imagini GIF
 Name[sl]=Slike GIF
+Name[sr]=GIF-Slike
 Name[sv]=GIF-bilder
 Read=true
 Write=false

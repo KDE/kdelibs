@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=MSWindows Pixmaps
+Name[ca]=Pixmaps de MSWindows
 Name[cs]=MSWindows pixmapa
 Name[da]=MSWindows billeder
 Name[de]=Windows-Pixmaps
@@ -18,6 +19,7 @@ Name[pt]=Imagens do Windows
 Name[pt_BR]=Pixmaps MS-Windows
 Name[ro]=Imagini MS Windows
 Name[sl]=Pikčaste mape za MSWindows
+Name[sr]=MSWindows Pixmape
 Name[sv]=Pixmappar för MSWindows
 Read=true
 Write=true

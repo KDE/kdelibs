@@ -2,6 +2,7 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF-Pictures
+Name[ca]=Dibuixos TIFF
 Name[cs]=Obrázky ve formátu TIFF
 Name[da]=TIFF-Billeder
 Name[de]=TIFF-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens TIFF
 Name[pt_BR]=Figuras TIFF
 Name[ro]=Imagini TIFF
 Name[sl]=Slike TIFF
+Name[sr]=TIFF-Slike
 Name[sv]=TIFF-bilder
 Read=true
 Write=true

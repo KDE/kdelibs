@@ -2,6 +2,7 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL-Images
+Name[ca]=Imatges KRL
 Name[cs]=Obrázky ve formátu KRL
 Name[da]=Krl billeder
 Name[de]=KRL-Bilder
@@ -18,6 +19,7 @@ Name[pt]=Imagens KRL
 Name[pt_BR]=Imagens KRL
 Name[ro]=Imagini KRL
 Name[sl]=Slike KRL
+Name[sr]=KRL-Slike
 Name[sv]=KRL-bilder
 Read=true
 Write=true
