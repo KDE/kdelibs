@@ -63,13 +63,11 @@ staticmodules: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 	fi ;\
 	done; \
 	echo "const char* kimgio_rpaths[] = {" >> kimgio-config.h ;\
-	if test -n "$(KDE_RPATH)"; then \
-	  for i in $(KDE_RPATH); do \
+	  for i in $(KDE_RPATH) "-rpath"; do \
 	    if test ! $$i = "-rpath"; then \
 	      echo "    \"$$i\"," >> kimgio-config.h  ; \
             fi; \
 	  done ;\
-        fi; \
 	echo "      0};" >> kimgio-config.h
 
 CLEANFILES = staticmodules kimgio-config.h
