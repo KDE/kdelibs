@@ -21,8 +21,6 @@
 <!ENTITY underX11License    SYSTEM
   "entities/underX11License.docbook"                -- level: para -->
 
-<!ENTITY help.menu          SYSTEM
-  "entities/help-menu.docbook"                         -- level: ? -->
 <!ENTITY reporting.bugs     SYSTEM
   "entities/report-bugs.docbook"                       -- level: ? -->
 <!ENTITY updating.documentation SYSTEM
