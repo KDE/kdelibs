@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.18  1998/02/20 02:37:25  torben
+ * Torben: Fixes permissions
+ *
  * Revision 1.17  1998/01/23 11:25:28  kulow
  * Solaris doesn't define UNIX_PATH_MAX
  *
@@ -114,7 +117,6 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -125,6 +127,18 @@
 #  include <time.h>
 # endif
 #endif
+#ifdef HAVE_LINUX_SOCKET_H
+#include <linux/socket.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+// Play it safe, use a reasonable default, if SOMAXCONN was no where defined.
+#ifndef SOMAXCONN
+#warning Your header files do not seem to support SOMAXCONN
+#define SOMAXCONN 5
+#endif
+
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -380,7 +394,7 @@ bool KServerSocket::init( const char *_path )
     return false;
   }
                
-  if ( listen( sock, 1000 ) < 0 )
+  if ( listen( sock, SOMAXCONN ) < 0 )
   {
     warning("Error listening on socket\n");
     ::close( sock );
@@ -417,7 +431,7 @@ bool KServerSocket::init( unsigned short int _port )
 	  return false;
     }
     
-  if ( listen( sock, 1000 ) < 0 )
+  if ( listen( sock, SOMAXCONN ) < 0 )
     {
 	  warning("Error listening on socket\n");
 	  ::close( sock );
