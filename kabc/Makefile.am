@@ -1,7 +1,7 @@
-SUBDIRS = . vcard plugins
+SUBDIRS = vcard . plugins
 
 INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top_srcdir)/kabc \
-  $(all_includes)
+  -I$(top_srcdir)/kab $(all_includes)
 
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 1:0:0 -module
