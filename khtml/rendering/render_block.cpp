@@ -176,6 +176,8 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     if ( !beforeChild && lastChild() && lastChild()->style()->styleType() == RenderStyle::AFTER )
         beforeChild = lastChild();
 
+    setNeedsLayout(true);
+
     bool madeBoxesNonInline = FALSE;
 
     // If the requested beforeChild is not one of our children, then this is most likely because
@@ -188,6 +190,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
         if (newChild->isInline()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
+//            newChild->setNeedsLayoutAndMinMaxRecalc();
             return;
         }
         else if (beforeChild->parent()->firstChild() != beforeChild)
@@ -229,6 +232,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 if ( beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymous() &&
                      beforeChild->previousSibling()->style()->styleType() == RenderStyle::NOPSEUDO ) {
                     beforeChild->previousSibling()->addChild(newChild);
+//                    newChild->setNeedsLayoutAndMinMaxRecalc();
                     return;
                 }
             }
@@ -236,6 +240,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 if ( m_last && m_last->isAnonymous() &&
                      m_last->style()->styleType() == RenderStyle::NOPSEUDO ) {
                     m_last->addChild(newChild);
+//                    newChild->setNeedsLayoutAndMinMaxRecalc();
                     return;
                 }
             }
@@ -245,6 +250,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
             newBox->setPos(newBox->xPos(), -500000);
+//            newChild->setNeedsLayoutAndMinMaxRecalc();
             return;
         }
         else {
