@@ -1970,8 +1970,10 @@ KPopupMenu *KToolBar::contextMenu()
           text = i18n("Small (%1x%2)").arg(*it).arg(*it);
       else if (*it < 25)
           text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-      else
+      else if (*it < 35)
           text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+      else
+          text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
       //we use the size as an id, with an offset
       size->insertItem( text, CONTEXT_ICONSIZES + *it );
   }
