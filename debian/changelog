@@ -1,7 +1,17 @@
+kdelibs (4:2.0-final-11) unstable; urgency=low
+ 
+  * mimetypes additions for mng and jng
+  * More fixes towards getting rid of kdm's creation of /.kde
+  * More upstream fixes
+  * Adding in replaces/conflicts for old kde 1 packages
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 24 Nov 2000 05:07:00 -0700
+
 kdelibs (4:2.0-final-10) unstable; urgency=low
  
   * Adding in note about kdelibs3-crypto and kdebase-crypto (Closes: #77698, #77703)
   * more upstream fixes
+  * Fix for Big5 encoding
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 22 Nov 2000 05:30:00 -0700
 
