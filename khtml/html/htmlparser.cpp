@@ -300,8 +300,8 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if(t->id == ID_TEXT && (!_inline 
-    	|| ( current && current->renderer() && !current->renderer()->isInline())))
+    if(t->id == ID_TEXT && (!_inline ))
+//    	|| ( current && current->renderer() && !current->renderer()->isInline())))
     {
 	if(t->text.length() == 1 && t->text[0] == QChar(' '))
 	{
