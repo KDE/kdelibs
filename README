@@ -49,6 +49,9 @@ are:
     This library also contains "Ksycoca", the system configure cache
     containing services, applications, servicetypes and mimetypes.
 
+* kjs
+    KDE's implementation of ECMAScript aka JavaScript.
+
 * kparts
     KDE component model. Stay tuned.
 
