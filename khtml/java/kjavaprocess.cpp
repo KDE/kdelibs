@@ -1,5 +1,6 @@
-#include "kjavaprocess.moc"
+#include "kjavaprocess.h"
 #include "kjavaappletserver.h"
+
 #include <kdebug.h>
 #include <kprotocolmanager.h>
 
@@ -348,3 +349,5 @@ void KJavaProcess::receivedData( KProcess*, char*, int )
 {
     kdWarning() << "This method is deprecated- it doesn't do anything anymore" << endl;
 }
+
+#include "kjavaprocess.moc"
