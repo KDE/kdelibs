@@ -163,8 +163,7 @@ class BuildHelper
 {
 public:
     BuildHelper( BuildState &state, 
-                 ContainerNode *node, 
-                 KXMLGUIFactory *factory );
+                 ContainerNode *node );
 
     void build( const QDomElement &element );
 
@@ -182,6 +181,10 @@ private:
     void processContainerElement( const QDomElement &e, const QString &tag,
                                   const QString &name );
 
+
+    QWidget *createContainer( QWidget *parent, int index, const QDomElement &element,
+                              int &id, KXMLGUIBuilder **builder );
+
     QStringList customTags;
     QStringList containerTags;
 
@@ -193,14 +196,12 @@ private:
 
     BuildState &m_state;
 
-    KXMLGUIFactory *m_factory;
-
     ContainerNode *parentNode;
 };
 
 struct BuildState
 {
-    BuildState() : guiClient( 0 ) {}
+    BuildState() : guiClient( 0 ), builder( 0 ), clientBuilder( 0 ) {}
 
     void reset();
 
@@ -218,6 +219,7 @@ struct BuildState
     QStringList builderCustomTags;
     QStringList builderContainerTags;
 
+    KXMLGUIBuilder *clientBuilder;
     QStringList clientBuilderCustomTags;
     QStringList clientBuilderContainerTags;
 };

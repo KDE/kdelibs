@@ -167,9 +167,6 @@ class KXMLGUIFactory : public QObject
 
   QPtrList<QWidget> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
 
-  QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
-                            KXMLGUIBuilder **builder );
-
   void applyActionProperties( const QDomElement &element );
   void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
   void configureAction( KAction *action, const QDomAttr &attribute );

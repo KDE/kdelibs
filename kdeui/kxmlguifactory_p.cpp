@@ -1,6 +1,5 @@
 
 #include "kxmlguifactory_p.h"
-#include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
@@ -456,10 +455,9 @@ int ContainerNode::calcMergingIndex( const QString &mergingName,
     return (*it).value;
 }
 
-BuildHelper::BuildHelper( BuildState &state, ContainerNode *node, 
-                          KXMLGUIFactory *_factory )
+BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
     : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ), 
-      m_factory( _factory ), parentNode( node )
+      parentNode( node )
 {
     static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
 
@@ -678,7 +676,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
     if ( matchingContainer )
     {
-        BuildHelper( m_state, matchingContainer, m_factory ).build( e );
+        BuildHelper( m_state, matchingContainer ).build( e );
 
         // re-calculate current default merging indices and client merging indices,
         // as they have changed in the recursive invocation.
@@ -714,7 +712,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
         KXMLGUIBuilder *builder;
 
-        QWidget *container = m_factory->createContainer( parentNode->container, idx, e, id, &builder );
+        QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
 
         // no container? (probably some <text> tag or so ;-)
         if ( !container )
@@ -745,7 +743,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
                                                mergingName, group, cusTags, conTags );
         }
 
-        BuildHelper( m_state, containerNode, m_factory ).build( e );
+        BuildHelper( m_state, containerNode ).build( e );
 
         // and re-calculate running values, for better performance
         m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
@@ -754,12 +752,46 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
     }
 }
 
+QWidget *BuildHelper::createContainer( QWidget *parent, int index, 
+                                       const QDomElement &element, int &id, 
+                                       KXMLGUIBuilder **builder )
+{
+    QWidget *res = 0L;
+
+    if ( m_state.clientBuilder )
+    {
+        res = m_state.clientBuilder->createContainer( parent, index, element, id );
+
+        if ( res )
+        {
+            *builder = m_state.clientBuilder;
+            return res;
+        }
+    }
+
+    KInstance *oldInstance = m_state.builder->builderInstance();
+    KXMLGUIClient *oldClient = m_state.builder->builderClient();
+
+    m_state.builder->setBuilderClient( m_state.guiClient );
+
+    res = m_state.builder->createContainer( parent, index, element, id );
+
+    m_state.builder->setBuilderInstance( oldInstance );
+    m_state.builder->setBuilderClient( oldClient );
+
+    if ( res )
+        *builder = m_state.builder;
+
+    return res;
+}
+
 void BuildState::reset()
 {
     clientName = QString::null;
     actionListName = QString::null;
     actionList.clear();
     guiClient = 0;
+    clientBuilder = 0;
 
     currentDefaultMergingIt = currentClientMergingIt = MergingIndexList::Iterator();
 }

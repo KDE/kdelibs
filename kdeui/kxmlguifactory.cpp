@@ -55,7 +55,6 @@ public:
 
         m_rootNode = new ContainerNode( 0L, QString::null, 0L );
         m_defaultMergingName = defaultMergingName;
-        m_clientBuilder = 0L;
         tagActionList = actionList;
         attrName = name;
     }
@@ -72,11 +71,6 @@ public:
      * Contains the container which is searched for in ::container .
      */
     QString m_containerName;
-
-    /*
-     * Basically what client->clientBuilder() returns for ::addClient. Cached.
-     */
-    KXMLGUIBuilder *m_clientBuilder;
 
     /*
      * List of all clients
@@ -232,12 +226,12 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // cache some variables
 
     d->clientName = docElement.attribute( d->attrName );
-    d->m_clientBuilder = client->clientBuilder();
+    d->clientBuilder = client->clientBuilder();
 
-    if ( d->m_clientBuilder )
+    if ( d->clientBuilder )
     {
-        d->clientBuilderContainerTags = d->m_clientBuilder->containerTags();
-        d->clientBuilderCustomTags = d->m_clientBuilder->customTags();
+        d->clientBuilderContainerTags = d->clientBuilder->containerTags();
+        d->clientBuilderCustomTags = d->clientBuilder->customTags();
     }
     else
     {
@@ -254,7 +248,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( !actionPropElement.isNull() )
         applyActionProperties( actionPropElement );
 
-    BuildHelper( *d, d->m_rootNode, this ).build( docElement );
+    BuildHelper( *d, d->m_rootNode ).build( docElement );
 
     // let the client know that we built its GUI.
     client->setFactory( this );
@@ -267,7 +261,6 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     // reset some variables, for safety
     d->BuildState::reset();
-    d->m_clientBuilder = 0L;
 
     emit clientAdded( client );
 
@@ -307,7 +300,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
     d->guiClient = client;
     d->clientName = client->domDocument().documentElement().attribute( d->attrName );
-    d->m_clientBuilder = client->clientBuilder();
+    d->clientBuilder = client->clientBuilder();
 
     client->setFactory( 0L );
 
@@ -325,7 +318,6 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
     // reset some variables
     d->BuildState::reset();
-    d->m_clientBuilder = 0L;
 
     emit clientRemoved( client );
 }
@@ -414,38 +406,6 @@ QPtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
         for (; wit.current(); ++wit )
             res.append( wit.current() );
     }
-
-    return res;
-}
-
-QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDomElement &element,
-                                          int &id, KXMLGUIBuilder **builder )
-{
-    QWidget *res = 0L;
-
-    if ( d->m_clientBuilder )
-    {
-        res = d->m_clientBuilder->createContainer( parent, index, element, id );
-
-        if ( res )
-        {
-            *builder = d->m_clientBuilder;
-            return res;
-        }
-    }
-
-    KInstance *oldInstance = d->builder->builderInstance();
-    KXMLGUIClient *oldClient = d->builder->builderClient();
-
-    d->builder->setBuilderClient( d->guiClient );
-
-    res = d->builder->createContainer( parent, index, element, id );
-
-    d->builder->setBuilderInstance( oldInstance );
-    d->builder->setBuilderClient( oldClient );
-
-    if ( res )
-        *builder = d->builder;
 
     return res;
 }
