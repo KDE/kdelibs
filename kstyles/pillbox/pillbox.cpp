@@ -232,7 +232,7 @@ void PillBoxStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      bool raised, bool enabled, bool popup,
                                      KToolButtonType icontext,
                                      const QString& btext, const QPixmap *pixmap,
-                                     QFont *font)
+                                     QFont *font, QWidget *)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;

@@ -48,7 +48,7 @@ public:
                             bool raised, bool enabled, bool popup,
                             KToolButtonType icontext,
                             const QString& btext, const QPixmap *pixmap,
-                            QFont *font);
+                            QFont *font, QWidget *);
     void drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                                int sliderStart, unsigned int controls,
                                unsigned int activeControl);

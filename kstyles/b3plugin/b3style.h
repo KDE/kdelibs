@@ -62,7 +62,7 @@ public:
                             KToolButtonType icontext = Icon,
                             const QString& btext=QString::null,
                             const QPixmap *icon=NULL,
-                            QFont *font=NULL);
+                            QFont *font=NULL, QWidget *btn=NULL);
     void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                        const QColorGroup &g, bool active,
                        QMenuItem *item, QBrush *fill=NULL);
