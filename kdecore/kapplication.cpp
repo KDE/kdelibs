@@ -2115,7 +2115,11 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
                                 const QCString& startup_id )
 {
    KConfig config("emaildefaults");
-   config.setGroup( QString::fromLatin1("PROFILE_Default") );
+
+   config.setGroup("Defaults");
+   QString group = config.readEntry("Profile","Default");
+
+   config.setGroup( QString("PROFILE_%1").arg(group) );
    QString command = config.readPathEntry("EmailClient");
 
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
