@@ -22,12 +22,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 
 class TestApp : public KUniqueApplication
 {
 public:
-   TestApp(int argc, char *argv[])
-	: KUniqueApplication(argc, argv, "TestApp") { }
+   TestApp() : KUniqueApplication("TestApp") { }
    virtual int newInstance( QValueList<QCString> params );
 };
 
@@ -64,12 +65,16 @@ TestApp::newInstance( QValueList<QCString> params )
 int
 main(int argc, char *argv[])
 {
-   if (!TestApp::start(argc,argv, "TestApp"))
+   KAboutData about("kuniqueapptest", "kuniqueapptest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+   KUniqueApplication::addCmdLineOptions();
+
+   if (!TestApp::start())
    {
 //      printf("Already running!\n");
       exit(0);
    }
-   TestApp a(argc, argv);
+   TestApp a;
 
    printf("Running.\n");
    printf("singleClick? %s\n", KGlobalSettings::singleClick() ? "yes" : "no");

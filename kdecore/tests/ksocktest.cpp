@@ -20,6 +20,8 @@
 #include "kglobal.h"
 #include "ksock.h"
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,8 +35,8 @@
 class TestApp : public KUniqueApplication
 {
 public:
-   TestApp(int argc, char *argv[], const char *name)
-	: KUniqueApplication(argc, argv, name) { }
+   TestApp()
+	: KUniqueApplication() { }
    int newInstance( QValueList<QCString> params );
 };
 
@@ -60,8 +62,11 @@ TestApp::newInstance( QValueList<QCString> )
 int
 main(int argc, char *argv[])
 {
-   TestApp a(argc, argv, "socktest");
+   KAboutData about("socktest", "SockTest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+   KUniqueApplication::addCmdLineOptions();
 
-   kapp->exec();   
+   TestApp a;
+   a.exec();   
    printf("Terminating.\n");
 }
