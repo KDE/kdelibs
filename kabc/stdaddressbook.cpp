@@ -100,7 +100,6 @@ StdAddressBook::~StdAddressBook()
 void StdAddressBook::init( bool )
 {
   KRES::ResourceManager<Resource> *manager = resourceManager();
-  manager->load();
 
   KRES::ResourceManager<Resource>::ActiveIterator it;
   for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
@@ -119,7 +118,7 @@ void StdAddressBook::init( bool )
   }
 
   setStandardResource( res );
-  manager->sync(); // write config file
+  manager->writeConfig();
 
   load();
 }

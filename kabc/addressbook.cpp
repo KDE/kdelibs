@@ -43,7 +43,8 @@ struct AddressBook::AddressBookData
   Addressee::List mRemovedAddressees;
   Field::List mAllFields;
   ErrorHandler *mErrorHandler;
-  KRES::ResourceManager<Resource> *mManager;  
+  KConfig *mConfig;
+  KRES::ResourceManager<Resource> *mManager;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -205,24 +206,26 @@ AddressBook::AddressBook()
 {
   d = new AddressBookData;
   d->mErrorHandler = 0;
+  d->mConfig = 0;
   d->mManager = new KRES::ResourceManager<Resource>( "contact" );
+  d->mManager->readConfig();
 }
 
 AddressBook::AddressBook( const QString &config )
 {
   d = new AddressBookData;
   d->mErrorHandler = 0;
-  d->mManager = new KRES::ResourceManager<Resource>( "contact", config );
+  d->mConfig = new KConfig( config );
+  d->mManager = new KRES::ResourceManager<Resource>( "contact" );
+  d->mManager->readConfig( d->mConfig );
 }
 
 AddressBook::~AddressBook()
 {
-  delete d->mManager;
-  d->mManager = 0;
-  delete d->mErrorHandler;
-  d->mErrorHandler = 0;
-  delete d;
-  d = 0;
+  delete d->mManager; d->mManager = 0;
+  delete d->mConfig; d->mConfig = 0;
+  delete d->mErrorHandler; d->mErrorHandler = 0;
+  delete d; d = 0;
 }
 
 bool AddressBook::load()
