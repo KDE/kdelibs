@@ -7,7 +7,7 @@
 
 int cols = 3, rows = 3; // how many 
 
-void KGradientWidget::paintEvent(QPaintEvent *ev)
+void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
 {
     QTime time;
     int it, ft;

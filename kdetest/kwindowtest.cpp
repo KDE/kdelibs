@@ -1,3 +1,4 @@
+#include <qmessagebox.h>
 #include <qpopupmenu.h>
 #include <qpixmap.h>
 #include <qkeycode.h>
@@ -14,7 +15,6 @@
 #include <qmultilinedit.h>
 #include "kwindowtest.h"
 
-#include <kmsgbox.h>
 #include <kglobal.h>
 
 
@@ -514,11 +514,11 @@ int main( int argc, char *argv[] )
 
     myApp->setMainWidget(&test);
 
-    i = KMsgBox::yesNoCancel(0, "Select", "Select type of mainwidget",
-                             0, "Fixed", "Y-fixed", "Resizable");
-    if (i == 1)
+    i = QMessageBox::information(0, "Select", "Select type of mainwidget",
+                             "Fixed", "Y-fixed", "Resizable");
+    if (i == 0)
         test.beFixed();
-    else if (i == 2)
+    else if (i == 1)
         test.beYFixed();
 
     test.show();

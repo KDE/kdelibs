@@ -32,7 +32,7 @@ class myTopWidget: public QWidget
 {
   Q_OBJECT
 public:
-  myTopWidget::myTopWidget(QWidget *parent=0, const char *name=0);
+  myTopWidget(QWidget *parent=0, const char *name=0);
   
 private:
   QLabel *bLabel;

@@ -1,6 +1,7 @@
 #include <qpopupmenu.h>
 #include <qwidget.h>
 #include <qstring.h>
+#include <qmessagebox.h>
 #include <qmultilinedit.h>
 #include <qkeycode.h>
 #include <qpixmap.h>
@@ -9,7 +10,6 @@
 
 #include "kstatusbar.h"
 #include <kapp.h>
-#include <kmsgbox.h>
 #include <ktopwidget.h>
 #include <kmenubar.h>
 #include "kstatusbartest.h"
@@ -78,7 +78,7 @@ void testWindow::slotClick(int id)
       break;
 
     case 2:
-      KMsgBox::message(0, "Go to line", "Enter line number:",0, "where?");
+      QMessageBox::information(0, "Go to line", "Enter line number:", "where?");
       statusbar->changeItem("16543", 2);
       break;
    }
@@ -87,7 +87,7 @@ void testWindow::slotClick(int id)
 void testWindow::slotPress(int id)
 {
   if (id == 0)
-    smenu->popup(QCursor::pos()); // This popup should understunf keys up and down
+    smenu->popup(QCursor::pos()); // This popup should understand keys up and down
 }
 
 void testWindow::slotMenu(int id)
