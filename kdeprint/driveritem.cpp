@@ -132,7 +132,8 @@ bool DriverItem::updateConflict()
 		}
 		else
 		{
-			//updateText();
+			if ( isSelected() )
+				updateText();
 			m_conflict = (m_item->conflict());
 		}
 	}
