@@ -354,7 +354,7 @@ char *x = NULL;
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->q);
-				rc += i18n("160 bit Prime Factor: ");
+				rc += i18n("160 bit prime factor: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ":";
@@ -378,7 +378,7 @@ char *x = NULL;
 				d->kossl->OPENSSL_free(x);
 	
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
-				rc += i18n("Public Key: ");
+				rc += i18n("Public key: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ":";

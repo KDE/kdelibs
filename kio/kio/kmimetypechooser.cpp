@@ -101,7 +101,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
              this, SLOT(slotCurrentChanged(QListViewItem*)) );
 
     QWhatsThis::add( d->btnEditMimeType, i18n(
-        "Click this button to display the familiar KDE Mime Type Editor.") );
+        "Click this button to display the familiar KDE mime type editor.") );
   }
 }
 

@@ -403,7 +403,7 @@ void KFileDialog::slotOk()
 // ### after message freeze, add message for directories!
             KMessageBox::sorry( d->mainWidget,
                                 i18n("You can only select local files."),
-                                i18n("Remote Files not Accepted") );
+                                i18n("Remote Files Not Accepted") );
             return;
         }
 
@@ -444,7 +444,7 @@ void KFileDialog::slotOk()
          !selectedURL.isLocalFile() ) {
         KMessageBox::sorry( d->mainWidget,
                             i18n("You can only select local files."),
-                            i18n("Remote Files not Accepted") );
+                            i18n("Remote Files Not Accepted") );
         return;
     }
 
