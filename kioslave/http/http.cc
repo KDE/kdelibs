@@ -484,6 +484,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     m_bUseSSL=true;
 #else
     error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
+    return false;
 #endif
   }
   // okay, we know now that our URL is at least half-way decent.  
@@ -555,8 +556,8 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     m_bKeepAlive = false;
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
-      error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
       m_sock = 0;
+      error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
       return false;
     }
 
@@ -590,7 +591,10 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 
     // Placeholder
     if (!openStream())
+    {
       error( ERR_COULD_NOT_CONNECT, _url.host() );
+      return false;
+    }
   }
 
   // this will be the entire header
@@ -817,7 +821,6 @@ bool HTTPProtocol::readHeader()
       } else if (buffer[9] == '4' || buffer[9] == '5') {
 	// Let's first send an error message
 	// this will be moved to slotErrorPage(), when it will be written
-	http_close();
 	error(ERR_ACCESS_DENIED, m_state.url.url());
 
 	// Tell that we will only get an error page here.
@@ -1436,7 +1439,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	tmpit++;
 	if( tmpit == _source.end() ) {
 	  open_CriticalDlg( "Error", tmp.latin1(), "Cancel" );
-	  http_closeConnection(); // Cancel
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
 	  m_cmd = CMD_NONE;
@@ -1444,7 +1446,6 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 	}
 	
 	if ( !open_CriticalDlg( "Error", tmp.latin1(), "Continue", "Cancel" ) ) {
-	  http_closeConnection(); // Cancel
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
 	  m_cmd = CMD_NONE;
@@ -1956,6 +1957,10 @@ void HTTPProtocol::jobError( int _errid, const char *_txt )
 
 bool HTTPProtocol::error( int _err, const char *_txt )
 {
+  if ((_err != ERR_WARNING) && ( _err != ERR_CHECKSUM_MISMATCH))
+  {
+     http_closeConnection();
+  }
   if ( m_bIgnoreErrors ) {
     m_iSavedError = _err;
     m_strSavedError = _txt;
