@@ -378,11 +378,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     if(!n->attached() && HTMLWidget)
                         n->attach();
 #endif
-		}
-
+                }
+                
                 return true;
             }
-
+                        
             break;
         case ID_HTML:
             if (!current->isDocumentNode() ) {
@@ -470,6 +470,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             // Fall through!
         }
         case ID_TEXT:
+        {
+            // Don't try to fit random white-space anywhere
+            TextImpl *t = static_cast<TextImpl *>(n);
+            if (t->containsOnlyWhitespace())
+                return false;
             // ignore text inside the following elements.
             switch(current->id())
             {
@@ -480,6 +485,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 // fall through!!
             };
             break;
+        }
          case ID_DL:
              popBlock( ID_DT );
              if ( current->id() == ID_DL ) {
@@ -510,7 +516,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 handled = true;
                 return true;
             }
-            return false;
+            else
+                return false;
         }
         case ID_THEAD:
         case ID_TBODY:
@@ -593,18 +600,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 popBlock(ID_TABLE); // end the table
                 handled = checkChild( current->id(), id);
                 break;
-            case ID_TEXT:
-            {
-                TextImpl *t = static_cast<TextImpl *>(n);
-                if (t->containsOnlyWhitespace())
-                    return false;
-                DOMStringImpl *i = t->string();
-                unsigned int pos = 0;
-                while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
-                                      *(i->s+pos) == QChar(0xa0))) pos++;
-                if(pos == i->l)
-                    break;
-            }
             default:
             {
                 NodeImpl *node = current;

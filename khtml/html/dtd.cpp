@@ -532,7 +532,6 @@ static const ushort tag_list_10[] = {
 };
 
 static const ushort tag_list_11[] = {
-    ID_TEXT,
     ID_SCRIPT,
     ID_STYLE,
     ID_META,
@@ -649,9 +648,11 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // DIV: _1 *
         return check_array(childID, tag_list_1);
     case ID_MAP:
+	// We accept SCRIPT in client-side image maps as an extension to the DTD.
         // MAP: ( _3 + | AREA + | SCRIPT + )
-        if( check_array(childID, tag_list_3) ) return true;
-        return (childID == ID_AREA || childID == ID_SCRIPT);
+        return check_array(childID, tag_list_3) || 
+            childID == ID_AREA || 
+            childID == ID_SCRIPT;
     case ID_OBJECT:
     case ID_EMBED:
     case ID_APPLET:
