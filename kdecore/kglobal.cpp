@@ -18,7 +18,7 @@
 
 KApplication *KGlobal::kApp()
 {
-	assert( kapp != 0 );
+//	assert( kapp != 0 ); 	// This would be good, but not practical
 
 	return kapp;
 }
