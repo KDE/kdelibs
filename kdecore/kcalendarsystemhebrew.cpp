@@ -356,13 +356,11 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
   return first.daysTo(date) + 1;
 }
 
-// ### Fixme
+
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
-  if ( true != false ) 
-    return 29;
-  else
-    return 30;
+  class hdate *sd = toHebrew(date);
+  return hndays(sd->mon, sd->year);
 }
 
 // ### CFM check. Fix Adar1 and Adar
