@@ -173,7 +173,7 @@ public:
     CSSException(const CSSException &other) { code = other.code; }
 
     CSSException & operator = (const CSSException &other)
-	{ code = other.code; return *this; }
+        { code = other.code; return *this; }
 
     virtual ~CSSException() {}
     /**
@@ -184,10 +184,10 @@ public:
 
     enum ExceptionCode
     {
-	SYNTAX_ERR                     = 0,
-	INVALID_MODIFICATION_ERR       = 1,
-	_EXCEPTION_OFFSET 	       = 1000
-    };	
+        SYNTAX_ERR                     = 0,
+        INVALID_MODIFICATION_ERR       = 1,
+        _EXCEPTION_OFFSET              = 1000
+    };
 };
 
 class CSSStyleSheetImpl;
@@ -372,7 +372,9 @@ public:
      *
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this media list is readonly.
      */
+    // BIC: remove me!
     DOM::DOMString mediaText();
+    DOM::DOMString mediaText() const;
 
     /**
      * see @ref mediaText

@@ -24,6 +24,7 @@
 #define _CSS_css_stylesheetimpl_h_
 
 #include <qlist.h>
+#include <qvaluelist.h>
 
 #include <dom_string.h>
 
@@ -105,7 +106,7 @@ public:
 
     bool isLoading();
     void setNonCSSHints();
-    
+
     virtual void checkLoaded();
     khtml::DocLoader *docLoader();
     DocumentImpl *doc() { return m_doc; }
@@ -150,11 +151,11 @@ public:
     void del ( const DOM::DOMString &oldMedium );
     void append ( const DOM::DOMString &newMedium );
 
-    DOM::DOMString cssText() const;
-    void setCssText(DOM::DOMString str);
+    DOM::DOMString mediaText() const;
+    void setMediaText(const DOM::DOMString &value);
 
 protected:
-    QList<DOMString> m_lstMedia;
+    QValueList<DOM::DOMString> m_lstMedia;
 };
 
 

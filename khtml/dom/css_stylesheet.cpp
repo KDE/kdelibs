@@ -140,9 +140,9 @@ CSSStyleSheet &CSSStyleSheet::operator = (const StyleSheet &other)
 {
     if(!other.handle()->isCSSStyleSheet())
     {
-	if(impl) impl->deref();
-	impl = 0;
-	return *this;
+        if(impl) impl->deref();
+        impl = 0;
+        return *this;
     }
     StyleSheet::operator = (other);
     return *this;
@@ -170,9 +170,9 @@ unsigned long CSSStyleSheet::insertRule( const DOMString &rule, unsigned long in
     if(!impl) return 0;
     unsigned long retval = ((CSSStyleSheetImpl *)impl)->insertRule( rule, index, exceptioncode );
     if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
-	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+        throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
     if ( exceptioncode )
-	throw DOMException( exceptioncode );
+        throw DOMException( exceptioncode );
     return retval;
 }
 
@@ -182,9 +182,9 @@ void CSSStyleSheet::deleteRule( unsigned long index )
     if(impl)
         ((CSSStyleSheetImpl *)impl)->deleteRule( index, exceptioncode );
     if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
-	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+        throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
     if ( exceptioncode )
-	throw DOMException( exceptioncode );
+        throw DOMException( exceptioncode );
 }
 
 
@@ -265,16 +265,20 @@ MediaList::~MediaList()
 
 DOM::DOMString MediaList::mediaText()
 {
-    // ###
     if(!impl) return 0;
-    //return ((ElementImpl *)impl)->getAttribute("cssText");
-    return 0;
+    return static_cast<MediaListImpl *>(impl)->mediaText();
 }
 
-void MediaList::setMediaText(const DOM::DOMString &/*value*/)
+DOM::DOMString MediaList::mediaText() const
 {
-    // ###
-    //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
+    if(!impl) return 0;
+    return static_cast<MediaListImpl *>(impl)->mediaText();
+}
+
+void MediaList::setMediaText(const DOM::DOMString &value )
+{
+    if(impl)
+        static_cast<MediaListImpl *>(impl)->setMediaText( value );
 }
 
 unsigned long MediaList::length()
@@ -352,9 +356,9 @@ StyleSheet LinkStyle::sheet()
     if(!node) return StyleSheet();
 
     if(node->id() == ID_STYLE)
-	return static_cast<HTMLStyleElementImpl *>(node)->sheet();
+        return static_cast<HTMLStyleElementImpl *>(node)->sheet();
     else if(node->id() == ID_LINK)
-	return static_cast<HTMLLinkElementImpl *>(node)->sheet();
+        return static_cast<HTMLLinkElementImpl *>(node)->sheet();
     // ### add PI
     return StyleSheet();
 }

@@ -39,7 +39,6 @@
 
 #include <kdebug.h>
 
-
 using namespace DOM;
 using namespace khtml;
 // --------------------------------------------------------------------------------
@@ -151,8 +150,8 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
-	m_lstChildren->append(rule);
-	rule->setParent(this);
+        m_lstChildren->append(rule);
+        rule->setParent(this);
     }
     m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
 }
@@ -164,8 +163,8 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
-	m_lstChildren->append(rule);
-	rule->setParent(this);
+        m_lstChildren->append(rule);
+        rule->setParent(this);
     }
     m_doc  = 0;
 }
@@ -191,16 +190,16 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
 {
     exceptioncode = 0;
     if(index > m_lstChildren->count()) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return 0;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return 0;
     }
     const QChar *curP = rule.unicode();
     const QChar *endP = rule.unicode()+rule.length();
     CSSRuleImpl *r = parseRule(curP, endP);
 
     if(!r) {
-	exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
-	return 0;
+        exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
+        return 0;
     }
     // ###
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an
@@ -214,8 +213,8 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
     exceptioncode = 0;
     StyleBaseImpl *b = m_lstChildren->take(index);
     if(!b) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return;
     }
     b->deref();
 }
@@ -240,10 +239,10 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
     {
         CSSRuleImpl *rule = parseRule(curP, endP);
         if(rule)
-	{
-	   m_lstChildren->append(rule);
-	   rule->setParent(this);
-	}
+        {
+           m_lstChildren->append(rule);
+           rule->setParent(this);
+        }
     }
     return true;
 }
@@ -253,20 +252,20 @@ bool CSSStyleSheetImpl::isLoading()
     StyleBaseImpl *rule;
     for ( rule = m_lstChildren->first(); rule != 0; rule = m_lstChildren->next() )
     {
-	if(rule->isImportRule())
-	{
-	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
+        if(rule->isImportRule())
+        {
+            CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
 #ifdef CSS_STYLESHEET_DEBUG
-	    kdDebug( 6080 ) << "found import" << endl;
+            kdDebug( 6080 ) << "found import" << endl;
 #endif
-	    if(import->isLoading())
-	    {
+            if(import->isLoading())
+            {
 #ifdef CSS_STYLESHEET_DEBUG
-		kdDebug( 6080 ) << "--> not loaded" << endl;
+                kdDebug( 6080 ) << "--> not loaded" << endl;
 #endif
-		return true;
-	    }
-	}
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -282,10 +281,10 @@ void CSSStyleSheetImpl::setNonCSSHints()
 {
     StyleBaseImpl *rule = m_lstChildren->first();
     while(rule) {
-	if(rule->isStyleRule()) {
-	    static_cast<CSSStyleRuleImpl *>(rule)->setNonCSSHints();
-	}
-	rule = m_lstChildren->next();
+        if(rule->isStyleRule()) {
+            static_cast<CSSStyleRuleImpl *>(rule)->setNonCSSHints();
+        }
+        rule = m_lstChildren->next();
     }
 }
 
@@ -327,13 +326,11 @@ StyleSheetImpl *StyleSheetListImpl::item( unsigned long /*index*/ )
 MediaListImpl::MediaListImpl(CSSStyleSheetImpl *parentSheet)
     : StyleBaseImpl(parentSheet)
 {
-    m_lstMedia.setAutoDelete(true);
 }
 
 MediaListImpl::MediaListImpl(CSSRuleImpl *parentRule)
     : StyleBaseImpl(parentRule)
 {
-    m_lstMedia.setAutoDelete(true);
 }
 
 MediaListImpl::~MediaListImpl()
@@ -359,34 +356,39 @@ unsigned long MediaListImpl::length() const
 
 DOMString MediaListImpl::item( unsigned long index )
 {
-    return *m_lstMedia.at(index);
+    return m_lstMedia[index];
 }
 
 void MediaListImpl::del( const DOMString &oldMedium )
 {
-    int i;
-    for(i = 0; i < (int)m_lstMedia.count(); i++)
-	if( *(m_lstMedia.at(i)) == oldMedium )
-	{
-	    m_lstMedia.remove(i);
-	    return;
-	}
+    for ( QValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != m_lstMedia.end(); ++it ) {
+        if( (*it) == oldMedium ) {
+            m_lstMedia.remove( it );
+            return;
+        }
+    }
 }
 
 void MediaListImpl::append( const DOMString &newMedium )
 {
-    DOMString *str = new DOMString(newMedium);
-    m_lstMedia.append(str);
+    m_lstMedia.append( newMedium );
 }
 
-DOM::DOMString MediaListImpl::cssText() const
+DOM::DOMString MediaListImpl::mediaText() const
 {
-    // ###
-    return 0;
+    DOMString text;
+    for ( QValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != m_lstMedia.end(); ++it ) {
+        text += *it;
+        text += ", ";
+    }
+    return text;
 }
 
-void MediaListImpl::setCssText(DOM::DOMString /*str*/)
+void MediaListImpl::setMediaText(const DOM::DOMString &value)
 {
-    // ###
+    m_lstMedia.clear();
+    QString val = value.string();
+    QStringList list = QStringList::split( ',', value.string() );
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+        m_lstMedia.append( DOMString( (*it).stripWhiteSpace() ) );
 }
-
