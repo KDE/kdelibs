@@ -22,6 +22,9 @@
 #ifndef _KWALLET_H
 #define _KWALLET_H
 
+#include <qglobal.h>
+#ifdef Q_OS_UNIX
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qobject.h>
@@ -470,5 +473,7 @@ class Wallet : public QObject, public DCOPObject {
 
 }
 
-#endif
+#endif //Q_OS_UNIX
+
+#endif //_KWALLET_H
 
