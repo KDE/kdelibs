@@ -36,6 +36,27 @@ namespace KIO { class Job; class ListJob; }
 class KDirLister::KDirListerPrivate
 {
 public:
+  KDirListerPrivate()
+  {
+    numJobs = 0;
+    complete = false;
+
+    autoUpdate = false;
+    isShowingDotFiles = false;
+    dirOnlyMode = false;
+
+    autoErrorHandling = false;
+    errorParent = 0;
+    
+    delayedMimeTypes = false;
+    urlChanged = false;
+    
+    rootFileItem = 0;
+    lstNewItems = 0;
+    lstRefreshItems = 0;
+    lstMimeFilteredItems = 0;
+  }
+
   /**
    * List of dirs handled by this dirlister. The first entry is the base URL.
    * For a tree view, it contains all the dirs shown.
@@ -69,7 +90,7 @@ public:
   // file item for the root itself (".")
   KFileItem *rootFileItem;
 
-  KFileItemList lstNewItems, lstRefreshItems, lstMimeFilteredItems;
+  KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems;
 
   QString nameFilter;
   QPtrList<QRegExp> lstFilters;

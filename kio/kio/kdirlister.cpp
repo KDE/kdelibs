@@ -1120,22 +1120,13 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   d = new KDirListerPrivate;
 
   d->complete = true;
-  d->urlChanged = false;
   d->delayedMimeTypes = _delayedMimeTypes;
-
-  d->autoErrorHandling = true;
-  d->errorParent = 0;
-
-  d->numJobs = 0;
-  d->rootFileItem = 0;
-
-  d->autoUpdate = false;
-  d->isShowingDotFiles = false;
-  d->dirOnlyMode = false;
 
   setAutoUpdate( true );
   setDirOnlyMode( false );
   setShowingDotFiles( false );
+
+  setAutoErrorHandlingEnabled( true, 0 );
 
   connect( this, SIGNAL( completed() ), SLOT( slotClearState() ) );
   connect( this, SIGNAL( canceled() ), SLOT( slotClearState() ) );
@@ -1389,10 +1380,16 @@ void KDirLister::addNewItem( const KFileItem *item )
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
+  if ( !d->lstNewItems )
+    d->lstNewItems = new KFileItemList;
+
+  if ( !d->lstMimeFilteredItems )
+    d->lstMimeFilteredItems = new KFileItemList;
+
   if ( !isNameFilterMatch && !isMimeFilterMatch )
-    d->lstNewItems.append( item );            // items not filtered
+    d->lstNewItems->append( item );            // items not filtered
   else if ( !isNameFilterMatch )
-    d->lstMimeFilteredItems.append( item );   // only filtered by mime
+    d->lstMimeFilteredItems->append( item );   // only filtered by mime
 }
 
 void KDirLister::addNewItems( const KFileItemList& items )
@@ -1404,16 +1401,22 @@ void KDirLister::addNewItems( const KFileItemList& items )
 
 void KDirLister::emitItems()
 {
-  if ( !d->lstNewItems.isEmpty() )
+  KFileItemList *tmpNew = d->lstNewItems;
+  d->lstNewItems = 0;
+
+  KFileItemList *tmpMime = d->lstMimeFilteredItems;
+  d->lstMimeFilteredItems = 0;
+
+  if ( tmpNew && !tmpNew->isEmpty() )
   {
-    emit newItems( d->lstNewItems );
-    d->lstNewItems.clear();
+    emit newItems( *tmpNew );
+    delete tmpNew;
   }
 
-  if ( !d->lstMimeFilteredItems.isEmpty() )
+  if ( tmpMime && !tmpMime->isEmpty() )
   {
-    emit itemsFilteredByMime( d->lstMimeFilteredItems );
-    d->lstMimeFilteredItems.clear();
+    emit itemsFilteredByMime( *tmpMime );
+    delete tmpMime;
   }
 }
 
