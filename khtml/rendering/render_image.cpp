@@ -52,7 +52,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderImage::RenderImage(HTMLElementImpl *_element)
+RenderImage::RenderImage(NodeImpl *_element)
     : RenderReplaced(_element)
 {
     image = 0;

@@ -938,9 +938,6 @@ void RenderObject::setStyle(RenderStyle *style)
     }
 
     if( ob != nb ) {
-        qDebug("%s changed from %p to %p",
-               renderName(), ob, nb);
-
         if(ob) ob->deref(this);
         if(nb) nb->ref(this);
     }
@@ -1105,6 +1102,11 @@ void RenderObject::removeFromFloatingObjects()
                 static_cast<RenderFlow*>(p)->removeFloatingObject(this);
         }
     }
+}
+
+DOM::DocumentImpl* RenderObject::document() const
+{
+    return m_node->getDocument();
 }
 
 RenderArena* RenderObject::renderArena() const

@@ -73,6 +73,7 @@ namespace DOM {
     class HTMLAreaElementImpl;
     class DOMString;
     class NodeImpl;
+    class DocumentImpl;
     class ElementImpl;
     class EventImpl;
 }
@@ -221,6 +222,7 @@ public:
 
     RenderCanvas* canvas() const;
     // don't even think about making this method virtual!
+    DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
 
     void relativePositionOffset(int &tx, int &ty) const;

@@ -39,7 +39,7 @@ class DocLoader;
 class RenderImage : public RenderReplaced
 {
 public:
-    RenderImage(DOM::HTMLElementImpl *_element);
+    RenderImage(DOM::NodeImpl* _element);
     virtual ~RenderImage();
 
     virtual const char *renderName() const { return "RenderImage"; }
