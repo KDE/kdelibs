@@ -113,7 +113,7 @@ const unsigned short DOM::tagPriority[] = {
    10,// ID_NOFRAMES
     3, // ID_NOSCRIPT
     1, // ID_NOLAYER
-    7, // ID_OBJECT
+    5, // ID_OBJECT
     5, // ID_OL
     1, // ID_OPTGROUP
     2, // ID_OPTION
