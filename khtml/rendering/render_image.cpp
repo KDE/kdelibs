@@ -221,7 +221,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
                 int ay = _ty + topBorder + topPad + 2;
                 QFontMetrics fm = fontMetrics(style()->font());
                 if (cWidth>5 && cHeight>=fm.height())
-                    p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::DontClip, text );
+                    p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
             }
         }
     }
