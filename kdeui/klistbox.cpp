@@ -31,10 +31,6 @@
 
 #include "klistbox.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> 
-#endif
-
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     : QListBox( parent, name, f )
 {
@@ -127,12 +123,7 @@ void KListBox::slotAutoSelect()
     setFocus();
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-  Window root;
-  Window child;
-  int root_x, root_y, win_x, win_y;
-  uint keybstate;
-  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+  uint keybstate = KApplication::keyboardModifiers();
 #endif
 
   QListBoxItem* previousItem = item( currentItem() ); 
@@ -141,14 +132,14 @@ void KListBox::slotAutoSelect()
   if( m_pCurrentItem ) {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     //Shift pressed?
-    if( (keybstate & ShiftMask) ) {
+    if( (keybstate & KApplication::ShiftModifier) ) {
 #endif
       bool block = signalsBlocked();
       blockSignals( true );
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )  
+      if( !(keybstate & KApplication::ControlModifier) )  
 	clearSelection(); 
 #endif
 
@@ -180,7 +171,7 @@ void KListBox::slotAutoSelect()
 	emit selectionChanged( m_pCurrentItem );
     }
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-    else if( (keybstate & ControlMask) )
+    else if( (keybstate & KApplication::ControlModifier) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
 #endif
     else {
@@ -204,19 +195,14 @@ void KListBox::slotAutoSelect()
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-  Window root;
-  Window child;
-  int root_x, root_y, win_x, win_y;
-  uint keybstate;
-  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+  uint keybstate = KApplication::keyboardModifiers();
 #endif
     
   m_pAutoSelect->stop();
   
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-  if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+  if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
 #endif
     emit executed( item );
     emit executed( item, pos );

@@ -41,10 +41,6 @@
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> 
-#endif
-
 class KListView::Tooltip : public QToolTip
 {
 public:
@@ -571,12 +567,7 @@ void KListView::slotAutoSelect()
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
   // FIXME(E): Implement for Qt Embedded
-  Window root;
-  Window child;
-  int root_x, root_y, win_x, win_y;
-  uint keybstate;
-  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-                                 &root_x, &root_y, &win_x, &win_y, &keybstate );
+  uint keybstate = KApplication::keyboardModifiers();
 #endif
 
   QListViewItem* previousItem = currentItem();
@@ -587,12 +578,12 @@ void KListView::slotAutoSelect()
   // FIXME(E): Implement for Qt Embedded
   if( d->pCurrentItem ) {
     //Shift pressed?
-    if( (keybstate & ShiftMask) ) {
+    if( (keybstate & KApplication::ShiftModifier) ) {
       bool block = signalsBlocked();
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )
+      if( !(keybstate & KApplication::ControlModifier) )
                 clearSelection();
 
       bool select = !d->pCurrentItem->isSelected();
@@ -622,7 +613,7 @@ void KListView::slotAutoSelect()
       if( selectionMode() == QListView::Single )
                 emit selectionChanged( d->pCurrentItem );
     }
-    else if( (keybstate & ControlMask) )
+    else if( (keybstate & KApplication::ControlModifier) )
       setSelected( d->pCurrentItem, !d->pCurrentItem->isSelected() );
     else {
       bool block = signalsBlocked();
@@ -666,17 +657,12 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 //#ifndef Q_WS_QWS
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	    // FIXME(E): Implement for Qt Embedded
-            Window root;
-            Window child;
-            int root_x, root_y, win_x, win_y;
-            uint keybstate;
-            XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-                           &root_x, &root_y, &win_x, &win_y, &keybstate );
+            uint keybstate = KApplication::keyboardModifiers();
 
             d->autoSelect.stop();
 
             //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-            if( !( ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+            if( !( ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
                 emit executed( item );
                 emit executed( item, pos, c );
             }

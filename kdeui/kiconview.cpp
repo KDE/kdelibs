@@ -39,10 +39,6 @@
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> 
-#endif
-
 class KIconView::KIconViewPrivate
 {
 public:
@@ -177,13 +173,7 @@ void KIconView::slotAutoSelect()
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
   //FIXME(E): Implement for Qt Embedded
-  Window root;
-  Window child;
-  int root_x, root_y, win_x, win_y;
-  uint keybstate;
-  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		 &root_x, &root_y, &win_x, &win_y, &keybstate );
-
+  uint keybstate = KApplication::keyboardModifiers();
   QIconViewItem* previousItem = currentItem();
 #endif
   setCurrentItem( m_pCurrentItem );
@@ -191,13 +181,13 @@ void KIconView::slotAutoSelect()
   if( m_pCurrentItem ) {
     //Shift pressed?
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-    if( (keybstate & ShiftMask) ) {
+    if( (keybstate & KApplication::ShiftModifier) ) {
       //Temporary implementation of the selection until QIconView supports it
       bool block = signalsBlocked();
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )
+      if( !(keybstate & KApplication::ControlModifier) )
 	clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
@@ -242,9 +232,9 @@ void KIconView::slotAutoSelect()
       if( selectionMode() == QIconView::Single )
 	emit selectionChanged( m_pCurrentItem );
 
-      //setSelected( m_pCurrentItem, true, (keybstate & ControlMask), (keybstate & ShiftMask) );
+      //setSelected( m_pCurrentItem, true, (keybstate & KApplication::ControlModifier), (keybstate & KApplication::ShiftModifier) );
     }
-    else if( (keybstate & ControlMask) )
+    else if( (keybstate & KApplication::ControlModifier) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
     else
 #endif
@@ -266,19 +256,14 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
   }
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-  Window root;
-  Window child;
-  int root_x, root_y, win_x, win_y;
-  uint keybstate;
-  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+  uint keybstate = KApplication::keyboardModifiers();
 #endif
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
-  if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+  if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
     setSelected( item, false );
     emit executed( item );
     emit executed( item, pos );
