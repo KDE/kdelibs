@@ -43,6 +43,7 @@ int main(int argc, char **argv)
   const int BufferSize = 100000;
   char code[BufferSize];
 
+  bool ret = true;
   for (int i = 1; i < argc; i++) {
     const char *file = argv[i];
     FILE *f = fopen(file, "r");
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "Warning: File may have been too long.\n");
 
     // run
-    bool ret = kjs->evaluate(code);
+    ret = ret && kjs->evaluate(code);
     if (kjs->errorType() != 0)
       printf("%s returned: %s\n", file, kjs->errorMsg());
     else if (kjs->returnValue())
@@ -75,5 +76,5 @@ int main(int argc, char **argv)
 #endif
 
   fprintf(stderr, "OK.\n");
-  return 0;
+  return ret;
 }
