@@ -255,6 +255,11 @@ KJSO Window::get(const UString &p) const
   if (part.isNull())
     return Undefined();
 
+  if (Imp::hasProperty(p,true)) {
+    if (isSafeScript())
+      return Imp::get(p);
+  }
+
   if (p == "crypto")
     return Undefined(); // ###
   else if (p == "defaultStatus" || p == "defaultstatus")
@@ -383,13 +388,6 @@ KJSO Window::get(const UString &p) const
   else if (p == "clearInterval") {
     if (isSafeScript())
       return Function(new WindowFunc(this, WindowFunc::ClearInterval));
-    else
-      return Undefined();
-  }
-
-  if (Imp::hasProperty(p,true)) {
-    if (isSafeScript())
-      return Imp::get(p);
     else
       return Undefined();
   }
