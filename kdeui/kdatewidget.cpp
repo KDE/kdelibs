@@ -67,7 +67,9 @@ KDateWidget::KDateWidget( QDate date, QWidget *parent,
   setDate(date);
 }
 
-void KDateWidget::init(const QDate & date)
+// ### CFM Repaced by init(const QDate&). Can be safely removed
+//     when no risk of BIC
+void KDateWidget::init()
 {
   d = new KDateWidgetPrivate;
   KLocale *locale = KGlobal::locale();
@@ -77,7 +79,32 @@ void KDateWidget::init(const QDate & date)
   d->m_month = new QComboBox(false, this);
   for (int i = 1; ; ++i)
   {
-    QString str = locale->calendar()->monthName(i, locale->calendar()->year(date));
+    QString str = locale->calendar()->monthName(i,
+       locale->calendar()->year(QDate()));
+    if (str.isNull()) break;
+    d->m_month->insertItem(str);
+  }
+
+  d->m_year = new KDateWidgetSpinBox(locale->calendar()->minValidYear(),
+				     locale->calendar()->maxValidYear(), this);
+
+  connect(d->m_day, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()));
+  connect(d->m_month, SIGNAL(activated(int)), this, SLOT(slotDateChanged()));
+  connect(d->m_year, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()));
+}
+
+void KDateWidget::init(const QDate& date)
+{
+  d = new KDateWidgetPrivate;
+  KLocale *locale = KGlobal::locale();
+  QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
+  layout->setAutoAdd(true);
+  d->m_day = new KDateWidgetSpinBox(1, 1, this);
+  d->m_month = new QComboBox(false, this);
+  for (int i = 1; ; ++i)
+  {
+    QString str = locale->calendar()->monthName(i,
+       locale->calendar()->year(date));
     if (str.isNull()) break;
     d->m_month->insertItem(str);
   }
