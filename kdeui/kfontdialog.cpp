@@ -186,6 +186,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	   SLOT(size_chosen_slot(const QString&)) );
 
   row ++;
+#if QT_VERSION < 300
   d->charsetLabel = new QLabel( page, "charsetLabel");
   d->charsetLabel->setText(i18n("Character set:"));
   gridLayout->addWidget(d->charsetLabel, 3, 0, AlignRight);
@@ -194,6 +195,10 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
   connect(charsetsCombo, SIGNAL(activated(const QString&)),
 	  SLOT(charset_chosen_slot(const QString&)));
+#else
+  d->charsetLabel = 0;
+  charsetsCombo = 0;
+#endif
 
   row ++;
   sampleEdit = new QLineEdit( page, "sampleEdit");
@@ -277,7 +282,7 @@ void KFontChooser::enableColumn( int column, bool state )
     sizeLabel->setEnabled(state);
     sizeListBox->setEnabled(state);
   }
-  if( column & CharsetList )
+  if( column & CharsetList && d->charsetLabel && charsetsCombo )
   {
     d->charsetLabel->setEnabled(state);
     charsetsCombo->setEnabled(state);
@@ -297,6 +302,7 @@ void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
   displaySample(selFont);
 }
 
+#if QT_VERSION < 300
 void KFontChooser::setCharset( const QString & charset )
 {
     for ( int i = 0; i < charsetsCombo->count(); i++ ) {
@@ -306,9 +312,11 @@ void KFontChooser::setCharset( const QString & charset )
         }
     }
 }
+#endif
 
 void KFontChooser::charset_chosen_slot(const QString& chset)
 {
+#if QT_VERSION < 300
   KCharsets *charsets = KGlobal::charsets();
   if (chset == i18n("default")) {
     selFont.setCharSet(charsets->nameToID(KGlobal::locale()->charset()));
@@ -318,15 +326,22 @@ void KFontChooser::charset_chosen_slot(const QString& chset)
   }
 
   emit fontSelected(selFont);
+#else
+  Q_UNUSED( chset );
+#endif
 }
 
+#if QT_VERSION < 300
 QString KFontChooser::charset() const
 {
   return charsetsCombo->currentText();
 }
 
+#endif
+
 void KFontChooser::fillCharsetsCombo()
 {
+#if QT_VERSION < 300
   int i;
   KCharsets *charsets=KGlobal::charsets();
 
@@ -345,6 +360,7 @@ void KFontChooser::fillCharsetsCombo()
       break;
     }
   }
+#endif
 }
 
 void KFontChooser::family_chosen_slot(const QString& family)
@@ -577,6 +593,14 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.64  2001/07/19 10:20:35  faure
+* Don't try to be clever when choosing a charset, it only hurts.
+* -    charsets->setQFont(selFont, chset);
+* +    selFont.setCharSet(charsets->nameToID(chset));
+* For instance when choosing the Unicode charset, QFontInfo was saying "already
+* using this charset" (when AA is enabled), so setQFont() would do _nothing_.
+* Approved by Lukas.
+*
 * Revision 1.63  2001/07/01 20:10:30  faure
 * Fixed BC breakage (Michael H's commit added a member var to the KFontChooser
 * class). Just got a crash when using KWord compiled against 2.1 running

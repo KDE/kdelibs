@@ -123,6 +123,7 @@ public:
    */
   QColor color() const;
 
+#if QT_VERSION < 300
   /**
    * Set the currently selected charset in the chooser.
    */
@@ -132,6 +133,7 @@ public:
    * @return The currently selected charset in the dialog.
    */
   QString charset() const;
+#endif
 
   /**
    * @return The current text in the sample text input area.
@@ -293,6 +295,7 @@ public:
    */
   QFont font() const { return chooser->font(); }
 
+#if QT_VERSION < 300
   /**
    * Sets the currently selected charset in the dialog.
    */
@@ -303,6 +306,7 @@ public:
    * @return The currently selected charset in the dialog.
    */
   QString charset() const { return chooser->charset(); }
+#endif
 
   /**
    * Creates a modal font dialog, lets the user choose a font,
