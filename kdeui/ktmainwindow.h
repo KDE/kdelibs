@@ -50,8 +50,7 @@ public:
      */
     KTMainWindow( const char *name = 0L );
     /**
-     * Destructor. Do not forget to delete all toolbars in destructor of your
-     * reimplementation
+     * Destructor. Will also destroy the toolbars.
      */
     ~KTMainWindow();
 
