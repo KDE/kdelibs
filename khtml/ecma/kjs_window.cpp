@@ -437,7 +437,6 @@ Completion WindowFunc::tryExecute(const List &args)
         }
         KParts::URLArgs uargs;
         uargs.frameName = args[1].toString().value().qstring();
-        uargs.serviceType = "text/html";
 
         // request new window
         KParts::ReadOnlyPart *newPart = 0L;
