@@ -4,15 +4,15 @@ INCLUDES= -I$(includedir)/arts $(all_includes)
 ####### Files
 
 bin_PROGRAMS	= knotify
-lib_LTLIBRARIES = kdeinit_knotify.la
+lib_LTLIBRARIES = knotify.la
 
-kdeinit_knotify_la_SOURCES	= knotify.cpp knotify.skel
-kdeinit_knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI)
-kdeinit_knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kdeinit_knotify_la_METASOURCES = AUTO
+knotify_la_SOURCES	= knotify.cpp knotify.skel
+knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI)
+knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
+knotify_la_METASOURCES = AUTO
 
 knotify_SOURCES = dummy.cpp
-knotify_LDADD = kdeinit_knotify.la
+knotify_LDADD = knotify.la
 knotify_LDFLAGS  = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS		= knotifytest

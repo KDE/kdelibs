@@ -1,15 +1,15 @@
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdeprint -I$(top_builddir)/kdeprint -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
-lib_LTLIBRARIES = libkdeprint_management.la kdeinit_kaddprinterwizard.la
+lib_LTLIBRARIES = libkdeprint_management.la kaddprinterwizard.la
 bin_PROGRAMS = kaddprinterwizard
 
 kaddprinterwizard_SOURCES = dummy.cpp
-kaddprinterwizard_LDADD = kdeinit_kaddprinterwizard.la
+kaddprinterwizard_LDADD = kaddprinterwizard.la
 kaddprinterwizard_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-kdeinit_kaddprinterwizard_la_SOURCES = kaddprinterwizard.cpp
-kdeinit_kaddprinterwizard_la_LIBADD = libkdeprint_management.la
-kdeinit_kaddprinterwizard_la_LDFLAGS = -module -avoid-version $(all_libraries) $(KDE_RPATH)
+kaddprinterwizard_la_SOURCES = kaddprinterwizard.cpp
+kaddprinterwizard_la_LIBADD = libkdeprint_management.la
+kaddprinterwizard_la_LDFLAGS = -module -avoid-version $(all_libraries) $(KDE_RPATH)
 
 libkdeprint_management_la_SOURCES = \
 	kmdbcreator.cpp kmdriverdb.cpp kmdriverdbwidget.cpp \
