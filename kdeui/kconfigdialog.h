@@ -60,7 +60,7 @@ class KConfigSkeleton;
  * @see KConfigSkeleton
  * @since 3.2
  */
-class KConfigDialog : public QObject {
+class KConfigDialog : public KDialogBase {
 Q_OBJECT
 
 signals:
@@ -79,19 +79,6 @@ signals:
    * @param dialogName the name of the dialog.
    */
   void settingsChanged(const char *dialogName);
-
-  /**
-   * Helper signal.
-   */
-  void okClicked();
-  /**
-   * Helper signal.
-   */
-  void applyClicked();
-  /**
-   * Helper signal.
-   */
-  void defaultClicked();
 
 public:
   /**
@@ -165,33 +152,9 @@ public:
   static bool showDialog( const char* name );
 
   /**
-   * Shows the dialog.  This has to be called after all of the pages
-   * have been added.
-   * @param track - Track all of the widgets for any changes. If false all
-   * of the buttons are enabled.  This can be set to false as a temporary
-   * measure, but applications in general should leave it on.  This
-   * parameter only matters the first time this function is called.
-   * @see hide()
+   * Show the dialog.
    */
-  virtual void show( bool track=true );
-
-  /**
-   * Hides the dialog.  An application shouldn't normally need to use
-   * this function.
-   * @see show()
-   */
-  void hide() const { kdialogbase->hide(); };
-
-  /**
-   * KConfigDialog automatically gives the dialog a common KDE
-   * configuration caption. This function is provided for dialogs other
-   * then the normal application configuration such as plugin configurations.
-   * Do not include the applications name as it will automatically be added
-   * via the KDE rules. KDialog::setCaption()
-   * @param caption - The new name for the dialog's caption such as:
-   * "Configure Audio Plugin"
-   **/
-  virtual void setCaption( const QString &caption );
+  virtual void show();
 
 protected slots:
   /**
@@ -246,17 +209,11 @@ protected slots:
    */
   void settingsChangedSlot();
 
-protected:
-  /**
-   * Pointer to the KDialogBase object.
-   */
-  KDialogBase *kdialogbase;
-
 private:
   /**
    * The list of existing dialogs.
    */
-  static QAsciiDict<QObject> openDialogs;
+  static QAsciiDict<KConfigDialog> openDialogs;
 
   class KConfigDialogPrivate;
   /**

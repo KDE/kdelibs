@@ -30,7 +30,7 @@
 #include <qlayout.h>
 #include <qvbox.h>
 
-QAsciiDict<QObject> KConfigDialog::openDialogs;
+QAsciiDict<KConfigDialog> KConfigDialog::openDialogs;
 
 // This class is here purly so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
@@ -38,9 +38,8 @@ class KConfigDialog::KConfigDialogPrivate
 
 public:
   KConfigDialogPrivate(KDialogBase::DialogType t) 
-  : track(true), shown(false), type(t), mgr(0) { }
+  : shown(false), type(t), mgr(0) { }
 
-  bool track;
   bool shown;
   KDialogBase::DialogType type;
   KConfigDialogManager *mgr;
@@ -51,36 +50,31 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  KDialogBase::DialogType dialogType,
 		  KDialogBase::ButtonCode dialogButtons,
 		  bool modal ) :
-    QObject(parent, name), d(new KConfigDialogPrivate(dialogType)) 
+    KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
+		  parent, name, modal, i18n("Configure"), dialogButtons ),
+    d(new KConfigDialogPrivate(dialogType)) 
 {		  
   openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
-		  parent, name, true, i18n("Configure"), dialogButtons );
 
-  connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-  connect(kdialogbase, SIGNAL(okClicked()), this, SIGNAL(okClicked()));
-  connect(kdialogbase, SIGNAL(applyClicked()), this, SIGNAL(applyClicked()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SIGNAL(defaultClicked()));
-
-  d->mgr = new KConfigDialogManager(kdialogbase, config);
+  d->mgr = new KConfigDialogManager(this, config);
 
   // TODO: Emit settingsChanged signal from slot to guarantee sequence
   connect(d->mgr, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
   connect(d->mgr, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
   connect(d->mgr, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
 
-  connect(kdialogbase, SIGNAL(okClicked()), this, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(okClicked()), d->mgr, SLOT(updateSettings()));
+  connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
+  connect(this, SIGNAL(okClicked()), d->mgr, SLOT(updateSettings()));
 
-  connect(kdialogbase, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), d->mgr, SLOT(updateSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
+  connect(this, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
+  connect(this, SIGNAL(applyClicked()), d->mgr, SLOT(updateSettings()));
+  connect(this, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
 
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
+  connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
+  connect(this, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
+  connect(this, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
 
-  kdialogbase->enableButton(KDialogBase::Apply, false);
+  enableButton(KDialogBase::Apply, false);
 }
 
 KConfigDialog::~KConfigDialog()
@@ -105,7 +99,7 @@ void KConfigDialog::addPage(QWidget *page,
     case KDialogBase::TreeList:
     case KDialogBase::IconList:
     case KDialogBase::Tabbed: {
-      QVBox *frame = kdialogbase->addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
+      QVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());
@@ -114,19 +108,19 @@ void KConfigDialog::addPage(QWidget *page,
 
     case KDialogBase::Swallow: 
     {
-      page->reparent(((QWidget*)kdialogbase), 0, QPoint());
-      kdialogbase->setMainWidget(page);
+      page->reparent(this, 0, QPoint());
+      setMainWidget(page);
     }
     break;
 
     case KDialogBase::Plain:
     {
-      page->reparent(((QWidget*)kdialogbase), 0, QPoint());
-      QFrame *page = kdialogbase->plainPage();
+      page->reparent(this, 0, QPoint());
+      QFrame *page = plainPage();
       QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 0 );
       page->reparent(((QWidget*)page), 0, QPoint());
       topLayout->addWidget( page );
-      kdialogbase->setMainWidget(page);
+      setMainWidget(page);
     }
     break;
 
@@ -139,7 +133,7 @@ void KConfigDialog::addPage(QWidget *page,
 
 KConfigDialog* KConfigDialog::exists(const char* name)
 {
-  return ((KConfigDialog*)openDialogs.find(name));
+  return openDialogs.find(name);
 }
 
 bool KConfigDialog::showDialog(const char* name)
@@ -152,11 +146,8 @@ bool KConfigDialog::showDialog(const char* name)
 
 void KConfigDialog::updateButtons()
 {
-  if(d->track)
-  {
-    kdialogbase->enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-    kdialogbase->enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
-  }
+  enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
+  enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
 }
 
 void KConfigDialog::settingsChangedSlot()
@@ -166,28 +157,17 @@ void KConfigDialog::settingsChangedSlot()
   emit (settingsChanged(name()));
 }
 
-void KConfigDialog::setCaption(const QString &caption)
-{
-  kdialogbase->setCaption(caption);
-}
-
-void KConfigDialog::show(bool track)
+void KConfigDialog::show()
 {
   if(!d->shown)
   {
     updateWidgets();
     d->mgr->updateWidgets();
-    kdialogbase->enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-    kdialogbase->enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
+    enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
+    enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
     d->shown = true;
-    if(!track)
-    {
-      kdialogbase->enableButton(KDialogBase::Apply, true);
-      kdialogbase->enableButton(KDialogBase::Default, true);
-    }
   }
-  d->track = track;
-  kdialogbase->show();
+  KDialogBase::show();
 }
 
 void KConfigDialog::updateSettings()
