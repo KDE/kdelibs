@@ -177,7 +177,7 @@ KLocale::KLocale( const QString& _catalogue )
       chset = config->readEntry(QString::fromLatin1("Charset"));
     }
 
-    if (chset.isNull())
+    if (chset.isEmpty())
     {
         chset = QString::fromLatin1("iso-8859-1");
         qt_set_locale_codec(QTextCodec::codecForMib(4)); // latin-1
