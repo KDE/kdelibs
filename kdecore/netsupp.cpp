@@ -196,7 +196,7 @@ int kde_getaddrinfo(const char *name, const char *service,
       if (hint && hint->ai_family == AF_UNSPEC)
 	{
 	  changing_family = true;
-	  hint->ai_family = AF_INET;
+	  const_cast<struct addrinfo *>(hint)->ai_family = AF_INET;
 	}
 # if KDE_IPV6_LOOKUP_MODE == 1
     }
@@ -210,7 +210,7 @@ int kde_getaddrinfo(const char *name, const char *service,
   // We have to set it back the way it was because the calling function
   // may want this to keep being the same
   if (changing_family)		// changing_family is only true if hint is non-null
-    hint->ai_family = AF_UNSPEC;
+    const_cast<struct addrinfo *>(hint)->ai_family = AF_UNSPEC;
 #endif
 
   if (err == 0)
