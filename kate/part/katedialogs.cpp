@@ -121,7 +121,9 @@
 #include <qdom.h>
 #include <qslider.h>
 
-#define HLDOWNLOADPATH "http://www.kde.org/apps/kate/hl/update.xml"
+// trailing slash is important
+#define HLDOWNLOADPATH "http://www.kde.org/apps/kate/syntax/"
+
 //END
 
 //BEGIN KateConfigPage
@@ -1367,24 +1369,29 @@ void KateHlConfigPage::showMTDlg()
 
 //BEGIN KateHlDownloadDialog
 KateHlDownloadDialog::KateHlDownloadDialog(QWidget *parent, const char *name, bool modal)
-  :KDialogBase(KDialogBase::Swallow, i18n("Highlight Download"), User1|Cancel, User1, parent, name, modal, true, i18n("&Install"))
+  :KDialogBase(KDialogBase::Swallow, i18n("Highlight Download"), User1|Close, User1, parent, name, modal, true, i18n("&Install"))
 {
   QVBox* vbox = new QVBox(this);
   setMainWidget(vbox);
   vbox->setSpacing(spacingHint());
   new QLabel(i18n("Select the syntax highlighting files you want to update:"), vbox);
   list = new QListView(vbox);
+  list->addColumn("");
   list->addColumn(i18n("Name"));
   list->addColumn(i18n("Installed"));
   list->addColumn(i18n("Latest"));
-  list->addColumn(i18n("Release Date"));
   list->setSelectionMode(QListView::Multi);
+  list->setAllColumnsShowFocus(true);
 
   new QLabel(i18n("Note: New versions are selected automatically."), vbox);
   actionButton (User1)->setIconSet(SmallIconSet("ok"));
 
-  KIO::TransferJob *getIt=KIO::get(KURL(HLDOWNLOADPATH), true, true );
-  connect(getIt,SIGNAL(data(KIO::Job *, const QByteArray &)),
+  transferJob = KIO::get(
+    KURL(QString(HLDOWNLOADPATH)
+       + QString("update-")
+       + QString(KATEPART_VERSION)
+       + QString(".xml")), true, true );
+  connect(transferJob, SIGNAL(data(KIO::Job *, const QByteArray &)),
     this, SLOT(listDataReceived(KIO::Job *, const QByteArray &)));
 //        void data( KIO::Job *, const QByteArray &data);
   resize(450, 400);
@@ -1394,6 +1401,12 @@ KateHlDownloadDialog::~KateHlDownloadDialog(){}
 
 void KateHlDownloadDialog::listDataReceived(KIO::Job *, const QByteArray &data)
 {
+  if (!transferJob || transferJob->isErrorPage())
+  {
+    actionButton(User1)->setEnabled(false);
+    return;
+  }
+
   listData+=QString(data);
   kdDebug(13000)<<QString("CurrentListData: ")<<listData<<endl<<endl;
   kdDebug(13000)<<QString("Data length: %1").arg(data.size())<<endl;
@@ -1434,10 +1447,13 @@ void KateHlDownloadDialog::listDataReceived(KIO::Job *, const QByteArray &data)
         }
 
         // autoselect entry if new or updated.
-        QListViewItem* entry = new QListViewItem(list,e.attribute("name"),installedVersion,e.attribute("version"),e.attribute("date"),e.attribute("url"));
+        QListViewItem* entry = new QListViewItem(
+          list, "", e.attribute("name"), installedVersion,
+          e.attribute("version"),e.attribute("url"));
         if (!hl || hl->version() < e.attribute("version"))
         {
           entry->setSelected(true);
+          entry->setPixmap(0, SmallIcon(("knewstuff")));
         }
       }
     }
