@@ -43,6 +43,7 @@ debian/tmp/usr/bin/lnusertemp
 debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
+debian/tmp/usr/bin/splitformat
 debian/tmp/usr/bin/xml2man
 debian/tmp/usr/bin/xmlizer
 debian/tmp/usr/lib/dcopserver.la

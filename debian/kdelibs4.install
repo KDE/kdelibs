@@ -42,6 +42,8 @@ debian/tmp/usr/lib/kde3/kabc_ldap.la
 debian/tmp/usr/lib/kde3/kabc_ldap.so
 debian/tmp/usr/lib/kde3/kabc_sql.la
 debian/tmp/usr/lib/kde3/kabc_sql.so
+debian/tmp/usr/lib/kde3/kabc_directory.la
+debian/tmp/usr/lib/kde3/kabc_directory.so
 debian/tmp/usr/lib/kde3/libkatepart.la
 debian/tmp/usr/lib/kde3/libkatepart.so
 debian/tmp/usr/lib/kde3/kbzip2filter.la
@@ -70,8 +72,6 @@ debian/tmp/usr/lib/kde3/khtmlimagepart.la
 debian/tmp/usr/lib/kde3/khtmlimagepart.so
 debian/tmp/usr/lib/kde3/kimg_eps.la
 debian/tmp/usr/lib/kde3/kimg_eps.so
-debian/tmp/usr/lib/kde3/kimg_g3.la
-debian/tmp/usr/lib/kde3/kimg_g3.so
 debian/tmp/usr/lib/kde3/kimg_ico.la
 debian/tmp/usr/lib/kde3/kimg_ico.so
 debian/tmp/usr/lib/kde3/kimg_krl.la
