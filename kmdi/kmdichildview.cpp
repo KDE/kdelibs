@@ -29,17 +29,15 @@
 //
 //----------------------------------------------------------------------------
 
+#include "kmdichildview.h"
+#include "kmdichildview.moc"
+
 #include <qdatetime.h>
 #include <qobjectlist.h>
-
-#ifndef NO_KDE
-#include <kdeversion.h>
-#endif
 
 #include "kmdimainfrm.h"
 #include "kmdichildfrm.h"
 #include "kmdidefines.h"
-#include "kmdichildview.h"
 
 //============ KMdiChildView ============//
 
@@ -91,7 +89,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f)
    setFocusPolicy(ClickFocus);
 
    installEventFilter(this);
-   
+
    // store the current time
    updateTimeStamp();
 }
@@ -156,13 +154,10 @@ void KMdiChildView::setInternalGeometry(const QRect& newGeometry)
 
       // create the new geometry that is accepted by the QWidget::setGeometry() method
       QRect    newGeoQt;
-#if defined(_OS_WIN32_) || defined(Q_OS_WIN32)
-      newGeoQt.setX(newGeometry.x()-nFrameSizeLeft+frameGeo.width()-geo.width()-KMDI_CHILDFRM_DOUBLE_BORDER+1);
-      newGeoQt.setY(newGeometry.y()-nFrameSizeTop+frameGeo.height()-geo.height()-KMDI_CHILDFRM_DOUBLE_BORDER+1);
-#else
+
       newGeoQt.setX(newGeometry.x()-nFrameSizeLeft);
       newGeoQt.setY(newGeometry.y()-nFrameSizeTop);
-#endif
+
       newGeoQt.setWidth(newGeometry.width());
       newGeoQt.setHeight(newGeometry.height());
 
@@ -215,7 +210,7 @@ void KMdiChildView::minimize(bool bAnimate)
       if(!isMinimized()) {
          mdiParent()->setState(KMdiChildFrm::Minimized,bAnimate);
       }
-   } 
+   }
    else {
       showMinimized();
    }
@@ -490,7 +485,7 @@ void KMdiChildView::slot_childDestroyed()
 {
    // do what we do if a child is removed
 
-   // if we lost a child we uninstall ourself as event filter for the lost 
+   // if we lost a child we uninstall ourself as event filter for the lost
    // child and its children
    const QObject* pLostChild = QObject::sender();
    if (pLostChild != 0L) {
@@ -519,25 +514,13 @@ void KMdiChildView::slot_childDestroyed()
 //============= eventFilter ===============//
 bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
 {
-#ifndef NO_KDE
-#if !(KDE_VERSION > 305)
-   if ( obj != this && e->type() == QEvent::KeyRelease )
-     //  somethings eats the KeyRelease events and the main frame does not receive
-     //  the event. So manually forward the event the the eventFilter() functions
-     //  (but only if the sending object is not this object; avoid deadlock).
-     //  The main frame is one of the filtering objects for this one.
-     //  However this does not work for toplevel windows, but they don't distribute 
-     //  any events anyway (like Alt+F,... )
-     qApp->sendEvent( this, e ); 
-#endif
-#endif
    if(e->type() == QEvent::KeyPress && isAttached()) {
       QKeyEvent* ke = (QKeyEvent*) e;
       if(ke->key() == Qt::Key_Tab) {
          //qDebug("ChildView %i::eventFilter - TAB from %s (%s)", this, obj->name(), obj->className());
          QWidget* w = (QWidget*) obj;
-         if((w->focusPolicy() == QWidget::StrongFocus) || 
-            (w->focusPolicy() == QWidget::TabFocus   ) || 
+         if((w->focusPolicy() == QWidget::StrongFocus) ||
+            (w->focusPolicy() == QWidget::TabFocus   ) ||
             (w->focusPolicy() == QWidget::WheelFocus ))
          {
             //qDebug("  accept TAB as setFocus change");
@@ -756,7 +739,4 @@ void KMdiChildView::raise()
    QWidget::raise();
 }
 
-
-#ifndef NO_INCLUDE_MOCFILES
-#include "kmdichildview.moc"
-#endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

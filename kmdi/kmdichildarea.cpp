@@ -25,11 +25,14 @@
 //
 //----------------------------------------------------------------------------
 
+#include "kmdichildarea.h"
+#include "kmdichildarea.moc"
+
+#include "kmdidefines.h"
+
 #include <math.h>
 #include <qpopupmenu.h>
 
-#include "kmdidefines.h"
-#include "kmdichildarea.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // KMdiChildArea
@@ -604,6 +607,4 @@ void KMdiChildArea::setMdiCaptionInactiveBackColor(const QColor &clr)
    m_captionInactiveBackColor = clr;
 }
 
-#ifndef NO_INCLUDE_MOCFILES
-#include "kmdichildarea.moc"
-#endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

@@ -25,6 +25,9 @@
 //
 //----------------------------------------------------------------------------
 
+#include "kmdichildfrmcaption.h"
+#include "kmdichildfrmcaption.moc"
+
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qcursor.h>
@@ -32,10 +35,10 @@
 #include <qpopupmenu.h>
 
 #include "kmdidefines.h"
-#include "kmdichildfrmcaption.h"
 #include "kmdichildfrm.h"
 #include "kmdichildarea.h"
 #include "kmdimainfrm.h"
+
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////
 // Class   : KMdiChildFrmCaption
@@ -272,6 +275,4 @@ void KMdiChildFrmCaption::slot_moveViaSystemMenu()
    m_offset = mapFromGlobal( QCursor::pos());
 }
 
-#ifndef NO_INCLUDE_MOCFILES
-#include "kmdichildfrmcaption.moc"
-#endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

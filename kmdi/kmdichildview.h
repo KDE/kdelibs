@@ -28,8 +28,8 @@
 //    License, or (at your option) any later version.
 //
 //----------------------------------------------------------------------------
-#ifndef _KMDICHILDVIEW_H_
-#define _KMDICHILDVIEW_H_
+#ifndef _KMDI_CHILD_VIEW_H_
+#define _KMDI_CHILD_VIEW_H_
 
 #include <qwidget.h>
 #include <qpixmap.h>
@@ -103,7 +103,7 @@
   *
   */
 
-class DLL_IMP_EXP_KMDICLASS KMdiChildView : public QWidget
+class KMdiChildView : public QWidget
 {
    friend class KMdiMainFrm;
    friend class KMdiChildFrm;
@@ -523,3 +523,5 @@ inline KMdiChildFrm *KMdiChildView::mdiParent() const
 }
 
 #endif //_KMDICHILDVIEW_H_
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

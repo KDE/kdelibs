@@ -27,6 +27,13 @@
 //
 //----------------------------------------------------------------------------
 
+#include "kmdichildfrm.h"
+#include "kmdichildfrm.moc"
+
+#include "kmdidefines.h"
+#include "kmdichildfrmcaption.h"
+#include "kmdichildarea.h"
+#include "kmdimainfrm.h"
 
 #include <qpainter.h>
 #include <qapplication.h>
@@ -36,13 +43,6 @@
 #include <qpopupmenu.h>
 #include <qtoolbutton.h>
 #include <qnamespace.h>
-
-#include "kmdidefines.h"
-#include "kmdichildfrmcaption.h"
-#include "kmdichildarea.h"
-#include "kmdichildfrm.h"
-#include "kmdimainfrm.h"
-
 
 //////////////////////////////////////////////////////////////////////////////
 // KMdiChildFrm
@@ -1051,8 +1051,8 @@ bool KMdiChildFrm::eventFilter( QObject *obj, QEvent *e )
          }
       }
       break;
-	 default:
-			break;
+   default:
+      break;
    }
    // return QWidget::eventFilter( obj, e);  // standard event processing
    return FALSE;                  // standard event processing (see Qt documentation)
@@ -1251,6 +1251,4 @@ QRect KMdiChildFrm::mdiAreaContentsRect() const
    }
 }
 
-#ifndef NO_INCLUDE_MOCFILES
-#include "kmdichildfrm.moc"
-#endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

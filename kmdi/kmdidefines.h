@@ -103,31 +103,6 @@ namespace KMdi
 #   define _DLL_IMP_EXP_MSG_
 #endif
 
-#if defined(_OS_WIN32_) || defined(Q_OS_WIN32)
-  /* QT linked libraries compiled with MSVC */
-#  ifdef MAKEDLL_KMDI
-    /* for building kmdi */
-#   ifdef _DLL_IMP_EXP_MSG_
-#     ifdef _DEBUG
-#      pragma message ("  exporting C++ class to debug lib...")
-#      else
-#      pragma message ("  exporting C++ class to release lib...")
-#      endif
-#    endif
-#    define DLL_IMP_EXP_KMDICLASS  __declspec(dllexport)
-#  else
-    /* for including headers of kmdi */
-#    ifdef _DLL_IMP_EXP_MSG_
-#      ifdef _DEBUG
-#      pragma message ("  importing C++ class from kmdi debug lib...")
-#      else
-#      pragma message ("  importing C++ class from kmdi release lib...")
-#      endif
-#    endif
-#    define DLL_IMP_EXP_KMDICLASS  __declspec(dllimport)
-#  endif
-#else
-#  define DLL_IMP_EXP_KMDICLASS
-#endif
+#define DLL_IMP_EXP_KMDICLASS
 
 #endif //_KMDIDEFINES_H_
