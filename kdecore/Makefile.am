@@ -22,7 +22,7 @@ INCLUDES = $(all_includes)
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
-	kcolorgroup.h kapp.h kcharsets.h \
+	kconfigbackend.h kcolorgroup.h kapp.h kcharsets.h \
 	kurl.h ksock.h drag.h kmisc.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
@@ -33,7 +33,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
-	kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
+	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \

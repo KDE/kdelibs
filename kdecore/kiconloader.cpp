@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.38  1999/05/13 19:03:24  bieker
+   More QStrings.
+
    Revision 1.37  1999/05/11 20:43:32  bieker
    * loadInternal wants a QString
    * don't use strcmp to compare QString.
@@ -57,57 +60,57 @@ Load large icons in icons/large or pics/large if setting is 'large'.
 
 void KIconLoader::initPath()
 {
-	// DF ---- Large icons --------------
-	// set the key depending on the current application
-	// FIXME: This is not a very nice hack at all. The app should be
-	// able to specify its own key. (Taj)
-
-	QString key = "KDE";
-	if (kapp->name() == "kpanel")
-		key = "kpanel";
-	if (kapp->name() == "kfm")
-		key = "kfm";
-	KConfig config; // read .kderc
-	config.setGroup("KDE");
-	QString setting = config.readEntry( key + "IconStyle", "Normal" );
-	//debug("App is %s - setting is %s", kapp->name(), setting.data());
-	// DF
-
-	// order is important! -- Bernd
-	// higher priority at the end
-
-	bool large = (setting == "Large" );
-
-	addPath( KApplication::kde_toolbardir() );
-	addPath( KApplication::kde_icondir() );
-
-	if ( large )
-		addPath( KApplication::kde_icondir() + "/large" );
-
-	addPath( KApplication::localkdedir() + "/share/toolbar" ); 
-	addPath( KApplication::localkdedir() + "/share/icons" ); 
-
-	if ( large )
-		addPath( KApplication::localkdedir() + "/share/icons/large" );
-
-	addPath( KApplication::kde_datadir() + "/" 
-			+ kapp->appName() + "/toolbar" );
-	addPath( KApplication::localkdedir() + "/share/apps/" 
-			+ kapp->appName() + "/toolbar" ); 
-	addPath( KApplication::kde_datadir() + "/" 
-			+ kapp->appName() + "/pics" );
-
-	if ( large )
-		addPath( KApplication::kde_datadir() + "/" 
-			+ kapp->appName() + "/pics/large" );
-
-	addPath( KApplication::localkdedir() + "/share/apps/" 
-			+ kapp->appName() + "/pics" ); 
-
-	if ( large )
-		addPath( KApplication::localkdedir() + "/share/apps/" 
-			+ kapp->appName() + "/pics/large" ); 
-
+  // DF ---- Large icons --------------
+  // set the key depending on the current application
+  // FIXME: This is not a very nice hack at all. The app should be
+  // able to specify its own key. (Taj)
+  
+  QString key = "KDE";
+  if (kapp->name() == "kpanel")
+    key = "kpanel";
+  if (kapp->name() == "kfm")
+    key = "kfm";
+  KConfig config; // with no filenames given, it will read only ~/.kderc
+  config.setGroup("KDE");
+  QString setting = config.readEntry( key + "IconStyle", "Normal" );
+  //debug("App is %s - setting is %s", kapp->name(), setting.data());
+  // DF
+  
+  // order is important! -- Bernd
+  // higher priority at the end
+  
+  bool large = (setting == "Large" );
+  
+  addPath( KApplication::kde_toolbardir() );
+  addPath( KApplication::kde_icondir() );
+  
+  if ( large )
+    addPath( KApplication::kde_icondir() + "/large" );
+  
+  addPath( KApplication::localkdedir() + "/share/toolbar" ); 
+  addPath( KApplication::localkdedir() + "/share/icons" ); 
+  
+  if ( large )
+    addPath( KApplication::localkdedir() + "/share/icons/large" );
+  
+  addPath( KApplication::kde_datadir() + "/" 
+	   + kapp->appName() + "/toolbar" );
+  addPath( KApplication::localkdedir() + "/share/apps/" 
+	   + kapp->appName() + "/toolbar" ); 
+  addPath( KApplication::kde_datadir() + "/" 
+	   + kapp->appName() + "/pics" );
+  
+  if ( large )
+    addPath( KApplication::kde_datadir() + "/" 
+	     + kapp->appName() + "/pics/large" );
+  
+  addPath( KApplication::localkdedir() + "/share/apps/" 
+	   + kapp->appName() + "/pics" ); 
+  
+  if ( large )
+    addPath( KApplication::localkdedir() + "/share/apps/" 
+	     + kapp->appName() + "/pics/large" ); 
+  
 }
 
 KIconLoader::KIconLoader( KConfig *conf, 

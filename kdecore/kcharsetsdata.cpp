@@ -362,7 +362,8 @@ const char * KCharsetConverterData::convert(const char * str
 	 break;
        default:
          if (inBits<=8) index=(unsigned char)str[i];
-	 else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
+	 else if (inBits==16) index=(((unsigned char)str[i])<<8)+(unsigned char)str[i];
+	 i++;
 	 break;
     }
     kchdebug("Got index: %x\n",index);
@@ -524,25 +525,22 @@ KCharsetsData::KCharsetsData(){
   config->setGroup("general");
   QString i18dir = config->readEntry("i18ndir");
   if (!i18dir.isNull()) scanDirectory(i18dir);
+
   kchdebug("Creating alias dictionary...\n");
-  KEntryIterator *it=config->entryIterator("aliases");
-  if ( it )
-  {
-      while( it->current() ){
-	const char*alias=it->currentKey().ascii();
-	kchdebug(" %s -> ",alias);
-	QString name=it->current()->aValue;
-	kchdebug(" %s:",name.ascii());
-	KCharsetEntry *ce=varCharsetEntry(name);
-	if (ce){
-	    aliases.insert(alias,ce);
-	    kchdebug("ok\n");
-	}
-	else kchdebug("not found\n");
-	++(*it);
-      }  
-  }
-  delete it;
+  QMap<QString, QString> tmpMap = config->entryMap("aliases");
+  QMap<QString, QString>::Iterator it(tmpMap.begin());
+  for (; it != tmpMap.end(); ++it) {
+    QString alias= it.key();
+    kchdebug(" %s -> ",alias.ascii());
+    QString name = *it;
+    kchdebug(" %s:",name.ascii());
+    KCharsetEntry *ce=varCharsetEntry(name);
+    if (ce) {
+      aliases.insert(alias,ce);
+      kchdebug("ok\n");
+    }
+    else kchdebug("not found\n");
+  }  
 
   kchdebug("done!\n");
 }
@@ -719,27 +717,24 @@ bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &f
 const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
 
   kchdebug("Searching for charset for face %s...\n",face.ascii());
-  KEntryIterator * it=config->entryIterator("faces");
-  if (!it) return 0;
-  while( it->current() ){
-    QString faceStr=it->current()->aValue;
-    QString key=it->currentKey();
+  QMap<QString,QString> tmpMap = config->entryMap("faces");
+  QMap<QString, QString>::Iterator it(tmpMap.begin());
+
+  for (; it != tmpMap.end(); ++it) {
+    QString key(it.key());
+    QString faceStr(*it);
     if (faceStr.isEmpty()){
-      delete it;
       return charsetEntry(key);
     }
-    kchdebug("testing if it is %s (%s)...",it->currentKey().ascii(),faceStr.ascii());
+    kchdebug("testing if it is %s (%s)...",key.ascii(),faceStr.ascii());
     QRegExp rexp(faceStr,FALSE,TRUE);
     kchdebug("regexp: %s face: %s\n",rexp.pattern().ascii(), face.ascii());
     if (face.contains(rexp)){
       kchdebug("Yes, it is\n");
-      delete it;
       return charsetEntry(key);
     }  
     kchdebug("No, it isn't\n");
-    ++(*it);
   }
-  delete it;
   return 0;
 }
   
@@ -766,7 +761,7 @@ const QString KCharsetsData::faceForCharset(const KCharsetEntry *charset){
 const KCharsetEntry *KCharsetsData::conversionHint(const KCharsetEntry *charset){
 
   QStrList list;
-  kchdebug("Serching for conversion hint for %s\n",charset->name);
+  kchdebug("Searching for conversion hint for %s\n",charset->name);
   config->setGroup("conversionHints");
   int n=config->readListEntry(charset->name,list);
   kchdebug("%i entries found\n",n);
@@ -816,6 +811,7 @@ Display *kde_display;
 	lst->append(face.ascii());
   }
   XFreeFontNames(fontNames);
+  return TRUE;
 }
 
 bool KCharsetsData::isDisplayableHack(KCharsetEntry *charset){
@@ -978,29 +974,25 @@ const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
  return displayableCharsDict;
 }
 
-QString KCharsetsData::fromX(QString name){
-
+QString KCharsetsData::fromX(QString name)
+{
+  
   if ( name.left(3) == "iso",3 ){
-      name="iso-"+name.mid(3,100);
-      return name;
+    name="iso-" + name.mid(3,100);
+    return name;
   }
   if ( name.left(4) == "koi8" )
       return name;
-		      
-  KEntryIterator *it=config->entryIterator("XNames");
-  if ( it )
-  {
-      while( it->current() ){
-        QString key = it->currentKey();
-        if (it->current()->aValue==name ){
-          delete it;
-          return key;
-        }
-	++(*it);
-      }  
+  
+  QMap<QString, QString> tmpMap = config->entryMap("XNames");
+  QMap<QString, QString>::Iterator it(tmpMap.begin());
+  for (; it != tmpMap.end(); ++it) {
+    QString key(it.key());
+    if (*it == name ) {
+      return key;
+    }
   }
-  delete it;
-  return ""; 
+  return QString(); 
 }
 
 QString KCharsetsData::toX(QString name){

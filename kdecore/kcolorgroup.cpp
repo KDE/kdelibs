@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1999/04/19 15:49:35  kulow
+// cleaning up yet some more header files (fixheaders is your friend).
+// Adding copy constructor to KPixmap to avoid casting while assingment.
+//
+// The rest of the fixes in kdelibs and kdebase I will commit silently
+//
 // Revision 1.7  1998/06/16 06:03:19  kalle
 // Implemented copy constructors and assignment operators or disabled them
 //
@@ -97,7 +103,7 @@ KColorGroup& KColorGroup::operator= ( const KColorGroup& group )
 
 void KColorGroup::load( KConfig& rConfig, QString* pString )
 {
-  QString aOldGroup = rConfig.getGroup();
+  QString aOldGroup = rConfig.group();
 
   QString aGroupName;
   if (pString) 
@@ -122,7 +128,7 @@ void KColorGroup::load( KConfig& rConfig, QString* pString )
 
 void KColorGroup::save( KConfig& rConfig, QString* pString )
 {
-  QString aOldGroup = rConfig.getGroup();
+  QString aOldGroup = rConfig.group();
 
   QString aGroupName;
   if (pString) 

@@ -395,7 +395,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		  KDebugDialog* pDialog = new KDebugDialog();
 		  /* Fill dialog fields with values from config data */
 		  KConfig* pConfig = getConfig();
-		  QString aOldGroup = pConfig->getGroup();
+		  QString aOldGroup = pConfig->group();
 		  pConfig->setGroup( "KDebug" );
 		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 4 ) );
 		  pDialog->setInfoFile( pConfig->readEntry( "InfoFilename",
@@ -1066,63 +1066,8 @@ void KApplication::readSettings()
 
 void KApplication::kdisplaySetPalette()
 {
-    emit kdisplayPaletteChanged();
-    emit appearanceChanged();
-
-    /*
-  // WARNING : QApplication::setPalette() produces inconsistent results.
-  // There are 3 problems :-
-  // 1) You can't change select colors
-  // 2) You need different palettes to apply the same color scheme to
-  //		different widgets !!
-  // 3) Motif style needs a different palette to Windows style.
-	
-  int highlightVal, lowlightVal;
-	
-  highlightVal=100+(2*contrast+4)*16/10;
-  lowlightVal=100+(2*contrast+4)*10;
-	
-  // printf("contrast = %d\n", contrast);
-	
-  if ( applicationStyle==MotifStyle ) {
-	QColorGroup disabledgrp( textColor, backgroundColor,
-							 backgroundColor.light(highlightVal),
-							 backgroundColor.dark(lowlightVal),
-							 backgroundColor.dark(120),
-							 backgroundColor.dark(120), windowColor );
-
-	QColorGroup colgrp( textColor, backgroundColor,
-						backgroundColor.light(highlightVal),
-						backgroundColor.dark(lowlightVal),
-						backgroundColor.dark(120),
-						textColor, windowColor );
-
-	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
-
-	emit kdisplayPaletteChanged();
-	emit appearanceChanged();
-
-  } else {
-	QColorGroup disabledgrp( textColor, backgroundColor,
-							 backgroundColor.light(150),
-							 backgroundColor.dark(),
-							 backgroundColor.dark(120),
-							 backgroundColor.dark(120), windowColor );
-
-	QColorGroup colgrp( textColor, backgroundColor,
-						backgroundColor.light(150),
-						backgroundColor.dark(),
-						backgroundColor.dark(120),
-						textColor, windowColor );
-
-	QApplication::setWinStyleHighlightColor( selectColor );
-	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
-
-	emit kdisplayPaletteChanged();
-	emit appearanceChanged();
-
-  }
-    */
+  emit kdisplayPaletteChanged();
+  emit appearanceChanged();
 }
 
 void KApplication::kdisplaySetFont()
@@ -1386,27 +1331,27 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
 QString KApplication::tempSaveName( const QString& pFilename )
 {
   QString aFilename;
-
+  
   if( pFilename[0] != '/' )
-	{
-	  kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
-	  aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
-	}
+    {
+      kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
+      aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
+    }
   else
-	aFilename = pFilename;
-
+    aFilename = pFilename;
+  
   QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
+    {
+      if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
 	{
-	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
-		{
-		  // Last chance: use _PATH_TMP
-		  aAutosaveDir.setPath( _PATH_TMP );
-		}
+	  // Last chance: use _PATH_TMP
+	  aAutosaveDir.setPath( _PATH_TMP );
 	}
+    }
 
-  aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
-
+  aFilename.replace( QRegExp( "/" ),"\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
+  
   return aFilename;
 }
 
@@ -1415,37 +1360,37 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
         bool& bRecover )
 {
   QString aFilename;
-
+  
   if( pFilename[0] != '/' )
-	{
-	  kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
-	  aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
-	}
+    {
+      kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
+      aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
+    }
   else
-	aFilename = pFilename;
-
+    aFilename = pFilename;
+  
   QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
+    {
+      if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
 	{
-	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
-		{
-		  // Last chance: use _PATH_TMP
-		  aAutosaveDir.setPath( _PATH_TMP );
-		}
+	  // Last chance: use _PATH_TMP
+	  aAutosaveDir.setPath( _PATH_TMP );
 	}
-
+    }
+  
   aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
-
+  
   if( QFile( aFilename ).exists() )
-	{
-	  bRecover = true;
-	  return aFilename;
-	}
+    {
+      bRecover = true;
+      return aFilename;
+    }
   else
-	{
-	  bRecover = false;
-	  return pFilename;
-	}
+    {
+      bRecover = false;
+      return pFilename;
+    }
 }
 
 

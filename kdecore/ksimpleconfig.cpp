@@ -1,307 +1,125 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+   
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 // $Id$
-//
-// $Log$
-// Revision 1.18  1999/05/13 19:03:24  bieker
-// More QStrings.
-//
-// Revision 1.17  1999/05/07 15:42:42  kulow
-// making some changes to the code and partly to the API to make it
-// -DQT_NO_ASCII_CAST compatible.
-// The job is quite boring, but triggers some abuses of QString. BTW:
-// I added some TODOs to the code where I was too lazy to continue.
-// Someone should start a grep for TODO in the code on a regular base ;)
-//
-// Revision 1.16  1999/04/18 16:24:11  denis
-// #include <qtextstream.h> to kcharsetsdata.cpp ksimpleconfig.cpp
-// #include "config.h" to kapp.cpp
-//
-// Revision 1.15  1999/04/18 09:15:12  kulow
-// taking out config.h from Header files. I don't know if I haven't noticed
-// before, but this is even very dangerous
-//
-// Revision 1.14  1999/03/01 23:33:42  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.13.2.1  1999/02/14 02:06:04  granroth
-// Converted a lot of 'const char*' to 'QString'.  This compiles... but
-// it's entirely possible that nothing will run linked to it :-P
-//
-// Revision 1.13  1999/01/18 10:56:24  kulow
-// .moc files are back in kdelibs. Built fine here using automake 1.3
-//
-// Revision 1.12  1999/01/15 09:30:41  kulow
-// it's official - kdelibs builds with srcdir != builddir. For this I
-// automocifized it, the generated rules are easier to maintain than
-// selfwritten rules. I have to fight with some bugs of this tool, but
-// generally it's better than keeping them updated by hand.
-//
-// Revision 1.11  1998/09/01 20:21:32  kulow
-// I renamed all old qt header files to the new versions. I think, this looks
-// nicer (and gives the change in configure a sense :)
-//
-// Revision 1.10  1998/01/18 14:39:01  kulow
-// reverted the changes, Jacek commited.
-// Only the RCS comments were affected, but to keep them consistent, I
-// thought, it's better to revert them.
-// I checked twice, that only comments are affected ;)
-//
-// Revision 1.8  1998/01/15 13:22:30  kalle
-// Read-only mode for KSimpleConfig
-//
-// Revision 1.7  1998/01/11 13:41:42  kalle
-// Write tag line for MIME detection even in KSimpleConfig
-//
-// Revision 1.6  1997/12/18 20:51:34  kalle
-// Some patches by Alex and me
-//
-// Revision 1.5  1997/10/21 20:44:52  kulow
-// removed all NULLs and replaced it with 0L or "".
-// There are some left in mediatool, but this is not C++
-//
-// Revision 1.4  1997/10/16 11:15:02  torben
-// Kalle: Copyright headers
-// kdoctoolbar removed
-//
-// Revision 1.3  1997/10/10 16:14:24  kulow
-// removed one more default value from the implementation
-//
-// Revision 1.2  1997/10/08 19:28:53  kalle
-// KSimpleConfig implemented
-//
-// Revision 1.1  1997/10/04 19:51:07  kalle
-// new KConfig
-//
 
-#include <ksimpleconfig.h>
-#include "config.h"
+#include <config.h>
+#include <stdlib.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include <qfileinfo.h>
-#include <qtextstream.h>
 
-KSimpleConfig::KSimpleConfig( const QString& pFile )
+#include <kapp.h>
+
+#include "ksimpleconfig.h"
+#include "ksimpleconfig.moc"
+
+KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
 {
-  if( !pFile.isNull() )
-	{
-	  // the file should exist in any case
-	  QFileInfo info( pFile );
-	  if( !info.exists() )
-		{
-		  QFile file( pFile );
-		  file.open( IO_WriteOnly );
-		  file.close();
-		}
+  // set the object's read-only status.
+  setReadOnly(bReadOnly);
 
-	  // we use the global app config file to save the filename 
-	  data()->aGlobalAppFile = pFile;
-	}
+  if (!bReadOnly) {
+    // the file should exist in any case if the object is not read only.
+    QFileInfo info( pFileName );
+    if (!info.exists()) {
+      // Can we allow the write? (see above)
+      if (checkAccess( pFileName, W_OK )) {
+	// Yes, write OK, create empty file
+	QFile file( pFileName );
+	file.open( IO_WriteOnly );
+	file.close();
+      }
+    }
+  }
   
-  parseConfigFiles();
-}
+  // for right now we will hardcode that we are using the INI
+  // back end driver.  In the future this should be converted over to
+  // a object factory of some sorts.
+  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
+						      pFileName,
+						      QString::null,
+						      false);
+  // set the object's back end pointer to this new backend
+  backEnd = aBackEnd;
 
-
-KSimpleConfig::KSimpleConfig( const QString& pFile, bool bReadOnly )
-{
-  if( !pFile.isNull() )
-	{
-	  if( !bReadOnly )
-		{
-		  // the file should exist in any case if the object is not read-only
-		  QFileInfo info( pFile );
-		  if( !info.exists() )
-			{
-			  QFile file( pFile );
-			  file.open( IO_WriteOnly );
-			  file.close();
-			}
-		}
-
-	  // we use the global app config file to save the filename 
-	  data()->aGlobalAppFile = pFile;
-	}
-
-  data()->bReadOnly = bReadOnly;
+  // add the "default group" marker to the map
+  KEntryKey groupKey = { "<default>", QString::null };
+  aEntryMap.insert(groupKey, KEntry());
 
   parseConfigFiles();
 }
 
-
-KSimpleConfig::~KSimpleConfig()
+QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 {
-  if( !data()->bReadOnly )
-	sync();
-}
+  QString aLocalizedKey = pKey;
 
+  // localize the key, if requested
+  if (bLocalized) {
+      aLocalizedKey += "[";
+      aLocalizedKey += locale();
+      aLocalizedKey += "]";
+  }
 
-void KSimpleConfig::parseConfigFiles()
-{
-  QFile aFile( data()->aGlobalAppFile );
-  if( data()->bReadOnly )
-	aFile.open( IO_ReadOnly );
-  else
-	aFile.open( IO_ReadWrite );
-  parseOneConfigFile( aFile, 0L );
-  aFile.close();
-}
-
-
-const QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
-{
-  // retrieve the current group dictionary
-  KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup ];
+  // retrieve the current entry map for the group specified by pKey
+  KEntryKey entryKey = { group(), aLocalizedKey };
+  KEntryMapIterator aIt;
   
-  if( pCurrentGroupDict )
-    {
-	  if( bLocalized )
-		{	  
-		  QString aLocalizedKey = QString( pKey );
-		  aLocalizedKey += "[";
-		  aLocalizedKey += data()->aLocaleString;
-		  aLocalizedKey += "]";
-		  // find the value for the key in the current group
-		  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey ];
-		  if( pEntryData )
-			{
-			  QString aValue = pEntryData->aValue;
-			  pCurrentGroupDict->remove( pKey );
-			  return aValue.copy();
-			}
-		  else
-			return QString();
-		}
-	  else
-		{
-		  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ pKey ];
-		  if( pEntryData )
-			{
-			  QString aValue = pEntryData->aValue;
-			  pCurrentGroupDict->remove( pKey );
-			  return aValue.copy();
-			}
-		  else
-			return QString();
-		}
-	}
-  else 
-	return QString();
+  aIt = aEntryMap.find(entryKey);
+  if (aIt != aEntryMap.end()) {
+    QString retValue = aIt->aValue;
+    // we found the key, get rid of it
+    aEntryMap.remove(aIt);
+    return retValue;
+  } else 
+    return QString();
 }
 
 
 bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
-  // retrieve the group dictionary
-  KEntryDict* pGroupDict = data()->aGroupDict[ pGroup ];
   
-  if( pGroupDict )
-	{
-	  if( pGroupDict->count() && !bDeep )
-		// there are items which should not be deleted
-		return false;
-	  else
-		{
-		  // simply remove the group dictionary, since the main group
-		  // dictionary is set to autoDelete, the items will be deleted,
-		  // too
-		  data()->aGroupDict.remove( pGroup );
-		  return true;
-		}
-	}
-  else
-	// no such group
-	return false;
+  KEntryMapIterator aIt;
+  KEntryKey groupKey = { pGroup, QString::null };
+
+  aIt = aEntryMap.find(groupKey);
+  if (aIt != aEntryMap.end()) {
+    // group found, remove it
+    if (!bDeep) {
+      // just remove the special group entry
+      aEntryMap.remove(aIt);
+      return false;
+    } else {
+      // we want to remove the group and all entries in the group
+      for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
+	aEntryMap.remove(aIt);
+      // now remove the special group entry
+      aEntryMap.remove(groupKey);
+      return true;
+    }
+  } else
+    // no such group
+    return false;
 }
-
-/** Write back the configuration data.
-  */
-bool KSimpleConfig::writeConfigFile( QFile& rFile, bool )
-{
-  if( data()->bReadOnly )
-	return true; // fake that the data was written
-
-  rFile.open( IO_Truncate | IO_WriteOnly );
-  QTextStream* pStream = new QTextStream( &rFile );
-
-  // write a magic cookie for Fritz' mime magic
-  *pStream << "# KDE Config File\n";
-  
-  // write back -- start with the default group
-  KEntryDict* pDefWriteGroup = data()->aGroupDict[ "<default>" ];
-  if( pDefWriteGroup )
-	{
-	  QDictIterator<KEntryDictEntry> aWriteInnerIt( *pDefWriteGroup );
-	  while( aWriteInnerIt.current() )
-		{
-		  if( aWriteInnerIt.current()->bNLS && 
-			  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
-			// not yet localized, but should be
-			*pStream << aWriteInnerIt.currentKey() << '[' 
-					 << data()->aLocaleString << ']' << "=" 
-					 << aWriteInnerIt.current()->aValue << '\n';
-		  else
-			// need not be localized or already is
-			*pStream << aWriteInnerIt.currentKey() << "=" 
-					 << aWriteInnerIt.current()->aValue << '\n';
-		  ++aWriteInnerIt;
-		}
-	}
-  
-  QDictIterator<KEntryDict> aWriteIt( data()->aGroupDict );
-  while( aWriteIt.current() )
-	{
-	  // check if it's not the default group (which has already been written)
-	  if( aWriteIt.currentKey() != "<default>" )
-		{
-		  *pStream << '[' << aWriteIt.currentKey() << ']' << '\n';
-		  QDictIterator<KEntryDictEntry> aWriteInnerIt( *aWriteIt.current() );
-		  while( aWriteInnerIt.current() )
-			{
-			  if( aWriteInnerIt.current()->bNLS && 
-				  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
-				// not yet localized, but should be
-				*pStream << aWriteInnerIt.currentKey() << '[' 
-						 << data()->aLocaleString << ']' << "=" 
-						 << aWriteInnerIt.current()->aValue << '\n';
-			  else
-				// need not be localized or already is
-				*pStream << aWriteInnerIt.currentKey() << "="
-						 << aWriteInnerIt.current()->aValue << '\n';
-			  ++aWriteInnerIt;
-			}
-		}
-	  ++aWriteIt;
-	}
-  
-  // clean up
-  delete pStream;
-  rFile.close();
-
-  return true;
-}
-
-void KSimpleConfig::sync()
-{
-  if( data()->bReadOnly )
-	return;
-
-  QFile aFile( data()->aGlobalAppFile );
-  writeConfigFile( aFile, false );
-}
-
-#include "ksimpleconfig.moc"
-

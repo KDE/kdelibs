@@ -1,521 +1,229 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+/*
+  This file is part of the KDE libraries
+  Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+  Copyright (C) 1997-1999 Matthias Kalle Dalheimer (kalle@kde.org)
+  
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+  
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
+  
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
 */
+
 // $Id$
-//
-// $Log$
-// Revision 1.24  1999/05/07 15:42:31  kulow
-// making some changes to the code and partly to the API to make it
-// -DQT_NO_ASCII_CAST compatible.
-// The job is quite boring, but triggers some abuses of QString. BTW:
-// I added some TODOs to the code where I was too lazy to continue.
-// Someone should start a grep for TODO in the code on a regular base ;)
-//
-// Revision 1.23  1999/04/18 09:15:05  kulow
-// taking out config.h from Header files. I don't know if I haven't noticed
-// before, but this is even very dangerous
-//
-// Revision 1.22  1999/03/01 23:33:18  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.21.2.2  1999/02/14 02:05:39  granroth
-// Converted a lot of 'const char*' to 'QString'.  This compiles... but
-// it's entirely possible that nothing will run linked to it :-P
-//
-// Revision 1.21.2.1  1999/01/30 20:18:53  kulow
-// start porting to Qt2.0 beta
-//
-// Revision 1.21  1999/01/18 10:56:15  kulow
-// .moc files are back in kdelibs. Built fine here using automake 1.3
-//
-// Revision 1.20  1999/01/15 09:30:33  kulow
-// it's official - kdelibs builds with srcdir != builddir. For this I
-// automocifized it, the generated rules are easier to maintain than
-// selfwritten rules. I have to fight with some bugs of this tool, but
-// generally it's better than keeping them updated by hand.
-//
-// Revision 1.19  1999/01/11 13:53:42  kulow
-// fixing bug 1311 - don't use data.sprintf("%s", data.data());
-// the meaning is undefined
-//
-// Revision 1.18  1998/11/08 19:06:46  esken
-// Several security fixes by adding checkAccess() tests before the creation
-// of files and directorys. This is neccesary for SUID programs. Added
-// checkAccess(), which checks if the user may write a file.
-//
-// checkAccess() is a global function, perhaps it should be moved to some
-// KTools class as static member funtion later.
-//
-// Revision 1.17  1998/09/01 20:21:19  kulow
-// I renamed all old qt header files to the new versions. I think, this looks
-// nicer (and gives the change in configure a sense :)
-//
-// Revision 1.16  1998/08/23 15:58:32  kulow
-// fixed some more advanced warnings
-//
-// Revision 1.15  1998/07/23 12:05:15  ettrich
-// Matthias: small bugfix. Writing of simple KConfig objects (without
-//  arguments constructed) was broken.
-//
-// Revision 1.14  1998/06/15 12:49:31  kulow
-// applied patch to replace .kde with localkdedir()
-//
-// Revision 1.13  1998/05/26 14:14:56  kalle
-// Two bugfixes in KConfig:
-//
-// - security hole when saving to symlinks in SUID mode
-// - trailing comma was needed in string list
-//
-// Revision 1.12  1998/05/04 20:08:12  ettrich
-// Matthias: \n, \t, \r are stored as \\n, \\t and \\r now.
-//
-// Revision 1.11  1998/01/18 14:38:44  kulow
-// reverted the changes, Jacek commited.
-// Only the RCS comments were affected, but to keep them consistent, I
-// thought, it's better to revert them.
-// I checked twice, that only comments are affected ;)
-//
-// Revision 1.9  1997/12/27 22:57:26  kulow
-// I was a little bit nerved by the QFile warnings caused by the KApplication
-// constructor, so I investigated a little bit ;) Fixed now
-//
-// Revision 1.8  1997/12/18 20:51:27  kalle
-// Some patches by Alex and me
-//
-// Revision 1.7  1997/11/20 08:44:54  kalle
-// Whoever says A should also say B...
-// (reading ~/.kderc works again)
-//
-// Revision 1.6  1997/11/18 21:40:51  kalle
-// KApplication::localconfigdir()
-// KApplication::localkdedir()
-// KConfig searches in $KDEDIR/share/config/kderc
-//
-// Revision 1.5  1997/10/21 20:44:43  kulow
-// removed all NULLs and replaced it with 0L or "".
-// There are some left in mediatool, but this is not C++
-//
-// Revision 1.4  1997/10/16 11:35:25  kulow
-// readded my yesterday bugfixes. I hope, I have not forgotten one.
-// I'm not sure, why this have been removed, but I'm sure, they are
-// needed.
-//
-// Revision 1.3  1997/10/16 11:14:29  torben
-// Kalle: Copyright headers
-// kdoctoolbar removed
-//
-// Revision 1.1  1997/10/04 19:50:58  kalle
-// new KConfig
-//
 
-#include <qfileinfo.h>
+#include <config.h>
 #include <stdlib.h>
-
-#include "kapp.h"
-
-#include "config.h"
-#include <kconfig.h>
-#include <qtextstream.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif 
-#ifdef HAVE_TEST
-#include <test.h>
 #endif
 
-static const char* aConfigFileName[] = 
-{ 
-  // !!! If you add/remove pathnames here, update CONFIGFILECOUNT a few lines
-  // below!!!
-  "/etc/kderc",
-  KDEDIR"/share/config/kderc",
-  "/usr/lib/KDE/system.kderc",
-  "/usr/local/lib/KDE/system.kderc",
-  "~/.kderc",
-};
+#include <qfileinfo.h>
 
-const int CONFIGFILECOUNT = 5; // number of entries in aConfigFileName[]
+#include <kapp.h>
 
+#include "kconfig.h"
+#include "kconfig.moc"
 
-static QString stringToPrintable(const QString& s){
-  QString result;
-  unsigned int i;
-  for (i=0;i<s.length();i++){
-    if (s[i] == '\n')
-      result.append("\\n");
-    else if (s[i] == '\t')
-      result.append("\\t");
-    else if (s[i] == '\r')
-      result.append("\\r");
-    else if (s[i] == '\\')
-      result.append("\\\\");
-    else
-      result.insert(result.length(), s[i]);
-  }
-  return result;
-}
-
-
-KConfig::KConfig( const QString& pGlobalAppFile, const QString& pLocalAppFile )
+KConfig::KConfig( const QString& pGlobalFileName,
+		  const QString& pLocalFileName,
+		  bool bReadOnly )
+  : KConfigBase(), flushInterval(30)
 {
-  if( !pGlobalAppFile.isNull() )
-	{
-	  data()->aGlobalAppFile = pGlobalAppFile;
-	  // the file should exist in any case
-	  QFileInfo info( pGlobalAppFile );
-	  if( !info.exists() )
-		{
-		  // Can we allow the write? (see above)
-		  if( checkAccess( pGlobalAppFile, W_OK ) )
-		    {
-		      // Yes, write OK
-		      QFile file( pGlobalAppFile );
-		      file.open( IO_WriteOnly );
-		      file.close();
-		    }
-		}
-	}
-  if( !pLocalAppFile.isNull() )
-	{
-	  data()->aLocalAppFile = pLocalAppFile;
-	  // the file should exist in any case
-	  QFileInfo info( pLocalAppFile );
-	  if( !info.exists() )
-		{
-		  // Can we allow the write? (see above)
-		  if ( checkAccess( pLocalAppFile, W_OK ) )
-		    {
-		      // Yes, write OK
-		      QFile file( pLocalAppFile );
-		      file.open( IO_WriteOnly );
-                      // Set uid/gid (neccesary for SUID programs)
-                      chown(file.name().ascii(), getuid(), getgid());
-		      file.close();
-		    }
-		}
-	}
+  QString aGlobalFileName, aLocalFileName;
 
+  // set the object's read-only status.
+  setReadOnly(bReadOnly);
+
+  if (!pGlobalFileName.isNull()) {
+    aGlobalFileName = pGlobalFileName;
+    if (!bReadOnly) {
+      // the file should exist in any case if the object is not read only.
+      QFileInfo info( aGlobalFileName );
+      if (!info.exists()) {
+	// Can we allow the write? (see above)
+	if (checkAccess( aGlobalFileName, W_OK )) {
+	  // Yes, write OK, create empty file
+	  QFile file( aGlobalFileName );
+	  file.open( IO_WriteOnly );
+	  file.close();
+	}
+      }
+    }
+  }
+
+  if (!pLocalFileName.isNull()) {
+    aLocalFileName = pLocalFileName;
+    if (!bReadOnly) {
+      // the file should exist in any case if the object is not read only.
+      QFileInfo info( aLocalFileName );
+      if (!info.exists()) {
+	// Can we allow the write? (see above)
+	if (checkAccess( pLocalFileName, W_OK )) {
+	  // Yes, write OK, create empty file
+	  QFile file( pLocalFileName );
+	  file.open( IO_WriteOnly );
+	  // Set uid/gid (necessary for SUID programs)
+	  chown(file.name().ascii(), getuid(), getgid());
+	  file.close();
+	}
+      }
+    }
+  }
+  
+  // for right now we will hardcode that we are using the INI
+  // back end driver.  In the future this should be converted over to
+  // a object factory of some sorts.
+  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
+						      aGlobalFileName,
+						      aLocalFileName,
+						      true);
+  // set the object's back end pointer to this new backend
+  backEnd = aBackEnd;
+
+  // add the "default group" marker to the map
+  KEntryKey groupKey = { "<default>", QString::null };
+  aEntryMap.insert(groupKey, KEntry());
+
+  // need to set this before we actually parse so as to avoid
+  // infinite looping when parseConfigFiles calls things like
+  // hasGroup, putData, etc. which would then try to load
+  // the cache if it isCached was false.
+  isCached = true;
   parseConfigFiles();
-}
 
+  // cache flushing setup
+  cacheTimer = new QTimer(this, "cacheTimer");
+  connect(cacheTimer, SIGNAL(timeout()), SLOT(flushCache()));
+  // initial cache timeout of 30 seconds.  It will auto-adjust.
+  cacheTimer->start(flushInterval * 1000);
+}
 
 KConfig::~KConfig()
 {
   sync();
+  
+  if (backEnd)
+    delete backEnd;
 }
 
-
-void KConfig::parseConfigFiles()
+void KConfig::rollback(bool bDeep)
 {
-  // Parse all desired files from the least to the most specific. This
-  // gives the intended behaviour because the QDict returns the last
-  // appropriate entry.
-  
-  // Parse the general config files
-  for( int i = 0; i < CONFIGFILECOUNT; i++ )
-    {
-      QString aFileName = aConfigFileName[i];
-     // replace a leading tilde with the home directory
-      // is there a more portable way to find out the home directory?
-      char* pHome = getenv( "HOME" );
-      if( (aFileName[0] == '~') && pHome )
-		aFileName.replace( 0, 1, pHome );
+  KConfigBase::rollback(bDeep);
 
-      QFile aConfigFile( aFileName );
-      QFileInfo aInfo( aConfigFile );
-      // only work with existing files currently
-      if( !aInfo.exists() )
-		continue;
-      aConfigFile.open( IO_ReadOnly );
-      parseOneConfigFile( aConfigFile, 0L, true ); 
-	  aConfigFile.close();
-    }
-  
-  // Parse app-specific config files if available
-  if( !data()->aGlobalAppFile.isEmpty() )
-	{
-	  QFile aConfigFile( data()->aGlobalAppFile );
-	  // we can already be sure that this file exists
-	  aConfigFile.open( IO_ReadOnly );
-	  parseOneConfigFile( aConfigFile, 0L, false );
-	  aConfigFile.close();
-	}
-  if( !data()->aLocalAppFile.isEmpty() )
-	{
-	  QFile aConfigFile( data()->aLocalAppFile );
-	  // we can already be sure that this file exists
- 	  /* Actually, we can't: CHange by Alex */
- 	  if (!aConfigFile.open( IO_ReadOnly)) {
-		QString tmp = data()->aLocalAppFile.copy();
-		data()->aLocalAppFile = QString("%1/share/config/%2").arg(KApplication::localkdedir()).arg(tmp);
- 		aConfigFile.close();
- 		aConfigFile.setName(data()->aLocalAppFile);
- 		aConfigFile.open(IO_ReadOnly);
- 	  } 
+  if (!bDeep)
+    return; // object's bDeep flag is set in KConfigBase method
 
-	  parseOneConfigFile( aConfigFile, 0L, false );
-	  aConfigFile.close();
-	}
+  // clear any dirty flags that entries might have set
+  for (KEntryMapIterator aIt = aEntryMap.begin();
+       aIt != aEntryMap.end(); ++aIt)
+    aIt->bDirty = false;
 }
 
-
-bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
+QStringList KConfig::groupList() const
 {
-  bool bEntriesLeft = false;
+  QStringList retList;
 
-  QTextStream* pStream = new QTextStream( &rConfigFile );
+  cacheCheck();
 
-  // create a temporary dictionary that represents the file to be written
-  QDict<KEntryDict> aTempDict( 37, FALSE );
-  aTempDict.setAutoDelete( true );
-  
-  // setup a group entry for the default group
-  KEntryDict* pDefGroup = new KEntryDict( 37, false );
-  pDefGroup->setAutoDelete( true );
-  aTempDict.insert( "<default>", pDefGroup );
-  
-  // fill the temporary structure with entries from the file
-  parseOneConfigFile( rConfigFile, &aTempDict, bGlobal );
+  KEntryMapConstIterator aIt;
+  for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
+    if (aIt.key().key == QString::null)
+      retList.append(aIt.key().group);
 
-  // augment this structure with the dirty entries from the normal structure
-  QDictIterator<KEntryDict> aIt( data()->aGroupDict );
-
-  // loop over all the groups
-  QString pCurrentGroup;
-  while( !(pCurrentGroup = aIt.currentKey()).isNull() )
-	{
-	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
-	  // loop over all the entries
-	  KEntryDictEntry* pCurrentEntry;
-	  while( (pCurrentEntry = aInnerIt.current()) )
-		{
-		  if( pCurrentEntry->bDirty )
-			{
-			  // only write back entries that have the same
-			  // "globality" as the file
-			  if( pCurrentEntry->bGlobal == bGlobal )
-				{
-				  // enter the
-				  // *aInnerIt.currentKey()/pCurrentEntry->aValue pair
-				  // into group *pCurrentGroup in aTempDict
-				  KEntryDict* pTempGroup;
-				  if( !( pTempGroup = aTempDict[ pCurrentGroup ] ) )
-					{
-					  // group does not exist in aTempDict
-					  pTempGroup = new KEntryDict( 37, false );
-					  pTempGroup->setAutoDelete( true );
-					  aTempDict.insert( pCurrentGroup, pTempGroup );
-					}
-				  KEntryDictEntry* pNewEntry = new KEntryDictEntry();
-				  pNewEntry->aValue = pCurrentEntry->aValue;
-				  pNewEntry->bDirty = false;
-				  pNewEntry->bGlobal = pCurrentEntry->bGlobal;
-				  pNewEntry->bNLS = pCurrentEntry->bNLS;
-				  pTempGroup->replace( aInnerIt.currentKey(), 
-									   pNewEntry );
-				}
-			  else
-				// wrong "globality" - might have to be saved later
-				bEntriesLeft = true;
-			}
-		  ++aInnerIt;
-		}
-	  ++aIt;
-	}
-  // truncate file
-  delete pStream;
-  rConfigFile.close();
-
-  /* Does program run SUID and user would not be allowed to write 
-   * to the file, if it doesn't run  SUID?
-   */
-  if( ! checkAccess( rConfigFile.name(), W_OK ) ) // write not allowed
-    return false; // can't allow to write config data.
-
-
-  rConfigFile.open( IO_Truncate | IO_WriteOnly );
-  // Set uid/gid (neccesary for SUID programs)
-  chown(rConfigFile.name().ascii(), getuid(), getgid());
- 
-  pStream = new QTextStream( &rConfigFile );
-  
-  // write a magic cookie for Fritz' mime magic
-  *pStream << "# KDE Config File\n";
-
-  // write back -- start with the default group
-  KEntryDict* pDefWriteGroup = aTempDict[ "<default>" ];
-  if( pDefWriteGroup )
-	{
-	  QDictIterator<KEntryDictEntry> aWriteInnerIt( *pDefWriteGroup );
-	  while( aWriteInnerIt.current() )
-		{
-		  if( aWriteInnerIt.current()->bNLS && 
-			  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
-			// not yet localized, but should be
-			*pStream << aWriteInnerIt.currentKey() << '[' 
-					 << data()->aLocaleString << ']' << "=" 
-					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
-		  else
-			// need not be localized or already is
-			*pStream << aWriteInnerIt.currentKey() << "=" 
-					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
-		  ++aWriteInnerIt;
-		}
-	}
-  
-  QDictIterator<KEntryDict> aWriteIt( aTempDict );
-  while( aWriteIt.current() )
-	{
-	  // check if it's not the default group (which has already been written)
-	  if( aWriteIt.currentKey() != "<default>" )
-		{
-		  *pStream << '[' << aWriteIt.currentKey() << ']' << '\n';
-		  QDictIterator<KEntryDictEntry> aWriteInnerIt( *aWriteIt.current() );
-		  while( aWriteInnerIt.current() )
-			{
-			  if( aWriteInnerIt.current()->bNLS && 
-				  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
-				// not yet localized, but should be
-				*pStream << aWriteInnerIt.currentKey() << '[' 
-						 << data()->aLocaleString << ']' << "=" 
-						 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
-			  else
-				// need not be localized or already is
-				*pStream << aWriteInnerIt.currentKey() << "="
-						 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
-			  ++aWriteInnerIt;
-			}
-		}
-	  ++aWriteIt;
-	}
-  
-  // clean up
-  delete pStream;
-  rConfigFile.close();
-
-
-  // Reopen the config file.
-
-  // Can we allow the write? (see above)
-  if( checkAccess( rConfigFile.name(), W_OK ) )
-    // Yes, write OK
-    rConfigFile.open( IO_ReadWrite );
-  else
-    rConfigFile.open( IO_ReadOnly );
-  
-  return bEntriesLeft;
+  return retList;
 }
 
-
-void KConfig::sync()
+QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
-  // write-sync is only necessary if there are dirty entries
-  if( data()->bDirty ) 
-	{
-	  bool bEntriesLeft = true;
-	  bool bLocalGood = false;
+  QMap<QString, QString> tmpMap;
+  KEntryMapConstIterator aIt;
+  KEntry aEntry;
+  KEntryKey groupKey = { pGroup, QString::null };
 
-	  // find out the file to write to (most specific writable file)
-	  // try local app-specific file first
-	  if( !data()->aLocalAppFile.isEmpty() )
-	    {
-	      // Can we allow the write? We can, if the program
-	      // doesn't run SUID. But if it runs SUID, we must
-	      // check if the user would be allowed to write if
-	      // it wasn't SUID.
-	      if( checkAccess( data()->aLocalAppFile, W_OK ) ) // we would be allowed anyhow
-		{    
-		  // is it writable?
-		  QFile aConfigFile( data()->aLocalAppFile );
-		  aConfigFile.open( IO_ReadWrite );
-                  // Set uid/gid (neccesary for SUID programs)
-                  chown(aConfigFile.name().ascii(), getuid(), getgid());
- 
-		  if ( aConfigFile.isWritable() )
-		    {
-		      bEntriesLeft = writeConfigFile( aConfigFile, false );   
-		      bLocalGood = true;
-		    }
-		  aConfigFile.close();
-		}
-	    }
+  cacheCheck();
 
-	  // If we could not write to the local app-specific config file,
-	  // we can try the global app-specific one. This will only work
-	  // as root, but is worth a try.
-	  if( !bLocalGood && !data()->aGlobalAppFile.isEmpty() )
-	    {
-	      // Can we allow the write? (see above)
-	      if( checkAccess( data()->aGlobalAppFile, W_OK ) )
-		{    
-		  // is it writable?
-		  QFile aConfigFile( data()->aGlobalAppFile );
-		  aConfigFile.open( IO_ReadWrite );
-		  if ( aConfigFile.isWritable() )
-		    {
-		      bEntriesLeft = writeConfigFile( aConfigFile, false );   
-		      bLocalGood = true;
-		    }
-		  aConfigFile.close();
-		}
-	    }
+  aIt = aEntryMap.find(groupKey);
+  for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
+    tmpMap.insert(aIt.key().key, aIt->aValue);
 
-	  if( bEntriesLeft )
-		// If there are entries left, either something went wrong with
-		// the app-specific files or there were global entries to write.
-		{
-		  // try other files
-		  for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
-			{
-			  QString aFileName = aConfigFileName[i];
-			  // replace a leading tilde with the home directory
-			  // is there a more portable way to find out the home directory?
-			  char* pHome = getenv( "HOME" );
-			  if( (aFileName[0] == '~') && pHome )
-				aFileName.replace( 0, 1, pHome );
-	  
-			  QFile aConfigFile( aFileName );
-			  QFileInfo aInfo( aConfigFile );
-			  // can we allow the write? (see above)
-			  if( checkAccess ( aFileName, W_OK ) )
-			    {
-
-			      if( ( aInfo.exists() && aInfo.isWritable() ) ||
-				  ( !aInfo.exists() && 
-				    QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
-				{
-				  aConfigFile.open( IO_ReadWrite );
-                                  // Set uid/gid (neccesary for SUID programs)
-                                  chown(aConfigFile.name().ascii(), getuid(), getgid());
- 				  writeConfigFile( aConfigFile, true );
-				  break;
-				}
-			    }
-			}
-		}
-	}
-
-  // no more dirty entries
-  rollback();
+  return tmpMap;
 }
-#include "kconfig.moc"
 
+void KConfig::reparseConfiguration()
+{
+  aEntryMap.clear();
+
+  // add the "default group" marker to the map
+  KEntryKey groupKey = { "<default>", QString::null };
+  aEntryMap.insert(groupKey, KEntry());
+
+  parseConfigFiles();
+  isCached = true;
+}
+
+KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
+{
+  KEntry aEntry;
+  KEntryMapConstIterator aIt;
+  KEntryKey aKey = { pGroup, QString::null };
+  KEntryMap tmpEntryMap;
+
+  cacheCheck();
+
+  aIt = aEntryMap.find(aKey);
+  if (aIt == aEntryMap.end()) {
+    // the special group key is not in the map,
+    // so it must be an invalid group.  Return
+    // an empty map.
+    return tmpEntryMap;
+  }
+  // we now have a pointer to the nodes we want to copy.
+  for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
+    tmpEntryMap.insert(aIt.key(), *aIt);
+
+  return tmpEntryMap;
+}
+
+void KConfig::flushCache()
+{
+  if (!isCached) {
+    // don't need to do anything
+    return;
+  }
+  
+  if (isDirty()) {
+    // if the config object has dirty status, we can't flush it
+    return;
+  }
+
+  // check if time of last I/O operation occured within timeout zone
+  if (lastIoOp.addSecs(flushInterval) > QTime::currentTime()) {
+    // IO occured within the flush interval.  Increase flush interval
+    // and reset timer accordingly.
+    flushInterval += (int)(flushInterval * .66);
+  } else {
+    // no I/O within the timeout period.  Flush the cache.
+    isCached = false;
+    aEntryMap.clear();
+    KEntryKey groupKey = { "<default>", QString::null };
+    aEntryMap.insert(groupKey, KEntry());
+    // reset the interval to 30 second checks
+    flushInterval = 30;
+  }
+
+  cacheTimer->changeInterval(flushInterval * 1000);
+}
