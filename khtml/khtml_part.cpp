@@ -2165,7 +2165,6 @@ void KHTMLPart::findTextBegin()
   d->m_findNode = 0;
   d->m_findPosEnd = -1;
   d->m_findNodeEnd= 0;
-  d->m_paFindNext->setEnabled( false ); // needs a 'find' first
 }
 
 bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
@@ -2393,8 +2392,12 @@ void KHTMLPart::findText()
 // New method
 void KHTMLPart::findTextNext()
 {
-  if (!d->m_find) // shouldn't be called before find is activated
+  if (!d->m_find)
+  {
+    // We didn't show the find dialog yet, let's do it then (#49442)
+    findText();
     return;
+  }
 
   long options = 0;
   if ( d->m_findDialog ) // 0 when we close the dialog
@@ -2539,7 +2542,6 @@ void KHTMLPart::findTextNext()
       slotClearSelection();
     }
   }
-  d->m_paFindNext->setEnabled( d->m_find != 0L  ); // always true nowadays
 }
 
 void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
@@ -3339,7 +3341,6 @@ void KHTMLPart::updateActions()
     enableFindAndSelectAll = frame->inherits( "KHTMLPart" );
 
   d->m_paFind->setEnabled( enableFindAndSelectAll );
-  d->m_paFindNext->setEnabled( false ); // needs a 'find' first
   d->m_paSelectAll->setEnabled( enableFindAndSelectAll );
 
   bool enablePrintFrame = false;
