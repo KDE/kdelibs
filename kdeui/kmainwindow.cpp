@@ -463,17 +463,11 @@ void KMainWindow::appHelpActivated( void )
 
 void KMainWindow::slotStateChanged(const QString &newstate)
 {
-  stateChanged(newstate, false);
+  stateChanged(newstate);
 }
 
 void KMainWindow::slotStateChanged(const QString &newstate,
                                    KXMLGUIClient::ReverseStateChange reverse)
-{
-  stateChanged(newstate, reverse);
-}
-
-void KMainWindow::slotStateChanged(const QString &newstate,
-                                   bool reverse)
 {
   stateChanged(newstate, reverse);
 }

@@ -839,14 +839,9 @@ KXMLGUIClient::StateChange KXMLGUIClient::getActionsToChangeForState(const QStri
 
 void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::ReverseStateChange reverse)
 {
-    stateChanged(newstate, reverse == StateNoReverse);
-}
-
-void KXMLGUIClient::stateChanged(const QString &newstate, bool reverse)
-{
   StateChange stateChange = getActionsToChangeForState(newstate);
 
-  bool setTrue = (reverse == false);
+  bool setTrue = (reverse == StateNoReverse);
   bool setFalse = !setTrue;
   
   // Enable actions which need to be enabled...

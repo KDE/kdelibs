@@ -260,22 +260,17 @@ protected:
   virtual void conserveMemory();
 
   /**
-   * DEPRECATED
-   */
-   virtual void stateChanged(const QString &newstate, ReverseStateChange reverse = StateNoReverse);
-
-  /**
    * Actions can collectively be assigned a "State". To accomplish this
-   * the respective actions are tagged as &lt;enable&gt; or &lt;disable&gt; in
-   * a &lt;State&gt; &lt;/State&gt; group of the XMLfile. During program execution the
+   * the respective actions are tagged as <enable> or <disable> in
+   * a <State> </State> group of the XMLfile. During program execution the
    * programmer can call stateChanged() to set actions to a defined state.
    *
    * @param newstate Name of a State in the XMLfile.
-   * @param reverse If the flag reverse is set to true, the State is reversed.
+   * @param reverse If the flag reverse is set to StateReverse, the State is reversed.
    * (actions to be enabled will be disabled and action to be disabled will be enabled)
    * Default is reverse=false.
    */
-   virtual void stateChanged(const QString &newstate, bool reverse = false);
+   virtual void stateChanged(const QString &newstate, ReverseStateChange reverse = StateNoReverse);
 
 private:
   struct DocStruct
