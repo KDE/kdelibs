@@ -1183,7 +1183,7 @@ void KFileDialog::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KFileItem i((unsigned) -1, (unsigned)-1, u, true );
+    KFileItem i(KFileItem::Unknown, KFileItem::Unknown, u, true );
     //    KFileItem i(u.path());
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
