@@ -465,16 +465,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
       containerClient->m_mergedClient = merge;
 
-      /*
-      if ( !containerClient )
-      {
-	containerClient = new KXMLGUIContainerClient;
-	containerClient->m_servant = m_servant;
-	containerClient->m_mergedClient = merge;
-	parentNode->clients.append( containerClient );
-      }
-      */
-
       if ( tag == tagAction )
       {
         KAction *action = m_client->action( e );
