@@ -106,6 +106,18 @@ QSize KCharSelectTable::sizeHint() const
 }
 
 //==================================================================
+void KCharSelectTable::resizeEvent( QResizeEvent * e )
+{
+    int new_w   = (e->size().width()  - 2*(margin()+frameWidth())) / numCols();
+    int new_h   = (e->size().height() - 2*(margin()+frameWidth())) / numRows();
+
+    if( new_w !=  cellWidth())
+        setCellWidth( new_w );
+    if( new_h !=  cellHeight())
+        setCellHeight( new_h );
+}
+
+//==================================================================
 void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 {
     int w = cellWidth();
@@ -113,8 +125,13 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     int x2 = w - 1;
     int y2 = h - 1;
 
+    //if( row == 0 && col == 0 ) {
+    //    printf("Repaint %d\n", temp++);
+    //    fflush( stdout );
+    //    }
+
     QFont font = QFont( vFont );
-    //font.setPixelSize( h-6 );
+    font.setPixelSize( int(.7 * h) );
 
     unsigned short c = vTableNum * 255;
     c += row * numCols();
@@ -338,12 +355,10 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
     charTable = new KCharSelectTable( this, name, _font.isEmpty() ? QVBox::font().family() : _font, _chr, _tableNum );
-    // This offset will go away -- the real goal is to make it resizable
-    //      printf("Frame width %d\n", frameWidth() );
     QSize sz( charTable->contentsWidth()  +  4 ,
               charTable->contentsHeight() +  4 );
     charTable->resize( sz );
-    charTable->setMaximumSize( sz );
+    //charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
     charTable->setHScrollBarMode( QScrollView::AlwaysOff );
     charTable->setVScrollBarMode( QScrollView::AlwaysOff );

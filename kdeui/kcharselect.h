@@ -56,6 +56,7 @@ public:
 		      const QChar &_chr, int _tableNum );
 
     virtual QSize sizeHint() const;
+    virtual void resizeEvent( QResizeEvent * );
 
     virtual void setFont( const QString &_font );
     virtual void setChar( const QChar &_chr );
@@ -84,6 +85,7 @@ protected:
     QPoint vPos;
     QChar focusItem;
     QPoint focusPos;
+    int temp;
 
 signals:
     void highlighted( const QChar &c );
