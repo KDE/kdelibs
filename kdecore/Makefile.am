@@ -60,7 +60,7 @@ srcdoc:
 	kdoc -H -d $(SRCDOC_DEST) kdecore \
 		 $(include_HEADERS) -lqt
 
-kckey.h : generate_keys.sh $(QNAMESPACE_H)
+kckey_h : generate_keys.sh $(QNAMESPACE_H)
 	./generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config 
