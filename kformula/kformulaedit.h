@@ -32,6 +32,14 @@ class box;
 class KFormula;
 struct charinfo;
 
+// now the fake chars used for control for passing to insertChar:
+#define CUT_CHAR 0
+#define COPY_CHAR 1
+#define PASTE_CHAR 2
+#define UNDO_CHAR 3
+#define REDO_CHAR 4
+
+
 struct _cursorInfo { //private
   int dirty;
   QRect pos;
@@ -69,6 +77,7 @@ signals:
 protected:
   QArray<_cursorInfo> cursorCache;
   bool restricted;  //whether for typesetting or evaluation
+  QRect oldBound; // previous rectangle of formula
   QString extraChars;
   int cacheState;
   QPixmap pm;       //double buffering
@@ -78,7 +87,7 @@ protected:
   int cursorPos;
   QArray<charinfo> info; //where each character of formText
                          //ends up in the formula
-  QStack<QString> undo, redo;  //if there was a "diff" for strings it would
+  QStack<QString> undo_stack, redo_stack;  //if there was a "diff" for strings it would
                                //save space
   QTimer t, fast; //t is for the cursor, fast for the cache
 
@@ -108,6 +117,12 @@ protected:
   bool nextGreek;
 
   bool sendSizeHint;
+
+  void do_undo(QString oldText, int oldc);
+  void do_redo(QString oldText, int oldc);
+  void do_cut(QString oldText, int oldc);
+  void do_copy(QString oldText, int oldc);
+  void do_paste(QString oldText, int oldc);
 
 protected:
   void insertChar(QChar c);

@@ -70,8 +70,8 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   cacheState = ALL_DIRTY;
   textSelected = 0;
   nextGreek = false;
-  undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
-  redo.setAutoDelete(TRUE);
+  undo_stack.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
+  redo_stack.setAutoDelete(TRUE);
 
   QFont f("utopia", DEFAULT_FONT_SIZE);
 
@@ -142,8 +142,8 @@ void KFormulaEdit::setText(QString text)
   formText = text;
   form->parse(formText, &info);
   cacheState = ALL_DIRTY;
-  while(undo.remove());
-  while(redo.remove());
+  while(undo_stack.remove());
+  while(redo_stack.remove());
   if(sendSizeHint) emit sizeHint( form->size());
   cursorPos = 0;
   redraw();
@@ -153,6 +153,11 @@ void KFormulaEdit::setText(QString text)
 void KFormulaEdit::resizeEvent(QResizeEvent *)
 {
   pm.resize(width(), height());
+  QPainter p(&pm);
+
+  //clear the pixmap
+  p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
+
   cacheState = ALL_DIRTY;
   redraw();
 }
@@ -177,7 +182,8 @@ void KFormulaEdit::redraw(int all)
 
   p.begin(&pm);
   p.setFont(font());
-  p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
+  //only clear what was drawn.
+  p.fillRect(oldBound, backgroundColor());
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -246,148 +252,20 @@ void KFormulaEdit::redraw(int all)
 //returns a C-like form for the formula.
 QString KFormulaEdit::uglyForm() const
 {
-  int i;
-
   KASSERT(restricted, KDEBUG_WARN, 0, "Called uglyForm on a formula that's not restricted.  God knows what might happen.");
 
-  if(formText.isNull()) return QString("");
-
-  QString ugly = formText;
-
-  //look for roots
-  i = ugly.find(QChar(SQRT));
-  while(i != -1) {
-    if(ugly[i - 2] == L_GROUP) { // we have a square root
-      ugly.remove(i - 2, 3);
-      ugly.insert(i - 2, "sqrt"); // {}@{...}  -->  sqrt{...}
-    }
-    else { // we have an nth root.  What to do?
-      kdebug(KDEBUG_WARN, 0, "What do you want to do about nth roots?");
-      //for now remove the root sign just to keep the conversion alive
-      ugly.remove(i, 1);
-    }
-
-    i = ugly.find(QChar(SQRT), i);
-  }
-  
-  //look for brackets
-  i = ugly.find(QChar(BRACKET));
-  while(i != -1) {
-    i -= 2;
-    ugly.remove(i, 3);  // {}[{...}  -->  {...}
-    
-    ugly[ KFormula::findMatch(ugly, i) ] = ']';
-    ugly[i] = '[';  // {...}  -->  [...]
-
-    i = ugly.find(QChar(BRACKET), i + 1); // find next parentheses
-  }
-
-  //do all other replacements.
-  QRegExp r;
-
-  r = QString(L_GROUP) + R_GROUP + QChar(PAREN); //parentheses
-  ugly.replace(r, "");  // {}({...} --> {...}
-
-  r = QString(L_GROUP) + R_GROUP + QChar(ABS); // absolute value
-  ugly.replace(r, "abs"); // {}|{...} --> abs{...}
-
-  for(i = 0; i < (int)ugly.length(); i++) {
-    if(ugly[i] == QChar(POWER)) ugly[i] = '^';
-    else if(ugly[i] == QChar(SUB)) ugly[i] = '_';
-    else if(ugly[i] == QChar(DIVIDE)) ugly[i] = '/';
-    else if(ugly[i] == L_GROUP) ugly[i] = '(';
-    else if(ugly[i] == R_GROUP) ugly[i] = ')';
-  }
-
-  return ugly;
+  return KFormula::toUgly(formText);
 }
 
 //-----------------------SET UGLY FORM----------------------
 //tries to take an ugly form and make it into a kformulaedit string
 void KFormulaEdit::setUglyForm(QString ugly)
 {
-  int i;
-
-  //search for absolute value:
-  i = ugly.find("abs(", 0, FALSE); // case insensitive
-  while(i != -1) {
-    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an abs
-      int tmp = KFormula::findMatch( ugly, i + 3);
-      ugly.replace(i, 4, QString(L_GROUP) + R_GROUP + QChar(ABS) + L_GROUP); // abs( --> {}|{
-      ugly[tmp] = R_GROUP;
-    }
-
-    i = ugly.find("abs(", i + 1, FALSE);
-  }
-
-  //search for square roots:
-  i = ugly.find("sqrt(", 0, FALSE); // case insensitive
-  while(i != -1) {
-    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an sqrt
-      ugly[ KFormula::findMatch( ugly, i + 4) ] = R_GROUP;
-      ugly.replace(i, 5, QString(L_GROUP) + R_GROUP + QChar(SQRT) + L_GROUP); // abs( --> {}|{
-    }
-
-    i = ugly.find("sqrt(", i + 1, FALSE);
-  }
-
-  //search for brackets:
-  for(i = 0; i < (int)ugly.length(); i++) {
-    if(ugly[i] == '[') {
-      ugly[ KFormula::findMatch(ugly, i) ] = R_GROUP;
-      ugly.remove(i, 1);
-      ugly.insert(i, QString(L_GROUP) + R_GROUP + QChar(BRACKET) + L_GROUP);
-      i += 4;
-    }
-  }
-
-  //look for division:
-  i = ugly.find(")/("); //if it doesn't have parentheses around it, it will be a slash not a fraction.
-  while(i != -1) {
-    ugly[ KFormula::findMatch(ugly, i) ] = L_GROUP;
-    ugly[i] = R_GROUP;
-    ugly[i + 1] = QChar(DIVIDE);
-    ugly[ KFormula::findMatch(ugly, i + 2) ] = R_GROUP;
-    ugly[i + 2] = L_GROUP;
-
-    i = ugly.find(")/(", i + 1);
-  }
-
-  //the quest for power (and subscript):
-  i = ugly.find("^("); // it will just remain a caret if it has no parentheses
-  while(i != -1) {
-    ugly[ KFormula::findMatch(ugly, i + 1) ] = R_GROUP;
-    ugly[i + 1] = L_GROUP;
-    ugly[i] = QChar(POWER);
-
-    i = ugly.find("^(", i + 1);
-  }
-
-  i = ugly.find("_("); // it will just remain an underscore if it has no parentheses
-  while(i != -1) {
-    ugly[ KFormula::findMatch(ugly, i + 1) ] = R_GROUP;
-    ugly[i + 1] = L_GROUP;
-    ugly[i] = QChar(SUB);
-
-    i = ugly.find("_(", i + 1);
-  }
-
-  //finally, take care of all the remaining parentheses:
-  for(i = 0; i < (int)ugly.length(); i++) {
-    if(ugly[i] == '(') {
-      ugly[i] = L_GROUP;
-      ugly.insert(i + 1, QString(R_GROUP) + QChar(PAREN) + L_GROUP);
-      i += 3;
-    }
-    if(ugly[i] == ')') ugly[i] = R_GROUP;
-  }
-
-  //and set the result to be the formula:
+  //set the result to be the formula:
   
-  setText(ugly);
+  setText(KFormula::fromUgly(ugly));
 
   return;
-
 }
 
 
@@ -422,11 +300,21 @@ QRect KFormulaEdit::getCursorPos(int pos)
 
 void KFormulaEdit::paintEvent(QPaintEvent *)
 {
-  bitBlt(this, 0, 0, &pm, 0, 0, -1, -1);
+  QRect bound(0, 0, form->size().width() + 10, form->size().height() + 10);
+  bound.moveCenter(QPoint(pm.width() / 2, pm.height() / 2));
+
+  QRect tmp = bound | oldBound;
+
+  //draw only what's necessary--faster
+  bitBlt(this, tmp.left(), tmp.top(), &pm, tmp.left(), tmp.top(),tmp.width(), tmp.height());
+
+  QPainter p(this);
+  qDrawPlainRect(&p, 0, 0, width(), height(), Qt::black);
+
+  oldBound = bound;
 
   if((!textSelected || cursorPos == selectStart) && cursorDrawn) {
     QRect r;
-    QPainter p(this);
     r = getCursorPos(cursorPos);
 
     p.drawLine(r.left(), r.top(), r.left(), r.bottom());
@@ -854,9 +742,9 @@ void KFormulaEdit::toggleCursor()
 //MODIFIED reparses the string, resets the cursor, invalidates the
 //cache, adds an undo step, and removes all redo.
 #define MODIFIED { form->parse(formText, &info); CURSOR_RESET \
-  cacheState = ALL_DIRTY; undo.push( &((new QString(oldText))-> \
+  cacheState = ALL_DIRTY; undo_stack.push( &((new QString(oldText))-> \
 				     insert(oldc, QChar(CURSOR))) ); \
-  while(redo.remove()); }
+  while(redo_stack.remove()); }
 #define UPDATE_SIZE if ( sendSizeHint ) { emit sizeHint( form->size() );  if(restricted) emit formulaChanged( uglyForm() ); }
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
@@ -1247,103 +1135,29 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
     //Copy:
     if(e->key() == Key_C) {
-      if(textSelected) {
-	clipText =
-	  QString(formText.mid(QMIN(selectStart, cursorPos),
-		  QMAX(selectStart - cursorPos + 1, \
-		      cursorPos - selectStart + 1) - 1));
-      }
+      do_copy(oldText, oldc);
       return;
     }
 
     //Cut: copy and remove
     if(e->key() == Key_X) {
-      if(textSelected) {
-	clipText =
-	  QString(formText.mid(QMIN(selectStart, cursorPos),
-		  QMAX(selectStart - cursorPos + 1, \
-		      cursorPos - selectStart + 1) - 1));
-	formText.remove(QMIN(selectStart, cursorPos),
-			QMAX(selectStart - cursorPos, \
-			    cursorPos - selectStart));
-	cursorPos = QMIN(selectStart, cursorPos);
-	textSelected = 0;
-	MODIFIED
-	redraw();
-	UPDATE_SIZE
-	return;
-      }
-
+      do_cut(oldText, oldc);
       return;
     }
 
     //Paste: just insert it into cursorPos, deleting any selected text.
     if(e->key() == Key_V) {
-      if(clipText.length() > 0) {
-	if(textSelected) {
-	  formText.remove(QMIN(selectStart, cursorPos),
-			  QMAX(selectStart - cursorPos, \
-			      cursorPos - selectStart));
-	  cursorPos = QMIN(selectStart, cursorPos);
-	  textSelected = 0;
-	}
-	formText.insert(cursorPos, clipText);
-	cursorPos += clipText.length();
-	MODIFIED
-        redraw();
-	UPDATE_SIZE
-	return;
-      }
+      do_paste(oldText, oldc);
+      return;
     }
 
     if(e->key() == Key_Z) { // undo
-      //pop the undo stack and push the current string onto redo.
-      if(!undo.isEmpty()) {
-	if(textSelected) textSelected = 0;
-	redo.push(&((new QString(oldText))->
-		    insert(oldc, QChar(CURSOR))));
-	formText = *undo.top(); //we don't want it deleted
-	                        //until a shallow copy is made--
-	                        //so we don't pop right away.
-	undo.pop();
-	
-	//now extract the cursor:
-	cursorPos = formText.find(QChar(CURSOR));
-	formText.remove(cursorPos, 1);
-
-	form->parse(formText, &info); //can't use MODIFIED
-	cacheState = ALL_DIRTY;
-	if(cursorPos == (int)oldText.length() ||
-	   cursorPos > (int)formText.length()) cursorPos = formText.length();
-	redraw();
-	UPDATE_SIZE
-      }
+      do_undo(oldText, oldc);
       return;
     }
 
     if(e->key() == Key_R) { // redo
-      //same thing as undo but backwards
-      if(!redo.isEmpty()) {
-	if(textSelected) textSelected = 0;
-
-	undo.push(&((new QString(oldText))->
-		  insert(oldc, QChar(CURSOR))));
-
-	formText = *redo.top();
-
-	redo.pop();
-
-	//now extract the cursor:
-	cursorPos = formText.find(QChar(CURSOR));
-	formText.remove(cursorPos, 1);
-
-	form->parse(formText, &info);
-	cacheState = ALL_DIRTY;
-	if(cursorPos == (int)oldText.length() ||
-	   cursorPos > (int)formText.length()) cursorPos = formText.length();
-	redraw();
-	UPDATE_SIZE
-      }
+      do_redo(oldText, oldc);
       return;	
     }
   }
@@ -1430,6 +1244,110 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
   }
 
   e->ignore(); //follow the rules...
+}
+
+void KFormulaEdit::do_undo(QString oldText, int oldc)
+{
+  //pop the undo stack and push the current string onto redo.
+  if(!undo_stack.isEmpty()) {
+    if(textSelected) textSelected = 0;
+    redo_stack.push(&((new QString(oldText))->
+		insert(oldc, QChar(CURSOR))));
+    formText = *undo_stack.top(); //we don't want it deleted
+	                        //until a shallow copy is made--
+	                        //so we don't pop right away.
+    undo_stack.pop();
+    
+    //now extract the cursor:
+    cursorPos = formText.find(QChar(CURSOR));
+    formText.remove(cursorPos, 1);
+    
+    form->parse(formText, &info); //can't use MODIFIED
+    cacheState = ALL_DIRTY;
+    if(cursorPos == (int)oldText.length() ||
+       cursorPos > (int)formText.length()) cursorPos = formText.length();
+    redraw();
+    UPDATE_SIZE
+  }
+  return;
+}
+
+void KFormulaEdit::do_redo(QString oldText, int oldc)
+{
+  //same thing as undo but backwards
+  if(!redo_stack.isEmpty()) {
+    if(textSelected) textSelected = 0;
+    
+    undo_stack.push(&((new QString(oldText))->
+		insert(oldc, QChar(CURSOR))));
+    
+    formText = *redo_stack.top();
+    
+    redo_stack.pop();
+    
+    //now extract the cursor:
+    cursorPos = formText.find(QChar(CURSOR));
+    formText.remove(cursorPos, 1);
+    
+    form->parse(formText, &info);
+    cacheState = ALL_DIRTY;
+    if(cursorPos == (int)oldText.length() ||
+       cursorPos > (int)formText.length()) cursorPos = formText.length();
+    redraw();
+    UPDATE_SIZE
+  }
+  return;
+}
+
+void KFormulaEdit::do_cut(QString oldText, int oldc)
+{
+  if(textSelected) {
+    clipText =
+      QString(formText.mid(QMIN(selectStart, cursorPos),
+			   QMAX(selectStart - cursorPos + 1, \
+				cursorPos - selectStart + 1) - 1));
+    formText.remove(QMIN(selectStart, cursorPos),
+		    QMAX(selectStart - cursorPos, \
+			 cursorPos - selectStart));
+    cursorPos = QMIN(selectStart, cursorPos);
+    textSelected = 0;
+    MODIFIED
+      redraw();
+    UPDATE_SIZE
+      return;
+  }
+  
+  return;
+}
+
+void KFormulaEdit::do_copy(QString oldText, int oldc)
+{
+  if(textSelected) {
+    clipText =
+      QString(formText.mid(QMIN(selectStart, cursorPos),
+			   QMAX(selectStart - cursorPos + 1, \
+				cursorPos - selectStart + 1) - 1));
+  }
+  return;
+}
+
+void KFormulaEdit::do_paste(QString oldText, int oldc)
+{
+  if(clipText.length() > 0) {
+    if(textSelected) {
+      formText.remove(QMIN(selectStart, cursorPos),
+		      QMAX(selectStart - cursorPos, \
+			   cursorPos - selectStart));
+      cursorPos = QMIN(selectStart, cursorPos);
+      textSelected = 0;
+    }
+    formText.insert(cursorPos, clipText);
+    cursorPos += clipText.length();
+    MODIFIED
+    redraw();
+    UPDATE_SIZE
+    return;
+  }
 }
 
 //---------------------------INSERT CHAR--------------------
@@ -1638,6 +1556,12 @@ void KFormulaEdit::insertChar(int c)
 {
   QString oldText = formText; // for undo
   int oldc = cursorPos; // also for undo mostly
+
+  if(c == CUT_CHAR) { do_cut(oldText, oldc); return; }
+  if(c == COPY_CHAR) { do_copy(oldText, oldc); return; }
+  if(c == PASTE_CHAR) { do_paste(oldText, oldc); return; }
+  if(c == UNDO_CHAR) { do_undo(oldText, oldc); return; }
+  if(c == REDO_CHAR) { do_redo(oldText, oldc); return; }
 
   insertChar(QChar(c));
 

@@ -38,9 +38,6 @@ struct charinfo { // used to determine where each character gets
 
 int operator==(struct charinfo a, struct charinfo b);
 
-//this class is for parsing and storing the actual boxes that
-//make up a formula
-
 #define L_GROUP QChar('{')
 #define R_GROUP QChar('}')
 #define L_BRACE_UNSEEN QChar(129)
@@ -54,6 +51,9 @@ enum ErrorType {
   EMPTY_BOX,
   PARSE_ERROR
 };
+
+//this class is for parsing and storing the actual boxes that
+//make up a formula
 
 class KFormula {
 private:
@@ -101,6 +101,8 @@ public:
   static QString bigop() { initStrings(); return *BIGOP; }
   static QString eval() { initStrings(); return *EVAL; }
   static int findMatch(QString s, int pos); // find the matching brace
+  static QString toUgly(QString);
+  static QString fromUgly(QString);
 
 };
 

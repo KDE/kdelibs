@@ -24,6 +24,7 @@
 #include "math.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <qregexp.h>
 
 //initialize the static members:
 QString *KFormula::SPECIAL = NULL;
@@ -102,6 +103,150 @@ void KFormula::initStrings(void)
   *EVAL += (QChar(ABS));
   *EVAL += (QChar(SQRT));
 }
+
+
+//-----------------------------TO UGLY--------------------------
+//static--converts string to ugly form
+QString KFormula::toUgly(QString ugly)
+{
+  int i;
+
+  if(ugly.isNull() || ugly.isEmpty()) return QString("");
+
+  //look for roots
+  i = ugly.find(QChar(SQRT));
+  while(i != -1) {
+    if(ugly[i - 2] == L_GROUP) { // we have a square root
+      ugly.remove(i - 2, 3);
+      ugly.insert(i - 2, "sqrt"); // {}@{...}  -->  sqrt{...}
+    }
+    else { // we have an nth root.  What to do?
+      kdebug(KDEBUG_WARN, 0, "What do you want to do about nth roots?");
+      //for now remove the root sign just to keep the conversion alive
+      ugly.remove(i, 1);
+    }
+
+    i = ugly.find(QChar(SQRT), i);
+  }
+  
+  //look for brackets
+  i = ugly.find(QChar(BRACKET));
+  while(i != -1) {
+    i -= 2;
+    ugly.remove(i, 3);  // {}[{...}  -->  {...}
+    
+    ugly[ findMatch(ugly, i) ] = ']';
+    ugly[i] = '[';  // {...}  -->  [...]
+
+    i = ugly.find(QChar(BRACKET), i + 1); // find next parentheses
+  }
+
+  //do all other replacements.
+  QRegExp r;
+
+  r = QString(L_GROUP) + R_GROUP + QChar(PAREN); //parentheses
+  ugly.replace(r, "");  // {}({...} --> {...}
+
+  r = QString(L_GROUP) + R_GROUP + QChar(ABS); // absolute value
+  ugly.replace(r, "abs"); // {}|{...} --> abs{...}
+
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == QChar(POWER)) ugly[i] = '^';
+    else if(ugly[i] == QChar(SUB)) ugly[i] = '_';
+    else if(ugly[i] == QChar(DIVIDE)) ugly[i] = '/';
+    else if(ugly[i] == L_GROUP) ugly[i] = '(';
+    else if(ugly[i] == R_GROUP) ugly[i] = ')';
+  }
+
+  return ugly;
+}
+
+
+//-----------------------------FROM UGLY--------------------------
+//static--converts string from ugly form toparseable form
+QString KFormula::fromUgly(QString ugly)
+{
+  int i;
+
+  //search for absolute value:
+  i = ugly.find("abs(", 0, FALSE); // case insensitive
+  while(i != -1) {
+    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an abs
+      int tmp = findMatch( ugly, i + 3);
+      ugly.replace(i, 4, QString(L_GROUP) + R_GROUP + QChar(ABS) + L_GROUP); // abs( --> {}|{
+      ugly[tmp] = R_GROUP;
+    }
+
+    i = ugly.find("abs(", i + 1, FALSE);
+  }
+
+  //search for square roots:
+  i = ugly.find("sqrt(", 0, FALSE); // case insensitive
+  while(i != -1) {
+    if( (i == 0 || !ugly[i - 1].isLetter()) ) { //we really have an sqrt
+      ugly[ findMatch( ugly, i + 4) ] = R_GROUP;
+      ugly.replace(i, 5, QString(L_GROUP) + R_GROUP + QChar(SQRT) + L_GROUP); // abs( --> {}|{
+    }
+
+    i = ugly.find("sqrt(", i + 1, FALSE);
+  }
+
+  //search for brackets:
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == '[') {
+      ugly[ findMatch(ugly, i) ] = R_GROUP;
+      ugly.remove(i, 1);
+      ugly.insert(i, QString(L_GROUP) + R_GROUP + QChar(BRACKET) + L_GROUP);
+      i += 4;
+    }
+  }
+
+  //look for division:
+  i = ugly.find(")/("); //if it doesn't have parentheses around it, it will be a slash not a fraction.
+  while(i != -1) {
+    ugly[ findMatch(ugly, i) ] = L_GROUP;
+    ugly[i] = R_GROUP;
+    ugly[i + 1] = QChar(DIVIDE);
+    ugly[ findMatch(ugly, i + 2) ] = R_GROUP;
+    ugly[i + 2] = L_GROUP;
+
+    i = ugly.find(")/(", i + 1);
+  }
+
+  //the quest for power (and subscript):
+  i = ugly.find("^("); // it will just remain a caret if it has no parentheses
+  while(i != -1) {
+    ugly[ findMatch(ugly, i + 1) ] = R_GROUP;
+    ugly[i + 1] = L_GROUP;
+    ugly[i] = QChar(POWER);
+
+    i = ugly.find("^(", i + 1);
+  }
+
+  i = ugly.find("_("); // it will just remain an underscore if it has no parentheses
+  while(i != -1) {
+    ugly[ findMatch(ugly, i + 1) ] = R_GROUP;
+    ugly[i + 1] = L_GROUP;
+    ugly[i] = QChar(SUB);
+
+    i = ugly.find("_(", i + 1);
+  }
+
+  //finally, take care of all the remaining parentheses:
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == '(') {
+      ugly[i] = L_GROUP;
+      ugly.insert(i + 1, QString(R_GROUP) + QChar(PAREN) + L_GROUP);
+      i += 3;
+    }
+    if(ugly[i] == ')') ugly[i] = R_GROUP;
+  }
+
+  //it's not ugly anymore--it's parseable!
+  return ugly;
+
+}
+
 
 //-----------------------------FIND MATCH--------------------------
 //static--finds the matching delimiter

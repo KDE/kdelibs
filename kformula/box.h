@@ -39,7 +39,7 @@
 #define UNUSED_OFFSET  1000
 
 //temporary workaround--otherwise it warns since
-//there are two possible QChat constructors:
+//there are two possible QChar constructors:
 #define QChar(__x) QChar((int)(__x))
 
 struct charinfo;
