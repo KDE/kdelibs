@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <qdatetime.h>
 
-bool fullscreen = false;
+bool fullscreen = false, orig = true;
 
 KColorWidget::KColorWidget(QWidget *parent, const char *name)
     : QWidget(parent, name)
@@ -42,15 +42,28 @@ void KColorWidget::doIntensityLoop()
     if (fullscreen){
       start = t.elapsed();
       for(count=0; count < 10; ++count){
-	KPixmapEffect::intensity(image, .03*count, false);
+	if (orig)
+	  KPixmapEffect::intensity(image, .03*count, false);
+	else {
+	  uint *qptr=(uint *)image.bits();
+	  QRgb qrgb;
+	  int size=pixmap.width()*pixmap.height();
+	  for (int i=0;i<size; i++, qptr++)
+	    {
+	      qrgb=*(QRgb *)qptr;
+	      *qptr=qRgb((int)(qRed(qrgb)*0.3*count),
+			 (int)(qGreen(qrgb)*03*count),
+			 (int)(qBlue(qrgb)*03*count));
+	    }
+	}
 	pixmap.convertFromImage(image);
 	image = original;
 	bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
 	       Qt::CopyROP, true);
       }
       stop = t.elapsed();
-      warning ("Total fullscreen dim time for %d steps : %f s", 
-	       count, (stop - start)*1e-3);
+      warning ("Total fullscreen %s dim time for %d steps : %f s", 
+	       orig?"":"(antonio)", count, (stop - start)*1e-3);
     }
     
     else {
@@ -125,9 +138,13 @@ int main(int argc, char **argv)
 {
     if (argc > 1) {
       if (!strcmp(argv[1], "fullscreen"))
-	fullscreen = true;
+	{
+	  fullscreen = true;
+	  if (!strcmp(argv[2], "orig"))
+	    orig = true;
+	}
       else
-	printf("Usage: %s [fullscreen]", argv[0]);
+	printf("Usage: %s [fullscreen [orig]]", argv[0]);
     }
     KApplication *app = new KApplication(argc, argv);
     KColorWidget w;

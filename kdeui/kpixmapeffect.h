@@ -70,21 +70,30 @@ public:
     
   /**
    * Blends the provided image into a background of the indicated color
-   * @ float initial_intensity;  this parameter says how much to fade the
-   *    image in its less affected spot
+   * @ float initial_intensity;  this parameter takes values from -1 to 1: 
+   *              a) if positive: how much to fade the image in its 
+   *                              less affected spot
+   *              b) if negative: roughly indicates how much of the image 
+   *                              remains unaffected
    * @ QColor bgnd; indicates the color of the background to blend in
    * @ KPixmapEffect::GradientType eff; lets you choose what
    *    kind of blending you like
+   * @ bool anti_dir; blend in the opposite direction (makes no much sense
+   *                  with concentric blending effects)
    */
-  static void blend(QImage &image, float initial_intensity,
-		    const QColor &bgnd, GradientType eff, int ncols=3);
+  static void blend(QImage &image, float initial_intensity, 
+		    const QColor &bgnd, GradientType eff,
+		    bool anti_dir=false, int ncols=3);
 
   /**
    * Blends the provided pixmap (see the other method prototype)
    */
-  inline static void blend(KPixmap &pixmap, float initial_intensity,
-		    const QColor &bgnd, GradientType eff, int ncols=3);
+  inline static void blend(KPixmap &pixmap, float initial_intensity, 
+			   const QColor &bgnd, GradientType eff,
+			   bool anti_dir=false, int ncols=3);
 };
+
+
 
 inline void KPixmapEffect::intensity(KPixmap &pixmap, float percent,
                                      bool brighten)
@@ -106,10 +115,10 @@ inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
 inline void KPixmapEffect::blend(KPixmap &pixmap, 
 					float initial_intensity,
 					const QColor &bgnd, GradientType eff, 
-					int ncols)
+					bool anti_dir, int ncols)
 {
   QImage image = pixmap.convertToImage();
-  blend(image, initial_intensity, bgnd, eff, ncols);
+  blend(image, initial_intensity, bgnd, eff, anti_dir, ncols);
   pixmap.convertFromImage(image);
 }
 
