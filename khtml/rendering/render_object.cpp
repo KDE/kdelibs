@@ -339,10 +339,16 @@ QSize RenderObject::size() const
 }
 
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width,
-                              BorderSide s, QColor c, EBorderStyle style, bool sb1, bool sb2)
+                              BorderSide s, QColor c, const QColor& textcolor, EBorderStyle style, bool sb1, bool sb2)
 {
     if(style == DOUBLE && width < 3)
         style = SOLID;
+
+    if(!c.isValid())
+        if(style == INSET || style == OUTSET)
+            c.setRgb(238, 238, 238);
+        else
+            c = textcolor;
 
     int half = width/2;
     switch(style)
@@ -408,12 +414,12 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         // drawing two small rectangles?
         // disadvantage is that current edges doesn't look right because of reverse
         // drawing order
-        drawBorder(p, x1, y1, x2, y2, width, s, c, INSET, sb1, sb2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, OUTSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, sb1, sb2);
         break;
     case RIDGE:
-        drawBorder(p, x1, y1, x2, y2, width, s, c, OUTSET, sb1, sb2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, INSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, sb1, sb2);
         break;
     case INSET:
         if(style == INSET) {
@@ -510,31 +516,29 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
 
 void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
 {
-    int bottom = _ty + h;
-    int right  = _tx + w;
-    const QColor& tc = style->borderTopColor().isValid() ? style->borderTopColor() : style->color();
-    const QColor& lc = style->borderLeftColor().isValid() ? style->borderLeftColor() : style->color();
-    const QColor& rc = style->borderRightColor().isValid() ? style->borderRightColor() : style->color();
-    const QColor& bc = style->borderBottomColor().isValid() ? style->borderBottomColor() : style->color();
+    const QColor& tc = style->borderTopColor();
+    const QColor& lc = style->borderLeftColor();
+    const QColor& rc = style->borderRightColor();
+    const QColor& bc = style->borderBottomColor();
     bool render_t = style->borderTopStyle() != BNONE && style->borderTopStyle() != BHIDDEN;
     bool render_l = style->borderLeftStyle() != BNONE && style->borderLeftStyle() != BHIDDEN && begin;
     bool render_r = style->borderRightStyle() != BNONE && style->borderRightStyle() != BHIDDEN && end;
     bool render_b = style->borderBottomStyle() != BNONE && style->borderBottomStyle() != BHIDDEN;
 
     if(render_r)
-        drawBorder(p, right, _ty, right, bottom, style->borderRightWidth(), BSRight, rc,
+        drawBorder(p, _tx + w, _ty, _tx + w, _ty + h, style->borderRightWidth(), BSRight, rc, style->color(),
                    style->borderRightStyle(), render_t && tc != rc, render_b && bc != rc);
 
     if(render_b)
-        drawBorder(p, _tx, bottom, right, bottom, style->borderBottomWidth(), BSBottom, bc,
+        drawBorder(p, _tx, _ty + h, _tx + w, _ty + h, style->borderBottomWidth(), BSBottom, bc, style->color(),
                    style->borderBottomStyle(), render_l && lc != bc, render_r && rc != bc);
 
     if(render_l)
-        drawBorder(p, _tx, _ty, _tx, bottom, style->borderLeftWidth(), BSLeft, lc,
+        drawBorder(p, _tx, _ty, _tx, _ty + h, style->borderLeftWidth(), BSLeft, lc, style->color(),
                    style->borderLeftStyle(), render_t && tc != lc, render_b && bc != lc);
 
     if(render_t)
-        drawBorder(p, _tx, _ty, right, _ty, style->borderTopWidth(), BSTop, tc,
+        drawBorder(p, _tx, _ty, _tx + w, _ty, style->borderTopWidth(), BSTop, tc, style->color(),
                    style->borderTopStyle(), render_l && lc != tc, render_r && rc != tc);
 }
 

@@ -274,8 +274,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     	border=1;
 #endif
 	QString str;
-	str.sprintf("%dpx solid", border);
-	addCSSProperty(CSS_PROP_BORDER, str);
+	str.sprintf("%dpx", border);
+	addCSSProperty(CSS_PROP_BORDER_WIDTH, str);
 #if 0
 	// wanted by HTML4 specs
 	if(!border)
