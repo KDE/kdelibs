@@ -93,6 +93,14 @@ public:
     KIntNumInput(const QString& label, int lower, int upper, int step, int value,
                  const QString& units, int base = 10, bool slider = true,
                  QWidget *parent=0, const char *name=0);
+
+    /**
+     * overloaded constructor, provided for convenience
+     *
+     */
+    KIntNumInput(int lower, int upper, int step, int value, QWidget* parent=0,
+                 const QString& label = QString::null, const QString& units = QString::null,
+                 bool slider = true, int base = 10, const char* name = 0);
     
     virtual ~KIntNumInput();
 
@@ -169,6 +177,9 @@ protected slots:
     void resetValueField(int);
     
 protected:
+    void init(const QString& label, int lower, int upper, int step, int val,
+              const QString& units, int _base, bool use_slider);
+    
     void resizeEvent ( QResizeEvent * );
   
     QLabel*      main_label;

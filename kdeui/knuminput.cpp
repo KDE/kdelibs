@@ -66,19 +66,35 @@ int KIntSpinBox::mapTextToValue(bool* ok)
 
 // -----------------------------------------------------------------------------
 
-KIntNumInput::KIntNumInput(const QString& label, 
-                           const int lower, const int upper,
-                           const int step, const int val,
-                           const QString& units, int _base,
-                           bool use_slider,
+KIntNumInput::KIntNumInput(const QString& label, int lower, int upper, int step,
+                           int val, const QString& units, int _base, bool use_slider,
                            QWidget *parent, const char *name)
     : QWidget(parent, name )
 {
-  // Check boundaries, since 'val' can be provided from a function call or a
-  // variable, so the programmer doesn't have full control on it.
+    init(label, lower, upper, step, val, units, _base, use_slider);
+
+}
+
+
+
+// -----------------------------------------------------------------------------
+
+KIntNumInput::KIntNumInput(int lower, int upper, int step, int value, QWidget* parent,
+                           const QString& label, const QString& units, bool use_slider,
+                           int _base, const char* name)
+    : QWidget(parent, name) 
+{
+    init(label, lower, upper, step, value, units, _base, use_slider);
+}
+
+
+// -----------------------------------------------------------------------------
+
+void KIntNumInput::init(const QString& label, int lower, int upper, int step, int val,
+                        const QString& units, int _base, bool use_slider) 
+{
   // Not checking the boundaries blocks the code in this constructor for
   // some reason.
-  
   int_value = val;
 
   if (val > upper) int_value = upper;
@@ -111,6 +127,8 @@ KIntNumInput::KIntNumInput(const QString& label,
     setSpinBoxSize(25);
 }
 
+
+// -----------------------------------------------------------------------------
 
 void KIntNumInput::resetValueField(int val)
 {
