@@ -31,7 +31,7 @@ check_PROGRAMS =kledlamptest kprogresstest \
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
 		kwindowtest kstatusbartest kbuttonboxtest \
 	        kledtest kcontainertest krulertest \
-		kwizardtest kurltest kformulatest \
+		kwizardtest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest dialogbasetest \
 		kgradienttest \
@@ -75,7 +75,6 @@ krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
-kurltest_SOURCES = kurltest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
