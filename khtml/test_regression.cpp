@@ -351,7 +351,7 @@ int main(int argc, char *argv[])
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
 
-    KCmdLineArgs::init(argc, argv, "test_regression", "TestRegression",
+    KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
                        "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
 
@@ -1007,9 +1007,7 @@ void RegressionTest::testStaticFile(const QString & filename)
         if ( comp.complType() == ReturnValue || comp.complType() == Normal )
         {
             if (!comp.value().isNull() && comp.value().isA(ObjectType) &&
-                (Object::dynamicCast(comp.value()).
-                 inherits(m_part->jScriptInterpreter()->builtinArray().
-                    imp()->classInfo()) ) )
+               (Object::dynamicCast(comp.value()).className() == "Array" ) )
             {
                 Object argArrayObj = Object::dynamicCast(comp.value());
                 unsigned int length = argArrayObj.
