@@ -227,24 +227,32 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         int sx = 0;
         int sy = 0;
-
+          
+        
+        //hacky stuff
+        EBackgroundRepeat bgr = m_style->backgroundRepeat();
+        if (isHtml() && firstChild())
+            bgr = firstChild()->style()->backgroundRepeat();
+        
+        //maybe here too?
         if( !m_style->backgroundAttachment() ) {
             //kdDebug(0) << "fixed background" << endl;
             QRect r = viewRect();
             sx = _tx - r.x();
             sy = _ty - r.y();
 
-        }
+        }          
 
-        switch(m_style->backgroundRepeat()) {
+        switch(bgr) {
         case NO_REPEAT:
             w = QMIN(bg->pixmap_size().width(), w);
+            h = QMIN(bg->pixmap_size().height(), h);
             /* nobreak */
         case REPEAT_X:
             h = QMIN(bg->pixmap_size().height(), h);
             break;
         case REPEAT_Y:
-            h = QMIN(bg->pixmap_size().width(), h);
+            w = QMIN(bg->pixmap_size().width(), w);
             break;
         case REPEAT:
             break;
