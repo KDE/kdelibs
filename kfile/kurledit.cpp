@@ -61,7 +61,7 @@ void KURLEdit::init()
   myEdit = new QLineEdit( this, "line edit" );
   myButton = new QToolButton( this, "kfile button" );
   myButton->setPixmap(
-	 KGlobal::iconLoader()->loadApplicationIcon(QString::fromLatin1("folder"),
+	 KGlobal::iconLoader()->loadIcon(QString::fromLatin1("folder"),
 						    KIconLoader::Small,
 						    0L, false ) );
 

@@ -311,12 +311,12 @@ KMimeType::~KMimeType()
 
 QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadApplicationIcon( icon( QString::null, false ), _size, _path, false );
+  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ), _size, _path, false );
 }
 
 QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadApplicationIcon( icon( _url, _url.isLocalFile() ), _size, _path, false );
+  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ), _size, _path, false );
 }
 
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
@@ -470,7 +470,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
 QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
-  QPixmap pix = KGlobal::iconLoader()->loadApplicationIcon( _icon, _size, _path, true );
+  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _size, _path, true );
   if (pix.isNull())
   {
     KSimpleConfig cfg( _url.path(), true );
@@ -480,9 +480,9 @@ QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, Q
     {
       //kDebugInfo( 7009, "trying to load devices/%s",_icon.latin1());
       // KDE-1.x kdelnks contain "cdrom_mount.xpm" instead of "devices/cdrom_mount"
-      return KGlobal::iconLoader()->loadApplicationIcon( QString("devices/"+_icon), _size, _path, false );
+      return KGlobal::iconLoader()->loadIcon( QString("devices/"+_icon), _size, _path, false );
     }
-    return KGlobal::iconLoader()->loadApplicationIcon("unknown", _size, _path, false);
+    return KGlobal::iconLoader()->loadIcon("unknown", _size, _path, false);
   }
   return pix;
 }

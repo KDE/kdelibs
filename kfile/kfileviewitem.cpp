@@ -440,7 +440,7 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	if ( myPixmapSize != size || !myPixmap ) {
 	    delete myPixmap;
 	    myPixmap = new QPixmap(
-				   KGlobal::iconLoader()->loadApplicationIcon(defaultIcon(), size,
+				   KGlobal::iconLoader()->loadIcon(defaultIcon(), size,
 									      0L, false));
 	}
     }
@@ -452,7 +452,7 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	    if ( icon.isEmpty() )
 		icon = defaultIcon();
 	
-	    QPixmap temp = KGlobal::iconLoader()->loadApplicationIcon(icon, size);
+	    QPixmap temp = KGlobal::iconLoader()->loadIcon(icon, size);
 	    delete myPixmap;
 	    myPixmap = new QPixmap( temp );
 	

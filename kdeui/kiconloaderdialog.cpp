@@ -390,7 +390,7 @@ void KIconLoaderButton::setIcon(const QString& _icon)
 {
   iconStr = _icon;
   if (resType == "icon")
-    setPixmap( KGlobal::iconLoader()->loadApplicationIcon(iconStr) );
+    setPixmap( KGlobal::iconLoader()->loadIcon(iconStr) );
   else
     setPixmap( locate(resType, iconStr) );
 }

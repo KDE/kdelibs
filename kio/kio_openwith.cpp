@@ -196,18 +196,18 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
         text_name         = kconfig.readEntry("Name", text_name);
         
         if( !mini_pixmap_name.isEmpty() )
-            pixmap = KGlobal::iconLoader()->loadApplicationIcon(mini_pixmap_name, 
+            pixmap = KGlobal::iconLoader()->loadIcon(mini_pixmap_name, 
 								KIconLoader::Small);
         if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
             pixmap = KGlobal::iconLoader()->
-	      loadApplicationIcon(big_pixmap_name, KIconLoader::Small);
+	      loadIcon(big_pixmap_name, KIconLoader::Small);
         if( pixmap.isNull() )
             pixmap = KGlobal::iconLoader()->
-	      loadApplicationIcon("default", KIconLoader::Small);
+	      loadIcon("default", KIconLoader::Small);
     }
     else {
         command_name = text_name;
-        pixmap = KGlobal::iconLoader()->loadApplicationIcon("default", 
+        pixmap = KGlobal::iconLoader()->loadIcon("default", 
 							    KIconLoader::Small);
     }
 
