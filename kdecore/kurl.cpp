@@ -82,6 +82,16 @@ KURL::detach()
   passwd_part.detach();
 }
 
+KURL::KURL() 
+{ 
+  malformed = true;
+  protocol_part = "";
+  host_part = ""; 
+  path_part = ""; 
+  ref_part = ""; 
+}
+
+
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
   malformed = _base_url.malformed;
@@ -266,6 +276,69 @@ const char* KURL::directory( bool _trailing )
     }
 
     return dir_part.data();
+}
+
+char* KURL::host() const 
+{
+  if (host_part.isNull()) 
+    return "";
+  else 
+    return host_part.data();
+}
+
+ 
+char* KURL::path() const 
+{ 
+  if (path_part.isNull()) 
+    return "";
+  else 
+    return path_part.data(); 
+}
+
+char* KURL::reference() const 
+{ 
+  if (ref_part.isNull()) 
+    return "";
+  else 
+    return ref_part.data(); 
+}
+
+const char* KURL::user() 
+{ 
+  if (user_part.isNull()) 
+    return "";
+  else 
+    return user_part.data(); 
+}
+
+unsigned int KURL::port() const 
+{
+  return port_number;
+}
+
+const char* KURL::passwd() 
+{ 
+  if (passwd_part.isNull()) 
+    return "";
+  else 
+    return passwd_part.data(); 
+}
+
+void KURL::setPassword( const char *password )
+{
+   passwd_part = password;
+}
+
+bool KURL::cdUp( bool zapRef ) 
+{
+  if( zapRef) 
+    setReference("");
+  return cd( "..");
+}
+
+bool KURL::operator==( const KURL &_url) const
+{
+   return _url.url() == url();
 }
 
 const char* KURL::directoryURL( bool _trailing )

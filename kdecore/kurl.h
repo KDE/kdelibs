@@ -36,8 +36,7 @@ public:
 /** 
 * Construct a KURL object.
 */
-  KURL() { malformed = true; protocol_part = ""; 
-  host_part = ""; path_part = ""; ref_part = ""; } 
+  KURL();
      
 /** 
 * Construct a KURL object from _url. 
@@ -107,8 +106,7 @@ public:
 * This function returns the host. If there is no host (i.e.
 * the URL refers to a local file) this function returns "".
 */
-  char* host() const { if (host_part.isNull()) return "";  
-  else return host_part.data(); }
+  char* host() const;
 
 /** 
 * This function returns the path-part of the URL.
@@ -116,8 +114,7 @@ public:
 * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
 * returns "/bar/stuff.tar.gz".
 */
-  char* path() const { if (path_part.isNull()) return ""; 
-  else return path_part.data(); }
+  char* path() const;
 
 /** 
 * This function returns the reference. 
@@ -125,30 +122,27 @@ public:
 * If the URL is "http://www.nowhere/path/file.html#toc", this function 
 * will return #toc#. If there is no reference it returns "".
 */
-  char* reference() const { if (ref_part.isNull()) return ""; 
-  else return ref_part.data(); }
+  char* reference() const;
 
 /**
 * This function returns the user name or an empty string if
 * no user has been specified.
 */
-  const char* user() { if (user_part.isNull()) return ""; 
-  else return user_part.data(); }
+  const char* user();
 
 /**
 * The password.
 *
 * @return the password, or an empty string if no password was specified.
 */
-  const char* passwd() { if (passwd_part.isNull()) return ""; 
-  else return passwd_part.data(); }
+  const char* passwd();
 
 /**
 * The port number.
 *
 * @return the port number, or 0 if none was specified.
 */
-    unsigned int port() const { return port_number; }
+    unsigned int port() const;
     
 /**
 * Returns the directory only.
@@ -187,7 +181,7 @@ public:
 /**
 * Set the password.
 */
-  void setPassword( const char *password ) { passwd_part = password; }     
+  void setPassword( const char *password );
 
 /** 
 * Set reference. 
@@ -237,8 +231,7 @@ public:
 * Go to parent dir. If zapRef is true, the reference is removed, 
 * otherwise it stays, but normally no one would want that. 
 */
-  bool cdUp( bool zapRef = true) { if( zapRef) setReference(""); 
-  return cd( ".."); }
+  bool cdUp( bool zapRef = true);
 
 /**
 * Returns the filename or directory name of the URL.
@@ -265,7 +258,7 @@ public:
 *
 * @return true if the URLs are equal, false otherwise.
 */
-  bool operator==( const KURL &_url) const { return _url.url() == url(); }
+  bool operator==( const KURL &_url) const ;
   //@}
      
 /** 
@@ -316,4 +309,3 @@ private:
 #endif
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
