@@ -57,7 +57,7 @@ public:
 #define REGISTER_IMPLEMENTATION(impl)                                      \
   class impl ## _Factory : virtual public Arts::Factory {                  \
   public:                                                                  \
-    std::string interfaceName() { return impl ## ::_interfaceNameSkel(); } \
+    std::string interfaceName() { return impl::_interfaceNameSkel(); } \
 	Arts::Object_skel *createInstance() { return new impl ; }              \
 } The_ ## impl ## _Factory
 
