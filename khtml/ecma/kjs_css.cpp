@@ -470,6 +470,8 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 @begin DOMCSSStyleSheetTable 2
   ownerRule	DOMCSSStyleSheet::OwnerRule	DontDelete|ReadOnly
   cssRules	DOMCSSStyleSheet::CssRules	DontDelete|ReadOnly
+# MSIE extension
+  rules		DOMCSSStyleSheet::Rules		DontDelete|ReadOnly
 @end
 @begin DOMCSSStyleSheetProtoTable 2
   insertRule	DOMCSSStyleSheet::InsertRule	DontDelete|Function 2
@@ -492,7 +494,7 @@ Value DOMCSSStyleSheet::tryGet(ExecState *exec, const UString &p) const
   DOM::CSSStyleSheet cssStyleSheet = static_cast<DOM::CSSStyleSheet>(styleSheet);
   if (p == "ownerRule")
     return getDOMCSSRule(exec,cssStyleSheet.ownerRule());
-  else if (p == "cssRules")
+  else if (p == "cssRules" || p == "rules" /* MSIE extension */)
     return getDOMCSSRuleList(exec,cssStyleSheet.cssRules());
   return DOMStyleSheet::tryGet(exec,p);
 }

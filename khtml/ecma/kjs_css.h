@@ -117,7 +117,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { OwnerRule, CssRules,
+    enum { OwnerRule, CssRules, Rules,
            InsertRule, DeleteRule };
     DOM::CSSStyleSheet toCSSStyleSheet() const { return static_cast<DOM::CSSStyleSheet>(styleSheet); }
   };
