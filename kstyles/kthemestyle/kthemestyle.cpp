@@ -394,7 +394,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
         : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 ),
-         brushHandle( 0 ), brushHandleSet( false )
+         brushHandle( 0 ), brushHandleSet( false ), kickerMode( false )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -409,8 +409,11 @@ KThemeStyle::~KThemeStyle()
 }
 
 
-void KThemeStyle::polish( QApplication * /*app*/ )
-{}
+void KThemeStyle::polish( QApplication * app )
+{
+    if (!qstrcmp(app->argv()[0], "kicker"))
+        kickerMode = true;
+}
 
 
 void KThemeStyle::polish( QPalette &p )
@@ -501,7 +504,9 @@ void KThemeStyle::polish( QWidget *w )
          w->installEventFilter(this);
 
 
-    if (w->backgroundPixmap() && !w->isTopLevel())
+    if (w->backgroundPixmap() && !w->isTopLevel() && 
+        (!kickerMode || 
+        (!w->inherits("TaskBar") && !w->inherits("TaskBarContainer") && !w->inherits("TaskbarApplet") && !w->inherits("ContainerArea") && !w->inherits("AppletHandle"))))
     {
         //The brushHandle check verifies that the bg pixmap is actually the brush..
         if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
@@ -2363,10 +2368,5 @@ int KThemeStyle::popupMenuItemHeight( bool /*checkable*/, QMenuItem *mi,
     return ( h );
 }
 
-
-
-
 #include "kthemestyle.moc"
-
-
-
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent on;

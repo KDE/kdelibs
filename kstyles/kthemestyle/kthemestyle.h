@@ -204,6 +204,7 @@ protected:
 
     Qt::HANDLE brushHandle;
     bool brushHandleSet;
+    bool kickerMode;
 
 protected slots:
     void paletteChanged();
