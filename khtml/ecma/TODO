@@ -8,4 +8,6 @@ Has to be done
 
 Could be done
 =============
-- Your wish here :)
+- Make the graphical debugger useable
+- Improve internal structures to give a really useful
+  output on errors (i.e. improve backtrance capabilities)
