@@ -70,7 +70,11 @@ public:
   typedef KSharedPtr<KSycocaEntry> SPtr;
   typedef QValueList<SPtr> List;
 public:
-
+  /**
+   * Construct a dummy servicegroup indexed with @p name
+   */
+  KServiceGroup( const QString & name );
+  
   /**
    * Construct a service and take all informations from a config file
    * @param _fullpath full path to the config file
@@ -166,6 +170,12 @@ public:
 
   static Ptr root();
   static Ptr group(const QString &relPath);
+
+  /**
+   * @return the group of services that have X-KDE-ParentApp equal
+   * to @p parent
+   */
+  static Ptr childGroup(const QString &parent);
 
 protected:
   /**

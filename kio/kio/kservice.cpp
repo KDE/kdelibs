@@ -535,6 +535,16 @@ bool KService::noDisplay() const {
      return false;
 }
 
+QString KService::parentApp() const {
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "X-KDE-ParentApp" );
+  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
+  {
+     return QString::null;
+  }
+
+  return it.data().toString();
+}
+
 bool KService::allowMultipleFiles() const {
   // Can we pass multiple files on the command line or do we have to start the application for every single file ?
   if ( m_strExec.find( "%F" ) != -1 || m_strExec.find( "%U" ) != -1 ||

@@ -229,6 +229,12 @@ public:
   bool noDisplay() const;
 
   /**
+   * Name of the application this service belongs to.
+   * (Usefull for e.g. plugins)
+   */
+  QString parentApp() const;
+
+  /**
    * @return the requested properties. Some often used properties
    *         have convenience access functions like @ref exec(),
    *         @ref serviceTypes etc.

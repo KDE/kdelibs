@@ -37,6 +37,13 @@ public:
   bool m_bNoDisplay;
 };
 
+KServiceGroup::KServiceGroup( const QString & name )
+ : KSycocaEntry(name), m_childCount(-1)
+{
+  d = new KServiceGroup::Private;
+  m_bDeleted = false;
+}
+
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
  : KSycocaEntry(_relpath), m_childCount(-1)
 {
@@ -334,6 +341,14 @@ KServiceGroup::group(const QString &relPath)
    if (relPath.isEmpty()) return root();
    return KServiceGroupFactory::self()->findGroupByDesktopPath(relPath, true);
 }
+
+KServiceGroup::Ptr
+KServiceGroup::childGroup(const QString &parent)
+{
+   return KServiceGroupFactory::self()->findGroupByDesktopPath("#parent#"+parent, true);
+}
+
+
 
 void KServiceGroup::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
