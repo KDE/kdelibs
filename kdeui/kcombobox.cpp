@@ -28,9 +28,6 @@
 #include "kcombobox.moc"
 
 
-
-
-
 KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
@@ -118,41 +115,39 @@ void KComboBox::makeCompletion( const QString& text )
 
     	int pos = cursorPosition();
     	KGlobalSettings::Completion mode = completionMode();
-		QString match = comp->makeCompletion( text );
+	QString match = comp->makeCompletion( text );
 
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
        	    // Put the cursor at the end when in semi-automatic
-	        // mode and completion is invoked with the same text.
-    	    if( mode == KGlobalSettings::CompletionMan )
-			{
-	    	    m_pEdit->end( false );
-	        }
+	    // mode and completion is invoked with the same text.
+    	    if( mode == KGlobalSettings::CompletionMan ) {
+		m_pEdit->end( false );
+	    }
     	    return;
       	}
 
       	// Set the current text to the one completed.
         setEditText( match );
 
-	    // Hightlight the text whenever appropriate.
+	// Hightlight the text whenever appropriate.
     	if( mode == KGlobalSettings::CompletionAuto ||
-	    	mode == KGlobalSettings::CompletionMan )
-	    {
+	    mode == KGlobalSettings::CompletionMan )
+	{
             m_pEdit->setSelection( pos, match.length() );
             m_pEdit->setCursorPosition( pos );
         }
-	}
-	// Read - only combobox
+    }
+    
+    // Read - only combobox
     else if( !m_pEdit )
     {
 	if( text.isNull() )
-	{
 	    return;
-	}
+
 	int index = listBox()->index( listBox()->findItem( text ) );
-	if( index >= 0 )
-	{
+	if( index >= 0 ) {
 	    setCurrentItem( index );
 	}
     }
@@ -171,20 +166,19 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 	// object available to begin with.
 	KCompletion* comp = compObj();
 	if( comp &&
-		( type == KCompletionBase::PrevCompletionMatch ||
-		  type == KCompletionBase::NextCompletionMatch ) )
+	    ( type == KCompletionBase::PrevCompletionMatch ||
+	      type == KCompletionBase::NextCompletionMatch ) )
 	{
-	   QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
+	    QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
 	   // Ignore rotating to the same text
            if( input.isNull() || input == currentText() )
-            {
-                return;
-            }
+	       return;
+
             bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
             int pos = cursorPosition(); // Note the current cursor position
-   		    setEditText( input );
+	    setEditText( input );
             // Re-mark the selection if it was
-			// previously selected
+	    // previously selected
             if( marked )
             {
                 m_pEdit->setSelection( pos, input.length() );
@@ -295,7 +289,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             if( !m_bEnableMenu )
                 return true;
 
-            QPopupMenu *popup = new QPopupMenu( this );            
+            QPopupMenu *popup = new QPopupMenu( this );
             popup->insertItem( i18n( "Cut" ), Cut );
             popup->insertItem( i18n( "Copy" ), Copy );
             popup->insertItem( i18n( "Clear" ), Clear );
@@ -319,13 +313,13 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                     subMenu->insertSeparator();
                     subMenu->insertItem( i18n("Default"), Default );
                 }
-                popup->insertSeparator();                
+                popup->insertSeparator();
                 popup->insertItem( i18n("Completion"), subMenu );
             }
             popup->insertSeparator();
             popup->insertItem( i18n( "Unselect" ), Unselect );
             popup->insertItem( i18n( "Select All" ), SelectAll );
-            
+
             bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
             bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
             popup->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
@@ -334,7 +328,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
             popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
             popup->setItemEnabled( SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
-            
+
             int result = popup->exec( e->globalPos() );
             delete popup;
 
@@ -371,8 +365,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
 	    // On Return pressed event, emit both returnPressed(const QString&)
 	    // and returnPressed() signals
-	    if ( !m_trapReturnKey )
-		emit returnPressed();
+	    emit returnPressed();
             emit returnPressed( currentText() );
 
 	    return m_trapReturnKey;
@@ -429,7 +422,6 @@ void KHistoryCombo::setHistoryItems( QStringList items,
     }
 
     clearEdit();
-
 }
 
 QStringList KHistoryCombo::historyItems() const
@@ -535,6 +527,6 @@ void KHistoryCombo::slotReset()
 {
     myIterateIndex = -1;
     myRotated = false;
-    //    clearEdit(); // FIXME, use a timer for that? slotReset is called
+    // clearEdit(); // FIXME, use a timer for that? slotReset is called
     // before addToHistory() so we can't clear the edit here :-/
 }

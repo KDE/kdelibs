@@ -486,25 +486,6 @@ public:
      * @see #addToHistory
      */
     bool removeFromHistory( const QString& item );
-    
-    /**
-     * @reimplemented QComboBox::setInsertionPolicy()     
-     *
-     * This function by design has a hard-coded insertion policy
-     * which cannot be modified.  It is set to QComboBox::NoInsertion
-     */
-    virtual void setInsertionPolicy( Policy ) {} // Do not allow change of insertion mode!!
-    
-    /**
-     * @reimplemented QComboBox::insertionPolicy()
-     *        
-     * This function always returns QComboBox::NoInsertion
-     * since this function has a hard-coded insertion policy
-     * by design.
-     *
-     * @return QComboBox::NoInsertion
-     */  
-    Policy insertionPolicy() const { return QComboBox::NoInsertion; }
 
 public slots:
     /**
@@ -530,6 +511,9 @@ public slots:
     void clearHistory();
 
 protected:
+    /**
+     * Handling key-events, the shortcuts to rotate the items.
+     */
     virtual void keyPressEvent( QKeyEvent * );
 
 private slots:
