@@ -132,6 +132,10 @@ void RenderListItem::setStyle(RenderStyle *_style)
 
     RenderStyle *newStyle = new RenderStyle();
     newStyle->inheritFrom(style());
+    if(newStyle->direction() == LTR)
+        newStyle->setFloating(FLEFT);
+    else
+        newStyle->setFloating(FRIGHT);
 
     if(!m_marker && style()->listStyleType() != LNONE) {
 
@@ -181,6 +185,8 @@ void RenderListItem::layout( )
     if (m_marker && !m_marker->layouted())
         m_marker->layout();
     RenderFlow::layout();
+    const QFontMetrics &fm = style()->fontMetrics();
+    m_height = QMAX( fm.height(),  m_height );
 }
 
 // -----------------------------------------------------------
