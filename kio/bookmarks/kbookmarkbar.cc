@@ -209,7 +209,18 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
     return 0;
 }
 
-static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atFirst)
+/** 
+ * Handle a QDragMoveEvent event on a toolbar drop
+ * @return the action to be dropped after (@see @param atFirst)
+ *         else a NULL if event should be ignored, this occurs
+ *         frequently and should be handled by ignoring the return
+ *         value and @param atFirst.
+ * @param pos the current QDragMoveEvent position
+ * @param actions the list of actions plugged into the bar
+ * @param atFirst bool reference, when true the position before the 
+ *        returned action was dropped on
+ */
+static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions, bool &atFirst)
 {
     static int sepIndex;
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
@@ -297,7 +308,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
             return false;
         KAction *_a; 
         bool _atFirst;
-        _a = doFunkySepThing(dme->pos(), dptr()->m_actions, _atFirst);
+        _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst);
         if (_a)
         {
             a = _a;
