@@ -2549,7 +2549,7 @@ void KHTMLPart::findText()
 
   // Create the KFind object
   delete d->m_find;
-  d->m_find = new KFind( d->m_findDialog->pattern(), 0 /*options*/, widget() );
+  d->m_find = new KFind( d->m_findDialog->pattern(), 0 /*options*/, widget(), d->m_findDialog );
   d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want another dlg popping up
   connect(d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
           this, SLOT( slotHighlight( const QString &, int, int ) ) );
