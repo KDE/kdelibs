@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.34  1997/09/29 18:57:35  kalle
+// BINARY INCOMPATIBLE!!!!!!!!!!!!!!!!!!!!!!
+// Support for session management
+// make KDebug compile on HP-UX
+//
 // Revision 1.33  1997/09/28 09:03:15  kulow
 // disabled the "contras=" message, since this breaks kdisplay
 //
@@ -486,9 +491,32 @@ KLocale* KApplication::getLocale()
   int i = 0;
   while( i < argc )
 	{
+	  // this code duplication is bad style, I'll clean this up some day...
 	  if( !strcmp( argv[i], "-caption" ) )
 		{
 		  aCaption = argv[i+1];
+		  
+		  for( int j = i;  j < argc-2; j++ )
+			strcpy( argv[j], argv[j+2] );
+	  }
+		  argc -=2 ;
+		}
+	  if( !strcmp( argv[i], "-icon" ) )
+		{
+		  QString aIconFile = kdedir() + "/share/icons/" + argv[i+1];
+		  bool bSuccess = aIconPixmap.load( aIconFile );
+		  KASSERT1( bSuccess, KDEBUG_WARN, 101, "Could not load icon file %s", aIconFile.data() );
+		  
+		  for( int j = i;  j < argc-2; j++ )
+			strcpy( argv[j], argv[j+2] );
+
+		  argc -=2 ;
+		}
+	  if( !strcmp( argv[i], "-miniicon" ) )
+		{
+		  QString aMiniIconFile = kdedir() + "/share/icons/mini/" + argv[i+1];
+		  bool bSuccess = aMiniIconPixmap.load( aMiniIconFile );
+		  KASSERT1( bSuccess, KDEBUG_WARN, 101, "Could not load mini-icon file %s", aMiniIconFile.data() );
 		  
 		  for( int j = i;  j < argc-2; j++ )
 			strcpy( argv[j], argv[j+2] );
