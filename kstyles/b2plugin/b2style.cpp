@@ -308,7 +308,7 @@ QRect B2Style::buttonRect(int x, int y, int w, int h)
 
 void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
-                                 bool, bool, const QBrush *fill)
+                                 bool, bool, const QBrush *)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
@@ -359,6 +359,7 @@ QRect B2Style::comboButtonFocusRect(int x, int y, int w, int h)
 {
     return(QRect(x+3, y+3, w-(h/3)-13, h-6));
 }
+
 
 void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                                        int sliderStart, uint controls,
@@ -415,35 +416,19 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g, activeControl == AddLine);
-        if (horiz)
-          drawSBArrow( p, RightArrow,
-                       activeControl == AddLine, addB.x()+3, addB.y()+4,
-                       addB.width()-7, addB.height()-10, g, !maxed);
-        else
-          drawSBArrow( p, DownArrow,
-                       activeControl == AddLine, addB.x()+5, addB.y()+3,
-                       addB.width()-10, addB.height()-7, g, !maxed);
+        drawArrow( p, horiz ? RightArrow : DownArrow,
+                   false, addB.x()+4, addB.y()+4,
+                   addB.width()-8, addB.height()-8, g, !maxed);
     }
     if ( controls & SubLine ) {
         drawSBButton(p, subB, g, activeControl == SubLine);
-        if (horiz)
-          drawSBArrow( p, LeftArrow,
-                       activeControl == SubLine, subB.x()+3, subB.y()+4,
-                       subB.width()-7, subB.height()-10, g, !maxed);
-        else
-          drawSBArrow( p, UpArrow,
-                       activeControl == SubLine, subB.x()+5, subB.y()+3,
-                       subB.width()-10, subB.height()-7, g, !maxed);
-
-        drawSBButton(p, subB2, g);
-        if (horiz)
-          drawSBArrow( p, LeftArrow,
-                       activeControl == SubLine, subB2.x()+3, subB2.y()+4,
-                       subB2.width()-7, subB2.height()-10, g, !maxed);
-        else
-          drawSBArrow( p, UpArrow,
-                       activeControl == SubLine, subB2.x()+5, subB2.y()+3,
-                       subB2.width()-10, subB2.height()-7, g, !maxed);
+        drawArrow( p, horiz ? LeftArrow : UpArrow,
+                   false, subB.x()+4, subB.y()+4,
+                   subB.width()-8, subB.height()-8, g, !maxed);
+        drawSBButton(p, subB2, g, activeControl == SubLine);
+        drawArrow( p, horiz ? LeftArrow : UpArrow,
+                   false, subB2.x()+4, subB2.y()+4,
+                   subB2.width()-8, subB2.height()-8, g, !maxed);
     }
     if(controls & AddPage){
         if(addPageR.width()){
@@ -509,64 +494,63 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 }
 
 void B2Style::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
-                           bool down, bool)
+                           bool down)
 {
-    int x = r.x();
-    int y = r.y();
-    int w = r.width();
-    int h = r.height();
-    int x2 = x+w-1;
-    int y2 = y+h-1;
-    p->setPen(g.dark());
-    p->drawRect(x, y, w, h);
-    p->fillRect(x+1, y+1, w-2, h-2, down ? g.brush(QColorGroup::Midlight) :
-                                           g.brush(QColorGroup::Button));
+    p->setPen(g.mid());
+    p->drawRect(r);
+    p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
+                g.brush(QColorGroup::Midlight));
 
-    p->setPen(down? g.light() : g.mid());
-    p->drawLine(x2-1, y+2, x2-1, y2-1);
-    p->drawLine(x+2, y2-1, x2-1, y2-1);
-
-    p->setPen(down ? g.mid() : g.light());
-    p->drawLine(x+1, y+1, x2-1, y+1);
-    p->drawLine(x+1, y+2, x+1, y2-1);
+    p->setPen(g.light());
+    if(down){
+        p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
+        p->drawLine(r.right()-1, r.top()+1, r.right()-1, r.bottom()-1);
+    }
+    else{
+        p->drawLine(r.x()+1, r.y()+1, r.right()-1, r.y()+1);
+        p->drawLine(r.x()+1, r.y()+1, r.x()+1, r.bottom()-1);
+    }
+    
 }
 
 void B2Style::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
-                         bool horiz, bool, bool)
+                         bool horiz)
 {
     if(horiz){
-        int y = r.y() + (r.height()-7)/2;
-        if(r.width() >= 36){
-            int x = r.x() + (r.width()-16)/2;
-            drawSBDecoButton(p, x,    y, 4, 7, g);
-            drawSBDecoButton(p, x+6,  y, 4, 7, g);
-            drawSBDecoButton(p, x+12, y, 4, 7, g);
+        int y = r.y() + (r.height()-6)/2;
+        if(r.width() >= 32){
+            int x = r.x() + (r.width()-22)/2;
+            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x+16, y, 6, 6, g, false, 1);
         }
         else if(r.width() >= 24 ){
-            int x = r.x() + (r.width()-10)/2;
-            drawSBDecoButton(p, x,   y, 4, 7, g);
-            drawSBDecoButton(p, x+6, y, 4, 7, g);
+            int x = r.x() + (r.width()-14)/2;
+            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
         }
         else if(r.width() >= 16)
-            drawSBDecoButton(p, r.x()+(r.width()-4)/2, y, 4, 7, g);
+            qDrawShadePanel(p, r.x()+(r.width()-6)/2, y, 6, 6, g, false, 1);
     }
     else{
-        int x = r.x() + (r.width()-7)/2;
-        if(r.height() >= 36 ){
-            int y = r.y() + (r.height()-16)/2;
-            drawSBDecoButton(p, x, y,    7, 4, g);
-            drawSBDecoButton(p, x, y+6,  7, 4, g);
-            drawSBDecoButton(p, x, y+12, 7, 4, g);
+        int x = r.x() + (r.width()-6)/2;
+        if(r.height() >= 32){
+            int y = r.y() + (r.height()-22)/2;
+            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x, y+16, 6, 6, g, false, 1);
         }
         else if(r.height() >= 24 ){
-            int y = r.y() + (r.height()-10)/2;
-            drawSBDecoButton(p, x, y,   7, 4, g);
-            drawSBDecoButton(p, x, y+6, 7, 4, g);
+            int y = r.y() + (r.height()-14)/2;
+            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
+            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
         }
         else if(r.height() >= 16)
-            drawSBDecoButton(p, x, r.y()+(r.height()-4)/2, 7, 4, g);
+            qDrawShadePanel(p, x, r.y()+(r.height()-6)/2, 6, 6, g, false, 1);
     }
 }
+
+
 
 
 void B2Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
@@ -819,25 +803,7 @@ void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 void B2Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, QBrush *)
 {
-    int x2 = x+w-1;
-    int y2 = y+h;
-
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
-
-    p->setPen(g.dark());
-    p->drawRect(x, y, w, h);
-
-    p->setPen(g.mid());
-    p->drawRect(x+1, y+1, w-2, h-1);
-
-    p->setPen(g.light());
-    p->drawLine(x+2, y+2,  x+2, y2-2);
-    p->drawLine(x+2, y+2, x2-2, y+2);
-
-    // and a little touch for roundedness
-    p->setPen(g.button());
-    p->drawPoint(x, y);
-    p->drawPoint(x2, y);
+    drawKToolBar(p, x, y, w, h, g, false);
 }
 
 void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,

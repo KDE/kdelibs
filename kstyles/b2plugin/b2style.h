@@ -148,10 +148,10 @@ public:
     virtual void tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
                        int &overlap);*/
 protected:
-    virtual void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
-                            bool horiz, bool down = false, bool enabled = true);
-    virtual void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
-                              bool down=false, bool enabled = true);
+    void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
+                   bool horiz);
+    void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
+                      bool down=false);
     virtual void drawSBDecoButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool down = false,
                                  bool enabled = true);
