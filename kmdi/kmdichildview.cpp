@@ -626,13 +626,19 @@ bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
       }
    }
    else
-        if (e->type()==QEvent::IconChange) {
-            qDebug("KMDiChildView:: QEvent:IconChange intercepted\n");
-	    if  (obj==this)
-		iconOrCaptionUdpated(this,icon()?(*icon()):QPixmap(),caption());
-	    else if (obj==m_trackChanges)
-		setIcon(m_trackChanges->icon()?(*(m_trackChanges->icon())):QPixmap());
-        }
+   {
+       if (e->type()==QEvent::IconChange) {
+//            qDebug("KMDiChildView:: QEvent:IconChange intercepted\n");
+          if  (obj==this)
+             iconUpdated(this,icon()?(*icon()):QPixmap());
+          else if (obj==m_trackChanges)
+             setIcon(m_trackChanges->icon()?(*(m_trackChanges->icon())):QPixmap());
+       }
+       if (e->type()==QEvent::CaptionChange) {
+          if (obj==this)
+             captionUpdated(this,caption());
+       }
+   }
 
    return false;                           // standard event processing
 }

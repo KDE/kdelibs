@@ -7,7 +7,7 @@ KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char
 	setHoverCloseButton(true);
         connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
 }
-	
+
 KMdiDocumentViewTabWidget::~KMdiDocumentViewTabWidget() {
 }
 
@@ -55,10 +55,16 @@ void KMdiDocumentViewTabWidget::removePage ( QWidget * w ) {
 	if (count()<2) tabBar()->hide();
 }
 
-
-void KMdiDocumentViewTabWidget::updateView(QWidget* w,QPixmap icon,const QString& caption) {
-	changeTab(w,icon,caption);
+void KMdiDocumentViewTabWidget::updateIconInView( QWidget *w, QPixmap icon )
+{
+    changeTab(w,icon,tabLabel(w));
 }
+
+void KMdiDocumentViewTabWidget::updateCaptionInView( QWidget *w, const QString &caption )
+{
+    changeTab(w, caption);
+}
+
 #ifndef NO_INCLUDE_MOCFILES
 #include "kmdidocumentviewtabwidget.moc"
 #endif
