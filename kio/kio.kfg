@@ -44,6 +44,15 @@ kioslave 'http'
 	reading<bool> = true;
 };
 
+kioslave 'https'
+{
+	exec<string> = 'kio_http';
+	protocol<string> = 'https';
+	input<string> = 'none';
+	output<string> = 'filesystem';
+	reading<bool> = true;
+};
+
 kioslave 'trader' 
 {
 	exec<string> = 'kio_trader';
