@@ -249,14 +249,6 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_extension, SIGNAL( clicked() ),
              SLOT( toggleAdvanced()) );
 
-    connect( m_affectAllApps, SIGNAL( toggled( bool )),
-             SLOT( emitChanged()));
-    connect( m_comboEnable, SIGNAL( activated ( int)),
-             SLOT( emitChanged()));
-    connect( m_comboDisable, SIGNAL( activated ( int)),
-             SLOT( emitChanged()));
-
-
     connect( m_buttonEnable, SIGNAL( clicked() ), SLOT( enableAll() ));
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
 
@@ -418,7 +410,7 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
                 !event.commandline.isEmpty();
     item->setPixmap( COL_EXECUTE, doIt ? d->pixmaps[COL_EXECUTE] : emptyPix );
 
-    doIt = (event.presentation & KNotifyClient::Sound) &&
+    doIt = (event.presentation & KNotifyClient::Sound) && 
            !event.soundfile.isEmpty();
     item->setPixmap( COL_SOUND, doIt ? d->pixmaps[COL_SOUND] : emptyPix );
 
@@ -603,7 +595,7 @@ void KNotifyWidget::logfileChanged( const QString& text )
     currentEvent()->logfile = text;
     bool ok = !text.isEmpty() && m_logToFile->isChecked();
     item->setPixmap( COL_LOGFILE, ok ? d->pixmaps[COL_LOGFILE] : QPixmap() );
-
+    
     emit changed( true );
 }
 
