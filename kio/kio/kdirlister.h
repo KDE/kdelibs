@@ -122,7 +122,7 @@ public:
   virtual void stop( const KURL& _url );
 
   /**
-   * Checks whether KDirWatch will automatically update directories. This is 
+   * Checks whether KDirWatch will automatically update directories. This is
    * enabled by default.
    * @return true if KDirWatch is used to automatically update directories.
    */
@@ -136,17 +136,17 @@ public:
   virtual void setAutoUpdate( bool enable );
 
   /**
-   * Check whether auto error handling is enabled. 
-   * If enabled, it will show an error dialog to the user when an 
+   * Check whether auto error handling is enabled.
+   * If enabled, it will show an error dialog to the user when an
    * error occurs. It is turned on by default.
-   * @return true if auto error handling is enabled, false otherwise 
+   * @return true if auto error handling is enabled, false otherwise
    * @see setAutoErrorHandlingEnabled()
    */
   bool autoErrorHandlingEnabled() const;
 
   /**
-   * Enable or disable auto error handling is enabled. 
-   * If enabled, it will show an error dialog to the user when an 
+   * Enable or disable auto error handling is enabled.
+   * If enabled, it will show an error dialog to the user when an
    * error occurs. It is turned on by default.
    * @param enable true to enable auto error handling, false to disable
    * @param parent the parent widget for the error dialogs, can be 0 for
@@ -175,15 +175,15 @@ public:
   virtual void setShowingDotFiles( bool _showDotFiles );
 
   /**
-   * Checks whether the KDirLister only lists directories or all 
-   * files. 
+   * Checks whether the KDirLister only lists directories or all
+   * files.
    * By default this option is disabled (all files will be shown).
    * @return true if setDirOnlyMode(true) was called
    */
   bool dirOnlyMode() const;
 
   /**
-   * Call this to list only directories. 
+   * Call this to list only directories.
    * By default this option is disabled (all files will be shown).
    * @param dirsOnly true to list only directories
    */
@@ -191,9 +191,9 @@ public:
 
   /**
    * Returns the URL that is listed by this KDirLister.
-   * It might be different from the one given with @ref openURL() or @ref setURL()
+   * It might be different from the one given with @ref openURL().
    * if there was a redirection. If you called @ref openURL() with
-   * @p _keep == true, this is the first url opened (in e.g. a treeview this is 
+   * @p _keep == true, this is the first url opened (in e.g. a treeview this is
    * the root).
    *
    * @return the url used by this instance to list the files.
@@ -344,7 +344,7 @@ public:
   QWidget *mainWindow();
 
   /**
-   * Used by @ref items() and @ref itemsForDir() to specify whether you want 
+   * Used by @ref items() and @ref itemsForDir() to specify whether you want
    * all items for a directory or just the filtered ones.
    */
   enum WhichItems
@@ -514,7 +514,7 @@ signals:
 
   /**
    * Regularly emitted to show the progress of this KDirLister.
-   * @param size the processed size in bytes   
+   * @param size the processed size in bytes
    */
   void processedSize( KIO::filesize_t size );
 
