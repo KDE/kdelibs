@@ -171,6 +171,7 @@ public:
 
     virtual const QFont &font();
     QFontMetrics metrics(bool firstLine = false) const;
+    virtual short verticalPositionHint() const;
 
     bool isFixedWidthFont() const;
 

@@ -724,7 +724,7 @@ void RenderObject::detach()
 short RenderObject::verticalPositionHint() const
 {
     // vertical align for table cells has a different meaning
-    if ( isTableCell() || (isText() && parent()->isTableCell()) )
+    if ( isTableCell() )
 	return 0;
     
     EVerticalAlign va = style()->verticalAlign();

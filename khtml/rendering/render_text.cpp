@@ -928,4 +928,10 @@ QFontMetrics RenderText::metrics(bool firstLine) const
     return *fm;
 }
 
+short RenderText::verticalPositionHint() const
+{
+    return parent()->verticalPositionHint();
+}
+
+
 #undef BIDI_DEBUG
