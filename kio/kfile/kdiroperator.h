@@ -820,7 +820,10 @@ private slots:
     void slotRefreshItems( const KFileItemList& items );
 
     void slotProperties();
-
+    
+    void insertViewDependentActions();
+    
+private:
     static bool isReadable( const KURL& url );
 
 protected:

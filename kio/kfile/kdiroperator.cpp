@@ -163,10 +163,11 @@ void KDirOperator::resetCursor()
     progress->hide();
 }
 
-void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
+void KDirOperator::insertViewDependentActions()
 {
     // If we have a new view actionCollection(), insert its actions
     //  into viewActionMenu.
+
     if( m_fileView && viewActionCollection != m_fileView->actionCollection() ) {
         viewActionCollection = m_fileView->actionCollection();
 
@@ -181,7 +182,10 @@ void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
         connect( viewActionCollection, SIGNAL( removed( KAction * )),
                  SLOT( slotViewActionRemoved( KAction * )));
     }
+}
 
+void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
+{
     updateSelectionDependentActions();
 
     actionMenu->popup( pos );
@@ -360,7 +364,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
 }
 
 KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
-                                    QWidget *parent, 
+                                    QWidget *parent,
                                     bool ask, bool showProgress )
 {
     if ( items.isEmpty() ) {
@@ -850,7 +854,7 @@ void KDirOperator::connectView(KFileView *view)
     }
 
     m_fileView = view;
-    viewActionCollection = 0;
+    viewActionCollection = 0L;
     KFileViewSignaler *sig = view->signaler();
 
     connect(sig, SIGNAL( activatedMenu(const KFileItem *, const QPoint& ) ),
@@ -1049,7 +1053,6 @@ void KDirOperator::setupActions()
 {
     myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
-
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Directory") );
     backAction = KStdAction::back( this, SLOT( back() ), myActionCollection, "back" );
@@ -1102,6 +1105,9 @@ void KDirOperator::setupActions()
 
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), myActionCollection, "view menu" );
+    connect( viewActionMenu->popupMenu(), SIGNAL( aboutToShow() ),
+             SLOT( insertViewDependentActions() ));
+
     shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn",
                                     KShortcut(), myActionCollection, "short view" );
     detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
