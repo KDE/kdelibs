@@ -106,7 +106,9 @@ QCString KIDNA::toAscii(const QString &idna)
 
 QString KIDNA::toUnicode(const QString &idna)
 {
-   // TODO: check for idna sequence
+   if (idna.find("iesg--") == -1)
+      return idna; // Return as is, nothing to do
+
    if (!KIDNA_lib && !KIDNA_lib_load_failed)
    {
       KIDNA_load_lib();
