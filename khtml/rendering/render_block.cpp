@@ -1011,8 +1011,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         else
             overflowDelta += child->overflowHeight();
 
-        int rightChildPos = child->xPos() + kMax(child->effectiveWidth(),
-                                                 child->width() + child->marginRight());
+        int rightChildPos = child->xPos() + kMax(child->effectiveWidth(), (int)child->width());
         if (child->isRelPositioned()) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
             // ### left overflow support
@@ -1107,14 +1106,14 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
         //kdDebug( 6040 ) << renderName() << " " << this << "::layoutPositionedObjects() start" << endl;
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
-        bool ps = isPositioned();
+        bool fixed = (style()->position() == FIXED);
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if ( relayoutChildren )
                 r->setLayouted( false );
             if ( !r->layouted() )
                 r->layout();
-            if (!ps && r->style()->position() == ABSOLUTE) {
+            if (!fixed && r->style()->position() == ABSOLUTE) {
                 if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
                     m_overflowWidth = r->xPos() + r->effectiveWidth();
                 if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
