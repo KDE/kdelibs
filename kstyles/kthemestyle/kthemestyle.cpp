@@ -1114,7 +1114,14 @@ void KThemeStyle::drawControl( ControlElement element,
                         state = QIconSet::On;
 
                     QPixmap pixmap = button->iconSet() ->pixmap( QIconSet::Small, mode, state );
-                    p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
+
+                    // Center the iconset if there's no text or pixmap
+                    if (button->text().isEmpty() && !button->pixmap())
+                        p->drawPixmap( x + (w - pixmap.width())  / 2,
+                                       y + (h - pixmap.height()) / 2, pixmap );
+                    else
+                        p->drawPixmap( x + 4, y + (h - pixmap.height()) / 2, pixmap );
+
                     int pw = pixmap.width();
                     x += pw + 4;
                     w -= pw + 4;
