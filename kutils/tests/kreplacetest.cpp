@@ -212,6 +212,21 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
     }
 }
 
+// Test for the \0 backref
+static void testReplaceBackRef( int options, int button = 0 )
+{
+    kdDebug() << "testReplaceBackRef: " << options << endl;
+    KReplaceTest test( QString( "abc def" ), button );
+    test.replace( "abc", "(\\0)", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    QString expected = options & KReplaceDialog::BackReference ? "(abc) def" : "(\\0) def";
+    if ( textLines[ 0 ] != expected ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of '"<< expected << "'" << endl;
+        exit(1);
+    }
+}
+
 int main( int argc, char **argv )
 {
     KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
@@ -259,6 +274,17 @@ int main( int argc, char **argv )
     testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
     testReplaceLongerInclude2( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
+    testReplaceBackRef( 0 );
+    testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBackRef( KReplaceDialog::FindBackwards, 0 );
+    testReplaceBackRef( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards, 0 );
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     QString text = "This file is part of the KDE project.\n"
                    "This library is free software; you can redistribute it and/or\n"

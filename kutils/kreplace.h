@@ -221,7 +221,7 @@ protected slots:
 private:
     KReplaceNextDialog* dialog();
     void doReplace();
-    static int replace( QString &text, const QString &replacement, int index, int length );
+    static int replace( QString &text, const QString &replacement, int index, long options, int length );
 
     QString m_replacement;
     unsigned m_replacements;
