@@ -85,6 +85,7 @@ extern QMap<QCString, DCOPObject *> * kde_dcopObjMap; // defined in dcopobject.c
  *********************************************/
 typedef QAsciiDict<DCOPClient> client_map_t;
 static client_map_t *DCOPClient_CliMap = 0;
+static QCStringList *DCOPClient_PendingCalls = 0;
 
 static
 client_map_t *cliMap()
@@ -501,13 +502,18 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 // qWarning("DCOP: %s got call: %s:%s:%s key = %d currentKey = %d", d->appId.data(), app.data(), objId.data(), fun.data(), key, d->currentKey);
 
     if ( canPost && d->currentKey && key != d->currentKey ) {
-        DCOPClientMessage* msg = new DCOPClientMessage;
-        msg->opcode = opcode;
-        msg->key = key;
-        msg->data = dataReceived;
-        d->messages.append( msg );
-        d->postMessageTimer.start( 0, true );
-        return;
+        if (!DCOPClient_PendingCalls->contains(fromApp)) {
+            DCOPClientMessage* msg = new DCOPClientMessage;
+            msg->opcode = opcode;
+            msg->key = key;
+            msg->data = dataReceived;
+            d->messages.append( msg );
+            d->postMessageTimer.start( 0, true );
+            return;
+        }
+#ifndef NDEBUG
+        qWarning("DCOP Deadlock prevention: handling call from %s for %s recursive", fromApp.data(), app.data());
+#endif
     }
 
     d->objId = objId;
@@ -600,6 +606,8 @@ void DCOPClient::setMainClient( DCOPClient* client )
 
 DCOPClient::DCOPClient()
 {
+    if (!DCOPClient_PendingCalls)
+       DCOPClient_PendingCalls = new QCStringList;
     d = new DCOPClientPrivate;
     d->parent = this;
 #ifdef Q_OS_UNIX
@@ -1833,6 +1841,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     if ( !d->currentKey )
         d->currentKey = d->key; // no key yet, initiate new call
 
+
     QByteArray ba;
     QDataStream ds(ba, IO_WriteOnly);
     ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
@@ -1853,6 +1862,8 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
         return false;
 
     IceFlush (d->iceConn);
+
+    DCOPClient_PendingCalls->prepend(remApp);
 
     IceReplyWaitInfo waitInfo;
     waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
@@ -1913,7 +1924,10 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
             }
         }
         if (!d->iceConn)
+        {
+            DCOPClient_PendingCalls->remove(DCOPClient_PendingCalls->first());
             return false;
+        }
 
         if( replyStruct->transactionId != -1 )
         {
@@ -1929,6 +1943,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
             if (s == IceProcessMessagesIOError) {
                 detach();
                 d->currentKey = oldCurrentKey;
+                DCOPClient_PendingCalls->remove(DCOPClient_PendingCalls->first());
                 return false;
             }
         }
@@ -1963,6 +1978,8 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
              break;
         }
     }
+
+    DCOPClient_PendingCalls->remove(DCOPClient_PendingCalls->first());
 
     // Wake up parent call, maybe it's reply is available already.
     if ( d->non_blocking_call_lock ) {
