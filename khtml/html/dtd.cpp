@@ -338,7 +338,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_SUP:
     case ID_SPAN:
     case ID_BDO:
-    case ID_FONT:
+//    case ID_FONT:
     case ID_P:
     case ID_H1:
     case ID_H2:
@@ -375,12 +375,13 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	// ADDRESS: ( _0 | P ) *
 	if( check_array(childID, tag_list_0) ) return true;
 	return (childID == ID_P);
-/*  // it is not this simple -ak
+  // it is not this simple -ak
+  // or maybe it is -ak
     case ID_FONT:
         // special handling for FONT: (_0 | 3)
         return check_array(childID, tag_list_3) ||
             check_array(childID, tag_list_0);
-*/
+
     case ID_LI:
     case ID_DT:
     case ID_DIV:
