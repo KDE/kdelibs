@@ -18,105 +18,110 @@
 */
 
 #include "kstdaccel.h"
+#include "kapp.h"
+#include "kconfig.h"
 
-KStdAccel::KStdAccel(KConfig* cfg): KKeyConfig(cfg)
+KStdAccel::KStdAccel(KConfig* /* cfg */) //: KKeyConfig(cfg)
 {
+  config = new KConfig; // we want the global stuff, and only the global stuff
+  config->setGroup("Keys");
 }
 
-uint KStdAccel::readKey(const char* keyName, uint defaultKey) const
+uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey) const
 {
-  uint key;
-  key = ((KStdAccel*)this)->readCurrentKey(keyName);
-  return (key ? key : defaultKey);
+  QString s = config->readEntry(KAccel::stdAction(accel));
+  int v = stringToKey(s.data());
+  return v?v:defaultKey;
+  
 }
 
 uint KStdAccel::open(void) const
 {
-  return readKey("Open", CTRL+Key_O);
+  return readKey(KAccel::Open, CTRL+Key_O);
 }
 
 uint KStdAccel::openNew(void) const
 {
-  return readKey("OpenNew", CTRL+Key_N);
+  return readKey(KAccel::New, CTRL+Key_N);
 }
 
 uint KStdAccel::close(void) const
 {
-  return readKey("Close", CTRL+Key_W);
+  return readKey(KAccel::Close, CTRL+Key_W);
 }
 
 uint KStdAccel::save(void) const
 {
-  return readKey("Save", CTRL+Key_S);
+  return readKey(KAccel::Save, CTRL+Key_S);
 }
 
 uint KStdAccel::print(void) const
 {
-  return readKey("Print", CTRL+Key_P);
+  return readKey(KAccel::Print, CTRL+Key_P);
 }
 
 uint KStdAccel::quit(void) const
 {
-  return readKey("Quit", CTRL+Key_Q);
+  return readKey(KAccel::Quit, CTRL+Key_Q);
 }
 
 uint KStdAccel::cut(void) const
 {
-  return readKey("Cut", CTRL+Key_X);
+  return readKey(KAccel::Cut, CTRL+Key_X);
 }
 
 uint KStdAccel::copy(void) const
 {
-  return readKey("Copy", CTRL+Key_C);
+  return readKey(KAccel::Copy, CTRL+Key_C);
 }
 
 uint KStdAccel::paste(void) const
 {
-  return readKey("Paste", CTRL+Key_V);
+  return readKey(KAccel::Paste, CTRL+Key_V);
 }
 
 uint KStdAccel::undo(void) const
 {
-  return readKey("Undo", CTRL+Key_Z);
+  return readKey(KAccel::Undo, CTRL+Key_Z);
 }
 
 uint KStdAccel::find(void) const
 {
-  return readKey("Find", CTRL+Key_F);
+  return readKey(KAccel::Find, CTRL+Key_F);
 }
 
 uint KStdAccel::replace(void) const
 {
-  return readKey("Replace", CTRL+Key_R);
+  return readKey(KAccel::Replace, CTRL+Key_R);
 }
 
 uint KStdAccel::insert(void) const
 {
-  return readKey("Insert", CTRL+Key_Insert);
+  return readKey(KAccel::Insert, CTRL+Key_Insert);
 }
 
 uint KStdAccel::home(void) const
 {
-  return readKey("Home", CTRL+Key_Home);
+  return readKey(KAccel::Home, CTRL+Key_Home);
 }
 
 uint KStdAccel::end(void) const
 {
-  return readKey("End", CTRL+Key_End);
+  return readKey(KAccel::End, CTRL+Key_End);
 }
 
 uint KStdAccel::prior(void) const
 {
-  return readKey("Prior", Key_Prior);
+  return readKey(KAccel::Prior, Key_Prior);
 }
 
 uint KStdAccel::next(void) const
 {
-  return readKey("Next", Key_Next);
+  return readKey(KAccel::Next, Key_Next);
 }
 
 uint KStdAccel::help(void) const
 {
-  return readKey("Help", Key_F1);
+  return readKey(KAccel::Help, Key_F1);
 }
 

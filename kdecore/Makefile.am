@@ -24,29 +24,31 @@ lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h kcharsets.h \
-	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
+	kurl.h ksock.h drag.h  ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
-	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h
+	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
+	kaccel.h  kglobalaccel.h   kckey.h
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h 
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kcolorgroup.cpp kapp.cpp kurl.cpp ksock.cpp drag.cpp \
-	kkeyconf.cpp kprocess.cpp kprocctrl.cpp klocale.cpp \
+	 kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
-	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp 
+	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp \
+	kckey.cpp kaccel.cpp kglobalaccel.cpp 
+
 
 libkdecore_la_LDFLAGS = -version-info 1:0
 libkdecore_la_LIBADD = 
 
-BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
+BUILT_SOURCES = ksock.moc drag.moc  kapp.moc kprocess.moc	\
 	kprocctrl.moc kiconloader.moc kdebugdialog.moc kconfig.moc \
-	kconfigbase.moc ksimpleconfig.moc 
+	kconfigbase.moc ksimpleconfig.moc kglobalaccel.moc 
 
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc
-kkeyconf.cpp: kkeydata.moc
 kapp.cpp: kapp.moc
 kprocess.cpp: kprocess.moc
 kprocctrl.cpp: kprocctrl.moc
@@ -55,6 +57,7 @@ kdebug.cpp: kdebugdialog.moc
 kconfigbase.cpp: kconfigbase.moc
 kconfig.cpp: kconfig.moc
 ksimpleconfig.cpp: ksimpleconfig.moc
+kglobalaccel.cpp: kglobalaccel.moc 
 
 install-data-local: charsets.config
 	$(mkinstalldirs) $(kde_confdir)
@@ -101,4 +104,7 @@ kconfigbase.moc: kconfigbase.h
 
 ksimpleconfig.moc: ksimpleconfig.h
 	$(MOC) ksimpleconfig.h -o ksimpleconfig.moc
+
+kglobalaccel.moc: kglobalaccel.h
+	$(MOC) kglobalaccel.h -o kglobalaccel.moc
 

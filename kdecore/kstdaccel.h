@@ -19,7 +19,10 @@
 #ifndef KSTDACCEL_H
 #define KSTDACCEL_H
 
-#include <kkeyconf.h>
+#include <qkeycode.h>
+#include "kconfig.h"
+#include "kaccel.h"
+// #include <kkeyconf.h>
 
 /** 
  * Convenient methods for access of the common accelerator keys in
@@ -27,10 +30,10 @@
  * in all Kde applications. They will be configurable, so do not hardcode
  * the default behaviour.
  */
-class KStdAccel: public KKeyConfig
+class KStdAccel //: public KKeyConfig
 {
 public:
-  KStdAccel(KConfig* pConfig);
+  KStdAccel(KConfig* cfg = 0);
 
   /** Open file. Default: Ctrl-o */
   uint open(void) const;
@@ -87,7 +90,8 @@ public:
   uint help(void) const;
 
 protected:
-  uint readKey(const char* keyName, uint defaultKey=0) const;
+  uint readKey(KAccel::StdAccel accel, uint defaultKey=0) const;
+  KConfig* config;
 };
 
 #endif /*kshortcut_h*/

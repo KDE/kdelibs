@@ -20,6 +20,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.105  1998/07/02 15:42:42  ettrich
+// Matthias: Added a new signal
+//
+//                  void shutDown();
+//
+//           which is emitted when the client is killed (for example via
+//           kwm's logout)
+//
 // Revision 1.104  1998/06/21 15:03:37  konold
 //
 // Martin K.: Fixed typo            Coolo does this affect the translations?? Please check.
@@ -241,7 +249,6 @@
 #include "kapp.moc"
 
 #include <kapp.h>
-#include "kkeyconf.h"
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kcharsets.h>
@@ -411,9 +418,6 @@ void KApplication::init()
   // initialize file search paths
   pSearchPaths = new QStrList();
   buildSearchPaths();
-
-  // initialize KKeyConfig
-  initKKeyConfig( getConfig() );  
 
   WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
   WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
@@ -747,8 +751,6 @@ KApplication::~KApplication()
 {
   removeEventFilter( this );
   
-  delete kKeys; // must be done before "delete pConfig"
-
   if( pIconLoader )
     delete pIconLoader;
     
