@@ -33,7 +33,6 @@
 #else
 #include <qptrvector.h>
 #endif
-#include <qdatetime.h>
 
 #include "render_box.h"
 #include "render_flow.h"
@@ -123,7 +122,7 @@ public:
     virtual void setCellWidths( );
 
     int getBaseline(int row) {return rowBaselines[row];}
-    
+
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
     virtual void calcWidth();
@@ -273,7 +272,6 @@ protected:
 
     Frame frame;
     Rules rules;
-    QTime updateTimer;
 
     RenderTableCol *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
@@ -420,7 +418,7 @@ public:
     virtual short baselinePosition( bool = false ) const;
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
-    
+
 protected:
     RenderTable *m_table;
 
