@@ -382,9 +382,9 @@ public final class KJASAppletStub
 
     static void waitForDestroyThreads()
     {
-        Thread [] ts = new Thread[Thread.activeCount()];
-        Thread.enumerate(ts);
-        for (int i = 0; i < ts.length; i++)
+        Thread [] ts = new Thread[Thread.activeCount() + 5];
+        int len = Thread.enumerate(ts);
+        for (int i = 0; i < len; i++)
             if (ts[i].getName() != null && 
                 ts[i].getName().equals("applet destroy thread")) {
                 try {
