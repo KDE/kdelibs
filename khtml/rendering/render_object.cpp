@@ -120,7 +120,7 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
-    //kdDebug( 6090 ) << "RenderObject::~RenderObject" << endl;
+    //kdDebug( 6090 ) << "RenderObject::~RenderObject this=" << this << endl;
     // previous and next node may still reference this!!!
     // hope this fix is fine...
     if(m_previous) m_previous->setNextSibling(0);
@@ -242,6 +242,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 void RenderObject::removeChild(RenderObject *oldChild)
 {
+    kdDebug() << "RenderObject::removeChild" << endl; 
     if (oldChild->previousSibling())
 	oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())
@@ -254,12 +255,8 @@ void RenderObject::removeChild(RenderObject *oldChild)
 
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
-
-// Note that we only delete the child here if it is an anonymous box.... othwerwise,
-// it has a node attached to it, and will be deleted with that.
-    if (oldChild->isAnonymousBox())
-	delete oldChild;
-
+    oldChild->setParent(0);
+    
     setLayouted(false);
 }
 

@@ -405,7 +405,6 @@ void HTMLTablePartElementImpl::recalcTable()
     // this is slow but at least it works ;)
     // ### just make the change in the rendering tree and make sure the table
     // gets re-layed out again on the next layout
-#if 0
     NodeImpl *table = parentNode();
     while (table && !(table->isElementNode() && table->id() == ID_TABLE))
 	table = table->parentNode();
@@ -413,7 +412,6 @@ void HTMLTablePartElementImpl::recalcTable()
 	table->detach();
 	table->attach(document->view());
     }
-#endif
 }
 
 NodeImpl *HTMLTablePartElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
