@@ -40,7 +40,7 @@ static const char *actionListName = "show_kmdi_document_tool_view_actions";
 static const char *guiDescription = ""
         "<!DOCTYPE kpartgui><kpartgui name=\"KMDIViewActions\">"
         "<MenuBar>"
-        "    <Menu name=\"view\">"
+        "    <Menu name=\"window\">"
         "        <ActionList name=\"%1\" />"
         "    </Menu>"
         "</MenuBar>"
