@@ -2556,7 +2556,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-    executeScript( url.right( url.length() - 11) );
+    executeScript( url.right( url.length() - 11 ) );
     return;
   }
 
@@ -3513,6 +3513,14 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
 
+  // TODO: handle child target correctly! currently the script are always executed fur the parent
+  QString urlStr = url.url();
+  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+      QString script = KURL::decode_string( urlStr.right( urlStr.length() - 11 ) );
+      executeScript( script );
+      return;
+  }
+
   QString frameName = args.frameName.lower();
   if ( !frameName.isEmpty() )
   {
@@ -3546,13 +3554,6 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
       child = _frame;
     }
-  }
-
-  // TODO: handle child target correctly! currently the script are always executed fur the parent
-  QString urlStr = url.url();
-  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
-      executeScript( urlStr.right( urlStr.length() - 11) );
-      return;
   }
 
   if ( child ) {
