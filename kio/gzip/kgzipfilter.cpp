@@ -206,7 +206,7 @@ bool KGzipFilter::writeHeader( const QCString & fileName )
     *p++ = 0;
     int headerSize = p - d->zStream.next_out;
     i -= headerSize;
-    ASSERT(i>0);
+    Q_ASSERT(i>0);
     m_crc = crc32(0L, Z_NULL, 0);
     d->zStream.next_out = p;
     d->zStream.avail_out = i;
@@ -264,7 +264,7 @@ KGzipFilter::Result KGzipFilter::uncompress_noop()
 
 KGzipFilter::Result KGzipFilter::uncompress()
 {
-    ASSERT ( m_mode == IO_ReadOnly );
+    Q_ASSERT ( m_mode == IO_ReadOnly );
     if ( d->bCompressed )
     {
         //kdDebug() << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
@@ -280,8 +280,8 @@ KGzipFilter::Result KGzipFilter::uncompress()
 
 KGzipFilter::Result KGzipFilter::compress( bool finish )
 {
-    ASSERT ( d->bCompressed );
-    ASSERT ( m_mode == IO_WriteOnly );
+    Q_ASSERT ( d->bCompressed );
+    Q_ASSERT ( m_mode == IO_WriteOnly );
 
     Bytef* p = d->zStream.next_in;
     ulong len = d->zStream.avail_in;

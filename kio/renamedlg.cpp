@@ -315,7 +315,7 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                                       time_t mtimeSrc,
                                       time_t mtimeDest)
 {
-  ASSERT(kapp);
+  Q_ASSERT(kapp);
 
   RenameDlg dlg( 0L, _caption, _src, _dest, _mode,
                  sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest,

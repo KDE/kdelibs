@@ -280,7 +280,7 @@ void PreviewJob::determineNextFile()
 void PreviewJob::slotResult( KIO::Job *job )
 {
     subjobs.remove( job );
-    ASSERT ( subjobs.isEmpty() ); // We should have only one job at a time ...
+    Q_ASSERT ( subjobs.isEmpty() ); // We should have only one job at a time ...
     switch ( d->state )
     {
         case PreviewJobPrivate::STATE_STATORIG:

@@ -213,8 +213,8 @@ bool KTarBase::open( int mode )
         {
           if ( nm == "." ) // special case
           {
-            ASSERT( !d->rootDir );
-            ASSERT( isdir );
+            Q_ASSERT( !d->rootDir );
+            Q_ASSERT( isdir );
             if ( isdir )
               d->rootDir = static_cast<KTarDirectory *>( e );
           }

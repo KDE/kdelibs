@@ -806,7 +806,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
-    ASSERT( urls.count() == 1 );
+    Q_ASSERT( urls.count() == 1 );
     QString path = urls.first().path();
     //kdDebug(7009) << "MOUNT&UNMOUNT" << endl;
 

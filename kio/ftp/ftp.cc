@@ -222,7 +222,7 @@ void Ftp::closeConnection()
   kdDebug(7102) << "Ftp::closeConnection() m_bLoggedOn=" << m_bLoggedOn << " m_bFtpStarted=" << m_bFtpStarted << endl;
   if ( m_bLoggedOn || m_bFtpStarted )
   {
-    ASSERT( m_bFtpStarted ); // can't see how it could be false is loggedon is true
+    Q_ASSERT( m_bFtpStarted ); // can't see how it could be false is loggedon is true
     if( sControl != 0 )
     {
       kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
@@ -1364,7 +1364,7 @@ void Ftp::stat( const KURL &url)
   QString listarg; // = tempurl.directory(false /*keep trailing slash*/);
   QString parentDir;
   QString filename = tempurl.fileName();
-  ASSERT(!filename.isEmpty());
+  Q_ASSERT(!filename.isEmpty());
   QString search = filename;
 
   // Try cwd into it, if it works it's a dir (and then we'll list the parent directory to get more info)
@@ -1469,7 +1469,7 @@ void Ftp::stat( const KURL &url)
 
   kdDebug(7102) << "Starting of list was ok" << endl;
 
-  ASSERT( !search.isEmpty() && search != QString::fromLatin1("/") );
+  Q_ASSERT( !search.isEmpty() && search != QString::fromLatin1("/") );
 
   FtpEntry *e;
   bool bFound = false;
@@ -1596,7 +1596,7 @@ void Ftp::listDir( const KURL &url )
   while( ( e = ftpReadDir() ) )
   {
     kdDebug(7102) << e->name << endl;
-    ASSERT( !e->name.isEmpty() );
+    Q_ASSERT( !e->name.isEmpty() );
     if ( !e->name.isEmpty() )
     {
       //if ( S_ISDIR( (mode_t)e->type ) )

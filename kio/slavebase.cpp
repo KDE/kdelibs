@@ -400,7 +400,7 @@ void SlaveBase::mimeType( const QString &_type)
   // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which
   // case the slave had been put on hold.) [or special,
   // for http posts]. Something else is basically an error
-  ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
+  Q_ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
 // remove in KDE 3.0

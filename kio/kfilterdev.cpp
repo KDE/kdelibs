@@ -172,7 +172,7 @@ bool KFilterDev::at( int pos )
 bool KFilterDev::at( QIODevice::Offset pos )
 #endif
 {
-    ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
     if ( ioIndex == pos )
@@ -219,7 +219,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
 Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 #endif
 {
-    ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
     // If we had an error, or came to the end of the stream, return 0.
     if ( d->result != KFilterBase::OK )
@@ -292,7 +292,7 @@ int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
 Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
 #endif
 {
-    ASSERT ( filter->mode() == IO_WriteOnly );
+    Q_ASSERT ( filter->mode() == IO_WriteOnly );
     // If we had an error, return 0.
     if ( d->result != KFilterBase::OK )
         return 0;
@@ -359,7 +359,7 @@ Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
             if (d->result == KFilterBase::END)
             {
                 //kdDebug(7005) << " KFilterDev::writeBlock END" << endl;
-                ASSERT(finish); // hopefully we don't get end before finishing
+                Q_ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }
         }
@@ -370,7 +370,7 @@ Q_LONG KFilterDev::writeBlock( const char *data /*0 to finish*/, Q_ULONG len )
 
 int KFilterDev::getch()
 {
-    ASSERT ( filter->mode() == IO_ReadOnly );
+    Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::getch" << endl;
     if ( !d->ungetchBuffer.isEmpty() ) {
         int len = d->ungetchBuffer.length();

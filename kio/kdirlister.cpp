@@ -302,7 +302,7 @@ void KDirLister::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
         break;
       }
 
-    ASSERT( !name.isEmpty() );
+    Q_ASSERT( !name.isEmpty() );
     if ( name.isEmpty() )
       continue;
 
@@ -499,7 +499,7 @@ void KDirLister::slotUpdateResult( KIO::Job * j )
         break;
       }
 
-    ASSERT( !name.isEmpty() );
+    Q_ASSERT( !name.isEmpty() );
 
     // we duplicate the check for dotdot here, to avoid iterating over
     // all items in m_lstFileItems and checking in matchesFilter() that way.
@@ -838,7 +838,7 @@ void KDirLister::FilesAdded( const KURL & directory )
 
 void KDirLister::FilesRemoved( const KURL::List & fileList )
 {
-  ASSERT( !fileList.isEmpty() );
+  Q_ASSERT( !fileList.isEmpty() );
   // Mark all items
   KFileItemListIterator kit ( m_lstFileItems );
   for( ; kit.current(); ++kit )

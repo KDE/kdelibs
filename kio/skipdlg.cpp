@@ -130,7 +130,7 @@ void SkipDlg::b2Pressed()
 
 SkipDlg_Result KIO::open_SkipDlg( bool _multi, const QString& _error_text )
 {
-  ASSERT(kapp);
+  Q_ASSERT(kapp);
 
   SkipDlg dlg( 0L, _multi, _error_text, true );
   return (SkipDlg_Result) dlg.exec();

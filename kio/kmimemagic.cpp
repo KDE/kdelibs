@@ -1159,7 +1159,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 				register unsigned char *a = (unsigned char *) m->value.s;
 				register unsigned char *b = (unsigned char *) p->s;
 				register int len = m->vallen;
-				ASSERT(len);
+				Q_ASSERT(len);
 
 				while (--len >= 0)
 					if ((v = *b++ - *a++) != 0)

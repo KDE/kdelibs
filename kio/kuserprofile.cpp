@@ -171,7 +171,7 @@ KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QSt
 
 KServiceTypeProfile::~KServiceTypeProfile()
 {
-  ASSERT( s_lstProfiles );
+  Q_ASSERT( s_lstProfiles );
 
   s_lstProfiles->removeRef( this );
 }

@@ -313,7 +313,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
     {
       QString e = exec;
       KURL url( *it );
-      ASSERT( !url.isMalformed() );
+      Q_ASSERT( !url.isMalformed() );
       QString f ( url.path( -1 ) );
       shellQuote( f );
       QString d ( url.directory() );
