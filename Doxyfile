@@ -61,6 +61,7 @@ INPUT                  = dcop \
                          interfaces \
                          kabc \
                          kspell \
+                         kdeprint \
                          arts/kde
 FILE_PATTERNS          = *.h
 RECURSIVE              = YES
