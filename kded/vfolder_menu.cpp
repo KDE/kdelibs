@@ -578,7 +578,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    }
 }
 
-static QString locateFile(const QStringList &files)
+/*static QString locateFile(const QStringList &files)
 {
    for(QStringList::ConstIterator it = files.begin();
        it != files.end();
@@ -588,7 +588,7 @@ static QString locateFile(const QStringList &files)
          return (*it);
    }
    return QString::null;
-}
+}*/
 
 void 
 VFolderMenu::pushDocInfo(const QString &fileName)
