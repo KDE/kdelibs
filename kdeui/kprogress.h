@@ -310,6 +310,7 @@ class KProgressDialog : public KDialogBase
         void slotCancel();
 
     private:
+        // ### Delete these member variables with KDE 4.0
         bool       mAutoClose;
         bool       mAutoReset;
         bool       mCancelled;
