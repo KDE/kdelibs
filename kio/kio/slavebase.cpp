@@ -129,7 +129,7 @@ long SlaveBase::s_seqNr;
 
 static volatile bool slaveWriteError = false;
 
-void sigalarm_handler(int sigNumber)
+static void sigalarm_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
    //I don't think we can have the same problem here as in the sigsegv handler
@@ -137,7 +137,7 @@ void sigalarm_handler(int sigNumber)
    exit(2);
 };
 
-void genericsig_handler(int sigNumber)
+static void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
    //I don't think we can have the same problem here as in the sigsegv handler

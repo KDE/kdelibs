@@ -24,8 +24,8 @@
 #include <kstaticdeleter.h>
 #include <assert.h>
 
-KMimeMagic* KMimeMagic::s_pSelf = 0L;
-KStaticDeleter<KMimeMagic> kmimemagicsd;
+KMimeMagic* KMimeMagic::s_pSelf;
+static KStaticDeleter<KMimeMagic> kmimemagicsd;
 
 KMimeMagic* KMimeMagic::self()
 {

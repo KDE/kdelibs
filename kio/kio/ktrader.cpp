@@ -83,8 +83,8 @@ bool KTraderSorter::operator< ( const KTraderSorter& _o ) const
 
 // --------------------------------------------------
 
-KTrader* KTrader::s_self = 0;
-KStaticDeleter<KTrader> ktradersd;
+KTrader* KTrader::s_self;
+static KStaticDeleter<KTrader> ktradersd;
 
 KTrader* KTrader::self()
 {

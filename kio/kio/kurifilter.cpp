@@ -169,8 +169,8 @@ void KURIFilterPlugin::setArguments( KURIFilterData& data, const QString& args )
 }
 
 //********************************************  KURIFilter **********************************************
-KURIFilter *KURIFilter::m_self = 0;
-KStaticDeleter<KURIFilter> kurifiltersd;
+KURIFilter *KURIFilter::m_self;
+static KStaticDeleter<KURIFilter> kurifiltersd;
 
 KURIFilter *KURIFilter::self()
 {
