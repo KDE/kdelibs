@@ -1,6 +1,6 @@
---- kdelibs-2.2.0-0.1beta1.orig/kdecore/kapp.cpp
-+++ kdelibs-2.2.0-0.1beta1/kdecore/kapp.cpp
-@@ -1800,7 +1802,7 @@
+--- kdelibs-2.2.0-final.orig/kdecore/kapp.cpp
++++ kdelibs-2.2.0-final/kdecore/kapp.cpp
+@@ -1802,7 +1802,7 @@
     // has to be executed by the terminal has to be supplied (e.g. something
     // like '/opt/kde2/bin/konsole -e %p'). - Frerich
     if (config.readBoolEntry("TerminalClient", false))
@@ -9,8 +9,8 @@
  
     QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
     QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
---- kdelibs-2.2.0-0.1beta1.orig/kfile/kopenwith.cpp
-+++ kdelibs-2.2.0-0.1beta1/kfile/kopenwith.cpp
+--- kdelibs-2.2.0-final.orig/kfile/kopenwith.cpp
++++ kdelibs-2.2.0-final/kfile/kopenwith.cpp
 @@ -502,7 +502,7 @@
    if (terminal->isChecked()) {
      KSimpleConfig conf(QString::fromLatin1("konquerorrc"), true);
@@ -20,8 +20,8 @@
  
      m_command += QString::fromLatin1(" -e ");
      m_command += edit->url();
---- kdelibs-2.2.0-0.1beta1.orig/kio/kmimetype.cpp
-+++ kdelibs-2.2.0-0.1beta1/kio/kmimetype.cpp
+--- kdelibs-2.2.0-final.orig/kio/kmimetype.cpp
++++ kdelibs-2.2.0-final/kio/kmimetype.cpp
 @@ -614,11 +614,11 @@
    if (s.substituteUid() && !user.isEmpty())
    {
@@ -36,8 +36,8 @@
    else
    {
      // No special options, do straight run
---- kdelibs-2.2.0-0.1beta1.orig/kio/krun.cpp
-+++ kdelibs-2.2.0-0.1beta1/kio/krun.cpp
+--- kdelibs-2.2.0-final.orig/kio/krun.cpp
++++ kdelibs-2.2.0-final/kio/krun.cpp
 @@ -113,12 +113,12 @@
    if (_service.substituteUid() && !user.isEmpty())
    {
@@ -53,8 +53,8 @@
    else
    {
    QString error;
---- kdelibs-2.2.0-0.1beta1.orig/kio/rlogin.protocol
-+++ kdelibs-2.2.0-0.1beta1/kio/rlogin.protocol
+--- kdelibs-2.2.0-final.orig/kio/rlogin.protocol
++++ kdelibs-2.2.0-final/kio/rlogin.protocol
 @@ -1,5 +1,5 @@
  [Protocol]
 -exec=konsole -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
@@ -62,8 +62,8 @@
  protocol=rlogin
  input=none
  output=none
---- kdelibs-2.2.0-0.1beta1.orig/kio/telnet.protocol
-+++ kdelibs-2.2.0-0.1beta1/kio/telnet.protocol
+--- kdelibs-2.2.0-final.orig/kio/telnet.protocol
++++ kdelibs-2.2.0-final/kio/telnet.protocol
 @@ -1,5 +1,5 @@
  [Protocol]
 -exec=konsole -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
@@ -71,24 +71,24 @@
  protocol=telnet
  input=none
  output=none
---- kdelibs-2.2.0-0.1beta1.orig/kio/useragent.pl
-+++ kdelibs-2.2.0-0.1beta1/kio/useragent.pl
+--- kdelibs-2.2.0-final.orig/kio/useragent.pl
++++ kdelibs-2.2.0-final/kio/useragent.pl
 @@ -1,4 +1,4 @@
 -#!/bin/perl
 +#!/usr/bin/perl
  while(<>)
  {
      if (($key, $domain, $useragent, $comment) = ($_ =~ /(Entry\d)=\.?([^:]+)::([^:]+)::([^\n]+)/))
---- kdelibs-2.2.0-0.1beta1.orig/kio/proxytype.pl
-+++ kdelibs-2.2.0-0.1beta1/kio/proxytype.pl
+--- kdelibs-2.2.0-final.orig/kio/proxytype.pl
++++ kdelibs-2.2.0-final/kio/proxytype.pl
 @@ -1,4 +1,4 @@
 -#!/bin/perl
 +#!/usr/bin/perl
  while(<>)
  {
      $useproxy = 1 if /UseProxy=true/;
---- kdelibs-2.2.0-0.1beta1.orig/kssl/ksslinfodlg.cc
-+++ kdelibs-2.2.0-0.1beta1/kssl/ksslinfodlg.cc
+--- kdelibs-2.2.0-final.orig/kssl/ksslinfodlg.cc
++++ kdelibs-2.2.0-final/kssl/ksslinfodlg.cc
 @@ -68,7 +68,7 @@
          }
      } else {
@@ -98,9 +98,9 @@
      }
      d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
  
---- kdelibs-2.2.0-0.1beta1.orig/kssl/kopenssl.cc
-+++ kdelibs-2.2.0-0.1beta1/kssl/kopenssl.cc
-@@ -135,11 +143,11 @@
+--- kdelibs-2.2.0-final.orig/kssl/kopenssl.cc
++++ kdelibs-2.2.0-final/kssl/kopenssl.cc
+@@ -143,11 +143,11 @@
              << "";
  
  // FIXME: #define here for the various OS types to optimize
@@ -114,8 +114,8 @@
               << "libcrypto.so"
               << "libcrypto.sl";
  
---- kdelibs-2.2.0-0.1beta1.orig/pics/hicolor/hi16-app-debian.xpm
-+++ kdelibs-2.2.0-0.1beta1/pics/hicolor/hi16-app-debian.xpm
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi16-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi16-app-debian.xpm
 @@ -0,0 +1,157 @@
 +/* XPM */
 +static char * debian_16_xpm[] = {
@@ -274,8 +274,8 @@
 +"      S M                       ",
 +"      J R #.                    ",
 +"        ..) x 6.                "};
---- kdelibs-2.2.0-0.1beta1.orig/pics/hicolor/hi32-app-debian.xpm
-+++ kdelibs-2.2.0-0.1beta1/pics/hicolor/hi32-app-debian.xpm
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi32-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi32-app-debian.xpm
 @@ -0,0 +1,173 @@
 +/* XPM */
 +static char * debian_32_xpm[] = {
@@ -450,8 +450,8 @@
 +"                I * * t K                                       ",
 +"                I * * t K                                       ",
 +"                      5 4 C C                                   "};
---- kdelibs-2.2.0-0.1beta1.orig/pics/hicolor/hi48-app-debian.xpm
-+++ kdelibs-2.2.0-0.1beta1/pics/hicolor/hi48-app-debian.xpm
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi48-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi48-app-debian.xpm
 @@ -0,0 +1,189 @@
 +/* XPM */
 +static char * debian_48_xpm[] = {
@@ -642,8 +642,8 @@
 +"                        I < * * f t K %.                                                        ",
 +"                          ..1 1 ) ) a x ^.^.6.g.                                                ",
 +"                                s 5 4 b C C `                                                   "};
---- kdelibs-2.2.0-0.1beta1.orig/admin/config.guess
-+++ kdelibs-2.2.0-0.1beta1/admin/config.guess
+--- kdelibs-2.2.0-final.orig/admin/config.guess
++++ kdelibs-2.2.0-final/admin/config.guess
 @@ -3,7 +3,7 @@
  #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
  #   Free Software Foundation, Inc.
@@ -793,8 +793,8 @@
  	# If we were able to find `uname', then EMX Unix compatibility
  	# is probably installed.
  	echo ${UNAME_MACHINE}-pc-os2-emx
---- kdelibs-2.2.0-0.1beta1.orig/admin/config.sub
-+++ kdelibs-2.2.0-0.1beta1/admin/config.sub
+--- kdelibs-2.2.0-final.orig/admin/config.sub
++++ kdelibs-2.2.0-final/admin/config.sub
 @@ -3,7 +3,7 @@
  #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
  #   Free Software Foundation, Inc.
@@ -884,19 +884,35 @@
  			;;
  		    *)
  			os=-nto$os
---- kdelibs-2.2.0-0.1beta1.orig/admin/acinclude.m4.in
-+++ kdelibs-2.2.0-0.1beta1/admin/acinclude.m4.in
-@@ -1318,7 +1318,7 @@
- AC_SUBST(kde_libraries)
- AC_SUBST(kde_includes)
+--- kdelibs-2.2.0-final.orig/admin/acinclude.m4.in
++++ kdelibs-2.2.0-final/admin/acinclude.m4.in
+@@ -2294,6 +2294,24 @@
+ #  LIBTOOL="$LIBTOOL --silent"
+ KDE_PLUGIN="-avoid-version -module -no-undefined \$(KDE_RPATH)"
+ AC_SUBST(KDE_PLUGIN)
++
++  AC_ARG_ENABLE(objprelink, [  --enable-objprelink     prelink apps (experimental, needs objprelink in path)],
++	kde_use_objprelink=$enableval, kde_use_objprelink=no)
++  if test "x$kde_use_objprelink" = "xyes"; then 
++      echo Patching libtool to run objprelink.
++      mv libtool libtool.orig
++      cat > libtool <<\EOF
++#! /bin/sh
++for n ; do case $n in
++  *.o)  test -r $n && echo objprelink $n && objprelink $n ;;
++  *.lo) m=`basename $n .lo`".o" && test -r $m && echo objprelink $m && objprelink $m 
++        m=".libs/$m" && test -r $m && echo objprelink $m && objprelink $m ;;
++esac; done
++EOF
++      cat >> libtool libtool.orig
++      rm libtool.orig
++      chmod a+x libtool
++  fi
+ ])
  
--if test "$kde_includes" = "$x_includes" || test "$kde_includes" = "$qt_includes" ; then
-+if test "$kde_includes" = "$x_includes" || test "$kde_includes" = "$qt_includes" || test "$kde_includes" = "/usr/include" ; then
-  KDE_INCLUDES=""
- else
-  KDE_INCLUDES="-I$kde_includes"
---- kdelibs-2.2.0-0.1beta1.orig/kdoctools/Makefile.am
-+++ kdelibs-2.2.0-0.1beta1/kdoctools/Makefile.am
+ AC_DEFUN(KDE_CHECK_TYPES,
+--- kdelibs-2.2.0-final.orig/kdoctools/Makefile.am
++++ kdelibs-2.2.0-final/kdoctools/Makefile.am
 @@ -1,7 +1,7 @@
  SUBDIRS = libxslt
  
@@ -906,8 +922,8 @@
  AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
  
  FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
---- kdelibs-2.2.0-0.1beta1.orig/kdoctools/xslt.cpp
-+++ kdelibs-2.2.0-0.1beta1/kdoctools/xslt.cpp
+--- kdelibs-2.2.0-final.orig/kdoctools/xslt.cpp
++++ kdelibs-2.2.0-final/kdoctools/xslt.cpp
 @@ -76,9 +76,10 @@
      return len;
  }
