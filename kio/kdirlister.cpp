@@ -56,6 +56,10 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_isShowingDotFiles = false;
   d->autoUpdate = true;
   d->urlChanged = false;
+  connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
+           this, SLOT( slotDirectoryDirty( const QString& ) ) );
+  connect( kdirwatch, SIGNAL( fileDirty( const QString& ) ),
+           this, SLOT( slotFileDirty( const QString& ) ) );
 }
 
 KDirLister::~KDirLister()
@@ -123,13 +127,6 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   {
     //kdDebug(7003) << "adding to kdirwatch " << _url.path() << endl;
     kdirwatch->addDir( _url.path() );
-    if ( !_keep ) // already done if keep == true
-    {
-      connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
-               this, SLOT( slotDirectoryDirty( const QString& ) ) );
-      connect( kdirwatch, SIGNAL( fileDirty( const QString& ) ),
-               this, SLOT( slotFileDirty( const QString& ) ) );
-    }
   }
   m_lstDirs.append( _url );
 
