@@ -36,8 +36,11 @@
 #endif
 #include "extern_md5.h"
 
-#ifdef DO_GZIP
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+
+#ifdef DO_GZIP
 #include <zlib.h>
 #endif
 
