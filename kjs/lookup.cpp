@@ -42,7 +42,7 @@ int Lookup::find(const struct HashTable *table,
 
   do {
     // compare strings
-#if WIN32
+#ifdef WIN32
     /* TODO: not exactly as optimized as the other version ... */
     if (len == e->len) {
 	const UChar *u = (const UChar*)e->c;
@@ -61,7 +61,7 @@ next:
     // try next bucket
     e = e->next;
   } while (e);
-  
+
   return -1;
 }
 

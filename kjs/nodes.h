@@ -83,14 +83,25 @@ namespace KJS {
 
   class StatementNode : public Node {
   public:
+#ifdef KJS_DEBUGGER
+    StatementNode() : l0(-1), l1(-1) { }
+#endif
     virtual Completion execute() = 0;
     void pushLabel(const UString *id) {
       if (id) ls.push(*id);
     }
+#ifdef KJS_DEBUGGER
+    void setLoc(int line0, int line1) { l0 = line0; l1 = line1; }
+    int firstLine() const { return l0; }
+    int lastLine() const { return l1; }
+#endif
   protected:
     LabelStack ls;
   private:
     KJSO evaluate() { return Undefined(); }
+#ifdef KJS_DEBUGGER
+    int l0, l1;
+#endif
   };
 
   class NullNode : public Node {
@@ -130,7 +141,7 @@ namespace KJS {
   private:
     UString pattern, flags;
   };
-  
+
   class ThisNode : public Node {
   public:
     KJSO evaluate();
@@ -202,7 +213,7 @@ namespace KJS {
   private:
     Node *name, *assign, *list;
   };
-  
+
   class PropertyNode : public Node {
   public:
     PropertyNode(double d) : numeric(d) { }

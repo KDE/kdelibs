@@ -22,6 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <string.h>
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
@@ -29,6 +30,13 @@
 /* default values for bison */
 #define YYDEBUG 0
 #define YYMAXDEPTH 0
+#ifdef KJS_DEBUGGER
+#define YYERROR_VERBOSE
+#define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line); } // location
+#else
+#undef YYLSP_NEEDED
+#define DBG(l, s, e)
+#endif
 
 extern int yylex();
 int yyerror (const char *);
@@ -415,33 +423,40 @@ EmptyStatement:
 ;
 
 ExprStatement:
-    Expr ';'                       { $$ = new ExprStatementNode($1); }
-  | Expr error                     { if (automatic())
+    Expr ';'                       { $$ = new ExprStatementNode($1);
+                                     DBG($$, @1, @2); }
+  | Expr error                     { if (automatic()) {
                                        $$ = new ExprStatementNode($1);
-                                     else
+				       DBG($$, @1, @1);
+                                     } else
 				       YYABORT; }
 ;
 
 IfStatement: /* shift/reduce conflict due to dangling else */
-    IF '(' Expr ')' Statement      { $$ = new IfNode($3, $5, 0L); }
+    IF '(' Expr ')' Statement      { $$ = new IfNode($3,$5,0L);DBG($$,@1,@4); }
   | IF '(' Expr ')' Statement ELSE Statement
-                                   { $$ = new IfNode($3, $5, $7); }
+                                   { $$ = new IfNode($3,$5,$7);DBG($$,@1,@4); }
 ;
 
 IterationStatement:
-    DO Statement WHILE '(' Expr ')' { $$ = new DoWhileNode($2, $5); }
-  | WHILE '(' Expr ')' Statement   { $$ = new WhileNode($3, $5); }
+    DO Statement WHILE '(' Expr ')' { $$=new DoWhileNode($2,$5);DBG($$,@1,@3);}
+  | WHILE '(' Expr ')' Statement   { $$ = new WhileNode($3,$5);DBG($$,@1,@4); }
   | FOR '(' ExprOpt ';' ExprOpt ';' ExprOpt ')'
-            Statement              { $$ = new ForNode($3, $5, $7, $9); }
+            Statement              { $$ = new ForNode($3,$5,$7,$9);
+	                             DBG($$,@1,@8); }
   | FOR '(' VAR VariableDeclarationList ';' ExprOpt ';' ExprOpt ')'
-            Statement              { $$ = new ForNode($4, $6, $8, $10); }
+            Statement              { $$ = new ForNode($4,$6,$8,$10);
+	                             DBG($$,@1,@9); }
   | FOR '(' LeftHandSideExpr IN Expr ')'
-            Statement              { $$ = new ForInNode($3, $5, $7); }
+            Statement              { $$ = new ForInNode($3, $5, $7);
+	                             DBG($$,@1,@6); }
   | FOR '(' VAR IDENT IN Expr ')'
-            Statement              { $$ = new ForInNode($4, 0L, $6, $8);
+            Statement              { $$ = new ForInNode($4,0L,$6,$8);
+	                             DBG($$,@1,@7);
                                      delete $4; }
   | FOR '(' VAR IDENT Initializer IN Expr ')'
-            Statement              { $$ = new ForInNode($4, $5, $7, $9);
+            Statement              { $$ = new ForInNode($4,$5,$7,$9);
+	                             DBG($$,@1,@8);
                                      delete $4; }
 ;
 
@@ -451,37 +466,41 @@ ExprOpt:
 ;
 
 ContinueStatement:
-    CONTINUE ';'                   { $$ = new ContinueNode(); }
-  | CONTINUE error                 { if (automatic())
-                                       $$ = new ContinueNode();
-                                     else
+    CONTINUE ';'                   { $$ = new ContinueNode(); DBG($$,@1,@2); }
+  | CONTINUE error                 { if (automatic()) {
+                                       $$ = new ContinueNode(); DBG($$,@1,@2);
+                                     } else
 				       YYABORT; }
-  | CONTINUE IDENT ';'             { $$ = new ContinueNode($2); delete $2; }
+  | CONTINUE IDENT ';'             { $$ = new ContinueNode($2); DBG($$,@1,@3);
+                                     delete $2; }
   | CONTINUE IDENT error           { if (automatic()) {
-                                       $$ = new ContinueNode($2); delete $2;
+                                       $$ = new ContinueNode($2);DBG($$,@1,@2);
+				       delete $2;
                                      } else
 				       YYABORT; }
 ;
 
 BreakStatement:
-    BREAK ';'                      { $$ = new BreakNode(); }
-  | BREAK error                    { if (automatic())
-                                       $$ = new BreakNode();
-                                     else
+    BREAK ';'                      { $$ = new BreakNode();DBG($$,@1,@2); }
+  | BREAK error                    { if (automatic()) {
+                                       $$ = new BreakNode(); DBG($$,@1,@1);
+                                     } else
 				       YYABORT; }
-  | BREAK IDENT ';'                { $$ = new BreakNode($2); delete $2; }
+  | BREAK IDENT ';'                { $$ = new BreakNode($2); DBG($$,@1,@3);
+                                     delete $2; }
   | BREAK IDENT error              { if (automatic()) {
-                                       $$ = new BreakNode($2); delete $2;
+                                       $$ = new BreakNode($2); DBG($$,@1,@2);
+				       delete $2;
                                      } else
 				       YYABORT;
                                    }
 ;
 
 ReturnStatement:
-    RETURN ';'                     { $$ = new ReturnNode(0L); }
-  | RETURN error                   { if (automatic())
-                                       $$ = new ReturnNode(0L);
-                                     else
+    RETURN ';'                     { $$ = new ReturnNode(0L); DBG($$,@1,@2); }
+  | RETURN error                   { if (automatic()) {
+                                       $$ = new ReturnNode(0L); DBG($$,@1,@1);
+                                     } else
 				       YYABORT; }
   | RETURN Expr ';'                { $$ = new ReturnNode($2); }
   | RETURN Expr error              { if (automatic())
@@ -491,11 +510,13 @@ ReturnStatement:
 ;
 
 WithStatement:
-    WITH '(' Expr ')' Statement    { $$ = new WithNode($3, $5); }
+    WITH '(' Expr ')' Statement    { $$ = new WithNode($3,$5);
+                                     DBG($$, @1, @4); }
 ;
 
 SwitchStatement:
-    SWITCH '(' Expr ')' CaseBlock  { $$ = new SwitchNode($3, $5); }
+    SWITCH '(' Expr ')' CaseBlock  { $$ = new SwitchNode($3, $5);
+                                     DBG($$, @1, @4); }
 ;
 
 CaseBlock:

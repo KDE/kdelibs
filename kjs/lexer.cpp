@@ -18,6 +18,10 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,6 +43,10 @@ using namespace KJS;
 #endif
 
 #include "lexer.lut.h"
+
+#ifdef KJS_DEBUGGER
+extern YYLTYPE yylloc;	// global bison variable holding token info
+#endif
 
 // a bridge for yacc from the C world to C++
 int kjsyylex()
@@ -403,6 +411,10 @@ int Lexer::lex()
 
   restrKeyword = false;
   delimited = false;
+#ifdef KJS_DEBUGGER
+  yylloc.first_line = yylineno; // ???
+  yylloc.last_line = yylineno;
+#endif
 
   switch (state) {
   case Eof:
