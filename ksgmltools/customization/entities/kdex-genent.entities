@@ -82,14 +82,6 @@
 ]]>
 <!ENTITY documentation.index "">
 
-<!ENTITY % DBPED1.0 "INCLUDE">
-<![%DBPED1.0;[
-<![%addindex;[
-<!ENTITY kdedocindex SYSTEM "docindex.docbook">
-]]>
-<!ENTITY kdedocindex "">
-]]>
-
 <!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">
 <!ENTITY % FDLFCT "IGNORE">
@@ -302,13 +294,3 @@
 <!ENTITY XSL	"<trademark>XSL</trademark>">
 
 <!-- Obsolete entities -->
-
-<!ENTITY % DBGED1.0 "INCLUDE">
-<![%DBGED1.0;[
-<!-- use Hewlett-Packard instead -->
-<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>'>
-<!-- use X-Windows instead -->
-<!ENTITY X	"<trademark>X Window System</trademark>">
-<!-- use pixie instead -->
-<!ENTITY Pixie	"<application>Pixie</application>">
-]]>
