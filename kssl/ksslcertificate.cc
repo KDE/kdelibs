@@ -21,6 +21,8 @@
 #include <config.h>
 #endif
 
+#include <qstring.h>
+
 #include "kssldefs.h"
 #include "ksslcertificate.h"
 #include "ksslutils.h"
@@ -117,6 +119,12 @@ void KSSLCertificate::setCert(X509 *c) {
   d->m_stateCached = false;
 }
 
+X509 *KSSLCertificate::getCert() {
+#ifdef HAVE_SSL
+  return d->m_cert;
+#endif
+return 0;
+}
 
 // pull in the callback.  It's common across multiple files but we want
 // it to be hidden.
@@ -344,4 +352,21 @@ return QString::null;
 }
 
 
+int operator==(KSSLCertificate &x, KSSLCertificate &y) {
+#ifndef HAVE_SSL
+  return 0;
+#else
+  if (!X509_cmp(x.getCert(), y.getCert())) return 0;
+  return 1;
+#endif
+}
+
+
+KSSLCertificate *KSSLCertificate::replicate() {
+  // The new certificate doesn't have the cached value.  It's probably
+  // better this way.  We can't anticipate every reason for doing this.
+  KSSLCertificate *newOne = new KSSLCertificate();
+  newOne->setCert(X509_dup(getCert()));
+  return newOne;
+}
 

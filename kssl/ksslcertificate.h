@@ -35,8 +35,7 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
-#include <qstring.h>
-
+class QString;
 class KSSL;
 class KSSLCertificatePrivate;
 
@@ -46,10 +45,15 @@ class KSSLCertificate {
 friend class KSSL;
 friend class KSSLCertificateHome;
 friend class KSSLCertificateFactory;
+friend class KSSLCertificateCache;
 friend class KSSLPeerInfo;
 
 public:
   ~KSSLCertificate();
+
+  // We need a static method to generate one of these, given a filename that
+  // points to a PEM encoded certificate file.  It will return NULL on failure.
+  // (that's why I don't want to use a constructor)
 
   enum KSSLValidation { Unknown, Ok, NoCARoot, InvalidPurpose,
                         PathLengthExceeded, InvalidCA, Expired,
@@ -61,14 +65,18 @@ public:
   QString getIssuer() const;
   QString getNotBefore() const;
   QString getNotAfter() const;
-  // getSerialNumber() const;
+  // getSerialNumber() const;      <-- it's an ASN1Integer.  Yum.
   // getSignatureType() const;
   // get public key ??
   bool isValid();
   KSSLValidation validate();
   KSSLValidation revalidate();
 
+  KSSLCertificate *replicate();
 
+         friend int operator==(KSSLCertificate &x, KSSLCertificate &y);
+  inline friend int operator!=(KSSLCertificate &x, KSSLCertificate &y) 
+                                                       { return !(x == y); }
 private:
   KSSLCertificatePrivate *d;
 
@@ -77,6 +85,7 @@ protected:
   KSSLCertificate();
 
   void setCert(X509 *c);
+  X509 *getCert();
   KSSLValidation processError(int ec);
 };
 

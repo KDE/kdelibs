@@ -23,28 +23,51 @@
 class QString;
 class KSSLCertificate;
 
+enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
+// Unknown: no policy has been set for this record
+// Reject: user has requested to not accept data from this site
+// Accept: user has requested to always accept data from this site
+// Prompt: user wishes to be prompted before accepting this certificate
+//         You may need to set a [non-]permanent policy on this record after
+//         the user is prompted.
+// Ambiguous: The state cannot be uniquely determined.  Hopefully this
+//            doesn't happen.
+
+
 class KSSLCertificateCache {
 
 public:
   KSSLCertificateCache();
   ~KSSLCertificateCache();
 
-  enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt };
+  void addCertificate(KSSLCertificate& cert, KSSLCertificatePolicy policy, 
+                                                     bool permanent = true);
 
-  void addCertificate(KSSLCertificate& cert, KSSLCertificatePolicy policy);
+  // WARNING!  This is not a "secure" method.  You need to actually
+  //           do a getPolicyByCertificate to be cryptographically sure
+  //           that this is an accepted certificate/site pair.
+  //           (note that the site (CN) is encoded in the certificate
+  //            so you should only accept certificates whose CN matches
+  //            the exact FQDN of the site presenting it)
+  //           If you're just doing an OpenSSL connection, I believe it
+  //           tests this for you, but don't take my word for it.
+  KSSLCertificatePolicy getPolicyByCN(QString& cn);
 
-  KSSLCertificatePolicy getPolicyByCN(QString& cn) const;
-  KSSLCertificatePolicy getPolicyByCertificate(KSSLCertificate& cert) const;
+  KSSLCertificatePolicy getPolicyByCertificate(KSSLCertificate& cert);
 
-  bool seenCN(QString& cn) const;
-  bool seenCertificate(KSSLCertificate& cert) const;
+  bool seenCN(QString& cn);
+  bool seenCertificate(KSSLCertificate& cert);
 
+  // This needs to deal with the permanent flag
   bool removeByCN(QString& cn);
   bool removeByCertificate(KSSLCertificate& cert);
 
 private:
   class KSSLCertificateCachePrivate;
   KSSLCertificateCachePrivate *d;
+
+  void loadDefaultPolicies();
+  void clearList();
 
 };
 
