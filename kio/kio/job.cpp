@@ -2048,6 +2048,13 @@ void CopyJob::statNextSrc()
         }
         else
         {
+            // if the file system doesn't support deleting, we do not even stat
+            if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
+                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
+		++m_currentStatSrc;
+                statNextSrc(); // we could use a loop instead of a recursive call :)
+                return;
+            }
             // Stat the next src url
             Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
             //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
@@ -3085,6 +3092,14 @@ void DeleteJob::statNextSrc()
     if ( m_currentStat != m_srcList.end() )
     {
         m_currentURL = (*m_currentStat);
+
+        // if the file system doesn't support deleting, we do not even stat
+        if (!KProtocolInfo::supportsDeleting(m_currentURL)) {
+            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
+            ++m_currentStat;
+            statNextSrc(); // we could use a loop instead of a recursive call :)
+            return;
+        }
         // Stat it
         state = STATE_STATING;
         KIO::SimpleJob * job = KIO::stat( m_currentURL, true, 1, false );
