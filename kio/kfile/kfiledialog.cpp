@@ -769,8 +769,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     docPath.setPath( KGlobalSettings::documentPath() );
     if ( u.path(+1) != docPath.path(+1) ) {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        d->pathCombo->addDefaultURL( u,
-                                     KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+        d->pathCombo->addDefaultURL( docPath,
+                                     KMimeType::pixmapForURL( docPath, 0, KIcon::Small ),
                                      text );
     }
 
