@@ -342,19 +342,24 @@ void KIconDialog::slotButtonClicked(int id)
     switch (id)
     {
     case 0:
-	mType = 0;
-	mpBrowseBut->setEnabled(false);
-	mpCombo->setEnabled(true);
-	showIcons();
+        if(mType!=0)
+        {
+            mType = 0;
+            mpBrowseBut->setEnabled(false);
+            mpCombo->setEnabled(true);
+            showIcons();
+        }
 	break;
 
     case 1:
-	mType = 1;
-	mpBrowseBut->setEnabled(true);
-	mpCombo->setEnabled(false);
-	showIcons();
-	break;
-
+        if(mType!=1)
+        {
+            mType = 1;
+            mpBrowseBut->setEnabled(true);
+            mpCombo->setEnabled(false);
+            showIcons();
+        }
+        break;
     case 2:
 	file = KFileDialog::getOpenFileName(QString::null,
 		i18n("*.png *.xpm|Icon Files (*.png *.xpm)"), this);
