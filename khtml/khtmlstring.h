@@ -52,7 +52,7 @@ public:
     HTMLString *operator += (int i);
     HTMLString operator + (int i);
 
-    QChar operator [](int i) {
+    QChar &operator [](int i) {
 	return *(s+i);
     }
 

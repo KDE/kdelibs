@@ -167,10 +167,12 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
      
 void KHTMLWidget::addHref( QString _url )
 { 
-    if (!usedHrefURLs.contains( _url))
-    {
-        usedHrefURLs.append( _url );
-    }
+    // allow doubles in there... The call to QStringList::contains()
+    // just uses up too much CPU time for some pages.
+    //if (!usedHrefURLs.contains( _url))
+    //{
+    usedHrefURLs.append( _url );
+    //}
 }
 
 
