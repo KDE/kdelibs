@@ -4,17 +4,66 @@
  <filterargs name="__root__" description="Poster Printing" >
 <filtergroup name="general" description="General" >
 <filterarg format="-m%value" type="list" name="media" default="A4" description="Media Size" >
-<value name="A5" description="A5" />
-    <value name="A4" description="A4" />
-    <value name="A3" description="A3" />
-    <value name="A2" description="A2" />
-    <value name="A1" description="A1" />   </filterarg>
-   <filterarg format="-p%value" type="list" name="size" default="default" description="Poster Size" >
-<value name="A5" description="A5" />
-    <value name="A4" description="A4" />
-    <value name="A3" description="A3" />
-    <value name="A2" description="A2" />
+    <value name="A0" description="A0" />
     <value name="A1" description="A1" />
+    <value name="A2" description="A2" />
+    <value name="A3" description="A3" />
+    <value name="A4" description="A4" />
+    <value name="A5" description="A5" />
+	<value name="A6" description="A6" />
+	<value name="A7" description="A7" />
+	<value name="A8" description="A8" />
+	<value name="A9" description="A9" />
+	<value name="B1" description="B1" />
+	<value name="B2" description="B2" />
+	<value name="B3" description="B3" />
+	<value name="B4" description="B4" />
+	<value name="B5" description="B5" />
+	<value name="B6" description="B6" />
+	<value name="B7" description="B7" />
+	<value name="B8" description="B8" />
+	<value name="B9" description="B9" />
+	<value name="B10" description="B10" />
+	<value name="C5" description="Envelope C5" />
+	<value name="DL" description="Envelope DL" />
+	<value name="Comm10" description="Envelope US #10" />
+	<value name="Tabloid" description="Tabloid" />
+	<value name="Ledger" description="Ledger" />
+	<value name="Executive" description="Executive" />
+	<value name="Folio" description="Folio" />
+	<value name="Legal" description="US Legal" />
+	<value name="Letter" description="US Letter" />
+</filterarg>
+   <filterarg format="-p%value" type="list" name="size" default="default" description="Poster Size" >
+    <value name="A0" description="A0" />
+    <value name="A1" description="A1" />
+    <value name="A2" description="A2" />
+    <value name="A3" description="A3" />
+    <value name="A4" description="A4" />
+    <value name="A5" description="A5" />
+	<value name="A6" description="A6" />
+	<value name="A7" description="A7" />
+	<value name="A8" description="A8" />
+	<value name="A9" description="A9" />
+	<value name="B1" description="B1" />
+	<value name="B2" description="B2" />
+	<value name="B3" description="B3" />
+	<value name="B4" description="B4" />
+	<value name="B5" description="B5" />
+	<value name="B6" description="B6" />
+	<value name="B7" description="B7" />
+	<value name="B8" description="B8" />
+	<value name="B9" description="B9" />
+	<value name="B10" description="B10" />
+	<value name="C5" description="Envelope C5" />
+	<value name="DL" description="Envelope DL" />
+	<value name="Comm10" description="Envelope US #10" />
+	<value name="Tabloid" description="Tabloid" />
+	<value name="Ledger" description="Ledger" />
+	<value name="Executive" description="Executive" />
+	<value name="Folio" description="Folio" />
+	<value name="Legal" description="US Legal" />
+	<value name="Letter" description="US Letter" />
     <value name="default" description="Use Media Size" />
     <value name="%psu" description="Use Original Print Size" />   </filterarg>  </filtergroup>
   <filtergroup name="margin" description="Margins" >
