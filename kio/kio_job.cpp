@@ -29,9 +29,6 @@
 #include <time.h>
 #include <sys/wait.h>
 
-#include <pwd.h>
-#include <grp.h>
-
 #ifdef __FreeBSD__
 #include <sys/param.h>
 #include <sys/ucred.h>
@@ -510,14 +507,6 @@ bool KIOJob::listDir( const char *_url ) {
     return false;
   }
 
-  if ( u.isLocalFile() )
-  {
-    m_localListingURL = u;
-    m_localListingPath = u.path();
-    QTimer::singleShot( 0, this, SLOT( slotListLocal() ) );
-    return true;
-  }
-  
   QString error;
   int errid;
   if ( !createSlave( u.protocol().ascii(), u.host().ascii(),
@@ -838,173 +827,6 @@ void KIOJob::slotSlaveDied( KProcess *)
   kdebug( KDEBUG_INFO, 7007, "Slave died, pid = %ld", m_pSlave->getPid() );
 }
 
-void KIOJob::slotListLocal()
-{
-  kdebug( KDEBUG_INFO, 7101, "=============== LIST %s ===============", m_localListingPath.ascii()  );
-
-  const char *_u = m_localListingURL.url().ascii();
-  
-  struct stat buff;
-  if ( stat( m_localListingPath.ascii(), &buff ) == -1 ) {
-    slotError( ERR_DOES_NOT_EXIST,_u );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  if ( !S_ISDIR( buff.st_mode ) ) {
-    slotError( ERR_IS_FILE,_u );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  m_cmd = CMD_LIST;
-
-  DIR *dp = 0L;
-  struct dirent *ep;
-
-  QString dir = m_localListingURL.path( 0 );
-  dp = opendir( dir.ascii() );
-  if ( dp == 0L ) {
-    slotError( ERR_CANNOT_ENTER_DIRECTORY,_u );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  QValueList<KUDSEntry> entries;
-
-  KUDSEntry entry;
-  KUDSAtom atom;
-  while ( ( ep = readdir( dp ) ) != 0L ) {
-
-    //kdebug( KDEBUG_INFO, 7101, "Listing %s", ep->d_name );
-
-    entry.clear();
-
-    atom.m_uds = UDS_NAME;
-    atom.m_str = ep->d_name;
-    entry.append( atom );
-
-    QString tmp = m_localListingURL.path( 1 );
-    tmp += ep->d_name;
-
-    QString slink = "";
-    mode_t type;
-    mode_t access;
-
-    struct stat buff;
-    struct stat lbuff;
-    if ( stat( tmp.ascii(), &buff ) == -1 )  {
-      // A link poiting to nowhere ?
-      if ( lstat( tmp.ascii(), &lbuff ) == -1 ) {
-	// Should never happen
-	slotError( ERR_DOES_NOT_EXIST, tmp );
-	m_cmd = CMD_NONE;
-	return;
-      }
-
-      // It is a link pointing to nowhere
-      type = S_IFMT - 1;
-      access = S_IRWXU | S_IRWXG | S_IRWXO;
-      buff.st_size = lbuff.st_size; // buff.st_size is invalid
-    } else {
-      lstat( tmp.ascii(), &lbuff );
-      type = buff.st_mode & S_IFMT; // extract file type
-      access = buff.st_mode & 0x1FF; // extract permissions
-      // Is it a link
-      if ( S_ISLNK( lbuff.st_mode ) ) {
-	// type |= S_IFLNK; No !! This screws S_ISDIR and friends. (David)
-        // caller should check UDS_LINK_DEST instead
-	char buffer2[ 1000 ];
-	int n = readlink( tmp.ascii(), buffer2, 1000 );
-	if ( n != -1 ) {
-	  buffer2[ n ] = 0;
-	  slink = buffer2;
-	}
-      }
-    }
-
-
-    atom.m_uds = UDS_FILE_TYPE;
-    atom.m_long = type;
-    entry.append( atom );
-
-    atom.m_uds = UDS_SIZE;
-    atom.m_long = buff.st_size;
-    entry.append( atom );
-
-    atom.m_uds = UDS_MODIFICATION_TIME;
-    atom.m_long = buff.st_mtime;
-    entry.append( atom );
-
-    atom.m_uds = UDS_ACCESS;
-    atom.m_long = access;
-    entry.append( atom );
-
-    atom.m_uds = UDS_USER;
-    uid_t uid = buff.st_uid;
-    //    QString *temp = usercache.find( uid );
-    //    if ( !temp ) {
-      struct passwd *user = getpwuid( uid );
-      if ( user ) // {
-      //	usercache.insert( uid, new QString(user->pw_name) );
-	atom.m_str = user->pw_name;
-	//      }
-      else
-	atom.m_str = "???";
-      //    }
-      //    else
-      //      atom.m_str = *temp;
-    entry.append( atom );
-
-    atom.m_uds = UDS_GROUP;
-    gid_t gid = buff.st_gid;
-    //    temp = groupcache.find( gid );
-    //    if ( !temp ) {
-      struct group *grp = getgrgid( gid );
-      if ( grp ) //{
-      //	groupcache.insert( gid, new QString(grp->gr_name) );
-	atom.m_str = grp->gr_name;
-	//      }
-      else
-	atom.m_str = "???";
-      //    }
-      //    else
-      //      atom.m_str = *temp;
-    entry.append( atom );
-
-    atom.m_uds = UDS_LINK_DEST;
-    atom.m_str = slink;
-    entry.append( atom );
-
-    atom.m_uds = UDS_ACCESS_TIME;
-    atom.m_long = buff.st_atime;
-    entry.append( atom );
-
-    atom.m_uds = UDS_CREATION_TIME;
-    atom.m_long = buff.st_ctime;
-    entry.append( atom );
-//    listEntry( entry );
-    entries.append( entry );
-  }
-
-  closedir( dp );
-
-  slotTotalFiles( entries.count() );
-
-  QValueList<KUDSEntry>::Iterator it = entries.begin();
-  QValueList<KUDSEntry>::Iterator end = entries.end();
-  for (; it != end; ++it )
-    slotListEntry( *it );
-
-  kdebug( KDEBUG_INFO, 7101, "============= COMPLETED LIST ============" );
-
-//  m_cmd = CMD_NONE;
-
-  slotFinished();
-
-  kdebug( KDEBUG_INFO, 7101, "=============== BYE ===========" );
- 
-} 
 
 void KIOJob::connectSlave( KIOSlave *_s ) {
   setConnection( _s );
