@@ -181,7 +181,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     
     QString f = kapp->kdedir();
     f.detach();
-    f += "/share/icons/khtmlw_dnd.xpm";
+    f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
     registerFormats();
@@ -223,7 +223,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
     }
 
     // Are we waiting for the background image ?
-    if ( !bgPixmapURL.isNull() )
+    if ( !bgPixmapURL.isEmpty() )
     {
 	// Did the background image arrive ?
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
@@ -241,7 +241,9 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
     if ( waitingFileList.count() == 0 )
     {
 	if ( !parsing )
+	{
 	    emit documentDone();
+	}
     }
 }
 
