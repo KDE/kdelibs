@@ -1,23 +1,20 @@
 # New ports collection makefile for:	KDE libraries 2
-# Date created:				Fri Apr 14 2000 15:05:00 EDT
-# Whom:					will
 #
-# $FreeBSD: ports/x11/kdelibs2/Makefile,v 1.69 2001/01/05 06:20:28 kevlo Exp $
+# $Id$
 #
 
 PORTNAME=	kdelibs
-PORTVERSION=	2.0.1
-PORTREVISION=	2
+PORTVERSION=	2.1dailypkg
+PORTREVISION=	3
 CATEGORIES=	x11 kde
-MASTER_SITES=	${MASTER_SITE_KDE}
-MASTER_SITE_SUBDIR=	stable/${PORTVERSION}/distribution/tar/generic/src
 
-MAINTAINER=	kevlo@FreeBSD.org
+MAINTAINER=	jazepeda@pacbell.net
 
 LIB_DEPENDS=	tiff.4:${PORTSDIR}/graphics/tiff \
 		audiofile.0:${PORTSDIR}/audio/libaudiofile \
-		mimelib.3:${PORTSDIR}/converters/kdesupport2
+		mimelib.1:${PORTSDIR}/converters/kdesupport2
 
+DISTFILES=	
 USE_OPENSSL=	yes
 USE_QT2=	yes
 MOC?=		${X11BASE}/bin/moc2
@@ -36,6 +33,8 @@ CONFIGURE_ENV=	CPPFLAGS="-I${LOCALBASE}/include -I${PREFIX}/include" \
 USE_GMAKE=	yes
 MAKE_ENV=	SOMAJOR="${SOMAJOR}" SOMINOR="${SOMINOR}"
 PLIST_SUB+=	LIBVER="${SOMAJOR}"
+WRKSRC=		${WRKDIR}/kdelibs_buildroot
+CONFIGURE_SCRIPT= ../../../configure
 
 .include <bsd.port.pre.mk>
 
@@ -51,11 +50,17 @@ pre-fetch:
 	@${ECHO}
 .endif
 
+# We need to go through Makefile.cvs before anything else.
 pre-configure:
+	cd ..;rm -f subdirs;${MKDIR} ${WRKSRC};${GMAKE} -f Makefile.cvs
 .for NUM in 1 3
 	(find ${WRKSRC} -name Makefile.in | xargs ${PERL} -pi -e \
 		"s@version-info ${NUM}:0@version-info ${SOMAJOR}:${SOMINOR}@g")
 .endfor
+
+# This should clean the KDE target pretty well
+pre-clean:
+	rm -rf ${WRKSRC}
 
 post-install:
 .for LIB in DCOP kab kdecore kdesu kdeui kfile kformula kio kjs \
