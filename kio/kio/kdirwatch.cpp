@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
+#include <assert.h>
 #endif
 
 #include <qptrlist.h>
