@@ -189,6 +189,7 @@ namespace KJS {
     List *copyOfChain();
     KJSO variableObject() const { return variable; }
     Imp* thisValue() const { return thisVal; }
+    void setThisValue(Imp *t) { thisVal = t; }
     bool hadError() const { return err; }
     void setError(const KJSO& e) { errObj = e; err = true; }
     void clearError() { err = false; errObj = KJSO(); }
