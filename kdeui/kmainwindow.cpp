@@ -166,7 +166,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
         do {
             s.setNum( ++unusedNumber );
             s= kapp->instanceName() + "-mainwindow#" + s;
-            for ( existingWin= memberList->first(); existingWin!=0; 
+            for ( existingWin= memberList->first(); existingWin!=0;
                   existingWin= memberList->next() )
                 if ( existingWin->name() == s )
                     break;
@@ -727,7 +727,7 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
     // Get notified when the user moves a toolbar around
-    connect( this, SIGNAL( endMovingToolBar( QToolBar * ) ),
+    connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
              this, SLOT( setSettingsDirty() ) );
     // Now read the previously saved settings
     applyMainWindowSettings( KGlobal::config(), groupName );
