@@ -348,8 +348,10 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
     if(!m_styleDecls) createDecl();
 
     // this is the only case no color gets applied in IE.
-    if ( !c.length() )
+    if ( !c.length() ) {
+	removeCSSProperty(id);
 	return;
+    }
 
     if ( m_styleDecls->setProperty(id, c, false, true) )
 	return;
