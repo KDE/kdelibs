@@ -74,7 +74,12 @@ int main(int argc, char **argv)
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
     }
-
+    else if (argv1 == QString::fromLatin1("save")) {
+        KURL u = KFileDialog::getSaveURL();
+//          QString(QDir::homeDirPath() + QString::fromLatin1("/testfile")),
+//          QString::null, 0L);
+        name1 = u.url();  
+    }
     else{
 	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"
