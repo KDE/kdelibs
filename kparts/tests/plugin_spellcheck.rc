@@ -7,7 +7,7 @@
  <Menu name="SomePluginMenu"><text>Some Cool Plugin Menu</text>
   <Action name="spellcheck" plugin="libspellcheckplugin"/>
   <Action name="searchreplace"/>
-  <Menu name="WhatASubMenu"><text>Yep</txt>
+  <Menu name="WhatASubMenu"><text>Yep</text>
     <Action name="searchreplace"/>
   </Menu>
  </Menu>
