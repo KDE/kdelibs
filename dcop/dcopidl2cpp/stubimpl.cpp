@@ -179,8 +179,9 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << " ";
 		    str << ")";
 
-		    if ( s.hasAttribute("qual") )
-			str << " " << s.attribute("qual");
+                    // const methods in a stub can't compile, they need to call setStatus()
+		    //if ( s.hasAttribute("qual") )
+			//str << " " << s.attribute("qual");
 		    str << endl;
 		
 		    str << "{" << endl ;

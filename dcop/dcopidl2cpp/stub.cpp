@@ -183,8 +183,9 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 			str << " ";
 		    str << ")";
 
-		    if ( s.hasAttribute("qual") )
-			str << " " << s.attribute("qual");
+                    // const methods stubs can't compile, they need to call setStatus().
+		    //if ( s.hasAttribute("qual") )
+			//str << " " << s.attribute("qual");
 		    str << ";" << endl;
 		}
 	    }
