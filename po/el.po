@@ -1,0 +1,202 @@
+ges, that are often used
+msgid "Error"
+msgstr "Λάθος"
+
+msgid "Malformed URL"
+msgstr "Κακοδιατυπωμένη URL"
+
+msgid "Yes"
+msgstr "Ναι"
+
+msgid "No"
+msgstr "Όχι"
+
+msgid "Warning"
+msgstr "Προειδοποίηση"
+
+msgid "Open a file"
+msgstr "¶νοιγμα αρχείου"
+
+msgid "Save a file"
+msgstr "Σώσιμο αρχείου"
+
+msgid "Contents"
+msgstr "Περιεχόμενα"
+
+msgid "About"
+msgstr "Σχετικά"
+
+msgid "Open"
+msgstr "¶νοιξε"
+
+msgid "Save"
+msgstr "Σώσε"
+
+msgid "Save As"
+msgstr "Σώσε ως"
+
+msgid "Close"
+msgstr "Κλείσε"
+
+msgid "Quit"
+msgstr "Εγκατάληψε"
+
+msgid "Untitled"
+msgstr "Χωρίς τίτλο"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "OK"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Apply"
+msgstr "Ενεργοποίησε"
+
+msgid "File"
+msgstr "Αρχείο"
+
+msgid "Help"
+msgstr "Βοήθεια"
+
+msgid "Edit"
+msgstr "Διώρθωση"
+
+# libkdeui messages
+
+#: kcolordlg.cpp:239
+msgid "Select Color"
+msgstr "Επιλογή Χρώματος"
+
+#: kcolordlg.cpp:244
+msgid "System Colors"
+msgstr "Χρώματα Συστήματος"
+
+#: kcolordlg.cpp:269
+msgid "Custom Colors"
+msgstr "Διαμορφωμένα Χρώματα"
+
+#: kcolordlg.cpp:345
+msgid "Add to Custom Colors"
+msgstr "Προσθήκη Διαμορφωμένου Χρώματος"
+
+#: kcolordlg.cpp:649 kcolordlg.cpp:699
+msgid "Custom..."
+msgstr "Διαμόρφωση"
+
+#: kfontdialog.cpp:95
+msgid "Select Font"
+msgstr "Επιλογή Γραμματοσειράς"
+
+#: kfontdialog.cpp:99
+msgid "Requested Font"
+msgstr "Ζητούμενη Γραμματοσειρά"
+
+#: kfontdialog.cpp:104
+msgid "Actual Font"
+msgstr "Πραγματική Γραμματοσειρά"
+
+#: kfontdialog.cpp:108 kfontdialog.cpp:112
+msgid "Family:"
+msgstr "Οικογένεια:"
+
+#: kfontdialog.cpp:119 kfontdialog.cpp:124
+msgid "Size:"
+msgstr "Μέγεθος:"
+
+#: kfontdialog.cpp:133 kfontdialog.cpp:138
+msgid "Weight:"
+msgstr "Βάρος:"
+
+#: kfontdialog.cpp:147 kfontdialog.cpp:155
+msgid "Style:"
+msgstr "Στυλ"
+
+#: kfontdialog.cpp:190
+msgid "Size"
+msgstr "Μέγεθος"
+
+#: kfontdialog.cpp:229
+msgid "Weight"
+msgstr "Βάρος"
+
+#: kfontdialog.cpp:230 kfontdialog.cpp:327
+msgid "normal"
+msgstr "κανονικά"
+
+#: kfontdialog.cpp:231 kfontdialog.cpp:329
+msgid "bold"
+msgstr "έντονα"
+
+#: kfontdialog.cpp:240
+msgid "Style"
+msgstr "Στυλ"
+
+#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
+msgid "roman"
+msgstr "απλά"
+
+#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
+msgid "italic"
+msgstr "πλαγιαστά"
+
+#: kfontdialog.cpp:270
+msgid "Dolor Ipse"
+msgstr ""
+
+#: kfontdialog.cpp:362
+msgid "Bold"
+msgstr "Έντονα"
+
+#: kfontdialog.cpp:364
+msgid "Normal"
+msgstr "Κανονικά"
+
+#: kiconloader.cpp:176
+msgid "Select Icon"
+msgstr "Επέλεξε Εικονίδιο"
+
+#: kiconloader.cpp:182
+msgid "Filter:"
+msgstr "Φίλτρο:"
+
+#: kiconloader.cpp:337
+#, c-format
+msgid "ERROR: couldn't find icon: %s"
+msgstr "ΛΑΘΟΣ: δεν μπορώ να βρώ το εικονίδιο: %s"
+
+#: kmenubar.cpp:106 ktoolbar.cpp:273
+msgid "Top"
+msgstr "Επάνω"
+
+#: kmenubar.cpp:107 ktoolbar.cpp:275
+msgid "Bottom"
+msgstr "Κάτω"
+
+#: kmenubar.cpp:108 ktoolbar.cpp:276
+msgid "Floating"
+msgstr "Επιπλέον"
+
+#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
+msgid "Float"
+msgstr "Επέπλευσε"
+
+#: kmenubar.cpp:213 ktoolbar.cpp:1198
+msgid "UnFloat"
+msgstr "Βούλιαξε"
+
+#: ktoolbar.cpp:87 ktoolbar.cpp:145
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: το pixmap είναι άδειο, ίσως λοίπει κάποιο αρχείο"
+
+#: ktoolbar.cpp:272
+msgid "Left"
+msgstr "Αριστερά"
+
+#: ktoolbar.cpp:274
+msgid "Right"
+msgstr "Δεξιά"
+
