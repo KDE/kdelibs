@@ -596,7 +596,7 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 		    return FALSE;
 		}
 		
-		qDebug("Processing mouse click");
+		//qDebug("Processing mouse click");
 		/* if ( view )
 		    qDebug("Click view=%x  part=%s", (int)view, part->name() );
 		else
