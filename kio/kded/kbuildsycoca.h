@@ -46,6 +46,11 @@ public:
 protected:
 
    /**
+    * Look up gnome mimetypes.
+    */
+   void processGnomeVfs();
+
+   /**
     * Build the whole system cache, from .desktop files
     */
    void build(KSycocaEntryListList *, QDict<Q_UINT32> *);

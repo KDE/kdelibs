@@ -23,7 +23,7 @@
 #include <assert.h>
 
 KCTimeInfo::KCTimeInfo()
- : KSycocaFactory( KST_CTimeInfo ), ctimeDict(523)
+ : KSycocaFactory( KST_CTimeInfo ), ctimeDict(977)
 {
    ctimeDict.setAutoDelete(true);
    if (m_str)

@@ -52,6 +52,8 @@
 
 static Q_UINT32 newTimestamp = 0;
 
+static KBuildServiceFactory *g_bsf = 0;
+
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
 {
@@ -59,6 +61,53 @@ KBuildSycoca::KBuildSycoca()
 
 KBuildSycoca::~KBuildSycoca()
 {
+
+}
+
+void KBuildSycoca::processGnomeVfs()
+{
+   QString file = locate("app-reg", "gnome-vfs.applications");
+   if (file.isEmpty())
+   {
+//      kdDebug(7021) << "gnome-vfs.applications not found." << endl;
+      return;
+   }
+
+   QString app;
+
+   char line[1024*64];
+ 
+   FILE *f = fopen(QFile::encodeName(file), "r");
+   while (!feof(f))
+   {
+      if (!fgets(line, sizeof(line)-1, f))
+      {
+        break;
+      }
+
+      if (line[0] != '\t')
+      {
+          app = QString::fromLatin1(line);
+          app.truncate(app.length()-1);
+      }
+      else if (strncmp(line+1, "mime_types=", 11) == 0)
+      {
+          QString mimetypes = QString::fromLatin1(line+12);
+          mimetypes.truncate(mimetypes.length()-1);
+          mimetypes.replace(QRegExp("\\*"), "all");
+          KService *s = g_bsf->findServiceByName(app);
+          if (!s)
+             continue;
+
+          QStringList &serviceTypes = s->accessServiceTypes();
+          if (serviceTypes.count() <= 1)
+          {
+             serviceTypes += QStringList::split(',', mimetypes);
+//             kdDebug(7021) << "Adding gnome mimetypes for '" << app << "'.\n";
+//             kdDebug(7021) << "ServiceTypes=" << s->serviceTypes().join(":") << endl;
+          }
+      }
+   }
 }
 
 void KBuildSycoca::build(KSycocaEntryListList *allEntries,
@@ -179,11 +228,11 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
                    }
                    else if (oldTimestamp)
                    {
-                      kdDebug() << "modified: " << (*it3) << endl;
+                      kdDebug(7021) << "modified: " << (*it3) << endl;
                    }
                    else 
                    {
-                      kdDebug() << "new: " << (*it3) << endl;
+                      kdDebug(7021) << "new: " << (*it3) << endl;
                    }
                }
                ctimeInfo->addCTime(*it3, timeStamp );
@@ -196,6 +245,8 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
                   factory->addEntry( entry, resource );
            }
         }
+        if ((factory == g_bsf) && (strcmp(resource, "apps") == 0))
+           processGnomeVfs();
      }
   }
 }
@@ -221,7 +272,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
-  (void) new KBuildServiceFactory(stf, bsgf);
+  g_bsf = new KBuildServiceFactory(stf, bsgf);
   (void) new KBuildImageIOFactory();
   (void) new KBuildProtocolInfoFactory();
 
@@ -237,7 +288,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
      kdError(7021) << "Error writing database to " << database.name() << endl;
      return;
   }
-  kdDebug() << "Build = " << Time2-Time1 << "s Save = " << Time3-Time2 << "s" << endl;
+  kdDebug(7021) << "Build = " << Time2-Time1 << "s Save = " << Time3-Time2 << "s" << endl;
 }
 
 void KBuildSycoca::save()
@@ -330,6 +381,7 @@ int main(int argc, char **argv)
    // force generating of KLocale object. if not, the database will get
    // be translated
    KGlobal::locale();
+   KGlobal::dirs()->addResourceType("app-reg", "share/application-registry" );
 
    DCOPClient *dcopClient = new DCOPClient();
 

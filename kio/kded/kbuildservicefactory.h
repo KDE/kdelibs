@@ -40,6 +40,8 @@ public:
 
   virtual ~KBuildServiceFactory();
 
+  KService *findServiceByName(const QString &_name);
+
   /**
    * Construct a KService from a config file.
    */
@@ -70,6 +72,7 @@ private:
 
   KSycocaFactory *m_serviceTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
+  QDict<KService> m_serviceDict;
 };
 
 #endif

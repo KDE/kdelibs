@@ -56,7 +56,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
       // Build new database!
       m_str = 0;
       m_resourceList = 0;
-      m_entryDict = new KSycocaEntryDict();
+      m_entryDict = new KSycocaEntryDict(977);
       m_entryDict->setAutoDelete(true);
       m_sycocaDict = new KSycocaDict();
       m_beginEntryOffset = 0;

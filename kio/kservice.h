@@ -30,6 +30,7 @@
 
 class KDesktopFile;
 class KService;
+class KBuildSycoca;
 /**
  * Represent a service, i.e. an application bound to one or several mimetypes
  * (or servicetypes) as written in its desktop entry file.
@@ -42,6 +43,8 @@ class KService;
 class KService : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry )
+
+  friend class KBuildSycoca;
 
 public:
   typedef KSharedPtr<KService> Ptr;
@@ -314,6 +317,8 @@ public:
 protected:
 
   void init(KDesktopFile *config);
+
+  QStringList &accessServiceTypes() { return m_lstServiceTypes; }
 
 private:
   QString m_strType;

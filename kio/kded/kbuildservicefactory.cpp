@@ -33,7 +33,8 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 	KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
   m_serviceTypeFactory( serviceTypeFactory ),
-  m_serviceGroupFactory( serviceGroupFactory )
+  m_serviceGroupFactory( serviceGroupFactory ),
+  m_serviceDict(977)
 {
    m_resourceList = new KSycocaResourceList();
    m_resourceList->add( "apps", "*.desktop" );
@@ -46,6 +47,12 @@ KBuildServiceFactory::~KBuildServiceFactory()
 {
    delete m_resourceList;
 }
+
+KService * KBuildServiceFactory::findServiceByName(const QString &_name)
+{
+   return m_serviceDict[_name];
+}
+
 
 KSycocaEntry *
 KBuildServiceFactory::createEntry( const QString& file, const char *resource )
@@ -184,11 +191,12 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    KSycocaFactory::addEntry(newEntry, resource);
 
    KService * service = (KService *) newEntry;
-   if (!service->isDeleted() && !service->property("NoDisplay").asBool())
+   if (!service->isDeleted())
       m_serviceGroupFactory->addNewEntry(service->entryPath(), resource, service);
 
    QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );
+   m_serviceDict.replace(name, service);
 
    QString relName = service->desktopEntryPath();
    m_relNameDict->add( relName, newEntry );
