@@ -18,48 +18,33 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KABC_RESOURCESQL_H
-#define KABC_RESOURCESQL_H
+#ifndef KABC_PLUGIN_H
+#define KABC_PLUGIN_H
 
-#include <kconfig.h>
-
-#include "addressbook.h"
-#include "resource.h"
-
-class QSqlDatabase;
+#include <qstring.h>
 
 namespace KABC {
 
-class ResourceSql : public Resource
+class Plugin
 {
 public:
-    ResourceSql( AddressBook *ab, const QString &user, const QString &password,
-	    const QString &db, const QString &host );
-    ResourceSql( AddressBook *ab, const KConfig * );
-  
-    bool open();
-    void close();
-  
-    Ticket *requestSaveTicket();
+  Plugin();
+  virtual ~Plugin();
 
-    bool load();
-    bool save( Ticket * );
+  virtual void setType( const QString& type );
+  virtual QString type() const;
 
-    QString identifier() const;
-    QString typeInfo() const;
+  virtual void setNameLabel( const QString& label );
+  virtual QString nameLabel() const;
+
+  virtual void setDescriptionLabel( const QString& label );
+  virtual QString descriptionLabel() const;
 
 private:
-    void init(const QString &user, const QString &password,
-	    const QString &db, const QString &host );
-
-    QString mUser;
-    QString mPassword;
-    QString mDbName;
-    QString mHost;
-
-    QSqlDatabase *mDb;
+  QString mType;
+  QString mNameLabel;
+  QString mDescriptionLabel;
 };
 
 }
-
 #endif

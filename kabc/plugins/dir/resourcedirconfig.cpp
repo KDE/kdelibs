@@ -24,47 +24,57 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-#include "format.h"
+#include "formatfactory.h"
 #include "resourcedirconfig.h"
 #include "stdaddressbook.h"
+
+using namespace KABC;
 
 ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
     : ResourceConfigWidget( parent, name )
 {
-    resize( 245, 115 ); 
-    QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
+  resize( 245, 115 ); 
+  QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
 
-    QLabel *label = new QLabel( i18n( "Format:" ), this );
-    formatBox = new KComboBox( this );
+  QLabel *label = new QLabel( i18n( "Format:" ), this );
+  formatBox = new KComboBox( this );
 
-    mainLayout->addWidget( label, 0, 0 );
-    mainLayout->addWidget( formatBox, 0, 1 );
+  mainLayout->addWidget( label, 0, 0 );
+  mainLayout->addWidget( formatBox, 0, 1 );
 
-    label = new QLabel( i18n( "Location:" ), this );
-    fileNameEdit = new KURLRequester( this );
-    fileNameEdit->setMode( KFile::Directory );
+  label = new QLabel( i18n( "Location:" ), this );
+  fileNameEdit = new KURLRequester( this );
+  fileNameEdit->setMode( KFile::Directory );
 
-    mainLayout->addWidget( label, 1, 0 );
-    mainLayout->addWidget( fileNameEdit, 1, 1 );
+  mainLayout->addWidget( label, 1, 0 );
+  mainLayout->addWidget( fileNameEdit, 1, 1 );
 
-    formatBox->insertItem( i18n( "VCard" ), KABC::Format::VCard );
-    formatBox->insertItem( i18n( "Binary" ), KABC::Format::Binary );
+  FormatFactory *factory = FormatFactory::self();
+  QStringList formats = factory->formats();
+  QStringList::Iterator it;
+  for ( it = formats.begin(); it != formats.end(); ++it ) {
+    FormatInfo *info = factory->info( *it );
+    if ( info ) {
+      mFormatTypes << (*it);
+      formatBox->insertItem( info->nameLabel );
+    }
+  }
 }
 
 void ResourceDirConfig::loadSettings( KConfig *config )
 {
-    uint format = config->readNumEntry( "FileFormat", KABC::Format::VCard );
-    formatBox->setCurrentItem( format );
+  QString format = config->readEntry( "FileFormat" );
+  formatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
 
-    fileNameEdit->setURL( config->readEntry( "FilePath" ) );    
-    if ( fileNameEdit->url().isEmpty() )
-        fileNameEdit->setURL( KABC::StdAddressBook::fileName() );
+  fileNameEdit->setURL( config->readEntry( "FilePath" ) );    
+  if ( fileNameEdit->url().isEmpty() )
+    fileNameEdit->setURL( KABC::StdAddressBook::directoryName() );
 }
 
 void ResourceDirConfig::saveSettings( KConfig *config )
 {
-    config->writeEntry( "FileFormat", formatBox->currentItem() );
-    config->writeEntry( "FilePath", fileNameEdit->url() );
+  config->writeEntry( "FileFormat", mFormatTypes[ formatBox->currentItem() ] );
+  config->writeEntry( "FilePath", fileNameEdit->url() );
 }
 
 #include "resourcedirconfig.moc"

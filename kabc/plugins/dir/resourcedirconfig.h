@@ -18,30 +18,32 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef RESOURCECONFIGWIDGET_H
-#define RESOURCECONFIGWIDGET_H
+#ifndef RESOURCEDIRCONFIG_H
+#define RESOURCEDIRCONFIG_H
 
-#include <qwidget.h>
+#include <kcombobox.h>
+#include <kurlrequester.h>
 
-#include <kconfig.h>
+#include "resourceconfigwidget.h"
 
 namespace KABC {
 
-class ResourceConfigWidget : public QWidget
-{
+class ResourceDirConfig : public ResourceConfigWidget
+{ 
   Q_OBJECT
 
 public:
-  ResourceConfigWidget( QWidget *parent = 0, const char *name = 0 );
+  ResourceDirConfig( QWidget* parent = 0, const char* name = 0 );
 
 public slots:
-  virtual void loadSettings( KConfig *config );
-  virtual void saveSettings( KConfig *config );
+  void loadSettings( KConfig *config );
+  void saveSettings( KConfig *config );
 
-signals:
-  void setResourceName( const QString &name );
-  void setReadOnly( bool value );
-  void setFast( bool value );
+private:
+  KComboBox* formatBox;
+  KURLRequester* fileNameEdit;
+
+  QStringList mFormatTypes;
 };
 
 }

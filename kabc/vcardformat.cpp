@@ -33,14 +33,24 @@ VCardFormat::~VCardFormat()
   delete mImpl;
 }
 
-bool VCardFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
+bool VCardFormat::load( Addressee &addressee, QFile *file )
 {
-  return mImpl->load( addressBook, resource, file );
+  return mImpl->load( addressee, file );
 }
 
-bool VCardFormat::save( const Addressee &addressee, QFile *file )
+bool VCardFormat::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
+{
+  return mImpl->loadAll( addressBook, resource, file );
+}
+
+void VCardFormat::save( const Addressee &addressee, QFile *file )
 {
   return mImpl->save( addressee, file );
+}
+
+void VCardFormat::saveAll( AddressBook *addressBook, Resource *resource, QFile *file )
+{
+  return mImpl->saveAll( addressBook, resource, file );
 }
 
 bool VCardFormat::checkFormat( QFile *file ) const

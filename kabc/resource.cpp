@@ -4,12 +4,11 @@
 
 using namespace KABC;
 
-Resource::Resource( AddressBook *ab ) :
-  mAddressBook( ab )
+Resource::Resource( AddressBook *ab ) 
+    : mAddressBook( ab )
 {
   mReadOnly = true;
   mFastResource = true;
-  mName = "NoName";
 }
 
 Resource::~Resource()
@@ -18,7 +17,6 @@ Resource::~Resource()
 
 bool Resource::open()
 {
-  kdDebug() << "resource: standard" << endl;
   return true;
 }
 
@@ -33,8 +31,6 @@ Ticket *Resource::requestSaveTicket()
 
 bool Resource::load()
 {
-  kdDebug() << "Resource::load()" << endl;
-
   return true;
 }
 
@@ -63,7 +59,7 @@ void Resource::setReadOnly( bool value )
   mReadOnly = value;
 }
 
-bool Resource::readOnly()
+bool Resource::readOnly() const
 {
   return mReadOnly;
 }
@@ -73,12 +69,12 @@ void Resource::setFastResource( bool value )
   mFastResource = value;
 }
 
-bool Resource::fastResource()
+bool Resource::fastResource() const
 {
   return mFastResource;
 }
 
-void Resource::setName( const QString& name )
+void Resource::setName( const QString &name )
 {
   mName = name;
 }
@@ -93,17 +89,7 @@ QString Resource::cryptStr( const QString &str )
   QString result;
   for ( uint i = 0; i < str.length(); ++i )
     result += ( str[ i ].unicode() < 0x20 ) ? str[ i ] :
-              QChar( 0x1001F - str[ i ].unicode() );
+        QChar( 0x1001F - str[ i ].unicode() );
                 
   return result;
-}
-
-QString Resource::typeInfo() const
-{
-  return "noType";
-}
-
-QString Resource::paramInfo() const
-{
-  return "noParameter";
 }

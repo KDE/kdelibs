@@ -18,30 +18,30 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef RESOURCECONFIGWIDGET_H
-#define RESOURCECONFIGWIDGET_H
+#ifndef RESOURCESQLCONFIG_H
+#define RESOURCESQLCONFIG_H
 
-#include <qwidget.h>
+#include <klineedit.h>
 
-#include <kconfig.h>
+#include "resourceconfigwidget.h"
 
 namespace KABC {
 
-class ResourceConfigWidget : public QWidget
-{
+class ResourceSqlConfig : public ResourceConfigWidget
+{ 
   Q_OBJECT
 
 public:
-  ResourceConfigWidget( QWidget *parent = 0, const char *name = 0 );
+  ResourceSqlConfig( QWidget* parent = 0, const char* name = 0 );
+
+  KLineEdit* user;
+  KLineEdit* dbName;
+  KLineEdit* host;
+  KLineEdit* password;
 
 public slots:
-  virtual void loadSettings( KConfig *config );
-  virtual void saveSettings( KConfig *config );
-
-signals:
-  void setResourceName( const QString &name );
-  void setReadOnly( bool value );
-  void setFast( bool value );
+  void loadSettings( KConfig *config );
+  void saveSettings( KConfig *config );
 };
 
 }

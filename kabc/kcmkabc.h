@@ -32,46 +32,50 @@
 
 class ConfigPage : public QWidget
 {
-    Q_OBJECT
-  public:
-    ConfigPage( QWidget *parent = 0, const char *name = 0 );
+  Q_OBJECT
 
-    void load();
-    void save();
-    void defaults();
+public:
+  ConfigPage( QWidget *parent = 0, const char *name = 0 );
 
-  public slots:
-    void slotAdd();
-    void slotRemove();
-    void slotEdit();
-    void slotConvert();
-    void slotSelectionChanged();
+  void load();
+  void save();
+  void defaults();
 
-  signals:
-    void changed(bool);
+public slots:
+  void slotAdd();
+  void slotRemove();
+  void slotEdit();
+  void slotConvert();
+  void slotSelectionChanged();
 
-  private:
-    KConfig *config;
+signals:
+  void changed(bool);
 
-    KListView* mListView;
-    QPushButton* mAddButton;
-    QPushButton* mRemoveButton;
-    QPushButton* mEditButton;
-    QPushButton* mConvertButton;
+private:
+  KConfig *config;
+
+  KListView* mListView;
+  QPushButton* mAddButton;
+  QPushButton* mRemoveButton;
+  QPushButton* mEditButton;
+  QPushButton* mConvertButton;
+
+  QListViewItem* mLastItem;
 };
 
 class KCMkabc : public KCModule
 {
-    Q_OBJECT
-  public:
-    KCMkabc( QWidget *parent = 0, const char *name = 0 );
+  Q_OBJECT
 
-    void load();
-    void save();
-    void defaults();
+public:
+  KCMkabc( QWidget *parent = 0, const char *name = 0 );
 
-  private:
-    ConfigPage *mConfigPage;
+  void load();
+  void save();
+  void defaults();
+
+private:
+  ConfigPage *mConfigPage;
 };
 
 #endif

@@ -34,35 +34,34 @@ namespace KABC {
 class ResourceLDAP : public Resource
 {
 public:
-    ResourceLDAP( AddressBook *ab, const KConfig * );
-    ResourceLDAP( AddressBook *ab, const QString &user, const QString &password,
-	    const QString &dn, const QString &host,
+
+  ResourceLDAP( AddressBook *ab, const KConfig * );
+  ResourceLDAP( AddressBook *ab, const QString &user, const QString &password,
+      const QString &dn, const QString &host,
 	    const QString &port, const QString &filter );
   
-    bool open();
-    void close();
+  bool open();
+  void close();
   
-    Ticket *requestSaveTicket();
+  Ticket *requestSaveTicket();
 
-    bool load();
-    bool save( Ticket * );
+  bool load();
+  bool save( Ticket * );
 
-    void removeAddressee( const Addressee& addr );
+  void removeAddressee( const Addressee& addr );
 
-    QString identifier() const;
-    QString typeInfo() const;
+  QString identifier() const;
 
 private:
-    QString mUser;
-    QString mPassword;
-    QString mDn;
-    QString mHost;
-    QString mPort;
-    QString mFilter;
+  QString mUser;
+  QString mPassword;
+  QString mDn;
+  QString mHost;
+  QString mPort;
+  QString mFilter;
 
-    LDAP *mLdap;
+  LDAP *mLdap;
 };
 
 }
-
 #endif

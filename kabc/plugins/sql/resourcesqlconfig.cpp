@@ -24,17 +24,18 @@
 #include <klocale.h>
 
 #include "resource.h"
-#include "resourceldapconfig.h"
+#include "resourcesqlconfig.h"
 
 using namespace KABC;
 
-ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
+ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
     : ResourceConfigWidget( parent, name )
 {
-  resize( 250, 120 ); 
-  QGridLayout *mainLayout = new QGridLayout( this, 6, 2 );
+  resize( 285, 167 ); 
 
-  QLabel *label = new QLabel( i18n( "User:" ), this );
+  QGridLayout *mainLayout = new QGridLayout( this, 4, 2 );
+
+  QLabel *label = new QLabel( i18n( "Username:" ), this );
   user = new KLineEdit( this );
 
   mainLayout->addWidget( label, 0, 0 );
@@ -53,41 +54,27 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( label, 2, 0 );
   mainLayout->addWidget( host, 2, 1 );
 
-  label = new QLabel( i18n( "Port:" ), this );
-  port = new KLineEdit( this );
+  label = new QLabel( i18n( "Database:" ), this );
+  dbName = new KLineEdit( this );
 
   mainLayout->addWidget( label, 3, 0 );
-  mainLayout->addWidget( port, 3, 1 );
-
-  label = new QLabel( i18n( "Dn:" ), this );
-  dn = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 4, 0 );
-  mainLayout->addWidget( dn, 4, 1 );
-
-  label = new QLabel( i18n( "Filter:" ), this );
-  filter = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 5, 0 );
-  mainLayout->addWidget( filter, 5, 1 );
+  mainLayout->addWidget( dbName, 3, 1 );
 }
 
-void ResourceLDAPConfig::loadSettings( KConfig *config )
+void ResourceSqlConfig::loadSettings( KConfig *config )
 {
-  user->setText( config->readEntry( "LdapUser" ) );
-  password->setText( KABC::Resource::cryptStr( config->readEntry( "LdapPassword" ) ) );
-  host->setText( config->readEntry( "LdapHost" ) );
-  port->setText( config->readEntry( "LdapPort" ) );
-  dn->setText( config->readEntry( "LdapDn" ) );
-  filter->setText( config->readEntry( "LdapFilter" ) );
+  user->setText( config->readEntry( "SqlUser" ) );
+  password->setText( KABC::Resource::cryptStr( config->readEntry( "SqlPassword" ) ) );
+  dbName->setText( config->readEntry( "SqlName" ) );
+  host->setText( config->readEntry( "SqlHost" ) );
 }
 
-void ResourceLDAPConfig::saveSettings( KConfig *config )
+void ResourceSqlConfig::saveSettings( KConfig *config )
 {
-  config->writeEntry( "LdapUser", user->text() );
-  config->writeEntry( "LdapPassword", KABC::Resource::cryptStr( password->text() ) );
-  config->writeEntry( "LdapHost", host->text() );
-  config->writeEntry( "LdapPort", port->text() );
-  config->writeEntry( "LdapDn", dn->text() );
-  config->writeEntry( "LdapFilter", filter->text() );
+  config->writeEntry( "SqlUser", user->text() );
+  config->writeEntry( "SqlPassword", KABC::Resource::cryptStr( password->text() ) );
+  config->writeEntry( "SqlName", dbName->text() );
+  config->writeEntry( "SqlHost", host->text() );
 }
+
+#include "resourcesqlconfig.moc"

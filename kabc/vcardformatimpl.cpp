@@ -32,7 +32,7 @@
 using namespace KABC;
 using namespace VCARD;
 
-bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, QFile *file )
+bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::load()" << endl;
   QString data;
@@ -45,151 +45,213 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, QFile 
   
   VCardListIterator it( e.cardList() );
 
-  for (; it.current(); ++it) {
+  if ( it.current() ) {
     VCard v(*it.current());
-    QPtrList<ContentLine> contentLines = v.contentLineList();
-    ContentLine *cl;
-
-    Addressee a;
-
-    for( cl = contentLines.first(); cl; cl = contentLines.next() ) {
-      QCString n = cl->name();
-      if ( n.left( 2 ) == "X-" ) {
-        n = n.mid( 2 );
-        int posDash = n.find( "-" );
-        a.insertCustom( QString::fromUtf8( n.left( posDash ) ),
-                        QString::fromUtf8( n.mid( posDash + 1 ) ),
-                        QString::fromUtf8( cl->value()->asString() ) );
-        continue;
-      }
-    
-      EntityType type = cl->entityType();
-      switch( type ) {
-
-        case EntityUID:
-          a.setUid( readTextValue( cl ) );
-          break;
-
-        case EntityEmail:
-          a.insertEmail( readTextValue( cl ) );
-          break;
-
-        case EntityName:
-          a.setName( readTextValue( cl ) );
-          break;
-
-        case EntityFullName:
-          a.setFormattedName( readTextValue( cl ) );
-          break;
-
-        case EntityURL:
-          a.setUrl( KURL( readTextValue( cl ) ) );
-          break;
-
-        case EntityNickname:
-          a.setNickName( readTextValue( cl ) );
-          break;
-
-        case EntityLabel:
-//          not supported by kabc
-          break;
-
-        case EntityMailer:
-          a.setMailer( readTextValue( cl ) );
-          break;
-
-        case EntityTitle:
-          a.setTitle( readTextValue( cl ) );
-          break;
-
-        case EntityRole:
-          a.setRole( readTextValue( cl ) );
-          break;
-
-        case EntityOrganisation:
-          a.setOrganization( readTextValue( cl ) );
-          break;
-
-        case EntityNote:
-          a.setNote( readTextValue( cl ) );
-          break;
-
-        case EntityProductID:
-          a.setProductId( readTextValue( cl ) );
-          break;
-
-        case EntitySortString:
-          a.setSortString( readTextValue( cl ) );
-          break;
-
-        case EntityN:
-          readNValue( cl, a );
-          break;
-
-        case EntityAddress:
-          a.insertAddress( readAddressValue( cl ) );
-          break;
-
-        case EntityTelephone:
-          a.insertPhoneNumber( readTelephoneValue( cl ) );
-          break;
-
-        case EntityCategories:
-          a.setCategories( QStringList::split( ",", readTextValue( cl ) ) );
-          break;
-
-        case EntityBirthday:
-          a.setBirthday( readDateValue( cl ) );
-          break;
-
-	case EntityRevision:
-	  a.setRevision( readDateTimeValue( cl ) );
-          break;
-
-	case EntityGeo:
-	  a.setGeo( readGeoValue( cl ) );
-          break;
-
-        case EntityVersion:
-          break;
-          
-        default:
-          kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
-                    << int( type ) << ": " << cl->asString() << endl;
-          break;
-      }
-    }
-
-    for( cl = contentLines.first(); cl; cl = contentLines.next() ) {
-      EntityType type = cl->entityType();
-      if ( type == EntityLabel ) {
-        int type = readAddressParam( cl );
-        Address address = a.address( type );
-        if ( address.isEmpty() ) {
-          address.setType( type );
-        }
-        address.setLabel( QString::fromUtf8( cl->value()->asString() ) );
-        a.insertAddress( address );
-      }
-    }
-  
-    a.setResource( resource );
-    addressBook->insertAddressee( a );
+    loadAddressee( addressee, v );
+    return true;
   }
 
+  return false;
+}
+
+bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
+{
+  kdDebug(5700) << "VCardFormat::loadAll()" << endl;
+  QString data;
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
   
+  VCardEntity e( data.utf8() );
+  
+  VCardListIterator it( e.cardList() );
+
+  for (; it.current(); ++it) {
+    VCard v(*it.current());
+    Addressee addressee;
+    loadAddressee( addressee, v );
+    addressee.setResource( resource );
+    addressBook->insertAddressee( addressee );
+  }
+
   return true;
 }
 
-bool VCardFormatImpl::save( const Addressee &addressee, QFile *file )
+void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
 {
   VCardEntity vcards;
   VCardList vcardlist;
   vcardlist.setAutoDelete( true );
-  ContentLine cl;
-  QString value;
 
   VCard *v = new VCard;
+
+  saveAddressee( addressee, v );
+
+  vcardlist.append( v );
+  vcards.setCardList( vcardlist );
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << QString::fromUtf8( vcards.asString() );
+}
+
+void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file )
+{
+  VCardEntity vcards;
+  VCardList vcardlist;
+  vcardlist.setAutoDelete( true );
+
+  AddressBook::Iterator it;
+  for ( it = ab->begin(); it != ab->end(); ++it ) {
+    if ( (*it).resource() == resource ) {
+      VCard *v = new VCard;
+      saveAddressee( (*it), v );
+      (*it).setChanged( false );
+      vcardlist.append( v );
+    }
+  }
+
+  vcards.setCardList( vcardlist );
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << QString::fromUtf8( vcards.asString() );
+}
+
+bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
+{
+  QPtrList<ContentLine> contentLines = v.contentLineList();
+  ContentLine *cl;
+
+  for( cl = contentLines.first(); cl; cl = contentLines.next() ) {
+    QCString n = cl->name();
+    if ( n.left( 2 ) == "X-" ) {
+      n = n.mid( 2 );
+      int posDash = n.find( "-" );
+      addressee.insertCustom( QString::fromUtf8( n.left( posDash ) ),
+                        QString::fromUtf8( n.mid( posDash + 1 ) ),
+                        QString::fromUtf8( cl->value()->asString() ) );
+        continue;
+    }
+    
+    EntityType type = cl->entityType();
+    switch( type ) {
+
+      case EntityUID:
+        addressee.setUid( readTextValue( cl ) );
+        break;
+
+      case EntityEmail:
+        addressee.insertEmail( readTextValue( cl ) );
+        break;
+
+      case EntityName:
+        addressee.setName( readTextValue( cl ) );
+        break;
+
+      case EntityFullName:
+        addressee.setFormattedName( readTextValue( cl ) );
+        break;
+
+      case EntityURL:
+        addressee.setUrl( KURL( readTextValue( cl ) ) );
+        break;
+
+      case EntityNickname:
+        addressee.setNickName( readTextValue( cl ) );
+        break;
+
+      case EntityLabel:
+        // not supported by kabc
+        break;
+
+      case EntityMailer:
+        addressee.setMailer( readTextValue( cl ) );
+        break;
+
+      case EntityTitle:
+        addressee.setTitle( readTextValue( cl ) );
+        break;
+
+      case EntityRole:
+        addressee.setRole( readTextValue( cl ) );
+        break;
+
+      case EntityOrganisation:
+        addressee.setOrganization( readTextValue( cl ) );
+        break;
+
+      case EntityNote:
+        addressee.setNote( readTextValue( cl ) );
+        break;
+
+      case EntityProductID:
+        addressee.setProductId( readTextValue( cl ) );
+        break;
+
+      case EntitySortString:
+        addressee.setSortString( readTextValue( cl ) );
+        break;
+
+      case EntityN:
+        readNValue( cl, addressee );
+        break;
+
+      case EntityAddress:
+        addressee.insertAddress( readAddressValue( cl ) );
+        break;
+
+      case EntityTelephone:
+        addressee.insertPhoneNumber( readTelephoneValue( cl ) );
+        break;
+
+      case EntityCategories:
+        addressee.setCategories( QStringList::split( ",", readTextValue( cl ) ) );
+        break;
+
+      case EntityBirthday:
+        addressee.setBirthday( readDateValue( cl ) );
+        break;
+
+      case EntityRevision:
+        addressee.setRevision( readDateTimeValue( cl ) );
+        break;
+
+      case EntityGeo:
+        addressee.setGeo( readGeoValue( cl ) );
+        break;
+
+      case EntityVersion:
+        break;
+          
+      default:
+        kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
+                    << int( type ) << ": " << cl->asString() << endl;
+        break;
+    }
+  }
+
+  for( cl = contentLines.first(); cl; cl = contentLines.next() ) {
+    EntityType type = cl->entityType();
+    if ( type == EntityLabel ) {
+      int type = readAddressParam( cl );
+      Address address = addressee.address( type );
+      if ( address.isEmpty() )
+        address.setType( type );
+
+      address.setLabel( QString::fromUtf8( cl->value()->asString() ) );
+      addressee.insertAddress( address );
+    }
+  }
+
+  return true;
+}
+
+void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v )
+{
+  ContentLine cl;
+  QString value;
 
   addTextValue( v, EntityName, addressee.name() );
   addTextValue( v, EntityUID, addressee.uid() );
@@ -238,16 +300,6 @@ bool VCardFormatImpl::save( const Addressee &addressee, QFile *file )
   addDateValue( v, EntityBirthday, addressee.birthday().date() );
   addDateTimeValue( v, EntityRevision, addressee.revision() );
   addGeoValue( v, EntityGeo, addressee.geo() );
-
-  vcardlist.append( v );
-
-  vcards.setCardList( vcardlist );
-
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << QString::fromUtf8( vcards.asString() );
-
-  return true;
 }
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )

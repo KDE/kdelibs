@@ -1,0 +1,7 @@
+[Misc]
+Encoding=UTF-8
+Name=Binary
+
+[Plugin]
+Type=binary
+X-KDE-Library=kabcformat_binary

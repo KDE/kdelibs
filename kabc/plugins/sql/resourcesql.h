@@ -17,27 +17,47 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-#ifndef KABC_BINARYFORMAT_H
-#define KABC_BINARYFORMAT_H
 
-#include "format.h"
+#ifndef KABC_RESOURCESQL_H
+#define KABC_RESOURCESQL_H
+
+#include <kconfig.h>
+
+#include "addressbook.h"
+#include "resource.h"
+
+class QSqlDatabase;
 
 namespace KABC {
 
-class AddressBook;
-class Addressee;
-
-/*
-  @short binary file format for addressbook entries.
-*/
-class BinaryFormat : public Format
+class ResourceSql : public Resource
 {
-  public:
-    bool load( AddressBook *, Resource *, QFile *file );
-    bool save( const Addressee &, QFile *file );
-    bool checkFormat( QFile *file ) const;
+public:
+  ResourceSql( AddressBook *ab, const QString &user, const QString &password,
+    const QString &db, const QString &host );
+  ResourceSql( AddressBook *ab, const KConfig * );
+  
+  bool open();
+  void close();
+  
+  Ticket *requestSaveTicket();
+
+  bool load();
+  bool save( Ticket * );
+
+  QString identifier() const;
+
+private:
+  void init(const QString &user, const QString &password,
+      const QString &db, const QString &host );
+
+  QString mUser;
+  QString mPassword;
+  QString mDbName;
+  QString mHost;
+
+  QSqlDatabase *mDb;
 };
 
 }
-
 #endif

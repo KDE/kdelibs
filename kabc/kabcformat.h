@@ -17,45 +17,55 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#ifndef KABC_FORMAT_H
+#define KABC_FORMAT_H
 
-#ifndef KABC_ERRORHANDLER_H
-#define KABC_ERRORHANDLER_H
+#include <qfile.h>
 
-#include <qstring.h>
+#include "plugin.h"
+#include "resource.h"
 
 namespace KABC {
 
-/**
- * Abstract class that provides displaying of error messages.
- * We need this to make libkabc gui independend on the one side
- * and provide user friendly error messages on the other side.
- * Use @p ConsoleErrorHandler or @p GUIErrorHandler in your
- * application.
- */
-class ErrorHandler
-{
-public:
-  virtual void error( const QString& msg ) = 0;
-};
+class AddressBook;
+class Addressee;
 
 /**
- * This class prints the error messages to
- * stderr via kdError().
+ * @short Base class for address book formats.
+ *
+ * This class provides an abstract interface for ResourceFile and
+ * ResourceDir formats.
+ *
+ * @internal
  */
-class ConsoleErrorHandler : public ErrorHandler
+class Format : public Plugin
 {
 public:
-  virtual void error( const QString& msg );
-};
 
-/**
- * This class shows messages boxes for every
- * error message.
- */
-class GUIErrorHandler : public ErrorHandler
-{
-public:
-  virtual void error( const QString& msg );
+  /**
+   * Load single addressee from file.
+   */
+  virtual bool load( Addressee &, QFile *file ) = 0;
+
+  /**
+   * Load whole addressbook from file.
+   */
+  virtual bool loadAll( AddressBook *, Resource *, QFile *file ) = 0;
+
+  /**
+   * Save a single Addressee to file.
+   */
+  virtual void save( const Addressee &, QFile *file ) = 0;
+    
+  /**
+   * Save whole addressbook to file.
+   */
+  virtual void saveAll( AddressBook *, Resource *, QFile *file ) = 0;
+    
+  /**
+   * Checks if given file contains the right format
+   */
+  virtual bool checkFormat( QFile *file ) const = 0;
 };
 
 }

@@ -30,67 +30,102 @@
 #include "resourceconfigdlg.h"
 
 ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
-	KConfig *config, const char *name )
-    : KDialog( parent, name, true ), mConfig( config )
+    KConfig *config, const char *name )
+  : KDialog( parent, name, true ), mConfig( config )
 {
-    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
+  KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
 
-    setCaption( i18n( "Resource Configuration" ) );
+  setCaption( i18n( "Resource Configuration" ) );
 
-    QVBoxLayout *mainLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
+  QVBoxLayout *mainLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
     
-    QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
-    generalGroupBox->setTitle( i18n( "General Settings" ) );
+  QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  generalGroupBox->setTitle( i18n( "General Settings" ) );
 
-    new QLabel( i18n( "Name:" ), generalGroupBox );
+  new QLabel( i18n( "Name:" ), generalGroupBox );
 
-    resourceName = new KLineEdit( generalGroupBox );
+  mName = new KLineEdit( generalGroupBox );
 
-    resourceIsReadOnly = new QCheckBox( i18n( "Read-only" ), generalGroupBox );
+  mReadOnly = new QCheckBox( i18n( "Read-only" ), generalGroupBox );
 
-    resourceIsFast = new QCheckBox( i18n( "Fast resource" ), generalGroupBox );
+  mFast = new QCheckBox( i18n( "Fast resource" ), generalGroupBox );
+  // we hide this checkbox until we find a meanigfull name :)
+  mFast->hide();
 
-    mainLayout->addWidget( generalGroupBox );
+  mainLayout->addWidget( generalGroupBox );
 
-    QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
-    resourceGroupBox->setTitle( i18n( "Resource Settings" ) );
+  QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
+  resourceGroupBox->setTitle( i18n( "Resource Settings" ) );
 
-    mainLayout->addSpacing( 10 );
-    mainLayout->addWidget( resourceGroupBox );
-    mainLayout->addSpacing( 10 );
+  mainLayout->addSpacing( 10 );
+  mainLayout->addWidget( resourceGroupBox );
+  mainLayout->addSpacing( 10 );
 
-    mConfigWidget = factory->configWidget( type, resourceGroupBox );
-    if ( mConfigWidget && mConfig ) {
-	mConfigWidget->loadSettings( mConfig );
-	mConfigWidget->show();
-    }
+  mConfigWidget = factory->configWidget( type, resourceGroupBox );
+  if ( mConfigWidget && mConfig ) {
+    mConfigWidget->loadSettings( mConfig );
+    mConfigWidget->show();
+    connect( mConfigWidget, SIGNAL( setResourceName( const QString & ) ), SLOT( setResourceName( const QString & ) ) );
+    connect( mConfigWidget, SIGNAL( setReadOnly( bool ) ), SLOT( setReadOnly( bool ) ) );
+    connect( mConfigWidget, SIGNAL( setFast( bool ) ), SLOT( setFast( bool ) ) );
+  }
 
-    buttonBox = new KButtonBox( this );
+  mButtonBox = new KButtonBox( this );
 
-    buttonBox->addStretch();    
-    buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) )->setFocus();
-    buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
-    buttonBox->layout();
+  mButtonBox->addStretch();    
+  mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) )->setFocus();
+  mButtonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  mButtonBox->layout();
 
-    mainLayout->addWidget( buttonBox );
+  mainLayout->addWidget( mButtonBox );
 }
 
 int ResourceConfigDlg::exec()
 {
-    return QDialog::exec();
+  return QDialog::exec();
+}
+
+bool ResourceConfigDlg::readOnly()
+{
+  return mReadOnly->isChecked();
+}
+
+bool ResourceConfigDlg::fast()
+{
+  return mFast->isChecked();
+}
+
+QString ResourceConfigDlg::resourceName()
+{
+  return mName->text();
+}
+
+void ResourceConfigDlg::setReadOnly( bool value )
+{
+  mReadOnly->setChecked( value );
+}
+
+void ResourceConfigDlg::setFast( bool value )
+{
+  mFast->setChecked( value );
+}
+
+void ResourceConfigDlg::setResourceName( const QString &name )
+{
+  mName->setText( name );
 }
 
 void ResourceConfigDlg::accept()
 {
-    if ( resourceName->text().isEmpty() ) {
-	KMessageBox::sorry( this, i18n( "Please enter a resource name" ) );
-	return;
-    }
+  if ( mName->text().isEmpty() ) {
+    KMessageBox::sorry( this, i18n( "Please enter a resource name" ) );
+    return;
+  }
 
-    if ( mConfigWidget && mConfig )
-	mConfigWidget->saveSettings( mConfig );
+  if ( mConfigWidget && mConfig )
+    mConfigWidget->saveSettings( mConfig );
 
-    QDialog::accept();
+  QDialog::accept();
 }
 
 #include "resourceconfigdlg.moc"

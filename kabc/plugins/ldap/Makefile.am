@@ -16,6 +16,6 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kabc_ldap.pot
 
-linkdir		= $(kde_datadir)/kabc/
-link_DATA	= ldap.plugin
+linkdir		= $(kde_datadir)/kabc/plugins
+link_DATA	= ldap.desktop
 EXTRA_DIST	= $(link_DATA)

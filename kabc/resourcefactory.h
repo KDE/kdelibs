@@ -22,6 +22,7 @@
 #define RESOURCEFACTORY_H
 
 #include <qdict.h>
+#include <qstring.h>
 
 #include <kconfig.h>
 #include <klibloader.h>
@@ -30,12 +31,6 @@
 #include "resourceconfigwidget.h"
 
 namespace KABC {
-
-struct ResourceInfo {
-    QString library;
-    QString name;
-    QString desc;
-};
 
 /**
  * Class for loading resource plugins.
@@ -58,51 +53,51 @@ class ResourceFactory
 {
 public:
     
-    /**
-     * Returns the global resource factory.
-     */
-    static ResourceFactory *self();
+  /**
+   * Returns the global resource factory.
+   */
+  static ResourceFactory *self();
 
-    /**
-     * Returns the config widget for the given resource type,
-     * or a null pointer if resource type doesn't exist.
-     *
-     * @param type   The type of the resource, returned by @ref resources()
-     * @param parent The parent widget
-     */
-    ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
+  /**
+   * Returns the config widget for the given resource type,
+   * or a null pointer if resource type doesn't exist.
+   *
+   * @param type   The type of the resource, returned by @ref resources()
+   * @param parent The parent widget
+   */
+  ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
 
-    /**
-     * Returns a pointer to a resource object or a null pointer
-     * if resource type doesn't exist.
-     *
-     * @param type   The type of the resource, returned by @ref resources()
-     * @param ab     The address book, the resource should belong to
-     * @param config The config object where the resource get it settings from
-     */
-    Resource *resource( const QString& type, AddressBook *ab, const KConfig *config );
+  /**
+   * Returns a pointer to a resource object or a null pointer
+   * if resource type doesn't exist.
+   *
+   * @param type   The type of the resource, returned by @ref resources()
+   * @param ab     The address book, the resource should belong to
+   * @param config The config object where the resource get it settings from
+   */
+  Resource *resource( const QString& type, AddressBook *ab, const KConfig *config );
 
-    /**
-     * Returns a list of all available resources.
-     */
-    QStringList resources();
-
-    /**
-     * Returns infos to a resource of a special type.
-     *
-     * @param type The type of the resource, returned by @ref resources()
-     */
-    ResourceInfo *info( const QString& type );
+  /**
+   * Returns a list of all available resource types.
+   */
+  QStringList resources();
 
 protected:
-    ResourceFactory();
-    ~ResourceFactory();
+  ResourceFactory();
+  ~ResourceFactory();
 
 private:
-    KLibrary *openLibrary( const QString& libName );
+  KLibrary *openLibrary( const QString& libName );
 
-    static ResourceFactory *mSelf;
-    QDict<ResourceInfo> mResourceList;
+  static ResourceFactory *mSelf;
+
+  struct ResourceInfo {
+    QString library;
+    QString nameLabel;
+    QString descriptionLabel;
+  };
+
+  QDict<ResourceInfo> mResourceList;
 };
 
 }

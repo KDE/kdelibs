@@ -47,34 +47,34 @@ namespace KABC {
  */
 class ResourceSelectDialog : KDialog
 {
-    Q_OBJECT
-  public:
-    /**
-     * Constructor.
-     * @param ab     The address book you want to select the resource from
-     * @param parent The parent widget
-     * @param name   The name of the dialog
-     */
-    ResourceSelectDialog( AddressBook *ab, QWidget *parent = 0,
-                          const char *name = 0);
+  Q_OBJECT
 
-    /**
-     * Return selected resource.
-     */
-    Resource *resource();
+public:
+  /**
+   * Constructor.
+   * @param ab     The address book you want to select the resource from
+   * @param parent The parent widget
+   * @param name   The name of the dialog
+   */
+  ResourceSelectDialog( AddressBook *ab, QWidget *parent = 0,
+      const char *name = 0);
 
-    /**
-     * Open a dialog showing the available resources and return the resource the
-     * user has selected. Returns 0, if the dialog was canceled.
-     */
-    static Resource *getResource( AddressBook *ab, QWidget *parent = 0 );
+  /**
+   * Return selected resource.
+   */
+  Resource *resource();
 
-  private:
-    KListBox *mResourceId;
+  /**
+   * Open a dialog showing the available resources and return the resource the
+   * user has selected. Returns 0, if the dialog was canceled.
+   */
+  static Resource *getResource( AddressBook *ab, QWidget *parent = 0 );
 
-    QMap<int, Resource*> mResourceMap;
+private:
+  KListBox *mResourceId;
+
+  QMap<int, Resource*> mResourceMap;
 };
 
 }
-
 #endif

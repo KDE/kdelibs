@@ -12,6 +12,7 @@ class QTimer;
 namespace KABC {
 
 class Format;
+class ResourceConfigWidget;
 
 /**
   @internal
@@ -20,10 +21,11 @@ class ResourceFile : public QObject, public Resource
 {
     Q_OBJECT
   public:
+
     ResourceFile( AddressBook *, const KConfig * );
-    ResourceFile( AddressBook *, const QString &filename, Format *format=0 );
+    ResourceFile( AddressBook *, const QString &filename, Format *format = 0 );
     ~ResourceFile();
-  
+
     bool open();
     void close();
   
@@ -33,24 +35,23 @@ class ResourceFile : public QObject, public Resource
     bool save( Ticket * );
 
     /**
-      Set name of file to be used for saving.
-    */
+     * Set name of file to be used for saving.
+     */
     void setFileName( const QString & );
+
     /**
-      Return name of file used for loading and saving the address book.
-    */
+     * Return name of file used for loading and saving the address book.
+     */
     QString fileName() const;
 
     virtual QString identifier() const;
 
-    QString typeInfo() const;
-
     /**
-      Remove a addressee from its source.
-      This method is maily called by KABC::AddressBook.
+     * Remove a addressee from its source.
+     * This method is maily called by KABC::AddressBook.
      */
     void removeAddressee( const Addressee& addr );
-	
+
   protected slots:
     void checkFile();
 

@@ -29,12 +29,12 @@ using namespace KABC;
 void
 ConsoleErrorHandler::error( const QString& msg )
 {
-    // no debug area is ok here
-    kdError() << msg << endl;
+  // no debug area is ok here
+  kdError() << msg << endl;
 }
 
 void
 GUIErrorHandler::error( const QString& msg )
 {
-    KMessageBox::error( 0, msg, i18n( "Error in libkabc" ) );
+  KMessageBox::error( 0, msg, i18n( "Error in libkabc" ) );
 }

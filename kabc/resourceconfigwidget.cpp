@@ -20,6 +20,8 @@
 
 #include "resourceconfigwidget.h"
 
+using namespace KABC;
+
 ResourceConfigWidget::ResourceConfigWidget( QWidget *parent, const char *name )
     : QWidget( parent, name )
 {

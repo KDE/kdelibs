@@ -4,19 +4,22 @@
 
 #include <qregexp.h>
 #include <qtimer.h>
+#include <qwidget.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kgenericfactory.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 
 #include "addressbook.h"
-#include "binaryformat.h"
-#include "vcardformat.h"
-#include "stdaddressbook.h"
+
+#include "formatfactory.h"
+
 #include "resourcedirconfig.h"
+#include "stdaddressbook.h"
 
 #include "resourcedir.h"
 
@@ -38,23 +41,10 @@ ResourceDir::ResourceDir( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
   QString path = config->readEntry( "FilePath" );
-  uint type = config->readNumEntry( "FileFormat", Format::VCard );
+  QString type = config->readEntry( "FileFormat" );
 
-  Format *format = 0;
-  switch ( type ) {
-    case Format::VCard:
-      if ( path.isEmpty() )
-        path = StdAddressBook::fileName();
-      format = new VCardFormat;
-      break;
-    case Format::Binary:
-      if ( path.isEmpty() )
-        path = locateLocal( "data", "kabc/std.bin" );
-      format = new BinaryFormat;
-      break;
-    default:
-      kdDebug( 5700 ) << "ResourceDir: no valid format type." << endl;
- }
+  FormatFactory *factory = FormatFactory::self();
+  Format *format = factory->format( type );
 
   init( path, format );
 }
@@ -71,10 +61,12 @@ ResourceDir::~ResourceDir()
   delete mFormat;
 }
 
+
 void ResourceDir::init( const QString &path, Format *format )
 {
   if ( !format ) {
-    mFormat = new VCardFormat();
+    FormatFactory *factory = FormatFactory::self();
+    mFormat = factory->format( "vcard" );
   } else {
     mFormat = format;
   }
@@ -93,7 +85,7 @@ Ticket *ResourceDir::requestSaveTicket()
   if ( !addressBook() ) return 0;
 
   if ( !lock( mPath ) ) {
-    kdDebug(5700) << "ResourceDir::requestSaveTicket(): Can't lock path '"
+    kdDebug(5700) << "ResourceDir::requestSaveTicket(): Unable to lock path '"
                   << mPath << "'" << endl;
     return 0;
   }
@@ -112,10 +104,8 @@ bool ResourceDir::open()
     return true;
 
   QFile file( mPath + "/" + testName );
-  if ( !file.open( IO_ReadWrite ) ) {
-    addressBook()->error( i18n( "Can't create file '%1'." ).arg( file.name() ) );
-    return false;
-  }
+  if ( !file.open( IO_ReadOnly ) )
+    return true;
 
   if ( file.size() == 0 )
     return true;
@@ -135,7 +125,7 @@ bool ResourceDir::load()
   kdDebug(5700) << "ResourceDir::load(): '" << mPath << "'" << endl;
 
   QDir dir( mPath );
-  QStringList files = dir.entryList();
+  QStringList files = dir.entryList( QDir::Files );
 
   QStringList::Iterator it;
   bool ok = true;
@@ -148,7 +138,7 @@ bool ResourceDir::load()
       continue;
     }
 
-    if ( !mFormat->load( addressBook(), this, &file ) )
+    if ( !mFormat->loadAll( addressBook(), this, &file ) )
       ok = false;
 
     file.close();
@@ -174,15 +164,7 @@ bool ResourceDir::save( Ticket *ticket )
       continue;
     }
 
-    bool success = mFormat->save( *it, &file );
-
-    if ( !success ) {
-      ok = false;
-      file.close();
-      QFile::remove( file.name() );
-      addressBook()->error( i18n( "Unable to save file '%1'." ).arg( file.name() ) );
-      continue;
-    }
+    mFormat->save( *it, &file );
 
     // mark as unchanged
     (*it).setChanged( false );

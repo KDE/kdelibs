@@ -1,7 +1,7 @@
 [Misc]
 Encoding=UTF-8
 Name=SQL
-Name[de]=SQL
+Name[de]=SQL Resource
 
 [Plugin]
 Type=sql

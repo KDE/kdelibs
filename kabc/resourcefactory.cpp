@@ -36,153 +36,145 @@ ResourceFactory *ResourceFactory::mSelf = 0;
 
 ResourceFactory *ResourceFactory::self()
 {
-    kdDebug(5700) << "ResourceFactory::self()" << endl;
+  kdDebug(5700) << "ResourceFactory::self()" << endl;
 
-    if ( !mSelf ) {
-	mSelf = new ResourceFactory;
-    }
+  if ( !mSelf ) {
+    mSelf = new ResourceFactory;
+  }
 
-    return mSelf;
+  return mSelf;
 }
 
 ResourceFactory::ResourceFactory()
 {
-    mResourceList.setAutoDelete( true );
+  mResourceList.setAutoDelete( true );
 
-    // default resource
-    ResourceInfo *info = new ResourceInfo;
-    info->library = "<none>";
-    info->name = i18n( "File" );
-    info->desc = "<none>";
+  // dummy entry for default resource
+  ResourceInfo *info = new ResourceInfo;
+  mResourceList.insert( "file", info );
 
-    mResourceList.insert( "file", info );
+  QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/plugins/*.desktop", true, true );
+  for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
+    KSimpleConfig config( *it, true );
 
-    QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/*.plugin", true, true );
-    for ( QStringList::iterator it = list.begin(); it != list.end(); ++it )
-    {
-	KSimpleConfig config( *it, true );
+    if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )
+      continue;
 
-	if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )
-	    continue;
+    info = new ResourceInfo;
 
-	info = new ResourceInfo;
-
-	config.setGroup( "Plugin" );
-	QString descr = config.readEntry( "Type" );
-	info->library = config.readEntry( "X-KDE-Library" );
+    config.setGroup( "Plugin" );
+    QString type = config.readEntry( "Type" );
+    info->library = config.readEntry( "X-KDE-Library" );
 	
-	config.setGroup( "Misc" );
-	info->name = config.readEntry( "Name" );
-	info->desc = config.readEntry( "Comment", i18n( "No description available." ) );
+    config.setGroup( "Misc" );
+    info->nameLabel = config.readEntry( "Name" );
+    info->descriptionLabel = config.readEntry( "Comment", i18n( "No description available." ) );
 
-	mResourceList.insert( descr, info );
-    }
+    mResourceList.insert( type, info );
+  }
 }
 
 ResourceFactory::~ResourceFactory()
 {
-    mResourceList.clear();
+  mResourceList.clear();
 }
 
 QStringList ResourceFactory::resources()
 {
-    QStringList retval;
+  QStringList retval;
 	
-    // make sure file is the first entry
-    retval << "file";
+  // make sure 'file' is the first entry
+  retval << "file";
 
-    QDictIterator<ResourceInfo> it( mResourceList );
-    for ( ; it.current(); ++it )
-	if ( it.currentKey() != "file" )
-	    retval << it.currentKey();
+  QDictIterator<ResourceInfo> it( mResourceList );
+  for ( ; it.current(); ++it )
+    if ( it.currentKey() != "file" )
+      retval << it.currentKey();
 
-    return retval;
+  return retval;
 }
 
-ResourceInfo *ResourceFactory::info( const QString& resName )
+ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidget *parent )
 {
-    if ( resName.isEmpty() )
-	return 0;
-    else
-	return mResourceList[ resName ];
+  ResourceConfigWidget *widget = 0;
+
+  if ( type.isEmpty() )
+    return 0;
+
+  if ( type == "file" )
+    return new ResourceFileConfig( parent, "ResourceFileConfig" );
+
+  QString libName = mResourceList[ type ]->library;
+
+  KLibrary *library = openLibrary( libName );
+  if ( !library )
+    return 0;
+
+  void *widget_func = library->symbol( "config_widget" );
+
+  if ( widget_func ) {
+    widget = ((ResourceConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
+  } else {
+    kdDebug( 5700 ) << "'" << libName << "' is not a kabc plugin." << endl;
+    return 0;
+  }
+
+  return widget;
 }
 
-ResourceConfigWidget *ResourceFactory::configWidget( const QString& resName, QWidget *parent )
+Resource *ResourceFactory::resource( const QString& type, AddressBook *ab, const KConfig *config )
 {
-    ResourceConfigWidget *widget = 0;
+  Resource *resource = 0;
 
-    if ( resName.isEmpty() )
-	return 0;
+  if ( type.isEmpty() )
+    return 0;
 
-    if ( resName == "file" ) {
-	return new ResourceFileConfig( parent, "ResourceFileConfig" );
-    }
-
-    QString libName = mResourceList[ resName ]->library;
-
-    KLibrary *library = openLibrary( libName );
-    if ( !library )
-	return 0;
-
-    void *widget_func = library->symbol( "config_widget" );
-
-    if ( widget_func ) {
-        widget = ((ResourceConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
-    } else {
-	kdDebug( 5700 ) << "'" << resName << "' is not a kabc plugin." << endl;
-	return 0;
-    }
-
-    return widget;
-}
-
-Resource *ResourceFactory::resource( const QString& resName, AddressBook *ab, const KConfig *config )
-{
-    Resource *resource = 0;
-
-    if ( resName.isEmpty() )
-	return 0;
-
-    if ( resName == "file" ) {
-	return new ResourceFile( ab, config );
-    }
-
-    QString libName = mResourceList[ resName ]->library;
-
-    KLibrary *library = openLibrary( libName );
-    if ( !library )
-	return 0;
-
-    void *resource_func = library->symbol( "resource" );
-
-    if( resource_func ) {
-        resource = ((Resource* (*)(AddressBook *, const KConfig *))resource_func)( ab, config );
-    } else {
-	kdDebug( 5700 ) << "'" << resName << "' is not a kabc plugin." << endl;
-	return 0;
-    }
-
+  if ( type == "file" ) {
+    resource = new ResourceFile( ab, config );
+    resource->setType( type );
+    resource->setNameLabel( i18n( "File" ) );
+    resource->setDescriptionLabel( i18n( "File Resource" ) );
     return resource;
-}
+  }
 
+  QString libName = mResourceList[ type ]->library;
+
+  KLibrary *library = openLibrary( libName );
+  if ( !library )
+    return 0;
+
+  void *resource_func = library->symbol( "resource" );
+
+  if ( resource_func ) {
+    resource = ((Resource* (*)(AddressBook *, const KConfig *))resource_func)( ab, config );
+    resource->setType( type );
+    resource->setNameLabel( mResourceList[ type ]->nameLabel );
+    resource->setDescriptionLabel( mResourceList[ type ]->descriptionLabel );
+  } else {
+    kdDebug( 5700 ) << "'" << libName << "' is not a kabc plugin." << endl;
+    return 0;
+  }
+
+  return resource;
+}
 
 KLibrary *ResourceFactory::openLibrary( const QString& libName )
 {
-    KLibrary *library = 0;
+  KLibrary *library = 0;
 
-    QString path = KLibLoader::findLibrary( QFile::encodeName( libName ) );
+  QString path = KLibLoader::findLibrary( QFile::encodeName( libName ) );
 
-    if ( path.isEmpty() ) {
-        kdDebug( 5700 ) << "No resource plugin library was found!" << endl;
-	return 0;
-    }
+  if ( path.isEmpty() ) {
+    kdDebug( 5700 ) << "No resource plugin library was found!" << endl;
+    return 0;
+  }
 
-    library = KLibLoader::self()->library( QFile::encodeName( path ) );
+  library = KLibLoader::self()->library( QFile::encodeName( path ) );
 
-    if ( !library ) {
-	kdDebug( 5700 ) << "Could not load library '" << libName << "'" << endl;
-	return 0;
-    }
+  if ( !library ) {
+    kdDebug( 5700 ) << "Could not load library '" << libName << "'" << endl;
+    return 0;
+  }
 
-    return library;
+  return library;
 }

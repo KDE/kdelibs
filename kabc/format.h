@@ -36,51 +36,52 @@ class Addressee;
  *
  * @internal
  */
-class Format {
-  public:
+class Format
+{
+public:
 
-    /**
-     * @li @p VCard -  VCard format according to rfc2426
-     * @li @p Binary - Binary format
-     * @li @p Simple - Simple format stored with KConfig
-     */
-    enum Type
-    {
-      VCard,
-      Binary,
-      Simple
-    };
+  /**
+   * @li @p VCard -  VCard format according to rfc2426
+   * @li @p Binary - Binary format
+   * @li @p Simple - Simple format stored with KConfig
+   */
+  enum Type
+  {
+    VCard,
+    Binary,
+    Simple
+  };
 
-    /**
-     * Load addressbook from file.
-     */
-    virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
-    /**
-      Load addressbook from file.
-    */
-    bool load( AddressBook *, Resource *, const QString &fileName );
+  /**
+   * Load addressbook from file.
+   */
+  virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
 
-    /**
-     * Save a single Addressee to file.
-     */
-    virtual bool save( const Addressee &, QFile *file ) = 0;
+  /**
+   * Load addressbook from file.
+   */
+  bool load( AddressBook *, Resource *, const QString &fileName );
+
+  /**
+   * Save a single Addressee to file.
+   */
+  virtual bool save( const Addressee &, QFile *file ) = 0;
     
-    /**
-      Save addressbook to file.
-    */
-    bool save( AddressBook *, Resource *, const QString &fileName );
+  /**
+   * Save addressbook to file.
+   */
+  bool save( AddressBook *, Resource *, const QString &fileName );
     
-    /**
-     * Checks if given file contains the right format
-     */
-    virtual bool checkFormat( QFile *file ) const = 0;
-    bool checkFormat( const QString &fileName ) const;
+  /**
+   * Checks if given file contains the right format
+   */
+  virtual bool checkFormat( QFile *file ) const = 0;
+  bool checkFormat( const QString &fileName ) const;
 
-    QString typeInfo();
+  QString typeInfo();
     
-    void removeAddressee( const Addressee & );
+  void removeAddressee( const Addressee & );
 };
 
 }
-
 #endif

@@ -26,19 +26,28 @@
 
 #include "resourceconfigwidget.h"
 
+namespace KABC {
+
 class ResourceFileConfig : public ResourceConfigWidget
 { 
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ResourceFileConfig( QWidget* parent = 0, const char* name = 0 );
-
-    KComboBox* formatBox;
-    KURLRequester* fileNameEdit;
+  ResourceFileConfig( QWidget* parent = 0, const char* name = 0 );
 
 public slots:
-    void loadSettings( KConfig *config );
-    void saveSettings( KConfig *config );
+  void loadSettings( KConfig *config );
+  void saveSettings( KConfig *config );
+
+protected slots:
+  void checkFilePermissions( const QString& fileName );
+
+private:
+  KComboBox* formatBox;
+  KURLRequester* fileNameEdit;
+
+  QStringList mFormatTypes;
 };
 
-#endif // RESOURCEFILECONFIG_H
+}
+#endif

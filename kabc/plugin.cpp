@@ -18,27 +18,44 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef RESOURCEDIRCONFIG_H
-#define RESOURCEDIRCONFIG_H
+#include "plugin.h"
 
-#include <kcombobox.h>
-#include <kurlrequester.h>
+using namespace KABC;
 
-#include "resourceconfigwidget.h"
+Plugin::Plugin()
+{
+}
 
-class ResourceDirConfig : public ResourceConfigWidget
-{ 
-    Q_OBJECT
+Plugin::~Plugin()
+{
+}
 
-public:
-    ResourceDirConfig( QWidget* parent = 0, const char* name = 0 );
+void Plugin::setType( const QString& type )
+{
+  mType = type;
+}
 
-    KComboBox* formatBox;
-    KURLRequester* fileNameEdit;
+QString Plugin::type() const
+{
+  return mType;
+}
 
-public slots:
-    void loadSettings( KConfig *config );
-    void saveSettings( KConfig *config );
-};
+void Plugin::setNameLabel( const QString& label )
+{
+  mNameLabel = label;
+}
 
-#endif
+QString Plugin::nameLabel() const
+{
+  return mNameLabel;
+}
+
+void Plugin::setDescriptionLabel( const QString& label )
+{
+  mDescriptionLabel = label;
+}
+
+QString Plugin::descriptionLabel() const
+{
+  return mDescriptionLabel;
+}

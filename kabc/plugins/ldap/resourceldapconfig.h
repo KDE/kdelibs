@@ -25,23 +25,26 @@
 
 #include "resourceconfigwidget.h"
 
+namespace KABC {
+
 class ResourceLDAPConfig : public ResourceConfigWidget
 { 
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
+  ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
 
-    KLineEdit* user;
-    KLineEdit* password;
-    KLineEdit* host;
-    KLineEdit* port;
-    KLineEdit* dn;
-    KLineEdit* filter;
+  KLineEdit* user;
+  KLineEdit* password;
+  KLineEdit* host;
+  KLineEdit* port;
+  KLineEdit* dn;
+  KLineEdit* filter;
 
 public slots:
-    void loadSettings( KConfig *config );
-    void saveSettings( KConfig *config );
+  void loadSettings( KConfig *config );
+  void saveSettings( KConfig *config );
 };
 
-#endif // RESOURCELDAPCONFIG_H
+}
+#endif

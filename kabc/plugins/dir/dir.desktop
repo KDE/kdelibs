@@ -5,4 +5,4 @@ Name[de]=Verzeichnis
 
 [Plugin]
 Type=dir
-X-KDE-Library=kabc_directory
+X-KDE-Library=kabc_dir

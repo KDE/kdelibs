@@ -20,7 +20,7 @@
 #ifndef KABC_VCARDFORMAT_H
 #define KABC_VCARDFORMAT_H
 
-#include "format.h"
+#include "kabcformat.h"
 
 namespace KABC {
 
@@ -39,8 +39,11 @@ class VCardFormat : public Format {
     VCardFormat();
     virtual ~VCardFormat();
   
-    bool load( AddressBook *, Resource *, QFile *file );
-    bool save( const Addressee &, QFile *file );
+    bool load( Addressee &, QFile *file );
+    bool loadAll( AddressBook *, Resource *, QFile *file );
+    void save( const Addressee &, QFile *file );
+    void saveAll( AddressBook *, Resource *, QFile *file );
+
     bool checkFormat( QFile *file ) const;
 
   private:

@@ -32,25 +32,34 @@
 
 class ResourceConfigDlg : KDialog
 {
-    Q_OBJECT
-public:
-    ResourceConfigDlg( QWidget *parent, const QString& type,
-	    KConfig *config, const char *name = 0);
+  Q_OBJECT
 
-    KButtonBox *buttonBox;
-    KLineEdit *resourceName;
-    QCheckBox *resourceIsReadOnly;
-    QCheckBox *resourceIsFast;
+public:
+  ResourceConfigDlg( QWidget *parent, const QString& type,
+      KConfig *config, const char *name = 0);
+
+  bool readOnly();
+  bool fast();
+  QString resourceName();
 
 public slots:
-    int exec();
+  int exec();
+
+  void setReadOnly( bool value );
+  void setFast( bool value );
+  void setResourceName( const QString &name );
 
 protected slots:
-    void accept();
+  void accept();
 
 private:
-    ResourceConfigWidget *mConfigWidget;
-    KConfig *mConfig;
+  KABC::ResourceConfigWidget *mConfigWidget;
+  KConfig *mConfig;
+
+  KButtonBox *mButtonBox;
+  KLineEdit *mName;
+  QCheckBox *mReadOnly;
+  QCheckBox *mFast;
 };
 
 #endif

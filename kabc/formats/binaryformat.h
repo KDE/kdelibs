@@ -17,29 +17,35 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#ifndef KABC_BINARYFORMAT_H
+#define KABC_BINARYFORMAT_H
 
-#ifndef RESOURCESQLCONFIG_H
-#define RESOURCESQLCONFIG_H
+#include "kabcformat.h"
 
-#include <klineedit.h>
+namespace KABC {
 
-#include "resourceconfigwidget.h"
+class AddressBook;
+class Addressee;
 
-class ResourceSqlConfig : public ResourceConfigWidget
-{ 
-    Q_OBJECT
-
+/*
+  @short binary file format for addressbook entries.
+*/
+class BinaryFormat : public Format
+{
 public:
-    ResourceSqlConfig( QWidget* parent = 0, const char* name = 0 );
+  bool load( Addressee &, QFile *file );
+  bool loadAll( AddressBook *, Resource *, QFile *file );
+  void save( const Addressee &, QFile *file );
+  void saveAll( AddressBook *, Resource *, QFile *file );
 
-    KLineEdit* user;
-    KLineEdit* dbName;
-    KLineEdit* host;
-    KLineEdit* password;
+  bool checkFormat( QFile *file ) const;
 
-public slots:
-    void loadSettings( KConfig *config );
-    void saveSettings( KConfig *config );
+private:
+  void loadAddressee( Addressee &, QDataStream & );
+  void saveAddressee( const Addressee &, QDataStream & );
+  bool checkHeader( QDataStream & ) const;
+  void writeHeader( QDataStream & );
 };
 
-#endif // RESOURCESQLCONFIG_H
+}
+#endif

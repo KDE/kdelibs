@@ -35,6 +35,11 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
+  return locateLocal( "data", "kabc/std.vcf" );
+}
+
+QString StdAddressBook::directoryName()
+{
   return locateLocal( "data", "kabc/stdvcf" );
 }
 
@@ -97,7 +102,7 @@ void StdAddressBook::init( bool onlyFastResources )
 
     resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
     resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
-    resource->setName( config.readEntry( "ResourceName" ) );
+    resource->setName( config.readEntry( "ResourceName" ).latin1() );
 
     if ( !addResource( resource ) ) delete resource;
   }
@@ -107,7 +112,6 @@ void StdAddressBook::init( bool onlyFastResources )
     kdDebug(5700) << "StdAddressBook(): using default resource" << endl;
 
     Resource *resource = new ResourceFile( this, fileName(), new VCardFormat );
-    resource->setName( "Default" );
     resource->setReadOnly( false );
     resource->setFastResource( true );
 

@@ -62,7 +62,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
     Resource *resource = list.at( i );
     if ( resource && !resource->readOnly() ) {
       mResourceMap.insert( counter, resource );
-      mResourceId->insertItem( resource->name() + " " +
+      mResourceId->insertItem( QString( resource->name() ) + " " +
                   ( resource->fastResource() ? i18n( "(search)" ) : "" ) );
       counter++;
     }

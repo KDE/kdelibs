@@ -54,41 +54,45 @@ namespace KABC {
 */
 class StdAddressBook : public AddressBook
 {
-  public:
-    /**
-     * Return the standard addressbook object.
-     */
-    static AddressBook *self();
+public:
+  /**
+   * Return the standard addressbook object.
+   */
+  static AddressBook *self();
 
-    /**
-     * This is the same as above, but with specified
-     * behaviour of resource loading.
-     *
-     * @param onlyFastResource Only resources marked as 'fast' should be loaded
-     */
-    static AddressBook *self( bool onlyFastResources );
+  /**
+   * This is the same as above, but with specified
+   * behaviour of resource loading.
+   *
+   * @param onlyFastResource Only resources marked as 'fast' should be loaded
+   */
+  static AddressBook *self( bool onlyFastResources );
 
-    /**
-     * Save the standard address book to disk.
-     */
-    static bool save();
+  /**
+   * Save the standard address book to disk.
+   */
+  static bool save();
 
-    /**
-     * Returns the default file name for vcard-based addressbook
-     */
-    static QString fileName();
+  /**
+   * Returns the default file name for vcard-based addressbook
+   */
+  static QString fileName();
 
-  protected:
-    StdAddressBook();
-    StdAddressBook( bool onlyFastResources );
-    ~StdAddressBook();
+  /**
+   * Returns the default directory name for vcard-based addressbook
+   */
+  static QString directoryName();
+
+protected:
+  StdAddressBook();
+  StdAddressBook( bool onlyFastResources );
+  ~StdAddressBook();
    
-    void init( bool onlyFastResources );
+  void init( bool onlyFastResources );
 
-  private:
-    static AddressBook *mSelf;
+private:
+  static AddressBook *mSelf;
 };
 
 }
-
 #endif

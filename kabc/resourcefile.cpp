@@ -9,15 +9,18 @@
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 
 #include "addressbook.h"
-#include "binaryformat.h"
-#include "vcardformat.h"
 #include "stdaddressbook.h"
 
+#include "formatfactory.h"
+
+#include "resourceconfigwidget.h"
 #include "resourcefile.h"
+#include "resourcefileconfig.h"
 
 using namespace KABC;
 
@@ -25,23 +28,10 @@ ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
   QString fileName = config->readEntry( "FileName" );
-  uint type = config->readNumEntry( "FileFormat", KABC::Format::VCard );
+  QString type = config->readEntry( "FileFormat" );
 
-  Format *format = 0;
-  switch ( type ) {
-    case KABC::Format::VCard:
-      if ( fileName.isEmpty() )
-        fileName = StdAddressBook::fileName();
-      format = new VCardFormat;
-      break;
-    case KABC::Format::Binary:
-      if ( fileName.isEmpty() )
-        fileName = locateLocal( "data", "kabc/std.bin" );
-      format = new BinaryFormat;
-      break;
-    default:
-      kdDebug( 5700 ) << "ResourceFile: no valid format type." << endl;
- }
+  FormatFactory *factory = FormatFactory::self();
+  Format *format = factory->format( type );
 
   init( fileName, format );
 }
@@ -61,7 +51,8 @@ ResourceFile::~ResourceFile()
 void ResourceFile::init( const QString &filename, Format *format )
 {
   if ( !format ) {
-    mFormat = new VCardFormat();
+    FormatFactory *factory = FormatFactory::self();
+    mFormat = factory->format( "vcard" );
   } else {
     mFormat = format;
   }
@@ -80,7 +71,7 @@ Ticket *ResourceFile::requestSaveTicket()
   if ( !addressBook() ) return 0;
 
   if ( !lock( mFileName ) ) {
-    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Can't lock file '"
+    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Unable to lock file '"
                   << mFileName << "'" << endl;
     return 0;
   }
@@ -90,7 +81,18 @@ Ticket *ResourceFile::requestSaveTicket()
 
 bool ResourceFile::open()
 {
-  return mFormat->checkFormat( mFileName );
+  QFile file( mFileName );
+
+  if ( !file.open( IO_ReadOnly ) )
+    return true;
+
+  if ( file.size() == 0 )
+    return true;
+
+  bool ok = mFormat->checkFormat( &file );
+  file.close();
+
+  return ok;
 }
 
 void ResourceFile::close()
@@ -101,19 +103,31 @@ bool ResourceFile::load()
 {
   kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
-  return mFormat->load( addressBook(), this, mFileName );
+  QFile file( mFileName );
+  if ( !file.open( IO_ReadOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
+    return false;
+  }
+
+  return mFormat->loadAll( addressBook(), this, &file );
 }
 
 bool ResourceFile::save( Ticket *ticket )
 {
   kdDebug(5700) << "ResourceFile::save()" << endl;
+
+  QFile file( mFileName );
+  if ( !file.open( IO_WriteOnly ) ) {
+    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
+    return false;
+  }
   
-  bool success = mFormat->save( addressBook(), this, mFileName );
+  mFormat->saveAll( addressBook(), this, &file );
 
   delete ticket;
   unlock( mFileName );
 
-  return success;
+  return true;
 }
 
 bool ResourceFile::lock( const QString &fileName )
@@ -205,14 +219,9 @@ QString ResourceFile::identifier() const
   return fileName();
 }
 
-QString ResourceFile::typeInfo() const
+void ResourceFile::removeAddressee( const Addressee& )
 {
-  return mFormat->typeInfo();
-}
-
-void ResourceFile::removeAddressee( const Addressee& addr )
-{
-  mFormat->removeAddressee( addr );
+    // this function is only used by record-based resources
 }
 
 #include "resourcefile.moc"
