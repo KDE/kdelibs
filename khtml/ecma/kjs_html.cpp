@@ -314,6 +314,9 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
+      KJSO tmp(new HTMLElement(form.elements().namedItem(p.string())));
+      if (tmp.isDefined())
+	return tmp;
       if      (p == "elements")        return getHTMLCollection(form.elements()); // type HTMLCollection
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
@@ -325,10 +328,8 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       // methods
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
-      else {
-        KJSO result = DOMElement::tryGet(p);
-        return (result.isA(UndefinedType) ? KJSO(new HTMLElement(form.elements().namedItem(p.string()))) : result);
-      }
+      else
+        return DOMElement::tryGet(p);
     }
     break;
     case ID_SELECT: {
