@@ -381,10 +381,12 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         }
 
         // Merge attributes
-        QDomNamedNodeMap attribs = matchingElement.attributes();
-        for(uint i = 0; i < attribs.count(); i++)
+        const QDomNamedNodeMap attribs = matchingElement.attributes();
+        const uint attribcount = attribs.count();
+
+        for(uint i = 0; i < attribcount; ++i)
         {
-          QDomNode node = attribs.item(i);
+          const QDomNode node = attribs.item(i);
           e.setAttribute(node.nodeName(), node.nodeValue());
         }
 
@@ -812,15 +814,17 @@ KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const
     if ( propIt == properties.end() )
       propIt = properties.insert( actionName, QMap<QString, QString>() );
 
-    QDomNamedNodeMap attributes = e.attributes();
-    for ( uint i = 0; i < attributes.length(); ++i )
+    const QDomNamedNodeMap attributes = e.attributes();
+    const uint attributeslength = attributes.length();
+
+    for ( uint i = 0; i < attributeslength; ++i )
     {
-      QDomAttr attr = attributes.item( i ).toAttr();
+      const QDomAttr attr = attributes.item( i ).toAttr();
 
       if ( attr.isNull() )
         continue;
 
-      QString name = attr.name();
+      const QString name = attr.name();
 
       if ( name == "name" || name.isEmpty() )
         continue;
