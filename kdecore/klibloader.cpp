@@ -248,6 +248,8 @@ public:
     QList<KLibWrapPrivate> loaded_stack;
     QList<KLibWrapPrivate> pending_close;
     enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
+
+    QString errorMessage;
 };
 
 KLibLoader* KLibLoader::s_self = 0;
@@ -303,7 +305,7 @@ KLibLoader::~KLibLoader()
 QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 {
     QCString libname( name );
- 
+
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
@@ -333,7 +335,7 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
       {
         kdWarning(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
       }
-    } 
+    }
     return libfile;
 }
 
@@ -372,9 +374,16 @@ KLibrary* KLibLoader::library( const char *name )
       lt_dlhandle handle = lt_dlopen( libfile.latin1() );
       if ( !handle )
       {
-        kdWarning(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
+        const char* errmsg = lt_dlerror();
+        if(errmsg)
+            d->errorMessage = QString::fromLatin1(errmsg);
+        else
+            d->errorMessage = QString::null;
+        kdWarning(150) << "library=" << name << ": file=" << libfile << ": " << d->errorMessage << endl;
         return 0;
       }
+      else
+        d->errorMessage = QString::null;
 
       KLibrary *lib = new KLibrary( name, libfile, handle );
       wrap = new KLibWrapPrivate(lib, handle);
@@ -386,6 +395,11 @@ KLibrary* KLibLoader::library( const char *name )
              this, SLOT( slotLibraryDestroyed() ) );
 
     return wrap->lib;
+}
+
+QString KLibLoader::lastErrorMessage() const
+{
+    return d->errorMessage;
 }
 
 void KLibLoader::unloadLibrary( const char *libname )

@@ -110,10 +110,10 @@ signals:
      * Emitted in @ref create
      */
     void objectCreated( QObject *obj );
-    
-    
+
+
 protected:
-    
+
     /**
      * Creates a new object. The returned object has to be derived from
      * the requested classname.
@@ -127,8 +127,8 @@ protected:
      * This function is called by @ref create()
      */
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
-    
-    
+
+
 private:
     KLibFactoryPrivate *d;
 };
@@ -238,10 +238,20 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
+     * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
      * @see #factory
      */
     virtual KLibrary* library( const char* libname );
+
+    /*
+     * returns an error message that can be useful to debug the problem
+     * returns QString::null if the last call to ::library(const char*) was successful
+     * you can call this function more than once. The error message is only
+     * reset by a new call to library(). 
+     */
+    QString lastErrorMessage() const;
 
     virtual void unloadLibrary( const char *libname );
 
@@ -274,7 +284,6 @@ private slots:
     void slotLibraryDestroyed();
 private:
     void close_pending( KLibWrapPrivate * );
-    //QAsciiDict<KLibrary> m_libs;
     QAsciiDict<KLibWrapPrivate> m_libs;
 
     static KLibLoader* s_self;
