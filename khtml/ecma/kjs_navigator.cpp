@@ -54,7 +54,9 @@ KJSO Navigator::get(const UString &p) const
   if (p == "appCodeName")
     return String("Mozilla");
   else if (p == "appName") {
-    if (userAgent.find(QString::fromLatin1("Netscape")) >= 0)
+    // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
+    if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
+	userAgent.find(QString::fromLatin1("compatible")) == -1)
       return String("Netscape");
     if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
 	userAgent.find(QString::fromLatin1("MSIE")) >= 0)
