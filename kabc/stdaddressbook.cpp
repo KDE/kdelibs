@@ -35,18 +35,16 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
-  return locateLocal( "data", "kabc/std.vcf" );
+  return locateLocal( "data", "kabc/stdvcf" );
 }
 
-AddressBook *StdAddressBook::self()
+AddressBook *StdAddressBook::self( bool onlyFastResource )
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf ) {
-    mSelf = new StdAddressBook;
+    mSelf = new StdAddressBook( onlyFastResource );
   }
-
-  kdDebug() << "self: " << mSelf->identifier() << endl;
 
   return mSelf;
 }
@@ -59,7 +57,7 @@ bool StdAddressBook::save()
 }
 
 
-StdAddressBook::StdAddressBook()
+StdAddressBook::StdAddressBook( bool onlyFastResource )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
 
@@ -71,6 +69,9 @@ StdAddressBook::StdAddressBook()
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     config.setGroup( "Resource_" + (*it) );
     QString type = config.readEntry( "ResourceType" );
+
+    if ( onlyFastResource && !config.readBoolEntry( "ResourceIsFast" ) )
+        continue;
 
     Resource *resource = factory->resource( type, this, &config );
 
