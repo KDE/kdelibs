@@ -290,7 +290,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 		file.close();
 		QString contents(fileData);
 		PartMonitor pm(m_part);
-		m_part->begin(url);
+		m_part->begin(KURL( url ));
 		m_part->write(contents);
 		m_part->end();
 		pm.waitForCompletion();
@@ -300,7 +300,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	}
 	case Begin: {
             QString url = args[0].toString(exec).qstring();
-            m_part->begin(url);
+            m_part->begin(KURL( url ));
             break;
         }
         case Write: {
@@ -485,6 +485,15 @@ int main(int argc, char *argv[])
                 printf( "\n" );
             if ( regressionTest->m_errors )
                 printf("Errors:   %d\n",regressionTest->m_errors);
+
+            QFile list( regressionTest->m_baseDir + "/output/links.html" );
+            list.open( IO_WriteOnly|IO_Append );
+            QString link, cl;
+            link = QString( "<hr>%1 failures. (%2 expected failures)" )
+                   .arg(regressionTest->m_failures_work )
+                   .arg( regressionTest->m_failures_fail );
+            list.writeBlock( link.latin1(), link.length() );
+            list.close();
 	}
     }
 
@@ -522,6 +531,19 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     m_passes_work = m_passes_fail = 0;
     m_failures_work = m_failures_fail = 0;
     m_errors = 0;
+
+    ::unlink( QFile::encodeName( m_baseDir + "/output/links.html" ) );
+    QFile f( m_baseDir + "/output/empty.html" );
+    QString s;
+    f.open( IO_WriteOnly | IO_Truncate );
+    s = "<html><body>Follow the white rabbit";
+    f.writeBlock( s.latin1(), s.length() );
+    f.close();
+    f.setName( m_baseDir  + "/output/index.html" );
+    f.open( IO_WriteOnly | IO_Truncate );
+    s = "<html><frameset cols=150,*><frame src=links.html><frame name=content src=empty.html>";
+    f.writeBlock( s.latin1(), s.length() );
+    f.close();
 
     curr = this;
 }
@@ -808,6 +830,34 @@ bool RegressionTest::pixmapsSame( const QImage &lhsi, const QPixmap &rhs )
     return true;
 }
 
+void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test )
+{
+    QFile list( baseDir + "/output/links.html" );
+    list.open( IO_WriteOnly|IO_Append );
+    QString link, cl;
+    link = QString( "<a href=\"%1\" target=content>%2</a><br>" )
+        .arg( test + "-compare.html" ).arg( m_currentTest );
+    list.writeBlock( link.latin1(), link.length() );
+    list.close();
+
+    QFile compare( baseDir + "/output/" + test + "-compare.html" );
+    // create a relative path so that it works via web as well. ugly
+    QString relpath = "..";
+    for ( int i = 0; i < test.contains( '/' ); ++i )
+        relpath += "/../";
+    compare.open( IO_WriteOnly|IO_Truncate );
+    cl = QString( "<html><body text=black bgcolor=gray><table valign=top>"
+                  "<tr><td><h1>Base</h1></td><td><h1>Output</h1></td></tr><tr><td>"
+                  "<img width=%3 height=%4 src=\"%1\"><td><img width=%5 height=%6 src=\"%2\"></html>" )
+         .arg( relpath+"baseline/"+test+"-dump.png" )
+         .arg( relpath+"output/"+test+"-dump.png" )
+         .arg( baseSize.width() ).arg( baseSize.height() )
+         .arg( outSize.width() ).arg( outSize.height() );
+
+    compare.writeBlock( cl.latin1(), cl.length() );
+    compare.close();
+}
+
 void RegressionTest::testStaticFile(const QString & filename)
 {
     qApp->mainWidget()->resize( 800, 600); // restore size
@@ -884,10 +934,14 @@ void RegressionTest::testStaticFile(const QString & filename)
         QImage baseline;
         baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
         QPixmap output = outputPixmap();
-        if ( !pixmapsSame( baseline, output ) )
+        if ( !pixmapsSame( baseline, output ) ) {
             output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 60);
-        else
+            doFailureReport( baseline.size(), output.size(), m_baseDir, filename );
+        }
+        else {
+            ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-compare.html" ) );
             ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-dump.png" ) );
+        }
 
 #endif
     }

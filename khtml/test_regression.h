@@ -140,6 +140,7 @@ public:
 
     QPixmap outputPixmap();
     bool pixmapsSame( const QImage &lhs, const QPixmap &rhs );
+    void doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test );
 
     KHTMLPart *m_part;
     QString m_baseDir;
