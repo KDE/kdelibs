@@ -1215,6 +1215,9 @@ Value Window::openWindow(ExecState *exec, const List& args)
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if ( p )
         url = p->htmlDocument().completeURL(str).string();
+      if ( !p || 
+           !static_cast<DOM::DocumentImpl*>(p->htmlDocument().handle())->isURLAllowed(url.url()) )
+          return Undefined();
     }
 
     KParts::URLArgs uargs;
