@@ -98,6 +98,9 @@
 <!ENTITY traducteurPierre-EmmanuelMuller   '<othercredit role="translator"><firstname>Pierre-Emmanuel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPierre-EmmanuelMuller   '<othercredit role="reviewer"><firstname>Pierre-Emmanel</firstname><surname>Müller</surname><affiliation><address><email>pem@levillage.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurCedricPasteur   '<othercredit role="translator"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurCedricPasteur   '<othercredit role="reviewer"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurBrunoPinaud        '<othercredit role="translator"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurBrunoPinaud        '<othercredit role="reviewer"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -149,6 +152,7 @@
 <!ENTITY ChristopheLefebvre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>a-m.mahfouf@lineone.net</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
+<!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
@@ -174,6 +178,7 @@
 <!ENTITY Echap          	'<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
 <!ENTITY etc            	"<abbrev>etc.</abbrev>">
 <!ENTITY FAQ            	'<acronym>FAQ</acronym>'>
+<!ENTITY mi			"messagerie instantanée">
 <!ENTITY kcontrol       	'<application>Centre de Configuration de &kde;</application>'>
 <!ENTITY kcontrolcenter 	'<application>Centre de Configuration de &kde;</application>'>
 <!ENTITY khelpcenter    	'<application>Aide centralisée de &kde;</application>'>
