@@ -281,16 +281,16 @@ void kimgio_pcx_read( QImageIO *io )
 
   img.reset();
 
-  kdDebug() << "Manufacturer: " << header.Manufacturer << endl;
-  kdDebug() << "Version: " << header.Version << endl;
-  kdDebug() << "Encoding: " << header.Encoding << endl;
-  kdDebug() << "Bpp: " << header.Bpp << endl;
-  kdDebug() << "Width: " << w << endl;
-  kdDebug() << "Height: " << h << endl;
-  kdDebug() << "Window: " << header.XMin << "," << header.XMax << "," 
+  kdDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
+  kdDebug( 399 ) << "Version: " << header.Version << endl;
+  kdDebug( 399 ) << "Encoding: " << header.Encoding << endl;
+  kdDebug( 399 ) << "Bpp: " << header.Bpp << endl;
+  kdDebug( 399 ) << "Width: " << w << endl;
+  kdDebug( 399 ) << "Height: " << h << endl;
+  kdDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << "," 
             << header.YMin << "," << header.YMax << endl;
-  kdDebug() << "BytesPerLine: " << header.BytesPerLine << endl;
-  kdDebug() << "NPlanes: " << header.NPlanes << endl;
+  kdDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
+  kdDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
 
   // Skip the rest of the header
   Q_UINT8 byte;
@@ -314,9 +314,9 @@ void kimgio_pcx_read( QImageIO *io )
     readImage24( s );
   }
 
-  kdDebug() << "Image Bytes: " << img.numBytes() << endl;
-  kdDebug() << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
-  kdDebug() << "Image Depth: " << img.depth() << endl;
+  kdDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
+  kdDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
+  kdDebug( 399 ) << "Image Depth: " << img.depth() << endl;
 
   if ( !img.isNull() )
   {
@@ -489,11 +489,11 @@ void kimgio_pcx_write( QImageIO *io )
   w = img.width();
   h = img.height();
 
-  kdDebug() << "Width: " << w << endl;
-  kdDebug() << "Height: " << h << endl;
-  kdDebug() << "Depth: " << img.depth() << endl;
-  kdDebug() << "BytesPerLine: " << img.bytesPerLine() << endl;
-  kdDebug() << "Num Colors: " << img.numColors() << endl;
+  kdDebug( 399 ) << "Width: " << w << endl;
+  kdDebug( 399 ) << "Height: " << h << endl;
+  kdDebug( 399 ) << "Depth: " << img.depth() << endl;
+  kdDebug( 399 ) << "BytesPerLine: " << img.bytesPerLine() << endl;
+  kdDebug( 399 ) << "Num Colors: " << img.numColors() << endl;
 
   header.Manufacturer = 10;
   header.Version = 5;
