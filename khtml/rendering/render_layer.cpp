@@ -42,13 +42,13 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
-#include "render_layer.h"
 #include <kdebug.h>
 #include <assert.h>
 #include "khtmlview.h"
-#include "render_block.h"
-#include "render_replaced.h"
-#include "render_arena.h"
+#include "rendering/render_layer.h"
+#include "rendering/render_block.h"
+#include "rendering/render_replaced.h"
+#include "rendering/render_arena.h"
 #include "xml/dom_docimpl.h"
 
 #include <qscrollbar.h>
@@ -69,22 +69,22 @@ void RenderScrollMediator::slotValueChanged()
 }
 
 RenderLayer::RenderLayer(RenderObject* object)
-: m_object( object ),
-m_parent( 0 ),
-m_previous( 0 ),
-m_next( 0 ),
-m_first( 0 ),
-m_last( 0 ),
-m_y( 0 ),
-m_x( 0 ),
-m_scrollX( 0 ),
-m_scrollY( 0 ),
-m_scrollWidth( 0 ),
-m_scrollHeight( 0 ),
-m_hBar( 0 ),
-m_vBar( 0 ),
-m_scrollMediator( 0 ),
-zOrderList(0)
+    : m_object( object ),
+      m_parent( 0 ),
+      m_previous( 0 ),
+      m_next( 0 ),
+      m_first( 0 ),
+      m_last( 0 ),
+      m_y( 0 ),
+      m_x( 0 ),
+      m_scrollX( 0 ),
+      m_scrollY( 0 ),
+      m_scrollWidth( 0 ),
+      m_scrollHeight( 0 ),
+      m_hBar( 0 ),
+      m_vBar( 0 ),
+      m_scrollMediator( 0 ),
+      zOrderList(0)
 {
 }
 
@@ -158,8 +158,7 @@ int RenderLayer::height() const
 //     return curr;
 // }
 
-RenderLayer*
-RenderLayer::enclosingPositionedAncestor()
+RenderLayer* RenderLayer::enclosingPositionedAncestor()
 {
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
@@ -304,22 +303,19 @@ RenderLayer::convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y)
     y += yPos();
 }
 
-void
-RenderLayer::scrollOffset(int& x, int& y)
+void RenderLayer::scrollOffset(int& x, int& y)
 {
     x += scrollXOffset();
     y += scrollYOffset();
 }
 
-void
-RenderLayer::subtractScrollOffset(int& x, int& y)
+void RenderLayer::subtractScrollOffset(int& x, int& y)
 {
     x -= scrollXOffset();
     y -= scrollYOffset();
 }
 
-void
-RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
+void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
 {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
@@ -349,8 +345,7 @@ RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars)
     }
 }
 
-void
-RenderLayer::updateScrollPositionFromScrollbars()
+void RenderLayer::updateScrollPositionFromScrollbars()
 {
     bool needUpdate = false;
     int newX = m_scrollX;
@@ -372,8 +367,7 @@ RenderLayer::updateScrollPositionFromScrollbars()
         scrollToOffset(newX, newY, false);
 }
 
-void
-RenderLayer::showScrollbar(Qt::Orientation o, bool show)
+void RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 {
     QScrollBar *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
 
@@ -416,8 +410,7 @@ void RenderLayer::layout()
 	updateLayerInformation();
 }
 
-void
-RenderLayer::positionScrollbars(int tx,  int ty)
+void RenderLayer::positionScrollbars(int tx,  int ty)
 {
     int bl = m_object->borderLeft();
     int bt = m_object->borderTop();
@@ -453,8 +446,7 @@ RenderLayer::positionScrollbars(int tx,  int ty)
 #define LINE_STEP   10
 #define PAGE_KEEP   40
 
-void
-RenderLayer::checkScrollbarsAfterLayout()
+void RenderLayer::checkScrollbarsAfterLayout()
 {
     int rightPos = m_object->rightmostPosition();
     int bottomPos = m_object->lowestPosition();
@@ -522,8 +514,7 @@ RenderLayer::checkScrollbarsAfterLayout()
 
 }
 
-void
-RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
+void RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
 {
 #ifdef APPLE_CHANGES
     if (m_hBar)
@@ -532,10 +523,10 @@ RenderLayer::paintScrollbars(QPainter* p, int x, int y, int w, int h)
         m_vBar->paint(p, QRect(x, y, w, h));
 #else
     if (m_hBar)
-	RenderWidget::paint(p, m_hBar, x, y, w, h,
+	RenderWidget::paintWidget(p, m_hBar, x, y, w, h,
 			    hBarRect.x(), hBarRect.y());
     if (m_vBar)
-	RenderWidget::paint(p, m_vBar, x, y, w, h,
+	RenderWidget::paintWidget(p, m_vBar, x, y, w, h,
 			    vBarRect.x(), vBarRect.y());
 #endif
 }
@@ -554,14 +545,7 @@ static void setClip(QPainter *p, const QRect &clip)
     p->setClipRegion(creg);
 }
 
-static inline void restoreClip(QPainter *p)
-{
-    p->restore();
-}
-
-
-void
-RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
+void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 		   int tx, int ty, bool selectionOnly)
 {
     tx += xPos();
@@ -613,7 +597,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 			  tx - renderer()->xPos(), ty - renderer()->yPos(),
 			  PaintActionBackground);
 	if (clip2)
-	    restoreClip(p);
+            p->restore();
     }
     if (clip2)
 	setClip(p, QRect(tx + bl, ty + bt,
@@ -655,7 +639,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 		    r->paint(p, x, y, w, h,
 			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionBackground);
 		    if (clip2)
-			restoreClip(p);
+                        p->restore();
 		}
 		if (clip2)
 		    setClip(p, QRect(tx + xOff + bl, ty + yOff + bt,
@@ -666,7 +650,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 		r->paint(p, x, y, w, h,
 			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionForeground);
 		if (lclip)
-		    restoreClip(p);
+                    p->restore();
 
 		l->paintScrollbars(p, x, y, w, h);
 	    }
@@ -675,13 +659,12 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 
 
     if (clip)
-	restoreClip(p);
+        p->restore();
 
     paintScrollbars(p, x, y, w, h);
 }
 
-void
-RenderLayer::clearOtherLayersHoverActiveState()
+void RenderLayer::clearOtherLayersHoverActiveState()
 {
     if (!m_parent)
         return;
@@ -695,8 +678,7 @@ RenderLayer::clearOtherLayersHoverActiveState()
     m_parent->clearOtherLayersHoverActiveState();
 }
 
-void
-RenderLayer::clearHoverAndActiveState(RenderObject* obj)
+void RenderLayer::clearHoverAndActiveState(RenderObject* obj)
 {
     if (!obj->mouseInside())
         return;

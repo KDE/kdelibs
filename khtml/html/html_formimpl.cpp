@@ -578,9 +578,8 @@ void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
         HTMLGenericFormElementImpl *current = it.current();
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
-            current != caller && current->form() == caller->form() && current->name() == caller->name()) {
+            current != caller && current->form() == caller->form() && current->name() == caller->name())
             static_cast<HTMLInputElementImpl*>(current)->setChecked(false);
-        }
     }
 }
 
@@ -1423,6 +1422,11 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             m_render->absolutePosition(offsetX,offsetY);
             xPos = me->clientX()-offsetX;
             yPos = me->clientY()-offsetY;
+        }
+
+        if (evt->id() == EventImpl::DOMACTIVATE_EVENT
+            && m_type == RADIO)  {
+            setChecked(true);
         }
 
         // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means

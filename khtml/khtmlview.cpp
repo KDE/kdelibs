@@ -1316,7 +1316,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 			viewportMouseReleaseEvent(&me2);
 		    else
 			viewportMouseDoubleClickEvent(&me2);
-		    block = me2.isAccepted();
+		    //block = me2.isAccepted();
+                    block = true;
 		}
 		break;
 	    }
@@ -1324,7 +1325,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		break;
 	    }
 	    if (block) {
-// 		qDebug("eating event");
+ 		//qDebug("eating event");
 		return true;
 	    }
 	}
@@ -1523,7 +1524,7 @@ void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
         d->visibleWidgets.remove(w);
 }
 
-void KHTMLView::print() 
+void KHTMLView::print()
 {
     print( false );
 }
@@ -4599,7 +4600,7 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
 {
   // paranoia sanity check
   if (!caretBox) return;
-                                             
+
   RenderObject *caretRender = caretBox->object();
   NodeImpl *caretNode = caretRender->element();
 

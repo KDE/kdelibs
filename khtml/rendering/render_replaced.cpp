@@ -63,7 +63,7 @@ void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
     if (paintPhase != PaintActionForeground)
         return;
 
-    // not visible or nont even once layouted?
+    // not visible or not even once layouted?
     if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
 
     _tx += m_x;
@@ -165,7 +165,7 @@ class QWidgetResizeEvent : public QEvent
 public:
     enum { Type = QEvent::User + 0xbee };
     QWidgetResizeEvent( int _w,  int _h ) :
-	QEvent( (QEvent::Type)Type ),  w( _w ), h( _h ) {}
+	QEvent( ( QEvent::Type ) Type ),  w( _w ), h( _h ) {}
     int w;
     int h;
 };
@@ -223,10 +223,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
-	if (m_view) {
-	    m_view->setWidgetVisible(this, false);
-	    m_view->addChild( m_widget, 0, -500000);
-	}
+        m_view->setWidgetVisible(this, false);
+        m_view->addChild( m_widget, 0, -500000);
     }
 }
 
@@ -234,10 +232,9 @@ void RenderWidget::layout( )
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
-    if ( m_widget ) {
+    if ( m_widget )
 	resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
 		      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-    }
 
     setLayouted();
 }
@@ -386,13 +383,13 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
 
-    paint(p, m_widget, x, y, w, h, _tx, _ty);
+    paintWidget(p, m_widget, x, y, w, h, _tx, _ty);
 }
 
 #include <private/qinternal_p.h>
 
 
-void RenderWidget::paint(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty)
+void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty)
 {
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
@@ -415,24 +412,24 @@ void RenderWidget::paint(QPainter *p, QWidget *widget, int x, int y, int w, int 
 	QApplication::sendEvent( widget, &e );
 	QPainter::redirect(widget, 0);
 	QSharedDoubleBuffer::setDisabled(dsbld);
+        p->drawPixmap(tx, ty, pm);
     } else {
 	// QScrollview is difficult and I currently know of no way to get
 	// the stuff on screen without flicker.
 	//
 	// This still doesn't work nicely for textareas. Probably need
 	// to fix qtextedit for that.
-	//
-	// Currently the stuff is disabled for QScrollView derived classes in
 	// KHTMLView::eventFilter()
+#if 0
 	QPaintEvent e( widget->rect(), FALSE );
 	QApplication::sendEvent( widget, &e );
 	QScrollView *sv = static_cast<QScrollView *>(widget);
-	sv->viewport()->repaint(true);
+	sv->repaint(true);
 	pm = QPixmap::grabWindow(widget->winId());
+#endif
     }
 
     allowWidgetPaintEvents = false;
-    p->drawPixmap(tx, ty, pm);
 }
 
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
