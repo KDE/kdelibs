@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.68  1998/06/16 17:20:46  radej
+// sven: Fixed Warnings when switching palettes (separators hav no pixmaps)
+// Changelog order
 // Revision 1.67  1998/05/19 14:10:05  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
 //
@@ -416,7 +419,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   localResize=false;
 }
 {
-void KToolBar::ContextCallback( int index )
+void KToolBar::ContextCallback( int )
 {
   int i = context->exec();
   switch ( i )
