@@ -69,7 +69,7 @@ public:
     /**
       * Construct a KFileViewItem object from a KDirEntry.
       */
-    KFileViewItem(const KIO::UDSEntry &);
+    KFileViewItem(const QString& baseURL, const KIO::UDSEntry &);
 
     /**
       * Copy a KFileViewItem.
@@ -79,7 +79,7 @@ public:
     /**
       * Constructs a "little" KFileViewItem (just for local files)
       **/
-    KFileViewItem(const QString& dir, const QString& name, bool delaystat = false);
+    KFileViewItem(const QString& baseURL, const QString& name, bool delaystat = false);
 
     /**
       * Destroy the KFileViewItem object.

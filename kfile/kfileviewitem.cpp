@@ -52,7 +52,7 @@ KFileViewItem::IntCache   * KFileViewItem::passwdCache = 0L;
 KFileViewItem::IntCache   * KFileViewItem::groupCache  = 0L;
 KFileViewItem::GroupCache * KFileViewItem::myGroupMemberships = 0L;
 
-KFileViewItem::KFileViewItem(const KIO::UDSEntry &e)
+KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
 {
     myIsDir = false;
     myIsFile = true;
@@ -60,10 +60,8 @@ KFileViewItem::KFileViewItem(const KIO::UDSEntry &e)
     myPermissions = 0755;
     mySize = 0;
     myPixmap = 0L;
+    myBaseURL = baseURL;
 
-    kDebugInfo(kfile_area, "KFileViewItem::KFileViewItem");
-
-    KURL url;
     KIO::UDSEntry::ConstIterator it = e.begin();
     for( ; it != e.end(); it++ ) {
 	switch (( *it ).m_uds) {
@@ -94,30 +92,27 @@ KFileViewItem::KFileViewItem(const KIO::UDSEntry &e)
 	case KIO::UDS_LINK_DEST:
 	    myIsSymLink = (( *it ).m_str.length());
 	    break;
-	case KIO::UDS_URL:
-	    url = ( *it ).m_str;
-	    myBaseURL = url.path( 1 ); // we want a trailing "/"
-	    break;
 	case KIO::UDS_MIME_TYPE:
-	  kDebugInfo(kfile_area, "Do something with KIO::UDS_MIME_TYPE?");
-	  break;
+	case KIO::UDS_ACCESS_TIME:
+	case KIO::UDS_CREATION_TIME:
+	    break;
 	default:
-	    kDebugInfo(kfile_area, "got %ld", static_cast<long int>(( *it ).m_uds));
+	    kDebugInfo(kfile_area, "got %lx", static_cast<long int>(( *it ).m_uds));
 	};
     }
 
-    kDebugInfo(kfile_area, "COMPLETE %s %d %d", debugString(myName), myIsDir, mySize);
-    myName.replace( QRegExp(QString::fromLatin1("/$")), QString::fromLatin1("") );
+    if (myName.at(myName.length() - 1) == '/')
+	myName.truncate(myName.length() - 1);
     myIsReadable = true;
 
     init();
 }
 
-KFileViewItem::KFileViewItem(const QString& dir, const QString& name, bool delaystat)
+KFileViewItem::KFileViewItem(const QString& baseurl, const QString& name, bool delaystat)
 {
     myPixmap = 0L;
     myName = name;
-    myBaseURL = dir;
+    myBaseURL = baseurl;
 
     myIsDir = false; // assumptions to get a nice default pixmap
     myIsFile = true;
@@ -500,7 +495,7 @@ void KFileViewItem::setDeleted()
 }
 
 
-// FIXME: what should happen with those items in copy constructor and 
+// FIXME: what should happen with those items in copy constructor and
 // assignment operator???
 void KFileViewItem::setViewItem( const KFileView *view, const void *item )
 {
