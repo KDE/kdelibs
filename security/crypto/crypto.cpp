@@ -392,12 +392,12 @@ void KCryptoConfig::load()
   mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
 
+#ifdef HAVE_SSL
   config->setGroup("Validation");
   mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
   mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
   mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
 
-#ifdef HAVE_SSL
   config->setGroup("SSLv2");
   for (unsigned int i = 0; i < SSLv2Box->count(); i++) {
     QString ciphername;
@@ -445,12 +445,12 @@ void KCryptoConfig::save()
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
 
+#ifdef HAVE_SSL
   config->setGroup("Validation");
   config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
   config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
 
-#ifdef HAVE_SSL
   int ciphercount = 0;
   config->setGroup("SSLv2");
   for (unsigned int i = 0; i < SSLv2Box->count(); i++) {
@@ -504,11 +504,11 @@ void KCryptoConfig::defaults()
   mWarnOnLeave->setChecked(true);
   mWarnOnUnencrypted->setChecked(false);
   mWarnOnMixed->setChecked(true);
+#ifdef HAVE_SSL
   mWarnSelfSigned->setChecked(true);
   mWarnExpired->setChecked(true);
   mWarnRevoked->setChecked(true);
 
-#ifdef HAVE_SSL
     // This is very complicated on purpose.  We don't want to make
     // ciphers < 40 bit a default selection.  This is very unsafe and
     // I have already witnessed OpenSSL negotiate a 0 bit connection
