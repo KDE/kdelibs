@@ -378,6 +378,15 @@ QString KBugReport::text()
   QString os = QString::fromLatin1("OS: %1 (%2)\n").
                arg(KDE_COMPILING_OS).
                arg(KDE_DISTRIBUTION_TEXT);
+  QString bodyText;
+  for(int i = 0; i < m_lineedit->numLines(); i++)
+  {
+     QString line = m_lineedit->textLine(i);
+     if (line.right(1) != "\n")
+        line += '\n';
+     bodyText += line;
+  }
+
   if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != QString::fromLatin1("C")) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
@@ -387,9 +396,7 @@ QString KBugReport::text()
                               "Application: %1\n"
                               // not really i18n's version, so better here IMHO
                               "Version: %2\n").arg(appname).arg(m_strVersion)+
-          os+
-	  QString::fromLatin1("\n")+
-	  m_lineedit->text();
+          os+QString::fromLatin1("\n")+bodyText;
   } else {
       appname = appname.replace(QRegExp("_"), QString::fromLatin1("-"));
       // Case 2 : normal bug
@@ -398,8 +405,7 @@ QString KBugReport::text()
                                  "Severity: %3\n")
           .arg(appname).arg(m_strVersion).arg(severity)+
           QString::fromLatin1("Compiler: %1\n").arg(KDE_COMPILER_VERSION)+
-          os+QString::fromLatin1("\n")+
-          m_lineedit->text();
+          os+QString::fromLatin1("\n")+bodyText;
   }
 }
 
