@@ -231,6 +231,26 @@ AC_CHECK_LIBASOUND
 fi
 
 AC_SUBST(LIBASOUND)
+
+# GLIB_CFLAGS:  cflags for compiling libraries and example progs
+# GLIB_LIBS:    libraries for linking example programs
+# GLIB_DEPLIBS: libraries for linking libraries against
+GLIB_PACKAGES="gobject gmodule gthread"
+AC_MSG_CHECKING(for GLib-2.0)
+if glib-config-2.0 --cflags >/dev/null 2>&1 ; then
+        GLIB_CFLAGS=`glib-config-2.0 --cflags $GLIB_PACKAGES`
+        GLIB_LIBS=`glib-config-2.0 --libs $GLIB_PACKAGES`
+        GLIB_DEPLIBS=$GLIB_LIBS
+        AC_MSG_RESULT($GLIB_CFLAGS $GLIB_LIBS)
+	ARTS_BUILD_GMCOP="gmcop"
+else
+	AC_MSG_RESULT(not installed)
+	ARTS_BUILD_GMCOP=""
+fi
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(GLIB_LIBS)
+AC_SUBST(GLIB_DEPLIBS)
+AC_SUBST(ARTS_BUILD_GMCOP)
  
 
 dnl Don't remove !
