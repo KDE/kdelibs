@@ -73,8 +73,8 @@ namespace KIO
    *
    * @since 3.4
    */
-  KIO_EXPORT unsigned long long int calculateRemainingSeconds( KIO::filesize_t totalSize,
-                                                               KIO::filesize_t processedSize, KIO::filesize_t speed );
+  KIO_EXPORT unsigned int calculateRemainingSeconds( KIO::filesize_t totalSize,
+                                                     KIO::filesize_t processedSize, KIO::filesize_t speed );
 
   /**
    * Convert @p seconds to a string representing number of days, hours, minutes and seconds
@@ -84,7 +84,7 @@ namespace KIO
    *
    * @since 3.4
    */
-  KIO_EXPORT QString convertSeconds( unsigned long long int seconds );
+  KIO_EXPORT QString convertSeconds( unsigned int seconds );
 
   /**
    * Calculates remaining time from total size, processed size and speed.
