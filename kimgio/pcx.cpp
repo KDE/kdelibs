@@ -420,7 +420,7 @@ void writeImage4( QDataStream &s )
   }
 }
 
-void writeImage8( QDataStream &s )
+static void writeImage8( QDataStream &s )
 {
   header.Bpp = 8;
   header.NPlanes = 1;
@@ -449,7 +449,7 @@ void writeImage8( QDataStream &s )
     s << RGB( img.color( i ) );
 }
 
-void writeImage24( QDataStream &s )
+static void writeImage24( QDataStream &s )
 {
   header.Bpp = 8;
   header.NPlanes = 3;
