@@ -483,7 +483,7 @@ KCmdLineArgs::parseAllArgs()
             printQ( QString("Qt: %1\n").arg(qVersion()));
             printQ( QString("KDE: %1\n").arg(VERSION));
             printQ( QString("%1: %2\n").
-			arg(about->appName()).arg(about->version()));
+			arg(about->programName()).arg(about->version()));
             exit(0);
          } else if ( (strcmp(option, "license") == 0) )
          {
@@ -495,13 +495,13 @@ KCmdLineArgs::parseAllArgs()
 	     if ( about ) {
 		 const QValueList<KAboutPerson> authors = about->authors();
 		 if ( !authors.isEmpty() ) {
-		     printQ( QString(about->appName()) + " " + i18n("was written by\n") );
+		     printQ( QString(about->programName()) + " " + i18n("was written by\n") );
 		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
 			 printQ( QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n");
 		     }
 		 }
 	     } else {
-		 printQ( QString(about->appName()) + " " + i18n("was written by somebody who wants to remain anonymous.") );
+		 printQ( QString(about->programName()) + " " + i18n("was written by somebody who wants to remain anonymous.") );
 	     }
 	     exit(0);
          } else {
