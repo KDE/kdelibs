@@ -54,7 +54,7 @@ libkfile_la_SOURCES = \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
 	knotifydialog.cpp kfilespeedbar.cpp
-libkfile_la_COMPILE_FIRST = ../kdirnotify_stub.h
+libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
 
 EXTRA_DIST = NOTES
 
@@ -70,7 +70,4 @@ servicetypedir = $(kde_servicetypesdir)
 #libkfileshare_la_LIBADD = libkfile.la
 #libkfileshare_la_LDFLAGS = -module $(KDE_PLUGIN)
 #kde_services_DATA = kfilesharepropsplugin.desktop
-
-kpropertiesdialog.lo: ../kio/kdirnotify_stub.h
-kfiletreeview.lo: ../kio/kdirnotify_stub.h
 
