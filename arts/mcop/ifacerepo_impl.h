@@ -70,7 +70,7 @@ class InterfaceRepo_impl : virtual public InterfaceRepoV2_skel {
 	std::list<EnumEntry *> enums;
 	std::list<TypeEntry *> types;
 	std::list<InterfaceEntry *> interfaces;
-	std::map<string, TypeIdentification> tiMap;
+	std::map<std::string, TypeIdentification> tiMap;
 
 	long nextModuleID;
 
