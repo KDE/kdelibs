@@ -221,6 +221,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	if ( reset || config->hasKey( "UserStyleSheet" ) )
 	    m_userSheet = config->readEntry( "UserStyleSheet", "" );
     }
+
+    m_formCompletionEnabled = config->readBoolEntry("FormCompletion", false);
+    m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {

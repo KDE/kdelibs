@@ -39,6 +39,7 @@ namespace DOM {
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
     class HTMLGenericFormElementImpl;
+    class HTMLFormElementImpl;
     class Range;
     class NodeImpl;
     class CSSProperty;
@@ -48,6 +49,7 @@ namespace khtml {
     class RenderObject;
     class RenderRoot;
     class RenderStyle;
+    class RenderLineEdit;
     void applyRule(RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 };
 
@@ -69,6 +71,8 @@ class KHTMLView : public QScrollView
     friend class KHTMLPart;
     friend class khtml::RenderRoot;
     friend class DOM::HTMLGenericFormElementImpl;
+    friend class DOM::HTMLFormElementImpl;
+    friend class khtml::RenderLineEdit;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:
@@ -224,6 +228,9 @@ private:
     DOM::NodeImpl *nodeUnderMouse() const;
 
     void restoreScrollBar();
+
+    QStringList formCompletionItems(const QString &name) const;
+    void addFormCompletionItem(const QString &name, const QString &value);
 
     // ------------------------------------- member variables ------------------------------------
  private:

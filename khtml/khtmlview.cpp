@@ -35,6 +35,8 @@
 #include "khtml_settings.h"
 
 #include <kcursor.h>
+#include <ksimpleconfig.h>
+#include <kstddirs.h>
 
 #include <qpixmap.h>
 #include <qstring.h>
@@ -66,9 +68,11 @@ public:
         reset();
         tp=0;
         paintBuffer=0;
+        formCompletions=0;
     }
     ~KHTMLViewPrivate()
     {
+        delete formCompletions;
         delete tp; tp = 0;
         delete paintBuffer; paintBuffer =0;
     }
@@ -101,7 +105,7 @@ public:
     bool useSlowRepaints;
 
     int borderX, borderY;
-
+    KSimpleConfig *formCompletions;
 };
 
 
@@ -862,3 +866,25 @@ void KHTMLView::toggleActLink(bool pressed)
     if (e)
 	e->setActive(pressed);
 }
+
+QStringList KHTMLView::formCompletionItems(const QString &name) const
+{
+    if (!m_part->settings()->isFormCompletionEnabled())
+        return QStringList();
+    if (!d->formCompletions)
+        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+    return d->formCompletions->readListEntry(name);
+}
+
+void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
+{
+    if (!m_part->settings()->isFormCompletionEnabled())
+        return;
+    QStringList items = formCompletionItems(name);
+    if (!items.contains(value))
+        items.prepend(value);
+    while (items.count() > m_part->settings()->maxFormCompletionItems())
+        items.remove(items.fromLast());
+    d->formCompletions->writeEntry(name, items);
+}
+

@@ -118,7 +118,11 @@ public:
     QString availableFamilies() const { return availFamilies; }
 
     QString userStyleSheet() const;
-    
+
+    // Form completion
+    bool isFormCompletionEnabled() const { return m_formCompletionEnabled; }
+    int maxFormCompletionItems() const { return m_maxFormCompletionItems; }
+
 private:
     void setFont(const QFont::CharSet &charset, int i, const QString &n);
     QString lookupFont(const QFont::CharSet &charset, int i) const;
@@ -155,6 +159,9 @@ private:
     QMap<QFont::CharSet, QStringList> fontsForCharset;
     QStringList defaultFonts;
     QString availFamilies;
+
+    bool m_formCompletionEnabled;
+    int m_maxFormCompletionItems;
 };
 
 #endif

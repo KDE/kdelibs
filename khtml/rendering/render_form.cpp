@@ -464,6 +464,13 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
+    QStringList completions =
+        static_cast<KHTMLView *>(view)->formCompletionItems(element->name().string());
+    if (completions.count())
+    {
+        edit->completionObject()->setItems(completions);
+        edit->setContextMenuEnabled(true);
+    }
 
     setQWidget(edit, false);
 }

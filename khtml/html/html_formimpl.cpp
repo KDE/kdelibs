@@ -326,6 +326,16 @@ void HTMLFormElementImpl::submit(  )
 #endif
     if(!view) return;
 
+    for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
+    {
+        if (current->id() == ID_INPUT &&
+            static_cast<HTMLInputElementImpl *>(current)->inputType() == HTMLInputElementImpl::TEXT)
+        {
+            HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl *>(current);
+            view->addFormCompletionItem(input->name().string(), input->value().string());
+        }
+    }
+    
     QByteArray form_data = formData();
     if(m_post)
     {
