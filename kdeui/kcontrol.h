@@ -23,15 +23,13 @@
 #ifndef _K_CONTROL_
 #define _K_CONTROL_
 
-
-#include <qtabbar.h>
-#include <qtabdialog.h>
 #include <qstrlist.h>
-#include <qpushbutton.h>
-
 #include <kapp.h>
 
-
+// prototypes
+class QTabBar;
+class QTabDialog;
+class QPushButton;
 class KControlApplication;
 
 
@@ -211,3 +209,11 @@ private:
 
 
 #endif
+
+/*
+****************************************************************************
+*
+* $Log$ 
+*
+****************************************************************************
+*/
