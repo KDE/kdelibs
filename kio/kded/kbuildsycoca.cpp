@@ -27,6 +27,7 @@
 #include <kbuildservicefactory.h>
 #include <kbuildservicegroupfactory.h>
 #include <kbuildimageiofactory.h>
+#include <kbuildprotocolinfofactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -213,6 +214,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
   (void) new KBuildServiceFactory(stf, bsgf);
   (void) new KBuildImageIOFactory();
+  (void) new KBuildProtocolInfoFactory();
 
   time_t Time1 = time(0);
   build(allEntries); // Parse dirs

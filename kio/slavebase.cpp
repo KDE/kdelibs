@@ -40,6 +40,7 @@
 #include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
+#include <kprotocolmanager.h>
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
@@ -476,6 +477,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         slave_status();
         break;
     case CMD_REPARSECONFIGURATION:
+        KProtocolManager::reparseConfiguration();
         reparseConfiguration();
 	break;
     case CMD_GET: {

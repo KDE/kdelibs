@@ -15,5 +15,5 @@ noinst_HEADERS = file.h
 
 METASOURCES = AUTO
 
-kioconfig_DATA = file.desktop
-kioconfigdir = $(kde_confdir)/protocols
+kdelnkdir = $(kde_servicesdir)
+kdelnk_DATA = file.protocol

@@ -29,11 +29,8 @@ kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 
 noinst_HEADERS = http.h extern_md5.h base64.h
 
-kioconfig_DATA = http.desktop https.desktop
-kioconfigdir = $(kde_confdir)/protocols
-
 kdelnkdir = $(kde_servicesdir)
-kdelnk_DATA = http_cache_cleaner.desktop
+kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol
 
 dummy.cpp:
 	echo > dummy.cpp

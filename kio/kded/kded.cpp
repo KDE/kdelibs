@@ -41,7 +41,6 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
-#include <kimageiofactory.h>
 
 Kded::Kded( bool needUpdate)
   : KSycoca( true )
@@ -90,6 +89,7 @@ void Kded::build()
   // We don't include KImageIOFactory here because it doesn't add
   // new resourceList entries anyway.
   //(void) KImageIOFactory::self();
+  // Same for KBuildProtocolInfoFactory
 
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );

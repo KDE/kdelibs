@@ -210,7 +210,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     dest_part += QString::fromLatin1(".part");
     QCString _dest_part( QFile::encodeName(dest_part));
 
-    bool bMarkPartial = KProtocolManager::self().markPartial();
+    bool bMarkPartial = KProtocolManager::markPartial();
 
     struct stat buff_orig;
     bool orig_exists = ( ::stat( _dest_orig.data(), &buff_orig ) != -1 );
@@ -309,7 +309,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         {
            struct stat buff;
            if (( ::stat( _dest.data(), &buff ) == -1 ) ||
-               ( buff.st_size < KProtocolManager::self().minimumKeepSize() ))
+               ( buff.st_size < KProtocolManager::minimumKeepSize() ))
            {
 	       remove(_dest.data());
            }

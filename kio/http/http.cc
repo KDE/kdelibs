@@ -1417,17 +1417,18 @@ bool HTTPProtocol::readHeader()
 
 void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 {
+  encoding = encoding.stripWhiteSpace().lower();
   // Identity is the same as no encoding
-  if (encoding.lower() == "identity") {
+  if (encoding == "identity") {
     return;
-  } else if (encoding.lower() == "chunked") {
+  } else if (encoding == "chunked") {
     m_bChunked = true;
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     //if ( m_cmd != CMD_COPY )
       m_iSize = -1;
-  } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip")) {
+  } else if ((encoding == "x-gzip") || (encoding == "gzip")) {
     encs.append(QString::fromLatin1("gzip"));
-  } else if ((encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
+  } else if ((encoding == "x-deflate") || (encoding == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
     // kdDebug(7103) << "Deflate not implemented.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
     // abort();
@@ -2678,11 +2679,11 @@ void HTTPProtocol::reparseConfiguration()
     }
   }
 
-  m_bUseCache = KProtocolManager::self().useCache();
+  m_bUseCache = KProtocolManager::useCache();
   if (m_bUseCache)
   {
      m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-     m_maxCacheAge = KProtocolManager::self().maxCacheAge();
+     m_maxCacheAge = KProtocolManager::maxCacheAge();
   }
 
 }

@@ -34,7 +34,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprotocolmanager.h>
+#include <kprotocolinfo.h>
 #include <kstddirs.h>
 #include <kprocess.h>
 #include <dcopclient.h>
@@ -483,14 +483,14 @@ void KRun::init()
     foundMimeType( mime->name() );
     return;
   }
-  else if ( KProtocolManager::self().isHelperProtocol( m_strURL.protocol() ) ) {
+  else if ( KProtocolInfo::isHelperProtocol( m_strURL.protocol() ) ) {
     kdDebug(7010) << "Helper protocol" << endl;
 
     emit finished();
 
     KURL::List urls;
     urls.append( m_strURL );
-    run( KProtocolManager::self().exec( m_strURL.protocol() ),
+    run( KProtocolInfo::exec( m_strURL.protocol() ),
 	 urls );
 
     kdDebug(7010) << "Launched helper:" << endl;
@@ -510,7 +510,7 @@ void KRun::init()
 
   // Let's see whether it is a directory
 
-  if ( !KProtocolManager::self().supportsListing( m_strURL.protocol() ) )
+  if ( !KProtocolInfo::supportsListing( m_strURL.protocol() ) )
   {
     //kdDebug(7010) << "Protocol has no support for listing" << endl;
     // No support for listing => it can't be a directory (example: http)
@@ -555,7 +555,7 @@ void KRun::scanFile()
   // We need to apply the 'KIO' method, i.e. either asking the server ot
   // getting some data out of the file, to know what mimetype it is.
 
-  if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
+  if ( !KProtocolInfo::supportsReading( m_strURL.protocol() ) )
   {
     kdError(7010) << "#### NO SUPPORT FOR READING!" << endl;
     m_bFault = true;

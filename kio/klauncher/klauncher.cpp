@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
+#include <kprotocolinfo.h>
 #include <ktempfile.h>
 
 #include "kio/global.h"
@@ -241,7 +242,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    else if (fun == "reparseConfiguration()")
    {
-      KProtocolManager::self().scanConfig();
+      KProtocolManager::reparseConfiguration();
       return true;
    }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
@@ -821,7 +822,7 @@ KLauncher::requestSlave(const QString &protocol,
     // to save memory compared to KProtocolManager which stores everything in memory...
     // Problem is that the protocol name is in the file (protocol= field), so we
     // do need to parse them all...
-    QCString name = KProtocolManager::self().exec( protocol ).latin1(); // ex: "kio_ftp"
+    QCString name = KProtocolInfo::exec( protocol ).latin1(); // ex: "kio_ftp"
     if ( name.isEmpty() ) {
         name = "kio_"; name += protocol.latin1(); // fallback
     }

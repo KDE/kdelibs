@@ -133,7 +133,7 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
 
   kdDebug( 7006 ) << "reparseConfiguration( " << proto << " )" << endl;
 
-  KProtocolManager::self().scanConfig();
+  KProtocolManager::reparseConfiguration();
 
   Slave *slave = slaveList->first();
   for (; slave; slave = slaveList->next() )

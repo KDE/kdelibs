@@ -1488,7 +1488,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   QString dest_part( dest_orig );
   dest_part += ".part";
 
-  bool bMarkPartial = KProtocolManager::self().markPartial();
+  bool bMarkPartial = KProtocolManager::markPartial();
 
   // Don't use mark partial over anonymous FTP.
   // My incoming dir allows put but not rename...
@@ -1590,7 +1590,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     {
       // Remove if smaller than minimum size
       if ( ftpSize( dest, 'I' ) &&
-           ( m_size < (unsigned long) KProtocolManager::self().minimumKeepSize() ) )
+           ( m_size < (unsigned long) KProtocolManager::minimumKeepSize() ) )
       {
         QCString cmd = "DELE ";
         cmd += dest.ascii();

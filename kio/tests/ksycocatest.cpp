@@ -6,6 +6,7 @@
 #include <kstddirs.h>
 #include <kservicegroup.h>
 #include <kimageio.h>
+#include <kprotocolinfo.h>
 
 #include <kapp.h>
 
@@ -230,6 +231,15 @@ int main(int argc, char *argv[])
    {
       KService *service = static_cast<KService *>(*it);
       debug(service->name());
+   }
+   debug("--End of list--");
+
+   debug("--protocols--");
+   QStringList stringL = KProtocolInfo::protocols();
+   for( QStringList::ConstIterator it = stringL.begin();
+       it != stringL.end(); it++)
+   {
+      debug((*it).ascii());
    }
    debug("--End of list--");
 

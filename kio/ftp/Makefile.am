@@ -10,7 +10,7 @@ kio_ftp_la_LDFLAGS = -module -avoid-version -no-undefined
 
 noinst_HEADERS = ftp.h
 
-kioconfig_DATA = ftp.desktop
-kioconfigdir = $(kde_confdir)/protocols
+kdelnk_DATA = ftp.protocol
+kdelnkdir = $(kde_servicesdir)
 
 

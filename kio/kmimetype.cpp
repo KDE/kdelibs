@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <kprotocolmanager.h>
+#include <kprotocolinfo.h>
 #include <kio/global.h>
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
@@ -191,8 +191,8 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       if ( mime && !_is_local_file )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
-        if ( KProtocolManager::self().mimetypeFastMode( _url.protocol(), mime->name() ) &&
-             KProtocolManager::self().patternFastMode( _url.protocol(), fileName ) )
+        if ( KProtocolInfo::mimetypeFastMode( _url.protocol(), mime->name() ) &&
+             KProtocolInfo::patternFastMode( _url.protocol(), fileName ) )
           return KMimeType::Ptr( mime );
       }
 
@@ -218,7 +218,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       // which mimetype this means. For HTTP we set unknown now, because
       // of redirections (e.g. freshmeat downloads).
       // Assume inode/directory otherwise.
-      QString def = KProtocolManager::self().defaultMimetype( _url.protocol() );
+      QString def = KProtocolInfo::defaultMimetype( _url.protocol() );
       return mimeType( def.isEmpty() ? QString::fromLatin1("inode/directory") : def );
     }
   }
@@ -334,7 +334,7 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group,
 
     // if we don't find an icon, maybe we can use the one for the protocol
     if ( mt->icon( _url, _url.isLocalFile() ) == unknown )
-	i = KProtocolManager::self().icon( _url.protocol() );
+	i = KProtocolInfo::icon( _url.protocol() );
 
     return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state,
 					    _path, false );
