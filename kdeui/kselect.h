@@ -109,6 +109,10 @@ protected:
    * @reimplemented
    */
   virtual void mouseMoveEvent( QMouseEvent *e );
+  /**
+   * KDE4 : add mousewheel support
+  virtual void wheelEvent( QWheelEvent * );
+   */
 
 private:
   void setPosition( int xp, int yp );
@@ -260,6 +264,10 @@ protected:
    * @reimplemented
    */
   virtual void mouseMoveEvent( QMouseEvent *e );
+  /**
+   * KDE4 : add mousewheel support
+  virtual void wheelEvent( QWheelEvent * );
+   */
 
 private:
   QPoint calcArrowPos( int val );
