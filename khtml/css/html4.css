@@ -529,7 +529,7 @@ frame {
 }
 
 nobr {
-        display: block;
+        display: inline;
         white-space: nowrap; 
 }
 
