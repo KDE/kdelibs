@@ -27,6 +27,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qstring.h>
+#include <qpainter.h>
 #define private public // bad bad bad....
 #include <khtml_part.h>
 #undef private
