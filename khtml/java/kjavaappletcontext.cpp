@@ -174,7 +174,8 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         else
         {
             KJavaApplet* tmp = d->applets[appletID];
-            tmp->resizeAppletWidget( width, height );
+            if (tmp)
+                tmp->resizeAppletWidget( width, height );
         }
     }
     else if (cmd.startsWith(QString::fromLatin1("audioclip_"))) {
@@ -239,7 +240,8 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             errorDetail.replace(QRegExp(":\\s*"), ":\n");
             KMessageBox::detailedError(0L, i18n("Java error while loading applet."), errorDetail);
             */
-            applet->setFailed();
+            if (applet)
+                applet->setFailed();
             emit appletLoaded();
         }
     }

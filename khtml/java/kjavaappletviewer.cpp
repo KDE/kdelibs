@@ -164,7 +164,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     m_view = new KJavaAppletViewerWidget (wparent);
 
-    QString classname, classid, codebase;
+    QString classname, classid, codebase, khtml_codebase;
     int width = -1;
     int height = -1;
     KJavaApplet * applet = m_view->applet ();
@@ -177,31 +177,36 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
             if (value.at(0)=='\"')
                 value = value.right (value.length () - 1);
             if (value.at (value.length () - 1) == '\"')
-                value = value.left(value.length()-1);
+                value.truncate (value.length () - 1);
             kdDebug(6100) << "name=" << name << " value=" << value << endl;
             if (!name.isEmpty()) {
-                if (name == "__KHTML__PLUGINBASEURL")
-                    baseurl = value;
-                else if (name == "__KHTML__CODEBASE" ||
-                         name.lower()==QString::fromLatin1("codebase") ||
-                         name.lower()==QString::fromLatin1("java_codebase")) {
+                QString name_lower = name.lower ();
+                if (name == "__KHTML__PLUGINBASEURL") {
+                    KURL url (value);
+                    QString fn = url.fileName (false);
+                    baseurl = fn.isEmpty () ?
+                        value : value.left (value.length ()-fn.length ());
+                } else if (name == "__KHTML__CODEBASE") {
+                    khtml_codebase = value;
+                } else if (name_lower == QString::fromLatin1("codebase") ||
+                        name_lower == QString::fromLatin1("java_codebase")) {
                     if (!value.isEmpty ())
                         codebase = value;
                 } else if (name == "__KHTML__CLASSID")
                 //else if (name.lower()==QString::fromLatin1("classid"))
                     classid = value;
-                else if (name.lower()==QString::fromLatin1("code") ||
-                         name.lower()==QString::fromLatin1("java_code") ||
-                         name.lower()==QString::fromLatin1("src"))
+                else if (name_lower == QString::fromLatin1("code") ||
+                         name_lower == QString::fromLatin1("java_code") ||
+                         name_lower == QString::fromLatin1("src"))
                     classname = value;
-                else if (name.lower()==QString::fromLatin1("archive") ||
-                         name.lower()==QString::fromLatin1("java_archieve"))
+                else if (name_lower == QString::fromLatin1("archive") ||
+                         name_lower == QString::fromLatin1("java_archieve"))
                     applet->setArchives (value);
-                else if (name.lower()==QString::fromLatin1("name"))
+                else if (name_lower == QString::fromLatin1("name"))
                     applet->setAppletName (value);
-                else if (name.lower()==QString::fromLatin1("width"))
+                else if (name_lower == QString::fromLatin1("width"))
                     width = value.toInt();
-                else if (name.lower()==QString::fromLatin1("height"))
+                else if (name_lower == QString::fromLatin1("height"))
                     height = value.toInt();
                 else {
                     applet->setParameter (name, value);
@@ -214,10 +219,12 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         kdDebug(6100) << "classid=" << classid << classid.startsWith("clsid:")<< endl;
         if (classid.startsWith ("clsid:"))
             // codeBase contains the URL to the plugin page
-            codebase = baseurl;
+            khtml_codebase = baseurl;
         else if (classname.isEmpty () && classid.startsWith ("java:"))
             classname = classid.mid(5);
     }
+    if (codebase.isEmpty ())
+        codebase = khtml_codebase;
 
     if (width > 0 && height > 0)
         applet->setSize (QSize(width, height));
