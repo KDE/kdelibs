@@ -57,8 +57,8 @@ bool Lock::readLockFile( const QString &filename, int &pid, QString &app )
   if ( !file.open( IO_ReadOnly ) ) return false;
   
   QTextStream t( &file );
-  t >> pid >> app;
-  
+  t >> pid >> ws >> app;
+
   return true;
 }
 
@@ -100,7 +100,7 @@ bool Lock::lock()
                       << endl;
     } else {
       mError = i18n("The resource '%1' is locked by application '%2'.")
-               .arg( mIdentifier ).arg( app );
+               .arg( mIdentifier.replace( '_', '/' ) ).arg( app );
       return false;
     }
   }
