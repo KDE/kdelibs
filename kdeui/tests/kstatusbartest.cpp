@@ -94,7 +94,7 @@ void testWindow::slotMenu(int id)
 {
   QString s = "Zoom: ";
   s.append (smenu->text(id));
-  statusbar->changeItem(s.data(),0);
+  statusbar->changeItem(s,0);
 }
 
 testWindow::~testWindow ()

@@ -357,7 +357,7 @@ void testWindow::slotCompletionsMenu(int id)
 {
   // Now set text in lined
   QString s =completions->text(id);
-  toolBar->setLinedText(5, s.data());  // Cursor is automaticly at the end of string after this
+  toolBar->setLinedText(5, s);  // Cursor is automaticly at the end of string after this
 }
 
 void testWindow::slotHide2 ()
