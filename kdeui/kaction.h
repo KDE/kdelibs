@@ -66,15 +66,17 @@
  * GUI representations of it.
  *
  * @sect General Usage:
+ *
  * The steps to using actions are roughly as follows
  * 
- * @li 1) Decide which attributes you want to associate with a given
- *    action (icons, text, keyboard accelerator, etc)
- * @li 2) Create the action using KAction (or derived or super class).
- * @li 3) "Plug" the Action into whatever GUI element you want.  This is
- *    typically a menu or toolbar.
+ * @li Decide which attributes you want to associate with a given
+ *     action (icons, text, keyboard accelerator, etc)
+ * @li Create the action using KAction (or derived or super class).
+ * @li "Plug" the Action into whatever GUI element you want.  This is
+ *     typically a menu or toolbar.
  *
  * @sect Detailed Example:
+ *
  * Here is an example of enabling a "New [document]" action
  * <PRE>
  * KAction *newAct = KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
