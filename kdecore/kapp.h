@@ -567,6 +567,12 @@ public:
    * Returns the app startup notification identifier for this running application.
    */
   const QCString startupId() const;
+  
+  /**
+   * Sets a new value for the application startup notification window property for newly
+   * created toplevel windows.
+   */
+  void setStartupId( const QCString& startup_id );
 
 public slots:
   /**
@@ -837,6 +843,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.223  2001/06/25 20:07:37  waba
+// -#define KDE_VERSION_STRING "2.2alpha2"
+// +#define KDE_VERSION_STRING "2.2beta1"
+//
 // Revision 1.222  2001/06/11 19:29:00  malte
 // alternate background colour belongs into KGlobalSettings, not KApplication
 //

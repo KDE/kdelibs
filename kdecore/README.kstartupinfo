@@ -252,6 +252,15 @@ Entries :
 - PID       - number
             - the PID of a process that belongs to this startup notification
             - there may be several PIDs for one notification
+            - value 0 is also valid, meaning that there's a process
+              with unknown PID for this notification ( is used e.g.
+              by kfmclient when it sends a DCOP message to already running
+              konqueror instance to create a new window and exits immediately,
+              without adding the zero PID to the notification, process
+              that started kfmclient could detect it exited and would send
+              a remove: message for the notification with kfmclient's PID,
+              which would cause the notification to stop if there wasn't also
+              PID=0 for it
 - HOSTNAME  - string
             - the hostname of the machine on which the application is being
               started

@@ -2215,6 +2215,14 @@ const QCString KApplication::startupId() const
     return d->startup_id;
 }
 
+void KApplication::setStartupId( const QCString& startup_id )
+{
+    if( startup_id.isEmpty())
+        d->startup_id = "0";
+    else
+        d->startup_id = startup_id;
+}
+
 // read the startup notification env variable, save it and unset it in order
 // not to propagate it to processes started from this app
 void KApplication::read_app_startup_id()
