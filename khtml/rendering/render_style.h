@@ -575,7 +575,7 @@ public:
     short border_vspacing;
 
     DOM::QuotesValueImpl* quotes;
-  
+
     // Paged media properties.
     short widows;
     short orphans;
@@ -597,7 +597,7 @@ enum EListStyleType {
      LDECIMAL, DECIMAL_LEADING_ZERO, ARABIC_INDIC, PERSIAN, URDU,
      LOWER_ROMAN, UPPER_ROMAN, HEBREW, ARMENIAN, GEORGIAN, CJK_IDEOGRAPHIC,
      LOWER_GREEK, UPPER_GREEK, LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
-     HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA, 
+     HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA,
      OPEN_QUOTE, CLOSE_QUOTE, LNONE
 };
 
@@ -694,7 +694,7 @@ protected:
                 bool _visuallyOrdered : 1;
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
-                
+
                 unsigned int unused : 29;
             } f;
             Q_UINT64 _iflags;
@@ -1138,7 +1138,7 @@ public:
     void setPageBreakInside(EPageBreak b) { SET_VAR(inherited, page_break_inside, b); }
     void setPageBreakBefore(EPageBreak b) { noninherited_flags.f._page_break_before = b; }
     void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
-    
+
     void setQuotes(DOM::QuotesValueImpl* q);
 
     // CSS3 Setters

@@ -938,18 +938,24 @@ void QuotesValueImpl::addLevel(const QString& open, const QString& close)
     levels++;
 }
 
-QString QuotesValueImpl::openQuote(int level) const 
+QString QuotesValueImpl::openQuote(int level) const
 {
-    if (level > levels) level = levels;
+    if (levels == 0) return "";
     level--; // increments are calculated before openQuote is called
-//    kdDebug( 6080 ) << "Open quote level:" << level << endl;
+//     kdDebug( 6080 ) << "Open quote level:" << level << endl;
+    if (level < 0) level = 0;
+    else
+    if (level >= levels) level = levels-1;
     return data[level*2];
 }
 
-QString QuotesValueImpl::closeQuote(int level) const 
+QString QuotesValueImpl::closeQuote(int level) const
 {
-    if (level > levels-1) level = levels-1;
-//    kdDebug( 6080 ) << "Close quote level:" << level << endl;
+    if (levels == 0) return "";
+//     kdDebug( 6080 ) << "Close quote level:" << level << endl;
+    if (level < 0) level = 0;
+    else
+    if (level >= levels) level = levels-1;
     return data[level*2+1];
 }
 

@@ -1386,7 +1386,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 QString selStr = sel->string_arg.string();
 //                kdDebug(6080) << ":contains(\"" << selStr << "\")" << " on \"" << s << "\"" << endl;
                 return s.string().contains(selStr);
-            } 
+            }
             break;
         }
 
@@ -1907,7 +1907,7 @@ static inline int nextFontSize(const QValueVector<int>& a, int v, bool smaller)
     while (l <= r) {
         m = (l+r)/2;
         if (a[m] == v)
-            return smaller ? ( m ? a[m-1] : (v*5)/6 ) : 
+            return smaller ? ( m ? a[m-1] : (v*5)/6 ) :
                              ( m+1<int(a.count()) ? a[m+1] : (v*6)/5 );
         else if (v < a[m])
             r = m-1;
@@ -1918,7 +1918,7 @@ static inline int nextFontSize(const QValueVector<int>& a, int v, bool smaller)
         return smaller ? (v*5)/6 : kMin((v*6)/5, a[0]);
     if (l == int(a.count()))
         return smaller ? kMax((v*5)/6, a[r]) : (v*6)/5;
-        
+
     return smaller ? a[r] : a[l];
 }
 
@@ -3001,7 +3001,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
             case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
             case CSS_VAL__KHTML_XXX_LARGE: size = int( fontSizes[7] ); break;
-            case CSS_VAL_LARGER: 
+            case CSS_VAL_LARGER:
                 size = nextFontSize(fontSizes, oldSize, false);
                 break;
             case CSS_VAL_SMALLER:
@@ -3340,7 +3340,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_QUOTES:
         HANDLE_INHERIT_AND_INITIAL(quotes, Quotes)
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
-            style->setQuotes(0);
+            // set a set of empty quotes
+            QuotesValueImpl* quotes = new QuotesValueImpl();
+            style->setQuotes(quotes);
         } else {
             QuotesValueImpl* quotes = static_cast<QuotesValueImpl *>(value);
             style->setQuotes(quotes);
