@@ -117,6 +117,30 @@ AC_MSG_CHECKING([for QT])
 ac_qt_includes=NO ac_qt_libraries=NO
 qt_libraries=""
 qt_includes=""
+ac_cv_with_qt_dir=
+ac_cv_with_qt_lib=
+ac_cv_with_qt_inc=
+AC_ARG_WITH(qt-dir,
+    [  --with-qt-dir           where the root of qt is installed (/usr/local/qt) ],
+    [  ac_cv_with_qt_dir="$withval"
+       ac_qt_includes=$ac_cv_with_qt_dir/include
+       ac_qt_libraries=$ac_cv_with_qt_dir/lib
+    ])
+
+AC_ARG_WITH(qt-includes,
+    [  --with-qt-includes       where the qt includes are. ],
+    [  ac_cv_with_qt_inc="$withval"
+       ac_qt_includes="$withval"
+    ])
+    
+AC_ARG_WITH(qt-libraries,
+    [  --with-qt-libraries           where the qt library is installed.],
+    [  ac_cv_with_qt_lib="$withval"
+       ac_qt_libraries="$withval"
+    ])
+
+if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
+
 AC_CACHE_VAL(ac_cv_have_qt,
 AC_PATH_QT_DIRECT
 [#try to guess qt locations
@@ -128,7 +152,7 @@ ac_qt_includes=$qt_incdir
 
 qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries $QTLIB"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
-AC_FIND_FILE(libqt.so libqt.a libqt.sl, $qt_libdirs, qt_libdir)
+AC_FIND_FILE(libqt.so libqt.so.1.2 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries=$qt_libdir
 
 ac_cxxflags_safe=$CXXFLAGS
@@ -157,7 +181,9 @@ fi
 rm -f conftest*
 CXXFLAGS=$ac_cxxflags_safe
 LDFLAGS=$ac_ldflags_safe
- 
+])dnl		
+fi
+
 if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"
   ac_qt_notfound=""
@@ -175,7 +201,9 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
 else
   ac_cv_have_qt="have_qt=yes \
   ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
-fi])dnl
+fi
+
+
 
 eval "$ac_cv_have_qt"
 
@@ -448,55 +476,3 @@ else
 fi
 ])
 
-
-dnl this should be included by aclocal, but wont
-dnl on linux (don't know, why)
-# serial 6 AM_PROG_LIBTOOL
-AC_DEFUN(AM_PROG_LIBTOOL,
-[AC_REQUIRE([AC_CANONICAL_HOST])
-AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_RANLIB])
-
-# Always use our own libtool.
-LIBTOOL='$(top_builddir)/libtool'
-AC_SUBST(LIBTOOL)
-
-dnl Allow the --disable-shared flag to stop us from building shared libs.
-AC_ARG_ENABLE(shared,
-[  --enable-shared         build shared libraries [default=yes]],
-test "$enableval" = no && libtool_shared=" --disable-shared",
-libtool_shared=)
-
-dnl Allow the --disable-static flag to stop us from building static libs.
-AC_ARG_ENABLE(static,
-[  --enable-static         build static libraries [default=yes]],
-test "$enableval" = no && libtool_static=" --disable-static",
-libtool_static=)
-
-libtool_flags="$libtool_shared$libtool_static"
-test "$silent" = yes && libtool_flags="$libtool_flags --silent"
-test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
-
-# Some flags need to be propagated to the compiler or linker for good
-# libtool support.
-[case "$host" in
-*-*-irix6*)
-  for f in '-32' '-64' '-cckr' '-n32' '-mips1' '-mips2' '-mips3' '-mips4'; do
-    if echo " $CC $CFLAGS " | egrep -e "[ 	]$f[	 ]" > /dev/null; then
-      LD="${LD-ld} $f"
-    fi
-  done
-  ;;
-
-*-*-sco3.2v5*)
-  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
-  CFLAGS="$CFLAGS -belf"
-  ;;
-esac]
-
-# Actually configure libtool.  ac_aux_dir is where install-sh is found.
-CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LD="$LD" RANLIB="$RANLIB" \
-${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
-$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
-|| AC_MSG_ERROR([libtool configure failed])
-])
