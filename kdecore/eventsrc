@@ -106,6 +106,7 @@ Name[sr@Latn]=Смеће: испражњено
 Name[sv]=Papperskorg: tömd
 Name[uk]=Смітник: спорожнено
 Name[xx]=xxTrash: emptiedxx
+Name[zh_CN]=回收站：已清空
 Comment=The trash has been emptied
 Comment[bg]=Съдържанието а кошчето е изтрито
 Comment[br]=Goullonderet e oa ar pod-lastez
@@ -128,11 +129,13 @@ Comment[nn]=Papirkorga er tømt
 Comment[pt]=O lixo foi esvaziado
 Comment[pt_BR]=A lixeira foi esvaziada
 Comment[ru]=Корзина была очищена
+Comment[sl]=Smeti so spraznjene
 Comment[sr]=Смеће је испражњено
 Comment[sr@Latn]=Смеће је испражњено
 Comment[sv]=Papperskorgen har tömts
 Comment[uk]=Смітник було спорожнено
 Comment[xx]=xxThe trash has been emptiedxx
+Comment[zh_CN]=回收站已被清空
 default_presentation=1
 
 [Textcompletion: rotation]
