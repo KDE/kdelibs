@@ -24,7 +24,7 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 //#define DEBUG_LAYOUT
-#define BOX_DEBUG
+//#define BOX_DEBUG
 
 
 #include "dom_string.h"
@@ -338,8 +338,11 @@ void RenderFlow::layoutBlockChildren()
         } else if ( child->isReplaced() ) {
             child->layout();
 	} else if ( child->isFloating() ) {
+	    // margins of floats and other objects do not collapse. The hack below assures this.
+	    m_height += prevMargin;
 	    insertFloat( child );
 	    positionNewFloats();
+	    m_height -= prevMargin;
 	    child = child->nextSibling();
 	    continue;
 	}
@@ -836,7 +839,7 @@ RenderFlow::rightBottom()
 void
 RenderFlow::clearFloats()
 {
-//    kdDebug( 6040 ) << this <<" clearFloats" << endl;
+    //kdDebug( 6040 ) << this <<" clearFloats" << endl;
 
     if (specialObjects) {
 	if( containsPositioned() ) {
@@ -858,12 +861,25 @@ RenderFlow::clearFloats()
     // find the element to copy the floats from
     // pass non-flows
     // pass fAF's unless they contain overhanging stuff
-    while (prev && (!prev->isFlow() || prev->isFloating() ||
-        (prev->style()->flowAroundFloats() &&
-            (static_cast<RenderFlow *>(prev)->floatBottom()+prev->yPos() < m_y ))))
-            prev = prev->previousSibling();
-
+    bool parentHasFloats = false;
+    while (prev) {
+	if (!prev->isFlow() || prev->isFloating() ||
+	    (prev->style()->flowAroundFloats() &&
+	     (static_cast<RenderFlow *>(prev)->floatBottom()+prev->yPos() < m_y ))) {
+	    if ( prev->isFloating() && parent()->isFlow() ) {
+		parentHasFloats = true;
+	    }
+	    prev = prev->previousSibling();
+	} else
+	    break;
+    }
+    
     int offset = m_y;
+
+    if ( parentHasFloats ) {
+	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), offset, false );
+    }
+    
     if(prev ) {
         if(prev->isTableCell()) return;
 
@@ -887,9 +903,9 @@ RenderFlow::clearFloats()
 
 void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child )
 {
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << (void *)this << ": adding overhanging floats offset=" << offset << " child=" << child << endl;
-//#endif
+#endif
 
     // we have overhanging floats
     if(!specialObjects) {
@@ -905,14 +921,12 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child 
 	       ( child && flow->yPos() + r->endY > height() ) ) ) {
 
 	    SpecialObject* f = 0;
-#if 1
 	    // don't insert it twice!
 	    QListIterator<SpecialObject> it(*specialObjects);
 	    while ( (f = it.current()) ) {
 		if (f->node == r->node) break;
 		++it;
 	    }
-#endif
 	    if ( !f ) {
 		SpecialObject *special = new SpecialObject;
 		special->count = specialObjects->count();
@@ -1302,7 +1316,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     }
     else if(!m_childrenInline)
     {
-        if(newChild->isInline() || newChild->isFloating())
+        if( newChild->isInline() )
         {
             // #### this won't work with beforeChild != 0 !!!!
             if (beforeChild && beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBox()) {
