@@ -1,3 +1,7 @@
+1998-11-10  Alex Zepeda  <alex@zippy.dyn.ml.org>
+
+	* configure.in: Fix a small typo.
+
 0.1 : first steps with libkde
 0.2 : first release with libkde, khtmlw, kdehelp, acli, kwm, kpanel
 0.3 : added kfm and bugfixes
