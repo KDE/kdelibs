@@ -77,15 +77,15 @@ lexer.lo: lexer.lut.h
 # Can't use %.lut.h: %.cpp, it's not portable.
 
 array_object.lut.h : $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/array_object.cpp -i > $@
 math_object.lut.h : $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/math_object.cpp -i > $@
 date_object.lut.h : $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/date_object.cpp -i > $@
 number_object.lut.h : $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/number_object.cpp -i > $@
 string_object.lut.h : $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/string_object.cpp -i > $@
 
 CLEANFILES = $(LUT_FILES)
 
