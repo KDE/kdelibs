@@ -4,6 +4,7 @@
 #include <kparts/factory.h>
 #include <kparts/part.h>
 #include <kgenericfactory.h>
+#include <kdebug.h>
 
 namespace KParts
 {
