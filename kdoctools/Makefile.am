@@ -43,22 +43,18 @@ messages:
 	$(XGETTEXT) *.cpp -o $(podir)/kdebase/kio_help.pot
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2
-	@echo "****************************************************"
-	@echo "** WARNING: I INSTALL LINKS HERE FOR EASIER DEVEL **"
-	@echo "** DON'T REMEMBER ME TO INSTALL THE FILES WHEN WE **"
-	@echo "** COME NEAR A RELEASE.             THANKS, COOLO **"
-	@echo "****************************************************"
-	@pwd=`cd $(srcdir) && pwd` ;\
-	if false; then \
-	rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook ;\
-	$(LN_S) $$pwd/docbook $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook ;\
-	rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization ;\
-	$(LN_S) $$pwd/customization $(DESTDIR)$(kde_datadir)/ksgmltools2/customization;\
-	else \
-	rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook ;\
-	cp -r $(srcdir)/docbook $(DESTDIR)$(kde_datadir)/ksgmltools2 ;\
-	rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization ;\
-	cp -r $(srcdir)/customization $(DESTDIR)$(kde_datadir)/ksgmltools2 ;\
-	fi
+	@(cd $(srcdir) && \
+	for subdir in customization docbook; do \
+	   for dir in `find $$subdir -type d ! -name CVS `; do \
+		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$dir ;\
+		for file in `ls -1 $$dir/*`; do \
+		    if test -f $$file; then \
+			$(INSTALL_DATA) $$file  $(DESTDIR)$(kde_datadir)/ksgmltools2/$$file; fi ;\
+	   	done ;\
+	   done ;\
+	done )
+
+uninstall-local:
+	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization	
+	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
 
