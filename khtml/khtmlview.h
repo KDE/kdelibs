@@ -147,6 +147,11 @@ public:
      **/
     void closeChildDialogs();
 
+    /**
+     * Between closeChildDialogs() and clear() no child dialogs may be created
+     **/
+    bool dialogsAllowed();
+
 signals:
     void cleared();
     void zoomView( int );

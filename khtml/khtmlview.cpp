@@ -152,6 +152,7 @@ public:
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
         updateRect = QRect();
+        m_dialogsAllowed = true;
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -225,6 +226,7 @@ public:
     bool layoutSchedulingEnabled;
     bool possibleTripleClick;
     bool dirtyLayout;
+    bool m_dialogsAllowed;
     QRect updateRect;
     KHTMLToolTip *tooltip;
     QPtrDict<QWidget> visibleWidgets;
@@ -482,6 +484,15 @@ void KHTMLView::closeChildDialogs()
         }
     }
     delete dlgs;
+    d->m_dialogsAllowed = false;
+}
+
+bool KHTMLView::dialogsAllowed() {
+    bool allowed = d->m_dialogsAllowed;
+    KHTMLPart* p = m_part->parentPart();
+    if (p && p->view())
+        allowed &= p->view()->dialogsAllowed();
+    return allowed;
 }
 
 void KHTMLView::closeEvent( QCloseEvent* ev )

@@ -1212,10 +1212,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case Window::Alert:
+    if (!widget->dialogsAllowed())
+      return Undefined();
     part->xmlDocImpl()->updateRendering();
     KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
     return Undefined();
   case Window::Confirm:
+    if (!widget->dialogsAllowed())
+      return Undefined();
     part->xmlDocImpl()->updateRendering();
     return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
