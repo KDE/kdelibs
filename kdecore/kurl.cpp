@@ -393,8 +393,12 @@ KURL::KURL( const KURL& _u )
 
 QDataStream & operator<< (QDataStream & s, const KURL & a)
 {
+  QString QueryForWire=a.m_strQuery_encoded;
+  if (!a.m_strQuery_encoded.isNull())
+    QueryForWire.prepend("?");
+
     s << a.m_strProtocol << a.m_strUser << a.m_strPass << a.m_strHost
-      << a.m_strPath << a.m_strPath_encoded << a.m_strQuery_encoded << a.m_strRef_encoded
+      << a.m_strPath << a.m_strPath_encoded << QueryForWire << a.m_strRef_encoded
       << Q_INT8(a.m_bIsMalformed ? 1 : 0) << a.m_iPort;
     return s;
 }
@@ -402,13 +406,16 @@ QDataStream & operator<< (QDataStream & s, const KURL & a)
 QDataStream & operator>> (QDataStream & s, KURL & a)
 {
     Q_INT8 malf;
+    QString QueryFromWire;
     s >> a.m_strProtocol >> a.m_strUser >> a.m_strPass >> a.m_strHost
-      >> a.m_strPath >> a.m_strPath_encoded >> a.m_strQuery_encoded >> a.m_strRef_encoded
+      >> a.m_strPath >> a.m_strPath_encoded >> QueryFromWire >> a.m_strRef_encoded
       >> malf >> a.m_iPort;
     a.m_bIsMalformed = (malf != 0);
 
-    if ( a.m_strQuery_encoded.isEmpty() )
+    if ( QueryFromWire.isEmpty() )
       a.m_strQuery_encoded = QString::null;
+    else
+      a.m_strQuery_encoded = QueryFromWire.mid(1);
 
     return s;
 }
@@ -717,10 +724,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if ( pos == len )
       goto NodeOk;
 
-  start = pos + 1;
-
  //Node10: // parse query or reference depending on what comes first
   delim = (buf[pos++]=='#'?'?':'#');
+
+  start = pos;
 
   while(buf[pos]!=delim && pos < len) pos++;
 
@@ -747,10 +754,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if (m_strProtocol.isEmpty())
     m_strProtocol = "file";
 
-  //debug("Prot=%s\nUser=%s\nPass=%s\nHost=%s\nPath=%s\nQuery=%s\nRef=%s\nPort=%i\n",
-  //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
-  //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
-  //m_strRef_encoded.ascii(), m_iPort );
+  //kdDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
   if (m_strProtocol == "file")
   {
     if (!m_strHost.isEmpty())
@@ -1034,7 +1038,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
   else
   {
     m_strPath_encoded = _txt.left( pos );
-    m_strQuery_encoded = _txt.right(_txt.length() - pos + 1);
+    m_strQuery_encoded = _txt.right(_txt.length() - pos - 1);
   }
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
@@ -1507,7 +1511,7 @@ void KURL::setQuery( const QString &_txt, int )
 
 QString KURL::query() const
 {
-    if (m_strQuery_encoded.isEmpty())
+    if (m_strQuery_encoded.isNull())
         return QString::null;
     return '?'+m_strQuery_encoded;
 }
