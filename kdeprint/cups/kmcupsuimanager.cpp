@@ -44,6 +44,7 @@
 #include "kmwusers.h"
 #include "kmpropusers.h"
 #include "kpschedulepage.h"
+#include "kptagspage.h"
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
@@ -165,6 +166,7 @@ int KMCupsUiManager::pluginPageCap()
 void KMCupsUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>* pages)
 {
 	pages->append(new KPSchedulePage());
+	pages->append(new KPTagsPage());
 }
 
 void KMCupsUiManager::setupJobViewer(QListView *lv)

@@ -32,6 +32,7 @@
 #include "kpdriverpage.h"
 #include "kpschedulepage.h"
 #include "kpcopiespage.h"
+#include "kptagspage.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -379,6 +380,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		dlg.addPage(new KPDriverPage(prt, dlg.driver(), &dlg));
 	dlg.addPage(new KPCopiesPage(0, &dlg));
 	dlg.addPage(new KPSchedulePage(&dlg));
+	dlg.addPage(new KPTagsPage(true, &dlg));
 	dlg.setOptions(opts);
 	dlg.enableSaveButton(false);
 	dlg.setCaption(i18n("Attributes of job %1@%2 (%3)").arg(j->id()).arg(j->printer()).arg(j->name()));
