@@ -197,7 +197,9 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 QString localRootIP()
 {
 	char	buf[256];
-	gethostname(buf, 255);
+	buf[0] = '\0';
+	if (!gethostname(buf, sizeof(buf)))
+		buf[sizeof(buf)-1] = '\0';
 	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
 	infos.setAutoDelete(true);
 	if (infos.count() > 0)

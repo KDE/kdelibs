@@ -161,6 +161,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      perror("Aborting. Could not determine hostname: ");
      exit(255);
   }
+  kde_tmp_dir[sizeof(kde_tmp_dir)-1] = '\0';
 
   result = lstat(kde_tmp_dir, &stat_buf);
   if ((result == 0) && (S_ISDIR(stat_buf.st_mode)))

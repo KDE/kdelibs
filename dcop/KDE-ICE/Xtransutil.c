@@ -226,6 +226,7 @@ TRANS(GetMyNetworkId) (XtransConnInfo ciptr)
     {
 	return (NULL);
     }
+    hostnamebuf[sizeof(hostnamebuf)-1] = '\0';
 
     switch (family)
     {
@@ -315,8 +316,10 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #if defined(UNIXCONN) || defined(STREAMSCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
     case AF_UNIX:
     {
-	if (gethostname (addrbuf, sizeof (addrbuf)) == 0)
+	if (gethostname (addrbuf, sizeof (addrbuf)) == 0) {
+	    addrbuf[sizeof(addrbuf)-1] = '\0';
 	    addr = addrbuf;
+	}
 	break;
     }
 #endif /* defined(UNIXCONN) || defined(STREAMSCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
@@ -387,6 +390,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
     case AF_INET:
     {
 	if (gethostname (addrbuf, sizeof (addrbuf)) == 0) {
+	    addrbuf[sizeof(addrbuf)-1] = '\0';
 	    addr = addrbuf;
 	} else {
 	    addr = "";

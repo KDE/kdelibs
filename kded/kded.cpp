@@ -569,6 +569,7 @@ void KHostnameD::checkHostname()
     char buf[1024+1];
     if (gethostname(buf, 1024) != 0)
        return;
+    buf[sizeof(buf)-1] = '\0';
 
     if (m_hostname.isEmpty())
     {

@@ -168,6 +168,7 @@ static int openSocket()
      perror("Warning: Could not determine hostname: ");
      return -1;
   }
+  sock_file[sizeof(sock_file)-1] = '\0';
 
   /* append $DISPLAY */
   display = getDisplay();
