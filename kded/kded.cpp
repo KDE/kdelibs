@@ -142,6 +142,7 @@ void Kded::initModules()
 {
      m_dontLoad.clear();
      KConfig *config = kapp->config();
+     bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
 
      // Preload kded modules.
      KService::List kdedModules = KServiceType::offers("KDEDModule");
@@ -151,7 +152,7 @@ void Kded::initModules()
          bool autoload = service->property("X-KDE-Kded-autoload").toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
          autoload = config->readBoolEntry("autoload", autoload);
-         if (autoload)
+         if (autoload && kde_running)
             loadModule(service, false);
 
          bool dontLoad = false;

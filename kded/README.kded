@@ -105,8 +105,11 @@ on fire)
 A KDED module should install a .desktop file with
 	ServicesTypes=KDEDModule
 
-A KDED module will be loaded on startup if it has a line
+A KDED module will be loaded on KDE startup if it has a line
 	X-KDE-Kded-autoload=true
+
+Note that this flag doesn't cause the module to be loaded if the KDE desktop
+is not running (i.e. when running a KDE application in another environment).
 
 Normally KDED modules are loaded whenever they are accessed, so you don't
 need autoloading enabled. On demand loading can be disabled by putting
