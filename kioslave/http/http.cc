@@ -3920,25 +3920,9 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
    kdDebug(7113) << "(" << m_pid << ") " << "Window ID: " 
                  << windowId << ", for host = " << url << endl;
 
-   bool attemptedRestart = false;
-   while ( 1 )
+   if ( !m_dcopClient->send( "kded", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
    {
-      if ( !m_dcopClient->send( "kcookiejar", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
-      {
-        if( !initCookieJar() || attemptedRestart )
-        {
-          kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
-          break;
-        }
-        else
-        {
-          attemptedRestart = true;
-        }
-      }
-      else
-      {
-        break;
-      }
+      kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
    }
 }
 
@@ -3955,35 +3939,21 @@ QString HTTPProtocol::findCookies( const QString &url)
   stream << url << windowId;
 
   bool attemptedRestart = false;
-  while ( 1 )
+  if ( !m_dcopClient->call( "kded", "kcookiejar", "findCookies(QString,long int)",
+                            params, replyType, reply ) )
   {
-    if ( !m_dcopClient->call( "kcookiejar", "kcookiejar", "findCookies(QString,long int)",
-                                             params, replyType, reply ) )
-    {
-      if ( !initCookieJar() || attemptedRestart )
-      {
-        kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
-        break;
-      }
-      else
-      {
-        attemptedRestart = true;
-      }
-    }
-    else
-    {
-      if ( replyType == "QString" )
-      {
-        QDataStream stream2( reply, IO_ReadOnly );
-        stream2 >> result;
-      }
-      else
-      {
-        kdError(7113) << "(" << m_pid << ") DCOP function findCookies(...) returns "
-                                      << replyType << ", expected QString" << endl;
-      }
-      break;
-    }
+     kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
+     return result;
+  }
+  if ( replyType == "QString" )
+  {
+     QDataStream stream2( reply, IO_ReadOnly );
+     stream2 >> result;
+  }
+  else
+  {
+     kdError(7113) << "(" << m_pid << ") DCOP function findCookies(...) returns "
+                          << replyType << ", expected QString" << endl;
   }
   return result;
 }
