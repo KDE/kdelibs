@@ -965,30 +965,45 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-	fd_set rd, wr;
+	fd_set rd;
 	struct timeval timeout;
 
-	int n = t; // Timeout in seconds
-	while(n--)
-	{
-		FD_ZERO(&rd);
-		FD_ZERO(&wr);
-		FD_SET(m_iSock, &rd);
-
-		timeout.tv_usec = 0;
-		timeout.tv_sec = 1; // 1 second
-
-    		if ( (m_bIsSSL || d->usingTLS) && 
-		     !d->useSSLTunneling && 
-		     d->kssl )
-			if (d->kssl->pending() > 0)
+	if ( (m_bIsSSL || d->usingTLS) && 
+		!d->useSSLTunneling && 
+		d->kssl )
+		if (d->kssl->pending() > 0)
 				return true;
 
-		select(m_iSock+1, &rd, &wr, (fd_set *)0, &timeout);
+	FD_ZERO(&rd);
+	FD_SET(m_iSock, &rd);
 
-		if (FD_ISSET(m_iSock, &rd))
-			return true;
+	timeout.tv_usec = 0;
+	timeout.tv_sec = t;
+	time_t startTime;
+
+	int rc;
+	int n = t;
+
+reSelect:
+	startTime = time(NULL);
+	rc = select(m_iSock+1, &rd, (fd_set *)0, (fd_set *)0, &timeout);
+
+	if (rc == -1)
+		return false;
+
+	if (FD_ISSET(m_iSock, &rd))
+		return true;
+
+	// Well it returned but it wasn't set.  Let's see if it
+	// returned too early (perhaps from an errant signal) and
+	// start over with the remaining time
+	int timeDone = time(NULL) - startTime;
+	if (timeDone < n) {
+		n -= timeDone;
+		timeout.tv_sec = n;
+		goto reSelect;
 	}
+
 	return false; // Timed out!
 }
 
