@@ -1118,7 +1118,17 @@ void KeramikStyle::drawControl( ControlElement element,
 				p->fillRect( main, cg.background().light( 110 ) );
 			// Are we a menu item separator?
 
-			p->fillRect( bar, cg.background().dark( 105 ) );
+#ifdef Q_WS_X11
+			if ( QPaintDevice::x11AppDepth() >= 24) {
+				KPixmap *barpm = new KPixmap(bar.size());
+				KPixmapEffect::gradient( *barpm, cg.mid().light(125), cg.mid().dark(125), KPixmapEffect::HorizontalGradient );
+				p->drawPixmap( bar.topLeft(), *barpm );
+				delete barpm;
+			} else {
+				p->fillRect( bar, cg.background().dark( 105 ) );
+			}
+#endif
+			// p->fillRect( bar, cg.background().dark( 105 ) );
 
 			if ( mi->isSeparator() )
 			{
