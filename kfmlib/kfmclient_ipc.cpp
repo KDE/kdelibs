@@ -36,7 +36,7 @@ KfmIpc::KfmIpc( char * _path )
     connect( sock, SIGNAL( readEvent(KSocket*) ), this, SLOT( readEvent(KSocket*) ) );
     connect( sock, SIGNAL( closeEvent(KSocket*) ), this, SLOT( closeEvent(KSocket*) ) );
     sock->enableRead( TRUE );
-    connected = TRUE;
+    connected = (sock->socket() > 0);
 }
 
 KfmIpc::~KfmIpc()
