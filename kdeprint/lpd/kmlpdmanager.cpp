@@ -179,7 +179,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	QString	cmd = QString::fromLatin1("chmod -R o-rwx,g-w,g+rX %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
+	QString	cmd = QString::fromLatin1("chmod -R o-rwx,g+rwX %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
 	if (system(cmd.latin1()) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
