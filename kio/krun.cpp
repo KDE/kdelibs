@@ -310,7 +310,7 @@ pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
 
-  KShellProcess proc("/bin/sh");
+  KShellProcess proc;
 
   // if we have the notify lib somewhere, use it
   QString lib = libmapnotify();
