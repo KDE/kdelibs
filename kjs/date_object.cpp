@@ -77,7 +77,7 @@ const ClassInfo DatePrototypeImp::info = {"Date", 0, &dateTable, 0};
    We use a negative ID to denote the "UTC" variant.
 @begin dateTable 61
   toString		DateProtoFuncImp::ToString		DontEnum|Function	0
-  toUTCString		-DateProtoFuncImp::ToString		DontEnum|Function	0
+  toUTCString		DateProtoFuncImp::ToUTCString		DontEnum|Function	0
   toDateString		DateProtoFuncImp::ToDateString		DontEnum|Function	0
   toTimeString		DateProtoFuncImp::ToTimeString		DontEnum|Function	0
   toLocaleString	DateProtoFuncImp::ToLocaleString	DontEnum|Function	0
@@ -196,12 +196,13 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   case ToDateString:
   case ToTimeString:
   case ToGMTString:
+  case ToUTCString:
     setlocale(LC_TIME,"C");
     if (id == DateProtoFuncImp::ToDateString) {
       strftime(timebuffer, bufsize, "%x",t);
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
-    } else {
+    } else { // toGMTString & toUTCString
       t = gmtime(&tv);
       strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
     }
