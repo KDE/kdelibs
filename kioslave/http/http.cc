@@ -202,7 +202,7 @@ void HTTPProtocol::resetSessionSettings()
     kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strRealm << endl;
   }  
 
-  m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", true);
+  m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", false);
   kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
                 << m_bPersistentProxyConnection << endl;  
   
@@ -1999,7 +1999,8 @@ bool HTTPProtocol::httpOpen()
     // don't not support such feature, e.g. junkbuster proxy server.
     if (!m_bUseProxy || m_bPersistentProxyConnection)
       header += "Connection: Keep-Alive\r\n";
-
+    else
+      header += "Connection: close\r\n";
 
     if (!m_request.userAgent.isEmpty())
     {
