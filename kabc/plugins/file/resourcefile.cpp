@@ -10,8 +10,8 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <ksavefile.h>
 #include <kstandarddirs.h>
-#include <kurlrequester.h>
 
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
@@ -149,32 +149,26 @@ bool ResourceFile::save( Ticket *ticket )
 {
   kdDebug(5700) << "ResourceFile::save()" << endl;
 
-  QFile file( mFileName );
-  file.open( IO_ReadOnly );
-
-  QByteArray array = file.readAll();
-  file.close();
-
   // create backup file
-  QFile backupFile( QString( "%1_%2" ).arg( mFileName )
-                                      .arg( QDate::currentDate().dayOfWeek() ) );
-  if ( backupFile.open( IO_WriteOnly ) ) {
-    backupFile.writeBlock( array );
-    backupFile.close();
+  QString extension = "_" + QString::number( QDate::currentDate().dayOfWeek() );
+  (void) KSaveFile::backupFile( mFileName, QString::null /*directory*/,
+                                extension );
+
+  KSaveFile saveFile( mFileName );
+  bool ok = false;
+  if ( saveFile.status() == 0 && saveFile.file() )
+  {
+    mFormat->saveAll( addressBook(), this, saveFile.file() );
+    ok = saveFile.close();
   }
 
-  if ( !file.open( IO_WriteOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
-    return false;
-  }
+  if ( !ok )
+    addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
   
-  mFormat->saveAll( addressBook(), this, &file );
-  file.close();
-
   delete ticket;
   unlock( mFileName );
 
-  return true;
+  return ok;
 }
 
 bool ResourceFile::lock( const QString &fileName )
@@ -219,7 +213,7 @@ void ResourceFile::unlock( const QString &fileName )
   fn.replace( QRegExp( "/" ), "_" );
 
   QString lockName = locate( "data", "kabc/lock/" + fn + ".lock" );
-  ::unlink( QFile::encodeName( lockName ) );
+  QFile::remove( lockName );
   QFile::remove( mLockUniqueName );
   addressBook()->emitAddressBookUnlocked();
 }
@@ -243,8 +237,7 @@ QString ResourceFile::fileName() const
 void ResourceFile::setFormat( const QString &format )
 {
   mFormatName = format;
-  if ( mFormat )
-    delete mFormat;
+  delete mFormat;
   
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );
