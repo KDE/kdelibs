@@ -502,9 +502,12 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     emit needProgressId();
     kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
+    QGuardedPtr<SlaveInterface> me = this;
+    m_pConnection->suspend();
     int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
-    if ( m_pConnection ) // Don't do anything if deleted meanwhile
+    if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
     {
+        m_pConnection->resume();
         kdDebug(7007) << this << " SlaveInterface result=" << result << endl;
         stream << result;
         m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
