@@ -337,7 +337,7 @@ class ImageSource : public QDataSource
 {
 public:
     ImageSource(QByteArray buf)
-        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( false )
+        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( true )
         {}
 
     int readyToSend()
