@@ -29,7 +29,7 @@ libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
-	openwith.cpp ktraderparsetree.cpp \
+	kopenwith.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
@@ -52,13 +52,13 @@ METASOURCES = AUTO
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
-	ktar.h ktrader.h
+	ktar.h ktrader.h kopenwith.h
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h renamedlg.h \
         filter.h skipdlg.h slaveinterface.h \
         global.h passdlg.h netaccess.h job.h \
-        paste.h openwith.h slavebase.h
+        paste.h slavebase.h
 
 # progressbase.h simpleprogressdlg.h
 # littleprogress_dlg.h listprogressdlg.h

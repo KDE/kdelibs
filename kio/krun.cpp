@@ -9,7 +9,7 @@
 #include "kuserprofile.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
-#include "kio/openwith.h"
+#include "kopenwith.h"
 #include "kio/job.h"
 #include "kio/global.h"
 
