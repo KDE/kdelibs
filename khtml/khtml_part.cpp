@@ -2198,6 +2198,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   KParts::URLArgs args;
 
+  if (!m_url.isEmpty())
+     args.metaData()["referrer"] = m_url.url();
   if ( strcmp( action, "get" ) == 0 )
   {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
