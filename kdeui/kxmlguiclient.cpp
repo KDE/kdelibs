@@ -127,7 +127,10 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
     file = locate( "data", QString(instance()->instanceName())+"/"+file );
     if ( file.isEmpty() )
     {
-      kdError( 1000) << "File not found: " << _file << endl;
+      // this might or might not be an error.  for the time being,
+      // let's treat this as if it isn't a problem and the user just
+      // wants the global standards file
+      setXML( QString::null, true );
       return;
     }
   }
