@@ -1891,6 +1891,13 @@ KApplication::kdeinitExec( const QString& name, const QStringList &args,
         name, args, error, 0, pid);
 }
 
+int
+KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
+                           QString *error, int *pid )
+{
+   return startServiceInternal("kdeinit_exec_wait(QString,QStringList)",
+        name, args, error, 0, pid);
+}
 
 bool KApplication::kdeFonts(QStringList &fontlist) const
 {

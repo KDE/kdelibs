@@ -397,6 +397,15 @@ public:
                 QString *error=0, int *pid = 0 );
 
   /**
+   * Start a program via kdeinit and wait for it to finish.
+   *
+   * Like kdeinitExec but it waits till the program is finished. 
+   * As such it behaves similair to the system(...) function.
+   */
+  static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
+                QString *error=0, int *pid = 0 );
+
+  /**
    * Retrieve the current KDE style object if a plugin is in use,
    *  or else NULL if a Qt internal style is being used.
    *
@@ -785,6 +794,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.203  2000/12/17 04:10:26  mueller
+// we're post beta 1 now
+//
 // Revision 1.202  2000/12/13 14:26:20  faure
 // After you've updated qt-copy, update kdelibs, it will save you recompilations :)
 // * Updated version string to 2.1 beta1
