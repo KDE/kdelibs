@@ -116,3 +116,4 @@ kdelibs3: shlib-missing-in-control-file kimg_tiff usr/lib/kde2/kimg_tiff.so
 kdelibs3: shlib-missing-in-control-file kimg_krl usr/lib/kde2/kimg_krl.so
 kdelibs3: shlib-missing-in-control-file kio_ftp usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_https usr/lib/kde2/kio_https-nossl.so
+kdelibs3: shlib-missing-in-control-file kio_uiserver usr/lib/kio_uiserver.so
