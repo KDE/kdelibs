@@ -99,14 +99,21 @@ to createObject and remove the 'emit objectCreated( yourObject );' line.
 The <i>filename()</i> method has been renamed to <i>fileName()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
 
+<H4>KPixmapSplitter</H4>
+KPixmapSplitter has now been moved to the new kdefx library.
+
 <H4>KStringHandler</H4>
 The <i>matchFilename( const QString& filename, const QString& pattern )</i> method has been 
 renamed to <br><i>matchFileName( const QString& filename, const QString& pattern )</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
 
 <H4>KStyle</H4>
-Because of the QStyle rewrite our old extensions have been dropped
-in order to have styles that fully integrate in KDE and Qt applications
+Due to the major changes in the QStyle API in Qt3, KStyle has been completely
+re-written. KStyle is now a thin wrapper around QCommonStyle with a few extra 
+primitive elements and a simple popupMenu transparency engine. All KStyles can
+now style Qt apps like designer and assistant automatically. KStyle is no longer
+present in kdecore. It is now in a new library called kdefx to allow Qt apps to
+use KDE's styles without having the styles linked to kdecore/kdeui.
 
 <H4>KURL</H4>
 The <i>filename( bool _ignore_trailing_slash_in_path = true )</i> method has been 
@@ -194,6 +201,9 @@ functionality.
 The WidgetList parameter has been renamed to QWidgetList. Behaviour
 is identical.
 
+<H4>KImageEffect</H4>
+KImageEffect has now been moved to the new kdefx library.
+
 <H4>KMessageBox</H4>
 KMessageBox now does automatic line-breaking. When using plain-text, you should 
 remove any mid-sentence linebreaks. Only use line-breaks to indicate the end of 
@@ -213,14 +223,18 @@ by the panel in a way similar to other applets (shared library loaded
 at run-time). See KDE 3.0 documentation
 for more informations on this new extension.
 
+<H4>KPixmapEffect</H4>
+PixmapEffect has now been moved to the new kdefx library.
+
 <H4>KRootPixmap</H4>
 The KRootPixmap class has been extended to make it more flexible, and the
 <i>checkAvailable(bool ignored)</i> method has been renamed to <i>isAvailable()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
 
 <H4>KThemeBase, KThemeStyle</H4>
-Because of the QStyle rewrite our old extensions have been dropped
-in order to have styles that fully integrate in KDE and Qt applications.
+KThemeBase and KThemeStyle have been ported over to the new QStyle/KStyle API
+present in Qt3/KDE3. KThemeBase is no longer in kdeui, but in kstyles/kthemestyle
+as its use is basically limited to KThemeStyle.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
