@@ -73,21 +73,28 @@ int openFile( const char* filename, const char* err_msg )
     return fileno(f);
 }
 
-int readContent( int fd, const char* err_msg, QByteArray& buf, bool closefd = true )
+int readContent( int fd, QByteArray& buf, int count, const char* err_msg, bool closefd = true )
 {
-    buf.resize(0);
-    buf.resize(1024);
-    int result = read( fd, buf.data(), 1024 );
-    if ( result == 0 )
+    int old_size = buf.size();
+    buf.resize(old_size+count);
+    int result = read( fd, buf.data()+old_size, count );
+    if ( result > 0 && result < count )
     {
-      if ( closefd )
-        if ( close(fd) == -1 )
+      buf.resize( old_size + result );
+    }
+    else if ( result == 0 )
+    {
+      buf.resize( old_size );
+      if ( closefd && close(fd) == -1 )
           kdDebug() << "WARNING: unable to close the file properly!" << endl;
     }
     else if ( result == -1 )
+    {
       kdDebug() << err_msg << endl
                 << "Could not read the file!" << endl;
-    buf.resize( result );
+      if ( close(fd) == -1 )
+        kdDebug() << "WARNING: unable to close the file properly!" << endl;
+    }
     return result;
 }
 
@@ -96,46 +103,46 @@ void testCodec( const char* msg, Codec type, bool isFile )
     QByteArray output;
     if ( isFile )
     {
-        int old_size;
+        // Open requested file...
         const char* err_msg = "Encoding with \"base64\" failed!";
-        int res, fd = openFile( msg, err_msg );
+        int fd = openFile( msg, err_msg );
         if ( fd == -1 ) return;
-        QBuffer buf (output);
-        buf.open( IO_WriteOnly | IO_Append );
-        do
+
+        // Read contents of file...
+        int count=0;
+        QByteArray data;
+        while((count=readContent(fd, data, 4096, err_msg)) > 0);
+
+        // Error! Exit!
+        if ( count == -1 ) return;
+
+        // Perform the requested encoding or decoding...
+        switch (type)
         {
-            QByteArray data, encoded;
-            res = readContent(fd, err_msg, data);
-            if ( res == -1 ) return;
-            switch (type)
-            {
-              case Base64Encode:
-                KCodecs::base64Encode(data, encoded);
+            case Base64Encode:
+                KCodecs::base64Encode(data, output, true);
                 break;
-              case Base64Decode:
-                KCodecs::base64Decode(data, encoded);
+            case Base64Decode:
+                KCodecs::base64Decode(data, output);
                 break;
-              case UUEncode:
-                KCodecs::uuencode(data, encoded);
+            case UUEncode:
+                KCodecs::uuencode(data, output);
                 break;
-              case UUDecode:
-                KCodecs::uudecode(data, encoded);
+            case UUDecode:
+                KCodecs::uudecode(data, output);
                 break;
 #if 0
-              case QPEncode:
-                KCodecs::quotedPrintableEncode(data, encoded);
+            case QPEncode:
+                KCodecs::quotedPrintableEncode(data, output);
                 break;
-              case QPDecode:
-                KCodecs::quotedPrintableDecode(data, encoded);
+            case QPDecode:
+                KCodecs::quotedPrintableDecode(data, ouput);
                 break;
 #endif
-              default:
+            default:
                 break;
-            }
-            buf.writeBlock(encoded.data(), encoded.size());
-        } while( res != 0 );
-        buf.close();
-        kdDebug() << output.data() << endl;
+        }
+        kdDebug() << "Result: \n" << output.data() << endl;
     }
     else
     {
