@@ -717,8 +717,7 @@ void KSpell::check2 (KProcIO *)
 	      else  //MISTAKE
 		{
 		  cwword=word;
-		  //		  kdebug(KDEBUG_INFO, 750, "(Before dialog) word=[%s] cwword =[%s]\n",
-			 (const char *)word, (const char *)cwword);
+		  //		  kdebug(KDEBUG_INFO, 750, "(Before dialog) word=[%s] cwword =[%s]\n", word, cwword);
 
 		  dialog (word, &sugg, SLOT (check3()));
 		  return;
