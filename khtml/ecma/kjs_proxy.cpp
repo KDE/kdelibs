@@ -225,8 +225,6 @@ Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 
 void KJSProxyImpl::initScript()
 {
-	KProtocolManager proto;
-
   if (m_script)
     return;
 
@@ -242,7 +240,7 @@ void KJSProxyImpl::initScript()
   //m_script->enableDebug();
   globalObject.put(m_script->globalExec(),"debug",new TestFunctionImp(),Internal);
 
-  QString userAgent = proto.userAgentForHost(m_part->url().host());
+  QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
       userAgent.find(QString::fromLatin1("MSIE")) >= 0)
     m_script->setCompatMode(Interpreter::IECompat);
