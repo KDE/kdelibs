@@ -412,9 +412,10 @@ void KRun::init()
   kDebugInfo( 7010, "##### TESTING DIRECTORY (STATING)" );
 
   // It may be a directory or a file, let's stat
-  m_job = KIO::stat( m_strURL );
-  connect( m_job, SIGNAL( result( KIO::Job * ) ),
+  KIO::StatJob *job = KIO::stat( m_strURL );
+  connect( job, SIGNAL( result( KIO::Job * ) ),
 	   this, SLOT( slotStatResult( KIO::Job * ) ) );
+  m_job = job;
 }
 
 KRun::~KRun()
@@ -439,6 +440,7 @@ void KRun::scanFile()
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
   connect(job, SIGNAL( result( KIO::Job *)),
           this, SLOT( slotScanFinished(KIO::Job *)));
+  m_job = job;
 }
 
 void KRun::slotTimeout()
@@ -522,6 +524,7 @@ void KRun::slotStatResult( KIO::Job * job )
 
 void KRun::slotScanFinished( KIO::Job *job )
 {
+  m_job = 0;
   if (job->error())
   {
      slotStatResult( job ); // hacky - we just want to use the same code on error
@@ -574,9 +577,10 @@ void KRun::foundMimeType( const QString& type )
     // We don't know if this is a file or a directory. Let's test this first.
     // (For instance a tar.gz is a directory contained inside a file)
     // It may be a directory or a file, let's stat
-    m_job = KIO::stat( m_strURL );
-    connect( m_job, SIGNAL( result( KIO::Job * ) ),
+    KIO::StatJob *job = KIO::stat( m_strURL );
+    connect( job, SIGNAL( result( KIO::Job * ) ),
 	     this, SLOT( slotStatResult( KIO::Job * ) ) );
+    m_job = job;
 
     return;
   }

@@ -119,7 +119,7 @@ protected:
   bool m_bFault;
   bool m_bAutoDelete;
   bool m_bFinished;
-  KIO::StatJob * m_job;
+  KIO::Job * m_job;
   QTimer m_timer;
 
   /**
