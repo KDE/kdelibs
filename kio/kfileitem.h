@@ -150,6 +150,7 @@ public:
   /**
    * @return the size of the file, if known
    */
+    // ### this should be unsigned long
   long size() const;
 
   /**
