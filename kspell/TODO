@@ -1,5 +1,15 @@
+ensure that KSpell is reusable with the same replace/ignore lists
+ for multiple spellchecks in a single editing session
+
+allow saving of ignore/replace lists for multiple spellchecks of a
+  given document across multiple sessions
+
 properly handle capitalization on "Replace All" (in parseOneResponse())
 
+
+
+Done
+^^^^
 change all constant strings to klocale->translate(string);  (or i18n?)
 
 set the dialog box's icon to that of the parent

@@ -1,25 +1,33 @@
+KSpell v0.5.0 8/8/98
+David Sweet
+.
+.
+.
 KSpell v0.3.2, 4/5/98
 By David Sweet
 
 
 KSpell provides an interface to International ISpell 3.1.  You should use
 it like a UI widget to provide spellchecking in your application.  See
-kspell.h and http://www.glue.umd.edu/~dsweet/KDE/hottokspell.html for
-documentation.
+kspell.h and http://www.chaos.umd.edu/~dsweet/KDE/KSpell for
+documentation.  You may also be interested in the ISpell Language-Pack.
+It contains ISpell dictionaries for German, Spanish, and Brazilian
+Portugues.  It is available for download at 
+	http://www.chaos.umd.edu/~dsweet/KDE/KSpell.
 
 A configuration dialog/widget is also provided.  This class (KSpellConfig) acts
 not only as a widget allowing the user to set KSpell preferences, but also
 as a data abstraction class allowing you to get and set the preferences from
-within your program.  You can also pass an instance of KSpellConfig to KSpell
+within your program.  You can pass an instance of KSpellConfig to KSpell
 and the spellchecker will run with the appropriate preference settings.  The
 preferences, when saved (see kspelldlg.h) are saved globally.  If needed,
 you can read them with KSpellDlg and set and use application-specific
 spellchecking settings.
 
 Please see
-	http://www.glue.umd.edu/~dsweet/KDE
+	http://www.chaos.umd.edu/~dsweet/KDE/KSpell
 for information and email bugs, suggestions, etc. to 
-	dsweet@phyics.umd.edu
+	dsweet@chaos.umd.edu
 
 Thank you.
 David Sweet

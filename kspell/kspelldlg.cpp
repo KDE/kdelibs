@@ -146,7 +146,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//
-	children->append (tmpQPushButton);
+	//children->append (tmpQPushButton);
 	layout->addWidget (tmpQPushButton, 4, 3);
 	//	tmpQPushButton->setMinimumSize (butSH);
 
@@ -168,7 +168,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton->setText( NLS("Stop") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
-	children->append (tmpQPushButton);
+	//children->append (tmpQPushButton);
 	layout->addWidget (tmpQPushButton, 4, 2);
 	//	tmpQPushButton->setMinimumSize (butSH);
 

@@ -60,7 +60,7 @@ class KSpell : public QObject
   bool dlgon;
   
   unsigned int lastpos, totalpos, lastline, posinline, lastlastline, offset;
-  int progres, curprog;
+  unsigned int progres, curprog;
   char *temp;
 
   int parseOneResponse (char *_buffer, char *word, QStrList *sugg);
@@ -199,7 +199,7 @@ public:
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
-  void setProgressResolution (int res);
+  void setProgressResolution (unsigned int res);
 
   /**
    * The destructor instructs ispell to write out the personal
@@ -221,7 +221,9 @@ signals:
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-  void misspelling (char *originalword, QStrList *suggestions, int  pos);
+
+  void misspelling (char *originalword, QStrList *suggestions, 
+		    unsigned int pos);
   /**
    * This is emitted after the dialog is closed, or if the word was 
    * corrected without calling the dialog (i.e., the user previously chose
@@ -229,7 +231,7 @@ signals:
    * Results from the dialog may be checked with dlgResult() and replacement()
    * (see notes for check() for more information).
    */
-  void corrected (char *originalword, char *newword, int pos);
+  void corrected (char *originalword, char *newword, unsigned int pos);
 
 
   /**
@@ -244,7 +246,7 @@ signals:
   /**
    * i is between 1 and 100 -- emitted only during a check ()
    */
-  void progress (int i);
+  void progress (unsigned int i);
   /**
    * emitted when check() is done
    * Copy the results of buffer if you need them.  You can only rely
@@ -270,7 +272,6 @@ protected slots:
   void checkWord2 (KProcIO *);
   void checkWord3 ();
   void check2 (KProcIO *);
-  void check2a ();
   void checkList2 ();
   void checkList3a (KProcIO *);
   void checkList3 ();
@@ -278,6 +279,7 @@ protected slots:
   void dialog2 (int dlgresult);
   void check3 ();
 		   
+  void slotStopCancel (int);
   void ispellExit (KProcess *);
 
 signals:
@@ -288,7 +290,7 @@ signals:
 protected:
   char *replacement (void)
     { return dlgreplacement.data(); }
-  bool isBadIspellChar (char);
+
   void  emitProgress (void);
   bool cleanFputs (const char *s, bool appendCR=TRUE);
   bool cleanFputsWord (const char *s, bool appendCR=TRUE);
