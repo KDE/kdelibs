@@ -604,35 +604,37 @@ bool CSSParser::parseValue( int propId, bool important )
 	    if ( invalid )
 		break;
 	    value = valueList->next();
-	    id = value->id;
-	    switch( id ) {
-	    case CSS_VAL_TOP:
-		if ( pos[0] != -1 )
-		    invalid = true;
-		pos[0] = 0;
-		break;
-	    case CSS_VAL_BOTTOM:
-		if ( pos[0] != -1 )
-		    invalid = true;
-		pos[0] = 100;
-		break;
-	    case CSS_VAL_LEFT:
-		if ( pos[1] != -1 )
-		    invalid = true;
-		pos[1] = 0;
-		break;
-	    case CSS_VAL_RIGHT:
-		if ( pos[1] != -1 )
-		    invalid = true;
-		pos[1] = 0;
-		break;
-	    case  CSS_VAL_CENTER:
-		break;
-	    default:
-		invalid = true;
+	    if ( value ) {
+	        id = value->id;
+	        switch( id ) {
+	        case CSS_VAL_TOP:
+	            if ( pos[0] != -1 )
+		        invalid = true;
+	            pos[0] = 0;
+	            break;
+	        case CSS_VAL_BOTTOM:
+	            if ( pos[0] != -1 )
+		        invalid = true;
+	            pos[0] = 100;
+	            break;
+	        case CSS_VAL_LEFT:
+	            if ( pos[1] != -1 )
+		        invalid = true;
+	            pos[1] = 0;
+	            break;
+	        case CSS_VAL_RIGHT:
+	            if ( pos[1] != -1 )
+		        invalid = true;
+	            pos[1] = 0;
+	            break;
+	        case  CSS_VAL_CENTER:
+	            break;
+	        default:
+	            invalid = true;
+	        }
+	        if ( !invalid )
+	            value = valueList->next();
 	    }
-	    if ( !invalid )
-		value = valueList->next();
 	    if ( pos[0] == -1 )
 		pos[0] = 50;
 	    if ( pos[1] == -1 )
