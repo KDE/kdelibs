@@ -275,7 +275,7 @@ void KPropertiesDialog::showFileSharingPage()
 {
   if (d->fileSharePage) {
      showPage( pageIndex( d->fileSharePage));
-  }            
+  }
 }
 
 void KPropertiesDialog::setFileSharingPage(QWidget* page) {
@@ -652,7 +652,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   // Those things only apply to 'single file' mode
   QString filename = QString::null;
   bool isTrash = false;
-  bool isIntoTrash = false;
   bool isDevice = false;
   m_bFromTemplate = false;
 
@@ -698,17 +697,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     oldName = filename;
 
     QString path;
-
     if ( !m_bFromTemplate ) {
       QString tmp = properties->kurl().path( 1 );
-      // is it the trash bin ?
-      if ( isLocal )
-      {
-          if ( tmp == KGlobalSettings::trashPath())
-              isTrash = true;
-          if ( tmp.startsWith(KGlobalSettings::trashPath()))
-              isIntoTrash = true;
-      }
+      isTrash = ( properties->kurl().protocol().find( "trash", 0, false)==0 );
       if ( properties->kurl().protocol().find("device", 0, false)==0)
             isDevice = true;
       // Extract the full name, but without file: for local files
@@ -784,7 +775,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     directory += ')';
   }
 
-  if ( !isDevice && !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
+  if ( !isDevice && !isTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
     int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
@@ -820,7 +811,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
 
-  if (d->bMultiple || isTrash || isIntoTrash || isDevice || hasRoot)
+  if (d->bMultiple || isTrash || isDevice || hasRoot)
   {
     QLabel *lab = new QLabel(d->m_frame );
     if ( d->bMultiple )
@@ -845,7 +836,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   ++curRow;
 
   QLabel *l;
-  if ( !mimeComment.isEmpty() && !isDevice && !isIntoTrash)
+  if ( !mimeComment.isEmpty() && !isDevice && !isTrash)
   {
     l = new QLabel(i18n("Type:"), d->m_frame );
 
@@ -1020,7 +1011,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
        QPushButton *button = properties->actionButton(KDialogBase::Ok);
        if (button)
           button->setFocus();
-    }    
+    }
   }
 }
 
@@ -1108,7 +1099,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
                          .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18n("1 file","%n files",totalFiles)) 
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
@@ -1123,8 +1114,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
-			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) 
-        .arg(i18n("1 file","%n files",totalFiles)) 
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
@@ -1207,11 +1198,11 @@ void KFilePropsPlugin::applyChanges()
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
-      
+
       QString newFileName = KIO::encodeFileName(n);
       if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
          newFileName += ".desktop";
-         
+
       // Tell properties. Warning, this changes the result of properties->kurl() !
       properties->rename( newFileName );
 
@@ -1426,8 +1417,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString path = properties->kurl().path(-1);
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
-  bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
-  bool isTrash = isLocal && ( properties->kurl().path( 1 ) == KGlobalSettings::trashPath() );
+  bool isTrash = ( properties->kurl().protocol().find("trash", 0, false)==0 );
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();
@@ -1714,7 +1704,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gl->setColStretch(2, 10);
 
   // "Apply recursive" checkbox
-  if ( hasDir && !isLink && !isIntoTrash )
+  if ( hasDir && !isLink && !isTrash  )
   {
       d->cbRecursive = new QCheckBox( i18n("Apply changes to all subfolders and their contents"), d->m_frame );
       connect( d->cbRecursive, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
@@ -1724,7 +1714,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   updateAccessControls();
 
 
-  if ( isIntoTrash || isTrash )
+  if ( isTrash )
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
@@ -2836,7 +2826,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   }
   else
     m_systrayBool = false;
-    
+
   m_origCommandStr = commandStr;
   QString pathStr = config.readPathEntry( "Path" );
   m_terminalBool = config.readBoolEntry( "Terminal" );
