@@ -1,0 +1,5 @@
+[Misc]
+Name=KDE-Sgi
+Comment=Sgi-like style
+[KDE]
+widgetStyle=ksgistyle.la
