@@ -391,12 +391,12 @@ bool KBookmarkManager::showNSBookmarks() const
 void KBookmarkManager::setShowNSBookmarks( bool show )
 {
     m_showNSBookmarks = show;
-    KBookmarkMenu::DynMenuInfo info;
-    info.location = KNSBookmarkImporter::netscapeBookmarksFile();
+    if (this != userBookmarksManager())
+       return;
+    KBookmarkMenu::DynMenuInfo info 
+       = KBookmarkMenu::showDynamicBookmarks("netscape");
     info.show = show;
-    info.type = "netscape";
-    info.name = i18n("Netscape Bookmarks");
-    KBookmarkMenu::setDynamicBookmarks(info.type, info);
+    KBookmarkMenu::setDynamicBookmarks("netscape", info);
 }
 
 void KBookmarkManager::slotEditBookmarks()
