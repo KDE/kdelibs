@@ -167,6 +167,7 @@ public:
 public:
   int index;
   int splitPosInPercent;
+  bool pendingFocusInEvent;
 };
 
 #endif

@@ -450,6 +450,7 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   : QObject()
   ,index(-1)
   ,splitPosInPercent(50)
+  ,pendingFocusInEvent(false)
 {
 }
 
