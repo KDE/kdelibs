@@ -244,9 +244,18 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
 void
 KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 {
+   KServiceType * serviceType = (KServiceType *) newEntry;
+   if ( (*m_entryDict)[ newEntry->name() ] )
+   {
+     // Already exists
+     if (serviceType->desktopEntryPath().endsWith("kdelnk"))
+        return; // Skip
+     
+     // Replace
+     KSycocaFactory::removeEntry(newEntry);
+   }
    KSycocaFactory::addEntry(newEntry, resource);
 
-   KServiceType * serviceType = (KServiceType *) newEntry;
 
    const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
    QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
