@@ -44,6 +44,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-home-url%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-home-url%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-home-url%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-home-url%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ; split up the in files for different languages - take over system from DB
@@ -75,6 +76,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-logo-alt%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-logo-alt%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-logo-alt%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-logo-alt%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ;; In future, the charset in the content-type should become charset=utf-8
@@ -115,6 +117,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-html-header-tags%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-html-header-tags%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-html-header-tags%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-html-header-tags%) ]]>
     (else (error "L10N ERROR: kde-gentext-html-header-tags: no localised version")))
    (list
     (list "META"
@@ -155,6 +158,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-encoding%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-encoding%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-encoding%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-encoding%) ]]>
     (else (error "L10N ERROR: kde-gentext-encoding: no localised version"))))
 
 (define (kde-gentext-default)
@@ -184,6 +188,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-default%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-default%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-default%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-default%) ]]>
     (else (error "L10N ERROR: kde-gentext-default: no localised version"))))
 
 (define (kde-gentext-language)
@@ -213,6 +218,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-language%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-language%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-language%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-language%) ]]>
     (else (error "L10N ERROR: kde-gentext-language: no localised version"))))
 
 (define (kde-gentext-author-phrase)
@@ -242,6 +248,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-author-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-author-phrase%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-author-phrase%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-author-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-author-phrase: no localised version"))))
 
 (define (kde-gentext-date-phrase)
@@ -271,6 +278,7 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-date-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-date-phrase%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-date-phrase%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-date-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-date-phrase: no localised version"))))
 
 (define (kde-gentext-releaseinfo-phrase)
@@ -300,4 +308,5 @@
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-releaseinfo-phrase%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-releaseinfo-phrase%) ]]>
     <![%kde-l10n-zhcn[ (("zh_cn") %kde-gentext-zhcn-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-zhtw[ (("zh_tw") %kde-gentext-zhtw-releaseinfo-phrase%) ]]>
     (else (error "L10N ERROR: kde-gentext-releaseinfo-phrase: no localised version"))))

@@ -24,6 +24,7 @@
 <!ENTITY % l10n-sl "INCLUDE">
 <!ENTITY % l10n-sv "INCLUDE">
 <!ENTITY % l10n-zhcn "INCLUDE">
+<!ENTITY % l10n-zhtw "INCLUDE">
 
 <![%l10n-ca;[
 <!ENTITY dbl1ca
@@ -250,6 +251,15 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
+<![%l10n-zhtw;[
+<!ENTITY dbl1zhtw
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//ZHTW"
+         "../common/dbl1zhtw.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1zhtw
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
 
 <!ENTITY dbl10n.dsl  SYSTEM "../common/dbl10n.dsl">
 
@@ -298,7 +308,7 @@
 
 <style-sheet>
 <style-specification id="docbook"
-   use="ca cs da de el en es et fi fr hu id it ja nl no pl pt ptbr ro ru sk sl sv zhcn param dblib">
+   use="ca cs da de el en es et fi fr hu id it ja nl no pl pt ptbr ro ru sk sl sv zhcn zhtw param dblib">
 
 <style-specification-body>
 
@@ -424,5 +434,6 @@
 <external-specification id="sl" document="dbl1sl">
 <external-specification id="sv" document="dbl1sv">
 <external-specification id="zhcn" document="dbl1zhcn">
+<external-specification id="zhtw" document="dbl1zhtw">
 
 </style-sheet>

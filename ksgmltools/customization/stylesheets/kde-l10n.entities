@@ -70,6 +70,7 @@
 <!ENTITY % kde-l10n-sr "INCLUDE">
 <!ENTITY % kde-l10n-sv "INCLUDE">
 <!ENTITY % kde-l10n-zhcn "INCLUDE">
+<!ENTITY % kde-l10n-zhtw "INCLUDE">
 
 <![%kde-l10n-ca;[
   <!ENTITY kde-l1ca
@@ -294,5 +295,14 @@
            "kde-l1zhcn.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY kde-l1zhcn
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         CDATA DSSSL>
+
+<![%kde-l10n-zhtw;[
+  <!ENTITY kde-l1zhtw
+    PUBLIC "-//KDE//DOCUMENT DocBook Stylesheet Localisation//ZHTW"
+           "kde-l1zhtw.dsl" CDATA DSSSL>
+]]>
+<!ENTITY kde-l1zhtw
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>
