@@ -399,6 +399,9 @@
 #kfilereplace
 23000 	     KFileReplace (kfilereplacepart)
 
+#klinkstatus
+23100        KLinkStatus
+
 # Quanta
 24000        Quanta
 24001	     Quanta (parser)
