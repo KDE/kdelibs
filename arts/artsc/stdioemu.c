@@ -61,8 +61,10 @@ static int fdc_seek (void *cookie, fpos_t position, int whence)
 
 static int fdc_clean (void *cookie)
 {
+	struct fd_cookie *fdc = (struct fd_cookie *)cookie;
+	int result = close(fdc->fd);
 	free(cookie);
-	return 0;
+	return result;
 }
 
 static FILE *fake_fopen(const char *path, const char *mode)
