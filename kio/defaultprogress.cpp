@@ -49,11 +49,9 @@ DefaultProgress::DefaultProgress( bool showNow )
 
   destInvite = new QLabel(i18n("Destination:"), this);
   grid->addWidget(destInvite, 1, 0);
-  destInvite->hide();
 
   destLabel = new QLabel(this);
   grid->addWidget(destLabel, 1, 2);
-  destLabel->hide();
 
 // why include this waste of space?
 //  topLayout->addSpacing( 10 );
@@ -189,10 +187,9 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
-  sourceLabel->setText( from.url() );
-  destLabel->setText( to.url() );
-  destLabel->show();
-  destInvite->show();
+  sourceLabel->setText( from.prettyURL() );
+  setDestVisible( true );
+  destLabel->setText( to.prettyURL() );
 }
 
 
@@ -200,10 +197,9 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Move file(s) progress"));
   mode = Move;
-  sourceLabel->setText( from.url() );
-  destLabel->setText( to.url() );
-  destLabel->show();
-  destInvite->show();
+  sourceLabel->setText( from.prettyURL() );
+  setDestVisible( true );
+  destLabel->setText( to.prettyURL() );
 }
 
 
@@ -211,9 +207,8 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
-  sourceLabel->setText( dir.url() );
-  destLabel->hide();
-  destInvite->hide();
+  sourceLabel->setText( dir.prettyURL() );
+  setDestVisible( false );
 }
 
 
@@ -221,33 +216,29 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
-  sourceLabel->setText( url.url() );
-  destLabel->hide();
-  destInvite->hide();
+  sourceLabel->setText( url.prettyURL() );
+  setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining file progress"));
-  sourceLabel->setText( url.url() );
-  destLabel->hide();
-  destInvite->hide();
+  sourceLabel->setText( url.prettyURL() );
+  setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
   setCaption(i18n("Mounting %1").arg(dev));
   sourceLabel->setText( point );
-  destLabel->hide();
-  destInvite->hide();
+  setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
   setCaption(i18n("Unmounting"));
   sourceLabel->setText( point );
-  destLabel->hide();
-  destInvite->hide();
+  setDestVisible( false );
 }
 
 void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
@@ -259,4 +250,20 @@ void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
   }
 }
 
+void DefaultProgress::setDestVisible( bool visible )
+{
+  // We can't hide the destInvite/destLabel labels,
+  // because it screws up the QGridLayout.
+  if (visible)
+  {
+    destInvite->setText( i18n("Destination:") );
+  }
+  else
+  {
+    destInvite->setText( QString::null );
+    destLabel->setText( QString::null );
+  }
+}
+
 #include "defaultprogress.moc"
+

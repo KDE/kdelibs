@@ -60,6 +60,7 @@ public slots:
   virtual void slotCanResume( KIO::Job*, bool );
 
 protected:
+  void setDestVisible( bool visible );
 
   QLabel* progressLabel;
   QLabel* sourceLabel;
