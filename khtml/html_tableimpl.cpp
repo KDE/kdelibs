@@ -757,6 +757,8 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     int distmax, LengthType type)
 {
 
+//    printf("HTMLTableElementImpl::spreadSpanMinMax()\n");
+
     if (distmin<1 && distmax<1)
     	return;
     if (distmin<1)
@@ -783,7 +785,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	bool out=false;
 	while (tt<=type && !out && tmin)
 	{
-	    tmin-=distributeMinWidth(tmin,type,tt,c,span);	
+	    tmin-=distributeMinWidth(tmin,type,tt,col,span);
     	    switch (type)
 	    {
     	    case Variable: tt=Relative; break;	    
@@ -791,7 +793,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	    case Percent: tt=Fixed; break;
 	    case Fixed: out=true; break;
 	    }
-	}	
+	}
 	
 	// force spread rest of the minWidth
 	c=col;
@@ -841,6 +843,8 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 
 void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
 {
+//    printf("HTMLTableElementImpl::calcSingleColMinMax()\n");
+
     int span=col->span;
     
     int oldmin=0;
@@ -877,23 +881,28 @@ void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
 
 void HTMLTableElementImpl::calcPercentRelativeMax(int c, ColInfo* col)
 {
+//    printf("HTMLTableElementImpl::calcPercentRelativeMax()\n");
+    
     int span=col->span;
     
     int oldmax=0;
+    int oldmin=0;
     for (int o=c; o<c+span; ++o)
     {
 	oldmax+=colMaxWidth[o];
+	oldmin+=colMinWidth[o];
     }
     
     int smax=0;
     if (col->type == Percent) 
     {
-    	smax = width * col->value / 100;
+    	smax = width * col->value / 100;	
     }
     else if (col->type == Relative) 
     {
     }
     
+    smax = MAX(smax,oldmin);
     smax = MIN(smax,width);
     
     if (span==1)
@@ -1212,7 +1221,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 
     int tooAdd = tableWidth - actWidth;      // what we can add
 
-//    printf("tooAdd %d\n",tooAdd);
+//    printf("tooAdd %d = %d - %d\n",tooAdd,tableWidth, actWidth);
     
     int olddis=0;
     int c=0;    
@@ -1276,9 +1285,9 @@ void HTMLTableElementImpl::calcColWidthII(void)
     width = columnPos[totalCols] + border;
     if(width != tableWidth) printf("========> table layout error!!! <===============================\n");
 
-#ifdef TABLE_DEBUG
+//#ifdef TABLE_DEBUG
     printf("total width = %d\n", width);
-#endif
+//#endif
 
     setBlocking(false);
 }
@@ -1315,6 +1324,7 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
 int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType, 
     	    LengthType toType, int start, int span )
 {
+    printf("HTMLTableElementImpl::distributeMinWidth\n");
     int olddis=0;
     int c=start;    
     
@@ -1332,12 +1342,13 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 	}
 	if (++c==start+span)
 	{
-	    c=0;
+	    c=start;
 	    if (olddis==tdis)
 		break;
 	    olddis=tdis;    
 	} 
     } 
+    printf("out\n");    
     return distrib-tdis;
 }
 
@@ -1434,8 +1445,8 @@ void HTMLTableElementImpl::calcRowHeights()
 
 void HTMLTableElementImpl::layout(bool deep)
 {
-//    if (layouted())
-//   	return;
+    if (layouted())
+   	return;
 
     ascent = 0;
     descent = 0;
