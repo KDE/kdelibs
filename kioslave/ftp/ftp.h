@@ -122,7 +122,7 @@ private:
    *
    * @return true on success.
    */
-  bool ftpLogin( const char *user, const char *pass, QString& redirect = QString::null );
+  bool ftpLogin( const char *user, const char *pass, QString& redirect = (QString &)QString::null );
 
   bool ftpSendCmd( const QCString& cmd, char expresp );
 
