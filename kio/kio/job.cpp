@@ -2495,37 +2495,29 @@ void CopyJob::statCurrentSrc()
             files.append( info ); // Files and any symlinks
             statNextSrc(); // we could use a loop instead of a recursive call :)
         }
-        // If moving, before going for the full stat+[list+]copy+del thing, try to rename
-        else if ( m_mode == Move &&
-                  (m_currentSrcURL.protocol() == m_dest.protocol()) &&
-                  (m_currentSrcURL.host() == m_dest.host()) &&
-                  (m_currentSrcURL.port() == m_dest.port()) &&
-                  (m_currentSrcURL.user() == m_dest.user()) &&
-                  (m_currentSrcURL.pass() == m_dest.pass()) )
+        else if ( m_mode == Move )
         {
-            KURL dest = m_dest;
-            // Append filename or dirname to destination URL, if allowed
-            if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                dest.addPath( m_currentSrcURL.fileName() );
-            kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
-            state = STATE_RENAMING;
-
-            struct CopyInfo info;
-            info.permissions = -1;
-            info.mtime = (time_t) -1;
-            info.ctime = (time_t) -1;
-            info.size = (KIO::filesize_t)-1;
-            info.uSource = m_currentSrcURL;
-            info.uDest = dest;
-            QValueList<CopyInfo> files;
-            files.append(info);
-            emit aboutToCreate( this, files );
-
-            SimpleJob * newJob = KIO::rename( m_currentSrcURL, dest, false /*no overwrite */);
-            Scheduler::scheduleJob(newJob);
-            addSubjob( newJob );
-            if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
-                m_bOnlyRenames = false;
+           // If moving, before going for the full stat+[list+]copy+del thing, try to rename
+           // The logic is pretty similar to FileCopyJob::slotStart()
+           if ( (m_currentSrcURL.protocol() == m_dest.protocol()) &&
+              (m_currentSrcURL.host() == m_dest.host()) &&
+              (m_currentSrcURL.port() == m_dest.port()) &&
+              (m_currentSrcURL.user() == m_dest.user()) &&
+              (m_currentSrcURL.pass() == m_dest.pass()) )
+           {
+              startRenameJob( m_currentSrcURL );
+              return;
+           }
+           else if ( m_currentSrcURL.isLocalFile() && KProtocolInfo::canRenameFromFile( m_dest ) )
+           {
+              startRenameJob( m_dest );
+              return;
+           }
+           else if ( m_dest.isLocalFile() && KProtocolInfo::canRenameToFile( m_currentSrcURL ) )
+           {
+              startRenameJob( m_currentSrcURL );
+              return;
+           }
         }
         else
         {
@@ -2565,6 +2557,33 @@ void CopyJob::statCurrentSrc()
     }
 }
 
+void CopyJob::startRenameJob( const KURL& slave_url )
+{
+    KURL dest = m_dest;
+    // Append filename or dirname to destination URL, if allowed
+    if ( destinationState == DEST_IS_DIR && !m_asMethod )
+        dest.addPath( m_currentSrcURL.fileName() );
+    kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
+    state = STATE_RENAMING;
+
+    struct CopyInfo info;
+    info.permissions = -1;
+    info.mtime = (time_t) -1;
+    info.ctime = (time_t) -1;
+    info.size = (KIO::filesize_t)-1;
+    info.uSource = m_currentSrcURL;
+    info.uDest = dest;
+    QValueList<CopyInfo> files;
+    files.append(info);
+    emit aboutToCreate( this, files );
+
+    KIO_ARGS << m_currentSrcURL << dest << (Q_INT8) false /*no overwrite*/;
+    SimpleJob * newJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
+    Scheduler::scheduleJob(newJob);
+    addSubjob( newJob );
+    if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
+        m_bOnlyRenames = false;
+}
 
 void CopyJob::startListing( const KURL & src )
 {
