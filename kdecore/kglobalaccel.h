@@ -49,7 +49,7 @@ uint keyToXSym( int keyCode );
  *
  * For example, "CTRL+SHIFT+M" could be a shortcut for popping-up a menu of
  * monitor setting choices anywhere on the desktop. The key codes are listed
- * in ckey.h. "Monitor settings" could be the action name for this
+ * in kckey.cpp. "Monitor settings" could be the action name for this
  * accelerator. The action name indentifies the key binding in configuration
  * files and the KKeyChooser GUI.
  *
