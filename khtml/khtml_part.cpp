@@ -1478,7 +1478,7 @@ void KHTMLPart::slotFinishedParsing()
 
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
-#if 0
+
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
 
   d->m_totalImageCount = 0;
@@ -1505,7 +1505,6 @@ void KHTMLPart::slotFinishedParsing()
       imageURLs.append( url );
     }
   }
-#endif
 
   checkCompleted();
 }
