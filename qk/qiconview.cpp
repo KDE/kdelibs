@@ -118,7 +118,6 @@ struct QIconViewPrivate
     QIconView::AlignMode alignMode;
     QIconView::ResizeMode resizeMode;
     QSize oldSize;
-    bool firstAdjust;
     QValueList<QIconDragItem> iconDragData;
     bool isIconDrag;
     int numDragItems, cachedW, cachedH;
@@ -137,7 +136,8 @@ struct QIconViewPrivate
     QFont ownFont;
     bool wordWrapIconText;
     int cachedContentsX, cachedContentsY;
-
+    int resizeEvents;
+    
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -2020,7 +2020,6 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->resizeMode = Fixed;
     d->dropped = FALSE;
     d->adjustTimer = new QTimer( this );
-    d->firstAdjust = TRUE;
     d->isIconDrag = FALSE;
     d->iconDragData.clear();
     d->numDragItems = 0;
@@ -2046,7 +2045,8 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->cachedContentsX = d->cachedContentsY = -1;
     d->clearing = FALSE;
     d->fullRedrawTimer = new QTimer( this );
-
+    d->resizeEvents = 0;
+    
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -3621,13 +3621,17 @@ void QIconView::contentsDropEvent( QDropEvent *e )
 
 void QIconView::resizeEvent( QResizeEvent* e )
 {
+    d->resizeEvents++;
     if ( d->resizeMode == Adjust )
 	d->oldSize = e->oldSize();
     QScrollView::resizeEvent( e );
     if ( d->resizeMode == Adjust ) {
 	if ( d->adjustTimer->isActive() )
 	    d->adjustTimer->stop();
-	d->adjustTimer->start( d->firstAdjust ? 0 : 100, TRUE );
+	if ( d->resizeEvents > 2 ) 
+	    d->adjustTimer->start( 100, TRUE );
+	else
+	    alignItemsInGrid( FALSE );
     }
 }
 
@@ -3639,11 +3643,8 @@ void QIconView::adjustItems()
 {
     d->adjustTimer->stop();
     if ( d->resizeMode == Adjust ) {
-	if ( size() != d->oldSize ) {
- 	    if ( d->firstAdjust )
- 		d->firstAdjust = FALSE;
+	if ( size() != d->oldSize )
 	    alignItemsInGrid( TRUE );
-	}
     }
 }
 
