@@ -308,11 +308,15 @@ Value Window::retrieve(KHTMLPart *p)
   KJSProxy *proxy = KJSProxy::proxy( p );
   if (proxy) {
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "Window::retrieve part=" << p << " interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
+    kdDebug(6070) << "Window::retrieve part=" << p << " '" << p->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
-  } else
+  } else {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "Window::retrieve part=" << p << " '" << p->name() << "' no jsproxy." << endl;
+#endif
     return Undefined(); // This can happen with JS disabled on the domain of that window
+  }
 }
 
 Location *Window::location() const
@@ -974,10 +978,14 @@ void Window::clear( ExecState *exec )
   // Really delete those properties, so that the DOM nodes get deref'ed
   KJS::Collector::collect();
   if (!m_part.isNull()) {
-    winq = new WindowQObject(this);
-    // Now recreate a working global object for the next URL that will use us
-    KJS::Interpreter *interpreter = KJSProxy::proxy( m_part )->interpreter();
-    interpreter->initGlobalObject();
+    KJSProxy* proxy = KJSProxy::proxy( m_part );
+    if (proxy) // i.e. JS not disabled
+    {
+      winq = new WindowQObject(this);
+      // Now recreate a working global object for the next URL that will use us
+      KJS::Interpreter *interpreter = proxy->interpreter();
+      interpreter->initGlobalObject();
+    }
   }
 }
 

@@ -194,7 +194,7 @@ void KJSProxyImpl::clear() {
 //        debugWin->leaveSession();
     //}
 #endif
-    Window *win = Window::retrieveWindow(m_part);
+    Window *win = static_cast<Window *>(m_script->globalObject().imp());
     if (win) {
         win->clear( m_script->globalExec() );
         // re-add "debug", clear() removed it
@@ -356,8 +356,8 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
 {
   oldAlarmHandler = signal(SIGVTALRM, alarmHandler);
-  itimerval tv = { 
-      { i_ms / 1000, (i_ms % 1000) * 1000 }, 
+  itimerval tv = {
+      { i_ms / 1000, (i_ms % 1000) * 1000 },
       { ms / 1000, (ms % 1000) * 1000 }
   };
   setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
