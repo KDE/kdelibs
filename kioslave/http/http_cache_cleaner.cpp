@@ -187,7 +187,7 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
    }
 }
 
-extern "C" int kdemain(int argc, char **argv)
+extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
    KLocale::setMainCatalogue("kdelibs");
    KCmdLineArgs::init( argc, argv, appName,
