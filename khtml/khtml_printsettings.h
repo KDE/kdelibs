@@ -37,6 +37,7 @@ public:
 private:
 	QCheckBox	*m_printfriendly;
 	QCheckBox	*m_printimages;
+	QCheckBox	*m_printheader;
 };
 
 #endif

@@ -45,6 +45,7 @@
 #include <kstringhandler.h>
 #include <kstandarddirs.h>
 #include <kprinter.h>
+#include <klocale.h>
 
 #include <qtooltip.h>
 #include <qpainter.h>
@@ -1024,6 +1025,21 @@ void KHTMLView::print()
         root->setMinMaxKnown( false );
         root->layout();
 
+        bool printHeader = (printer->option("app-khtml-printimages") == "true");
+
+        int headerHeight = 0;
+        QFont headerFont("helvetica", 8);
+
+        QString headerLeft = KGlobal::locale()->formatDate(QDate::currentDate(),true);
+        QString headerMid = docname;
+        QString headerRight;
+
+        if (printHeader)
+        {
+           p->setFont(headerFont);
+           headerHeight = (p->fontMetrics().lineSpacing() * 3) / 2;
+        }
+
         // ok. now print the pages.
         kdDebug(6000) << "printing: html page width = " << root->docWidth()
                       << " height = " << root->docHeight() << endl;
@@ -1036,27 +1052,55 @@ void KHTMLView::print()
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
         p->setClipRect(0,0, pageWidth, pageHeight);
-        if(root->docWidth() > metrics.width()) {
-            double scale = ((double) metrics.width())/((double) root->docWidth());
+        
+        pageHeight -= headerHeight;
+        
+        bool scalePage = false;
+        double scale = 0.0;
 #ifndef QT_NO_TRANSFORMATIONS
-            p->scale(scale, scale);
-#endif
+        if(root->docWidth() > metrics.width()) {
+            scalePage = true;
+            scale = ((double) metrics.width())/((double) root->docWidth());
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
+            headerHeight = (int) (headerHeight/scale);
         }
+#endif
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
+                      
         int top = 0;
+        int page = 1;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+            if (printHeader)
+            {
+                int dy = p->fontMetrics().lineSpacing();
+                p->setPen(Qt::black);
+                p->setFont(headerFont);
+
+                headerRight = QString("#%1").arg(page);
+                                 
+                p->drawText(0, 0, metrics.width(), dy, Qt::AlignLeft, headerLeft);
+                p->drawText(0, 0, metrics.width(), dy, Qt::AlignHCenter, headerMid);
+                p->drawText(0, 0, metrics.width(), dy, Qt::AlignRight, headerRight);
+            }
+            
+#ifndef QT_NO_TRANSFORMATIONS
+            if (scalePage)
+                p->scale(scale, scale);
+#endif
+            p->translate(0, headerHeight-top);
+        
             root->setTruncatedAt(top+pageHeight);
 
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
 
-            p->translate(0, top - root->truncatedAt());
             top = root->truncatedAt();
+            p->resetXForm();
+            page++;
         }
 
         p->end();

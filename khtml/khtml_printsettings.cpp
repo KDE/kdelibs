@@ -32,10 +32,13 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent, const char *name)
 	m_printfriendly->setChecked(true);
 	m_printimages = new QCheckBox(i18n("Print images"), this);
 	m_printimages->setChecked(true);
+	m_printheader = new QCheckBox(i18n("Print header"), this);
+	m_printheader->setChecked(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
 	l0->addWidget(m_printfriendly);
 	l0->addWidget(m_printimages);
+	l0->addWidget(m_printheader);
 	l0->addStretch(1);
 }
 
@@ -47,12 +50,14 @@ void KHTMLPrintSettings::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
 	opts["app-khtml-printfriendly"] = (m_printfriendly->isChecked() ? "true" : "false");
 	opts["app-khtml-printimages"] = (m_printimages->isChecked() ? "true" : "false");
+	opts["app-khtml-printheader"] = (m_printheader->isChecked() ? "true" : "false");
 }
 
 void KHTMLPrintSettings::setOptions(const QMap<QString,QString>& opts)
 {
 	m_printfriendly->setChecked(opts["app-khtml-printfriendly"] != "false");
 	m_printimages->setChecked(opts["app-khtml-printimages"] != "false");
+	m_printheader->setChecked(opts["app-khtml-printheader"] != "false");
 }
 
 #include "khtml_printsettings.moc"
