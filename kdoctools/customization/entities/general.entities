@@ -307,7 +307,6 @@
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
-<!ENTITY Shift	"<keycap>Shift</keycap>">
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
@@ -336,4 +335,5 @@
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kworldwatch  "<application>KWorldClock</application>">
+<!ENTITY Shift	"<keycap>Shift</keycap>"> <!-- to be localised -->
 <!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
