@@ -795,9 +795,9 @@ public:
 
     void startTokenizer( const QString& str, bool _strictParsing ) {
       m_yyIn = str.simplifyWhiteSpace();
-//#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG
       kdDebug( 6080 ) << "startTokenizer: [" << m_yyIn << "]" << endl;
-//#endif
+#endif
       m_yyPos = 0;
       m_yyChar = getChar();
       strictParsing = _strictParsing;
@@ -924,7 +924,7 @@ public:
 
     bool matchNameFamily( QString *ffamily )
     {
-	//kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       
+	//kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;
       bool matched = false;
       if ( m_yyTok == TOK_SYMBOL || ( m_yyTok == TOK_STRING && !strictParsing ) ) {
 	// accept quoted "serif" only in non strict mode.
@@ -983,7 +983,7 @@ public:
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
 			QString *fsize, QString *lheight, QString *ffamily )
     {
-      kdDebug( 6080 ) << "matchRealFont(..)" << endl;     
+      //kdDebug( 6080 ) << "matchRealFont(..)" << endl;     
       bool metFstyle = matchFontStyle( fstyle );
       bool metFvariant = matchFontVariant( fvariant );
       matchFontWeight( fweight );
@@ -1008,60 +1008,71 @@ public:
 
 bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 {
-    QString str( curP, endP - curP );
-    QString fstyle, fvariant, fweight, fsize, lheight, ffamily;
+  QString str( curP, endP - curP );
+  QString fstyle, fvariant, fweight, fsize, lheight, ffamily;
 
-    FontParser fontParser;
-    fontParser.startTokenizer( str, strictParsing );
+  FontParser fontParser;
+  fontParser.startTokenizer( str, strictParsing );
 
-    //qDebug( "%s", str.latin1() );
-    const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
+  //kdDebug( 6080 ) << str << endl;
+  const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
   
-    //### What is the correct mapping here? / Where is this info stored?
-    //    How to set this properties efficently? (Reparsing is slow)
-    //    Will have to get the infrastructure in place first - schlpbch
-    if (cssval) {
-      switch (cssval->id) 
-	{ 
-	case CSS_VAL_MENU: 
-	  {
-	    QFont menuFont = KGlobalSettings::menuFont();
-	  }   
-	case CSS_VAL_CAPTION:
-	  {
-	    QFont generalFont = KGlobalSettings::generalFont();
-	  }
-	case CSS_VAL_STATUS_BAR:
-	case CSS_VAL_ICON:
-	case CSS_VAL_MESSAGE_BOX:
-	case CSS_VAL_SMALL_CAPTION:
-	  {	
-	    kdDebug( 6080 ) << "system font requested..." << endl;
-	    break;
-	  }
-	}
-    } else {
-      fontParser.m_yyTok = fontParser.getToken();
-      if ( fontParser.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight, &ffamily) ) {
-	qDebug( "  %s %s %s %s / %s", fstyle.latin1(), fvariant.latin1(), 
-		fweight.latin1(), fsize.latin1(), lheight.latin1() );
-	
-	if(!fstyle.isNull())
-	  parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), CSS_PROP_FONT_STYLE);
-	if(!fvariant.isNull())
-	  parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(), CSS_PROP_FONT_VARIANT);
-	if(!fweight.isNull())
-	  parseValue(fweight.unicode(), fweight.unicode()+fweight.length(), CSS_PROP_FONT_WEIGHT);
-	if(!fsize.isNull())
-	  parseValue(fsize.unicode(), fsize.unicode()+fsize.length(), CSS_PROP_FONT_SIZE);
-	if(!lheight.isNull())
-	  parseValue(lheight.unicode(), lheight.unicode()+lheight.length(), CSS_PROP_LINE_HEIGHT);
-	if(!ffamily.isNull())
-	  parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(), CSS_PROP_FONT_FAMILY);
-	return true;
-      }
+  if (cssval) {
+    kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
+    QFont sysFont;
+    switch (cssval->id) { 
+    case CSS_VAL_MENU: 
+      sysFont = KGlobalSettings::menuFont();
+      break;
+    case CSS_VAL_CAPTION:
+      /* Waiting for the patch to go in 
+      sysFont = KGlobalSettings::windowTitleFont();
+      break;
+      */
+    case CSS_VAL_STATUS_BAR:
+    case CSS_VAL_ICON:
+    case CSS_VAL_MESSAGE_BOX:
+    case CSS_VAL_SMALL_CAPTION:
+    default:
+      sysFont = KGlobalSettings::generalFont();
+      break;	  
     }
-    return false;
+    if (sysFont.italic()) {
+      fstyle = "italic";
+    } else {
+      fstyle = "normal";
+    }
+    if (sysFont.bold()) {
+      fweight = "bold";
+    } else {
+      fweight = "normal";
+    }
+    fsize.sprintf("%dpx", sysFont.pixelSize());
+    ffamily = sysFont.family();
+
+  } else {
+    fontParser.m_yyTok = fontParser.getToken();
+    if (!(fontParser.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight, &ffamily)))
+      {
+	return false;
+      }
+  }
+  //kdDebug(6080) << "[" << fstyle << "] [" << fvariant << "] [" << fweight << "] [" 
+  //		<< fsize << "] / [" << lheight << "] [" << ffamily << "]" << endl;
+      
+  if(!fstyle.isNull())
+    parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), CSS_PROP_FONT_STYLE);
+  if(!fvariant.isNull())
+    parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(), CSS_PROP_FONT_VARIANT);
+  if(!fweight.isNull())
+    parseValue(fweight.unicode(), fweight.unicode()+fweight.length(), CSS_PROP_FONT_WEIGHT);
+  if(!fsize.isNull())
+    parseValue(fsize.unicode(), fsize.unicode()+fsize.length(), CSS_PROP_FONT_SIZE);
+  if(!lheight.isNull())
+    parseValue(lheight.unicode(), lheight.unicode()+lheight.length(), CSS_PROP_LINE_HEIGHT);
+  if(!ffamily.isNull())
+    parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(), CSS_PROP_FONT_FAMILY);
+  return true;
 }
 
 // ---------------- end font property --------------------------
@@ -1076,6 +1087,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId)
 {
+   if (curP==endP) {return 0; /* e.g.: width="" */}
+
    QString value(curP, endP - curP);    
    value = value.lower().stripWhiteSpace();
 #ifdef CSS_DEBUG
@@ -2140,7 +2153,7 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
 	// Moving on
 	nextP = bckgrNextP;
     }
-    //qDebug("found background property!");
+    //kdDebug(6080) << "found background property!" << endl;
     return nextP;
 }
 
