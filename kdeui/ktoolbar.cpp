@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.124  1999/06/20 10:49:35  mario
+// Mario: the menu bar was not correctly drawn. This hack fixes that
+//
 // Revision 1.123  1999/06/18 20:28:19  kulow
 // getConfig -> config
 //
@@ -1385,17 +1388,6 @@ KToolBar::updateRects(bool res)
 		min_width = 30;
 		min_height = 10;
 		updateGeometry();
-		break;
-
-	case Floating:
-		/* We try to support horizontal and vertical floating bars with just
-		 * one attribute. If the bar is wider than tall it's a horizontal bar
-		 * otherwine it's vertical. This leads to some unexpected resize
-		 * behaviour! */
-		if (width() >= height())
-			layoutHorizontal(width());
-		else
-			layoutVertical(height());
 		break;
 
 	case Top:
