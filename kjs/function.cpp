@@ -100,9 +100,12 @@ void FunctionImp::processParameters(const List *args)
 
 KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 {
-  if (!args)
-    args = List::empty();
-
+  bool dummyList = false;
+  if (!args) {
+    args = new List();
+    dummyList = true;
+  }
+  
   Context *save = Context::current();
 
   Context::setCurrent(new Context(codeType(), save, this, args, thisV));
@@ -111,6 +114,9 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   processParameters(args);
 
   Completion comp = execute(*args);
+
+  if (dummyList)
+    delete args;
 
   delete Context::current();
   Context::setCurrent(save);
