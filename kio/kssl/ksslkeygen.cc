@@ -96,7 +96,7 @@ void KSSLKeyGen::slotGenerate() {
 }
 
 
-int KSSLKeyGen::generateCSR(QString name, QString pass, int bits, int e) {
+int KSSLKeyGen::generateCSR(QString , QString , int bits, int e) {
 #ifdef KSSL_HAVE_SSL
 KOSSL *kossl = KOSSL::self();
 X509_REQ *req;
