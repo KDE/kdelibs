@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875a.  */
+/* A Bison parser, made by GNU Bison 1.875.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -268,6 +268,7 @@ typedef union YYSTYPE {
     unsigned int element;
     unsigned int ns;
     CSSSelector::Relation relation;
+    CSSSelector::Match match;
     bool b;
     char tok;
     Value value;
@@ -539,22 +540,22 @@ static const yysigned_char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short yyrline[] =
 {
-       0,   253,   253,   254,   255,   256,   260,   267,   273,   298,
-     299,   302,   304,   305,   308,   310,   315,   316,   319,   321,
-     332,   342,   345,   351,   352,   356,   360,   364,   365,   368,
-     370,   381,   382,   383,   384,   385,   386,   387,   391,   392,
-     396,   399,   404,   408,   413,   420,   434,   435,   445,   467,
-     470,   476,   479,   485,   486,   487,   488,   492,   493,   497,
-     517,   530,   544,   551,   554,   575,   582,   586,   591,   599,
-     600,   609,   610,   611,   616,   636,   640,   644,   654,   661,
-     667,   668,   669,   673,   682,   683,   690,   714,   719,   728,
-     731,   734,   737,   740,   743,   749,   750,   754,   760,   765,
-     774,   777,   780,   783,   788,   794,   798,   801,   806,   812,
-     834,   840,   847,   848,   852,   856,   872,   875,   878,   884,
-     885,   887,   888,   889,   895,   896,   897,   899,   905,   906,
-     907,   908,   909,   910,   911,   912,   913,   914,   915,   916,
-     917,   918,   919,   920,   921,   922,   927,   935,   951,   958,
-     964,   973,   999,  1000,  1004,  1005
+       0,   254,   254,   255,   256,   257,   261,   268,   274,   299,
+     300,   303,   305,   306,   309,   311,   316,   317,   320,   322,
+     333,   343,   346,   352,   353,   357,   361,   365,   366,   369,
+     371,   382,   383,   384,   385,   386,   387,   388,   392,   393,
+     397,   400,   405,   409,   414,   421,   435,   436,   446,   468,
+     471,   477,   480,   486,   487,   488,   489,   493,   494,   498,
+     518,   531,   545,   552,   555,   576,   583,   587,   592,   600,
+     601,   610,   611,   612,   617,   637,   641,   645,   655,   662,
+     668,   669,   670,   674,   683,   684,   691,   715,   720,   729,
+     732,   735,   738,   741,   744,   750,   751,   755,   761,   766,
+     775,   778,   781,   784,   789,   795,   799,   802,   807,   813,
+     835,   841,   848,   849,   853,   857,   873,   876,   879,   885,
+     886,   888,   889,   890,   896,   897,   898,   900,   906,   907,
+     908,   909,   910,   911,   912,   913,   914,   915,   916,   917,
+     918,   919,   920,   921,   922,   923,   928,   936,   952,   959,
+     965,   974,  1000,  1001,  1005,  1006
 };
 #endif
 
@@ -898,7 +899,6 @@ static const unsigned char yystos[] =
 #define YYABORT		goto yyabortlab
 #define YYERROR		goto yyerrlab1
 
-
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
    Once GCC version 2 has supplanted version 1, this can go.  */
@@ -1154,6 +1154,66 @@ yysymprint (yyoutput, yytype, yyvaluep)
 
   switch (yytype)
     {
+      case 81: /* maybe_media_list */
+
+        (null);
+
+        break;
+      case 82: /* media_list */
+
+        (null);
+
+        break;
+      case 84: /* ruleset_list */
+
+        (null);
+
+        break;
+      case 91: /* selector_list */
+
+        (null);
+
+        break;
+      case 92: /* selector */
+
+        (null);
+
+        break;
+      case 93: /* simple_selector */
+
+        (null);
+
+        break;
+      case 97: /* specifier_list */
+
+        (null);
+
+        break;
+      case 98: /* specifier */
+
+        (null);
+
+        break;
+      case 99: /* class */
+
+        (null);
+
+        break;
+      case 102: /* attrib */
+
+        (null);
+
+        break;
+      case 105: /* pseudo */
+
+        (null);
+
+        break;
+      case 111: /* expr */
+
+        (null);
+
+        break;
       default:
         break;
     }
@@ -2071,7 +2131,7 @@ yyreduce:
     {
 	yyval.selector = new CSSSelector();
 	yyval.selector->attr = yyvsp[-5].attribute;
-	yyval.selector->match = (CSSSelector::Match)yyvsp[-4].val;
+	yyval.selector->match = yyvsp[-4].match;
 	yyval.selector->value = domString(yyvsp[-2].string);
     ;}
     break;
@@ -2079,42 +2139,42 @@ yyreduce:
   case 89:
 
     {
-	yyval.val = CSSSelector::Exact;
+	yyval.match = CSSSelector::Exact;
     ;}
     break;
 
   case 90:
 
     {
-	yyval.val = CSSSelector::List;
+	yyval.match = CSSSelector::List;
     ;}
     break;
 
   case 91:
 
     {
-	yyval.val = CSSSelector::Hyphen;
+	yyval.match = CSSSelector::Hyphen;
     ;}
     break;
 
   case 92:
 
     {
-	yyval.val = CSSSelector::Begin;
+	yyval.match = CSSSelector::Begin;
     ;}
     break;
 
   case 93:
 
     {
-	yyval.val = CSSSelector::End;
+	yyval.match = CSSSelector::End;
     ;}
     break;
 
   case 94:
 
     {
-	yyval.val = CSSSelector::Contain;
+	yyval.match = CSSSelector::Contain;
     ;}
     break;
 
@@ -2514,7 +2574,7 @@ yyreduce:
 
     }
 
-/* Line 999 of yacc.c.  */
+/* Line 991 of yacc.c.  */
 
 
   yyvsp -= yylen;
@@ -2627,14 +2687,9 @@ yyerrlab:
 
     }
 
-  /* Else will try to reuse lookahead token after shifting the error
-     token.  */
-  goto yyerrlab1;
-
-
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------------------.
+| yyerrlab2 -- pop states until the error token can be shifted.  |
+`---------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 

@@ -97,6 +97,7 @@ static inline int getValueID(const char *tagStr, int len)
     unsigned int element;
     unsigned int ns;
     CSSSelector::Relation relation;
+    CSSSelector::Match match;
     bool b;
     char tok;
     Value value;
@@ -231,7 +232,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %type <b> prio
 
-%type <val> match
+%type <match> match
 %type <val> unary_operator
 %type <tok> operator
 
@@ -719,7 +720,7 @@ attrib:
     | '[' maybe_space ns_attrib_id match maybe_space ident_or_string maybe_space ']' {
 	$$ = new CSSSelector();
 	$$->attr = $3;
-	$$->match = (CSSSelector::Match)$4;
+	$$->match = $4;
 	$$->value = domString($6);
     }
   ;
