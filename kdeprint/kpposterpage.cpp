@@ -21,6 +21,7 @@
 #include "posterpreview.h"
 #include "kprinter.h"
 #include "kmfactory.h"
+#include "util.h"
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
@@ -32,13 +33,6 @@
 #include <klocale.h>
 #include <knuminput.h>
 #include <kiconloader.h>
-
-extern struct pagesizestruct
-{
-	const char* text;
-	int ID;
-} page_sizes[];
-int findIndex( int );
 
 KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	: KPrintDialogPage( parent, name )

@@ -97,3 +97,11 @@ QString urlToSmb(const KURL& url)
 	s.append(url.host()).append(url.path());
 	return s;
 }
+
+int findIndex(int ID)
+{
+	for (int i=0; i<KPrinter::NPageSize-1; i++)
+		if (page_sizes[i].ID == ID)
+			return i;
+	return 4;
+}
