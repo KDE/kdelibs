@@ -133,6 +133,8 @@ protected:
      */
     virtual QPopupMenu *createPopupMenu( const QPoint &pos );
     // FIXME: use using once we dump gcc 2.x support
+    // FIXME: Reimplementing this doesn't work.  You must use the one above.
+    //        Did we break compatibility here?
     virtual QPopupMenu *createPopupMenu();
 
 protected:
