@@ -398,10 +398,17 @@ void KBookmarkMenu::fillBookmarkMenu()
     if ( m_bAddBookmark && !isAdvanced() )
       addNewFolder();
 
-    if ( m_pManager->showNSBookmarks()
-      && QFile::exists( KNSBookmarkImporter::netscapeBookmarksFile() ) )
+    bool haveSep = false;
+
+    QString type = "netscape";
+    QPair<bool, QString> info = m_pManager->showDynamicBookmarks(type);
+
+    if ( info.first && QFile::exists( info.second ) )
     {
-      m_parentMenu->insertSeparator();
+      if (!haveSep) {
+         m_parentMenu->insertSeparator();
+         haveSep = true;
+      }
 
       KActionMenu * actionMenu = new KActionMenu( i18n("Netscape Bookmarks"), "netscape",
                                                   m_actionCollection, 0L );
