@@ -83,9 +83,9 @@ public:
    * @param _trailing may be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged. If the URL has no path, then no '/' is added
-   *                  anyways. And on the other side: If the path is "/", then this
-   *                  character wont be stripped. Reason: "ftp://weis@host" means something
-   *                  completly different than "ftp://weis@host/". So adding or stripping
+   *                  anyway. And on the other side: if the path is "/", then this
+   *                  character won't be stripped. Reason: "ftp://weis@host" means something
+   *                  completely different than "ftp://weis@host/". So adding or stripping
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    *
@@ -132,6 +132,7 @@ public:
   void setRef( const char *_txt ) { m_strRef_encoded = _txt; }
   bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
   
+  /* @return true if the url is malformed */
   bool isMalformed() const  { return m_bIsMalformed; }
 
   /* @return true if the file is a plain local file (no sub protocol) */
@@ -143,7 +144,7 @@ public:
   /**
    * Assumes that the current path is a directory. '_txt' is appended to the
    * current path. The function adds '/' if needed while concatenating.
-   * This means it does not matter wether the current path has a trailing
+   * This means it does not matter whether the current path has a trailing
    * '/' or not. If there is none, it becomes appended. If '_txt'
    * has a leading '/' then this one is stripped.
    *
@@ -157,14 +158,14 @@ public:
    * @param _txt is considered to be decoded. If the current path ends with '/'
    *             then '_txt' ist just appended, otherwise all text behind the last '/'
    *             in the current path is erased and '_txt' is appended then. It does
-   *             not matter wether '_txt' starts with '/' or not.
+   *             not matter whether '_txt' starts with '/' or not.
    */
   void setFileName( const char *_txt );
 
   /**
    * @return the filename of the current path. The returned string is decoded.
    *
-   * @ref _ignore_trailing_slash_in_path tells wether a trailing '/' should be ignored.
+   * @ref _ignore_trailing_slash_in_path tells whether a trailing '/' should be ignored.
    *                                     This means that the function would return "torben" for
    *                                     <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
    *                                     If the flag is set to false, then everything behind the last '/'
@@ -176,11 +177,11 @@ public:
    *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
    *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded.
    *
-   * @param _strip_trailing_slash_from_result tells wether the returned result should end with '/' or not.
+   * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
    *                                          If the path is empty or just "/" then this flag has no effect.
    * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and 
-   *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/torben/</tt>
-   *                                       or <tt>/hallo/torben</tt> depending on the other flag
+   *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/</tt>
+   *                                       or <tt>/hallo</tt> depending on the other flag
    */
   QString directory( bool _strip_trailing_slash_from_result = true, bool _ignore_trailing_slash_in_path = true );
   
@@ -243,14 +244,14 @@ public:
 
   /**
    * Changes directory by descending into the given directory.
+   * It is assumed the current URL represents a directory.
    * If dir starts with a "/" the
    * current URL will be "protocol://host/dir" otherwise dir will
-   * be appended to the path.
-   * If 'zapRef' is true, the reference will be deleted.
-   * Provided for compatibility with the previous KURL class.
+   * be appended to the path. _dir can be ".."
+   * @param zapRef if true, delete the reference (of last nesteed URL).
    */
   bool cd( const QString& _dir, bool zapRef = true);
-  
+
 protected:
   void reset();
   void parse( const char* _url );

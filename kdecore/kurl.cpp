@@ -458,7 +458,7 @@ QString KURL::directory( bool _strip_trailing_slash_from_result, bool _ignore_tr
     result = path( -1 );
   else
     result = m_strPath;
- 
+
   if ( result.isEmpty() || result == "/" )
     return result;
     
@@ -557,33 +557,67 @@ void KURL::decode( QString& _url )
   delete [] new_url;
 }
 
-// Compatibility with old KURL. Added by David Faure <faure@kde.org>
-bool KURL::cd( const QString& _dir, bool zapRef)
+// implemented by David, faure@kde.org
+bool KURL::cd( const QString& _dir, bool zapRef )
 {
     if ( _dir.isNull() )
         return false;
  
-    if( _dir[0] == '/' )
+    if ( _dir[0] == '/' ) //absolute path
     {
         m_strPath = _dir;
+        if ( zapRef )
+          setRef( QString::null );
     }
-    else if (( _dir[0] == '~' ) && ( m_strProtocol == "file" ))
+    else if (( _dir[0] == '~' ) && ( m_strProtocol == "file" )) //absolute path
     {
         m_strPath = QDir::homeDirPath().copy();
         m_strPath += "/";
         m_strPath += _dir + 1;
+        if ( zapRef )
+          setRef( QString::null );
     }
-    else
+    else //relative path - we have to handle nested URLs
     {
-        if ( m_strPath.right(1)[0] != '/' && _dir[0] != '/' )
-            m_strPath += "/";
-        m_strPath += _dir;
+      // split URL
+      KURLList lst;
+      assert( KURL::split( url(), lst ) );
+      KURL * lastUrl = lst.getLast();
+      // get directory of last nested URL
+      QString lastPath = lastUrl->path(1); // append '/' if necessary
+      debug("lastPath = %s",lastPath.data());
+      // append relative dir
+      // but if _dir == ".." and lastPath == "/" we need to remove the last part
+      if ( ( (_dir == "..") || (_dir == "../") ) &&
+           ( (lastPath == "/") || (lastPath.isEmpty()) ) )
+      {
+        lst.removeLast();
+        // HACK? also remove any gzip part : if doing cd("..") on
+        // file:/home/dfaure/myfile.tgz#gzip:/decompress#tar:/
+        // we want file:/home/dfaure/myfile.tgz
+        while ( !strcmp( lst.getLast()->protocol(), "gzip" ) )
+        {
+          lst.removeLast();
+        }
+        lastUrl = lst.getLast();
+        // remove filename, if any (myfile.tgz in the example above)
+        lastUrl->setPath(lastUrl->directory(false, false)); // keep trailing slash
+      }
+      else
+      {
+        lastPath += _dir;
+        lastPath = QDir::cleanDirPath( lastPath );
+        lastUrl->setPath( lastPath );
+      }
+      if ( zapRef )
+        lastUrl->setRef( QString::null );
+      // join the nested URLs and parse the result
+      QString _url;
+      KURL::join( lst, _url );
+      reset();
+      parse ( _url );
     }
 
-    m_strPath = QDir::cleanDirPath( m_strPath );
-    if ( zapRef )
-        setRef( QString::null );
- 
     return true;
 }
 
