@@ -36,13 +36,28 @@
 			</Not>
 		</Include>
 	</Menu>
-	<Menu>
-		<Name>Development</Name>
-		<Directory>kde-development.directory</Directory>
-		<Include>
-			<Category>Development</Category>
-		</Include>
-	</Menu>
+       <Menu>
+                <Name>Development</Name>
+                <Directory>kde-development.directory</Directory>
+                <Menu>
+                        <Name>X-KDE-KDevelopIDE</Name>
+                        <Directory>kde-development-kdevelop.directory</Directory>
+                        <Include>
+                                <And>
+                                <Category>Development</Category>
+                                <Category>X-KDE-KDevelopIDE</Category>
+                                </And>
+                        </Include>
+                </Menu>
+                <Include>
+                        <And>
+                        <Category>Development</Category>
+                        <Not>
+                        <Category>X-KDE-KDevelopIDE</Category>
+                        </Not>
+                        </And>
+                </Include>
+        </Menu>
 	<Menu>
 		<Name>Science</Name>
 		<Directory>kde-science.directory</Directory>
