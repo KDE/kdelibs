@@ -57,7 +57,7 @@ public:
    */
   KSimpleConfig( const QString &fileName, bool bReadOnly = false);
 
-  KSimpleConfig(KConfigBackEnd *bakcEnd, bool bReadOnly = false);
+  KSimpleConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
 
   /**
    * Destructor.
