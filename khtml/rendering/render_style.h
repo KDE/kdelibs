@@ -242,6 +242,9 @@ public:
 
     StyleSurroundData(const StyleSurroundData& o );
     bool operator==(const StyleSurroundData& o) const;
+    bool operator!=(const StyleSurroundData& o) const {
+        return !(*this == o);
+    }
 
     LengthBox offset;
     LengthBox margin;
@@ -275,6 +278,9 @@ public:
     }
 
     bool operator==(const StyleBoxData& o) const;
+    bool operator!=(const StyleBoxData& o) const {
+        return !(*this == o);
+    }
 
     Length width;
     Length height;
@@ -289,7 +295,6 @@ public:
 
     int z_index;
 };
-
 
 //------------------------------------------------
 // Random visual rendering model attributes. Not inherited.
@@ -326,6 +331,9 @@ public:
 		 counter_increment == o.counter_increment &&
 		 counter_reset == o.counter_reset &&
 		 palette == o.palette );
+    }
+    bool operator!=( const StyleVisualData &o ) const {
+        return !(*this == o);
     }
 
     LengthBox clip;
