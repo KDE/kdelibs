@@ -46,8 +46,12 @@
 <!ENTITY vertaling.tom     "<para>Dit document is vertaald naar het Nederlands door &Tom.Albers;.</para>">
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
+<!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY vertaling.xxx "<para>Dit document is vertaald naar het Nederlands door &xxx;.</para>">
+<!ENTITY nagelezen.xxx "<para>De vertaling werd nagelezen door &xxx;.</para>">
 -->
 
+<!-- Entities voor nalezers (voor CREDITS_FOR_TRANSLATORS)-->
 <!ENTITY nagelezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
 <!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
@@ -79,7 +83,7 @@
 </inlinemediaobject>
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
+<!ENTITY kmenu   "<guimenu>K</guimenu>-menu">
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
@@ -87,6 +91,8 @@
 <!ENTITY Esc     "<keycap>Escape</keycap>">
 <!ENTITY Enter   "<keycap>Enter</keycap>">
 <!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
+<!ENTITY OS      "<abbrev>O.S.</abbrev>">
+<!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
