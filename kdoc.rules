@@ -41,7 +41,7 @@ khtml_LIBS = -ldcop -lkjs -lkio -lkparts -lkdecore -lkdeui -lkdefx -lkdeprint -l
 
 kdejava_FILES = *.h
 kdejava_PATH = khtml/java
-kdejava_LIBS = -lkdecore -lkdeui -lkdefx -lqt
+kdejava_LIBS = -lkparts -lkdecore -lkdeui -lkdefx -lqt
 
 kio_FILES = *.h
 kio_PATH = kio/kio
