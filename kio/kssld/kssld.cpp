@@ -384,15 +384,118 @@ bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
   return false;
 }
 
+///////////////////////////////////////////////////////////////////////////
 
 
+bool KSSLD::caRegenerate() {
+KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
+QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
+
+QFile out(path);
+
+	if (!out.open(IO_WriteOnly))
+		return false;
+
+KConfig cfg("ksslcalist", false, false);
+
+QStringList x = cfg.groupList();
+
+	for (QStringList::Iterator i = x.begin();
+				   i != x.end();
+				   ++i) {
+		if ((*i).isEmpty() || *i == "<default>") continue;
+
+		cfg.setGroup(*i);
+
+		if (!cfg.readBoolEntry("site", false)) continue;
+
+		QString cert = cfg.readEntry("x509", "");
+		if (cert.length() <= 0) continue;
+
+		for (unsigned int j = 0; j < (cert.length()-1)/64; j++) {
+			cert.insert(64*(j+1)+j, '\n');
+		}
+		out.writeBlock("-----BEGIN CERTIFICATE-----\n", 28);
+		out.writeBlock(cert.latin1(), cert.length());
+		out.writeBlock("\n-----END CERTIFICATE-----\n\n", 28);
+		out.flush();
+	}
+
+return true;
+}
+
+
+
+QStringList KSSLD::caListCAs() {
+QStringList x;
+KConfig cfg("ksslcalist", false, false);
+
+	x = cfg.groupList();
+	x.remove("<default>");
+
+return x;
+}
+
+
+bool KSSLD::caUseForSSL(QString subject) {
+KConfig cfg("ksslcalist", false, false);
+
+	if (!cfg.hasGroup(subject))
+		return false;
+
+	cfg.setGroup(subject);
+return cfg.readBoolEntry("site", false);
+}
+
+
+
+bool KSSLD::caUseForEmail(QString subject) {
+KConfig cfg("ksslcalist", false, false);
+
+	if (!cfg.hasGroup(subject))
+		return false;
+
+	cfg.setGroup(subject);
+return cfg.readBoolEntry("email", false);
+}
+
+
+
+bool KSSLD::caUseForCode(QString subject) {
+KConfig cfg("ksslcalist", false, false);
+
+	if (!cfg.hasGroup(subject))
+		return false;
+
+	cfg.setGroup(subject);
+return cfg.readBoolEntry("code", false);
+}
+
+
+bool KSSLD::caRemove(QString subject) {
+KConfig cfg("ksslcalist", false, false);
+	if (!cfg.hasGroup(subject))
+		return false;
+
+	cfg.deleteGroup(subject);
+return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////
 
 #include "kssld.moc"
 
 
 /*
 
-  DESIGN
+  DESIGN     - KSSLCertificateCache
   ------
 
   This is the first implementation and I think this cache actually needs

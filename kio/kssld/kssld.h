@@ -26,6 +26,7 @@
 #include <ksslcertificate.h>
 #include <ksslcertificatecache.h>
 #include <qstring.h>
+#include <qstringlist.h>
 
 
 class KSimpleConfig;
@@ -73,6 +74,19 @@ k_dcop:
                            KSSLCertificateCache::KSSLCertificatePolicy policy,
                                 bool permanent,
                                 QDateTime expires);
+
+  /* Certificate Authorities */
+  bool caRegenerate();
+
+  QStringList caListCAs();
+
+  bool caUseForSSL(QString subject);
+
+  bool caUseForEmail(QString subject);
+  
+  bool caUseForCode(QString subject);
+
+  bool caRemove(QString subject);
 
   //
   //  Certificate Home methods
