@@ -21,7 +21,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#define QT_CLEAN_NAMESPACE
 #include "kwinmodule.h"
 #include "kwin.h"
 #include <X11/Xatom.h>

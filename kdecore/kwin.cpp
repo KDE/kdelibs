@@ -21,7 +21,6 @@
  */
 
 #include <stdlib.h>
-#define QT_CLEAN_NAMESPACE
 #include "kwin.h"
 #include <qapplication.h>
 #include "kapp.h"
@@ -65,7 +64,7 @@ void kwin_net_create_atoms() {
 	atoms[n] = &net_wm_context_help;
 	names[n++] = "_NET_WM_CONTEXT_HELP";
 
-	atoms[n] = &net_kde_docking_window_for;
+	atoms[n] = &net_wm_kde_docking_window_for;
 	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
 	
 	// we need a const_cast for the shitty X API
