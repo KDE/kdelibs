@@ -86,16 +86,16 @@ KHTMLCachedImage::load( const char * _file )
 
     // Workaround for bug in QMovie
     // Load the image in memory to avoid vasting file handles
+    FILE *f = fopen( _file, "rb" );
+    if( !f )
+    {
+	warning( "Cache: Could not load %s\n", _file );
+	return;
+    }
     struct stat buff;
     stat( _file, &buff );
     int s = buff.st_size;
     char *c = new char[ s ];
-    FILE *f = fopen( _file, "rb" );
-    if( !f )
-    {
-	warning( "Could not load %s\n", _file );
-	perror( "" );
-    }
     fread( c, 1, s, f );
     fclose( f );
     QByteArray arr;
@@ -231,6 +231,11 @@ KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
 {
     // this brings the _url to a standard form...
     KURL kurl( _url );
+    if( kurl.isMalformed() )
+    {
+      printf("Cache: Malformed url: %s\n", _url );
+      return;
+    }
     KHTMLCachedImage *im = cache->find(kurl.url());
     if(!im)
     {
