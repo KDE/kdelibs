@@ -189,8 +189,7 @@ public:
   bool sourceParsed(KJS::ExecState *exec, int sourceId,
                     const KJS::UString &source, int errorLine);
   bool sourceUnused(KJS::ExecState * exec, int sourceId);
-  bool exception(KJS::ExecState *exec, int sourceId, 
-                 int lineno, KJS::Object &exceptionObj);
+  bool exception(KJS::ExecState *exec, const KJS::Value &value, bool inTryCatch);
   bool atStatement(KJS::ExecState *exec, int sourceId, 
                    int firstLine, int lastLine);
   bool enterContext(KJS::ExecState *exec, CodeType codeType, int sourceId,

@@ -407,15 +407,17 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
 {
   // the interpreter has parsed some js code - store it in a SourceFragment object
   // ### report errors (errorLine >= 0)
-
   SourceFile *sourceFile = m_sourceFiles[m_nextSourceUrl];
   if (!sourceFile) {
-    sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count(), exec->interpreter());
-    m_sourceSelFiles[sourceFile->index] = sourceFile;
-    if (m_nextSourceUrl.isNull() || m_nextSourceUrl == "")
-        m_sourceSel->insertItem("???");
-    else
-        m_sourceSel->insertItem(m_nextSourceUrl);
+    if (!m_nextSourceUrl.isNull() && m_nextSourceUrl != "") {
+      setSourceFile(m_nextSourceUrl,source.qstring(),exec->interpreter());
+      sourceFile = m_sourceFiles[m_nextSourceUrl];
+    }
+    else {
+      sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count(), exec->interpreter());
+      m_sourceSelFiles[sourceFile->index] = sourceFile;
+      m_sourceSel->insertItem("???");
+    }
   }
 
   SourceFragment *sf = new SourceFragment(sourceId,m_nextSourceBaseLine,sourceFile);
@@ -450,11 +452,16 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::exception(KJS::ExecState *exec, int sourceId, 
-        int lineno, KJS::Object &exceptionObj)
+bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch)
 {
+  assert(m_frames.count() > 0);
+
+  QString msg = "An exception occurred at " + m_frames.last()->sourceFragment->sourceFile->url +
+		" line " + QString("%1").arg(m_frames.last()->sourceFragment->baseLine+m_frames.last()->lineno-1) +
+		":\n\n" + value.toString(exec).qstring();
+
   // ### bring up source & hilight line
-  KMessageBox::error(this, exceptionObj.toString(exec).qstring(), "JavaScript error");
+  KMessageBox::error(this, msg, "JavaScript error");
   return (m_mode != Stop);
 }
 
