@@ -97,7 +97,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       lt_dlhandle libhandle = lt_dlopen(mLib.ascii());
       if (libhandle == 0) {
          iio->setStatus(1); // error
-         warning("couldn't dlopen %s (%s)",
+         warning("KImageIOFormat::callLibFunc: couldn't dlopen %s (%s)",
 			mLib.ascii(), lt_dlerror());
          return;
       }
