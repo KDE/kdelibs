@@ -122,7 +122,6 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     switch( attr->attrId )
     {
     case ATTR_ALIGN:
-//	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
         if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
             addCSSProperty(CSS_PROP_MARGIN_LEFT, "auto");
         if( strcasecmp( attr->value(), "right") != 0)
@@ -157,6 +156,8 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLHRElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
+    if(document->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
