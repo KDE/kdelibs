@@ -1175,7 +1175,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        else
        {
           item->setSelected(!item->isSelected());
-          //item->repaint();
           emitSelectionChanged=TRUE;
        };
        break;
@@ -1198,10 +1197,8 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        {
           repaintItem2=nextItem;
           visItem=nextItem;
-          //ensureItemVisible(nextItem);
           setCurrentItem(nextItem);
        };
-       //item->repaint();
        emitSelectionChanged=TRUE;
        break;
 
@@ -1213,11 +1210,16 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
           if (d->selectedBySimpleMove)
              d->selectedBySimpleMove=false;
           else
+          {
              item->setSelected(!item->isSelected());
+             emitSelectionChanged=TRUE;
+          }
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
+       {
           item->setSelected(false);
-
+          emitSelectionChanged=TRUE;
+       };
 
        if (nextItem!=0)
        {
@@ -1225,11 +1227,8 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              nextItem->setSelected(true);
           repaintItem2=nextItem;
           visItem=nextItem;
-          //ensureItemVisible(nextItem);
           setCurrentItem(nextItem);
        };
-       //item->repaint();
-       emitSelectionChanged=TRUE;
        break;
 
     case Key_Up:
@@ -1242,10 +1241,16 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
           if (d->selectedBySimpleMove)
              d->selectedBySimpleMove=false;
           else
+          {
              item->setSelected(!item->isSelected());
+             emitSelectionChanged=TRUE;
+          }
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
+       {
           item->setSelected(false);
+          emitSelectionChanged=TRUE;
+       };
 
        if (nextItem!=0)
        {
@@ -1253,11 +1258,8 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              nextItem->setSelected(true);
           repaintItem2=nextItem;
           visItem=nextItem;
-          //ensureItemVisible(nextItem);
           setCurrentItem(nextItem);
        };
-       //item->repaint();
-       emitSelectionChanged=TRUE;
        break;
 
     case Key_End:
@@ -1278,8 +1280,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 nextItem->setSelected(true);
              repaintItem2=nextItem;
              visItem=nextItem;
-             //nextItem->repaint();
-             //ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
           }
           nextItem=nextItem->itemBelow();
@@ -1305,8 +1305,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 nextItem->setSelected(true);
              repaintItem2=nextItem;
              visItem=nextItem;
-             //nextItem->repaint();
-             //ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
           }
           nextItem=nextItem->itemAbove();
@@ -1335,9 +1333,9 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
              //nextItem->repaint();
+             setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
-             setUpdatesEnabled(true);
              update();
              if ((shiftOrCtrl) || (d->selectedBySimpleMove))
              {
@@ -1368,9 +1366,9 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
              //nextItem->repaint();
+             setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
-             setUpdatesEnabled(true);
              update();
              if ((shiftOrCtrl) || (d->selectedBySimpleMove))
              {
@@ -1401,7 +1399,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        if (d->selectedBySimpleMove)
        {
           currentItem()->setSelected(true);
-          //currentItem()->repaint();
           emitSelectionChanged=TRUE;
        }
        repaintItem2=currentItem();
@@ -1435,7 +1432,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     if (repaintItem2)
        repaintItem2->repaint();*/
     update();
-    //viewport()->repaint();
     if (emitSelectionChanged)
        emit selectionChanged();
 }
