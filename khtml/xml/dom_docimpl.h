@@ -149,7 +149,7 @@ protected:
 /**
  * @internal
  */
-class DocumentImpl : public QObject, khtml::CachedObjectClient, public NodeBaseImpl
+class DocumentImpl : public QObject, private khtml::CachedObjectClient, public NodeBaseImpl
 {
     Q_OBJECT
 public:
