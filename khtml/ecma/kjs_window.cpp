@@ -852,7 +852,7 @@ void Location::put(const UString &p, const KJSO &v)
 
   QString str = v.toString().value().qstring();
 
-  KURL url = part->completeURL(part->url().url());
+  KURL url = part->completeURL(str);
 
   if (p == "href") url = KURL(url,str);
   else if (p == "hash") url.setRef(str);
