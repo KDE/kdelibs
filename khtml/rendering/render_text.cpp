@@ -416,8 +416,8 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
       _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
 
   int absx, absy;
-  
-  if (absolutePosition(absx,absy)) 
+
+  if (absolutePosition(absx,absy))
   {
     _x += absx;
     _y += absy;
@@ -430,14 +430,13 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
-    if(parent()) {
-        parent()->absolutePosition(xPos, yPos, false);
+    if(parent() && parent()->absolutePosition(xPos, yPos, false)) {
         if ( m_lines.count() ) {
             TextSlave* s = m_lines[0];
             xPos += s->m_x;
             yPos += s->m_y;
-            return true;
         }
+        return true;
     }
     xPos = yPos = 0;
     return false;
@@ -569,7 +568,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         if (hasKeyboardFocus!=DOM::ActivationOff)
         {
             si = firstSi;
-            bool clip = p->hasClipping();
             p->setClipping(false);
             p->setRasterOp(Qt::CopyROP);
 	    p->setBrush(Qt::NoBrush);
@@ -707,8 +705,12 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-    return m_contentHeight * m_lines.count()
-        + style()->borderTopWidth() + style()->borderBottomWidth();
+    if(m_lines.count())
+         return m_lines[m_lines.count()-1]->m_y+m_contentHeight +
+             style()->borderTopWidth() + style()->borderBottomWidth();
+    else
+        return m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
+
     // ### padding is relative to the _width_ of the containing block
     //+ style()->paddingTop() + style()->paddingBottom()
 }

@@ -117,10 +117,12 @@ QScrollView *RenderRoot::view()
 
 bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    xPos = yPos = 0;
     if ( f ) {
-	xPos += m_view->contentsX();
-	yPos += m_view->contentsY();
+	xPos = m_view->contentsX();
+	yPos = m_view->contentsY();
+    }
+    else {
+        xPos = yPos = 0;
     }
     return true;
 }
