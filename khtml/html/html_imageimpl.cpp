@@ -457,7 +457,10 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     // attribute, so we try to guess by looking at the coords count
     // what the HTML author tried to tell us.
 
-    if (shape==Poly || shape==Unknown && coords->count() > 4)
+    // a Poly needs at least 3 points (6 coords), so this is correct
+    // just ignore poly's with 2 points or less, because
+    // QRegion will anyway crash on them. 
+    if ((shape==Poly || shape==Unknown) && coords->count() > 4)
     {
         //cout << " poly " << endl;	
 	bool xcoord=true;
