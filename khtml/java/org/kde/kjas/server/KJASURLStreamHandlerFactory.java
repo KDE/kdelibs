@@ -33,6 +33,8 @@ class KIOConnection
     final static int DATA = 0;
     final static int FINISHED = 1;
     final static int ERRORCODE = 2;
+    final static int CONNECTED = 6;
+    final static int REQUESTDATA = 7;
 
     final static int STOP = 0;
     final static int HOLD = 1;
@@ -45,10 +47,11 @@ class KIOConnection
 
     protected boolean connected = false;
     protected String jobid = null;
-    protected LinkedList data = new LinkedList ();
+    protected LinkedList data = new LinkedList();
     protected int errorcode = 0;
     protected boolean finished = false;
     protected boolean onhold = false;
+    protected boolean request_data = false;
     protected URL url;
 
     void checkConnected() throws IOException {
@@ -63,15 +66,30 @@ class KIOConnection
         KJASOutputStream() {
         }
         public void write(int b) throws IOException {
-            throw new IOException("not implemented");
+            byte[] buf = {(byte)b};
+            write(buf);
+        }
+        public void write(byte b[], int off, int len) throws IOException {
+            Main.debug ("KJASOutputStream.write" + jobid);
+            byte[] buf = new byte[len];
+            System.arraycopy(b, off, buf, 0, len);
+            synchronized(jobs) {
+                data.addLast(buf);
+            }
+            sendData(false);
+        }
+        public void write(byte b[]) throws IOException {
+            write(b, 0, b.length);
         }
         public void close() throws IOException {
+            Main.debug ("KJASOutputStream.close" + jobid);
             checkConnected();
             disconnect();
         }
         public void flush() throws IOException {
+            Main.debug ("KJASOutputStream.flush" + jobid);
             checkConnected();
-            throw new IOException("not implemented");
+            sendData(true);
         }
     }
 
@@ -203,7 +221,58 @@ class KIOConnection
                 errorcode = Integer.parseInt(codestr);
                 Main.debug ("ERRORECODE(" + jobid + ") " + errorcode);
                 break;
+            case CONNECTED:
+                Main.debug ("CONNECTED(" + jobid + ") ");
+                request_data = true;
+                break;
+            case REQUESTDATA:
+                Main.debug ("REQUESTDATA(" + jobid + ") ");
+                request_data = true;
+                break;
         }
+    }
+    void sendData(boolean force) throws IOException {
+        Main.debug ("sendData(" + jobid + ") force:" + force + " request_data:" + request_data);
+        if (!request_data && !force) return;
+        synchronized (jobs) {
+            if (data.size() == 0) return;
+        }
+        if (force && !request_data) {
+            thread = Thread.currentThread();
+            try {
+                Main.debug ("sendData(" + jobid + ") sleep");
+                thread.sleep(10000);
+            } catch (InterruptedException ie) {
+                Main.debug ("sendData(" + jobid + ") inter");
+            }
+            if (!request_data) {
+                Main.debug ("sendData(" + jobid + ") timeout");
+                thread = null;
+                synchronized(jobs) {
+                    data.clear();
+                }
+                disconnect();
+                throw new IOException("timeout");
+            }
+        }
+        byte[] buf;
+        int total = 0;
+        synchronized(jobs) {
+            ListIterator it = data.listIterator(0);
+            while (it.hasNext())
+                total += ((byte []) it.next()).length;
+            buf = new byte[total];
+            int off = 0;
+            it = data.listIterator(0);
+            while (it.hasNext()) {
+                byte [] b = (byte []) it.next();
+                System.arraycopy(b, 0, buf, off, b.length);
+                off += b.length;
+            }
+            data.clear();
+	    request_data = false;
+        }
+        Main.protocol.sendPutData(jobid, buf, 0, total);
     }
     synchronized void connect(boolean doInput) throws IOException {
         if (connected)
@@ -217,15 +286,17 @@ class KIOConnection
         }
         if (doInput)
             Main.protocol.sendGetURLDataCmd(jobid, url.toExternalForm());
+        else
+            Main.protocol.sendPutURLDataCmd(jobid, url.toExternalForm());
         try {
             Thread.currentThread().sleep(20000);
         } catch (InterruptedException ie) {
-            connected = true;
-            if (doInput)
-                in = new KJASInputStream();
-            else
-                out = new KJASOutputStream();
             if (!haveError()) {
+                connected = true;
+                if (doInput)
+                    in = new KJASInputStream();
+                else
+                    out = new KJASOutputStream();
                 Main.debug ("connect(" + jobid + ") " + url);
                 return;
             }
@@ -248,6 +319,12 @@ class KIOConnection
         if (!connected)
             return;
         Main.debug ("disconnect " + jobid);
+	//(new Exception()).printStackTrace();
+        if (out != null) {
+            try {
+                out.flush();
+            } catch (IOException iox) {}
+        }
         synchronized (jobs) {
             jobs.remove(jobid);
         }
@@ -286,7 +363,7 @@ final class KIOHttpConnection extends KIOConnection
         super(u);
     }
     protected boolean haveError() {
-        return responseCode >= 400;
+        return responseCode < 0 || responseCode >= 400;
     }
     public void setData(int code, byte [] d) {
         // this method is synchronized on jobs in processCommand

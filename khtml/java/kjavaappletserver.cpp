@@ -69,11 +69,13 @@
 #define KJAS_APPLET_STATE      (char)23
 #define KJAS_APPLET_FAILED     (char)24
 #define KJAS_DATA_COMMAND      (char)25
+#define KJAS_PUT_URLDATA       (char)26
+#define KJAS_PUT_DATA          (char)27
 
 
 class JSStackFrame;
 
-typedef QMap< int, KJavaDownloader* > KIOJobMap;
+typedef QMap< int, KJavaKIOJob* > KIOJobMap;
 typedef QMap< int, JSStackFrame* > JSStack;
 
 class JSStackFrame {
@@ -421,7 +423,6 @@ void KJavaAppletServer::sendURLData( int loaderID, int code, const QByteArray& d
     args.append( QString::number(code) );
 
     process->send( KJAS_URLDATA, args, data );
-
 }
 
 void KJavaAppletServer::removeDataJob( int loaderID )
@@ -475,6 +476,21 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     }*/
     ++index; //skip the sep
 
+    if (cmd_code == KJAS_PUT_DATA) {
+        // rest of the data is for kio put
+        if (ok) {
+            KIOJobMap::iterator it = d->kiojobs.find( ID_num );
+            if (ok && it != d->kiojobs.end()) {
+                QByteArray qba;
+                qba.setRawData(qb.data() + index, qb.size() - index - 1);
+                it.data()->data(qba);
+                qba.resetRawData(qb.data() + index, qb.size() - index - 1);
+            }
+            kdDebug(6100) << "PutData(" << ID_num << ") size=" << qb.size() - index << endl;
+        } else
+            kdError(6100) << "PutData error " << ok << endl;
+        return;
+    }
     //now parse out the arguments
     while( index < qb_size )
     {
@@ -512,7 +528,16 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 d->kiojobs.insert(ID_num, new KJavaDownloader(ID_num, args[0]));
                 kdDebug(6100) << "GetURLData(" << ID_num << ") url=" << args[0] << endl;
             } else
-                kdError(6100) << "GetURLData error " << ok << " args:" << args.size () << endl;
+                kdError(6100) << "GetURLData error " << ok << " args:" << args.size() << endl;
+            return;
+        case KJAS_PUT_URLDATA:
+            if (ok && args.size () > 0) {
+                KJavaUploader *job = new KJavaUploader(ID_num, args[0]);
+                d->kiojobs.insert(ID_num, job);
+                job->start();
+                kdDebug(6100) << "PutURLData(" << ID_num << ") url=" << args[0] << endl;
+            } else
+                kdError(6100) << "PutURLData error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_DATA_COMMAND:
             if (ok && args.size () > 0) {
@@ -522,7 +547,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                     it.data()->jobCommand( cmd );
                 kdDebug(6100) << "KIO Data command: " << ID_num << " " << args[0] << endl;
             } else
-                kdError(6100) << "KIO Data command error " << ok << " args:" << args.size () << endl;
+                kdError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_JAVASCRIPT_EVENT:
             cmd = QString::fromLatin1( "JS_Event" );

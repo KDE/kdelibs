@@ -23,7 +23,6 @@
 #define KJAVADOWNLOADER_H
 
 #include <qobject.h>
-#include <kio/jobclasses.h>
 
 /**
  * @short A class for handling downloads from KIO
@@ -34,9 +33,23 @@
  * @author Wynn Wilkes, wynnw@calderasystems.com
  */
 
+namespace KIO {
+    class Job;
+}
 
 class KJavaDownloaderPrivate;
-class KJavaDownloader : public QObject
+class KJavaUploaderPrivate;
+
+class KJavaKIOJob : public QObject
+{
+Q_OBJECT
+public:
+    virtual ~KJavaKIOJob();
+    virtual void jobCommand( int cmd ) = 0;
+    virtual void data( const QByteArray& qb );
+};
+
+class KJavaDownloader : public KJavaKIOJob
 {
 Q_OBJECT
 
@@ -44,7 +57,7 @@ public:
     KJavaDownloader( int ID, const QString& url );
     ~KJavaDownloader();
 
-    void jobCommand( int cmd );
+    virtual void jobCommand( int cmd );
 protected slots:
     void slotData( KIO::Job*, const QByteArray& );
     void slotConnected( KIO::Job* );
@@ -56,4 +69,22 @@ private:
 
 };
 
+class KJavaUploader : public KJavaKIOJob
+{
+Q_OBJECT
+
+public:
+    KJavaUploader( int ID, const QString& url );
+    ~KJavaUploader();
+
+    virtual void jobCommand( int cmd );
+    virtual void data( const QByteArray& qb );
+    void start();
+protected slots:
+    void slotDataRequest( KIO::Job*, QByteArray& );
+    void slotResult( KIO::Job* );
+private:
+    KJavaUploaderPrivate* d;
+
+};
 #endif

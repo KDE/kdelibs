@@ -24,6 +24,7 @@
 
 #include <kurl.h>
 #include <kio/job.h>
+#include <kio/jobclasses.h>
 #include <kdebug.h>
 #include <qfile.h>
 
@@ -33,10 +34,21 @@ static const int ERRORCODE = 2;
 static const int HEADERS = 3;
 static const int REDIRECT = 4;
 static const int MIMETYPE = 5;
+static const int CONNECTED = 6;
+static const int REQUESTDATA = 7;
 
 static const int KJAS_STOP = 0;
 static const int KJAS_HOLD = 1;
 static const int KJAS_RESUME = 2;
+
+KJavaKIOJob::~KJavaKIOJob() {}
+
+void KJavaKIOJob::data( const QByteArray& )
+{
+    kdError(6100) << "Job id mixup" << endl;
+}
+
+//-----------------------------------------------------------------------------
 
 class KJavaDownloaderPrivate
 {
@@ -95,6 +107,7 @@ void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
             d->file.resize( headers.length() );
             memcpy( d->file.data(), headers.ascii(), headers.length() );
             server->sendURLData( d->loaderID, HEADERS, d->file );
+            d->file.resize( 0 );
         }
         d->isfirstdata = false;
         KIO::MetaData md = d->job->metaData();
@@ -102,13 +115,8 @@ void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
         for( it = md.begin(); it !=  md.end(); ++it)
             kdDebug(6100)<< "metadata " << it.key() << "=" << it.data() << endl;
     }
-    int qb_size = qb.size();
-    if (qb_size) {
-        d->file.resize( qb_size );
-        memcpy( d->file.data(), qb.data(), qb_size );
-        server->sendURLData( d->loaderID, DATA, d->file );
-        d->file.resize( 0 );
-    }
+    if ( qb.size() )
+        server->sendURLData( d->loaderID, DATA, qb );
     KJavaAppletServer::freeJavaServer();
 }
 
@@ -139,6 +147,7 @@ void KJavaDownloader::slotResult( KIO::Job* )
         kdDebug(6100) << "slave had an error = " << code << endl;
 
         server->sendURLData( d->loaderID, ERRORCODE, d->file );
+        d->file.resize( 0 );
     }
     else
     {
@@ -175,5 +184,119 @@ void KJavaDownloader::jobCommand( int cmd )
     }
 }
 
-#include "kjavadownloader.moc"
+//-----------------------------------------------------------------------------
 
+class KJavaUploaderPrivate
+{
+public:
+    KJavaUploaderPrivate() {}
+    ~KJavaUploaderPrivate()
+    {
+        delete url;
+        if (job) job->kill(); // KIO::Job::kill deletes itself
+    }
+    int               loaderID;
+    KURL*             url;
+    QByteArray        file;
+    KIO::TransferJob* job;
+    bool              finished;
+};
+
+KJavaUploader::KJavaUploader( int ID, const QString& url )
+{
+    kdDebug(6100) << "KJavaUploader(" << ID << ") = " << url << endl;
+
+    d = new KJavaUploaderPrivate;
+
+    d->loaderID = ID;
+    d->url = new KURL( url );
+    d->job = 0L;
+    d->finished = false;
+}
+
+void KJavaUploader::start()
+{
+    kdDebug(6100) << "KJavaUploader::start(" << d->loaderID << ")" << endl;
+    KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
+    // create a suspended job
+    d->job = KIO::put( *d->url, -1, false, false, false );
+    d->job->suspend();
+    connect( d->job, SIGNAL(dataReq( KIO::Job*, QByteArray& )),
+            this,   SLOT(slotDataRequest( KIO::Job*, QByteArray& )) );
+    connect( d->job, SIGNAL(result(KIO::Job*)),
+            this,   SLOT(slotResult(KIO::Job*)) );
+    server->sendURLData( d->loaderID, CONNECTED, d->file );
+    KJavaAppletServer::freeJavaServer();
+}
+
+KJavaUploader::~KJavaUploader()
+{
+    delete d;
+}
+
+void KJavaUploader::slotDataRequest( KIO::Job*, QByteArray& qb )
+{
+    // send our data and suspend
+    kdDebug(6100) << "slotDataRequest(" << d->loaderID << ") finished:" << d->finished << endl;
+    qb.resize( d->file.size() );
+    KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
+    if (d->file.size() == 0) {
+        d->job = 0L; // eof, job deletes itself
+        server->removeDataJob( d->loaderID ); // will delete this
+    } else {
+        memcpy( qb.data(), d->file.data(), d->file.size() );
+        d->file.resize( 0 );
+	if (!d->finished) {
+            server->sendURLData( d->loaderID, REQUESTDATA, d->file );
+            d->job->suspend();
+        }
+    }
+    KJavaAppletServer::freeJavaServer();
+}
+
+void KJavaUploader::data( const QByteArray& qb )
+{
+    kdDebug(6100) << "KJavaUploader::data(" << d->loaderID << ")" << endl;
+    d->file.resize( qb.size() );
+    memcpy( d->file.data(), qb.data(), qb.size() );
+    d->job->resume();
+}
+
+void KJavaUploader::slotResult( KIO::Job* )
+{
+    kdDebug(6100) << "slotResult(" << d->loaderID << ") job:" << d->job << endl;
+
+    if (!d->job)
+        return;
+    KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
+    if (d->job->error())
+    {
+        int code = d->job->error();
+        QString codestr = QString::number(code);
+        d->file.resize(codestr.length());
+        memcpy( d->file.data(), codestr.ascii(), codestr.length() );
+        kdDebug(6100) << "slave had an error " << code <<  ": " << d->job->errorString() << endl;
+
+        server->sendURLData( d->loaderID, ERRORCODE, d->file );
+        d->file.resize( 0 );
+    }
+    else // shouldn't come here
+        kdError(6100) << "slotResult(" << d->loaderID << ") job:" << d->job << endl;
+    d->job = 0L; // signal KIO::Job::result deletes itself
+    server->removeDataJob( d->loaderID ); // will delete this
+    KJavaAppletServer::freeJavaServer();
+}
+
+void KJavaUploader::jobCommand( int cmd )
+{
+    if (!d->job) return;
+    switch (cmd) {
+        case KJAS_STOP: {
+            kdDebug(6100) << "jobCommand(" << d->loaderID << ") stop" << endl;
+	    d->finished = true;
+            break;
+        }
+    }
+}
+
+#include "kjavadownloader.moc"

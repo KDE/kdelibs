@@ -40,7 +40,9 @@ public class KJASProtocolHandler
     private static final int AppletStateNotificationCode = 23;
     private static final int AppletFailedCode    = 24;
     private static final int DataCommand         = 25;
-    
+    private static final int PutURLDataCode      = 26;
+    private static final int PutDataCode         = 27;
+
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
 
@@ -244,7 +246,7 @@ public class KJASProtocolHandler
             synchronized (KIOConnection.jobs) {
                 KIOConnection job = (KIOConnection) KIOConnection.jobs.get(id);
                 if (job == null)
-                    Main.info("KJASHttpURLConnection gone (timeout or closed)");
+                    Main.info("KJASHttpURLConnection gone (timedout/closed)");
                 else {
                     job.setData(Integer.parseInt(code), data);
                     if (job.thread != null) {
@@ -358,11 +360,11 @@ public class KJASProtocolHandler
     /**
     * sends get url request
     */
-    public void sendGetURLDataCmd( String ID_str, String file )
+    public void sendGetURLDataCmd( String jobid, String url )
     {
-        Main.info( "sendGetURLCmd(" + ID_str + ") url = " + file );
+        Main.info( "sendGetURLCmd(" + jobid + ") url = " + url );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
-        int length = ID_str.length() + file.length() + 4;
+        int length = jobid.length() + url.length() + 4;
         char[] chars = new char[ length + 8 ];
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
@@ -372,12 +374,12 @@ public class KJASProtocolHandler
         chars[index++] = (char) GetURLDataCode;
         chars[index++] = sep;
 
-        tmpchar = ID_str.toCharArray();
+        tmpchar = jobid.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = file.toCharArray();
+        tmpchar = url.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
@@ -386,7 +388,7 @@ public class KJASProtocolHandler
     }
 
     /**
-    * sends command for get url request (stop/hold/resume)
+    * sends command for get url request (stop/hold/resume) or put (stop)
     */
     public void sendDataCmd( String id, int cmd )
     {
@@ -414,13 +416,66 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
-
-    public void sendPutURLDataCmd( String id, String file )
+    /**
+    * sends put url request
+    */
+    public void sendPutURLDataCmd( String jobid, String url )
     {
+        Main.info( "sendPutURLCmd(" + jobid + ") url = " + url );
+        //length  = length of args plus 1 for code, 2 for seps and 1 for end
+        int length = jobid.length() + url.length() + 4;
+        char[] chars = new char[ length + 8 ];
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) PutURLDataCode;
+        chars[index++] = sep;
+
+        tmpchar = jobid.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = url.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
     }
-
-    public void sendData( String id, int cmd, byte [] b, int off, int len )
+    /**
+    * sends put data
+    */
+    public void sendPutData( String jobid, byte [] b, int off, int len )
     {
+        Main.info( "sendPutData(" + jobid + ") len = " + len );
+        //length  = length of args plus 1 for code, 2 for seps and 1 for end
+        int length = jobid.length() + len + 4;
+        char[] chars = new char[ length + 8 ];
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) PutDataCode;
+        chars[index++] = sep;
+
+        tmpchar = jobid.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = new char[len];
+        for (int i = 0; i < len; i++)
+            tmpchar[i] = (char) b[off+i];
+	
+        System.arraycopy( tmpchar, 0, chars, index, len );
+        index += len;
+        chars[index++] = sep;
+
+        signals.print( chars );
     }
     /**
     * sends notification about the state of the applet.
