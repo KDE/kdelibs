@@ -86,7 +86,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
-    //kdDebug() << "document.write: " << str.ascii() << endl;
+    //kdDebug() << "document.write: " << str.string().string() << endl;
     doc.write(str.string());
     return Undefined();
   }

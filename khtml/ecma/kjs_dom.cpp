@@ -266,7 +266,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       if (!rend)
         return Undefined();
       else
-        // "Width of the object including padding, but not including margin, border, or scroll bar."
+        // "Height of the object including padding, but not including margin, border, or scroll bar."
         return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft:
       if (!rend || !v)
