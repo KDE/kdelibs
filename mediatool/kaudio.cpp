@@ -1,9 +1,11 @@
-
+#include <config.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "kaudio.h"
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 KAudio::KAudio()
 {
@@ -27,7 +29,7 @@ KAudio::KAudio()
     l_b_contactError = true;
   }
   if ( !l_b_contactError && setsockopt( sockFD, SOL_SOCKET, SO_REUSEADDR,
-				       &curState, sizeof(curState) ) < 0 ) {
+				       (char*)&curState, sizeof(curState) ) < 0 ) {
     cerr << "Unable to set socket option SO_REUSEADDR\n";
     l_b_contactError = true;
   }
@@ -68,8 +70,8 @@ KAudio::KAudio()
 
 KAudio::~KAudio()
 {
-  if(ServerContacted)
-    true;
+  // if (ServerContacted)
+  //  true;
 }
 
 bool KAudio::play()
@@ -139,7 +141,7 @@ void KAudio::setAutosync(bool autosync)
 /** If you want to recieve a Qt signal when your media is finished, you must
   *  call setSignals(true) before you play your media.
   */
-void KAudio::setSignals(bool sigs=true)
+void KAudio::setSignals(bool /*sigs*/)
 {
 }
 

@@ -21,10 +21,6 @@
 #ifndef KAUDIO_H
 #define KAUDIO_H "$Id$"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <qobject.h>
 #include <qtimer.h>
 #include <string>
