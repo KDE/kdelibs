@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-applixspread
+Icon=applix
+Patterns=*.as
+Comment=Applix Spreadsheets document

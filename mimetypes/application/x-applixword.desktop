@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-applixword
+Icon=applix
+Patterns=*.aw
+Comment=Applix Words document
