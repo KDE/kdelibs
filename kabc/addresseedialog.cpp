@@ -81,6 +81,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   connect( mAddresseeEdit->completionObject(), SIGNAL( match( const QString & ) ),
            SLOT( selectItem( const QString & ) ) );
   mAddresseeEdit->setFocus();
+  mAddresseeEdit->completionObject()->setIgnoreCase( true );
   listLayout->addWidget( mAddresseeEdit );
 
   if ( mMultiple ) {
@@ -134,9 +135,8 @@ void AddresseeDialog::addCompletionItem( const QString &str, QListViewItem *item
 {
   if ( str.isEmpty() ) return;
 
-  QString s = str.lower();
-  mItemDict.insert( s, item );
-  mAddresseeEdit->completionObject()->addItem( s );
+  mItemDict.insert( str, item );
+  mAddresseeEdit->completionObject()->addItem( str );
 }
 
 void AddresseeDialog::selectItem( const QString &str )
