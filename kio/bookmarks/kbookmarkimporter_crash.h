@@ -53,6 +53,7 @@ signals:
 
 protected:
     QString m_fileName;
+    QMap<QString, QString> parseCrashLog_noemit( QString filename, bool del );
     void parseCrashLog( QString filename, bool del );
 };
 
