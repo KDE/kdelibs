@@ -2433,6 +2433,8 @@ lt_dlopenext (filename)
 
 
 #ifdef _AIX
+  tmp[len] = '\0'; /* delete the ".la" again.  */
+  
   /* versioned shared objects can be in .a's */
   strcat(tmp, ".a");
   handle = lt_dlopen (tmp);
