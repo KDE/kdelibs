@@ -50,3 +50,21 @@ setcookies	string		Used to send/receive HTTP cookies when "cookies" is set to "m
 errorPage	bool		Flag that indicates that an errorPage() is preferred over an error(). (default:true)
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
+
+
+Examples:
+
+E.g. the following disables cookies:
+job = KIO::get( KURL("http://www.kde.org"), false, false);
+job->addMetaData("cookies", "none");
+
+If you want to handle cookies yourself, you can do:
+job = KIO::get( KURL("http://www.kde.org"), false, false);
+job->addMetaData("cookies", "manual");
+job->addMetaData("setcookies", "Cookie: foo=bar; gnat=gnork");
+
+The above sends two cookies along with the request, any cookies send back by 
+the server can be retrieved with job->queryMetaData("cookies") after 
+receiving the mimetype() signal or when the job is finished.
+
+The cookiejar is not used in this case.
