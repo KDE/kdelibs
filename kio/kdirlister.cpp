@@ -51,6 +51,7 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_rootFileItem = 0L;
   m_bDirOnlyMode = false;
   m_bDelayedMimeTypes = _delayedMimeTypes;
+  m_isShowingDotFiles = false;
   d->autoUpdate = true;
 }
 
