@@ -26,8 +26,7 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS =kledlamptest kprogresstest \
-		kcolordlgtest kdatepicktest kfontdialogtest	\
+check_PROGRAMS = kprogresstest kcolordlgtest kdatepicktest kfontdialogtest	\
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
 		kwindowtest kstatusbartest kbuttonboxtest \
 		kledtest kcontainertest krulertest \
@@ -63,7 +62,6 @@ kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kformulatest_SOURCES = kformulatest.cpp
 kformulatest_LDADD = $(LIB_KFORMULA)
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
-kledlamptest_SOURCES = kledlamptest.cpp
 kledtest_SOURCES = kledtest.cpp
 kmessageboxtest_SOURCES = kmessageboxtest.cpp
 knuminputtest_SOURCES = knuminputtest.cpp
