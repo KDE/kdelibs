@@ -58,12 +58,12 @@ KSycoca::KSycoca()
 
 bool KSycoca::openDatabase( bool ignoreErrors )
 {
+   m_sycoca_mmap = 0;
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
      m_sycoca_size = database->size();
-     m_sycoca_mmap = 0;
 #ifdef HAVE_MMAP
      m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size, 
 				PROT_READ, MAP_SHARED,
@@ -71,7 +71,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
      if (!m_sycoca_mmap)
      {
 #endif
-        kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
+        kdWarning(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
         m_str = new QDataStream(database);
 #ifdef HAVE_MMAP
      }
@@ -142,11 +142,12 @@ void KSycoca::closeDatabase()
    if (m_str)
       device = m_str->device();
 #ifdef HAVE_MMAP
-   if (m_sycoca_mmap)
+   if (device && m_sycoca_mmap)
    {
       QBuffer *buf = (QBuffer *) device;
       buf->buffer().resetRawData(m_sycoca_mmap, m_sycoca_size);
       munmap((void *) m_sycoca_mmap, m_sycoca_size);
+      m_sycoca_mmap = 0;
    }
 #endif
    if (device)
