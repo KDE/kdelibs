@@ -71,7 +71,7 @@ ArrayPrototype::ArrayPrototype(const Object& proto, const Object &funcProto)
 {
   // The constructor will be added later in ArrayObject's constructor
 
-  put("length", 0u, DontEnum | DontDelete);
+  put("length", Number(0), DontEnum | DontDelete);
 
   put("toString",       new ArrayProtoFunc(funcProto,ArrayProtoFunc::ToString,      0), DontEnum);
   put("toLocaleString", new ArrayProtoFunc(funcProto,ArrayProtoFunc::ToLocaleString,0), DontEnum);

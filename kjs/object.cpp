@@ -520,7 +520,7 @@ Object Object::create(Class c, const KJSO& val)
     break;
   case StringClass:
     p += "String";
-    obj.put("length", val.toString().value().size());
+    obj.put("length", val.toString().value().size(), DontEnum | DontDelete | ReadOnly);
     break;
   case BooleanClass:
     p += "Boolean";

@@ -95,6 +95,8 @@ StringPrototype::StringPrototype(const Object& proto, const Object &funcProto)
   // The constructor will be added later in StringObject's constructor
 //  setPrototype(Global::current().get("[[Function.prototype]]"));
 
+  put("length",Number(0),DontDelete|ReadOnly|DontEnum);
+
   put("toString",    new StringProtoFunc(funcProto,StringProtoFunc::ToString,    0), DontEnum);
   put("valueOf",     new StringProtoFunc(funcProto,StringProtoFunc::ValueOf,     0), DontEnum);
   put("charAt",      new StringProtoFunc(funcProto,StringProtoFunc::CharAt,      1), DontEnum);
@@ -339,25 +341,24 @@ Completion StringProtoFunc::execute(const List &args)
   case Substring: {
     n = a0.toInteger();
     m = a1.toInteger();
-    double nvalue = n.value();
-    double mvalue = m.value();
-    if (KJS::isNaN(nvalue))
-      nvalue = 0;
-    if (KJS::isNaN(mvalue))
-      mvalue = 0;
-    if (nvalue > mvalue) {
-      double temp = mvalue;
-      mvalue = nvalue;
-      nvalue = temp;
-    }
-    d = min(max(nvalue, 0), len);
+    double start = n.value();
+    double end = m.value();
+    if (KJS::isNaN(start))
+      start = 0;
+    if (KJS::isNaN(end))
+      end = 0;
+    if (start > len)
+      start = len;
+    if (end > len)
+      end = len;
     if (a1.isA(UndefinedType))
-      d2 = len - d;
-    else {
-      d2 = min(max(mvalue, 0), len);
-      d2 = max(d2-d, 0);
+      end = len;
+    if (start > end) {
+      double temp = end;
+      end = start;
+      start = temp;
     }
-    result = String(s.value().substr((int)d, (int)d2));
+    result = String(s.value().substr((int)start, (int)(end-start)));
     }
     break;
   case ToLowerCase:

@@ -131,6 +131,7 @@ FunctionPrototype::FunctionPrototype(const Object &p)
     : FunctionImp()
 {
   setPrototype(p);
+  put("length",Number(0),DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.3.4 invoking Function.prototype() returns undefined
