@@ -1,12 +1,13 @@
 [Desktop Entry]
 Icon=
-InitialPreference=5
-Name=CramMD5Auth
-Name[cs]=Autorizace CramMD5
-Name[eo]=CramMD5-aŭtentigo
-Name[ro]=Autentificare CramMD5
-Name[sl]=CramMD5Overov.
-Name[sv]=CramMD5-autentisering
+InitialPreference=6
+Name=DigestMD5Auth
+Name[cs]=Autorizace DigestMD5
+Name[eo]=DigestMD5-aŭtentigo
+Name[ko]=DigestMD5 인증
+Name[ro]=Autentificare DigestMD5
+Name[sl]=DigestMD5Overov.
+Name[sv]=DigestMD5-autentisering
 ServiceTypes=KSASL/Module
 Type=Service
-X-KDE-Library=ksasl_auth_cram
+X-KDE-Library=ksasl_auth_digest

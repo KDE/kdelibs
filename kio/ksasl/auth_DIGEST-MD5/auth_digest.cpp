@@ -1,4 +1,32 @@
-// $Id$
+/*-
+ * Copyright (c) 2000,2001 Alex Zepeda <jazepeda@pacbell.net>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Redistributions of source code or in binary form must consent to
+ *    future terms and conditions as set forth by the original author.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * $Id$
+ */
 
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -15,23 +43,31 @@
 #include <qstringlist.h>
 #include <qmap.h>
 
-#include <kmdcodec.h>
 #include <kdebug.h>
 #include <kurl.h>
 
 #include "auth_digest.h"
 
-void GetA2(const QString &qop, const QString &uri, KMD5 &A2);
-void GetA1(const QString &user, const QString &realm, const QString &pass, const QString &nonce, const QString &cnonce, KMD5 &A1);
+QString DigestAuthModule::COLON;
 
 DigestAuthModule::DigestAuthModule (QObject *parent, const char *name)
-	: KSASLAuthModule (parent, name)
+	: KSASLAuthModule (parent, name), nonce_count(0)
+{
+	COLON = ASCII(":");
+}
+
+DigestAuthModule::~DigestAuthModule ()
 {
 }
 
-QString DigestAuthModule::auth_method()
+QString DigestAuthModule::ASCII (const char *text)
 {
-	return QString::fromLatin1("DIGEST-MD5");
+	return QString::fromLatin1(text);
+}
+
+QString DigestAuthModule::auth_method ()
+{
+	return ASCII("DIGEST-MD5");
 }
 
 QString DigestAuthModule::auth_response(const QString &challenge, const KURL &auth_url)
@@ -41,83 +77,89 @@ QString DigestAuthModule::auth_response(const QString &challenge, const KURL &au
 	QString uri, response;
 	KMD5 A1, A2, FINAL;
 
-	GetA1(auth_url.user(), keys[QString::fromLatin1("realm")], auth_url.pass(), keys[QString::fromLatin1("nonce")], QString(QString::fromLatin1(cnonce)), A1);
+	GetA1(auth_url.user(), keys[ASCII("realm")], auth_url.pass(), keys[ASCII("nonce")], ASCII(cnonce), A1);
 
 	uri=auth_url.protocol()+QChar('/')+auth_url.host()+QChar('/')+auth_url.host();
-	GetA2(QString::fromLatin1("auth"), uri, A2);
+	GetA2(ASCII("auth"), uri, A2);
 
-        FINAL.update((unsigned char *)A1.hexDigest(), 32);
-        FINAL.update((unsigned char *)":", 1);
-        FINAL.update((unsigned char *)keys[QString::fromLatin1("nonce")].latin1(), strlen(keys[QString::fromLatin1("nonce")].latin1()));
-        FINAL.update((unsigned char *)":", 1);
-        sprintf(nc, "%.8d", ++nonce_count);
-        FINAL.update((unsigned char *)nc, strlen(nc));
-        FINAL.update((unsigned char *)":", 1);
-        FINAL.update((unsigned char *)cnonce, strlen(cnonce));
-        FINAL.update((unsigned char *)":", 1);
-        FINAL.update((unsigned char *)"auth", strlen("auth"));
-        FINAL.update((unsigned char *)":", 1);
-        FINAL.update((unsigned char *)A2.hexDigest(), 32);
-        FINAL.finalize();
+	FINAL.update(reinterpret_cast<unsigned char *>(A1.hexDigest()), 32);
+	FINAL.update(COLON);
+	FINAL.update(keys[ASCII("nonce")]);
+	FINAL.update(COLON);
+	sprintf(nc, "%.8d", ++nonce_count);
+	FINAL.update(ASCII(nc));
+	FINAL.update(COLON);
+	FINAL.update(reinterpret_cast<unsigned char *>(cnonce), strlen(cnonce));
+	FINAL.update(COLON);
+	FINAL.update(ASCII("auth"));
+	FINAL.update(COLON);
+	FINAL.update((unsigned char *)A2.hexDigest(), 32);
+	FINAL.finalize();
 
-	response=QString::fromLatin1("charset=utf-8,");
-	response+=QString::fromLatin1("username=\"")+auth_url.user()+QString::fromLatin1("\",");
-	response+=QString::fromLatin1("realm=\"")+keys[QString::fromLatin1("realm")]+QString::fromLatin1("\",");
-	response+=QString::fromLatin1("nonce=\"")+keys[QString::fromLatin1("nonce")]+QString::fromLatin1("\",");
-	response+=QString::fromLatin1("nc=")+QString::fromLatin1(nc)+QChar(',');
-	response+=QString::fromLatin1("cnonce=\"")+QString::fromLatin1(cnonce)+QString::fromLatin1("\",");
-	response+=QString::fromLatin1("digest-uri=\"")+uri+QString::fromLatin1("\",");
-	response+=QString::fromLatin1("response=")+QString::fromLatin1(FINAL.hexDigest())+QChar(',');
-	response+=QString::fromLatin1("qop=auth");
+	response=ASCII("charset=utf-8,");
+	response+=ASCII("username=\"%1\",").arg(auth_url.user());
+	response+=ASCII("realm=\"%1\",").arg(keys[ASCII("realm")]);
+	response+=ASCII("nonce=\"%1\",").arg(keys[ASCII("nonce")]);
+	response+=ASCII("nc=%1,").arg(ASCII(nc));
+	response+=ASCII("cnonce=\"%1\",").arg(ASCII(cnonce));
+	response+=ASCII("digest-uri=\"%1\",").arg(uri);
+	response+=ASCII("response=%1,").arg(ASCII(FINAL.hexDigest()));
+	response+=ASCII("qop=auth");
 	return response;
 }
 
-void GetA1(const QString &user, const QString &realm, const QString &pass, const QString &nonce, const QString &cnonce, KMD5 &A1)
+void DigestAuthModule::GetA1(const QString &user, const QString &realm, const QString &pass, const QString &nonce, const QString &cnonce, KMD5 &A1)
 {
-	KMD5 *md5;
+	KMD5 md5;
 
-	md5 = new KMD5;
-	md5->update((unsigned char *)user.latin1(), strlen(user.latin1()));
-	md5->update((unsigned char *)":", 1);
-	md5->update((unsigned char *)realm.latin1(), strlen(realm.latin1()));
-	md5->update((unsigned char *)":", 1);
-	md5->update((unsigned char *)pass.latin1(), strlen(pass.latin1()));
-	md5->finalize();
+	md5.update(user);
+	md5.update(COLON);
+	md5.update(realm);
+	md5.update(COLON);
+	md5.update(pass);
+	md5.finalize();
 
-	A1.update(md5->raw_digest(), 16);
-	A1.update((unsigned char *)":", 1);
-	A1.update((unsigned char *)nonce.latin1(), strlen(nonce.latin1()));
-	A1.update((unsigned char *)":", 1);
-	A1.update((unsigned char *)cnonce.latin1(), strlen(cnonce.latin1()));
+	A1.update(md5.rawDigest(), 16);
+	A1.update(COLON);
+	A1.update(nonce);
+	A1.update(COLON);
+	A1.update(cnonce);
 	A1.finalize();
-	delete md5;
 }
 
-void GetA2(const QString &qop, const QString &uri, KMD5 &A2)
+void DigestAuthModule::GetA2(const QString &qop, const QString &uri, KMD5 &A2)
 {
-	A2.update((unsigned char *)"AUTHENTICATE", strlen("AUTHENTICATE"));
-	A2.update((unsigned char *)":", 1);
-	A2.update((unsigned char *)uri.latin1(), strlen(uri.latin1()));
-	if ( (qop == "auth-int") ||  (qop == "auth-conf") ) {
+	A2.update(ASCII("AUTHENTICATE"));
+	A2.update(COLON);
+	A2.update(uri);
+	if ( (qop == ASCII("auth-int")) ||  (qop == ASCII("auth-conf")) ) {
 		char buf[34];
 		sprintf(buf, ":%.32d", 0);
-		A2.update((unsigned char *)buf, strlen(buf));
+		A2.update(ASCII(buf));
 	}
 	A2.finalize();
 }
 
-void DigestAuthModule::Reset()
+void DigestAuthModule::reset()
 {
-	memset(&cnonce, 0, 128);
-	QFile f("/dev/random");
+	// TODO: Replace this with a sane random class
+	//memset(&cnonce, 0, 128);
+	QFile f(ASCII("/dev/random"));
 	if (f.open(IO_ReadOnly)) {
-		::read(f.handle(), cnonce, 127); // Read up to 127 bits of randomness
+		// Read up to 127 bits of randomness
+		ssize_t ret = ::read(f.handle(), cnonce, 127); 
+		if (ret <= 0) {
+			sprintf(cnonce, "%s", "AHHYOUNEEDRANDOMINYOURLIFE");
+		} else {
+			cnonce[ret] = 0;
+		}
+
 		f.close();
 	} else {
 		sprintf(cnonce, "%s", "AHHYOUNEEDRANDOMINYOURLIFE");
 	}
 	keys.clear();
-	nonce_count=0;
+	nonce_count = 0;
 }
 
 void DigestAuthModule::AddKey(const QString &k, const QString &v, QMap<QString, QString> &m)
@@ -132,7 +174,7 @@ void DigestAuthModule::AddKey(const QString &line, QMap<QString, QString> &)
 	unsigned int i=0;
 	QString authstr(line);
 	while (authstr.length() >= i) {
-		if (authstr.at(i) == '\"')
+		if (authstr.at(i) == QChar('\"'))
 			if (open_quote) open_quote=false;
 			else open_quote=true;
 		else if (authstr.at(i) == '=') {
@@ -157,13 +199,16 @@ void DigestAuthModule::UseAuthString(const QString &challenge)
 	unsigned int i=0, comma=0;
 	while (challenge.length() >= i) {
 		if (challenge.at(i) == '\"') {
-			if (open_quote) open_quote=false;
-			else open_quote=true;
+			if (open_quote) {
+				open_quote=false;
+			} else {
+				open_quote=true;
+			}
 		} else if (challenge.at(i) == ',') {
 			if (!open_quote) {
 				AddKey(challenge.mid(comma, i-comma), keys);
 				comma=i+1;
-				if (challenge.find(",", i+1) == -1) {
+				if (challenge.find(ASCII(","), i+1) == -1) {
 					AddKey(challenge.mid(i+1, challenge.length()), keys);
 					break;
 				}
@@ -172,3 +217,35 @@ void DigestAuthModule::UseAuthString(const QString &challenge)
 		i++;
 	}
 }
+
+// Module factory stuff.. should be automated
+DigestAuthModuleFactory::DigestAuthModuleFactory (QObject *parent, const char *name)
+	: KLibFactory (parent, name)
+{
+	s_instance = new KInstance("authdigestmodule");
+}
+
+DigestAuthModuleFactory::~DigestAuthModuleFactory ()
+{
+	delete s_instance;
+}
+
+QObject *DigestAuthModuleFactory::create (QObject *parent, const char *name, const char *, const QStringList &) {
+	QObject *obj = new DigestAuthModule (parent, name);
+	emit objectCreated(obj);
+	return obj;
+}
+
+KInstance *DigestAuthModuleFactory::instance ()
+{
+	return s_instance;
+}
+
+extern "C" {
+	void *init_ksasl_auth_digest () {
+		return new DigestAuthModuleFactory;
+	}
+}
+
+
+#include "auth_digest.moc"

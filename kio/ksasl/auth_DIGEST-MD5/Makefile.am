@@ -1,6 +1,6 @@
 # $Id$
 
-AM_CPPFLAGS = -DQT_NO_CAST_ASCII
+AM_CPPFLAGS = -DQT_NO_CAST_ASCII -UQT_NO_TRANSLATION
 INCLUDES = -I$(top_srcdir)/kio/ksasl -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES = ksasl_auth_digest.la
