@@ -30,6 +30,7 @@ public:
       * @param catalogue the name of the language file      
       */
     KLocale( const char *catalogue = 0L );
+
     /**
       * Destructor.
       */
@@ -86,16 +87,17 @@ public:
       * In every other case, one of the @ref translate methods are fast
       * enough.
       */
-    void alias( long index, const char *text);
+    void aliasLocale( const char *text, long int index);
     
     /** 
       * Returns an alias, that you have set before or NULL, if not
       * set. This method uses @ref QIntDict.
       */
-    char *operator[] ( long key) const;
+    const char* getAlias( long key ) const;
 
 private:
     char *catalogue;
+    int enabled;
     QIntDict<char> aliases;
     static KLocale *pLocale;
 };

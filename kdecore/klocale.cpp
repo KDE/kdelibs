@@ -77,7 +77,9 @@ KLocale::KLocale( const char *_catalogue )
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , kapp->kdedir() + "/locale");
     k_bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/locale");
-    
+
+    enabled = 1;
+
     if (pLocale == NULL)
 	pLocale = this;
 }
@@ -91,7 +93,11 @@ KLocale::~KLocale()
 
 const char *KLocale::translate(const char *msgid)
 {
+    if (!enabled)
+      return msgid;
+
     char *text = k_dcgettext( catalogue, msgid, LC_MESSAGES);
+
     if (text == msgid) // just compare the pointers
 	return k_dcgettext( SYSTEM_MESSAGES, msgid, LC_MESSAGES);
     else
@@ -100,6 +106,9 @@ const char *KLocale::translate(const char *msgid)
 
 const char *KLocale::translate(const char *index, const char *d_text)
 {
+    if (!enabled)
+      return index;
+
     char *text = k_dcgettext( catalogue, index, LC_MESSAGES);
 
     if (text == index) { // just compare the pointers
@@ -111,7 +120,7 @@ const char *KLocale::translate(const char *index, const char *d_text)
     
 }
 
-void KLocale::alias(long index, const char* text)
+void KLocale::aliasLocale( const char* text, long int index)
 {
     aliases.insert(index, translate(text));
 }
@@ -153,10 +162,13 @@ KLocale *KLocale::klocale()
 	return pLocale;
 
     warning("A new KLocale instance will be created. This one may not be removed.");
-    return new KLocale(); // the constructor will set pLocale!
+    KLocale *kl = new KLocale(); // the constructor will set pLocale!
+    kl->enabled = 0;
+    return kl;
 }
 
-char *KLocale::operator[] ( long key) const
+const char *KLocale::getAlias(long key) const
 {
     return aliases[key];
 }
+
