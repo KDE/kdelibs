@@ -569,18 +569,16 @@ bool HTTPProtocol::http_isConnected()
     int retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
     // retval ==  0 ==> Connection Idle
     // retval >=  1 ==> Connection Active
-    if ( retval >= 0 )
+    if ( retval == -1 )
+        return false;       // should really never happen, but just in-case...
+    else if ( retval > 0 )
     {
       char buffer[100];
       retval = recv(m_sock, buffer, 80, MSG_PEEK);
-      // retval == -1 ==> Connection errored iff errno != EAGAIN
       // retval ==  0 ==> Connection clased
-      if ( retval == 0 || (retval == -1 && errno != EAGAIN))
+      if ( retval == 0 )
         return false;
     }
-    else
-        return false;       // should really never happen, but just incase...
-
     return true;
 }
 
