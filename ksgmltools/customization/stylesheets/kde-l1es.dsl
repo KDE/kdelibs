@@ -29,15 +29,15 @@
     <STYLE-SPECIFICATION-BODY>
 
 (define %kde-gentext-es-home-url% "http://www.kde.org/")
-(define %kde-gentext-es-logo-alt% "El entorno de escritorio K")
+(define %kde-gentext-es-logo-alt% "K Desktop Environment")
 (define %kde-gentext-es-encoding% "iso-8859-1")
 (define %kde-gentext-es-html-header-tags% '())
 (define %kde-gentext-es-default% "&Default;")
 (define %kde-gentext-es-language% "&Spanish;")
 (define %kde-es-logo% "")
-(define %kde-gentext-es-date-phrase% "&LastUpdated;: ")
-; <!-- (define %kde-gentext-es-author-phrase% "&by; ") -->
-(define %kde-gentext-es-releaseinfo-phrase% "&Version; ") 
+(define %kde-gentext-es-date-phrase% "Ultima actualización: ")
+; <!-- (define %kde-gentext-es-author-phrase% "por; ") -->
+(define %kde-gentext-es-releaseinfo-phrase% "Versión ") 
 
    </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
