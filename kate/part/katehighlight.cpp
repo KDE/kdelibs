@@ -1484,6 +1484,7 @@ void Highlight::done()
     return;
 
   contextList.clear ();
+  internalIDList.clear();
 }
 
 HlContext *Highlight::contextNum (uint n)
