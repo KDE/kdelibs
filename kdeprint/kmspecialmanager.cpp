@@ -152,7 +152,9 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 		printer->setOption("kde-special-require",conf.readEntry("Require"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
 		printer->setType(KMPrinter::Special);
-		if (!KdeprintChecker::check(&conf))
+		//if (!KdeprintChecker::check(&conf))
+		if ( !KXmlCommandManager::self()->checkCommand( printer->option( "kde-special-command" ), 
+					KXmlCommandManager::None, KXmlCommandManager::None, 0 ) )
 			printer->addType(KMPrinter::Invalid);
 		printer->setState(KMPrinter::Idle);
 		printer->setAcceptJobs(true);

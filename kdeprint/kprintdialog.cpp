@@ -320,6 +320,10 @@ void KPrintDialog::initialize(KPrinter *printer)
 		bool	sep(false);
 		for (;it.current();++it)
 		{
+			// skip invalid printers
+			if ( !it.current()->isValid() )
+				continue;
+
 			if (!sep && it.current()->isSpecial())
 			{
 				sep = true;
