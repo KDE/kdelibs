@@ -63,7 +63,7 @@ class KDECORE_EXPORT KWin
 public:
 
     /**
-     * Requests that window @p is activated.
+     * Requests that window @p win is activated.
      *
      * There are two ways how to activate a window, by calling
      * activateWindow() and forceActiveWindow(). Generally,
@@ -84,7 +84,7 @@ public:
      * package (kdebase/kwin/README), or ask on the kwin@kde.org
      * mailing list.
      *
-     * @param win the if of the window to make active
+     * @param win the id of the window to make active
      * @param time X server timestamp of the user activity that
      *    caused this request
      * @since 3.2
@@ -99,7 +99,7 @@ public:
      * and similar tools. See the explanation in description
      * of activateWindow().
      *
-     * @param win the if of the window to make active
+     * @param win the id of the window to make active
      * @param time X server timestamp of the user activity that
      *    caused this request
      *
