@@ -92,7 +92,7 @@ void KSSLKeyGen::slotGenerate() {
 		return;
 	}
 
-	int rc = generateCSR("This CSR", page2->_password1->text(), bits, 0x10001);
+	generateCSR("This CSR", page2->_password1->text(), bits, 0x10001);
 }
 
 
