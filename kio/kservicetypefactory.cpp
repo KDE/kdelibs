@@ -80,6 +80,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 {
    // Assume we're NOT building a database
+   if (!m_str) return 0;
 
    // Get stream to the header
    QDataStream *str = m_str;
