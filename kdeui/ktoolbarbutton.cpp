@@ -357,7 +357,7 @@ QPopupMenu *KToolBarButton::popup()
 void KToolBarButton::setPopup(QPopupMenu *p, bool)
 {
   QToolButton::setPopup(p);
-  QToolButton::setPopupDelay(1);
+  QToolButton::setPopupDelay(-1);
 }
 
 
