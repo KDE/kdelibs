@@ -947,13 +947,18 @@ void AutoTableLayout::layout()
         }
     }
 
-    // if we have overallocated, reduce from the back
+    // if we have overallocated, reduce every cell according to the difference between desired width and minwidth
+    // this seems to produce to the pixel exaxt results with IE. Wonder is some of this also holds for width distributing.
     if ( available < 0 ) {
-	for ( int i = nEffCols-1; i >= 0; i-- ) {
-	    int space = layoutStruct[i].calcWidth - layoutStruct[i].effMinWidth;
-	    space = QMIN( space, -available );
-	    layoutStruct[i].calcWidth -= space;
-	    available += space;
+	int mw = 0;
+	for ( int i = nEffCols-1; i >= 0; i-- )
+	    mw += layoutStruct[i].effMaxWidth - layoutStruct[i].effMinWidth;
+	for ( int i = nEffCols-1; i >= 0 && mw > 0; i-- ) {
+	    int minMaxDiff = layoutStruct[i].effMaxWidth-layoutStruct[i].effMinWidth;
+	    int reduce = available * minMaxDiff / mw;
+	    layoutStruct[i].calcWidth += reduce;
+	    available -= reduce;
+	    mw -= minMaxDiff;
 	    if ( available >= 0 )
 		break;
 	}
