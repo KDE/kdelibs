@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.41  1999/03/09 23:38:16  kulow
+// moved the QString wrapper to the header file as inline function
+//
 // Revision 1.40  1999/03/08 16:05:16  rbeutler
 // added writeEntry( const QString &, const char *, ... ) method to fix the problem with the implicitely conversion to bool
 //
@@ -383,7 +386,7 @@ const QString KConfigBase::readEntry( const QString& pKey,
 		pEntryData = (*pCurrentGroupDict)[ pKey ];
 	  
       if( pEntryData )
-		aValue = pEntryData->aValue;
+	aValue = pEntryData->aValue;
       else if( pDefault )
 		{
 		  aValue = pDefault;
@@ -426,6 +429,10 @@ const QString KConfigBase::readEntry( const QString& pKey,
 			  nDollarPos = aValue.find( '$', nDollarPos );
 		  };
   }
+
+  if( !aValue )
+    aValue = pDefault;
+
   return aValue;
 }
 
