@@ -197,7 +197,8 @@ public:
     Modem,
     User1,
     User2,
-    User3
+    User3,
+    NoOfTelephoneTypes
   };
   /** Each entry in a loaded database has its own ::Entry object.
    *
