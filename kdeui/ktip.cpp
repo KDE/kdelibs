@@ -371,6 +371,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
      .arg(mTextColor.name())
      .arg(mBaseColor.name())
      .arg(i18n(mDatabase->tip().utf8())));
+      mTipText->setContentsPos(0, 0);
   }
 
   void KTipDialog::nextTip()
@@ -380,6 +381,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
         .arg(mTextColor.name())
         .arg(mBaseColor.name())
         .arg(i18n(mDatabase->tip().utf8())));
+      mTipText->setContentsPos(0, 0);
   }
 
   void KTipDialog::showOnStart(bool on)
