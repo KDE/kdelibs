@@ -221,6 +221,7 @@ action/openwith
 action/openintab
 action/kdesktop_rmb // RMB menu, see note below
 action/iconview_preview 
+action/sharefile // File sharing, see note below
 
 Kicker related: 
 action/kicker_rmb // RMB menu
@@ -298,7 +299,7 @@ Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
   if present.
 * action/bookmarks also disables action/bookmark_add and action/bookmark_edit
-* action/help is not yet implemented
+* action/help is not yet fully implemented
 * action/kdesktop_rmb disables the RMB menu but some actions may still be accesible
   via keyboard shortcuts: cut/copy/rename/trash/delete
 * action/iconview_preview disables the option to toggle previews on or off
@@ -307,6 +308,8 @@ Notes:
   konqiconviewrc:
 	[Settings]
 	PreviewsEnabled[$i]=false
+* action/sharefile disables file sharing from the UI, but you may also want
+  to disable filesharing altogether.
 
 
 Applications may use additional actions that they defined themselves.
