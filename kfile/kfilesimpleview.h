@@ -59,7 +59,7 @@ protected:
     /* own function, which calls QTableView::setNumCols */
     void setNumCols(int i);
     
-    uint rowsVisible;
+    int rowsVisible;
     int curCol, curRow;
     int *cellWidths;
     QList<QPixmap> pixmaps;

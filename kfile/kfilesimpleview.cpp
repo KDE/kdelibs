@@ -86,7 +86,7 @@ void KFileSimpleView::highlightItem(int row, int col)
 { 
     debugC("highlightItem %d %d", row, col);
 
-    if (col * rowsVisible + row  >= count())
+    if (col * rowsVisible + row  >= static_cast<int>(count()))
 	return;
 
     int cx;
@@ -181,7 +181,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	if( newCol < numCols()-1 )
 	    newCol++;
         else newRow = lastRowVisible();
-	if (newCol * rowsVisible + oldRow >= count())
+	if (newCol * rowsVisible + oldRow >= static_cast<int>(count()))
 	    newRow = count() - rowsVisible * newCol - 1;
 	break;
     case Key_Up:
@@ -264,7 +264,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 
 bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 {
-    if (numCols() * rowsVisible < count())
+    if (numCols() * rowsVisible < static_cast<int>(count()))
         setNumCols(numCols() + 1);
     
     if (i->isDir()) {
@@ -300,7 +300,7 @@ int KFileSimpleView::cellWidth ( int col )
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
-	for (uint j = 0; offset + j < width_length && j < rowsVisible; j++) {
+	for (int j = 0; offset + j < width_length && j < rowsVisible; j++) {
 	    int w = width_array[offset + j];
 	    if (width < w)
 		width = w;
