@@ -816,8 +816,10 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   setButtonOK( KGuiItem((editType == InsertionMode) ? i18n( "&Add" ) : i18n( "&Update" )) );
   if (editType == InsertionMode) {
     setButtonText( User1, i18n( "&New Folder..." ) );
-    actionButton( User1 )->setIconSet( SmallIcon( "folder_new" ) );
-    actionButton( Ok )->setIconSet( SmallIcon( "bookmark_add" ) );
+    if (KGlobalSettings::showIconsOnPushButtons()) {
+      actionButton( User1 )->setIconSet( SmallIcon( "folder_new" ) );
+      actionButton( Ok )->setIconSet( SmallIcon( "bookmark_add" ) );
+    }
   }
 
   bool folder = url.isNull();
