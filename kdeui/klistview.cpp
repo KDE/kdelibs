@@ -476,6 +476,7 @@ void KListView::focusInEvent( QFocusEvent *fe )
   {
       currentItem()->setSelected(true);
       currentItem()->repaint();
+      emit selectionChanged();
   };
 }
 
@@ -491,6 +492,7 @@ void KListView::focusOutEvent( QFocusEvent *fe )
   {
       currentItem()->setSelected(false);
       currentItem()->repaint();
+      emit selectionChanged();
   };
 
   QListView::focusOutEvent( fe );
@@ -1106,6 +1108,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
       {
          currentItem()->setSelected(true);
          currentItem()->repaint();
+         emit selectionChanged();
       };
       return;
    };
