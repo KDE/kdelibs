@@ -94,6 +94,8 @@ public:
      * some subclasses. */
     void setErase(bool erase) { m_bErase = erase; }
 
+    /** Return the filedescriptor of the process. */
+    int fd() {return m_Fd;};
 
 protected:
     bool m_bErase, m_bTerminal;
