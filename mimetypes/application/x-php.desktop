@@ -1,10 +1,40 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=PHP Script
+Comment=PHP script
+Comment[az]=PHP skripti
+Comment[ca]=seqüència PHP
+Comment[da]=PHP-program
+Comment[de]=PHP-Skript
+Comment[el]=Πρόγραμμα εντολών PHP
+Comment[es]=archivo de comandos de PHP
+Comment[et]=PHP skript
+Comment[fi]=PHP-skripti
+Comment[fr]=Script PHP
+Comment[gl]=Script de PHP
+Comment[hu]=PHP szkript
+Comment[it]=Script PHP
+Comment[ja]=PHP スクリプト
+Comment[ko]=PHP 스크립트
+Comment[ms]=Skrip PHP
+Comment[nl]=PHP script
+Comment[nn]=PHP-skript
+Comment[no]=PHP-skript
+Comment[pl]=Skrypt w PHP
+Comment[pt]=Script PHP
+Comment[ro]=Script PHP
+Comment[ru]=Скрипт типа PHP
+Comment[sk]=skript PHP
+Comment[sl]=skripta PHP
+Comment[sv]=PHP-skript
+Comment[tr]=PHP betiği
+Comment[uk]=скрипт PHP
+Comment[wa]=scripe PHP
+Comment[zh]=PHP脚本
+
 Icon=source_php
 Type=MimeType
 MimeType=application/x-php
-Patterns=*.php;*.PHP;*.php3;*.PHP3;*.phps;*.PHPS
+Patterns=*.php;*.PHP;*.php3;*.PHP3;*.php4;*.PHP4
 
 [Property::X-KDE-text]
 Type=bool
