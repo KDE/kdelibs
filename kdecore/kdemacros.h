@@ -87,7 +87,11 @@
  *
  * \note
  * It does not make much sense to use the KDE_DEPRECATED keyword for a Qt signal;
- * this is because signals always get referenced by the auto-generated moc code.
+ * this is because usually get called by the class which they belong to,
+ * and one'd assume that a class author doesn't use deprecated methods of his
+ * own class. The only exception to this are signals which are connected to
+ * other signals; they get invoked from moc-generated code. In any case, 
+ * printing a warning message in either case is not useful.
  * For slots, it can make sense (since slots can be invoked directly) but be
  * aware that if the slots get triggered by a signal, the will get called from
  * moc code as well and thus the warnings are useless.
