@@ -175,14 +175,12 @@ void RenderFormElement::layout()
 
 void RenderFormElement::slotClicked()
 {
-    if(isRenderButton()) {
-        ref();
-        QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    ref();
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
-        element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-        m_isDoubleClick = false;
-        deref();
-    }
+    element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+    m_isDoubleClick = false;
+    deref();
 }
 
 // -------------------------------------------------------------------------
@@ -960,6 +958,7 @@ KListBox* RenderSelect::createListBox()
     // ### looks broken
     //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+    connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 
