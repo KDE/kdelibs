@@ -1384,8 +1384,16 @@ static const int windowsRightBorder     = 12;
   //
   
   if (checkable && !mi->iconSet() && mi->isChecked()) {
-  
-    drawIndicator (p, x+2, y+1, checkcol-4, h-2, itemg, TRUE, FALSE, enabled);
+    int w2 = checkcol-4;
+    int h2 = h-2;
+
+    //
+    // make sure the check is square
+    //
+
+    if (w2 > h2) w2 = h2;
+
+    drawIndicator (p, x+2, y+1, w2, h2, itemg, TRUE, FALSE, enabled);
   } 
   
   //
