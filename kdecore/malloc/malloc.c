@@ -570,7 +570,8 @@ extern "C" {
   (of <= 36 bytes) are manually unrolled in realloc and calloc.
 */
 
-#define HAVE_MEMCPY
+/* If it's available it's defined in config.h.  */
+/* #define HAVE_MEMCPY */
 
 #ifndef USE_MEMCPY
 #ifdef HAVE_MEMCPY

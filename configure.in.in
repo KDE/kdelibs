@@ -29,6 +29,11 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 KDE_PROG_LIBTOOL
 
+AC_LANG_SAVE
+AC_LANG_C
+KDE_LIB_LTDL
+AC_LANG_RESTORE
+
 dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files, GNU_GETTEXT for the sources
 AM_KDE_WITH_NLS
@@ -205,8 +210,6 @@ ac_save_LIBS="$LIBS"
 LIBS="$LIBS $X_LDFLAGS -lICE"
 AC_CHECK_FUNCS(_IceTransNoListen)
 LIBS="$ac_save_LIBS"
-
-AC_CONFIG_SUBDIRS(libltdl)
 
 if test "x$kde_use_qt_emb" != "xyes"; then
    CXXFLAGS="$CXXFLAGS $USE_RTTI"

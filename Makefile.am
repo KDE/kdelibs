@@ -23,8 +23,8 @@ COMPILE_LAST = doc
 
 SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS) $(COMPILE_LAST)
 
-$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
-	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
+$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
+	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl/ltdl.m4 > acinclude.m4
 
 $(top_srcdir)/configure.in: $(top_srcdir)/subdirs $(top_srcdir)/configure.files $(CONF_FILES)
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in
@@ -65,20 +65,6 @@ MAINTAINERCLEANFILES = configure.files subdirs
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
-
-cvs-local:
-	@echo "*** preparing libtool library"
-	@cd  libltdl && \
-	rm -f acinclude.m4 && \
-	cat ../admin/libtool.m4.in > acinclude.m4 && \
-	cat ltdl.m4 >> acinclude.m4 && \
-	$(ACLOCAL) && \
-	$(AUTOHEADER) && \
-	$(AUTOMAKE) --gnits --add-missing && \
-	$(AUTOCONF)
-
-cvs-dist-local:
-	cd libltdl && $(AUTOMAKE) --gnits --add-missing -i && $(AUTOCONF)
 
 # Rule for generating HTML documentation [you need kdoc installed]
 # Don't forget to run qt2kdoc first (qt2kdoc $QTDIR/doc/html)
