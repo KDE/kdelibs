@@ -24,18 +24,10 @@
 #ifndef _KJS_VALUE_H_
 #define _KJS_VALUE_H_
 
-#ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
-
-// Uncomment this to enable very verbose output from KJS
-//#define KJS_VERBOSE
-// Uncomment this to debug memory allocation and garbage collection
-//#define KJS_DEBUG_MEM
-
-#endif
-
 #include <stdlib.h> // Needed for size_t
 
 #include "ustring.h"
+#include "global.h"
 
 // Primitive data types
 

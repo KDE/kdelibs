@@ -24,6 +24,8 @@
 #ifndef _KJS_USTRING_H_
 #define _KJS_USTRING_H_
 
+#include "global.h"
+
 /**
  * @internal
  */
