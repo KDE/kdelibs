@@ -26,6 +26,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
+#include <kdebug.h>
 
 class KXMLGUIBuilderPrivate
 {
@@ -153,7 +154,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       i18nText = i18n( text );
 
     QString icon = element.attribute( d->attrIcon );
-    QPixmap pix;
+    QIconSet pix;
 
     if ( !icon.isEmpty() )
     {
@@ -161,7 +162,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       if ( !instance )
         instance = KGlobal::instance();
 
-      pix = SmallIcon( icon, 16, KIcon::DefaultState, instance );
+      pix = SmallIconSet( icon, 16, instance );
     }
 
     if ( parent && parent->inherits( "KMenuBar" ) )

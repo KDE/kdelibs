@@ -534,9 +534,9 @@ void KEditToolbarWidget::loadToolbarCombo()
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name( (*it).namedItem( tagText ).toElement().text() );
+      QString name( i18n( (*it).namedItem( tagText ).toElement().text().utf8() ) );
       if ( name.isEmpty() )
-          name = (*it).namedItem( tagText2 ).toElement().text();
+          name = i18n( (*it).namedItem( tagText2 ).toElement().text().utf8() );
       if ( name.isEmpty() )
           name = (*it).attribute( attrName );
 
