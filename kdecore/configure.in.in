@@ -2,61 +2,65 @@ dnl --------
 dnl KSocketAddress/KExtendedSocket extra configuration
 dnl --------
 dnl
-dnl This is to be merged with configure.in.in soon
+dnl This is to be merged with toplevel configure.in.in soon
 
 dnl Don't check for getnameinfo and freeaddrinfo. If getaddrinfo is there,
 dnl so are those two
 AC_CHECK_FUNCS(inet_ntop inet_pton getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
 
 AC_SUBST(HAVE_GETADDRINFO)
-AC_SUBST(HAVE_BROKEN_GETADDRINFO)
+AC_SUBST(GETADDRINFO_RETURNS_UNIX)
 AC_CHECK_FUNC(getaddrinfo,
   [
-    AC_MSG_CHECKING([if getaddrinfo is broken])
+    AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo is present and works])
+    AC_MSG_CHECKING([if getaddrinfo returns AF_UNIX])
     dnl At least one system has a bad implementation of getaddrinfo
-    dnl FreeBSD"s libc getaddrinfo code has AF_UNIX disabled
+    dnl FreeBSD's libc getaddrinfo code has AF_UNIX disabled
     dnl This is rather stupid, but since it's there...
     AC_TRY_RUN(dnl
-     [
+      [
         #include <sys/types.h>
-        #include <sys/socket.h>
+	#include <sys/socket.h>
         #include <netdb.h>
-       int main()
-       {
-         struct addrinfo hint, *res;
-         int err;
-         hint.ai_family = AF_UNSPEC;
-         hint.ai_protocol = 0;
-         hint.ai_socktype = SOCK_STREAM;
-         hint.ai_flags = 0;
-         err = getaddrinfo(0, "/tmp/conftest-sock", &hint, &res);
-         if (err != 0 || res == 0 || res->ai_family != AF_UNIX)
-           return 1;
-         return 0;
-       }
-    ],
-    [
-      AC_MSG_RESULT(no)
-      AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo is present and wor
-ks])
-    ],   
-    [
-      AC_MSG_RESULT(yes)
-      AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken])
-    ],
-    [
-      case "$target" in
-         *-*-freebsd*)
-           AC_MSG_RESULT(assuming it is)
-           AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 2, [Define if getaddrinfo is broken])
-           ;;
-         *)
-           AC_MSG_RESULT(assuming it is not)
-           AC_DEFINE(HAVE_GETADDRINFO, 2, [Define if getaddrinfo is present and works])
-           ;;
-      esac
-    ])
-  ])
+	int main()
+	{
+	  struct addrinfo hint, *res;
+	  int err;
+	  hint.ai_family = AF_UNSPEC;
+	  hint.ai_protocol = 0;
+	  hint.ai_socktype = SOCK_STREAM;
+	  hint.ai_flags = 0;
+	  err = getaddrinfo(0, "/tmp/conftest-sock", &hint, &res);
+	  if (err != 0 || res == 0 || res->ai_family != AF_UNIX)
+	    return 1;
+	  return 0;
+	}
+      ],
+      [
+        AC_MSG_RESULT(yes)
+	AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
+      ],
+      [
+        AC_MSG_RESULT(no)
+      ],
+      [
+        case "$target" in
+	  *-*-freebsd*)
+	    AC_MSG_RESULT(assuming it doesn't)
+	    ;;
+	  *)
+	    AC_MSG_RESULT(assuming it does)
+	    AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
+	    ;;
+	esac
+      ]
+    )
+  ],
+  [
+    dnl Our getaddrinfo returns AF_UNIX sockets
+    AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
+  ]
+)
 
 AC_SUBST(HAVE_SOCKADDR_SA_LEN)
 AC_MSG_CHECKING([if struct sockaddr has member sa_len])
