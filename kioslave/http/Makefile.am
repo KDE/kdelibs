@@ -15,7 +15,7 @@ kde_module_LTLIBRARIES = kio_http.la
 
 kio_http_la_SOURCES = http.cc
 kio_http_la_METASOURCES = AUTO
-kio_http_la_LIBADD = $(LIB_KIO) $(top_builddir)/kio/httpfilter/libhttpfilter.la $(GSSAPI_LIBS) -lkntlm
+kio_http_la_LIBADD = $(LIB_KIO) $(top_builddir)/kio/httpfilter/libhttpfilter.la $(GSSAPI_LIBS) $(top_builddir)/kio/misc/kntlm/libkntlm.la
 kio_http_la_LDFLAGS = $(all_libraries) $(GSSAPI_RPATH) -module $(KDE_PLUGIN)
 
 kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
