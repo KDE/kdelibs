@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.93  1998/12/02 16:08:26  radej
+// sven: hide toolbar items better when session management wants toolbar flat
+//
 // Revision 1.92  1998/11/21 19:27:19  radej
 // Revision 1.94  1998/12/09 13:44:30  radej
 // sven: iconify() -> hide() even when floating. Commented out debug output.
@@ -390,7 +393,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
   if ((KToolBarButton *)o == this && ev->type () == Event_MouseButtonDblClick)
   {
-    debug ("Doubleclick");
+    //debug ("Doubleclick");
     emit doubleClicked (id);
     return true;
   }
@@ -408,7 +411,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   {
     case Event_MouseButtonDblClick:
     case Event_MouseButtonPress:
-      debug ("Got press | doubleclick");
+      //debug ("Got press | doubleclick");
       // If I get this, it means that popup is visible
       {
       QRect r(geometry());
@@ -419,7 +422,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       break;
     
     case Event_MouseButtonRelease:
-      debug ("Got release");
+      //debug ("Got release");
       if (!myPopup->geometry().contains(QCursor::pos())) // not in menu...
       {
         QRect r(geometry());
@@ -434,7 +437,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       break;
 
     case Event_Hide:
-      debug ("Got hide");
+      //debug ("Got hide");
       on(false);
       return false;
       break;
@@ -2202,10 +2205,10 @@ bool KToolBar::enable(BarStatus stat)
 
   if ( (stat == Toggle && mystat) || stat == Hide )
    {
-     if (position == Floating)
-       iconify();
-     else
-       hide();
+     //if (position == Floating)
+       //iconify();
+     //else
+     hide();       //Sven 09.12.1998: hide in both cases
    }
   else
     show();
@@ -2305,7 +2308,7 @@ void KToolBar::setFlat (bool flag)
   if (flag) //flat
   {
     lastPosition = position; // test float. I did and it works by miracle!?
-    debug ("Flat");
+    //debug ("Flat");
     position = Flat;
     horizontal = false;
     resize(30, 10);
@@ -2316,7 +2319,7 @@ void KToolBar::setFlat (bool flag)
   }
   else //unflat
   {
-    debug ("Unflat");
+    //debug ("Unflat");
     setBarPos(lastPosition);
     enableFloating(true);
     emit moved (position); // KTM will call this->updateRects
