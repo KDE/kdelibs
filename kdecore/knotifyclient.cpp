@@ -52,7 +52,7 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   if ( !KNotifyClient::startDaemon() )
       return false;
 
-  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data);
 }
 
 bool KNotifyClient::event( StandardEvent type, const QString& text )
