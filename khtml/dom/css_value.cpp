@@ -25,7 +25,7 @@
 
 #include "css/css_valueimpl.h"
 
-using namespace DOM;
+namespace DOM {
 
 CSSStyleDeclaration::CSSStyleDeclaration()
 {
@@ -561,5 +561,7 @@ bool Rect::isNull() const
 {
     return (impl == 0);
 }
+
+} // namespace
 
 
