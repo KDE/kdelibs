@@ -190,7 +190,7 @@ bool AudioIOOSS::open()
 		return false;
 	}  
 
-	if (_format && (gotFormat != requestedFormat))
+	if (_format && (ossBits(gotFormat) != ossBits(requestedFormat)))
 	{  
 		char details[80];
 		sprintf(details," (_format = %d, asked driver to give %d, got %d)",
