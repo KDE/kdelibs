@@ -406,3 +406,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	. possibility to cancel printing even with external PS viewers
   * general: added the backend stuff for printer filtering, needs GUI
     -> allows to only show a selected set of printers
+
+18/02/2002 Michael Goffioul <goffioul@imec.be>
+  * general: simple printer filtering mechanism based on printer name
+    and location regexp. Graphical configuration for printer name.
