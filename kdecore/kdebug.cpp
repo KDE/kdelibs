@@ -27,6 +27,7 @@
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
+#include <qlayout.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qtextstream.h>
@@ -279,6 +280,152 @@ void kdebug( ushort nLevel, ushort nArea,
 }
 
 
+
+
+KDebugDialog::KDebugDialog( QWidget *parent, const char *name, bool modal )
+  : QDialog( parent, name, modal ),
+    mMarginHint(6), mSpacingHint(6)
+{
+  setCaption(kapp->makeStdCaption(i18n("Debug Settings")));
+ 
+  QVBoxLayout *topLayout = new QVBoxLayout( this, mMarginHint, mSpacingHint );
+  if( topLayout == 0 ) { return; }
+  
+  QGridLayout *gbox = new QGridLayout( 2, 2, mSpacingHint );
+  if( gbox == 0 ) { return; }
+  topLayout->addLayout( gbox );
+
+  QStringList destList;
+  destList.append( i18n("File") );
+  destList.append( i18n("Message Box") );
+  destList.append( i18n("Shell") );
+  destList.append( i18n("Syslog") );
+  destList.append( i18n("None") );
+
+  //
+  // Upper left frame
+  //
+  pInfoGroup = new QGroupBox( i18n("Information"), this );
+  gbox->addWidget( pInfoGroup, 0, 0 );
+  QVBoxLayout *vbox = new QVBoxLayout( pInfoGroup, mSpacingHint );
+  vbox->addSpacing( fontMetrics().lineSpacing() );
+  pInfoLabel1 = new QLabel( i18n("Output to:"), pInfoGroup );
+  vbox->addWidget( pInfoLabel1 );
+  pInfoCombo = new QComboBox( false, pInfoGroup );
+  vbox->addWidget( pInfoCombo );
+  pInfoCombo->insertStringList( destList );
+  pInfoLabel2 = new QLabel( i18n("Filename:"), pInfoGroup );
+  vbox->addWidget( pInfoLabel2 );
+  pInfoFile = new QLineEdit( pInfoGroup );
+  vbox->addWidget( pInfoFile );
+  pInfoLabel3 = new QLabel( i18n("Show only area(s):"), pInfoGroup );
+  vbox->addWidget( pInfoLabel3 );
+  pInfoShow = new QLineEdit( pInfoGroup );
+  vbox->addWidget( pInfoShow );
+
+  //
+  // Upper right frame
+  //
+  pWarnGroup = new QGroupBox( i18n("Warning"), this );
+  gbox->addWidget( pWarnGroup, 0, 1 );
+  vbox = new QVBoxLayout( pWarnGroup, mSpacingHint );
+  vbox->addSpacing( fontMetrics().lineSpacing() );
+  pWarnLabel1 = new QLabel( i18n("Output to:"), pWarnGroup );
+  vbox->addWidget( pWarnLabel1 );
+  pWarnCombo = new QComboBox( false, pWarnGroup );
+  vbox->addWidget( pWarnCombo );
+  pWarnCombo->insertStringList( destList );
+  pWarnLabel2 = new QLabel( i18n("Filename:"), pWarnGroup );
+  vbox->addWidget( pWarnLabel2 );
+  pWarnFile = new QLineEdit( pWarnGroup );
+  vbox->addWidget( pWarnFile );
+  pWarnLabel3 = new QLabel( i18n("Show only area(s):"), pWarnGroup );
+  vbox->addWidget( pWarnLabel3 );
+  pWarnShow = new QLineEdit( pWarnGroup );
+  vbox->addWidget( pWarnShow );
+
+  //
+  // Lower left frame
+  //
+  pErrorGroup = new QGroupBox( i18n("Error"), this );
+  gbox->addWidget( pErrorGroup, 1, 0 );
+  vbox = new QVBoxLayout( pErrorGroup, mSpacingHint );
+  vbox->addSpacing( fontMetrics().lineSpacing() );
+  pErrorLabel1 = new QLabel( i18n("Output to:"), pErrorGroup );
+  vbox->addWidget( pErrorLabel1 );
+  pErrorCombo = new QComboBox( false, pErrorGroup );
+  vbox->addWidget( pErrorCombo );
+  pErrorCombo->insertStringList( destList );
+  pErrorLabel2 = new QLabel( i18n("Filename:"), pErrorGroup );
+  vbox->addWidget( pErrorLabel2 );
+  pErrorFile = new QLineEdit( pErrorGroup );
+  vbox->addWidget( pErrorFile );
+  pErrorLabel3 = new QLabel( i18n("Show only area(s):"), pErrorGroup );
+  vbox->addWidget( pErrorLabel3 );
+  pErrorShow = new QLineEdit( pErrorGroup );
+  vbox->addWidget( pErrorShow );
+
+  //
+  // Lower right frame
+  //
+  pFatalGroup = new QGroupBox( i18n("Fatal error"), this );
+  gbox->addWidget( pFatalGroup, 1, 1 );
+  vbox = new QVBoxLayout( pFatalGroup, mSpacingHint );
+  vbox->addSpacing( fontMetrics().lineSpacing() );
+  pFatalLabel1 = new QLabel( i18n("Output to:"), pFatalGroup );
+  vbox->addWidget( pFatalLabel1 );
+  pFatalCombo = new QComboBox( false, pFatalGroup );
+  vbox->addWidget( pFatalCombo );
+  pFatalCombo->insertStringList( destList );
+  pFatalLabel2 = new QLabel( i18n("Filename:"), pFatalGroup );
+  vbox->addWidget( pFatalLabel2 );
+  pFatalFile = new QLineEdit( pFatalGroup );
+  vbox->addWidget( pFatalFile );
+  pFatalLabel3 = new QLabel( i18n("Show only area(s):"), pFatalGroup );
+  vbox->addWidget( pFatalLabel3 );
+  pFatalShow = new QLineEdit( pFatalGroup );
+  vbox->addWidget( pFatalShow );
+
+
+  pAbortFatal = new QCheckBox( i18n("Abort on fatal errors"), this );
+  topLayout->addWidget(pAbortFatal);
+
+  QFrame *hline = new QFrame( this );
+  hline->setFrameStyle( QFrame::Sunken | QFrame::HLine );
+  topLayout->addWidget( hline );
+
+  QHBoxLayout *hbox = new QHBoxLayout( mSpacingHint );
+  topLayout->addLayout( hbox );
+  pHelpButton = new QPushButton( i18n("&Help"), this );
+  hbox->addWidget( pHelpButton );
+  hbox->addStretch(10);
+  pOKButton = new QPushButton( i18n("&OK"), this );
+  hbox->addWidget( pOKButton );
+  pCancelButton = new QPushButton( i18n("&Cancel"), this );
+  hbox->addWidget( pCancelButton );
+
+  int w1 = pHelpButton->sizeHint().width();
+  int w2 = pOKButton->sizeHint().width();
+  int w3 = pCancelButton->sizeHint().width();
+  int w4 = QMAX( w1, QMAX( w2, w3 ) );
+
+  pHelpButton->setFixedWidth( w4 );
+  pOKButton->setFixedWidth( w4 );
+  pCancelButton->setFixedWidth( w4 );
+
+  connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
+  connect( pOKButton, SIGNAL( clicked() ), SLOT( accept() ) );
+  connect( pCancelButton, SIGNAL( clicked() ), SLOT( reject() ) );
+}
+
+
+KDebugDialog::~KDebugDialog()
+{
+}
+
+
+
+#if 0
 KDebugDialog::KDebugDialog() :
   QDialog( 0L, i18n("Debug Settings"), true )
 {
@@ -444,6 +591,7 @@ KDebugDialog::~KDebugDialog()
   delete pCancelButton;
   delete pHelpButton;
 }
+#endif
 
 
 void KDebugDialog::showHelp()

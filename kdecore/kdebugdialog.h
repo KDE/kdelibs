@@ -76,8 +76,11 @@ private:
   QPushButton* pCancelButton;
   QPushButton* pHelpButton;
 
+  int mMarginHint;
+  int mSpacingHint;
+
 public:
-  KDebugDialog();
+  KDebugDialog( QWidget *parent=0, const char *name=0, bool modal=true );
   ~KDebugDialog();
 
   void setInfoOutput( int n )
