@@ -150,7 +150,7 @@ void KJavaAppletWidget::showApplet()
    // Avoid flickering a la kwm! (ettrich)
    //KWM::doNotManage( swallowTitle );
 
-   connect( kwm, SIGNAL( windowAdd( WId ) ),
+   connect( kwm, SIGNAL( windowAdded( WId ) ),
 	    this, SLOT( setWindow( WId ) ) );
 
    applet->show( swallowTitle );
@@ -177,7 +177,7 @@ void KJavaAppletWidget::setWindow( WId w )
          swallowWindow( w );
 	
          // disconnect from KWM events
-         disconnect( kwm, SIGNAL( windowAdd( WId ) ),
+         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
                      this, SLOT( setWindow( WId ) ) );
        }
 }
