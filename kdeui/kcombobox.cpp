@@ -467,7 +467,7 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     // now add the item
     if ( myPixProvider )
-	insertItem( myPixProvider->pixmapFor( item ), KIcon::SizeSmall );
+	insertItem( myPixProvider->pixmapFor( item, KIcon::SizeSmall), item );
     else
 	insertItem( item, 0 );
     completionObject()->addItem( item );
