@@ -1132,36 +1132,51 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
 // used by Qt.  This is because our formula is much much faster.  If,
 // however, it turns out that this is producing sub-optimal images,
 // then it will have to change (kurt)
-QImage& KImageEffect::toGray(QImage &img)
+//
+// It does produce lower quality grayscale ;-) Use fast == true for the fast
+// algorithm, false for the higher quality one (mosfet).
+QImage& KImageEffect::toGray(QImage &img, bool fast)
 {
-    if (img.depth() == 32) {
-        register uchar * r(img.bits());
-        register uchar * g(img.bits() + 1);
-        register uchar * b(img.bits() + 2);
+    if(fast){
+        if (img.depth() == 32) {
+            register uchar * r(img.bits());
+            register uchar * g(img.bits() + 1);
+            register uchar * b(img.bits() + 2);
 
-        uchar * end(img.bits() + img.numBytes());
+            uchar * end(img.bits() + img.numBytes());
 
-        while (r != end) {
-         
-          *r = *g = *b = (((*r + *g) >> 1) + *b) >> 1; // (r + b + g) / 3
+            while (r != end) {
 
-          r += 4;
-          g += 4;
-          b += 4;
+                *r = *g = *b = (((*r + *g) >> 1) + *b) >> 1; // (r + b + g) / 3
+
+                r += 4;
+                g += 4;
+                b += 4;
+            }
         }
-    }
-    else
-    {
-        for (int i = 0; i < img.numColors(); i++)
+        else
         {
-            register uint r = qRed(img.color(i));
-            register uint g = qGreen(img.color(i));
-            register uint b = qBlue(img.color(i));
+            for (int i = 0; i < img.numColors(); i++)
+            {
+                register uint r = qRed(img.color(i));
+                register uint g = qGreen(img.color(i));
+                register uint b = qBlue(img.color(i));
 
-            register uint gray = (((r + g) >> 1) + b) >> 1;
-            img.setColor(i, qRgb(gray, gray, gray));
+                register uint gray = (((r + g) >> 1) + b) >> 1;
+                img.setColor(i, qRgb(gray, gray, gray));
+            }
         }
     }
-
+    else{
+        int pixels = img.depth() > 8 ? img.width()*img.height() :
+            img.numColors();
+        unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
+            (unsigned int *)img.colorTable();
+        int val, i;
+        for(i=0; i < pixels; ++i){
+            val = qGray(data[i]);
+            data[i] = qRgb(val, val, val);
+        }
+    }
     return img;
 }

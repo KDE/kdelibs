@@ -277,10 +277,10 @@ KPixmap& KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
 
 
 // -----------------------------------------------------------------------------
-KPixmap& KPixmapEffect::toGray(KPixmap &pixmap)
+KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
 {
     QImage img = pixmap.convertToImage();
-    KImageEffect::toGray(img);
+    KImageEffect::toGray(img, fast);
     pixmap.convertFromImage(img);
 
     return pixmap;

@@ -151,14 +151,12 @@ public:
     /**
      * Converts an image to grayscale.
      *
-     * The formula used in the conversion is (r+b+g)/3.  This may not
-     * be the best way to do the conversion from an aesthetics point
-     * of view.  It is, however, very optimized and very fast.
-     *
      * @param image The QImage to process.
+     * @param fast Set to true in order to use a faster but non-photographic
+     * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the @ref #image, provided for convenience.
      */
-    static QImage& toGray(QImage &image);
+    static QImage& toGray(QImage &image, bool fast = false);
 
 private:
 

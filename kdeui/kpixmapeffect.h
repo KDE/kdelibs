@@ -169,14 +169,12 @@ public:
     /**
      * Converts a pixmap to grayscale.
      *
-     * The formula used in the conversion is (r+b+g)/3.  This may not
-     * be the best way to do the conversion from an aesthetics point
-     * of view.  It is, however, very optimized and very fast.
-     *
      * @param pixmap The pixmap to process.
+     * @param fast Set to true in order to use a faster but non-photographic
+     * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the @ref #pixmap, provided for convenience.
      */
-    static KPixmap& toGray(KPixmap& pixmap);
+    static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
 };
 
 
