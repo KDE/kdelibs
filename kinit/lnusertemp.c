@@ -209,15 +209,42 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
 
 int main(int argc, char **argv)
 {
+  const char *tmp = 0;
+  char *tmp_prefix = 0;
+  const char *kde_prefix = 0;
+  int res = 0;
+
   if ((argc != 2) || 
       ((strcmp(argv[1], "tmp")!=0) && (strcmp(argv[1], "socket")!=0)))
   {
      fprintf(stderr, "Usage: lnusertemp tmp|socket\n");
      return 1;
   }
+
+  tmp = getenv("KDETMP");
+  if (!tmp || !tmp[0]) 
+      tmp = "/tmp";
    
   if (strcmp(argv[1], "tmp") == 0)
-     return build_link("/tmp/kde-", "/tmp-");
+  {
+    tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/kde-")+1);
+    strcpy(tmp_prefix, tmp);
+    strcat(tmp_prefix, "/kde-"); 
+    
+    kde_prefix = "/tmp-"; 
+  }
   else
-     return build_link("/tmp/ksocket-", "/socket-");
+  {
+    tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/ksocket-")+1);
+    strcpy(tmp_prefix, tmp );
+    strcat(tmp_prefix, "/ksocket-" );
+
+    kde_prefix = "/socket-"; 
+  }
+
+  res = build_link(tmp_prefix, kde_prefix); 
+    
+  free(tmp_prefix);
+
+  return res;
 }
