@@ -28,18 +28,18 @@
 PluginImpl::PluginImpl(QObject *parent)
     : Plugin(parent, "MySQL")
 {
-    kdDebug(20012) << "PluginImpl::PluginImpl" << endl;
+    //kdDebug(20012) << "PluginImpl::PluginImpl" << endl;
 }
 
 PluginImpl::~PluginImpl()
 {
-    kdDebug(20012) << "PluginImpl::~PluginImpl" << endl;
+    //kdDebug(20012) << "PluginImpl::~PluginImpl" << endl;
 }
 
 KDB::Plugin::PluginInfo
 PluginImpl::info()
 {
-    kdDebug(20012) << "KDB::Plugin::PluginInfoPluginImpl::info" << endl;
+    kdDebug(20012) << "KDB::Plugin::PluginInfo PluginImpl::info" << endl;
     KDB::Plugin::PluginInfo info;
     info.name = name();
     info.description = "A MySQL plugin for KDE-DB";
@@ -54,21 +54,21 @@ PluginImpl::info()
 KDB::Connector *
 PluginImpl::createConnector()
 {
-    kdDebug(20012) << "PluginImpl::createConnector" << endl;
+    //kdDebug(20012) << "PluginImpl::createConnector" << endl;
     return new ConnectorImpl;
 }
 
 bool
 PluginImpl::provides(KDB::capability /*cap*/)
 {
-    kdDebug(20012) << "PluginImpl::provides" << endl;
+    //kdDebug(20012) << "PluginImpl::provides" << endl;
     return false;
 }
 
 KDB::Capability *
 PluginImpl::createObject(KDB::capability /* cap */)
 {
-    kdDebug(20012) << "PluginImpl::createObject" << endl;
+    //kdDebug(20012) << "PluginImpl::createObject" << endl;
     pushError( new KDB::UnsupportedCapability("this plugin does nothing!"));
     return 0L;
 }

@@ -25,7 +25,7 @@
 HandlerImpl::HandlerImpl(MYSQL_RES * result)
     :res(result)
 {
-    kdDebug(20012) << "HandlerImpl::HandlerImpl" << endl;
+    //kdDebug(20012) << "HandlerImpl::HandlerImpl" << endl;
 
     m_fields = mysql_fetch_fields(res);
     numFields = mysql_num_fields(res);
@@ -33,7 +33,7 @@ HandlerImpl::HandlerImpl(MYSQL_RES * result)
 
 HandlerImpl::~HandlerImpl()
 {
-    kdDebug(20012) << "HandlerImpl::~HandlerImpl" << endl;
+    //kdDebug(20012) << "HandlerImpl::~HandlerImpl" << endl;
     mysql_free_result(res);
 }
 
@@ -41,14 +41,14 @@ HandlerImpl::~HandlerImpl()
 KDB_ULONG
 HandlerImpl::count() const
 {
-    kdDebug(20012) << "HandlerImpl::count" << endl;
+    //kdDebug(20012) << "HandlerImpl::count" << endl;
     return mysql_num_rows(res);
 }
 
 KDB::Row
 HandlerImpl::record(KDB_ULONG pos) const
 {
-    kdDebug(20012) << "KDB::RowHandlerImpl::record" << endl;
+    //kdDebug(20012) << "KDB::RowHandlerImpl::record" << endl;
 
     // TODO: transform it into a direct request to the backend if possible
     if (m_rows.isEmpty())
@@ -59,7 +59,7 @@ HandlerImpl::record(KDB_ULONG pos) const
 KDB::RowList
 HandlerImpl::rows() const
 {
-    kdDebug(20012) << "KDB::RowListHandlerImpl::rows" << endl;
+    //kdDebug(20012) << "KDB::RowListHandlerImpl::rows" << endl;
     if ( m_rows.isEmpty() ) {
         MYSQL_ROW row;
 
@@ -75,25 +75,25 @@ HandlerImpl::rows() const
                 case FIELD_TYPE_TINY:
                 case FIELD_TYPE_SHORT:
                     v = QVariant(v.toString().toInt());
-                    kdDebug(20012) << "To int: "<< v.toInt() << endl;
+                    //kdDebug(20012) << "To int: "<< v.toInt() << endl;
                     break;
                 case FIELD_TYPE_LONG:
                 case FIELD_TYPE_INT24:
-                    kdDebug(20012) << "To Long: (string) "<< v.toString() << endl;
+                    //kdDebug(20012) << "To Long: (string) "<< v.toString() << endl;
                     v.cast(Value::Long);
-                    kdDebug(20012) << "To Long: "<< v.toLong() << endl;
+                    //kdDebug(20012) << "To Long: "<< v.toLong() << endl;
                 case FIELD_TYPE_LONGLONG:
                     // ???
                     break;
                 case FIELD_TYPE_DECIMAL:
                     // need to interpret?
                     v = QVariant(v.toString().toDouble());
-                    kdDebug(20012) << "To Double: " << v.toDouble() << endl;
+                    //kdDebug(20012) << "To Double: " << v.toDouble() << endl;
                     break;
                 case FIELD_TYPE_DOUBLE:
                 case FIELD_TYPE_FLOAT:
                     v = QVariant(v.toString().toDouble());
-                    kdDebug(20012) << "To Double: " << v.toDouble() << endl;
+                    //kdDebug(20012) << "To Double: " << v.toDouble() << endl;
                     break;
                 case FIELD_TYPE_TIMESTAMP:
                     v.asDateTime();
@@ -134,7 +134,7 @@ HandlerImpl::rows() const
 QStringList
 HandlerImpl::fields() const
 {
-    kdDebug(20012) << "HandlerImpl::fields" << endl;
+    //kdDebug(20012) << "HandlerImpl::fields" << endl;
     QStringList f;
 
     for (unsigned int i = 0; i < numFields; i++) {
@@ -146,7 +146,7 @@ HandlerImpl::fields() const
 QString
 HandlerImpl::nativeType(const QString &fieldName) const
 {
-    kdDebug(20012) << "HandlerImpl::nativeType" << " fieldName=" << fieldName << endl;
+    //kdDebug(20012) << "HandlerImpl::nativeType" << " fieldName=" << fieldName << endl;
     unsigned int i = 0;
     for ( ; i < numFields; ++i) {
         if (fieldName == m_fields[i].name)
@@ -223,7 +223,7 @@ HandlerImpl::nativeType(const QString &fieldName) const
 KDB::DataType
 HandlerImpl::kdbDataType(const QString &fieldName) const
 {
-    kdDebug(20012) << "KDB::DataTypeHandlerImpl::kdbDataType" << " fieldName=" << fieldName << endl;
+    //kdDebug(20012) << "KDB::DataTypeHandlerImpl::kdbDataType" << " fieldName=" << fieldName << endl;
 
     return ConnectorImpl::NToK(nativeType(fieldName));
 }

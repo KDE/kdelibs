@@ -27,19 +27,19 @@ KInstance * Factory::s_instance = 0L;
 Factory::Factory(QObject* parent, const char* name)
     : KLibFactory(parent, name)
 {
-    kdDebug(20012) << "Factory::Factory" << endl;
+    //kdDebug(20012) << "Factory::Factory" << endl;
     s_instance = new KInstance("ksql_mysql");
 }
 
 Factory::~Factory()
 {
-    kdDebug(20012) << "Factory::~Factory" << endl;
+    //kdDebug(20012) << "Factory::~Factory" << endl;
 }
 
 /**  */
 QObject * Factory::create(QObject* parent , const char* , const char*,  const QStringList &)
 {
-    kdDebug(20012) << "Factory::Create" << " parent=" << parent <<  endl;
+    //kdDebug(20012) << "Factory::Create" << " parent=" << parent <<  endl;
     PluginImpl * p = new PluginImpl(parent);
     emit objectCreated(p);
     return p;

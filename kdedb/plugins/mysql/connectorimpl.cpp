@@ -40,14 +40,14 @@
 
 ConnectorImpl::ConnectorImpl()
 {
-    kdDebug(20012) << "ConnectorImpl::ConnectorImpl" << endl;
+    //kdDebug(20012) << "ConnectorImpl::ConnectorImpl" << endl;
     conn = 0L;
 }
 
 ConnectorImpl::ConnectorImpl(const ConnectorImpl &c)
     : Connector(c)
 {
-    kdDebug(20012) << "ConnectorImpl::ConnectorImpl (const ConnectorImpl &c)" << endl;
+    //kdDebug(20012) << "ConnectorImpl::ConnectorImpl (const ConnectorImpl &c)" << endl;
     conn = c.conn;
 
     setHost( c.host() );
@@ -67,14 +67,14 @@ ConnectorImpl::~ConnectorImpl()
 MYSQL *
 ConnectorImpl::connection()
 {
-    kdDebug(20012) << "ConnectorImpl::connection" << endl;
+    //kdDebug(20012) << "ConnectorImpl::connection" << endl;
     return conn->conn;
 }
 
 bool
 ConnectorImpl::connect()
 {
-    kdDebug(20012) << "ConnectorImpl::connect" << endl;
+    //kdDebug(20012) << "ConnectorImpl::connect" << endl;
     bool ret = true;
 
     if (isConnected()) {
@@ -127,7 +127,7 @@ ConnectorImpl::connect()
 
 void ConnectorImpl::close()
 {
-    kdDebug(20012) << "ConnectorImpl::close" << endl;
+    //kdDebug(20012) << "ConnectorImpl::close" << endl;
     if ( isConnected() ) {
         kdDebug(20012) << k_funcinfo << endl;
         conn = 0L;
@@ -138,7 +138,7 @@ void ConnectorImpl::close()
 KDB::Connector *
 ConnectorImpl::clone()
 {
-    kdDebug(20012) << "ConnectorImpl::clone" << endl;
+    //kdDebug(20012) << "ConnectorImpl::clone" << endl;
     ConnectorImpl * ci = new ConnectorImpl(*this);
     return ci;
 }
@@ -146,7 +146,7 @@ ConnectorImpl::clone()
 QStringList
 ConnectorImpl::databases()
 {
-    kdDebug(20012) << "ConnectorImpl::databases" << endl;
+    //kdDebug(20012) << "ConnectorImpl::databases" << endl;
     KDB::RowList l = resultQuery("SHOW databases");
     QStringList lst;
     KDB::RowList::Iterator it;
@@ -159,7 +159,7 @@ ConnectorImpl::databases()
 QStringList
 ConnectorImpl::tables()
 {
-    kdDebug(20012) << "ConnectorImpl::tables" << endl;
+    //kdDebug(20012) << "ConnectorImpl::tables" << endl;
     KDB::RowList l = resultQuery("SHOW tables");
     QStringList lst;
     KDB::RowList::Iterator it;
@@ -173,7 +173,7 @@ ConnectorImpl::tables()
 KDB::RowList
 ConnectorImpl::fields(const QString & tableName)
 {
-    kdDebug(20012) << "ConnectorImpl::fields" << " tableName=" << tableName << endl;
+    //kdDebug(20012) << "ConnectorImpl::fields" << " tableName=" << tableName << endl;
 
     //KDB::RowList l = resultQuery(QString("SHOW fields from %1").arg(tableName));
 
@@ -217,7 +217,7 @@ ConnectorImpl::fields(const QString & tableName)
 bool
 ConnectorImpl::createDatabase(const QString & name)
 {
-    kdDebug(20012) << "ConnectorImpl::createDatabase" << " name=" << name << endl;
+    //kdDebug(20012) << "ConnectorImpl::createDatabase" << " name=" << name << endl;
     QString sql = QString("create database %1").arg(name);
     execute(sql);
 
@@ -231,7 +231,7 @@ ConnectorImpl::createDatabase(const QString & name)
 KDB::RowList
 ConnectorImpl::resultQuery(const QString &sql)
 {
-    kdDebug(20012) << "KDB::RowListConnectorImpl::resultQuery" << " sql=" << sql << endl;
+    //kdDebug(20012) << "KDB::RowListConnectorImpl::resultQuery" << " sql=" << sql << endl;
 
     HandlerImpl *res = static_cast<HandlerImpl *> (query(sql));
 
@@ -245,7 +245,7 @@ ConnectorImpl::resultQuery(const QString &sql)
 bool
 ConnectorImpl::setCurrentDatabase(const QString &name)
 {
-    kdDebug(20012) << "ConnectorImpl::setCurrentDatabase" << " name=" << name << endl;
+    //kdDebug(20012) << "ConnectorImpl::setCurrentDatabase" << " name=" << name << endl;
     // pretend to be closed, but don't close the connection
     // it may be used by other connectors
     if (isConnected())
@@ -262,7 +262,7 @@ ConnectorImpl::setCurrentDatabase(const QString &name)
 KDB_ULONG
 ConnectorImpl::execute(const QString &sql)
 {
-    kdDebug(20012) << "ConnectorImpl::execute" << " sql=" << sql << endl;
+    //kdDebug(20012) << "ConnectorImpl::execute" << " sql=" << sql << endl;
     int len = sql.length();
 
     if ( (mysql_real_query(connection(), sql.latin1(), len )) != 0 ) {
@@ -277,7 +277,7 @@ ConnectorImpl::execute(const QString &sql)
 KDB::Handler *
 ConnectorImpl::query(const QString &SQL)
 {
-    kdDebug(20012) << "ConnectorImpl::query" << " SQL=" << SQL << endl;
+    //kdDebug(20012) << "ConnectorImpl::query" << " SQL=" << SQL << endl;
     execute(SQL);
     if (DBENGINE->error()) {
         return 0L;
@@ -289,14 +289,14 @@ ConnectorImpl::query(const QString &SQL)
 KDB::DataType
 ConnectorImpl::nativeToKDB(const QString &type)
 {    
-    kdDebug(20012) << "KDB::DataTypeConnectorImpl::nativeToKDB" << " type=" << type << endl;
+    //kdDebug(20012) << "KDB::DataTypeConnectorImpl::nativeToKDB" << " type=" << type << endl;
     return NToK(type);
 }
 
 KDB::DataType
 ConnectorImpl::NToK(const QString &type)
 {
-    kdDebug(20012) << "KDB::DataType ConnectorImpl::NToK" << " type=" << type << endl;
+    //kdDebug(20012) << "KDB::DataType ConnectorImpl::NToK" << " type=" << type << endl;
     KDB::DataType ret = KDB::UNKNOWN;
 
     if (type == "CHAR")
@@ -349,14 +349,14 @@ ConnectorImpl::NToK(const QString &type)
 QString
 ConnectorImpl::KDBToNative(KDB::DataType type)
 {
-    kdDebug(20012) << "ConnectorImpl::KDBToNative" << endl;
+    //kdDebug(20012) << "ConnectorImpl::KDBToNative" << endl;
     return KToN(type);
 }
 
 QString
 ConnectorImpl::KToN(KDB::DataType type)
 {
-    kdDebug(20012) << "ConnectorImpl::KToN" << endl;
+    //kdDebug(20012) << "ConnectorImpl::KToN" << endl;
     QString ret = QString::null;
 
     switch (type) {
@@ -452,7 +452,7 @@ ConnectorImpl::createTable(const KDB::Table &tab)
 bool
 ConnectorImpl::dropDatabase(const QString & name)
 {
-    kdDebug(20012) << "ConnectorImpl::dropDatabase" << " name=" << name << endl;
+    //kdDebug(20012) << "ConnectorImpl::dropDatabase" << " name=" << name << endl;
     execute(QString("drop database %1").arg(name));
     if (DBENGINE->error())
         return false;
@@ -463,7 +463,7 @@ ConnectorImpl::dropDatabase(const QString & name)
 bool
 ConnectorImpl::dropTable(const QString & name)
 {
-    kdDebug(20012) << "ConnectorImpl::dropTable" << " name=" << name << endl;
+    //kdDebug(20012) << "ConnectorImpl::dropTable" << " name=" << name << endl;
     execute(QString("drop table %1").arg(name));
     if (DBENGINE->error())
         return false;
