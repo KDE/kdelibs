@@ -27,7 +27,7 @@
 #include "css_valueimpl.h"
 #include "csshelper.h"
 #include "html/html_documentimpl.h"
-#include "html/html_baseimpl.h"
+#include "xml/dom_elementimpl.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
 #include "khtml_factory.h"
@@ -41,7 +41,6 @@ using namespace DOM;
 #include "khtml_settings.h"
 #include "misc/htmlhashes.h"
 
-#include "html/html_headimpl.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "khtml_settings.h"
@@ -75,55 +74,15 @@ static bool lastSelectorPart;
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
     strictParsing = doc->parseMode() == DocumentImpl::Strict;
-    if (doc->isHTMLDocument()) {
-        HTMLDocumentImpl *htmlDoc = static_cast<HTMLDocumentImpl*>(doc);
+    if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
 
-	if(!defaultStyle) loadDefaultStyle(htmlDoc->view()->part()->settings());
+    // add stylesheets from document
+    authorStyle = new CSSStyleSelectorList();
+    QList<StyleSheetImpl> authorStyleSheets = doc->authorStyleSheets();
+    QListIterator<StyleSheetImpl> it(authorStyleSheets);
+    for (; it.current(); ++it)
+	authorStyle->append(it.current());
 
-	authorStyle = new CSSStyleSelectorList();
-	// ### go through DOM tree for style elements
-
-	NodeImpl *test = htmlDoc->html(); // should be html element
-	if(!test) return;
-	test = test->firstChild();
-	if(!test) return;
-	while(test && (test->id() != ID_HEAD))
-	    test = test->nextSibling();
-	if(test) {
-	    HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
-
-	    // all LINK and STYLE elements have to be direct children of the HEAD element
-	    test = head->firstChild();
-	    while(test)
-	    {
-		if(test->id() == ID_LINK)
-		{
-		    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
-		    authorStyle->append(link->sheet());
-		}
-		else if(test->id() == ID_STYLE)
-		{
-		    HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
-		    authorStyle->append(style->sheet());
-		}
-		test = test->nextSibling();
-	    }
-	}
-	HTMLElementImpl *e = htmlDoc->body();
-	if(e && e->id() == ID_BODY)
-	{
-	    HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
-	    if(body->sheet())
-	    {
-		authorStyle->append(body->sheet());
-	    }
-	}
-    }
-    else { // just a normal XML document
-	// ### parse the xml for processing instructions containing style sheet info
-	if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
-	authorStyle = new CSSStyleSelectorList();
-    }
 }
 
 CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
@@ -353,11 +312,8 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
     bool last = lastSelectorPart;
     lastSelectorPart = false;
     
-    if(!e || !e->isHTMLElement())
-    {
-        // ### no support for xml elements at the moment
+    if(!e)
         return false;
-    }
 
     if(e->id() != sel->tag && sel->tag != -1) return false;
 

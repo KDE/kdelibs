@@ -45,6 +45,7 @@ class CSSRuleList;
 class CSSStyleRuleImpl;
 class CSSValueImpl;
 class NodeImpl;
+class DocumentImpl;
 
 class StyleSheetImpl : public StyleListImpl
 {
@@ -106,9 +107,10 @@ public:
     void setNonCSSHints();
     
     virtual void checkLoaded();
-    khtml::DocLoader *docLoader() { return m_docLoader; }
+    khtml::DocLoader *docLoader();
+    DocumentImpl *doc() { return m_doc; }
 protected:
-    khtml::DocLoader *m_docLoader;
+    DocumentImpl *m_doc;
 };
 
 // ----------------------------------------------------------------------------

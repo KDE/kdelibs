@@ -116,6 +116,9 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_paintDeviceMetrics = 0;
     pMode = Strict;
     m_textColor = "#000000";
+    m_elementNames = 0;
+    m_elementNameAlloc = 0;
+    m_elementNameCount = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -137,6 +140,9 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     setPaintDevice( m_view );
     pMode = Strict;
     m_textColor = "#000000";
+    m_elementNames = 0;
+    m_elementNameAlloc = 0;
+    m_elementNameCount = 0;
 }
 
 DocumentImpl::~DocumentImpl()
@@ -152,6 +158,14 @@ DocumentImpl::~DocumentImpl()
     m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
+
+    if (m_elementNames) {
+	unsigned short id;
+	for (id = 0; id < m_elementNameCount; id++) {
+	    m_elementNames[id]->deref();
+	}
+	delete [] m_elementNames;
+    }
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -1139,6 +1153,43 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
     return 0;
 }
 
+unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
+{
+    // first try and find the element
+    unsigned short id;
+    for (id = 0; id < m_elementNameCount; id++)
+	if (!strcmp(m_elementNames[id],_name))
+	    return id+1000;
+
+    // we don't have it yet, assign it an id
+    if (m_elementNameCount+1 > m_elementNameAlloc) {
+	m_elementNameAlloc += 100;
+	DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
+	if (m_elementNames) {
+	    unsigned short i;
+	    for (i = 0; i < m_elementNameCount; i++)
+		newNames[i] = m_elementNames[i];
+	    delete [] m_elementNames;
+	}
+	m_elementNames = newNames;
+    }
+    id = m_elementNameCount++;
+    m_elementNames[id] = _name;
+    _name->ref();
+    // we add 1000 to the XML element id to avoid clashes with HTML element ids
+    return id+1000;
+}
+
+QList<StyleSheetImpl> DocumentImpl::authorStyleSheets()
+{
+    return m_xmlStyleSheets;
+}
+
+void DocumentImpl::addXMLStyleSheet(StyleSheetImpl *_styleSheet)
+{
+    m_xmlStyleSheets.append(_styleSheet);
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -1242,11 +1293,6 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 
 
-
 #include "dom_docimpl.moc"
-
-
-
-
 
 

@@ -188,11 +188,12 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual DOMString namespaceURI() const;
+    virtual unsigned short id() const { return m_id; };
 
 protected:
     DOMStringImpl *m_name;
     DOMStringImpl *m_namespaceURI;
-
+    unsigned short m_id;
 };
 
 

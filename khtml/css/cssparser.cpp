@@ -47,7 +47,6 @@ using namespace DOM;
 #include "cssproperties.h"
 #include "cssvalues.h"
 
-
 //
 // The following file defines the function
 //     const struct props *findProp(const char *word, int len)
@@ -471,8 +470,20 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
             //kdDebug( 6080 ) << "found '*' selector" << endl;
             cs->tag = -1;
         }
-        else
-            cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
+        else {
+	    StyleBaseImpl *root = this;
+	    DocumentImpl *doc = 0;
+	    while (root->parent())
+		root = root->parent();
+	    if (root->isCSSStyleSheet())
+		doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
+	    if (doc && !doc->isHTMLDocument()) {
+		DOMString s = tag;
+		cs->tag = doc->elementId(s.implementation());
+	    }
+	    else
+		cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
+        }
    }
    if (cs->tag == 0)
    {
@@ -711,7 +722,6 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
     delete propList;
     return 0;
 }
-
 
 // ------------------- begin font property ---------------------
 /*

@@ -127,25 +127,21 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     : StyleSheetImpl(parentSheet, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
-    m_docLoader = 0;
+    m_doc = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
-    DocumentImpl *ownerDoc = static_cast<DocumentImpl*>(parentNode->nodeType() == Node::DOCUMENT_NODE ? parentNode : parentNode->ownerDocument());
-    if (ownerDoc->isHTMLDocument())
-	m_docLoader = static_cast<HTMLDocumentImpl*>(ownerDoc)->docLoader();
-    else
-	m_docLoader = 0;
+    m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
-    m_docLoader = 0;
+    m_doc = 0;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -158,11 +154,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
 	m_lstChildren->append(rule);
 	rule->setParent(this);
     }
-    DocumentImpl *ownerDoc = static_cast<DocumentImpl*>(parentNode->nodeType() == Node::DOCUMENT_NODE ? parentNode : parentNode->ownerDocument());
-    if (ownerDoc->isHTMLDocument())
-	m_docLoader = static_cast<HTMLDocumentImpl*>(ownerDoc)->docLoader();
-    else
-	m_docLoader = 0;
+    m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -175,7 +167,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
 	m_lstChildren->append(rule);
 	rule->setParent(this);
     }
-    m_docLoader = 0;
+    m_doc  = 0;
 }
 
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
@@ -295,6 +287,12 @@ void CSSStyleSheetImpl::setNonCSSHints()
 	}
 	rule = m_lstChildren->next();
     }
+}
+
+khtml::DocLoader *CSSStyleSheetImpl::docLoader()
+{
+    // ### remove? (clients just use sheet->doc()->docLoader())
+    return m_doc->docLoader();
 }
 
 // ---------------------------------------------------------------------------------------------

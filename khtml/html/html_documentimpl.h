@@ -60,7 +60,6 @@ public:
     DOMString domain() const;
 
     HTMLElementImpl *body();
-    HTMLElementImpl *html();
     void setBody(const HTMLElement &_body);
 
     virtual Tokenizer *createTokenizer();
@@ -75,6 +74,7 @@ public:
     void setOnload( const QString &script ) { onloadScript = script; }
     void setOnunload( const QString &script ) { onUnloadScript = script; }
     virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual QList<StyleSheetImpl> authorStyleSheets();
 
 signals:
     void finishedParsing();

@@ -40,6 +40,7 @@ namespace DOM {
     class CSSRuleImpl;
     class CSSStyleRuleImpl;
 
+    class DocumentImpl;
 
     int getPropertyID(const char *tagStr, int len);
 
@@ -89,6 +90,7 @@ public:
     public:
 	StyleBaseImpl() { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
 	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
+	
 	virtual ~StyleBaseImpl() {}
 
 	virtual bool deleteMe();
@@ -170,7 +172,7 @@ public:
 	
     protected:
 	StyleBaseImpl *m_parent;
-	bool hasInlinedDecl : 1; 
+	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
     };
 

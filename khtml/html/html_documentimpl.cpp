@@ -32,6 +32,8 @@
 #include "xml_tokenizer.h"
 #include "htmlhashes.h"
 #include "html_imageimpl.h"
+#include "html_headimpl.h"
+#include "html/html_baseimpl.h"
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -86,36 +88,14 @@ DOMString HTMLDocumentImpl::domain() const
 
 HTMLElementImpl *HTMLDocumentImpl::body()
 {
-    if(bodyElement) return bodyElement;
-    if(!_first) return 0;
-    if(!htmlElement)
-        html();
-    if(!htmlElement) return 0;
-    NodeImpl *test = htmlElement->firstChild();
-    while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
-        test = test->nextSibling();
-    if(!test) return 0;
-    bodyElement = static_cast<HTMLElementImpl *>(test);
-    return bodyElement;
+    NodeImpl *de = documentElement();
+    if (!de)
+	return 0;
+    NodeImpl *b = de->firstChild();
+    while (b && b->id() != ID_BODY && b->id() != ID_FRAMESET)
+	b = b->nextSibling();
+    return static_cast<HTMLElementImpl *>(b);
 }
-
-HTMLElementImpl *HTMLDocumentImpl::html()
-{
-    if (htmlElement)
-        return htmlElement;
-
-
-    NodeImpl *n = _first;
-    while (n && n->id() != ID_HTML)
-        n = n->nextSibling();
-    if (n) {
-        htmlElement = static_cast<HTMLElementImpl*>(n);
-        return htmlElement;
-    }
-    else
-        return 0;
-}
-
 
 void HTMLDocumentImpl::setBody(const HTMLElement &/*_body*/)
 {
@@ -183,6 +163,47 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
 {
     return createHTMLElement(name);
+}
+
+QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
+{
+    QList<StyleSheetImpl> styleSheets;
+    NodeImpl *test = documentElement(); // should be html element
+    if(!test) return styleSheets;
+    test = test->firstChild();
+    if(!test) return styleSheets;
+    while(test && (test->id() != ID_HEAD))
+	test = test->nextSibling();
+    if(test) {
+	HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
+
+	// all LINK and STYLE elements have to be direct children of the HEAD element
+	test = head->firstChild();
+	while(test)
+	{
+	    if(test->id() == ID_LINK)
+	    {
+		HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
+		styleSheets.append(link->sheet());
+	    }
+	    else if(test->id() == ID_STYLE)
+	    {
+		HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
+		styleSheets.append(style->sheet());
+	    }
+	    test = test->nextSibling();
+	}
+    }
+    HTMLElementImpl *e = body();
+    if(e && e->id() == ID_BODY)
+    {
+	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
+	if(body->sheet())
+	{
+	    styleSheets.append(body->sheet());
+	}
+    }
+    return styleSheets;
 }
 
 //------------------------------------------------------------------------------

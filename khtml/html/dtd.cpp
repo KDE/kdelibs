@@ -311,6 +311,9 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 
     // ### allow comments inside ANY node that can contain children
 
+    if (tagID >= 1000 || childID >= 1000)
+	return true; // one or both of the elements in an XML element; just allow for now
+
     switch(tagID)
     {
     case ID_TT:

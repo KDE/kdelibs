@@ -721,6 +721,7 @@ XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name) : Elemen
     if (m_name)
 	m_name->ref();
     m_namespaceURI = 0;
+    m_id = document->elementId(_name);
 }
 
 XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
@@ -731,6 +732,7 @@ XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name, DOMStrin
     m_namespaceURI = _namespaceURI;
     if (m_namespaceURI)
 	m_namespaceURI->ref();
+    m_id = document->elementId(_name);
 }
 
 XMLElementImpl::~XMLElementImpl()

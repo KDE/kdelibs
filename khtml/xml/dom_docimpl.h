@@ -38,6 +38,7 @@ class Tokenizer;
 namespace khtml {
     class CSSStyleSelector;
     class DocLoader;
+    class CSSStyleSelectorList;
 }
 
 namespace DOM {
@@ -218,6 +219,12 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
+    unsigned short elementId(DOMStringImpl *_name);
+    DOMStringImpl *elementName(unsigned short _id) const { return m_elementNames[_id-1000]; }
+    virtual QList<StyleSheetImpl> authorStyleSheets();
+
+    void addXMLStyleSheet(StyleSheetImpl *_styleSheet);
+
 signals:
     virtual void finishedParsing();
 
@@ -247,7 +254,11 @@ protected:
     QPaintDeviceMetrics *m_paintDeviceMetrics;
     ParseMode pMode;
 
-    DOMString m_textColor; 
+    DOMString m_textColor;
+    DOMStringImpl **m_elementNames;
+    unsigned short m_elementNameAlloc;
+    unsigned short m_elementNameCount;
+    QList<StyleSheetImpl> m_xmlStyleSheets;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

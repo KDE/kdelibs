@@ -30,6 +30,7 @@
 #include "dom_xmlimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
+#include "css/css_stylesheetimpl.h"
 
 #include "misc/loader.h"
 
@@ -169,6 +170,23 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
 	exitText();
     // ### handle exceptions
     m_currentNode->addChild(m_doc->createProcessingInstruction(target,data));
+
+    if (target == "xml-stylesheet") {
+	// see http://www.w3.org/TR/xml-stylesheet/
+	// ### check that this occurs only in the prolog
+	// ### support stylesheet included in a fragment of this (or another) document
+	XMLAttributeReader attrReader(data);
+	bool attrsOk;
+	QXmlAttributes attrs = attrReader.readAttrs(attrsOk);
+	if (!attrsOk)
+	    return false;
+	if (attrs.value("type") != "text/css")
+	    return false;
+	
+	// ### some validation on the URL?
+	(void) new XMLStyleSheetLoader(m_doc,attrs.value("href"));
+    }
+
     return true;
 }
 
@@ -213,8 +231,8 @@ void XMLHandler::exitText()
 	m_currentNode = m_currentNode->parentNode();
 }
 
-bool XMLHandler::attributeDecl(const QString &eName, const QString &aName, const QString &type,
-                               const QString &valueDefault, const QString &value)
+bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,
+                               const QString &/*valueDefault*/, const QString &/*value*/)
 {
     // qt's xml parser (as of 2.2.3) does not currently give us values for type, valueDefault and
     // value. When it does, we can store these somewhere and have default attributes on elements
@@ -404,6 +422,65 @@ void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
         m_view->part()->executeScript(scriptSource.string());
 	executeScripts();
     }
+}
+
+//------------------------------------------------------------------------------
+
+XMLStyleSheetLoader::XMLStyleSheetLoader(DocumentImpl *_doc, DOM::DOMString url)
+{
+    m_doc = _doc;
+
+    // ### make sure doc->baseURL() is not empty?
+    m_cachedSheet = m_doc->docLoader()->requestStyleSheet(url, m_doc->baseURL());
+    m_cachedSheet->ref( this );
+}
+
+XMLStyleSheetLoader::~XMLStyleSheetLoader()
+{
+    if ( m_cachedSheet ) m_cachedSheet->deref(this);
+}
+
+void XMLStyleSheetLoader::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+{
+    CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc, url);
+    styleSheet->ref(); // ### should this be done in addXMLStyleSheet instead? check that it gets deleted...
+    styleSheet->parseString(sheet);
+    m_doc->addXMLStyleSheet(styleSheet);
+    m_doc->applyChanges();
+    delete this;
+}
+
+//------------------------------------------------------------------------------
+
+XMLAttributeReader::XMLAttributeReader(QString _attrString)
+{
+    m_attrString = _attrString;
+}
+
+XMLAttributeReader::~XMLAttributeReader()
+{
+}
+
+QXmlAttributes XMLAttributeReader::readAttrs(bool &ok)
+{
+    // parse xml file
+    QXmlInputSource source;
+    source.setData("<?xml version=\"1.0\"?><attrs "+m_attrString+" />");
+    QXmlSimpleReader reader;
+    reader.setContentHandler( this );
+    ok = reader.parse( source );
+    return attrs;
+}
+
+bool XMLAttributeReader::startElement(const QString& /*namespaceURI*/, const QString& localName,
+				      const QString& /*qName*/, const QXmlAttributes& atts)
+{
+    if (localName == "attrs") {
+	attrs = atts;
+	return true;
+    }
+    else
+	return false; // we shouldn't have any other elements
 }
 
 #include "xml_tokenizer.moc"
