@@ -312,8 +312,6 @@ int main(int argc, char **argv)
       p+=strlen(tty)+1;
    }
 
-   printf("size = %d p-buffer = %d\n", size, p-buffer);
-
    write_socket(sock, buffer, size);
    free( buffer );
 
