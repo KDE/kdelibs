@@ -1,8 +1,8 @@
 Source: kdelibs-cvs
 Section: libs
-Priority: extra
+Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
-Standards-Version: 2.5.1
+Standards-Version: 3.0.1.1
 
 Package: kdelibs3-cvs
 Architecture: any
@@ -18,6 +18,7 @@ Section: doc
 Depends: kdelibs3-cvs (= ${Source-Version})
 Suggests: kdevelop, kdoc, qt2-doc
 Conflicts: kdelibs-doc
+Provides: kdelibs-doc
 Description: KDE core libraries (documentation)
  KDE library documentation.
 
