@@ -1050,6 +1050,7 @@ bool QXEmbed::x11Event( XEvent* e)
             // L2010: We lost the window
             window = 0;
             windowChanged( window );
+            emit embeddedWindowDestroyed();
             // L2011: Remove window from save set
             //        ??? [not sure it is good to touch this window since
             //             someone else has taken control of it already.]
