@@ -195,8 +195,7 @@ void KioslaveTest::changeProgressMode( int id ) {
 
 
 void KioslaveTest::startJob() {
-  KURL current;
-  current.setPath(QDir::currentDirPath());
+  KURL current(QDir::currentDirPath()+"/");
   QString sSrc( le_source->text() );
   KURL src( current, sSrc );
 
