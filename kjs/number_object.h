@@ -86,7 +86,7 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
     Value get(ExecState *exec, const UString &p) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
     enum { NaNValue, NegInfinity, PosInfinity, MaxValue, MinValue };

@@ -136,7 +136,7 @@ Value NumberObjectImp::get(ExecState *exec, const UString &propertyName) const
   return lookupGetValue<NumberObjectImp, InternalFunctionImp>( exec, propertyName, &numberTable, this );
 }
 
-Value NumberObjectImp::getValue(ExecState *, int token) const
+Value NumberObjectImp::getValueProperty(ExecState *, int token) const
 {
   // ECMA 15.7.3
   switch(token) {

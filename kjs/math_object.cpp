@@ -83,7 +83,7 @@ Value MathObjectImp::get(ExecState *exec, const UString &propertyName) const
   return lookupGet<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
 }
 
-Value MathObjectImp::getValue(ExecState *, int token) const
+Value MathObjectImp::getValueProperty(ExecState *, int token) const
 {
   double d = -42; // ;)
   switch (token) {

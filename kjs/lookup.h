@@ -123,12 +123,12 @@ namespace KJS {
    *
    * This method does it all (looking in the hashtable, checking for function
    * overrides, creating the function or retrieving from cache, calling
-   * getValue in case of a non-function property, forwarding to parent if
+   * getValueProperty in case of a non-function property, forwarding to parent if
    * unknown property).
    *
    * Template arguments:
    * @param FuncImp the class which implements this object's functions
-   * @param ThisImp the class of "this". It must implement the getValue(exec,token) method,
+   * @param ThisImp the class of "this". It must implement the getValueProperty(exec,token) method,
    * for non-function properties.
    * @param ParentImp the class of the parent, to propagate the lookup.
    *
@@ -150,12 +150,12 @@ namespace KJS {
     //fprintf(stderr, "lookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
       return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
-    return thisObj->getValue(exec, entry->value);
+    return thisObj->getValueProperty(exec, entry->value);
   }
 
   /**
    * Simplified version of lookupGet in case there are only functions.
-   * Using this instead of lookupGet prevents 'this' from implementing a dummy getValue.
+   * Using this instead of lookupGet prevents 'this' from implementing a dummy getValueProperty.
    */
   template <class FuncImp, class ParentImp>
   inline Value lookupGetFunction(ExecState *exec, const UString &propertyName,
@@ -188,7 +188,7 @@ namespace KJS {
 
     if (entry->attr & Function)
       fprintf(stderr, "Function bit set! Shouldn't happen in lookupGetValue! propertyName was %s\n", propertyName.ascii() );
-    return thisObj->getValue(exec, entry->value);
+    return thisObj->getValueProperty(exec, entry->value);
   }
 
   /**
@@ -213,7 +213,7 @@ namespace KJS {
       ; // do nothing
 #endif
     else
-      thisObj->putValue(exec, entry->value, value, attr);
+      thisObj->putValueProperty(exec, entry->value, value, attr);
   }
 
   /*
@@ -223,7 +223,7 @@ namespace KJS {
    * - include the .lut.h
    * - mention the table in the classinfo (add a classinfo if necessary)
    * - write/update the class enum (for the tokens)
-   * - turn get() into getValue(), put() into putValue(), using a switch and removing funcs
+   * - turn get() into getValueProperty(), put() into putValueProperty(), using a switch and removing funcs
    * - write get() and/or put() using a template method
    * - cleanup old stuff (e.g. hasProperty)
    * - compile, test, commit ;)
