@@ -64,6 +64,16 @@ k_dcop:
 
   void cacheReload();
 
+  bool cacheModifyByCN(QString cn,
+                       KSSLCertificateCache::KSSLCertificatePolicy policy,
+                       bool permanent,
+                       QDateTime expires);
+
+  bool cacheModifyByCertificate(KSSLCertificate cert,
+                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                                bool permanent,
+                                QDateTime expires);
+
   //
   //  Certificate Home methods
   //

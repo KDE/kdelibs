@@ -26,6 +26,7 @@
 class QString;
 class KSSLCertificate;
 #include <qcstring.h>
+#include <qdatetime.h>
 
 
 class KSSLCertificateCache {
@@ -66,6 +67,16 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
   bool removeByCertificate(KSSLCertificate& cert);
 
   bool isPermanent(KSSLCertificate& cert);
+
+  bool modifyByCN(QString& cn,
+                  KSSLCertificateCache::KSSLCertificatePolicy policy,
+                  bool permanent,
+                  QDateTime& expires);
+
+  bool modifyByCertificate(KSSLCertificate& cert,
+                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                           bool permanent,
+                           QDateTime& expires);
 
   void reload();
 

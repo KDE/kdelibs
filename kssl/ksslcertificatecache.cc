@@ -227,6 +227,53 @@ return false;
 }
 
 
+bool KSSLCertificateCache::modifyByCN(QString& cn,
+                  KSSLCertificateCache::KSSLCertificatePolicy policy,
+                  bool permanent,
+                  QDateTime& expires) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << cn << policy << permanent << expires;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "cacheModifyByCN(QString,KSSLCertificateCache::KSSLCertificatePolicy,bool,QDateTime)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "bool") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        bool drc;
+        retStream >> drc;
+        return drc;
+     }
+
+return false;
+}
+
+
+bool KSSLCertificateCache::modifyByCertificate(KSSLCertificate& cert,
+                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                           bool permanent,
+                           QDateTime& expires) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << cert << policy << permanent << expires;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "cacheModifyByCertificate(KSSLCertificate,KSSLCertificateCache::KSSLCertificatePolicy,bool,QDateTime)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "bool") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        bool drc;
+        retStream >> drc;
+        return drc;
+     }
+
+return false;
+}
+
+
+
 QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
   s << (Q_UINT32)p;
 return s;
