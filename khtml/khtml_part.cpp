@@ -227,7 +227,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
-  
+
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -1658,33 +1658,33 @@ void KHTMLPart::slotSelectionChanged()
 void KHTMLPart::slotIncFontSizes()
 {
   updateFontSize( ++d->m_fontBase );
-} 
+}
 
 void KHTMLPart::slotDecFontSizes()
 {
-  updateFontSize( --d->m_fontBase ); 
-} 
+  updateFontSize( --d->m_fontBase );
+}
 
 void KHTMLPart::updateFontSize( int add )
 {
-  resetFontSizes(); 
+  resetFontSizes();
   QValueList<int> sizes = fontSizes();
-  
+
   QValueList<int>::Iterator it = sizes.begin();
   QValueList<int>::Iterator end = sizes.end();
   for (; it != end; ++it )
-    (*it) += add*4;
-  
+    (*it) += add;
+
   setFontSizes( sizes );
-  
+
   // HACK until khtml supports setting the font size dynamically
   KParts::URLArgs args( d->m_extension->urlArgs() );
   args.reload = true;
-  
+
   closeURL();
   d->m_extension->setURLArgs( args );
   openURL( m_url );
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
