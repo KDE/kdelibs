@@ -21,6 +21,8 @@
 #ifndef _KSSLSESSION_H
 #define _KSSLSESSION_H
 
+#include <qstring.h>
+
 class KSSL;
 
 class KSSLSessionPrivate;

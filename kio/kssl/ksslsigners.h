@@ -22,10 +22,10 @@
 #ifndef _INCLUDE_KSSLSIGNERS_H
 #define _INCLUDE_KSSLSIGNERS_H
 
-class QString;
 class KSSLCertificate;
 class DCOPClient;
 
+#include <qstringlist.h>
 
 // ### KDE4 - Fix constness
 /**
