@@ -608,6 +608,7 @@ public:
   bool bMultiple;
   bool bIconChanged;
   bool bKDesktopMode;
+  bool bDesktopFile;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
   QString oldFileName;
@@ -621,6 +622,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
   d->bKDesktopMode = (QCString(qApp->name()) == "kdesktop"); // nasty heh?
+  d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
   // We set this data from the first item, and we'll
@@ -680,8 +682,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
     d->oldFileName = filename;
 
-    bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
-    if ( d->bKDesktopMode && isDesktopFile ) {
+    if ( d->bKDesktopMode && d->bDesktopFile ) {
         KDesktopFile config( properties->kurl().path(), true /* readonly */ );
         if ( config.hasKey( "Name" ) ) {
             filename = config.readName();
@@ -718,7 +719,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
 
     if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
-        isDesktopFile ||
+        d->bDesktopFile ||
         KBindingPropsPlugin::supports(properties->items())) {
 
       determineRelativePath( path );
@@ -1179,8 +1180,13 @@ void KFilePropsPlugin::applyChanges()
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
+      
+      QString newFileName = KIO::encodeFileName(n);
+      if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
+         newFileName += ".desktop";
+         
       // Tell properties. Warning, this changes the result of properties->kurl() !
-      properties->rename( KIO::encodeFileName(n) );
+      properties->rename( newFileName );
 
       // Update also relative path (for apps and mimetypes)
       if ( !m_sRelativePath.isEmpty() )
@@ -1231,7 +1237,6 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
   assert( properties->item() );
   assert( !properties->item()->url().isEmpty() );
-  bool isDesktopFile = KDesktopPropsPlugin::supports(properties->items());
 
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
@@ -1240,7 +1245,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     newURL.setPath( locateLocal("mime", m_sRelativePath) );
     properties->updateUrl( newURL );
   }
-  else if (isDesktopFile && !m_sRelativePath.isEmpty())
+  else if (d->bDesktopFile && !m_sRelativePath.isEmpty())
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
     KURL newURL;
@@ -1249,11 +1254,15 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     properties->updateUrl( newURL );
   }
 
-  if ( d->bKDesktopMode && isDesktopFile ) {
+  if ( d->bKDesktopMode && d->bDesktopFile ) {
       // Renamed? Update Name field
       if ( d->oldFileName != properties->kurl().fileName() || m_bFromTemplate ) {
           KDesktopFile config( properties->kurl().path() );
           QString nameStr = properties->kurl().fileName();
+          if ( nameStr.endsWith(".desktop") )
+              nameStr.truncate( nameStr.length() - 8 );
+          if ( nameStr.endsWith(".kdelnk") )
+              nameStr.truncate( nameStr.length() - 7 );
           config.writeEntry( "Name", nameStr );
           config.writeEntry( "Name", nameStr, true, false, true );
       }
@@ -2368,9 +2377,9 @@ void KURLPropsPlugin::applyChanges()
   {
     // ### duplicated from KApplicationPropsPlugin
     QString nameStr = properties->kurl().fileName();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
+    if ( nameStr.endsWith(".desktop") )
       nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
+    if ( nameStr.endsWith(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
     config.writeEntry( "Name", nameStr );
     config.writeEntry( "Name", nameStr, true, false, true );
@@ -3766,9 +3775,9 @@ void KApplicationPropsPlugin::applyChanges()
   if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
   {
     nameStr = properties->kurl().fileName();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
+    if ( nameStr.endsWith(".desktop") )
       nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
+    if ( nameStr.endsWith(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
   }
   config.writeEntry( "Name", nameStr );
