@@ -631,8 +631,7 @@ void KDoubleNumInput::init(double value)
 
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
     edit->setAlignment(AlignRight);
-    edit->setValidator(new KFloatValidator(this,
-                                                                                   "KDoubleNumInput::KFloatValidator"));
+    edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
     edit->installEventFilter( this );
     setFocusProxy(edit);
 

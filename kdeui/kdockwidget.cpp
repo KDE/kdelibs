@@ -21,7 +21,7 @@
 
 #include <qlayout.h>
 #include <qpainter.h>
-#include <qobjcoll.h>
+#include <qobjectlist.h>
 
 #ifndef NO_KDE2
  #include <kapp.h>
@@ -29,7 +29,7 @@
  #include <ktoolbar.h>
  #include <kpopupmenu.h>
 #else
- #include <qapp.h>
+ #include <qapplication.h>
  #include <qtoolbar.h>
  #include <qpopupmenu.h>
 #endif
