@@ -625,7 +625,10 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    if( !success )
 	    {
 		cerr_ << "ERROR: Couldn't attach to DCOP server!" << endl;
-		continue;
+		if( users.isEmpty() )
+		    break;
+		else
+		    continue;
 	    }
 	    dcop = client;
 
