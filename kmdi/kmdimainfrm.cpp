@@ -797,7 +797,6 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
 {
    if (!pWnd) return;
    //Closes a child window. sends no close event : simply deletes it
-   // very inefficient for big lists
    m_pDocumentViews->removeRef(pWnd);
    if (m_pDocumentViews->count() == 0)
       m_pCurrentWindow = 0L;
@@ -853,6 +852,7 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
   } else if (pWnd->isAttached()) {
     m_pMdi->destroyChild(pWnd->mdiParent());
   } else {
+    delete pWnd;
     // is not attached
     if (m_pMdi->getVisibleChildCount() > 0) {
       setActiveWindow();
@@ -873,7 +873,6 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
     }
   }
 
-    delete pWnd;
    if (!m_pCurrentWindow)
       emit lastChildViewClosed();
 }
