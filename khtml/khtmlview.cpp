@@ -91,18 +91,12 @@ class KHTMLViewPrivate {
     friend class KHTMLToolTip;
 public:
     KHTMLViewPrivate()
+        : underMouse( 0 )
     {
-        underMouse = 0;
         reset();
-        tp=0;
-        paintBuffer=0;
         vertPaintBuffer=0;
         formCompletions=0;
         prevScrollbarVisible = true;
-	timerId = 0;
-        repaintTimerId = 0;
-        scrollTimerId = 0;
-        complete = false;
 	tooltip = 0;
         possibleTripleClick = false;
     }
@@ -143,7 +137,7 @@ public:
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
-	timerId = 0;
+	layoutTimerId = 0;
         repaintTimerId = 0;
         scrollTimerId = 0;
         complete = false;
@@ -213,7 +207,7 @@ public:
 
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
-    int timerId;
+    int layoutTimerId;
 
     int repaintTimerId;
     int scrollTimerId;
@@ -431,6 +425,8 @@ void KHTMLView::setMarginHeight(int h)
 
 void KHTMLView::layout()
 {
+    d->layoutSchedulingEnabled=false;
+
     if( m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
@@ -463,6 +459,10 @@ void KHTMLView::layout()
     }
     else
        _width = visibleWidth();
+
+    killTimer(d->layoutTimerId);
+    d->layoutTimerId = 0;
+    d->layoutSchedulingEnabled=true;
 }
 
 void KHTMLView::closeChildDialogs()
@@ -702,7 +702,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,
-			   d->clickCount,_mouse,true,DOM::NodeImpl::MouseRelease);
+                           d->clickCount,_mouse,true,DOM::NodeImpl::MouseRelease);
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
@@ -1611,7 +1611,7 @@ void KHTMLView::slotScrollBarMoved()
 void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
-    if (e->timerId() == d->scrollTimerId) {
+    if ( e->timerId() == d->scrollTimerId ) {
         switch (d->scrollDirection) {
             case KHTMLViewPrivate::ScrollDown:
                 if (contentsY() + visibleHeight () >= contentsHeight())
@@ -1640,20 +1640,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         }
         return;
     }
-    if (e->timerId()==d->timerId)
-    {
+    else if ( e->timerId() == d->layoutTimerId ) {
         d->firstRelayout = false;
-        killTimer(d->timerId);
-
         d->dirtyLayout = true;
-        d->layoutSchedulingEnabled=false;
         layout();
-        d->layoutSchedulingEnabled=true;
-
-        d->timerId = 0;
-
-
-        //scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
 	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
 
@@ -1673,14 +1663,15 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
+    d->repaintTimerId = 0;
     updateContents( d->updateRect );
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
+        QWidget* w;
         d->dirtyLayout = false;
 
         QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
         QPtrList<RenderWidget> toRemove;
-        QWidget* w;
         for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
             int xp = 0, yp = 0;
             w = it.current();
@@ -1693,29 +1684,22 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }
-
-    d->repaintTimerId = 0;
 }
 
 void KHTMLView::scheduleRelayout()
 {
-    if (!d->layoutSchedulingEnabled || d->timerId)
+    if (!d->layoutSchedulingEnabled || d->layoutTimerId)
         return;
 
-    d->timerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
+    d->layoutTimerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
                              ? 1000 : 0 );
 }
 
 void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 {
-
     //kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
 
-
-    bool parsing = false;
-    if( m_part->xmlDocImpl() ) {
-        parsing = m_part->xmlDocImpl()->parsing();
-    }
+    bool parsing = !m_part->xmlDocImpl() || m_part->xmlDocImpl()->parsing();
 
 //     kdDebug() << "parsing " << parsing << endl;
 //     kdDebug() << "complete " << d->complete << endl;
@@ -1725,7 +1709,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
     // if complete...
     if (d->complete)
         // ...repaint immediatly
-        time = 0;
+        time = 20;
     else
     {
         if (parsing)
@@ -1734,7 +1718,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
         else
             // not complete, not parsing, extend the timer if it exists
             // otherwise, repaint immediatly
-            time = d->repaintTimerId ? 400 : 0;
+            time = d->repaintTimerId ? 400 : 20;
     }
 
     if (d->repaintTimerId) {
@@ -1755,12 +1739,12 @@ void KHTMLView::complete()
     d->complete = true;
 
     // is there a relayout pending?
-    if (d->timerId)
+    if (d->layoutTimerId)
     {
 //         kdDebug() << "requesting relayout now" << endl;
         // do it now
-        killTimer(d->timerId);
-        d->timerId = startTimer( 0 );
+        killTimer(d->layoutTimerId);
+        d->layoutTimerId = startTimer( 0 );
     }
 
     // is there a repaint pending?
@@ -1769,6 +1753,6 @@ void KHTMLView::complete()
 //         kdDebug() << "requesting repaint now" << endl;
         // do it now
         killTimer(d->repaintTimerId);
-        d->repaintTimerId = startTimer( 1 );
+        d->repaintTimerId = startTimer( 20 );
     }
 }
