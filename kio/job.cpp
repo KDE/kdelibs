@@ -46,6 +46,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
+#include <kdatastream.h>
 
 #include <errno.h>
 

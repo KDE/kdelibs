@@ -28,6 +28,7 @@
 #include <kurl.h>
 
 #include <kio/global.h>
+#include <kdatastream.h>
 
 namespace KIO {
 
@@ -194,22 +195,6 @@ protected:
 };
 
 };
-
-inline QDataStream& operator<<(QDataStream& s, signed long n)
-{
-    register unsigned long un = n;
-    return (s << Q_INT32((un & 0xffff0000) >> 16) << Q_INT32(un & 0x0000ffff));
-}
-
-inline QDataStream& operator>>(QDataStream& s, signed long& n)
-{
-    Q_INT32 hi, lo;
-    s >> hi >> lo;
-
-    unsigned long un = hi;
-    n = static_cast<signed long>((un << 16) + lo);
-    return s;
-}
 
 inline QDataStream &operator >>(QDataStream &s, KIO::UDSAtom &a )
 {

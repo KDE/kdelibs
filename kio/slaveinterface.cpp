@@ -25,7 +25,6 @@
 #include <unistd.h>
 #include <kio/observer.h>
 
-
 using namespace KIO;
 
 //////////////
