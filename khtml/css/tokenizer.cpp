@@ -581,7 +581,6 @@ YY_DECL
 		yy_bp = yy_cp;
 
 		yy_current_state = yy_start;
-yy_match:
 		do
 			{
 			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
@@ -613,7 +612,6 @@ yy_find_action:
 		YY_DO_BEFORE_ACTION;
 
 
-do_action:	/* This label is used only to access EOF actions. */
 
 
 		switch ( yy_act )

@@ -21,7 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define CSS_DEBUG
+// #define CSS_DEBUG
+// #define TOKEN_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -95,6 +96,7 @@ CSSParser::CSSParser( bool strictParsing )
     id = 0;
     important = false;
     nonCSSHint = false;
+    inParseShortHand = false;
     yy_start = 1;
 
 #if YYDEBUG > 0
@@ -154,7 +156,7 @@ CSSRuleImpl *CSSParser::parseRule( const DOM::DOMString &string )
     for ( unsigned int i = 0; i < strlen(konq_rule); i++ )
 	data[i] = konq_rule[i];
     memcpy( data + strlen( konq_rule ), string.unicode(), string.length()*sizeof( unsigned short) );
-    qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
+    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
     data[length-1] = 0;
     data[length-2] = 0;
     data[length-3] = ' ';
@@ -192,7 +194,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     data[length-2] = 0;
     data[length-3] = ' ';
     data[length-4] = '}';
-    qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
+    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
     yy_hold_char = 0;
     yyleng = 0;
     yytext = yy_c_buf_p = data;
@@ -240,7 +242,7 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     data[length-2] = 0;
     data[length-3] = ' ';
     data[length-4] = '}';
-    qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
+    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().latin1() );
     yy_hold_char = 0;
     yyleng = 0;
     yytext = yy_c_buf_p = data;
@@ -1071,13 +1073,15 @@ bool CSSParser::parseValue( int propId, bool important )
     }
 
     if ( valid_primitive ) {
-	if ( id != 0 )
+	if ( id != 0 ) {
+	    // qDebug(" new value: id=%d", id );
 	    parsedValue = new CSSPrimitiveValueImpl( id );
-	else if ( value->unit == CSSPrimitiveValue::CSS_STRING )
+	} else if ( value->unit == CSSPrimitiveValue::CSS_STRING )
 	    parsedValue = new CSSPrimitiveValueImpl( domString( value->string ),
 						     (CSSPrimitiveValue::UnitTypes) value->unit );
 	else if ( value->unit >= CSSPrimitiveValue::CSS_NUMBER &&
 		  value->unit <= CSSPrimitiveValue::CSS_KHZ ) {
+	    // qDebug(" new value: value=%.2f, unit=%d", value->fValue, value->unit );
 	    parsedValue = new CSSPrimitiveValueImpl( value->fValue,
 						     (CSSPrimitiveValue::UnitTypes) value->unit );
 	}
@@ -1104,7 +1108,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
     	fnd[i] = false;
 
 #ifdef CSS_DEBUG
-    kdDebug(6080) << "PSH: numProperties=" << numProperties << endl;
+    // kdDebug(6080) << "PSH: numProperties=" << numProperties << endl;
 #endif
 
     while ( valueList->current() ) {
@@ -1129,7 +1133,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 	    return false;
 	}
     }
-    inParseShortHand = true;
+    inParseShortHand = false;
 //     kdDebug( 6080 ) << "parsed shorthand" << endl;
     return true;
 }
@@ -1146,6 +1150,8 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
 
     int num = inParseShortHand ? 1 : valueList->numValues;
     // qDebug("parse4Values: num=%d", num );
+
+    // the order is top, right, bottom, left
     switch( num ) {
     case 1: {
         if( !parseValue( properties[0], important ) ) return false;
@@ -1156,11 +1162,12 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
         return true;
     }
     case 2: {
+
         if( !parseValue( properties[0], important ) ) return false;
         if( !parseValue( properties[1], important ) ) return false;
 	CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
 	addProperty( properties[2], value, important );
-	value = parsedProperties[numParsedProperties-1]->value();
+	value = parsedProperties[numParsedProperties-2]->value();
 	addProperty( properties[3], value, important );
         return true;
     }
@@ -1375,7 +1382,7 @@ bool CSSParser::parseFont( bool important )
     if ( !font->size || !value )
 	goto invalid;
 
-    kdDebug( 6080 ) << "  got size" << endl;
+    // kdDebug( 6080 ) << "  got size" << endl;
 
     if ( value->unit == Value::Operator && value->iValue == '/' ) {
 	// line-height
@@ -1469,7 +1476,9 @@ int DOM::CSSParser::lex( void *_yylval ) {
     int length;
     unsigned short *t = text( &length );
 
-    qDebug("got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
+#ifdef TOKEN_DEBUG
+    qDebug("CSSTokenizer: got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
+#endif
     switch( token ) {
     case S:
     case SGML_CD:

@@ -89,7 +89,7 @@
 
 #include <assert.h>
 #include <kdebug.h>
-#define CSS_DEBUG
+// #define CSS_DEBUG
 
 using namespace DOM;
 
@@ -149,7 +149,9 @@ typedef union {
 
 
 static inline int cssyyerror(const char *x ) {
+#ifdef CSS_DEBUG
     qDebug( x );
+#endif
     return 1;
 }
 
@@ -218,9 +220,9 @@ static const short yyprhs[] = {     0,
    191,   193,   195,   197,   200,   203,   208,   217,   219,   221,
    223,   225,   227,   230,   237,   239,   242,   244,   246,   250,
    254,   259,   264,   270,   273,   276,   277,   279,   283,   286,
-   289,   290,   292,   295,   298,   301,   304,   307,   309,   312,
-   315,   318,   321,   324,   327,   330,   333,   336,   339,   342,
-   345,   348,   351,   354,   357,   360,   362,   368
+   289,   290,   292,   295,   298,   301,   304,   307,   309,   311,
+   314,   317,   320,   323,   326,   329,   332,   335,   338,   341,
+   344,   347,   350,   353,   356,   359,   362,   368
 };
 
 static const short yyrhs[] = {    61,
@@ -254,12 +256,12 @@ static const short yyrhs[] = {    61,
     59,     0,    21,    59,     0,     0,    98,     0,    96,    97,
     98,     0,    54,    59,     0,    46,    59,     0,     0,    99,
      0,    77,    99,     0,     7,    59,     0,     8,    59,     0,
-    40,    59,     0,    42,    59,     0,   101,     0,    39,    59,
-     0,    38,    59,     0,    24,    59,     0,    25,    59,     0,
-    26,    59,     0,    27,    59,     0,    28,    59,     0,    29,
-    59,     0,    30,    59,     0,    31,    59,     0,    32,    59,
-     0,    33,    59,     0,    34,    59,     0,    35,    59,     0,
-    36,    59,     0,    22,    59,     0,    23,    59,     0,   100,
+    40,    59,     0,    42,    59,     0,   101,     0,   100,     0,
+    39,    59,     0,    38,    59,     0,    24,    59,     0,    25,
+    59,     0,    26,    59,     0,    27,    59,     0,    28,    59,
+     0,    29,    59,     0,    30,    59,     0,    31,    59,     0,
+    32,    59,     0,    33,    59,     0,    34,    59,     0,    35,
+    59,     0,    36,    59,     0,    22,    59,     0,    23,    59,
      0,    41,    59,    96,    53,    59,     0,     9,    59,     0
 };
 
@@ -276,9 +278,9 @@ static const short yyrline[] = { 0,
    566,   567,   568,   571,   580,   600,   606,   614,   618,   621,
    626,   628,   631,   637,   642,   646,   651,   654,   662,   666,
    672,   677,   685,   708,   715,   717,   720,   725,   737,   741,
-   744,   749,   751,   752,   753,   762,   763,   764,   767,   769,
-   770,   771,   772,   773,   774,   775,   776,   777,   778,   779,
-   780,   781,   782,   783,   784,   785,   791,   805
+   744,   749,   751,   752,   753,   762,   763,   764,   766,   771,
+   773,   774,   775,   776,   777,   778,   779,   780,   781,   782,
+   783,   784,   785,   786,   787,   788,   792,   806
 };
 #endif
 
@@ -312,7 +314,7 @@ static const short yyr1[] = {     0,
     84,    84,    84,    85,    86,    87,    87,    88,    88,    88,
     89,    89,    90,    90,    91,    91,    91,    91,    92,    92,
     92,    92,    93,    94,    95,    95,    96,    96,    97,    97,
-    97,    98,    98,    98,    98,    98,    98,    98,    99,    99,
+    97,    98,    98,    98,    98,    98,    98,    98,    98,    99,
     99,    99,    99,    99,    99,    99,    99,    99,    99,    99,
     99,    99,    99,    99,    99,    99,   100,   101
 };
@@ -327,9 +329,9 @@ static const short yyr2[] = {     0,
      1,     1,     1,     2,     2,     4,     8,     1,     1,     1,
      1,     1,     2,     6,     1,     2,     1,     1,     3,     3,
      4,     4,     5,     2,     2,     0,     1,     3,     2,     2,
-     0,     1,     2,     2,     2,     2,     2,     1,     2,     2,
+     0,     1,     2,     2,     2,     2,     2,     1,     1,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     5,     2
+     2,     2,     2,     2,     2,     2,     5,     2
 };
 
 static const short yydefact[] = {    13,
@@ -340,12 +342,12 @@ static const short yydefact[] = {    13,
     63,    78,     8,     0,     0,    75,     0,     8,     8,     8,
      8,     8,     8,     8,     8,     8,     8,     8,     8,     8,
      8,     8,     8,     8,     8,     8,     8,     8,     8,     8,
-    47,    46,     0,    91,    87,    92,   116,    98,     8,     0,
+    47,    46,     0,    91,    87,    92,    99,    98,     8,     0,
     10,    14,    73,     8,    64,     0,     0,     8,     8,     8,
      8,     0,    53,     8,    55,    59,     8,    84,     6,     0,
-    76,     8,     8,    94,    95,   118,   114,   115,   101,   102,
-   103,   104,   105,   106,   107,   108,   109,   110,   111,   112,
-   113,   100,    99,    96,     0,    97,    93,     7,     8,     8,
+    76,     8,     8,    94,    95,   118,   115,   116,   102,   103,
+   104,   105,   106,   107,   108,   109,   110,   111,   112,   113,
+   114,   101,   100,    96,     0,    97,    93,     7,     8,     8,
      0,     0,     0,     0,     8,     0,    10,    23,    20,    21,
     22,    19,    16,     0,     8,     0,     5,     0,     0,    43,
     44,    52,    54,    80,     8,     8,    79,     0,    91,    90,
@@ -401,7 +403,7 @@ static const short yypgoto[] = {-32768,
 };
 
 
-#define	YYLAST		309
+#define	YYLAST		307
 
 
 static const short yytable[] = {    13,
@@ -435,7 +437,7 @@ static const short yytable[] = {    13,
     60,    61,    62,    63,    64,    65,     0,    66,    67,    68,
     69,    70,     0,     0,     0,     0,    71,     0,    72,    51,
     52,    53,    54,    55,    56,    57,    58,    59,    60,    61,
-    62,    63,    64,    65,     0,    66,    67,     0,    69
+    62,    63,    64,    65,     0,    66,    67
 };
 
 static const short yycheck[] = {     5,
@@ -469,7 +471,7 @@ static const short yycheck[] = {     5,
     31,    32,    33,    34,    35,    36,    -1,    38,    39,    40,
     41,    42,    -1,    -1,    -1,    -1,    47,    -1,    49,    22,
     23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-    33,    34,    35,    36,    -1,    38,    39,    -1,    41
+    33,    34,    35,    36,    -1,    38,    39
 };
 #define YYPURE 1
 
@@ -849,7 +851,7 @@ yynewstate:
 	      free (yyls);
 #endif
 	    }
-#endif	    
+#endif
 	  return 2;
 	}
       yystacksize *= 2;
@@ -1585,9 +1587,13 @@ case 91:
         yyval.tok = 0;
   ;
     break;}
+case 92:
+#line 750 "parser.y"
+{ yyval.value = yyvsp[0].value; ;
+    break;}
 case 93:
 #line 751 "parser.y"
-{ yyval.value = yyvsp[0].value; yyvsp[0].value.fValue *= yyvsp[-1].val; ;
+{ yyval.value = yyvsp[0].value; yyval.value.fValue *= yyvsp[-1].val; ;
     break;}
 case 94:
 #line 752 "parser.y"
@@ -1618,81 +1624,81 @@ case 98:
 { yyval.value.string = yyvsp[0].string; yyval.value.unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;
     break;}
 case 99:
-#line 768 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_NUMBER; ;
-    break;}
-case 100:
-#line 769 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;
-    break;}
-case 101:
-#line 770 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PX; ;
-    break;}
-case 102:
-#line 771 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_CM; ;
-    break;}
-case 103:
-#line 772 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MM; ;
-    break;}
-case 104:
-#line 773 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_IN; ;
-    break;}
-case 105:
-#line 774 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PT; ;
-    break;}
-case 106:
-#line 775 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PC; ;
-    break;}
-case 107:
-#line 776 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_DEG; ;
-    break;}
-case 108:
-#line 777 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_RAD; ;
-    break;}
-case 109:
-#line 778 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_GRAD; ;
-    break;}
-case 110:
-#line 779 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MS; ;
-    break;}
-case 111:
-#line 780 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_S; ;
-    break;}
-case 112:
-#line 781 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_HZ; ;
-    break;}
-case 113:
-#line 782 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_KHZ; ;
-    break;}
-case 114:
-#line 783 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EMS; ;
-    break;}
-case 115:
-#line 784 "parser.y"
-{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EXS; ;
-    break;}
-case 116:
-#line 785 "parser.y"
+#line 766 "parser.y"
 {
       yyval.value = yyvsp[0].value;
   ;
     break;}
+case 100:
+#line 772 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_NUMBER; ;
+    break;}
+case 101:
+#line 773 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;
+    break;}
+case 102:
+#line 774 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PX; ;
+    break;}
+case 103:
+#line 775 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_CM; ;
+    break;}
+case 104:
+#line 776 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MM; ;
+    break;}
+case 105:
+#line 777 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_IN; ;
+    break;}
+case 106:
+#line 778 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PT; ;
+    break;}
+case 107:
+#line 779 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PC; ;
+    break;}
+case 108:
+#line 780 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_DEG; ;
+    break;}
+case 109:
+#line 781 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_RAD; ;
+    break;}
+case 110:
+#line 782 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_GRAD; ;
+    break;}
+case 111:
+#line 783 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MS; ;
+    break;}
+case 112:
+#line 784 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_S; ;
+    break;}
+case 113:
+#line 785 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_HZ; ;
+    break;}
+case 114:
+#line 786 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_KHZ; ;
+    break;}
+case 115:
+#line 787 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EMS; ;
+    break;}
+case 116:
+#line 788 "parser.y"
+{ yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EXS; ;
+    break;}
 case 117:
-#line 792 "parser.y"
+#line 793 "parser.y"
 {
       Function *f = new Function;
       f->name = yyvsp[-4].string;
@@ -1702,7 +1708,7 @@ case 117:
   ;
     break;}
 case 118:
-#line 806 "parser.y"
+#line 807 "parser.y"
 { yyval.string = yyvsp[-1].string; ;
     break;}
 }
@@ -1928,9 +1934,9 @@ yyerrhandle:
       free (yyls);
 #endif
     }
-#endif    
+#endif
   return 1;
 }
-#line 809 "parser.y"
+#line 810 "parser.y"
 
 

@@ -37,7 +37,7 @@
 
 #include <assert.h>
 #include <kdebug.h>
-#define CSS_DEBUG
+// #define CSS_DEBUG
 
 using namespace DOM;
 
@@ -99,7 +99,9 @@ static inline int getValueID(const char *tagStr, int len)
 %{
 
 static inline int cssyyerror(const char *x ) {
+#ifdef CSS_DEBUG
     qDebug( x );
+#endif
     return 1;
 }
 
@@ -747,8 +749,8 @@ operator:
   ;
 
 term:
-  unary_term
-   | unary_operator unary_term { $$ = $2; $2.fValue *= $1; }
+  unary_term { $$ = $1; }
+   | unary_operator unary_term { $$ = $2; $$.fValue *= $1; }
   | STRING maybe_space { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
@@ -762,6 +764,10 @@ term:
   | URI maybe_space { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_URI; }
   | UNICODERANGE maybe_space { $$.iValue = 0; $$.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ }
   | hexcolor { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_RGBCOLOR; }
+/* ### according to the specs a function can have a unary_operator in front. I know no case where this makes sense */
+  | function {
+      $$ = $1;
+  }
   ;
 
 unary_term:
@@ -782,9 +788,6 @@ unary_term:
   | KHERZ maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_KHZ; }
   | EMS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | EXS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
-  | function {
-      $$ = $1;
-  }
     ;
 
 

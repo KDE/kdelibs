@@ -87,7 +87,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     KHTMLView* view = doc->view();
     strictParsing = _strictParsing;
-    kdDebug() << "CSSStyleSelector::CSSStyleSelector: strict parsing = " << strictParsing << endl;
+    // kdDebug() << "CSSStyleSelector::CSSStyleSelector: strict parsing = " << strictParsing << endl;
     settings = view ? view->part()->settings() : 0;
     if(!defaultStyle) loadDefaultStyle(settings);
     m_medium = view ? view->mediaType() : QString("all");

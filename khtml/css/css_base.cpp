@@ -47,7 +47,7 @@ StyleSheetImpl* StyleBaseImpl::stylesheet()
     StyleBaseImpl *b = this;
     while(b && !b->isStyleSheet())
         b = b->m_parent;
-    return static_cast<StyleSheetImpl *>(b);	
+    return static_cast<StyleSheetImpl *>(b);
 }
 
 DOMString StyleBaseImpl::baseURL()
@@ -120,17 +120,22 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", match = \"" << match << "\" value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
+    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", match = \"" << match
+		    << "\" value = \"" << value.string().latin1() << "\" relation = " << (int)relation
+		    << "]" << endl;
     if ( tagHistory )
         tagHistory->print();
+    kdDebug( 6080 ) << "    specificity = " << specificity() << endl;
 }
 
+// ###### this still needs fixing. #foo gets sepcificity 0x10000, while
+// [id=foo] only gets 0x100. See CSS 2.1 specs.
 unsigned int CSSSelector::specificity()
 {
     if ( nonCSSHint )
         return 0;
 
-    int s = ((tag != -1) ? 0 : 1);
+    int s = ((tag == -1) ? 0 : 1);
     switch(match)
     {
     case Exact:
