@@ -294,7 +294,8 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
         //e->ignore();
         QPopupMenu::keyPressEvent(e);
         return;
-    }
+    } else if ( key == Key_Shift || key == Key_Control || key == Key_Alt || key == Key_Meta )
+	return QPopupMenu::keyPressEvent(e);
 
     // check to see if the user wants to remove a key from the sequence (backspace)
     // or clear the sequence (delete)
@@ -422,6 +423,12 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
     resetKeyboardVars(true);
     //e->ignore();
     QPopupMenu::keyPressEvent(e);
+}
+
+bool KPopupMenu::focusNextPrevChild( bool next )
+{
+    resetKeyboardVars();
+    return QPopupMenu::focusNextPrevChild( next );
 }
 
 QString KPopupMenu::underlineText(const QString& text, uint length)

@@ -241,6 +241,7 @@ signals:
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
+    virtual bool focusNextPrevChild( bool next );
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
 
