@@ -2122,6 +2122,8 @@ bool HTTPProtocol::readHeader()
 
 	kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
 
+  m_returnedHeaders = "";
+
   do {
     // strip off \r and \n if we have them
     len = strlen(buffer);
@@ -2144,7 +2146,20 @@ bool HTTPProtocol::readHeader()
         buf++;
 
     // We got a header back !
-    if (strncasecmp(buf, "HTTP/", 5) == 0) {
+    bool isStart = (strncasecmp(buf, "HTTP/", 5) == 0);
+
+    // We pass the headers as metadata so they can be displayed in
+    // the GUI if the user wants to see them.  In addition, we pass
+    // back the HTTP version.  This is separated from the second scope
+    // below for clarity and simplicity.
+
+    if (!isStart) {
+        m_returnedHeaders += buf;
+        m_returnedHeaders += "\n";
+    }
+
+    // Now do what we need to do with the line we get back
+    if (isStart) {
       if (strncmp(buf+5, "1.0 ",4) == 0)
       {
          m_HTTPrev = HTTP_10;
@@ -2548,6 +2563,14 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
   } while (len && (gets(buffer, sizeof(buffer)-1)));
+
+  setMetaData("HTTP-Headers", m_returnedHeaders);
+  if (m_HTTPrev == HTTP_11)
+    setMetaData("HTTP-Version", "1.1");
+  else if (m_HTTPrev == HTTP_10)
+    setMetaData("HTTP-Version", "1.0");
+  else
+    setMetaData("HTTP-Version", "Unknown");
 
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||

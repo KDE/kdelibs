@@ -481,5 +481,8 @@ protected:
   int m_remoteRespTimeout;
 
   int m_pid;
+
+  // Metadata storage for the returnedHeaders
+  QString m_returnedHeaders;
 };
 #endif
