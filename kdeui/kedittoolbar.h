@@ -24,7 +24,7 @@
 
 class KActionCollection;
 class QComboBox;
-class QPushButton;
+class QToolButton;
 class KListView;
 class QListViewItem;
 
@@ -390,10 +390,10 @@ private:
   KListView *m_activeList;
   QComboBox *m_toolbarCombo;
 
-  QPushButton *m_upAction;
-  QPushButton *m_removeAction;
-  QPushButton *m_insertAction;
-  QPushButton *m_downAction;
+  QToolButton *m_upAction;
+  QToolButton *m_removeAction;
+  QToolButton *m_insertAction;
+  QToolButton *m_downAction;
 
 protected:
   virtual void virtual_hook( int id, void* data );

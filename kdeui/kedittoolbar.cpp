@@ -24,7 +24,7 @@
 
 #include <qheader.h>
 #include <qcombobox.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qvaluelist.h>
 
@@ -517,34 +517,28 @@ void KEditToolbarWidget::setupLayout()
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
   QIconSet iconSet;
-  QPixmap pixMap;
 
-  m_upAction     = new QPushButton(QString::null, this);
+  m_upAction     = new QToolButton(this);
   iconSet = SmallIconSet( "up" );
   m_upAction->setIconSet( iconSet );
-  pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
-  m_upAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_upAction->setEnabled(false);
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
-  m_insertAction = new QPushButton(QString::null, this);
+  m_insertAction = new QToolButton(this);
   iconSet = SmallIconSet( "forward" );
   m_insertAction->setIconSet( iconSet );
-  m_insertAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
-  m_removeAction = new QPushButton(QString::null, this);
+  m_removeAction = new QToolButton(this);
   iconSet = SmallIconSet( "back" );
   m_removeAction->setIconSet( iconSet );
-  m_removeAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));
 
-  m_downAction   = new QPushButton(QString::null, this);
+  m_downAction   = new QToolButton(this);
   iconSet = SmallIconSet( "down" );
   m_downAction->setIconSet( iconSet );
-  m_downAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_downAction->setEnabled(false);
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
 
@@ -567,10 +561,12 @@ void KEditToolbarWidget::setupLayout()
 //  name_layout->addWidget(new_toolbar);
 //  name_layout->addWidget(del_toolbar);
 
+  button_layout->setRowStretch( 0, 10 );
   button_layout->addWidget(m_upAction, 1, 1);
   button_layout->addWidget(m_removeAction, 2, 0);
   button_layout->addWidget(m_insertAction, 2, 2);
   button_layout->addWidget(m_downAction, 3, 1);
+  button_layout->setRowStretch( 4, 10 );
 
   inactive_layout->addWidget(inactive_label);
   inactive_layout->addWidget(m_inactiveList, 1);
