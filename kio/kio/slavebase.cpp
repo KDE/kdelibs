@@ -108,6 +108,9 @@ public:
     SlaveBaseConfig *config;
     KURL onHoldUrl;
     bool onHold;
+
+    struct timeval last_tv;
+    KIO::filesize_t processed_size;
 };
 
 };
@@ -182,6 +185,9 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->multipleAuthCaching = false;
     d->config = new SlaveBaseConfig(this);
     d->onHold = false;
+    d->last_tv.tv_sec = 0;
+    d->last_tv.tv_usec = 0;
+    d->processed_size = 0;
 }
 
 SlaveBase::~SlaveBase()
@@ -362,8 +368,25 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
 
 void SlaveBase::processedSize( KIO::filesize_t _bytes )
 {
-    KIO_DATA << KIO_FILESIZE_T(_bytes);
-    m_pConnection->send( INF_PROCESSED_SIZE, data );
+  struct timeval tv;
+  if ( gettimeofday( &tv, 0L ) == 0 ) {
+    // Compute difference, in ms
+    int msecdiff = 1000 * ( tv.tv_sec - d->last_tv.tv_sec );
+    int usecdiff = tv.tv_usec - d->last_tv.tv_usec;
+    if ( usecdiff < 0 ) {
+      msecdiff--;
+      msecdiff += 1000;
+    }
+    msecdiff += usecdiff / 1000;
+    
+     if ( msecdiff >= 200 ) { // emit size 5 times a second
+      kdDebug() << "emited " << long(_bytes) << endl;
+       KIO_DATA << KIO_FILESIZE_T(_bytes);
+       m_pConnection->send( INF_PROCESSED_SIZE, data );
+       d->last_tv = tv;
+    }
+  }
+  d->processed_size = _bytes;
 }
 
 void SlaveBase::speed( unsigned long _bytes_per_second )
