@@ -188,7 +188,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
     // this is a bit hacky, but who cares....
     ::strictParsing = strictParsing;
-    
+
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
    // the higher the offset or important number, the later the rules get applied.
@@ -202,11 +202,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
 
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
-    // inline style declarations, after all others. non css hints 
+    // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
     dynamicPseudo = RenderStyle::NOPSEUDO;
     if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00800000, 0x020000000);
-    
+
     propsToApply->sort();
 
     RenderStyle *style;
@@ -540,7 +540,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         CSSProperty *prop = values->at(i);
         if(prop->m_bImportant) thisOffset += important;
 	// one less than authorstyle, makes them come at the beginning
-	if( prop->nonCSSHint ) thisOffset = 0x003FFFFF; 
+	if( prop->nonCSSHint ) thisOffset = 0x003FFFFF;
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
@@ -1215,6 +1215,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 // ### shouldn't that be crosshair????
             case CSS_VAL_CROSSHAIR:
                 c = CURSOR_CROSS; break;
+            // IE (?) alias for VAL_POINTER
+            case CSS_VAL_HAND: if(strictParsing) break;
             case CSS_VAL_POINTER:
                 c = CURSOR_POINTER; break;
             case CSS_VAL_MOVE:

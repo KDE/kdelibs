@@ -60,6 +60,7 @@ faster, CSS_VAL_FASTER
 fixed, CSS_VAL_FIXED
 georgian, CSS_VAL_GEORGIAN
 groove, CSS_VAL_GROOVE
+hand, CSS_VAL_HAND
 hebrew, CSS_VAL_HEBREW
 help, CSS_VAL_HELP
 hidden, CSS_VAL_HIDDEN

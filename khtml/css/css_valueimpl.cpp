@@ -160,8 +160,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	    p->nonCSSHint = true;
 	    p = m_lstValues->next();
 	}
-    } else 
-	kdDebug() << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << "value: " << value.string() << endl; 
+    } else if(pos == m_lstValues->count() )
+	kdDebug() << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << "value: " << value.string() << endl;
 }
 
 
