@@ -89,14 +89,10 @@ public:
     }
 
     void setText( const QString& text ) {
-    QWidget *w = combo ? (QWidget *) combo : (QWidget *) edit;
-	bool blocked = w->signalsBlocked();
-	w->blockSignals( true );
 	if ( combo )
 	    combo->setEditText( text );
 	else
 	    edit->setText( text );
-	w->blockSignals( blocked );
     }
 
     void connectSignals( QObject *receiver ) {
