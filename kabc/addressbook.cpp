@@ -45,6 +45,7 @@ struct AddressBook::AddressBookData
   KRES::Manager<Resource> *mManager;
   QPtrList<Resource> mPendingLoadResources;
   QPtrList<Resource> mPendingSaveResources;
+  Iterator end;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -298,6 +299,8 @@ AddressBook::AddressBook()
   d->mErrorHandler = 0;
   d->mConfig = 0;
   d->mManager = new KRES::Manager<Resource>( "contact" );
+  d->end.d->mResources = QValueList<Resource*>();
+  d->end.d->mCurrRes = -1;
 }
 
 AddressBook::AddressBook( const QString &config )
@@ -434,44 +437,32 @@ AddressBook::ConstIterator AddressBook::begin() const
 
 AddressBook::Iterator AddressBook::end()
 {
-  Resource *res = 0;
-  KRES::Manager<Resource>::ActiveIterator resIt;
-  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
-    res = (*resIt);
+  KRES::Manager<Resource>::ActiveIterator resIt = d->mManager->activeEnd();
+  --resIt;
+  Resource *res = (*resIt);
 
-  Iterator it = Iterator();
   if ( !res ) { // no resource available
-    it.d->mResources = QValueList<Resource*>();
-    it.d->mCurrRes = -1;
-    it.d->mIt = Resource::Iterator();
+    d->end.d->mIt = Resource::Iterator();
   } else {
-    it.d->mResources = QValueList<Resource*>();
-    it.d->mCurrRes = -1;
-    it.d->mIt = res->end();
+    d->end.d->mIt = res->end();
   }
 
-  return it;
+  return d->end;
 }
 
 AddressBook::ConstIterator AddressBook::end() const
 {
-  Resource *res = 0;
-  KRES::Manager<Resource>::ActiveIterator resIt;
-  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
-    res = (*resIt);
+  KRES::Manager<Resource>::ActiveIterator resIt = d->mManager->activeEnd();
+  --resIt;
+  Resource *res = (*resIt);
 
-  Iterator it = Iterator();
   if ( !res ) { // no resource available
-    it.d->mResources = QValueList<Resource*>();
-    it.d->mCurrRes = -1;
-    it.d->mIt = Resource::Iterator();
+    d->end.d->mIt = Resource::Iterator();
   } else {
-    it.d->mResources = QValueList<Resource*>();
-    it.d->mCurrRes = -1;
-    it.d->mIt = res->end();
+    d->end.d->mIt = res->end();
   }
 
-  return it;
+  return d->end;
 }
 
 void AddressBook::clear()
