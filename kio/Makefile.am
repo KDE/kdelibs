@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la libkmapnotify.la
 bin_PROGRAMS = kio_uiserver
 
 libkmapnotify_la_LDFLAGS = -version-info 3:0
-libkmapnotify_la_LIBADD = -lICE ${LIBDL}
+libkmapnotify_la_LIBADD = -L$(top_builddir)/dcop/ICE/ -lkICE ${LIBDL}
 libkmapnotify_la_SOURCES = kmapnotify.c
 
 #libkioslave_la_LDFLAGS = -version-info 3:0
