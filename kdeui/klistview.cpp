@@ -1770,12 +1770,6 @@ void KListView::setSorting(int column, bool ascending)
   QListView::setSorting(column, ascending);
 }
 
-struct KListViewItem::KListViewItemPrivate
-{
-  bool odd : 1;
-  bool known : 1;
-};
-
 KListViewItem::KListViewItem(QListView *parent)
   : QListViewItem(parent)
 {
@@ -1834,13 +1828,11 @@ KListViewItem::KListViewItem(QListViewItem *parent, QListViewItem *after,
 
 KListViewItem::~KListViewItem()
 {
-  delete d;
 }
 
 void KListViewItem::init()
 {
-  d = new KListViewItemPrivate;
-  d->known = false;
+  m_known = false;
 }
 
 const QColor &KListViewItem::backgroundColor()
@@ -1854,16 +1846,16 @@ const QColor &KListViewItem::backgroundColor()
     {
       items.push(item);
       above = dynamic_cast<KListViewItem *>(item->itemAbove());
-      if (!above || above->d->known)
+      if (!above || above->m_known)
         break;
     }
     while (items.top())
     {
-      items.top()->d->odd = above ? !above->d->odd : false;
-      items.top()->d->known = true;
+      items.top()->m_odd = above ? !above->m_odd : false;
+      items.top()->m_known = true;
       above = items.pop();
     }
-    if (d->odd)
+    if (m_odd)
       return lv->alternateBackground();
   }
   return listView()->viewport()->colorGroup().base();

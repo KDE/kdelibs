@@ -898,8 +898,9 @@ private:
   void init();
 
 private:
-  struct KListViewItemPrivate;
-  KListViewItemPrivate *d;
+  uint m_odd : 1;
+  uint m_known : 1;
+  uint m_unused : 30;
 };
 
 #endif
