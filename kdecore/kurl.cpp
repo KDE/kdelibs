@@ -148,6 +148,11 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
     	// Full URL
         parse( _rel_url );
     }
+    // A Relative URL that is only missing its protocol ?
+    else if ( strncmp ( "//", _rel_url, 2 ) == 0 )
+    {
+        parse( _base_url.protocol_part + ":" + _rel_url );
+    }
     else
     {
 	// Relative URL
@@ -190,8 +195,8 @@ void KURL::parse( const char * _url )
       malformed = true;
       return;
     }
-
-    if ( _url[0] == '/' )
+    // Only allow valid URL's that begin with "/". (Dawit A.)
+    if ( url[0] == '/' && url.find (QRegExp ("//[a-zA-Z0-9]+.*")) == -1 )
     {
 	// Create a light weight URL with protocol
 	path_part_decoded = _url;
@@ -202,8 +207,9 @@ void KURL::parse( const char * _url )
     }
     
     // We need a : somewhere to determine the protocol
+    // ":" Cannot be the first character either! (Dawit A.)
     int pos = url.find( ":" );
-    if ( pos == -1 )
+    if ( pos <= 0 )
     {
 	malformed = true;
 	return;
