@@ -1315,7 +1315,7 @@ static QStringList lookupProfiles(const QString &mapFile)
         // Check if user is in this group
         struct group *grp_ent = getgrnam(grp);
         if (!grp_ent) continue;
-        int gid = grp_ent->gr_gid;
+        gid_t gid = grp_ent->gr_gid;
         if (pw->pw_gid == gid)
         {
             // User is in this group --> add profiles
