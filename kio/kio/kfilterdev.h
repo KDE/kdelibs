@@ -56,9 +56,6 @@ public:
     /**
      * Close after reading or writing.
      * If the KFilterBase's device was opened by open(), it will be closed.
-     *
-     * (behaviour in KDE-3.1: it was always closed here; but the destructor
-     * didn't call close() when destroying an open KFilterDev).
      */
     virtual void close();
     virtual void flush();
