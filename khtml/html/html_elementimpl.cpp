@@ -257,24 +257,43 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
 {
     if(!m_styleDecls) createDecl();
 
-    // strip attribute garbage..
-    DOMStringImpl* v = value.implementation();
-    if ( v ) {
-        unsigned int l = 0;
+    // strip attribute garbage to avoid CSS parsing errors
+    // ### create specialized hook that avoids parsing every
+    // value twice!
+    if ( value.implementation() ) {
+        // match \s*[+-]?\d*(\.\d*)?[%\*]?
+        unsigned i = 0;
+        QChar* s = value.implementation()->s;
+        unsigned l = value.implementation()->l;
 
-        while ( l < v->l && v->s[l].unicode() <= ' ') l++;
+        while (i < l && s[i].isSpace())
+            ++i;
+        if (i < l && (s[i] == '+' || s[i] == '-'))
+            ++i;
+        while (i < l && s[i].isDigit())
+            ++i;
 
-        for ( ;l < v->l; l++ ) {
-            char cc = v->s[l].latin1();
-            if ( cc > '9' || ( cc < '0' && ( numOnly || (cc != '%' && cc != '.' &&
-							 !( multiLength && cc == '*') ) ) ) )
-                break;
+        int v = QConstString(s, i).string().toInt();
+        const char* suffix = "px";
+        if (!numOnly || multiLength) {
+            // look if we find a % or *
+            while (i < l) {
+                if (multiLength && s[i] == '*') {
+                    suffix = "";
+                    break;
+                }
+                if (s[i] == '%') {
+                    suffix = "%";
+                    break;
+                }
+                ++i;
+            }
         }
-        if ( l != v->l ) {
-            m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true, multiLength );
-            setChanged();
-            return;
-        }
+
+        QString ns = QString::number(v) + suffix;
+        m_styleDecls->setLengthProperty( id, DOMString( ns ), false, true, multiLength );
+        setChanged();
+        return;
     }
 
     m_styleDecls->setLengthProperty(id, value, false, true, multiLength);
@@ -423,7 +442,8 @@ DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString
     // the following is in accordance with the definition as used by IE
     if( endTag[id()] == FORBIDDEN )
         return NULL;
-    // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
+    // IE disallows innerHTML on inline elements.
+    // I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
     //if ( isInline() ) return false;
     switch( id() ) {
@@ -459,11 +479,11 @@ DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString
     // accomadate folks passing complete HTML documents to make the
     // child of an element.
 
-    NodeImpl *node = fragment->firstChild(); 
+    NodeImpl *node = fragment->firstChild();
     while (node != NULL) {
 	if (node->id() == ID_HTML || node->id() == ID_BODY) {
 	    NodeImpl *firstChild = node->firstChild();
-	    NodeImpl *child = firstChild; 
+	    NodeImpl *child = firstChild;
 	    while (child != NULL) {
 		NodeImpl *nextChild = child->nextSibling();
 		fragment->insertBefore(child, node, ignoredExceptionCode);
