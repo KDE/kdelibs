@@ -36,7 +36,7 @@
 class KDirWatch;
 
 // No need for this in libkio - apps only get readonly access
-class Kded : public QObject, DCOPObject, DCOPObjectProxy
+class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
 {
   Q_OBJECT
 public:
