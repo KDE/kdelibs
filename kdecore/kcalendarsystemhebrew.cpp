@@ -362,9 +362,9 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   // range checks
   // ### Fixme
 
-  class hdate * gd = gdate( y, m - 1, d - 1 );
+  class hdate * gd = gdate( y, m, d );
 
-  return date.setYMD(gd->hd_year, gd->hd_mon, gd->hd_day);
+  return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
 
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
@@ -397,7 +397,7 @@ int KCalendarSystemHebrew::dayOfWeek(const QDate& date) const
     return (sd->hd_dw);
 }
 
-// Don't know
+// Ok
 int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
 {
   QDate first;
