@@ -141,6 +141,11 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
+        /**
+         * Enables or disables action @p sAction.
+         * @since 3.4
+         */ 
+	bool setActionEnabled( const QString& sAction, bool bEnable );
 	/**
 	 * Return the label (i18n'ized short description) associated with the action named by @p sAction.
 	 * @param sAction the name of the action

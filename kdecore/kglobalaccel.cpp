@@ -97,6 +97,10 @@ QString KGlobalAccel::label( const QString& sAction ) const
 	const KAccelAction* pAction = d->actions().actionPtr( sAction );
 	return (pAction) ? pAction->label() : QString();
 }
+bool KGlobalAccel::setActionEnabled( const QString& sAction, bool bEnable )
+{
+        return d->setActionEnabled( sAction, bEnable );
+}
 
 const QString& KGlobalAccel::configGroup() const
 	{ return d->configGroup(); }
