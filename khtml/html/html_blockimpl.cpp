@@ -24,9 +24,13 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 #include "html_blockimpl.h"
+#include "html_documentimpl.h"
+#include "css/cssstyleselector.h"
 
 #include "css/cssproperties.h"
 #include "misc/htmlhashes.h"
+
+#include "rendering/render_hr.h"
 
 using namespace khtml;
 using namespace DOM;
@@ -118,15 +122,31 @@ void HTMLHRElementImpl::parseAttribute(Attribute *attr)
 	    halign = CENTER;
 	break;
     case ATTR_SIZE:
-	size = attr->value().toInt();
+	size = attr->value().toInt();		
 	break;
     case ATTR_WIDTH:
-	length = attr->val()->toLength();
+	length = attr->val()->toLength();	
+	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
 	break;
     case ATTR_NOSHADE:
 	shade = FALSE;
     default:
 	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLHRElementImpl::attach(KHTMLView *)
+{
+    m_style = document->styleSelector()->styleForElement(this);
+    khtml::RenderObject *r = _parent->renderer();
+    if(r)
+    {
+	RenderHR *renderHr = new RenderHR(m_style);
+	renderHr->setSize(size);
+	renderHr->setShade(shade);
+	m_render = renderHr;
+	if(m_render) r->addChild(m_render);
+	
     }
 }
 

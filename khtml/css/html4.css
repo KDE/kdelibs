@@ -83,7 +83,7 @@
       SUB             { vertical-align: sub }
       SUP             { vertical-align: super }
       S, STRIKE, DEL  { text-decoration: line-through }
-      HR              { border: 1px inset; margin-top: 3px; margin-bottom: 3px }
+      HR              { margin-top: 5px; margin-bottom: 5px }
 
       /* ### I'm wondering how this should work in a Right to left context */
       OL, UL, DIR,

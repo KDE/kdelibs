@@ -99,5 +99,5 @@ void RenderRoot::close()
     setParsing(false);
     updateSize();
     repaint();
-    printTree();
+//    printTree();
 }

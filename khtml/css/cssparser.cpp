@@ -529,7 +529,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         return;
 
     QString propName( curP, colon - curP );
-    //printf("Property-name = \"%s\"\n", propName.data());
+//    printf("Property-name = \"%s\"\n", propName.data());
 
     // May have only reached white space before
     if (*colon != ':')
@@ -805,7 +805,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	{
 	    DOMString value(curP, endP - curP);
 	    value = khtml::parseURL(value);
-	    printf("mage, url=%s\n", value.string().ascii());
+	    printf("mage, url=%s base=%s\n", value.string().ascii(), baseUrl().string().ascii());
 	    parsedValue = new CSSImageValueImpl(value, baseUrl());
 	    break;
 	}
@@ -978,13 +978,18 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	bool last = false;
 	while(!last)
 	{
+	    bool ignoreSpace=false;
 	    const QChar *nextP = curP;
-	    while(*nextP != ' ' && *nextP != ';')
+	    while((*nextP != ' ' || ignoreSpace) && *nextP != ';')
 	    {
 		if(nextP >= endP) {
                     last = true;
                     break;
                 }
+		if (*nextP == '(')
+		   ignoreSpace=true; 
+		if (*nextP == ')')
+		   ignoreSpace=false;
 		nextP++;
 	    }
 	    bool found;

@@ -97,14 +97,28 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
 DOMString khtml::parseURL(const DOMString &url)
 {
     QString u = url.string();
-    u.stripWhiteSpace();
+    if (u[0] == ' ')	// stripWhiteSpace does not do anything ???
+    	u = u.mid(1, u.length()-1);
+    if (u[u.length()-1] == ' ')
+    	u = u.mid(0, u.length()-1);
+	
     if(u.find("url(") == 0 && u[u.length()-1] == ')')
     {
 	u = u.mid(4, u.length()-5);
     }
+    
+    if (u[0] == ' ')
+    	u = u.mid(1, u.length()-1);
+    if (u[u.length()-1] == ' ')
+    	u = u.mid(0, u.length()-1); 
+	   
     if(u[0] == '\"' && u[u.length()-1] == '\"')
 	u = u.mid(1, u.length()-2);
-
+	
+    if (u[0] == ' ')
+    	u = u.mid(1, u.length()-1);
+    if (u[u.length()-1] == ' ')
+    	u = u.mid(0, u.length()-1);
     return u;
 }
 

@@ -1537,21 +1537,14 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // shorthand properties
     case CSS_PROP_BACKGROUND:
 	// ### inherit
+	if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;	
+	style->setBackgroundColor(e->parentNode()->style()->backgroundColor());
+	style->setBackgroundImage(e->parentNode()->style()->backgroundImage());
+	style->setBackgroundRepeat(e->parentNode()->style()->backgroundRepeat());
+	style->setBackgroundAttachment(e->parentNode()->style()->backgroundAttachment());
+//	style->setBackgroundPosition(e->parentNode()->style()->backgroundPosition());
+	
 	break;
-	if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
-	style->setBorderTopStyle(e->parentNode()->style()->borderTopStyle());
-	style->setBorderBottomStyle(e->parentNode()->style()->borderBottomStyle());
-	style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
-	style->setBorderRightStyle(e->parentNode()->style()->borderRightStyle());
-	style->setBorderTopWidth(e->parentNode()->style()->borderTopWidth());
-	style->setBorderBottomWidth(e->parentNode()->style()->borderBottomWidth());
-	style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth());
-	style->setBorderRightWidth(e->parentNode()->style()->borderRightWidth());
-	style->setBorderTopColor(e->parentNode()->style()->borderTopColor());
-	style->setBorderBottomColor(e->parentNode()->style()->borderBottomColor());
-	style->setBorderLeftColor(e->parentNode()->style()->borderLeftColor());
-	style->setBorderRightColor(e->parentNode()->style()->borderRightColor());
-	return;
     case CSS_PROP_BORDER_COLOR:
 	if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_TRANSPARENT)
 	{
