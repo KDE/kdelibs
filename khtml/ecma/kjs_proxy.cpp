@@ -35,6 +35,12 @@
 #include "kjs_navigator.h"
 #include "kjs_debugwin.h"
 
+//#define CODE_DEBUG
+
+#ifdef CODE_DEBUG
+#include <kdebug.h>
+#endif
+
 using namespace KJS;
 
 extern "C" {
@@ -87,6 +93,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
 		    const DOM::Node &n, KHTMLPart *khtmlpart)
   {
+#ifdef CODE_DEBUG
+    kdDebug(6070) << "Executing: " << QString(c, len) << endl;
+#endif
     script->init(); // set a valid current interpreter
 
 #ifdef KJS_DEBUGGER
