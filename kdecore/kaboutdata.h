@@ -199,6 +199,7 @@ class KAboutData
      *        is correct, "some.domain" is not.
      *
      * @param bugsEmailAddress The bug report email address string.
+     *        This defaults to the kde.org bug system.
      *
      */
     KAboutData( const char *appName,
