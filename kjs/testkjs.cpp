@@ -29,24 +29,10 @@
 int main(int argc, char **argv)
 {
   // expecting a filename
-  if (argc != 2) {
-    fprintf(stderr, "You have to specify a filename\n");
+  if (argc < 2) {
+    fprintf(stderr, "You have to specify at least one filename\n");
     return -1;
   }
-
-  // read code from file
-  const char *file = argv[1];
-  FILE *f = fopen(file, "r");
-  if (!f) {
-    fprintf(stderr, "Error opening file.\n");
-    return -1;
-  }
-  const int BufferSize = 100000;
-  char code[BufferSize];
-  int num = fread(code, 1, BufferSize, f);
-  code[num] = '\0';
-  if(num >= BufferSize)
-    fprintf(stderr, "Warning: File may have been too long.\n");
 
   // create interpreter
   KJScript *kjs = new KJScript();
@@ -54,10 +40,28 @@ int main(int argc, char **argv)
   // add debug() function
   kjs->enableDebug();
 
-  // run
-  bool ret = kjs->evaluate(code);
-  if (!ret)
-    printf("error %d\n", kjs->errorType());
+  const int BufferSize = 100000;
+  char code[BufferSize];
+
+  for (int i = 1; i < argc; i++) {
+    const char *file = argv[i];
+    FILE *f = fopen(file, "r");
+    if (!f) {
+      fprintf(stderr, "Error opening %s.\n", file);
+      return -1;
+    }
+    int num = fread(code, 1, BufferSize, f);
+    code[num] = '\0';
+    if(num >= BufferSize)
+      fprintf(stderr, "Warning: File may have been too long.\n");
+
+    // run
+    bool ret = kjs->evaluate(code);
+    if (!ret)
+      printf("%s returned error %d\n", file, kjs->errorType());
+
+    fclose(f);
+  }
 
   delete kjs;
 
