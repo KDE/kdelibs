@@ -92,6 +92,8 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
   };
 
+  class ActivationImp;
+
   class ArgumentsImp : public ObjectImp {
   public:
     ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act);
