@@ -43,12 +43,16 @@
 #include <qradiobutton.h>
 
 #include <kapplication.h>
+#include <kconfig.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kiconloader.h>
 #include <kkeynative.h>
 #include <klocale.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
+
+bool KShortcutDialog::s_showMore = false;
 
 KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, QWidget* parent, const char* name )
 : KIShortcutDialog( parent, name )
@@ -78,6 +82,8 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 	setShortcut( shortcut );
 	resize( 0, 0 );
 
+	s_showMore = KConfigGroup(KGlobal::config(), "General").readBoolEntry("ShowAlternativeShortcutConfig", s_showMore);
+
 	#ifdef Q_WS_X11
 	kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
 	#endif
@@ -85,6 +91,8 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 
 KShortcutDialog::~KShortcutDialog()
 {
+	KConfigGroup group(KGlobal::config(), "General");
+	group.writeEntry("ShowAlternativeShortcutConfig", s_showMore);
 }
 
 void KShortcutDialog::setShortcut( const KShortcut & shortcut )
@@ -143,6 +151,7 @@ void KShortcutDialog::updateShortcutDisplay()
 
 void KShortcutDialog::slotShowMore()
 {
+	s_showMore = true;
 	m_bRecording = false;
 	m_iSeq = 0;
 	m_iKey = 0;
@@ -157,6 +166,7 @@ void KShortcutDialog::slotShowMore()
 
 void KShortcutDialog::slotShowLess()
 {
+	s_showMore = false;
 	m_bRecording = false;
 	m_iSeq = 0;
 	m_iKey = 0;
@@ -220,26 +230,26 @@ void KShortcutDialog::slotMultiKeyMode( bool bOn )
 void KShortcutDialog::showEvent( QShowEvent * pEvent )
 {
 	//kdDebug(125) << "KShortcutDialog::showEvent" << endl;
-	if( m_shortcut.count() == 1 )
+	if( m_shortcut.count() == 1 && !s_showMore)
 		slotShowLess();
 	else
 		slotShowMore();
 
-	KDialog::showEvent( pEvent );
+	KIShortcutDialog::showEvent( pEvent );
 }
 
 // TODO: delete me
 void KShortcutDialog::hideEvent( QHideEvent * pEvent )
 {
 	//kdDebug(125) << "KShortcutDialog::hideEvent" << endl;
-	KDialog::hideEvent( pEvent );
+	KIShortcutDialog::hideEvent( pEvent );
 }
 
 // TODO: delete me
 void KShortcutDialog::paintEvent( QPaintEvent * pEvent )
 {
 	//kdDebug(125) << "KShortcutDialog::paintEvent" << endl;
-	KDialog::paintEvent( pEvent );
+	KIShortcutDialog::paintEvent( pEvent );
 }
 
 #ifdef Q_WS_X11

@@ -72,6 +72,10 @@ private slots:
 	void slotClearPrimary();
 	void slotClearAlternate();
 	void slotMultiKeyMode( bool bOn );
+
+private:
+    // ### KDE4: add d-pointer?
+    static bool s_showMore;
 };
 
 #endif // _KSHORTCUTDIALOG_H_
