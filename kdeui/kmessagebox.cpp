@@ -228,7 +228,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
     switch( result )
@@ -299,7 +299,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Information, 
                        text, QStringList(),
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
     switch( result )
@@ -372,7 +372,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(),
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
     switch( result )
@@ -452,7 +452,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
     switch( result )
@@ -517,7 +517,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(),
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
     switch( result )
