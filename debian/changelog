@@ -4,6 +4,7 @@ kdelibs (4:2.2.0-0beta1-2) unstable; urgency=low
   * Fix alsa-stamp build location
   * Change kdelibs3-cups depends on kdebase-libs to a recommends
   * More upstream fixes
+  * Fix overwrites (Closes: #102857)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 29 Jun 2001 13:18:00 -0700
 
