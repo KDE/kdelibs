@@ -51,6 +51,7 @@
 #include <netdb.h>
 
 #include <qregexp.h>
+#include <qfile.h>
 
 #include <kapplication.h>
 #include <kurl.h>
@@ -859,19 +860,19 @@ bool HTTPProtocol::http_open()
   case HTTP_PUT:
       header = "PUT ";
       moreData = !isSSLTunnelEnabled();
-      m_bCachedWrite = false; // Do not put nay result in the cache
+      m_bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
       moreData = !isSSLTunnelEnabled();
-      m_bCachedWrite = false; // Do not put nay result in the cache
+      m_bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_HEAD:
       header = "HEAD ";
       break;
   case HTTP_DELETE:
       header = "DELETE ";
-      m_bCachedWrite = false; // Do not put nay result in the cache
+      m_bCachedWrite = false; // Do not put any result in the cache
       break;
   }
 
@@ -1873,13 +1874,20 @@ bool HTTPProtocol::readHeader()
 
 
   // Do we want to cache this request?
-  if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
+  if (m_bUseCache)
   {
-     // Check...
-     createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
-     if (!m_fcache)
-        m_bCachedWrite = false; // Error creating cache entry.
-     m_expireDate = expireDate;
+     if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
+     {
+        // Check...
+        createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
+        if (!m_fcache)
+           m_bCachedWrite = false; // Error creating cache entry.
+        m_expireDate = expireDate;
+     }
+     else
+     {
+        ::unlink( QFile::encodeName(m_state.cef));
+     }
   }
 
   if (m_bCachedWrite && !m_strMimeType.isEmpty())
@@ -2001,7 +2009,7 @@ void HTTPProtocol::http_close()
      if (m_bCachedWrite)
      {
         QString filename = m_state.cef + ".new";
-        unlink( filename.latin1() );
+        ::unlink( QFile::encodeName(filename) );
      }
   }
   if (!m_bKeepAlive)
@@ -2677,7 +2685,7 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
      {
        fclose(m_fcache);
        m_fcache = 0;
-       ::unlink(m_state.cef.latin1());
+       ::unlink( QFile::encodeName(m_state.cef) );
      }
   }
   else
@@ -2706,7 +2714,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    QString host = m_state.hostname.lower();
-   CEF = host + CEF + ':';
+   CEF = host + CEF + '_';
 
    QString dir = m_strCacheDir;
    if (dir[dir.length()-1] != '/')
@@ -2742,7 +2750,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    const char *mode = (readWrite ? "r+" : "r");
 
-   FILE *fs = fopen( CEF.latin1(), mode); // Open for reading and writing
+   FILE *fs = fopen( QFile::encodeName(CEF), mode); // Open for reading and writing
    if (!fs)
       return 0;
 
@@ -2821,7 +2829,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       return fs;
 
    fclose(fs);
-   unlink( CEF.latin1());
+   unlink( QFile::encodeName(CEF));
    return 0;
 }
 
@@ -2891,13 +2899,13 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
-   (void) ::mkdir( dir.latin1(), 0700 );
+   (void) ::mkdir( QFile::encodeName(dir), 0700 );
 
    QString filename = m_state.cef + ".new";  // Create a new cache entryexpireDate
 
 //   kdDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
 
-   m_fcache = fopen( filename.latin1(), "w");
+   m_fcache = fopen( QFile::encodeName(filename), "w");
    if (!m_fcache)
    {
       kdWarning(7103) << "createCacheEntry: opening " << filename << " failed." << endl;
@@ -2949,7 +2957,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
       fclose(m_fcache);
       m_fcache = 0;
       QString filename = m_state.cef + ".new";
-      unlink( filename.latin1());
+      ::unlink( QFile::encodeName(filename) );
       return;
    }
 }
@@ -2961,7 +2969,7 @@ void HTTPProtocol::closeCacheEntry()
    m_fcache = 0;
    if (result == 0)
    {
-      if (::rename( filename.latin1(), m_state.cef.latin1()) == 0)
+      if (::rename( QFile::encodeName(filename), QFile::encodeName(m_state.cef)) == 0)
          return; // Success
 
       kdWarning(7103) << "closeCacheEntry: error renaming cache entry. ("
@@ -2982,10 +2990,10 @@ void HTTPProtocol::cleanCache()
 
    struct stat stat_buf;
 
-   int result = ::stat(cleanFile.latin1(), &stat_buf);
+   int result = ::stat(QFile::encodeName(cleanFile), &stat_buf);
    if (result == -1)
    {
-      int fd = creat( cleanFile.latin1(), 0600);
+      int fd = creat( QFile::encodeName(cleanFile), 0600);
       if (fd != -1)
       {
          doClean = true;
@@ -3001,7 +3009,7 @@ void HTTPProtocol::cleanCache()
    if (doClean)
    {
       // Touch file.
-      utime(cleanFile.latin1(), 0);
+      utime(QFile::encodeName(cleanFile), 0);
       KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop");
    }
 }
