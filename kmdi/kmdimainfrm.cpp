@@ -235,8 +235,18 @@ void KMdiMainFrm::setStandardMDIMenuEnabled() {
   connect(m_mdiGUIClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
   connect(m_mdiGUIClient,SIGNAL(toggleRight()),this,SIGNAL(toggleRight()));
   connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
-  connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
-  connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
+
+  if (m_mdiMode==KMdi::IDEAlMode) {
+	if (m_topContainer) 
+		connect(this,SIGNAL(toggleTop()),m_topContainer->getWidget(),SLOT(toggle()));
+	if (m_leftContainer) 
+		connect(this,SIGNAL(toggleLeft()),m_leftContainer->getWidget(),SLOT(toggle()));
+	if (m_rightContainer) 
+		connect(this,SIGNAL(toggleRight()),m_rightContainer->getWidget(),SLOT(toggle()));
+	if (m_bottomContainer) 
+		connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
+  }
+
   mdiModeHasBeenChangedTo(m_mdiMode);
 }
 
