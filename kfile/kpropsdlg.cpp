@@ -1015,11 +1015,11 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   if (IamRoot && isLocal)
   {
     usrEdit = new KLineEdit( gb );
-    KCompletion *compl = usrEdit->completionObject();
-    compl->setSorted(true);
+    KCompletion *kcom = usrEdit->completionObject();
+    kcom->setSorted(true);
     setpwent();
     for (i=0; ((user = getpwent()) != 0L) && (i < maxEntries); i++)
-      compl->addItem(QString::fromLatin1(user->pw_name));
+      kcom->addItem(QString::fromLatin1(user->pw_name));
     endpwent();
     usrEdit->setCompletionMode((i < maxEntries) ? KGlobalSettings::CompletionAuto :
 	  KGlobalSettings::CompletionNone);
@@ -1094,9 +1094,9 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   if (IamRoot && isLocal)
   {
     grpEdit = new KLineEdit(gb);
-    KCompletion *compl = new KCompletion;
-    compl->setItems(groupList);
-    grpEdit->setCompletionObject(compl, true);
+    KCompletion *kcom = new KCompletion;
+    kcom->setItems(groupList);
+    grpEdit->setCompletionObject(kcom, true);
     grpEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
     grpEdit->setText(strGroup);
     gl->addWidget(grpEdit, 2, 1);
@@ -1357,22 +1357,22 @@ KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
   enableSuidEdit();
 
   // Provide username completion up to 1000 users.
-  KCompletion *compl = new KCompletion;
-  compl->setSorted(true);
+  KCompletion *kcom = new KCompletion;
+  kcom->setSorted(true);
   struct passwd *pw;
   int i, maxEntries = 1000;
   setpwent();
   for (i=0; ((pw = getpwent()) != 0L) && (i < maxEntries); i++)
-    compl->addItem(QString::fromLatin1(pw->pw_name));
+    kcom->addItem(QString::fromLatin1(pw->pw_name));
   endpwent();
   if (i < maxEntries)
   {
-    suidEdit->setCompletionObject(compl, true);
+    suidEdit->setCompletionObject(kcom, true);
     suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
   }
   else
   {
-    delete compl;
+    delete kcom;
   }
 
   connect( swallowExecEdit, SIGNAL( textChanged( const QString & ) ),
