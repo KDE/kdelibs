@@ -1109,6 +1109,7 @@ void KTabListBox::resizeList(int newNumItems)
   {
     for (i = oldNum; i < newNumItems; i++)
       newItemList[i] = new KTabListBoxItem(nc);
+      newItemShowList[i] = 0;
   }
   else
   {
