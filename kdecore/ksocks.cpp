@@ -96,7 +96,7 @@ class KSocksTable {
 KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
 }
 
-KSockTable::~KSocksTable() {
+KSocksTable::~KSocksTable() {
 }
 
 
