@@ -18,26 +18,25 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kfilereader.h"
-#include <qpixmap.h>
-#include "kfileiconview.h"
-#include "qkeycode.h"
+#include <qfontmetrics.h>
+#include <qkeycode.h>
+#include <qlabel.h>
 #include <qpainter.h>
+#include <qpixmap.h>
+#include <qtooltip.h>
+
 #include <kapp.h>
 #include <klocale.h>
-#include "config-kfile.h"
 #include <kfileviewitem.h>
-#include <qlabel.h>
-#include <qtooltip.h>
-#include <qfontmetrics.h>
+#include <kglobalsettings.h>
+
+#include "kfileiconview.h"
+#include "config-kfile.h"
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    if ( false ) { // FIXME - weird bug here ;( memory corruption!??
-                   // comes since latest QIconView changes
-	const_cast<KFileViewItem*>(fileInfo())->
-	    setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
-    }
+    const_cast<KFileViewItem*>(fileInfo())->
+	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
 }
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -60,15 +59,17 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
-    connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
+
+    // we want single click _and_ double click (as convenience)
+    connect( this, SIGNAL( clicked(QIconViewItem *, const QPoint&) ),
 	     SLOT( selected( QIconViewItem *) ) );
+    connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
+	     SLOT( slotDoubleClicked( QIconViewItem *) ) );
 
     connect( this, SIGNAL( executed(QIconViewItem *) ),
 	     SLOT( highlighted( QIconViewItem *) ) );
     connect( this, SIGNAL( currentChanged( QIconViewItem *) ),
 	     this, SLOT( highlighted( QIconViewItem *)	) );
-    //    connect( this, SIGNAL( currentChanged( QIconViewItem *) ),
-    //	     this, SLOT( highlighted( QIconViewItem *)	) );
 
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
 	     this, SLOT( showToolTip( QIconViewItem * ) ) );
@@ -176,16 +177,24 @@ void KFileIconView::insertItem( KFileViewItem *i )
     i->setViewItem( this, item );
 }
 
-void KFileIconView::selected( QIconViewItem *item )
+void KFileIconView::slotDoubleClicked( QIconViewItem *item )
 {
     if ( !item )
 	return;
     const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
-    if ( fi ) {
+    if ( fi )
 	select( const_cast<KFileViewItem*>( fi ) );
-	// FIXME: why is selected() called, when we just highlighted a file?
-	// on highlighting, we can't scroll away...
-	// setContentsPos( 0, 0 ); // scroll to top left
+}
+
+void KFileIconView::selected( QIconViewItem *item )
+{
+    if ( !item )
+	return;
+    
+    if ( KGlobalSettings::singleClick() ) {
+	const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
+	    select( const_cast<KFileViewItem*>( fi ) );
     }
 }
 

@@ -54,15 +54,23 @@ template class QDict<KFileViewItem>;
 
 KURL *KDirOperator::lastDirectory = 0; // to set the start path
 
+class KDirOperator::KDirOperatorPrivate 
+{
+public:
+    bool onlyDoubleClickSelectsFiles;
+};
+
 KDirOperator::KDirOperator(const KURL& url,
 			   QWidget *parent, const char* _name)
     : QWidget(parent, _name), fileView(0), oldView(0), progress(0)
 {
     myPreview = 0L;
-    myMode=KFile::File;
+    myMode = KFile::File;
     viewKind = KFile::Simple;
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
-
+    d = new KDirOperatorPrivate;
+    d->onlyDoubleClickSelectsFiles = false;
+    
     if (url.isEmpty()) // no dir specified -> current dir
       {
 	QString strPath = QDir::currentDirPath();
@@ -103,6 +111,7 @@ KDirOperator::~KDirOperator()
     resetCursor();
     delete fileView;
     delete dir;
+    delete d;
 }
 
 
@@ -124,7 +133,7 @@ void KDirOperator::readNextMimeType()
     const QPixmap& p = item->pixmap();
     (void) item->determineMimeType();
 
-    if ( item->pixmap().serialNumber() != p.serialNumber() ) // reloads the pixmap in case
+    if ( item->pixmap().serialNumber() != p.serialNumber() )
         fileView->updateView(item);
     pendingMimeTypes.removeFirst();
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
@@ -619,6 +628,7 @@ void KDirOperator::setView( KFile::FileView view )
 
     setFocusProxy(new_view->widget());
     new_view->setSorting( mySorting );
+    new_view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
     connectView(new_view);
 }
 
@@ -1151,6 +1161,16 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 	fileView->widget()->resize( size() );
     if ( progress )
 	progress->move(2, height() - progress->height() -2);
+}
+
+void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable ) 
+{
+    d->onlyDoubleClickSelectsFiles = enable;
+}
+
+bool KDirOperator::onlyDoubleClickSelectsFiles() const 
+{
+    return d->onlyDoubleClickSelectsFiles;
 }
 
 #include "kdiroperator.moc"

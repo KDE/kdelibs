@@ -54,6 +54,8 @@ KFileView::KFileView()
     view_mode = All;
     selection_mode = KFile::Single;
     viewname = i18n("Unknown View");
+
+    myOnlyDoubleClickSelectsFiles = false;
 }
 
 KFileView::~KFileView()

@@ -220,9 +220,9 @@ public:
     /**
      * pure virtual function, that should be implemented to make item i
      * visible, i.e. by scrolling the view appropriately.
-     */ 
+     */
     virtual void ensureItemVisible( const KFileViewItem *i ) = 0;
-    
+
     /**
      * Clear any selection, unhighlight everything. Must be implemented by the
      * view.
@@ -280,6 +280,29 @@ public:
      */
     KFileViewItem *firstItem() const { return myFirstItem; }
 
+    /**
+     * This is a KFileDialog specific hack: we want to select directories with
+     * single click, but not files. But as a generic class, we have to be able
+     * to select files on single click as well.
+     *
+     * This gives us the opportunity to do both.
+     *
+     * Every view has to decide when to call select( item ) when a file was
+     * single-clicked, based on @ref onlyDoubleClickSelectsFiles().
+     */
+    void setOnlyDoubleClickSelectsFiles( bool enable ) { 
+	myOnlyDoubleClickSelectsFiles = enable; 
+    }
+    
+    /**
+     * @returns whether files (not directories) should only be select()ed by
+     * double-clicks.
+     * @see #setOnlyDoubleClickSelectsFiles
+     */
+    bool onlyDoubleClickSelectsFiles() const { 
+	return myOnlyDoubleClickSelectsFiles;
+    }
+    
 protected:
 
     /**
@@ -360,6 +383,7 @@ private:
     KFileViewItem *myFirstItem;
     mutable KFileViewItemList *itemList, *selectedList;
     mutable  bool itemListDirty;
+    bool myOnlyDoubleClickSelectsFiles;
 
 private:
     class KFileViewPrivate;

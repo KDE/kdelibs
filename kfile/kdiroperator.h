@@ -172,7 +172,26 @@ class KDirOperator : public QWidget {
     virtual void saveConfig( KConfig *, const QString& group = QString::null );
 
 
- protected:
+    /**
+     * This is a KFileDialog specific hack: we want to select directories with
+     * single click, but not files. But as a generic class, we have to be able
+     * to select files on single click as well.
+     *
+     * This gives us the opportunity to do both.
+     *
+     * The default is false, set it to true if you don't want files selected
+     * with single click.
+     */
+    void setOnlyDoubleClickSelectsFiles( bool enable );
+
+    /**
+     * @returns whether files (not directories) should only be select()ed by
+     * double-clicks.
+     * @see #setOnlyDoubleClickSelectsFiles
+     */
+    bool onlyDoubleClickSelectsFiles() const;
+
+protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
     void setupActions();

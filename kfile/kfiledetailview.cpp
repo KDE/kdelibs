@@ -18,16 +18,18 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kfilereader.h"
+#include <qkeycode.h>
 #include <qheader.h>
-#include <qpixmap.h>
-#include "kfiledetailview.h"
-#include "qkeycode.h"
 #include <qpainter.h>
+#include <qpixmap.h>
+
 #include <kapp.h>
-#include "config-kfile.h"
 #include <kfileviewitem.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
+
+#include "kfiledetailview.h"
+#include "config-kfile.h"
 
 #define COL_NAME 0
 #define COL_SIZE 1
@@ -61,8 +63,12 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 
     connect( this, SIGNAL( returnPressed(QListViewItem *) ),
 	     SLOT( selected( QListViewItem *) ) );
-    connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
+
+    connect( this, SIGNAL( clicked(QListViewItem *, const QPoint&, int)),
 	     SLOT( selected( QListViewItem *) ) );
+    connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
+	     SLOT( slotDoubleClicked( QListViewItem *) ) );
+
 
     //    connect( this, SIGNAL( currentChanged( QListViewItem *) ),
     //	     this, SLOT( highlighted( QListViewItem *)	) );
@@ -155,14 +161,25 @@ void KFileDetailView::insertItem( KFileViewItem *i )
     myLastItem = item;
 }
 
+void KFileDetailView::slotDoubleClicked( QListViewItem *item )
+{
+    if ( !item )
+	return;
+
+    const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    if ( fi )
+	select( const_cast<KFileViewItem*>( fi ) );
+}
+
 void KFileDetailView::selected( QListViewItem *item )
 {
     if ( !item )
 	return;
-    const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
-    if ( fi ) {
-	select( const_cast<KFileViewItem*>( fi ) );
-	// ContentsPos( 0, 0 ); // scroll to top left
+
+    if ( KGlobalSettings::singleClick() ) {
+	const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
+	    select( const_cast<KFileViewItem*>( fi ) );
     }
 }
 

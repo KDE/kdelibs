@@ -207,6 +207,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->url = *lastDirectory;
 
     ops = new KDirOperator(*lastDirectory, d->mainWidget, "KFileDialog::ops");
+    ops->setOnlyDoubleClickSelectsFiles( true );
     connect(ops, SIGNAL(updateInformation(int, int)),
 	    SLOT(updateStatusLine(int, int)));
     connect(ops, SIGNAL(urlEntered(const KURL&)),
