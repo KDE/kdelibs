@@ -72,7 +72,7 @@ kde_mimedir="\$(prefix)/share/mimelnk"
 AC_SUBST(kde_mimedir)
 kde_toolbardir="\$(prefix)/share/toolbar"
 AC_SUBST(kde_toolbardir)
-kde_wallpaperdir="\$(prefix)/share/wallpaper"
+kde_wallpaperdir="\$(prefix)/share/wallpapers"
 AC_SUBST(kde_wallpaperdir)
 
 ])
