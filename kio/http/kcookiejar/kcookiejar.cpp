@@ -79,11 +79,13 @@ static KCookieAdvice strToAdvice(const QString &_str)
     if (_str.isEmpty())
         return KCookieDunno;
 
-    if (_str == "accept")
+    QString advice = _str.lower();
+
+    if (advice == "accept")
 		return KCookieAccept;
-    else if (_str == "reject")
+    else if (advice == "reject")
 		return KCookieReject;
-    else if (_str == "ask")
+    else if (advice == "ask")
 		return KCookieAsk;
 
     return KCookieDunno;	
@@ -1186,7 +1188,7 @@ void KCookieJar::loadConfig(KConfig *_config)
         if (sepPos <= 0)
              continue;
         QString domain(value.left(sepPos));
-        KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1).lower() ); // send a case insensitve version (DA)
+        KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice( domain, advice);
     }
 }
