@@ -43,9 +43,14 @@ public:
     int plug( QWidget* );
 
     virtual void setChecked( bool );
-
+    bool isChecked() const;
+    
 protected slots:
-    void slotActivated2();
+    void slotActivated();
+
+protected:
+    bool locked, locked2;
+    bool checked;
     
 };
 

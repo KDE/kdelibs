@@ -120,29 +120,44 @@ void KAction::setIconSet( const QIconSet& iconSet )
 KToggleAction::KToggleAction( const QString& text, int accel, QObject* parent, const char* name )
     : QToggleAction( text, accel, parent, name )
 {
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
 }
 
 KToggleAction::KToggleAction( const QString& text, int accel,
 	       QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QToggleAction( text, accel, receiver, slot, parent, name )
 {
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
 	       QObject* parent, const char* name )
     : QToggleAction( text, pix, accel, parent, name )
 {
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
 	       QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
 }
 
 KToggleAction::KToggleAction( QObject* parent, const char* name )
     : QToggleAction( parent, name )
 {
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
 }
 
 int KToggleAction::plug( QWidget* widget )
@@ -159,12 +174,12 @@ int KToggleAction::plug( QWidget* widget )
 	KToolBar *bar = (KToolBar *)widget;
 
 	int id_ = get_toolbutton_id();
- 	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated2() ),
+ 	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
  			   isEnabled(), text() );
 
 	KToolBarButton *but = bar->getButton( id_ );
 
-	connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
+// 	connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
 
 	addContainer( bar, id_ );
 	
@@ -197,8 +212,13 @@ int KToggleAction::plug( QWidget* widget )
     return index;
 }
 
-void KToggleAction::setChecked( bool checked )
+void KToggleAction::setChecked( bool c )
 {
+    if ( locked2 )
+	return;
+    locked2 = TRUE;
+    checked = c;
+    
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
@@ -216,29 +236,17 @@ void KToggleAction::setChecked( bool checked )
     }
 
     // Uncheck all the other toggle actions in the same group
-    if ( parent() && !exclusiveGroup().isEmpty() )
-    {
-	const QObjectList *list = parent()->children();
-	if ( list )
-	{
-	    QObjectListIt it( *list );
-	    for( ; it.current(); ++it )
-	    {
-		if ( it.current()->inherits( "KToggleAction" ) &&
-		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() )
-		    ((KToggleAction*)it.current())->setChecked( FALSE );
-	    }
-	}
-    }
 
-    QToggleAction::setChecked( checked );
-
-    emit activated();
-    emit toggled( isChecked() );
+    locked2 = FALSE;
+//     QToggleAction::setChecked( checked );
 }
 
-void KToggleAction::slotActivated2()
+void KToggleAction::slotActivated()
 {
+    if ( locked )
+	return;
+
+    locked = TRUE;
     if ( parent() && !exclusiveGroup().isEmpty() )
     {
 	const QObjectList *list = parent()->children();
@@ -253,6 +261,13 @@ void KToggleAction::slotActivated2()
 	    }
 	}
     }
+    setChecked( !isChecked() );
+    locked = FALSE;
+}
+
+bool KToggleAction::isChecked() const
+{
+    return checked;
 }
 
 #include "kaction.moc"
