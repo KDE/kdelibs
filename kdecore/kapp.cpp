@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.116  1998/12/05 01:32:59  ettrich
+// support for icon text
+//
 // Revision 1.115  1998/11/08 19:06:43  esken
 // Several security fixes by adding checkAccess() tests before the creation
 // of files and directorys. This is neccesary for SUID programs. Added
@@ -1730,12 +1733,13 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the specified icons
     KWM::setIcon(topWidget->winId(), getIcon());
     KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
-    // set a short icon text 
+    // set a short icon text
     XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption() );
     if (bSessionManagement)
       enableSessionManagement(bSessionManagementUserDefined);
-    else
-      KWM::setWmCommand( topWidget->winId(), aWmCommand);
+    
+    if (bSessionManagementUserDefined || !bSessionManagement)
+	KWM::setWmCommand( topWidget->winId(), aWmCommand);
   }
 }
 
