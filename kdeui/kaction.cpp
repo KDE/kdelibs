@@ -362,9 +362,9 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
     QString s = menu->text( id );
     int i = s.find( '\t' );
     if ( i >= 0 )
-      s.replace( i+1, s.length()-i, d->m_cut.toString() );
+      s.replace( i+1, s.length()-i, d->m_cut.seq(0).toString() );
     else
-      s += "\t" + d->m_cut.toString();
+      s += "\t" + d->m_cut.seq(0).toString();
 
     QPixmap *pp = menu->pixmap( id );
     if ( pp && !pp->isNull() )
