@@ -193,22 +193,6 @@ AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 
 AC_SUBST(EXTRA_SUBDIRS)
 
-AC_MSG_CHECKING(if malloc debugging is wanted)
-AC_ARG_WITH(dmalloc,
-[  --with-dmalloc          use dmalloc, as in
-			  http://dmalloc.com/releases/],
-[if test "$withval" = yes; then
-  AC_MSG_RESULT(yes)
-  AC_DEFINE(WITH_DMALLOC,1,
-            [Define if using the dmalloc debugging malloc package])
-  LIB_DMALLOC="-ldmalloc"
-  LDFLAGS="$LDFLAGS -g"
-else
-  AC_MSG_RESULT(no)
-fi], [AC_MSG_RESULT(no)])
-
-AC_SUBST(LIB_DMALLOC)
-
 AC_MSG_CHECKING(if MIT-SHM support is wanted)
 AC_ARG_ENABLE(mitshm,
 [  --enable-mitshm         use MIT-SHM for pixmap loading/saving],
