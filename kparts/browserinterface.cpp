@@ -57,9 +57,9 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
         default: break;
     }
 #else
-    const QMetaData *mdata = metaObject()->slot( metaObject()->findSlot( name ) );
+    int slot = metaObject()->findSlot( name );
 
-    if ( !mdata )
+    if ( slot == -1 )
         return;
 
     QUObject o[ 2 ];
@@ -90,7 +90,7 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
         default: return;
     }
   
-    qt_invoke( mdata->ptr, o );
+    qt_invoke( slot, o );
 #endif
 }
 

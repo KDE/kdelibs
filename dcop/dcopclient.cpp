@@ -1214,20 +1214,11 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 	    reply << (Q_INT8) o->setProperty( name, value );
 	    return true;
 	} else {
-#if QT_VERSION < 300
-	    QMetaData* slot = o->metaObject()->slot( fun, true );
-#else
-	    QMetaObject *mo = o->metaObject();
-	    const QMetaData* slot = mo->slot( mo->findSlot( fun, true ), true );
-#endif
-	    if ( slot ) {
+	    int slot = o->metaObject()->findSlot( fun, true );
+	    if ( slot != -1 ) {
 		replyType = "void";
-#if QT_VERSION < 300
-		(o->*(slot->ptr))();
-#else
 		QUObject uo[ 1 ];
-		o->qt_invoke( slot->ptr, uo );
-#endif
+		o->qt_invoke( slot, uo );
 		return true;
 	    }
 	}

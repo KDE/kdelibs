@@ -210,13 +210,12 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy );
     (ext->*(metaData->ptr))();
 #else
-    QMetaObject *mo = m_extensionProxy->metaObject();
-    const QMetaData *metaData = mo->slot( mo->findSlot( method ) );
-    if ( !metaData )
+    int slot = m_extensionProxy->metaObject()->findSlot( method );
+    if ( slot == -1 )
         return;
 
     QUObject o[ 1 ];
-    m_extensionProxy->qt_invoke( metaData->ptr, o );
+    m_extensionProxy->qt_invoke( slot, o );
 #endif
 }
 
