@@ -27,9 +27,7 @@ public final class KJASAppletStub
     private String            className;
     private Class             appletClass;
     private JFrame            frame;
-    private boolean           failed = false;
-   
-    
+
     /**
     * applet state unknown
     */
@@ -61,10 +59,13 @@ public final class KJASAppletStub
     /**
     * request for termination of the applet thread 
     */
-    public static final int TERMINATE = 7;
+    private static final int TERMINATE = 7;
+    /**
+    * like TERMINATE, an end-point state 
+    */
+    private static final int FAILED = 8;
    
     
-    private int state = UNKNOWN;  
     private KJASAppletClassLoader loader;
     private KJASAppletPanel       panel;
     private Applet                app;
@@ -90,7 +91,7 @@ public final class KJASAppletStub
         /**
          * Get the asked state
          */
-        synchronized int getRequestState() {
+        synchronized private int getRequestState() {
             while (request_state == current_state) {
                 try {
                     wait ();
@@ -104,6 +105,12 @@ public final class KJASAppletStub
          */
         synchronized int getState() {
             return current_state;
+        }
+        /**
+         * Set the current state
+         */
+        synchronized private void setState(int nstate) {
+            current_state = nstate;
         }
         /**
          * Put applet in asked state
@@ -174,7 +181,6 @@ public final class KJASAppletStub
                 default:
                     return;
                 }
-                stateChange(nstate);
         }
         /**
          * RunThread run(), loop until state is TERMINATE
@@ -189,14 +195,17 @@ public final class KJASAppletStub
                 } catch (Exception ex) {
                     Main.kjas_err("Error during state " + nstate, ex);
                     if (nstate < INITIALIZED) {
+                        setState(FAILED);
                         setFailed(ex.toString());
                         return;
                     }
                 } catch (Throwable tr) {
+                    setState(FAILED);
                     setFailed(tr.toString());
                     return;
                 }
-                current_state = nstate;
+                setState(nstate);
+                stateChange(nstate);
             }
         }
     }
@@ -218,7 +227,6 @@ public final class KJASAppletStub
         codeBase   = _codeBase;
         docBase    = _docBase;
         active     = false;
-        state      = UNKNOWN;
         appletName = _appletName;
         className  = _className.replace( '/', '.' );
         appletSize = _appletSize;
@@ -244,9 +252,6 @@ public final class KJASAppletStub
     }
 
     private void stateChange(int newState) {
-        if (failed)
-            return;
-        state = newState;
         Main.protocol.sendAppletStateNotification(
             context.getID(),
             appletID,
@@ -254,7 +259,6 @@ public final class KJASAppletStub
     }
     
     private void setFailed(String why) {
-        failed = true;
         loader.removeStatusListener(panel);
         panel.stopAnimation();
         panel.showFailed();
@@ -392,7 +396,7 @@ public final class KJASAppletStub
     * @return true if the applet has been completely loaded.
     */
     boolean isLoaded() {
-        return state >= INSTANCIATED;
+        return runThread != null && runThread.getState() >= INSTANCIATED;
     }
     
     public void appletResize( int width, int height )
