@@ -39,3 +39,6 @@ testkabcdlg_SOURCES = testkabcdlg.cpp
 testdistlist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testdistlist_LDADD = libkabc.la
 testdistlist_SOURCES = testdistlist.cpp
+
+autostart_DATA = kab2kabc.desktop
+autostartdir = $(prefix)/share/autostart

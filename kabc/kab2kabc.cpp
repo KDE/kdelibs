@@ -25,11 +25,20 @@
 #include <kcmdlineargs.h>
 #include <kabapi.h>
 #include <kglobal.h>
+#include <kconfig.h>
 
 #include "addressbook.h"
 #include "stdaddressbook.h"
 
 using namespace KABC;
+
+static const KCmdLineOptions options[] =
+{
+  {"disable-autostart", I18N_NOOP("Disable automatic startup on login."), 0},
+  {"o", 0, 0},
+  {"override", I18N_NOOP("Override existing entries."),"1"},
+  {0,0,0}
+};
 
 void readKAddressBookEntries( const QString &dataString, Addressee &a )
 {
@@ -145,9 +154,29 @@ int main(int argc,char **argv)
 {
   KAboutData aboutData("kab2kabc",I18N_NOOP("Kab to Kabc Converter"),"0.1");
   aboutData.addAuthor("Cornelius Schumacher", 0, "schumacher@kde.org");
+
   KCmdLineArgs::init(argc,argv,&aboutData);
+  KCmdLineArgs::addCmdLineOptions( options );
 
   KApplication app;
+
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+  bool override = false;
+
+  if ( args->isSet( "override" ) ) {
+    kdDebug() << "Override existing entries." << endl;
+
+    override = true;
+  }
+
+  if ( args->isSet( "disable-autostart" ) ) {
+    kdDebug() << "Disable autostart." << endl;
+
+    KConfig *config = app.config();
+    config->setGroup( "Startup" );
+    config->writeEntry( "EnableAutostart", false );
+  }
 
   kdDebug(5700) << "Converting old-style kab addressbook to "
                "new-style kabc addressbook." << endl;
@@ -194,7 +223,9 @@ int main(int argc,char **argv)
         a.insertCustom( "kab2kabc", QString::number( count++ ), *customIt );
       }
     }
-    if( !idFound ) {
+    if( idFound ) {
+      if ( !override ) continue;
+    } else {
       entry.custom << "X-KABC-UID:" + a.uid();
       ::AddressBook::ErrorCode error = kab.addressbook()->change( key, entry );
       if (error != ::AddressBook::NoError) {
@@ -203,7 +234,7 @@ int main(int argc,char **argv)
         kdDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
       }
     }
-    
+ 
     a.setTitle( entry.title );
     a.setFormattedName( entry.fn );
     a.setPrefix( entry.nameprefix );

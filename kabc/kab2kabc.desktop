@@ -1,0 +1,10 @@
+# KDE Config File
+[Desktop Entry]
+Name=kab2kabc
+Exec=kab2kabc --disable-autostart
+Icon=misc
+Type=Application
+Comment=libkab to libkabc conversion tool.
+Terminal=false
+NoDisplay=true
+X-KDE-autostart-condition=kab2kabcrc:Startup:EnableAutostart:true
