@@ -1220,7 +1220,7 @@ void RenderFlow::calcMinMaxWidth()
     if (style()->width().isFixed())
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
-    if ( style()->whiteSpace() != NORMAL )
+    if ( style()->whiteSpace() == NOWRAP )
         m_minWidth = m_maxWidth;
 
     int toAdd = 0;
