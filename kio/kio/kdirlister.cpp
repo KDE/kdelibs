@@ -1374,7 +1374,10 @@ void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
     ++dataIt;
   }
 
-  result /= size;
+  if ( size != 0 )
+    result /= size;
+  else
+    result = 100;
   emit percent( result );
 }
 
