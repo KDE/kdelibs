@@ -518,7 +518,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
   char *single_locale;
   char *retval;
   int saved_errno = errno;
-  const char *_domainname = (domainname == NULL) ? domainname : _nl_current_default_domain;
+  const char *_domainname = (domainname == NULL) ? _nl_current_default_domain : domainname;
 
   /* If no real MSGID is given return NULL.  */
   if (msgid == NULL)
@@ -527,8 +527,9 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
   /* If DOMAINNAME is NULL, we are interested in the default domain.  If
      CATEGORY is not LC_MESSAGES this might not make much sense but the
      defintion left this undefined.  */
-  //  if (domainname == NULL)
-  //    domainname = _nl_current_default_domain;
+  /* if (domainname == NULL)
+     domainname = _nl_current_default_domain;
+  */
 
   /* First find matching binding.  */
   for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
@@ -586,7 +587,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
 	 HAVE_STPCPY to be defined.  */
       stpcpy (stpcpy (strchr (dirname, '\0'), "/"), binding->dirname);
     }
-
+  
   /* Now determine the symbolic name of CATEGORY and its value.  */
   categoryname = category_to_name (category);
   categoryvalue = guess_category_value (category, categoryname);
