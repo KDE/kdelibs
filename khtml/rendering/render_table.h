@@ -363,9 +363,9 @@ protected:
     short _col;
     ushort rSpan;
     ushort cSpan;
-    short _topExtra;
-    short _bottomExtra;
+    int _topExtra : 31;
     bool nWrap : 1;
+    int _bottomExtra : 31;
     bool m_widthChanged : 1;
 };
 
