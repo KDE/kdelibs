@@ -50,6 +50,7 @@ KFileInfo::KFileInfo(const KDirEntry &e)
     myGroup= e.group;
     myAccess= e.access;
     parsePermissions(e.access);
+    myIsSymLink = false;
 }
 
 KFileInfo::KFileInfo(const QFileInfo &e)
@@ -71,6 +72,7 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
     myName = name;
     myBaseURL = dir;
     struct stat buf;
+    myIsSymLink = false;
 
     if (lstat((dir + myName).data(), &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
