@@ -472,11 +472,31 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
     }
 }
 
+static KURL kurlbar_readURLEntry( KConfig *config, const QString& key )
+{
+    // This looks a bit complex to just read a URL, but we have our reasons:
+    // Until KDE 3.1.1, the url was written as prettyURL(), so it included the file:/
+    // prefix. Now we use KConfig::writePathEntry( url.path() ) in case it's a local
+    // file, so readEntry() may return e.g. either file:/foo, /foo or $HOME
+
+    QString urlEntry = config->readEntry( key );
+    bool isPath = !urlEntry.isEmpty() && (urlEntry[0] == '/' || urlEntry[0] == '$');
+    // if it's local, try dollar expansion
+    if ( !urlEntry.isEmpty() && (isPath || urlEntry.startsWith("file:/") ))
+        urlEntry = config->readPathEntry( key );
+    KURL url;
+    if ( isPath )
+        url.setPath( urlEntry );
+    else
+        url = urlEntry;
+
+    return url;
+}
+
 void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-
-    const KURL& url = config->readEntry( QString("URL_") + number );
+    KURL url = kurlbar_readURLEntry( config, QString("URL_") + number );
     if ( url.isMalformed() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -543,7 +563,11 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
     QString IconGroup = "IconGroup_";
 
     QString number = QString::number( i );
+    if ( item->url().isLocalFile() )
+        config->writePathEntry( URL + number, item->url().path(), true, global );
+    else
     config->writeEntry( URL + number, item->url().prettyURL(), true, global );
+
     config->writeEntry( Description + number, item->description(),true,global);
     config->writeEntry( Icon + number, item->icon(), true, global );
     config->writeEntry( IconGroup + number, item->iconGroup(), true, global );
