@@ -6,7 +6,7 @@ libkutils_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
 libkutils_la_LIBADD  = ../kio/libkio.la
 
 libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplace.cpp kreplacedialog.cpp \
-                       kcmoduleinfo.cpp kcmoduleloader.cpp kcmultidialog.h
+                       kcmoduleinfo.cpp kcmoduleloader.cpp kcmultidialog.cpp
 
  # kreplace.cpp
 
