@@ -526,7 +526,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
   QString cNetpath = i18n( "There may have been a problem at some point along "
     "the network path between the server and this computer." );
   QString sTryagain = i18n( "Try again, either now or at a later time." );
-  QString cProtocol = i18n( "A protocol error or incompatability may have occurred." );
+  QString cProtocol = i18n( "A protocol error or incompatibility may have occurred." );
   QString sExists = i18n( "Ensure that the resource exists, and try again." );
   QString cExists = i18n( "The specified resource may not exist." );
   QString cTypo = i18n( "You may have incorrectly typed the location." );
@@ -560,7 +560,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "The program on your computer which provides access "
         "to the <strong>%1</strong> protocol could not be started. This is "
         "usually due to technical reasons." ).arg( protocol );
-      causes << i18n( "The program which provides compatability with this "
+      causes << i18n( "The program which provides compatibility with this "
         "protocol may not have been updated with your last update of KDE. "
         "This can cause the program to be incompatible with the current version "
         "and thus not start." ) << cBug;
