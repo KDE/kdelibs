@@ -305,6 +305,8 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
     case FieldImpl::Organization:
       a.setOrganization( value );
       return true;
+    case FieldImpl::Birthday:
+      a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
     case FieldImpl::CustomField:
       a.insertCustom( mImpl->app(), mImpl->key(), value );
     default:

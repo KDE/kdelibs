@@ -120,7 +120,7 @@ QString Field::value( const KABC::Addressee &a )
       return a.preferredEmail();
     case FieldImpl::Birthday:
       if ( a.birthday().isValid() )
-        return KGlobal::locale()->formatDate( a.birthday().date() );
+        return a.birthday().date().toString( Qt::ISODate );
       else
         return QString::null;
     case FieldImpl::Url:
@@ -166,6 +166,8 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
 {
   switch ( mImpl->fieldId() ) {
     --CASESETVALUE--
+    case FieldImpl::Birthday:
+      a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
     case FieldImpl::CustomField:
       a.insertCustom( mImpl->app(), mImpl->key(), value );
     default:
