@@ -423,7 +423,14 @@ void KCompletionBox::cancelled()
 class KCompletionBoxItem : public QListBoxItem
 {
 public:
-    void reuse( const QString &text ) { setText( text ); }
+    //Returns true if dirty.
+    bool reuse( const QString& newText ) 
+    {   
+        if ( text() == newText )
+            return false;
+        setText( newText ); 
+        return true;
+    }
 };
 
 
@@ -446,21 +453,36 @@ void KCompletionBox::setItems( const QStringList& items )
         insertStringList( items );
     }
     else {
+        //Keep track of whether we need to change anything,
+        //so we can avoid a repaint for identical updates,
+        //to reduce flicker
+        bool dirty = false;
         for ( QStringList::ConstIterator it = items.begin(); it != items.end(); it++) {
             if ( item ) {
-                ((KCompletionBoxItem*)item)->reuse( *it );
+                bool changed = ((KCompletionBoxItem*)item)->reuse( *it );
+                dirty = dirty || changed;
                 item = item->next();
             }
             else {
+                dirty = true;
+                //Inserting an item is a way of making this dirty
                 insertItem( new QListBoxText( *it ) );
             }
         }
+        
+        //If there is an unused item, mark as dirty -> less items now
+        if ( item ) {
+            dirty = true; 
+        }
+
         QListBoxItem* tmp = item;
         while ( (item = tmp ) ) {
             tmp = item->next();
             delete item;
         }
-        triggerUpdate( false );
+        
+        if (dirty)
+            triggerUpdate( false );
     }
 
     blockSignals( block );
