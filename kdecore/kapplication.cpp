@@ -2107,7 +2107,10 @@ void KApplication::invokeHelp( const QString& anchor,
    {
        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
        {
-           kdWarning() << "Could not launch help:\n" << error << endl;
+           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
+           i18n("Could not launch the KDE Help Center.\n\n"
+                "Please ensure that you have the kdebase\n"
+                "package installed correctly!"), i18n("&OK"));
            return;
        }
    }
@@ -2137,7 +2140,10 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
    {
        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", false))
        {
-           kdWarning() << "Could not launch help:\n" << error << endl;
+           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
+           i18n("Could not launch the KDE Help Center.\n\n"
+                "Please ensure that you have the kdebase\n"
+                "package installed correctly!"), i18n("&OK"));
            return;
        }
    }
