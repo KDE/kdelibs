@@ -110,7 +110,7 @@ namespace khtml
 	    m_request = 0;
 	    m_expireDate = _expireDate;
             m_deleted = false;
-            m_expireDateChanged = false;
+            m_expireDateChanged = (_expireDate!=0);
 	}
 	virtual ~CachedObject() {
             if(m_deleted) abort();

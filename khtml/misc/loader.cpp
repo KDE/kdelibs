@@ -66,18 +66,15 @@ void CachedObject::finish()
         m_status = Uncacheable;
     else
         m_status = Cached;
-    KURL url(m_url.string());
-    if (m_expireDateChanged && url.protocol().startsWith("http"))
+    if (m_expireDateChanged)
     {
-        m_expireDateChanged = false;
-        KIO::http_update_cache(url, false, m_expireDate);
-#ifdef CACHE_DEBUG
-        kdDebug(6060) << " Setting expire date for image "<<m_url.string()<<" to " << m_expireDate << endl;
-#endif
+	KURL url(m_url.string());
+        if ( url.protocol().startsWith("http"))
+	    {
+		m_expireDateChanged = false;
+		KIO::http_update_cache(url, false, m_expireDate);
+	    }
     }
-#ifdef CACHE_DEBUG
-    else kdDebug(6060) << " No expire date for image "<<m_url.string()<<endl;
-#endif
 }
 
 void CachedObject::setExpireDate(time_t _expireDate, bool changeHttpCache)
@@ -89,15 +86,33 @@ void CachedObject::setExpireDate(time_t _expireDate, bool changeHttpCache)
     {
         finish();
     }
+    if (m_expireDateChanged && !changeHttpCache)
+    {
+	// stop if the current expire date which is supposed to be
+	// written to the disk cache would be overwritten by an expire
+	// date which actually comes from the disk cache
+#ifdef CACHE_DEBUG
+	kdDebug(6061) << "refusing to overwrite expire date of "<<m_expireDate-time(0)<<" with new value " << _expireDate-time(0)<<endl;
+#endif
+	return;
+    }
     m_expireDate = _expireDate;
     if (changeHttpCache && m_expireDate)
-       m_expireDateChanged = true;
+    {
+	m_expireDateChanged = true;
+#ifdef CACHE_DEBUG
+	kdDebug(6061) << " CachedObject: Changing http expire date for "<<m_url.string()<<" to " << m_expireDate << endl;
+#endif
+    }
 }
 
 bool CachedObject::isExpired() const
 {
     if (!m_expireDate) return false;
     time_t now = time(0);
+#ifdef CACHE_DEBUG
+    kdDebug(6061)<<"is "<<m_url.string()<<" expired? " << m_expireDate-time(0) << " seconds to go!\n";
+#endif
     return (difftime(now, m_expireDate) >= 0);
 }
 
@@ -869,6 +884,14 @@ void DocLoader::setCacheCreationDate(time_t _creationDate)
 
 void DocLoader::setExpireDate(time_t _expireDate, bool relative)
 {
+#ifdef CACHE_DEBUG
+    assert(!relative || m_creationDate);
+    const char *relativity = relative?"relative":"absolute";
+    int ed = _expireDate;
+    if (!relative)
+	ed -=time(0);
+    kdDebug(6061) << "docLoader: got "<<relativity<<" expire Date " << ed << " on " << m_part->url().url()<<endl;
+#endif
     if (relative)
        m_expireDate = _expireDate + m_creationDate; // Relative date
     else
@@ -912,6 +935,13 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
 
+    if (m_expireDate)
+    {
+	CachedObject *existing = Cache::cache->find(fullURL.url());
+	if (existing)
+	    existing->setExpireDate(m_expireDate, true);
+    }
+
     bool reload = needReload(fullURL);
 
     return Cache::requestImage(this, url, reload, m_expireDate);
@@ -922,6 +952,13 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
 
+    if (m_expireDate)
+    {
+	CachedObject *existing = Cache::cache->find(fullURL.url());
+	if (existing)
+	    existing->setExpireDate(m_expireDate, true);
+    }
+
     bool reload = needReload(fullURL);
 
     return Cache::requestStyleSheet(this, url, reload, m_expireDate, charset);
@@ -931,6 +968,13 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+
+    if (m_expireDate)
+    {
+	CachedObject *existing = Cache::cache->find(fullURL.url());
+	if (existing)
+	    existing->setExpireDate(m_expireDate, true);
+    }
 
     bool reload = needReload(fullURL);
 
@@ -1070,7 +1114,10 @@ void Loader::slotFinished( KIO::Job* job )
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
-kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << " expires " << ctime(&expireDate) << endl;
+#ifdef CACHE_DEBUG
+      kdDebug(6061) << "Loader::slotFinished, url = " << j->url().url() << " created " << creationDate-time(0) << " expires " << expireDate-time(0) << endl;
+      time_t creationDate = j->queryMetaData("cache-creation-date").toLong();
+#endif
       r->object->setExpireDate(expireDate, false);
   }
 
@@ -1394,7 +1441,7 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
 
     o->setExpireDate(_expireDate, true);
 
-    if(!(o->type() == CachedObject::Script))
+    if(!o->type() == CachedObject::Script)
     {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
