@@ -17,8 +17,8 @@ typedef struct sdate {
 } SDATE;
 
 extern SDATE *julianToGregorian(double julian);
-extern SDATE *hdate(int,int,int);
-extern SDATE *gdate(int,int,int);
+extern SDATE *gregorianToHijri(int,int,int);
+extern SDATE *hijriToGregorian(int,int,int);
 extern double gregorianToJulian(int,int,int,float);
 extern int hijriDaysInMonth(int m, int y);
 

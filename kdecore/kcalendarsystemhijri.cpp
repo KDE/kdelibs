@@ -42,7 +42,7 @@ KCalendarSystemHijri::~KCalendarSystemHijri()
 static SDATE * toHijri(const QDate & date)
 {
   SDATE *sd;
-  sd = hdate(date.year(), date.month(), date.day());
+  sd = gregorianToHijri(date.year(), date.month(), date.day());
   return sd;
 }
 
@@ -263,7 +263,7 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
   if ( d < 1 || d > hndays(m, y) )
     return false;
 
-  SDATE * gd = gdate( y, m, d );
+  SDATE * gd = hijriToGregorian( y, m, d );
 
   return date.setYMD(gd->year, gd->mon, gd->day);
 }
@@ -343,8 +343,8 @@ int KCalendarSystemHijri::hndays(int mon, int year) const
 {
   SDATE fd, ld;
   int nd = 666;
-  fd = *gdate(year, mon, 1);
-  ld = *gdate(year, mon + 1, 1);
+  fd = *hijriToGregorian(year, mon, 1);
+  ld = *hijriToGregorian(year, mon + 1, 1);
   ld = *julianToGregorian(gregorianToJulian(ld.year, ld.mon, ld.day, 0.0) - 1.0);
   if (fd.mon == ld.mon)
     nd = ld.day - fd.day + 1;

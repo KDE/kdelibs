@@ -142,8 +142,7 @@ julianday( int year, int month, int day, float time)
 /* 
  * inverse function of Julianday.
  */
-SDATE *
-julianToGregorian( double julday )
+SDATE * julianToGregorian( double julday )
 {
 	static SDATE sd;
 	long	z, alpha, a, b, c, d, e;
@@ -179,8 +178,7 @@ julianToGregorian( double julday )
  * 1405 A.H. started immediatly after lunar conjunction number 1048
  * which occured on September 1984 25d 3h 10m UT.
  */
-SDATE *
-hdate (int y, int m, int d)
+SDATE * gregorianToHijri (int y, int m, int d)
 {
 	static SDATE h;
 	double jd, mjd, rjd;
@@ -209,8 +207,7 @@ hdate (int y, int m, int d)
 /*
  * Given a Hijri date, compute corresponding C.E. date structure 
  */
-SDATE *
-gdate(int y, int m, int d)
+SDATE * hijriToGregorian(int y, int m, int d)
 {
 	double jd, rjd;
 	long k;
