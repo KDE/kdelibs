@@ -75,6 +75,7 @@ struct KStartupInfoPrivate
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
         KWinModule* wm_module;
         KXMessages msgs;
+	QTimer* cleanup;
        KStartupInfoPrivate() : msgs( KDE_STARTUP_INFO ) {}
     };
     
@@ -87,9 +88,8 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
     connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( window_added( WId )));
     connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( window_added( WId )));
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
-    QTimer* cleanup = new QTimer( this );
-    connect( cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
-    cleanup->start( 1000 ); // 1 sec
+    d->cleanup = new QTimer( this );
+    connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
     }
 
 KStartupInfo::~KStartupInfo()
@@ -150,6 +150,7 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P, Data& 
     d->startups.insert( id_P, data_P );
     kdDebug( 172 ) << "adding" << endl;
     emit gotNewStartup( id_P, data_P );
+    d->cleanup->start( 1000 ); // 1 sec
     }
 
 void KStartupInfo::got_remove_startup_info( const QString& msg_P )
@@ -451,7 +452,10 @@ void KStartupInfo::startups_cleanup_no_age()
 void KStartupInfo::startups_cleanup()
     {
     if( d->startups.count() == 0 )
+    {
+        d->cleanup->stop();
         return;
+    }
     startups_cleanup_internal( true );
     }
     
