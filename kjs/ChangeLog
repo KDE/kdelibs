@@ -1,3 +1,8 @@
+2003-11-11  Harri Porten  <porten@kde.org>
+
+	* array_object.cpp: patch from Darin that adds checks for
+	undefined type in compare functions
+
 2003-11-07  Harri Porten  <porten@kde.org>
 
 	* grammar.y: do automatic semicolon insertion after throw statements
