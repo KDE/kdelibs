@@ -298,7 +298,7 @@ void ListProgress::writeConfig() {
 //------------------------------------------------------------
 
 
-UIServer::UIServer() : KTMainWindow( "" ), DCOPObject("UIServer")
+UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
 {
   readSettings();
 
@@ -773,6 +773,13 @@ int main(int argc, char **argv)
     KCmdLineArgs::init( argc, argv, &aboutdata );
     // KCmdLineArgs::addCmdLineOptions( options );
     KUniqueApplication::addCmdLineOptions();
+
+    if (!KUniqueApplication::start())
+    {
+      qDebug("kio_uiserver is already running!\n");
+      return (0);
+    }
+
     KUniqueApplication app;
 
     // This app is started automatically, no need for session management
