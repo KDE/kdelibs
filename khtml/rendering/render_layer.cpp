@@ -406,7 +406,7 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
         sb = new QScrollBar(o, scrollView);
         scrollView->addChild(sb, 0, -50000);
 	sb->setBackgroundMode(QWidget::NoBackground);
-	sb->show();
+        sb->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
         m_scrollMediator->connect(sb, SIGNAL(valueChanged(int)), SLOT(slotValueChanged()));
@@ -427,7 +427,12 @@ int RenderLayer::verticalScrollbarWidth()
     if (!m_vBar)
         return 0;
 
+#ifdef APPLE_CHANGES
     return m_vBar->width();
+#else
+    return m_vBar->style().pixelMetric(QStyle::PM_ScrollBarExtent);
+#endif
+
 }
 
 int RenderLayer::horizontalScrollbarHeight()
@@ -435,7 +440,12 @@ int RenderLayer::horizontalScrollbarHeight()
     if (!m_hBar)
         return 0;
 
+#ifdef APPLE_CHANGES
     return m_hBar->height();
+#else
+    return m_hBar->style().pixelMetric(QStyle::PM_ScrollBarExtent);
+#endif
+
 }
 
 void RenderLayer::moveScrollbarsAside()
@@ -904,6 +914,7 @@ void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& pain
         // This layer establishes a clip of some kind.
         if (m_object->hasOverflowClip())
             foregroundRect = foregroundRect.intersect(m_object->getOverflowClipRect(x,y));
+
         if (m_object->hasClip()) {
             // Clip applies to *us* as well, so go ahead and update the damageRect.
             QRect newPosClip = m_object->getClipRect(x,y);

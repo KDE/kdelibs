@@ -1,3 +1,14 @@
+
+2003-11-14  Germain Garand  <germain@ebooksfrance.org>
+        
+        fix "overflow: scroll" layout/painting issues
+
+        * rendering/render_box.cpp (getOverflowClipRect): substract
+        scrollbars width/height if any. Merged from WebCore.
+
+        * rendering/render_layer.cpp (horizontalScrollbarHeight,
+        verticalScrollbarWidth): use pixelMetric instead of width()/height().
+
 2003-11-13  Zack Rusin  <zack@kde.org>
 
 	* rendering/render_box.cpp (calcAbsoluteVertical): fix the
