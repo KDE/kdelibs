@@ -246,6 +246,8 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     }
 
     KHTMLAssert(!child->parent());
+    while ( beforeChild->parent() != this && beforeChild->parent()->isAnonymousBox() )
+	beforeChild = beforeChild->parent();
     KHTMLAssert(beforeChild->parent() == this);
 
     if(beforeChild == firstChild())

@@ -150,7 +150,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
-                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     RenderObject *o = child;
 
@@ -200,14 +200,22 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         if ( beforeChild && beforeChild->isAnonymousBox() )
             o = beforeChild;
         else {
+	    RenderObject *lastBox = beforeChild;
+	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableSection() )
+		lastBox = lastBox->parent();
+	    if ( lastBox && lastBox->isAnonymousBox() ) {
+		lastBox->addChild( child, beforeChild );
+		return;
+	    } else {
 //          kdDebug( 6040 ) << "creating anonymous table section" << endl;
-            o = new RenderTableSection(0 /* anonymous */);
-            RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(style());
-            newStyle->setDisplay(TABLE_ROW_GROUP);
-            o->setStyle(newStyle);
-            o->setIsAnonymousBox(true);
-            addChild(o, beforeChild);
+		o = new RenderTableSection(0 /* anonymous */);
+		RenderStyle *newStyle = new RenderStyle();
+		newStyle->inheritFrom(style());
+		newStyle->setDisplay(TABLE_ROW_GROUP);
+		o->setStyle(newStyle);
+		o->setIsAnonymousBox(true);
+		addChild(o, beforeChild);
+	    }
         }
         o->addChild(child);
 	child->setLayouted( false );
@@ -1825,7 +1833,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
-                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     RenderObject *row = child;
 
@@ -1837,14 +1845,22 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         if( beforeChild && beforeChild->isAnonymousBox() )
             row = beforeChild;
         else {
-            kdDebug( 6040 ) << "creating anonymous table row" << endl;
-            row = new RenderTableRow(0 /* anonymous table */);
-            RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(style());
-            newStyle->setDisplay(TABLE_ROW);
-            row->setStyle(newStyle);
-            row->setIsAnonymousBox(true);
-            addChild(row, beforeChild);
+	    RenderObject *lastBox = beforeChild;
+	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableRow() )
+		lastBox = lastBox->parent();
+	    if ( lastBox && lastBox->isAnonymousBox() ) {
+		lastBox->addChild( child, beforeChild );
+		return;
+	    } else {
+		kdDebug( 6040 ) << "creating anonymous table row" << endl;
+		row = new RenderTableRow(0 /* anonymous table */);
+		RenderStyle *newStyle = new RenderStyle();
+		newStyle->inheritFrom(style());
+		newStyle->setDisplay(TABLE_ROW);
+		row->setStyle(newStyle);
+		row->setIsAnonymousBox(true);
+		addChild(row, beforeChild);
+	    }
         }
         row->addChild(child);
 	child->setLayouted( false );
@@ -1909,7 +1925,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
-                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     RenderTableCell *cell;
 
@@ -1920,14 +1936,22 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTableCell() )
             cell = static_cast<RenderTableCell *>(beforeChild);
         else {
+	    RenderObject *lastBox = beforeChild;
+	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableCell() )
+		lastBox = lastBox->parent();
+	    if ( lastBox && lastBox->isAnonymousBox() ) {
+		lastBox->addChild( child, beforeChild );
+		return;
+	    } else {
 //          kdDebug( 6040 ) << "creating anonymous table cell" << endl;
-            cell = new RenderTableCell(0 /* anonymous object */);
-            RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(style());
-            newStyle->setDisplay(TABLE_CELL);
-            cell->setStyle(newStyle);
-            cell->setIsAnonymousBox(true);
-            addChild(cell, beforeChild);
+		cell = new RenderTableCell(0 /* anonymous object */);
+		RenderStyle *newStyle = new RenderStyle();
+		newStyle->inheritFrom(style());
+		newStyle->setDisplay(TABLE_CELL);
+		cell->setStyle(newStyle);
+		cell->setIsAnonymousBox(true);
+		addChild(cell, beforeChild);
+	    }
         }
         cell->addChild(child);
 	child->setLayouted( false );
