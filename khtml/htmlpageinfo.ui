@@ -54,19 +54,6 @@
                 <cstring>_title</cstring>
             </property>
         </widget>
-        <widget class="KActiveLabel" row="1" column="1" rowspan="1" colspan="3">
-            <property name="name">
-                <cstring>_url</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>7</hsizetype>
-                    <vsizetype>5</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-        </widget>
         <widget class="QLabel" row="1" column="0">
             <property name="name">
                 <cstring>TextLabel1</cstring>
@@ -142,7 +129,7 @@
                 </sizepolicy>
             </property>
             <property name="text">
-                <string>HTTP Headers:</string>
+                <string>HTTP headers:</string>
             </property>
             <property name="buddy" stdset="0">
                 <cstring>_headers</cstring>
@@ -174,14 +161,14 @@
                 </sizepolicy>
             </property>
             <property name="text">
-                <string>Last Modified:</string>
+                <string>Last modified:</string>
             </property>
             <property name="buddy" stdset="0">
                 <cstring>_lastModified</cstring>
             </property>
         </widget>
         <spacer row="5" column="0" rowspan="1" colspan="3">
-            <property name="name" stdset="0">
+            <property name="name">
                 <cstring>Spacer3</cstring>
             </property>
             <property name="orientation">
@@ -193,36 +180,12 @@
             <property name="sizeHint">
                 <size>
                     <width>20</width>
-                    <height>20</height>
+                    <height>0</height>
                 </size>
             </property>
         </spacer>
-        <widget class="KPushButton" row="5" column="3">
-            <property name="name">
-                <cstring>_close</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>0</hsizetype>
-                    <vsizetype>5</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="text">
-                <string>&amp;Close</string>
-            </property>
-        </widget>
     </grid>
 </widget>
-<connections>
-    <connection>
-        <sender>_close</sender>
-        <signal>clicked()</signal>
-        <receiver>HTMLPageInfo</receiver>
-        <slot>close()</slot>
-    </connection>
-</connections>
 <includes>
     <include location="global" impldecl="in declaration">kpushbutton.h</include>
     <include location="global" impldecl="in declaration">qlabel.h</include>
