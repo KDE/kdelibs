@@ -375,45 +375,6 @@ void KFormula::setPos(int x, int y)
   posy = y;
 }
 
-//-------------------------------UNPARSE----------------------------
-
-//recursively output a string that, when parsed, results in the
-//formula.  Pretty self-explanatory.
-//it's not used anywhere now, but it might be useful.
-//it will need to be fixed before it's used
-
-QString KFormula::unparse(box *b)
-{
-  if(b == NULL) b = boxes[boxes.size() - 1];
-
-  if(b->type == TEXT) return b->text;
-
-  QString x;
-  
-  if(b->b1 != NULL && b->b2 != NULL) {
-    x.sprintf("{}%c{}", b->type);
-
-    x.insert(1, unparse(b->b1));
-    x.insert(x.length() - 1, unparse(b->b2));
-    return x;
-  }
-
-  if(b->b1 != NULL) {
-    x.sprintf("{}%c{}", b->type);
-    x.insert(1, unparse(b->b1));
-    return x;
-  }
-
-  if(b->b2 != NULL) {
-    x.sprintf("{}%c{}", b->type);
-    x.insert(x.length() - 1, unparse(b->b2));
-    return x;
-  }
-  //if both are NULL
-  x.sprintf("{}%c{}", b->type);
-  return x;
-}
-
 //------------------------------EVALUATE--------------------------------
 //default value of b is NULL
 //if it's a text box, looks up variables vars and their values

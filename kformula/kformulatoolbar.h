@@ -4,6 +4,10 @@
 #include "kformulaedit.h"
 #include <ktoolbar.h>
 
+/**
+ * Just make one of these and call connectToFormula passing
+ * your KFormulaEdit.
+ */
 class KFormulaToolBar : public KToolBar
 {
   Q_OBJECT

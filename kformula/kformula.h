@@ -54,7 +54,27 @@ enum ErrorType {
 
 //this class is for parsing and storing the actual boxes that
 //make up a formula
-
+/**
+ * I don't have time now to write real documentation.
+ * The KFormula class is used for parsing and displaying formulas.
+ *
+ * If you want to draw a formula from a c-style expression,
+ * call KFormula::fromUgly on your string and pass the result
+ * to parse.  Decide where you want it to be drawn by calling setPos
+ * and passing the center to it (for other alignments, you can always
+ * get the size).  Then draw your formula by calling redraw (then you
+ * pass the painter--for now its font is used for arranging and drawing
+ * the formula).
+ *
+ * You can also evaluate a formula that you constructed with
+ * the restricted flag set to true--pass the appropriate arguments
+ * to evaluate.  Beware that the error handling is not great,
+ * especially in fromUgly (whose output you need to pass to parse
+ * before you can evaluate anything).
+ *
+ * The other use of KFormula is with KFormulaEdit--it's much cooler
+ * that way.
+ */
 class KFormula {
 private:
 
@@ -70,8 +90,8 @@ private:
   bool restricted; // if will be evaluated
 
 public:
-  KFormula(bool r = FALSE);
-  KFormula(int x, int y, bool r = FALSE);
+  KFormula(bool restricted = FALSE);
+  KFormula(int x, int y, bool restricted = FALSE);
   virtual ~KFormula();
 
   void redraw(QPainter &p);
@@ -79,13 +99,16 @@ public:
   QArray<box *> getBoxes(void);
   void setPos(int x, int y); //sets the position for the center of the formula
   void parse(QString text, QArray<charinfo> *info = NULL);
-  QString unparse(box *b = NULL);
   QRect getCursorPos(charinfo i);
+
+  /**
+   * The arguments to this will be replaced with a dict at some point...
+   */
   double evaluate(QStrList &vars, const QArray<double> &vals,
 		  int *error = NULL, box *b = NULL);
   QSize size();
 
-protected:
+private:
   QArray<box *> boxes;
   int posx;
   int posy;

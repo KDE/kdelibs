@@ -85,7 +85,14 @@ enum SymbolType {
 //a box is a unit of a formula.
 //it has up to two children, and routines
 //for arranging and displaying them.
-
+/**
+ * The box class is used for internal calculations.
+ *
+ * After a formula is parsed, it is converted to a
+ * tree of boxes which can then be "calculated" (arranged)
+ * and drawn.  You probably don't want to use this class
+ * in your own programs.  If you do, see the header file.
+ */
 class box {
 friend class KFormula;
 friend class matrixbox;

@@ -45,12 +45,31 @@ struct _cursorInfo { //private
   QRect pos;
 };
 
-
+/**
+ * Disclaimer: I don't have time right now for real documentation.
+ *
+ * This guy is a formula editor--kind of like a line editor but
+ * you can do formulas.  If you construct it with restricted
+ * set to true, it prevents you from typing things it doesn't know
+ * how to evaluate (like matrices, greek, integrals, etc.)
+ * If you want to use your own evaluation, but want to have
+ * the typing restrictions, you can use uglyForm() on a restricted formula
+ * to get a c-style expression and setExtraChars() to allow characters
+ * beyond the default allowed in restricted mode.
+ *
+ * Features of KFormulaEdit include infinite undo/redo, cut/copy/paste,
+ * and you can enter almost anything KFormula can display (I think).
+ * To save a formula, use text(), save the returned string, and when
+ * loading use setText(QString) with the saved string.
+ *
+ * Keyboard shortcuts are availiable, but it's probably easier to
+ * use a KFormulaToolBar (which see).
+ */
 class KFormulaEdit : public QWidget
 {
   Q_OBJECT
 public:
-  KFormulaEdit(QWidget * parent=0, const char *name=0, WFlags f=0, bool r = 0);
+  KFormulaEdit(QWidget * parent=0, const char *name=0, WFlags f=0, bool restricted = false);
   virtual ~KFormulaEdit();
   void setText(QString text);
   void setExtraChars(QString c) { extraChars = c; }
@@ -74,7 +93,7 @@ signals:
   void sizeHint( QSize );
   void formulaChanged( const QString & );
 
-protected:
+private:
   QArray<_cursorInfo> cursorCache;
   bool restricted;  //whether for typesetting or evaluation
   QRect oldBound; // previous rectangle of formula
@@ -126,13 +145,13 @@ protected:
   void do_copy(QString oldText, int oldc);
   void do_paste(QString oldText, int oldc);
 
-protected:
+private:
   void insertChar(QChar c);
 
 public slots:
   void insertChar(int c); // just to make connecting to toolbars easy.
 
-protected slots:
+private slots:
   void toggleCursor();
   void computeCache();   // computes one step
 
