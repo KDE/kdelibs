@@ -80,6 +80,15 @@ public:
    */
   virtual QByteArray takeContainerStateBuffer( const QString &key );
 
+  /**
+   * <<INTERNAL>>
+   */
+  void setContainerStates( const QMap<QString,QByteArray> &states );
+  /**
+   * <<INTERNAL>>
+   */
+  QMap<QString,QByteArray> containerStates() const;
+
   void setFactory( KXMLGUIFactory *factory );
   KXMLGUIFactory *factory() const;
 

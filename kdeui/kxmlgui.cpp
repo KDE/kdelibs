@@ -603,7 +603,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     //container in case we add the same client again later.
     QByteArray containerStateBuffer = node->builder->removeContainer( node->container, parentContainer, node->containerId );
 
-    if ( containerStateBuffer.size() > 0 )
+    if ( containerStateBuffer.size() > 0 && !node->name.isEmpty() )
       m_client->storeContainerStateBuffer( node->tagName + node->name, containerStateBuffer );
 
     node->client = 0L;

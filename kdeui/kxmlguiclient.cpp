@@ -166,7 +166,7 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     // strange to it
     base = d->m_doc.documentElement();
     dump_xml(base.toElement());
-   
+
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
       d->m_doc.setContent( document );
@@ -445,13 +445,17 @@ void KXMLGUIClient::conserveMemory()
 
 void KXMLGUIClient::storeContainerStateBuffer( const QString &key, const QByteArray &data )
 {
-  d->m_containerStates.replace( key, data );
+  if ( !key.isEmpty() ) 
+    d->m_containerStates.replace( key, data );
 }
 
 QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
 {
   QByteArray res;
 
+  if ( key.isEmpty() )
+    return res;
+  
   QMap<QString,QByteArray>::Iterator it = d->m_containerStates.find( key );
   if ( it != d->m_containerStates.end() )
   {
@@ -461,6 +465,16 @@ QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
 
   return res;
 }
+
+void KXMLGUIClient::setContainerStates( const QMap<QString,QByteArray> &states )
+{
+  d->m_containerStates = states; 
+}
+
+QMap<QString,QByteArray> KXMLGUIClient::containerStates() const
+{
+  return d->m_containerStates; 
+} 
 
 void KXMLGUIClient::setFactory( KXMLGUIFactory *factory )
 {
