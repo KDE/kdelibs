@@ -268,7 +268,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
     blockSignals( block );
   }
 
-  QListView::contentsMousePressEvent( e );
+
 
   QPoint p( contentsToViewport( e->pos() ) );
   QListViewItem *i = itemAt( p );
@@ -283,6 +283,13 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
       d->pressPos= new QPoint(p);
     }
   }
+
+// If the row was already selected, create an editor widget.
+	QListViewItem *at=itemAt(p);
+	if (at && at->isSelected())
+		rename(at, 0); // TODO
+
+  QListView::contentsMousePressEvent( e );
 }
 
 void KListView::contentsMouseMoveEvent( QMouseEvent *e )
@@ -385,14 +392,21 @@ void KListView::dragMoveEvent(QDragMoveEvent *event)
     if (!event->isAccepted()) return;
 
     //Clean up the view
-    cleanRect();
-	
     QListViewItem *afterme=findDrop(event->pos());
-	
-    d->invalidateRect=new QRect(0, itemRect(afterme).bottom(),
-	                            width(), 2);
-	
-    repaintContents(*d->invalidateRect);
+
+    QRect *rectTemp=new QRect(drawDropVisualizer(0,0, afterme));
+
+    if (d->invalidateRect && (*d->invalidateRect)!=*rectTemp)
+    {
+        cleanRect();
+        QPainter painter(viewport());
+        drawDropVisualizer(&painter,0, afterme);
+    }
+
+    delete d->invalidateRect;
+    d->invalidateRect=rectTemp;
+
+
 }
 
 void KListView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -415,15 +429,8 @@ void KListView::cleanRect()
 void KListView::viewportPaintEvent(QPaintEvent *event)
 {
     QListView::viewportPaintEvent(event);
-    QColor barcolor(foregroundColor());	
-	
-    if (d->invalidateRect)
-	{
-	    QPainter paint(viewport());
-	    paint.setPen(barcolor);
-
-	    paint.drawRect(*d->invalidateRect);
-	}
+	delete d->invalidateRect;
+	d->invalidateRect=0;
 }
 
 QListViewItem* KListView::findDrop(const QPoint &_p)
@@ -531,7 +538,7 @@ QList<QListViewItem> KListView::selectedItems() const
 	return list;
 }
 
-void KListView::moveItem(QListViewItem *item, QListViewItem *after)
+void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*after*/)
 {
 // unimplemented
 /*
@@ -547,3 +554,25 @@ void KListView::dragEnterEvent(QDragEnterEvent *event)
 	event->accept(event->source()==viewport());
 }
 
+QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after)
+{
+	QRect rect(depth*treeStepSize(), itemRect(after).bottom(), width(), 2);
+
+	if (painter)
+	{	
+		QColor barcolor(foregroundColor());	
+		painter->setPen(barcolor);
+		painter->drawRect(rect);
+	}
+	return rect;
+}
+
+void KListView::rename(QListViewItem *item, int c)
+{
+
+}
+
+void KListView::mousePressEvent(QMouseEvent *e)
+{
+
+}

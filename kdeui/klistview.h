@@ -115,10 +115,12 @@ signals:
 
   void dropped(QDropEvent * e, QListViewItem *after);
   void moved();
-  void itemRenamed(QListViewItem * item, const QString &str, int row);
+  void itemRenamed(QListViewItem * item, const QString &str, int col);
   void itemRenamed(QListViewItem * item);
 
 
+public slots:
+  virtual void rename(QListViewItem *item, int c);
 
 protected slots:
   void slotOnItem( QListViewItem *item );
@@ -140,6 +142,8 @@ protected:
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
+  virtual void mousePressEvent(QMouseEvent *e);
+
   /**
    * Override this method.  event is as you'd expect
    * after is the item to drop this after
@@ -157,9 +161,13 @@ protected:
   virtual void contentsMouseReleaseEvent(QMouseEvent*);
   virtual void dragEnterEvent(QDragEnterEvent *);
 
-
   virtual QDragObject *dragObject() const;
-	
+
+
+  /**
+   * paint the drag line.  if painter is null, don't try to :)
+   **/
+  virtual QRect drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after);	
 
   QCursor oldCursor;
   bool m_bUseSingle;
@@ -173,6 +181,7 @@ protected:
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
+
 
 
 private:
