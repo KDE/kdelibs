@@ -78,7 +78,7 @@ public:
     QChar* m_text;
     int m_y;
     unsigned short m_len;
-    unsigned short m_x;
+    short m_x;
     unsigned short m_baseline;
     unsigned short m_width;
 
