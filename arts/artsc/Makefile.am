@@ -1,5 +1,5 @@
 AM_CFLAGS = -DARTSC_BACKEND='"$(libdir)/libartscbackend.la"'
-lib_LTLIBRARIES = libartsc.la libartscbackend.la libartsdsp.la
+lib_LTLIBRARIES = libartsc.la libartscbackend.la libartsdsp.la libartsdsp_st.la
 FLOWLIBS = $(top_builddir)/arts/flow/libartsflow.la
 
 INCLUDES = -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
@@ -11,6 +11,10 @@ bin_SCRIPTS = artsc-config artsdsp
 libartsdsp_la_SOURCES = artsdsp.c
 libartsdsp_la_LDFLAGS = -no-undefined -module
 libartsdsp_la_LIBADD = libartsc.la
+
+libartsdsp_st_la_SOURCES = artsc.c artsdsp.c
+libartsdsp_st_la_LDFLAGS = -no-undefined -module
+libartsdsp_st_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la
 
 libartsc_la_SOURCES = artsc.c
 libartsc_la_LDFLAGS = -no-undefined
