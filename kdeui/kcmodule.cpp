@@ -61,7 +61,7 @@ KCDialog::KCDialog(KCModule *client, const QString &docpath, QWidget *parent, co
   _reset = new QPushButton(i18n("Reset"), this);
   _cancel = new QPushButton(i18n("Cancel"), this);
   _apply = new QPushButton(i18n("Apply"), this);
-  _ok = new QPushButton(i18n("Ok"), this);
+  _ok = new QPushButton(i18n("OK"), this);
 
   // only enable the requested buttons
   int b = _client->buttons();
