@@ -1,6 +1,6 @@
 
-#include "kpartmanager.h"
-#include "kpart.h"
+#include <kparts/partmanager.h>
+#include <kparts/part.h>
 #include <kdebug.h>
 
 #include <qapplication.h>
@@ -154,4 +154,4 @@ void PartManager::slotObjectDestroyed()
   removePart( (Part *)sender() );
 }
 
-#include "kpartmanager.moc"
+#include "partmanager.moc"

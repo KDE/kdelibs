@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kxmlgui.h"
+#include <kparts/xmlgui.h>
 
 #include <qfile.h>
 #include <kdebug.h>

@@ -6,9 +6,9 @@
 
 #include <ktmainwindow.h>
 
-#include "kxmlgui.h"
-#include "kpart.h"
-#include "kevent.h"
+#include <kparts/xmlgui.h>
+#include <kparts/part.h>
+#include <kparts/event.h>
 
 class QString;
 

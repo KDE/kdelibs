@@ -1,5 +1,5 @@
 
-#include "kevent.h"
+#include <kparts/event.h>
 
 using namespace KParts;
 

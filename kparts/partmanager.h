@@ -5,7 +5,7 @@
 #include <qobject.h>
 #include <qwidget.h>
 
-#include "kevent.h"
+#include <kparts/event.h>
 
 namespace KParts
 {

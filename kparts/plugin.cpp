@@ -1,5 +1,5 @@
-#include "kplugin.h"
-#include "kpart.h"
+#include <kparts/plugin.h>
+#include <kparts/part.h>
 
 #include <qobjectlist.h>
 
@@ -143,4 +143,4 @@ QValueList<XMLGUIServant *> Plugin::pluginServants( QObject *parent )
   return servants;
 }
 
-#include "kplugin.moc"
+#include "plugin.moc"

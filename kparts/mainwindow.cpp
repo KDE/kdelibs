@@ -1,6 +1,6 @@
-#include "kpartsmainwindow.h"
-#include "kpart.h"
-#include "kplugin.h"
+#include <kparts/mainwindow.h>
+#include <kparts/part.h>
+#include <kparts/plugin.h>
 
 #include <qdom.h>
 #include <qmenubar.h>
@@ -383,4 +383,4 @@ void KPartsMainWindow::clearGUI()
 }
 */
 
-#include "kpartsmainwindow.moc"
+#include "mainwindow.moc"

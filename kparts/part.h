@@ -6,7 +6,7 @@
 #include <qguardedptr.h>
 #include <kurl.h>
 
-#include "kxmlgui.h"
+#include <kparts/xmlgui.h>
 
 class KInstance;
 class QWidget;

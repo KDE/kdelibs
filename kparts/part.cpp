@@ -1,7 +1,7 @@
-#include "kpart.h"
-#include "kplugin.h"
-#include "kpartsmainwindow.h"
-#include "kpartmanager.h"
+#include <kparts/part.h>
+#include <kparts/plugin.h>
+#include <kparts/mainwindow.h>
+#include <kparts/partmanager.h>
 
 #include <qfile.h>
 #include <qpoint.h>
@@ -377,4 +377,4 @@ void ReadWritePart::slotUploadError( int, int, const char * text )
   emit canceled( QString(text) );
 }
 
-#include "kpart.moc"
+#include "part.moc"
