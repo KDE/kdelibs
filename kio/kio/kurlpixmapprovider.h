@@ -52,7 +52,7 @@ public:
 	    u.setPath( url );
 	else
 	    u = url;
-	return KMimeType::pixmapForURL( u, 0, 0, size );
+	return KMimeType::pixmapForURL( u, 0, KIcon::Desktop, size );
     }
 };
 
