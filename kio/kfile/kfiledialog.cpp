@@ -306,6 +306,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "forward" )->plug( toolbar );
     coll->action( "home" )->plug( toolbar );
     coll->action( "reload" )->plug( toolbar );
+    coll->action( "mkdir" )->setShortcut(Key_F10);
     coll->action( "mkdir" )->plug( toolbar );
     
     d->bookmarkHandler = new KFileBookmarkHandler( this );
@@ -322,6 +323,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                           (int)CONFIGURE_BUTTON, true,
                           i18n("Configure this dialog"));
     */
+    
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
@@ -338,9 +340,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "show hidden" )->setShortcut(Key_F8);
     menu->insert( coll->action( "show hidden" ));
     menu->insert( showSidebarAction );
-    coll->action( "preview" )->setShortcut(Key_F10);
+    coll->action( "preview" )->setShortcut(Key_F11);
     menu->insert( coll->action( "preview" ));
-    coll->action( "separate dirs" )->setShortcut(Key_F11);
+    coll->action( "separate dirs" )->setShortcut(Key_F12);
     menu->insert( coll->action( "separate dirs" ));
     
     menu->setDelayed( false );
@@ -1166,8 +1168,8 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 {
     // we don't support popup completion here, sorry
     if ( ops->dirCompletionObject()->completionMode() ==
-	 KGlobalSettings::CompletionPopup )
-	return;
+         KGlobalSettings::CompletionPopup )
+        return;
 
     QString base = ops->url().url();
 
@@ -1189,14 +1191,14 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
         QString complete = ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
-	    QString newText = base + complete;
-	    QString fileProt = QString::fromLatin1( "file:" );
-	    if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
-		newText = newText.mid( 5 ); // remove file:
+            QString newText = base + complete;
+            QString fileProt = QString::fromLatin1( "file:" );
+            
+            if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
+                newText = newText.mid( 5 ); // remove file:
 
-	    d->pathCombo->setCompletedText( newText );
-
-	    d->url = newText;
+            d->pathCombo->setCompletedText( newText );
+            d->url = newText;
         }
     }
     d->completionLock = false;
@@ -1208,12 +1210,12 @@ void KFileDialog::fileCompletion( const QString& file )
     d->completionLock = true;
     QString text = ops->makeCompletion( file );
     if ( !text.isEmpty() ) {
-	KCompletion *comp = ops->completionObject();
-	if ( comp->completionMode() == KGlobalSettings::CompletionPopup ||
-	     comp->completionMode() == KGlobalSettings::CompletionPopupAuto )
-	    locationEdit->setCompletedItems( comp->allMatches() );
-	else
-	    locationEdit->setCompletedText( text );
+        KCompletion *comp = ops->completionObject();
+        if ( comp->completionMode() == KGlobalSettings::CompletionPopup ||
+            comp->completionMode() == KGlobalSettings::CompletionPopupAuto )
+            locationEdit->setCompletedItems( comp->allMatches() );
+        else
+            locationEdit->setCompletedText( text );
     }
     else
         if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup ||
