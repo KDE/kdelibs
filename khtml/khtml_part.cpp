@@ -20,24 +20,23 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include "khtml_part.h"
+
 #include "khtml_factory.h"
 #include "khtml_run.h"
 #include "khtml_events.h"
 #include "khtml_find.h"
 
-#include "dom/html_document.h"
-#include "dom/dom_node.h"
+#include "dom/dom_string.h"
 #include "dom/dom_element.h"
 #include "html/html_documentimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
-#include "html/html_formimpl.h"
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
+using namespace DOM;
 
 #include "khtmlview.h"
 #include "decoder.h"
@@ -57,7 +56,6 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kfiledialog.h>
-#include <klibloader.h>
 #include <ktrader.h>
 #include <kparts/partmanager.h>
 #include <kxmlgui.h>
@@ -65,15 +63,8 @@
 
 #include <qtextcodec.h>
 
-#include <unistd.h>
 #include <qstring.h>
-#include <qfont.h>
 #include <qfile.h>
-#include <qfontinfo.h>
-#include <qobject.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qwidget.h>
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qdragobject.h>

@@ -19,48 +19,32 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include "khtmlview.moc"
+
 #include "khtml_part.h"
 #include "khtml_events.h"
 #include "khtml_settings.h"
 #include "khtml_factory.h"
 
-#include "misc/loader.h"
 #include "html/html_documentimpl.h"
-#include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
-#include "dom/dom2_range.h"
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
 #include "misc/htmlhashes.h"
-#include "xml/dom_textimpl.h"
 
-#include <qdragobject.h>
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qpainter.h>
 #include <qpalette.h>
 #include <qevent.h>
 #include <qdatetime.h>
-#include <qclipboard.h>
-
-#include <kapp.h>
-#include <kmimetype.h>
-#include <kimageio.h>
-#include <kdebug.h>
-#include <kglobalsettings.h>
-#include <kcursor.h>
-
-#include <qlist.h>
-#include <qrect.h>
-#include <qscrollview.h>
-#include <qwidget.h>
-#include <qapplication.h>
-
 #include <qprinter.h>
 #include <qpaintdevicemetrics.h>
 
+#include <kimageio.h>
+#include <kdebug.h>
+
+// #### don't hardcode!!!!!!
 #define SCROLLBARWIDTH 16
 
 #define PAINT_BUFFER_HEIGHT 150
@@ -380,7 +364,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    kdDebug( 6000 ) << "\nmouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
+    kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
     DOMString url;
     NodeImpl *innerNode=0;

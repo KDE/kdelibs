@@ -27,9 +27,8 @@
 
 // qt includes and classes
 #include <qscrollview.h>
-#include <qstring.h>
-#include <qlist.h>
 
+template<class C> class QList;
 
 class QPainter;
 
