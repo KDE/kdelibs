@@ -222,12 +222,12 @@ KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, 
   // Look at mode_t first
   if ( S_ISDIR( _mode ) )
   {
-    // Special hack for local files. We want to see wether we
+    // Special hack for local files. We want to see whether we
     // are allowed to enter the directory
     if ( _is_local_file )
     {
-      string path ( _url.path( 0 ) );
-      if ( access( path.c_str(), R_OK ) == -1 )
+      QString path ( _url.path( 0 ) );
+      if ( access( path.data(), R_OK ) == -1 )
 	return find( "inode/directory-locked" );
     }
     return find( "inode/directory" );
@@ -244,15 +244,19 @@ KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, 
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
     return find( "application/x-executable" );
       
-  string path ( _url.path( 0 ) );
+  QString path ( _url.path( 0 ) );
   
   // Try to find it out by looking at the filename
   assert( s_mapTypes );
   QDictIterator<KMimeType> it( *s_mapTypes );
   for( ; it.current() != 0L; ++it )
-    if ( it.current()->matchFilename( path.c_str() ) )
+    if ( it.current()->matchFilename( path.data() ) )
       return it.current();
   
+  // Another filename binding, hardcoded, is .kdelnk :
+  if ( !strcmp(path.right(7), ".kdelnk") )
+    return find( "application/x-kdelnk" );
+
   if ( !_is_local_file || _fast_mode )
   {
     QString path = _url.path();
@@ -265,8 +269,8 @@ KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, 
     return find( "application/octet-stream" );
   
   // Do some magic for local files
-  kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.c_str() );
-  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.c_str() );
+  kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
+  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
   /** DEBUG code **/
   /* assert( result );
   assert( result->mimeType() );
