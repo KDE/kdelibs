@@ -22,3 +22,5 @@ AC_MSG_RESULT($kde_cv_shortsetgroups)
 if test "$kde_cv_shortsetgroups" = "yes"; then
     AC_DEFINE(HAVE_SHORTSETGROUPS,1,[if setgroups() takes short *as second arg])
 fi
+
+AC_CHECK_HEADER(arpa/nameser8_compat.h)

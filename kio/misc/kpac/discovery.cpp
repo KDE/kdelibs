@@ -19,6 +19,7 @@
 
 // $Id$
 
+
 #include "config.h"
 
 #include <netdb.h>
@@ -30,6 +31,9 @@
 #include <netinet/in.h>
 #endif
 #include <arpa/nameser.h>
+#ifdef HAVE_ARPA_NAMESER8_COMPAT_H
+#include <arpa/nameser8_compat.h>
+#endif
 #include <resolv.h>
 #include <sys/utsname.h>
 
