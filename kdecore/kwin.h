@@ -130,6 +130,8 @@ public:
      * user action, it won't be activated after being shown.
      * The most common case is the special value 0 which means
      * not to activate the window after being shown.
+     *
+     * @since 3.2
      */
     static void setUserTime( WId win, long time );
 
@@ -226,6 +228,7 @@ public:
      * @param scale if true the icon will be scaled to the desired size. Otherwise the
      *        icon will not be modified.
      * @param flags OR-ed flags from the IconSource enum
+     * @since 3.2
      */
     static QPixmap icon( WId win, int width, int height, bool scale, int flags );
 
@@ -371,12 +374,14 @@ public:
 
     /**
      * Returns true if the WM announces which actions it allows for windows.
+     * @since 3.2
      */
     static bool allowedActionsSupported();
 
     /**
      * Function that reads and returns the contents of the given text
      * property (WM_NAME, WM_ICON_NAME,...).
+     * @since 3.2
      */
     static QString readNameProperty( WId window, unsigned long atom );
 
@@ -434,6 +439,7 @@ private:
 
 /**
  * Information about a window.
+ * @since 3.2
  */
 class KWin::WindowInfo
 {
