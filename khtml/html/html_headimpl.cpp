@@ -407,8 +407,6 @@ void HTMLStyleElementImpl::reparseSheet()
         text += static_cast<CharacterDataImpl*>(n)->data();
     }
 
-    kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
-
     if(m_sheet)
 	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this);
