@@ -543,6 +543,8 @@ void Kded::registerWindowId(long windowId)
 {
   m_globalWindowIdList.replace(windowId, &windowId);
   QCString sender = callingDcopClient()->senderId();
+  if( sender.isEmpty()) // local call
+      sender = callingDcopClient()->appId();
   QValueList<long> *windowIds = m_windowIdList.find(sender);
   if (!windowIds)
   {
@@ -563,6 +565,8 @@ void Kded::unregisterWindowId(long windowId)
 {
   m_globalWindowIdList.remove(windowId);
   QCString sender = callingDcopClient()->senderId();
+  if( sender.isEmpty()) // local call
+      sender = callingDcopClient()->appId();
   QValueList<long> *windowIds = m_windowIdList.find(sender);
   if (windowIds)
   {
