@@ -354,6 +354,8 @@ void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfigBase *c
 
         if ( s.isNull() || s.startsWith( "default" ))
             (*it).aConfigKeyCode = useFourModifierKeys() ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+        else if( s == "none" )
+            (*it).aConfigKeyCode = 0;
         else
             (*it).aConfigKeyCode = stringToKey( s );
 
@@ -473,9 +475,10 @@ void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig
 
             if ( ( *it ).aConfigKeyCode != ( *it ).aDefaultKeyCode )
             {
-                pConfig->writeEntry( it.key(),
-                                     KAccel::keyToString( (*it).aConfigKeyCode, false),
-                                     true, global );
+                QString keyStr = (*it).aConfigKeyCode ?
+                                  KAccel::keyToString( (*it).aConfigKeyCode, false ) :
+                                  "none";
+                pConfig->writeEntry( it.key(), keyStr, true, global );
             }
             else
             { // global ones must be written
@@ -661,6 +664,8 @@ void KAccel::readModifierMapping()
 		kdDebug(125) << QString( "%1: keyModMaskX = 0x%2\n" ).arg(g_aModKeys[i].keyName).arg(g_aModKeys[i].keyModMaskX, 0, 16);
 
 	XFreeModifiermap(xmk);
+
+	ModKeyXQt::bInitialized = true;
 }
 
 QString KAccel::keyToString( int keyCombQt, bool bi18n )
@@ -1033,8 +1038,18 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 
 		// Get X modifier flags
 		for( int i = 0; i < MOD_KEYS; i++ ) {
-			if( keyCombQt & g_aModKeys[i].keyModMaskQt )
-				keyModX |= g_aModKeys[i].keyModMaskX;
+			if( keyCombQt & g_aModKeys[i].keyModMaskQt ) {
+				if( g_aModKeys[i].keyModMaskX )
+					keyModX |= g_aModKeys[i].keyModMaskX;
+				// Qt key calls for a modifier which the current
+				//  X modifier map doesn't support.
+				else {
+					keySymX = 0;
+					keyCodeX = 0;
+					keyModX = 0;
+					break;
+				}
+			}
 		}
 	}
 
@@ -1075,10 +1090,34 @@ uint KAccel::keyModXShift()		{ return ShiftMask; }
 uint KAccel::keyModXLock()		{ return LockMask; }
 uint KAccel::keyModXCtrl()		{ return ControlMask; }
 uint KAccel::keyModXAlt()		{ return g_aModKeys[ModAltIndex].keyModMaskX; }
-uint KAccel::keyModXNumLock()		{ return g_aModKeys[ModNumLockIndex].keyModMaskX; }
-uint KAccel::keyModXModeSwitch()	{ return g_aModKeys[ModModeSwitchIndex].keyModMaskX; }
-uint KAccel::keyModXMeta()		{ return g_aModKeys[ModMetaIndex].keyModMaskX; }
-uint KAccel::keyModXScrollLock()	{ return g_aModKeys[ModScrollLockIndex].keyModMaskX; }
+
+uint KAccel::keyModXNumLock()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return g_aModKeys[ModNumLockIndex].keyModMaskX;
+}
+
+uint KAccel::keyModXModeSwitch()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return g_aModKeys[ModModeSwitchIndex].keyModMaskX;
+}
+
+uint KAccel::keyModXMeta()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return g_aModKeys[ModMetaIndex].keyModMaskX;
+}
+
+uint KAccel::keyModXScrollLock()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return g_aModKeys[ModScrollLockIndex].keyModMaskX;
+}
 
 uint KAccel::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
 uint KAccel::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
