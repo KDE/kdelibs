@@ -320,29 +320,26 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 				       bool create) const
 {
     QString local = QDir::homeDirPath() + "/.kde/";
-    int length = local.length();
     struct stat st;
 
-    QStringList candidates = getResourceDirs(type);
-    for (QStringList::ConstIterator it = candidates.begin();
-         it != candidates.end(); it++) 
-    {
-	if ((*it).left(length) == local) {
-	    // Check for existance of typed directory + suffix
-	    QString fullPath = *it + suffix;
-	    if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
-                if(!create) {
-                    debug("save location %s doesn't exist", fullPath.ascii());
-                    return local;
-                }
-                if(!makeDir(fullPath)) {
-                    debug("failed to create %s", fullPath.ascii());
-                    return local;
-                }
-            }
-            return fullPath;
+    QStringList *dirs = relatives.find(type);
+
+    if (dirs) {
+      // Check for existance of typed directory + suffix
+      QString fullPath = local + dirs->last() + suffix;
+      if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+	if(!create) {
+	  debug("save location %s doesn't exist", fullPath.ascii());
+	  return local;
 	}
+	if(!makeDir(fullPath)) {
+	  debug("failed to create %s", fullPath.ascii());
+	  return local;
+	}
+      }
+      return fullPath;
     }
+
     debug("couldn't find save location for type %s", type.ascii());
     return local;
 }
