@@ -460,7 +460,7 @@ void KListView::dropEvent(QDropEvent* event)
 			{
 				if (!i->isSelected())
 					continue;
-				// do something
+				moveItem(i, 0, afterme);
 				afterme=i;
 			}		
 		}	
@@ -649,52 +649,23 @@ QList<QListViewItem> KListView::selectedItems() const
 	return list;
 }
 
-/*
-class QListViewItem
+
+void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after)
 {
-    int ownHeight;
-    int maybeTotalHeight;
-    int nChildren;
-
-    uint lsc: 14;
-    uint lso: 1;
-    uint open : 1;
-    uint selected : 1;
-    uint selectable: 1;
-    uint configured: 1;
-    uint expandable: 1;
-    uint is_root: 1;
-
-    QListViewItem * parentItem;
-    QListViewItem * siblingItem;
-    QListViewItem * childItem;
-
-    void * columns;
-};
-*/
-
-void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*parent*/, QListViewItem */*after*/)
-{
-/*	if ( item->parentItem && item->olderSibling && olderSibling->parentItem == parentItem && olderSibling != this )
-	{
-		if (item->parentItem->childItem == this )
-		{
-			parentItem->childItem = siblingItem;
-		}
-		else
-		{
-			QListViewItem * i = parentItem->childItem;
-			while( i && i->siblingItem != this )
-				i = i->siblingItem;
-			if ( i )
-			i->siblingItem = siblingItem;
-		}
-		siblingItem = olderSibling->siblingItem;
-		olderSibling->siblingItem = this;
-	}
-*/
-
-
+	// Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
+	// in here, without ever deleting the item.
+	if (item->parent())
+		item->parent()->takeItem(item);
+	else
+		takeItem(item);
+		
+	if (parent)
+		parent->insertItem(item);
+	else
+		insertItem(item);
+	
+	if (after)
+		item->moveToJustAfter(after);
 }
 
 void KListView::dragEnterEvent(QDragEnterEvent *event)

@@ -20,7 +20,7 @@
 #define KLISTVIEW_H
 
 #ifdef CHEAT
-#define private protected
+#define private public
 #include <qlistview.h>
 #undef private
 #else
