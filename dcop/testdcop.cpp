@@ -46,8 +46,8 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     reply << (Q_INT8) 1;
     return true;
   }
-  if (fun == "isAliveSlot()") {
-    qDebug("isAliveSlot()");
+  if (fun == "isAliveSlot(int)") {
+    qDebug("isAliveSlot(int)");
     return true;
   }
 
@@ -70,11 +70,14 @@ int main(int argc, char **argv)
   if ( client->isApplicationRegistered( app.name() ) )
       qDebug("indeed, we are registered!");
 
-  client->emitDCOPSignal("alive()", QByteArray());
+  QDataStream dataStream( data, IO_WriteOnly );
+  dataStream << (int) 43;
+  client->emitDCOPSignal("alive(int,QCString)", data);
 
   MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
-  client->connectDCOPSignal("", "alive()", "object1", "isAliveSlot()", false);
+  bool connectResult = client->connectDCOPSignal("", "alive(int , QCString)", "object1", "isAliveSlot(int)", false);
+  qDebug("connectDCOPSignal returns %s", connectResult ? "true" : "false");
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;

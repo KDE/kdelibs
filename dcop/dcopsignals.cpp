@@ -82,6 +82,31 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
                        const QCString &slot, bool Volatile)
 {
    // TODO: Check if signal and slot match
+   QCString signalArgs, slotArgs;
+   int i,j;
+   i = signal.find('(');
+   if (i < 0) return false;
+   signalArgs = signal.mid(i+1);
+   j = signalArgs.find(')');
+   if (j < 0) return false;
+   signalArgs.truncate(j);
+   i = slot.find('(');
+   if (i < 0) return false;
+   slotArgs = slot.mid(i+1);
+   j = slotArgs.find(')');
+   if (j < 0) return false;
+   slotArgs.truncate(j);
+
+   if(signalArgs != slotArgs)
+   {
+      // Maybe the signal has more arguments than the slot...
+      if (signalArgs.length() <= slotArgs.length())
+         return false;
+      if ((slotArgs.length() > 0) && (signalArgs[slotArgs.length()] != ','))
+         return false;
+      if (signalArgs.left(slotArgs.length()) != slotArgs)
+         return false;
+   }
 
    DCOPConnection *senderConn = 0;
    if (Volatile)

@@ -915,7 +915,7 @@ qDebug("DCOPServer: connectSignal(sender = %s signal = %s recvObj = %s slot = %s
         bool b = dcopSignals->connectSignal(sender, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
-        reply << b;
+        reply << (Q_INT8) (b?1:0);
         return TRUE;
     } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCSQtring)") {
         DCOPConnection* conn = clients.find( iceConn );
@@ -928,7 +928,7 @@ qDebug("DCOPServer: disconnectSignal(sender = %s signal = %s recvObj = %s slot =
         bool b = dcopSignals->disconnectSignal(sender, signal, conn, receiverObj, slot);
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
-        reply << b;
+        reply << (Q_INT8) (b?1:0);
         return TRUE;
     }   
 

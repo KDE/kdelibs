@@ -273,8 +273,9 @@ class DCOPClient : public QObject
    * at that time.
    *
    * @return false if a connection could not be established. 
-   * This will only be the case when @p Volatile is true and @p sender 
-   * does not exist.
+   * This will be the case when 
+   * @li @p Volatile is true and @p sender  does not exist.
+   * @li @p signal and @p slot do not have matching arguments.
    */
   bool connectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
