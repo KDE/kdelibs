@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk A. Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -60,88 +61,119 @@ RenderFormElement::RenderFormElement(RenderStyle *style, QScrollView *view,
 
 RenderFormElement::~RenderFormElement()
 {
-    if(m_form) m_form->removeFormElement(this);
+     if(m_form) m_form->removeFormElement(this);
 }
 
 QString RenderFormElement::encodeString( QString e )
 {
-	static const char *safe = "$-._!*(),"; /* RFC 1738 */
-	unsigned pos = 0;
-	QString encoded;
-	char buffer[5];
+    static const char *safe = "$-._!*(),"; /* RFC 1738 */
+    unsigned pos = 0;
+    QString encoded;
+    char buffer[5];
 
-	while ( pos < e.length() )
-	{
-		QChar c = e[pos];
+    while ( pos < e.length() )
+    {
+        QChar c = e[pos];
 
-		if ( (( c >= 'A') && ( c <= 'Z')) ||
-		     (( c >= 'a') && ( c <= 'z')) ||
-		     (( c >= '0') && ( c <= '9')) ||
-		     (strchr(safe, c))
-		   )
-		{
-			encoded += c;
-		}
-		else if ( c == ' ' )
-		{
-			encoded += '+';
-		}
-		else if ( c == '\n' )
-		{
-			encoded += "%0D%0A";
-		}
-		else if ( c != '\r' )
-		{
-			sprintf( buffer, "%%%02X", (int)c );
-			encoded += buffer;
-		}
-		pos++;
-	}
+        if ( (( c >= 'A') && ( c <= 'Z')) ||
+             (( c >= 'a') && ( c <= 'z')) ||
+             (( c >= '0') && ( c <= '9')) ||
+             (strchr(safe, c))
+            )
+        {
+            encoded += c;
+        }
+        else if ( c == ' ' )
+        {
+            encoded += '+';
+        }
+        else if ( c == '\n' )
+        {
+            encoded += "%0D%0A";
+        }
+        else if ( c != '\r' )
+        {
+            sprintf( buffer, "%%%02X", (int)c );
+            encoded += buffer;
+        }
+        pos++;
+    }
 
-	return encoded;
+    return encoded;
 }
 
 QString RenderFormElement::decodeString( QString e )
 {
-	unsigned int pos = 0;
-	unsigned int len = e.length();
-	QString decoded;
+    unsigned int pos = 0;
+    unsigned int len = e.length();
+    QString decoded;
 
-	while ( pos < len )
-	{
-	     if (e[pos] == QChar('%'))
-	     {
-	         if (pos+2 < len)
-	         {
-		     DOMString buffer(e.unicode()+pos+1, 2);
-		     bool ok;
-	             unsigned char val = buffer.string().toInt(&ok, 16);
-	             if (((char) val) != '\r')
-	             {
-	                 decoded += (char) val;
-	             }
-	         }
-	         else
-	         {
-	             decoded += e[pos];
-	         }
-	     }
-	     else if (e[pos] == '+')
-	     {
-	       decoded += ' ';
-	     }
-	     else
-	     {
-	       decoded += e[pos];
-	     }
-	     pos++;
-	}
-	return decoded;
+    while ( pos < len )
+    {
+        if (e[pos] == QChar('%'))
+        {
+            if (pos+2 < len)
+            {
+                DOMString buffer(e.unicode()+pos+1, 2);
+                bool ok;
+                unsigned char val = buffer.string().toInt(&ok, 16);
+                if (((char) val) != '\r')
+                {
+                    decoded += (char) val;
+                }
+            }
+            else
+            {
+                decoded += e[pos];
+            }
+        }
+        else if (e[pos] == '+')
+        {
+            decoded += ' ';
+        }
+        else
+        {
+            decoded += e[pos];
+        }
+        pos++;
+    }
+    return decoded;
 }
+
+void RenderFormElement::layout(bool)
+{
+    printf("inside RenderFormElement::layout()\n");
+
+    // honor style sheet stuff
+    int h = 0;
+
+#if 0
+    if(parent()) {
+        if((h = m_style->width().width(containingBlockWidth())) > 0) {
+            printf("overwriting width to %d\n", h);
+            m_width = h;
+        }
+
+
+        if((h = m_style->height().width(containingBlockHeight())) > 0) {
+            printf("overwriting height to %d\n", h);
+            m_height = h;
+        }
+    }
+#endif
+
+    // now Layout the stuff
+    if(m_widget)
+        m_widget->resize(m_width, m_height);
+}
+
 
 void RenderFormElement::calcMinMaxWidth()
 {
     layout(false);
+
+    printf("inside RenderFormElement::calcMinMaxWidth()\n");
+
     m_minWidth = m_width;
     m_maxWidth = m_width;
 }
@@ -158,13 +190,13 @@ void RenderButton::layout(bool)
 {
     QSize s(0, 0);
 
-    if(m_widget) {
+    if(m_widget)
         s = m_widget->sizeHint();
-        m_widget->resize(s);
-    }
 
     m_height = s.height();
     m_width = s.width();
+
+    RenderFormElement::layout(false);
 }
 
 
@@ -207,7 +239,7 @@ QString RenderCheckBox::encoding()
     {
 	encoding = encodeString( m_name.string() );
 	encoding += '=';
-	encoding += encodeString( m_value.string() );
+	encoding += m_value.isEmpty() ? QString("on") : encodeString( m_value.string() );
     }
     return encoding;
 }
@@ -231,14 +263,6 @@ RenderRadioButton::RenderRadioButton(RenderStyle *style, QScrollView *view,
     : RenderButton(style, view, form)
 {
     QRadioButton *b = new QRadioButton(view->viewport());
-#if 0
-    QPalette p(b->palette());
-
-    p.setBrush(QColorGroup::Background, QBrush(NoBrush));
-
-    b->setPalette(p);
-#endif
-
 
     m_widget = b;
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -280,6 +304,7 @@ RenderSubmitButton::RenderSubmitButton(RenderStyle *style, QScrollView *view,
 {
     QPushButton *p = new QPushButton(view->viewport());
     m_widget = p;
+
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
 }
@@ -315,8 +340,6 @@ void RenderSubmitButton::setValue(const DOMString &value)
 	static_cast<QPushButton *>(m_widget)->setText(m_value.string());
     else
 	static_cast<QPushButton *>(m_widget)->setText(i18n("Submit Query"));
-    calcMinMaxWidth();
-    if(m_parent) m_parent->updateSize();
 }
 
 void RenderSubmitButton::reset()
@@ -347,12 +370,10 @@ void RenderImageButton::setPixmap( const QPixmap &p )
 {
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
-    //printf("Image: recalculating layout\n");
     layout(false);
-    if(m_parent) m_parent->updateSize();	
+    m_widget->resize(m_width, m_height);
 
-    // ###
-    //if(view) view->print(this);
+    if(m_parent) m_parent->updateSize();	
 }
 
 
@@ -400,7 +421,6 @@ RenderLineEdit::RenderLineEdit(RenderStyle *style, QScrollView *view, HTMLFormEl
     : RenderFormElement(style, view, form)
 {
     QLineEdit *edit = new QLineEdit(view);
-    edit->setFont(m_style->font());
     connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
 
     if(maxLen > 0) edit->setMaxLength(maxLen);
@@ -417,12 +437,9 @@ void RenderLineEdit::slotReturnPressed()
 
 void RenderLineEdit::setValue(const DOMString &value)
 {
-    printf("RenderLineEdit::setValue(): %s\n", value.string().ascii());
     m_value = value;
     if(m_value != 0)
 	static_cast<QLineEdit *>(m_widget)->setText(m_value.string());
-    calcMinMaxWidth();
-    if(m_parent) m_parent->updateSize();
 }
 
 QString RenderLineEdit::encoding()
@@ -436,7 +453,7 @@ QString RenderLineEdit::encoding()
     return encoding;
 }
 
-void RenderLineEdit::layout(bool)
+void RenderLineEdit::layout(bool deep)
 {
     QFontMetrics fm( m_widget->font() );
     QSize s;
@@ -452,10 +469,11 @@ void RenderLineEdit::layout(bool)
         s = QSize( w + 4, h + 4 );
 
     static_cast<QLineEdit*>(m_widget)->setReadOnly(m_readonly);
-    m_widget->resize(s);
 
-    m_height = m_widget->height();
-    m_width = m_widget->width();
+    m_height = s.height();
+    m_width = s.width();
+
+    RenderFormElement::layout(false);
 }
 
 void RenderLineEdit::reset()
@@ -488,7 +506,6 @@ RenderFileButton::RenderFileButton(RenderStyle *style, QScrollView *view,
     : RenderFormElement(style, view, form)
 {
     QLineEdit *edit = new QLineEdit(view);
-    edit->setFont(m_style->font());
 
     m_widget = edit;
 }
@@ -499,10 +516,12 @@ RenderFileButton::~RenderFileButton()
 
 void RenderFileButton::layout( bool )
 {
-    m_widget->resize(m_widget->sizeHint());
+    QSize s(m_widget->sizeHint());
 
-    m_height = m_widget->height();
-    m_width = m_widget->width();
+    m_height = s.height();
+    m_width = s.width();
+
+    RenderFormElement::layout(false);
 }
 
 void RenderFileButton::reset()
@@ -560,8 +579,6 @@ RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
     }
     else {
         QComboBox *w = new QComboBox(view);
-        //    w->setFont(style->font());
-
         m_size = 1;
         m_widget = w;
     }
@@ -584,13 +601,17 @@ void RenderSelect::layout( bool )
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = QMAX(m_size, 1)*height + 2*w->frameWidth();
 
-        m_widget->resize(width, height);
+        m_width = width;
+        m_height = height;
     }
     else
-        m_widget->resize(m_widget->sizeHint());
+    {
+        QSize s(m_widget->sizeHint());
+        m_width = s.width();
+        m_height = s.height();
+    }
 
-    m_width  = m_widget->width();
-    m_height = m_widget->height();
+    RenderFormElement::layout(false);
 }
 
 void RenderSelect::close()
@@ -764,8 +785,7 @@ RenderTextArea::RenderTextArea(int wrap, RenderStyle *style, QScrollView *view,
                                HTMLFormElementImpl *form)
     : RenderFormElement(style, view, form)
 {
-    QMultiLineEdit *edit = new TextAreaWidget(wrap, view);
-    edit->setFont(m_style->font());
+    TextAreaWidget *edit = new TextAreaWidget(wrap, view);
 
     m_widget = edit;
 }
@@ -787,13 +807,10 @@ void RenderTextArea::layout( bool )
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 
-    w->resize( size );
+    m_width  = size.width();
+    m_height = size.height();
 
-    m_width  = w->width();
-    m_height = w->height();
-
-//    setLayouted();
-//    setBlocking(false);
+    RenderFormElement::layout(false);
 }
 
 void RenderTextArea::reset()
@@ -808,7 +825,7 @@ QString RenderTextArea::encoding()
     if(!m_name.isEmpty()) {
         encoding = encodeString( m_name.string() );
         encoding += '=';
-        encoding += encodeString( static_cast<QMultiLineEdit *>(m_widget)->text() );
+        encoding += encodeString( static_cast<TextAreaWidget *>(m_widget)->text() );
     }
 
     return encoding;
