@@ -73,6 +73,8 @@ public:
   KOSSL *kossl;
   bool m_bUseEGD;
   QString m_EGDPath;
+  bool m_bSendX509;
+  bool m_bPromptX509;
 };
 
 //
@@ -215,6 +217,10 @@ void KSSLSettings::load() {
   d->m_bUseEGD = m_cfg->readBoolEntry("UseEGD", false);
   d->m_EGDPath = m_cfg->readEntry("EGDPath");
 
+  m_cfg->setGroup("Auth");
+  d->m_bSendX509 = ("send" == m_cfg->readEntry("AuthMethod", ""));
+  d->m_bPromptX509 = ("prompt" == m_cfg->readEntry("AuthMethod", ""));
+
   #ifdef HAVE_SSL
 
 
@@ -304,6 +310,8 @@ bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
 bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }
 bool KSSLSettings::warnOnExpired() const     { return m_bWarnExpired; }
 bool KSSLSettings::useEGD() const            { return d->m_bUseEGD;      }
+bool KSSLSettings::autoSendX509() const      { return d->m_bSendX509; }
+bool KSSLSettings::promptSendX509() const    { return d->m_bPromptX509; }
 
 void KSSLSettings::setTLSv1(bool enabled) { m_bUseTLSv1 = enabled; }
 void KSSLSettings::setSSLv2(bool enabled) { m_bUseSSLv2 = enabled; }

@@ -50,6 +50,9 @@ public:
   void setSSLv2(bool enabled);
   void setSSLv3(bool enabled);
 
+  bool autoSendX509() const;
+  bool promptSendX509() const;
+
   // Returns the OpenSSL cipher list for selecting the list of ciphers to
   // use in a connection
   QString getCipherList();
