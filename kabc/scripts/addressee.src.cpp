@@ -2,6 +2,7 @@
     This file is part of libkabc.
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (c) 2005 Ingo Kloecker <kloecker@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -196,7 +197,7 @@ void Addressee::setNameFromString( const QString &str )
   QString spaceStr = " ";
   QString emptyStr = "";
   AddresseeHelper *helper = AddresseeHelper::self();
-      
+
   int i = str.find( ',' );
   if( i < 0 ) {
     QStringList parts = QStringList::split( spaceStr, str );
@@ -817,61 +818,158 @@ QStringList Addressee::customs() const
 void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
                                    QString &email)
 {
-  int startPos, endPos, len;
-  QString partA, partB, result;
-  char endCh = '>';
+  // This is a simplified version of KPIM::splitAddress().
 
-  startPos = rawEmail.find( '<' );
-  if ( startPos < 0 ) {
-    startPos = rawEmail.find( '(' );
-    endCh = ')';
+  fullName = "";
+  email = "";
+  if ( rawEmail.isEmpty() )
+    return; // KPIM::AddressEmpty;
+
+  // The code works on 8-bit strings, so convert the input to UTF-8.
+  QCString address = rawEmail.utf8();
+
+  QCString displayName;
+  QCString addrSpec;
+  QCString comment;
+
+  // The following is a primitive parser for a mailbox-list (cf. RFC 2822).
+  // The purpose is to extract a displayable string from the mailboxes.
+  // Comments in the addr-spec are not handled. No error checking is done.
+
+  enum { TopLevel, InComment, InAngleAddress } context = TopLevel;
+  bool inQuotedString = false;
+  int commentLevel = 0;
+  bool stop = false;
+
+  for ( char* p = address.data(); *p && !stop; ++p ) {
+    switch ( context ) {
+    case TopLevel : {
+      switch ( *p ) {
+      case '"' : inQuotedString = !inQuotedString;
+                 displayName += *p;
+                 break;
+      case '(' : if ( !inQuotedString ) {
+                   context = InComment;
+                   commentLevel = 1;
+                 }
+                 else
+                   displayName += *p;
+                 break;
+      case '<' : if ( !inQuotedString ) {
+                   context = InAngleAddress;
+                 }
+                 else
+                   displayName += *p;
+                 break;
+      case '\\' : // quoted character
+                 displayName += *p;
+                 ++p; // skip the '\'
+                 if ( *p )
+                   displayName += *p;
+                 else
+                   //return KPIM::UnexpectedEnd;
+                   goto ABORT_PARSING;
+                 break;
+      case ',' : if ( !inQuotedString ) {
+                   //if ( allowMultipleAddresses )
+                   //  stop = true;
+                   //else
+                   //  return KPIM::UnexpectedComma;
+                   goto ABORT_PARSING;
+                 }
+                 else
+                   displayName += *p;
+                 break;
+      default :  displayName += *p;
+      }
+      break;
+    }
+    case InComment : {
+      switch ( *p ) {
+      case '(' : ++commentLevel;
+                 comment += *p;
+                 break;
+      case ')' : --commentLevel;
+                 if ( commentLevel == 0 ) {
+                   context = TopLevel;
+                   comment += ' '; // separate the text of several comments
+                 }
+                 else
+                   comment += *p;
+                 break;
+      case '\\' : // quoted character
+                 comment += *p;
+                 ++p; // skip the '\'
+                 if ( *p )
+                   comment += *p;
+                 else
+                   //return KPIM::UnexpectedEnd;
+                   goto ABORT_PARSING;
+                 break;
+      default :  comment += *p;
+      }
+      break;
+    }
+    case InAngleAddress : {
+      switch ( *p ) {
+      case '"' : inQuotedString = !inQuotedString;
+                 addrSpec += *p;
+                 break;
+      case '>' : if ( !inQuotedString ) {
+                   context = TopLevel;
+                 }
+                 else
+                   addrSpec += *p;
+                 break;
+      case '\\' : // quoted character
+                 addrSpec += *p;
+                 ++p; // skip the '\'
+                 if ( *p )
+                   addrSpec += *p;
+                 else
+                   //return KPIM::UnexpectedEnd;
+                   goto ABORT_PARSING;
+                 break;
+      default :  addrSpec += *p;
+      }
+      break;
+    }
+    } // switch ( context )
   }
 
-  if ( startPos < 0 ) {
-    // We couldn't find any separators, so we assume the whole string
-    // is the email address
-    email = rawEmail;
-    fullName = "";
-  } else {
-    // We have a start position, try to find an end
-    endPos = rawEmail.find( endCh, startPos + 1 );
+ABORT_PARSING:
+  displayName = displayName.stripWhiteSpace();
+  comment = comment.stripWhiteSpace();
+  addrSpec = addrSpec.stripWhiteSpace();
 
-    if ( endPos < 0 ) {
-      // We couldn't find the end of the email address. We can only
-      // assume the entire string is the email address.
-      email = rawEmail;
-      fullName = "";
-    } else {
-      // We have a start and end to the email address
+  fullName = QString::fromUtf8( displayName );
+  email = QString::fromUtf8( addrSpec );
 
-      // Grab the name part
-      QString left = rawEmail.left( startPos ).stripWhiteSpace();
-      // grab the email part
-      QString right = rawEmail.mid( startPos + 1, endPos - startPos - 1 )
-                              .stripWhiteSpace();
+  // check for errors
+  if ( inQuotedString )
+    return; // KPIM::UnbalancedQuote;
+  if ( context == InComment )
+    return; // KPIM::UnbalancedParens;
+  if ( context == InAngleAddress )
+    return; // KPIM::UnclosedAngleAddr;
 
-      // Either "Name <email>" or "email (Name)"
-      if ( endCh == '>' ) {
-        fullName = left;
-        email = right;
-      } else { // endCh == ')'
-        fullName = right;
-        email = left;
-      }
-
-      // Check that we do not have any extra characters on the end of the
-      // strings
-      len = fullName.length();
-      if ( fullName[ 0 ] == '"' && fullName[ len - 1 ] == '"' )
-        fullName = fullName.mid( 1, len - 2 );
-      else if ( fullName[ 0 ] == '(' && fullName[ len - 1 ] == ')' )
-        fullName = fullName.mid( 1, len - 2 );
-
-      len = email.length();
-      if ( email[ 0 ] == '<' && email[ len - 1 ] == '>' )
-        email = email.mid( 1, len - 2 );
+  if ( addrSpec.isEmpty() ) {
+    if ( displayName.isEmpty() )
+      return; // KPIM::NoAddressSpec;
+    else {
+      //addrSpec = displayName;
+      //displayName.truncate( 0 );
+      // Address of the form "foo@bar" or "foo@bar (Name)".
+      email = fullName;
+      fullName = QString::fromUtf8( comment );
     }
   }
+
+  // Check that we do not have any extra characters on the end of the
+  // strings
+  unsigned int len = fullName.length();
+  if ( fullName[ 0 ] == '"' && fullName[ len - 1 ] == '"' )
+    fullName = fullName.mid( 1, len - 2 );
 }
 
 void Addressee::setResource( Resource *resource )
