@@ -54,17 +54,15 @@ public:
 
   /**
    * Status of the light is on/off.
-   * NoOfStates gives the total number of states.
    * @short LED on/off.
    */
-  enum State { Off, On, NoOfStates };
+  enum State { Off, On };
   
   /** 
    * Shades of the lamp.
-   * NoOfShapes gives the total number of shapes.
    * @short LED shape
    */ 
-  enum Shape { NoShape, Rectangular, Circular, NoOfShapes=Circular };
+  enum Shape { Rectangular, Circular };
   
   /**
    * Display a flat, round or sunken LED.
@@ -83,11 +81,10 @@ public:
    *  @li sunken Approximately 3.3 msec per paint
    *
    * The widget will be updated on the next repaining event.
-   * NoOfLooks gives the total number Looks
    *
    * @short LED look.
    */
-  enum Look  { NoLook, Flat, Raised, Sunken, NoOfLooks=Sunken };
+  enum Look  { Flat, Raised, Sunken };
 
   /**
    * Constructs a green, round LED widget which will initially
