@@ -37,6 +37,22 @@ public:
     */
    static KOpenSSLProxy *self();
 
+   /**
+    *   Return true of libcrypto was found and loaded
+    */
+   bool hasLibCrypto() const;
+
+   /**
+    *   Return true of libssl was found and loaded
+    */
+   bool hasLibSSL() const;
+
+   /**
+    *   Destroy the class and start over - don't use this unless you know
+    *   what you are doing.
+    */
+   void destroy();
+
    // Here are the symbols that we need.
 #ifdef HAVE_SSL
 
@@ -114,7 +130,9 @@ public:
    /*
     *   SSL_set_options - manipulate SSL engine options
     *   Note: These are all mapped to SSL_ctrl so call them as the comment
-    *         specifies but know that the use SSL_ctrl
+    *         specifies but know that they use SSL_ctrl.  They are #define
+    *         so they will map to the one in this class if called as a
+    *         member function of this class.
     */
    /* long SSL_set_options(SSL *ssl, long options); */
    long    SSL_ctrl(SSL *ssl,int cmd, long larg, char *parg);

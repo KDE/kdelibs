@@ -17,6 +17,7 @@ include_HEADERS = \
 		ksslinfodlg.h            \
 		ksslutils.h              \
 		kopenssl.h               \
+		ksslall.h	 	 \
 		ksslx509map.h
  
 

@@ -83,6 +83,21 @@ static X509* (*K_X509_dup)         (X509 *) = NULL;
 #endif
 
 
+bool KOpenSSLProxy::hasLibSSL() const {
+   return _sslLib != NULL;
+}
+
+
+bool KOpenSSLProxy::hasLibCrypto() const {
+   return _cryptoLib != NULL;
+}
+
+
+void KOpenSSLProxy::destroy() {
+  delete this;
+}
+
+
 KOpenSSLProxy::KOpenSSLProxy() {
 KLibLoader *ll = KLibLoader::self();
 _ok = false;
