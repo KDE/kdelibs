@@ -570,7 +570,7 @@ void ContentData::clearContent()
     }
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
 static QString describeFont( const QFont &f)
 {
