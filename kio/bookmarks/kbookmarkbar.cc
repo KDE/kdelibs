@@ -333,6 +333,7 @@ static QString handleToolbarDragMoveEvent(
     address = a->property("address").toString();
     p->m_sepIndex = index + (atFirst ? 0 : 1);
 
+#if 0
     { // ugly workaround to fix the goto scoping problems...
         KBookmark bk = mgr->findByAddress( address );
         if (bk.isGroup()) // TODO - fix this ****!!!, manhatten distance should be used!!!
@@ -343,6 +344,7 @@ static QString handleToolbarDragMoveEvent(
             menu->popup(tb->mapToGlobal(b->geometry().center()));
         } 
     }
+#endif
 
 skipact:
     tb->insertLineSeparator(p->m_sepIndex, const_sepId);
@@ -413,8 +415,6 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
-
-    return false; // DO NOTHING FOR THE MOMENT
 
     if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) ) // FIXME, which one?
     {
