@@ -218,7 +218,7 @@ private:
  * <pre>
  *      QFont myFont;
  *      int result = KFontDialog::getFont( myFont );
- *      if ( result == KColorDialog::Accepted )
+ *      if ( result == KFontDialog::Accepted )
  *            ...
  * </pre>
  *
