@@ -139,34 +139,26 @@ namespace KDEPrivate
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<KParts::Part> )
         { 
-            // ### disabled args. enable next friday.
-            //return new T( parentWidget, widgetName, parent, name, args ); 
-            return new T( parentWidget, widgetName, parent, name ); 
+            return new T( parentWidget, widgetName, parent, name, args ); 
         }
 
         static inline T *create( QWidget *parentWidget, const char *widgetName,
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<QWidget> )
         {
-            /* ### disabled for now. breaks source compat with regexp editor. 
-               enable next friday!
             QWidget *p = dynamic_cast<QWidget *>( parent );
-            if ( !p )
-                p = parentWidget;
-            if ( !p )
+            // bail out if a parent was provided but it doesn't inherit from
+            // QWidget
+            if ( parent && !p ) 
                 return 0;
             return new T( p, name, args );
-            */
-            return new T( parent, name );
         }
 
         static inline T *create( QWidget *parentWidget, const char *widgetName,
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<QObject> )
         { 
-            // ### args disabled for now. enable next friday.
-            //return new T( parent, name, args ); 
-            return new T( parent, name ); 
+            return new T( parent, name, args ); 
         }
     };
 
