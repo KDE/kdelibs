@@ -29,11 +29,15 @@
 
 #define MAXFONTSIZES 15
 // xx-small, x-small, small, medium, large, x-large, xx-large, ...
+const int defaultXSmallFontSizes[MAXFONTSIZES] =
+  {  5, 6, 7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48 };
 const int defaultSmallFontSizes[MAXFONTSIZES] =
-  {  8,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56, 68 };
+  {  6, 7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56 };
 const int defaultMediumFontSizes[MAXFONTSIZES] =
-  {  9, 10, 11, 12, 14, 16, 20, 24, 28, 34, 40, 48, 56, 68, 82 };
+  {  7,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56, 68 };
 const int defaultLargeFontSizes[MAXFONTSIZES] =
+  {  9, 10, 11, 12, 14, 16, 20, 24, 28, 34, 40, 48, 56, 68, 82 };
+const int defaultXLargeFontSizes[MAXFONTSIZES] =
   { 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
@@ -381,12 +385,24 @@ void KHTMLSettings::resetFontSizes()
 {
     m_fontSizes.clear();
     for ( int i = 0; i < MAXFONTSIZES; i++ )
-        if( m_fontSize == 0 ) // small
-            m_fontSizes << defaultSmallFontSizes[ i ];
-        else if( m_fontSize == 2 ) // large
-            m_fontSizes << defaultLargeFontSizes[ i ];
-        else
-            m_fontSizes << defaultMediumFontSizes[ i ];
+	switch( m_fontSize ) {
+	    case -1:
+		m_fontSizes << defaultXSmallFontSizes[ i ];
+		break;
+	    case 0:
+		m_fontSizes << defaultSmallFontSizes[ i ];
+		break;
+	    case 2:
+		m_fontSizes << defaultLargeFontSizes[ i ];
+		break;
+	    case 3:
+		m_fontSizes << defaultXLargeFontSizes[ i ];
+		break;
+	    case 1:
+	    default:
+		m_fontSizes << defaultMediumFontSizes[ i ];
+		break;
+	}
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
