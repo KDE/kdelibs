@@ -93,7 +93,6 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 {
 	m_current = 0;
 	m_first = true;
-	m_msgwindow = 0;
 
 	// create widgets
 	m_printerview = new KMPrinterView(this, "PrinterView");
@@ -851,13 +850,12 @@ void KMMainView::slotUpdatePossible( bool flag )
 void KMMainView::createMessageWindow( const QString& txt, int delay )
 {
 	destroyMessageWindow();
-	m_msgwindow = new MessageWindow( txt, delay, m_printerview, "MessageWindow" );
+	MessageWindow::add( m_printerview, txt, delay );
 }
 
 void KMMainView::destroyMessageWindow()
 {
-	delete m_msgwindow;
-	m_msgwindow = 0;
+	MessageWindow::remove( m_printerview );
 }
 
 void KMMainView::slotInit()

@@ -112,7 +112,8 @@ private:
 	QStringList	m_toollist;
 	bool		m_first;
 	QBoxLayout	*m_boxlayout;
-	MessageWindow *m_msgwindow;
+	class KMainWindowPrivate;
+	KMainWindowPrivate *d;
 	KToolBar *m_menubar;
 };
 

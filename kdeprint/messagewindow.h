@@ -21,6 +21,7 @@
 #define MESSAGEWINDOW_H
 
 #include <qwidget.h>
+#include <qptrdict.h>
 
 class QLabel;
 
@@ -29,16 +30,24 @@ class MessageWindow : public QWidget
 	Q_OBJECT
 
 public:
-	MessageWindow( const QString& txt, int delay = 500, QWidget *parent = 0, const char *name = 0 );
+	~MessageWindow();
 
-	void setText( const QString& txt );
-	QString text() const;
+	static void add( QWidget *parent, const QString& txt, int delay = 500 );
+	static void change( QWidget *parent, const QString& txt );
+	static void remove( QWidget *parent );
+	static void removeAll();
 
 protected slots:
 	void slotTimer();
 
+protected:
+	MessageWindow( const QString& txt, int delay = 500, QWidget *parent = 0, const char *name = 0 );
+	void setText( const QString& txt );
+	QString text() const;
+
 private:
 	QLabel *m_text;
+	static QPtrDict<MessageWindow> m_windows;
 };
 
 #endif

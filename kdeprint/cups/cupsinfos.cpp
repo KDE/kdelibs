@@ -22,6 +22,7 @@
 #include "cupsinfos.h"
 #include "kmfactory.h"
 #include "kmtimer.h"
+#include "messagewindow.h"
 
 #include <kio/passdlg.h>
 #include <klocale.h>
@@ -93,6 +94,9 @@ const char* CupsInfos::getPasswordCB()
 	if (count_ == 0 && !password_.isEmpty()) return password_.latin1();
 	else
 	{
+		// to avoid focus/modality problem, message windows must be removed
+		MessageWindow::removeAll();
+
 		QString	msg = i18n("<p>The access to the requested resource on the CUPS server running on <b>%1</b> (port <b>%2</b>) requires a password.</p>").arg(host_).arg(port_);
 		bool ok(false);;
 		KIO::PasswordDialog	dlg(msg,login_);

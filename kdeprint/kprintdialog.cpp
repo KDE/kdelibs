@@ -77,7 +77,6 @@ public:
 	KURLRequester	*m_file;
 	QCheckBox	*m_persistent;
 	bool	m_reduced;
-	MessageWindow *m_msgwindow;
 
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;
@@ -90,7 +89,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 
 	d->m_pages.setAutoDelete(false);
 	d->m_printer = 0;
-	d->m_msgwindow = 0;
 	setCaption(i18n("Print"));
 
 	// widget creation
@@ -677,15 +675,14 @@ void KPrintDialog::slotOutputFileSelected(const QString& txt)
 void KPrintDialog::init()
 {
 	d->m_ok->setEnabled( false );
-	delete d->m_msgwindow;
-	d->m_msgwindow = new MessageWindow( i18n( "Initializing printing system..." ), 500, this, "MessageWindow" );
+	MessageWindow::remove( this );
+	MessageWindow::add( this, i18n( "Initializing printing system..." ), 500 );
 	KMFactory::self()->manager()->checkUpdatePossible();
 }
 
 void KPrintDialog::slotUpdatePossible( bool flag )
 {
-	delete d->m_msgwindow;
-	d->m_msgwindow = 0;
+	MessageWindow::remove( this );
 	if ( !flag )
 		KMessageBox::error(parentWidget(),
 			"<qt><nobr>"+
