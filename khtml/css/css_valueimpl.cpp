@@ -182,7 +182,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	}
     } else if((unsigned) pos == m_lstValues->count() )
 	{
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string() 
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 					<< "] value: [" << value.string() << "]"<< endl;
 	}
     if (m_node)
@@ -208,7 +208,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 	}
     } else if((unsigned) pos == m_lstValues->count() )
 	{
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()   
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 					<< "] value: [" << value << "]" << endl;
 	}
     if (m_node)
@@ -645,8 +645,10 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &base
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
-    // we must have a docLoader here!
-    m_image = docLoader->requestImage(url, baseurl);
+    if (docLoader)
+	m_image = docLoader->requestImage(url, baseurl);
+    else
+	m_image = khtml::Cache::requestImage(0, url, baseurl);
 
     if(m_image) m_image->ref(this);
 }
