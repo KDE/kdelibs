@@ -22,13 +22,14 @@
 
 #include <kdialogbase.h>
 
+class KPrintJob;
 class KPrintDialogPrivate;
 
 class KPrintDialog: public KDialogBase
 {
    Q_OBJECT
 public:   
-   KPrintDialog(QWidget *parent=0, bool modal = true);
+   KPrintDialog(QWidget *parent=0, KPrintJob *job = 0, bool modal = true);
    ~KPrintDialog();
 
 #if 0
@@ -36,10 +37,21 @@ public:
    void setPrinter( QPrinter * );
    QPrinter *printer() const;
 #endif
-private:
+protected:
    void addGeneralPage();
    void addPaperPage();
    void addAdvancedPage();
+   
+   /**
+    * Fill the list of available printers
+    */
+   void setAvailablePrinters();
+   
+   /**
+    * Set the settings according to the currently selected printer
+    */
+   void setPrinterSettings();
+   
    KPrintDialogPrivate *d;   
 };
 

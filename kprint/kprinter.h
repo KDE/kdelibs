@@ -52,10 +52,21 @@ public:
     */
    bool isValid();
 
+
    /**
     * Return a list of all available printers.
     */
    static QStringList allPrinters();
+
+public:
+   // APS specific functions
+
+   // We return a pointer so that we don't need to include aps.h
+   /**
+    * Internal
+    * Access function to Aps structure.
+    */
+   void * defaultAttributes();
    
 private:
    /**

@@ -20,7 +20,7 @@
 #ifndef _KPRINTJOB_H_
 #define _KPRINTJOB_H_
 
-#include <kpagesize.h>
+#include <kpapersize.h>
 
 class KPrinter;
 class KPrintJobPrivate;
@@ -49,19 +49,19 @@ public:
    const KPrinter *printer() const;
    
    /**
-    * Set the page size to use for this job.
+    * Set the paper size to use for this job.
     */
-   void setPageSize( KPageSize *pageSize);
+   void setPaperSize( KPaperSize *paperSize);
    
    /**
-    * Returns the page size to use for this job.
+    * Returns the paper size to use for this job.
     */
-   const KPageSize *pageSize() const;
+   const KPaperSize *paperSize() const;
 
    /**
-    * Returns a list of all possible page sizes for this job.
+    * Returns a list of all possible paper sizes for this job.
     */
-   KPageSize::List allPageSizes() const;   
+   KPaperSize::List allPaperSizes() const;   
 
    enum Orientation { Portrait, Landscape };
   

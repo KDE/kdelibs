@@ -27,7 +27,7 @@
 #include "aps.h"
 
 #include "kprinter.h"
-#include "kpagesize.h"
+#include "kpapersize.h"
 #include "kprintjob.h"
 
 
@@ -37,13 +37,13 @@ class KPrintJobPrivate
 public:
    KPrintJob::Orientation orientation;
    KPrinter::Ptr printer;
-   KPageSize::Ptr pageSize;
+   KPaperSize::Ptr paperSize;
 };
 
 KPrintJob::KPrintJob()
 {
   d = new KPrintJobPrivate;
-  d->printer = new KPrinter(); // Default printer
+  d->printer = new KPrinter("ap"); // Default printer
 }
 
 KPrintJob::~KPrintJob()
@@ -55,7 +55,7 @@ void
 KPrintJob::setPrinter( KPrinter *printer)
 {
    d->printer = printer;
-   d->pageSize = KPageSize::defaultPageSize(d->printer);
+   d->paperSize = KPaperSize::defaultPaperSize(d->printer);
 }
 
 const KPrinter *
@@ -65,21 +65,21 @@ KPrintJob::printer() const
 }
 
 void
-KPrintJob::setPageSize( KPageSize *pageSize)
+KPrintJob::setPaperSize( KPaperSize *paperSize)
 {
-   d->pageSize = pageSize;
+   d->paperSize = paperSize;
 }
 
-const KPageSize *
-KPrintJob::pageSize() const 
+const KPaperSize *
+KPrintJob::paperSize() const 
 {
-   return d->pageSize;
+   return d->paperSize;
 }
 
-KPageSize::List
-KPrintJob::allPageSizes() const
+KPaperSize::List
+KPrintJob::allPaperSizes() const
 {
-   return KPageSize::allPageSizes(d->printer);
+   return KPaperSize::allPaperSizes(d->printer);
 }
 
 void

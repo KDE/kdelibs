@@ -17,49 +17,59 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KPAGESIZE_H_
-#define _KPAGESIZE_H_
+#ifndef _KPAPERSIZE_H_
+#define _KPAPERSIZE_H_
 
 #include <qvaluelist.h>
 #include <ksharedptr.h>
 
 class KPrinter;
-class KPageSizePrivate;
+class KPaperSizePrivate;
 
-class KPageSize : public KShared
+class KPaperSize : public KShared
 {
 public:   
-   typedef KSharedPtr<KPageSize> Ptr;
+   typedef KSharedPtr<KPaperSize> Ptr;
    typedef QValueList<Ptr> List;
    friend Ptr;
 
    /**
     * Default constructor.
     */
-   KPageSize();
+   KPaperSize();
 
    /**
-    * The name of this page size.
+    * The name of this paper size.
     */
    QString name() const;
    
    /**
-    * The default page-size for printer.
+    * The default paper-size for printer.
     */
-   static KPageSize *defaultPageSize(KPrinter *printer);
+   static KPaperSize *defaultPaperSize(KPrinter *printer);
 
    /**
-    * All possible page sizes for printer. 
+    * All possible paper sizes for printer. 
     */
-   static List allPageSizes(KPrinter *printer);
+   static List allPaperSizes(KPrinter *printer);
+
+   /**
+    * List of well-known paper sizes. 
+    */
+   static List wellKnownPaperSizes();
    
 private:
    /**
+    * Construct paper size from Aps_PageSize structure.
+    */
+   KPaperSize(void *_apsPageSize);
+
+   /**
     * Destructor
     */
-   ~KPageSize();
+   ~KPaperSize();
 
-   KPageSizePrivate *d;   
+   KPaperSizePrivate *d;   
 };
 
 #endif

@@ -35,7 +35,7 @@ int main( int argc, char *argv[] )
 
    KApplication a;
 
-   KPrintDialog *dlg = new KPrintDialog(0, true);
+   KPrintDialog *dlg = new KPrintDialog(0, 0, true);
 
    int result = dlg->exec();
    fprintf(stderr, "Result = %d\n", result);

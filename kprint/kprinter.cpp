@@ -37,6 +37,7 @@ public:
      if (valid)
      {
         Aps_ReleaseHandle(aps_printer);
+        Aps_ReleaseHandle(aps_jobAttr);
      } 
    }
 
@@ -44,14 +45,17 @@ public:
    { 
      valid = d.valid;
      aps_printer = d.aps_printer;
+     aps_jobAttr = d.aps_jobAttr;
      if (valid)
      {
         Aps_AddRef(aps_printer);
+        Aps_AddRef(aps_jobAttr);
      }
    };
 
    bool valid;
    Aps_PrinterHandle aps_printer;
+   Aps_JobAttrHandle aps_jobAttr;
 };
 
 QStringList
@@ -79,20 +83,44 @@ fprintf(stderr, "Printer: '%s'\n", names[i]);
 
 KPrinter::KPrinter()
 {
+fprintf(stderr, "Opening default printer...");
   d = new KPrinterPrivate;
   if (Aps_OpenDefaultPrinter(&d->aps_printer) == APS_SUCCESS)
   {
-     d->valid = true;
+fprintf(stderr, "APS_SUCCESS\n");
+fprintf(stderr, "Fetching default attributes...");
+     if (Aps_PrinterGetDefAttr(d->aps_printer, &d->aps_jobAttr) == APS_SUCCESS)
+     {
+fprintf(stderr, "APS_SUCCESS\n");
+        d->valid = true;
+     }
+     if (!d->valid)
+     {
+        Aps_ReleaseHandle(d->aps_printer);
+     }
   }
+fprintf(stderr, "Done\n");
 }
 
 KPrinter::KPrinter(const QString &name)
 {
+fprintf(stderr, "Opening printer '%s'...", name.latin1());
   d = new KPrinterPrivate;
   if (Aps_OpenPrinter(name.utf8(), &d->aps_printer) == APS_SUCCESS)
   {
-     d->valid = true;
+fprintf(stderr, "APS_SUCCESS\n");
+fprintf(stderr, "Fetching default attributes...");
+     if (Aps_PrinterGetDefAttr(d->aps_printer, &d->aps_jobAttr) == APS_SUCCESS)
+     {
+fprintf(stderr, "APS_SUCCESS\n");
+        d->valid = true;
+     }
+     if (!d->valid)
+     {
+        Aps_ReleaseHandle(d->aps_printer);
+     }
   }
+fprintf(stderr, "Done\n");
 }
 
 KPrinter::KPrinter(const KPrinter &printer)
@@ -110,5 +138,11 @@ bool
 KPrinter::isValid()
 {
    return d->valid;
+}
+
+void *
+KPrinter::defaultAttributes()
+{
+   return (void *) d->aps_jobAttr;
 }
 
