@@ -304,8 +304,12 @@ QString Addressee::fullEmail( const QString &email ) const
   QString text;
   if ( realName().isEmpty() )
     text = e;
-  else
-    text = assembledName() + " <" + e + ">";
+  else {
+    if ( realName().find( ',' ) != -1 )
+      text = "\"" + realName() + "\" <" + e + ">";
+    else
+      text = realName() + " <" + e + ">";
+  }
 
   return text;
 }
