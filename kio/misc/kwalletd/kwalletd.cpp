@@ -28,6 +28,7 @@
 #include <kdirwatch.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <kstddirs.h>
 #include <kwalletentry.h>
@@ -153,9 +154,19 @@ bool brandNew = false;
 			if (_wallets.count() == 1) {
 				KApplication::startServiceByDesktopName("kwalletmanager");
 			}
-		} else if (!_handles[dc->senderId()].contains(rc)) {
-			_handles[dc->senderId()].append(rc);
-		 	_wallets.find(rc)->ref();
+		} else {
+			int response = KMessageBox::Yes;
+			
+			if (!_handles[dc->senderId()].contains(rc)) {
+				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'.  Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
+			}
+
+			if (response == KMessageBox::Yes) {
+				_handles[dc->senderId()].append(rc);
+			 	_wallets.find(rc)->ref();
+			} else {
+				return -1;
+			}
 		}
 	}
 
@@ -223,7 +234,7 @@ KWallet::Backend *w = _wallets.find(handle);
 		if (_handles.contains(dc->senderId())) { // we know this app
 			if (_handles[dc->senderId()].contains(handle)) {
 				// the app owns this handle
-				_handles[dc->senderId()].remove(handle);
+				_handles[dc->senderId()].remove(_handles[dc->senderId()].find(handle));
 			}
 		}
 
