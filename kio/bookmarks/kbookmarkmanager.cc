@@ -430,6 +430,10 @@ public:
     void update();
     QValueList<KBookmark> find( const KURL &url ) const;
 private:
+    void crawl();
+    void enterGroup(const KBookmarkGroup &group) { ; }
+    void exitGroup() { ; }
+    void sawItem(const KBookmark &);
     typedef QValueList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
     KBookmarkManager *m_manager;
@@ -444,7 +448,18 @@ KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
 void KBookmarkMap::update()
 {
     m_bk_map.clear();
+    crawl();
+}
 
+void KBookmarkMap::sawItem(const KBookmark &bk) {
+    if (!bk.isSeparator()) {
+        // add bookmark to url map
+        m_bk_map[bk.url().url()].append(bk);
+    }
+}
+
+void KBookmarkMap::crawl()
+{
     // non-recursive bookmark iterator
     QPtrStack<KBookmarkGroup> stack;
     KBookmarkGroup root = m_manager->root();
@@ -454,6 +469,7 @@ void KBookmarkMap::update()
         if (bk.isGroup()) 
         {
             KBookmarkGroup gp = bk.toGroup();
+            enterGroup(gp);
             // only recurse into non-empty group, else skip it
             if (!gp.first().isNull()) 
             {
@@ -461,11 +477,11 @@ void KBookmarkMap::update()
                  bk = gp.first();
                  continue;
             }
+            exitGroup();
         } 
-        else if (!bk.isSeparator()) 
+        else
         {
-            // add bookmark to url map
-            m_bk_map[bk.url().url()].append(bk);
+            sawItem(bk);
         }
 
         // find next bookmark, finishing off groups as needed
@@ -479,6 +495,11 @@ void KBookmarkMap::update()
                 return;
             }
             bk = *(stack.pop());
+            // umm... this is _ugly_
+            if (!stack.isEmpty())
+            {
+                exitGroup();
+            }
         }
         bk = next;
     }
