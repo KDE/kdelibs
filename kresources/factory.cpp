@@ -161,8 +161,6 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
     kdDebug(5650) << "Creating resource of type " << type << endl;
     resource = ((Resource* (*)(const KConfig *))resource_func)( config );
     resource->setType( type );
-//    resource->setNameLabel( mResourceList[ type ]->nameLabel );
-//    resource->setDescriptionLabel( mResourceList[ type ]->descriptionLabel );
   } else {
     kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
     return 0;

@@ -28,8 +28,8 @@
 
 #include <kcmodule.h>
 
-// #include "resource.h"
 #include "resourcemanager.h"
+
 class KListView;
 class QPushButton;
 class QListViewItem;
@@ -42,44 +42,46 @@ class ResourcesConfigPage : public QWidget, public ManagerListener<Resource>
 {
   Q_OBJECT
 
-public:
-  ResourcesConfigPage( const QString& resourceFamily, QWidget *parent = 0, const char *name = 0 );
-  virtual ~ResourcesConfigPage();
+  public:
+    ResourcesConfigPage( const QString &family, const QString &config = QString::null,
+                         QWidget *parent = 0, const char *name = 0 );
+    virtual ~ResourcesConfigPage();
 
-  void load();
-  void save();
-  virtual void defaults();
+    void load();
+    void save();
+    virtual void defaults();
 
-public slots:
-  void slotAdd();
-  void slotRemove();
-  void slotEdit();
-  void slotStandard();
-  void slotSelectionChanged();
+  public slots:
+    void slotAdd();
+    void slotRemove();
+    void slotEdit();
+    void slotStandard();
+    void slotSelectionChanged();
 
-  // From ManagerListener<Resource>
-public:
-  virtual void resourceAdded( Resource* resource );
-  virtual void resourceModified( Resource* resource );
-  virtual void resourceDeleted( Resource* resource );
+    // From ManagerListener<Resource>
+  public:
+    virtual void resourceAdded( Resource* resource );
+    virtual void resourceModified( Resource* resource );
+    virtual void resourceDeleted( Resource* resource );
 
-protected slots:
-  void slotItemClicked( QListViewItem * );
+  protected slots:
+    void slotItemClicked( QListViewItem * );
 
-signals:
-  void changed(bool);
+  signals:
+    void changed( bool );
 
-private:
-  ResourceManager<Resource>* mManager;
-  QString mFamily;
+  private:
+    ResourceManager<Resource>* mManager;
+    QString mFamily;
+    QString mConfig;
 
-  KListView* mListView;
-  QPushButton* mAddButton;
-  QPushButton* mRemoveButton;
-  QPushButton* mEditButton;
-  QPushButton* mStandardButton;
+    KListView* mListView;
+    QPushButton* mAddButton;
+    QPushButton* mRemoveButton;
+    QPushButton* mEditButton;
+    QPushButton* mStandardButton;
 
-  QListViewItem* mLastItem;
+    QListViewItem* mLastItem;
 };
 
 }

@@ -54,7 +54,7 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
 {
     Q_OBJECT
   public:
-    ResourceManagerImpl( const QString &family );
+    ResourceManagerImpl( const QString &family, const QString &config );
     ~ResourceManagerImpl();
 
     void sync();
@@ -70,15 +70,13 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     Resource::List *resourceList();
 
     QPtrList<Resource> resources();
+
     // Get only active or passive resources
     QPtrList<Resource> resources( bool active );
 
     QStringList resourceNames();
 
-    void setListener( ManagerImplListener *listener )
-    {
-      mListener = listener;
-    }
+    void setListener( ManagerImplListener *listener );
 
     void load();
 
@@ -101,6 +99,7 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
 
     Resource *mStandard;
     QString mFamily;
+    QString mConfigLocation;
     Resource::List mResources;
     ManagerImplListener *mListener;
     ResourceFactory *mFactory;

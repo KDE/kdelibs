@@ -37,7 +37,6 @@
 
 #include "resource.h"
 #include "resourceconfigdlg.h"
-#include "resourcemanager.h"
 
 #include "resourcesconfigpage.h"
 
@@ -74,8 +73,9 @@ class ConfigViewItem : public QCheckListItem
     bool mIsStandard;
 };
 
-ResourcesConfigPage::ResourcesConfigPage( const QString& resourceFamily, QWidget *parent, const char *name )
-  : QWidget( parent, name ), mFamily( resourceFamily )
+ResourcesConfigPage::ResourcesConfigPage( const QString &family, const QString &config,
+                                          QWidget *parent, const char *name )
+  : QWidget( parent, name ), mFamily( family ), mConfig( config )
 {
   kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
   setCaption( i18n( "Resource Configuration" ) );
@@ -131,7 +131,7 @@ void ResourcesConfigPage::load()
   kdDebug(5650) << "ResourcesConfigPage::load()" << endl;
 
   delete mManager;
-  mManager = new ResourceManager<Resource>( mFamily );
+  mManager = new ResourceManager<Resource>( mFamily, mConfig );
   mManager->load();
 
   if ( !mManager )

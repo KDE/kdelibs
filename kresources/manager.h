@@ -159,12 +159,12 @@ class ResourceManager : private ManagerImplListener
 
     bool isEmpty() const { return mManager->resourceList()->isEmpty(); }
   
-    ResourceManager( const QString& family )
+    ResourceManager( const QString &family, const QString &config = QString::null )
     {
       mFactory = ResourceFactory::self( family );
       // The managerimpl will use the same Factory object as the manager
       // because of the ResourceFactory::self() pattern
-      mManager = new ResourceManagerImpl( family );
+      mManager = new ResourceManagerImpl( family, config );
       mManager->setListener( this );
       mListeners = new QPtrList<ManagerListener<T> >;
     }

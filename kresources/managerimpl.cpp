@@ -21,10 +21,13 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <dcopclient.h>
+
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kconfig.h>
-#include <dcopclient.h>
+#include <kstandarddirs.h>
 
 #include "resource.h"
 #include "resourcefactory.h"
@@ -33,14 +36,22 @@
 
 using namespace KRES;
 
-ResourceManagerImpl::ResourceManagerImpl( const QString& family ) :
-  DCOPObject( "ResourceManagerIface_" + family.utf8()+"_"+QCString().setNum(kapp->random()) ),
-  mFamily( family )
+ResourceManagerImpl::ResourceManagerImpl( const QString &family,
+                                          const QString &config )
+  : DCOPObject( "ResourceManagerIface_" + family.utf8() + "_" +
+                QCString().setNum( kapp->random() ) ),
+    mFamily( family )
 {
   kdDebug(5650) << "ResourceManagerImpl::ResourceManagerImpl()" << endl;
   mConfig = 0;
   mStandard = 0;
   mFactory = 0;
+
+  if ( config.isEmpty() )
+    mConfigLocation = locateLocal( "data", QString( kapp->aboutData()->appName() )
+                                   + "/kresources/" + mFamily + "rc" );
+  else
+    mConfigLocation = config;
 
   // Register with DCOP
   if ( !kapp->dcopClient()->isRegistered() ) {
@@ -72,6 +83,7 @@ ResourceManagerImpl::~ResourceManagerImpl()
   }
  
   delete mConfig;
+  mConfig = 0;
 }
 
 void ResourceManagerImpl::sync()
@@ -245,13 +257,11 @@ QPtrList<Resource> ResourceManagerImpl::resources( bool active )
   return result;
 }
 
-
-/*
-void ResourceManagerImpl::defaults()
+void ResourceManagerImpl::setListener( ManagerImplListener *listener )
 {
-  // mConfigPage->defaults();
+  mListener = listener;
 }
-*/
+
 
 //////////////////////////////
 /// Config file handling /////
@@ -265,7 +275,7 @@ void ResourceManagerImpl::load()
   mFactory = ResourceFactory::self( mFamily );
 
   delete mConfig;
-  mConfig = new KConfig( mFamily );
+  mConfig = new KConfig( mConfigLocation );
 
   mStandard = 0;
 
@@ -288,7 +298,7 @@ void ResourceManagerImpl::load()
 Resource* ResourceManagerImpl::loadResource( const QString& identifier,
                                              bool checkActive )
 {
-  if ( !mConfig ) mConfig = new KConfig( mFamily );
+  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
   mConfig->setGroup( "Resource_" + identifier );
 
   QString type = mConfig->readEntry( "ResourceType" );
@@ -357,7 +367,7 @@ void ResourceManagerImpl::saveResource( Resource *resource, bool checkActive )
 
   kdDebug(5650) << "Saving resource " << key << endl;
 
-  if ( !mConfig ) mConfig = new KConfig( mFamily );
+  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
 
   mConfig->setGroup( "Resource_" + key );
   resource->writeConfig( mConfig );
@@ -388,7 +398,7 @@ void ResourceManagerImpl::removeResource( Resource *resource )
 {
   QString key = resource->identifier();
 
-  if ( !mConfig ) mConfig = new KConfig( mFamily );
+  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
   
   mConfig->setGroup( "General" );
   QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
