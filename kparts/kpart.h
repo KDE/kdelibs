@@ -46,12 +46,25 @@ public:
 
     virtual void updatePlugins();
 
+    /**
+     * @return a list of filenames containing plugin xml documents
+     */
     virtual QStringList plugins();
 
+    /**
+     * @return a list of QDomDocuments, containing the parsed xml documents returned by @ref plugins
+     */
     virtual QValueList<QDomDocument> pluginDocuments();
 
+    /**
+     * @return a (cached) list of @ref KXMLGUIServant s, serving the plugin documents returned by 
+               @ref pluginDocuments()
+     */
     virtual const QList<KXMLGUIServant> *pluginServants();
 
+    /**
+     * @return a (cached) @ref KXMLGUIServant for the part.
+     */
     virtual KXMLGUIServant *servant();
 
     // Only called by KPartManager - should be protected and using friend ?
@@ -61,6 +74,9 @@ public:
      */
     KPartManager * manager() { return m_manager; }
 
+    /**
+     * @return the parsed XML in a QDomDocument, set by @ref setXMLFile or @ref setXML
+     */
     QDomDocument document() const;
 
 protected:

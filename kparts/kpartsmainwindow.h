@@ -51,6 +51,7 @@ class KPartsMainWindow : public KTMainWindow, public KXMLGUIBuilder, public KXML
   // KXMLGUIBuilder interface (internal)
   virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer );
 
+  // KXMLGUIBuilder interface (internal)
   virtual QByteArray removeContainer( QObject *container, QWidget *parent );
 
 protected slots:

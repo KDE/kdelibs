@@ -81,7 +81,7 @@ void Shell::embedEditor()
 {
   if ( m_manager->activePart() == m_part2 )
     createGUI( 0L );
-  
+
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
@@ -93,6 +93,9 @@ void Shell::embedEditor()
 
 void Shell::slotFileCloseEditor()
 {
+  if ( m_manager->activePart() == m_editorpart )
+    createGUI( 0L );
+
   delete m_editorpart;
   m_editorpart = 0L;
   m_part2 = new Part2(m_splitter);

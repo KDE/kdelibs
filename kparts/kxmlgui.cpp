@@ -32,10 +32,6 @@ public:
   {
   }
 
-  /**
-   * This map stores the states of the containers the servant created, indexed by a combination of
-   * tagname and name attribute.
-   */
   QMap<QString,QByteArray> m_containerStates;
 };
 
@@ -299,8 +295,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
     	  continue;
         }
 
-	// Determine the correct index
-	
         int *idx = parentNode->index();
 	bool merged = false;
 
@@ -325,17 +319,12 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	if ( !container )
 	  continue;
 	
-	// increase the used index (normal or merging index) in case we successfully created a new container
         (*idx)++;
 	
-	// keep track of newly created containers on this level
 	containerList.append( container );
 	
-	//allocate and insert a new node into our xmlgui tree (the insertion is done in the
-	//KXMLGUIContainerNode constructor
         KXMLGUIContainerNode *containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( "name" ), parentNode, m_servant, merged );
 	
-	//enter the next level with our newly created container :)
         buildRecursive( e, containerNode );
       }
     }
@@ -345,7 +334,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
 bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 {
-  //we have to remove child nodes first
+
   QListIterator<KXMLGUIContainerNode> childIt( *node->children() );
   while ( childIt.current() )
     // removeRecursive returns true in case the container really got deleted
@@ -353,10 +342,9 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
       node->children()->removeRef( childIt.current() );
     else
       ++childIt;
-  
+
   QListIterator<KXMLGUIContainerClient> clientIt( *node->clients() );
 
-  // now let's unplug as many actions as possible ;-) (but only if the container is a widget)
   if ( node->container() && node->container()->isWidgetType() )
     while ( clientIt.current() )
       //only unplug the actions of the servant we want to remove, as the container might be owned
@@ -381,8 +369,6 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
       else
         ++clientIt;
 
-  // only remove the container if there are really no clients or children left and if we actually
-  // own the container ;-) (container servant == servant which is to be removed)
   if ( node->clients()->count() == 0 && node->children()->count() == 0 && node->container() &&
        node->servant() == m_servant )
   {
@@ -397,7 +383,6 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     {
       parentContainer = (QWidget *)node->parent()->container();
 
-      //adjust the parent node's index
       KXMLGUIContainerNode *p = node->parent();
       if ( node->mergedContainer() )
         (*p->mergingIndex())--;
@@ -410,7 +395,6 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     //container in case we add the same servant again later.
     QByteArray containerStateBuffer = m_builder->removeContainer( node->container(), parentContainer );
 
-    //only save the buffer if it contains data ;-)
     if ( containerStateBuffer.size() > 0 )
       m_servant->storeContainerStateBuffer( node->tagName() + node->name(), containerStateBuffer );
 

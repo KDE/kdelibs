@@ -45,14 +45,23 @@ class KXMLGUIBuilder
   virtual ~KXMLGUIBuilder() {}
 
   /**
-   * Create a container (menubar/menu/toolbar/statusbar/...) from an
+   * Create a container (menubar/menu/toolbar/statusbar/separator/...) from an
    * element in the XML file
-   * @param parent the parent for the widget
-   * @return 0L if you handled the element yourself (like for Separators for
-   * example)
+   * @param parent the parent for the container
+   * @param index the index where the container should be inserted into the parent container/widget
+   * @param element the element from the DOM tree describing the container (use it to access
+   *                container specified attributes or child elements)
+   * @param containerStateBuffer a buffer which possibibly contains previously saved container state
+   *        information, return via @ref removeContainer .
    */
   virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer ) = 0;
 
+  /**
+   * Remove the given (and previously via @ref createContainer ) created container.
+   * @return a buffer containing state information about the deleted container (like the last position of
+   *         a toolbar container for example) . The buffer is passed again to @ref createContainer when
+   *         the same container is about to be created again later.
+   */
   virtual QByteArray removeContainer( QObject *container, QWidget *parent ) = 0;
 };
 
@@ -71,24 +80,19 @@ class KXMLGUIServant
 
   virtual QDomDocument document() = 0;
 
+  /**
+   * default implementation, storing the given data in an internal map. Called from
+   * KXMLGUIFactory when removing containers which were owned by the servant.
+   */
   virtual void storeContainerStateBuffer( const QString &key, const QByteArray &data );
+  /**
+   * default implementation, returning a previously via @ref storeContainerStateBuffer saved
+   * data. Called from KXMLGUIFactory when creating a new container.
+   */
   virtual QByteArray takeContainerStateBuffer( const QString &key );
 
  private:
   KXMLGUIServantPrivate *d;
-};
-
-/**
- * Implementation of the servant interface that serves nothing.
- * Used when no part is active.
- */
-class KNullGUIServant : public KXMLGUIServant
-{
- public:
-  KNullGUIServant() {}
-
-  virtual QAction *action( const QDomElement & ) { return 0L; }
-  virtual QDomDocument document() { return QDomDocument(); }
 };
 
 class KXMLGUIContainerNode;
@@ -99,10 +103,19 @@ class KXMLGUIFactory
   KXMLGUIFactory( KXMLGUIBuilder *builder );
   ~KXMLGUIFactory();
 
+  // XXX move to somewhere else? (Simon)
   static QString readConfigFile( const QString &filename );
 
+  /**
+   * Creates the GUI described by the QDomDocument of the servant, using the servant's actions, and
+   * merges it with the previously created GUI.
+   */
   void addServant( KXMLGUIServant *servant );
 
+  /**
+   * Removes the GUI described by the servant, by unplugging all provided actions and removing all owned
+   * containers (and storing container state information in the given servant)
+   */
   void removeServant( KXMLGUIServant *servant );
 
  private:
