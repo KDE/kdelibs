@@ -886,7 +886,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 	if( doctype != -1 ) {
 	    while( (quote = spec.find( "\"", start )) != -1 ) {
 		int quote2 = spec.find( "\"", quote+1 );
-		if(quote2 < 0) quote2 = spec.length() - quote - 1;
+		if(quote2 < 0) quote2 = spec.length();
 		QString val = spec.mid( quote+1, quote2 - quote-1 );
 		//kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
 		// find system id
@@ -950,8 +950,8 @@ void DocumentImpl::determineParseMode( const QString &str )
 	if ( htmlMode == XHtml )
 	    pMode = Strict;
     }
-//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
-//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
+    //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+    //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
     if( pMode == Strict )
 	kdDebug() << " using strict parseMode" << endl;
     else if (pMode == Compat )
