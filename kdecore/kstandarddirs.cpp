@@ -88,6 +88,9 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
     absolutes.setAutoDelete(true);
     savelocations.setAutoDelete(true);
     addKDEDefaults();
+#ifdef __linux__
+    addExecutablePrefix();
+#endif
 }
 
 KStandardDirs::~KStandardDirs()
@@ -712,7 +715,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     QStringList tokens;
     QString p = pstr;
 
-    if( p.isNull() ) 
+    if( p.isNull() )
     {
 	p = getenv( "PATH" );
     }
@@ -1247,6 +1250,51 @@ QString KStandardDirs::localxdgconfdir() const
 {
     // Return the prefix to use for saving
     return d->xdgconf_prefixes.first();
+}
+
+void KStandardDirs::addExecutablePrefix()
+{
+	addPrefix(extractPrefix(executablePath()));
+}
+
+QString KStandardDirs::executablePath()
+{
+#ifdef __linux__
+	char line[5000];
+	int length;
+
+	length = readlink ("/proc/self/exe", line, 5000);
+	if (length != -1)
+	{
+		line[length] = '\0';
+
+		return QString (line);
+	}
+#endif
+	return QString::null;
+}
+
+QString KStandardDirs::extractPrefix(const QString &path)
+{
+	if(path.isEmpty())
+		return path;
+
+	int pos = path.findRev('/');
+	if(pos != -1)
+	{
+		pos = path.findRev('/', pos - 1);
+	}
+
+	if(pos == -1)
+	{
+		return path;
+	}
+	else if(pos == 0)
+	{
+		return QString("/");
+	}
+
+	return path.left(pos);
 }
 
 // just to make code more readable without macros

@@ -317,7 +317,7 @@ public:
 	 * @param unique If specified,  only return items which have
 	 *        unique suffixes - suppressing duplicated filenames.
 	 *
-	 * @return List of all the files whose filename matches the 
+	 * @return List of all the files whose filename matches the
 	 *         specified filter.
 	 */
 	QStringList findAllResources( const char *type,
@@ -344,7 +344,7 @@ public:
 	 * @param relPaths The list to store the relative paths into
 	 *        These can be used later to ::locate() the file
 	 *
-	 * @return List of all the files whose filename matches the 
+	 * @return List of all the files whose filename matches the
 	 *         specified filter.
 	 */
 	QStringList findAllResources( const char *type,
@@ -353,7 +353,7 @@ public:
 				       bool unique,
 				       QStringList &relPaths) const;
 
-	/** 
+	/**
 	 * Returns a QStringList list of pathnames in the system path.
 	 *
 	 * @param pstr  The path which will be searched. If this is
@@ -594,6 +594,10 @@ public:
 	void checkConfig() const;
 	void applyDataRestrictions(const QString &) const;
 	void createSpecialResource(const char*);
+
+	void addExecutablePrefix();
+	static QString executablePath();
+	static QString extractPrefix(const QString &path);
 };
 
 /**
