@@ -229,6 +229,15 @@ static void removeTempSep()
     }
 }
 
+static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBarButton *b, KToolBar *ttb)
+{
+    QPtrListIterator<KAction> it( actions );
+    for (; (*it); ++it )
+        if (b && (*it)->isPlugged(ttb, b->id()))
+            return (*it);
+    return 0;
+}
+
 static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
 {
     static int sepIndex;
@@ -245,11 +254,9 @@ static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
     removeTempSep();
 
     b = dynamic_cast<KToolBarButton*>(ttb->childAt(pos));
-
-    QPtrListIterator<KAction> it( actions );
-    for (; (*it); ++it )
-        if (found = (b && (*it)->isPlugged(ttb, b->id())), found)
-            break;
+    KAction *ita;
+    ita = findPluggedAction(actions, b, ttb);
+    found = !!ita;
 
     int id;
 
@@ -295,15 +302,14 @@ static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
     b = ttb->getButton(id);
     Q_ASSERT(id == b->id());
     found = false;
-    for (it.toFirst(); (*it); ++it )
-        if (found = (*it)->isPlugged(ttb, id), found)
-            break;
+    ita = findPluggedAction(actions, b, ttb);
+    found = !!ita;
     Q_ASSERT(found);
 
     index = ttb->itemIndex(id);
 
 okay_exit:
-    a = (*it);
+    a = ita;
     sepIndex = index + 1;
 
 failure_exit:
