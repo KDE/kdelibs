@@ -315,11 +315,11 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 	dlg.m_dest = dest;
 	dlg.m_datadir = datadir;
 	dlg.m_text->setText(
-			i18n("You are about to export the <b>%1</b> driver to Windows client "
-				 "through samba. This operation requires <a href=\"http://www.adobe.com\">"
+			i18n("You are about to export the <b>%1</b> driver to a Windows client "
+				 "through Samba. This operation requires the <a href=\"http://www.adobe.com\">"
 				 "Adobe PostScript Driver</a>, <a href=\"http://www.samba.org\">Samba</a> "
 				 "version 2.2 and a running SMB service on server <b>%1</b>. Click <b>Export</b> "
-				 "to start operation.").arg(dest).arg(cupsServer()));
+				 "to start the operation.").arg(dest).arg(cupsServer()));
 	dlg.exec();
 	return dlg.m_status;
 }
