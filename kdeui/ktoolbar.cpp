@@ -166,7 +166,7 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 }
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
-    : QToolBar( QString( name ),
+    : QToolBar( QString::fromLatin1( name ),
       parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0,
       parent, FALSE,
       name ? name : "mainToolBar")
@@ -1519,6 +1519,15 @@ KToolBar::IconText KToolBar::iconTextSetting()
 void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
 {
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
+    //kdDebug(220) << "KToolBar::applyAppearanceSettings " << configGroup << endl;
+    // We have application-specific settings in the XML file,
+    // and nothing in the application's config file
+    // -> don't apply the global defaults, the XML ones are preferred
+    // See applySettings for a full explanation
+    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
+           !config->hasGroup(configGroup) )
+        return;
+
     KConfig *gconfig = KGlobal::config();
 
     static const QString &grpKDE     = KGlobal::staticQString("KDE");
@@ -1586,6 +1595,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
     // check if the icon/text has changed
     if (icon_text != d->m_iconText) {
+        //kdDebug(220) << "KToolBar::applyAppearanceSettings setIconText" << icontext << endl;
         setIconText(icon_text, false);
         doUpdate = true;
     }
@@ -1622,16 +1632,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     //kdDebug(220) << "KToolBar::applySettings group=" << _configGroup << endl;
 
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
-
-    // We have application-specific settings in the XML file,
-    // and nothing in the application's config file
-    // -> don't apply the global defaults, the XML ones are preferred
-    /*
-      Let's see if we still need this
-    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
-           !config->hasGroup(configGroup) )
-        return;
-    */
 
     /*
       Let's explain this a bit more in details.
@@ -1794,6 +1794,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     if ( !attrIconText.isEmpty() ) {
+        //kdDebug(220) << "KToolBar::loadState attrIconText=" << attrIconText << endl;
         if ( attrIconText == "icontextright" )
             setIconText( KToolBar::IconTextRight );
         else if ( attrIconText == "textonly" )
