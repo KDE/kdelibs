@@ -81,7 +81,11 @@ versions of the views.
 This class inherits KParts::ReadOnlyPart, and provides a BrowserExtension.
 It integrates KonqFileManagerWidget as its KParts widget, and provides KActions for it.
 
+Important :
 
+Make sure to take kfind into account. It would be nice if it could use
+the same views as konqueror, to have access to all the view modes, as well
+as image preview, etc.
 
 Unrelated:
 To Add
