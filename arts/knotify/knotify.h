@@ -45,13 +45,13 @@ public:
 
 protected:
 	void processNotification(const QString &event, const QString &fromApp,
-	                         const QString &text, QString sound,
+	                         const QString &text, QString sound, QString file
 	                         Presentation present);
 
 	bool notifyBySound(const QString &sound);
 	bool notifyByMessagebox(const QString &text);
 	bool notifyByLogwindow(const QString &text);
-	bool notifyByLogfile(const QString &text);
+	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 };
 

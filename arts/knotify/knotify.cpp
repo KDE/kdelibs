@@ -101,7 +101,7 @@ bool KNotify::process(const QCString &fun, const QByteArray &data,
 }
 
 void KNotify::processNotification(const QString &event, const QString &fromApp,
-                                  const QString &text, QString sound,
+                                  const QString &text, QString sound, QString file
                                   Presentation present)
 {
 	static bool eventRunning=true;
@@ -117,18 +117,22 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 			present=(Presentation)eventsfile.readNumEntry("default_presentation", 0);
 		sound=eventsfile.readEntry("sound", 0);
 		if (sound.isNull())
-			sound=eventsfile.readEntry("sound", "");
+			sound=eventsfile.readEntry("default_logfile", "");
+		file=eventsfile.readEntry("sound", 0);
+		if (file.isNull())
+			sound=eventsfile.readEntry("default_logfile", "");
+		
 	}
 	
 	eventRunning=true;
-	if ((present & Sound) && (QFile(sound).exists()))
+	if ((present & Sound) && (QFile(sound).readable()))
 		notifyBySound(sound);
 	if (present & Messagebox)
 		notifyByMessagebox(text);
 	if (present & Logwindow)
 		notifyByLogwindow(text);
-	if (present & Logfile)
-		notifyByLogfile(text);
+	if (present & Logfile && (QFile(file).readable()))
+		notifyByLogfile(text, file);
 	if (present & Stderr)
 		notifyByStderr(text);
 	eventRunning=false;
@@ -153,21 +157,28 @@ bool KNotify::notifyByMessagebox(const QString &text)
 	return true;
 }
 
-bool KNotify::notifyByLogwindow(const QString &/*text*/)
+bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 {
-	cerr << "notifyByLogwindow(): Not implemented\n";
-	return true;
-}
+	QFile f(file);
+	if (!f.open(IO_WriteOnly)) return false;
+	QTextStream t(&f);
 
-bool KNotify::notifyByLogfile(const QString &/*text*/)
-{
-	cerr << "notifyByLogfile(): Not implemented\n";
+	t<< "=======================================\n";
+	t<< "KNotify: " << QDateTime::currentDateTime().toString() << '\n';
+	t<< text<< "\n\n";
+	f.close();
 	return true;
 }
 
 bool KNotify::notifyByStderr(const QString &text)
 {
-	cerr << "KDE Notification system: " << text << "\n";
+	QFile f(file);
+	if (!f.open(IO_WriteOnly)) return false;
+	QTextStream t(&f);
+
+	t<< "KNotify: " << QDateTime::currentDateTime().toString() << '\n';
+	t<< text<< "\n\n";
+	f.close();
 	return true;
 }
 
