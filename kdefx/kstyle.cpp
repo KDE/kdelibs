@@ -98,7 +98,6 @@ struct KStylePrivate
 	TransparencyEngine   transparencyEngine;
 	KStyle::KStyleScrollBarType  scrollbarType;
 	TransparencyHandler* menuHandler;
-	QStyle* winstyle;		// ### REMOVE
 	KStyle::KStyleFlags flags;
 };
 
@@ -144,23 +143,15 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 			d->menuHandler = new TransparencyHandler(this, d->transparencyEngine, d->menuOpacity);
 		}
 	}
-
-	// ### Remove this ugly dependency!!!
-	d->winstyle = QStyleFactory::create("Windows");
-	if (!d->winstyle)
-		d->winstyle = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
 }
 
 
 KStyle::~KStyle()
 {
-	if (d->winstyle)
-		delete d->winstyle;
 	if (d->menuHandler)
 		delete d->menuHandler;
 
 	d->menuHandler = NULL;
-	d->winstyle    = NULL;
 	delete d;
 }
 
@@ -1318,13 +1309,277 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 	return ret;
 }
 
+static const char * const kstyle_close_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"..##....##..",
+"...##..##...",
+"....####....",
+".....##.....",
+"....####....",
+"...##..##...",
+"..##....##..",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_maximize_xpm[]={
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+".##########.",
+".##########.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".##########.",
+"............"};
+
+
+static const char * const kstyle_minimize_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"............",
+"............",
+"............",
+"...######...",
+"...######...",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_normalizeup_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"...#######..",
+"...#######..",
+"...#.....#..",
+".#######.#..",
+".#######.#..",
+".#.....#.#..",
+".#.....###..",
+".#.....#....",
+".#.....#....",
+".#######....",
+"............"};
+
+
+static const char * const kstyle_shade_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"............",
+".....#......",
+"....###.....",
+"...#####....",
+"..#######...",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_unshade_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"..#######...",
+"...#####....",
+"....###.....",
+".....#......",
+"............",
+"............",
+"............",
+"............"};
+
+static const char * dock_window_close_xpm[] = {
+"8 8 2 1",
+"# c #000000",
+". c None",
+"##....##",
+".##..##.",
+"..####..",
+"...##...",
+"..####..",
+".##..##.",
+"##....##",
+"........"};
+
+// Message box icons, from page 210 of the Windows style guide.
+
+// Hand-drawn to resemble Microsoft's icons, but in the Mac/Netscape
+// palette.  The "question mark" icon, which Microsoft recommends not
+// using but a lot of people still use, is left out.
+
+/* XPM */
+static const char * const information_xpm[]={
+"32 32 5 1",
+". c None",
+"c c #000000",
+"* c #999999",
+"a c #ffffff",
+"b c #0000ff",
+"...........********.............",
+"........***aaaaaaaa***..........",
+"......**aaaaaaaaaaaaaa**........",
+".....*aaaaaaaaaaaaaaaaaa*.......",
+"....*aaaaaaaabbbbaaaaaaaac......",
+"...*aaaaaaaabbbbbbaaaaaaaac.....",
+"..*aaaaaaaaabbbbbbaaaaaaaaac....",
+".*aaaaaaaaaaabbbbaaaaaaaaaaac...",
+".*aaaaaaaaaaaaaaaaaaaaaaaaaac*..",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaaac*.",
+"*aaaaaaaaaabbbbbbbaaaaaaaaaaac*.",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+".*aaaaaaaaaaabbbbbaaaaaaaaaac***",
+".*aaaaaaaaaaabbbbbaaaaaaaaaac***",
+"..*aaaaaaaaaabbbbbaaaaaaaaac***.",
+"...caaaaaaabbbbbbbbbaaaaaac****.",
+"....caaaaaaaaaaaaaaaaaaaac****..",
+".....caaaaaaaaaaaaaaaaaac****...",
+"......ccaaaaaaaaaaaaaacc****....",
+".......*cccaaaaaaaaccc*****.....",
+"........***cccaaaac*******......",
+"..........****caaac*****........",
+".............*caaac**...........",
+"...............caac**...........",
+"................cac**...........",
+".................cc**...........",
+"..................***...........",
+"...................**..........."};
+/* XPM */
+static const char* const warning_xpm[]={
+"32 32 4 1",
+". c None",
+"a c #ffff00",
+"* c #000000",
+"b c #999999",
+".............***................",
+"............*aaa*...............",
+"...........*aaaaa*b.............",
+"...........*aaaaa*bb............",
+"..........*aaaaaaa*bb...........",
+"..........*aaaaaaa*bb...........",
+".........*aaaaaaaaa*bb..........",
+".........*aaaaaaaaa*bb..........",
+"........*aaaaaaaaaaa*bb.........",
+"........*aaaa***aaaa*bb.........",
+".......*aaaa*****aaaa*bb........",
+".......*aaaa*****aaaa*bb........",
+"......*aaaaa*****aaaaa*bb.......",
+"......*aaaaa*****aaaaa*bb.......",
+".....*aaaaaa*****aaaaaa*bb......",
+".....*aaaaaa*****aaaaaa*bb......",
+"....*aaaaaaaa***aaaaaaaa*bb.....",
+"....*aaaaaaaa***aaaaaaaa*bb.....",
+"...*aaaaaaaaa***aaaaaaaaa*bb....",
+"...*aaaaaaaaaa*aaaaaaaaaa*bb....",
+"..*aaaaaaaaaaa*aaaaaaaaaaa*bb...",
+"..*aaaaaaaaaaaaaaaaaaaaaaa*bb...",
+".*aaaaaaaaaaaa**aaaaaaaaaaa*bb..",
+".*aaaaaaaaaaa****aaaaaaaaaa*bb..",
+"*aaaaaaaaaaaa****aaaaaaaaaaa*bb.",
+"*aaaaaaaaaaaaa**aaaaaaaaaaaa*bb.",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaa*bbb",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaa*bbb",
+".*aaaaaaaaaaaaaaaaaaaaaaaaa*bbbb",
+"..*************************bbbbb",
+"....bbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+".....bbbbbbbbbbbbbbbbbbbbbbbbb.."};
+/* XPM */
+static const char* const critical_xpm[]={
+"32 32 4 1",
+". c None",
+"a c #999999",
+"* c #ff0000",
+"b c #ffffff",
+"...........********.............",
+".........************...........",
+".......****************.........",
+"......******************........",
+".....********************a......",
+"....**********************a.....",
+"...************************a....",
+"..*******b**********b*******a...",
+"..******bbb********bbb******a...",
+".******bbbbb******bbbbb******a..",
+".*******bbbbb****bbbbb*******a..",
+"*********bbbbb**bbbbb*********a.",
+"**********bbbbbbbbbb**********a.",
+"***********bbbbbbbb***********aa",
+"************bbbbbb************aa",
+"************bbbbbb************aa",
+"***********bbbbbbbb***********aa",
+"**********bbbbbbbbbb**********aa",
+"*********bbbbb**bbbbb*********aa",
+".*******bbbbb****bbbbb*******aa.",
+".******bbbbb******bbbbb******aa.",
+"..******bbb********bbb******aaa.",
+"..*******b**********b*******aa..",
+"...************************aaa..",
+"....**********************aaa...",
+"....a********************aaa....",
+".....a******************aaa.....",
+"......a****************aaa......",
+".......aa************aaaa.......",
+".........aa********aaaaa........",
+"...........aaaaaaaaaaa..........",
+".............aaaaaaa............"};
 
 QPixmap KStyle::stylePixmap( StylePixmap stylepixmap,
 						  const QWidget* widget,
 						  const QStyleOption& opt) const
 {
-	// ### Only need new images for the others to use KStyle
-	return d->winstyle->stylePixmap(stylepixmap, widget, opt);
+	switch (stylepixmap) {
+		case SP_TitleBarShadeButton:
+			return QPixmap(const_cast<const char**>(kstyle_shade_xpm));
+		case SP_TitleBarUnshadeButton:
+			return QPixmap(const_cast<const char**>(kstyle_unshade_xpm));
+		case SP_TitleBarNormalButton:
+			return QPixmap(const_cast<const char**>(kstyle_normalizeup_xpm));
+		case SP_TitleBarMinButton:
+			return QPixmap(const_cast<const char**>(kstyle_minimize_xpm));
+		case SP_TitleBarMaxButton:
+			return QPixmap(const_cast<const char**>(kstyle_maximize_xpm));
+		case SP_TitleBarCloseButton:
+			return QPixmap(const_cast<const char**>(kstyle_close_xpm));
+		case SP_DockWindowCloseButton:
+			return QPixmap(const_cast<const char**>(dock_window_close_xpm ));
+		case SP_MessageBoxInformation:
+			return QPixmap(const_cast<const char**>(information_xpm));
+		case SP_MessageBoxWarning:
+			return QPixmap(const_cast<const char**>(warning_xpm));
+		case SP_MessageBoxCritical:
+			return QPixmap(const_cast<const char**>(critical_xpm));
+		default:
+			break;
+    }
+    return QCommonStyle::stylePixmap(stylepixmap, widget, opt);
 }
 
 
