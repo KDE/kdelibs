@@ -1,6 +1,8 @@
 // $Id$
 
+#ifndef NDEBUG
 #define NDEBUG
+#endif
 
 #include "ftp.h"
 
