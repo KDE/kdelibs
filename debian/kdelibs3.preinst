@@ -16,6 +16,7 @@ case "$1" in
           mv /usr/share/applnk /etc/kde2/applnk
         fi
       fi
+      rm -rf /usr/share/applnk > /dev/null 2>&1
     ;;
 
     abort-upgrade)
