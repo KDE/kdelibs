@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.51  1999/04/22 15:59:44  shausman
+// - support QStringList for combos
+//
 // Revision 1.50  1999/03/06 18:03:37  ettrich
 // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 // It has its own menu entry and reacts on simple LMP clicks.
@@ -115,6 +118,12 @@ enum itemType {
     ITEM_ANYWIDGET=5
 };
 
+
+/**
+ * A toolbar item. Used internally by KToolBar, use KToolBar methods
+ * instead.
+ * @internal
+ * */
 class KToolBarItem
 {
 public:
@@ -152,7 +161,9 @@ private:
 
 
 /**
- * This is internal button for use in KToolBar and...
+ * A toolbar button. This is used internally by @ref KToolBar, use the 
+ * KToolBar methods instead.
+ * @internal
  */
 
 class KToolBarButton : public QButton
@@ -227,35 +238,33 @@ class KToolBarButton : public QButton
  };
 
 
-/**
- * KToolBar is a self resizing, floatable widget.
- * It is usually managed from KTopLevelWidget, but can be
- * used even if you don't use KTopLevelWidget. If you want
- * to handle this without KTopLevelWidget, see updateRects .<BR>
- * KToolBar can contain buttons Line inputs Combo Boxes, frames, and
- * custom widgets.
- * Combos, Frames and Lineds, and Widgets can be  autosized to full width.
- * Any Item can be right aligned, and buttons can be toggle buttons. Item
- * height,  type of buttons (icon or icon+text), and option for highlighting
- * is adjustable on constructor invocation by reading config file.
- * Toolbar will reread config-file when it recieves signal
- * Kapplication:appearanceChanged.
- * Toolbar can float, be dragged from and docked back to parent window.
- * It autoresizes itself. This may lead to
- * some flickering, but there is no way to solve it (as far as I
- * know). <BR>
- * You can bind popups and delayed popups to buttons. <BR>
- * You normaly use toolbar from subclassed KTopLevelWidget. When
- * you create toolbar object, insert items that you want to be in it.
- * Items can be inserted or removed ( removeItem() ) later, when toolbar
- * is displayed. It will update itself.
- * Then set their propperties ( alignItemRight , setItemAutoSized ,
- * setToggle ...) After that set the toolbar itself, enable ,setBarPos ...).
- * Then simply do addToolbar (toolbar),
- * and you're on. See how it's done in kwindowtest.
- * @short KDE Toolbar widget
- * @author Stephan Kulow <coolo@kde.org> Maintained by Sven Radej <radej@kde.org>
- */
+ /**
+  * KToolBar can be "floated", dragged and docked from its parent window.
+  *
+  * A KToolBar can contain standard or toggle buttons, line edit widgets,
+  * combo boxes, frames or any developer-defined custom widget, with 
+  * automatic full-width resize for each widget except buttons. Buttons 
+  * can also be connected to popup menus with a delay option.
+  * 
+  * KToolBar can be used as a standalone widget, but @ref KTopLevelWidget 
+  * provides easy factories and management of one or more toolbars.
+  * Once you have a KToolBar object, you can insert items into it with the 
+  * insert... methods, or remove them with the @ref removeItem method. This
+  * can be done at any time; the toolbar will be automatically updated.
+  * There are also many methods to set per-child properties like alignment
+  * and toggle behaviour.
+  *
+  * KToolBar uses a global config group to load toolbar settings on
+  * construction. It will reread this config group on a
+  * @ref KApplication::apearanceChanged signal.
+  * 
+  * BUGS: Sometimes flickers on auto resize, no workaround has yet been
+  * found for this.
+  *
+  * @short Floatable toolbar with auto resize.
+  * @version $Id$
+  * @author Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
+  */
  class KToolBar : public QFrame
   {
 
@@ -439,7 +448,8 @@ public:
    * Sets delayed popup to a button. Delayed popup is what you see in
    * netscape's Previous&next buttons: if you click them you go back,
    * or forth. If you press them long enough, you get a history-menu.
-   * This is exactly what we do here. <BR>
+   * This is exactly what we do here.
+   *
    * You will insert normal button with connection (or use signals from
    * toolbar):
    * <pre>
@@ -485,7 +495,8 @@ public:
   /**
    * If button is toggle (@ref #setToggle must be called first)
    * this will set him to state flag. This will also emit signal
-   * #ref toggled . <BR>
+   * #ref toggled.
+   *
    * @see #setToggle
    */
   void setButton (int id, bool flag);
@@ -652,7 +663,8 @@ public:
   /**
    * Sets toolbar to full parent width (or to value set by setMaxWidth).
    * You have to call this function if you want to have right aligned items or
-   * autosized item. <BR>
+   * autosized item.
+   *
    * The toolbar is set to full width by default.
    * @see #alignItemRight
    * @see #setItemAutoSized
@@ -731,19 +743,20 @@ public:
    * You normaly don't have to call it, since it's called from
    * @ref KTopLevelWidget#updateRects or from resizeEvent. You can call it
    * if you manualy change width of inserted frame, or if you wish to force
-   * toolbar to recalculate itself. <BR>
+   * toolbar to recalculate itself.
+   *
    * You don't want to fiddle with this.
    * @ref KtopLevelWidget works closely with toolbar. If you want to
-   * subclass KTopLevelWidget to change its resize policy, hear this: <BR>
-   * <BR>
+   * subclass KTopLevelWidget to change its resize policy, hear this:
+   *
    * resizeEvent() in KTopLevelWidget just calls updateRects, which handles
-   * children sizes. Call updateRects when you're done with your things. <BR>
-   * <BR>
-   * If you want to handle everything yourself:<BR>
-   * <BR>
+   * children sizes. Call updateRects when you're done with your things.
+   * 
+   * If you want to handle everything yourself:
+   * 
    * KToolBar manages itself by calling toolbar->@ref #updateRects (true).
    * It will autosize itself, but won't move itself.
-   * You have to do the moving. <BR>
+   * You have to do the moving.
    * First setup & move anything that is above toolbars (menus...). Then
    * setup statusbars and other horizontal things on bottom. Then loop through
    * all HORIZONTAL toolbars, call their updateRects(true), _then_ take their
@@ -751,6 +764,7 @@ public:
    * width()). After  you have looped through HORIZONTAL toolbars, calculate
    * the maximum height that vertical toolbars may have (this is your free
    * area height). Then loop through vertical toolbars,
+   *
    * @ref #setMaxHeight (calculated_max_height) on them,
    * call their updateRects(true), and _then_ move them to their locations.
    * In 0xFE cases out of 0xFF you don't need to use this function.
