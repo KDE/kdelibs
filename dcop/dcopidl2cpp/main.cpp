@@ -46,8 +46,9 @@ int main( int argc, char** argv )
         exit(1);
     }
     int argpos = 1;
-    bool generate_skel = TRUE;
-    bool generate_stub = TRUE;
+    bool generate_skel    = TRUE;
+    bool generate_stub    = TRUE;
+    bool generate_signals = TRUE;
 
     QString suffix = "cpp";
 
@@ -62,6 +63,12 @@ int main( int argc, char** argv )
 	else if ( strcmp( argv[argpos], "--no-stub" ) == 0 )
 	{
 	    generate_stub = FALSE;
+	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
+	    argc--;
+	}
+	else if ( strcmp( argv[argpos], "--no-signals" ) == 0 )
+	{
+	    generate_signals = FALSE;
 	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
 	    argc--;
 	}
@@ -105,15 +112,22 @@ int main( int argc, char** argv )
     if ( generate_skel )
 	generateSkel( idl, base + "_skel." + suffix, de );
 
-    if ( generate_stub ) {
+    if ( generate_signals ) {
 	QString header = base;
-	generateStub( idl, header + "_stub.h", de, false );
 	generateStub( idl, header + "_signals.h", de, true );
 	pos = header.findRev('/');
 	if ( pos != -1 )
 	    header = header.mid( pos+1 );
-	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de, false );
 	generateStubImpl( idl, header + "_signals.h", base+".h", base + "_signals." + suffix, de, true );
+    }
+
+    if ( generate_stub ) {
+	QString header = base;
+	generateStub( idl, header + "_stub.h", de, false );
+	pos = header.findRev('/');
+	if ( pos != -1 )
+	    header = header.mid( pos+1 );
+	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de, false );
     }
 
     return 0;
