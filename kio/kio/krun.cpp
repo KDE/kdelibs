@@ -547,28 +547,18 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
 
-static pid_t runCommandInternal( KProcess* proc, const QString& binName,
+static pid_t runCommandInternal( KProcess* proc, const KService::Ptr& service, const QString& binName,
     const QString &execName_P, const QString & iconName_P )
 {
   QString bin = KRun::binaryName( binName, false );
   QString execName = execName_P;
   QString iconName = iconName_P;
-#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
-  KService::Ptr service = 0;
-  // Find service, if starting a .desktop file
-  // (not when starting an executable)
-  if ( KDesktopFile::isDesktopFile( bin ) )
+  if ( service != NULL && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
-      if (!KDesktopFile::isAuthorizedDesktopFile( bin))
-      {
-         KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
-         return 0;
-      }
-      if( bin[0] == '/' ) // Full path
-          service = new KService( bin );
-      else
-          service = KService::serviceByDesktopName( bin );
+     KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
+     return 0;
   }
+#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   bool startup_notify = false;
   QCString wmclass;
   KStartupInfoId id;
@@ -657,7 +647,7 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
      QString arg = *it;
      *proc << arg;
   }
-  return runCommandInternal( proc, _service.exec(), _service.name(), _service.icon() );
+  return runCommandInternal( proc, KService::Ptr( new KService( _service ) ), _service.exec(), _service.name(), _service.icon() );
 }
 
 // BIC merge with method below
@@ -733,7 +723,9 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   KProcess * proc = new KProcess;
   proc->setUseShell(true);
   *proc << cmd;
-  return runCommandInternal( proc, binaryName( cmd, false ), execName, iconName );
+  QString bin = binaryName( cmd, false );
+  KService::Ptr service = KService::serviceByDesktopName( bin );
+  return runCommandInternal( proc, service, bin, execName, iconName );
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
