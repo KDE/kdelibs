@@ -1429,6 +1429,6 @@ const QColor& KDockTabBar::textColor( int id )
   return Qt::black;
 }
 
-// DON'T REMOVE THIS INCLUDE!
+#ifndef NO_KDE2 // for Qt-only projects, because tmake doesn't take this name
 #include "kdocktabctl.moc"
-
+#endif
