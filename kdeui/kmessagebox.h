@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1999/08/15 10:50:30  kulow
+ * adding KMessageBox::about which uses the KDE icon instead of the Qt Information
+ * icon - very cool! :)
+ *
  * Revision 1.1  1999/07/25 19:38:58  waba
  * WABA: Added some i18n'ed qmessagebox'es for convenience
  *
@@ -149,9 +153,9 @@ public:
    * not allowed, this should never be reported as with error(). Use sorry()
    * instead to explain to the user that is action is not allowed. 
    *
-   * The default button is "&Ok". Pressing "Esc" selects the Ok-button.
+   * The default button is "&OK". Pressing "Esc" selects the OK-button.
    *
-   * NOTE: The ok button will always have the i18n'ed text '&Ok'.
+   * NOTE: The ok button will always have the i18n'ed text '&OK'.
    */
    
   static void error(QWidget *parent, 
@@ -174,9 +178,9 @@ public:
   * To be used for small problems like 
   * "Sorry, I can't find the file you specified.."
   *
-  * The default button is "&Ok". Pressing "Esc" selects the Ok-button.
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
-  * NOTE: The ok button will always have the i18n'ed text '&Ok'.
+  * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
   
   static void sorry(QWidget *parent, 
@@ -198,9 +202,9 @@ public:
   * To be used for things like 
   * "Your bookmarks have been rearranged."
   *
-  * The default button is "&Ok". Pressing "Esc" selects the Ob-button.
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
-  *  NOTE: The ok button will always have the i18n'ed text '&Ok'.
+  *  NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
    
   static void information(QWidget *parent, 
@@ -222,9 +226,9 @@ public:
    * Your program wants to show some general informations about the application
    * like the authors's names and email addresses.
    *
-   * The default button is "&Ok". 
+   * The default button is "&OK". 
    *
-   *  NOTE: The ok button will always have the i18n'ed text '&Ok'.
+   *  NOTE: The ok button will always have the i18n'ed text '&OK'.
    */
   static void about(QWidget *parent,
 		    const QString& text,
