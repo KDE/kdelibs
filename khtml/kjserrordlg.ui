@@ -80,8 +80,16 @@
             <property name="textFormat">
                 <enum>RichText</enum>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>1</verstretch>
+                </sizepolicy>
+            </property>
         </widget>
-        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="3">
+        <widget class="KActiveLabel" row="0" column="0" rowspan="1" colspan="3">
             <property name="name">
                 <cstring>_url</cstring>
             </property>
@@ -110,9 +118,15 @@
     <tabstop>_close</tabstop>
     <tabstop>_clear</tabstop>
 </tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+<layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
 <includes>
+    <include location="global" impldecl="in declaration">kactivelabel.h</include>
     <include location="local" impldecl="in implementation">kjserrordlg.ui.h</include>
 </includes>
+<includehints>
+    <includehint>kactivelabel.h</includehint>
+</includehints>
 <slots>
     <slot>init()</slot>
     <slot>addError( const QString &amp; error )</slot>
