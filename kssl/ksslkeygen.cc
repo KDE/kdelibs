@@ -25,6 +25,9 @@
 #include "keygenwizard.h"
 #include "keygenwizard2.h"
 #include <qlineedit.h>
+#include <qpushbutton.h>
+
+#include <assert.h>
 
 #include <kopenssl.h>
 
@@ -32,8 +35,9 @@
 
 KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal) 
 :KWizard(parent,name,modal) {
+	_idx = -1;
+
 #ifdef HAVE_SSL
-	kossl = KOSSL::self();
 	page1 = new KGWizardPage1(this, "Wizard Page 1");
 	addPage(page1, i18n("KDE Certificate Request"));
 	page2 = new KGWizardPage2(this, "Wizard Page 2");
@@ -43,6 +47,7 @@ KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
 	setFinishEnabled(page2, false);
 	connect(page2->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
 	connect(page2->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+	connect(finishButton(), SIGNAL(clicked()), SLOT(slotGenerate()));
 #else
 	// tell him he doesn't have SSL
 #endif
@@ -56,6 +61,18 @@ KSSLKeyGen::~KSSLKeyGen() {
 
 void KSSLKeyGen::slotPassChanged() {
 	setFinishEnabled(page2, page2->_password1->text() == page2->_password2->text() && page2->_password1->text().length() >= 4);
+}
+
+
+void KSSLKeyGen::slotGenerate() {
+	assert(_idx >= 0 && _idx < 3);   // for now
+
+	// Show a progress box
+
+	// Generate the CSR
+
+	// Store
+
 }
 
 

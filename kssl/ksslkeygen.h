@@ -47,13 +47,13 @@ public:
 
 private slots:
 	void slotPassChanged();
+	void slotGenerate();
 
 private:
  
 	class KSSLKeyGenPrivate;
 	KSSLKeyGenPrivate *d;
 	int _idx;
-	KOpenSSLProxy *kossl;
 	KGWizardPage1 *page1;
 	KGWizardPage2 *page2;
  
