@@ -27,6 +27,7 @@
 
 #include <qaction.h>
 #include <kpart.h>
+#include <kevent.h>
 
 class KFileItem;
 typedef QList<KFileItem> KFileItemList;
@@ -35,9 +36,26 @@ class QString;
 
 namespace KParts {
 
+class OpenURLEvent : public Event
+{
+public:
+  // arghl, shouldn't we move this into *some* lib, in order to make that string a static const char * ?
+  OpenURLEvent( ReadOnlyPart *part, const KURL &url ) 
+  : Event( "BrowserExtension/OpenURLEvent" ), m_part( part ), m_url( url ) {}
+
+  ReadOnlyPart *part() const { return m_part; }
+  KURL url() const { return m_url; }
+
+  static bool test( const QEvent *event ) { return Event::test( event, "BrowserExtension/OpenURLEvent" ); }
+
+private:
+  ReadOnlyPart *m_part;
+  KURL m_url;
+};
+
  /**
   * The following standard actions are defined by the host of the view :
-  * 
+  *
   * cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
   * copy : copy selected items to clipboard (and notifies it's not a cut)
   * pastecut : called when doing a paste after a cut
@@ -50,8 +68,8 @@ namespace KParts {
   * saveLocalProperties : save current configuration into .directory
   * savePropertiesAsDefault : save current configuration as default
   * refreshMimeTypes : if the view uses mimetypes it should re-determine them
-  * 
-  * 
+  *
+  *
   * The view should emit enableAction when an action should be enabled/disabled,
   * and should define a slot with the name of the action in order to implement the action.
   * The browser will detect the slot automatically and connect its action to it when
@@ -118,7 +136,7 @@ signals:
   void enableAction( const char * name, bool enabled );
 
   /**
-   * Open @p url in the browser, optionnally forcing @p reload, and 
+   * Open @p url in the browser, optionnally forcing @p reload, and
    * optionnally setting the x and y offsets.
    * The @serviceType allows to ...
    */
