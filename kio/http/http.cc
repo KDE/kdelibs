@@ -550,7 +550,9 @@ HTTPProtocol::http_openConnection()
       QString proxyconheader = QString("CONNECT %1:%2 HTTP/1.1\r\n\r\n").arg(m_request.hostname).arg(m_request.port);
       // WARNING: ugly hack alert!  We don't want to use the SSL routines
       //          for this code so we have to disabled it temporarily.
-      bool useSSLSaved = m_bUseSSL;   m_bUseSSL = false;
+      kdDebug(7113) << "Sending connect header: " << proxyconheader << endl;
+      bool useSSLSaved = m_bUseSSL;
+      m_bUseSSL = false;
       bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length())
                            == (ssize_t) proxyconheader.length());
       char buffer[513];
@@ -3119,7 +3121,9 @@ void HTTPProtocol::reparseConfiguration()
   if ( KProtocolManager::useProxy() )
   {
     // Use the appropriate proxy depending on the protocol
-    m_proxyURL = KURL( KProtocolManager::proxyFor( m_protocol ) );
+    kdDebug(7113) << "Protocol is: " << m_protocol << endl;
+    QString protocol = (m_protocol == "https") ? QString("http") : m_protocol;
+    m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
     if (!m_proxyURL.isMalformed() )
     {
         m_bUseProxy = true;
