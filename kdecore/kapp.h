@@ -121,7 +121,7 @@
 #ifndef klocale
 #define klocale KApplication::getKApplication()->getLocale()
 #endif
-#define i18n KApplication::getKApplication()->getLocale()->translate
+
 // klocale->translate is much to long
 #ifndef i18n
 #define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
