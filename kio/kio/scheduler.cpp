@@ -126,7 +126,6 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 Scheduler::Scheduler()
           : DCOPObject( "KIO::Scheduler" ),
            QObject(kapp, "scheduler"),
-           DCOPObject( "KIO::Scheduler" ),
            slaveTimer(0, "Scheduler::slaveTimer"),
            coSlaveTimer(0, "Scheduler::coSlaveTimer"),
            cleanupTimer(0, "Scheduler::cleanupTimer")
