@@ -297,6 +297,11 @@ signals:
     void completion( const QString& );
 
     /**
+     * Emitted when the shortcut for substring completion is pressed.
+     */
+    void substringCompletion( const QString& );
+    
+    /**
      * Emitted when the text rotation key-bindings are pressed.
      *
      * The argument indicates which key-binding was pressed.

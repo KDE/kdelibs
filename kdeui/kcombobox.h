@@ -327,7 +327,7 @@ public:
      * @ref KGlobalSettings::CompletionPopup.
      * This method will create a completion-box by calling
      * @ref makeCompletionBox, if none is there, yet.
-     * 
+     *
      * @param create Set this to false if you don't want the box to be created
      *               i.e. to test if it is available.
      */
@@ -374,6 +374,11 @@ signals:
     */
     void completion( const QString& );
 
+    /**
+     * Emitted when the shortcut for substring completion is pressed.
+     */
+    void substringCompletion( const QString& );
+    
     /**
     * Emitted when the text rotation key-bindings are pressed.
     *

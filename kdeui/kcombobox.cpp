@@ -343,13 +343,17 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
 
             // substring completion
-            if ( handleSignals() && compObj() ) {
+            if ( compObj() ) {
                 int key = ( keys[SubstringCompletion] == 0 ) ?
                           KStdAccel::key(KStdAccel::SubstringCompletion) :
                           keys[SubstringCompletion];
                 if ( KStdAccel::isEqual( e, key ) ) {
-                    setCompletedItems( compObj()->substringCompletion( currentText() ) );
-                    e->accept();
+                    if ( emitSignals() )
+                        emit substringCompletion( currentText() );
+                    if ( handleSignals() ) {
+                        setCompletedItems( compObj()->substringCompletion( currentText() ) );
+                        e->accept();
+                    }
                     return;
                 }
             }

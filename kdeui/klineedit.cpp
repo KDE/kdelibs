@@ -286,13 +286,17 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
 
         // substring completion
-        if ( handleSignals() && compObj() ) {
+        if ( compObj() ) {
             int key = ( keys[SubstringCompletion] == 0 ) ?
                       KStdAccel::key(KStdAccel::SubstringCompletion) :
                       keys[SubstringCompletion];
             if ( KStdAccel::isEqual( e, key ) ) {
-                setCompletedItems( compObj()->substringCompletion( text() ) );
-                e->accept();
+                if ( emitSignals() )
+                    emit substringCompletion( text() );
+                if ( handleSignals() ) {
+                    setCompletedItems( compObj()->substringCompletion(text()));
+                    e->accept();
+                }
                 return;
             }
         }
