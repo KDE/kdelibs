@@ -263,6 +263,9 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
+   if (ds.atEnd())
+      return;
+
    KCmdLineArgs *args;
    if (argsList)
    {
