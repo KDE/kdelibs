@@ -334,7 +334,7 @@ bool HTMLDocumentImpl::headLoaded()
 {
     printf("checking for headLoaded()\n");
     if(parser && !parser->parsingBody()) return false;
-    if(m_loadingSheet) return false;
+    //if(m_loadingSheet) return false;
 
     NodeImpl *test = _first;
     if(!test) return true;

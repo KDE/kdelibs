@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -392,9 +392,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    current = newNode;
 	    if(!block && current->blocking())
 		block = current;
+	    n->attach(HTMLWidget);
+	    // ### HACK!!!
 	    if(n->id() == ID_BODY)
 		document->createSelector();
-	    n->attach(HTMLWidget);
 	    if(current->isInline()) _inline = true;
 	}
 	else

@@ -52,6 +52,8 @@ using namespace DOM;
 #include <qvaluelist.h>
 #include <qstring.h>
 
+#include <assert.h>
+
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
 
@@ -174,7 +176,10 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     RenderStyle *style;
     if(e->parentNode())
+    {
+	assert(e->parentNode()->style() != 0);
 	style = new RenderStyle(e->parentNode()->style());
+    }
     else
 	style = new RenderStyle();	
 
