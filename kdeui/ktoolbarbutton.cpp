@@ -435,7 +435,7 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
     if (ev->type() == QEvent::MouseButtonDblClick)
     {
       emit doubleClicked(d->m_id);
-      return true;
+      return false;
     }
   }
 
