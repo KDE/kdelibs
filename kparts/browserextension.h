@@ -311,6 +311,10 @@ public:
    * ShowBookmark: show "add to bookmarks" (usually not done on the local filesystem)
    * ShowCreateDirectory: show "create directory" (usually only done on the background of the view, or
    *                      in hierarchical views like directory trees, where the new dir would be visible)
+   *
+   * KDE4 TODO: add IsLink flag, for "Bookmark This Link" and linkactions merging group.
+   *                    [currently it depends on which signal is emitted]
+   *            add ShowURLOperation flags for copy,cut,paste,rename,trash,del [same thing]
    */
   enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
@@ -706,7 +710,7 @@ protected:
       KParts::ReadOnlyPart *callingPart;
       QString frame;
   };
-                                                    
+
   virtual void virtual_hook( int id, void* data );
 private:
   class BrowserHostExtensionPrivate;
