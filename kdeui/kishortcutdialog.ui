@@ -44,9 +44,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
                 <widget class="Line" row="0" column="3" rowspan="3" colspan="1">
                     <property name="name">
                         <cstring>line1</cstring>
@@ -68,9 +65,6 @@
                     <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="spacing">
-                            <number>0</number>
                         </property>
                         <widget class="KPushButton">
                             <property name="name">
@@ -295,9 +289,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
                         <cstring>layout9</cstring>
@@ -305,12 +296,6 @@
                     <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>0</number>
                         </property>
                         <widget class="QLayoutWidget">
                             <property name="name">
@@ -414,12 +399,6 @@
                     <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>0</number>
                         </property>
                         <widget class="KPushButton">
                             <property name="name">
@@ -547,7 +526,10 @@
     <include location="global" impldecl="in declaration">kshortcut.h</include>
     <include location="global" impldecl="in declaration">kdialog.h</include>
     <include location="global" impldecl="in implementation">kpushbutton.h</include>
+    <include location="global" impldecl="in implementation">kdialog.h</include>
 </includes>
+<layoutdefaults spacing="6" margin="11"/>
+<layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
 <forwards>
     <forward>class KShortcut</forward>
 </forwards>
@@ -561,6 +543,7 @@
     <slot access="protected" specifier="pure virtual">slotMultiKeyMode(bool bOn)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
+<layoutfunctions/>
 <includehints>
     <includehint>kdialog.h</includehint>
     <includehint>kpushbutton.h</includehint>

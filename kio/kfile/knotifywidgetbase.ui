@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>KNotifyWidgetBase</class>
 <widget class="QWidget">
     <property name="name">
@@ -19,12 +19,6 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <property name="margin">
-            <number>11</number>
-        </property>
-        <property name="spacing">
-            <number>6</number>
-        </property>
         <widget class="KListView">
             <column>
                 <property name="text">
@@ -33,7 +27,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>false</bool>
                 </property>
             </column>
@@ -44,7 +38,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>false</bool>
                 </property>
             </column>
@@ -55,7 +49,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>false</bool>
                 </property>
             </column>
@@ -66,7 +60,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>false</bool>
                 </property>
             </column>
@@ -77,7 +71,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>false</bool>
                 </property>
             </column>
@@ -88,7 +82,7 @@
                 <property name="clickable">
                     <bool>true</bool>
                 </property>
-                <property name="resizeable">
+                <property name="resizable">
                     <bool>true</bool>
                 </property>
             </column>
@@ -115,12 +109,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>11</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
                         <cstring>Layout26</cstring>
@@ -128,12 +116,6 @@
                     <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
                         </property>
                         <widget class="KURLRequester" row="1" column="1">
                             <property name="name">
@@ -199,12 +181,6 @@
                                 <property name="name">
                                     <cstring>unnamed</cstring>
                                 </property>
-                                <property name="margin">
-                                    <number>0</number>
-                                </property>
-                                <property name="spacing">
-                                    <number>6</number>
-                                </property>
                                 <widget class="QCheckBox">
                                     <property name="name">
                                         <cstring>m_playSound</cstring>
@@ -244,12 +220,6 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
-                        </property>
                         <widget class="QCheckBox">
                             <property name="name">
                                 <cstring>m_messageBox</cstring>
@@ -284,12 +254,6 @@
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
                         </property>
                         <spacer>
                             <property name="name">
@@ -346,12 +310,6 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
-                        </property>
                         <widget class="QCheckBox">
                             <property name="name">
                                 <cstring>m_stderr</cstring>
@@ -392,12 +350,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>11</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
                 <widget class="QCheckBox">
                     <property name="name">
                         <cstring>m_affectAllApps</cstring>
@@ -413,12 +365,6 @@
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
                         </property>
                         <spacer>
                             <property name="name">
@@ -444,12 +390,6 @@
                             <grid>
                                 <property name="name">
                                     <cstring>unnamed</cstring>
-                                </property>
-                                <property name="margin">
-                                    <number>0</number>
-                                </property>
-                                <property name="spacing">
-                                    <number>6</number>
                                 </property>
                                 <widget class="QPushButton" row="1" column="0">
                                     <property name="name">
@@ -513,12 +453,6 @@
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
                 </property>
                 <widget class="QPushButton">
                     <property name="name">
@@ -594,5 +528,43 @@
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>m_listview</tabstop>
+    <tabstop>m_playSound</tabstop>
+    <tabstop>m_playButton</tabstop>
+    <tabstop>m_soundPath</tabstop>
+    <tabstop>m_logToFile</tabstop>
+    <tabstop>m_logfilePath</tabstop>
+    <tabstop>m_execute</tabstop>
+    <tabstop>m_executePath</tabstop>
+    <tabstop>m_messageBox</tabstop>
+    <tabstop>m_passivePopup</tabstop>
+    <tabstop>m_stderr</tabstop>
+    <tabstop>m_affectAllApps</tabstop>
+    <tabstop>m_buttonEnable</tabstop>
+    <tabstop>m_comboEnable</tabstop>
+    <tabstop>m_buttonDisable</tabstop>
+    <tabstop>m_comboDisable</tabstop>
+    <tabstop>m_extension</tabstop>
+    <tabstop>m_playerButton</tabstop>
+</tabstops>
+<includes>
+    <include location="global" impldecl="in implementation">kdialog.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
+<layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
+<includehints>
+    <includehint>klistview.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kcombobox.h</includehint>
+    <includehint>kcombobox.h</includehint>
+</includehints>
 </UI>

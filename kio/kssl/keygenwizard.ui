@@ -1,14 +1,11 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>KGWizardPage1</class>
 <author>George Staikos &lt;staikos@kde.org&gt;</author>
-<widget>
-    <class>QWidget</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QWidget">
+    <property name="name">
         <cstring>KGWizardPage1</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
@@ -16,45 +13,37 @@
             <height>142</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Form2</string>
     </property>
     <grid>
-        <property stdset="1">
-            <name>margin</name>
-            <number>11</number>
+        <property name="name">
+            <cstring>unnamed</cstring>
         </property>
-        <property stdset="1">
-            <name>spacing</name>
-            <number>6</number>
-        </property>
-        <widget row="0"  column="0" >
-            <class>QLabel</class>
-            <property stdset="1">
-                <name>name</name>
+        <widget class="QLabel" row="0" column="0">
+            <property name="name">
                 <cstring>TextLabel1</cstring>
             </property>
-            <property stdset="1">
-                <name>text</name>
+            <property name="text">
                 <string>You have indicated that you wish to obtain or purchase a secure certificate. This wizard is intended to guide you through the procedure. You may cancel at any time, and this will abort the transaction.</string>
             </property>
-            <property stdset="1">
-                <name>textFormat</name>
+            <property name="textFormat">
                 <enum>RichText</enum>
             </property>
-            <property stdset="1">
-                <name>scaledContents</name>
+            <property name="scaledContents">
                 <bool>false</bool>
             </property>
-            <property stdset="1">
-                <name>alignment</name>
+            <property name="alignment">
                 <set>WordBreak|AlignVCenter|AlignLeft</set>
             </property>
-            <property>
-                <name>wordwrap</name>
+            <property name="wordwrap" stdset="0">
             </property>
         </widget>
     </grid>
 </widget>
+<includes>
+    <include location="global" impldecl="in implementation">kdialog.h</include>
+</includes>
+<layoutdefaults spacing="6" margin="11"/>
+<layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
 </UI>
