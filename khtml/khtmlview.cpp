@@ -1065,46 +1065,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	{
 		// type-ahead find aka find-as-you-type
 		QString status;
-		if(_ke->key() >= Key_Space && _ke->key() < Key_Escape)
-		{
-			QString newFindString = d->findString + _ke->text();
-			if(d->findLinksOnly)
-			{
-				m_part->findText(newFindString, KHTMLPart::FindNoPopups |
-				                 KHTMLPart::FindLinksOnly, this);
-				if(m_part->findTextNext())
-				{
-					d->findString = newFindString;
-					status = i18n("Link found: \"%1\".");
-				}
-				else
-				{
-					KNotifyClient::beep();
-					status = i18n("Link not found: \"%1\".");
-				}
-			}
-			else
-			{
-				m_part->findText(newFindString, KHTMLPart::FindNoPopups, this);
-				if(m_part->findTextNext())
-				{
-					d->findString = newFindString;
-					status = i18n("Text found: \"%1\".");
-				}
-				else
-				{
-					KNotifyClient::beep();
-					status = i18n("Text not found: \"%1\".");
-				}
-			}
-			m_part->setStatusBarText(status.arg(newFindString.lower()),
-			                         KHTMLPart::BarDefaultText);
-
-			d->timer.start(3000, true);
-			_ke->accept();
-			return;
-		}
-		else if(_ke->key() == Key_BackSpace)
+		if(_ke->key() == Key_BackSpace)
 		{
 			d->findString = d->findString.left(d->findString.length() - 1);
 
@@ -1147,6 +1108,45 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		{
 			findTimeout();
 
+			_ke->accept();
+			return;
+		}
+		else if(_ke->text().isEmpty() == false)
+		{
+			QString newFindString = d->findString + _ke->text();
+			if(d->findLinksOnly)
+			{
+				m_part->findText(newFindString, KHTMLPart::FindNoPopups |
+				                 KHTMLPart::FindLinksOnly, this);
+				if(m_part->findTextNext())
+				{
+					d->findString = newFindString;
+					status = i18n("Link found: \"%1\".");
+				}
+				else
+				{
+					KNotifyClient::beep();
+					status = i18n("Link not found: \"%1\".");
+				}
+			}
+			else
+			{
+				m_part->findText(newFindString, KHTMLPart::FindNoPopups, this);
+				if(m_part->findTextNext())
+				{
+					d->findString = newFindString;
+					status = i18n("Text found: \"%1\".");
+				}
+				else
+				{
+					KNotifyClient::beep();
+					status = i18n("Text not found: \"%1\".");
+				}
+			}
+			m_part->setStatusBarText(status.arg(newFindString.lower()),
+			                         KHTMLPart::BarDefaultText);
+
+			d->timer.start(3000, true);
 			_ke->accept();
 			return;
 		}
