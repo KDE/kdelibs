@@ -984,12 +984,13 @@ static void sighandler(int sig)
 extern "C" int _KDE_IceTransNoListen(const char *protocol);
 #endif
 
-DCOPServer::DCOPServer(bool _only_local)
+DCOPServer::DCOPServer(bool _only_local, bool _suicide)
     : QObject(0,0), appIds(263), clients(263), currentClientNumber(0)
 {
     serverKey = 42;
 
     only_local = _only_local;
+    suicide = _suicide;
 
 #ifdef HAVE_KDE_ICETRANSNOLISTEN
     if (only_local)
@@ -1297,7 +1298,7 @@ void DCOPServer::removeConnection( void* data )
 
     delete conn;
 
-    if ( currentClientNumber == 0 )
+    if ( suicide && (currentClientNumber == 0) )
     {
         m_timer->start( 10000 ); // if within 10 seconds nothing happens, we'll terminate
     }
@@ -1569,6 +1570,7 @@ int main( int argc, char* argv[] )
     bool nofork = false;
     bool nosid = false;
     bool nolocal = false;
+    bool suicide = false;
     for(int i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "--nofork") == 0)
 	    nofork = true;
@@ -1576,6 +1578,8 @@ int main( int argc, char* argv[] )
 	    nosid = true;
 	else if (strcmp(argv[i], "--nolocal") == 0)
 	    nolocal = true;
+	else if (strcmp(argv[i], "--suicide") == 0)
+	    suicide = true;
 	else {
 	    fprintf(stdout, ABOUT );
 	    return 0;
@@ -1667,7 +1671,7 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer *server = new DCOPServer(!nolocal); // this sets the_server
+    DCOPServer *server = new DCOPServer(!nolocal, suicide); // this sets the_server
 
     int ret = a.exec();
     delete server;

@@ -103,7 +103,7 @@ class DCOPServer : public QObject
 {
     Q_OBJECT
 public:
-    DCOPServer(bool _only_local);
+    DCOPServer(bool _only_local, bool _suicide);
     ~DCOPServer();
 
     void* watchConnection( IceConn iceConn );
@@ -132,16 +132,17 @@ private slots:
     void slotOutputReady(int socket );
 
 private:
+    bool suicide;
     int majorOpcode;
+    int currentClientNumber;
     CARD32 serverKey;
+    DCOPSignals *dcopSignals;
+    QTimer *m_timer;
+    QTimer *m_deadConnectionTimer;
     QList<DCOPListener> listener;
     QAsciiDict<DCOPConnection> appIds; // index on app id
     QPtrDict<DCOPConnection> clients; // index on iceConn
     QIntDict<DCOPConnection> fd_clients; // index on fd
-    DCOPSignals *dcopSignals;
-    int currentClientNumber;
-    QTimer *m_timer;
-    QTimer *m_deadConnectionTimer;
     QList<_IceConn> deadConnections;
 };
 
