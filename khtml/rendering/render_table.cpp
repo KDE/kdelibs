@@ -356,13 +356,6 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
-    bool clipped = false;
-    // overflow: hidden
-    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
-        calcClip(p, _tx, _ty);
-	clipped = true;
-    }
-
 
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
@@ -371,6 +364,13 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     {
         if((_ty > _y + _h) || (_ty + height() < _y)) return;
         if((_tx > _x + _w) || (_tx + width() < _x)) return;
+    }
+
+    bool clipped = false;
+    // overflow: hidden
+    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
+        calcClip(p, _tx, _ty);
+	clipped = true;
     }
 
 #ifdef TABLE_PRINT
@@ -393,9 +393,8 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
     // overflow: hidden
     // restore clip region
-    if ( clipped ) {
+    if ( clipped )
 	p->restore();
-    }
 
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty, "blue");
