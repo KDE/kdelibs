@@ -51,6 +51,9 @@ public:
 
     QStatusBar *createStatusBar();
 
+    QToolBar *viewToolBar( const char *name );
+    QMenuBar *viewMenuBar( const char *name );
+
 protected:
     void createToolBars( const QDomElement& element );
     void createMenuBar( const QDomElement& shell, const QDomElement& part );

@@ -59,6 +59,16 @@ QStatusBar *Shell::createStatusBar()
   return m_statusBar;
 }
 
+QToolBar *Shell::viewToolBar( const char *name )
+{
+  return (QToolBar *)child( name, "QToolBar" );
+}
+
+QMenuBar *Shell::viewMenuBar( const char *name )
+{
+  return (QMenuBar *)child( name, "QMenuBar" );
+}
+
 Part* Shell::rootPart()
 {
     return m_rootPart;
@@ -230,7 +240,7 @@ QToolBar* Shell::createToolBar( const char* name )
 
     return bar;
 }
-
+#include <iostream.h>
 void Shell::createToolBars( const QDomElement& element )
 {
     QDomElement e = element.firstChild().toElement();
@@ -239,15 +249,32 @@ void Shell::createToolBars( const QDomElement& element )
 	if ( e.tagName() == "ToolBar" )
         {
 	    QToolBar* bar = createToolBar( e.attribute("name") );
+
+            //EEEK, this is ugly! (Simon)
+            if ( e.attribute( "rightJustification" ).lower() == "true" )
+              setRightJustification( TRUE );
+            else
+              setRightJustification( FALSE );
 	
 	    QDomElement f = e.firstChild().toElement();
 	    for( ; !f.isNull(); f = f.nextSibling().toElement() )
 	    {
+
+                bool stretch = false;
+                if ( f.hasAttribute( "stretchwidget" ) &&
+                     f.attribute( "stretchwidget" ) == "true" )
+                  stretch = true;
+
+                QWidget *container = 0;
+
 		if ( f.tagName() == "Action" )
 	        {
 		    QAction* a = action( f.attribute("name") );
 		    if ( a )
-			a->plug( bar );
+                    {
+			int idx = a->plug( bar );
+                        container = a->container( idx );
+                    }
 		}
 		else if ( f.tagName() == "PluginAction" )
                 {
@@ -258,7 +285,10 @@ void Shell::createToolBars( const QDomElement& element )
 		    {
 			QAction* a = plugin->action( f.attribute("name") );
 			if ( a )
-			    a->plug( bar );
+                        {
+			    int idx = a->plug( bar );
+                            QWidget *container = a->container( idx );
+                        }
 			else
 			    qDebug("Shell: Unknown plugin action %s", f.attribute("name").latin1() );
 		    }
@@ -269,8 +299,12 @@ void Shell::createToolBars( const QDomElement& element )
 	        {
 		    bar->addSeparator();
 		}
+
+               if ( container && stretch )
+                 bar->setStretchableWidget( container );
+
 	    }
-	
+
 	    bar->show();
 	}
     }
