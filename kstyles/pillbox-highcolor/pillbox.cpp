@@ -957,30 +957,27 @@ void PillBoxStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
 
 void PillBoxStyle::makeWallpaper(QPixmap &dest, const QColor &base)
 {
-    static QBitmap paper3(100, 100, paper_3_bits, true);
-    static QBitmap paper4(100, 100, paper_4_bits, true);
-    static QBitmap paper6(100, 100, paper_6_bits, true);
-    static QBitmap paper7(100, 100, paper_7_bits, true);
+    static QBitmap paper1(45, 45, paper_1_bits, true);
+    static QBitmap paper2(45, 45, paper_2_bits, true);
+    static QBitmap paper3(45, 45, paper_3_bits, true);
 
-    if(!paper3.mask()){
+    if(!paper1.mask()){
+        paper1.setMask(paper1);
+        paper2.setMask(paper2);
         paper3.setMask(paper3);
-        paper4.setMask(paper4);
-        paper6.setMask(paper6);
-        paper7.setMask(paper7);
     }
-    dest.resize(100, 100);
-    dest.fill(base); // paper5
+    dest.resize(45, 45);
+    dest.fill(base);
     QPainter p;
     p.begin(&dest);
     p.setPen(base.dark(104));
-    p.drawPixmap(0, 0, paper3);
-    p.setPen(base.dark(102));
-    p.drawPixmap(0, 0, paper4);
-    p.setPen(base.light(102));
-    p.drawPixmap(0, 0, paper6);
+    p.drawPixmap(0, 0, paper1);
     p.setPen(base.light(104));
-    p.drawPixmap(0, 0, paper7);
+    p.drawPixmap(0, 0, paper2);
+    p.setPen(base.light(106));
+    p.drawPixmap(0, 0, paper3);
     p.end();
+
 }
 
 
