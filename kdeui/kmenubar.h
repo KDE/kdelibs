@@ -72,7 +72,7 @@ public:
      */
     bool isTopLevelMenu() const;
 
-    virtual void setGeometry( const QRect &r ) { QWidget::setGeometry( r ); }
+    virtual void setGeometry( const QRect &r ) { QMenuBar::setGeometry( r ); }
     virtual void        setGeometry( int x, int y, int w, int h );
 
     virtual void show();
