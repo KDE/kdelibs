@@ -23,6 +23,10 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.13  1998/09/01 20:21:54  kulow
+    I renamed all old qt header files to the new versions. I think, this looks
+    nicer (and gives the change in configure a sense :)
+
     Revision 1.12  1998/08/31 12:43:25  esken
     GPL -> LGPL
 
@@ -105,10 +109,12 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlistbox.h>
+#include <qlayout.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qscrollbar.h>
 #include <qtooltip.h>
+#include <kbuttonbox.h>
 
 #include <qstring.h>
 #include <qfont.h>
@@ -195,10 +201,15 @@ private:
     bool loadKDEInstalledFonts();
     void fill_family_combo();
     void setCombos();
-   
+
+
+    QVBoxLayout  *layout;
     QGroupBox	 *box1;
     QGroupBox	 *box2;
-    
+    KButtonBox   *bbox;
+    QGridLayout  *box1layout;
+    QGridLayout  *box2layout;
+
     // pointer to an optinally supplied list of fonts to 
     // inserted into the fontdialog font-family combo-box
     QStrList     *fontlist; 
@@ -226,8 +237,6 @@ private:
     QComboBox    *weight_combo;
     QComboBox    *style_combo;
     QComboBox	 *charset_combo;    
-    QPushButton	 *ok_button;
-    QPushButton	 *cancel_button;
 
     QLineEdit       *example_edit;
     QFont         selFont;
