@@ -738,21 +738,23 @@ char *gai_strerror(int errorcode)
     I18N_NOOP("no error"),	// 0
     I18N_NOOP("address family for nodename not supported"), // EAI_ADDRFAMILY
     I18N_NOOP("temporary failure in name resolution"),	// EAI_AGAIN
-    I18N_NOOP("invalid value for ai_flags"),	// EAI_BADFLAGS
+    I18N_NOOP("invalid value for 'ai_flags'"),	// EAI_BADFLAGS
     I18N_NOOP("non-recoverable failure in name resolution"), // EAI_FAIL
-    I18N_NOOP("ai_family not supported"),	// EAI_FAMILY
+    I18N_NOOP("'ai_family' not supported"),	// EAI_FAMILY
     I18N_NOOP("memory allocation failure"),	// EAI_MEMORY
     I18N_NOOP("no address associated with nodename"),	// EAI_NODATA
     I18N_NOOP("name or service not known"),	// EAI_NONAME
     I18N_NOOP("servname not supported for ai_socktype"), // EAI_SERVICE
-    I18N_NOOP("ai_socktype not supported"),	// EAI_SOCKTYPE
-    I18N_NOOP("system error returned in errno")	// EAI_SYSTEM
+    I18N_NOOP("'ai_socktype' not supported"),	// EAI_SOCKTYPE
+    I18N_NOOP("system error")			// EAI_SYSTEM
   };
 
   if (errorcode > EAI_SYSTEM || errorcode < 0)
     return NULL;
 
-  return (char*)messages[errorcode];
+  static char buffer[200];
+  strcpy(buffer, i18n(messages[errorcode]).local8Bit());
+  return buffer;
 }
 
 static void findport(unsigned short port, char *serv, size_t servlen, int flags)
