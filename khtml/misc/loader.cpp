@@ -30,9 +30,6 @@
 
 // up to which size is a picture for sure cacheable
 #define MAXCACHEABLE 40*1024
-// max. size of a single picture in percent of the total cache size
-// to be cacheable
-#define MAXPERCENT 10
 // default cache size
 #define DEFCACHESIZE 512*1024
 // maximum number of files the loader will try to load in parallel
@@ -59,12 +56,12 @@ using namespace DOM;
 
 void CachedObject::computeStatus()
 {
-    if( m_size > MAXCACHEABLE || m_size > Cache::size()/MAXPERCENT )
+    if( m_size > MAXCACHEABLE )
     {
         m_status = Uncacheable;
-        m_size = 0;
+        Cache::flush(true); // Force flush.
     }
-   else
+    else
         m_status = Cached;
 }
 
@@ -115,6 +112,8 @@ void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
 {
     if(!eof) return;
+    m_size = buffer.buffer().size();
+
     buffer.close();
     buffer.open( IO_ReadOnly );
     QTextStream t( &buffer );
@@ -188,6 +187,7 @@ void CachedScript::data( QBuffer &buffer, bool eof )
 
     m_script = DOMString(data);
     loading = false;
+    m_size = buffer.buffer().size();
 
     checkNotify();
 }
@@ -641,8 +641,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         imgSource->setEOF(eof);
     }
 
-    m_size = _buffer.size();
-
     if(eof)
     {
         // QMovie currently doesn't support all kinds of image formats
@@ -655,7 +653,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #endif
             p = new QPixmap( _buffer.buffer() );
             // set size of image.
-            m_size = p->width() * p->height() * p->depth() / 8;
 #ifdef CACHE_DEBUG
             //kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
 #endif
@@ -665,6 +662,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                     do_notify(*p, p->rect());
         }
 
+        QSize s = pixmap_size();
+        m_size = s.width() * s.height() * 2;
         computeStatus();
     }
 }
@@ -924,7 +923,7 @@ Cache::LRUList *Cache::lru = 0;
 Loader *Cache::m_loader = 0;
 
 int Cache::maxSize = DEFCACHESIZE;
-int Cache::actSize = 0;
+int Cache::flushCount = 0;
 
 QPixmap *Cache::nullPixmap = 0;
 
@@ -950,7 +949,6 @@ void Cache::init()
     if(!cache)
     {
         cache = new QDict<CachedObject>(401, true);
-        cache->setAutoDelete(true);
     }
     if(!lru)
     {
@@ -965,6 +963,11 @@ void Cache::init()
 
 void Cache::clear()
 {
+#ifdef CACHE_DEBUG
+    kdDebug( 6060 ) << "Cache: CLEAR!" << endl;
+#endif
+    statistics();
+    cache->setAutoDelete( true );
     delete cache; cache = 0;
     delete lru;   lru = 0;
     delete nullPixmap; nullPixmap = 0;
@@ -1101,10 +1104,13 @@ CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMStr
     return static_cast<CachedScript *>(o);
 }
 
-void Cache::flush()
+void Cache::flush(bool force)
 {
-    CachedObject *o;
-    QString url;
+    if (force) 
+       flushCount = 0;
+    // Don't flush for every image.
+    if (!lru || (lru->count() < flushCount)) 
+       return;
 
     init();
 
@@ -1112,21 +1118,34 @@ void Cache::flush()
     //statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
-    if( actSize < maxSize ) return;
+    
+    int cacheSize = 0;
 
-    for ( QStringList::Iterator it = lru->begin(); it != lru->end(); ++it )
+    for ( QStringList::Iterator it = lru->fromLast(); it != lru->end(); )
     {
-        o = cache->find( *it );
-        if( !o->canDelete() || o->status() == CachedObject::Persistent )
-            continue; // image is still used or cached permanently
+        QString url = *it;
+        --it; // Update iterator, we might delete the current entry later on.
+        CachedObject *o = cache->find( url );
 
-        kdDebug( 6060 ) << "Cache: removing " << url << endl;
-        actSize -= o->size();
+        if( o->status() != CachedObject::Uncacheable )
+        {
+           cacheSize += o->size();
+           if( !o->canDelete() || o->status() == CachedObject::Persistent )
+               continue; // image is still used or cached permanently
+
+           if( cacheSize < maxSize ) 
+               continue;
+        }
+
+        o->setFree( true );
+
         lru->remove( url );
         cache->remove( url );
-        if( actSize < maxSize ) break;
-    }
 
+        if ( o->canDelete() )
+           delete o;
+    }
+    flushCount = lru->count()+10; // Flush again when the cache has grown.
 #ifdef CACHE_DEBUG
     //statistics();
 #endif
@@ -1136,7 +1155,8 @@ void Cache::setSize( int bytes )
 {
     maxSize = bytes;
     // may be we need to clear parts of the cache
-    flush();
+    flushCount = 0;
+    flush(true);
 }
 
 void Cache::statistics()
@@ -1167,8 +1187,8 @@ void Cache::statistics()
             if(o->type() == CachedObject::CSSStyleSheet)
                 stylesheets++;
 
-            size += o->size();
         }
+        size += o->size();
     }
     size /= 1024;
 
@@ -1178,7 +1198,6 @@ void Cache::statistics()
     kdDebug( 6060 ) << "Number of cached images: " << cache->count()-movie << endl;
     kdDebug( 6060 ) << "Number of cached movies: " << movie << endl;
     kdDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets << endl;
-    kdDebug( 6060 ) << "calculated allocated space approx. " << actSize/1024 << " kB" << endl;
     kdDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
     kdDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
     kdDebug( 6060 ) << "--------------------------------------------------------------------" << endl;
@@ -1206,34 +1225,11 @@ void Cache::removeCacheEntry( CachedObject *object )
   // drops down to zero
   object->setFree( true );
 
-  // if the object is still referenced, then don't really kill it but let it get killed
-  // when its reference counter drops down to zero
-  if ( !object->canDelete() )
-  {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "cache object for " << key << " is still referenced. Killing it softly..." << endl;
-#endif
-    cache->setAutoDelete( false );
-  }
+  cache->remove( key );
+  lru->remove( key );
 
-
-  if ( cache->remove( key ) )
-  {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "removed cache entry for " << key << " from cache dict" << endl;
-#endif
-   }
-
-  cache->setAutoDelete( true );
-
-  LRUList::Iterator it = lru->find( key );
-  if ( it != lru->end() )
-  {
-    lru->remove( it );
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "removed cache entry for " << key << " from lru" << endl;
-#endif
-  }
+  if ( object->canDelete() )
+     delete object;
 }
 
 void Cache::autoloadImages( bool enable )

@@ -385,7 +385,7 @@ namespace khtml
 	static void statistics();
 
 	/** clean up cache */
-	static void flush();
+	static void flush(bool force=false);
 
 	/**
 	 * clears the cache
@@ -428,7 +428,7 @@ namespace khtml
 	static LRUList *lru;
 
 	static int maxSize;
-	static int actSize;
+	static int flushCount;
 
 	static Loader *m_loader;
 
