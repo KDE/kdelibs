@@ -26,8 +26,9 @@
 
 #include <kdebug.h>
 
-Filter::Filter( const char *_cmd )
+Filter::Filter( const char *_cmd , char **arguments)
 {
+  unsigned int i=0;
   // Indicate an error;
   m_pid = -1;
   send_in = -1;
@@ -46,7 +47,18 @@ Filter::Filter( const char *_cmd )
     close( send_in );
     close( send_out );
 
-    char *argv[4] = { NULL, NULL, NULL, NULL };
+    if (arguments) {
+      while(arguments[i]) i++;
+    }
+
+    char *argv[i+2];
+    argv[i+1]=0;
+    if (arguments) {
+    i=0; while (arguments[i]) {
+        argv[i+1] = strdup(arguments[i]);
+        i++;
+    }
+    }
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
