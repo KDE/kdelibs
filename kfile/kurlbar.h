@@ -94,7 +94,8 @@ public:
                                       bool applicationLocal = true,
                                       const QString& icon = QString::null,
                                       int group = KIcon::Panel );
-    virtual void setOrientation( Orientation orient );
+    virtual void setOrientation( Qt::Orientation orient );
+    Orientation orientation() const;
 
     // will clear all the items
     virtual void setListBox( KURLBarListBox * );
@@ -115,18 +116,18 @@ public:
     virtual void writeItem( KURLBarItem *item, int i, KConfig * );
 
 public slots:
-    virtual void setCurrentItem( const KURL& url ); 
-    
+    virtual void setCurrentItem( const KURL& url );
+
 signals:
     void activated( const KURL& url );
 
 protected:
     virtual void resizeEvent( QResizeEvent * );
-    bool isVertical() const;
+    bool isVertical() const { return orientation() == Vertical; }
 
     KURLBarItem * m_activeItem;
     bool m_useGlobal :1;
-    
+
 protected slots:
     virtual void slotContextMenuRequested( QListBoxItem *, const QPoint& pos );
     virtual void slotSelected( QListBoxItem * );
@@ -165,8 +166,8 @@ public:
     KURLBarListBox( QWidget *parent = 0, const char *name = 0 );
     ~KURLBarListBox();
 
-    virtual void setOrientation( Orientation orient );
-    Orientation orientation() const { return m_orientation; }
+    virtual void setOrientation( Qt::Orientation orient );
+    Qt::Orientation orientation() const { return m_orientation; }
 
 signals:
     void dropped( QDropEvent *e );
@@ -177,7 +178,7 @@ protected:
     virtual void contentsDropEvent( QDropEvent * );
 
 private:
-    Orientation m_orientation;
+    Qt::Orientation m_orientation;
     KURLBarToolTip m_toolTip;
 
 private:
@@ -216,7 +217,7 @@ protected:
 private:
     class KURLBarDropDialogPrivate;
     KURLBarDropDialogPrivate *d;
-    
+
 };
 
 

@@ -78,7 +78,7 @@ void KURLBarItem::setIcon( const QString& icon, int group )
 void KURLBarItem::setDescription( const QString& desc )
 {
     m_description = desc;
-    setText( desc );
+    setText( desc.isEmpty() ? m_url.fileName() : desc );
 }
 
 void KURLBarItem::setToolTip( const QString& tip )
@@ -103,12 +103,12 @@ void KURLBarItem::paint( QPainter *p )
 
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
         // small icon -> draw icon next to text
-        
+
         // ### mostly cut & paste of QListBoxPixmap::paint() until Qt 3.1
-        // (where it will properly use pixmap() instead of the internal pixmap).
+        // (where it will properly use pixmap() instead of the internal pixmap)
         const QPixmap *pm = pixmap();
         int yPos = QMAX( 0, (height(box) - pm->height())/2 );
-        
+
         p->drawPixmap( 3, yPos, *pm );
         if ( !text().isEmpty() ) {
             QFontMetrics fm = p->fontMetrics();
@@ -118,7 +118,7 @@ void KURLBarItem::paint( QPainter *p )
                 yPos = pm->height()/2 - fm.height()/2 + fm.ascent();
             p->drawText( pm->width() + 5, yPos, text() );
         }
-        // end cut & paste
+        // end cut & paste (modulo pixmap centering)
     }
 
     else {
@@ -154,12 +154,12 @@ int KURLBarItem::width( const QListBox *lb ) const
     int min = 0;
     bool vertical = (static_cast<const KURLBarListBox*>(lb)->orientation()
                      == Qt::Vertical);
-    
+
     if ( m_parent->iconSize() < KIcon::SizeMedium )
         min = QListBoxPixmap::width( lb );
     else
         min = QMAX(lb->fontMetrics().width( text() ), pixmap()->width()) + 6;
-    
+
     if ( vertical ) {
         // qDebug("** min: %i, box: %i", min, lb->viewport()->width());
         return QMAX( min, lb->viewport()->width() );
@@ -171,12 +171,12 @@ int KURLBarItem::width( const QListBox *lb ) const
 int KURLBarItem::height( const QListBox *lb ) const
 {
     int min = 0;
-    bool horiz = (static_cast<const KURLBarListBox*>(lb)->orientation() 
+    bool horiz = (static_cast<const KURLBarListBox*>(lb)->orientation()
                   == Qt::Horizontal);
-    
+
     if ( m_parent->iconSize() < KIcon::SizeMedium )
         min = QListBoxPixmap::height( lb );
-    else 
+    else
         min = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
 
     if ( horiz )
@@ -204,7 +204,7 @@ KURLBar::~KURLBar()
 }
 
 KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
-                                  bool applicationLocal, 
+                                  bool applicationLocal,
                                   const QString& icon, int group )
 {
     KURLBarItem *item = new KURLBarItem(this, url, description, icon, group);
@@ -213,9 +213,14 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
     return item;
 }
 
-void KURLBar::setOrientation( Orientation orient )
+void KURLBar::setOrientation( Qt::Orientation orient )
 {
     m_listBox->setOrientation( orient );
+}
+
+Qt::Orientation KURLBar::orientation() const
+{
+    return m_listBox->orientation();
 }
 
 void KURLBar::setListBox( KURLBarListBox *view )
@@ -246,7 +251,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
              SLOT( slotSelected( QListBoxItem * )));
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
-    connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *, 
+    connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *,
                                                       const QPoint& )),
              SLOT( slotContextMenuRequested( QListBoxItem *, const QPoint& )));
 }
@@ -299,8 +304,6 @@ QSize KURLBar::sizeHint() const
         w += m_listBox->verticalScrollBar()->width();
     else if ( !vertical && m_listBox->horizontalScrollBar()->isVisible() )
         h += m_listBox->horizontalScrollBar()->height();
-    
-    qDebug("*** sizeHint: %i, %i", w, h);
 
     if ( w == 0 && h == 0 )
         return QSize( 100, 200 );
@@ -311,11 +314,6 @@ QSize KURLBar::sizeHint() const
 QSize KURLBar::minimumSizeHint() const
 {
     return sizeHint();
-}
-
-bool KURLBar::isVertical() const
-{
-    return m_listBox->orientation() == Vertical;
 }
 
 void KURLBar::slotSelected( QListBoxItem *item )
@@ -329,9 +327,14 @@ void KURLBar::slotSelected( QListBoxItem *item )
 
 void KURLBar::setCurrentItem( const KURL& url )
 {
+    QString u = url.url(-1);
+    
+    if ( m_activeItem && m_activeItem->url().url(-1) == u )
+        return;
+    
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
-        if ( static_cast<KURLBarItem*>( item )->url().url(-1) == url.url(-1) ) {
+        if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
             m_listBox->setCurrentItem( item );
             break;
         }
@@ -363,7 +366,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    
+
     const KURL& url = config->readEntry( QString("URL_") + number );
     if ( url.isMalformed() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
@@ -395,14 +398,14 @@ void KURLBar::writeConfig( KConfig *appConfig, const QString& itemGroup )
         item = static_cast<KURLBarItem*>( item->next() );
     }
     appConfig->writeEntry("Number of Entries", numLocal);
-    
-    
+
+
     // write the global entries to kdeglobals, if any
     bool haveGlobalEntries = (i > numLocal);
     if ( m_useGlobal && haveGlobalEntries ) {
         KConfig *globalConfig = new KConfig("kdeglobals", false, false);
         globalConfig->setGroup( itemGroup + " (Global)" );
-        
+
         int numGlobals = 0;
         item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
@@ -426,7 +429,7 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config )
     QString URL = "URL_";
     QString Icon = "Icon_";
     QString IconGroup = "IconGroup_";
-    
+
     QString number = QString::number( i );
     config->writeEntry( URL         + number, item->url().prettyURL() );
     config->writeEntry( Description + number, item->description());
@@ -448,7 +451,7 @@ void KURLBar::slotDropped( QDropEvent *e )
         KURL::List::Iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
             url = *it;
-            if ( KURLBarDropDialog::getInformation( m_useGlobal, 
+            if ( KURLBarDropDialog::getInformation( m_useGlobal,
                                                     url, description, icon,
                                                     appLocal, this ) ) {
                 item = insertItem( url, description, appLocal, icon );
@@ -466,18 +469,18 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     // also emit activated(), as the item will be painted as "current" anyway
     if ( item )
         slotSelected( item );
-    
+
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
-    popup->insertItem( smallIcons ? i18n("&Large Icons") : i18n("&Small Icons"), 
+    popup->insertItem( smallIcons ? i18n("&Large Icons") : i18n("&Small Icons"),
                        IconSize );
     popup->insertSeparator();
     popup->insertItem( i18n("&Edit Item"), EditItem );
     popup->insertItem( i18n("&Remove Item"), RemoveItem );
-    
+
     popup->setItemEnabled( EditItem, item != 0L );
     popup->setItemEnabled( RemoveItem, item != 0L );
-    
+
     int result = popup->exec( pos );
     switch ( result ) {
         case IconSize:
@@ -539,7 +542,7 @@ void KURLBarListBox::contentsDropEvent( QDropEvent *e )
     emit dropped( e );
 }
 
-void KURLBarListBox::setOrientation( Orientation orient )
+void KURLBarListBox::setOrientation( Qt::Orientation orient )
 {
     if ( orient == Vertical ) {
         setColumnMode( 1 );
@@ -561,8 +564,9 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
                                         QString& description, QString& icon,
                                         bool& appLocal, QWidget *parent )
 {
-    KURLBarDropDialog *dialog = new KURLBarDropDialog( allowGlobal, url, 
-                                                       description, icon, parent );
+    KURLBarDropDialog *dialog = new KURLBarDropDialog( allowGlobal, url,
+                                                       description, icon,
+                                                       parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
         description = dialog->description();
@@ -577,7 +581,7 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
 
 KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
                                       const QString& description,
-                                      QString icon, 
+                                      QString icon,
                                       QWidget *parent, const char *name )
     : KDialogBase( parent, "drop dialog", true,
                    i18n("Quick Access entry Settings"), Ok | Cancel, Ok, true)
@@ -610,7 +614,7 @@ KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
     }
     else
         m_appLocal = 0L;
-    
+
     m_edit->setFocus();
     setMainWidget( box );
 }
@@ -633,7 +637,7 @@ bool KURLBarDropDialog::applicationLocal() const
 {
     if ( !m_appLocal )
         return true;
-        
+
     return m_appLocal->isChecked();
 }
 
