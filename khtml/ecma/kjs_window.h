@@ -40,6 +40,7 @@ namespace KJS {
   class WindowQObject;
   class Location;
   class History;
+  class External;
   class FrameArray;
   class JSEventListener;
 
@@ -115,7 +116,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
-           NodeFilter, DOMException, CSSRule, Frames, _History, Event, InnerHeight,
+           NodeFilter, DOMException, CSSRule, Frames, _History, _External, Event, InnerHeight,
            InnerWidth, Length, _Location, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
@@ -144,6 +145,7 @@ namespace KJS {
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;
     History *history;
+    External *external;
     FrameArray *m_frames;
     Location *loc;
     DOM::Event *m_evt;

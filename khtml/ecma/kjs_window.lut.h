@@ -110,7 +110,7 @@ static const struct HashEntry WindowTableEntries[] = {
    { "onunload", Window::Onunload, DontDelete, 0, 0 },
    { "onmousemove", Window::Onmousemove, DontDelete, 0, 0 },
    { "addEventListener", Window::AddEventListener, DontDelete|Function, 3, &WindowTableEntries[107] },
-   { 0, 0, 0, 0, 0 },
+   { "external", Window::_External, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "open", Window::Open, DontDelete|Function, 3, 0 },
    { "defaultstatus", Window::DefaultStatus, DontDelete, 0, &WindowTableEntries[95] },
@@ -171,6 +171,21 @@ static const struct HashEntry LocationTableEntries[] = {
 };
 
 static const struct HashTable LocationTable = { 2, 16, LocationTableEntries, 11 };
+
+} // namespace
+
+using namespace KJS;
+
+namespace KJS {
+
+static const struct HashEntry ExternalTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "addFavorite", External::AddFavorite, DontDelete|Function, 1, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 }
+};
+
+static const struct HashTable ExternalTable = { 2, 4, ExternalTableEntries, 4 };
 
 } // namespace
 

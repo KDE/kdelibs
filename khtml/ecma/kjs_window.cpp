@@ -31,6 +31,7 @@
 #include <kparts/browserinterface.h>
 #include <kwin.h>
 #include <kwinmodule.h>
+#include <kbookmarkmanager.h>
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
@@ -58,8 +59,6 @@ using namespace KJS;
 
 namespace KJS {
 
-////////////////////// History Object ////////////////////////
-
   class History : public ObjectImp {
     friend class HistoryFunc;
   public:
@@ -70,6 +69,19 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
+  private:
+    QGuardedPtr<KHTMLPart> part;
+  };
+
+  class External : public ObjectImp {
+    friend class ExternalFunc;
+  public:
+    External(ExecState *exec, KHTMLPart *p)
+      : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { AddFavorite };
   private:
     QGuardedPtr<KHTMLPart> part;
   };
@@ -187,6 +199,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   CSSRule	Window::CSSRule		DontDelete
   frames	Window::Frames		DontDelete|ReadOnly
   history	Window::_History	DontDelete|ReadOnly
+  external	Window::_External	DontDelete|ReadOnly
   event		Window::Event		DontDelete|ReadOnly
   innerHeight	Window::InnerHeight	DontDelete|ReadOnly
   innerWidth	Window::InnerWidth	DontDelete|ReadOnly
@@ -270,7 +283,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
 
 Window::Window(KHTMLPart *p)
-  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), m_frames(0), loc(0), m_evt(0)
+  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), external(0), m_frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
@@ -348,6 +361,8 @@ void Window::mark()
     screen->mark();
   if (history && !history->marked())
     history->mark();
+  if (external && !external->marked())
+    external->mark();
   if (m_frames && !m_frames->marked())
     m_frames->mark();
   //kdDebug(6070) << "Window::mark " << this << " marking loc=" << loc << endl;
@@ -482,6 +497,10 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case _History:
       return Value(history ? history :
                    (const_cast<Window*>(this)->history = new History(exec,m_part)));
+
+    case _External:
+      return Value(external ? external :
+                   (const_cast<Window*>(this)->external = new External(exec,m_part)));
 
     case Event:
       if (m_evt)
@@ -1937,6 +1956,70 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Location::ToString:
     return String(location->toString(exec));
   }
+  return Undefined();
+}
+
+////////////////////// External Object ////////////////////////
+
+const ClassInfo External::info = { "External", 0, 0, 0 };
+/*
+@begin ExternalTable 4
+  addFavorite	External::AddFavorite	DontDelete|Function 1
+@end
+*/
+IMPLEMENT_PROTOFUNC_DOM(ExternalFunc)
+
+Value External::get(ExecState *exec, const Identifier &p) const
+{
+  return lookupGetFunction<ExternalFunc,ObjectImp>(exec,p,&ExternalTable,this);
+}
+
+Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  KJS_CHECK_THIS( External, thisObj );
+  External *external = static_cast<External *>(thisObj.imp());
+
+  KHTMLPart *part = external->part;
+  if (!part)
+    return Undefined();
+
+  KHTMLView *widget = part->view();
+
+  switch (id) {
+  case External::AddFavorite:
+  {
+    if (!widget->dialogsAllowed())
+      return Undefined();
+    part->xmlDocImpl()->updateRendering();
+    if (args.size() != 1 && args.size() != 2)
+      return Undefined();
+
+    QString url = args[0].toString(exec).qstring();
+    QString title;
+    if (args.size() == 2)
+      title = args[1].toString(exec).qstring();
+
+    // AK - don't do anything yet, for the moment i 
+    // just wanted the base js handling code in cvs
+    return Undefined();
+
+    QString question = 
+       i18n("Do you want a bookmark pointing to the location \"%1\" %2to be added to your collection?") 
+      .arg(url).arg(title.isEmpty()?"":i18n("titled \"%2\" ").arg(title));
+    if (KMessageBox::warningYesNo( 
+          widget, question,
+          "JavaScript Attempted Bookmark Insert",
+          i18n("Insert"), i18n("Disallow")) == KMessageBox::Yes)
+    {
+      KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
+      mgr->addBookmarkDialog(url,title);
+    }
+    break;
+  }
+  default:
+    return Undefined();
+  }
+
   return Undefined();
 }
 
