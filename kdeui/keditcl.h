@@ -31,6 +31,7 @@ class QCheckBox;
 class QRadioButton;
 class QLineEdit;
 class QTextStream;
+class KHistoryCombo;
 class KIntNumInput;
 
 class KEdGotoLine : public KDialogBase
@@ -61,6 +62,7 @@ class KEdFind : public KDialogBase
 public:
 
     KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);
+    ~KEdFind();
 
     QString getText() const;
     void setText(QString string);
@@ -69,6 +71,12 @@ public:
     void setDirection( bool b );
     bool get_direction() const;
 
+    /**
+     * @returns the combobox containing the history of searches. Can be used
+     * to save and restore the history.
+     */
+    KHistoryCombo *searchCombo() const;
+
 protected slots:
     void slotCancel( void );
     void slotUser1( void );
@@ -76,11 +84,11 @@ protected slots:
 private:
     QCheckBox *sensitive;
     QCheckBox *direction;
-    QLineEdit *value;
+    QLineEdit *value; // FIXME: remove, unused
 
     class KEdFindPrivate;
     KEdFindPrivate *d;
-	virtual void done(int i ) { KDialogBase::done(i); }
+    virtual void done(int i ) { KDialogBase::done(i); }
 
 signals:
 
@@ -96,12 +104,26 @@ class KEdReplace : public KDialogBase
 public:
 
     KEdReplace ( QWidget *parent = 0, const char *name=0, bool modal=true );
+    ~KEdReplace();
 
     QString 	getText();
     QString 	getReplaceText();
     void 	setText(QString);
-    QLineEdit 	*value;
-    QLineEdit 	*replace_value;
+
+    /**
+     * @returns the combobox containing the history of searches. Can be used
+     * to save and restore the history.
+     */
+    KHistoryCombo *searchCombo() const;
+
+    /**
+     * @returns the combobox containing the history of replaces. Can be used
+     * to save and restore the history.
+     */
+    KHistoryCombo *replaceCombo() const;
+
+    QLineEdit 	*value; // FIXME: remove, unused
+    QLineEdit 	*replace_value; // FIXME: remove, unused
     bool 	case_sensitive();
     bool 	get_direction();
 
@@ -117,7 +139,7 @@ private:
 
     class KEdReplacePrivate;
     KEdReplacePrivate *d;
-	virtual void done(int i ) { KDialogBase::done(i); } 
+	virtual void done(int i ) { KDialogBase::done(i); }
 
 signals:
     void replace();
@@ -255,7 +277,7 @@ public:
     /**
      * Allow the user to toggle between insert mode and overwrite mode with
      * the "Insert" key. See also @ref toggle_overwrite_signal();
-     * 
+     *
      * The default is false: the user can not toggle.
      */
     void setOverwriteEnabled(bool b);
@@ -276,13 +298,13 @@ signals:
      */
     void 	CursorPositionChanged();
 
-    /** 
+    /**
      * This signal is emitted if the user toggles from insert to overwrite mode
      * or vice versa.
      *
      * The user can do so by pressing the "Insert" button on a PC keyboard.
      *
-     * This feature must be activated by calling @ref setOverwriteEnabled(true) 
+     * This feature must be activated by calling @ref setOverwriteEnabled(true)
      * first.
      */
     void 	toggle_overwrite_signal();

@@ -29,6 +29,7 @@
 #include <qcheckbox.h>
 
 #include <kapp.h>
+#include <kcombobox.h>
 #include <knuminput.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -59,10 +60,10 @@ void KEdit::search(){
   // If we already searched / replaced something before make sure it shows
   // up in the find dialog line-edit.
 
-  QString string;
-  string = srchdialog->getText();
-  if(string.isEmpty())
-    srchdialog->setText(pattern);
+//   QString string;
+//   string = srchdialog->getText();
+//   if(string.isEmpty())
+//     srchdialog->setText(pattern);
 
   this->deselect();
   last_search = NONE;
@@ -256,10 +257,9 @@ void KEdit::replace()
     connect(replace_dialog,SIGNAL(done()),this,SLOT(replacedone_slot()));
   }
 
-  QString string = replace_dialog->getText();
-
-  if(string.isEmpty())
-    replace_dialog->setText(pattern);
+//   QString string = replace_dialog->getText();
+//   if(string.isEmpty())
+//     replace_dialog->setText(pattern);
 
 
   this->deselect();
@@ -625,6 +625,21 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 //
 // Find Dialog
 //
+
+class KEdFind::KEdFindPrivate
+{
+public:
+    KEdFindPrivate( QWidget *parent ) {
+	combo = new KHistoryCombo( parent, "value" );
+    }
+    ~KEdFindPrivate() {
+	delete combo;
+    }
+	
+    KHistoryCombo *combo;
+};
+
+
 KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
 		User1|Cancel, User1, false, i18n("&Find") )
@@ -633,14 +648,15 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
+  d = new KEdFindPrivate( page );
+
   QString text = i18n("Find:");
   QLabel *label = new QLabel( text, page , "find" );
   topLayout->addWidget( label );
 
-  value = new QLineEdit( page, "value");
-  value->setMinimumWidth(fontMetrics().maxWidth()*20);
-  value->setFocus();
-  topLayout->addWidget(value);
+  d->combo->setMinimumWidth(fontMetrics().maxWidth()*20);
+  d->combo->setFocus();
+  topLayout->addWidget(d->combo);
 
   QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
@@ -657,17 +673,24 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   gbox->setRowStretch( 2, 10 );
 }
 
+KEdFind::~KEdFind()
+{
+    delete d;
+}
+
 
 void KEdFind::slotCancel( void )
 {
   emit done();
+  d->combo->clearEdit();
 }
 
 
 void KEdFind::slotUser1( void )
 {
-  if( value->text().isEmpty() == false )
+  if( !d->combo->currentText().isEmpty() )
   {
+    d->combo->addToHistory( d->combo->currentText() );
     emit search();
   }
 }
@@ -675,14 +698,14 @@ void KEdFind::slotUser1( void )
 
 QString KEdFind::getText() const
 {
-  return value->text();
+    return d->combo->currentText();
 }
 
 
 void KEdFind::setText(QString string)
 {
-  value->setText(string);
-  value->selectAll();
+  d->combo->setEditText(string);
+  d->combo->lineEdit()->selectAll();
 }
 
 void KEdFind::setCaseSensitive( bool b )
@@ -705,11 +728,33 @@ bool KEdFind::get_direction() const
   return direction->isChecked();
 }
 
+KHistoryCombo * KEdFind::searchCombo() const
+{
+    return d->combo;
+}
+
+
 
 ////////////////////////////////////////////////////////////////////
 //
 //  Replace Dialog
 //
+
+class KEdReplace::KEdReplacePrivate
+{
+public:
+    KEdReplacePrivate( QWidget *parent ) {
+	searchCombo = new KHistoryCombo( parent, "value" );
+	replaceCombo = new KHistoryCombo( parent, "replace_value" );
+    }
+    ~KEdReplacePrivate() {
+	delete searchCombo;
+	delete replaceCombo;
+    }
+	
+    KHistoryCombo *searchCombo, *replaceCombo;
+};
+
 KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Replace"),
 		User3|User2|User1|Cancel, User3, false,
@@ -720,22 +765,22 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   QFrame *page = makeMainWidget();
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
+  d = new KEdReplacePrivate( page );
+
   QString text = i18n("Find:");
   QLabel *label = new QLabel( text, page, "find" );
   topLayout->addWidget( label );
 
-  value = new QLineEdit( page, "value");
-  value->setMinimumWidth(fontMetrics().maxWidth()*20);
-  value->setFocus();
-  topLayout->addWidget(value);
+  d->searchCombo->setMinimumWidth(fontMetrics().maxWidth()*20);
+  d->searchCombo->setFocus();
+  topLayout->addWidget(d->searchCombo);
 
   text = i18n("Replace with:");
   label = new QLabel( text, page, "replace" );
   topLayout->addWidget( label );
 
-  replace_value = new QLineEdit( page, "value");
-  replace_value->setMinimumWidth(fontMetrics().maxWidth()*20);
-  topLayout->addWidget(replace_value);
+  d->replaceCombo->setMinimumWidth(fontMetrics().maxWidth()*20);
+  topLayout->addWidget(d->replaceCombo);
 
   QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
@@ -753,28 +798,39 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 }
 
 
+KEdReplace::~KEdReplace()
+{
+    delete d;
+}
+
+
 void KEdReplace::slotCancel( void )
 {
   emit done();
+  d->searchCombo->clearEdit();
+  d->replaceCombo->clearEdit();
 }
 
 
 void KEdReplace::slotUser1( void )
 {
+  d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
   emit replaceAll();
 }
 
 
 void KEdReplace::slotUser2( void )
 {
+  d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
   emit replace();
 }
 
 
 void KEdReplace::slotUser3( void )
 {
-  if( value->text().isEmpty() == false )
+  if( !d->searchCombo->currentText().isEmpty() )
   {
+    d->searchCombo->addToHistory( d->searchCombo->currentText() );
     emit find();
   }
 }
@@ -782,19 +838,20 @@ void KEdReplace::slotUser3( void )
 
 QString KEdReplace::getText()
 {
-  return value->text();
+    return d->searchCombo->currentText();
 }
 
 
 QString KEdReplace::getReplaceText()
 {
-  return replace_value->text();
+    return d->replaceCombo->currentText();
 }
 
 
 void KEdReplace::setText(QString string)
 {
-  value->setText(string);
+  d->searchCombo->setEditText(string);
+  d->searchCombo->lineEdit()->selectAll();
 }
 
 
@@ -809,6 +866,15 @@ bool KEdReplace::get_direction()
   return direction->isChecked();
 }
 
+KHistoryCombo * KEdReplace::searchCombo() const
+{
+    return d->searchCombo;
+}
+
+KHistoryCombo * KEdReplace::replaceCombo() const
+{
+    return d->replaceCombo;
+}
 
 
 KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
@@ -829,7 +895,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
 
 void KEdGotoLine::selected(int)
 {
-	accept();
+  accept();
 }
 
 
