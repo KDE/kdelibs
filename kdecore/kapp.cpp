@@ -133,11 +133,20 @@ class KApplicationPrivate
 {
 public:
   KApplicationPrivate()
-  {}
+  {
+    refCount = 1;
+  }
 
   ~KApplicationPrivate()
   {}
 
+  /**
+   * This counter indicates when to exit the application.
+   * It starts at 1, is decremented by the "last window close" event, but
+   * is incremented by operations that should outlive the last window closed
+   * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+   */
+  int refCount;
 };
 
 
@@ -369,6 +378,19 @@ KConfig* KApplication::sessionConfig()
     return pSessionConfig;
 }
 
+void KApplication::ref()
+{
+    d->refCount++;
+    //kdDebug() << "KApplication::ref() : refCount = " << d->refCount << endl;
+}
+
+void KApplication::deref()
+{
+    d->refCount--;
+    //kdDebug() << "KApplication::deref() : refCount = " << d->refCount << endl;
+    if ( d->refCount <= 0 )
+        quit();
+}
 
 KSessionManaged::KSessionManaged()
 {
@@ -1019,7 +1041,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     }
     if(pKStyle)
 	connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
-    
+
     // WABA: Hack to get the button background right.
     QApplication::setPalette(palette(), true);
     // WABA: End-hack
@@ -1368,9 +1390,9 @@ startServiceInternal( const QCString &function,
       QDataStream stream2(params2, IO_WriteOnly);
       QCString desktopStr;
       desktopStr.setNum( desktop );
-      stream2 << QCString("KDE_INITIAL_DESKTOP") 
+      stream2 << QCString("KDE_INITIAL_DESKTOP")
               << desktopStr;
-      dcopClient->call(_launcher, _launcher, 
+      dcopClient->call(_launcher, _launcher,
          "setLaunchEnv(QCString,QCString)", params2, replyType, replyData);
    }
    if (!dcopClient->call(_launcher, _launcher,

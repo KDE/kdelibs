@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.91 Beta >= 20000621"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000624"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 3
@@ -231,12 +231,6 @@ public:
    * Retrieve a pointer to a @ref DCOPClient for the application.
    */
   virtual DCOPClient *dcopClient();
-
-  // See kapp.cpp for explanation
-  /*
-  QPopupMenu* helpMenu( bool bAboutQtMenu,
-			   const QString& appAboutText );
-  */
 
   /**
    * Get the application icon.
@@ -461,7 +455,7 @@ public:
    * Enable style plugins.
    *
    * This is useful only to applications that normally
-   * do not display a GUI and create the @ref KApplication with 
+   * do not display a GUI and create the @ref KApplication with
    *  @p allowStyles set to @tt false.
    */
   void enableStyles();
@@ -506,6 +500,20 @@ public:
    * @param id The message id.
    */
   void removeKipcEventMask(int id);
+
+  /**
+   * Tell KApplication about one more operation that should be finished
+   * before the application exits. The standard behaviour is to exit on the
+   * "last window closed" event, but some events should outlive the last window closed
+   * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+   */
+  void ref();
+
+  /**
+   * Tell KApplication that one operation such as those described in @ref just finished.
+   * The application exits if the counter is back to 0;
+   */
+  void deref();
 
 protected:
   /**
@@ -560,7 +568,7 @@ public:
   /**
    * Valid values for the settingsChanged signal
    */
-  enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS, 
+  enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
          SETTINGS_POPUPMENU, SETTINGS_QT };
 
   signals:
@@ -647,13 +655,13 @@ public:
 
      Do not do any closing at this point! The user may still select
      Cancel  wanting to continue working with your
-     application. Cleanups could be done after shutDown() (see 
+     application. Cleanups could be done after shutDown() (see
      the following).
 
   */
   void saveYourself();
 
-  /** Your application is killed. Either by your program itself, 
+  /** Your application is killed. Either by your program itself,
       @tt xkill or (the usual case) by KDE's logout.
 
       The signal is particularly useful if your application has to do some
@@ -735,6 +743,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.168  2000/06/24 00:35:18  dsweet
+// Editing header file documentation.
+//
 // Revision 1.167  2000/06/21 20:23:09  molnarc
 //
 // bumbed date up to 20000621 since everyone gets to recompile anyway!
