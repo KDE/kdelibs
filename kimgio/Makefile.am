@@ -18,23 +18,23 @@ endif
 
 kimg_jpeg_la_SOURCES = jpeg.cpp
 kimg_jpeg_la_LDFLAGS = -module -avoid-version
-kimg_jpeg_la_LIBADD = $(LIBJPEG) $(LIB_QT)
+kimg_jpeg_la_LIBADD = $(LIBJPEG) 
 
 kimg_png_la_SOURCES = pngr.cpp
 kimg_png_la_LDFLAGS = -module -avoid-version
-kimg_png_la_LIBADD = $(LIBPNG) $(LIB_QT)
+kimg_png_la_LIBADD = $(LIBPNG) 
 
 kimg_tiff_la_SOURCES = tiffr.cpp
 kimg_tiff_la_LDFLAGS = -module -avoid-version
-kimg_tiff_la_LIBADD = $(LIBTIFF) $(LIB_QT)
+kimg_tiff_la_LIBADD = $(LIBTIFF) 
 
 kimg_xview_la_SOURCES = xview.cpp
 kimg_xview_la_LDFLAGS = -module -avoid-version
-kimg_xview_la_LIBADD = $(LIB_QT)
+kimg_xview_la_LIBADD = 
 
 kimg_eps_la_SOURCES = eps.cpp
 kimg_eps_la_LDFLAGS = -module -avoid-version
-kimg_eps_la_LIBADD = $(LIB_QT)
+kimg_eps_la_LIBADD = 
 
 kimgio-config.h: staticmodules
 
