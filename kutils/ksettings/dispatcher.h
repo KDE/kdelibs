@@ -40,7 +40,7 @@ namespace KSettings
  * into the KConfigureDialog you need a way to get notified. This is what you
  * do:
  * \code
- * Dispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() ) );
+ * Dispatcher::self()->registerInstance( instance(), this, SLOT( loadSettings() ) );
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
