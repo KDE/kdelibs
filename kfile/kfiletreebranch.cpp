@@ -61,11 +61,8 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
    connect( this, SIGNAL( completed()),
 	    this,     SLOT(slCompleted()));
 
-   connect( this, SIGNAL( dirty( const QString& )),
-	    this,     SLOT(slotDirty( const QString& )));
-
-   connect( this, SIGNAL( started( const QString& )),
-	    this,   SLOT( slotListerStarted( const QString& )));
+   connect( this, SIGNAL( started( const KURL& )),
+	    this,   SLOT( slotListerStarted( const KURL& )));
 
    connect( this, SIGNAL( deleteItem( KFileItem* )),
 	    this,   SLOT( slotDeleteItem( KFileItem* )));
@@ -75,53 +72,45 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 }
 
 
-void KFileTreeBranch::slotListerStarted( const QString &url )
+void KFileTreeBranch::slotListerStarted( const KURL &url )
 {
-   kdDebug(1201) << "Slot Lister Started" << endl;
-
    /* set the parent correct if it is zero. */
-   if( ! m_currParent )
-   {
-      kdDebug( 1201) << "No parent available at the moment" << endl;
+   kdDebug( 1201) << "Find parent for " << url.prettyURL() << endl;
 
-      KFileItem *fi = findByName( url );
-      if( fi )
-      {
-	 m_currParent = static_cast<KFileTreeViewItem*>( fi->extraData( this ));
-      }
-      else
-      {
-	 kdDebug(1201) << "No parent found in KFileItem for " << url << endl;
-      }
-   }
-}
+   KFileItem *fi = find( url );
 
-void KFileTreeBranch::slotDirty( const QString& dir )
-{
-   kdDebug(1201) << "Slot Dirty Started" << endl;
-
-   /* set the parent correct if it is zero. */
-   kdDebug( 1201) << "No parent available at the moment" << endl;
-
-   KFileItem *fi = findByName( dir );
+   m_currParent = 0;
+   
    if( fi )
    {
       m_currParent = static_cast<KFileTreeViewItem*>( fi->extraData( this ));
+      kdDebug(1201) << "Current parent changed!" << endl;
    }
-   else
+
+   if( !fi && url == m_root->url())
    {
-      kdDebug(1201) << "No parent found in KFileItem for " << dir << endl;
+      m_currParent = m_root;
+      kdDebug(1201) << "slotListerStarted: Parent is branch-root!" << endl;
+   }
+
+   if( ! m_currParent )
+   {
+      kdDebug(1201) << "No parent found in KFileItem for " << url.prettyURL() << endl;
    }
 }
+
 
 
 void KFileTreeBranch::addItems( const KFileItemList& list )
 {
    /* Put the new items under the current url */
    KFileItemListIterator it( list );
-
+   kdDebug(1201) << "Adding items !" << endl;
    KFileItem *currItem;
-   while ( m_currParent&& (currItem = it.current()) != 0 )
+
+   
+   
+   while ( m_currParent && (currItem = it.current()) != 0 )
    {
       KFileTreeViewItem *newKFTVI = new KFileTreeViewItem( m_currParent,
                                                            currItem,
@@ -135,7 +124,6 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
       {
 	 KURL url = currItem->url();
 	 QString filename = url.directory( false, true ) + url.filename();
-	 kdDebug(1201) << "Doing stat on " << filename << endl;
 	 /* do the stat trick of Carsten. The problem is, that the hardlink
 	 *  count only contains directory links. Thus, this method only seem
          * to work in dir-only mode */
@@ -143,7 +131,6 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 if( stat( QFile::encodeName( filename ), &statBuf ) == 0 )
 	 {
 	    int hardLinks = statBuf.st_nlink;  /* Count of dirs */
-	    kdDebug(1201) << "Hard link count: " << hardLinks << endl;
 	    if( hardLinks > 2 )
 	    {
 	       newKFTVI->setExpandable(true);
@@ -168,12 +155,16 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
    kdDebug(1201) << "Slot Delete Item hitted" << endl;
 
-   KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(it));
+   KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(this));
 
    if( kfti )
    {
       kdDebug(1201) << "Found corresponding KFileTreeViewItem" << endl;
       delete( kfti );
+   }
+   else
+   {
+      kdDebug(1201) << "Error: kfiletreeviewitem: "<< kfti << endl;
    }
 }
 

@@ -94,14 +94,13 @@ public slots:
 
 signals:
    void populateFinished( KFileTreeViewItem * );
-
+   
 private slots:
    void addItems( const KFileItemList& );
    void slCompleted();
    void slotCanceled();
-   void slotListerStarted( const QString & );
+   void slotListerStarted( const KURL& );
    void slotDeleteItem( KFileItem* );
-   void slotDirty( const QString& dir );
 
 private:
    KFileTreeViewItem 	*m_root;
