@@ -240,9 +240,7 @@ const QString &KHTMLSettings::availableFamilies()
 {
     if ( !avFamilies ) {
         avFamilies = new QString;
-        *avFamilies = ",Adobe Courier,Adobe Helvetica,Adobe New Century Schoolbook,Adobe Times,Adobe Utopia,Century Schoolbook L,Charter,Clean,Console,Courier,Courier 10 Pitch,Cursor,DEC Terminal,Dingbats,ETL Fixed,Fixed,Goha Tibeb Zemen,Gothic,Helvetica,Luxi Mono,Luxi Sans,Luxi Serif,Mincho,New Century Schoolbook,Newspaper,Nil,Proof,Schumacher Clean,Song Ti,Sony Fixed,Standard Symbols L,Symbol,Terminal,Times,Utopia,";
-        // when we need to regenerate the baseline anyway ;/
-        // *avFamilies = ",Courier,Fixed,Helvetica,Times,Utopia,Times New Roman,Courier New,Verdana,";
+        *avFamilies = ",Adobe Courier,Arial,Comic Sans MS,Courier,Helvetica,Times,Times New Roman,Utopia,Fixed,";
     }
 
   return *avFamilies;
@@ -256,4 +254,14 @@ int QPaintDevice::x11AppDpiY( int )
 int QPaintDevice::x11AppDpiX( int )
 {
     return 100;
+}
+
+void QFont::insertSubstitution(const QString &,
+                               const QString &)
+{
+}
+
+void QFont::insertSubstitutions(const QString &,
+                                const QStringList &)
+{
 }
