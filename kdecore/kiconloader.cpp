@@ -62,12 +62,10 @@ public:
     void printTree(QString& dbgString) const;
 
     KIconTheme *theme;
-    QPtrList<KIconThemeNode> links;
 };
 
 KIconThemeNode::KIconThemeNode(KIconTheme *_theme)
 {
-    links.setAutoDelete(true);
     theme = _theme;
 }
 
@@ -78,16 +76,10 @@ KIconThemeNode::~KIconThemeNode()
 
 void KIconThemeNode::printTree(QString& dbgString) const
 {
+    /* This method doesn't have much sense anymore, so maybe it should
+       be removed in the (near?) future */
     dbgString += "(";
     dbgString += theme->name();
-    bool first;
-    QPtrListIterator<KIconThemeNode> it(links);
-    for (first=true ; it.current(); ++it, first=false)
-    {
-	if (first) dbgString += ": ";
-	else dbgString += ", ";
-	it.current()->printTree(dbgString);
-    }
     dbgString += ")";
 }
 
@@ -96,9 +88,6 @@ void KIconThemeNode::queryIcons(QStringList *result,
 {
     // add the icons of this theme to it
     *result += theme->queryIcons(size, context);
-    QPtrListIterator<KIconThemeNode> it(links);
-    for (; it.current(); ++it) // recursivly going down
-	it.current()->queryIcons(result, size, context);
 }
 
 void KIconThemeNode::queryIconsByContext(QStringList *result,
@@ -106,27 +95,12 @@ void KIconThemeNode::queryIconsByContext(QStringList *result,
 {
     // add the icons of this theme to it
     *result += theme->queryIconsByContext(size, context);
-    QPtrListIterator<KIconThemeNode> it(links);
-    for (; it.current(); ++it) // recursivly going down
-	it.current()->queryIconsByContext(result, size, context);
 }
 
 KIcon KIconThemeNode::findIcon(const QString& name, int size,
 			       KIcon::MatchType match) const
 {
-    KIcon icon;
-    icon = theme->iconPath(name, size, match);
-    if (icon.isValid())
-	return icon;
-
-    QPtrListIterator <KIconThemeNode> it(links);
-    for (; it.current(); ++it)
-    {
-	icon = it.current()->findIcon(name, size, match);
-	if (icon.isValid())
-	    break;
-    }
-    return icon;
+    return theme->iconPath(name, size, match);
 }
 
 
@@ -155,6 +129,7 @@ struct KIconLoaderPrivate
     QString lastImageKey; // key for icon without effect
     int lastIconType; // see KIcon::type
     int lastIconThreshold; // see KIcon::threshold
+    QPtrList<KIconThemeNode> links;
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -174,6 +149,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
     d = new KIconLoaderPrivate;
     d->imgDict.setAutoDelete( true );
+    d->links.setAutoDelete(true);
 
     if (_dirs)
 	d->mpDirs = _dirs;
@@ -208,9 +184,10 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     }
     d->mpThemeRoot = new KIconThemeNode(def);
+    d->links.append(d->mpThemeRoot);
     d->mThemesInTree += KIconTheme::current();
     addBaseThemes(d->mpThemeRoot, appname);
-
+    
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
     KConfig *config = KGlobal::config();
@@ -256,7 +233,9 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
 KIconLoader::~KIconLoader()
 {
-    delete d->mpThemeRoot;
+    /* antlarr: There's no need to delete d->mpThemeRoot as it's already
+       deleted when the elements of d->links are deleted */
+    d->mpThemeRoot=0;
     delete[] d->mpGroups;
     delete d;
 }
@@ -278,7 +257,7 @@ void KIconLoader::addAppThemes(const QString& appname)
         if (def->isValid())
         {
             KIconThemeNode* node = new KIconThemeNode(def);
-            d->mpThemeRoot->links.append(node);
+            d->links.append(node);
             addBaseThemes(node, appname);
         }
         else
@@ -287,7 +266,7 @@ void KIconLoader::addAppThemes(const QString& appname)
 
     KIconTheme *def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     KIconThemeNode* node = new KIconThemeNode(def);
-    d->mpThemeRoot->links.append(node);
+    d->links.append(node);
     addBaseThemes(node, appname);
 }
 
@@ -308,7 +287,7 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
         KIconThemeNode *n = new KIconThemeNode(theme);
 	d->mThemesInTree.append(*it);
 	addBaseThemes(n, appname);
-	node->links.append(n);
+	d->links.append(n);
     }
 }
 
@@ -379,8 +358,8 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
        order.
        
        */
-    for ( KIconThemeNode *themeNode = d->mpThemeRoot ; themeNode ;
-	themeNode = themeNode->links.first() )
+    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+	themeNode = d->links.next() )
     {
 	for (int i = 0 ; i < count ; i++)
 	{
@@ -391,8 +370,8 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
         
     }
 
-    for ( KIconThemeNode *themeNode = d->mpThemeRoot ; themeNode ;
-	themeNode = themeNode->links.first() )
+    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+	themeNode = d->links.next() )
     {
 	for (int i = 0 ; i < count ; i++)
 	{
@@ -902,7 +881,10 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
 	size = d->mpGroups[group_or_size].size;
     else
 	size = -group_or_size;
-    d->mpThemeRoot->queryIconsByContext(&result, size, context);
+
+    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+            themeNode = d->links.next() )
+       themeNode->queryIconsByContext(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
     QString name;
@@ -938,7 +920,10 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
 	size = d->mpGroups[group_or_size].size;
     else
 	size = -group_or_size;
-    d->mpThemeRoot->queryIcons(&result, size, context);
+
+    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+            themeNode = d->links.next() )
+       themeNode->queryIcons(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
     QString name;
