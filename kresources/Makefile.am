@@ -44,7 +44,6 @@ testresources_SOURCES = testresources.cpp
 xdg_apps_DATA = kresources.desktop
 
 servicetypedir = $(kde_servicetypesdir)
-servicetype_DATA = kresources_plugin.desktop 
-#kresources_manager.desktop
+servicetype_DATA = kresources_plugin.desktop kresources_manager.desktop
 
 include ../admin/Doxyfile.am
