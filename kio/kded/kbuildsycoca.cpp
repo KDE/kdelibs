@@ -398,8 +398,8 @@ void KBuildSycoca::save()
      kdebug(KDEBUG_ERROR, 7020, "Can't rename %s to %s", from.ascii(), to.ascii());
 }
 
-bool KBuildSycoca::process(const QCString &fun, const QByteArray &data,
-			   QCString &replyType, QByteArray &replyData)
+bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,
+			   QCString &replyType, QByteArray &/*replyData*/)
 {
   if (fun == "recreate()") {
     qDebug("got a recreate signal!");
