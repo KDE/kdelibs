@@ -1,16 +1,11 @@
 <variablelist>
 <varlistentry>
-<term>
-<menuchoice>
-<shortcut>
-<keycombo action="simul"><keycap>F1</keycap></keycombo>
-</shortcut>
+<term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>Inhoud...</guimenuitem>
+<guimenuitem>&kappname; handboek...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Roept het KDE Help systeem aan</action> beginnend bij de
-help pagina's van &kappname;. (dit document).</para></listitem>
+<listitem><para><action>Roept het handboek van &kappname; op</action> (dit document).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -23,28 +18,28 @@ help pagina's van &kappname;. (dit document).</para></listitem>
 </menuchoice>
 </term>
 <listitem><para><action>Verandert de muiscursor in de combinatie pijltje en 
-vraagteken.</action>  Het klikken op items in &kappname; zal een helpvenster 
-openen (als er een bestaat voor dit specifieke item) met een omschrijving van 
-de functie van dit item. </para></listitem>
+vraagteken.</action>  Het klikken op items in &kappname; zal een tekstballon 
+tonen (als er een beschikbaar is voor dat specifieke item) met een omschrijving van 
+de functie van dat item. </para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>Bug Rapporteren...</guimenuitem>
+<guimenuitem>Bug rapporteren...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opent het bugrapport dialoogvenster</action> waar u een
-een bug kunt rapporteren of een <quote>wensitem</quote> kunt aanvragen.</para>
+<listitem><para><action>Opent het bugrapport-dialoogvenster</action> waar u een
+een bug kunt melden of een <quote>suggestie</quote> kunt indienen die deze toepassing beter, handiger of nuttiger zou kunnen maken.</para>
 </listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>Over &kappname;</guimenuitem>
+<guimenuitem>Info over &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Deze ingang zal informatie over de versie en de auteurs 
+<listitem><para><action>Deze optie zal informatie over de versie en de auteurs 
 tonen.</action></para></listitem>
 </varlistentry>
 
@@ -53,7 +48,7 @@ tonen.</action></para></listitem>
 <guimenu>Help</guimenu>
 <guimenuitem>Over KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Dit zal de KDE versie en andere standaard informatie 
+<listitem><para><action>Dit zal de KDE-versie en andere standaardinformatie 
 tonen.</action></para></listitem>
 </varlistentry>
 </variablelist>

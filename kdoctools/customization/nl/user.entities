@@ -97,9 +97,11 @@
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
+<!ENTITY Backspace   "<keycap>Backspace</keycap>">
 <!ENTITY Esc     "<keycap>Escape</keycap>">
 <!ENTITY Enter   "<keycap>Enter</keycap>">
 <!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
+<!ENTITY HTML    "<abbrev>HTML</abbrev>">
 <!ENTITY OS      "<abbrev>O.S.</abbrev>">
 <!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
 <!ENTITY cdrom   "<abbrev>cd-rom</abbrev>">
