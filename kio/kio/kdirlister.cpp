@@ -35,6 +35,7 @@
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
 
+#include <assert.h>
 
 KDirListerCache* KDirListerCache::s_pSelf = 0;
 static KStaticDeleter<KDirListerCache> sd_KDirListerCache;
