@@ -1,5 +1,6 @@
 /*
    Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,7 +26,8 @@
 
    The encode/decode utilities in KCodecs were adapted from
    Ronald Tschalär Copyright (C) 1996-1999 HTTPClient java
-   pacakge.
+   package, except the Quoted-Printable codec, which is
+   (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 */
 
 #include <string.h>
@@ -902,3 +904,169 @@ void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
 #endif
 }
 */
+
+// Following code Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
+
+// Quoted-Printable codec described in RFC 2045, section 6.7.
+
+static const char         hexChars[]      = "0123456789ABCDEF";
+static const unsigned int maxQPLineLength = 70;
+
+// strchr(3) for broken systems.
+
+static int rikFindChar(register const char * _s, const char c)
+{
+  register const char * s = _s;
+
+  while (true)
+  {
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+  }
+
+  return s - _s;
+}
+
+  QCString
+KCodecs::quotedPrintableEncode(const QByteArray & in)
+{
+  const char * data = in.data();
+  unsigned int length = in.size();
+
+  // Reasonable guess for output size when we're encoding mostly-ASCII
+  // data. It doesn't really matter, because the underlying allocation
+  // routines are quite efficient, but it's nice to have 0 allocations
+  // in many cases.
+
+  QCString output(length * 1.2);
+
+  const unsigned int end = length - 1;
+  unsigned int lineLength = 0;
+
+  for (unsigned int i = 0; i < length; i++)
+  {
+    unsigned char c(data[i]);
+
+    // Plain ASCII chars just go straight out.
+
+    if ((c >= 33) && (c <= 126) && ('=' != c))
+    {
+      output += c;
+
+      ++lineLength;
+    }
+
+    // Spaces need some thought. We have to encode them at eol (or eof).
+
+    else if (' ' == c)
+    {
+      if
+        (
+         (i >= length)
+         ||
+         ((i < end) && (data[i + 1] == '\r') && (data[i + 2] == '\n'))
+        )
+      {
+        output += "=20";
+        lineLength += 3;
+      }
+      else
+      {
+        output += ' ';
+        ++lineLength;
+      }
+    }
+
+    // If we find \r\n, just let it through.
+
+    else if (('\r' == c) && (i < end) && ('\n' == data[i + 1]))
+    {
+      output += "\r\n";
+
+      lineLength = 0;
+
+      ++i;
+    }
+
+    // Anything else is converted to =XX.
+
+    else
+    {
+      output += '=';
+      output += hexChars[c / 16];
+      output += hexChars[c % 16];
+
+      lineLength += 3;
+    }
+
+    // If we're approaching the maximum line length, do a soft line break.
+
+    if ((lineLength > maxQPLineLength) && (i < end))
+    {
+      output += "=\r\n";
+
+      lineLength = 0;
+    }
+    
+  }
+
+  return output;
+}
+
+  QByteArray
+KCodecs::quotedPrintableDecode(const QCString & in)
+{
+  const char * data = in.data();
+  const unsigned int length = in.size();
+
+  // Maximum output size is equal to input size.
+
+  QByteArray output(length);
+  char * cursor = output.data();
+
+  for (unsigned int i = 0; i < length; i++)
+  {
+    char c(data[i]);
+
+    if ('=' == c)
+    {
+      if (i < length - 2)
+      {
+        char c1 = data[i + 1];
+        char c2 = data[i + 2];
+
+        if ('\r' == c1 && '\n' == c2)
+        {
+          // Soft line break. No output.
+          i += 2;
+        }
+        else
+        {
+          // =XX encoded byte.
+
+          int hexChar0 = rikFindChar(hexChars, c1);
+          int hexChar1 = rikFindChar(hexChars, c2);
+
+          if (hexChar0 < 16 && hexChar1 < 16)
+          {
+            *cursor++ = char((hexChar0 * 16) | hexChar1);
+            i += 2;
+          }
+        }
+      }
+    }
+    else
+    {
+      *cursor++ = c;
+    }
+  }
+
+  --cursor;
+
+  output.truncate(cursor - output.data());
+
+  return output;
+}
+

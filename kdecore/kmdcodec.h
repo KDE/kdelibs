@@ -1,5 +1,6 @@
 /*
    Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,8 +44,8 @@ typedef char HASHHEX[33];
 /**
  * A wrapper class for the most commonly used encoding and
  * decoding algorithms.  Currently it provides encoding and
- * decoding facilities for the base64 and uuencode/uudecode
- * algorithms.
+ * decoding facilities for the base64, uuencode/uudecode
+ * and quoted-printable algorithms.
  *
  * @section Useage:
  *
@@ -64,6 +65,7 @@ typedef char HASHHEX[33];
  *
  * @short A collection of commonly used encoding/decoding algorithms.
  * @author Dawit Alemayheu <adawit@kde.org>
+ * @author Rik Hemsley <rik@kde.org>
  */
 class KCodecs
 {
@@ -143,6 +145,22 @@ public:
   * @return      a uudecoded string.
   */
   static QCString uudecode( const QCString& str );
+
+ /**
+  * Encodes the given data using the quoted-printable algorithm.
+  *
+  * @param in  data to be encoded.
+  * @return    quoted-printable encoded data.
+  */
+  static QCString quotedPrintableEncode(const QByteArray & in);
+
+ /**
+  * Decodes a quoted-printable encoded string.
+  *
+  * @param in  the data to be decoded.
+  * @return    decoded data.
+  */
+  static QByteArray quotedPrintableDecode(const QCString & in);
 
  /**
   * Encodes the given data using the base64 algorithm.
