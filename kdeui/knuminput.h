@@ -79,7 +79,7 @@ public:
      *     @li @p AlignBottom  The label is placed below the edit/slider
      *
      */
-    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
 
     /**
      * Sets the spacing of tickmarks for the slider.
@@ -253,7 +253,7 @@ public:
     /**
      * @reimplemented
      */
-    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
 
     /**
      * This method returns the minimum size necessary to display the
@@ -409,10 +409,10 @@ public:
      */
     QString prefix() const;
     /**
-     * @return the format.
-     * @see #setFormat()
+     * @return the precision.
+     * @see #setPrecision()
      */
-    const char *format() const;
+    int precision() const;
     /**
      * @return the string displayed for a special value.
      * @see #setSpecialValueText()
@@ -427,12 +427,9 @@ public:
     void setRange(double lower, double upper, double step=1, bool slider=true);
 
     /**
-     * Sets the format string that should be used to display the double value.
-     * The format string follows the same rules as the printf() function or
-     * @ref QString::sprintf(). You can use this if you want to set the number
-     * of digits to be displayed, etc.
+     * Specifies the number of digits to use.
      */
-    void setFormat(const char* format);
+    void setPrecision(int precision);
 
     /**
      * Sets the special value text. If set, the spin box will display
@@ -445,7 +442,7 @@ public:
     /**
      * @reimplemented
      */
-    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
     /**
      * @reimplemented
      */
@@ -512,7 +509,7 @@ protected:
 private:
     void init(double value);
     QString  m_specialvalue, m_prefix, m_suffix;
-    char     *m_format;
+    char     *m_format; // ####: HPB: Remove in next BCI change
     double   m_value;
 
     class KDoubleNumInputPrivate;
@@ -592,12 +589,12 @@ protected:
     /**
      *  Overloaded to make use of the base given in the constructor.
      */
-    virtual QString mapValueToText(int);
+    virtual QString mapValueToText(int) const;
 
     /**
      *  Overloaded to make use of the base given in the constructor.
      */
-    virtual int mapTextToValue(bool*);
+    virtual int mapTextToValue(bool*) const;
 
     /**
      * @reimplemented

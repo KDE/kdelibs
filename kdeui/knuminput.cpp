@@ -39,6 +39,9 @@
 #include <qspinbox.h>
 #include <qstyle.h>
 
+#include <kglobal.h>
+#include <klocale.h>
+
 #include "knumvalidator.h"
 #include "knuminput.h"
 
@@ -96,7 +99,7 @@ KNumInput::~KNumInput()
 
 // -----------------------------------------------------------------------------
 
-void KNumInput::setLabel(QString label, int a)
+void KNumInput::setLabel(const QString & label, int a)
 {
     if(label.isEmpty()) {
         delete m_label;
@@ -247,7 +250,7 @@ int KIntSpinBox::base() const
 
 // -----------------------------------------------------------------------------
 
-QString KIntSpinBox::mapValueToText(int v)
+QString KIntSpinBox::mapValueToText(int v) const
 {
     return QString::number(v, val_base);
 }
@@ -255,7 +258,7 @@ QString KIntSpinBox::mapValueToText(int v)
 
 // -----------------------------------------------------------------------------
 
-int KIntSpinBox::mapTextToValue(bool* ok)
+int KIntSpinBox::mapTextToValue(bool* ok) const
 {
     return cleanText().toInt(ok, val_base);
 }
@@ -512,7 +515,7 @@ QString KIntNumInput::specialValueText() const
 
 // -----------------------------------------------------------------------------
 
-void KIntNumInput::setLabel(QString label, int a)
+void KIntNumInput::setLabel(const QString & label, int a)
 {
     KNumInput::setLabel(label, a);
 
@@ -579,7 +582,10 @@ void KDoubleLine::interpretText()
 
     if(edited()) {
         bool ok;
-        double value = s.toDouble(&ok);
+        double value = KGlobal::locale()->readNumber(s, &ok);
+	// kdDebug() << "input: " << s << ": read as: " << value
+	// << ": ok: " << ok << endl;
+
         if(ok) {
             w->m_value = value;
             setEdited(false);
@@ -588,6 +594,14 @@ void KDoubleLine::interpretText()
     }
 }
 
+
+// -----------------------------------------------------------------------------
+
+class KDoubleNumInput::KDoubleNumInputPrivate
+{
+public:
+  int precision;
+};
 
 // -----------------------------------------------------------------------------
 
@@ -619,7 +633,7 @@ KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent
 
 KDoubleNumInput::~KDoubleNumInput()
 {
-    delete m_format;
+    delete d;
 }
 
 
@@ -627,8 +641,10 @@ KDoubleNumInput::~KDoubleNumInput()
 
 void KDoubleNumInput::init(double value)
 {
+    d = new KDoubleNumInputPrivate;
+
     m_value = value;
-    m_format = qstrdup("%.2f");
+    d->precision = 2;
     m_range = false;
 
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
@@ -721,16 +737,16 @@ void KDoubleNumInput::doLayout()
     QFontMetrics fm( edit->font() );
     QString s;
     int h = fm.height();
-    s.sprintf(m_format, m_value);
+    s = KGlobal::locale()->formatNumber(m_value, d->precision);
     int w = fm.width(m_prefix) + fm.width(s) + fm.width(m_suffix);
     w = QMAX(w, fm.width(m_specialvalue));
     if(m_range) {
-        s.sprintf(m_format, m_lower);
+        s = KGlobal::locale()->formatNumber(m_lower, d->precision);
         w = QMAX(w, fm.width(s));
-        s.sprintf(m_format, m_upper);
+        s = KGlobal::locale()->formatNumber(m_upper, d->precision);
         w = QMAX(w, fm.width(s));
         // something inbetween
-        s.sprintf(m_format, m_lower + m_step);
+        s = KGlobal::locale()->formatNumber(m_lower + m_step, d->precision);
         w = QMAX(w, fm.width(s));
     }
 
@@ -838,11 +854,6 @@ QString KDoubleNumInput::prefix() const
 }
 
 
-const char *KDoubleNumInput::format() const
-{
-    return m_format;
-}
-
 // -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setSuffix(const QString &suffix)
@@ -865,12 +876,17 @@ void KDoubleNumInput::setPrefix(const QString &prefix)
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setFormat(const char* fmt)
+void KDoubleNumInput::setPrecision(int precision)
 {
-    m_format = qstrdup(fmt);
+    d->precision = precision;
 
     resetEditBox();
     layout(true);
+}
+
+int KDoubleNumInput::precision() const
+{
+    return d->precision;
 }
 
 // -----------------------------------------------------------------------------
@@ -883,7 +899,7 @@ void KDoubleNumInput::resetEditBox()
     }
     else {
         QString s;
-        s.sprintf(m_format, m_value);
+        s = KGlobal::locale()->formatNumber(m_value, d->precision);
         edit->setText(m_prefix + s + m_suffix);
         edit->home( false );
     }
@@ -903,7 +919,7 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setLabel(QString label, int a)
+void KDoubleNumInput::setLabel(const QString & label, int a)
 {
     KNumInput::setLabel(label, a);
 
