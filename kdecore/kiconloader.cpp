@@ -629,6 +629,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	if ((overlay & KIcon::ZipOverlay) &&
 		((ovl = loadOverlay(theme->zipOverlay(), size)) != 0L))
 	    KIconEffect::overlay(*img, *ovl);
+	if ((overlay & KIcon::ShareOverlay) &&
+	    ((ovl = loadOverlay(theme->shareOverlay(), size)) != 0L))
+	  KIconEffect::overlay(*img, *ovl);
         if (overlay & KIcon::HiddenOverlay)
             for (int y = 0; y < img->height(); y++)
             {

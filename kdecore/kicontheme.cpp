@@ -40,7 +40,7 @@ class KIconThemePrivate
 {
 public:
     QString example, screenshot;
-    QString linkOverlay, lockOverlay, zipOverlay;
+    QString linkOverlay, lockOverlay, zipOverlay, shareOverlay;
 };
 
 /**
@@ -130,6 +130,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
     d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
     d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
+    d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
     QStringList dirs = cfg.readListEntry("Directories");
     mDirs.setAutoDelete(true);
@@ -195,6 +196,7 @@ QString KIconTheme::screenshot() const { return d->screenshot; }
 QString KIconTheme::linkOverlay() const { return d->linkOverlay; }
 QString KIconTheme::lockOverlay() const { return d->lockOverlay; }
 QString KIconTheme::zipOverlay() const { return d->zipOverlay; }
+QString KIconTheme::shareOverlay() const { return d->shareOverlay; }
 
 int KIconTheme::defaultSize(KIcon::Group group) const
 {
