@@ -214,6 +214,15 @@ public:
   void setURLDropHandlingEnabled( bool enable );
 
   /**
+   * @return the status (enabled/disabled) of an action.
+   * When the enableAction signal is emitted, the browserextension
+   * stores the status of the action internally, so that it's possible
+   * to query later for the status of the action, using this method.
+   */
+  bool isActionEnabled( const char * name ) const;
+
+  typedef QMap<QCString,QCString> ActionSlotMap;
+  /**
    * Retrieve a map containing the action names as keys and corresponding
    * SLOT()'ified method names as data entries.
    *
@@ -241,7 +250,13 @@ public:
    *
    * (where "mapIterator" is your QMap<QCString,QCString> iterator)
    */
-  static QMap<QCString,QCString> actionSlotMap();
+  static ActionSlotMap actionSlotMap();
+
+  /**
+   * @return a pointer to the static action-slot map. Preferred method to get it.
+   * The map is created if it doesn't exist yet
+   */
+  static ActionSlotMap * actionSlotMapPtr();
 
   /**
    * Queries @p obj for a child object which inherits from this
@@ -386,11 +401,17 @@ private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
   void slotEmitOpenURLRequestDelayed();
+  void slotEnableAction( const char *, bool );
 
 private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
   BrowserExtensionPrivate *d;
+  typedef QMap<QCString,int> ActionNumberMap;
+
+  static ActionNumberMap * s_actionNumberMap;
+  static ActionSlotMap * s_actionSlotMap;
+  static void createActionSlotMap();
 };
 
 /**
