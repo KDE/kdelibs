@@ -65,8 +65,9 @@ public:
 
 	/**
 	 * Destructs the pixmap.
+         * ### KDE 4: remove
 	 */
-	~KPixmap() {};
+	~KPixmap();
 
 	/**
 	 * Copies the QPixmap @p pix.

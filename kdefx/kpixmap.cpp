@@ -183,6 +183,9 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     return true;
 }
 
+KPixmap::~KPixmap()
+{
+}
 
 bool KPixmap::load( const QString& fileName, const char *format,
 		    int conversion_flags )
