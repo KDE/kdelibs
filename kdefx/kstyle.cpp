@@ -68,51 +68,70 @@ class TransparencyHandler : public QObject
 		KStyle* kstyle;
 };
 
+struct KStyle::Private
+{
+	bool  highcolor                : 1;
+	bool  allowMenuTransparency    : 1;
+	bool  useMenuTransparency      : 1;
+	bool  useFilledFrameWorkaround : 1;
+	bool  etchDisabledText         : 1;
+	bool  menuAltKeyNavigation     : 1;
+	int   popupMenuDelay;
+	float menuOpacity;
+
+	KStyleScrollBarType  scrollbarType;
+	TransparencyHandler* menuHandler;
+	QStyle* winstyle;		// ### REMOVE
+};
+
 // -----------------------------------------------------------------------------
 
 
 KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
-	: QCommonStyle()
+	: QCommonStyle(), d(new Private)
 {
-	allowMenuTransparency    = (flags & AllowMenuTransparency);
-	useFilledFrameWorkaround = (flags & FilledFrameWorkaround);
-	scrollbarType = sbtype;
-	highcolor = QPixmap::defaultDepth() > 8;
+	d->allowMenuTransparency    = (flags & AllowMenuTransparency);
+	d->useFilledFrameWorkaround = (flags & FilledFrameWorkaround);
+	d->scrollbarType = sbtype;
+	d->highcolor = QPixmap::defaultDepth() > 8;
 
 	// Read style settings
 	QSettings settings;
-	popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
-	etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
-	menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
+	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
+	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
+	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 
-	if (highcolor && allowMenuTransparency) {
-		useMenuTransparency	= settings.readBoolEntry  ("/KStyle/Settings/UseMenuTransparency", false); 
-		menuOpacity 		= settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
+	if (d->highcolor && d->allowMenuTransparency) {
+		d->useMenuTransparency	= settings.readBoolEntry  ("/KStyle/Settings/UseMenuTransparency", false); 
+		d->menuOpacity 		= settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
 	} else
-		useMenuTransparency = false;
+		d->useMenuTransparency = false;
 
 	// Create an instance of the menu transparency handler if required
-	menuHandler = useMenuTransparency ? new TransparencyHandler(this, menuOpacity) : NULL;
+	d->menuHandler = d->useMenuTransparency ? new TransparencyHandler(this, d->menuOpacity) : NULL;
 
 	// ### Remove this ugly dependency!!!
-	winstyle = QStyleFactory::create("Windows");
-	if (!winstyle)
-		winstyle = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
+	d->winstyle = QStyleFactory::create("Windows");
+	if (!d->winstyle)
+		d->winstyle = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
 }
 
 
 KStyle::~KStyle()
 {
-	delete winstyle;
-	delete menuHandler;
-	winstyle    = NULL;
-	menuHandler = NULL;
+	delete d->winstyle;
+	d->winstyle    = NULL;
+	
+	delete d->menuHandler;
+	d->menuHandler = NULL;
+
+	delete d;
 }
 
 
 void KStyle::polish( QWidget* widget )
 {
-	if ( useFilledFrameWorkaround )
+	if ( d->useFilledFrameWorkaround )
 	{
 		if (widget->inherits("QToolBar"))
 			widget->installEventFilter(this);
@@ -124,7 +143,7 @@ void KStyle::polish( QWidget* widget )
 
 void KStyle::unPolish( QWidget* widget )
 {
-	if ( useFilledFrameWorkaround )
+	if ( d->useFilledFrameWorkaround )
 	{
 		if (widget->inherits("QMenuBar"))
 			widget->removeEventFilter(this);
@@ -141,9 +160,9 @@ void KStyle::polishPopupMenu( QPopupMenu* p )
 		p->setCheckable(true);
 
 	// Install transparency handler if the effect is enabled.
-	if ( menuHandler && 
+	if ( d->menuHandler && 
 		(strcmp(p->name(), "tear off menu") != 0))
-			p->installEventFilter(menuHandler);
+			p->installEventFilter(d->menuHandler);
 }
 
 
@@ -153,7 +172,7 @@ void KStyle::polishPopupMenu( QPopupMenu* p )
 
 void KStyle::setScrollBarType(KStyleScrollBarType sbtype)
 {
-	scrollbarType = sbtype;
+	d->scrollbarType = sbtype;
 }
 
 
@@ -495,7 +514,7 @@ void KStyle::drawControl( ControlElement element,
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
 				
 				// Do fancy gradient for highcolor displays
-				if (highcolor) {
+				if (d->highcolor) {
 					QColor c(cg.highlight());
 					KPixmap pix;
 					pix.resize(cr.width(), cr.height());
@@ -685,7 +704,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 		// ------------------------------------------------------------------------
 		case CC_ScrollBar: {
 			// Many thanks to Brad Hughes for contributing this code.
-			bool useThreeButtonScrollBar = (scrollbarType & ThreeButtonScrollBar);
+			bool useThreeButtonScrollBar = (d->scrollbarType & ThreeButtonScrollBar);
 
 			const QScrollBar *sb = (const QScrollBar*)widget;
 			bool   maxedOut   = (sb->minValue()    == sb->maxValue());
@@ -808,7 +827,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 
 		default:
 			// ### Only needed for CC_ListView if the style has been fully implemented.
-			winstyle->drawComplexControl( control, p, widget, r, cg,
+			d->winstyle->drawComplexControl( control, p, widget, r, cg,
 										  flags, controls, active, opt );
 			break;
 	}
@@ -822,7 +841,7 @@ QStyle::SubControl KStyle::querySubControl( ComplexControl control,
 {
 	QStyle::SubControl ret = QCommonStyle::querySubControl(control, widget, pos, opt);
 
-	if (scrollbarType == ThreeButtonScrollBar) {
+	if (d->scrollbarType == ThreeButtonScrollBar) {
 		// Enable third button
 		if (control == CC_ScrollBar && ret == SC_None)
 			ret = SC_ScrollBarSubLine;
@@ -840,9 +859,9 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 
 	if (control == CC_ScrollBar)
 	{
-		bool threeButtonScrollBar = scrollbarType & ThreeButtonScrollBar;
-		bool platinumScrollBar    = scrollbarType & PlatinumStyleScrollBar;
-		bool nextScrollBar        = scrollbarType & NextStyleScrollBar;
+		bool threeButtonScrollBar = d->scrollbarType & ThreeButtonScrollBar;
+		bool platinumScrollBar    = d->scrollbarType & PlatinumStyleScrollBar;
+		bool nextScrollBar        = d->scrollbarType & NextStyleScrollBar;
 
 		const QScrollBar *sb = (const QScrollBar*)widget;
 		bool horizontal = sb->orientation() == Qt::Horizontal;
@@ -980,7 +999,7 @@ QPixmap KStyle::stylePixmap( StylePixmap stylepixmap,
 						  const QStyleOption& opt) const
 {
 	// ### Only need new images for the others to use KStyle
-	return winstyle->stylePixmap(stylepixmap, widget, opt);
+	return d->winstyle->stylePixmap(stylepixmap, widget, opt);
 }
 
 
@@ -990,13 +1009,13 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 	switch (sh)
 	{
 		case SH_EtchDisabledText:
-			return etchDisabledText ? 1 : 0;
+			return d->etchDisabledText ? 1 : 0;
 
 		case SH_MenuBar_AltKeyNavigation:
-			return menuAltKeyNavigation ? 1 : 0;
+			return d->menuAltKeyNavigation ? 1 : 0;
 
 		case SH_PopupMenu_SubMenuPopupDelay:
-			return popupMenuDelay;
+			return d->popupMenuDelay;
 
 		case SH_ItemView_ChangeHighlightOnFocus:
 		case SH_Slider_SloppyKeyEvents:
@@ -1020,7 +1039,7 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 
 bool KStyle::eventFilter( QObject* object, QEvent* event )
 {
-	if ( useFilledFrameWorkaround )
+	if ( d->useFilledFrameWorkaround )
 	{
 		QMenuBar* menubar = dynamic_cast<QMenuBar*>(object);
 		QToolBar* toolbar = dynamic_cast<QToolBar*>(object);

@@ -283,18 +283,8 @@ class KStyle: public QCommonStyle
 		KStyle( const KStyle & );
 		KStyle& operator=( const KStyle & );
 
-		bool  highcolor                : 1;
-		bool  allowMenuTransparency    : 1;
-		bool  useMenuTransparency      : 1;
-		bool  useFilledFrameWorkaround : 1;
-		bool  etchDisabledText         : 1;
-		bool  menuAltKeyNavigation     : 1;
-		int   popupMenuDelay;
-		float menuOpacity;
-
-		KStyleScrollBarType  scrollbarType;
-		TransparencyHandler* menuHandler;
-		QStyle* winstyle;		// ### REMOVE
+		struct Private;
+		Private *d;
 };
 
 
