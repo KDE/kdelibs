@@ -1,3 +1,8 @@
+1998-10-12  Jochen Küpper  <jochen@uni-duesseldorf.de>
+
+	* kfiledialog.cpp (okPressed): Changed okPressed to store the correct
+	filename before leaving the dialog.
+
 1998-06-07  Stephan Kulow  <coolo@kde.org>
 
 	* kfilesimpleview.cpp: added some checks to prevent division with

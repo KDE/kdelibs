@@ -291,11 +291,11 @@ void KFileBaseDialog::setFilter(const char *filter)
 
 void KFileBaseDialog::okPressed()
 {
+    filename_ = locationEdit->currentText();
     if (!filename_.isNull())
 	debugC("filename %s", filename_.data());
     else {
 	debugC("no filename");
-	filename_ = locationEdit->currentText();
     }
     if (!finished)
 	QApplication::restoreOverrideCursor();
