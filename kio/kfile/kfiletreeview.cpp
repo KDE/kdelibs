@@ -44,6 +44,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
       m_wantOpenFolderPixmaps( true ),
       m_toolTip( this )
 {
+    setDragEnabled(true);
     setSelectionModeExt( KListView::Single );
 
     m_animationTimer = new QTimer( this );
