@@ -20,7 +20,7 @@
 #ifndef __kio_pass_dlg_h__
 #define __kio_pass_dlg_h__
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class QGridLayout;
 
@@ -32,24 +32,11 @@ namespace KIO {
  * KIO-Slave authors are encouraged to use @ref SlaveBase::openPassDlg
  * instead of directly instantiating this dialog.
  */
-// ### inherit KDialogBase instead of KDialog in 3.0
-class PasswordDialog : public KDialog
+class PasswordDialog : public KDialogBase 
 {
     Q_OBJECT
 
 public:
-    /**
-     * Create a password dialog.
-     *
-     * @param parent        the parent widget (default:NULL).
-     * @param name          the dialog name (default:NULL).
-     * @param wfags         window flags.
-     * @param modal         if true, the dialog will be modal(default:true).
-     * @param enableKeep    shows or hides the keep password check box.
-     */
-    PasswordDialog( QWidget* parent=0, const char* name=0, WFlags wflags=0,
-                    bool modal=true, bool enableKeep=false );
-
     /**
      * Create a password dialog.
      *
@@ -59,30 +46,10 @@ public:
      * @param modal         if true, the dialog will be modal (default:true).
      * @param parent        the parent widget (default:NULL).
      * @param name          the dialog name (default:NULL).
-     * @param wfags         window flags.
      */
     PasswordDialog( const QString& prompt, const QString& user,
                     bool enableKeep = false, bool modal=true,
-                    QWidget* parent=0, const char* name=0,
-                    WFlags wflags=0 );
-
-    /**
-     * @deprecated Creates a password dialog
-     *
-     * @param parent the parent widget
-     * @param name the dialog name
-     * @param modal if true, the dialog will be modal
-     * @param wflags window flags, passed to QDialog
-     * @param head the text to show in the dialog, on top of the two fields
-     * @param user user name, if known initially
-     * @param pass password, if known initially
-     *
-     * IMPORTANT: This function is added for binary compatability with the
-     *            previous password dialog and as such should be avoided!
-     */
-    PasswordDialog( QWidget* parent, const char* name, bool modal,
-                    WFlags wflags, const QString& head, const QString& user,
-                    const QString& pass );
+                    QWidget* parent=0, const char* name=0 );
 
     /**
      * Destructor
@@ -166,7 +133,6 @@ private slots:
 private:
     void init( const QString&, const QString&, bool );
 
-    QGridLayout* m_pLay;
     struct PasswordDialogPrivate;
     PasswordDialogPrivate* d;
 };
