@@ -146,20 +146,20 @@ typedef QMap<QString, KKeyEntry> KKeyEntryMap;
  */
 class KAccel : public QAccel
 {
- Q_OBJECT	
-	
+ Q_OBJECT
+
  public:
-	
+
 	/**
 	 * Create a KAccel object with a parent widget and a name.
 	 */
 	KAccel( QWidget * parent, const char *name = 0 );
-	
+
 	/**
 	 * Remove all accelerator items.
 	 */
 	void clear();
-	
+
 	/**
 	 * Connect an accelerator item to a slot/signal in another object.
 	 *
@@ -189,9 +189,9 @@ class KAccel : public QAccel
 
 	/**
 	* Retrieve the number of accelerator items.
-	*/					
+	*/
 	uint count() const;
-	
+
 	/**
 	* Retrieve the key code of the accelerator item with the action name
 	* @p action, or zero if either the action name cannot be
@@ -213,19 +213,19 @@ class KAccel : public QAccel
 	* @p action, or zero if the action name cannot be found.
 	*/
 	int defaultKey( const QString& action) const;
-	
+
 	/**
 	 * Disconnect an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
 						const QObject* receiver, const char *member );
-	
+
 	/**
 	 * Rerieve the identifier of the accelerator item with the keycode @p key,
 	 * or @ref QString::null if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
-	
+
 	/**
 	 * Insert an accelerator item.
 	 *
@@ -247,7 +247,7 @@ class KAccel : public QAccel
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 					int defaultKeyCode, bool configurable = true );
-	
+
 	/**
 	 * Insert an accelerator item.
 	 *
@@ -273,13 +273,13 @@ class KAccel : public QAccel
 	bool insertItem( const QString& descr, const QString& action,
 					int defaultKeyCode, int id, QPopupMenu *qmenu,
 					bool configurable = true );
-	
+
 	 /**
 	 * Insert an accelerator item.
 	 *
 	 * If an action already exists the old association and connections
 	 * will be removed.
-	 *	
+	 *
 	 *  @param descr The localized name of the action, useful in
 	 *  menus or the keybinding editor.
 	 *  @param action The internal accelerator item action name. It
@@ -298,10 +298,10 @@ class KAccel : public QAccel
 	bool insertItem( const QString& descr, const QString& action,
 					const QString& defaultKeyCode,
 					bool configurable = true );
-	
+
 	 /**
 	 * Insert an accelerator item.
-	 *	
+	 *
 	 * If an action already exists the old association and connections
 	 * will be removed..
 	 *
@@ -321,7 +321,7 @@ class KAccel : public QAccel
 	bool insertItem( const QString& descr, const QString& action,
 					const QString& defaultKeyCode,
 					int id, QPopupMenu *qmenu, bool configurable = true );
-				
+
 	/**
 	 * Insert a standard accelerator item.
 	 *
@@ -389,9 +389,9 @@ class KAccel : public QAccel
 	 *
 	 * Note that only a shallow copy is made so
 	 * that items will be lost when the @ref KKeyEntry objects are deleted.
-	 */	
+	 */
 	bool setKeyDict( const KKeyEntryMap& nKeyDict );
-	
+
 	/**
 	 * Retrieve the dictionary of accelerator action names and
 	 * @ref KKeyEntry
@@ -399,7 +399,7 @@ class KAccel : public QAccel
 	 * items will be lost when the @ref KKeyEntry objects are deleted.
 	 */
 	KKeyEntryMap keyDict() const;
-				
+
 	/**
 	 * Read all key associations from @p config, or (if @p config
 	 * is zero) from the application's configuration file
@@ -407,16 +407,27 @@ class KAccel : public QAccel
 	 *
 	 * The group in which the configuration is stored can be
 	 * set with @ref setConfigGroup().
-	 */	
+	 */
 	void readSettings(KConfig* config = 0);
+
+        /// @internal
+        static void readKeyMap( KKeyEntryMap &aKeyMap, const QString &group,
+                                KConfig *config = 0 );
 
 	/**
 	 * Write the current configurable associations to @p config,
          * or (if @p config is zero) to the application's
 	 * configuration file.
-	 */	
+	 */
 	void writeSettings(KConfig* config = 0) const;
-	
+
+        /**
+         * More flexible version of @see writeSettings. You can specify your
+         * own key map. ( writeSettings calls this function internally )
+         * @internal
+         **/
+        static void writeKeyMap( const KKeyEntryMap &aKeyMap, const QString& group, KConfig *config = 0);
+
 	/**
 	 * Set the group in the configuration file in which the
 	 * accelerator settings are stored.
@@ -441,7 +452,7 @@ class KAccel : public QAccel
 	 *  the application configuration file)?
 	 **/
 	bool configGlobal() const;
-	
+
 	/**
 	 * Enable all accelerators if activate is true, or disable it if
 	 * activate is false.
@@ -453,7 +464,7 @@ class KAccel : public QAccel
 	 * Are accelerators enabled?
 	 **/
 	bool isEnabled() const;
-	
+
 	/**
 	 * Enable or disable an accelerator item.
 	 *
@@ -486,7 +497,7 @@ class KAccel : public QAccel
 	 *  Clear any pointers to a menu.
 	 **/
 	void removeDeletedMenu(QPopupMenu *menu);
-	
+
 	/**
 	 * Retrieve the key code corresponding to the string @p sKey or
 	 * zero if the string is not recognized.
@@ -497,9 +508,9 @@ class KAccel : public QAccel
 	 * the modifiers Shift, Ctrl and Alt.
 	 *
 	 * N.B.: @p sKey must @em not be @ref i18n()'d!
-	 */	
+	 */
 	static int stringToKey( const QString& sKey );
-	
+
 	/**
 	 * Retrieve a string corresponding to the key code @p keyCode,
 	  * which is empty if
@@ -509,7 +520,7 @@ class KAccel : public QAccel
 
  signals:
 	void keycodeChanged();
-	
+
  protected:
 	int aAvailableId;
 	KKeyEntryMap aKeyMap;
@@ -519,5 +530,5 @@ class KAccel : public QAccel
  private:
         KAccelPrivate *d;
 };
-	
+
 #endif

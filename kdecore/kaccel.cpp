@@ -272,37 +272,48 @@ KKeyEntryMap KAccel::keyDict() const
 	return aKeyMap;
 }
 
-void KAccel::readSettings(KConfig* config)
+void KAccel::readSettings( KConfig* config )
 {
-	QString s;
+    readKeyMap( aKeyMap, aGroup, config );
 
-	KConfig *pConfig = config ? config : KGlobal::config();
-	KConfigGroupSaver cgs(pConfig, aGroup);
+    for (KKeyEntryMap::Iterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it) {
 
-	for (KKeyEntryMap::Iterator it = aKeyMap.begin();
-             it != aKeyMap.end(); ++it) {
-            s = pConfig->readEntry(it.key());
+        if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+            kdDebug(125) << "insert " << (*it).descr << " " << (*it).bEnabled << endl;
+            QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
+                                           (*it).member );
+            QAccel::removeItem( (*it).aAccelId );
+            QAccel::insertItem( (*it).aCurrentKeyCode, (*it).aAccelId );
+            QAccel::connectItem( (*it).aAccelId, (*it).receiver,
+                                        (*it).member);
+        }
+        if ( (*it).menu )
+            changeMenuAccel((*it).menu, (*it).menuId, it.key());
+    }
 
-            if ( s.isNull() )
-                (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
-            else
-                (*it).aConfigKeyCode = stringToKey( s );
+    emit keycodeChanged();
 
-            (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
-            if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
-                kdDebug(125) << "insert " << (*it).descr << " " << (*it).bEnabled << endl;
-                QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
-                                        (*it).member );
-                QAccel::removeItem( (*it).aAccelId );
-                QAccel::insertItem( (*it).aCurrentKeyCode, (*it).aAccelId );
-                QAccel::connectItem( (*it).aAccelId, (*it).receiver,
-                                     (*it).member);
-            }
-            if ( (*it).menu )
-                changeMenuAccel((*it).menu, (*it).menuId, it.key());
-	}
+}
 
-	emit keycodeChanged();
+void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfig *config )
+{
+    QString s;
+
+    KConfig *pConfig = config ? config : KGlobal::config();
+    KConfigGroupSaver cgs(pConfig, group);
+
+    for (KKeyEntryMap::Iterator it = map.begin();
+         it != map.end(); ++it) {
+        s = pConfig->readEntry(it.key());
+
+        if ( s.isNull() || s == "default" )
+            (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
+        else
+            (*it).aConfigKeyCode = stringToKey( s );
+
+        (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
+    }
 }
 
 void KAccel::removeItem( const QString& action )
@@ -401,25 +412,37 @@ bool KAccel::configGlobal() const
 	return bGlobal;
 }
 
+void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig *config )
+{
+    KConfig *pConfig = config ? config : KGlobal::config();
+    KConfigGroupSaver cs(pConfig, group);
+
+    for (KKeyEntryMap::ConstIterator it = map.begin();
+         it != map.end(); ++it)
+    {
+        if ( (*it).bConfigurable )
+        {
+            kdDebug(125) << "writing " <<  KAccel::keyToString( (*it).aCurrentKeyCode, false) << " " <<
+                KAccel::keyToString( (*it).aConfigKeyCode, false) << endl;
+
+            if ( ( *it ).aConfigKeyCode != ( *it ).aDefaultKeyCode )
+            {
+                pConfig->writeEntry( it.key(),
+                                     KAccel::keyToString( (*it).aConfigKeyCode, false) );
+
+            } else {
+                if ( !pConfig->readEntry( it.key() ).isNull() )
+                    pConfig->writeEntry( it.key(),
+                                         "default" );
+            }
+        }
+    }
+    pConfig->sync();
+}
+
 void KAccel::writeSettings(KConfig* config) const
 {
-	KConfig *pConfig = config?config:KGlobal::config();
-        KConfigGroupSaver cs(pConfig, aGroup);
-
-        for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
-             it != aKeyMap.end(); ++it) {
-            if ( (*it).bConfigurable ) {
-                if ( bGlobal )
-                    pConfig->writeEntry( it.key(),
-                                         keyToString( (*it).aCurrentKeyCode, false),
-                                         true, true );
-                else
-                    pConfig->writeEntry( it.key(),
-                                         keyToString( (*it).aCurrentKeyCode, false));
-
-            }
-	}
-	pConfig->sync();
+    writeKeyMap( aKeyMap, aGroup, config );
 }
 
 bool KAccel::configurable( const QString &action ) const
