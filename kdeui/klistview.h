@@ -53,7 +53,9 @@ class KConfig;
 class KListView : public QListView
 {
   Q_OBJECT
+  Q_ENUMS( SelectionModeExt )
   Q_PROPERTY( bool fullWidth READ fullWidth WRITE setFullWidth )
+  Q_OVERRIDE( SelectionModeExt selectionMode READ selectionModeExt WRITE setSelectionModeExt )
 
 public:
   /**
