@@ -32,6 +32,7 @@ public:
   bool usingTLS;
   KSSLCertificateCache *cc;
   QString host;
+  QString ip;
 };
 
 
@@ -56,6 +57,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &prot
 void TCPSlaveBase::doConstructorStuff()
 {
         d = new TcpSlaveBasePrivate;
+        d->ip = "";
         d->cc = NULL;
         d->usingTLS = false;
 }
@@ -146,6 +148,11 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	  }
 
 	m_iSock = ks.fd();
+
+        // store the IP for later
+        KSocketAddress *sa = ks.peerAddress();
+        d->ip = sa->pretty();
+
 	ks.release();		// KExtendedSocket no longer applicable
 
         if (m_bIsSSL) {
@@ -191,6 +198,7 @@ void TCPSlaveBase::CloseDescriptor()
 		close(m_iSock);
 		m_iSock=-1;
 	}
+        d->ip = "";
 }
 
 bool TCPSlaveBase::InitializeSSL()
@@ -301,7 +309,7 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
    setMetaData("ssl_cipher_bits", 
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
    setMetaData("ssl_peer_ip", 
-                                                            QString("FIXME"));
+                                                                       d->ip);
    setMetaData("ssl_cert_state", 
                                                         QString::number(ksv));
    setMetaData("ssl_good_from", 
