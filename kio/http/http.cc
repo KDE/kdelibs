@@ -1473,7 +1473,7 @@ bool HTTPProtocol::readHeader()
           m_strCharset = m_strMimeType.mid( equalPos+1 );
           kdDebug(7103) << "Found charset : " << m_strCharset << endl;
         }
-        m_strMimeType = m_strMimeType.left( semicolonPos );
+        m_strMimeType = m_strMimeType.left( semicolonPos ).lower();
       }
     }
 
