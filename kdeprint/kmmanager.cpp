@@ -54,6 +54,11 @@ KMManager::~KMManager()
 {
 }
 
+KMManager* KMManager::self()
+{
+	return KMFactory::self()->manager();
+}
+
 bool KMManager::notImplemented()
 {
 	setErrorMsg(i18n("This operation is not implemented."));

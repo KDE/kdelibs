@@ -22,7 +22,7 @@
 #ifndef KMMANAGER_H
 #define KMMANAGER_H
 
-#include "kmprinter.h"
+#include <kdeprint/kmprinter.h>
 
 #include <qobject.h>
 #include <qstring.h>
@@ -58,6 +58,8 @@ public:
 
 	KMManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMManager();
+
+    static KMManager* self();
 
 	// error management functions
 	QString errorMsg() const		{ return m_errormsg; }
