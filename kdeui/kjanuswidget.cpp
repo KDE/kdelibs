@@ -278,6 +278,7 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
       widget->recreate( mSwallowPage, 0, QPoint(0,0) );
     }
     gbox->addWidget(widget, 0, 0 );
+    gbox->activate();
     mSwallowPage->setMinimumSize( widget->minimumSize() );
   }
 
