@@ -58,7 +58,7 @@ class KJSProxy {
 public:
   KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSExecFuncCall fc,
            KJSClearFunc c, KJSSpecialFunc sp, KJSDestroyFunc d)
-    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d) { };
+    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d), inEvaluate(false) { }
   ~KJSProxy() { (*destr)(script); }
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
