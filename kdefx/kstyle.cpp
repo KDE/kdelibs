@@ -941,6 +941,9 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_DockWindowFrameWidth:
 			return 1;
 
+		case PM_DockWindowHandleExtent:
+			return 17;
+
 		// GENERAL
 		// ------------------------------------------------------------------------
 		case PM_MaximumDragDistance:
