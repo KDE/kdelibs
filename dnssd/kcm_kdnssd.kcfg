@@ -1,0 +1,34 @@
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+ <kcfgfile name="kdnssdrc" />
+ <group name="browsing" >
+  <entry key="DomainList" type="StringList" >
+   <label>Additional domains for browsing</label>
+  </entry>
+  <entry key="BrowseLocal" type="Bool" >
+   <label>Browse local network</label>
+   <default>true</default>
+  </entry>
+  <entry key="Recursive" type="Bool" >
+   <label>Recursive search for domains</label>
+   <default>false</default>
+  </entry>
+  <entry key="PollingInterval" type="UInt" >
+   <label>Time (in seconds) between refreshing list of services found by unicast DNS-SD</label>
+   <default>0</default>
+  </entry>
+ </group>
+ <group name="publishing" >
+  <entry key="PublishType" type="Enum" >
+   <label>Select publishing in LAN (multicast) or WAN (unicast, needs configured DNS server)</label>
+   <default>LAN</default>
+   <choices>
+    <choice name="LAN" />
+    <choice name="WAN" />
+   </choices>
+  </entry>
+  <entry key="PublishDomain" type="String" >
+   <label>Name of default publishing domain for WAN</label>
+  </entry>
+ </group>
+</kcfg>
