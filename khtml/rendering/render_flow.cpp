@@ -670,7 +670,7 @@ RenderFlow::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatLeft &&
             r->left + r->width > left) {
-	    left = r->left + r->width + 1;
+	    left = r->left + r->width;
 	    if ( heightRemaining ) *heightRemaining = r->endY - y;
 	}
     }
@@ -713,7 +713,7 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatRight &&
             r->left < right) {
-	    right = r->left - 1;
+	    right = r->left;
 	    if ( heightRemaining ) *heightRemaining = r->endY - y;
 	}
     }
