@@ -27,6 +27,7 @@
 #include <qdict.h>
 #include <qvaluelist.h>
 #include <karchive.h>
+#include <zlib.h>
 
 class KZipFileEntry;
 
@@ -68,7 +69,7 @@ public:
     bool setEntry(Q_LONG start, int encoding,Q_LONG csize);
     uLong getcrc() {return crc; }
     void setcrc(uLong _crc) { crc= _crc; }
-         
+
 private:
     typedef QValueList<KZipFileEntry> KZipFileList;
     QIODevice * dev;
@@ -80,20 +81,20 @@ private:
 class KZipFileEntry
 {
 public:
-    KZipFileEntry() : st(-1) 
+    KZipFileEntry() : st(-1)
     {}
     KZipFileEntry(Q_LONG start, int encoding, Q_LONG csize) :
-		st(start) , enc(encoding) , cs(csize)		
+		st(start) , enc(encoding) , cs(csize)
     {}
     Q_LONG start() const {return st; }
     int encoding() const {return enc; }
     Q_LONG csize() const {return cs; }
     uLong crc32() const {return crc; }
-    
+
     QString filename() const {return fn; }
     Q_LONG usize() const {return us; }
     Q_LONG headerstart() const {return hst; }
-    
+
     void setStart(Q_LONG start) { st=start; }
     void setEncoding(int encoding) { enc=encoding; }
     void setCSize(Q_LONG csize) { cs=csize; }
@@ -102,17 +103,17 @@ public:
     void setFilename(QString filename) { fn=filename; }
     void setUSize(Q_LONG usize) { us=usize; }
     void setHeaderStart(Q_LONG headerstart) { hst=headerstart; }
-    
+
 private:
     Q_LONG st;
     int enc;
     Q_LONG cs;
     uLong crc;
-    
+
     QString fn;
     Q_LONG us;
     Q_LONG hst;
-    
+
 };
 
 

@@ -57,7 +57,7 @@ public:
 
     /**
      * Closes the archive.
-     * Inherited classes might want to reimplement openArchive instead.
+     * Inherited classes might want to reimplement closeArchive instead.
      *
      * @see #open
      */
