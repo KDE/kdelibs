@@ -115,7 +115,7 @@ public:
   /**
    * Checks whether auto delete is activated.
    * Auto-deletion causes the KRun instance to delete itself
-   * when the it finished its task.
+   * when it finished its task.
    * By default auto deletion is on.
    * @return true if auto deletion is on, false otherwise
    */
@@ -124,7 +124,7 @@ public:
   /**
    * Enables or disabled auto deletion.
    * Auto deletion causes the KRun instance to delete itself
-   * when the it finished its task. If you allocate the KRun
+   * when it finished its task. If you allocate the KRun
    * object on the stack you must disable auto deletion.
    * By default auto deletion is on.
    * @param b true to enable auto deletion, false to disable
