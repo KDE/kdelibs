@@ -45,25 +45,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
-#ifdef DCOP_LOG
-#include <string.h>
-#endif
 
 #define QT_CLEAN_NAMESPACE 1
 #include <qfile.h>
 #include <qtextstream.h>
-#ifdef DCOP_LOG
-#include <qdir.h>
-#endif
 #include <qdatastream.h>
 #include <qptrstack.h>
 #include <qtimer.h>
 
-#include <dcopserver.h>
+#include "dcopserver.h"
+
 #include <dcopsignals.h>
 #include <dcopclient.h>
 #include <dcopglobal.h>
 #include "dcop-path.h"
+
+#ifdef DCOP_LOG
+#undef Unsorted
+#include <qdir.h>
+#include <string.h>
+#endif
 
 // #define DCOP_DEBUG
 
