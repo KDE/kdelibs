@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.7  1999/11/07 03:50:54  ettrich
+    small fix (don't destroy the XSelect mask)
+
     Revision 1.6  1999/11/07 02:16:51  ettrich
     avoid using 50% CPU....
 
@@ -80,9 +83,11 @@ static Atom net_client_list;
 static Atom net_client_list_stacking;
 static Atom net_active_window;
 static Atom net_current_desktop;
+static Atom net_kde_docking_windows;
 
 static void createAtoms() {
     if (!atoms){
+	// #### TODO make this an X11 big call (less roundtrips)
 
 	module_init = XInternAtom(qt_xdisplay(),
 				  "KWM_MODULE_INIT", False);
@@ -132,6 +137,7 @@ static void createAtoms() {
 	net_client_list_stacking = XInternAtom(qt_xdisplay(), "_NET_CLIENT_LIST_STACKIN", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
+	net_kde_docking_windows = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOWS", False);
 	atoms = true;
     }
 }
@@ -165,6 +171,7 @@ public:
 	killTimers();
 	updateWindows();
 	updateWindowsSorted();
+	updateDockWindows();
     }
     int desktop;
 
@@ -173,6 +180,7 @@ public:
 
     void updateWindows();
     void updateWindowsSorted();
+    void updateDockWindows();
 
 };
 
@@ -180,7 +188,7 @@ QValueList<WId> KWinModulePrivate::readWindowList( Atom a )
 {
     Atom type;
     int format;
-    ulong  nitems, after = 1;
+    ulong  nitems, after;
     long offset = 0;
     WId  *data;
 
@@ -194,6 +202,7 @@ QValueList<WId> KWinModulePrivate::readWindowList( Atom a )
     if ( e != Success || !nitems )
 	return result;
 
+    after = 1;
     while (after > 0) {
 	XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), a,
 			    offset, 1024, FALSE, XA_WINDOW,
@@ -209,22 +218,22 @@ QValueList<WId> KWinModulePrivate::readWindowList( Atom a )
 
 void KWinModulePrivate::updateWindows()
 {
-    QValueList<WId> nl = readWindowList( net_client_list );
-
+    QValueList<WId> old = windows;
+    
+    windows = readWindowList( net_client_list );
     qHeapSort( windows );
-    qHeapSort( nl );
 
     QValueList<WId>::Iterator it1, it2;
 
-    it1 = windows.begin();
-    it2 = nl.begin();
-    while ( it1 != windows.end() || it2 != nl.end() ) {
-	if ( it1 == windows.end() ) {
+    it1 = old.begin();
+    it2 = windows.begin();
+    while ( it1 != old.end() || it2 != windows.end() ) {
+	if ( it1 == old.end() ) {
 	    if ( !QWidget::find( *it2 ) )
 		XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
 	    emit module->windowAdd( *it2 );
 	    ++it2;
-	} else if ( it2 == nl.end() ) {
+	} else if ( it2 == windows.end() ) {
 	    emit module->windowRemove( *it1 );
 	    ++it1;
 	} else {
@@ -242,7 +251,6 @@ void KWinModulePrivate::updateWindows()
 	    }
 	}
     }
-    windows = nl;
 }
 
 void KWinModulePrivate::updateWindowsSorted()
@@ -251,6 +259,42 @@ void KWinModulePrivate::updateWindowsSorted()
     emit module->stackingOrderChanged();
 }
 
+void KWinModulePrivate::updateDockWindows()
+{
+    QValueList<WId> old = dockWindows;
+    
+    dockWindows = readWindowList( net_kde_docking_windows );
+    qHeapSort( dockWindows );
+    
+    QValueList<WId>::Iterator it1, it2;
+
+    it1 = old.begin();
+    it2 = dockWindows.begin();
+    while ( it1 != old.end() || it2 != dockWindows.end() ) {
+	if ( it1 == old.end() ) {
+	    if ( !QWidget::find( *it2 ) )
+		XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
+	    emit module->dockWindowAdd( *it2 );
+	    ++it2;
+	} else if ( it2 == dockWindows.end() ) {
+	    emit module->dockWindowRemove( *it1 );
+	    ++it1;
+	} else {
+	    if (*it1 < *it2 ) {
+		emit module->windowRemove( *it1 );
+		++it1;
+	    } else if ( *it2 < *it1 ) {
+		if ( !QWidget::find( *it2 ) )
+		    XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
+		emit module->dockWindowAdd( *it2 );
+		++it2;
+	    } else {
+		++it1;
+		++it2;
+	    }
+	}
+    }
+}
 
 
 KWinModule::KWinModule( QObject* parent, bool dockModule )
@@ -301,6 +345,9 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	}
 	else if ( ev->xproperty.atom == net_client_list_stacking ) {
 	    updateWindowsSorted();
+	}
+	else if ( ev->xproperty.atom == net_kde_docking_windows ) {
+	    updateDockWindows();
 	}
 	else if (  ev->xproperty.atom == net_active_window ) {
 	    emit module->windowActivate( KWin::activeWindow() );
