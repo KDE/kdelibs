@@ -1090,8 +1090,6 @@ void KHTMLPart::clear()
   connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
 #endif
 
-  d->m_totalObjectCount = 0;
-  d->m_loadedObjects = 0;
   d->m_jobPercent = 0;
 
   if ( !d->m_haveEncoding )
@@ -1465,7 +1463,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   KURL ref(url);
   ref.setRef(QString::null);
-  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : QString::null;
+  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
 
   m_url = url;
   KURL baseurl;
@@ -1739,6 +1737,8 @@ void KHTMLPart::checkCompleted()
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
   d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
+  d->m_totalObjectCount = 0;
+  d->m_loadedObjects = 0;
 
   KHTMLPart* p = this;
   while ( p ) {
@@ -1874,7 +1874,7 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = QString::null;
+  d->m_referrer = "";
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
@@ -1891,11 +1891,18 @@ void KHTMLPart::slotRedirect()
   KParts::URLArgs args;
   // Redirecting to the current URL leads to a reload.
   // But jumping to an anchor never leads to a reload.
+  KURL cUrl( m_url );
   KURL url( u );
 
-  if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url))
+  // handle windows opened by JS
+  if ( openedByJS() && d->m_opener )
+      cUrl = d->m_opener->url();
+
+  qDebug( "comparing %s and %s", 
+   cUrl.url().latin1(), url.url().latin1() );
+  if (!kapp || !kapp->kapp->authorizeURLAction("redirect", cUrl, url))
   {
-    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
     return;
   }
 
