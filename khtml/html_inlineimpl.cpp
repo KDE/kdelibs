@@ -295,7 +295,7 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     s = attributeMap.valueForId(ATTR_FACE);
     if(!s.isEmpty())
     {
-      //printf("setting face\n");
+      printf("setting face\n");
 	QString str = s.string();
 	str.replace(QRegExp("[ ,]+"), ",");
 	// try to find a matching font in the font list.

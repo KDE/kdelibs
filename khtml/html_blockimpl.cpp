@@ -62,11 +62,12 @@ void HTMLBlockquoteElementImpl::setAvailableWidth(int w)
 {
     if(w != -1)
     { 
+	if(w != availableWidth + 2*BLOCKQUOTEINDENT)
+	    setLayouted(false);
+
 	availableWidth = w - 2*BLOCKQUOTEINDENT;
 	if(availableWidth < 20) availableWidth = 20;
     }
-
-    //setLayouted(false);
 
     HTMLBlockElementImpl::setAvailableWidth(availableWidth);
     width = availableWidth;

@@ -999,7 +999,7 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
         delete paintBuffer;
         paintBuffer = new QPixmap(width()+100,height()+100);            
     }
-    paintBuffer->fill();
+    paintBuffer->fill(defaultSettings->bgColor);
         
     QPainter* tp = new QPainter;
     tp->begin( paintBuffer );
@@ -1015,6 +1015,8 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     p->drawPixmap(clipx,clipy,*paintBuffer,0,0,clipw,cliph);
 
 #else
+    QBrush b(defaultSettings->bgColor);
+    p->fillRect(clipx, clipy, clipw, cliph, b);
     body->print(p, clipx, clipy, clipw, cliph, 0, 0);
 #endif
 }

@@ -26,7 +26,7 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
- #define TOKEN_DEBUG
+// #define TOKEN_DEBUG
 //#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H

@@ -94,7 +94,7 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
   //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
     if (usemap.length()>0)
     {
-    	cout << "usemap: " << usemap.string() << endl;
+        //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
     	    return map->mapMouseEvent(_x-getXPos()-_tx, _y-getYPos()-_ty+ascent,
