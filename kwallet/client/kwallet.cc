@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "kwallettypes.h"
 #include "kwallet.h"
 #include <kconfig.h>
 #include <kdebug.h>
@@ -28,8 +29,6 @@
 #include <qapplication.h>
 
 #include <assert.h>
-
-inline const char* dcopTypeName(const QByteArray&) { return "QByteArray"; }
 
 using namespace KWallet;
 
@@ -400,6 +399,23 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
 }
 
 
+int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) {
+	int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readEntryList", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(value);
+		rc = 0;
+	}
+
+	return rc;
+}
+
+
 int Wallet::renameEntry(const QString& oldName, const QString& newName) {
 	int rc = -1;
 
@@ -438,6 +454,32 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 }
 
 
+int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value) {
+	int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readMapList", _handle, _folder, key);
+	if (r.isValid()) {
+		QMap<QString,QByteArray> unparsed;
+		r.get(unparsed);
+		for (QMap<QString,QByteArray>::ConstIterator i = unparsed.begin(); i != unparsed.end(); ++i) {
+			if (!i.data().isEmpty()) {
+				QDataStream ds(i.data(), IO_ReadOnly);
+				QMap<QString,QString> v;
+				ds >> v;
+				value.insert(i.key(), v);
+			}
+		}
+		rc = 0;
+	}
+
+	return rc;
+}
+
+
 int Wallet::readPassword(const QString& key, QString& value) {
 	int rc = -1;
 
@@ -446,6 +488,23 @@ int Wallet::readPassword(const QString& key, QString& value) {
 	}
 
 	DCOPReply r = _dcopRef->call("readPassword", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(value);
+		rc = 0;
+	}
+
+	return rc;
+}
+
+
+int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) {
+	int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readPasswordList", _handle, _folder, key);
 	if (r.isValid()) {
 		r.get(value);
 		rc = 0;

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -302,6 +302,43 @@ class Wallet : public QObject, public DCOPObject {
 		 *          written as a password.
 		 */
 		virtual int readPassword(const QString& key, QString& value);
+
+		/**
+		 *  Read the entries matching @p key from the current folder.
+		 *  The entry format is unknown except that it is either a
+		 *  QByteArray or a QDataStream, which effectively means that
+		 *  it is anything.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
+		int readEntryList(const QString& key, QMap<QString, QByteArray>& value);
+
+		/**
+		 *  Read the map entry @p key from the current folder.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a map.
+		 */
+		int readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value);
+
+		/**
+		 *  Read the password entry @p key from the current folder.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a password.
+		 */
+		int readPasswordList(const QString& key, QMap<QString, QString>& value);
 
 		/**
 		 *  Write @p key = @p value as a binary entry to the current

@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2002-2003 George Staikos <staikos@kde.org>
+   Copyright (c) 2002-2004 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -105,6 +105,9 @@ class KWalletD : public KDEDModule {
 		virtual QByteArray readEntry(int handle, const QString& folder, const QString& key);
 		virtual QByteArray readMap(int handle, const QString& folder, const QString& key);
 		virtual QString readPassword(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QByteArray> readEntryList(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QByteArray> readMapList(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QString> readPasswordList(int handle, const QString& folder, const QString& key);
 
 		// Rename an entry.  rc=0 on success.
 		virtual int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName);

@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2002-2003 George Staikos <staikos@kde.org>
+   Copyright (c) 2002-2004 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -775,6 +775,28 @@ QByteArray KWalletD::readMap(int handle, const QString& folder, const QString& k
 }
 
 
+QMap<QString,QByteArray> KWalletD::readMapList(int handle, const QString& folder, const QString& key) {
+	KWallet::Backend *b;
+
+	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
+		b->setFolder(folder);
+		QPtrList<KWallet::Entry> e = b->readEntryList(key);
+		QMap<QString, QByteArray> rc;
+		QPtrListIterator<KWallet::Entry> it(e);
+		KWallet::Entry *entry;
+		while ((entry = it.current())) {
+			if (entry->type() == KWallet::Wallet::Map) {
+				rc.insert(entry->key(), entry->map());
+			}
+			++it;
+		}
+		return rc;
+	}
+
+	return QMap<QString, QByteArray>();
+}
+
+
 QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString& key) {
 	KWallet::Backend *b;
 
@@ -787,6 +809,26 @@ QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString&
 	}
 
 	return QByteArray();
+}
+
+
+QMap<QString, QByteArray> KWalletD::readEntryList(int handle, const QString& folder, const QString& key) {
+	KWallet::Backend *b;
+
+	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
+		b->setFolder(folder);
+		QPtrList<KWallet::Entry> e = b->readEntryList(key);
+		QMap<QString, QByteArray> rc;
+		QPtrListIterator<KWallet::Entry> it(e);
+		KWallet::Entry *entry;
+		while ((entry = it.current())) {
+			rc.insert(entry->key(), entry->value());
+			++it;
+		}
+		return rc;
+	}
+
+	return QMap<QString, QByteArray>();
 }
 
 
@@ -814,6 +856,28 @@ QString KWalletD::readPassword(int handle, const QString& folder, const QString&
 	}
 
 	return QString::null;
+}
+
+
+QMap<QString, QString> KWalletD::readPasswordList(int handle, const QString& folder, const QString& key) {
+	KWallet::Backend *b;
+
+	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
+		b->setFolder(folder);
+		QPtrList<KWallet::Entry> e = b->readEntryList(key);
+		QMap<QString, QString> rc;
+		QPtrListIterator<KWallet::Entry> it(e);
+		KWallet::Entry *entry;
+		while ((entry = it.current())) {
+			if (entry->type() == KWallet::Wallet::Password) {
+				rc.insert(entry->key(), entry->password());
+			}
+			++it;
+		}
+		return rc;
+	}
+
+	return QMap<QString, QString>();
 }
 
 

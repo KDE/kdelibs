@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qregexp.h>
+
 #include "blowfish.h"
 #include "sha1.h"
 #include "cbc.h"
@@ -670,6 +672,26 @@ Entry *rc = 0L;
 	}
 
 return rc;
+}
+
+
+QPtrList<Entry> Backend::readEntryList(const QString& key) {
+	QPtrList<Entry> rc;
+
+	if (!_open) {
+		return rc;
+	}
+
+	QRegExp re(key, true, true);
+
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
+			if (re.exactMatch(j.key())) {
+				rc.append(j.data());
+			}
+		}
+	}
+	return rc;
 }
 
 
