@@ -3052,7 +3052,7 @@ void KHTMLPart::slotSaveDocument()
 
   KIO::MetaData metaData;
   // Referre unknown?
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, i18n("*.html *.htm|HTML files"), d->m_cacheId );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, "text/html", d->m_cacheId );
 }
 
 void KHTMLPart::slotSecurity()
@@ -3124,7 +3124,7 @@ void KHTMLPart::slotSaveFrame()
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, i18n("*.html *.htm|HTML files") );
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, "text/html" );
 }
 
 void KHTMLPart::slotSetEncoding()
