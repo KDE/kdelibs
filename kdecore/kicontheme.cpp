@@ -142,8 +142,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
     {
-        cfg.setGroup(*it);
-        mDirs.append(new KIconThemeDir(mDir + *it, &cfg));
+	cfg.setGroup(*it);
+	mDirs.append(new KIconThemeDir(mDir + *it, &cfg));
     }
 
     // Expand available sizes for scalable icons to their full range
@@ -306,10 +306,15 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 }
 
 // static
+QString *KIconTheme::_theme = 0L;
+
+// static
+QStringList *KIconTheme::_theme_list = 0L;
+
+// static
 QString KIconTheme::current()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    static QString *_theme = 0L;
     if (_theme != 0L)
         return *_theme;
 
@@ -331,7 +336,6 @@ QString KIconTheme::current()
 QStringList KIconTheme::list()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    static QStringList *_theme_list = 0L;
     if (_theme_list != 0L)
         return *_theme_list;
 
@@ -358,6 +362,14 @@ QStringList KIconTheme::list()
     return *_theme_list;
 }
 
+// static
+void KIconTheme::reconfigure()
+{
+    delete _theme;
+    _theme=0L;
+    delete _theme_list;
+    _theme_list=0L;
+}
 
 /*** KIconThemeDir ***/
 

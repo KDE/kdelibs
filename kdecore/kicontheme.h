@@ -140,6 +140,8 @@ public:
     /** Returns the current icon theme. */
     static QString current();
 
+    static void reconfigure();
+
 private:
     int mDefSize[8];
     QValueList<int> mSizes[8];
@@ -149,6 +151,9 @@ private:
     QStringList mInherits;
     QList<KIconThemeDir> mDirs;
     KIconThemePrivate *d;
+
+    static QString *_theme;
+    static QStringList *_theme_list;
 };
 
 #endif
