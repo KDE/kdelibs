@@ -1,3 +1,3 @@
 
 data_DATA = x-wav.kdelnk 
-datadir = $(prefix)/mimetypes/audio
+datadir = $(prefix)/share/mimelnk/audio

@@ -1,4 +1,4 @@
 
 data_DATA = jpeg.kdelnk tiff.kdelnk x-xpm.kdelnk x-xbm.kdelnk gif.kdelnk
-datadir = $(prefix)/mimetypes/image
+datadir = $(prefix)/share/mimelnk/image
 
