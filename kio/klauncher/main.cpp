@@ -50,6 +50,7 @@ start_launcher(int socket)
    putenv(strdup("SESSION_MANAGER="));
 
    KLauncher *launcher = new KLauncher(socket);
+   launcher->dcopClient()->setDefaultObject( name );
 
    signal( SIGHUP, sig_handler);
    signal( SIGPIPE, sig_handler);
