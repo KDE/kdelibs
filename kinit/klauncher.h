@@ -114,6 +114,7 @@ public:
 
    ~KLauncher();
 
+   void close();
    static void destruct(int exit_code); // exit!
 
    // DCOP
