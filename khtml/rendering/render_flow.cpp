@@ -936,6 +936,12 @@ void RenderFlow::addChild(RenderObject *newChild)
     printf("current height = %d\n", m_height);
 #endif
 
+    //to prevents non-layouted elements from getting printed
+    if (!newChild->isFloating()) 
+    {
+    	newChild->setYPos(-100000);
+    }
+
 
     if(m_childrenInline && !newChild->isInline() && !newChild->isFloating())
     {
@@ -960,7 +966,8 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    }
 	    newBox->setParent(this);
 	    m_first = m_last = newBox;
-	    newBox->close();	    
+	    newBox->close();
+	    newBox->setYPos(-100000);	    
 	    newBox->layout();
 	}
 	m_childrenInline = false;
@@ -979,6 +986,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 		newBox->setIsAnonymousBox(true);
 		RenderObject::addChild(newBox);
 		newBox->addChild(newChild);
+		newBox->setYPos(-100000);	    
 		setHaveAnonymousBox();
 		return;
 	    }
