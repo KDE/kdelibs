@@ -1015,6 +1015,7 @@ namespace KJS {
     ParameterNode *next;
   };
 
+  // inherited by ProgramNode
   class FunctionBodyNode : public BlockNode {
   public:
     FunctionBodyNode(SourceElementsNode *s);

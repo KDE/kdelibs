@@ -56,11 +56,14 @@ Value StringInstanceImp::get(ExecState *exec, const Identifier &propertyName) co
     return Number(internalValue().toString(exec).size());
 
   bool ok;
-  unsigned index = propertyName.toULong(&ok);
+  const unsigned index = propertyName.toArrayIndex(&ok);
   if (ok) {
-    UString str = internalValue().toString(exec);
-    if (index < (unsigned)str.size())
-      return String(str.substr(index,1));
+    const UString s = internalValue().toString(exec);
+    const unsigned length = s.size();
+    if (index < length) {
+      const UChar c = s[index];
+      return String(UString(&c, 1));
+    }
   }
 
   return ObjectImp::get(exec, propertyName);
@@ -187,7 +190,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 {
   Value result;
 
-  // toString and valueOf are no generic function.
+  // toString and valueOf are no generic functions.
   if (id == ToString || id == ValueOf) {
     KJS_CHECK_THIS( StringInstanceImp, thisObj );
 
