@@ -95,7 +95,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
                                 database->handle(), 0);
      /* POSIX mandates only MAP_FAILED, but we are paranoid so check for
         null pointer too.  */
-     if (m_sycoca_mmap == MAP_FAILED || m_sycoca_mmap == 0)
+     if (m_sycoca_mmap == (const char*) MAP_FAILED || m_sycoca_mmap == 0)
      {
         kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
 #endif
