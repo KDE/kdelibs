@@ -24,7 +24,7 @@
 
 class KPrinter;
 
-class KPrintAction : public KActionMenu
+class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 {
 	Q_OBJECT
 public:

@@ -26,6 +26,8 @@ typedef unsigned long Atom;
 #include <qmap.h>
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
+
 class KRootPropPrivate;
 
 /**
@@ -42,7 +44,7 @@ class KRootPropPrivate;
 * @author Mark Donohoe (donohe@kde.org)
 * @version $Id$
 */
-class KRootProp
+class KDECORE_EXPORT KRootProp
 {
 private:	
   Atom atom;
