@@ -1,44 +1,48 @@
-unique identifier,QString,uid
-name,QString,name
+AL,unique identifier,QString,uid
+AL,name,QString,name
 
-formatted name,QString,formattedName
+ALF,formatted name,QString,formattedName
 
-family name,QString,familyName
-given name,QString,givenName
-additional names,QString,additionalName
-honorific prefixes,QString,prefix
-honorific suffixes,QString,suffix
+ALF,family name,QString,familyName
+ALF,given name,QString,givenName
+ALF,additional names,QString,additionalName
+ALF,honorific prefixes,QString,prefix
+ALF,honorific suffixes,QString,suffix
 
-nick name,QString,nickName
-#QPixmap photo
+ALF,nick name,QString,nickName
+,photo,QPixmap,photo
 
-birthday,QDateTime,birthday,.toString()
+ALF,birthday,QDateTime,birthday,.toString()
 
 #Address address
 #QString label (part of Address)
 
 #phoneNumbers
+
+
 #emails
-mail client,QString,mailer
+LF,email address,QString,email
 
-time zone,TimeZone,timeZone,.asString()
-geographic position,Geo,geo,.asString()
+ALF,mail client,QString,mailer
 
-title,QString,title
-role,QString,role
+AL,time zone,TimeZone,timeZone,.asString()
+AL,geographic position,Geo,geo,.asString()
+
+ALF,title,QString,title
+ALF,role,QString,role
 #QPixmap logo
 #Agent agent
-organization,QString,organization
+ALF,organization,QString,organization
 
-note,QString,note
+AL,note,QString,note
 
-product identifier,QString,productId
-revision date,QDateTime,revision,.toString()
+AL,product identifier,QString,productId
+AL,revision date,QDateTime,revision,.toString()
 
-sort string,QString,sortString
+AL,sort string,QString,sortString
 
 #sound
 #class (PUBLIC, PRIVATE, CONFIDENTIAL)
 #key
 
-URL,KURL,url,.url()
+ALF,URL,KURL,url,.url()

@@ -34,13 +34,7 @@ class Field::FieldImpl
   
     enum FieldId
     {
-      FamilyName,
-      GivenName,
-      AdditionalName,
-      Prefix,
-      Suffix,
-      NickName,
-      Email
+      --ENUMS--
     };
 
     int fieldId() { return mFieldId; }
@@ -69,20 +63,7 @@ Field::~Field()
 QString Field::label()
 {
   switch ( mImpl->fieldId() ) {
-    case FieldImpl::FamilyName:
-      return Addressee::familyNameLabel();
-    case FieldImpl::GivenName:
-      return Addressee::givenNameLabel();
-    case FieldImpl::AdditionalName:
-      return Addressee::additionalNameLabel();
-    case FieldImpl::Prefix:
-      return Addressee::prefixLabel();
-    case FieldImpl::Suffix:
-      return Addressee::suffixLabel();
-    case FieldImpl::NickName:
-      return Addressee::nickNameLabel();
-    case FieldImpl::Email:
-      return i18n("Email");
+    --CASELABEL--
     default:
       return i18n("Unknown Field");
   }
@@ -96,20 +77,16 @@ int Field::category()
 QString Field::value( const KABC::Addressee &a )
 {
   switch ( mImpl->fieldId() ) {
-    case FieldImpl::FamilyName:
-      return a.familyName();
-    case FieldImpl::GivenName:
-      return a.givenName();
-    case FieldImpl::AdditionalName:
-      return a.additionalName();
-    case FieldImpl::Prefix:
-      return a.prefix();
-    case FieldImpl::Suffix:
-      return a.suffix();
-    case FieldImpl::NickName:
-      return a.nickName();
+    --CASEVALUE--
     case FieldImpl::Email:
       return a.preferredEmail();
+    case FieldImpl::Birthday:
+      if ( a.birthday().isValid() )
+        return KGlobal::locale()->formatDate( a.birthday().date() );
+      else
+        return QString::null;
+    case FieldImpl::Url:
+      return a.url().prettyURL();
     default:
       return QString::null;
   }
@@ -118,24 +95,7 @@ QString Field::value( const KABC::Addressee &a )
 bool Field::setValue( KABC::Addressee &a, const QString &value )
 {
   switch ( mImpl->fieldId() ) {
-    case FieldImpl::FamilyName:
-      a.setFamilyName( value );
-      return true;
-    case FieldImpl::GivenName:
-      a.setGivenName( value );
-      return true;
-    case FieldImpl::AdditionalName:
-      a.setAdditionalName( value );
-      return true;
-    case FieldImpl::Prefix:
-      a.setPrefix( value );
-      return true;
-    case FieldImpl::Suffix:
-      a.setSuffix( value );
-      return true;
-    case FieldImpl::NickName:
-      a.setNickName( value );
-      return true;
+    --CASESETVALUE--
     case FieldImpl::Email:
     default:
       return false;
@@ -150,13 +110,7 @@ bool Field::isCustom()
 Field::List Field::allFields()
 {
   if ( mAllFields.isEmpty() ) {
-    createField( FieldImpl::FamilyName );
-    createField( FieldImpl::GivenName );
-    createField( FieldImpl::AdditionalName );
-    createField( FieldImpl::Prefix );
-    createField( FieldImpl::Suffix );
-    createField( FieldImpl::NickName );
-    createField( FieldImpl::Email );
+    --CREATEFIELDS--
   }
 
   return mAllFields;

@@ -197,6 +197,11 @@ class Addressee
     static QString birthdayLabel();
 
     /*
+      Return translated label for email field.
+    */
+    static QString emailLabel();
+
+    /*
       Set mail client.
     */
     void setMailer( const QString &mailer );

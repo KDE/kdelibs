@@ -292,6 +292,12 @@ QString Addressee::birthdayLabel()
 }
 
 
+QString Addressee::emailLabel()
+{
+  return i18n("Email Address");
+}
+
+
 void Addressee::setMailer( const QString &mailer )
 {
   if ( mailer == mData->mailer ) return;

@@ -35,13 +35,20 @@ class Field::FieldImpl
   
     enum FieldId
     {
+      FormattedName,
       FamilyName,
       GivenName,
       AdditionalName,
       Prefix,
       Suffix,
       NickName,
-      Email
+      Birthday,
+      Email,
+      Mailer,
+      Title,
+      Role,
+      Organization,
+      Url
     };
 
     int fieldId() { return mFieldId; }
@@ -70,6 +77,8 @@ Field::~Field()
 QString Field::label()
 {
   switch ( mImpl->fieldId() ) {
+    case FieldImpl::FormattedName:
+      return Addressee::formattedNameLabel();
     case FieldImpl::FamilyName:
       return Addressee::familyNameLabel();
     case FieldImpl::GivenName:
@@ -82,8 +91,20 @@ QString Field::label()
       return Addressee::suffixLabel();
     case FieldImpl::NickName:
       return Addressee::nickNameLabel();
+    case FieldImpl::Birthday:
+      return Addressee::birthdayLabel();
     case FieldImpl::Email:
-      return i18n("Email");
+      return Addressee::emailLabel();
+    case FieldImpl::Mailer:
+      return Addressee::mailerLabel();
+    case FieldImpl::Title:
+      return Addressee::titleLabel();
+    case FieldImpl::Role:
+      return Addressee::roleLabel();
+    case FieldImpl::Organization:
+      return Addressee::organizationLabel();
+    case FieldImpl::Url:
+      return Addressee::urlLabel();
     default:
       return i18n("Unknown Field");
   }
@@ -97,6 +118,8 @@ int Field::category()
 QString Field::value( const KABC::Addressee &a )
 {
   switch ( mImpl->fieldId() ) {
+    case FieldImpl::FormattedName:
+      return a.formattedName();
     case FieldImpl::FamilyName:
       return a.familyName();
     case FieldImpl::GivenName:
@@ -109,8 +132,23 @@ QString Field::value( const KABC::Addressee &a )
       return a.suffix();
     case FieldImpl::NickName:
       return a.nickName();
+    case FieldImpl::Mailer:
+      return a.mailer();
+    case FieldImpl::Title:
+      return a.title();
+    case FieldImpl::Role:
+      return a.role();
+    case FieldImpl::Organization:
+      return a.organization();
     case FieldImpl::Email:
       return a.preferredEmail();
+    case FieldImpl::Birthday:
+      if ( a.birthday().isValid() )
+        return KGlobal::locale()->formatDate( a.birthday().date() );
+      else
+        return QString::null;
+    case FieldImpl::Url:
+      return a.url().prettyURL();
     default:
       return QString::null;
   }
@@ -119,6 +157,9 @@ QString Field::value( const KABC::Addressee &a )
 bool Field::setValue( KABC::Addressee &a, const QString &value )
 {
   switch ( mImpl->fieldId() ) {
+    case FieldImpl::FormattedName:
+      a.setFormattedName( value );
+      return true;
     case FieldImpl::FamilyName:
       a.setFamilyName( value );
       return true;
@@ -137,6 +178,18 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
     case FieldImpl::NickName:
       a.setNickName( value );
       return true;
+    case FieldImpl::Mailer:
+      a.setMailer( value );
+      return true;
+    case FieldImpl::Title:
+      a.setTitle( value );
+      return true;
+    case FieldImpl::Role:
+      a.setRole( value );
+      return true;
+    case FieldImpl::Organization:
+      a.setOrganization( value );
+      return true;
     case FieldImpl::Email:
     default:
       return false;
@@ -151,13 +204,20 @@ bool Field::isCustom()
 Field::List Field::allFields()
 {
   if ( mAllFields.isEmpty() ) {
+    createField( FieldImpl::FormattedName );
     createField( FieldImpl::FamilyName );
     createField( FieldImpl::GivenName );
     createField( FieldImpl::AdditionalName );
     createField( FieldImpl::Prefix );
     createField( FieldImpl::Suffix );
     createField( FieldImpl::NickName );
+    createField( FieldImpl::Birthday );
     createField( FieldImpl::Email );
+    createField( FieldImpl::Mailer );
+    createField( FieldImpl::Title );
+    createField( FieldImpl::Role );
+    createField( FieldImpl::Organization );
+    createField( FieldImpl::Url );
   }
 
   return mAllFields;
