@@ -99,22 +99,28 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     p->restore();
 }
 
-// no blink at the moment...
-void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
+void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
 {
     _tx += m_x;
     _ty += m_y;
 
-    int underlineOffset = p->fontMetrics().height()/7 + m_baseline;
-    if(underlineOffset == m_baseline) underlineOffset++;
+    int width = m_width;
+
+    if( begin )
+ 	width -= p->paddingLeft() + p->borderLeft();
+
+    if ( end )
+        width -= p->paddingRight() + p->borderRight();
+
+    int underlineOffset = ( pt->fontMetrics().height() + m_baseline ) / 2;
+    if(underlineOffset <= m_baseline) underlineOffset = m_baseline+1;
 
     if(deco & UNDERLINE)
-        p->drawLine(_tx, _ty + underlineOffset, _tx + m_width, _ty + underlineOffset );
+        pt->drawLine(_tx, _ty + underlineOffset, _tx + width, _ty + underlineOffset );
     if(deco & OVERLINE)
-        p->drawLine(_tx, _ty, _tx + m_width, _ty );
+        pt->drawLine(_tx, _ty, _tx + width, _ty );
     if(deco & LINE_THROUGH)
-        p->drawLine(_tx, _ty + 2*m_baseline/3, _tx + m_width, _ty + 2*m_baseline/3 );
-// add BLINK
+        pt->drawLine(_tx, _ty + 2*m_baseline/3, _tx + width, _ty + 2*m_baseline/3 );
     // NO! Do NOT add BLINK! It is the most annouing feature of Netscape, and IE has a reason not to
     // support it. Lars
 }
@@ -134,10 +140,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
     int height = pt->fontMetrics().height() + topExtra + bottomExtra;
 
     if( begin )
-	_tx -= p->paddingLeft() + p->borderLeft();;
-
-    if ( end )
-        width += p->paddingRight() + p->borderRight();
+	_tx -= p->paddingLeft() + p->borderLeft();
 
     QColor c = style->backgroundColor();
     CachedImage *i = style->backgroundImage();
@@ -298,7 +301,7 @@ void RenderText::setStyle(RenderStyle *_style)
     RenderObject::setStyle(_style);
     hasFirstLine = (style()->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
     if ( !fm || fontchanged ) {
-        if ( fm ) delete fm;
+        delete fm;
         fm = new QFontMetrics( style()->font() );
     }
     m_lineHeight = style()->lineHeight().width(metrics().height());
@@ -582,7 +585,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(d != TDNONE)
             {
                 p->setPen(_style->textDecorationColor());
-                s->printDecoration(p, tx, ty, d);
+                s->printDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
             if (selectionState() != SelectionNone && endPos > 0)
@@ -647,7 +650,7 @@ void RenderText::calcMinMaxWidth()
     int currMaxWidth = 0;
     m_hasReturn = false;
     m_hasBreakableChar = false;
-    
+
     QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
@@ -813,7 +816,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     // add half leading to vertiaclly center it.
     y += ( m_lineHeight - metrics( firstLine ).height() )/2;
-    
+
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
     kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << lineHeight() << " fontHeight=" << metrics().height() << " ascent =" << metrics().ascent() << endl;

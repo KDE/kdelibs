@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -58,7 +59,7 @@ public:
     }
     ~TextSlave();
     void print( QPainter *p, int _tx, int _ty);
-    void printDecoration( QPainter *p, int _tx, int _ty, int decoration);
+    void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
