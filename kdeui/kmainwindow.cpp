@@ -1044,8 +1044,8 @@ void KMainWindow::paintEvent( QPaintEvent * )
 
 QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 {
-    KToolBar *tb = toolBar();
-    if (!tb->isHidden()) {
+    KToolBar *tb = (KToolBar*)child( "mainToolBar", "KToolBar" );
+    if (tb && !tb->isHidden()) {
         switch( tb->barPos() )
         {
           case KToolBar::Top:
