@@ -68,7 +68,7 @@
 	(list (normalize "simplesect")  (if %section-autolabel%
 					    "&Section; %n"
 					    "the &section; called %t"))
-	(list (normalize "sidebar")     "the &sidebar; %t")
+	(list (normalize "sidebar")     "&sidebar; %t")
 	(list (normalize "step")        "&step; %n")
 	(list (normalize "table")       "&Table; %n")))
 
