@@ -792,7 +792,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
-  return formatDate(pDateTime.date()) + formatTime(pDateTime.time());
+  return formatDate(pDateTime.date()) + " " + formatTime(pDateTime.time());
 }
 
 void KLocale::aliasLocale( const char* text, long int index)
