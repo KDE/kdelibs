@@ -1,7 +1,7 @@
 
-data_DATA = kdebug.html
+data_DATA = index.html
 
 datadir = $(kde_htmldir)/en/kdelibs
 
-EXTRA_DIST = kdebug.html
+EXTRA_DIST = index.html
 
