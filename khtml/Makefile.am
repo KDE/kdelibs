@@ -71,8 +71,9 @@ libkhtmlpart_la_LIBADD = libkhtml.la
 
 # init_khtmlimagefactory is in libkhtml.so; init_khtmlimagepart needs to be in the part
 imgdummy.cpp: $(srcdir)/Makefile.am
-	echo 'extern "C" void* init_khtmlimagefactory();' > $@
-	echo 'extern "C" void* init_khtmlimagepart() { return init_khtmlimagefactory(); } ' >> $@
+	echo '#include <kdelibs_export.h>' > $@
+	echo 'extern "C"  KDE_EXPORT void* init_khtmlimagefactory();' >> $@
+	echo 'extern "C"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); } ' >> $@
 
 khtmlimagepart_la_SOURCES = imgdummy.cpp
 khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
