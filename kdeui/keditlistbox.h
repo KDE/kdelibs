@@ -58,25 +58,25 @@ public:
     class CustomEditor
     {
     public:
-        CustomEditor()
+        KDEUI_EXPORT CustomEditor()
             : m_representationWidget( 0L ),
               m_lineEdit( 0L ) {}
-        CustomEditor( QWidget *repWidget, KLineEdit *edit )
+        KDEUI_EXPORT CustomEditor( QWidget *repWidget, KLineEdit *edit )
             : m_representationWidget( repWidget ),
               m_lineEdit( edit ) {}
-        CustomEditor( KComboBox *combo );
+        KDEUI_EXPORT CustomEditor( KComboBox *combo );
 
-        void setRepresentationWidget( QWidget *repWidget ) {
+        KDEUI_EXPORT void setRepresentationWidget( QWidget *repWidget ) {
             m_representationWidget = repWidget;
         }
-        void setLineEdit( KLineEdit *edit ) {
+        KDEUI_EXPORT void setLineEdit( KLineEdit *edit ) {
             m_lineEdit = edit;
         }
 
-        virtual QWidget   *representationWidget() const {
+        KDEUI_EXPORT virtual QWidget   *representationWidget() const {
             return m_representationWidget;
         }
-        virtual KLineEdit *lineEdit() const {
+        KDEUI_EXPORT  virtual KLineEdit *lineEdit() const {
             return m_lineEdit;
         }
 
