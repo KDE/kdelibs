@@ -61,3 +61,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     work in any cases
   * General: make use of KLocale::pageSize() to determine the default
     page size (used for example for pseudo printers and classes)
+  * Wizard: fix buffer overflow when adding a remote LPD queue having
+    a lot of jobs waiting
