@@ -435,7 +435,7 @@ bool Ftp::ftpLogin()
                           "password: [hidden]\n\nServer replied:\n%2\n\n"
                           ).arg(user).arg(rspbuf);
         }
-        
+
         if ( user != FTP_LOGIN && pass != FTP_PASSWD )
           info.username = m_user;
 
@@ -482,6 +482,7 @@ bool Ftp::ftpLogin()
       if ( !loggedIn && !needPass )
       {
         kdDebug(7102) << "1> " << rspbuf << endl;
+        ++failedAuth;
         continue;  // Well we failed, prompt the user please!!
       }
 
@@ -607,10 +608,12 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   char rsp = readresp();
   if (!rsp || ( rsp == '4' && rspbuf[1] == '2' && rspbuf[2] == '1' ))
   {
-      kdDebug(7102) << "got 421 -> timeout" << endl;
     // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
+    // But when logging it, it can be "421 Too many users - please try again later."!
+    // (This is why we only set maxretries for some operations)
     if ( maxretries > 0 )
     {
+      kdDebug(7102) << "got timeout. maxretries=" << maxretries << endl;
       // It might mean a timeout occured, let's try logging in again
       m_bLoggedOn = false;
       kdDebug(7102) << "Couldn't read answer - perhaps timeout - trying logging in again" << endl;
@@ -2189,32 +2192,18 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   {
     if ( m_user == FTP_LOGIN )
       kdDebug(7102) << "Trying to chmod over anonymous FTP ???" << endl;
-    // chmod the file we just put, ignoring errors.
-    (void) ftpChmod( dest_orig, permissions );
+    // chmod the file we just put
+    if ( ! ftpChmod( dest_orig, permissions ) )
+    {
+        // To be tested
+        //if ( m_user != FTP_LOGIN )
+        //    warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
+    }
   }
 
   // We have done our job => finish
   finished();
 }
-
-
-/*
-  This is related to "canResume" ... not sure how
-  Old main.cc contained:
-  if ( !ftp.ftpResume( 0 ) )
-    m_bCanResume = false;
-
-bool Ftp::ftpResume( unsigned long offset )
-{
-  char buf[64];
-  sprintf(buf, "rest %ld", offset);
-  if ( !ftpSendCmd( buf, '3' ) ) {
-    error( ERR_CANNOT_RESUME, QString::null );
-    return false;
-  }
-  return true;
-}
-*/
 
 /** Use the SIZE command to get the file size.
     Warning : the size depends on the transfer mode, hence the second arg. */
