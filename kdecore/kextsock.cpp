@@ -342,7 +342,7 @@ kde_addrinfo* KExtendedSocketLookup::results()
       q->ai_next = p;
 
       memset(sin6, 0, sizeof(*sin6));
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       sin6->sin6_len = sizeof(*sin6);
 # endif
       sin6->sin6_family = AF_INET6;
@@ -368,7 +368,7 @@ kde_addrinfo* KExtendedSocketLookup::results()
       q->ai_next = p;
 
       memset(sin, 0, sizeof(*sin));
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       sin->sin_len = sizeof(*sin);
 # endif
       sin->sin_family = AF_INET;
@@ -2367,14 +2367,14 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
 
   /* was it enough? */
   if (len > sizeof(static_sa)
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       || sa->sa_len > sizeof(static_sa)
 #endif
       )
     {
       /* nope, malloc a new socket with the proper size */
 
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       if (sa->sa_len != len)
         len = sa->sa_len;
 #endif
@@ -2415,14 +2415,14 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
 
   /* was it enough? */
   if (len > sizeof(static_sa)
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       || sa->sa_len > sizeof(static_sa)
 #endif
       )
     {
       /* nope, malloc a new socket with the proper size */
 
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       if (sa->sa_len != len)
         len = sa->sa_len;
 #endif

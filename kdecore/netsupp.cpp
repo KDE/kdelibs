@@ -158,7 +158,7 @@ make_unix(const char *name, const char *serv)
     }
 
   _sun->sun_family = AF_UNIX;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
   _sun->sun_len = len;
 # endif
   if (*buf == '/')
@@ -473,7 +473,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
     {
       struct sockaddr_in *sin = (sockaddr_in*)q->ai_addr;
       sin->sin_family = AF_INET;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       sin->sin_len = sizeof(*sin);
 # endif
       sin->sin_port = portnum;
@@ -484,7 +484,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
     {
       struct sockaddr_in6 *sin6 = (sockaddr_in6*)q->ai_addr;
       sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_SOCKADDR_SA_LEN
+#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       sin6->sin6_len = sizeof(*sin6);
 #  endif
       sin6->sin6_port = portnum;
@@ -524,7 +524,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 	{
 	  struct sockaddr_in *sin = (sockaddr_in*)q->ai_addr;
 	  sin->sin_family = AF_INET;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin->sin_len = sizeof(*sin);
 # endif
 	  sin->sin_port = portnum;
@@ -535,7 +535,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 	{
 	  struct sockaddr_in6 *sin6 = (sockaddr_in6*)q->ai_addr;
 	  sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_SOCKADDR_SA_LEN
+#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin6->sin6_len = sizeof(*sin6);
 #  endif
 	  sin6->sin6_port = portnum;
@@ -614,7 +614,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 		}
 
 	      sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_SOCKADDR_SA_LEN
+#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	      sin6->sin6_len = sizeof(*sin6);
 #  endif
 	      sin6->sin6_port = portnum;
@@ -663,7 +663,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 		}
 
 	      sin->sin_family = AF_INET;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	      sin->sin_len = sizeof(*sin);
 # endif
 	      sin->sin_port = portnum;
@@ -714,7 +714,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 	    }
 
 	  sin->sin_family = AF_INET;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin->sin_len = sizeof(*sin);
 # endif
 	  sin->sin_port = portnum;
@@ -749,7 +749,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 	    }
 
 	  sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_SOCKADDR_SA_LEN
+#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin6->sin6_len = sizeof(*sin6);
 #  endif
 	  sin6->sin6_port = portnum;

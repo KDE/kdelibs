@@ -51,7 +51,7 @@
 
 #define V6_CAN_CONVERT_TO_V4(addr)	(KDE_IN6_IS_ADDR_V4MAPPED(addr) || KDE_IN6_IS_ADDR_V4COMPAT(addr))
 
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
 # define MY_MAX(a, b)  			((a) > (b) ? (a) : (b))
 # define MIN_SOCKADDR_LEN		MY_MAX(offsetof(sockaddr, sa_family) + sizeof(((sockaddr*)0)->sa_family), \
 					       offsetof(sockaddr, sa_len) + sizeof(((sockaddr*)0)->sa_len))
@@ -250,7 +250,7 @@ public:
   {
     sin.sin_family = AF_INET;
     sin.sin_port = 0;
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
     sin.sin_len = sizeof(sin);
 #endif
 #ifdef AF_INET6
@@ -260,7 +260,7 @@ public:
 # ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
     sin6.sin6_scope_id = 0;
 # endif
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
     sin6.sin6_len = sizeof(sin6);
 # endif
 #endif
@@ -356,7 +356,7 @@ bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6, ksocklen_t len)
 
   /* Now make a sanity check */
   d->sockfamily = d->sin6.sin6_family = AF_INET6;
-# ifdef HAVE_SOCKADDR_SA_LEN
+# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
   d->sin6.sin6_len = sizeof(d->sin6);
 # endif
 
@@ -793,7 +793,7 @@ bool KUnixSocketAddress::setAddress(const sockaddr_un* _sun, ksocklen_t _size)
   datasize = _size;
   data = (sockaddr*)d->m_sun;
   owndata = true;
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
   data->sa_len = _size;
 #endif
   return 1;
@@ -808,7 +808,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
     {
       // we can reuse this
       strcpy(d->m_sun->sun_path, path);
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
       data->sa_len = newsize;
 #endif
       return true;
@@ -829,7 +829,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
   strcpy(d->m_sun->sun_path, path);
   data = (sockaddr*)d->m_sun;
   datasize = newsize;
-#ifdef HAVE_SOCKADDR_SA_LEN
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
   data->sa_len = newsize;
 #endif
   return 1;
