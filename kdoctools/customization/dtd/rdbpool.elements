@@ -75,8 +75,8 @@
 <!ENTITY % lang.attrib
         "lang           (af|ar|az|be|bg|bn|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB
                         |en-US|eo|es|et|eu|fa|fi|fo|fr|fy|ga|gl|gu|he|hi|hr|hu|id
-                        |is|it|ja|kn|km|ko|ku|lo|lt|lv|mi|mk|mr|mt|nl|no|nb|nn|nso
-                        |oc|pl|pt|pt-BR|pt-PT|ro|ru|si|sk|sl|sq|sr|st|sv|ta|te
+                        |is|it|ja|kn|km|ko|ku|lo|lt|lv|mi|mk|mr|mt|nb|nl|nn|no|nso
+                        |oc|pl|pt|pt-BR|pt-PT|ro|ru|se|si|sk|sl|sq|sr|st|sv|ta|te
                         |tg|th|tr|uk|ven|vi|wa|xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
 <!-- List of languages
@@ -139,6 +139,7 @@ pl      Polish
 pt      Portuguese
 ro      Romanian
 ru      Russian
+se      Northern Sami
 si      Sinhalese
 sk      Slovak
 sl      Slovenian
