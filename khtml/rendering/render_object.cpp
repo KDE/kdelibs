@@ -434,6 +434,15 @@ bool RenderObject::hasStaticY() const
     return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
 }
 
+void RenderObject::setPixmap(const QPixmap&, const QRect& r, CachedImage* image)
+{
+    //repaint bg when it finished loading
+    if(image && parent() && style() && style()->backgroundImage() == image
+       && image->valid_rect().size() == image->pixmap_size() ) {
+        isBody() ? canvas()->repaint() : repaint();
+    }
+}
+
 void RenderObject::setLayouted(bool b)
 {
     m_layouted = b;
@@ -883,7 +892,7 @@ QString RenderObject::information() const
         if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
             QString pseudo;
             switch (style()->styleType()) {
-              case RenderStyle::FIRST_LETTER: 
+              case RenderStyle::FIRST_LETTER:
                 pseudo = ":first-letter"; break;
               case RenderStyle::BEFORE:
                 pseudo = ":before"; break;
@@ -958,7 +967,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
             if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
                 QString pseudo;
                 switch (style()->styleType()) {
-                  case RenderStyle::FIRST_LETTER: 
+                  case RenderStyle::FIRST_LETTER:
                     pseudo = ":first-letter"; break;
                   case RenderStyle::BEFORE:
                     pseudo = ":before"; break;
@@ -1007,7 +1016,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
 
-    //qDebug("new style, diff=%d", d);
+    //qDebug("m_style: %p new style, diff=%d", m_style,  d);
 
     if ( d == RenderStyle::Visible && m_parent && m_style &&
          m_style->outlineWidth() > style->outlineWidth() )
@@ -1024,10 +1033,6 @@ void RenderObject::setStyle(RenderStyle *style)
     m_positioned = false;
     m_relPositioned = false;
     m_paintBackground = false;
-    // no support for changing the display type dynamically... object must be
-    // detached and re-attached as a different type
-
-    //m_inline = true;
 
     if ( style->position() == STATIC ) {
         if ( isRoot() )
@@ -1574,11 +1579,10 @@ void RenderObject::recalcMinMaxWidths()
 #endif
 
     RenderObject *child = firstChild();
+    int cmin=0;
+    int cmax=0;
+
     while( child ) {
-        // gcc sucks. if anybody knows a trick to get rid of the
-        // warning without adding an extra (unneeded) initialization,
-        // go ahead
-        int cmin, cmax;
         bool test = false;
         if ( ( m_minMaxKnown && child->m_recalcMinMax ) || !child->m_minMaxKnown ) {
             cmin = child->minWidth();
@@ -1596,7 +1600,7 @@ void RenderObject::recalcMinMaxWidths()
 
     // we need to recalculate, if the contains inline children, as the change could have
     // happened somewhere deep inside the child tree
-    if ( !isInline() && childrenInline() )
+    if ( ( !isInline() || isReplacedBlock() ) && childrenInline() )
         m_minMaxKnown = false;
 
     if ( !m_minMaxKnown )

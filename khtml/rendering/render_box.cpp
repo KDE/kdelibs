@@ -197,12 +197,6 @@ void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
         child->paint(i, _tx, _ty);
 }
 
-void RenderBox::setPixmap(const QPixmap &, const QRect&, CachedImage *image)
-{
-    if(image && image->pixmap_size() == image->valid_rect().size() && parent())
-        repaint();      //repaint bg when it finished loading
-}
-
 void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintRootBoxDecorations()" << _tx << "/" << _ty << endl;
@@ -549,7 +543,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 
         box->detach(renderArena());
     }
-    else 
+    else
 #endif
     if (isReplaced()) {
         setPos( box->xPos(), box->yPos() );

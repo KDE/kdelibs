@@ -84,8 +84,6 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
 
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
-
     virtual short containingBlockWidth() const;
     void relativePositionOffset(int &tx, int &ty) const;
 
