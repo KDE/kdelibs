@@ -33,21 +33,25 @@ using namespace Arts;
 
 class Arts::ObjectInternalData {
 public:
+	struct MethodTableEntry {
+		DispatchFunction dispatcher;
+		OnewayDispatchFunction onewayDispatcher;
+		void *object;
+		MethodDef methodDef;
+	};
+
 	list<WeakReferenceBase *> weakReferences;
 	NamedStore<Arts::Object> children;
+
+	// for _skel classes only:
+	bool methodTableInit;
+	std::vector<MethodTableEntry> methodTable;
 };
 
 struct Object_base::ObjectStreamInfo {
 	string name;
 	long flags;
 	void *ptr;
-};
-
-struct Object_skel::MethodTableEntry {
-	DispatchFunction dispatcher;
-	OnewayDispatchFunction onewayDispatcher;
-	void *object;
-	MethodDef methodDef;
 };
 
 /*
@@ -290,7 +294,7 @@ void Object_base::_removeWeakReference(WeakReferenceBase *b)
 Object_skel::Object_skel() :_remoteSendCount(0), _remoteSendUpdated(false)
 {
 	_objectID = Dispatcher::the()->addObject(this);
-	_methodTableInit = false;
+	_internalData->methodTableInit = false;
 
 	char ioid[1024];
 	sprintf(ioid,"SKEL:%p",this);
@@ -480,64 +484,64 @@ std::vector<std::string> *Object_skel::_queryChildren()
 void Object_skel::_addMethod(DispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
-	MethodTableEntry me;
+	Arts::ObjectInternalData::MethodTableEntry me;
 	me.dispatcher = disp;
 	me.object = obj;
 	me.methodDef = md;
-	_methodTable.push_back(me);
+	_internalData->methodTable.push_back(me);
 }
 
 void Object_skel::_addMethod(OnewayDispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
-	MethodTableEntry me;
+	Arts::ObjectInternalData::MethodTableEntry me;
 	me.onewayDispatcher = disp;
 	me.object = obj;
 	me.methodDef = md;
-	_methodTable.push_back(me);
+	_internalData->methodTable.push_back(me);
 }
 
 long Object_skel::_addCustomMessageHandler(OnewayDispatchFunction handler,
 																	void *obj)
 {
-	if(!_methodTableInit)
+	if(!_internalData->methodTableInit)
 	{
 		// take care that the object base methods are at the beginning
 		Object_skel::_buildMethodTable();
 		_buildMethodTable();
-		_methodTableInit = true;
+		_internalData->methodTableInit = true;
 	}
-	MethodTableEntry me;
+	Arts::ObjectInternalData::MethodTableEntry me;
 	me.onewayDispatcher = handler;
 	me.object = obj;
 	me.methodDef.name = "_userdefined_customdatahandler";
-	_methodTable.push_back(me);
-	return _methodTable.size()-1;
+	_internalData->methodTable.push_back(me);
+	return _internalData->methodTable.size()-1;
 }
 
 void Object_skel::_dispatch(Buffer *request, Buffer *result,long methodID)
 {
-	if(!_methodTableInit)
+	if(!_internalData->methodTableInit)
 	{
 		// take care that the object base methods are at the beginning
 		Object_skel::_buildMethodTable();
 		_buildMethodTable();
-		_methodTableInit = true;
+		_internalData->methodTableInit = true;
 	}
-	_methodTable[methodID].dispatcher(_methodTable[methodID].object,
+	_internalData->methodTable[methodID].dispatcher(_internalData->methodTable[methodID].object,
 														request,result);
 }
 
 void Object_skel::_dispatch(Buffer *request,long methodID)
 {
-	if(!_methodTableInit)
+	if(!_internalData->methodTableInit)
 	{
 		// take care that the object base methods are at the beginning
 		Object_skel::_buildMethodTable();
 		_buildMethodTable();
-		_methodTableInit = true;
+		_internalData->methodTableInit = true;
 	}
-	_methodTable[methodID].onewayDispatcher(_methodTable[methodID].object,
+	_internalData->methodTable[methodID].onewayDispatcher(_internalData->methodTable[methodID].object,
 																	request);
 }
 
@@ -545,16 +549,16 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 {
 	long mcount = 0;
 
-	if(!_methodTableInit)
+	if(!_internalData->methodTableInit)
 	{
 		// take care that the object base methods are at the beginning
 		Object_skel::_buildMethodTable();
 		_buildMethodTable();
-		_methodTableInit = true;
+		_internalData->methodTableInit = true;
 	}
 
-	vector<MethodTableEntry>::iterator i;
-	for(i=_methodTable.begin(); i != _methodTable.end(); i++)
+	vector<Arts::ObjectInternalData::MethodTableEntry>::iterator i;
+	for(i=_internalData->methodTable.begin(); i != _internalData->methodTable.end(); i++)
 	{
 		MethodDef& mdm = i->methodDef;
 		if(mdm.name == md.name && mdm.type == md.type)
@@ -1142,3 +1146,24 @@ void Object_stub::_sendCustomMessage(Buffer *buffer)
 }
 
 unsigned long Object_base::_IID = MCOPUtils::makeIID("Object");
+
+/*
+ * global cleanup
+ */
+
+void Object_stub::_cleanupMethodCache()
+{
+	if(_lookupMethodCache)
+	{
+		free(_lookupMethodCache);
+		_lookupMethodCache = 0;
+	}
+}
+
+namespace Arts {
+	static class Object_stub_Shutdown : public StartupClass {
+	public:
+		void startup() { }
+		void shutdown() { Object_stub::_cleanupMethodCache(); }
+	} The_Object_stub_Shutdown;
+};

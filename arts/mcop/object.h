@@ -194,11 +194,8 @@ class MethodDef;
 class Object_skel : virtual public Object_base {
 private:
 	friend class Object_base;
-	struct MethodTableEntry;
 
 	long _objectID;
-	bool _methodTableInit;
-	std::vector<struct MethodTableEntry> _methodTable;
 
 	// reference counting - remote object watching
 	
@@ -339,6 +336,11 @@ public:
 	 */
 
 	bool _error();
+
+	/*
+	 * global cleanup
+	 */
+	static void _cleanupMethodCache();
 };
 
 };
