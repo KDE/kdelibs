@@ -372,7 +372,8 @@ void KListViewLineEdit::terminate(bool commit)
         col=0;
         item=0;
         hide(); // will call focusOutEvent, that's why we set item=0 before
-        emit done(i,c);
+        if (commit)
+            emit done(i,c);
     }
 }
 
