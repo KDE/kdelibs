@@ -96,6 +96,15 @@ void KTabWidget::dropEvent( QDropEvent *e )
     QTabWidget::dropEvent( e );
 }
 
+void KTabWidget::mouseDoubleClickEvent( QMouseEvent *e )
+{
+    if ( isEmptyTabbarSpace( e->pos() ) ) {
+        emit( mouseDoubleClick() );
+        return;
+    }
+    QTabWidget::mouseDoubleClickEvent( e );
+}
+
 void KTabWidget::mousePressEvent( QMouseEvent *e )
 {
     if ( e->button() == RightButton ) {

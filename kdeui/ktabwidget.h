@@ -138,6 +138,12 @@ signals:
     void movedTab( int, int );
 
     /*!
+      A double left mouse button click was performed over empty space besides tabbar.
+      @since 3.3
+    */
+    void mouseDoubleClick();
+
+    /*!
       A double left mouse button click was performed over the widget.
     */
     void mouseDoubleClick( QWidget * );
@@ -159,6 +165,7 @@ signals:
     void closeRequest( QWidget * );
 
 protected:
+    virtual void mouseDoubleClickEvent( QMouseEvent *e );
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
