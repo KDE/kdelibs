@@ -56,8 +56,8 @@ void KAccel::connectItem( const QString& action,
     KKeyEntry *pEntry = aKeyDict[ action ];
 
 	if ( !pEntry ) {
-	    warning("KAccel : Cannot connect action %s "
-		    "which is not in the object dictionary", action.ascii());
+		kdWarning(125) << "cannot connect action " << action
+					   << " which is not in the object dictionary" << endl;
 	    return;
 	}
 	
@@ -107,8 +107,9 @@ void KAccel::setDescription(const QString &action,
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
-	if ( !pEntry ) warning("KAccel: cannot set description"
-						   "for absent action %s", action.ascii());
+	if ( !pEntry )
+		kdWarning(125) << "cannot set description for absent action "
+					   << action << endl;
 	else pEntry->descr = description;
 }
 
@@ -147,7 +148,7 @@ QString KAccel::findKey( int key ) const
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
 	while ( aKeyIt.current() ) {
-	    if ( (unsigned int)key == aKeyIt.current()->aCurrentKeyCode ) 
+	    if ( (unsigned int)key == aKeyIt.current()->aCurrentKeyCode )
 		return aKeyIt.currentKey();
 	    ++aKeyIt;
 	}
@@ -290,7 +291,6 @@ void KAccel::readSettings(KConfig* config)
 			pE->aConfigKeyCode = stringToKey( s );
 	
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
-		emit keycodeChanged();
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
 			QAccel::disconnectItem( pE->aAccelId, pE->receiver,
 						pE->member );
@@ -305,6 +305,8 @@ void KAccel::readSettings(KConfig* config)
 		++aKeyIt;
 	}
 #undef pE
+
+	emit keycodeChanged();
 }
 
 void KAccel::removeItem( const QString& action )
@@ -340,9 +342,8 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 {	
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-		QString str = i18n("KAccel : cannont enable action %1 "
-				   "which is not in the object dictionary").arg(action);
-		warning( str.ascii() );
+		kdWarning(125) << "cannot enable action " << action
+					   << " which is not in the object dictionary" << endl;
 		return;
 	}
 
@@ -388,7 +389,6 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->aDefaultKeyCode = pE->aDefaultKeyCode;
 		// Note we write config key code to current key code !!
 		pEntry->aCurrentKeyCode = pE->aConfigKeyCode;
-		emit keycodeChanged();
 		pEntry->aConfigKeyCode = pE->aConfigKeyCode;
 		pEntry->bConfigurable = pE->bConfigurable;
 		pEntry->aAccelId = pE->aAccelId;
@@ -396,7 +396,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->member = pE->member;
 		pEntry->descr = pE->descr; // tanghus
 		pEntry->menuId = pE->menuId;
-		pEntry->menu = pE->menu; 
+		pEntry->menu = pE->menu;
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
@@ -412,6 +412,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 #undef pE
 		
 	delete aKeyIt; // tanghus
+	emit keycodeChanged();
 	return true;
 }
 
@@ -500,11 +501,11 @@ bool KAccel::updateItem( const QString &action, uint keyCode)
     }
 
     pEntry->aCurrentKeyCode = keyCode;
-	emit keycodeChanged();
     if (pEntry->aCurrentKeyCode) {
 		QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
 		QAccel::connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
     }
+	emit keycodeChanged();
     return true;
   } else
     return false;
@@ -602,26 +603,29 @@ uint KAccel::stringToKey(const QString& key)
 			return 0;
 		}
 
-		if ( str.upper()=="SHIFT" )     keyCode |= Qt::SHIFT;
-		else if ( str.upper()=="CTRL" ) keyCode |= Qt::CTRL;
-		else if ( str.upper()=="ALT" )  keyCode |= Qt::ALT;
-		else if (codeFound) {
+		if ( k!=1 ) { // for e.g. "Shift" can be a modifier or a key
+			if ( str.upper()=="SHIFT" )     { keyCode |= Qt::SHIFT; continue; }
+			if ( str.upper()=="CTRL" )      { keyCode |= Qt::CTRL;  continue; }
+			if ( str.upper()=="ALT" )       { keyCode |= Qt::ALT;   continue; }
+		}
+
+		if (codeFound) {
 			kdWarning(125) << "stringToKey::Duplicate keycode" << endl;
 			return 0;
-		} else {
-			// search for keycode
-			uint j;
-			for(j=0; j<NB_KEYS; j++) {
-				if ( str==KKEYS[j].name ) {
-				    keyCode |= KKEYS[j].code;
-					break;
-				}
-			}
-			if ( j==NB_KEYS ) {
-				kdWarning(125) << "stringToKey::Unknown key name " << str << endl;
-				return 0;
+		}
+		// search for keycode
+		uint j;
+		for(j=0; j<NB_KEYS; j++) {
+			if ( str==KKEYS[j].name ) {
+				keyCode |= KKEYS[j].code;
+				break;
 			}
 		}
+		if ( j==NB_KEYS ) {
+			kdWarning(125) << "stringToKey::Unknown key name " << str << endl;
+			return 0;
+		}
 	}
+
 	return keyCode;
 }
