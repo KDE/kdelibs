@@ -161,7 +161,7 @@ DateValue::_parse()
 	
 	dateStr.replace(QRegExp("-"), "");
 
-	kdDebug() << "dateStr: " << dateStr << endl;
+	kdDebug(5710) << "dateStr: " << dateStr << endl;
 
 	year_	= dateStr.left(4).toInt();
 	month_	= dateStr.mid(4, 2).toInt();
