@@ -121,9 +121,9 @@ QString kioErrorString( int _errid, const char *_errortext )
       break;
     case  ERR_CHECKSUM_MISMATCH:
       if (_errortext)
-        result = i18n( "Warning: MD5 Checksum for %s does not match checksum returned from server" ).arg(_errortext);
+        result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg(_errortext);
       else
-        result = i18n( "Warning: MD5 Checksum for %s does not match checksum returned from server" ).arg("document");
+        result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg("document");
       break;
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg(_errid ).arg(_errortext);
