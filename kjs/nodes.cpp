@@ -37,8 +37,8 @@ Node *Node::firstNode = 0L;
 
 Node::Node()
 {
-  assert(KJScript::lexer());
-  line = KJScript::lexer()->lineNo();
+  assert(Lexer::curr());
+  line = Lexer::curr()->lineNo();
   nodeCount++;
   //  cout << "Node()" << endl;
 

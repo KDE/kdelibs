@@ -29,6 +29,8 @@ namespace KJS {
   public:
     Lexer();
     ~Lexer();
+    static Lexer *curr();
+    static void setCurrent(Lexer *l);
 
     void setCode(const UChar *c, unsigned int len);
     int lex();

@@ -46,7 +46,7 @@ KJScript::KJScript()
   : initialized(false)
 {
   KJScriptLock lock(this);
-  setLexer(new Lexer());
+  Lexer::setCurrent(new Lexer());
   init();
 }
 
@@ -56,8 +56,8 @@ KJScript::~KJScript()
 
   KJScriptLock lock(this);
 
-  delete lexer();
-  setLexer(0L);
+  delete Lexer::curr();
+  Lexer::setCurrent(0L);
 
 #ifdef KJS_DEBUG_MEM
   if (KJSO::count != 0) {
@@ -89,7 +89,7 @@ bool KJScript::evaluate(const QChar *code, unsigned int length)
   // maintain lock on global "current" pointer while running
   KJScriptLock lock(this);
 
-  lexer()->setCode((UChar*)code, length);
+  Lexer::curr()->setCode((UChar*)code, length);
   int parseError = kjsyyparse();
 
   if (parseError) {

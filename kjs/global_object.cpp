@@ -101,7 +101,7 @@ KJSO *GlobalFunc::execute(const List &args)
     if (x->type() != StringType)
       res = x;
     else {
-      KJScript::lexer()->setCode(x->stringVal().data(), x->stringVal().size());
+      Lexer::curr()->setCode(x->stringVal().data(), x->stringVal().size());
       if (kjsyyparse()) {
 	KJS::Node::deleteAllNodes();
 	return newCompletion(Normal, newError(ErrParser)); /* TODO: zeroRef */

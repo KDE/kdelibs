@@ -542,7 +542,7 @@ bool automatic()
 {
   if (yychar == '}')
     return true;
-  else if (KJScript::lexer()->prevTerminator())
+  else if (Lexer::curr()->prevTerminator())
     return true;
 
   return false;

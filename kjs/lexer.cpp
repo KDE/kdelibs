@@ -39,7 +39,7 @@ using namespace KJS;
 // a bridge for yacc from the C world to C++
 int kjsyylex()
 {
-  return KJScript::lexer()->lex();
+  return Lexer::curr()->lex();
 }
 
 Lexer::Lexer()
@@ -59,6 +59,16 @@ Lexer::~Lexer()
 {
   delete [] buffer8;
   delete [] buffer16;
+}
+
+Lexer *Lexer::curr()
+{
+  return KJScript::current()->lex;
+}
+
+void Lexer::setCurrent(Lexer *l)
+{
+  KJScript::current()->lex = l;
 }
 
 void Lexer::setCode(const UChar *c, unsigned int len)
