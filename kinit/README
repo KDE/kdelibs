@@ -1,6 +1,6 @@
 README
 
-kdeinit is a process launcher somewhat similair to the 
+kdeinit is a process launcher somewhat similar to the 
 famous init used for booting UNIX.
 
 It launches processes by forking and then loading a
@@ -80,3 +80,4 @@ The process name of applications started via kdeinit is "kdeinit". This problem
 can be corrected to a degree by changing the application name as shown
 by 'ps'. However, applications like "killall" will only see "kdeinit" as 
 process name.
+
