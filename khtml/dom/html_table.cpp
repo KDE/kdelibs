@@ -744,13 +744,20 @@ void HTMLTableRowElement::setVAlign( const DOMString &value )
 HTMLElement HTMLTableRowElement::insertCell( long index )
 {
     if(!impl) return 0;
-    return ((HTMLTableRowElementImpl *)impl)->insertCell( index );
+    int exceptioncode = 0;
+    HTMLElementImpl* ret = ((HTMLTableRowElementImpl *)impl)->insertCell( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return ret;
 }
 
 void HTMLTableRowElement::deleteCell( long index )
 {
+    int exceptioncode = 0;
     if(impl)
-        ((HTMLTableRowElementImpl *)impl)->deleteCell( index );
+        ((HTMLTableRowElementImpl *)impl)->deleteCell( index, exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
 }
 
 // --------------------------------------------------------------------------
