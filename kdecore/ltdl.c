@@ -192,7 +192,7 @@ strrchr(str, ch)
 {
 	const char *p;
 
-	for (p = str; p != '\0'; p++)
+	for (p = str; *p != '\0'; p++)
 		/*NOWORK*/;
 
 	while (*p != (char)ch && p >= str)
