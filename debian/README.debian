@@ -1,0 +1,9 @@
+KDE NOTICE
+==========
+
+When you want to install KDE applications using this libraries, be sure,
+that they installing in the right paths. It may be, that they are using
+other paths than the packages used in Debian.
+
+Stephan Kulow <coolo@kde.org>  Wed, 25 Dec 1998 21:09:54 +0100
+

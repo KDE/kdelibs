@@ -1,0 +1,56 @@
+This package was updated by Stephan Kulow <coolo@kde.org>.
+This package was debianized by Andreas Jellinghaus <aj@debian.org>.
+Thanks to Brandon Mitchell <bhmit1@mail.wm.edu> for his work on the
+libc5 version.
+
+It was downloaded from ftp.kde.org
+/pub/kde/unstable/CVS/snapshots/current kdelibs-*.tar.gz
+
+Copyright:
+
+See */AUTHORS for authors.
+
+June 1997) by the GNU Library General License Version 2 or later (at
+your option). Please see the file COPYING.LIB for more information.      
+
+parts are copyright by fsf :
+
+/* Combined sources of GNU gettext library
+   Copyright (C) 1995 Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+ 
+-------------------------------------------------------------------
+$Id$
+
+outline class implementations
+An example using the QktsTreeListWidget
+
+Copyright (C) 1996 Keith Brown and KtSoft
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABLILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details. You should have received a
+copy of the GNU General Public License along with this program; if
+not, write to the Free Software Foundation, Inc, 59 Temple Place - 
+Suite 330, Boston, MA 02111-1307, USA.
+
+

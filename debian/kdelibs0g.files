@@ -1,0 +1,4 @@
+usr/X11R6/lib/*.so.*.*
+usr/X11R6/lib/*.so.*
+usr/share/*
+etc/kde/charsets
