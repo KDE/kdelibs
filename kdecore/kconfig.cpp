@@ -48,6 +48,8 @@
 // There are some left in mediatool, but this is not C++
 //
 // Revision 1.4  1997/10/16 11:35:25  kulow
+// readded my yesterday bugfixes. I hope, I have not forgotten one.
+// I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
 //
 // Revision 1.3  1997/10/16 11:14:29  torben
@@ -55,7 +57,7 @@
 // kdoctoolbar removed
 //
 // Revision 1.1  1997/10/04 19:50:58  kalle
-const int CONFIGFILECOUNT = 4; // number of entries in aConfigFileName[]
+// new KConfig
 //
 
 #include <kconfig.h>
