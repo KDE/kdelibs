@@ -34,7 +34,7 @@ public:
     KURLComboBoxPrivate() {
 	dirpix = SmallIcon(QString::fromLatin1("folder"));
     }
-    
+
     QPixmap dirpix;
 };
 
@@ -63,7 +63,7 @@ KURLComboBox::~KURLComboBox()
 void KURLComboBox::init( Mode mode )
 {
     d = new KURLComboBoxPrivate();
-    
+
     myMode    = mode;
     urlAdded  = false;
     myMaximum = 10; // default
@@ -322,19 +322,17 @@ QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 void KURLComboBox::updateItem( const KURLComboItem *item,
                                int index, const QPixmap& pixmap )
 {
-    //TODO: a getText method for this
-    const QString &text = isEditable() ?
-                          ( item->url.isLocalFile() ? item->url.path(myMode) : item->url.prettyURL(myMode) )
-                          : item->text;
-
     // QComboBox::changeItem() doesn't honour the pixmap when
     // using an editable combobox, so we just remove and insert
     if ( isEditable() ) {
-        removeItem( index );
-        insertItem( pixmap, text, index );
+	removeItem( index );
+	insertItem( pixmap, 
+		    item->url.isLocalFile() ? item->url.path( myMode ) :
+		                              item->url.prettyURL( myMode ),
+		    index );
     }
     else
-        changeItem( pixmap, text, index );
+        changeItem( pixmap, item->text, index );
 }
 
 
