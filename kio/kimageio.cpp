@@ -469,7 +469,7 @@ bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
        ++it )
   {
      KImageIOFormat *format = (*it);
-     if (format->mMimetype = _mimeType)
+     if (format->mMimetype == _mimeType)
      {
         if (((_mode == Reading) && format->bRead) ||
             ((_mode == Writing) && format->bWrite))
