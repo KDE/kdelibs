@@ -42,6 +42,7 @@
  * @author Wynn Wilkes, wynnw@kde.org
  */
 
+class KJavaApplet;
 class KJavaAppletWidget;
 class KJavaAppletContext;
 class KJavaAppletPrivate;
