@@ -679,6 +679,15 @@ void KDialogBase::setTreeListAutoResize( bool state )
 }
 
 
+void KDialogBase::setIconListAllVisible( bool state )
+{
+  if( mJanus != 0 )
+  {
+    mJanus->setIconListAllVisible( state );
+  }
+}
+
+
 void KDialogBase::slotHelp() 
 {
   emit helpClicked();

@@ -631,9 +631,24 @@ class KDialogBase : public KDialog
      * when the dialog becomes wider.
      *
      * @param state The resize mode. If false (default) the tree list keeps
-     *              its current width when the dialog becomes wider.
+     *        its current width when the dialog becomes wider.
      */
      void setTreeListAutoResize( bool state );
+     
+    /**
+     * This function has only effect in IconList mode.
+     *
+     * Defines how the icon list widget is displayed. By default it is 
+     * the widgets in the dialog pages that decide the minimum height 
+     * of the dialog. A vertical scrollbar can be used in the icon list
+     * area.
+     *
+     * @param state The visibility mode. If true, the minimum height is 
+     *        adjusted so that every icon in the list is visible at the 
+     *        same time. The vertical scrollbar will never be visible.
+     */
+    void setIconListAllVisible( bool state );
+     
 
     /** 
      * Check whether the background tile is set or not. 

@@ -49,7 +49,7 @@ class IconListItem : public QListBoxItem
     int expandMinimumWidth( int width );
 
   protected:
-    const QPixmap &defaultPixmap( void );
+    const QPixmap &defaultPixmap();
     void paint( QPainter *painter );
 
   private:
@@ -116,7 +116,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     {
       mIconNodeList = new QList<QListBoxItem>;
       QHBoxLayout *hbox = new QHBoxLayout( topLayout );
-      mIconList = new KListBox( this );
+      mIconList = new IconListBox( this );
       mIconList->verticalScrollBar()->installEventFilter( this );
       hbox->addWidget( mIconList );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
@@ -178,7 +178,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 }
 
 
-KJanusWidget::~KJanusWidget( void )
+KJanusWidget::~KJanusWidget()
 {
   delete mPageList;
   delete mTreeNodeList;
@@ -186,19 +186,19 @@ KJanusWidget::~KJanusWidget( void )
 }
 
 
-bool KJanusWidget::isValid( void ) const
+bool KJanusWidget::isValid() const
 {
   return( mValid );
 }
 
 
-QFrame *KJanusWidget::plainPage( void )
+QFrame *KJanusWidget::plainPage()
 {
   return( mPlainPage );
 }
 
 
-int KJanusWidget::face( void ) const
+int KJanusWidget::face() const
 {
   return( mFace );
 }
@@ -380,6 +380,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QString &itemName,
       IconListItem *item = new IconListItem( mIconList, pixmap, itemName );
       mIconNodeList->append( item );
       mIconList->insertItem( item );
+      mIconList->invalidateHeight();
 
       //
       // Make sure all list items have stored the same minimum width. The
@@ -489,7 +490,7 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
 
 
 
-bool KJanusWidget::slotShowPage( void )
+bool KJanusWidget::slotShowPage()
 {
   if( mValid == false )
   {
@@ -601,7 +602,7 @@ bool KJanusWidget::showPage( QWidget *w )
 }
 
 
-int KJanusWidget::activePageIndex( void ) const
+int KJanusWidget::activePageIndex() const
 {
   if( mFace == TreeList || mFace == IconList )
   {
@@ -614,7 +615,7 @@ int KJanusWidget::activePageIndex( void ) const
 }
 
 
-void KJanusWidget::slotFontChanged( void )
+void KJanusWidget::slotFontChanged()
 {
   if( mTitleLabel != 0 )
   {
@@ -623,10 +624,15 @@ void KJanusWidget::slotFontChanged( void )
     titleFont.setBold( true );
     mTitleLabel->setFont( titleFont );
   }
+
+  if( mFace == IconList )
+  {
+    mIconList->invalidateHeight();
+  }
 }
 
 
-void KJanusWidget::setFocus( void )
+void KJanusWidget::setFocus()
 {
   if( mValid == false ) { return; }
   if( mFace == TreeList )
@@ -652,7 +658,7 @@ void KJanusWidget::setFocus( void )
 }
 
 
-QSize KJanusWidget::minimumSizeHint( void ) const
+QSize KJanusWidget::minimumSizeHint() const
 {
   if( mFace == TreeList || mFace == IconList )
   {
@@ -668,6 +674,7 @@ QSize KJanusWidget::minimumSizeHint( void ) const
     }
     else
     {
+      mIconList->updateMinimumHeight();
       s2 = mIconList->minimumSize();
     }
     
@@ -677,8 +684,13 @@ QSize KJanusWidget::minimumSizeHint( void ) const
       s3.rheight() += mTitleSep->minimumSize().height();
     }
 
-    return( QSize( s1.width() + s2.width() + QMAX( s3.width(), s4.width() ),
-		   s1.height() + s3.height() + s4.height() ) );
+    //
+    // Select the tallest item. It has only effect in IconList mode
+    //
+    int h1 = s1.rheight() + s3.rheight() + s4.height();
+    int h2 = QMAX( h1, s2.rheight() );
+
+    return( QSize( s1.width()+s2.width()+QMAX(s3.width(),s4.width()), h2 ) );
   }
   else if( mFace == Tabbed )
   {
@@ -700,7 +712,7 @@ QSize KJanusWidget::minimumSizeHint( void ) const
 }
 
 
-QSize KJanusWidget::sizeHint( void ) const
+QSize KJanusWidget::sizeHint() const
 {
   return( minimumSizeHint() );
 }
@@ -717,6 +729,14 @@ void KJanusWidget::setTreeListAutoResize( bool state )
   }
 }
 
+
+void KJanusWidget::setIconListAllVisible( bool state )
+{
+  if( mFace == IconList )
+  {
+    mIconList->setShowAll( state );
+  }
+}
 
 
 void KJanusWidget::showEvent( QShowEvent * )
@@ -760,6 +780,46 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
 
 
 
+//
+// Code for the icon list box
+//
+
+
+KJanusWidget::IconListBox::IconListBox( QWidget *parent, const char *name, 
+					WFlags f )
+  :KListBox( parent, name, f ), mShowAll(false), mHeightValid(false)
+{
+}
+
+
+void KJanusWidget::IconListBox::updateMinimumHeight()
+{
+  if( mShowAll == true && mHeightValid == false )
+  {
+    int h = frameWidth()*2;
+    for( QListBoxItem *i = item(0); i != 0; i = i->next() )
+    {
+      h += i->height( this );
+    }
+    setMinimumHeight( h );
+    mHeightValid = true;
+  }
+}
+
+
+void KJanusWidget::IconListBox::invalidateHeight()
+{
+  mHeightValid = false;
+}
+
+
+void KJanusWidget::IconListBox::setShowAll( bool showAll )
+{
+  mShowAll = showAll;
+  mHeightValid = false;
+}
+
+
 
 IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap, 
 			    const QString &text )
@@ -782,7 +842,7 @@ int IconListItem::expandMinimumWidth( int width )
 }
 
 
-const QPixmap &IconListItem::defaultPixmap( void )
+const QPixmap &IconListItem::defaultPixmap()
 {
   static QPixmap *pix=0;
   if( pix == 0 )

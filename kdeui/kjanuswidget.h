@@ -1,5 +1,5 @@
 /*  This file is part of the KDE Libraries
- *  Copyright (C) 1999-2000 Espen Sand (espensa@online.no)
+ *  Copyright (C) 1999-2000 Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -81,11 +81,25 @@ class KSeparator;
  *
  *
  * @short Easy to use widget with many layouts
- * @author Espen Sand (espensa@online.no)
+ * @author Espen Sand (espen@kde.org)
  */
 class KJanusWidget : public QWidget
 {
   Q_OBJECT
+
+  private:
+    class IconListBox : public KListBox
+    {
+      public:
+        IconListBox( QWidget *parent=0, const char *name=0, WFlags f=0 );
+	void updateMinimumHeight();
+	void invalidateHeight();
+	void setShowAll( bool showAll );
+      
+      private:
+	bool mShowAll;
+	bool mHeightValid;
+    };
   
   public:
     enum Face
@@ -112,7 +126,7 @@ class KJanusWidget : public QWidget
     /**
      * Destructor.
      */
-    ~KJanusWidget( void );
+    ~KJanusWidget();
 
     /**
      * Raises the page which was added by @ref addPage().
@@ -126,7 +140,7 @@ class KJanusWidget : public QWidget
      *
      * @return The index or -1 of the face is not TreeList or Tabbed
      */
-    int  activePageIndex( void ) const;
+    int  activePageIndex() const;
 
     /**
      * Use this to verify 
@@ -134,14 +148,14 @@ class KJanusWidget : public QWidget
      *
      * @return true if the widget was properly created. 
      */
-    bool isValid( void ) const;
+    bool isValid() const;
 
     /**
      * Retrieve the face type.
      *
      * @return The face type.
      */
-    int face( void ) const;
+    int face() const;
 
     /**
      * Retrieve the minimum size that must be made available for the widget
@@ -149,7 +163,7 @@ class KJanusWidget : public QWidget
      *
      * @return The minimum size.
      */
-    virtual QSize minimumSizeHint( void ) const;
+    virtual QSize minimumSizeHint() const;
 
     /**
      * Returns the recommended size for the widget in order to be displayed
@@ -157,14 +171,14 @@ class KJanusWidget : public QWidget
      *
      * @return The recommended size.
      */
-    virtual QSize sizeHint( void ) const;
+    virtual QSize sizeHint() const;
 
     /**
      * Retrieve the empty widget that is available in Plain mode.
      *
      * @return The widget or 0 if the face in not Plain.
      */
-    QFrame *plainPage( void );
+    QFrame *plainPage();
 
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed 
@@ -275,11 +289,25 @@ class KJanusWidget : public QWidget
      */
      void setTreeListAutoResize( bool state );
 
+    /**
+     * This function has only effect in IconList mode.
+     *
+     * Defines how the icon list widget is displayed. By default it is 
+     * the widgets in the pages that decide the minimum height 
+     * of the toplevel widget. A vertical scrollbar can be used in 
+     * the icon list area.
+     *
+     * @param state The visibility mode. If true, the minimum height is 
+     *        adjusted so that every icon in the list is visible at the 
+     *        same time. The vertical scrollbar will never be visible.
+     */
+    void setIconListAllVisible( bool state );
+
   public slots:
     /**
      * Give the keyboard input focus to the widget.
      */
-    virtual void setFocus( void ); 
+    virtual void setFocus(); 
 
   protected:
     /**
@@ -299,8 +327,8 @@ class KJanusWidget : public QWidget
     virtual bool eventFilter( QObject *o, QEvent *e );
 
   private slots:
-    bool slotShowPage( void );
-    void slotFontChanged( void );
+    bool slotShowPage();
+    void slotFontChanged();
 
   private:
     bool showPage( QWidget *w );
@@ -317,7 +345,7 @@ class KJanusWidget : public QWidget
 
     int          mFace;
     KListView    *mTreeList;
-    KListBox     *mIconList;
+    IconListBox  *mIconList;
     QWidgetStack *mPageStack;
     QLabel       *mTitleLabel;
     QTabWidget   *mTabControl;
