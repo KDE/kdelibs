@@ -1216,7 +1216,8 @@ void FileCopyJob::slotStart()
         (m_src.host() == m_dest.host()) &&
         (m_src.port() == m_dest.port()) &&
         (m_src.user() == m_dest.user()) &&
-        (m_src.pass() == m_dest.pass()))
+        (m_src.pass() == m_dest.pass()) &&
+        !m_src.hasSubURL() && !m_dest.hasSubURL())
     {
        if (m_move)
        {
