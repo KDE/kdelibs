@@ -197,7 +197,7 @@ void HTMLAppletElementImpl::attach()
     if ( !code.isEmpty() )
         url = KURL( url, code.string() );
 
-    if( view->part()->javaEnabled() && isURLAllowed( url.url() ) )
+    if( view->part()->javaEnabled() && getDocument()->isURLAllowed( url.url() ) )
     {
 	QMap<QString, QString> args;
 
@@ -314,7 +314,7 @@ void HTMLEmbedElementImpl::attach()
         RenderStyle* _style = getDocument()->styleSelector()->styleForElement( this );
         _style->ref();
 
-        if (w->part()->pluginsEnabled() && isURLAllowed( url ) &&
+        if (w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
             parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
             m_render = new RenderPartObject(this);
             m_render->setStyle(_style );
@@ -410,7 +410,7 @@ void HTMLObjectElementImpl::attach()
     KHTMLView* w = getDocument()->view();
     if ( !w->part()->pluginsEnabled() ||
          ( url.isEmpty() && classId.isEmpty() ) ||
-         m_renderAlternative || !isURLAllowed( url ) ) {
+         m_renderAlternative || !getDocument()->isURLAllowed( url ) ) {
         // render alternative content
         ElementImpl::attach();
         return;

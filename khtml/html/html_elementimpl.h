@@ -50,7 +50,7 @@ public:
     void addCSSLength(int id, const DOMString &value, bool numOnly = false, bool multiLength = false);
     void addCSSProperty(int id, const DOMString &value);
     void addCSSProperty(int id, int value);
-    void addHtmlColor( int id, const DOMString &c );
+    void addHTMLColor( int id, const DOMString &c );
     void removeCSSProperty(int id);
 
     virtual void recalcStyle( StyleChange );
@@ -63,8 +63,6 @@ public:
     virtual DOMString namespaceURI() const;
 
 protected:
-    bool isURLAllowed(const QString& url) const;
-
     // for IMG, OBJECT and APPLET
     void addHTMLAlignment( DOMString alignment );
 };

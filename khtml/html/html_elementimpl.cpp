@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 // -------------------------------------------------------------------------
 //#define DEBUG
@@ -48,7 +47,6 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
-#include <kapplication.h>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -268,7 +266,7 @@ static inline int toHex( const QChar &c ) {
 }
 
 /* color parsing that tries to match as close as possible IE 6. */
-void HTMLElementImpl::addHtmlColor( int id, const DOMString &c )
+void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 {
     if(!m_styleDecls) createDecl();
 
@@ -276,10 +274,10 @@ void HTMLElementImpl::addHtmlColor( int id, const DOMString &c )
     if ( !c.length() )
 	return;
 
-    QString color = c.string();
-    if ( m_styleDecls->setProperty(id, DOMString(color), false, true) )
+    if ( m_styleDecls->setProperty(id, c, false, true) )
 	return;
 
+    QString color = c.string();
     // not something that fits the specs.
 
     // we're emulating IEs color parser here. It maps transparent to black, otherwise it tries to build a rgb value
@@ -508,39 +506,6 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
     if ( propvalign != -1 )
 	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
 }
-
-bool HTMLElementImpl::isURLAllowed(const QString& url) const
-{
-    KHTMLView *w = getDocument()->view();
-
-    KURL newURL(getDocument()->completeURL(url));
-    newURL.setRef(QString::null);
-
-    // Prohibit non-file URLs if we are asked to.
-    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
-        return false;
-
-    // do we allow this suburl ?
-    if ( !kapp || !kapp->kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
-        return false;
-
-    // We allow one level of self-reference because some sites depend on that.
-    // But we don't allow more than one.
-    bool foundSelfReference = false;
-    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
-        KURL partURL = part->url();
-        partURL.setRef(QString::null);
-        if (partURL == newURL) {
-            if (foundSelfReference)
-                return false;
-            foundSelfReference = true;
-        }
-    }
-
-    return true;
-}
-
-
 
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)

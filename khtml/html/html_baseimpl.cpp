@@ -102,11 +102,11 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
         break;
     case ATTR_BGCOLOR:
-        addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
+        addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
         m_bgSet = !attr->value().isNull();
         break;
     case ATTR_TEXT:
-        addHtmlColor(CSS_PROP_COLOR, attr->value());
+        addHTMLColor(CSS_PROP_COLOR, attr->value());
         m_fgSet = !attr->value().isNull();
         break;
     case ATTR_BGPROPERTIES:
@@ -295,7 +295,6 @@ void HTMLFrameElementImpl::attach()
 {
     assert(!attached());
     assert(parentNode());
-    assert(parentNode()->renderer());
 
     // we should first look up via id, then via name.
     // this shortterm hack fixes the ugly case. ### rewrite needed for next release
@@ -320,7 +319,7 @@ void HTMLFrameElementImpl::attach()
     // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
 
-    if (isURLAllowed(url.string()))  {
+    if (parentNode()->renderer() && getDocument()->isURLAllowed(url.string()))  {
         m_render = new RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -601,7 +600,7 @@ void HTMLIFrameElementImpl::attach()
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
-    if (isURLAllowed(url.string()) &&
+    if (getDocument()->isURLAllowed(url.string()) &&
         parentNode()->renderer() && style->display() != NONE) {
         m_render = new RenderPartObject(this);
         m_render->setStyle(style);

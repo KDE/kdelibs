@@ -386,13 +386,13 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_BGCOLOR:
         if (!attr->value().isEmpty())
-            addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
+            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
-            addHtmlColor(CSS_PROP_BORDER_COLOR, attr->value());
+            addHTMLColor(CSS_PROP_BORDER_COLOR, attr->value());
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
@@ -521,7 +521,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_BGCOLOR:
         if (attr->val())
-            addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value() );
+            addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value() );
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
@@ -539,7 +539,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_BORDERCOLOR:
     {
         if(!attr->value().isEmpty()) {
-            addHtmlColor(CSS_PROP_BORDER_COLOR, attr->value());
+            addHTMLColor(CSS_PROP_BORDER_COLOR, attr->value());
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);

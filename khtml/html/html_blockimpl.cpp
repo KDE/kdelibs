@@ -108,7 +108,7 @@ void HTMLHRElementImpl::attach()
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, DOMString("0"));
             addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, DOMString(si));
-            addHtmlColor(CSS_PROP_BORDER_COLOR, color);
+            addHTMLColor(CSS_PROP_BORDER_COLOR, color);
         }
         else {
             if (_s > 1 && getAttribute(ATTR_NOSHADE).isNull()) {
