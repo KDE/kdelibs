@@ -41,8 +41,8 @@ public:
     Open=0, New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
     Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
     ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion, NextCompletion,
-    RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, Up, Back, Forward,
-    SelectAll, ShowMenubar, NB_STD_ACCELS
+    RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, SelectAll, Up, Back,
+    Forward, ShowMenubar, NB_STD_ACCELS
   };
 
   /** Open file. Default: Ctrl-o */
