@@ -220,8 +220,14 @@ int Lexer::lex()
 	state = InString;
 	record16(convertHex(current, next1));
 	shift(1);
+      } else if (current == stringType) {
+	record16('x');
+	shift(1);
+	setDone(String);
       } else {
-	setDone(Bad);
+	record16('x');
+	record16(current);
+	state = InString;
       }
       break;
     case InUnicodeEscape:
@@ -230,6 +236,10 @@ int Lexer::lex()
 	record16(convertUnicode(current, next1, next2, next3));
 	shift(3);
 	state = InString;
+      } else if (current == stringType) {
+	record16('u');
+	shift(1);
+	setDone(String);
       } else {
 	setDone(Bad);
       }

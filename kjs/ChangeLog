@@ -1,6 +1,8 @@
 2000-12-10  Harri Porten  <harri@trolltech.com>
 
-	* lexer.cpp: parsing != was broken, added \v escape in strings
+	* lexer.cpp: parsing != was broken, added \v escape in strings,
+		fixed "\u" and "\x" and \x with non hex chars following.
 	* nodes.cpp: implemented <<=, >>=, >>>=, &=, ^=, |= and %=
+	* internal.cpp: create error message including line no on parse errors
 
 

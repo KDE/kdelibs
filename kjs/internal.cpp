@@ -532,8 +532,11 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   int parseError = kjsyyparse();
 
   if (parseError) {
+    errType = 99; /* TODO */
+    errLine = Lexer::curr()->lineNo();
+    errMsg = "Parse error at line " + UString::from(errLine);
 #ifndef NDEBUG
-    fprintf(stderr, "JavaScript parse error.\n");
+    fprintf(stderr, "JavaScript parse error at line %d.\n", errLine);
 #endif
     /* TODO: either clear everything or keep previously
        parsed function definitions */
