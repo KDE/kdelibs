@@ -568,7 +568,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
 }
 
 // This code is also used in klauncher.
-bool KRun::checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QCString* wmclass_arg )
+bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* service, bool* silent_arg, QCString* wmclass_arg )
 {
   bool silent = false;
   QCString wmclass;
