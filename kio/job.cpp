@@ -126,7 +126,7 @@ void Job::showErrorDialog()
 
 SimpleJob::SimpleJob(const KURL& url, int command,
 		     const QByteArray &packedArgs)
-  : Job(), m_url(url), m_command(command), m_slave(0), m_packedArgs(packedArgs)
+  : Job(), m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command)
 {
     Scheduler::doJob(this);
 }
@@ -1635,4 +1635,4 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred )
   return job;
 }
 
-#include "job.moc"
+#include "jobclasses.moc"
