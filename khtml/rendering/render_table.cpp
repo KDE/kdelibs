@@ -1231,6 +1231,10 @@ int RenderTableSection::layoutRows( int toAdd )
     int totalRows = grid.size();
     int hspacing = table()->borderHSpacing();
     int vspacing = table()->borderVSpacing();
+    if (markedForRepaint()) {
+        repaintDuringLayout();
+        setMarkedForRepaint(false);
+    }                         
 
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
@@ -1762,6 +1766,8 @@ void RenderTableRow::layout()
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
             if ( child->needsLayout() ) {
+                if (markedForRepaint())
+                    cell->setMarkedForRepaint( true );
                 cell->calcVerticalMargins();
                 cell->layout();
                 cell->setCellTopExtra(0);
@@ -1770,6 +1776,7 @@ void RenderTableRow::layout()
 	}
 	child = child->nextSibling();
     }
+    setMarkedForRepaint(false);
     setNeedsLayout(false);
 }
 

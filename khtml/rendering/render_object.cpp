@@ -1289,8 +1289,8 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
         return;        
     if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() || 
-                     !(isFloatingOrPositioned() || flowAroundFloats() || isTableCell() || hasOverflowClip())))
-        container()->dirtyFormattingContext(false);
+                     !(isFloating() || flowAroundFloats() || isTableCell())))
+        m_parent->dirtyFormattingContext(false);
 }
 
 void RenderObject::repaintDuringLayout()
