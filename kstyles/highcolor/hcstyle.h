@@ -8,6 +8,7 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
+#include <qbitmap.h>
 #include <limits.h>
 
 /*-
@@ -184,6 +185,11 @@ private:
     QColor gradientHight, gradientLow;
     QWidget *highlightWidget;
     QBrush wallpaper;
+    QBitmap lightBmp;
+    QBitmap grayBmp;
+    QBitmap dgrayBmp;
+    QBitmap maskBmp;
+    QBitmap xBmp;
 };
 
 #endif

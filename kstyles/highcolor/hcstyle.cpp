@@ -933,9 +933,12 @@ void HCStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                      int h, const QColorGroup &g, bool on,
                                      bool down, bool)
 {
-    static QBitmap lightBmp(13, 13, radiooff_light_bits, true);
-    static QBitmap grayBmp(13, 13, radiooff_gray_bits, true);
-    static QBitmap dgrayBmp(13, 13, radiooff_dgray_bits, true);
+    if (lightBmp.isNull())
+    {
+       lightBmp = QBitmap(13, 13, radiooff_light_bits, true);
+       grayBmp = QBitmap(13, 13, radiooff_gray_bits, true);
+       dgrayBmp = QBitmap(13, 13, radiooff_dgray_bits, true);
+    }
 
     p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
     kColorBitmaps(p, g, x, y, &lightBmp, &grayBmp,
@@ -955,7 +958,10 @@ void HCStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
 void HCStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
                                          int h, bool)
 {
-    static QBitmap maskBmp(13, 13, radiomask_bits, true);
+    if (maskBmp.isNull())
+    {
+        maskBmp = QBitmap(13, 13, radiomask_bits, true);
+    }
     p->fillRect(x, y, w, h, Qt::color0);
     p->setPen(Qt::color1);
     p->drawPixmap(x, y, maskBmp);
@@ -973,11 +979,12 @@ void HCStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
     int x2 = x+w-1;
     int y2 = y+h-1;
 
-    static unsigned char x_bits[] = {0x63, 0x77, 0x3e, 0x1c, 0x3e, 0x77, 0x63};
-    static QBitmap xBmp(7, 7, x_bits, true);
-    if(!xBmp.mask())
+    static const unsigned char x_bits[] = {0x63, 0x77, 0x3e, 0x1c, 0x3e, 0x77, 0x63};
+    if (xBmp.isNull())
+    {
+        QBitmap xBmp = QBitmap(7, 7, x_bits, true);
         xBmp.setMask(xBmp);
-
+    }
 
     p->setPen(g.mid());
     p->drawLine(x, y, x2, y);
@@ -1107,10 +1114,10 @@ void HCStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *)
 {
-    static QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
-    static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
-    static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
-    static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
+    static const QCOORD u_arrow[]={3,1, 4,1, 2,2, 5,2, 1,3, 6,3, 0,4, 7,4, 0,5, 7,5};
+    static const QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
+    static const QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
+    static const QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
 
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
     if(w > 8){
@@ -1798,8 +1805,8 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     }
 
     QString s = text;
-    static QString modStr =
-           QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
+    static const QString &modStr = KGlobal::staticQString(
+           QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]"));
 
     int modStrPos = s.find(modStr);
 
