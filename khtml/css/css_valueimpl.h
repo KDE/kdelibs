@@ -108,6 +108,7 @@ public:
     void setCssText(DOM::DOMString str);
 
     virtual bool isValue() { return true; }
+    virtual bool isFontValue() { return false; }
 };
 
 class CSSInheritedValueImpl : public CSSValueImpl
@@ -300,6 +301,24 @@ protected:
 private:
     int _genericFamilyType;
     bool _isKonqBody;
+};
+
+class FontValueImpl : public CSSValueImpl
+{
+public:
+    FontValueImpl();
+    virtual ~FontValueImpl();
+
+    virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
+
+    virtual bool isFontValue() { return true; }
+
+    CSSPrimitiveValueImpl *style;
+    CSSPrimitiveValueImpl *variant;
+    CSSPrimitiveValueImpl *weight;
+    CSSPrimitiveValueImpl *size;
+    CSSPrimitiveValueImpl *lineHeight;
+    CSSValueListImpl *family;
 };
 
 // ------------------------------------------------------------------------------

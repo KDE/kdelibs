@@ -417,7 +417,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
 		    fontDirty = false;
 		}
-                applyRule( propsToApply[i]->prop );
+		DOM::CSSProperty *prop = propsToApply[i]->prop;
+                applyRule( prop->m_id, prop->value() );
 	    }
 	    if ( fontDirty )
 		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
@@ -449,8 +450,10 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
                 }
 
 		CSSStyleSelector::style = pseudoStyle;
-                if ( pseudoStyle )
-                    applyRule( pseudoProps[i]->prop );
+                if ( pseudoStyle ) {
+		    DOM::CSSProperty *prop = pseudoProps[i]->prop;
+		    applyRule( prop->m_id, prop->value() );
+		}
             }
 
 	    if ( fontDirty ) {
@@ -499,8 +502,10 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
         switch(prop->m_id)
         {
         case CSS_PROP_FONT_STYLE:
-        case CSS_PROP_FONT_SIZE:
+        case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT_WEIGHT:
+	case CSS_PROP_FONT_SIZE:
+        case CSS_PROP_LINE_HEIGHT:
         case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
@@ -1162,10 +1167,12 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
-	case CSS_PROP_FONT_STYLE:
-        case CSS_PROP_FONT_SIZE:
-	case CSS_PROP_FONT_WEIGHT:
-	case CSS_PROP_FONT_FAMILY:
+        case CSS_PROP_FONT_STYLE:
+        case CSS_PROP_FONT_VARIANT:
+        case CSS_PROP_FONT_WEIGHT:
+	case CSS_PROP_FONT_SIZE:
+        case CSS_PROP_LINE_HEIGHT:
+        case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:
@@ -1209,11 +1216,9 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
     return l;
 }
 
-void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
+void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
-    CSSValueImpl *value = prop->value();
-
-//     kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
+//     kdDebug( 6080 ) << "applying property " << id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -1223,7 +1228,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
     // here follows a long list, defining how to apply certain properties to the style object.
     // rather boring stuff...
-    switch(prop->m_id)
+    switch(id)
     {
 // ident only properties
     case CSS_PROP_BACKGROUND_ATTACHMENT:
@@ -1306,7 +1311,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;
-            switch(prop->m_id)
+            switch(id)
             {
             case CSS_PROP_BORDER_TOP_STYLE:
                 s = parentStyle->borderTopStyle();
@@ -1330,7 +1335,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	    if(!primitiveValue) return;
 	    s = (EBorderStyle) (primitiveValue->getIdent() - CSS_VAL_NONE);
 	}
-        switch(prop->m_id)
+        switch(id)
         {
         case CSS_PROP_BORDER_TOP_STYLE:
             style->setBorderTopStyle(s); return;
@@ -1830,7 +1835,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         QColor col;
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
-            switch(prop->m_id)
+            switch(id)
             {
             case CSS_PROP_BACKGROUND_COLOR:
                 col = parentStyle->backgroundColor(); break;
@@ -1857,7 +1862,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
                 col = element->getDocument()->textColor();
 	}
         //kdDebug( 6080 ) << "applying color " << col.isValid() << endl;
-        switch(prop->m_id)
+        switch(id)
         {
         case CSS_PROP_BACKGROUND_COLOR:
             style->setBackgroundColor(col); break;
@@ -1958,7 +1963,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	short width = 3;
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
-            switch(prop->m_id)
+            switch(id)
             {
             case CSS_PROP_BORDER_TOP_WIDTH:
 		    width = parentStyle->borderTopWidth(); break;
@@ -1995,7 +2000,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         }
 	}
         if(width < 0) return;
-        switch(prop->m_id)
+        switch(id)
         {
         case CSS_PROP_BORDER_TOP_WIDTH:
             style->setBorderTopWidth(width);
@@ -2027,7 +2032,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;
-            switch(prop->m_id)
+            switch(id)
             {
             case CSS_PROP_MARKER_OFFSET:
                 // ###
@@ -2045,7 +2050,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	    if(!primitiveValue) return;
 	    width = primitiveValue->computeLength(style, paintDeviceMetrics);
 	}
-        switch(prop->m_id)
+        switch(id)
         {
         case CSS_PROP_LETTER_SPACING:
             style->setLetterSpacing(width);
@@ -2070,7 +2075,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_RIGHT:
         // http://www.w3.org/Style/css2-updates/REC-CSS2-19980512-errata
         // introduces static-position value for top, left & right
-        if(prop->m_id != CSS_PROP_MAX_WIDTH && primitiveValue &&
+        if(id != CSS_PROP_MAX_WIDTH && primitiveValue &&
            primitiveValue->getIdent() == CSS_VAL_STATIC_POSITION)
         {
             //kdDebug( 6080 ) << "found value=static-position" << endl;
@@ -2085,7 +2090,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_MARGIN_BOTTOM:
     case CSS_PROP_MARGIN_LEFT:
         // +inherit +auto
-        if(prop->m_id != CSS_PROP_MAX_WIDTH && primitiveValue &&
+        if(id != CSS_PROP_MAX_WIDTH && primitiveValue &&
            primitiveValue->getIdent() == CSS_VAL_AUTO)
         {
             //kdDebug( 6080 ) << "found value=auto" << endl;
@@ -2101,7 +2106,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
 	    apply = true;
-            switch(prop->m_id)
+            switch(id)
                 {
                 case CSS_PROP_MAX_WIDTH:
                     l = parentStyle->maxWidth(); break;
@@ -2153,7 +2158,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             apply = true;
         }
         if(!apply) return;
-        switch(prop->m_id)
+        switch(id)
             {
             case CSS_PROP_MAX_WIDTH:
                 style->setMaxWidth(l); break;
@@ -2199,14 +2204,14 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_HEIGHT:
     case CSS_PROP_MIN_HEIGHT:
         // +inherit +auto !can be calculted directly!
-        if(!prop->m_id == CSS_PROP_MAX_HEIGHT && primitiveValue &&
+        if(!id == CSS_PROP_MAX_HEIGHT && primitiveValue &&
            primitiveValue->getIdent() == CSS_VAL_AUTO)
             apply = true;
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;
 	    apply = true;
-            switch(prop->m_id)
+            switch(id)
                 {
                 case CSS_PROP_MAX_HEIGHT:
                     l = parentStyle->maxHeight(); break;
@@ -2233,7 +2238,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             apply = true;
         }
         if(!apply) return;
-        switch(prop->m_id)
+        switch(id)
         {
         case CSS_PROP_MAX_HEIGHT:
             style->setMaxHeight(l); break;
@@ -2671,21 +2676,21 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_BORDER_WIDTH:
         if(value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
 
-        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_COLOR)
+        if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
             style->setBorderTopColor(parentStyle->borderTopColor());
             style->setBorderBottomColor(parentStyle->borderBottomColor());
             style->setBorderLeftColor(parentStyle->borderLeftColor());
             style->setBorderRightColor(parentStyle->borderRightColor());
         }
-        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_STYLE)
+        if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_STYLE)
         {
             style->setBorderTopStyle(parentStyle->borderTopStyle());
             style->setBorderBottomStyle(parentStyle->borderBottomStyle());
             style->setBorderLeftStyle(parentStyle->borderLeftStyle());
             style->setBorderRightStyle(parentStyle->borderRightStyle());
         }
-        if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_WIDTH)
+        if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_WIDTH)
         {
             style->setBorderTopWidth(parentStyle->borderTopWidth());
             style->setBorderBottomWidth(parentStyle->borderBottomWidth());
@@ -2734,6 +2739,28 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
 //     case CSS_PROP_CUE:
     case CSS_PROP_FONT:
+	if ( value->cssValueType() == CSSValue::CSS_INHERIT ) {
+	    if ( !parentNode )
+		return;
+            FontDef fontDef = parentStyle->htmlFont().fontDef;
+	    style->setFontVariant( parentStyle->fontVariant() );
+	    style->setLineHeight( parentStyle->lineHeight() );
+	    if (style->setFontDef( fontDef ))
+		fontDirty = true;
+	} else if ( value->isFontValue() ) {
+	    FontValueImpl *font = static_cast<FontValueImpl *>(value);
+	    if ( !font->style || !font->variant || !font->weight ||
+		 !font->size || !font->lineHeight || !font->family )
+		return;
+	    applyRule( CSS_PROP_FONT_STYLE, font->style );
+	    applyRule( CSS_PROP_FONT_VARIANT, font->variant );
+	    applyRule( CSS_PROP_FONT_WEIGHT, font->weight );
+	    applyRule( CSS_PROP_FONT_SIZE, font->size );
+	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
+	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
+	}
+	return;
+
     case CSS_PROP_LIST_STYLE:
     case CSS_PROP_OUTLINE:
 //    case CSS_PROP_PAUSE:

@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// #define CSS_DEBUG
+#define CSS_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -180,7 +180,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 #endif
 
     styleElement = declaration->stylesheet();
-    
+
     const char konq_value[] = "@-konq-value{";
     int length = string.length() + 4 + strlen(konq_value);
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
@@ -903,28 +903,7 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT_FAMILY:
     	// [[ <family-name> | <generic-family> ],]* [<family-name> | <generic-family>] | inherit
     {
-	CSSValueListImpl *list = new CSSValueListImpl;
-	while ( value ) {
-	    if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-		id = value->iValue;
-		if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_DEFAULT )
-		    list->append( new CSSPrimitiveValueImpl( id ) );
-		else
-		    break;
-	    } else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
-			value->unit == Value::IdentString )
-		list->append( new FontFamilyValueImpl( qString( value->string ) ) );
-	    else
-		break;
-	    value = valueList->next();
-	    if ( !value || value->unit != Value::Operator || value->iValue != ',' )
-		break;
-	    value = valueList->next();
-	}
-	if ( !list->length() )
-	    delete list;
-	else
-	    parsedValue = list;
+	parsedValue = parseFontFamily();
 	break;
     }
 
@@ -1071,11 +1050,12 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT:
     	// [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
 	// 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
-    {
-#if 0
-	return parseFont(value);
-#endif
-    }
+	if ( value->unit == CSSPrimitiveValue::CSS_IDENT &&
+	     value->iValue >= CSS_VAL_CAPTION && value->iValue <= CSS_VAL_STATUS_BAR )
+	    valid_primitive = true;
+	else
+	    return parseFont(important);
+
     case CSS_PROP_LIST_STYLE:
     {
 	const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
@@ -1097,7 +1077,6 @@ bool CSSParser::parseValue( int propId, bool important )
 						     (CSSPrimitiveValue::UnitTypes) value->unit );
 	else if ( value->unit >= CSSPrimitiveValue::CSS_NUMBER &&
 		  value->unit <= CSSPrimitiveValue::CSS_KHZ ) {
-	    qDebug("primitive value is %f (unit=%d)", value->fValue, value->unit );
 	    parsedValue = new CSSPrimitiveValueImpl( value->fValue,
 						     (CSSPrimitiveValue::UnitTypes) value->unit );
 	}
@@ -1129,14 +1108,14 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 
     while ( valueList->current() ) {
         found = false;
-	qDebug("outer loop" );
+	// qDebug("outer loop" );
         for (int propIndex = 0; !found && propIndex < numProperties; ++propIndex) {
             if (!fnd[propIndex]) {
-		kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
+		//kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
 		if ( parseValue( properties[propIndex], important ) ) {
 		    fnd[propIndex] = found = true;
 #ifdef CSS_DEBUG
-		    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
+		    //kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
 #endif
 		}
 	    }
@@ -1144,13 +1123,13 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
         // if we didn't find at least one match, this is an
         // invalid shorthand and we have to ignore it
         if (!found) {
-	    qDebug("didn't find anything" );
+	    //qDebug("didn't find anything" );
 	    inParseShortHand = false;
 	    return false;
 	}
     }
     inParseShortHand = true;
-    kdDebug( 6080 ) << "parsed shorthand" << endl;
+//     kdDebug( 6080 ) << "parsed shorthand" << endl;
     return true;
 }
 
@@ -1165,7 +1144,7 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
      */
 
     int num = inParseShortHand ? 1 : valueList->numValues;
-    qDebug("parse4Values: num=%d", num );
+    // qDebug("parse4Values: num=%d", num );
     switch( num ) {
     case 1: {
         if( !parseValue( properties[0], important ) ) return false;
@@ -1204,167 +1183,278 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
     }
 }
 
+// [ <string> | <uri> | <counter> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+ | inherit
+// in CSS 2.1 this got somewhat reduced:
+// [ <string> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+ | inherit
 bool CSSParser::parseContent( int propId, bool important )
 {
-    return false;
-#if 0
     CSSValueListImpl* values = new CSSValueListImpl();
 
-
-    while (curP < endP) {
-        const QChar *nextP = curP;
-        bool esc = false;
-        bool sq = false;
-        bool dq = false;
-        while ( nextP < endP ) {
-            if (esc)
-                esc = false;
-            else if (*nextP == '\\')
-                esc = true;
-            else if (!sq && (*nextP == '"')) {
-                if (dq) break;
-                dq = true;
-            }
-            else if (!dq && (*nextP == '\'')) {
-                if (sq) break;
-                sq = true;
-            }
-            else if (!sq && !dq && nextP->isSpace())
-                break;
-            nextP++;
-        }
-        QString str = QConstString(curP, nextP-curP).string();
-        CSSValueImpl* parsedValue=0;
-        if (str.startsWith("url("))
-        {
+    Value *val;
+    CSSValueImpl *parsedValue = 0;
+    while ( (val = valueList->current()) ) {
+        if ( val->unit == CSSPrimitiveValue::CSS_URI ) {
             // url
-	    DOMString value = khtml::parseURL(DOMString(str));
+	    DOMString value = khtml::parseURL(domString(val->string));
             parsedValue = new CSSImageValueImpl(
-            DOMString(KURL(baseURL().string(), value.string()).url()), this);
+		DOMString(KURL( styleElement->baseURL().string(), value.string()).url() ), styleElement );
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
+	    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().string() << endl;
 #endif
-        }
-        else if (str.startsWith("attr("))
-        {
-            // attr
-        }
-        else if (str.startsWith("open-quote"))
-        {
+        } else if ( val->unit == Value::Function ) {
+	    // attr( X )
+        } else if ( val->unit == CSSPrimitiveValue::CSS_IDENT ) {
             // open-quote
-        }
-        else if (str.startsWith("close-quote"))
-        {
-            // open-quote
-        }
-        else if (str.startsWith("no-open-quote"))
-        {
+            // close-quote
             // no-open-quote
-        }
-        else if (str.startsWith("no-close-quote"))
-        {
             // no-close-quote
-        }
-        else if (str.length() && (str[0] == '\'' || str[0] == '"'))
-        {
-            // string
-            int l = str.length();
-            QString strstr;
-            // skip first character (which is ' or " !)
-            for (int i = 1; i < l; ++i) {
-                if (i < l - 1 && str[i] == '\\') {
-		    QChar nextChar = str[i+1];
-		    if (nextChar == '\n') {
-			i++;
-		    }
-		    else if ( nextChar == '\r' ) {
-			i++;
-			if ( str[i+1] == '\n' )
-		            i++;
-		    }
-		    else if ( isHexadecimal( nextChar ) ) {
-			int initial=i;
-			QString hex;
-			bool ok;
-			while ( i-initial<6 && i<l-1 && isHexadecimal( nextChar ) ) {
-			    hex += nextChar;
-			    i++;
-			    nextChar = str[i+1];
-		        }
-
-		        strstr += QChar( hex.toInt(&ok, 16) );
-		        if ( i<l-1 && nextChar.isSpace() ) {
-			    i++;
-			    if ( nextChar == '\r' && str[i+1] == '\n' ) {
-				    i++;
-			    }
-			}
-		    }
-                    else {
-			++i;
-                        strstr += nextChar;
-		    }
-                }
-		else
-		    strstr += str[i];
-            }
-            parsedValue = new CSSPrimitiveValueImpl(DOMString(strstr), CSSPrimitiveValue::CSS_STRING);
+        } else if ( val->unit == CSSPrimitiveValue::CSS_STRING ) {
+            parsedValue = new CSSPrimitiveValueImpl(domString(val->string), CSSPrimitiveValue::CSS_STRING);
         }
         if (parsedValue)
             values->append(parsedValue);
-
-        // skip over whitespace
-        for (curP = ++nextP ; curP < endP && curP->isSpace(); ++curP)
-            ;
+	else
+	    break;
+	valueList->next();
     }
-    return values;
-#endif
+    if ( values->length() ) {
+	addProperty( propId, values, important );
+	valueList->next();
+	return true;
+    }
+    delete values;
+    return false;
 }
 
 bool CSSParser::parseShape( int propId, bool important )
 {
-    return false; //####
-#if 0
+    Value *value = valueList->current();
+    ValueList *args = value->function->args;
+    QString fname = qString( value->function->name ).lower();
+    qDebug("CSSParser::parseShape: shape = '%s'", fname.latin1() );
+    if ( fname != "rect(" || !args )
+	return false;
+
+    // rect( t, r, b, l ) || rect( t r b l )
+    if ( args->numValues != 4 && args->numValues != 7 )
+	return false;
     RectImpl *rect = new RectImpl();
-    for ( i = 0; i < 4; i++ ) {
-	int space;
-	space = str.find( ' ', pos );
-	const QChar *start = str.unicode() + pos;
-	const QChar *end = str.unicode() + space;
-	//qDebug("part: from=%d, to=%d", pos, space );
-	if ( start >= end )
-	    goto cleanup;
-	CSSPrimitiveValueImpl *length = 0;
-	if ( str.find( "auto", pos, FALSE ) == pos )
-	    length = new CSSPrimitiveValueImpl( CSS_VAL_AUTO );
-	else
-	    length = parseUnit( start, end, LENGTH );
-	if ( !length )
-	    goto cleanup;
-	switch ( i ) {
-	case 0:
+    bool valid = true;
+    int i = 0;
+    Value *a = args->current();
+    while ( a ) {
+	valid = validUnit( a, FLength, strict );
+	if ( !valid )
+	    break;
+	CSSPrimitiveValueImpl *length =
+	    new CSSPrimitiveValueImpl( a->fValue, (CSSPrimitiveValue::UnitTypes) a->unit );
+	if ( i == 0 )
 	    rect->setTop( length );
-	    break;
-	case 1:
+	else if ( i == 1 )
 	    rect->setRight( length );
-	    break;
-	case 2:
+	else if ( i == 2 )
 	    rect->setBottom( length );
-	    break;
-	case 3:
+	else
 	    rect->setLeft( length );
+	a = args->next();
+	if ( a && args->numValues == 7 ) {
+	    if ( a->unit == Value::Operator && a->iValue == ',' ) {
+		a = args->next();
+	    } else {
+		valid = false;
+		break;
+	    }
+	}
+    }
+    if ( valid ) {
+	qDebug(" passed rectangle parsing");
+	addProperty( propId, new CSSPrimitiveValueImpl( rect ), important );
+	valueList->next();
+	return true;
+    }
+    delete rect;
+    return false;
+}
+
+// [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 'font-family'
+bool CSSParser::parseFont( bool important )
+{
+    kdDebug(6080) << "parsing font property current=" << valueList->currentValue << endl;
+    bool valid = true;
+    Value *value = valueList->current();
+    FontValueImpl *font = new FontValueImpl;
+    // optional font-style, font-variant and font-weight
+    while ( value ) {
+	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
+			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+			<< endl;
+	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
+	    int id = value->iValue;
+	    if ( id == CSS_VAL_NORMAL ) {
+		// do nothing, it's the inital value for all three
+	    }
+	    /*
+	      else if ( id == CSS_VAL_INHERIT ) {
+	      // set all non set ones to inherit
+	      // This is not that simple as the inherit could also apply to the following font-size.
+	      // very ahrd to tell without looking ahead.
+	      inherit = true;
+		} */
+	    else if ( id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE ) {
+		if ( font->style )
+		    goto invalid;
+		font->style = new CSSPrimitiveValueImpl( id );
+	    } else if ( id == CSS_VAL_SMALL_CAPS ) {
+		if ( font->variant )
+		    goto invalid;
+		font->variant = new CSSPrimitiveValueImpl( id );
+	    } else if ( id >= CSS_VAL_BOLD && id <= CSS_VAL_LIGHTER ) {
+		if ( font->weight )
+		    goto invalid;
+		font->weight = new CSSPrimitiveValueImpl( id );
+	    } else {
+		valid = false;
+	    }
+	} else if ( !font->weight && validUnit( value, FInteger|FNonNeg, true ) ) {
+	    int weight = (int)value->fValue;
+	    int val = 0;
+	    if ( weight == 100 )
+		val = CSS_VAL_100;
+	    else if ( weight == 200 )
+		val = CSS_VAL_200;
+	    else if ( weight == 300 )
+		val = CSS_VAL_300;
+	    else if ( weight == 400 )
+		val = CSS_VAL_400;
+	    else if ( weight == 500 )
+		val = CSS_VAL_500;
+	    else if ( weight == 600 )
+		val = CSS_VAL_600;
+	    else if ( weight == 700 )
+		val = CSS_VAL_700;
+	    else if ( weight == 800 )
+		val = CSS_VAL_800;
+	    else if ( weight == 900 )
+		val = CSS_VAL_900;
+
+	    if ( val )
+		font->weight = new CSSPrimitiveValueImpl( val );
+	    else
+		valid = false;
+	} else {
+	    valid = false;
+	}
+	if ( !valid )
+	    break;
+	value = valueList->next();
+    }
+    if ( !value )
+	goto invalid;
+
+    // set undefined values to default
+    if ( !font->style )
+	font->style = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !font->variant )
+	font->variant = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !font->weight )
+	font->weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+
+    kdDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue << endl;
+
+    // now a font size _must_ come
+    // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
+    if ( value->unit == CSSPrimitiveValue::CSS_IDENT &&
+	 id >= CSS_VAL_XX_SMALL && id <= CSS_VAL_LARGER )
+	font->size = new CSSPrimitiveValueImpl( id );
+    else if ( validUnit( value, FLength|FPercent, strict ) ) {
+	font->size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+    }
+    value = valueList->next();
+    if ( !font->size || !value )
+	goto invalid;
+
+    kdDebug( 6080 ) << "  got size" << endl;
+
+    if ( value->unit == Value::Operator && value->iValue == '/' ) {
+	// line-height
+	value = valueList->next();
+	if ( !value )
+	    goto invalid;
+	if ( value->unit == CSSPrimitiveValue::CSS_IDENT && value->iValue == CSS_VAL_NORMAL ) {
+	    // default value, nothing to do
+	} else if ( validUnit( value, FNumber|FLength|FPercent, strict ) ) {
+	    font->lineHeight = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+	} else {
+	    goto invalid;
+	}
+	value = valueList->next();
+	if ( !value )
+	    goto invalid;
+    } else {
+	font->lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    }
+
+    kdDebug( 6080 ) << "  got line height current=" << valueList->currentValue << endl;
+    // font family must come now
+    font->family = parseFontFamily();
+
+    if ( valueList->current() || !font->family )
+	goto invalid;
+    kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
+
+    addProperty( CSS_PROP_FONT, font, important );
+    return true;
+
+ invalid:
+    kdDebug(6080) << "   -> invalid" << endl;
+    delete font;
+    return false;
+}
+
+CSSValueListImpl *CSSParser::parseFontFamily()
+{
+    kdDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue << endl;
+    CSSValueListImpl *list = new CSSValueListImpl;
+    Value *value = valueList->current();
+    while ( value ) {
+	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
+			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+			<< endl;
+	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
+	    id = value->iValue;
+	    if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_DEFAULT )
+		list->append( new CSSPrimitiveValueImpl( id ) );
+	    else
+		break;
+	} else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
+		    value->unit == Value::IdentString )
+	    list->append( new FontFamilyValueImpl( qString( value->string ) ) );
+	else {
+	    kdDebug( 6080 ) << "invalid family part" << endl;
 	    break;
 	}
-	pos = space + 1;
+	value = valueList->next();
+	if ( !value || value->unit != Value::Operator || value->iValue != ',' ) {
+	    kdDebug(6080) << "invalid separator" << endl;
+	    break;
+	}
+	value = valueList->next();
     }
-    parsedValue = new CSSPrimitiveValueImpl( rect );
-    //qDebug(" passed rectangle parsing");
-#endif
+    if ( !list->length() ) {
+	delete list;
+	list = 0;
+    }
+    return list;
 }
+
 
 static inline int yyerror( const char *str ) {
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "CSS parse error " << str << endl;
+#else
+    Q_UNUSED( str );
 #endif
     return 1;
 }
@@ -1429,7 +1519,7 @@ int DOM::CSSParser::lex( void *_yylval ) {
 	length--;
     case NUMBER:
 	yylval->val = QString( (QChar *)t, length ).toDouble();
-	qDebug("value = %s, converted=%.2f", QString( (QChar *)t, length ).latin1(), yylval->val );
+	//qDebug("value = %s, converted=%.2f", QString( (QChar *)t, length ).latin1(), yylval->val );
 	break;
 
     default:

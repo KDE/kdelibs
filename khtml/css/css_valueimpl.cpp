@@ -816,3 +816,24 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
 	}
     }
 }
+
+
+FontValueImpl::FontValueImpl()
+{
+    style = 0;
+    variant = 0;
+    weight = 0;
+    size = 0;
+    lineHeight = 0;
+    family = 0;
+}
+
+FontValueImpl::~FontValueImpl()
+{
+    delete style;
+    delete variant;
+    delete weight;
+    delete size;
+    delete lineHeight;
+    delete family;
+}

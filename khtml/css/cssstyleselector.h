@@ -45,6 +45,7 @@ namespace DOM {
     class CSSStyleDeclarationImpl;
     class CSSProperty;
     class StyleSheetListImpl;
+    class CSSValueImpl;
 }
 
 namespace khtml
@@ -166,7 +167,7 @@ namespace khtml
 
 public:
 	static RenderStyle* styleNotYetAvailable;
-	
+
     private:
         void init();
 
@@ -228,7 +229,7 @@ public:
 
 	bool fontDirty;
 
-	void applyRule(DOM::CSSProperty *prop);
+	void applyRule(int id, DOM::CSSValueImpl *value);
     };
 
     /*
