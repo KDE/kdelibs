@@ -1217,18 +1217,20 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 
       if( pos == -1 )
       {
-        delay = qData.toInt();
-        if ( delay != -1 )
+        delay = qData.stripWhiteSpace().toInt();
           scheduleRedirection( qData.toInt(), m_url.url() );
       }
       else
       {
-        delay = qData.left(pos).toInt();
-        QString refUrl = qData.mid(pos+1).stripWhiteSpace();
-        if ((pos = refUrl.find( "url=", 0, false )) == 0)
-          refUrl = refUrl.remove( 0, 4 ).stripWhiteSpace();
-        refUrl = KURL( d->m_baseURL, refUrl ).url();
-        scheduleRedirection( delay, refUrl );
+        delay = qData.left(pos).stripWhiteSpace().toInt();
+        while ( qData[++pos] == ' ' );
+        if ( qData.find( "url", pos, false ) == pos )
+        {
+          pos += 3;
+          while (qData[pos] == ' ' || qData[pos] == '=') pos++;
+        }
+        qData = KURL( d->m_baseURL, qData.mid(pos) ).url();
+        scheduleRedirection( delay, qData );
       }
       d->m_bHTTPRefresh = true;
     }
