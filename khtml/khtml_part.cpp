@@ -73,6 +73,7 @@ using namespace DOM;
 #include <kdatastream.h>
 #include <ktempfile.h>
 #include <kglobalsettings.h>
+#include <kurldrag.h>
 
 #include <kssl.h>
 #include <ksslinfodlg.h>
@@ -2859,12 +2860,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
-          QStringList uris;
           KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-          uris.append( u.url() );
-          QUriDrag *udrag = new QUriDrag( d->m_view->viewport() );
-          udrag->setUnicodeUris( uris );
-          drag = udrag;
+          drag = KURLDrag::newDrag( u, d->m_view->viewport() );
           p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
