@@ -600,7 +600,16 @@ void HTMLIFrameElementImpl::attach()
     assert(parentNode());
 
     KHTMLView* w = getDocument()->view();
-    // limit to how deep we can nest frames
+    // avoid endless recursion
+    KURL u;
+    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
+    bool selfreference = false;
+    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
+        if (part->url() == u) {
+            selfreference = true;
+            break;
+        }
+
     KHTMLPart *part = w->part();
     int depth = 0;
     while ((part = part->parentPart()))
@@ -608,7 +617,8 @@ void HTMLIFrameElementImpl::attach()
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (depth < 7 && parentNode()->renderer() && _style->display() != NONE) {
+    if (!selfreference && !(w->part()->onlyLocalReferences() && u.protocol() != "file") &&
+        parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderPartObject(this);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());

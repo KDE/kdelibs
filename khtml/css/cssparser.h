@@ -175,7 +175,6 @@ public:
 	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId);
 
         CSSValueImpl* parseContent(const QChar *curP, const QChar *endP);
-        QPtrList<QChar> splitContent(const QChar *curP, const QChar *endP);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
@@ -210,9 +209,6 @@ public:
     protected:
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
-    private:
-// 	bool m_bImportant : 1;
-//         bool m_bnonCSSHint : 1;
     };
 
     // a style class which has a list of children (StyleSheets for example)

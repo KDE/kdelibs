@@ -2333,104 +2333,92 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
 {
     CSSValueListImpl* values = new CSSValueListImpl();
 
-    QPtrList<QChar> list = splitContent(curP, endP);
-    for(uint n=0; n<list.count(); n+=2)
-    {
-        QString str(list.at(n), list.at(n+1)-list.at(n));
-        CSSValueImpl* parsedValue=0;
 
-        if (str.left(4) == "url(")
+    while (curP < endP) {
+        const QChar *nextP = curP;
+        bool esc = false;
+        bool sq = false;
+        bool dq = false;
+        while ( nextP < endP ) {
+            if (esc)
+                esc = false;
+            else if (*nextP == '\\')
+                esc = true;
+            else if (!sq && (*nextP == '"')) {
+                if (dq) break;
+                dq = true;
+            }
+            else if (!dq && (*nextP == '\'')) {
+                if (sq) break;
+                sq = true;
+            }
+            else if (!sq && !dq && nextP->isSpace())
+                break;
+            nextP++;
+        }
+        QString str = QConstString(curP, nextP-curP).string();
+        CSSValueImpl* parsedValue=0;
+        if (str.startsWith("url("))
         {
             // url
 	    DOMString value(curP, endP - curP);
 	    value = khtml::parseURL(value);
             parsedValue = new CSSImageValueImpl(
-                DOMString(KURL(baseURL().string(), value.string()).url()), this);
-    #ifdef CSS_DEBUG
+            DOMString(KURL(baseURL().string(), value.string()).url()), this);
+#ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
-    #endif
+#endif
         }
-        else if (str.left(5) == "attr(")
+        else if (str.startsWith("attr("))
         {
             // attr
         }
-        else if (str.left(8) == "counter(")
+        else if (str.startsWith("counter("))
         {
             // counter
         }
-        else if (str == "open-quote")
+        else if (str.startsWith("open-quote"))
         {
             // open-quote
         }
-        else if (str == "close-quote")
+        else if (str.startsWith("close-quote"))
         {
             // open-quote
         }
-        else if (str == "no-open-quote")
+        else if (str.startsWith("no-open-quote"))
         {
             // no-open-quote
         }
-        else if (str == "no-close-quote")
+        else if (str.startsWith("no-close-quote"))
         {
             // no-close-quote
         }
-        else
+        else if (str.length() && (str[0] == '\'' || str[0] == '"'))
         {
             // string
-            QString str = QConstString( list.at(n), list.at(n+1)-list.at(n)).string();
-            str = str.replace(QRegExp("\\\\a"),"\n");
-            parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);
+            int l = str.length();
+            QString strstr;
+            for (int i = 0; i < l; ++i) {
+                if (i < l - 1 && str[i] == '\\') {
+                    if (str[i+1] == 'a')
+                        strstr += '\n';
+                    else
+                        strstr += str[i+1];
+                    ++i;
+                    continue;
+                }
+                strstr += str[i];
+            }
+            parsedValue = new CSSPrimitiveValueImpl(DOMString(strstr), CSSPrimitiveValue::CSS_STRING);
         }
         if (parsedValue)
             values->append(parsedValue);
 
+        // skip over whitespace
+        for (curP = ++nextP ; curP < endP && curP->isSpace(); ++curP)
+            ;
     }
     return values;
-}
-
-
-
-QPtrList<QChar> StyleBaseImpl::splitContent(const QChar *curP, const QChar *endP)
-{
-    bool last = false;
-
-    QPtrList<QChar> list;
-    while(!last) {
-        const QChar *nextP = curP;
-        bool q = false;
-        bool dq = false;
-        if(*nextP=='\'')
-            q=true;
-        else if (*nextP=='\"')
-            dq=true;
-        while(!(nextP->isSpace()) || q || dq) {
-            nextP++;
-            if(nextP >= endP){
-                last = true;
-                break;
-            }
-            if((q&&*nextP=='\'') || (dq&&*nextP=='\"')){
-                nextP++;
-                if(nextP >= endP) last= true;
-                break;
-            }
-        }
-
-        list.append(curP+((q||dq)?1:0));
-        list.append(nextP-((q||dq)?1:0));
-
-        if ( last ) break;
-        curP = nextP;
-        while(nextP->isSpace()) { // skip over WS between tokens
-            nextP++;
-            curP = nextP;
-            if(curP >= endP) {
-                last = true;
-                break;
-            }
-        }
-    }
-    return list;
 }
 
 

@@ -52,6 +52,7 @@
 #include "khtml_factory.h"
 #include "khtml_part.h"
 
+#include "html/html_documentimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "xml/dom_docimpl.h"
 
@@ -61,10 +62,7 @@ using namespace DOM;
 void CachedObject::finish()
 {
     if( m_size > MAXCACHEABLE )
-    {
         m_status = Uncacheable;
-        //Cache::flush(true); // Force flush.
-    }
     else
         m_status = Cached;
     KURL url(m_url.string());
@@ -154,6 +152,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
+    Cache::flush();
     m_clients.remove(c);
     if ( canDelete() && m_free )
       delete this;
@@ -235,6 +234,7 @@ void CachedScript::ref(CachedObjectClient *c)
 
 void CachedScript::deref(CachedObjectClient *c)
 {
+    Cache::flush();
     m_clients.remove(c);
     if ( canDelete() && m_free )
       delete this;
@@ -324,9 +324,6 @@ namespace khtml
 }
 
 
-/*!
-  This Class defines the DataSource for incremental loading of images.
-*/
 ImageSource::ImageSource(QByteArray buf)
 {
   buffer = buf;
@@ -336,10 +333,6 @@ ImageSource::ImageSource(QByteArray buf)
   rewable = true;
 }
 
-/**
- * Overload QDataSource::readyToSend() and returns the number
- * of bytes ready to send if not eof instead of returning -1.
-*/
 int ImageSource::readyToSend()
 {
     if(eof && pos == buffer.size())
@@ -348,9 +341,6 @@ int ImageSource::readyToSend()
     return  buffer.size() - pos;
 }
 
-/*!
-  Reads and sends a block of data.
-*/
 void ImageSource::sendTo(QDataSink* sink, int n)
 {
     sink->receive((const uchar*)&buffer.at(pos), n);
@@ -365,9 +355,6 @@ void ImageSource::sendTo(QDataSink* sink, int n)
     }
 }
 
-/**
- * Sets the EOF state.
- */
 void ImageSource::setEOF( bool state )
 {
     eof = state;
@@ -395,7 +382,6 @@ void ImageSource::rewind()
         ready();
 }
 
-
 void ImageSource::cleanBuffer()
 {
     // if we need to be able to rewind, buffer is needed
@@ -418,6 +404,30 @@ static QString buildAcceptHeader()
     if (result.right(2) == ", ")
         result = result.left(result.length()-2);
     return result;
+}
+
+static bool crossDomain(const QString &a, const QString &b)
+{
+    if (a == b) return false;
+
+    QStringList l1 = QStringList::split('.', a);
+    QStringList l2 = QStringList::split('.', b);
+
+    while(l1.count() > l2.count())
+        l1.pop_front();
+
+    while(l2.count() > l1.count())
+        l2.pop_front();
+
+    while(l2.count() >= 2)
+    {
+        if (l1 == l2)
+           return false;
+
+        l1.pop_front();
+        l2.pop_front();
+    }
+    return true;
 }
 
 // -------------------------------------------------------------------------------------
@@ -475,10 +485,10 @@ void CachedImage::deref( CachedObjectClient *c )
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << this << " CachedImage::deref(" << c << ") " << endl;
 #endif
+    Cache::flush();
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
-
     if ( canDelete() && m_free )
         delete this;
 }
@@ -607,12 +617,8 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
     CachedObjectClient *c;
 
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "found a client to update: " << c << endl;
-#endif
+    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
         c->setPixmap( p, r, this);
-    }
 }
 
 
@@ -663,6 +669,7 @@ void CachedImage::movieStatus(int status)
         delete bg;
         bg = 0;
     }
+
 
     if((status == QMovie::EndOfMovie && (!m || m->frameNumber() <= 1)) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
@@ -715,6 +722,7 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
         imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
+
         m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
         m->disconnectStatus( this, SLOT( movieStatus( int ) ));
         m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
@@ -994,7 +1002,8 @@ void Loader::servePendingRequests()
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-  KIO::TransferJob* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
+  KURL u(req->object->url().string());
+  KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
 
   job->addMetaData("cache", getCacheControlString(req->object->cachePolicy()));
   if (!req->object->accept().isEmpty())
@@ -1005,6 +1014,11 @@ void Loader::servePendingRequests()
           r.setPath( "/" );
 
       job->addMetaData("referrer", r.url());
+      QString domain = r.host();
+      if (req->m_docLoader->doc()->isHTMLDocument())
+         domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
+      if (crossDomain(u.host(), domain))
+         job->addMetaData("cross-domain", "true");
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
@@ -1225,7 +1239,6 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
         if ( dl && dl->autoloadImages() ) Cache::loader()->load(dl, im, true);
         cache->insert( kurl.url(), im );
         lru->prepend( kurl.url() );
-        flush();
         o = im;
     }
 
@@ -1285,7 +1298,6 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
         CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset);
         cache->insert( kurl.url(), sheet );
         lru->prepend( kurl.url() );
-        flush();
         o = sheet;
     }
 
@@ -1355,7 +1367,6 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
         CachedScript *script = new CachedScript(dl, kurl.url(), cachePolicy, _expireDate, charset);
         cache->insert( kurl.url(), script );
         lru->prepend( kurl.url() );
-        flush();
         o = script;
     }
 
@@ -1405,7 +1416,7 @@ void Cache::flush(bool force)
     init();
 
 #ifdef CACHE_DEBUG
-    //statistics();
+    statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
 
