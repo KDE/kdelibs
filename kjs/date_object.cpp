@@ -379,8 +379,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    t->tm_isdst = -1; // reset DST
-    result = Number(mktime(t) * 1000.0 + ms);
+    result = makeTime(t, ms, utc);
     thisObj.setInternalValue(result);
   }
 
@@ -461,7 +460,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
     t.tm_isdst = -1;
     int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
-    value = Number(mktime(&t) * 1000.0 + ms);
+    value = makeTime(&t, ms, false);
   }
 
   Object proto = exec->interpreter()->builtinDatePrototype();
@@ -521,7 +520,7 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
     t.tm_min = (n >= 5) ? args[4].toInt32(exec) : 0;
     t.tm_sec = (n >= 6) ? args[5].toInt32(exec) : 0;
     int ms = (n >= 7) ? args[6].toInt32(exec) : 0;
-    return Number(mktime(&t) * 1000.0 + ms);
+    return makeTime(&t, ms, true);
   }
 }
 
@@ -593,19 +592,21 @@ static const struct {
     { { 0, 0, 0, 0 }, 0 }
 };
 
-int KJS::local_timeoffset()
+Number KJS::makeTime(struct tm *t, int ms, bool utc)
 {
-     static int local_offset = -1;
+    int utcOffset;
+    if (utc) {
+	time_t zero = 0;
+	struct tm t3;
+       	localtime_r(&zero, &t3);
+        utcOffset = t3.tm_gmtoff;
+        t->tm_isdst = t3.tm_isdst;
+    } else {
+	utcOffset = 0;
+	t->tm_isdst = -1;
+    }
 
-     if ( local_offset != -1 ) return local_offset;
-
-     time_t local = time(0);
-     struct tm* tm_local = gmtime(&local);
-     local_offset = local-mktime(tm_local);
-     if(tm_local->tm_isdst)
-       local_offset += 3600;
-
-     return local_offset;
+    return Number( ( mktime(t) + utcOffset ) * 1000.0 + ms );
 }
 
 double KJS::KRFCDate_parseDate(const UString &_date)
@@ -862,7 +863,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if ((year < 1900) || (year > 2500))
      	return invalidDate;
 
-     if (!have_time && !have_tz) {
+     if (!have_tz) {
        // fall back to midnight, local timezone
        struct tm t;
        memset(&t, 0, sizeof(tm));
@@ -870,13 +871,16 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        t.tm_mon = month;
        t.tm_year = year - 1900;
        t.tm_isdst = -1;
+       if (have_time) {
+         t.tm_sec = second;
+         t.tm_min = minute;
+         t.tm_hour = hour;
+       }
+	    
        return mktime(&t);
      }
 
-     if(!have_tz)
-       offset = local_timeoffset();
-     else
-       offset *= 60;
+     offset *= 60;
 
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
 

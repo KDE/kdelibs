@@ -122,7 +122,7 @@ namespace KJS {
   Value parseDate(const UString &u);
   double KRFCDate_parseDate(const UString &_date);
   Value timeClip(const Value &t);
-  int local_timeoffset();
+  Number makeTime(struct tm *t, int milli, bool utc);
 
 } // namespace
 
