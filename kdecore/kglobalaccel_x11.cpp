@@ -200,10 +200,10 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
 	// do not change this line unless you really really know what you are doing (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() )
-	    XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
+		XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
 
 	if( !m_bEnabled )
-	    return false;
+		return false;
 
 	CodeMod codemod;
 	codemod.code = pEvent->xkey.keycode;
@@ -233,7 +233,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	if( !pAction ) {
 		QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
 		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
-		pMenu->exec();
+		pMenu->exec( QPoint( 0, 0 ) );
 		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
 		delete pMenu;
 	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() )
