@@ -345,7 +345,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         cs->tag = -1;
         cs->match = CSSSelector::Pseudo;
         cs->value = getValue(curP+1, endP, endVal);
-		cs->value = cs->value.implementation()->lower();
+        cs->value = cs->value.implementation()->lower();
     }
     else
     {
@@ -375,7 +375,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 tag = QString( startP, curP - startP );
                 cs->match = CSSSelector::Pseudo;
                 cs->value = getValue(curP+1, endP, endVal);
-				cs->value = cs->value.implementation()->lower();
+                cs->value = cs->value.implementation()->lower();
                 break;
             }
             else if (*curP == '[')
@@ -2493,39 +2493,6 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     }
 
     startP = curP;
-
-    // The code below ignores any occurances of
-    // the beginning and/or the end of a html
-    // comment tag
-    while (startP && (startP < endP))
-    {
-       if(*startP == comment[count])
-         count++;
-       else
-         break;
-       if(count == 4)
-       {
-          curP = ++startP;
-          break;
-       }
-       ++startP;
-    }
-
-    comment = "-->";
-    while (startP && (startP < endP))
-    {
-       if(*startP == comment[count])
-         count++;
-       else
-         break;
-       if(count == 3)
-       {
-          curP = ++startP;
-          break;
-       }
-       ++startP;
-    }
-
     CSSRuleImpl *rule = 0;
 
     if(!curP) return 0;
@@ -2548,7 +2515,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     return rule;
 }
 
-/* Generated a sort of Normal Form for CSS.
+/* Generate a sort of Normal Form for CSS.
  * Remove comments, it is guaranteed that there will not be more then one space between
  * tokens and all the tokens within curly braces are lower case (except text
  * within quotes and url tags). Space is replaced with QChar(' ') and removed where
@@ -2588,15 +2555,23 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
   float orgLength = str.length();
   kdDebug(6080) << "Length: " << orgLength << endl;
 #endif
-
-  /*Remove initial SGML Comment which hides CSS from 3.0 Browsers */      
-  while(ch < last && ch->isSpace()) { ++ch; }
   
-  if ((*ch == '<') && ((ch+4) < last) && 
-      (*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
-    ch = ch+4; //skip '<!--'
+  if (!(justOneRule)) {
+    /* Remove start of SGML Comment which hides CSS from 3.0 Browsers */      
+    while((ch < last) && (ch->isSpace())) { ++ch; }
+    if ((*ch == '<') && ((ch+4) < last) && 
+	(*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
+      ch = ch+4; //skip '<!--'
+    }
+  
+    /* Remove end of SGML Comment which hides CSS from 3.0 Browsers */      
+    while ((last > ch) && ((last-1)->isSpace())) { --last; }
+    if ((*(last-1) == '>') && ((last-3) > ch) && 
+	(*(last-2) == '-') && (*(last-3) == '-')) {
+      last = last-3; //skip '-->'
+    }
   }
-
+ 
   while(ch < last) {
     if( !comment && !sq && *ch == '"' ) {
       dq = !dq;
@@ -2672,7 +2647,7 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 
 #ifdef CSS_DEBUG
   kdDebug(6080) << "---After ---" << endl;
-  kdDebug(6080) <<  processed  << endl;
+  kdDebug(6080) << "[" << processed << "]" << endl;
   kdDebug(6080) << "------------" << endl;
   kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: "
 		<< 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;

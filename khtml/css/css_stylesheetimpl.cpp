@@ -198,8 +198,9 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return 0;
     }
-    const QChar *curP = rule.unicode();
-    const QChar *endP = rule.unicode()+rule.length();
+    const QString preprocessed = preprocess(rule.string());
+    const QChar *curP = preprocessed.unicode();
+    const QChar *endP = preprocessed.unicode() + preprocessed.length();
     CSSRuleImpl *r = parseRule(curP, endP);
 
     if(!r) {
@@ -227,14 +228,14 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 {
     strictParsing = strict;
-    QString preprocessed = preprocess(string.string());
+    const QString preprocessed = preprocess(string.string());
 
 #ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 #endif
 
     const QChar *curP = preprocessed.unicode();
-    const QChar *endP = preprocessed.unicode()+preprocessed.length() - 1;
+    const QChar *endP = preprocessed.unicode() + preprocessed.length();
 
 #ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
