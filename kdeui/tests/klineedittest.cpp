@@ -27,7 +27,7 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     m_lineedit->completionObject()->setItems( list );
     m_lineedit->setFixedSize(500,30);
     m_lineedit->setFocus();
-    m_lineedit->setText ("Whateverkdlsjfldskjf;alskj;ldskjf;lsdjfl;sdkjf;lsdjf;lsdjflkasjfd;lsdjfldskfj;ldskjf;lsdkjf;lsdkjf;sdlfks;dlkfj;lsdkfj;lsdkjflsdkjflsdkjf;lsdkjfs;dlkfs;dlkfsldkjf;lks");
+    m_lineedit->setText ("Whatever");
     connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ), 
              SLOT( slotReturnPressed(const QString&) ) );
@@ -53,6 +53,10 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     setCaption( "KLineEdit Unit Test" );
 }
 
+KLineEditTest::~KLineEditTest()
+{
+}
+
 void KLineEditTest::quitApp()
 {
     kapp->closeAllWindows();
@@ -65,7 +69,7 @@ void KLineEditTest::slotReturnPressed()
 
 void KLineEditTest::slotReturnPressed( const QString& text )
 {
-    kdDebug() << "-- Return pressed " << text << endl;
+    kdDebug() << "Return pressed: " << text << endl;
 }
 
 void KLineEditTest::resultOutput( const QString& text )
@@ -76,35 +80,25 @@ void KLineEditTest::resultOutput( const QString& text )
 void KLineEditTest::readOnly (bool ro)
 {
     m_lineedit->setReadOnly (ro);
-    if (ro)
-      m_btnReadOnly->setText ("&Read Write");
-    else
-      m_btnReadOnly->setText ("&Read Only");
+    QString text = (ro) ? "&Read Write":"&Read Only";
+    m_btnReadOnly->setText (text);
 }
 
 void KLineEditTest::setEnable (bool enable)
 {
     m_lineedit->setEnabled (!enable);
-    
-    if (!enable)
-      m_btnEnable->setText ("Dis&able");
-    else
-      m_btnEnable->setText ("En&able");
-}
-
-
-KLineEditTest::~KLineEditTest()
-{
+    QString text = (enable) ? "En&able":"Dis&able";
+    m_btnEnable->setText (text);
 }
 
 int main ( int argc, char **argv)
 {
-    KApplication *a = new KApplication (argc, argv, "klineedittest");
+    KApplication a(argc, argv, "klineedittest");
     KLineEditTest *t = new KLineEditTest();
     t->lineEdit()->setTrapReturnKey( true );
-    a->setMainWidget(t);
+    a.setMainWidget(t);
     t->show();
-    return a->exec();
+    return a.exec();
 }
 
 #include "klineedittest.moc"
