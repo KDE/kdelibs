@@ -243,6 +243,7 @@
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
 <!ENTITY kontour	"<application>Kontour</application>">
+<!ENTITY kooka	"<application>Kooka</application>">
 <!ENTITY korganizer	"<application>KOrganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY koshell "<application>KOShell</application>">
