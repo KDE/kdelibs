@@ -158,7 +158,7 @@ void KFileBaseDialog::init()
     toolbar->insertButton(kapp->getIconLoader()->loadIcon("idea.xpm"),
 			  MKDIR_BUTTON, true,
 			  i18n("Create new folder"));
-    toolbar->insertButton(kapp->getIconLoader()->loadIcon("viewmag.xpm"),
+    toolbar->insertButton(kapp->getIconLoader()->loadIcon("search.xpm"),
 			  FIND_BUTTON, true,
 			  i18n("Search for a file"));
     toolbar->insertButton(kapp->getIconLoader()->loadIcon("configure.xpm"),
@@ -817,6 +817,17 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
     case FIND_BUTTON: {
 	KShellProcess proc;
 	proc << c->readEntry("FindCommandPath", DefaultFindCommand);
+ 
+ 	QString strURL( dirPath() );
+ 	KURL::decodeURL( strURL );
+ 	KURL url( strURL );
+
+ 	if( url.isLocalFile() && !url.isMalformed() ) {
+ 	  proc << " ";
+ 	  proc << c->readEntry(QString("FindSearchPathParameter"), "");
+ 	  proc << url.directory();
+ 	}
+         
 	proc.start(KShellProcess::DontCare);
 	break;
     }
