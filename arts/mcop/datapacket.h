@@ -132,15 +132,25 @@ public:
 
 protected:
 	int capacity;
-	void ensureCapacity(int capacity);
-
+	void ensureCapacity(int newCapacity)
+	{
+		if(newCapacity > capacity)
+		{
+			delete contents;
+			capacity = newCapacity;
+			contents = new T[capacity];
+		}
+	}
 	DataPacket(int capacity, GenericDataChannel *channel)
 		:GenericDataPacket(channel), capacity(capacity)
 	{
 		size = capacity;
 		contents = new T[capacity];
 	}
-	~DataPacket();
+	~DataPacket()
+	{
+		delete contents;
+	}
 };
 
 /**

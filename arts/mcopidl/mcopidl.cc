@@ -46,6 +46,8 @@ stack<pair<int,string> > idl_include_stack;
 list<EnumDef *> enums;
 list<TypeDef *> structs;
 list<InterfaceDef *> interfaces;
+list<string> packetTypes;		// just an evil hack to get experimental video
+list<string> customIncludes;	// just an evil hack to get experimental video
 list<string> includes;		// files to include
 list<string> includePath;	// path for the includes
 
@@ -135,6 +137,16 @@ void endInclude()
 	idl_include_stack.pop();
 
 	idl_in_include--;
+}
+
+bool isPacketType( string type )
+{
+	list<string>::iterator i;
+
+	for(i=packetTypes.begin();i != packetTypes.end(); i++)
+		if((*i) == type) return true;
+
+	return false;
 }
 
 bool isStruct( string type )
@@ -416,6 +428,10 @@ string createTypeCode(string type, const string& name, long model,
 			result = "request->writeString("+name+")";
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeString("+name+");\n";
+	} else if(isPacketType(type)) {
+		if(model==MODEL_ASTREAM)
+			result = type+"AsyncStream "+name;
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<"+type+"> *";
 	} else if(isStruct(type)) {
 		if(model==MODEL_MEMBER)
 			result = type;
@@ -584,6 +600,11 @@ FILE *startHeader(string prefix)
 	fprintf(header,"#ifndef %s\n",mkdef(prefix).c_str());
 	fprintf(header,"#define %s\n\n",mkdef(prefix).c_str());
 	fprintf(header,"#include \"common.h\"\n\n");
+	
+	list<string>::iterator cii;
+	for(cii=customIncludes.begin(); cii != customIncludes.end(); cii++)
+		fprintf(header,"#include \"%s\"\n",(*cii).c_str());
+	if(!customIncludes.empty()) fprintf(header,"\n");
 
 	return (header);
 }
@@ -2064,11 +2085,15 @@ int main(int argc, char **argv)
 	 * parse command line options
 	 */
 	int c;
-	while((c = getopt(argc, argv, "I:")) != -1)
+	while((c = getopt(argc, argv, "I:P:C:")) != -1)
 	{
 		switch(c)
 		{
 			case 'I': includePath.push_back(optarg);
+				break;
+			case 'P': packetTypes.push_back(optarg);
+				break;
+			case 'C': customIncludes.push_back(optarg);
 				break;
 			default: exit_usage(argv[0]);
 				break;

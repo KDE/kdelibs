@@ -23,25 +23,6 @@
 #include "datapacket.h"
 #include "buffer.h"
 
-/**** DataPacket<T> ****/
-
-template<class T>
-DataPacket<T>::~DataPacket()
-{
-	delete contents;
-}
-
-template<class T>
-void DataPacket<T>::ensureCapacity(int newCapacity)
-{
-	if(newCapacity > capacity)
-	{
-		delete contents;
-		capacity = newCapacity;
-		contents = new T[capacity];
-	}
-}
-
 /**** specific DataPacket types ****/
 
 void FloatDataPacket::read(Buffer& stream)
