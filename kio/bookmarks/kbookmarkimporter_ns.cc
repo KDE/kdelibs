@@ -1,4 +1,4 @@
-// -*- mode:cperl; cperl-indent-level:4; cperl-continued-statement-offset:4; indent-tabs-mode:nil -*-
+//  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE libraries
    Copyright (C) 1996-1998 Martin R. Jones <mjones@kde.org>
