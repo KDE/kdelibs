@@ -48,7 +48,7 @@ int check_tmp_dir(const char *tmp_dir)
   result = lstat(tmp_dir, &stat_buf);
   if ((result == -1) && (errno == ENOENT))
   {
-    result = mkdir(tmp_dir, 0777);
+    result = mkdir(tmp_dir, 0700);
     if (result == -1)
     {
        fprintf(stderr, "Error: Can not create directory \"%s\".\n", tmp_dir);
@@ -141,7 +141,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   result = stat(kde_tmp_dir, &stat_buf);
   if ((result == -1) && (errno == ENOENT))
   {
-     result = mkdir(kde_tmp_dir, 0777);
+     result = mkdir(kde_tmp_dir, 0700);
   }
   if (result == -1)
   {
