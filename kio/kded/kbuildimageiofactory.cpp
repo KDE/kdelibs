@@ -16,10 +16,6 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include <unistd.h>
-
-#include <qfile.h>
-
 #include "ksycoca.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
@@ -49,10 +45,6 @@ KSycocaEntry *
 KBuildImageIOFactory::createEntry( const QString& file, const char *resource )
 {
    QString fullPath = locate( resource, file);
-
-   // is it readable?
-   if (!::access(QFile::encodeName(fullPath), R_OK))
-       return 0;
 
    KImageIOFormat *format = new KImageIOFormat(fullPath);
    return format;

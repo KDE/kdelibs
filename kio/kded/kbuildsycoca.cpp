@@ -46,6 +46,7 @@
 #include <unistd.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
@@ -115,8 +116,16 @@ void KBuildSycoca::build()
                 it3 != relFiles.end();
                 ++it3 )
            {
-              // Check if file matches filter
-              if (res.filter.match(*it3) == -1) continue;
+               // Check if file matches filter
+	       if (res.filter.match(*it3) == -1) continue;
+	       
+	       // Check if file is accessible
+	       if (::access(QFile::encodeName(
+		   KGlobal::dirs()->findResource(resource, *it3)), R_OK)) {
+		   kDebugInfo("skipping resource %s, not readable",
+			      (*it3).latin1());
+		   continue;
+	       }
 
               // Create a new entry
               KSycocaEntry* entry = factory->createEntry( *it3, resource );
