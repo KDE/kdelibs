@@ -44,11 +44,6 @@
 #include <sys/asoundlib.h>
 #endif
 
-//#define HANDLETIMEINDEVICES
-
-#ifdef HANDLETIMEINDEVICES
-#include <sys/ioctl.h>
-#endif
 
 SEQ_USE_EXTBUF();
 
@@ -97,9 +92,6 @@ public:
   int tgtport;
   char *tgtname;
 
-  void eventInit(snd_seq_event_t *ev);
-  void eventSend(snd_seq_event_t *ep);
-  void timerEventSend(int type);
 #endif
 };
 
@@ -110,12 +102,6 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
   devicetype=KMID_ALSA;
   device= d;
 
-#ifdef HANDLETIMEINDEVICES
-  count=0.0;
-  lastcount=0.0;
-  m_rate=100;
-  convertrate=10;
-#endif
   volumepercentage=100;
 #ifdef HAVE_LIBASOUND
   printf("%d %d %d %s\n",device, di->tgtclient, di->tgtport, di->tgtname);
@@ -177,10 +163,6 @@ void AlsaOut::initDev (void)
 #ifdef HAVE_LIBASOUND
   int chn;
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
-  count=0.0;
-  lastcount=0.0;
-#endif
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)
@@ -198,23 +180,23 @@ void AlsaOut::initDev (void)
 }
 
 #ifdef HAVE_LIBASOUND
-void AlsaOut::AlsaOutPrivate::eventInit(snd_seq_event_t *ev)
+void AlsaOut::eventInit(snd_seq_event_t *ev)
 {
   snd_seq_ev_clear(ev);
   snd_seq_real_time_t tmp;
   tmp.tv_sec=(time)/1000;
   tmp.tv_nsec=(time%1000)*1000000;
 //  printf("time : %d %d %d\n",(int)time,(int)tmp.tv_sec, (int)tmp.tv_nsec);
-  ev->source = *src;
-  ev->dest = *tgt;
+  ev->source = *di->src;
+  ev->dest = *di->tgt;
 
-  snd_seq_ev_schedule_real(ev, queue, 0, &tmp);
+  snd_seq_ev_schedule_real(ev, di->queue, 0, &tmp);
 
 }
 
-void AlsaOut::AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
+void AlsaOut::eventSend(snd_seq_event_t *ev)
 {
-    int err = snd_seq_event_output(handle, ev);
+    int err = snd_seq_event_output(di->handle, ev);
 /*        if (err < 0)
                 return;
 */
@@ -226,7 +208,7 @@ void AlsaOut::AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
          */
 /*        err = 0;
         do {
-                err = snd_seq_flush_output(handle);
+                err = snd_seq_flush_output(di->handle);
                 if (err > 0)
                         usleep(2000);
         } while (err > 0);
@@ -237,15 +219,15 @@ void AlsaOut::AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
 */
 }
 
-void AlsaOut::AlsaOutPrivate::timerEventSend(int type)
+void AlsaOut::timerEventSend(int type)
 {
   snd_seq_event_t ev;
 
-  ev.queue = queue;
+  ev.queue = di->queue;
   ev.dest.client = SND_SEQ_CLIENT_SYSTEM;
   ev.dest.port = SND_SEQ_PORT_SYSTEM_TIMER;
 
-  ev.data.queue.queue = queue;
+  ev.data.queue.queue = di->queue;
 
   ev.flags = SND_SEQ_TIME_STAMP_REAL | SND_SEQ_TIME_MODE_REL;
   ev.time.time.tv_sec = 0;
@@ -253,8 +235,8 @@ void AlsaOut::AlsaOutPrivate::timerEventSend(int type)
 
   ev.type = type;
 
-  snd_seq_event_output(handle, &ev);
-  snd_seq_flush_output(handle);
+  snd_seq_event_output(di->handle, &ev);
+  snd_seq_flush_output(di->handle);
 
 }
 

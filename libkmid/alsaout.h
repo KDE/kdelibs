@@ -30,6 +30,8 @@
 #include <config.h>
 #endif
 
+struct snd_seq_event_t;
+
 /**
  * @short Sends MIDI events to a MIDI devices using ALSA
  * @version 0.9.5 17/01/2000
@@ -53,12 +55,12 @@ class AlsaOut : public MidiOut
  */
   int nmidiports;
 
+/*
   double count;
   double lastcount;
   double lasttime;
   double begintime;
-
-  int    m_rate;
+*/
 /**
  * @internal
  * A "constant" used to convert from milliseconds to the computer rate
@@ -69,6 +71,9 @@ class AlsaOut : public MidiOut
 
   virtual void seqbuf_dump (void);
   virtual void seqbuf_clean(void);
+  void eventInit(snd_seq_event_t *ev);
+  void eventSend(snd_seq_event_t *ep);
+  void timerEventSend(int type);
 
   public:
 
@@ -131,11 +136,6 @@ class AlsaOut : public MidiOut
    * @see #deviceType
    */
   virtual const char * deviceName (void) const;
-
-  /**
-   * @internal
-   */
-  int  rate	(void) { return m_rate; };
 
   /**
    * See @ref DeviceManager::noteOn()
@@ -208,20 +208,6 @@ class AlsaOut : public MidiOut
   { if (seqfd<0) return 0;
     return (_ok>0);
   };
-
-//#ifdef HANDLETIMEINDEVICES
-  virtual void wait        (double ticks);
-  virtual void tmrSetTempo (int v);
-  virtual void tmrStart    (int tpcn=-1);
-  virtual void tmrStop     ();
-  virtual void tmrContinue ();
-  /**
-   * @internal
-   * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
-   * this is what syncronizing really means :-) )
-   */
-  virtual void sync        (int i=0);
-//#endif
 
   class AlsaOutPrivate;
   AlsaOutPrivate *di;
