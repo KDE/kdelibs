@@ -548,7 +548,7 @@ void KHTMLPart::clear()
   d->m_selectionEnd = DOM::Node();
   d->m_startOffset = 0;
   d->m_endOffset = 0;
-  
+
   d->m_totalImageCount = 0;
   d->m_loadedImages = 0;
 }
@@ -690,10 +690,25 @@ void KHTMLPart::end()
     QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
     return;
   }
-  
+
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
-  
-  d->m_totalImageCount = imgColl.length();
+
+  d->m_totalImageCount = 0;
+  KURL::List imageURLs;
+  unsigned long i = 0;
+  unsigned long len = imgColl.length();
+  for (; i < len; i++ )
+  {
+    NodeImpl *node = imgColl.item( i );
+    if ( node->id() != ID_IMG )
+      continue;
+    KURL url( m_url, static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_SRC ).string() );
+    if ( !imageURLs.contains( url ) )
+    {
+      d->m_totalImageCount++;
+      imageURLs.append( url );
+    }
+  }
 
   checkCompleted();
 }
@@ -702,16 +717,16 @@ void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::Cac
 {
   if ( baseURL != m_url.url() )
     return;
-  
+
   if ( obj && obj->type() == khtml::CachedObject::Image && !d->m_bParsing )
   {
     d->m_loadedImages++;
-    
+
     emit d->m_extension->infoMessage( i18n( "%1 of %2 Images loaded" ).arg( d->m_loadedImages ).arg( d->m_totalImageCount ) );
   }
-  
-  checkCompleted(); 
-} 
+
+  checkCompleted();
+}
 
 void KHTMLPart::checkCompleted()
 {
@@ -2304,11 +2319,11 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 void KHTMLPart::slotFind()
 {
   KHTMLFind *findDlg = new KHTMLFind( this, "khtmlfind" );
-  
+
   findDlg->exec();
-  
+
   delete findDlg;
-} 
+}
 
 void KHTMLPart::startAutoScroll()
 {
@@ -2327,7 +2342,7 @@ void KHTMLPart::stopAutoScroll()
 void KHTMLPart::slotAutoScroll()
 {
     if (d->m_view)
-      d->m_view->doAutoScroll(); 
+      d->m_view->doAutoScroll();
     else
       stopAutoScroll(); // Safety
 }
@@ -2461,8 +2476,8 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
-  QApplication::clipboard()->setText( d->m_imageURL.url() ); 
-} 
+  QApplication::clipboard()->setText( d->m_imageURL.url() );
+}
 
 void KHTMLPopupGUIClient::slotReloadFrame()
 {
