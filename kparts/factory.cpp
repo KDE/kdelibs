@@ -47,6 +47,14 @@ Part *Factory::createPart( QWidget *parentWidget, const char *widgetName, QObjec
     return part;
 }
 
+const KInstance *Factory::partInstance()
+{
+    QueryInstanceParams params;
+    params.instance = 0;
+    virtual_hook( VIRTUAL_QUERY_INSTANCE_PARAMS, &params );
+    return params.instance;
+}
+
 Part *Factory::createPartObject( QWidget *, const char *, QObject *, const char *, const char *, const QStringList & )
 {
     return 0;

@@ -41,6 +41,15 @@ namespace KParts
             return new KInstance( aboutData() );
         }
 
+        virtual void virtual_hook( int id, void *data )
+        {
+            if ( id != VIRTUAL_QUERY_INSTANCE_PARAMS )
+                return KParts::Factory::virtual_hook( id, data );
+
+            QueryInstanceParams *params = reinterpret_cast<QueryInstanceParams *>( data );
+            params->instance = createInstance();
+        }
+
     private:
         static GenericFactoryBase<T> *s_self;
         static KInstance *s_instance;

@@ -73,6 +73,15 @@ public:
      */
      Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
 
+     /**
+      * If you have a part contained in a shared library you might want to query
+      * for meta-information like the about-data, or the KInstance in general.
+      * If the part is exported using KParts::GenericFactory then this method will
+      * return the instance that belongs to the part without the need to instantiate
+      * the part component.
+      */
+     const KInstance *partInstance();
+
 protected:
 
     /**
@@ -103,6 +112,17 @@ protected:
      * Reimplemented from KLibFactory. Calls createPart()
      */
     virtual QObject *createObject( QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
+
+    /** This 'enum' along with the structure below is NOT part of the public API.
+      * It's going to disappear in KDE 4.0 and is likely to change inbetween.
+      *
+      * @internal
+      */
+    enum { VIRTUAL_QUERY_INSTANCE_PARAMS = 0x10 };
+    struct QueryInstanceParams
+    {
+        const KInstance *instance;
+    };
 };
 
 }
