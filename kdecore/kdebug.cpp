@@ -280,7 +280,8 @@ void kdebug( ushort nLevel, ushort nArea,
         abort();
 
   // restore old group
-  kapp->getConfig()->setGroup( aOldGroup );
+  if (kapp)
+    kapp->getConfig()->setGroup( aOldGroup );
 }
 
 
