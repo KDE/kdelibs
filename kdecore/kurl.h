@@ -26,6 +26,8 @@
 class QUrl;
 class QStringList;
 
+struct KURLPrivate;
+
 /**
  * Represent and parse a URL.
  *
@@ -61,6 +63,12 @@ public:
    * Construct an empty URL.
    */
   KURL();
+
+  /**
+   * destruktor
+   */
+  ~KURL();
+
   /**
    * Usual constructor, to construct from a string.
    * @param url A URL, not a filename. If the URL does not have a protocol
@@ -253,7 +261,7 @@ public:
   bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
 
   /**
-   * @return The HTML-style reference. 
+   * @return The HTML-style reference.
    */
   QString htmlRef() const;
 
@@ -274,10 +282,14 @@ public:
   bool hasHTMLRef() const;
 
   /**
-   * @return @p true if the URL is malformed. This function does @em not test
+   * @return @p false if the URL is malformed. This function does @em not test
    *         whether sub URLs are well-formed, too.
    */
-  bool isMalformed() const  { return m_bIsMalformed; }
+  bool isValid() const  { return !m_bIsMalformed; }
+  /*
+   * @deprecated
+   */
+  bool isMalformed() const { return !isValid(); }
 
   /**
    * @return @p true if the file is a plain local file and has no filter protocols
@@ -326,10 +338,10 @@ public:
    *                                     is considered to be the filename.
    */
   QString fileName( bool _ignore_trailing_slash_in_path = true ) const;
-  /**
-   * For backward compatiblity only.
-   */
-  QString filename( bool _ignore_trailing_slash_in_path = true ) const;
+  QString filename( bool _ignore_trailing_slash_in_path = true ) const
+  {
+    return fileName(_ignore_trailing_slash_in_path);
+  }
 
   /**
    * @return The directory part of the current path. Everything between the last and the second last '/'
@@ -359,9 +371,6 @@ public:
    */
   bool cd( const QString& _dir );
 
-  /** Provide for binary compatibility only. **/
-  bool cd( const QString& _dir, bool zapRef );
-
   /**
    * @return The complete URL, with all escape sequences intact.
    * Example: http://localhost:8080/test.cgi?test=hello%20world&name=fred
@@ -377,8 +386,7 @@ public:
    * characters.
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
-  QString prettyURL() const;
-  QString prettyURL( int _trailing ) const; // BCI
+  QString prettyURL( int _trailing = 0) const;
 
   /**
    * Test to see if the @ref KURL is empty.
@@ -393,9 +401,6 @@ public:
    * possible it strips the right most URL. It continues stripping URLs.
    */
   KURL upURL( ) const;
-
-  /** Provide for binary compatibility only. **/
-  KURL upURL( bool ) const;
 
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
@@ -426,7 +431,7 @@ public:
    * Splits nested URLs like file:/home/weis/kde.tgz#gzip:/#tar:/kdebase
    * A URL like http://www.kde.org#tar:/kde/README.hml#ref1 will be split in
    * http://www.kde.org and tar:/kde/README.html#ref1.
-   * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL. 
+   * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL.
    * Since HTML-style references mark
    * a certain position in a document this reference is appended to every URL.
    * The idea behind this is that browsers, for example, only look at the first URL while
@@ -464,7 +469,7 @@ public:
    * Convenience function
    *
    * Convert unicoded string to local encoding and use %-style
-   * encoding for all common delimiters / non-ascii characters 
+   * encoding for all common delimiters / non-ascii characters
    * as well as the slash '/'.
    * @param str String to encode
    * @param encoding_hint Reserved, should be 0.
@@ -504,10 +509,10 @@ private:
   QString m_strPath;
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
-  QString m_strMalformed;
-  bool m_bIsMalformed;
+  KURLPrivate* d;
+  bool m_bIsMalformed : 1;
+  int freeForUse      : 7;
   unsigned short int m_iPort;
-
   QString m_strPath_encoded;
 
   friend QDataStream & operator<< (QDataStream & s, const KURL & a);

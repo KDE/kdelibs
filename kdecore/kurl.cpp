@@ -222,7 +222,7 @@ bool KURL::isRelativeURL(const QString &_url)
         // URL starts with "xxx:/" -> absolute URL
         i++;
         if ((i < len) && (str[i].latin1() == '/'))
-           return false; 
+           return false;
         // Make an expection for mailto:user@host
         if ((i == 7) && (_url.left(7).lower() == "mailto:"))
            return false;
@@ -270,6 +270,11 @@ KURL::KURL()
 {
   reset();
 }
+
+KURL::~KURL()
+{
+}
+
 
 KURL::KURL( const QString &url, int encoding_hint )
 {
@@ -963,11 +968,6 @@ QString KURL::url( int _trailing ) const
   return u;
 }
 
-QString KURL::prettyURL() const
-{
-  return prettyURL( 0 );
-}
-
 QString KURL::prettyURL( int _trailing ) const
 {
   if( m_bIsMalformed )
@@ -1069,12 +1069,6 @@ KURL KURL::join( const KURL::List & lst )
   return tmp;
 }
 
-QString KURL::filename( bool _ignore_trailing_slash_in_path ) const
-{
-    kdDebug() << "KURL::filename() is obsolete, use KURL::fileName() instead" << endl;
-    return fileName(_ignore_trailing_slash_in_path);
-}
-
 QString KURL::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
@@ -1165,11 +1159,6 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 }
 
 
-bool KURL::cd( const QString& _dir, bool )
-{
-   return cd(_dir);
-}
-
 // implemented by David, faure@kde.org
 // Modified by Torben, weis@kde.org
 bool KURL::cd( const QString& _dir )
@@ -1219,13 +1208,6 @@ bool KURL::cd( const QString& _dir )
   setHTMLRef( QString::null );
 
   return true;
-}
-
-
-/** Provide for binary compatibility only. **/
-KURL KURL::upURL( bool ) const
-{
-  return upURL();
 }
 
 KURL KURL::upURL( ) const
