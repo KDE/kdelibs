@@ -288,7 +288,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // try to sort out most style rules as early as possible.
     // ### implement CSS3 namespace support
-    int cssTagId = (e->id() & NodeImpl::IdLocalMask);
+    int cssTagId = (e->id() & NodeImpl_IdLocalMask);
     int smatch = 0;
     int schecked = 0;
 
@@ -625,7 +625,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 //     sel->print();
 
 
-    if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
+    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
 
     if(sel->attr)
     {
