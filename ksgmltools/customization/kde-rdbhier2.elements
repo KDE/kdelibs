@@ -125,6 +125,10 @@
 <!ENTITY % book.module "INCLUDE">
 <![ %book.module; [
 
+<!-- Unchanged -->
+<!ENTITY % local.book.attrib "">
+<!ENTITY % book.role.attrib "%role.attrib;">
+
 <!ENTITY % book.element "IGNORE">
 <!ENTITY % kde.book.element "INCLUDE">
 <![ %kde.book.element; [
@@ -140,6 +144,23 @@
 		| Colophon)*)
 		%ubiq.inclusion;>
 <!--end of kde.book.element-->]]>
+
+<!ENTITY % book.attlist "IGNORE">
+<!ENTITY % kde.book.attlist "INCLUDE">
+<![ %kde.book.attlist; [
+<!-- FPI is made compulsory in KDE -->
+<!ATTLIST Book	
+		--
+		FPI: SGML formal public identifier
+		--
+		FPI		CDATA		#REQUIRED
+		%label.attrib;
+		%status.attrib;
+		%common.attrib;
+		%book.role.attrib;
+		%local.book.attrib;
+>
+<!--end of kde.book.attlist-->]]>
 <!--end of book.module-->]]>
 
 <!ENTITY % bookinfo.module "INCLUDE">

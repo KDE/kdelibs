@@ -103,7 +103,9 @@
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
   CDATA SGML               -- http://www.gnu.org/copyleft/fdl.html -->
-<!-- Use in a document prologue only -->
+
+<!-- Use in a document prologue only; contains &FDLNotice;
+     See common/fdl-notice.docbook on how to use it
 <!ENTITY % FDLNotice        PUBLIC
-  "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN"
-                                           -- contains &FDLNotice; -->
+  "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN"             >
+ -->

@@ -57,6 +57,12 @@
                         |sr|sv|ta|th|tr|uk|x-wa|zh-CN|zh-TW) #IMPLIED">
 <!-- end of KDE languages -->
 
+<!-- DocBook Reference Documentation recommends switching these off
+     if not used: it massively reduces the ESIS size (~ what you get
+     from nsgmls).  Should anyone need any of these attributes, let
+     me know.  It's easy to add them on again.  -->
+<!ENTITY % effectivity.attrib "">
+
 <![ %kde.compulsory.datereleaseinfo; [
 <!-- Unchanged -->
 <!ENTITY % local.person.ident.mix "">
