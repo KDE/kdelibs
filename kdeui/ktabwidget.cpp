@@ -140,6 +140,9 @@ void KTabWidget::wheelDelta( int delta )
 
 void KTabWidget::mouseDoubleClickEvent( QMouseEvent *e )
 {
+    if( e->button() != LeftButton )
+        return;
+
     if ( isEmptyTabbarSpace( e->pos() ) ) {
         emit( mouseDoubleClick() );
         return;
@@ -204,7 +207,7 @@ void KTabWidget::moveTab( int from, int to )
     QTab * t = new QTab();
     t->setText(tablabel);
     QTabWidget::insertTab( w, t, to );
-    
+
     w = page( to );
     changeTab( w, tabiconset, tablabel );
     setTabToolTip( w, tabtooltip );
