@@ -107,6 +107,11 @@ public:
     /**
      * Writes a local directory into the archive, including all its contents, recursively.
      * Calls addLocalFile for each file to be added.
+     *
+     * Since KDE 3.2 it will also add a @p path that is a symbolic link to a
+     * directory. The symbolic link will be dereferenced and the content of the
+     * directory it is pointing to added recursively. However, symbolic links
+     * *under* @p path will be stored as is.
      * @param path full path to an existing local directory, to be added to the archive.
      * @param destName the resulting name (or relative path) of the file in the archive.
      */
@@ -128,8 +133,8 @@ public:
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
      *
-     * This method also allows various file attributes to be
-     * set. However, depending on the archive type not all attributes might be
+     * This method also allows some file metadata to be
+     * set. However, depending on the archive type not all metadata might be
      * regarded.
      * @param name the name of the directory
      * @param user the user that owns the directory
@@ -138,6 +143,7 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime creation time of the file
+     * @since 3.2
      * // TODO(BIC): make this virtual. For now use virtual hook
      */
     bool writeDir( const QString& name, const QString& user, const QString& group,
@@ -154,6 +160,7 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime creation time of the file
+     * @since 3.2
      * // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
      */
     bool writeSymLink(const QString &name, const QString &target,
@@ -179,8 +186,10 @@ public:
      * If an archive is opened for writing then you can add a new file
      * using this function. If the file name is for example "mydir/test1" then
      * the directory "mydir" is automatically appended first if that did not
-     * happen yet. This method also allows various file attributes to be
-     * set. However, depending on the archive type not all attributes might be
+     * happen yet.
+     *
+     * This method also allows some file metadata to be
+     * set. However, depending on the archive type not all metadata might be
      * regarded.
      * @param name the name of the file
      * @param user the user that owns the file
@@ -191,6 +200,7 @@ public:
      * @param mtime modification time of the file
      * @param ctime creation time of the file
      * @param data the data to write (@p size bytes)
+     * @since 3.2
      * // TODO(BIC): make virtual. For now use virtual hook
      */
     bool writeFile( const QString& name, const QString& user, const QString& group,
@@ -218,6 +228,10 @@ public:
      * as many times as wanted then call @ref doneWriting( totalSize ).
      * For tar.gz files, you need to know the size before hand, it is needed in the header!
      * For zip files, size isn't used.
+     *
+     * This method also allows some file metadata to be
+     * set. However, depending on the archive type not all metadata might be
+     * regarded.
      * @param name the name of the file
      * @param user the user that owns the file
      * @param group the group that owns the file
@@ -226,6 +240,7 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime creation time of the file
+     * @since 3.2
      * // TODO(BIC): make this virtual. For now use virtual hook.
      */
     bool prepareWriting( const QString& name, const QString& user,
