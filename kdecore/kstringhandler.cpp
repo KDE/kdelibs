@@ -438,7 +438,7 @@ perlSplit(const QString & sep, const QString & s, uint max)
 
   int tokenStart = s.find(sep, searchStart);
 
-  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
     if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
       l << s.mid(searchStart, tokenStart - searchStart);
@@ -464,7 +464,7 @@ perlSplit(const QChar & sep, const QString & s, uint max)
 
   int tokenStart = s.find(sep, searchStart);
 
-  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
     if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
       l << s.mid(searchStart, tokenStart - searchStart);
@@ -492,7 +492,7 @@ perlSplit(const QRegExp & sep, const QString & s, uint max)
 
   int tokenStart = sep.match(s, searchStart, &len);
 
-  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
     if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
       l << s.mid(searchStart, tokenStart - searchStart);

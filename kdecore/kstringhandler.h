@@ -188,11 +188,10 @@ public:
      * Split a QString into a QStringList in a similar fashion to the static
      * QStringList function in Qt, except you can specify a maximum number
      * of tokens. If max is specified (!= 0) then only that number of tokens
-     * will be extracted. The final item in the returned QStringList will
-     * be the remainder of the string.
+     * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * perlSplit("__", "some__string__for__you__here", 3)
+     * perlSplit("__", "some__string__for__you__here", 4)
      * QStringList contains: "some", "string", "for", "you__here"
      *
      * @return A QStringList containing tokens extracted from s.
@@ -206,11 +205,10 @@ public:
      * Split a QString into a QStringList in a similar fashion to the static
      * QStringList function in Qt, except you can specify a maximum number
      * of tokens. If max is specified (!= 0) then only that number of tokens
-     * will be extracted. The final item in the returned QStringList will
-     * be the remainder of the string.
+     * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * perlSplit(' ', "kparts reaches the parts other parts can't", 2)
+     * perlSplit(' ', "kparts reaches the parts other parts can't", 3)
      * QStringList contains: "kparts", "reaches", "the pats other parts can't"
      *
      * @return A QStringList containing tokens extracted from s.
@@ -224,11 +222,10 @@ public:
      * Split a QString into a QStringList in a similar fashion to the static
      * QStringList function in Qt, except you can specify a maximum number
      * of tokens. If max is specified (!= 0) then only that number of tokens
-     * will be extracted. The final item in the returned QStringList will
-     * be the remainder of the string.
+     * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 2)
+     * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 3)
      * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
      *
      * @return A QStringList containing tokens extracted from s.
