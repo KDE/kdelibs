@@ -533,7 +533,7 @@ QString param( const QString &type )
     else if ( type == "Path" )        return "const QString &";
     else if ( type == "Password" )    return "const QString &";
     else {
-        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        kdError() <<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
     }
 }
@@ -562,7 +562,7 @@ QString cppType( const QString &type )
     else if ( type == "Path" )        return "QString";
     else if ( type == "Password" )    return "QString";
     else {
-        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        kdError()<<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
     }
 }
