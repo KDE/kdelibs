@@ -362,7 +362,13 @@ void HTMLDocumentImpl::applyChanges()
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
 
-    m_render->setStyle(m_style);
+    const QString *families = m_view->part()->settings()->families();
+    QValueList<int> fs = m_view->part()->settings()->fontSizes();
+    QFont f = KGlobal::generalFont();
+    f.setFamily(families[0]);
+    f.setPointSize(fs[3]);
+    f.setCharSet(m_view->part()->settings()->charset);
+    m_style->setFont(f);
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too

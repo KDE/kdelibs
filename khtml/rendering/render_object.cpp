@@ -337,6 +337,9 @@ void RenderObject::setStyle(RenderStyle *style)
 
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
 	m_printSpecial = true;
+    
+    setMinMaxKnown(false);
+    setLayouted(false);
 }
 
 void RenderObject::relativePositionOffset(int &tx, int &ty)
