@@ -26,6 +26,7 @@ const int kfile_area = 250;
 #define PathComboCompletionMode QString::fromLatin1("PathCombo Completionmode")
 #define LocationComboCompletionMode QString::fromLatin1("LocationCombo Completionmode")
 #define ShowSpeedbar QString::fromLatin1("Show Speedbar")
+#define ShowBookmarks QString::fromLatin1("Show Bookmarks")
 #define AutoSelectExtChecked QString::fromLatin1("Automatically select filename extension")
 
 #endif

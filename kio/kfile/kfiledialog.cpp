@@ -150,9 +150,6 @@ struct KFileDialogPrivate
     // setting it again and again, we have this nice little boolean :)
     bool hasView :1;
 
-    // do we show the speedbar for the first time?
-    bool initializeSpeedbar :1;
-
     bool hasDefaultFilter :1; // necessary for the operationMode
     KFileDialog::OperationMode operationMode;
 
@@ -812,6 +809,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
+    d->bookmarkHandler = 0;
     d->hasDefaultFilter = false;
     d->hasView = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
@@ -825,10 +823,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->autoSelectExtCheckBox = 0; // delayed loading
     d->autoSelectExtChecked = false;
     d->urlBar = 0; // delayed loading
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
-                                                   true );
 
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
@@ -920,26 +914,16 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "mkdir" )->plug( toolbar );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
-    d->bookmarkHandler = new KFileBookmarkHandler( this );
-    toolbar->insertButton(QString::fromLatin1("bookmark"),
-                          (int)HOTLIST_BUTTON, true,
-                          i18n("Bookmarks"));
-    toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(),
-                                                  true);
-    QWhatsThis::add(toolbar->getButton(HOTLIST_BUTTON),
-                    i18n("<qt>This button allows you to bookmark specific locations. "
-                         "Click on this button to open the bookmark menu where you may add, "
-                         "edit or select a bookmark.<p>"
-                         "These bookmarks are specific to the file dialog, but otherwise operate "
-                         "like bookmarks elsewhere in KDE.</qt>"));
-    connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
-             SLOT( enterURL( const QString& )));
-
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), Key_F9, coll,"toggleSpeedbar");
     showSidebarAction->setCheckedState(i18n("Hide Quick Access Navigation Panel"));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
+
+    KToggleAction *showBookmarksAction =
+            new KToggleAction(i18n("Bookmarks"), 0, coll, "toggleBookmarks");
+    connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
+             SLOT( toggleBookmarks( bool )) );
 
     KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
@@ -960,6 +944,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "show hidden" )->setShortcut(Key_F8);
     menu->insert( coll->action( "show hidden" ));
     menu->insert( showSidebarAction );
+    menu->insert( showBookmarksAction );
     coll->action( "preview" )->setShortcut(Key_F11);
     menu->insert( coll->action( "preview" ));
     coll->action( "separate dirs" )->setShortcut(Key_F12);
@@ -1042,6 +1027,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     initGUI(); // activate GM
 
+    KConfig* config = KGlobal::config();
     readRecentFiles( config );
 
     adjustSize();
@@ -1721,6 +1707,9 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     // show or don't show the speedbar
     toggleSpeedbar( kc->readBoolEntry(ShowSpeedbar, true) );
 
+    // show or don't show the bookmarks
+    toggleBookmarks( kc->readBoolEntry(ShowBookmarks, false) );
+
     // does the user want Automatically Select Extension?
     d->autoSelectExtChecked = kc->readBoolEntry (AutoSelectExtChecked, DefaultAutoSelectExtChecked);
     updateAutoSelectExtension ();
@@ -1749,6 +1738,7 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     kc->writeEntry( PathComboCompletionMode, static_cast<int>(d->pathCombo->completionMode()) );
     kc->writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
     kc->writeEntry( ShowSpeedbar, d->urlBar && !d->urlBar->isHidden() );
+    kc->writeEntry( ShowBookmarks, d->bookmarkHandler != 0 );
     kc->writeEntry( AutoSelectExtChecked, d->autoSelectExtChecked );
 
     ops->writeConfig( kc, group );
@@ -1800,6 +1790,10 @@ void KFileDialog::slotCancel()
 {
     ops->close();
     KDialogBase::slotCancel();
+
+    KConfig *config = KGlobal::config();
+    config->setForceGlobal( true );
+    writeConfig( config, ConfigGroup );
 }
 
 void KFileDialog::setKeepLocation( bool keep )
@@ -2207,6 +2201,41 @@ void KFileDialog::toggleSpeedbar( bool show )
     }
 
     static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );
+}
+
+void KFileDialog::toggleBookmarks(bool show)
+{
+    if (show)
+    {
+        if (d->bookmarkHandler)
+        {
+            return;
+        }
+
+        d->bookmarkHandler = new KFileBookmarkHandler( this );
+        connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
+                    SLOT( enterURL( const QString& )));
+
+        toolbar->insertButton(QString::fromLatin1("bookmark"),
+                              (int)HOTLIST_BUTTON, true,
+                              i18n("Bookmarks"), 5);
+        toolbar->getButton(HOTLIST_BUTTON)->setPopup(d->bookmarkHandler->menu(),
+                                                     true);
+        QWhatsThis::add(toolbar->getButton(HOTLIST_BUTTON),
+                        i18n("<qt>This button allows you to bookmark specific locations. "
+                                "Click on this button to open the bookmark menu where you may add, "
+                                "edit or select a bookmark.<p>"
+                                "These bookmarks are specific to the file dialog, but otherwise operate "
+                                "like bookmarks elsewhere in KDE.</qt>"));
+    }
+    else if (d->bookmarkHandler)
+    {
+        delete d->bookmarkHandler;
+        d->bookmarkHandler = 0;
+        toolbar->removeItem(HOTLIST_BUTTON);
+    }
+
+    static_cast<KToggleAction *>(actionCollection()->action("toggleBookmarks"))->setChecked( show );
 }
 
 int KFileDialog::pathComboIndex()

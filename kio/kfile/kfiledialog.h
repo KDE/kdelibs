@@ -939,6 +939,11 @@ protected slots:
     void toggleSpeedbar( bool );
 
     /**
+     * @since 3.4
+     */
+    void toggleBookmarks(bool show);
+
+    /**
      * @deprecated
      */
     virtual void updateStatusLine(int dirs, int files);
