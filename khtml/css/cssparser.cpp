@@ -65,9 +65,9 @@ using namespace DOM;
 #include "cssvalues.c"
 
 
-static QPtrList<CSSProperty>* m_propList = 0;
-static bool m_bImportant = FALSE;
-static bool m_bnonCSSHint = FALSE;
+static QPtrList<CSSProperty>* m_propList;
+static bool m_bImportant;
+static bool m_bnonCSSHint;
 
 int DOM::getPropertyID(const char *tagStr, int len)
 {
@@ -469,7 +469,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                         if (doc->isHTMLDocument())
                             attr = attr.lower();
                         const DOMString dattr(attr);
-                        cs->attr = doc->attrId(0, dattr.implementation(), false);
+                        cs->attr = doc->attrId(0, dattr.implementation(), false, 0);
                     }
                     else {
                         cs->attr = khtml::getAttrID(attr.lower().ascii(), attr.length());
@@ -547,7 +547,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (doc->isHTMLDocument())
                     tag = tag.lower();
                 const DOMString dtag(tag);
-                cs->tag = doc->tagId(0, dtag.implementation(), false);
+                cs->tag = doc->tagId(0, dtag.implementation(), false, 0);
             }
             else {
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
@@ -1905,7 +1905,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
       {
 	  const struct css_value *cssval = findValue(val, len);
-	  if (cssval->id == CSS_VAL_AUTO || cssval->id == CSS_VAL_FIXED)
+	  if (cssval && 
+              (cssval->id == CSS_VAL_AUTO || cssval->id == CSS_VAL_FIXED))
 	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  break;
       }
@@ -2880,11 +2881,7 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	  comment = true;
 	} else {
 	  processed += '/';
-	  if (curlyBracket > 0) {
-	    processed += ch->lower();
-	  } else {
-	    processed += *ch;
-	  }
+	  processed += *ch;
 	  space = ch->isSpace();
 	}
 	firstChar = false;
@@ -2925,11 +2922,7 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
       if (ch->isSpace()) {
 	processed += QChar(' '); // Normalize whitespace
       } else {
-	if (curlyBracket > 0 || justOneRule) {
-	  processed += ch->lower();
-	} else {
 	  processed += *ch;
-	}
       }
     }
     space = ch->isSpace();

@@ -39,6 +39,8 @@
 #include <qregexp.h>
 #include <qtimer.h>
 #include <qsocket.h>
+#include <qdatetime.h>
+
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -49,8 +51,10 @@
 #include <kaction.h>
 #include <kdialogbase.h>
 #include <kextendedsocket.h>
+#include <kprocess.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
+#include <math.h>
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
@@ -107,7 +111,7 @@ QString KMCupsManager::cupsInstallDir()
 {
 	KConfig	*conf=  KMFactory::self()->printConfig();
 	conf->setGroup("CUPS");
-	QString	dir = conf->readEntry("InstallDir",QString::null);
+	QString	dir = conf->readPathEntry("InstallDir");
 	return dir;
 }
 
@@ -260,16 +264,45 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
 	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+
+	/*
 	// change host and port for remote stuffs
 	if (!p->uri().isEmpty())
 	{
-		req.setHost(p->uri().host());
-		req.setPort(p->uri().port());
+		m_hostSuccess = false;
+		m_lookupDone = false;
+		// Give 3 seconds to connect to the printer, or abort
+		KExtendedSocket *kes = new KExtendedSocket(p->uri().host(),
+							p->uri().port());
+		connect(kes, SIGNAL(connectionSuccess()), this, SLOT(hostPingSlot()));
+		connect(kes, SIGNAL(connectionFailed(int)), this, SLOT(hostPingFailedSlot()));
+		if (kes->startAsyncConnect() != 0) {
+			delete kes;
+			m_hostSuccess = false;
+		} else {
+			QDateTime tm = QDateTime::currentDateTime().addSecs(2);
+			while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
+				qApp->processEvents();
+
+			kes->cancelAsyncConnect();
+
+			delete kes;
+
+			if (!m_lookupDone)
+				m_hostSuccess = false;
+		}
+
+		if (m_hostSuccess == true) {
+			req.setHost(p->uri().host());
+			req.setPort(p->uri().port());
+		}
 	}
 	// disable location as it has been transferred to listing (for filtering)
 	//keys.append("printer-location");
 	keys.append("printer-info");
 	keys.append("printer-make-and-model");
+	*/
+
 	keys.append("job-sheets-default");
 	keys.append("job-sheets-supported");
 	keys.append("job-quota-period");
@@ -364,7 +397,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 	uri = printerURI(p);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
-	if (!CupsInfos::self()->realLogin().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
+	if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
 	req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
 	if (req.doFileRequest("/printers/",testpage))
 		return true;
@@ -450,6 +483,9 @@ void KMCupsManager::processRequest(IppRequest* req)
 			printer->addType(((value & CUPS_PRINTER_CLASS) || (value & CUPS_PRINTER_IMPLICIT) ? KMPrinter::Class : KMPrinter::Printer));
 			if ((value & CUPS_PRINTER_REMOTE)) printer->addType(KMPrinter::Remote);
 			if ((value & CUPS_PRINTER_IMPLICIT)) printer->addType(KMPrinter::Implicit);
+
+			// convert printer-type attribute
+			//printer->setPrinterCap( ( value & CUPS_PRINTER_OPTIONS ) >> 2 );
 		}
 		else if (attrname == "printer-state")
 		{
@@ -479,6 +515,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 		}
 		attr = attr->next;
 	}
+	delete printer;
 }
 
 DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
@@ -523,7 +560,12 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	if (in.open(exe + " -t cups -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	QString cmd = KProcess::quote(exe);
+	cmd += " -t cups -d ";
+	cmd += KProcess::quote(comps[2]);
+	cmd += " -p ";
+	cmd += KProcess::quote(comps[1]);
+	if (in.open(cmd) && out.open(IO_WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -625,7 +667,10 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			for (int i=0; i<ppd->num_sizes; i++)
 			{
 				ppd_size_t	*sz = ppd->sizes+i;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)sz->left,(int)sz->bottom,(int)sz->right,(int)sz->top));
+				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
+				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)ceil( sz->left ),(int)ceil( sz->bottom ),
+							(int)ceil( sz->width - sz->right ),(int)ceil( sz->length - sz->top )));
 			}
 
 			ppdClose(ppd);
@@ -756,7 +801,11 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			{
 				int	p = line.find(':',8);
 				keyword = line.mid(8,p-8);
-				DrBase	*bopt = driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
+				DrBase *bopt = 0;
+				if ( keyword == "PageRegion" || keyword == "ImageableArea" || keyword == "PaperDimension" )
+					bopt = driver->findOption( QString::fromLatin1( "PageSize" ) );
+				else
+					bopt = driver->findOption( keyword );
 				if (bopt)
 					switch (bopt->type())
 					{
@@ -946,11 +995,13 @@ void KMCupsManager::printerIppReport()
 		req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
 		uri = printerURI(m_currentprinter, true);
 		req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+		/*
 		if (!m_currentprinter->uri().isEmpty())
 		{
 			req.setHost(m_currentprinter->uri().host());
 			req.setPort(m_currentprinter->uri().port());
 		}
+		*/
 		req.dump(2);
 		if (req.doRequest("/printers/"))
 		{
@@ -1040,6 +1091,16 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 	setUpdatePossible( false );
 }
 
+void KMCupsManager::hostPingSlot() {
+	m_hostSuccess = true;
+	m_lookupDone = true;
+}
+
+void KMCupsManager::hostPingFailedSlot() {
+	m_hostSuccess = false;
+	m_lookupDone = true;
+}
+
 //*****************************************************************************************************
 
 void extractMaticData(QString& buf, const QString& filename)
@@ -1073,6 +1134,7 @@ QString downloadDriver(KMPrinter *p)
 	QString	driverfile, prname = p->printerName();
 	bool	changed(false);
 
+	/*
 	if (!p->uri().isEmpty())
 	{
 		// try to load the driver from the host:port
@@ -1086,6 +1148,7 @@ QString downloadDriver(KMPrinter *p)
 		prname = prname.replace(QRegExp("@.*"), "");
 		changed = true;
 	}
+	*/
 
 	// download driver
 	driverfile = cupsGetPPD(prname.local8Bit());

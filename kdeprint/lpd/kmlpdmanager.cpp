@@ -37,6 +37,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
+#include <kprocess.h>
 
 #include <pwd.h>
 #include <unistd.h>
@@ -185,8 +186,11 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	QString	cmd = QString::fromLatin1("chmod -R o-rwx,g+rwX %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
-	if (system(cmd.latin1()) != 0)
+	QCString cmd = "chmod -R o-rwx,g+rwX ";
+	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+	cmd += "&& chown -R lp.lp ";
+	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+	if (system(cmd.data()) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
 		return false;
@@ -206,7 +210,9 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 			m_entries.insert(ent->m_name,ent);
 			return false;
 		}
-		system(QString::fromLatin1("rm -rf %1").arg(ent->arg("sd")).latin1());
+		QCString cmd = "rm -rf ";
+		cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+		system(cmd.data());
 		delete ent;
 		return true;
 	}
@@ -217,7 +223,11 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 {
 	KPipeProcess	proc;
-	QString		cmd = QString::fromLatin1("%1 %2 %3").arg(programName(0)).arg(state ? "up" : "down").arg(printer->printerName());
+	QString		cmd = programName(0);
+	cmd += " ";
+	cmd += state ? "up" : "down";
+	cmd += " ";
+	cmd += KProcess::quote(printer->printerName());
 	if (proc.open(cmd))
 	{
 		QTextStream	t(&proc);
@@ -269,9 +279,9 @@ QString KMLpdManager::programName(int f)
 	conf->setGroup("LPD");
 	switch (f)
 	{
-		case 0: return conf->readEntry("LpdCommand","/usr/sbin/lpc");
-		case 1: return conf->readEntry("LpdQueue","lpq");
-		case 2: return conf->readEntry("LpdRemove","lprm");
+		case 0: return conf->readPathEntry("LpdCommand","/usr/sbin/lpc");
+		case 1: return conf->readPathEntry("LpdQueue","lpq");
+		case 2: return conf->readPathEntry("LpdRemove","lprm");
 	}
 	return QString::null;
 }
@@ -279,7 +289,7 @@ QString KMLpdManager::programName(int f)
 void KMLpdManager::checkStatus()
 {
 	KPipeProcess	proc;
-	QString		cmd = QString::fromLatin1("%1 status all").arg(programName(0));
+	QString		cmd = programName(0) + " status all";
 	if (proc.open(cmd))
 	{
 		QTextStream	t(&proc);
@@ -540,8 +550,11 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 		if (!writePrinters())
 			return false;
 		// write various driver files using templates
-		QString	cmd = QString::fromLatin1("cp %1/master-filter %2/filter").arg(driverDirectory()).arg(spooldir);
-		if (system(cmd.latin1()) == 0 &&
+		QCString cmd = "cp ";
+		cmd += QFile::encodeName(KProcess::quote(driverDirectory()+"/master-filter"));
+		cmd += " ";
+		cmd += QFile::encodeName(KProcess::quote(spooldir + "/filter"));
+		if (system(cmd.data()) == 0 &&
 		    savePrinttoolCfgFile(driverDirectory()+"/general.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/postscript.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/textonly.cfg.in",spooldir,options))

@@ -514,7 +514,7 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
  QString
 KStringHandler::tagURLs( const QString& text )
 {
-    /*static*/ QRegExp urlEx("(www\\.|(f|ht)tp(|s)://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+]+[\\d\\w/]");
+    /*static*/ QRegExp urlEx("(www\\.(?!\\.)|(f|ht)tp(|s)://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+\\%]+[\\d\\w/]");
 
     QString richText( text );
     int urlPos = 0, urlLen;
@@ -522,9 +522,15 @@ KStringHandler::tagURLs( const QString& text )
     {
         urlLen = urlEx.matchedLength();
         QString href = richText.mid( urlPos, urlLen );
-        QString anchor( "<a href=\"%1\">%2</a>" );
-        anchor = anchor.arg( href ).arg( href );
+        // Qt doesn't support (?<=pattern) so we do it here
+        if((urlPos > 0) && richText[urlPos-1].isLetterOrNumber()){
+            urlPos++;
+            continue;
+        }
+        // Don't use QString::arg since %01, %20, etc could be in the string
+        QString anchor = "<a href=\"" + href + "\">" + href + "</a>";
         richText.replace( urlPos, urlLen, anchor );
+
 
         urlPos += anchor.length();
     }

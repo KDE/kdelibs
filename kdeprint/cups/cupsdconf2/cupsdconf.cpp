@@ -79,8 +79,8 @@ CupsdConf::CupsdConf()
 	tmpfiles_ = requestdir_+"/tmp";
 
 	// other options
-	servername_ = "localhost";
-	serveradmin_ = "root@"+servername_;
+	servername_ = QString::null;
+	serveradmin_ = QString::null;
 	classification_ = CLASS_NONE;
 	otherclassname_ = QString::null;
 	classoverride_ = false;
@@ -184,10 +184,12 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "# Server" << endl << endl;
 
 		t << comments_["servername"] << endl;
-		t << "ServerName " << servername_ << endl;
+		if ( !servername_.isEmpty() )
+			t << "ServerName " << servername_ << endl;
 
 		t << endl << comments_["serveradmin"] << endl;
-		t << "ServerAdmin " << serveradmin_ << endl;
+		if ( !serveradmin_.isEmpty() )
+			t << "ServerAdmin " << serveradmin_ << endl;
 
 		t << endl << comments_["classification"] << endl;
 		t << "Classification ";

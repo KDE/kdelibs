@@ -104,6 +104,6 @@ namespace KIO {
                       QString newOwner, QString newGroup,
                       bool recursive, bool showProgressInfo = true );
 
-};
+}
 
 #endif

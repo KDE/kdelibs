@@ -54,5 +54,5 @@ namespace KTextEditor
 		uint  m_currentrow;
 		uint  m_currentmatchlen;
 	};
-};
+}
 #endif

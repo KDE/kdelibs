@@ -56,7 +56,7 @@ namespace DOM {
     class NodeImpl;
     class ElementImpl;
     class EventImpl;
-};
+}
 
 namespace khtml {
     class RenderFlow;
@@ -148,7 +148,7 @@ public:
     bool isInline() const { return m_inline; }  // inline object
     bool mouseInside() const { return m_mouseInside; }
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
-    bool hasSpecialObjects() const { return m_printSpecial; }
+    bool hasSpecialObjects() const { return m_paintSpecial; }
     bool layouted() const   { return m_layouted; }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool overhangingContents() const { return m_overhangingContents; }
@@ -186,10 +186,6 @@ public:
     void setLayoutedLocal(bool b) {
 	m_layouted = b;
     }
-    // hack to block inline layouts during parsing
-    // evil, evil. I didn't do it. <tm>
-    virtual void setBlockBidi() {}
-
     void setMinMaxKnown(bool b=true) {
 	m_minMaxKnown = b;
 	if ( !b ) {
@@ -207,7 +203,7 @@ public:
     void setFloating(bool b=true) { m_floating = b; }
     void setInline(bool b=true) { m_inline = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
-    void setSpecialObjects(bool b=true) { m_printSpecial = b; }
+    void setSpecialObjects(bool b=true) { m_paintSpecial = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
@@ -226,12 +222,12 @@ public:
      * Print the object and its children, clipped by (x|y|w|h).
      * (tx|ty) is the calculated position of the parent
      */
-    virtual void print( QPainter *p, int x, int y, int w, int h, int tx, int ty);
+    virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
-    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
+    virtual void paintObject( QPainter */*p*/, int /*x*/, int /*y*/,
                         int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
-    void printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
-    void printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
+    void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
+    void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 
 
     /*
@@ -440,7 +436,7 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
-    virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
+    virtual void paintBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     virtual QRect viewRect() const;
@@ -474,7 +470,7 @@ private:
     bool m_positioned                : 1;
     bool m_overhangingContents : 1;
     bool m_relPositioned             : 1;
-    bool m_printSpecial              : 1; // if the box has something special to print (background, border, etc)
+    bool m_paintSpecial              : 1; // if the box has something special to print (background, border, etc)
 
     bool m_isAnonymous               : 1;
     bool m_recalcMinMax 	     : 1;
@@ -499,5 +495,5 @@ enum VerticalPositionHint {
     PositionUndefined = 0x3fff
 };
 
-}; //namespace
+} //namespace
 #endif

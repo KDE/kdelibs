@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <qfile.h>
+#include <qdir.h>
 #include <qtextstream.h>
 
 #include <kapplication.h>
@@ -39,7 +40,7 @@
 
 static bool isUtf8(const char *buf) {
   int i, n;
-  register char c;
+  register unsigned char c;
   bool gotone = false;
 
 #define F 0   /* character never appears in text */
@@ -149,7 +150,7 @@ QString KConfigBase::locale() const
 
 void KConfigBase::setGroup( const QString& group )
 {
-  if ( group.isNull() )
+  if ( group.isEmpty() )
     mGroup = "<default>";
   else
     mGroup = group.utf8();
@@ -241,7 +242,8 @@ bool KConfigBase::entryIsImmutable(const QString &key) const
   if (aEntryData.bImmutable)
     return true;
 
-  entryKey.c_key = key.utf8().data();
+  QCString utf8_key = key.utf8();
+  entryKey.c_key = utf8_key.data();
   aEntryData = lookupData(entryKey); // Normal entry
   if (aEntryData.bImmutable)
     return true;
@@ -405,6 +407,11 @@ QCString KConfigBase::readEntryUtf8( const char *pKey) const
   KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
   KEntry aEntryData = lookupData(entryKey);
+  if (aEntryData.bExpand)
+  {
+     // We need to do fancy, take the slow route.
+     return readEntry(pKey, QString::null).utf8();
+  }
   return aEntryData.mValue;
 }
 
@@ -611,6 +618,20 @@ QString KConfigBase::readPathEntry( const char *pKey, const QString& pDefault ) 
   const bool bExpandSave = bExpand;
   bExpand = true;
   QString aValue = readEntry( pKey, pDefault );
+  bExpand = bExpandSave;
+  return aValue;
+}
+
+QStringList KConfigBase::readPathListEntry( const QString& pKey, char sep ) const
+{
+  return readPathListEntry(pKey.utf8().data(), sep);
+}
+
+QStringList KConfigBase::readPathListEntry( const char *pKey, char sep ) const
+{
+  const bool bExpandSave = bExpand;
+  bExpand = true;
+  QStringList aValue = readListEntry( pKey, sep );
   bExpand = bExpandSave;
   return aValue;
 }
@@ -1053,20 +1074,88 @@ void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
    writePathEntry(pKey.utf8().data(), path, bPersistent, bGlobal, bNLS);
 }
 
+
+static bool cleanHomeDirPath( QString &path, const QString &homeDir )
+{
+   if (!path.startsWith(homeDir))
+        return false;
+
+   unsigned int len = homeDir.length();
+   // replace by "$HOME" if possible
+   if (path.length() == len || path[len] == '/') {
+        path = path.replace(0, len, QString::fromLatin1("$HOME"));
+        return true;
+   } else 
+        return false;
+}
+
+static QString translatePath( QString path )
+{
+   if (path.isEmpty())
+       return path;
+
+   bool startsWithFile = path.left(5).lower() == QString::fromLatin1("file:");
+
+   // return original path, if it refers to another type of URL (e.g. http:/), or
+   // if the path is already relative to another directory
+   if (!startsWithFile && path[0] != '/' ||
+        startsWithFile && path[5] != '/')
+	return path;
+
+   if (startsWithFile)
+        path.remove(0,5); // strip leading "file:/" off the string
+
+   // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
+   // since it would not recognize paths without a trailing '/'.
+   // All of the 3 following functions to return the user's home directory
+   // can return different paths. We have to test all them.
+   QString homeDir0 = QFile::decodeName(getenv("HOME"));
+   QString homeDir1 = QDir::homeDirPath();
+   QString homeDir2 = QDir(homeDir1).canonicalPath();
+   if (cleanHomeDirPath(path, homeDir0) || 
+       cleanHomeDirPath(path, homeDir1) ||
+       cleanHomeDirPath(path, homeDir2) ) {
+     // kdDebug() << "Path was replaced\n";
+   }
+
+   if (startsWithFile)
+      path.prepend( "file:" );
+
+   return path;
+}
+
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   bool bPersistent, bool bGlobal,
                                   bool bNLS)
 {
-   QString value;
-   if (!path.isEmpty())
-   {
-      value = KGlobal::dirs()->relativeLocation("home", path);
-      if (value[0] != '/')
-         value = "$HOME/"+value;
-   }
-   writeEntry(pKey, value, bPersistent, bGlobal, bNLS);
+   writeEntry(pKey, translatePath(path), bPersistent, bGlobal, bNLS);
 }
 
+void KConfigBase::writePathEntry ( const QString& pKey, const QStringList &list,
+                               char sep , bool bPersistent,
+                               bool bGlobal, bool bNLS )
+{
+  writePathEntry(pKey.utf8().data(), list, sep, bPersistent, bGlobal, bNLS);
+}
+
+void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
+                               char sep , bool bPersistent,
+                               bool bGlobal, bool bNLS )
+{
+  if( list.isEmpty() )
+    {
+      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
+      return;
+    }
+  QStringList new_list;
+  QStringList::ConstIterator it = list.begin();
+  for( ; it != list.end(); ++it )
+    {
+      QString value = *it;
+      new_list.append( translatePath(value) );
+    }
+  writeEntry( pKey, new_list, sep, bPersistent, bGlobal, bNLS );
+}
 
 void KConfigBase::deleteEntry( const QString& pKey,
                                  bool bNLS,

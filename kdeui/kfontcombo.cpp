@@ -85,7 +85,7 @@ KFontListItem::KFontListItem(const QString &fontName, KFontCombo *combo)
       m_canPaintName(true)
 {
     setText(fontName);
-};
+}
 
 KFontListItem::~KFontListItem()
 {

@@ -21,13 +21,13 @@
 
 #include <qstring.h>
 #include <kurl.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 namespace KIO {
   class Job;
   Job *pasteClipboard( const KURL& _dest_url, bool move = false );
   void pasteData( const KURL& _dest_url, const QByteArray& _data );
   bool isClipboardEmpty();
-};
+}
 
 #endif

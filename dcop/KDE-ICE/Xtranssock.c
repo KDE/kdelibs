@@ -383,11 +383,6 @@ TRANS(SocketOpen) (int i, int type)
 
     if ((ciptr->fd = socket(Sockettrans2devtab[i].family, type,
 	Sockettrans2devtab[i].protocol)) < 0
-#ifndef WIN32
-#if (defined(X11_t) && !defined(USE_POLL)) || defined(FS_t) || defined(FONT_t)
-       || ciptr->fd >= TRANS_OPEN_MAX
-#endif
-#endif
       ) {
 	PRMSG (1, "SocketOpen: socket() failed for %s\n",
 	    Sockettrans2devtab[i].transname, 0, 0);

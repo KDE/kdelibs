@@ -58,7 +58,7 @@ namespace DOM
   class Node;
   class HTMLEventListener;
   class EventListener;
-};
+}
 
 namespace khtml
 {
@@ -75,20 +75,21 @@ namespace khtml
   class CachedObject;
   class RenderWidget;
   class CSSStyleSelector;
-};
+  class HTMLTokenizer;
+}
 
 namespace KJS {
     class Window;
     class WindowFunc;
     class JSEventListener;
     class DOMDocument;
-};
+}
 
 namespace KParts
 {
   class PartManager;
   class LiveConnectExtension;
-};
+}
 
 /**
  * This class is khtml's main class. It features an almost complete
@@ -105,8 +106,18 @@ namespace KParts
  * w->show();
  * </pre>
  *
- * By default Java and JavaScript support are disabled. You can enable them by
- * using the @ref setJavaEnabled() and @ref setJScriptEnabled() methods.
+ * If Java and JavaScript are enabled by default depends on the user's
+ * settings. If you do not need them, and escpecially if you display
+ * unfiltered data from untrusted sources, it is strongly recommended to 
+ * turn them off. In that case, you should also turn off the automatic 
+ * redirect and plugins:
+ *
+ * <pre>
+ * w->setJScriptEnabled(false);
+ * w->setJavaEnabled(false);
+ * w->setMetaRefreshEnabled(false);
+ * w->setPluginsEnabled(false);
+ * </pre>
  *
  * Some apps want to write their HTML code directly into the widget instead of
  * it opening an url. You can also do that in the following way:
@@ -154,11 +165,12 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::DocumentImpl;
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
-  friend class HTMLTokenizer;
+  friend class khtml::HTMLTokenizer;
   friend class XMLTokenizer;
   friend class khtml::RenderWidget;
   friend class khtml::CSSStyleSelector;
   friend class KHTMLPartIface;
+  friend class KHTMLPartFunction;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
@@ -253,12 +265,12 @@ public:
   bool jScriptEnabled() const;
 
   /**
-   * Enable/disable the automatic forwarding by <meta http-equiv="refresh" ....>
+   * Enable/disable the automatic forwarding by &lt;meta http-equiv="refresh" ....&gt;
    */
   void setMetaRefreshEnabled( bool enable );
 
   /**
-   * Returns @p true if automtaic forwarding is enabled.
+   * Returns @p true if automatic forwarding is enabled.
    */
   bool metaRefreshEnabled() const;
 
@@ -688,6 +700,11 @@ public:
    * Referrer used for links in this page.
    */
   QString referrer() const;
+
+  /**
+   * Referrer used to obtain this page.
+   */
+  QString pageReferrer() const;
 
   /**
    * Last-modified date (in raw string format), if received in the [HTTP] headers.

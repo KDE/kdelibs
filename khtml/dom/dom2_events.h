@@ -832,5 +832,5 @@ protected:
 
 
 
-}; //namespace
+} //namespace
 #endif

@@ -422,7 +422,7 @@ QString KMManager::testPage()
 {
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
-	QString	tpage = conf->readEntry("TestPage",QString::null);
+	QString	tpage = conf->readPathEntry("TestPage");
 	if (tpage.isEmpty())
 		tpage = locate("data","kdeprint/testprint.ps");
 	return tpage;

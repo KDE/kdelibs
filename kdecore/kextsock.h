@@ -372,7 +372,8 @@ public:
    * This function returns true if the value was set correctly. That is NOT
    * the result of the set.
    * @param enable	if true, set address reusable
-   * @return true on success, false if this is not possible in this state
+   * @return true on success, false on failure. If the socket was not yet created,
+   * the value is only remembered. In this case the return value is always true.
    */
   bool setAddressReusable(bool enable);
 
@@ -381,6 +382,34 @@ public:
    * @return true if the address can be reused
    */
   bool addressReusable();
+
+  /**
+   * Sets/unsets the v6-only flag for IPv6 sockets.
+   *
+   * When an IPv6 socket is in use, communication with IPv4 sockets is 
+   * guaranteed by translating those IPv4 addresses into IPv6 ones
+   * (specifically, the v4-mapped addresses). This flag allows that
+   * behaviour to be turned on and off.
+   *
+   * Note that this does not have any effect on sockets that are not
+   * IPv6 and the function will always return false in those cases.
+   * Also note that this flag defaults to off in order to accomodate
+   * existing applications.
+   *
+   * @param enable	if true, no IPv4 translation will be performed;
+   *			this socket will be restricted to IPv6 communication
+   * @returns true on success, false on failure.
+   * @see localAddress to find out if this is an IPv6 socket
+   */
+  bool setIPv6Only(bool enable);
+
+  /**
+   * Returns the status of the v6-only flag for IPv6 sockets.
+   * @returns true if the flag is set to on; false if it is not. If this
+   * socket is not an IPv6 one, the return value is false.
+   * @see setIPv6Only
+   */
+  bool isIPv6Only();
 
   /**
    * Sets the buffer sizes for this socket.
@@ -914,6 +943,17 @@ public:
    * @return the text for the given error code
    */
   static QString strError(int code, int syserr);
+
+  /**
+   * Sets/unsets address reusing flag for this socket.
+   *
+   * This function returns true if the value was set correctly. That is NOT
+   * the result of the set.
+   * @param fd	the file descriptor
+   * @param enable	if true, set address reusable
+   * @return true on success, false on failure.
+   */
+  static bool setAddressReusable(int fd, bool enable);
 
 protected:
   virtual void virtual_hook( int id, void* data );

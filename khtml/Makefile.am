@@ -24,7 +24,7 @@ JAVA_SUBDIR=java
 LIBKJAVA=./java/libkjava.la
 endif
 
-SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) . ecma kmultipart
+SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma . kmultipart
 
 lib_LTLIBRARIES = libkhtml.la
 kde_module_LTLIBRARIES = khtmlimagepart.la
@@ -43,7 +43,7 @@ noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_ext.h
 libkhtml_la_LDFLAGS = -version-info 5:0:1 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
-	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la $(LIBKJAVA) \
+	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	$(LIB_KIO) \
 	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
@@ -57,7 +57,8 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kio/kssl -I$(top_srcdir)/kdeprint \
+	-I$(top_srcdir)/kio/kssl -I$(top_builddir)/kio/kssl \
+	-I$(top_srcdir)/kdeprint \
 	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir)/interfaces/kregexpeditor \
 	-I$(top_srcdir) $(all_includes)
@@ -97,7 +98,7 @@ testcss_LDADD = libkhtml.la
 testrender_SOURCES = testrender.cpp
 testrender_LDADD = libkhtml.la
 test_regression_SOURCES = test_regression.cpp
-test_regression_LDADD = libkhtml.la ecma/kjs_html.la $(top_builddir)/kjs/libkjs.la
+test_regression_LDADD = libkhtml.la $(top_builddir)/kjs/libkjs.la
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
 DOXYGEN_EXCLUDE =  test*.*

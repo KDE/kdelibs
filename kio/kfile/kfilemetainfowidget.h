@@ -38,9 +38,7 @@ public:
 
     bool apply()
     {
-        return m_item.isEditable() &&
-               m_item.value()!= m_value &&
-               m_item.setValue(m_value);
+        return m_item.isEditable() && m_item.setValue(m_value);
     }
 
     void setValue(const QVariant& value)  { m_value = value;    }

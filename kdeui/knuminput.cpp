@@ -53,7 +53,7 @@
 static inline int calcDiffByTen( int x, int y ) {
     // calculate ( x - y ) / 10 without overflowing ints:
     return ( x / 10 ) - ( y / 10 )  +  ( x % 10 - y % 10 ) / 10;
-};
+}
 
 // ----------------------------------------------------------------------------
 
@@ -496,7 +496,7 @@ void KIntNumInput::setSpecialValueText(const QString& text)
 {
     m_spin->setSpecialValueText(text);
     layout(true);
-};
+}
 
 QString KIntNumInput::specialValueText() const
 {
@@ -562,6 +562,7 @@ KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent
 
 KDoubleNumInput::~KDoubleNumInput()
 {
+	delete d;
 }
 
 // ### remove when BIC changes are allowed again:
@@ -837,7 +838,7 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
 
     layout(true);
     updateLegacyMembers();
-};
+}
 
 void KDoubleNumInput::setLabel(const QString & label, int a)
 {
@@ -896,7 +897,7 @@ public:
       return INT_MIN;
     } else {
       *ok = true;
-      return int( value * f + 0.5 );
+      return int( value * f + ( value < 0 ? -0.5 : 0.5 ) );
     }
   }
 

@@ -54,8 +54,8 @@ public:
 
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
-    virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
-    void printObject(QPainter *p, int _x, int _y,
+    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty);
+    void paintObject(QPainter *p, int _x, int _y,
                      int _w, int _h, int _tx, int _ty);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
@@ -63,10 +63,10 @@ public:
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
     virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
 
-    void setPrintingMode(bool print) { m_printingMode = print; }
+    void setPrintingMode(bool print ) { m_printingMode = print; }
     bool printingMode() const { return m_printingMode; }
-    void setPrintImages(bool enable) { m_printImages = enable; }
-    bool printImages() const { return m_printImages; }
+    void setPrintImages(bool enable) { m_paintImages = enable; }
+    bool paintImages() const { return m_paintImages; }
     void setTruncatedAt(int y) { m_truncatedAt = y; }
     int truncatedAt() const { return m_truncatedAt; }
 
@@ -95,11 +95,11 @@ protected:
     int m_viewportWidth;
     int m_viewportHeight;
 
-    // used to ignore viewport width when printing to the printer
+    // used to ignore viewport width when painting to the printer
     bool m_printingMode;
-    bool m_printImages;
+    bool m_paintImages;
     int m_truncatedAt;
 };
 
-};
+}
 #endif

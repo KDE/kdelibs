@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #undef FORMS_DEBUG
@@ -39,6 +38,7 @@
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_ext.h"
 
@@ -49,6 +49,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <netaccess.h>
 #include <kfileitem.h>
@@ -64,9 +65,10 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
+HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     : HTMLElementImpl(doc)
 {
+    m_implicit = implicit;
     m_post = false;
     m_multipart = false;
     m_autocomplete = true;
@@ -74,7 +76,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
     m_doingsubmit = false;
     m_inreset = false;
     m_enctype = "application/x-www-form-urlencoded";
-    m_boundary = "----------0xKhTmLbOuNdArY";
+    m_boundary = "----------" + KApplication::randomString( 42 + 13 );
     m_acceptcharset = "UNKNOWN";
 }
 
@@ -83,6 +85,9 @@ HTMLFormElementImpl::~HTMLFormElementImpl()
     QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
         it.current()->m_form = 0;
+    QPtrListIterator<HTMLImageElementImpl> it2(imgElements);
+    for (; it2.current(); ++it2)
+        it2.current()->m_form = 0;
 }
 
 NodeImpl::Id HTMLFormElementImpl::id() const
@@ -106,13 +111,25 @@ static QCString encodeCString(const QCString& e)
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    QCString encoded(( e.length()+e.contains( '\n' ) )*3+1);
+    QCString encoded(( e.length()+e.contains( '\n' ) )*3
+                     +e.contains('\r') * 3 + 1);
     int enclen = 0;
+    bool crmissing = false;
+    unsigned char oldc;
+    unsigned char c ='\0';
 
     //QCString orig(e.data(), e.size());
 
     for(unsigned pos = 0; pos < e.length(); pos++) {
-        unsigned char c = e[pos];
+        oldc = c;
+        c = e[pos];
+
+        if (crmissing && c != '\n') {
+            encoded[enclen++] = '%';
+            encoded[enclen++] = '0';
+            encoded[enclen++] = 'D';
+            crmissing = false;
+        }
 
         if ( (( c >= 'A') && ( c <= 'Z')) ||
              (( c >= 'a') && ( c <= 'z')) ||
@@ -130,6 +147,10 @@ static QCString encodeCString(const QCString& e)
             encoded[enclen++] = '%';
             encoded[enclen++] = '0';
             encoded[enclen++] = 'A';
+            crmissing = false;
+        }
+        else if (c == '\r' && oldc != '\n') {
+            crmissing = true;
         }
         else if ( c != '\r' )
         {
@@ -155,24 +176,6 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
     str.truncate(str.length());
     return str;
 }
-
-void HTMLFormElementImpl::i18nData()
-{
-    QString foo1 = i18n( "You're about to send data to the Internet "
-                         "via an unencrypted connection. It might be possible "
-                         "for others to see this information.\n"
-                         "Do you want to continue?");
-    QString foo2 = i18n("KDE Web browser");
-    QString foo3 = i18n("When you send a password unencrypted to the Internet, "
-                        "it might be possible for others to capture it as plain text.\n"
-                        "Do you want to continue?");
-    QString foo5 = i18n("Your data submission is redirected to "
-                        "an insecure site. The data is sent unencrypted.\n"
-                        "Do you want to continue?");
-    QString foo6 = i18n("The page contents expired. You can repost the form"
-                        "data by using <a href=\"javascript:go(0);\">Reload</a>");
-}
-
 
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
@@ -249,7 +252,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 else
                 {
                     QCString hstr("--");
-                    hstr += m_boundary.string().latin1();
+                    hstr += m_boundary.latin1();
                     hstr += "\r\n";
                     hstr += "Content-Disposition: form-data; name=\"";
                     hstr += (*it).data();
@@ -303,7 +306,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (m_multipart)
-        enc_string = ("--" + m_boundary.string() + "--\r\n").ascii();
+        enc_string = ("--" + m_boundary + "--\r\n").ascii();
 
     int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );
@@ -333,14 +336,12 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
     m_encCharset = QString::null;
 }
 
-void HTMLFormElementImpl::setBoundary( const DOMString& bound )
-{
-    m_boundary = bound;
-}
-
 void HTMLFormElementImpl::submitFromKeyboard()
 {
-    // Activate the first submit button - like other browsers do
+    // Activate the first submit button
+    // if there is none, do a submit anyway if not more
+    // than one <input type=text> or <input type=password>
+    unsigned int inputtext = 0;
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* current = static_cast<HTMLButtonElementImpl *>(it.current());
@@ -350,14 +351,22 @@ void HTMLFormElementImpl::submitFromKeyboard()
             }
         } else if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl *>(it.current());
-            if (current->inputType() == HTMLInputElementImpl::SUBMIT && !current->disabled()) {
+            switch(current->inputType())  {
+            case HTMLInputElementImpl::SUBMIT:
+            case HTMLInputElementImpl::IMAGE:
                 current->activate();
                 return;
+            case HTMLInputElementImpl::TEXT:
+            case HTMLInputElementImpl::PASSWORD:
+                ++inputtext;
+            default:
+                break;
             }
         }
     }
 
-    prepareSubmit();
+    if (inputtext <= 1)
+        prepareSubmit();
 }
 
 bool HTMLFormElementImpl::prepareSubmit()
@@ -413,7 +422,7 @@ void HTMLFormElementImpl::submit(  )
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
                                       enctype().string(),
-                                      boundary().string() );
+                                      m_boundary );
         }
         else {
             view->part()->submitForm( "get", url.string(), form_data,
@@ -510,6 +519,16 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
     formElements.remove(e);
+}
+
+void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
+{
+    imgElements.append(e);
+}
+
+void HTMLFormElementImpl::removeImgElement(HTMLImageElementImpl *e)
+{
+    imgElements.remove(e);
 }
 
 // -------------------------------------------------------------------------
@@ -842,9 +861,8 @@ void HTMLFieldSetElementImpl::attach()
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE)
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderFieldset(this);
-    if (m_render) {
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -989,10 +1007,10 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         m_maxLen = -1;
         if (!attr->val()) break;
         bool ok;
-        m_maxLen = attr->val()->toInt(&ok);
-        if (!ok)
-            m_maxLen = -1;
-        else if (m_maxLen < 0)
+        int ml = attr->val()->toInt(&ok);
+        if (ml > 0 && ml < 1024)
+            m_maxLen = ml;
+        else if (ok && ml <= 0)
             m_maxLen = 0;
         setChanged();
     }
@@ -1188,17 +1206,17 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case IMAGE:
 
-            if(m_clicked && clickX() != -1)
+            if(m_clicked)
             {
                 m_clicked = false;
                 QString astr(nme.isEmpty() ? QString::fromLatin1("x") : nme + ".x");
 
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(clickX());
+                astr.setNum(KMAX( clickX(), 0 ));
                 encoding += fixUpfromUnicode(codec, astr);
                 astr = nme.isEmpty() ? QString::fromLatin1("y") : nme + ".y";
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(clickY());
+                astr.setNum(KMAX( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);
 
                 return true;
@@ -1229,23 +1247,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             QString local;
             QCString dummy("");
 
+            KURL fileurl(value().string());
+            KIO::UDSEntry filestat;
+
             // can't submit file in www-url-form encoded
-            if (multipart) {
-                KURL fileurl(value().string());
-                KIO::UDSEntry filestat;
-
-                if (!KIO::NetAccess::stat(fileurl, filestat)) {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
+            if (multipart && KIO::NetAccess::stat(fileurl, filestat)) {
                 KFileItem fileitem(filestat, fileurl, true, false);
-                if(fileitem.isDir()) {
-                    encoding += dummy;
-                    return false;
-                }
 
-                if ( KIO::NetAccess::download(KURL(value().string()), local) ) {
+                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local) ) {
                     QFile file(local);
                     if (file.open(IO_ReadOnly)) {
                         QCString filearray(file.size()+1);
@@ -1259,14 +1268,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
                         return true;
                     }
-                    return false;
                 }
-                else {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
-                break;
             }
             // else fall through
         }
@@ -1334,9 +1336,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
     if ( !m_disabled )
     {
         if (evt->isMouseEvent() &&
-            ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
-            m_type == IMAGE
-            && m_render) {
+            evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
             // record the mouse position for when we get the DOMActivate event
             MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
             int offsetX, offsetY;
@@ -1350,9 +1350,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
         // must dispatch a DOMActivate event - a click event will not do the job.
         if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
-            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
+            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET))
             activate();
-        }
     }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
@@ -1384,7 +1383,7 @@ bool HTMLInputElementImpl::isEditable()
 // -------------------------------------------------------------------------
 
 HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+    : HTMLGenericFormElementImpl(doc)
 {
 }
 
@@ -1414,13 +1413,21 @@ void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+void HTMLLabelElementImpl::attach()
+{
+    // skip the generic handler
+    HTMLElementImpl::attach();
+}
+
+#if 0
 ElementImpl *HTMLLabelElementImpl::formElement()
 {
     DOMString formElementId = getAttribute(ATTR_FOR);
-    if (formElementId.isNull() || formElementId.isEmpty())
+    if (formElementId.isEmpty())
         return 0;
     return getDocument()->getElementById(formElementId);
 }
+#endif
 
 // -------------------------------------------------------------------------
 
@@ -1447,11 +1454,10 @@ void HTMLLegendElementImpl::attach()
     addCSSProperty(CSS_PROP_PADDING_RIGHT, "1px");
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE)
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderLegend(this);
-    if (m_render)
         m_render->setStyle(_style);
-
+    }
     HTMLGenericFormElementImpl::attach();
     _style->deref();
 }
@@ -1583,7 +1589,7 @@ DOMString HTMLSelectElementImpl::value( )
             && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
             return static_cast<HTMLOptionElementImpl*>(items[i])->value();
     }
-    return DOMString();
+    return DOMString("");
 }
 
 void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)
@@ -1880,7 +1886,7 @@ HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementIm
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
         addChild(o);
-        o->addChild(new TextImpl(doc, DOMString(*i)));
+        o->addChild(doc->document()->createTextNode(DOMString(*i).implementation()));
     }
 }
 
@@ -1923,72 +1929,9 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 
 // -------------------------------------------------------------------------
 
-HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f)
-{
-}
-
-HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
-{
-}
-
 NodeImpl::Id HTMLOptGroupElementImpl::id() const
 {
     return ID_OPTGROUP;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild, exceptioncode);
-    if ( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
-    if(!exceptioncode)
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl* HTMLOptGroupElementImpl::addChild(NodeImpl* newChild)
-{
-    recalcSelectOptions();
-
-    return HTMLGenericFormElementImpl::addChild(newChild);
-}
-
-void HTMLOptGroupElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    HTMLGenericFormElementImpl::parseAttribute(attr);
-    recalcSelectOptions();
-}
-
-void HTMLOptGroupElementImpl::recalcSelectOptions()
-{
-    NodeImpl *select = parentNode();
-    while (select && select->id() != ID_SELECT)
-        select = select->parentNode();
-    if (select)
-        static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
 // -------------------------------------------------------------------------
@@ -2068,7 +2011,7 @@ DOMString HTMLOptionElementImpl::value() const
     if ( !m_value.isNull() )
         return m_value;
     // Use the text if the value wasn't set.
-    return text().string().stripWhiteSpace();
+    return text().string().simplifyWhiteSpace();
 }
 
 void HTMLOptionElementImpl::setValue(DOMStringImpl* value)
@@ -2193,6 +2136,7 @@ void HTMLTextAreaElementImpl::attach()
     assert(parentNode());
 
     addCSSProperty(CSS_PROP_COLOR, "text");
+    addCSSProperty( CSS_PROP_FONT_FAMILY, "monospace" );
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -2275,7 +2219,7 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
     }
-    insertBefore(getDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
+    insertBefore(getDocument()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 

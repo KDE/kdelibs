@@ -75,14 +75,16 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   
   if (path[0] != '/')
      return true; // Relative paths are ok.
-     
+
   KStandardDirs *dirs = KGlobal::dirs();
-  if (dirs->relativeLocation("applnk", path)[0] != '/')
+     
+  if (dirs->relativeLocation("apps", path)[0] != '/')
      return true;
   if (dirs->relativeLocation("services", path)[0] != '/')
      return true;
-  if (dirs->relativeLocation("appdata", path).startsWith("kdesktop/Desktop"))
+  if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
+     
   return false;
 }
 
@@ -113,7 +115,7 @@ QString KDesktopFile::readGenericName() const
 
 QString KDesktopFile::readPath() const
 {
-  return readEntry("Path");
+  return readPathEntry("Path");
 }
 
 QString KDesktopFile::readDevice() const
@@ -159,7 +161,7 @@ QString KDesktopFile::readURL() const
 	return devURL;
 
     } else {
-	QString url = readEntry("URL");
+	QString url = readPathEntry("URL");
         if ( !url.isEmpty() && url[0] == '/' )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
@@ -210,27 +212,30 @@ bool KDesktopFile::hasDeviceType() const
 bool KDesktopFile::tryExec() const
 {
   // Test for TryExec and "X-KDE-AuthorizeAction" 
-  QString te = readEntry("TryExec");
+  QString te = readPathEntry("TryExec");
 
   if (!te.isEmpty()) {
     if (te[0] == '/') {
       if (::access(QFile::encodeName(te), R_OK & X_OK))
 	return false;
-      else
-	return true;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale cpecified
       // encoding (Like a filenames).
       QStringList dirs = QStringList::split(':', QFile::decodeName(::getenv("PATH")));
       QStringList::Iterator it(dirs.begin());
+      bool match = false;
       for (; it != dirs.end(); ++it) {
 	QString fName = *it + "/" + te;
 	if (::access(QFile::encodeName(fName), R_OK & X_OK) == 0)
-	  return true;
+	{
+	  match = true;
+	  break;
+	}
       }
       // didn't match at all
-      return false;
+      if (!match)
+        return false;
     }
   }
   QStringList list = readListEntry("X-KDE-AuthorizeAction");
@@ -284,6 +289,6 @@ void KDesktopFile::virtual_hook( int id, void* data )
 
 QString KDesktopFile::readDocPath() const
 {
-	return readEntry( "DocPath" );
+	return readPathEntry( "DocPath" );
 }
 

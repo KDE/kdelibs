@@ -170,11 +170,9 @@ namespace KNotifyClient
 	 **/
 	bool startDaemon();
 
+//#ifndef KDE_NO_COMPAT
 	/**
-	 * This should be the most used method in here.
-	 * Call it by KNotifyClient::event("EventName");
-	 * It will use KApplication::kApplication->dcopClient() to communicate to
-	 * the server
+	 * @deprecated
 	 * @param message The name of the event
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only. Can be QString::null.
@@ -183,6 +181,7 @@ namespace KNotifyClient
 	bool event(const QString &message, const QString &text=QString::null);
 
 	/**
+	 * @deprecated
 	 * Allows to easily emit standard events.
 	 * @param event The event you want to raise.
 	 * @param text The text explaining the event you raise. Can be QString::null.
@@ -191,6 +190,7 @@ namespace KNotifyClient
 	bool event( StandardEvent event, const QString& text=QString::null );
 
 	/**
+	 * @deprecated
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
 	 * @param present The presentation method(s) of the event
@@ -200,6 +200,57 @@ namespace KNotifyClient
 	 * @return true if successful, false otherwise
 	 */
 	bool userEvent(const QString &text=QString::null, int present=Default, int level=Default,
+	                      const QString &sound=QString::null, const QString &file=QString::null);
+	
+//#endif
+    
+	/**
+	 * This should be the most used method in here.
+	 * Pass the origin-widget's winId() here so that a PassivePopup can be
+	 * placed appropriately.
+	 *
+	 * Call it by KNotifyClient::event(widget->winId(), "EventName");
+	 * It will use KApplication::kApplication->dcopClient() to communicate to
+	 * the server
+	 * @param winId The winId() of the widget where the event originates
+	 * @param message The name of the event
+	 * @param text The text to put in a dialog box.  This won't be shown if
+	 *             the user connected the event to sound, only. Can be QString::null.
+	 * @return true if successful, false otherwise
+	 * @since 3.1.1
+	 */
+	bool event( int winId, const QString& message, 
+                    const QString& text = QString::null );
+    
+	/**
+	 * You should
+	 * pass the origin-widget's winId() here so that a PassivePopup can be
+	 * placed appropriately.
+	 * @param winId The winId() of the widget where the event originates
+	 * @param message The name of the event
+	 * @param text The text to put in a dialog box.  This won't be shown if
+	 *             the user connected the event to sound, only. Can be QString::null.
+	 * @return true if successful, false otherwise
+	 * @since 3.1.1
+	 */
+	bool event( int winId, StandardEvent event,
+                    const QString& text = QString::null );
+    
+	/**
+	 * Will fire an event that's not registered.
+	 * You should
+	 * pass the origin-widget's winId() here so that a PassivePopup can be
+	 * placed appropriately.
+	 * @param winId The winId() of the originating widget
+	 * @param text The error message text, if applicable
+	 * @param present The presentation method(s) of the event
+	 * @param level The error message level, defaulting to "Default"
+	 * @param sound The sound file to play if selected with @p present
+	 * @param file The log file to play if selected with @p present
+	 * @return true if successful, false otherwise
+	 * @since 3.1.1
+	 */
+	bool userEvent(int winId, const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
 	
 	/**
@@ -259,6 +310,6 @@ namespace KNotifyClient
 	 * @returns the current KInstance.
 	 */
 	KInstance * instance();
-};
+}
 
 #endif

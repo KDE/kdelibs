@@ -67,7 +67,7 @@ public:
 
     virtual bool childAllowed( NodeImpl *newChild );
 
-    virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElement ( const DOMString &tagName, int* pExceptioncode );
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
 
@@ -90,6 +90,6 @@ private:
     mutable DOMString m_domain;
 };
 
-}; //namespace
+} //namespace
 
 #endif

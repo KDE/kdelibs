@@ -29,10 +29,6 @@
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
 
-class KCharsets;
-class StringTokenizer;
-class HTMLTokenizer;
-
 #include <qstring.h>
 #include <qobject.h>
 #include <qptrqueue.h>
@@ -45,7 +41,7 @@ class HTMLTokenizer;
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 
-class KHTMLParser;
+class KCharsets;
 class KHTMLView;
 
 namespace DOM {
@@ -55,7 +51,7 @@ namespace DOM {
 
 namespace khtml {
     class CachedScript;
-
+    class KHTMLParser;
 
     /**
      * @internal
@@ -83,7 +79,7 @@ namespace khtml {
             if(buffer->unicode())
                 a = new AttributeImpl(buffer->unicode(), v.implementation());
             else if ( !attrName.isEmpty() && attrName != "/" )
-                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false),
+                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false, 0),
                                       v.implementation());
 
             if (a) {
@@ -112,14 +108,13 @@ namespace khtml {
         ushort id;
         bool flat;
     };
-};
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
 //-----------------------------------------------------------------------------
 
-class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
+class HTMLTokenizer : public Tokenizer, public CachedObjectClient
 {
 public:
     HTMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
@@ -149,7 +144,7 @@ protected:
     void scriptHandler();
     void scriptExecution(const QString& script, QString scriptURL = QString(),
                          int baseLine = 0);
-    void setSrc(QString source);
+    void setSrc(const QString& source);
 
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -341,6 +336,8 @@ protected:
 
     KHTMLView *view;
 };
+
+} // namespace
 
 #endif // HTMLTOKENIZER
 

@@ -76,7 +76,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         exitText();
 
     ElementImpl *newElement;
-    newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    newElement = m_doc->document()->createElementNS(namespaceURI, qName, 0);
 
     int i;
     for (i = 0; i < atts.length(); i++) {
@@ -86,7 +86,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         DOMString val(atts.value(i));
         NodeImpl::Id id = m_doc->document()->attrId(uri.implementation(),
                                                     ln.implementation(),
-                                                    false /* allocate */);
+                                                    false /* allocate */, 0);
         newElement->setAttribute(id, val.implementation(), exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
@@ -128,7 +128,7 @@ bool XMLHandler::startCDATA()
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
 
-    NodeImpl *newNode = m_doc->document()->createCDATASection("");
+    NodeImpl *newNode = m_doc->document()->createCDATASection(new DOMStringImpl(""));
     if (m_currentNode->addChild(newNode)) {
         if (m_view && !newNode->attached())
             newNode->attach();
@@ -185,7 +185,7 @@ bool XMLHandler::comment(const QString & ch)
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
-    m_currentNode->addChild(m_doc->document()->createComment(ch));
+    m_currentNode->addChild(m_doc->document()->createComment(new DOMStringImpl(ch.unicode(), ch.length())));
     return true;
 }
 
@@ -194,7 +194,8 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
-    ProcessingInstructionImpl *pi = m_doc->document()->createProcessingInstruction(target,data);
+    ProcessingInstructionImpl *pi =
+        m_doc->document()->createProcessingInstruction(target, new DOMStringImpl(data.unicode(), data.length()));
     m_currentNode->addChild(pi);
     pi->checkStyleSheet();
     return true;
@@ -260,7 +261,7 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
 {
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
-    e->addChild(m_doc->document()->createTextNode(value));
+    e->addChild(m_doc->document()->createTextNode(new DOMStringImpl(value.unicode(), value.length())));
 // ### FIXME
 //     if (m_doc->document()->doctype())
 //         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
@@ -360,13 +361,13 @@ void XMLTokenizer::finish()
 
         // Create elements for display
         DocumentImpl *doc = m_doc->document();
-        NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html");
-        NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body");
-        NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
+        NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html", 0);
+        NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body", 0);
+        NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1", 0);
         NodeImpl       *headingText = doc->createTextNode(i18n("XML parsing error"));
         NodeImpl     *errorText = doc->createTextNode(handler.errorProtocol());
-        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
-        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
+        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr", 0);
+        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre", 0);
         NodeImpl       *lineText = doc->createTextNode(line+"\n");
         NodeImpl       *errorLocText = doc->createTextNode(errorLocPtr);
 
@@ -439,9 +440,10 @@ void XMLTokenizer::executeScripts()
             QString scriptCode = "";
             NodeImpl *child;
             for (child = m_scriptsIt->current()->firstChild(); child; child = child->nextSibling()) {
-                if (child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) {
-                    scriptCode += static_cast<TextImpl*>(child)->data().string();
-                }
+                if ( ( child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) &&
+                     static_cast<TextImpl*>(child)->string() )
+                    scriptCode += QConstString(static_cast<TextImpl*>(child)->string()->s,
+                                               static_cast<TextImpl*>(child)->string()->l).string();
             }
             // the script cannot do document.write until we support incremental parsing
             // ### handle the case where the script deletes the node or redirects to

@@ -201,25 +201,6 @@ Value::Value(ValueImp *v)
   }
 }
 
-Value::Value(const Value &v)
-{
-  rep = v.imp();
-  if (rep)
-  {
-    rep->ref();
-    //fprintf(stderr, "Value::Value(%p)(copying %p) imp=%p ref=%d\n", this, &v, rep, rep->refcount);
-  }
-}
-
-Value::~Value()
-{
-  if (rep)
-  {
-    rep->deref();
-    //fprintf(stderr, "Value::~Value(%p) imp=%p ref=%d\n", this, rep, rep->refcount);
-  }
-}
-
 Value& Value::operator=(const Value &v)
 {
   if (rep) {

@@ -32,7 +32,7 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 $(top_srcdir)/configure.in: $(top_srcdir)/subdirs $(top_srcdir)/configure.files $(CONF_FILES)
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in
 
-AUTOMAKE_OPTIONS = foreign 1.5
+AUTOMAKE_OPTIONS = foreign 1.6
 
 include_HEADERS = kde.pot
 
@@ -105,4 +105,9 @@ install-apidox-kdelibs:
 		$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt ;\
 		echo $(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
 		$(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
+	fi
+
+clean-generic:
+	if test -f $(top_builddir)/apidocs; then \
+		rm -rf $(top_builddir)/apidocs; \
 	fi

@@ -115,8 +115,8 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     QValueList<KBookmark> bookmarks;
     if ( e->provides("application/x-xbel") )
     {
-        QCString s( e->encodedData("application/x-xbel") );
-        kdDebug(1203) << "KBookmarkDrag::decode s=" << s << endl;
+        QByteArray s( e->encodedData("application/x-xbel") );
+        kdDebug(1203) << "KBookmarkDrag::decode s=" << QCString(s, s.size()+1 ) << endl;
         QDomDocument doc;
         doc.setContent( s );
         QDomElement elem = doc.documentElement();

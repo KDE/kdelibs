@@ -26,45 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qmetaobject.h>
 #include <qlabel.h>
-
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-
-const int XFocusOut = FocusOut;
-const int XFocusIn = FocusIn;
-#undef FocusOut
-#undef FocusIn
-
-typedef int (*QX11EventFilter) (XEvent*);
-extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
-static QX11EventFilter oldFilter = 0;
-
-static int qxembed_x11_event_filter( XEvent* e)
-{
-    switch ( e->type ) {
-    case LeaveNotify: {
-        QWidget* w = QWidget::find( e->xkey.window );
-        if (w && w->metaObject()->inherits("KJavaAppletWidget"))
-            XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, e->xany.window );
-        break;
-    }
-    case EnterNotify: {
-        QWidget* w = QWidget::find( e->xkey.window );
-        if (w && w->metaObject()->inherits("KJavaAppletWidget") && !w->hasFocus())
-            XGrabButton(qt_xdisplay(), AnyButton, AnyModifier, e->xany.window,
-                    FALSE, ButtonPressMask, GrabModeSync, GrabModeAsync,
-                    None, None );
-        break;
-    }
-    }
-    if ( oldFilter )
-        return oldFilter( e );
-    return FALSE;
-}
 
 
 // For future expansion
@@ -78,15 +40,33 @@ private:
 int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
-                                      QWidget* parent, const char* name )
+                   QWidget* parent, const char* name )
    : QXEmbed ( parent, name)
 {
-    static bool initialized = false;
-    if (!initialized) {
-        oldFilter = qt_set_x11_event_filter( qxembed_x11_event_filter );
-        initialized = true;
-    }
-    m_applet = new KJavaApplet( this, context );
+    setProtocol(QXEmbed::XPLAIN);
+
+    m_applet = new KJavaApplet( this );
+    d        = new KJavaAppletWidgetPrivate;
+    m_kwm    = new KWinModule( this );
+
+    m_applet->setAppletContext( context );
+
+    d->tmplabel = new QLabel( this );
+    d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
+    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
+    d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+    d->tmplabel->show();
+
+    m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", appletCount++ );
+    m_applet->setWindowName( m_swallowTitle );
+}
+
+KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
+   : QXEmbed ( parent, name)
+{
+    setProtocol(QXEmbed::XPLAIN);
+
+    m_applet = new KJavaApplet( this );
     d        = new KJavaAppletWidgetPrivate;
     m_kwm    = new KWinModule( this );
 
@@ -160,8 +140,6 @@ QSize KJavaAppletWidget::sizeHint() const
 
 void KJavaAppletWidget::resize( int w, int h )
 {
-    kdDebug(6100) << "KJavaAppletWidget, id = " << m_applet->appletId() << ", ::resize to: " << w << ", " << h << endl;
-
     if( d->tmplabel )
     {
         d->tmplabel->resize( w, h );
@@ -169,45 +147,6 @@ void KJavaAppletWidget::resize( int w, int h )
     }
 
     QXEmbed::resize( w, h );
-}
-
-void KJavaAppletWidget::focusInEvent( QFocusEvent * e ){
-    WId window = embeddedWinId();
-    if (!window)
-        return;
-    XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, window );
-    XFocusInEvent inev = { XFocusIn, 0, TRUE, qt_xdisplay(), window, 
-                           NotifyNormal, NotifyPointer };
-    XSendEvent(qt_xdisplay(), window, TRUE, FocusChangeMask, (XEvent*) &inev);
-    QXEmbed::focusInEvent(e);
-}
-
-/*!\reimp
- */
-void KJavaAppletWidget::focusOutEvent( QFocusEvent * e ) {
-    if (!embeddedWinId())
-        return;
-    XFocusOutEvent outev = { XFocusOut, 0, TRUE, qt_xdisplay(), embeddedWinId(),
-                             NotifyNormal, NotifyPointer };
-    XSendEvent(qt_xdisplay(), embeddedWinId(), TRUE, FocusChangeMask, (XEvent*) &outev);
-    QXEmbed::focusOutEvent(e);
-}
-
-bool KJavaAppletWidget::x11Event( XEvent* e )
-{
-    switch ( e->type ) {
-
-    case ButtonPress:
-        QFocusEvent::setReason( QFocusEvent::Mouse );
-        setFocus();
-        QFocusEvent::resetReason();
-        XAllowEvents(qt_xdisplay(), ReplayPointer, CurrentTime);
-        return TRUE;
-    case ButtonRelease:
-        XAllowEvents(qt_xdisplay(), SyncPointer, CurrentTime);
-        break;
-    }
-    return QXEmbed::x11Event(e);
 }
 
 #include "kjavaappletwidget.moc"

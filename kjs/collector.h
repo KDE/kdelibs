@@ -98,6 +98,6 @@ namespace KJS {
     enum { BlockSize = 100 };
   };
 
-};
+}
 
 #endif

@@ -122,6 +122,7 @@ public final class KJASAppletStub
     
     private void setFailed(String why) {
         failed = true;
+        panel.stopAnimation();
         Main.protocol.sendAppletFailed(context.getID(), appletID, why); 
     }
     
@@ -196,12 +197,18 @@ public final class KJASAppletStub
                 
                 try {
                     app.init();
-                } catch (Error e) {
-                    Main.info("Error " + e.toString() + " during applet initialization"); 
-                    e.printStackTrace();
-                    setFailed(e.toString());
+                } catch (Error er) {
+                    Main.info("Error " + er.toString() + " during applet initialization"); 
+                    er.printStackTrace();
+                    setFailed(er.toString());
+                    return;
+                } catch (Exception ex) {
+                    Main.info("Exception " + ex.toString() + " during applet initialization"); 
+                    ex.printStackTrace();
+                    setFailed(ex.toString());
                     return;
                 }
+
                 stateChange(INITIALIZED);
                 loader.removeStatusListener(panel);
                 app.setVisible(true);
@@ -289,15 +296,24 @@ public final class KJASAppletStub
         if( app != null ) {
             synchronized (app) {
                 if (active) {
-                    stopApplet();
+                    try {
+                        stopApplet();
+                    } catch (Exception e) {
+                    }
                 }
-                app.destroy();
+                try {
+                    app.destroy();
+                } catch (Exception e) {
+                }
             }
             stateChange(DESTROYED);
         }
 
         if( runThread != null && runThread.isAlive() )
             Main.debug( "runThread is active when stub is dying" );
+        loader = null;
+        context = null;
+        app = null;
         frame.dispose();
     }
 

@@ -598,7 +598,13 @@ KCmdLineArgs::parseAllArgs()
 	     } else {
 		 printQ( i18n("%1 was written by somebody who wants to remain anonymous.").arg(about->programName()) );
 	     }
-	     printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
+	     if (!about->bugAddress().isEmpty())
+	     {
+	        QString bugReporting = i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" );
+		if (about->bugAddress() != "submit@bugs.kde.org")
+		    bugReporting.replace("http://bugs.kde.org", about->bugAddress());
+		printQ(bugReporting);
+	     }
 	     exit(0);
          } else {
            if ((option[0] == 'n') && (option[1] == 'o'))

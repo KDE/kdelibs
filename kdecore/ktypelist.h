@@ -348,7 +348,7 @@
 namespace KDE
 {
     class NullType;
-};
+}
 
 /**
  * The building block of typelists of any length.

@@ -24,6 +24,7 @@
 
 #include "qmenubar.h"
 #include "qapplication.h"
+#include "qcheckbox.h"
 #include "qpainter.h"
 #include "qpalette.h"
 #include "qframe.h"
@@ -1095,6 +1096,23 @@ QRect LightStyleV3::subRect(SubRect subrect, const QWidget *widget) const
 	    break;
 	}
 
+	case SR_CheckBoxFocusRect:
+	{
+		const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+		//Only checkbox, no label
+		if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+		{
+			QRect bounding = cb->rect();
+			QRect checkbox(bounding.x(), bounding.y() + (bounding.height() - 13)/2,
+							13, 13);
+
+			return checkbox;
+		}
+		//Fallthrough intentional
+	}
+
+
     default:
 	rect = QCommonStyle::subRect(subrect, widget);
 	break;
@@ -1310,13 +1328,19 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 						  data);
 
 	    if ((controls & SC_SliderGroove) && groove.isValid()) {
+		QColor grooveColor = cg.midlight();
+		if (!(flags & Style_Enabled))
+		    grooveColor = cg.background();
+            
+            
+		QBrush brush(grooveColor);                            
 		drawLightBevel( p, groove, cg,
 				( ( flags | Style_Raised ) ^ Style_Raised ) |
 				( ( flags & Style_Enabled ) ? Style_Sunken :
 				  Style_Default ), 2, true, true,
-				&cg.brush( QColorGroup::Midlight ) );
+				&brush );
 		groove.addCoords( 2, 2, -2, -2 );
-		drawLightEtch( p, groove, cg.midlight(), false );
+		drawLightEtch( p, groove, grooveColor, false );
 
 		if (flags & Style_HasFocus) {
 		    groove.addCoords( -2, -2, 2, 2 );
@@ -1325,16 +1349,21 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 	    }
 
 	    if ((controls & SC_SliderHandle) && handle.isValid()) {
-		p->setPen( cg.highlight().light() );
+		QColor sliderColor = cg.highlight();
+		if (!(flags & Style_Enabled))
+		    sliderColor = cg.button();                   
+		
+		p->setPen( sliderColor.light() );
+                
 		p->drawLine( handle.topLeft(), handle.topRight() );
 		p->drawLine( handle.left(), handle.top() + 1,
 			     handle.left(), handle.bottom() - 1 );
-		p->setPen( cg.highlight().dark() );
+		p->setPen( sliderColor.dark() );
 		p->drawLine( handle.left(), handle.bottom(),
 			     handle.right() - 1, handle.bottom() );
 		p->drawLine( handle.topRight(), handle.bottomRight() );
 		handle.addCoords( 1, 1, -1, -1 );
-		p->fillRect( handle, cg.brush( QColorGroup::Highlight ) );
+		p->fillRect( handle, sliderColor );
 		p->setPen( cg.midlight() );
 
 		if ( slider->orientation() == Qt::Horizontal )

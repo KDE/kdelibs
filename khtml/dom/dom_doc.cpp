@@ -57,9 +57,9 @@ DOMImplementation::DOMImplementation(DOMImplementationImpl *i)
 DOMImplementation &DOMImplementation::operator = (const DOMImplementation &other)
 {
     if ( impl != other.impl ) {
-    if (impl) impl->deref();
-    impl = other.impl;
-    if (impl) impl->ref();
+        if (impl) impl->deref();
+        impl = other.impl;
+        if (impl) impl->ref();
     }
     return *this;
 }
@@ -187,11 +187,11 @@ Document &Document::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -228,14 +228,24 @@ Element Document::documentElement() const
 
 Element Document::createElement( const DOMString &tagName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElement(tagName);
-    return 0;
+    if (!impl)
+        return 0;
+    int exceptioncode = 0;
+    Element el = ((DocumentImpl *)impl)->createElement(tagName, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return el;
 }
 
 Element Document::createElementNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElementNS(namespaceURI,qualifiedName);
-    return 0;
+    if (!impl)
+        return 0;
+    int exceptioncode = 0;
+    Element el = ((DocumentImpl *)impl)->createElementNS(namespaceURI, qualifiedName, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return el;
 }
 
 DocumentFragment Document::createDocumentFragment(  )
@@ -246,26 +256,26 @@ DocumentFragment Document::createDocumentFragment(  )
 
 Text Document::createTextNode( const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createTextNode( data );
+    if (impl) return ((DocumentImpl *)impl)->createTextNode( data.implementation() );
     return 0;
 }
 
 Comment Document::createComment( const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createComment( data );
+    if (impl) return ((DocumentImpl *)impl)->createComment( data.implementation() );
     return 0;
 }
 
 CDATASection Document::createCDATASection( const DOMString &data )
 {
     // ### DOM1 spec says raise exception if html documents - what about XHTML documents?
-    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data );
+    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data.implementation() );
     return 0;
 }
 
 ProcessingInstruction Document::createProcessingInstruction( const DOMString &target, const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createProcessingInstruction( target, data );
+    if (impl) return ((DocumentImpl *)impl)->createProcessingInstruction( target, data.implementation() );
     return 0;
 }
 
@@ -288,11 +298,12 @@ Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString
         localName.remove(0, colonpos+1);
     }
 
-    // ### check correctness of parameters
-
-    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */);
-    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
     int exceptioncode = 0;
+    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */, &exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+
+    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
     if (r.handle() && prefix.implementation())
         r.handle()->setPrefix(prefix.implementation(), exceptioncode);
     if (exceptioncode)
@@ -439,12 +450,12 @@ DocumentFragment &DocumentFragment::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
-	    if ( impl ) impl->deref();
-	impl = 0;
-	} else {
-    Node::operator =(other);
-	}
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
+            if ( impl ) impl->deref();
+            impl = 0;
+        } else {
+            Node::operator =(other);
+        }
     }
     return *this;
 }
@@ -483,11 +494,11 @@ DocumentType &DocumentType::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;

@@ -66,7 +66,7 @@ namespace KJS {
 
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
-};
+}
 
 // ------------------------------ UndefinedImp ---------------------------------
 
@@ -256,12 +256,34 @@ Value Reference2::getValue(ExecState *exec) const
 
 void Reference2::putValue(ExecState *exec, const Value& w)
 {
+  if (!isValid()) {
+    UString m = I18N_NOOP("Invalid left-hand side value");
+    Object err = Error::create(exec, ReferenceError, m.ascii());
+    exec->setException(err);
+    return;
+  }
 #ifdef KJS_VERBOSE
   printInfo(exec, (UString("setting property ")+
 		   propertyName()).cstring().c_str(), w);
 #endif
   if (bs.type() == NullType)
-    exec->interpreter()->globalObject().put(exec, propertyName(), w);
+  {
+    // Declare new variable in the right (lexically scoped) global object
+    // which is the last item in the scope chain
+    List chain = exec->context().scopeChain();
+    if ( chain.isEmpty() )
+      fprintf( stderr, "KJS: Reference2::putValue: empty scope chain!\n" );
+    else
+    {
+      ListIterator last = chain.end();
+      --last;
+      Object varObj = Object::dynamicCast( *last );
+      if ( varObj.isValid() )
+        varObj.put(exec, propertyName(), w);
+      else // shouldn't happen
+        fprintf( stderr, "KJS: Reference2::putValue: scope chain contains non-object!\n" );
+    }
+  }
   else
     static_cast<ObjectImp*>(bs.imp())->put(exec, propertyName(), w);
 }
@@ -691,7 +713,12 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
     case GlobalCode:
       scope = List();
       scope.append(glob);
-      thisVal = Object(static_cast<ObjectImp*>(glob.imp()));
+#ifndef KJS_PURE_ECMA
+      if (thisV.isValid())
+          thisVal = thisV;
+      else
+#endif
+          thisVal = glob;
       break;
     case FunctionCode:
     case AnonymousCode:

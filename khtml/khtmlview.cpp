@@ -374,7 +374,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
-        p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
+        p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
@@ -382,8 +382,8 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->vertPaintBuffer->resize(10, visibleHeight());
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
-        d->tp->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey, ew, eh, 0, 0);
+        d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
+        m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey, ew, eh, 0, 0);
         d->tp->end();
         p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
     }
@@ -396,8 +396,8 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
             d->tp->begin(d->paintBuffer);
             d->tp->translate(-ex, -ey-py);
-            d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
-            m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
+            d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
+            m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey+py, ew, ph, 0, 0);
 #ifdef BOX_DEBUG
             if (m_part->xmlDocImpl()->focusNode())
             {
@@ -525,6 +525,12 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
+
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	d->clickCount++;
@@ -560,6 +566,12 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
@@ -602,6 +614,13 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
+
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -695,6 +714,12 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
@@ -1275,7 +1300,7 @@ void KHTMLView::print()
 
             root->setTruncatedAt(top+pageHeight);
 
-            root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
+            root->paint(p, 0, top, pageWidth, pageHeight, 0, 0);
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
 
@@ -1332,7 +1357,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     p->scale(scale, scale);
 #endif
 
-    root->print(p, 0, yOff, root->docWidth(), height, 0, 0);
+    root->paint(p, 0, yOff, root->docWidth(), height, 0, 0);
     if (more)
         *more = yOff + height < root->docHeight();
     p->restore();
@@ -1386,6 +1411,16 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
     if (!d->formCompletions)
         d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
     return d->formCompletions->readListEntry(name);
+}
+
+void KHTMLView::clearCompletionHistory(const QString& name)
+{
+    if (!d->formCompletions)
+    {
+        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+    }
+    d->formCompletions->writeEntry(name, "");
+    d->formCompletions->sync();
 }
 
 void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
@@ -1508,35 +1543,16 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						button,0);
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
-	bool defaultHandled = me->defaultHandled();
         if (me->defaultHandled() || me->defaultPrevented())
             swallowEvent = true;
 	me->deref();
 
-	// Special case: If it's a click event, we also send the KHTML_CLICK or KHTML_DBLCLICK event. This is not part
-	// of the DOM specs, but is used for compatibility with the traditional onclick="" and ondblclick="" attributes,
-	// as there is no way to tell the difference between single & double clicks using DOM (only the click count is
-	// stored, which is not necessarily the same)
-	if (eventId == EventImpl::CLICK_EVENT) {
-	    me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
-				    true,cancelable,m_part->xmlDocImpl()->defaultView(),
-				    detail,screenX,screenY,clientX,clientY,
-				    ctrlKey,altKey,shiftKey,metaKey,
-				    button,0);
-
-	    me->ref();
-	    if (defaultHandled)
-		me->setDefaultHandled();
-	    targetNode->dispatchEvent(me,exceptioncode,true);
-            if (me->defaultHandled() || me->defaultPrevented())
-                swallowEvent = true;
-	    me->deref();
-
+        if( eventId == EventImpl::MOUSEDOWN_EVENT ) {
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
                 m_part->xmlDocImpl()->setFocusNode(0);
-	}
+        }
     }
 
     return swallowEvent;

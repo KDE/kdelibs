@@ -56,5 +56,5 @@ signals:
   void result( SkipDlg *_this, int _button );
 };
 
-};
+}
 #endif

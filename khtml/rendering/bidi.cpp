@@ -764,7 +764,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     BidiRun *r = runs.first();
 
     while ( r ) {
-        //printf("level = %d\n", r->level);
+        //paintf("level = %d\n", r->level);
         if ( r->level > levelHigh )
             levelHigh = r->level;
         if ( r->level < levelLow )

@@ -105,15 +105,16 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 
     if ( needsTable ) {
         RenderTable *table;
-        if( !beforeChild )
-            beforeChild = lastChild();
-        if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
-            table = static_cast<RenderTable *>(beforeChild);
-        else {
-            //kdDebug( 6040 ) << "creating anonymous table" << endl;
+	RenderObject *last = beforeChild ? beforeChild->previousSibling() : lastChild();
+        if ( last && last->isTable() && last->isAnonymousBox() ) {
+            table = static_cast<RenderTable *>(last);
+        } else {
+	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
             table = new RenderTable(0 /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
+	    newStyle->setDisplay( TABLE );
+	    newStyle->setFlowAroundFloats( true );
             table->setStyle(newStyle);
             table->setIsAnonymousBox(true);
             addChild(table, beforeChild);
@@ -167,7 +168,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     setLayouted( false );
     setMinMaxKnown( false );
 
-    if ( isAnonymousBox() && !m_first ) {
+    if ( isAnonymousBox() && !firstChild() ) {
 	// we are an empty anonymous box. There is no reason for us to continue living.
 	detach();
     }
@@ -183,9 +184,9 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
 
     RenderStyle* pseudo = child->style()->getPseudoStyle(type);
 
-    if (pseudo)
-    {
-        if (pseudo->contentType()==CONTENT_TEXT)
+    if (pseudo) {
+        pseudo->ref();
+        if (pseudo->display() != NONE && pseudo->contentType()==CONTENT_TEXT)
         {
             RenderObject* po = new RenderFlow(0 /* anonymous box */);
             po->setStyle(pseudo);
@@ -202,14 +203,14 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
             t->close();
             po->close();
         }
-        else if (pseudo->contentType()==CONTENT_OBJECT)
+        else if (pseudo->display() != NONE && pseudo->contentType()==CONTENT_OBJECT)
         {
             RenderObject* po = new RenderImage(0);
             po->setStyle(pseudo);
             addChild(po, beforeChild);
             po->close();
         }
-
+        pseudo->deref();
     }
 }
 

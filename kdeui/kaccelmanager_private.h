@@ -23,7 +23,7 @@
 
 
 #include <qstring.h>
-#include <qarray.h>
+#include <qmemarray.h>
 #include <qvaluelist.h>
 #include <qobject.h>
 

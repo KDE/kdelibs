@@ -30,6 +30,6 @@ namespace khtml {
 	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/);
 	virtual void notifyFinished(CachedObject * /*finishedObj*/);
     };
-};
+}
 
 #endif

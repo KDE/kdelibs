@@ -214,7 +214,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
     return res;
 }
 
- CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) const
+CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) const
 {
     if(!m_lstValues) return 0;
 

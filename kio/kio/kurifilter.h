@@ -21,7 +21,7 @@
 #ifndef __kurifilter_h__
 #define __kurifilter_h__ "$Id$"
 
-#include <qptrlist.h>
+#include <qstringlist.h>
 #include <qobject.h>
 
 #include <kurl.h>

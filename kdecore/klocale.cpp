@@ -140,10 +140,10 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
       // HPB: Only run splitLocale on the environment variables..
       QStringList langs;
 
-      langs << QFile::decodeName( ::getenv("LC_CTYPE") );
-      langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LC_ALL") );
+      langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LANG") );
+      langs << QFile::decodeName( ::getenv("LC_CTYPE") );
 
       for ( QStringList::Iterator it = langs.begin();
 	    it != langs.end();
@@ -157,6 +157,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 	    if (!chrset.isEmpty())
 	      langs.insert(it, ln + '_' + ct + '.' + chrset);
 	  }
+	  langs.insert(it, ln);
 
 	}
 
@@ -215,6 +216,8 @@ void KLocale::doBindInit()
 	d->plural_form = 11;
       else if ( pf == "Balcan" )
 	d->plural_form = 12;
+      else if ( pf == "Macedonian" )
+	d->plural_form = 13;
       else {
 	kdWarning(173) << "Definition of PluralForm is none of "
 		       << "NoPlural/"
@@ -229,6 +232,7 @@ void KLocale::doBindInit()
 		       << "Slovak/"
 		       << "Arabic/"
 		       << "Balcan/"
+		       << "Macedonian/"
 		       << "Maltese: " << pf << endl;
 	exit(1);
       }
@@ -804,6 +808,14 @@ QString KLocale::translate( const char *singular, const char *plural,
      if (n != 11 && n % 10 == 1)
 	return put_n_in(forms[0], n);
      else if (n / 10 != 1 && n % 10 >= 2 && n % 10 <= 4)
+	return put_n_in(forms[1], n);
+     else
+	return put_n_in(forms[2], n);
+  case 13: // Macedonian
+     EXPECT_LENGTH(3);
+     if (n % 10 == 1)
+	return put_n_in(forms[0], n);
+     else if (n % 10 == 2)
 	return put_n_in(forms[1], n);
      else
 	return put_n_in(forms[2], n);

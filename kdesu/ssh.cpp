@@ -129,10 +129,6 @@ int SshProcess::exec(const char *password, int check)
 	return 0;
     }
 
-    // Notify the taskbar that an app has been started.
-    QString suffix = i18n("(as %1@%2)").arg(m_User).arg(m_Host);
-    notifyTaskbar(suffix);
-
     setExitString("Waiting for forwarded connections to terminate");
     ret = waitForChild();
     return ret;

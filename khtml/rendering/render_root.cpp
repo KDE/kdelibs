@@ -50,7 +50,7 @@ RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
     setPositioned(true); // to 0,0 :)
 
     m_printingMode = false;
-    m_printImages = true;
+    m_paintImages = true;
 
     m_selectionStart = 0;
     m_selectionEnd = 0;
@@ -69,13 +69,13 @@ void RenderRoot::calcWidth()
 
     // exception: m_width is already known and set in layout()
 
-    if (style()->marginLeft().type==Fixed)
-        m_marginLeft = style()->marginLeft().value;
+    if (style()->marginLeft().isFixed())
+        m_marginLeft = style()->marginLeft().value();
     else
         m_marginLeft = 0;
 
-    if (style()->marginRight().type==Fixed)
-        m_marginRight = style()->marginRight().value;
+    if (style()->marginRight().isFixed())
+        m_marginRight = style()->marginRight().value();
     else
         m_marginRight = 0;
 }
@@ -118,7 +118,7 @@ void RenderRoot::layout()
 #endif
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       m_view->contentsHeight());
+                                       0);
         m_width = s.width();
         m_height = s.height();
     }
@@ -160,35 +160,35 @@ bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
     return true;
 }
 
-void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
+void RenderRoot::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
 {
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderRoot::printObject(QPainter *p, int _x, int _y,
+void RenderRoot::paintObject(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
-    // 1. print background, borders etc
+    // 1. paint background, borders etc
     if(hasSpecialObjects() && !isInline())
-        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 2. print contents
+    // 2. paint contents
     RenderObject *child = firstChild();
     while(child != 0) {
         if(!child->isFloating() && !child->isPositioned()) {
-            child->print(p, _x, _y, _w, _h, _tx, _ty);
+            child->paint(p, _x, _y, _w, _h, _tx, _ty);
         }
         child = child->nextSibling();
     }
 
-    // 3. print floats and other non-flow objects.
+    // 3. paint floats and other non-flow objects.
     // we have to do that after the contents otherwise they would get obscured by background settings.
     // it is anyway undefined if regular text is above fixed objects or the other way round.
     if (m_view)
@@ -198,7 +198,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     }
 
     if(specialObjects)
-        printSpecialObjects(p, _x, _y, _w, _h, _tx, _ty);
+        paintSpecialObjects(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty);

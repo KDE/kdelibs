@@ -60,7 +60,9 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
 }
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
-    KDialogBase(parent, name, true, i18n("Replace Text"), Ok | Cancel, Ok)
+    KDialogBase(parent, name, true, i18n("Replace Text"), Ok | Cancel, Ok),
+    m_findExtension (0),
+    m_replaceExtension (0)
 {
     d = new KFindDialogPrivate;
 }
@@ -254,7 +256,7 @@ void KFindDialog::setPattern (const QString &pattern)
     m_find->lineEdit()->setText( pattern );
     m_find->lineEdit()->selectAll();
     d->pattern = pattern;
-    kdDebug() << "setPattern " << pattern;
+    kdDebug() << "setPattern " << pattern<<endl;
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)

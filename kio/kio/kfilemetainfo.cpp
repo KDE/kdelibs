@@ -44,14 +44,21 @@ public:
         : QShared(),
           mimeTypeInfo( mti ),
           key( _key ),
-          value( _value )
+          value( _value ),
+          dirty( false ),
+          added( false ),
+          removed( false )
     {}
 
     // we use this one for the streaming operators
-    Data() {
+    Data() : mimeTypeInfo( 0L )
+    {}
+
+    ~Data() 
+    {
         if ( this == null )
             delete const_cast<KFileMimeTypeInfo::ItemInfo*>( mimeTypeInfo );
-    };
+    }
 
     const KFileMimeTypeInfo::ItemInfo*  mimeTypeInfo;
     // mimeTypeInfo has the key, too, but only for non-variable ones
@@ -135,6 +142,9 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
     }
 
 //    kdDebug(7033) << key() << ".setValue()\n";
+
+    if ( d->value == value )
+        return true;
 
     d->dirty = true;
     d->value = value;
@@ -225,6 +235,11 @@ void KFileMetaInfoItem::setAdded()
     d->added = true;
 }
 
+void KFileMetaInfoItem::setRemoved()
+{
+    d->removed = true;
+}
+
 void KFileMetaInfoItem::ref()
 {
     if (d != Data::null) d->ref();
@@ -278,7 +293,7 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
 
     QString mT;
     if (mimeType.isEmpty())
-        mT = KMimeType::findByURL(path, 0, true )->name();
+        mT = KMimeType::findByPath(path)->name();
     else
         mT = mimeType;
 
@@ -488,17 +503,23 @@ bool KFileMetaInfo::applyChanges()
 
     // look up if we need to write to the file
     QMapConstIterator<QString, KFileMetaInfoGroup> it;
-    for (it = d->groups.begin(); it!=d->groups.end(); ++it)
+    for (it = d->groups.begin(); it!=d->groups.end() && !doit; ++it)
+    {
+        if ( (*it).isModified() )
+            doit = true;
+
+        else
     {
         QStringList keys = it.data().keys();
-        for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it)
+            for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it2)
         {
-            if ((*it)[*it2].isModified());
+                if ( (*it)[*it2].isModified() )
             {
                 doit = true;
                 break;
             }
         }
+    }
     }
 
     if (!doit)
@@ -799,7 +820,7 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
             item->m_suffix = i18n("bpp"); break;
 
         case KFileMimeTypeInfo::Hertz:
-            item->m_suffix = i18n("bpp");
+            item->m_suffix = i18n("Hz");
     }
 }
 
@@ -982,7 +1003,9 @@ public:
     Data(const QString& _name)
         : QShared(),
           name(_name),
-          mimeTypeInfo(0L)
+          mimeTypeInfo(0L),
+          dirty( false ),
+          added( false )
     {}
 
     // we use this one for the streaming operators
@@ -998,7 +1021,6 @@ public:
     QStringList                         removedItems;
     bool                                dirty   :1;
     bool                                added   :1;
-    bool                                removed :1;
 
     static Data* null;
     static Data* makeNull();
@@ -1152,6 +1174,11 @@ void KFileMetaInfoGroup::setAdded()
     d->added = true;
 }
 
+bool KFileMetaInfoGroup::isModified() const
+{
+    return d->dirty;
+}
+
 void KFileMetaInfoGroup::ref()
 {
     if (d != Data::null) d->ref();
@@ -1226,8 +1253,10 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
         return false;
     }
 
+    (*it).setRemoved();
     d->items.remove(it);
     d->removedItems.append(key);
+    d->dirty = true;
     return true;
 }
 
@@ -1518,7 +1547,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& item )
            << d->removed;
 
      return s;
-};
+}
 
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& item )
@@ -1569,7 +1598,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& group )
           << d->mimeTypeInfo->mimeType();
     }
     return s;
-};
+}
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 {
@@ -1625,7 +1654,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
           << d->mimeTypeInfo->mimeType();
     }
     return s;
-};
+}
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
 {

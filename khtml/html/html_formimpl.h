@@ -20,12 +20,12 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef HTML_FORMIMPL_H
 #define HTML_FORMIMPL_H
 
 #include "html/html_elementimpl.h"
+#include "html/html_imageimpl.h"
 #include "dom/html_element.h"
 
 #include <qvaluelist.h>
@@ -60,7 +60,7 @@ class HTMLOptionElementImpl;
 class HTMLFormElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFormElementImpl(DocumentPtr *doc);
+    HTMLFormElementImpl(DocumentPtr *doc, bool implicit);
     virtual ~HTMLFormElementImpl();
 
     virtual Id id() const;
@@ -72,36 +72,31 @@ public:
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
 
-    DOMString boundary() const { return m_boundary; }
-    void setBoundary( const DOMString & );
-
     bool autoComplete() const { return m_autocomplete; }
 
     virtual void parseAttribute(AttributeImpl *attr);
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
 
-    void registerFormElement(khtml::RenderFormElement *);
-    void removeFormElement(khtml::RenderFormElement *);
-
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
+    void registerImgElement(HTMLImageElementImpl *);
+    void removeImgElement(HTMLImageElementImpl *);
 
     void submitFromKeyboard();
     bool prepareSubmit();
     void submit();
     void reset();
 
-    static void i18nData();
-
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
 
 private:
     QPtrList<HTMLGenericFormElementImpl> formElements;
+    QPtrList<HTMLImageElementImpl> imgElements;
     DOMString m_target;
     DOMString m_enctype;
-    DOMString m_boundary;
+    QString m_boundary;
     DOMString m_acceptcharset;
     QString m_encCharset;
     bool m_post : 1;
@@ -308,20 +303,16 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLLabelElementImpl : public HTMLElementImpl
+class HTMLLabelElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLLabelElementImpl(DocumentPtr *doc);
     virtual ~HTMLLabelElementImpl();
 
     virtual Id id() const;
-
     virtual void parseAttribute(AttributeImpl *attr);
+    virtual void attach();
 
-    /**
-     * the form element this label is associated to.
-     */
-    ElementImpl *formElement();
  private:
     DOMString m_formElementID;
 };
@@ -445,19 +436,10 @@ public:
 class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
-    virtual ~HTMLOptGroupElementImpl();
+    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0)
+        : HTMLGenericFormElementImpl(doc, f) {}
 
     virtual Id id() const;
-
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
-    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
-    virtual NodeImpl *addChild( NodeImpl* newChild );
-    virtual void parseAttribute(AttributeImpl *attr);
-    void recalcSelectOptions();
-
 };
 
 
@@ -563,6 +545,6 @@ public:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

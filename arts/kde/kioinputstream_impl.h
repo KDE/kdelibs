@@ -74,6 +74,7 @@ private:
 	bool m_firstBuffer;
 	bool m_streamStarted;
 	bool m_streamSuspended;
+	bool m_streamPulled;
 
 	unsigned int m_packetBuffer;
 	const unsigned int m_packetSize;
@@ -81,6 +82,6 @@ private:
 	static const unsigned int PACKET_COUNT;
 };
 
-};
+}
 
 #endif

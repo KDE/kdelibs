@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 George Staikos <staikos@kde.org>
+   Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,7 +29,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include "klibloader.h"
-#include "kstaticdeleter.h"
 #include <kconfig.h>
 #include <kapplication.h>
 
@@ -61,24 +60,24 @@ enum SymbolKeys {
 
 extern "C" {
 // Function pointer table
-static int     (*F_SOCKSinit)   (char *) = NULL;
-static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t) = NULL;
-static signed long int (*F_read)        (int, void *, unsigned long int) = NULL;
-static signed long int (*F_write)       (int, const void *, unsigned long int) = NULL;
+static int     (*F_SOCKSinit)   (char *) = 0L;
+static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t) = 0L;
+static signed long int (*F_read)        (int, void *, unsigned long int) = 0L;
+static signed long int (*F_write)       (int, const void *, unsigned long int) = 0L;
 static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *, 
-                                 ksocklen_t *) = NULL;
+                                 ksocklen_t *) = 0L;
 static int     (*F_sendto)      (int, const void *, unsigned long int, int,
-                                 const struct sockaddr *, ksocklen_t) = NULL;
-static int     (*F_recv)        (int, void *, unsigned long int, int) = NULL;
-static int     (*F_send)        (int, const void *, unsigned long int, int) = NULL;
-static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *) = NULL;
-static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *) = NULL;
-static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = NULL;
+                                 const struct sockaddr *, ksocklen_t) = 0L;
+static int     (*F_recv)        (int, void *, unsigned long int, int) = 0L;
+static int     (*F_send)        (int, const void *, unsigned long int, int) = 0L;
+static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *) = 0L;
+static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *) = 0L;
+static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = 0L;
 static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *, 
-                                 struct timeval *) = NULL;
-static int     (*F_listen)      (int, int) = NULL;
-static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = NULL;
-};
+                                                     struct timeval *) = 0L;
+static int     (*F_listen)      (int, int) = 0L;
+static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = 0L;
+}
 
 
 class KSocksTable {
@@ -89,10 +88,11 @@ class KSocksTable {
    QMap<SymbolKeys,QString>  symbols;
    // The name of this library
    QString                   myname;
+   bool                      hasWorkingAsyncConnect;
 };
 
 
-KSocksTable::KSocksTable() : myname("Unknown") {
+KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
 }
 
 
@@ -162,6 +162,7 @@ class KDanteSocksTable : public KSocksTable {
 };
 
 KDanteSocksTable::KDanteSocksTable() : KSocksTable() {
+  hasWorkingAsyncConnect = false;
   myname = i18n("Dante SOCKS client");
   symbols.insert(S_SOCKSinit,   "SOCKSinit");
   symbols.insert(S_connect,     "Rconnect");
@@ -192,25 +193,23 @@ KDanteSocksTable::~KDanteSocksTable() {
 
 KSocks *KSocks::_me = 0;
 bool KSocks::_disabled = false;
-static KStaticDeleter<KSocks> med;
 
 void KSocks::disable() 
 { 
-   if (!_me) _disabled = true; 
+   if (!_me)
+      _disabled = true; 
 }
 
 KSocks *KSocks::self() {
+  // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
-    if (kapp)
-    {
-       KConfigGroup cfg(kapp->config(), "Socks");
-       _me = med.setObject(new KSocks(&cfg));
-    }
-    else
-    {
-       _disabled = true;
-       _me = med.setObject(new KSocks(0));
-    }
+     if (kapp) {
+        KConfigGroup cfg(kapp->config(), "Socks");
+        _me = new KSocks(&cfg);
+     } else {
+        _disabled = true;
+        _me = new KSocks(0);
+     }
   }
   return _me;
 }
@@ -219,24 +218,30 @@ void KSocks::setConfig(KConfigBase *config)
 {
   // We can change the config from disabled to enabled
   // but not the other way around.
-  if (_me && _disabled) 
-  { 
+  if (_me && _disabled) { 
      delete _me;
      _me = 0;
      _disabled = false;
   }
-  if (_me) return;
-  _me = med.setObject(new KSocks(config));
+  if (!_me)
+    _me = new KSocks(config);
 }
 
-bool KSocks::activated() { return (_me != NULL); }
+bool KSocks::activated() { return (_me != 0L); }
 
 
-KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
+KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
    _hasSocks = false;
    _useSocks = false;
 
-   if (_disabled || !config)
+   if (!config)
+      return;
+
+   if (!(config->readBoolEntry("SOCKS_enable", false))) {
+      _disabled = true;
+   }
+
+   if (_disabled)
       return;
 
    _libPaths << ""
@@ -247,14 +252,6 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
    _libNames << "libsocks.so"                  // Dante
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
-
-
-
-   if (!(config->readBoolEntry("SOCKS_enable", false))) 
-   {
-      _disabled = true;
-      return;
-   }
 
    // Add the custom library paths here
    QStringList newlibs = config->readListEntry("SOCKS_lib_path");
@@ -279,7 +276,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
           */
 
    if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
-      _socksLib = ll->library(config->readEntry("SOCKS_lib", "").latin1());
+      _socksLib = ll->library(config->readPathEntry("SOCKS_lib", "").latin1());
       if (_socksLib && _socksLib->symbol("Rconnect")) {  // Dante compatible?
          _st = new KDanteSocksTable;       
          _useSocks = true;
@@ -289,8 +286,8 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
          _useSocks = true;
          _hasSocks = true;
       } else if (_socksLib) {
-         ll->unloadLibrary(QFile::encodeName(_socksLib->name()));
-         _socksLib = NULL;
+         _socksLib->unload();
+         _socksLib = 0L;
       }
    } else              // leave this here   "else for {}"
    for (QStringList::Iterator pit  = _libPaths.begin();
@@ -302,22 +299,22 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
       _socksLib = ll->library((*pit + *it).latin1());
       if (_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
-             _socksLib->symbol("S5LogShowThreadIDS") != NULL) {  // NEC SOCKS
+             _socksLib->symbol("S5LogShowThreadIDS") != 0L) {  // NEC SOCKS
             kdDebug(171) << "Found NEC SOCKS" << endl;
             _st = new KNECSocksTable;
             _useSocks = true;
             _hasSocks = true;
             break;
          } else if ((_meth == 1 || _meth == 3) && 
-                    _socksLib->symbol("sockaddr2ruleaddress") != NULL) { //Dante
+                    _socksLib->symbol("sockaddr2ruleaddress") != 0L) { //Dante
             kdDebug(171) << "Found Dante SOCKS" << endl;
             _st = new KDanteSocksTable;
             _useSocks = true;
             _hasSocks = true;
             break;
          } else {
-           ll->unloadLibrary(QFile::encodeName(_socksLib->name()));
-           _socksLib = NULL;
+           _socksLib->unload();
+           _socksLib = 0L;
          }
       }
    }
@@ -394,40 +391,41 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
  
       // Now we check for the critical stuff.
       if (F_SOCKSinit) {
-        int rc = (*F_SOCKSinit)((char *)"KDE");
-        if (rc != 0) stopSocks();
-        else  kdDebug(171) << "SOCKS has been activated!" << endl;
+         int rc = (*F_SOCKSinit)((char *)"KDE");
+         if (rc != 0)
+            stopSocks();
+         else kdDebug(171) << "SOCKS has been activated!" << endl;
       } else {
-        stopSocks();
+         stopSocks();
       }
    }
 }
 
 
 KSocks::~KSocks() {
-  stopSocks();
-  _me = med.setObject(0);
+   stopSocks();
+   _me = 0;
 }
 
-
 void KSocks::die() {
-  if (_me == this) {
-    _me = NULL;
-    delete this;
-  }
+   if (_me == this) {
+      _me = 0;
+      delete this;
+   }
 }
 
 void KSocks::stopSocks() {
    if (_hasSocks) {
-        // This library doesn't even provide the basics.
-        // it's probably broken.  Lets abort.
-          _useSocks = false;
-          _hasSocks = false;
-          if (_socksLib)
-            _socksLib->unload();
-          _socksLib = NULL;
-          delete _st;
-          _st = NULL;
+      // This library doesn't even provide the basics.
+      // It's probably broken.  Let's abort.
+      _useSocks = false;
+      _hasSocks = false;
+      if (_socksLib) {
+         _socksLib->unload();
+         _socksLib = 0L;
+      }
+      delete _st;
+      _st = 0L;
    }
 }
 
@@ -438,20 +436,24 @@ bool KSocks::usingSocks() {
 
 
 bool KSocks::hasSocks() {
-return _hasSocks;
+   return _hasSocks;
 }
 
 
 void KSocks::disableSocks() {
-  _useSocks = false;
+   _useSocks = false;
 }
 
 
 void KSocks::enableSocks() {
-  if (_hasSocks)
-     _useSocks = true;
+   if (_hasSocks)
+      _useSocks = true;
 }
 
+bool KSocks::hasWorkingAsyncConnect()
+{
+   return (_useSocks && _st) ? _st->hasWorkingAsyncConnect : true;
+}
 
 
 /*
@@ -461,116 +463,116 @@ void KSocks::enableSocks() {
 
 int KSocks::connect (int sockfd, const sockaddr *serv_addr,
                                                    ksocklen_t addrlen) {
-  if (_useSocks && F_connect)
-    return (*F_connect)(sockfd, serv_addr, addrlen);
-  else return ::connect(sockfd, (sockaddr*) serv_addr, (socklen_t)addrlen);
+   if (_useSocks && F_connect)
+      return (*F_connect)(sockfd, serv_addr, addrlen);
+   else return ::connect(sockfd, (sockaddr*) serv_addr, (socklen_t)addrlen);
 }
 
 
 signed long int KSocks::read (int fd, void *buf, unsigned long int count) {
-  if (_useSocks && F_read)
-    return (*F_read)(fd, buf, count);
-  else return ::read(fd, buf, count);
+   if (_useSocks && F_read)
+      return (*F_read)(fd, buf, count);
+   else return ::read(fd, buf, count);
 }
 
 
 signed long int KSocks::write (int fd, const void *buf, unsigned long int count) {
-  if (_useSocks && F_write)
-    return (*F_write)(fd, buf, count);
-  else return ::write(fd, buf, count);
+   if (_useSocks && F_write)
+      return (*F_write)(fd, buf, count);
+   else return ::write(fd, buf, count);
 }
 
 
 int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
                                 sockaddr *from, ksocklen_t *fromlen) {
-  if (_useSocks && F_recvfrom)
-    return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
-  else {
-    socklen_t casted_len = (socklen_t) *fromlen;
-    int rc = ::recvfrom(s, (char*) buf, len, flags, from, &casted_len);
-    *fromlen = casted_len;
-    return rc;
-  }
+   if (_useSocks && F_recvfrom) {
+      return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
+   } else {
+      socklen_t casted_len = (socklen_t) *fromlen;
+      int rc = ::recvfrom(s, (char*) buf, len, flags, from, &casted_len);
+      *fromlen = casted_len;
+      return rc;
+   }
 }
 
 
 int KSocks::sendto (int s, const void *msg, unsigned long int len, int flags,
                              const sockaddr *to, ksocklen_t tolen) {
-  if (_useSocks && F_sendto)
-    return (*F_sendto)(s, msg, len, flags, to, tolen);
-  else return ::sendto(s, (char*) msg, len, flags, to, (socklen_t)tolen);
+   if (_useSocks && F_sendto)
+      return (*F_sendto)(s, msg, len, flags, to, tolen);
+   else return ::sendto(s, (char*) msg, len, flags, to, (socklen_t)tolen);
 }
 
 
 int KSocks::recv (int s, void *buf, unsigned long int len, int flags) {
-  if (_useSocks && F_recv)
-    return (*F_recv)(s, buf, len, flags);
-  else return ::recv(s, (char*) buf, len, flags);
+   if (_useSocks && F_recv)
+      return (*F_recv)(s, buf, len, flags);
+   else return ::recv(s, (char*) buf, len, flags);
 }
 
 
 int KSocks::send (int s, const void *msg, unsigned long int len, int flags) {
-  if (_useSocks && F_send)
-    return (*F_send)(s, msg, len, flags);
-  else return ::send(s, (char*) msg, len, flags);
+   if (_useSocks && F_send)
+      return (*F_send)(s, msg, len, flags);
+   else return ::send(s, (char*) msg, len, flags);
 }
 
 
 int KSocks::getsockname (int s, sockaddr *name, ksocklen_t *namelen) {
-  if (_useSocks && F_getsockname)
-    return (*F_getsockname)(s, name, namelen);
-  else {
-    socklen_t casted_len = *namelen;
-    int rc = ::getsockname(s, name, &casted_len);
-    *namelen = casted_len;
-    return rc;
-  }
+   if (_useSocks && F_getsockname) {
+      return (*F_getsockname)(s, name, namelen);
+   } else {
+     socklen_t casted_len = *namelen;
+     int rc = ::getsockname(s, name, &casted_len);
+     *namelen = casted_len;
+     return rc;
+   }
 }
 
 
 int KSocks::getpeername (int s, sockaddr *name, ksocklen_t *namelen) {
-  if (_useSocks && F_getpeername)
-    return (*F_getpeername)(s, name, namelen);
-  else {
-    socklen_t casted_len = *namelen;
-    int rc = ::getpeername(s, name, &casted_len);
-    *namelen = casted_len;
-    return rc;
-  }
+   if (_useSocks && F_getpeername) {
+      return (*F_getpeername)(s, name, namelen);
+   } else {
+      socklen_t casted_len = *namelen;
+      int rc = ::getpeername(s, name, &casted_len);
+      *namelen = casted_len;
+      return rc;
+   }
 }
 
 
 int KSocks::accept (int s, sockaddr *addr, ksocklen_t *addrlen) {
-  if (_useSocks && F_accept)
-    return (*F_accept)(s, addr, addrlen);
-  else {
-    socklen_t casted_len = *addrlen;
-    int rc = ::accept(s, addr, &casted_len);
-    *addrlen = casted_len;
-    return rc;
-  }
+   if (_useSocks && F_accept) {
+     return (*F_accept)(s, addr, addrlen);
+   } else {
+      socklen_t casted_len = *addrlen;
+      int rc = ::accept(s, addr, &casted_len);
+      *addrlen = casted_len;
+      return rc;
+   }
 }
 
 
 int KSocks::select (int n, fd_set *readfds, fd_set *writefds,
                                 fd_set *exceptfds, struct timeval *timeout) {
-  if (_useSocks && F_select)
-    return (*F_select)(n, readfds, writefds, exceptfds, timeout);
-  else return ::select(n, readfds, writefds, exceptfds, timeout);
+   if (_useSocks && F_select)
+      return (*F_select)(n, readfds, writefds, exceptfds, timeout);
+   else return ::select(n, readfds, writefds, exceptfds, timeout);
 }
 
 
 int KSocks::listen (int s, int backlog) {
-  if (_useSocks && F_listen)
-    return (*F_listen)(s, backlog);
-  else return ::listen(s, backlog);
+   if (_useSocks && F_listen)
+      return (*F_listen)(s, backlog);
+   else return ::listen(s, backlog);
 }
 
 
 int KSocks::bind (int sockfd, sockaddr *my_addr, ksocklen_t addrlen) {
-  if (_useSocks && F_bind)
-    return (*F_bind)(sockfd, my_addr, addrlen);
-  else return ::bind(sockfd, my_addr, (socklen_t)addrlen);
+   if (_useSocks && F_bind)
+      return (*F_bind)(sockfd, my_addr, addrlen);
+   else return ::bind(sockfd, my_addr, (socklen_t)addrlen);
 }
 
 

@@ -55,7 +55,7 @@ extern "C"
       // (Simon)
       return new KHTMLFactory( true );
   }
-};
+}
 
 KHTMLFactory *KHTMLFactory::s_self = 0;
 unsigned long int KHTMLFactory::s_refcnt = 0;

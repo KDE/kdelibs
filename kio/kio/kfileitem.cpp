@@ -187,6 +187,9 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
           else // link pointing to nowhere (see kio/file/file.cc)
               mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
         }
+        // While we're at it, store the times
+        m_time[ Modification ] = buf.st_mtime;
+        m_time[ Access ] = buf.st_atime;
       }
     }
     if ( m_fileMode == KFileItem::Unknown )
@@ -278,8 +281,8 @@ KIO::filesize_t KFileItem::size() const
   if ( m_bIsLocalURL )
   {
     KDE_struct_stat buf;
-    KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    return buf.st_size;
+    if ( KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 )
+        return buf.st_size;
   }
   return 0L;
 }
@@ -315,12 +318,14 @@ time_t KFileItem::time( unsigned int which ) const
   if ( m_bIsLocalURL )
   {
     KDE_struct_stat buf;
-    KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
-                           buf.st_mtime :
-                           (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
-                           static_cast<time_t>(0); // We can't determine creation time for local files
-    return m_time[mappedWhich];
+    if ( KDE_stat( QFile::encodeName(m_url.path(-1)), &buf ) == 0 )
+    {
+        m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
+                               buf.st_mtime :
+                               (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
+                               static_cast<time_t>(0); // We can't determine creation time for local files
+        return m_time[mappedWhich];
+    }
   }
   return static_cast<time_t>(0);
 }
@@ -606,6 +611,7 @@ QString KFileItem::getToolTipText(int maxcount)
       if ( item.isValid() )
       {
         QString s = item.string();
+        if (s.length() > 50) s = s.left(47) + "...";
         if ( !s.isEmpty() )
         {
           count++;

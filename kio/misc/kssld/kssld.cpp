@@ -206,6 +206,7 @@ void KSSLD::cacheAddCertificate(KSSLCertificate cert,
   n->cert = cert.replicate();
   n->policy = policy;
   n->permanent = permanent;
+  cacheRemoveByCN(KSSLX509Map(n->cert->getSubject()).getValue("CN")); // remove the old one
   certList.prepend(n); 
   if (!permanent) {
     n->expires = QDateTime::currentDateTime();

@@ -233,7 +233,12 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
     m_plugins.append(info);
   }
 
-  clear();
+  clearMarks ();
+  clearUndo ();
+  clearRedo ();
+  setModified (false);
+  internalSetHlMode (0);
+
   docWasSavedWhenUndoWasEmpty = true;
 
   // if the user changes the highlight with the dialog, notify the doc
@@ -359,7 +364,16 @@ bool KateDocument::closeURL()
   fileInfo->setFile (QString());
   setMTime();
 
-  clear();
+  buffer->clear();
+  clearMarks ();
+
+  clearUndo();
+  clearRedo();
+
+  setModified(false);
+
+  internalSetHlMode(0);
+
   updateViews();
 
   emit fileNameChanged ();
@@ -379,7 +393,7 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 QPtrList<KTextEditor::View> KateDocument::views () const
 {
   return m_textEditViews;
-};
+}
 
 //
 // KTextEditor::ConfigInterfaceExtension stuff
@@ -560,8 +574,32 @@ QString KateDocument::textLine( uint line ) const
 
 bool KateDocument::setText(const QString &s)
 {
-  clear();
-  return insertText (0, 0, s);
+  QPtrList<KTextEditor::Mark> m = marks ();
+  QValueList<KTextEditor::Mark> msave;
+
+  for (uint i=0; i < m.count(); i++)
+    msave.append (*m.at(i));
+
+  editStart ();
+
+  if (!clear())
+  {
+    editEnd ();
+    return false;
+  }
+
+  if (!insertText (0, 0, s))
+  {
+    editEnd ();
+    return false;
+  }
+
+  editEnd ();
+
+  for (uint i=0; i < msave.count(); i++)
+    setMark (msave[i].line, msave[i].type);
+
+  return true;
 }
 
 bool KateDocument::clear()
@@ -574,17 +612,9 @@ bool KateDocument::clear()
 
   eolMode = KateDocument::eolUnix;
 
-  buffer->clear();
   clearMarks ();
 
-  clearUndo();
-  clearRedo();
-
-  setModified(false);
-
-  internalSetHlMode(0); //calls updateFontData()
-
-  return true;
+  return removeText (0,0,lastLine()+1, 0);
 }
 
 bool KateDocument::insertText( uint line, uint col, const QString &s)
@@ -792,7 +822,7 @@ void KateDocument::editStart (bool withUndo)
 
   if (editSessionNumber > 1)
     return;
-    
+
   buffer->setHlUpdate (false);
 
   editIsRunning = true;
@@ -842,7 +872,7 @@ void KateDocument::editEnd ()
     return;
 
   buffer->setHlUpdate (true);
-  
+
   if (editTagLineStart <= editTagLineEnd)
     updateLines(editTagLineStart, editTagLineEnd);
 
@@ -908,7 +938,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine, uint col)
     line++;
 
     if (line >= numLines()) break;
-  };
+  }
 
   editEnd ();
 
@@ -917,8 +947,16 @@ bool KateDocument::wrapText (uint startLine, uint endLine, uint col)
 
 void KateDocument::editAddUndo (uint type, uint line, uint col, uint len, const QString &text)
 {
-  if (editIsRunning && editWithUndo && editCurrentUndo)
+  if (editIsRunning && editWithUndo && editCurrentUndo) {
     editCurrentUndo->addItem (type, line, col, len, text);
+
+    // Clear redo buffer
+    if (redoItems.count()) {
+      redoItems.setAutoDelete(true);
+      redoItems.clear();
+      redoItems.setAutoDelete(false);
+    }
+  }
 }
 
 void KateDocument::editTagLine (uint line)
@@ -1009,7 +1047,7 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool autowrap)
 
   TextLine::Ptr nl = buffer->plainLine(line+1);
   TextLine::Ptr tl = new TextLine();
-  int llen = l->length(), nllen;
+  int llen = l->length(), nllen = 0;
 
   if (!nl || !autowrap)
   {
@@ -1202,7 +1240,7 @@ bool KateDocument::setSelection( const KateTextCursor& start, const KateTextCurs
 {
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   if (start <= end) {
     selectStart.setPos(start);
     selectEnd.setPos(end);
@@ -1210,10 +1248,10 @@ bool KateDocument::setSelection( const KateTextCursor& start, const KateTextCurs
     selectStart.setPos(end);
     selectEnd.setPos(start);
   }
-  
+
   if (hasSelection() || selectAnchor.line != -1)
     tagSelection();
-  
+
   repaintViews();
 
   emit selectionChanged ();
@@ -1225,7 +1263,7 @@ bool KateDocument::setSelection( uint startLine, uint startCol, uint endLine, ui
 {
   if (hasSelection())
     clearSelection(false);
-  
+
   selectAnchor.line = startLine;
   selectAnchor.col = startCol;
 
@@ -1241,22 +1279,22 @@ bool KateDocument::clearSelection(bool redraw)
 {
   if( !hasSelection() )
     return false;
-  
+
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   selectStart.setPos(-1, -1);
   selectEnd.setPos(-1, -1);
   selectAnchor.setPos(-1, -1);
-  
+
   tagSelection();
-  
+
   oldSelectStart = selectStart;
   oldSelectEnd = selectEnd;
-  
+
   if (redraw)
     repaintViews();
-  
+
   emit selectionChanged();
 
   return true;
@@ -1348,6 +1386,11 @@ bool KateDocument::setBlockSelectionMode (bool on)
     oldSelectEnd = selectEnd;
     clearSelection();
     setSelection(oldSelectStart, oldSelectEnd);
+
+    for (KateView * view = m_views.first(); view; view = m_views.next())
+    {
+      view->slotSelectionTypeChanged();
+    }
   }
 
   return true;
@@ -1419,8 +1462,8 @@ void KateDocument::updateModified()
   {
     setModified( false );
     kdDebug() << k_funcinfo << "setting modified to false !" << endl;
-  };
-};
+  }
+}
 
 void KateDocument::clearUndo()
 {
@@ -1684,7 +1727,7 @@ void KateDocument::readConfig(KConfig *config)
   }
 
   config->setGroup("Kate View");
-  m_dynWordWrap = config->readBoolEntry( "DynamicWordWrap", false );
+  m_dynWordWrap = config->readBoolEntry( "DynamicWordWrap", true );
   m_lineNumbers = config->readBoolEntry( "LineNumbers", false );
   m_iconBar = config->readBoolEntry( "Iconbar", false );
   m_foldingBar = config->readBoolEntry( "FoldingMarkers", true );
@@ -1744,7 +1787,7 @@ void KateDocument::writeConfig()
 
 void KateDocument::readSessionConfig(KConfig *config)
 {
-  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
+  m_url = config->readPathEntry("URL"); // ### doesn't this break the encoding? (Simon)
   internalSetHlMode(hlManager->nameFind(config->readEntry("Highlight")));
   QString tmpenc=config->readEntry("Encoding");
 
@@ -2011,7 +2054,7 @@ bool KateDocument::printDialog ()
      int endCol = 0;
      bool needWrap = true;
      bool pageStarted = true;
-     
+
 //     kdDebug(13020)<<"pdm width: "<<pdmWidth<<endl;
 
      // Text Settings Page
@@ -2113,15 +2156,15 @@ bool KateDocument::printDialog ()
          tags["y"] =  KGlobal::locale()->formatDate(dt.date(), true);
          tags["Y"] =  KGlobal::locale()->formatDate(dt.date(), false);
          tags["f"] =  url().fileName();
-         tags["F"] =  url().prettyURL();
+         tags["U"] =  url().prettyURL();
          if ( selectionOnly )
          {
            QString s( i18n("(Selection of) ") );
            tags["f"].prepend( s );
-           tags["F"].prepend( s );
+           tags["U"].prepend( s );
          }
 
-         QRegExp reTags( "%([dDfFhuyY])" ); // TODO tjeck for "%%<TAG>"
+         QRegExp reTags( "%([dDfUhuyY])" ); // TODO tjeck for "%%<TAG>"
 
          if (useHeader)
          {
@@ -2318,7 +2361,7 @@ uint _count = 0;
        needWrap = true;
 
 //       kdDebug(13020)<<"Starting real new line "<<lineCount<<endl;
-       
+
        while (needWrap)
        {
          if ( y+printFont.fontHeight >= (uint)(maxHeight) )
@@ -2491,7 +2534,7 @@ kdDebug(13020)<<"Starting new page, "<<_count<<" lines up to now."<<endl;
 //        kdDebug(13020)<<"Calling textWidth( startCol="<<startCol<<", maxWidth="<<maxWidth<<", needWrap="<<needWrap<<")"<<endl;
          endCol = textWidth (buffer->line(lineCount), startCol, maxWidth, 0, PrintFont, &needWrap);
 //         kdDebug(13020)<<"REAL WIDTH: " << pdmWidth << " WIDTH: " << maxWidth <<" line: "<<lineCount<<" start: "<<startCol<<" end: "<<endCol<<" line length: "<< buffer->line(lineCount)->length()<< "; need Wrap: " << needWrap <<" !?"<<endl;
-         
+
          if ( endCol < startCol )
          {
            kdDebug(13020)<<"--- Skipping garbage, line: "<<lineCount<<" start: "<<startCol<<" end: "<<endCol<<" real EndCol; "<< buffer->line(lineCount)->length()<< " !?"<<endl;
@@ -2619,12 +2662,12 @@ bool KateDocument::openFile()
 bool KateDocument::saveFile()
 {
   QString eol ("\n");
-  
+
   if (eolMode == KateDocument::eolDos) eol = QString("\r\n");
   else if (eolMode == KateDocument::eolMacintosh) eol = QString ("\r");
-    
+
   bool success = buffer->saveFile (m_file, KGlobal::charsets()->codecForName(myEncoding), eol);
-  
+
   fileInfo->setFile (m_file);
   setMTime();
 
@@ -2654,7 +2697,7 @@ bool KateDocument::saveFile()
 
     internalSetHlMode(hl);
   }
-  
+
   emit fileNameChanged ();
 
   setDocName  (url().filename());
@@ -2692,7 +2735,7 @@ void KateDocument::setModified(bool m) {
   if ( m == false && ! undoItems.isEmpty() )
   {
     lastUndoGroupWhenSaved = undoItems.last();
-  };
+  }
   if ( m == false ) docWasSavedWhenUndoWasEmpty = undoItems.isEmpty();
 
 }
@@ -2792,21 +2835,30 @@ bool KateDocument::isLastView(int numViews) {
   return ((int) m_views.count() == numViews);
 }
 
-uint KateDocument::textWidth(const TextLine::Ptr &textLine,
-			     int cursorX, WhichFont wf)
+uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorCol, WhichFont wf)
 {
   if (!textLine)
     return 0;
 
-  if (cursorX < 0)
-    cursorX = textLine->length();
+  if (cursorCol < 0)
+    cursorCol = textLine->length();
+
+  int len = textLine->length();
 
   const FontStruct & fs = getFontStruct(wf);
 
   int x = 0;
-  for (int z = 0; z < cursorX; z++) {
+  int width;
+  for (int z = 0; z < cursorCol; z++) {
     Attribute *a = attribute(textLine->attribute(z));
-    int width = a->width(fs, textLine->getChar(z));
+
+    if (z < len) {
+      width = a->width(fs, textLine->getChar(z));
+    } else {
+      Q_ASSERT(!(configFlags() & KateDocument::cfWrapCursor));
+      width = a->width(fs, QChar (' '));
+    }
+
     x += width;
 
     if (textLine->getChar(z) == QChar('\t'))
@@ -2828,7 +2880,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, uint startcol, uint 
   int lastWhiteSpaceX = -1;
 
   *needWrap = false;
-  
+
   uint z = startcol;
   for (; z < textLine->length(); z++)
   {
@@ -2881,7 +2933,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, uint startcol, uint 
       break;
     }
   }
-  
+
   if (*needWrap)
   {
     if (endX)
@@ -2957,6 +3009,10 @@ uint KateDocument::textPos(uint line, int xPos, WhichFont wf, uint startCol)
 }
 
 uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos,WhichFont wf, uint startCol) {
+  Q_ASSERT(textLine);
+  if (!textLine)
+    return 0;
+
   const FontStruct & fs = getFontStruct(wf);
 
   int x, oldX;
@@ -3081,7 +3137,7 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
 
   // temporary hack to get the cursor pos right !!!!!!!!!
   c = v->cursorCache;
-  
+
   if (c.line > (int)lastLine())
    c.line = lastLine();
 
@@ -3297,7 +3353,7 @@ void KateDocument::selectTo( const KateTextCursor& from, const KateTextCursor& t
   if (!hasSelection()) {
     selectAnchor.setPos(from);
   }
-  
+
   setSelection(selectAnchor, to);
 }
 
@@ -3738,6 +3794,7 @@ bool KateDocument::removeStartLineCommentFromSelection()
   int sl = selectStart.line;
   int el = selectEnd.line;
 
+
   if ((selectEnd.col == 0) && ((el-1) >= 0))
   {
     el--;
@@ -3884,7 +3941,7 @@ void KateDocument::tagSelection()
           tagLines(selectEnd, oldSelectEnd);
       }
     }
-        
+
   } else {
     // No more selection, clean up
     tagLines(oldSelectStart, oldSelectEnd);
@@ -4015,7 +4072,7 @@ bool KateDocument::selectBounds(uint line, uint &start, uint &end, uint lineLeng
     end = selectEnd.col;
     hasSel = true;
   }
-  
+
   if (start > end) {
     int temp = end;
     end = start;
@@ -4637,6 +4694,13 @@ bool KateDocument::exportDocumentToHTML(QTextStream *outputStream,const QString 
     // finish the line :
     (*outputStream) << endl;
   }
+
+  // Be good citizens and close our tags
+  if (previousCharacterWasBold)
+    (*outputStream) << "</b>";
+  if (previousCharacterWasItalic)
+    (*outputStream) << "</i>";
+
   // HTML document end :
   (*outputStream) << "</span>";  // i'm guaranteed a span is started (i started one at the beginning of the output).
   (*outputStream) << "</pre></body>";

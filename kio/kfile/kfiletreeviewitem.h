@@ -42,6 +42,7 @@ class KFileTreeViewItem : public KListViewItem
 public:
    KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );
    KFileTreeViewItem( KFileTreeView*, KFileItem*, KFileTreeBranch * );
+   ~KFileTreeViewItem();
 
    /**
     * @return the @ref KFileTreeBranch the item is sorted in.

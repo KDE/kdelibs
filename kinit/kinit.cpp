@@ -130,10 +130,12 @@ struct {
   bool debug_wait;
   int lt_dlopen_flag;
   QCString errorMsg;
+  bool launcher_ok;
 } d;
 
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
+int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 
 /*
@@ -885,10 +887,27 @@ static void WaitPid( pid_t waitForPid)
 
 static void launcher_died()
 {
-   /* This is bad. */
-   fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
-   ::exit(255);
-   return;
+   if (!d.launcher_ok)
+   {
+      /* This is bad. */
+      fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
+      ::exit(255);
+      return;
+   }
+
+   // KLauncher died... restart
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: KLauncher died unexpectedly.\n");
+#endif
+   d.launcher_pid = 0;
+   close(d.launcher[0]);
+   d.launcher[0] = -1;
+
+   pid_t pid = launch( 1, "klauncher", 0 );
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: Relaunching KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
+   WaitPid(pid);
 }
 
 static void handle_launcher_request(int sock = -1)
@@ -923,6 +942,8 @@ static void handle_launcher_request(int sock = -1)
            return;
        }
    }
+   
+   d.launcher_ok = true;
 
    if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
@@ -996,6 +1017,13 @@ static void handle_launcher_request(int sock = -1)
      {
          startup_id_str = arg_n;
          arg_n += strlen( startup_id_str ) + 1;
+     }
+     
+     if ((request_header.arg_length > (arg_n - request_data)) &&
+         (request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW ))
+     {
+         // Optional cwd
+         cwd = arg_n; arg_n += strlen(cwd) + 1;
      }
 
      if ((arg_n - request_data) != request_header.arg_length)
@@ -1133,7 +1161,12 @@ static void handle_requests(pid_t waitForPid)
 #endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
-           if (d.launcher_pid)
+              
+           if (exit_pid == d.launcher_pid)
+           {
+             launcher_died();
+           }
+           else if (d.launcher_pid)
            {
            // TODO send process died message
               klauncher_header request_header;
@@ -1273,9 +1306,12 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
-int kdeinit_xio_errhandler( Display * )
+int kdeinit_xio_errhandler( Display *disp )
 {
-    qWarning( "kdeinit: Fatal IO error: client killed" );
+    // disp is 0L when KDE shuts down. We don't want those warnings then.
+
+    if ( disp )
+        qWarning( "kdeinit: Fatal IO error: client killed" );
 
     if (sock_file[0])
     {
@@ -1283,7 +1319,8 @@ int kdeinit_xio_errhandler( Display * )
       unlink(sock_file);
     }
 
-    qWarning( "kdeinit: sending SIGHUP to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGHUP to children." );
 
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
@@ -1291,17 +1328,37 @@ int kdeinit_xio_errhandler( Display * )
 
     sleep(2);
 
-    qWarning( "kdeinit: sending SIGTERM to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGTERM to children." );
 
     /* and if they don't listen to us, this should work */
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
 
-    qWarning( "kdeinit: Exit." );
+    if ( disp )
+        qWarning( "kdeinit: Exit." );
 
     exit( 1 );
     return 0;
 }
+
+int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
+{
+#ifndef NDEBUG
+    char errstr[256];
+    XGetErrorText( dpy, err->error_code, errstr, 256 );
+    if ( err->error_code != BadWindow )
+    {
+        fprintf(stderr, "kdeinit: KDE detected X Error: %s %d\n", errstr, err->error_code );
+        fprintf(stderr, "  Major opcode:  %d\n", err->request_code);
+    }
+#else
+    Q_UNUSED(dpy);
+    Q_UNUSED(err);
+#endif
+    return 0;
+}
+
 
 #ifdef Q_WS_X11
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
@@ -1310,6 +1367,8 @@ static int initXconnection()
   X11display = XOpenDisplay(NULL);
   if ( X11display != 0 ) {
     XSetIOErrorHandler(kdeinit_xio_errhandler);
+    XSetErrorHandler(kdeinit_x_errhandler);
+     
     XCreateSimpleWindow(X11display, DefaultRootWindow(X11display), 0,0,1,1, \
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
@@ -1430,6 +1489,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    d.debug_wait = false;
+   d.launcher_ok = false;
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();

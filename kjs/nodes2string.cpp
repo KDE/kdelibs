@@ -40,7 +40,7 @@ namespace KJS {
     UString str; /* TODO: buffer */
     UString ind;
   };
-};
+}
 
 using namespace KJS;
 

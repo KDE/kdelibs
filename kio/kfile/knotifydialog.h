@@ -245,6 +245,8 @@ namespace KNotify
         void playSound();
 
     private slots:
+        void slotItemClicked( QListViewItem *item, const QPoint& point, 
+                              int col );
         void slotEventChanged( QListViewItem * );
         void soundToggled( bool on );
         void loggingToggled( bool on );
@@ -331,7 +333,7 @@ namespace KNotify
         Event * m_event;
     };
 
-};
+}
 
 
 #endif

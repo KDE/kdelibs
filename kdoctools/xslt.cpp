@@ -79,9 +79,10 @@ int writeToQString(void * context, const char * buffer, int len)
     return len;
 }
 
-void closeQString(void * context) {
+int closeQString(void * context) {
     QString *t = (QString*)context;
     *t += QString::fromLatin1("\n");
+    return 0;
 }
 
 QString transform( const QString &pat, const QString& tss)
@@ -96,7 +97,9 @@ QString transform( const QString &pat, const QString& tss)
     /* if (contents.left(5) != "<?xml") {
         fprintf(stderr, "xmlizer\n");
         INFO(i18n("XMLize document"));
-        FILE *p = popen(QString::fromLatin1("xmlizer %1").arg(pat).latin1(), "r");
+        QString cmd = "xmlizer ";
+        cmd += KProcess::quote(pat);
+        FILE *p = popen(QFile::encodeName(cmd), "r");
         xmlFile.open(IO_ReadOnly, p);
         char buffer[5001];
         contents.truncate(0);
@@ -412,12 +415,16 @@ QCString fromUnicode( const QString &data )
         for ( uint i = 0; i < len; i++ ) {
             QCString test = locale->fromUnicode( part.mid( i, 1 ) );
             if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
+                if (buffer_len + test.length() + 1 > sizeof(buffer))
+                   break;
                 strcpy( buffer + buffer_len, test.data() );
                 buffer_len += test.length();
             } else {
                 QString res;
                 res.sprintf( "&#%d;", part.at( i ).unicode() );
                 test = locale->fromUnicode( res );
+                if (buffer_len + test.length() + 1 > sizeof(buffer))
+                   break;
                 strcpy( buffer + buffer_len, test.data() );
                 buffer_len += test.length();
             }

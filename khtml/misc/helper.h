@@ -48,6 +48,6 @@ namespace khtml
 			       // to get BiDi contexts right.
 			       SelectionPointBeforeInLine,
 			       SelectionPointAfterInLine };
-};
+}
 
 #endif

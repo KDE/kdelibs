@@ -20,10 +20,12 @@
 #ifndef __KSHORTCUTLIST_H
 #define __KSHORTCUTLIST_H
 
-class QString;
+#include <qstring.h>
 class QVariant;
 class KInstance;
 class KShortcut;
+class KKeySequence;
+class KConfigBase;
 
 /**********************************************************************
 * This is a wrapper class which allows a function to use one interface
@@ -53,28 +55,28 @@ class KShortcutList
 	 * Returns the number of entries.
 	 * @return the number of entries
 	 */
-	virtual uint count() const = 0;
+	virtual unsigned int count() const = 0;
 
 	/**
 	 * Returns the name of the shortcut with the given @p index.
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @return the name of the shortcut
 	 */
-	virtual QString name( uint index ) const = 0;
+	virtual QString name( unsigned int index ) const = 0;
 
 	/**
 	 * Returns the (i18n'd) label of the shortcut with the given @p index.
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @return the label (i18n'd) of the shortcut
 	 */
-	virtual QString label( uint index ) const = 0;
+	virtual QString label( unsigned int index ) const = 0;
 
 	/**
 	 * Returns the (i18n'd) What's This text of the shortcut with the given @p index.
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @return the What's This text (i18n'd) of the shortcut
 	 */
-	virtual QString whatsThis( uint index ) const = 0;
+	virtual QString whatsThis( unsigned int index ) const = 0;
 
 	/**
 	 * Returns the shortcut with the given @p index.
@@ -82,7 +84,7 @@ class KShortcutList
 	 * @return the shortcut
 	 * @see shortcutDefault()
 	 */
-	virtual const KShortcut& shortcut( uint index ) const = 0;
+	virtual const KShortcut& shortcut( unsigned int index ) const = 0;
 
 	/**
 	 * Returns default shortcut with the given @p index.
@@ -90,21 +92,21 @@ class KShortcutList
 	 * @return the default shortcut
 	 * @see shortcut()
 	 */
-	virtual const KShortcut& shortcutDefault( uint index ) const = 0;
+	virtual const KShortcut& shortcutDefault( unsigned int index ) const = 0;
 
 	/**
 	 * Checks whether the shortcut with the given @p index is configurable.
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @return true if configurable, false otherwise
 	 */
-	virtual bool isConfigurable( uint index ) const = 0;
+	virtual bool isConfigurable( unsigned int index ) const = 0;
 
 	/**
 	 * Sets the shortcut of the given entry
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @param shortcut the shortcut
 	 */
-	virtual bool setShortcut( uint index, const KShortcut &shortcut ) = 0;
+	virtual bool setShortcut( unsigned int index, const KShortcut &shortcut ) = 0;
 
 	/**
 	 * Checks whether the shortcut with the given @p index is saved in the
@@ -112,7 +114,7 @@ class KShortcutList
 	 * @param index the index of the shortcut (must be < @ref count())
 	 * @return true if global, false otherwise
 	 */
-	virtual bool isGlobal( uint index ) const;
+	virtual bool isGlobal( unsigned int index ) const;
 
 	/**
 	 * Returns the index of the shortcut with he given name.
@@ -137,9 +139,9 @@ class KShortcutList
 	// These are here in order to handle expansion.
 	enum Other { };
 	/// @internal
-	virtual QVariant getOther( Other, uint index ) const = 0;
+	virtual QVariant getOther( Other, unsigned int index ) const = 0;
 	/// @internal
-	virtual bool setOther( Other, uint index, QVariant ) = 0;
+	virtual bool setOther( Other, unsigned int index, QVariant ) = 0;
 
 	/**
 	 * Save the shortcut list.
@@ -214,20 +216,20 @@ class KAccelShortcutList : public KShortcutList
 	KAccelShortcutList( KAccelActions &actions, bool bGlobal );
 	virtual ~KAccelShortcutList();
 
-	virtual uint count() const;
-	virtual QString name( uint index ) const;
-	virtual QString label( uint index ) const;
-	virtual QString whatsThis( uint index ) const;
-	virtual const KShortcut& shortcut( uint index ) const;
-	virtual const KShortcut& shortcutDefault( uint index ) const;
-	virtual bool isConfigurable( uint index ) const;
-	virtual bool setShortcut( uint index , const KShortcut& shortcut );
-	virtual bool isGlobal( uint index ) const;
+	virtual unsigned int count() const;
+	virtual QString name( unsigned int index ) const;
+	virtual QString label( unsigned int index ) const;
+	virtual QString whatsThis( unsigned int index ) const;
+	virtual const KShortcut& shortcut( unsigned int index ) const;
+	virtual const KShortcut& shortcutDefault( unsigned int index ) const;
+	virtual bool isConfigurable( unsigned int index ) const;
+	virtual bool setShortcut( unsigned int index , const KShortcut& shortcut );
+	virtual bool isGlobal( unsigned int index ) const;
 
 	/// @internal
-	virtual QVariant getOther( Other, uint index ) const;
+	virtual QVariant getOther( Other, unsigned int index ) const;
 	/// @internal
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, unsigned int index, QVariant );
 
 	virtual bool save() const;
 
@@ -259,19 +261,19 @@ class ShortcutList : public KShortcutList
 	ShortcutList();
 	virtual ~ShortcutList();
 
-	virtual uint count() const;
-	virtual QString name( uint index ) const;
-	virtual QString label( uint index ) const;
-	virtual QString whatsThis( uint index ) const;
-	virtual const KShortcut& shortcut( uint index ) const;
-	virtual const KShortcut& shortcutDefault( uint index ) const;
-	virtual bool isConfigurable( uint index ) const;
-	virtual bool setShortcut( uint index , const KShortcut& shortcut );
+	virtual unsigned int count() const;
+	virtual QString name( unsigned int index ) const;
+	virtual QString label( unsigned int index ) const;
+	virtual QString whatsThis( unsigned int index ) const;
+	virtual const KShortcut& shortcut( unsigned int index ) const;
+	virtual const KShortcut& shortcutDefault( unsigned int index ) const;
+	virtual bool isConfigurable( unsigned int index ) const;
+	virtual bool setShortcut( unsigned int index , const KShortcut& shortcut );
 
 	/// @internal
-	virtual QVariant getOther( Other, uint index ) const;
+	virtual QVariant getOther( Other, unsigned int index ) const;
 	/// @internal
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, unsigned int index, QVariant );
 
 	virtual bool save() const;
 
@@ -280,6 +282,6 @@ class ShortcutList : public KShortcutList
  private:
 	class ShortcutListPrivate* d;
 };
-};
+}
 
 #endif // __KSHORTCUTLIST_H

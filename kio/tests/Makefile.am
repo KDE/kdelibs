@@ -18,17 +18,19 @@
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
 LDADD = $(LIB_KIO)
-LDFLAGS = $(all_libraries) $(KDE_RPATH)
+AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
-                 kfiltertest kiopassdlgtest kscantest kdirlistertest \
+                 kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
-		 kmimefromext kpropsdlgtest
+		 kmimefromext kpropsdlgtest \
+                bla
 
 METASOURCES = AUTO
 
+bla_SOURCES = bla.cpp
 speed_SOURCES = speed.cpp
 kioslavetest_SOURCES = kioslavetest.cpp
 kshredtest_SOURCES = kshredtest.cpp
@@ -44,7 +46,6 @@ kruntest_SOURCES = kruntest.cpp
 kdirwatchtest_SOURCES = kdirwatchtest.cpp
 ktradertest_SOURCES = ktradertest.cpp
 kmimemagictest_SOURCES = kmimemagictest.cpp
-kfiltertest_SOURCES = kfiltertest.cpp
 kscantest_SOURCES = kscantest.cpp
 kdirlistertest_SOURCES = kdirlistertest.cpp
 previewtest_SOURCES = previewtest.cpp

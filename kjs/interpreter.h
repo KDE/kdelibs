@@ -320,6 +320,12 @@ namespace KJS {
     CompatMode compatMode() const;
 
     /**
+     * Run the garbage collection. Returns true when at least one object
+     * was collected; false otherwise.
+     */
+    static bool collect();
+
+    /**
      * Called by InterpreterImp during the mark phase of the garbage collector
      * Default implementation does nothing, this exist for classes that reimplement Interpreter.
      */
@@ -400,6 +406,6 @@ namespace KJS {
     static bool terminate_request;
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_INTERPRETER_H_

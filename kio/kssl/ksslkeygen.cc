@@ -38,7 +38,7 @@ KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
 :KWizard(parent,name,modal) {
 	_idx = -1;
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	page1 = new KGWizardPage1(this, "Wizard Page 1");
 	addPage(page1, i18n("KDE Certificate Request"));
 	page2 = new KGWizardPage2(this, "Wizard Page 2");
@@ -97,7 +97,7 @@ void KSSLKeyGen::slotGenerate() {
 
 
 int KSSLKeyGen::generateCSR(QString name, QString pass, int bits, int e) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 KOSSL *kossl = KOSSL::self();
 X509_REQ *req;
 int rc;
@@ -150,7 +150,7 @@ return -1;
 QStringList KSSLKeyGen::supportedKeySizes() {
 QStringList x;
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
    x << "1024"
      << "768"
      << "512";

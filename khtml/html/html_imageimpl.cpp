@@ -21,6 +21,7 @@
  */
 
 #include "html/html_imageimpl.h"
+#include "html/html_formimpl.h"
 #include "html/html_documentimpl.h"
 
 #include "misc/htmlhashes.h"
@@ -51,14 +52,17 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
+    : HTMLElementImpl(doc), ismap(false), m_form(f)
 {
-    ismap = false;
+    if (m_form)
+        m_form->registerImgElement(this);
 }
 
 HTMLImageElementImpl::~HTMLImageElementImpl()
 {
+    if (m_form)
+        m_form->removeImgElement(this);
 }
 
 NodeImpl::Id HTMLImageElementImpl::id() const
@@ -224,7 +228,6 @@ bool HTMLImageElementImpl::complete() const
         return r->complete();
     return false;
 }
-
 
 // -------------------------------------------------------------------------
 

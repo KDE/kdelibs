@@ -21,7 +21,6 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlineedit.h>
 #include <qmultilineedit.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
@@ -31,6 +30,7 @@
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -222,7 +222,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QHBoxLayout * hlay = new QHBoxLayout( lay );
     tmpLabel = new QLabel( i18n("S&ubject: "), parent );
     hlay->addWidget( tmpLabel );
-    m_subject = new QLineEdit( parent );
+    m_subject = new KLineEdit( parent );
     m_subject->setFocus();
     tmpLabel->setBuddy(m_subject);
     hlay->addWidget( m_subject );
@@ -256,28 +256,6 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     m_lineedit->setMinimumHeight( 180 ); // make it big
     m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
     lay->addWidget( m_lineedit, 10 /*stretch*/ );
-
-
-    hlay = new QHBoxLayout( lay, 0 );
-
-    text = i18n("Please check that the bug you are about to report is not already listed at ");
-    label = new QLabel( text, parent, "label");
-    hlay->addWidget( label, 0, AlignBottom );
-    hlay->addSpacing(1); // Looks better :)
-
-    text = "http://bugs.kde.org/";
-    KURLLabel *url = new KURLLabel( parent );
-    url->setText(text);
-    url->setURL(text);
-    connect( url, SIGNAL(leftClickedURL(const QString &)),
-             this, SLOT(slotUrlClicked(const QString &)));
-    hlay->addWidget( url, 0, AlignBottom );
-
-    hlay->addStretch( 10 );
-
-    // Necessary for vertical label and url alignment.
-    label->setFixedHeight( fontMetrics().lineSpacing() );
-    url->setFixedHeight( fontMetrics().lineSpacing());
 
     slotSetFrom();
   } else {
@@ -477,7 +455,7 @@ QString KBugReport::text() const
      bodyText += line;
   }
 
-  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != QString::fromLatin1("C")) {
+  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
       package = package.replace(QRegExp("_"), QString::fromLatin1("-"));

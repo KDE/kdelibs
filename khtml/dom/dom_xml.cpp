@@ -41,11 +41,11 @@ CDATASection &CDATASection::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != CDATA_SECTION_NODE) {
+        if (!ohandle || ohandle->nodeType() != CDATA_SECTION_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -78,11 +78,11 @@ Entity &Entity::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != ENTITY_NODE) {
+        if (!ohandle || ohandle->nodeType() != ENTITY_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -140,11 +140,11 @@ EntityReference &EntityReference::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != ENTITY_REFERENCE_NODE) {
+        if (!ohandle || ohandle->nodeType() != ENTITY_REFERENCE_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -178,11 +178,11 @@ Notation &Notation::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != NOTATION_NODE) {
+        if (!ohandle || ohandle->nodeType() != NOTATION_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -234,11 +234,11 @@ ProcessingInstruction &ProcessingInstruction::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != PROCESSING_INSTRUCTION_NODE) {
+        if (!ohandle || ohandle->nodeType() != PROCESSING_INSTRUCTION_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;

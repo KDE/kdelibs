@@ -371,7 +371,7 @@ QString LPRngToolHandler::printOptions(KPrinter *printer)
 	QMap<QString,QString>	opts = printer->options();
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
-		if (it.key().startsWith("kde") || it.key().startsWith("_kde") || it.key() == "lpr")
+		if (it.key().startsWith("kde-") || it.key().startsWith("_kde-") || it.key() == "lpr" || it.key().startsWith( "app-" ))
 			continue;
 		optstr.append(*it).append(",");
 	}

@@ -65,6 +65,7 @@
 #include "html/html_objectimpl.h"
 
 #include <kio/job.h>
+#include <kapplication.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -84,7 +85,7 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version == "1.0" || version == "" || version.isNull()))
+        (version == "1.0" || version == "null" || version == "" || version.isNull()))
         return true;
     else
         return false;
@@ -125,40 +126,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 {
     exceptioncode = 0;
 
-    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
-    if (qualifiedName.isNull()) {
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return 0;
-    }
-
-    // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!Element::khtmlValidQualifiedName(qualifiedName)) {
-        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
-        return 0;
-    }
-
-    // NAMESPACE_ERR:
-    // - Raised if the qualifiedName is malformed,
-    // - if the qualifiedName has a prefix and the namespaceURI is null, or
-    // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
-    //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
-    int colonpos = -1;
-    uint i;
-    DOMStringImpl *qname = qualifiedName.implementation();
-    for (i = 0; i < qname->l && colonpos < 0; i++) {
-        if ((*qname)[i] == ':')
-            colonpos = i;
-    }
-
-    if (Element::khtmlMalformedQualifiedName(qualifiedName) ||
-        (colonpos >= 0 && namespaceURI.isNull()) ||
-        (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
-         namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
-
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return 0;
-    }
-
     DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
@@ -175,8 +142,10 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     if (doc->doctype() && dtype)
         doc->doctype()->copyFrom(*dtype);
 
-    ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
-    doc->appendChild(element,exceptioncode);
+    ElementImpl *element = doc->createElementNS(namespaceURI, qualifiedName, &exceptioncode);
+    if (!exceptioncode)
+        doc->appendChild(element,exceptioncode);
+
     if (exceptioncode) {
         delete element;
         delete doc;
@@ -219,8 +188,8 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
-QPtrList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
+static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
+QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
@@ -281,14 +250,16 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSheets->ref();
     m_inDocument = true;
     m_styleSelectorDirty = false;
-
-    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+    m_styleSelector = 0;
     m_windowEventListeners.setAutoDelete(true);
+
+    m_inStyleRecalc = false;
 }
 
 DocumentImpl::~DocumentImpl()
 {
+    assert( !m_render );
+
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     delete m_tokenizer;
@@ -340,9 +311,13 @@ ElementImpl *DocumentImpl::documentElement() const
     return static_cast<ElementImpl*>(n);
 }
 
-ElementImpl *DocumentImpl::createElement( const DOMString &name )
+ElementImpl *DocumentImpl::createElement( const DOMString &name, int *pExceptioncode )
 {
-    return new XMLElementImpl( document, name.implementation() );
+    Id id = tagId(0 /* no namespace */, name.implementation(),
+                  false /* allocate */, pExceptioncode);
+    if ( pExceptioncode && *pExceptioncode )
+        return 0;
+    return new XMLElementImpl( document, id );
 }
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
@@ -350,22 +325,17 @@ DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
     return new DocumentFragmentImpl( docPtr() );
 }
 
-TextImpl *DocumentImpl::createTextNode( const DOMString &data )
-{
-    return new TextImpl( docPtr(), data);
-}
-
-CommentImpl *DocumentImpl::createComment ( const DOMString &data )
+CommentImpl *DocumentImpl::createComment ( DOMStringImpl* data )
 {
     return new CommentImpl( docPtr(), data );
 }
 
-CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
+CDATASectionImpl *DocumentImpl::createCDATASection ( DOMStringImpl* data )
 {
     return new CDATASectionImpl( docPtr(), data );
 }
 
-ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
+ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, DOMStringImpl* data )
 {
     return new ProcessingInstructionImpl( docPtr(),target,data);
 }
@@ -382,11 +352,18 @@ EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name
 
 NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &exceptioncode)
 {
-	NodeImpl *result = 0;
+    NodeImpl *result = 0;
+
+    // Not mentioned in spec: throw NOT_FOUND_ERR if evt is null
+    if (!importedNode) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
+    }
+
 
 	if(importedNode->nodeType() == Node::ELEMENT_NODE)
 	{
-		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName());
+		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName(), 0);
 		result = tempElementImpl;
 
 		if(static_cast<ElementImpl *>(importedNode)->attributes(true) && static_cast<ElementImpl *>(importedNode)->attributes(true)->length())
@@ -406,7 +383,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 					// ### extract and set new prefix
 				}
 
-				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */);
+				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */, 0);
 				tempElementImpl->setAttribute(nodeId, value.implementation(), exceptioncode);
 
 				if(exceptioncode != 0)
@@ -416,24 +393,24 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	}
 	else if(importedNode->nodeType() == Node::TEXT_NODE)
 	{
-		result = createTextNode(importedNode->nodeValue());
+		result = createTextNode(static_cast<TextImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::CDATA_SECTION_NODE)
 	{
-		result = createCDATASection(importedNode->nodeValue());
+		result = createCDATASection(static_cast<CDATASectionImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::ENTITY_REFERENCE_NODE)
 		result = createEntityReference(importedNode->nodeName());
 	else if(importedNode->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
 	{
-		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue());
+		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue().implementation());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::COMMENT_NODE)
 	{
-		result = createComment(importedNode->nodeValue());
+		result = createComment(static_cast<CommentImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else
@@ -448,20 +425,50 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	return result;
 }
 
-ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
+ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName, int* pExceptioncode )
 {
-    ElementImpl *e = 0;
     QString qName = _qualifiedName.string();
     int colonPos = qName.find(':',0);
 
+    if ( pExceptioncode ) // skip those checks during parsing
+    {
+        // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
+        if (!Element::khtmlValidQualifiedName(_qualifiedName)) {
+            *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+            return 0;
+        }
+
+        // NAMESPACE_ERR:
+        // - Raised if the qualifiedName is malformed,
+        // - if the qualifiedName has a prefix and the namespaceURI is null, or
+        // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
+        //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
+        if (Element::khtmlMalformedQualifiedName(_qualifiedName) ||
+            (colonPos >= 0 && _namespaceURI.isNull()) ||
+            (colonPos == 3 && _qualifiedName[0] == 'x' && _qualifiedName[1] == 'm' && _qualifiedName[2] == 'l' &&
+             _namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
+
+            *pExceptioncode = DOMException::NAMESPACE_ERR;
+            return 0;
+        }
+    }
+
+    ElementImpl *e = 0;
     if ((_namespaceURI.isNull() && colonPos < 0) ||
         _namespaceURI == XHTML_NAMESPACE) {
         // User requested an element in the XHTML namespace - this means we create a HTML element
         // (elements not in this namespace are treated as normal XML elements)
         e = createHTMLElement(qName.mid(colonPos+1));
-        int exceptioncode = 0;
-        if (colonPos >= 0)
-            e->setPrefix(qName.left(colonPos),  exceptioncode);
+        if ( e )
+        {
+            int _exceptioncode = 0;
+            if (colonPos >= 0)
+                e->setPrefix(qName.left(colonPos), _exceptioncode);
+            if ( _exceptioncode ) {
+                if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
+                return 0;
+            }
+        }
     }
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
@@ -543,7 +550,8 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
-    uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
+    QString qstr = name.string().lower();
+    uint id = khtml::getTagID( qstr.latin1(), qstr.length() );
 
     ElementImpl *n = 0;
     switch(id)
@@ -589,7 +597,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // form elements
 // ### FIXME: we need a way to set form dependency after we have made the form elements
     case ID_FORM:
-            n = new HTMLFormElementImpl(docPtr());
+            n = new HTMLFormElementImpl(docPtr(), false);
         break;
     case ID_BUTTON:
             n = new HTMLButtonElementImpl(docPtr());
@@ -649,25 +657,21 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 
 // formatting elements (block)
-    case ID_BLOCKQUOTE:
-        n = new HTMLBlockquoteElementImpl(docPtr());
-        break;
     case ID_DIV:
-        n = new HTMLDivElementImpl(docPtr());
+    case ID_P:
+        n = new HTMLDivElementImpl(docPtr(), id);
         break;
+    case ID_BLOCKQUOTE:
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLHeadingElementImpl(docPtr(), id);
+        n = new HTMLGenericElementImpl(docPtr(), id);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(docPtr());
-        break;
-    case ID_P:
-        n = new HTMLParagraphElementImpl(docPtr());
         break;
     case ID_PRE:
         n = new HTMLPreElementImpl(docPtr(), id);
@@ -798,6 +802,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 
     default:
+        if ( id )  // known tag but missing in this list
+            kdDebug( 6020 ) << "Unsupported tag " << qstr << " id=" << id << endl;
         break;
     }
     return n;
@@ -864,6 +870,11 @@ void DocumentImpl::recalcStyle( StyleChange change )
 //     qDebug("recalcStyle(%p)", this);
 //     QTime qt;
 //     qt.start();
+    if (m_inStyleRecalc)
+        return; // Guard against re-entrancy. -dwh
+
+    m_inStyleRecalc = true;
+
     if( !m_render ) goto bail_out;
 
     if ( change == Force ) {
@@ -917,14 +928,14 @@ void DocumentImpl::recalcStyle( StyleChange change )
     if ( changed() ) {
 	renderer()->setLayouted( false );
 	renderer()->setMinMaxKnown( false );
-	renderer()->layout();
-	renderer()->repaint();
     }
 
 bail_out:
     setChanged( false );
     setHasChangedChild( false );
     setDocumentChanged( false );
+
+    m_inStyleRecalc = false;
 }
 
 void DocumentImpl::updateRendering()
@@ -968,6 +979,9 @@ void DocumentImpl::attach()
         setPaintDevice( m_view );
 
     // Create the rendering tree
+    assert(!m_styleSelector);
+    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
+                                            pMode == Strict );
     m_render = new RenderRoot(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
@@ -1532,7 +1546,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
     return 0;
 }
 
-NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
+NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int* pExceptioncode)
 {
     // Each document maintains a mapping of attrname -> id for every attr name
     // encountered in the document.
@@ -1594,6 +1608,11 @@ NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_
     // unknown
     if (readonly) return 0;
 
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(_name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
+
     // Name not found in m_attrNames, so let's add it
     // ### yeah, this is lame. use a dictionary / map instead
     if (m_attrNameCount+1 > m_attrNameAlloc) {
@@ -1628,9 +1647,9 @@ DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
     }
 }
 
-NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
+NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly, int *pExceptioncode)
 {
-    if (!_name) return 0;
+    if (!_name || !_name->l) return 0;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
     NodeImpl::Id id = 0;
@@ -1678,8 +1697,9 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
     }
 
     // Look in the m_elementNames array for the name
+    //DOMString nme(n.string());
+    DOMString nme( _name );
     // ### yeah, this is lame. use a dictionary / map instead
-    DOMString nme(n.string());
     // compatibility mode has to store upper case
     if (htmlMode() != XHtml) nme = nme.upper();
     for (id = 0; id < m_elementNameCount; id++)
@@ -1688,6 +1708,11 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
 
     // unknown
     if (readonly) return 0;
+
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(_name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {
@@ -1935,6 +1960,37 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
     QPtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
         it.current()->notifyBeforeNodeRemoval(n);
+}
+
+bool DocumentImpl::isURLAllowed(const QString& url) const
+{
+    KHTMLView *w = view();
+
+    KURL newURL(completeURL(url));
+    newURL.setRef(QString::null);
+
+    // Prohibit non-file URLs if we are asked to.
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // do we allow this suburl ?
+    if ( !kapp || !kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
+        return false;
+
+    // We allow one level of self-reference because some sites depend on that.
+    // But we don't allow more than one.
+    bool foundSelfReference = false;
+    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+        KURL partURL = part->url();
+        partURL.setRef(QString::null);
+        if (partURL == newURL) {
+            if (foundSelfReference)
+                return false;
+            foundSelfReference = true;
+        }
+    }
+
+    return true;
 }
 
 AbstractViewImpl *DocumentImpl::defaultView() const

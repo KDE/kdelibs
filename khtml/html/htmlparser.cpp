@@ -26,8 +26,6 @@
 // KDE HTML Widget -- HTML Parser
 //#define PARSER_DEBUG
 
-#include "html/htmlparser.h"
-
 #include "dom/dom_exception.h"
 
 #include "html/html_baseimpl.h"
@@ -53,6 +51,7 @@
 
 #include "rendering/render_object.h"
 
+#include "html/htmlparser.h"
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -111,7 +110,8 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
+KHTMLParser::KHTMLParser
+( KHTMLView *_parent, DocumentPtr *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
@@ -302,14 +302,19 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
+
+	// have to do this here (and not when creating the node, as we don't know before where we add the LI element to.
+	if ( id == ID_LI && n->isElementNode() ) {
+	    int cid = current->id();
+	    if ( cid != ID_UL && cid != ID_OL )
+	    static_cast<HTMLElementImpl*>(n)->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
+	}
+
 	// don't push elements without end tag on the stack
         if(tagPriority[id] != 0 && !flat) {
 #if SPEED_DEBUG < 2
-            if(!n->attached() && HTMLWidget ) {
+            if(!n->attached() && HTMLWidget )
                 n->attach();
-                if (n->renderer())
-                    n->renderer()->setBlockBidi();
-            }
 #endif
 	    if(n->isInline()) m_inline = true;
             pushBlock(id, tagPriority[id]);
@@ -328,7 +333,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #endif
 	    if(n->isInline()) m_inline = true;
         }
-
 
 #if SPEED_DEBUG < 1
         if(tagPriority[id] == 0 && n->renderer())
@@ -356,7 +360,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_HEAD:
             // ### alllow not having <HTML> in at all, as per HTML spec
-            if (!current->isDocumentNode() && !current->id() == ID_HTML )
+            if (!current->isDocumentNode() && current->id() != ID_HTML )
                 return false;
             break;
         case ID_META:
@@ -793,7 +797,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_FORM:
         // thou shall not nest <form> - NS/IE quirk
         if (form) break;
-        n = form = new HTMLFormElementImpl(document);
+        n = form = new HTMLFormElementImpl(document, false);
         break;
     case ID_BUTTON:
         n = new HTMLButtonElementImpl(document, form);
@@ -870,19 +874,16 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         popBlock(ID_LI);
         HTMLElementImpl *e = new HTMLLIElementImpl(document);
         n = e;
-        if( current->id() != ID_UL && current->id() != ID_OL )
-                e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
         break;
     }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
-        n = new HTMLBlockquoteElementImpl(document);
-        break;
-    case ID_DIV:
-        n = new HTMLDivElementImpl(document);
-        break;
     case ID_LAYER:
-        n = new HTMLLayerElementImpl(document);
+        n = new HTMLGenericElementImpl(document, t->id);
+        break;
+    case ID_P:
+    case ID_DIV:
+        n = new HTMLDivElementImpl(document, t->id);
         break;
     case ID_H1:
     case ID_H2:
@@ -890,13 +891,10 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLHeadingElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(document);
-        break;
-    case ID_P:
-        n = new HTMLParagraphElementImpl(document);
         break;
     case ID_PRE:
         ++inPre;
@@ -929,7 +927,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // images
     case ID_IMG:
-        n = new HTMLImageElementImpl(document);
+        n = new HTMLImageElementImpl(document, form);
         break;
     case ID_MAP:
         map = new HTMLMapElementImpl(document);
@@ -1239,17 +1237,17 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     NodeImpl *n;
     HTMLFormElementImpl *myform = form;
     if ( !myform ) {
-        myform = new HTMLFormElementImpl(document);
+        myform = new HTMLFormElementImpl(document, true);
         n = myform;
     } else
-        n = new HTMLDivElementImpl( document );
+        n = new HTMLDivElementImpl( document, ID_DIV );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
     AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;
     DOMString text = i18n("This is a searchable index. Enter search keywords: ");
     if (a)
         text = a->value();
-    child = new TextImpl(document, text);
+    child = new TextImpl(document, text.implementation());
     n->addChild( child );
     child = new HTMLIsIndexElementImpl(document, myform);
     static_cast<ElementImpl *>(child)->setAttribute(ATTR_TYPE, "khtml_isindex");

@@ -18,7 +18,7 @@
 
 AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 
-INCLUDES=  -I$(top_srcdir) -I$(srcdir)/.. -I$(srcdir)/../kssl -I$(srcdir)/../../interfaces  $(all_includes) $(SSL_INCLUDES)
+INCLUDES=  -I$(top_srcdir) -I$(srcdir)/.. -I$(srcdir)/../kssl -I../kssl -I$(srcdir)/../../interfaces  $(all_includes) $(SSL_INCLUDES)
 
 noinst_LTLIBRARIES = libkiocore.la libksycoca.la
 

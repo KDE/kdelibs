@@ -64,7 +64,7 @@ namespace DOM
 {
     class CSSStyleSheetImpl;
     class DocumentImpl;
-};
+}
 
 namespace khtml
 {
@@ -105,12 +105,12 @@ namespace khtml
 	    m_type = type;
 	    m_status = Pending;
 	    m_size = 0;
-	    m_free = false;
 	    m_cachePolicy = _cachePolicy;
 	    m_request = 0;
 	    m_expireDate = _expireDate;
             m_deleted = false;
             m_expireDateChanged = false;
+            m_free = false;
 	}
 	virtual ~CachedObject() {
             if(m_deleted) abort();
@@ -140,12 +140,7 @@ namespace khtml
 	 */
 	virtual void finish();
 
-        /**
-         * Called by the cache if the object has been removed from the cache dict
-         * while still being referenced. This means the object should kill itself
-         * if its reference counter drops down to zero.
-         */
-        void setFree( bool b ) { m_free = b; }
+        void setFree();
 
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
 
@@ -177,10 +172,10 @@ namespace khtml
 	int m_size;
 	time_t m_expireDate;
 	KIO::CacheControl m_cachePolicy;
-        bool m_free : 1;
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
+        bool m_free : 1;
     };
 
 
@@ -397,10 +392,9 @@ namespace khtml
     protected slots:
 	void slotFinished( KIO::Job * );
 	void slotData( KIO::Job *, const QByteArray & );
-
-    private:
 	void servePendingRequests();
 
+    protected:
 	QPtrList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
@@ -506,8 +500,10 @@ namespace khtml
 		prepend( url );
 	    }
 	};
-
-
+        private:
+        friend class CachedObject;
+        static void flushFreeList();
+        static QPtrList<CachedObject> *freeList;
 	static QDict<CachedObject> *cache;
 	static LRUList *lru;
         static QPtrList<DocLoader>* docloader;
@@ -520,6 +516,13 @@ namespace khtml
         static unsigned long s_ulRefCnt;
     };
 
-};
+    inline void CachedObject::setFree() {
+        if ( !m_free ) {
+            Cache::freeList->append(this);
+            m_free = true;
+        }
+    }
+
+} // namespace
 
 #endif

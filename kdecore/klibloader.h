@@ -36,7 +36,7 @@ class KLibLoaderPrivate;
 class KLibraryPrivate;
 
 #define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { void *init_##libname() { return new factory; } };
+    extern "C" { void *init_##libname() { return new factory; } }
 
 /**
  * @short Represents a dynamically loaded library.
@@ -139,6 +139,8 @@ class KLibWrapPrivate;
  */
 class KLibLoader : public QObject
 {
+    friend class KLibrary;
+
     Q_OBJECT
 public:
     /**

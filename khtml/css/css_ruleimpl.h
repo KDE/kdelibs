@@ -31,7 +31,7 @@
 
 namespace khtml {
     class CachedCSSStyleSheet;
-};
+}
 
 namespace DOM {
 
@@ -230,6 +230,6 @@ protected:
     QPtrList<CSSRuleImpl> m_lstCSSRules;
 };
 
-}; // namespace
+} // namespace
 
 #endif

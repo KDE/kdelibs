@@ -26,11 +26,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <kcursor.h>
-#include <klibloader.h>
 #include <kxmlguifactory.h>
-#include <kaction.h>
-#include <kparts/partmanager.h>
-#include <qtimer.h>
 
 #include "khtml_run.h"
 #include "../kutils/kfind.h"
@@ -47,7 +43,7 @@ namespace KIO
 {
   class Job;
   class TransferJob;
-};
+}
 
 namespace khtml
 {
@@ -80,7 +76,7 @@ namespace khtml
     bool m_bPendingRedirection;
   };
 
-};
+}
 
 class FrameList : public QValueList<khtml::ChildFrame>
 {
@@ -297,6 +293,7 @@ public:
   QString m_strSelectedURL;
   QString m_strSelectedURLTarget;
   QString m_referrer;
+  QString m_pageReferrer;
 
   struct SubmitForm
   {

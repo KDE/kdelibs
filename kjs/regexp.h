@@ -66,6 +66,6 @@ namespace KJS {
     RegExp();
   };
 
-}; // namespace
+} // namespace
 
 #endif

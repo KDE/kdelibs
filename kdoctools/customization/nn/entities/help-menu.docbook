@@ -23,7 +23,7 @@ til &kappname; (dette dokumentet).</para></listitem>
 </menuchoice>
 </term>
 <listitem><para><action>Endrar musepeikaren til ei pil med 
-spørjeteikn.</action>  Når du klikkar på element i &kappname;, får du sjå ei 
+spÃ¸rjeteikn.</action>  NÃ¥r du klikkar pÃ¥ element i &kappname;, fÃ¥r du sjÃ¥ ei 
 hjelperute (dersom det finst) med informasjon om elementet.</para></listitem>
 </varlistentry>
 
@@ -34,7 +34,7 @@ hjelperute (dersom det finst) med informasjon om elementet.</para></listitem>
 <guimenuitem>Rapporter feil ...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Opnar dialogen for feilrapport</action> der du kan 
-rapportera om feil eller senda inn ønskje om nye funksjonar.</para></listitem>
+rapportera om feil eller senda inn Ã¸nskje om nye funksjonar.</para></listitem>
 </varlistentry>
 
 <varlistentry>

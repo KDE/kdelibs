@@ -52,9 +52,9 @@ NamedNodeMap::NamedNodeMap(NamedNodeMapImpl *i)
 NamedNodeMap &NamedNodeMap::operator = (const NamedNodeMap &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -105,7 +105,12 @@ Node NamedNodeMap::removeNamedItemNS( const DOMString &namespaceURI, const DOMSt
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(impl->mapId(namespaceURI, localName, true), exceptioncode);
+    NodeImpl::Id id = impl->mapId(namespaceURI, localName, true);
+    NodeImpl* oldItem = impl->getNamedItem(id);
+    if (!oldItem) throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    Node r(oldItem->cloneNode(true));
+    impl->removeNamedItem(id, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -149,9 +154,9 @@ Node::Node( NodeImpl *i )
 Node &Node::operator = (const Node &other)
 {
     if(impl != other.impl) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -453,9 +458,9 @@ NodeList::NodeList(const NodeListImpl *i)
 NodeList &NodeList::operator = (const NodeList &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }

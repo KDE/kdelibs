@@ -46,6 +46,7 @@ public:
     bool m_bEnableJavaScriptDebug : 1;
     bool m_bEnablePlugins : 1;
     bool m_formCompletionEnabled : 1;
+    bool m_autoDelayedActionsEnabled: 1;
 
     int m_fontSize;
     int m_minFontSize;
@@ -243,6 +244,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
     d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
+    d->m_autoDelayedActionsEnabled = config->readBoolEntry ("AutoDelayedActions", true);
   }
 
   // Colors
@@ -592,4 +594,9 @@ bool KHTMLSettings::autoLoadImages() const
 KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations() const
 {
   return d->m_showAnimations;
+}
+
+bool KHTMLSettings::isAutoDelayedActionsEnabled() const
+{
+  return d->m_autoDelayedActionsEnabled;
 }

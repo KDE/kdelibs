@@ -31,6 +31,7 @@ include_HEADERS = \
 		ksslsigners.h		 \
 		ksslpkcs7.h		 \
 		ksslpemcallback.h	 \
+		ksslconfig.h		 \
 		ksslx509map.h
  
 

@@ -62,5 +62,5 @@ protected:
     bool haveEncoding;
 };
 
-};
+}
 #endif

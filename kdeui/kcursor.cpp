@@ -69,6 +69,9 @@ QCursor KCursor::handCursor()
                         QBitmap hand_bitmap(22, 22, HAND_BITS, true);
                         QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
                         hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
+                        // Hack to force QCursor to call XCreatePixmapCursor() immediately
+                        // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+                        hand_cursor->handle();
                 }
                 else
                         hand_cursor = new QCursor(PointingHandCursor);
@@ -126,6 +129,9 @@ QCursor KCursor::workingCursor()
         {
             QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
             working_cursor = new QCursor( pm, 1, 1 );
+            // Hack to force QCursor to call XCreatePixmapCursor() immediately
+            // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+            working_cursor->handle();
         }
 
         Q_CHECK_PTR(working_cursor);
@@ -216,28 +222,7 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable )
 void KCursor::setAutoHideCursor( QWidget *w, bool enable,
 				 bool customEventFilter )
 {
-    if ( !w )
-        return;
-
-    KCursorPrivate *kp = KCursorPrivate::self();
-    if ( !kp->enabled )
-	return;
-
-    if ( enable ) {
-        kp->start();
-        w->setMouseTracking( true );
-
-	if ( !customEventFilter )
-	    w->installEventFilter( kp );
-	else // safety
-	    w->removeEventFilter( kp );
-    }
-
-    else {
-        w->setMouseTracking( false );
-        w->removeEventFilter( kp );
-        kp->stop();
-    }
+    KCursorPrivate::self()->setAutoHideCursor( w, enable, customEventFilter );
 }
 
 void KCursor::autoHideEventFilter( QObject *o, QEvent *e )
@@ -255,9 +240,115 @@ int KCursor::hideCursorDelay()
     return KCursorPrivate::self()->hideCursorDelay;
 }
 
+// **************************************************************************
 
-// **************************************************************************
-// **************************************************************************
+KCursorPrivateAutoHideEventFilter::KCursorPrivateAutoHideEventFilter( QWidget* widget )
+    : m_widget( widget )
+    , m_wasMouseTracking( m_widget->hasMouseTracking() )
+    , m_isCursorHidden( false )
+    , m_isOwnCursor( false )
+{
+    m_widget->setMouseTracking( true );
+    connect( &m_autoHideTimer, SIGNAL( timeout() ),
+             this, SLOT( hideCursor() ) );
+}
+
+KCursorPrivateAutoHideEventFilter::~KCursorPrivateAutoHideEventFilter()
+{
+    if( m_widget != NULL )
+        m_widget->setMouseTracking( m_wasMouseTracking );
+}
+
+void KCursorPrivateAutoHideEventFilter::resetWidget()
+{
+    m_widget = NULL;
+}
+
+void KCursorPrivateAutoHideEventFilter::hideCursor()
+{
+    m_autoHideTimer.stop();
+
+    if ( m_isCursorHidden )
+        return;
+
+    m_isCursorHidden = true;
+
+    QWidget* w = actualWidget();
+
+    m_isOwnCursor = w->ownCursor();
+    if ( m_isOwnCursor )
+        m_oldCursor = w->cursor();
+
+    w->setCursor( KCursor::blankCursor() );
+}
+
+void KCursorPrivateAutoHideEventFilter::unhideCursor()
+{
+    m_autoHideTimer.stop();
+
+    if ( !m_isCursorHidden )
+        return;
+
+    m_isCursorHidden = false;
+
+    QWidget* w = actualWidget();
+
+    if ( m_isOwnCursor )
+        w->setCursor( m_oldCursor );
+    else
+        w->unsetCursor();
+}
+
+QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
+{
+    QWidget* w = m_widget;
+
+    // Is w a scrollview ? Call setCursor on the viewport in that case.
+    QScrollView * sv = dynamic_cast<QScrollView *>( w );
+    if ( sv )
+        w = sv->viewport();
+
+    return w;
+}
+
+bool KCursorPrivateAutoHideEventFilter::eventFilter( QObject *o, QEvent *e )
+{
+    Q_ASSERT( o == m_widget );
+
+    switch ( e->type() )
+    {
+    case QEvent::Create:
+        // Qt steals mouseTracking on create()
+        m_widget->setMouseTracking( true );
+        break;
+    case QEvent::Leave:
+    case QEvent::FocusOut:
+    case QEvent::WindowDeactivate:
+        unhideCursor();
+        break;
+    case QEvent::KeyPress:
+    case QEvent::AccelOverride:
+        hideCursor();
+        break;
+    case QEvent::Enter:
+    case QEvent::FocusIn:
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+    case QEvent::MouseMove:
+    case QEvent::Show:
+    case QEvent::Hide:
+    case QEvent::Wheel:
+        unhideCursor();
+        if ( m_widget->hasFocus() )
+            m_autoHideTimer.start( KCursorPrivate::self()->hideCursorDelay, true );
+        break;
+    default:
+        break;
+    }
+
+    return false;
+}
 
 KCursorPrivate * KCursorPrivate::s_self = 0L;
 
@@ -272,12 +363,7 @@ KCursorPrivate * KCursorPrivate::self()
 
 KCursorPrivate::KCursorPrivate()
 {
-    count = 0;
-    autoHideTimer = 0;
     hideCursorDelay = 5000; // 5s default value
-    isCursorHidden = false;
-    isOwnCursor = false;
-    hideWidget = 0L;
 
     KConfig *kc = KGlobal::config();
     KConfigGroupSaver ks( kc, QString::fromLatin1("KDE") );
@@ -289,166 +375,56 @@ KCursorPrivate::~KCursorPrivate()
 {
 }
 
-void KCursorPrivate::start()
+void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEventFilter )
 {
-    if ( !autoHideTimer ) {
-        autoHideTimer = new QTimer(qApp);
-        QObject::connect( autoHideTimer, SIGNAL( timeout() ),
-                          this, SLOT( slotHideCursor() ));
-    }
-    count++;
-}
-
-void KCursorPrivate::stop()
-{
-    count--;
-    if ( count <= 0 ) {
-        delete autoHideTimer;
-        autoHideTimer = 0L;
-        count = 0;
-    }
-}
-
-void KCursorPrivate::hideCursor( QWidget *w )
-{
-    if ( !w )
+    if ( !w || !enabled )
         return;
-    // Is w a scrollview ? Call setCursor on the viewport in that case.
-    QScrollView * sv = dynamic_cast<QScrollView *>( w );
-    if ( sv )
-        w = sv->viewport();
 
-    isCursorHidden = true;
-    isOwnCursor = w->ownCursor();
-    if ( isOwnCursor )
-        oldCursor = w->cursor();
-
-    w->setCursor( KCursor::blankCursor() );
-}
-
-void KCursorPrivate::unhideCursor( QWidget *w )
-{
-    isCursorHidden = false;
-
-    if ( w ) {
-        QScrollView * sv = dynamic_cast<QScrollView *>( w );
-        if ( sv )
-            w = sv->viewport();
-
-        if ( isOwnCursor )
-            w->setCursor( oldCursor );
-        else
-            w->unsetCursor();
+    if ( enable )
+    {
+        if ( m_eventFilters.find( w ) != NULL )
+            return;
+        KCursorPrivateAutoHideEventFilter* filter = new KCursorPrivateAutoHideEventFilter( w );
+        m_eventFilters.insert( w, filter );
+        if ( !customEventFilter )
+            w->installEventFilter( filter );
+        connect( w, SIGNAL( destroyed(QObject*) ),
+                 this, SLOT( slotWidgetDestroyed(QObject*) ) );
+    }
+    else
+    {
+        KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.take( w );
+        if ( filter == NULL )
+            return;
+        w->removeEventFilter( filter );
+        delete filter;
+        disconnect( w, SIGNAL( destroyed(QObject*) ),
+                    this, SLOT( slotWidgetDestroyed(QObject*) ) );
     }
 }
 
-
-// what a mess :-/
-// no kidding!
 bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 {
-    if ( !enabled || !o->isWidgetType() )
+    if ( !enabled )
         return false;
 
-    int t = e->type();
-    
-    // If it is not one of the events we respond to, ignore it.
-    if( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
-            (t >= QEvent::Destroy && t <= QEvent::Hide) ||
-             t == QEvent::AccelOverride ||
-             t == QEvent::Wheel ) )
-      return false;
-    
-    // disconnect() and connect() on events for a new widget
-    if ( o != hideWidget ) {
-        if ( hideWidget ) {
-            disconnect( hideWidget, SIGNAL( destroyed() ),
-                        this, SLOT( slotWidgetDestroyed()));
-        }
-        connect( o, SIGNAL( destroyed() ),
-                 this, SLOT( slotWidgetDestroyed()));
-    }
+    KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.find( o );
 
-    QWidget *w = static_cast<QWidget *>( o );
-    hideWidget = w;
-
-    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy) {
-	if ( autoHideTimer )
-            autoHideTimer->stop();
-
-        if ( isCursorHidden && t != QEvent::Destroy )
-            unhideCursor( w );
-
+    Q_ASSERT( filter != NULL );
+    if ( filter == NULL )
         return false;
-    }
 
-    if ( t == QEvent::Create ) // Qt steals mouseTracking on create()
-        w->setMouseTracking( true );
-
-    // don't process events not coming from the focus-window
-    // or from widgets that accept focus, but don't have it.
-    if ( !w->isActiveWindow() || (w->isFocusEnabled() && !w->hasFocus()) ) {
-        disconnect( hideWidget, SIGNAL( destroyed() ),
-                    this, SLOT( slotWidgetDestroyed() ));
- 	hideWidget = 0L;
- 	return false;
-    }
-
-    else if ( t == QEvent::Enter ) {
-        if ( isCursorHidden )
-            unhideCursor( w );
-        if ( autoHideTimer )
-            autoHideTimer->start( hideCursorDelay, true );
-    }
-
-    else { // other than enter/leave/focus events
-        
-        if ( isCursorHidden ) {
-            if ( t == QEvent::MouseButtonPress ||
-                 t == QEvent::MouseButtonRelease ||
-                 t == QEvent::MouseButtonDblClick || t == QEvent::MouseMove ||
-                 t == QEvent::Show || t == QEvent::Hide ) {
-                unhideCursor( w );
-		autoHideTimer->start( hideCursorDelay, true );
-	    }
-	}
-
-        else { // cursor not hidden yet
-            if ( t == QEvent::KeyPress || t == QEvent::AccelOverride ) { //t == QEvent::KeyRelease ) {
-                if ( insideWidget( QCursor::pos(), w )) {
-                    hideCursor( w );
-                    autoHideTimer->stop();
-		}
-            }
-
-	    // restart the timer on user-input
-            else if ( (t >= QEvent::MouseButtonPress &&
-		       t <= QEvent::KeyRelease) ||
-		      t == QEvent::Wheel || t == QEvent::AccelOverride ) {
-
-                if ( insideWidget( QCursor::pos(), w ) && autoHideTimer )
-                    autoHideTimer->start( hideCursorDelay, true );
-            }
-        }
-    }
-    return false;
+    return filter->eventFilter( o, e );
 }
 
-void KCursorPrivate::slotHideCursor()
+void KCursorPrivate::slotWidgetDestroyed( QObject* o )
 {
-    if ( !isCursorHidden )
-        hideCursor( hideWidget );
-}
+    KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.take( o );
 
-void KCursorPrivate::slotWidgetDestroyed()
-{
-    isCursorHidden = false;
-    hideWidget = 0L;
-}
+    Q_ASSERT( filter != NULL );
 
-bool KCursorPrivate::insideWidget( const QPoint &p, QWidget *w )
-{
-    return w->rect().contains( w->mapFromGlobal( p ) );
+    filter->resetWidget(); // so that dtor doesn't access it
+    delete filter;
 }
 
 #include "kcursor_private.moc"

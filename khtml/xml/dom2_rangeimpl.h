@@ -102,7 +102,7 @@ private:
     bool containedByReadOnly();
 };
 
-}; // namespace
+} // namespace
 
 #endif
 

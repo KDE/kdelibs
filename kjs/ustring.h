@@ -31,7 +31,7 @@
  */
 namespace DOM {
   class DOMString;
-};
+}
 class KJScript;
 class QString;
 class QConstString;
@@ -416,6 +416,6 @@ namespace KJS {
   bool operator==(const CString& s1, const CString& s2);
   UString operator+(const UString& s1, const UString& s2);
 
-}; // namespace
+} // namespace
 
 #endif

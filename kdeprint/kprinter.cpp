@@ -177,13 +177,13 @@ void KPrinter::loadSettings()
 
 	// load latest used printer from config file, if required in the options
 	if (searchName().isEmpty() && pconf->readBoolEntry("UseLast", true))
-		setSearchName(conf->readEntry("Printer",QString::null));
+		setSearchName(conf->readEntry("Printer"));
 
 	// latest used print command
-	setOption("kde-printcommand",conf->readEntry("PrintCommand"));
+	setOption("kde-printcommand",conf->readPathEntry("PrintCommand"));
 
 	// latest used document directory
-	setDocDirectory( conf->readEntry( "DocDirectory" ) );
+	setDocDirectory( conf->readPathEntry( "DocDirectory" ) );
 	setDocFileName( "print" );
 }
 
@@ -215,6 +215,12 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
+	if (!kapp->authorize("print/dialog"))
+	{
+		autoConfigure(QString::null, parent);
+		return true; // Just print it
+	}
+		
 	if (parent)
 		d->m_parentId = parent->winId();
 
@@ -305,7 +311,11 @@ void KPrinter::translateQtOptions()
 	{
 		QRect r = d->m_drawablearea;
 		QSize ps = d->m_pagesize;
-		d->m_wrapper->setMargins( r.top(), r.left(), ps.height() - r.bottom(), ps.width() - r.right() );
+		int res = resolution();
+		d->m_wrapper->setMargins( ( r.top() * res + 71 ) / 72,
+				( r.left() * res + 71 ) / 72, 
+				( ( ps.height() - r.bottom() - 1 ) * res + 71 ) / 72,
+				( ( ps.width() - r.right() - 1 ) * res + 71 ) / 72 );
 	}
 	/*else
 	{
@@ -658,16 +668,17 @@ void reportError(KPrinter *p)
 		kdDebug(500) << "could not send notify event" << endl;
 }
 
-KPrinter::PageSize pageNameToPageSize(const QString& name)
+KPrinter::PageSize pageNameToPageSize(const QString& _name)
 {
-	if (name == "Letter") return KPrinter::Letter;
-	else if (name == "Legal") return KPrinter::Legal;
+	QString name = _name.upper();
+	if (name == "LETTER") return KPrinter::Letter;
+	else if (name == "LEGAL") return KPrinter::Legal;
 	else if (name == "A4") return KPrinter::A4;
 	else if (name == "A3") return KPrinter::A3;
-	else if (name == "Executive") return KPrinter::Executive;
-	else if (name == "Ledger") return KPrinter::Ledger;
-	else if (name == "Tabloid") return KPrinter::Tabloid;
-	else if (name == "Folio") return KPrinter::Folio;
+	else if (name == "EXECUTIVE") return KPrinter::Executive;
+	else if (name == "LEDGER") return KPrinter::Ledger;
+	else if (name == "TABLOID") return KPrinter::Tabloid;
+	else if (name == "FOLIO") return KPrinter::Folio;
 	else if (name == "A5") return KPrinter::A5;
 	else if (name == "A6") return KPrinter::A6;
 	else if (name == "A7") return KPrinter::A7;
@@ -687,9 +698,9 @@ KPrinter::PageSize pageNameToPageSize(const QString& name)
 	else if (name == "B8" || name == "B8ISO") return KPrinter::B8;
 	else if (name == "B9" || name == "B9ISO") return KPrinter::B9;
 	else if (name == "B10" || name == "B10ISO") return KPrinter::B10;
-	else if (name == "C5" || name == "C5E" || name == "EnvC5") return KPrinter::C5E;
-	else if (name == "DL" || name == "DLE" || name == "EnvDL") return KPrinter::DLE;
-	else if (name == "Comm10" || name == "COM10" || name == "Env10") return KPrinter::Comm10E;
+	else if (name == "C5" || name == "C5E" || name == "ENVC5") return KPrinter::C5E;
+	else if (name == "DL" || name == "DLE" || name == "ENVDL") return KPrinter::DLE;
+	else if (name == "COMM10" || name == "COM10" || name == "ENV10") return KPrinter::Comm10E;
 	else return KPrinter::A4;
 }
 

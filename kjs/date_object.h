@@ -120,11 +120,11 @@ namespace KJS {
   };
 
   // helper functions
-  Value parseDate(const String &s);
+  Value parseDate(const UString &u);
   double KRFCDate_parseDate(const UString &_date);
   Value timeClip(const Value &t);
   int local_timeoffset();
 
-}; // namespace
+} // namespace
 
 #endif

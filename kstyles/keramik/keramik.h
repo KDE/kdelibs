@@ -4,8 +4,8 @@
    based on the KDE3 HighColor Style
 
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
-             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
- 
+             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org>
+
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
              (C) 2000 Dirk Mueller          <mueller@kde.org>
@@ -60,7 +60,7 @@ public:
 	                          const QColorGroup& cg,
 	                          SFlags flags = Style_Default,
 	                          const QStyleOption& = QStyleOption::Default ) const;
-		
+
 	void drawPrimitive( PrimitiveElement pe,
 	                    QPainter* p,
 	                    const QRect& r,
@@ -99,7 +99,7 @@ public:
 	                             const QStyleOption& = QStyleOption::Default ) const;
 
 	int pixelMetric( PixelMetric m, const QWidget* widget = 0 ) const;
-		
+
 	QSize sizeFromContents( ContentsType contents,
 	                        const QWidget* widget,
 	                        const QSize& contentSize,

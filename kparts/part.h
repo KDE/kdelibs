@@ -531,15 +531,43 @@ public:
   bool isModified() const { return m_bModified; }
 
   /**
+   * If the document has been modified, ask the user to save changes.
+   * This method is meant to be called from @ref KMainWindow::queryClose().
+   * It will also be called from @ref closeURL().
+   *
+   * @return true if closeURL() can be called without the user losing
+   * important data, false if the user chooses to cancel.
+   *
+   * @since 3.2
+   */
+  // TODO: Make virtual for KDE 4
+  bool queryClose();
+
+  /**
    * Called when closing the current url (e.g. document), for instance
    * when switching to another url (note that @ref openURL() calls it
    * automatically in this case).
+   *
    * If the current URL is not fully loaded yet, aborts loading.
-   * Reimplemented from ReadOnlyPart, to handle modified parts
-   * (and suggest saving in this case, with yes/no/cancel).
+   *
+   * If @ref isModified(), @ref queryClose() will be called.
+   *
    * @return false on cancel
    */
   virtual bool closeURL();
+
+  /**
+   * Call this method instead of the above if you need control if
+   * the save prompt is shown. For example, if you call @ref queryClose()
+   * from @ref KMainWindow::queryClose(), you would not want to prompt
+   * again when closing the url.
+   *
+   * Equivalent to promptToSave ? @ref closeURL() : @ref ReadOnlyPart::closeURL()
+   *
+   * @since 3.2
+   */
+  // TODO: Make virtual for KDE 4
+  bool closeURL( bool promptToSave );
 
   /**
    * Save the file to a new location.
@@ -597,6 +625,6 @@ private:
   bool m_bClosing;
 };
 
-};
+}
 
 #endif

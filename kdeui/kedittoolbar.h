@@ -25,7 +25,7 @@
 class KActionCollection;
 class QComboBox;
 class QPushButton;
-class KListView;;
+class KListView;
 class QListViewItem;
 
 class KEditToolbarWidget;
@@ -280,14 +280,9 @@ public:
   virtual ~KEditToolbarWidget();
 
   /**
-   * This is overriden so that the KXMLGUIClient internal functions
-   * have the proper action collections to deal with.  You shouldn't
-   * have to do anything with this as it was your collection in the
-   * first place.
-   *
-   * @return Your application's collection of actions
+   * @internal Reimplemented for internal purposes.
    */
-  //virtual KActionCollection *actionCollection() const;
+  virtual KActionCollection *actionCollection() const;
 
   /**
    * Save any changes the user made.  The file will be in the user's

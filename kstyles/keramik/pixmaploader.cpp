@@ -1,6 +1,6 @@
-/* 
+/*
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-                 (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+             (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,23 +38,21 @@ using namespace Keramik;
 PixmapLoader* PixmapLoader::s_instance = 0;
 
 PixmapLoader::PixmapLoader():  m_pixmapCache(327680, 2017)
-													
-{ 
-//	QPixmapCache::setCacheLimit( 128 );
+
+{
 	m_pixmapCache.setAutoDelete(true);
-	
+
 	for (int c=0; c<256; c++)
 		clamp[c]=static_cast<unsigned char>(c);
-		
+
 	for (int c=256; c<540; c++)
 		clamp[c] = 255;
-		
+
 }
 
 void PixmapLoader::clear()
 {
 	//m_cache.clear();
-	QPixmapCache::clear();
 }
 
 QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& back, bool blend)
@@ -62,12 +60,12 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	KeramikEmbedImage* edata = KeramikGetDbImage(name);
 	if (!edata)
 		return 0;
-		
+
 	//Like getColored, but desaturate a bit, and lower gamma..
 
 	//Create a real image...
 	QImage* img = new QImage(edata->width, edata->height, 32);
-	
+
 
 
 	//OK, now, fill it in, using the color..
@@ -76,9 +74,9 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	r = (3*color.red()+i)>>2;
 	g= (3*color.green()+i)>>2;
 	b = (3*color.blue()+i)>>2;
-	
+
 	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
-	
+
 
 	if (edata->haveAlpha)
 	{
@@ -117,7 +115,7 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 				Q_UINT32 scale  = edata->data[pos];
 				Q_UINT32 add    = (edata->data[pos+1]*i+127)>>8;
 				Q_UINT32 alpha = edata->data[pos+2];
-				
+
 				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
 				Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
 				Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
@@ -146,7 +144,7 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 			write++;
 		}
 	}
-		
+
 	return img;
 }
 
@@ -158,17 +156,17 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 
 	//Create a real image...
 	QImage* img = new QImage(edata->width, edata->height, 32);
-	
+
 	//OK, now, fill it in, using the color..
 	Q_UINT32 r, g,b;
 	r = color.red() + 2;
 	g= color.green() + 2;
 	b = color.blue() + 2;
-	
+
 //	int i = qGray(color.rgb());
-	
+
 	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
-	
+
 	if (edata->haveAlpha)
 	{
 		if (blend)
@@ -204,7 +202,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 
 			Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
-			
+
 			for (int pos = 0; pos < size; pos+=3)
 			{
 				Q_UINT32 scale  = edata->data[pos];
@@ -220,15 +218,15 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 				*write =qRgba(rr, rg, rb, alpha);
 				write++;
 			}
-		}		
+		}
 	}
 	else
 	{
 		img->setAlphaBuffer(false);
-		
+
 		Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
 		int size = img->width()*img->height() * 2;
-	
+
 		for (int pos = 0; pos < size; pos+=2)
 		{
 			Q_UINT32 scale  = edata->data[pos];
@@ -245,7 +243,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 			write++;
 		}
 	}
-	
+
 	return img;
 }
 
@@ -253,85 +251,90 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 {
 	KeramikCacheEntry entry(name, color, bg, disabled, blend);
 	KeramikCacheEntry* cacheEntry;
-	
-	int key =entry.key();
-	
+
+	int key = entry.key();
+
 	if ((cacheEntry = m_pixmapCache.find(key, false)))
 	{
 		if (entry == *cacheEntry) //True match!
 		{
-			m_pixmapCache.find(key, true); 
+			m_pixmapCache.find(key, true);
 			return *cacheEntry->m_pixmap;
 		}
+		else //Remove old entry in case of a conflict!
+			m_pixmapCache.remove(key);
 	}
-	
 
-	QImage* img = 0;	
+
+	QImage* img = 0;
 	QPixmap* result = 0;
-		if (disabled)
-			img = getDisabled(name, color, bg, blend);
-		else
-			img = getColored(name, color, bg, blend);
-		if ( !img )
-		{
-			KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-			toAdd->m_pixmap = new QPixmap();
-			m_pixmapCache.insert(key, toAdd, 16);
-			return QPixmap();
-		}
+	if (disabled)
+		img = getDisabled(name, color, bg, blend);
+	else
+		img = getColored(name, color, bg, blend);
+	if ( !img )
+	{
+		KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+		toAdd->m_pixmap = new QPixmap();
+		m_pixmapCache.insert(key, toAdd, 16);
+		return QPixmap();
+	}
 
-	
-		result = new QPixmap( *img );
+
+	result = new QPixmap( *img );
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
-	
+
 	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
-	
+
 	delete img;
 	return *result;
 }
+
 
 QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& color,  const QColor& bg, bool disabled, bool blend )
 {
 	KeramikCacheEntry entry(name, color, disabled, blend, width, height);
 	KeramikCacheEntry* cacheEntry;
-	
-	int key =entry.key();
-	
+
+	int key = entry.key();
+
 	if ((cacheEntry = m_pixmapCache.find(key, false)))
 	{
 		if (entry == *cacheEntry) //True match!
 		{
-			m_pixmapCache.find(key, true); 
+			m_pixmapCache.find(key, true);
 			return *cacheEntry->m_pixmap;
 		}
+		else //Remove old entry in case of a conflict!
+			m_pixmapCache.remove(key);
 	}
-	
-	
-	QImage* img = 0;	
-	QPixmap* result = 0;
-	
-		if (disabled)
-			img = getDisabled(name, color, bg, blend);
-		else
-			img = getColored(name, color, bg, blend);
 
-		if ( !img )
-		{
-			KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-			toAdd->m_pixmap = new QPixmap();
-			m_pixmapCache.insert(key, toAdd, 16);
-			return QPixmap();
-		}
-		
-	result = new QPixmap ( img->scale( width ? width : img->width(), height ? height: img->height() ) );
+
+	QImage* img = 0;
+	QPixmap* result = 0;
+
+	if (disabled)
+		img = getDisabled(name, color, bg, blend);
+	else
+		img = getColored(name, color, bg, blend);
+
+	if ( !img )
+	{
+		KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+		toAdd->m_pixmap = new QPixmap();
+		m_pixmapCache.insert(key, toAdd, 16);
+		return QPixmap();
+	}
+
+	result = new QPixmap ( img->smoothScale( width ? width : img->width(), height ? height: img->height() ) );
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
-	
+
 	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
 
-	delete img;	
+	delete img;
 	return *result;
 }
 
@@ -348,7 +351,12 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 	bool swBlend = (mode != PaintFullBlend);
 	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
 	int scaleWidth = width, scaleHeight = height;
-  
+
+	//scaleWidth, scaleHeight are calculated to contain the area available
+	//for all tiled and stretched columns/rows respectively.
+	//This is need to redistribute the area remaining after painting
+	//the "fixed" elements. We also keep track of the last col and row
+	//being scaled so rounding errors don't cause us to be short a pixel or so.
 	for ( unsigned int col = 0; col < columns(); ++col )
 		if ( columnMode( col ) != Fixed )
 		{
@@ -356,6 +364,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 			lastScaledColumn = col;
 		}
 		else scaleWidth -= PixmapLoader::the().size (absTileName( col, 0 ) ).width();
+
 	for ( unsigned int row = 0; row < rows(); ++row )
 		if ( rowMode( row ) != Fixed )
 		{
@@ -363,60 +372,81 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 			lastScaledRow = row;
 		}
 		else scaleHeight -= PixmapLoader::the().size (absTileName( 0, row ) ).height();
+
+
 	if ( scaleWidth < 0 ) scaleWidth = 0;
 	if ( scaleHeight < 0 ) scaleHeight = 0;
 
-	
 
 	int ypos = y;
-	if ( scaleHeight && !scaledRows ) ypos += scaleHeight / 2;
+
+	//Center vertically if everything is fixed but there is extra room remaining
+	if ( scaleHeight && !scaledRows )
+		ypos += scaleHeight / 2;
+
 	for ( unsigned int row = 0; row < rows(); ++row )
 	{
 		int xpos = x;
-		if ( scaleWidth && !scaledColumns ) xpos += scaleWidth / 2;
+
+		//Center horizontally if extra space and no where to redistribute it to...
+		if ( scaleWidth && !scaledColumns )
+			xpos += scaleWidth / 2;
+
+		//If not fixed vertically, calculate our share of space available
+		//for scalable rows.
 		int h = rowMode( row ) == Fixed ? 0 : scaleHeight / scaledRows;
-		if ( scaledRows && row == lastScaledRow ) h += scaleHeight - scaleHeight / scaledRows * scaledRows;
-		
+
+		//Redistribute any "extra" pixels to the last scaleable row.
+		if ( scaledRows && row == lastScaledRow )
+			h += scaleHeight - scaleHeight / scaledRows * scaledRows;
+
+
+		//If we're fixed, get the height from the pixmap itself.
 		int realH = h ? h : PixmapLoader::the().size (absTileName( 0, row ) ).height();
-    
-			//Skip non-fitting tiles, too.
-			if (rowMode( row ) != Fixed && h == 0)
-			{
-				continue;
-			}
-    
-   
-		if ( rowMode( row ) == Tiled ) h = 0;
+
+		//Skip non-fitting stretched/tiled rows, too.
+		if (rowMode( row ) != Fixed && h == 0)
+			continue;
+
+
+		//Set h to 0 to denote that we aren't scaling
+		if ( rowMode( row ) == Tiled )
+			h = 0;
 
 		for ( unsigned int col = 0; col < columns(); ++col )
 		{
+			//Calculate width for rows that aren't fixed.
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
-			
-			//else t = tile( col, row, color, disabled );
+
+			//Get the width of the pixmap..
 			int tileW = PixmapLoader::the().size (absTileName( col, row ) ).width();
-			
+
+			//Redistribute any extra pixels..
 			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
+
+			//The width to use...
 			int realW = w ? w : tileW;
-			
-			//M.O.: Check me: Just skip the tile if it can't fit...
+
+			//Skip any non-fitting stretched/tiled columns
 			if (columnMode( col ) != Fixed && w == 0)
-			{
 				continue;
-			}
-			
-			if ( columnMode( col ) == Tiled ) w = 0;
-			
+
+			//Set w to 0 to denote that we aren't scaling
+			if ( columnMode( col ) == Tiled )
+				w = 0;
+
+			//If we do indeed have a pixmap..
 			if ( tileW )
+			{
+				//If scaling in either direction.
 				if ( w || h )
 				{
-					//Scaling
 					if (mode != PaintMask)
 					{
 						p->drawTiledPixmap( xpos, ypos, realW, realH, scale( col, row, w, h, color, bg, disabled, swBlend ) );
 					}
 					else
 					{
-						//QPixmap draw(->convertToImage());
 						const QBitmap* mask  = scale( col, row, w, h, color,  bg, disabled, false ).mask();
 						if (mask)
 						{
@@ -430,7 +460,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 				}
 				else
 				{
-					//Tiling
+					//Tiling (or fixed, the same really)
 					if (mode != PaintMask)
 					{
 						p->drawTiledPixmap( xpos, ypos, realW, realH, tile( col, row, color, bg, disabled, swBlend ) );
@@ -446,13 +476,18 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 						}
 						else
 							p->fillRect ( xpos, ypos, realW, realH, Qt::color1);
-						
+
 					}
 				}
+			}
+
+			//Advance horizontal position
 			xpos += realW;
 		}
+
+		//Advance vertical position
 		ypos += realH;
-	}    
+	}
 }
 
 RectTilePainter::RectTilePainter( int name,
@@ -464,7 +499,7 @@ RectTilePainter::RectTilePainter( int name,
 {
 	m_columns =  columns;
 	m_rows       = rows;
-	
+
 	TileMode mh = m_scaleH ? Scaled : Tiled;
 	TileMode mv = m_scaleV ? Scaled : Tiled;
 	for (int c=0; c<4; c++)
@@ -474,7 +509,7 @@ RectTilePainter::RectTilePainter( int name,
 		else
 			colMde[c] = mh;
 	}
-	
+
 	for (int c=0; c<4; c++)
 	{
 		if (c != 1)
@@ -529,8 +564,8 @@ InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
 		rowMde[0] = rowMde[2] = rowMde[3] = Fixed;
 		rowMde[1] = Scaled;
 	}
-	
-	
+
+
 	Mode check = QApplication::reverseLayout() ? First : Last;
 	m_columns = (m_mode == check ? 3 : 2);
 }
@@ -554,14 +589,14 @@ ScrollBarPainter::ScrollBarPainter( int type, int count, bool horizontal )
 	{
 		if ( !m_horizontal || !( c % 2 ) ) colMde[c] = Fixed;
 		else colMde[c] =  Tiled;
-		
+
 		if ( m_horizontal || !( c % 2 ) ) rowMde[c] = Fixed;
 		else rowMde[c] =  Tiled;
 	}
-    
+
 	m_columns = m_horizontal ? m_count : 1;
 	m_rows       = m_horizontal ? 1 : m_count;
-	
+
 }
 
 int ScrollBarPainter::name( bool horizontal )

@@ -148,7 +148,13 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             {
                 int newPerms = m_permissions & mask;
                 if ( (newPerms & 0111) && !(permissions & 0111) )
-                    mask = mask & ~0111;
+                {
+                    // don't interfere with mandatory file locking
+                    if ( newPerms & 02000 )
+                      mask = mask & ~0101;
+                    else
+                      mask = mask & ~0111;
+                }
             }
             info.permissions = ( m_permissions & mask ) | ( permissions & ~mask );
             /*kdDebug(7007) << "\n current permissions=" << QString::number(permissions,8)

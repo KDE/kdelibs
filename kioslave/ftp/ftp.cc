@@ -32,6 +32,7 @@
 #endif
 
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -110,7 +111,7 @@ Ftp::~Ftp()
 }
 
 /* memccpy appeared first in BSD4.4 */
-void *mymemccpy(void *dest, const void *src, int c, size_t n)
+static void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
     char *d = (char*)dest;
     const char *s = (const char*)src;
@@ -335,7 +336,9 @@ bool Ftp::connect( const QString &host, unsigned short int port )
       error( ERR_OUT_OF_MEMORY, QString::null );
       return false;
     }
-  if (ksControl->connect() < 0)
+
+    ksControl->setTimeout(connectTimeout());
+    if (ksControl->connect() < 0)
     {
       if (ksControl->status() == IO_LookupError)
 	error(ERR_UNKNOWN_HOST, host);
@@ -437,8 +440,8 @@ bool Ftp::ftpLogin()
                           ).arg(user).arg(rspbuf);
         }
 
-        if ( user != FTP_LOGIN && pass != FTP_PASSWD )
-          info.username = m_user;
+        if ( user != FTP_LOGIN )
+          info.username = user;
 
         kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
         kdDebug(7102) << "Username: " << info.username << endl;
@@ -447,7 +450,7 @@ bool Ftp::ftpLogin()
         info.commentLabel = i18n( "Site:" );
         info.comment = i18n("<b>%1</b>").arg( m_host );
         info.keepPassword = true; // Prompt the user for persistence as well.
-        info.readOnly = !info.username.isEmpty();
+        info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
         bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
         if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
@@ -699,7 +702,8 @@ bool Ftp::ftpOpenPASVDataConnection()
 	int port = i[4] << 8 | i[5];
   ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
-
+  ks.setTimeout (connectTimeout());
+  
   if (ks.connect() < 0)
     {
       kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << port << endl;
@@ -1724,7 +1728,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     }
                     else
                       de.link = QString::null;
-
+                      
+                    if (strchr(p_name, '/'))
+                       return 0L; // Don't trick us!
+                    
                     de.access = 0;
                     de.type = S_IFREG;
                     switch ( p_access[0] ) {
@@ -1752,20 +1759,26 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                       de.access |= S_IRUSR;
                     if ( p_access[2] == 'w' )
                       de.access |= S_IWUSR;
-                    if ( p_access[3] == 'x' )
+                    if ( p_access[3] == 'x' || p_access[3] == 's' )
                       de.access |= S_IXUSR;
                     if ( p_access[4] == 'r' )
                       de.access |= S_IRGRP;
                     if ( p_access[5] == 'w' )
                       de.access |= S_IWGRP;
-                    if ( p_access[6] == 'x' )
+                    if ( p_access[6] == 'x' || p_access[6] == 's' )
                       de.access |= S_IXGRP;
                     if ( p_access[7] == 'r' )
                       de.access |= S_IROTH;
                     if ( p_access[8] == 'w' )
                       de.access |= S_IWOTH;
-                    if ( p_access[9] == 'x' )
+                    if ( p_access[9] == 'x' || p_access[9] == 't' )
                       de.access |= S_IXOTH;
+		    if ( p_access[3] == 's' || p_access[3] == 'S' )
+		      de.access |= S_ISUID;
+		    if ( p_access[6] == 's' || p_access[6] == 'S' )
+		      de.access |= S_ISGID;
+		    if ( p_access[9] == 't' || p_access[9] == 'T' )
+		      de.access |= S_ISVTX;
 
                     // maybe fromLocal8Bit would be better in some cases,
                     // but what proves that the ftp server is in the same encoding

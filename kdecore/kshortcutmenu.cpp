@@ -102,8 +102,10 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 		}
 			
 		if( iItem == -1 ) {
-			// Let Up and Down keys navigate menu
-			if( pEvent->key() == Qt::Key_Up || pEvent->key() == Qt::Key_Down )
+			// Let Up and Down keys navigate menu,
+			// And permit Enter, Return to select the item.
+			if( pEvent->key() == Qt::Key_Up    || pEvent->key() == Qt::Key_Down ||
+			    pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return )
 				QPopupMenu::keyPressEvent( pEvent );
 			else
 				close();

@@ -119,7 +119,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 
 	KPrintProcess	*proc = new KPrintProcess;
 	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
-	connect(proc,SIGNAL(passwordRequested(KProcess*,const QString&)),SLOT(slotPasswordRequested(KProcess*,const QString&)));
+//	connect(proc,SIGNAL(passwordRequested(KProcess*,const QString&)),SLOT(slotPasswordRequested(KProcess*,const QString&)));
 	*proc << command;
 	if (remflag)
 		m_tempfiles.insert(proc,new QStringList(files));

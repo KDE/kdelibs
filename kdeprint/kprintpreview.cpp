@@ -246,7 +246,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	KPreviewProc	proc;
 	if (externalPreview)
 	{
-		exe = conf->readEntry("PreviewCommand", "gv");
+		exe = conf->readPathEntry("PreviewCommand", "gv");
 		if (KStandardDirs::findExe(exe).isEmpty())
 		{
 			QString	msg = i18n("The preview program %1 cannot be found. "

@@ -130,7 +130,8 @@ void KAnimWidget::mousePressEvent( QMouseEvent *e )
 
 void KAnimWidget::mouseReleaseEvent( QMouseEvent *e )
 {
-  if ( e->button() == LeftButton )
+  if ( e->button() == LeftButton &&
+       rect().contains( e->pos() ) )
     emit clicked();
 
   QFrame::mouseReleaseEvent( e );

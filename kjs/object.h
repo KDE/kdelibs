@@ -608,6 +608,6 @@ namespace KJS {
     static const char * const * const errorNames;
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_OBJECT_H_

@@ -42,7 +42,7 @@ namespace KJS {
     CollectorBlock *prev, *next;
   };
 
-}; // namespace
+} // namespace
 
 using namespace KJS;
 

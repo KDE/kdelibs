@@ -298,7 +298,8 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     d->userAborted = false;
 
     //  - leaving SSL - warn before we even connect
-    if (metaData("ssl_activate_warnings") == "TRUE" &&
+    if (metaData("main_frame_request") == "TRUE" &&
+               metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
         !m_bIsSSL) {
        KSSLSettings kss;
@@ -343,7 +344,10 @@ bool TCPSlaveBase::connectToHost( const QString &host,
 
     // store the IP for later
     const KSocketAddress *sa = ks.peerAddress();
-    d->ip = sa->nodeName();
+    if (sa)
+      d->ip = sa->nodeName();
+    else
+      d->ip = "";
 
     ks.release(); // KExtendedSocket no longer applicable
 
@@ -976,24 +980,22 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
              rc = 1;
              cp = KSSLCertificateCache::Accept;
-             d->cc->addHost(pc, ourHost);
-                result = messageBox( WarningYesNo,
+             result = messageBox( WarningYesNo,
                                i18n("Would you like to accept this "
                                     "certificate forever without "
                                     "being prompted?"),
                                i18n("Server Authentication"),
                                i18n("&Forever"),
                                i18n("&Current Sessions Only"));
-                if (result == KMessageBox::Yes)
-                   permacache = true;
-                else
-                   permacache = false;
+             permacache = (result == KMessageBox::Yes);
+             d->cc->addCertificate(pc, cp, permacache);
+             d->cc->addHost(pc, ourHost);
           } else {
              setMetaData("ssl_action", "reject");
              rc = -1;
              cp = KSSLCertificateCache::Prompt;
+             d->cc->addCertificate(pc, cp, permacache);
           }
-          d->cc->addCertificate(pc, cp, permacache);
         }
       }
     }

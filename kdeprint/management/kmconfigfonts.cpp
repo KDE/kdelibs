@@ -104,7 +104,7 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 void KMConfigFonts::loadConfig(KConfig *)
 {
 	QSettings	settings;
-	m_embedfonts->setChecked(settings.readBoolEntry("/qt/embedFonts"));
+	m_embedfonts->setChecked(settings.readBoolEntry("/qt/embedFonts", true));
 	QStringList	paths = settings.readListEntry("/qt/fontPath", ':');
 	QListViewItem	*item(0);
 	for (QStringList::ConstIterator it=paths.begin(); it!=paths.end(); ++it)

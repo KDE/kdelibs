@@ -55,9 +55,9 @@ StyleSheet::StyleSheet(StyleSheetImpl *i)
 StyleSheet &StyleSheet::operator = (const StyleSheet &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -227,9 +227,9 @@ StyleSheetList::StyleSheetList(StyleSheetListImpl *i)
 StyleSheetList &StyleSheetList::operator = (const StyleSheetList &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -283,9 +283,9 @@ MediaList::MediaList(MediaListImpl *i)
 MediaList &MediaList::operator = (const MediaList &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -357,9 +357,9 @@ LinkStyle::LinkStyle(const LinkStyle &other)
 LinkStyle & LinkStyle::operator = (const LinkStyle &other)
 {
     if ( node != other.node ) {
-    if(node) node->deref();
-    node = other.node;
-    if(node) node->ref();
+        if(node) node->deref();
+        node = other.node;
+        if(node) node->ref();
     }
     return *this;
 }
@@ -389,7 +389,7 @@ StyleSheet LinkStyle::sheet()
 {
     int id = node ? node->id() : 0;
     // ### add PI
-    return 
+    return
 	( id == ID_STYLE) ?
 	static_cast<HTMLStyleElementImpl *>(node)->sheet()
 	: ( (id == ID_LINK) ?
@@ -419,9 +419,9 @@ DocumentStyle::DocumentStyle(const DocumentStyle &other)
 DocumentStyle & DocumentStyle::operator = (const DocumentStyle &other)
 {
     if ( doc != other.doc ) {
-    if(doc) doc->deref();
-    doc = other.doc;
-    if(doc) doc->ref();
+        if(doc) doc->deref();
+        doc = other.doc;
+        if(doc) doc->ref();
     }
     return *this;
 }

@@ -228,19 +228,19 @@ void RenderListMarker::setStyle(RenderStyle *s)
 }
 
 
-void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
+void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
                              int _tx, int _ty)
 {
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderListMarker::printObject(QPainter *p, int, int _y,
+void RenderListMarker::paintObject(QPainter *p, int, int _y,
                                     int, int _h, int _tx, int _ty)
 {
     if (style()->visibility() != VISIBLE) return;
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
+    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(style()->font());
     const QFontMetrics fm = p->fontMetrics();
@@ -251,7 +251,7 @@ void RenderListMarker::printObject(QPainter *p, int, int _y,
     {
         if (_ty < _y)
         {
-            // This has been printed already we suppose.
+            // This has been painted already we suppose.
             return;
         }
         if (_ty + m_height + paddingBottom() + borderBottom() >= _y+_h)
@@ -259,7 +259,7 @@ void RenderListMarker::printObject(QPainter *p, int, int _y,
             RenderRoot *rootObj = root();
             if (_ty < rootObj->truncatedAt())
                 rootObj->setTruncatedAt(_ty);
-            // Let's print this on the next page.
+            // Let's paint this on the next page.
             return;
         }
     }
@@ -333,6 +333,11 @@ void RenderListMarker::layout()
 {
     KHTMLAssert( !layouted() );
     // ### KHTMLAssert( minMaxKnown() );
+    if (m_listImage)
+        m_height = m_listImage->pixmap().height();
+    else
+        m_height = style()->fontMetrics().ascent();
+
     if ( !minMaxKnown() )
 	calcMinMaxWidth();
     setLayouted();
@@ -363,7 +368,6 @@ void RenderListMarker::calcMinMaxWidth()
     if(m_listImage) {
         if(style()->listStylePosition() == INSIDE)
             m_width = m_listImage->pixmap().width();
-        m_height = m_listImage->pixmap().height();
 	setMinMaxKnown();
         return;
     }
@@ -376,16 +380,14 @@ void RenderListMarker::calcMinMaxWidth()
     }
 
     const QFontMetrics &fm = style()->fontMetrics();
-    m_height = fm.ascent();
 
     switch(style()->listStyleType())
     {
     case DISC:
     case CIRCLE:
     case SQUARE:
-        if(style()->listStylePosition() == INSIDE) {
-            m_width = m_height; //fm.ascent();
-        }
+        if(style()->listStylePosition() == INSIDE)
+            m_width = fm.ascent();
     	goto end;
     case ARMENIAN:
     case GEORGIAN:

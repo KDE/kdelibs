@@ -14,12 +14,12 @@
 <!ENTITY Intro	"<keycap>Intro</keycap>"><!-- English: &Enter; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY PMF	'<acronym>PMF</acronym>'>
 <!ENTITY ead    "<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
 <!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: &infocenter; -->
 <!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
 <!ENTITY BER    "botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
-<!ENTITY BMR    "botó <mousebutton>mitg</mousebutton> del ratolí"><!-- English: &MMB; -->
+<!ENTITY BMR    "botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
 <!ENTITY BDR    "botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
 <!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
 <!ENTITY Maj  	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->

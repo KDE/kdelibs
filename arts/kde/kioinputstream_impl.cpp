@@ -41,9 +41,9 @@
 
 using namespace Arts;
 
-const unsigned int KIOInputStream_impl::PACKET_COUNT = 5;
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 10;
 
-KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
+KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(2048)
 {
 	m_job = 0;
 	m_data = 0;
@@ -52,6 +52,7 @@ KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
 	m_packetBuffer = 16;
 	m_streamStarted = false;
 	m_streamSuspended = false;
+	m_streamPulled = false;
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
@@ -64,13 +65,13 @@ void KIOInputStream_impl::streamStart()
 {
 	// prevent kill/reconnect
 	if (m_streamStarted) {
-		kdDebug() << "not restarting stream!\n";
+		kdDebug(400) << "not restarting stream!\n";
 		if (m_job->isSuspended())
 			m_job->resume();
 		return;
 	}
 
-	kdDebug() << "(re)starting stream\n";
+	kdDebug(400) << "(re)starting stream\n";
 
 	if(m_job != 0)
 		m_job->kill();
@@ -90,7 +91,7 @@ void KIOInputStream_impl::streamStart()
 
 void KIOInputStream_impl::streamEnd()
 {
-	kdDebug() << "streamEnd()\n";
+	kdDebug(400) << "streamEnd()\n";
 
 	if(m_job != 0)
 	{
@@ -101,11 +102,13 @@ void KIOInputStream_impl::streamEnd()
 		QObject::disconnect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
 				 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
 
+		if ( m_streamPulled )
+			outdata.endPull();
+
 		m_job->kill();
 		m_job = 0;
 	}	
 
-	outdata.endPull();
 	m_streamStarted = false;
 }
 
@@ -122,7 +125,7 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 
 	QDataStream dataStream(m_data, IO_WriteOnly | IO_Append);
 	dataStream.writeRawBytes(data.data(), data.size());
-	kdDebug() << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
+	//kdDebug() << "STREAMING: buffersize = " << m_data.size() << " bytes" << endl;
 	
 	processQueue();
 }
@@ -144,7 +147,7 @@ void KIOInputStream_impl::slotResult(KIO::Job *job)
 
 void KIOInputStream_impl::slotScanMimeType(KIO::Job *, const QString &mimetype)
 {
-	kdDebug() << "got mimetype: " << mimetype << endl;
+	kdDebug(400) << "got mimetype: " << mimetype << endl;
 	emit mimeTypeFound(mimetype);
 }
 
@@ -174,22 +177,23 @@ void KIOInputStream_impl::processQueue()
 	{
 		if(m_data.size() > (m_packetBuffer * m_packetSize * 2) && !m_job->isSuspended())
 		{
-			kdDebug() << "STREAMING: suspend job" << endl;
+			kdDebug(400) << "STREAMING: suspend job" << endl;
 			m_job->suspend();
 		}
 		else if(m_data.size() < (m_packetBuffer * m_packetSize) && m_job->isSuspended())
 		{
-			kdDebug() << "STREAMING: resume job" << endl;
+			kdDebug(400) << "STREAMING: resume job" << endl;
 			m_job->resume();
 		}
 	}
 
 	if (!m_firstBuffer) {
 		if(m_data.size() < (m_packetBuffer * m_packetSize * 2) ) {
-			kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
+			//kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize * 2) - m_data.size()) << ")" << endl;
 			return;
 		} else {
 			m_firstBuffer = true;
+			m_streamPulled = true;
 			outdata.setPull(PACKET_COUNT, m_packetSize);
 		} 
 	}

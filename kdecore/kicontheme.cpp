@@ -53,6 +53,7 @@ class KIconThemeDir
 public:
     KIconThemeDir(const QString& dir, const KConfigBase *config);
 
+    bool isValid() const { return mbValid; }
     QString iconPath(const QString& name) const;
     QStringList iconList() const;
     QString dir() const { return mDir; }
@@ -141,21 +142,29 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
          if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";
 
     d->hidden = cfg.readBoolEntry("Hidden", false);
-    d->example = cfg.readEntry("Example");
-    d->screenshot = cfg.readEntry("ScreenShot");
+    d->example = cfg.readPathEntry("Example");
+    d->screenshot = cfg.readPathEntry("ScreenShot");
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
     d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
     d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
     d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
-    QStringList dirs = cfg.readListEntry("Directories");
+    QStringList dirs = cfg.readPathListEntry("Directories");
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
     {
 	cfg.setGroup(*it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); itDir++)
+	{
 	    if (KStandardDirs::exists(*itDir + *it + "/"))
-		mDirs.append(new KIconThemeDir(*itDir + *it, &cfg));
+	    {
+	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
+	        if (!dir->isValid())
+	            delete dir;
+	        else
+	            mDirs.append(dir);
+            }
+        }
     }
 
     // Expand available sizes for scalable icons to their full range

@@ -113,10 +113,10 @@ int parsePpdFile(const char *filename, FILE *output_file)
 		if (strncmp(line,"*Manufacturer:",14) == 0) fprintf(output_file,"MANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*ShortNickName:",15) == 0) fprintf(output_file,"MODEL=%s\n",value);
 		else if (strncmp(line,"*ModelName:",11) == 0) fprintf(output_file,"MODELNAME=%s\n",value);
-		else if (strncmp(line,"*NickName:",10) == 0) strncat(desc,value,255);
+		else if (strncmp(line,"*NickName:",10) == 0) strncat(desc,value,255-strlen(desc));
 		else if (strncmp(line,"*pnpManufacturer:",17) == 0) fprintf(output_file,"PNPMANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*pnpModel:",10) == 0) fprintf(output_file,"PNPMODEL=%s\n",value);
-		else if (strncmp(line,"*LanguageVersion:",17) == 0) strncat(langver,value,63);
+		else if (strncmp(line,"*LanguageVersion:",17) == 0) strncat(langver,value,63-strlen(langver));
 		else count--;
 		/* Either we got everything we needed, or we encountered an "OpenUI" directive
 		 * and it's reasonable to assume that there's no needed info further in the file,
@@ -125,9 +125,9 @@ int parsePpdFile(const char *filename, FILE *output_file)
 		{
 			if (strlen(langver) > 0)
 			{
-				strncat(desc, " [", 255);
-				strncat(desc, langver, 255);
-				strncat(desc, "]", 255);
+				strncat(desc, " [", 255-strlen(desc));
+				strncat(desc, langver, 255-strlen(desc));
+				strncat(desc, "]", 255-strlen(desc));
 			}
 			if (strlen(desc) > 0)
 				fprintf(output_file, "DESCRIPTION=%s\n", desc);

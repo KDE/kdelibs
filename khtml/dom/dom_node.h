@@ -950,5 +950,5 @@ protected:
 typedef unsigned long long DOMTimeStamp;
 
 
-}; //namespace
+} //namespace
 #endif

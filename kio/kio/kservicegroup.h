@@ -19,7 +19,7 @@
 #ifndef __kservicegroup_h__
 #define __kservicegroup_h__
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qshared.h>
 #include <qdatastream.h>

@@ -81,11 +81,13 @@ static int dnotify_signal = 0;
  */
 void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 {
+  if (!dwp_self) return;
+
   // write might change errno, we have to save it and restore it
   // (Richard Stevens, Advanced programming in the Unix Environment)
   int saved_errno = errno;
 
-  Entry* e = (dwp_self) ? dwp_self->fd_Entry.find(si->si_fd) :0;
+  Entry* e = dwp_self->fd_Entry.find(si->si_fd);
 
 //  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
 //		<< QString(e ? e->path:"unknown") << endl;
@@ -107,17 +109,18 @@ static struct sigaction old_sigio_act;
  */
 void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
 {
-  // write might change errno, we have to save it and restore it
-  // (Richard Stevens, Advanced programming in the Unix Environment)
-  int saved_errno = errno;
+  if (dwp_self)
+  {
+    // write might change errno, we have to save it and restore it
+    // (Richard Stevens, Advanced programming in the Unix Environment)
+    int saved_errno = errno;
 
-  if (dwp_self) 
     dwp_self->rescan_all = true;
+    char c = 0;
+    write(dwp_self->mPipe[1], &c, 1);
 
-  char c = 0;
-  write(dwp_self->mPipe[1], &c, 1);
-
-  errno = saved_errno;
+    errno = saved_errno;
+  }
   
   // Call previous signal handler
   if (old_sigio_act.sa_flags & SA_SIGINFO)
@@ -212,22 +215,33 @@ KDirWatchPrivate::KDirWatchPrivate()
     available += ", DNotify";
 
     pipe(mPipe);
+    fcntl(mPipe[0], F_SETFD, FD_CLOEXEC);
+    fcntl(mPipe[1], F_SETFD, FD_CLOEXEC);
     mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
     connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
     connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
-    struct sigaction act;
-    act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = SA_SIGINFO;
+    // Install the signal handler only once
+    if ( dnotify_signal == 0 )
+    {
+       dnotify_signal = SIGRTMIN + 8;
+
+       struct sigaction act;
+       act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
+       sigemptyset(&act.sa_mask);
+       act.sa_flags = SA_SIGINFO;
 #ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
+       act.sa_flags |= SA_RESTART;
 #endif
-    if( dnotify_signal == 0 )
-        dnotify_signal = SIGRTMIN + 8;
-    sigaction(dnotify_signal, &act, NULL);
+       sigaction(dnotify_signal, &act, NULL);
     
-    act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
-    sigaction(SIGIO, &act, &old_sigio_act);
+       act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
+       sigaction(SIGIO, &act, &old_sigio_act);
+    }
+  }
+  else
+  {
+    mPipe[0] = -1;
+    mPipe[1] = -1;
   }
 #endif
 
@@ -248,7 +262,10 @@ KDirWatchPrivate::~KDirWatchPrivate()
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
-
+#ifdef HAVE_DNOTIFY
+  close(mPipe[0]);
+  close(mPipe[1]);
+#endif
 }
 
 #ifdef HAVE_DNOTIFY
@@ -523,6 +540,22 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
        (*it).m_entries.append(sub_entry);
        kdDebug(7001) << "Added already watched Entry " << path
 		     << " (for " << sub_entry->path << ")" << endl;
+#ifdef HAVE_DNOTIFY
+       Entry* e = &(*it);
+       if( e->dn_fd > 0 ) {
+         int mask = DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT;
+         // if dependant is a file watch, we check for MODIFY & ATTRIB too
+         for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next())
+     	   if (!dep->isDir) { mask |= DN_MODIFY|DN_ATTRIB; break; }
+	 if( fcntl(e->dn_fd, F_NOTIFY, mask) < 0) { // shouldn't happen
+	   ::close(e->dn_fd);
+	   e->m_mode = UnknownMode;
+  	   fd_Entry.remove(e->dn_fd);
+           e->dn_fd = 0;
+           useStat( e );
+         }
+       }
+#endif
     }
     else {
        (*it).addClient(instance);
@@ -606,6 +639,8 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     return;
 
   if (delayRemove) {
+    // removeList is allowed to contain any entry at most once
+    if (removeList.findRef(e)==-1)
     removeList.append(e);
     // now e->isValid() is false
     return;

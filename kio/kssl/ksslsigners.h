@@ -22,7 +22,8 @@
 #ifndef _INCLUDE_KSSLSIGNERS_H
 #define _INCLUDE_KSSLSIGNERS_H
 
-class QString;
+#include <qstringlist.h>
+
 class KSSLCertificate;
 class DCOPClient;
 

@@ -43,7 +43,7 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <kdebug.h>
+#include <qpopupmenu.h>
 
 using namespace khtml;
 
@@ -53,9 +53,7 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     // init RenderObject attributes
     setInline(true);   // our object is Inline
 
-    m_clickCount = 0;
     m_state = 0;
-    m_button = 0;
     m_isDoubleClick = false;
 }
 
@@ -68,23 +66,6 @@ short RenderFormElement::baselinePosition( bool f ) const
     return RenderWidget::baselinePosition( f ) - 2 - style()->fontMetrics().descent();
 }
 
-short RenderFormElement::calcReplacedWidth(bool*) const
-{
-    Length w = style()->width();
-    if ( w.isVariable() )
-        return intrinsicWidth();
-    else
-        return RenderReplaced::calcReplacedWidth();
-}
-
-int RenderFormElement::calcReplacedHeight() const
-{
-    Length h = style()->height();
-    if ( h.isVariable() )
-        return intrinsicHeight();
-    else
-        return RenderReplaced::calcReplacedHeight();
-}
 
 void RenderFormElement::updateFromElement()
 {
@@ -104,8 +85,7 @@ void RenderFormElement::layout()
     calcHeight();
 
     if ( m_widget )
-        resizeWidget(m_widget,
-                     m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+        resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
     if ( !style()->width().isPercent() )
@@ -115,9 +95,9 @@ void RenderFormElement::layout()
 void RenderFormElement::slotClicked()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
 
-    element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+    element()->dispatchMouseEvent(&e2, EventImpl::CLICK_EVENT, m_isDoubleClick + 1);
     m_isDoubleClick = false;
     deref();
 }
@@ -125,16 +105,16 @@ void RenderFormElement::slotClicked()
 void RenderFormElement::slotPressed()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, m_button, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, m_clickCount);
+    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, 1, m_state);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, 1);
     deref();
 }
 
 void RenderFormElement::slotReleased()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, m_clickCount);
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, 1);
     deref();
 }
 
@@ -272,15 +252,25 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     bool empty = raw.isEmpty();
     if ( empty )
-        raw = QString::fromLatin1("XXXX");
+        raw = QString::fromLatin1("X");
     QFontMetrics fm = pb->fontMetrics();
-    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb);
-    QSize s(pb->style().sizeFromContents(
-                QStyle::CT_PushButton, pb, fm.size( ShowPrefix, raw))
+    QSize ts = fm.size( ShowPrefix, raw);
+    QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
             .expandedTo(QApplication::globalStrut()));
+    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
+		 pb->style().pixelMetric( QStyle::PM_DefaultFrameWidth, pb ) * 2;
+    int w = ts.width() + margin;
+    int h = s.height();
+    if (pb->isDefault() || pb->autoDefault()) {
+	int dbw = pb->style().pixelMetric( QStyle::PM_ButtonDefaultIndicator, pb ) * 2;
+	w += dbw;
+    }
 
-    setIntrinsicWidth( s.width() - margin / 2 );
-    setIntrinsicHeight( s.height() - margin / 2);
+    // add 30% margins to the width (heuristics to make it look similar to IE)
+    s = QSize( w*13/10, h ).expandedTo(QApplication::globalStrut());
+
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
 
     RenderButton::calcMinMaxWidth();
 }
@@ -347,6 +337,34 @@ LineEditWidget::LineEditWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
+QPopupMenu *LineEditWidget::createPopupMenu()
+{
+    QPopupMenu *popup = KLineEdit::createPopupMenu();
+    if ( !popup )
+        return 0L;
+    connect( popup, SIGNAL( activated( int ) ),
+             this, SLOT( extendedMenuActivated( int ) ) );
+    return popup;
+}
+
+void LineEditWidget::extendedMenuActivated( int id)
+{
+    switch ( id )
+    {
+    case ClearHistory:
+        clearMenuHistory();
+        break;
+    default:
+        break;
+    }
+}
+
+void LineEditWidget::clearMenuHistory()
+{
+    emit clearCompletionHistory();
+}
+
+
 bool LineEditWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
@@ -382,7 +400,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
     connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
-
+    connect(edit, SIGNAL(clearCompletionHistory()), this, SLOT( slotClearCompletionHistory()));
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -395,6 +413,14 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     }
 
     setQWidget(edit);
+}
+
+void RenderLineEdit::slotClearCompletionHistory()
+{
+    if ( element()->autoComplete() ) {
+        view()->clearCompletionHistory(element()->name().string());
+        static_cast<LineEditWidget*>(m_widget)->completionObject()->clear();
+    }
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -534,10 +560,10 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
         return !!maxw;
 }
 
-void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
+void RenderFieldset::paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -555,17 +581,17 @@ void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
     int end = QMIN( _y + _h,  _ty + h );
     int mh = end - my;
 
-    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if ( style()->hasBorder() ) {
 	if ( legend )
-	    printBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
+	    paintBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
 	else
-	    printBorder(p, _tx, _ty, w, h, style());
+	    paintBorder(p, _tx, _ty, w, h, style());
     }
 }
 
-void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
+void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
                                             const RenderStyle* style, int lx, int lw)
 {
 
@@ -638,6 +664,7 @@ void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
+    // this sucks, it creates a grey background
     QHBox *w = new QHBox(view()->viewport());
 
     m_edit = new LineEditWidget(w);
@@ -663,18 +690,17 @@ void RenderFileButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     const QFontMetrics &fm = style()->fontMetrics();
-    QSize s;
     int size = element()->size();
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    w += 6 + fm.width( m_button->text() ) + 2*fm.width( ' ' );
-    s = QSize(w + 2 + 2*m_edit->frameWidth(),
-              QMAX(h, 14) + 2 + 2*m_edit->frameWidth())
+    QSize s = m_edit->style().sizeFromContents(QStyle::CT_LineEdit, m_edit,
+          QSize(w + 2 + 2*m_edit->frameWidth(), kMax(h, 14) + 2 + 2*m_edit->frameWidth()))
         .expandedTo(QApplication::globalStrut());
+    QSize bs = m_button->sizeHint();
 
-    setIntrinsicWidth( s.width() );
-    setIntrinsicHeight( s.height() );
+    setIntrinsicWidth( s.width() + bs.width() );
+    setIntrinsicHeight( kMax(s.height(), bs.height()) );
 
     RenderFormElement::calcMinMaxWidth();
 }
@@ -886,9 +912,9 @@ void RenderSelect::updateFromElement()
                 }
 
                 if(m_useListBox)
-                    static_cast<KListBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
+                    static_cast<KListBox*>(m_widget)->insertItem(text, listIndex);
                 else
-                    static_cast<KComboBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
+                    static_cast<KComboBox*>(m_widget)->insertItem(text, listIndex);
             }
             else
                 KHTMLAssert(false);
@@ -1206,7 +1232,7 @@ void RenderTextArea::calcMinMaxWidth()
     w->setTabStopWidth(8 * m.width(" "));
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +
+                QMAX(element()->rows(), 1)*m.lineSpacing() + w->frameWidth()*4 +
                 (w->wordWrap() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );

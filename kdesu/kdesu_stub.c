@@ -26,8 +26,8 @@
  * - user            Target user         string
  * - priority        Process priority    0 <= int <= 100
  * - scheduler       Process scheduler   "fifo" | "normal"
- * - kappstart_pid   PID the app uses    int
- *                   for _NET_WM_PID
+ * - app_startup_id  KDE_STARTUP_ENV     string
+ * - environment     Additional envvars  strings, last one is empty
  */
 
 #include <config.h>
@@ -79,7 +79,8 @@ struct param_struct params[] =
     { "user", 0L },
     { "priority", 0L },
     { "scheduler", 0L },
-    { "app_start_pid", 0L }
+/* obsoleted by app_startup_id    { "app_start_pid", 0L } */
+    { "app_startup_id", 0L }
 };
 
 #define P_HEADER 0
@@ -94,7 +95,7 @@ struct param_struct params[] =
 #define P_USER 9
 #define P_PRIORITY 10
 #define P_SCHEDULER 11
-#define P_APP_START_PID 12
+#define P_APP_STARTUP_ID 12
 #define P_LAST 13
 
 /* Prototypes */
@@ -212,12 +213,28 @@ int main()
 	    exit(0);
 	}
     }
+    printf("environment\n");
+    fflush(stdout);
+    for(;;)
+    {
+	char* tmp;
+	if (fgets(buf, BUFSIZE, stdin) == 0L) 
+	{
+	    printf("end\n"); fflush(stdout);
+	    perror("kdesu_stub: fgets()");
+	    exit(1);
+	}
+	tmp = xstrdup( buf );
+	if( tmp[ 0 ] == '\0' ) /* terminator */
+	    break;
+	putenv( xstrdup( buf ));
+    }
+
     printf("end\n");
     fflush(stdout);
 
-fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
     xsetenv("PATH", params[P_PATH].value);
-    xsetenv("KDE_APP_START_PID", params[P_APP_START_PID].value);
+    xsetenv("KDE_STARTUP_ENV", params[P_APP_STARTUP_ID].value);
 
     /* Do we need to change uid? */
 
@@ -370,8 +387,6 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
     {
 	system("kdeinit --suicide");
     }
-
-fprintf(stderr," before forking\n");
 
     /* Execute the command */
 

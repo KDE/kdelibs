@@ -430,6 +430,6 @@ namespace KKeyServer
 	 * Unimplemented?
 	 */
 	void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-};
+}
 
 #endif // !_KKEYSERVER_X11_H

@@ -39,7 +39,7 @@ namespace KTextEditor
 	private:
 		EncodingInterface *m_parent;
 	};
-};
+}
 #endif
 
 
