@@ -178,8 +178,6 @@ void RenderFormElement::slotClicked()
         QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
         element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-        //already done by NodeImpl::dispatchGenericEvent
-        //element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
         m_isDoubleClick = false;
         deref();
     }
@@ -731,8 +729,10 @@ void RenderSelect::updateFromElement()
         QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
-        if(m_useListBox)
+        if(m_useListBox) {
             static_cast<KListBox*>(m_widget)->clear();
+        }
+
         else
             static_cast<KComboBox*>(m_widget)->clear();
 
@@ -776,8 +776,10 @@ void RenderSelect::updateFromElement()
     }
 
     // update selection
-    if (m_selectionChanged)
+    if (m_selectionChanged) {
         updateSelection();
+    }
+
 
     m_ignoreSelectEvents = false;
 
@@ -911,7 +913,9 @@ void RenderSelect::slotSelectionChanged()
 {
     if ( m_ignoreSelectEvents ) return;
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    // don't use listItems() here as we have to avoid recalculations - changing the
+    // option list will make use update options not in the way the user expects them
+    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.

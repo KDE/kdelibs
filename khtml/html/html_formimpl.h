@@ -373,6 +373,8 @@ public:
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     virtual NodeImpl *addChild( NodeImpl* newChild );
 
+    virtual void childrenChanged();
+
     virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
@@ -444,7 +446,6 @@ public:
     virtual NodeImpl *addChild( NodeImpl* newChild );
     virtual void parseAttribute(AttributeImpl *attr);
     void recalcSelectOptions();
-    virtual void setChanged(bool);
 
 };
 
@@ -473,8 +474,6 @@ public:
     void setSelected(bool _selected);
 
     HTMLSelectElementImpl *getSelect() const;
-
-    virtual void setChanged(bool);
 
 protected:
     DOMString m_value;

@@ -725,6 +725,9 @@ void HTMLButtonElementImpl::attach()
 {
     // skip the generic handler
     HTMLElementImpl::attach();
+    // doesn't work yet in the renderer ### fixme
+//     if (renderer())
+//         renderer()->setReplaced(true);
 }
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
@@ -1700,6 +1703,13 @@ void HTMLSelectElementImpl::recalcListItems()
     m_recalcListItems = false;
 }
 
+void HTMLSelectElementImpl::childrenChanged()
+{
+    setRecalcListItems();
+
+    HTMLGenericFormElementImpl::childrenChanged();
+}
+
 void HTMLSelectElementImpl::setRecalcListItems()
 {
     m_recalcListItems = true;
@@ -1861,13 +1871,6 @@ void HTMLOptGroupElementImpl::recalcSelectOptions()
         static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
-void HTMLOptGroupElementImpl::setChanged( bool b )
-{
-    HTMLGenericFormElementImpl::setChanged( b );
-    if ( b )
-        recalcSelectOptions();
-}
-
 // -------------------------------------------------------------------------
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
@@ -1963,8 +1966,6 @@ void HTMLOptionElementImpl::setSelected(bool _selected)
     HTMLSelectElementImpl *select = getSelect();
     if (select)
         select->notifyOptionSelected(this,_selected);
-    else
-        qDebug("*** no select!");
 }
 
 HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const
@@ -1973,14 +1974,6 @@ HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const
     while (select && select->id() != ID_SELECT)
         select = select->parentNode();
     return static_cast<HTMLSelectElementImpl*>(select);
-}
-
-void HTMLOptionElementImpl::setChanged( bool b )
-{
-    HTMLGenericFormElementImpl::setChanged( b );
-    HTMLSelectElementImpl* s;
-    if ( b && ( s = getSelect() ) )
-        s->setRecalcListItems();
 }
 
 // -------------------------------------------------------------------------
