@@ -404,7 +404,12 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bReloading = args.reload;
   if ( (args.postData.size() > 0) && (url.protocol() == QString::fromLatin1( "http" )) )
-      d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
+  {
+      d->m_job = KIO::http_post( url, args.postData, false );
+      // DA: Send the content-type as a meta-data instead...
+//    d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
+      d->m_job->addMetaData("content-type", d->m_userHeaders );
+  }
   else
       d->m_job = KIO::get( url, args.reload, false );
 
@@ -1765,9 +1770,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
-      d->m_userHeaders = "Content-type: application/x-www-form-urlencoded\r\n";
+      d->m_userHeaders = "Content-Type: application/x-www-form-urlencoded";
     else // contentType must be "multipart/form-data"
-      d->m_userHeaders = "Content-type: " + contentType + "; boundary=" + boundary + "\r\n";
+      d->m_userHeaders = "Content-Type: " + contentType + "; boundary=" + boundary;
 
     emit d->m_extension->openURLRequest( u, args );
   }
