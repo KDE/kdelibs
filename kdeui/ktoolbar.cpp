@@ -124,7 +124,7 @@ public:
 
     struct ToolBarInfo
     {
-        ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( Qt::DockTop ) {}
+        ToolBarInfo() : index( -1 ), offset( -1 ), newline( FALSE ), dock( Qt::DockTop ) {}
         ToolBarInfo( Qt::Dock d, int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {}
         int index, offset;
         bool newline;
@@ -1672,7 +1672,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
         QString position = config->readEntry(attrPosition, d->PositionDefault);
-        int index = config->readNumEntry(attrIndex, 0);
+        int index = config->readNumEntry(attrIndex, -1);
         int offset = config->readNumEntry(attrOffset, d->OffsetDefault);
         bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
         bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
@@ -1818,7 +1818,8 @@ void KToolBar::loadState( const QDomElement &element )
         setIconSize( d->IconSizeDefault );
     }
 
-    int index = 0;
+    int index = -1; // append by default. This is very important, otherwise
+    // with all 0 indexes, we keep reversing the toolbars.
     {
         QString attrIndex = element.attribute( "index" ).lower();
         if ( !attrIndex.isEmpty() )
@@ -1937,7 +1938,7 @@ void KToolBar::saveState( QDomElement &current )
     if ( isHidden() )
         current.setAttribute( "hidden", "true" );
     d->modified = true;
-    //kdDebug(220) << name() << " saveState: saving iconText=" << icontext << endl;
+    //kdDebug(220) << name() << " saveState: saving index=" << index << " iconText=" << icontext << endl;
 }
 
 // Called by KMainWindow::finalizeGUI

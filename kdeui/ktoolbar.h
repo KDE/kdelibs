@@ -886,7 +886,8 @@ public:
    * config file or to the XML-GUI resource file (whichever has
    * precedence).
    */
-    void saveState();
+    void saveState(); // BIC: remove for KDE4? This doesn't appear to be used internally,
+                      // and apps use saveMainWindowSettings in KMainWindow anyway.
 
   /**
    * Save the toolbar settings to group @p configGroup in @p config.
