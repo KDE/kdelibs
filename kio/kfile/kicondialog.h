@@ -62,6 +62,7 @@ signals:
      * Emitted when the current icon has changed.
      */
     void nameChanged(QString);
+    /* KDE 4: Make it const QString & */
 
     void startLoading(int);
     void progress(int);
@@ -293,6 +294,7 @@ signals:
      * Emitted when the icon has changed.
      */
     void iconChanged(QString icon);
+    /* KDE 4: Make it const QString & */
 
 private slots:
     void slotChangeIcon();

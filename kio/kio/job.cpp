@@ -996,6 +996,7 @@ class PostErrorJob : public TransferJob
 {
 public:
 
+  // KDE 4: Make it const QString & 
   PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
     m_error = KIO::ERR_POST_DENIED;
@@ -1561,6 +1562,7 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
+// KDE 4: Make it const QString & _prefix 
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
     recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)

@@ -72,7 +72,7 @@ template class QPtrList<QString>;
 // ----------------------------------------------------------------------
 
 KAppTreeListItem::KAppTreeListItem( KListView* parent, const QString & name,
-                                    const QPixmap& pixmap, bool parse, bool dir, QString p, QString c )
+                                    const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
     : QListViewItem( parent, name )
 {
     init(pixmap, parse, dir, p, c);
@@ -82,7 +82,7 @@ KAppTreeListItem::KAppTreeListItem( KListView* parent, const QString & name,
 // ----------------------------------------------------------------------
 
 KAppTreeListItem::KAppTreeListItem( QListViewItem* parent, const QString & name,
-                                    const QPixmap& pixmap, bool parse, bool dir, QString p, QString c )
+                                    const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
     : QListViewItem( parent, name )
 {
     init(pixmap, parse, dir, p, c);
@@ -91,7 +91,7 @@ KAppTreeListItem::KAppTreeListItem( QListViewItem* parent, const QString & name,
 
 // ----------------------------------------------------------------------
 
-void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, QString _path, QString _exec)
+void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &_exec)
 {
     setPixmap(0, pixmap);
     parsed = parse;
@@ -171,7 +171,7 @@ static QPixmap appIcon(const QString &iconName)
     return normal;
 }
 
-void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
+void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem *item)
 {
    KServiceGroup::Ptr root = KServiceGroup::group(relPath);
    KServiceGroup::List list = root->entries();

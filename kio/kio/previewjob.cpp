@@ -374,6 +374,7 @@ void PreviewJob::getOrCreateThumbnail()
     }
 }
 
+// KDE 4: Make it const QString &
 void PreviewJob::createThumbnail( QString pixPath )
 {
     d->state = PreviewJobPrivate::STATE_CREATETHUMB;

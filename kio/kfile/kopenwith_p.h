@@ -47,13 +47,13 @@ class KAppTreeListItem : public QListViewItem
 protected:
     QString key(int column, bool ascending) const;
 
-    void init(const QPixmap& pixmap, bool parse, bool dir, QString _path, QString exec);
+    void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, QString exec);
 
 public:
     KAppTreeListItem( KListView* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, QString p, QString c );
+                      bool parse, bool dir, const QString &p, QString c );
     KAppTreeListItem( QListViewItem* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, QString p, QString c );
+                      bool parse, bool dir, const QString &p, QString c );
     bool isDirectory();
 
 protected:
@@ -77,7 +77,7 @@ public:
     /**
      * Add a group of .desktop/.kdelnk entries
      */
-    void addDesktopGroup( QString relPath, KAppTreeListItem *item = 0 );
+    void addDesktopGroup( const QString &relPath, KAppTreeListItem *item = 0 );
 
     bool isDirSel();
 

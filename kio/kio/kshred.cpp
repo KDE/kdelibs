@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <kapplication.h>
 
+// antlarr: KDE 4: Make it const QString &
 KShred::KShred(QString fileName)
 {
   if (fileName.isEmpty())
@@ -143,6 +144,7 @@ KShred::fillrandom()
 }
 
 
+// antlarr: KDE 4: Make it const QString &
 bool
 KShred::shred(QString fileName)
 {

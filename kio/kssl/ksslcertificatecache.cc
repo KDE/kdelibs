@@ -89,6 +89,7 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
 }
 
 
+// KDE 4: Make it const QString &
 KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
      QByteArray data, retval;
      QCString rettype;
@@ -127,6 +128,7 @@ return KSSLCertificateCache::Ambiguous;
 }
 
 
+// KDE 4: Make it const QString &
 bool KSSLCertificateCache::seenCN(QString& cn) {
      QByteArray data, retval;
      QCString rettype;
@@ -187,6 +189,7 @@ return false;
 }
 
 
+// KDE 4: Make it const QString &
 bool KSSLCertificateCache::removeByCN(QString& cn) {
      QByteArray data, retval;
      QCString rettype;
@@ -227,6 +230,7 @@ return false;
 }
 
 
+// KDE 4: Make it const QString &
 bool KSSLCertificateCache::modifyByCN(QString& cn,
                   KSSLCertificateCache::KSSLCertificatePolicy policy,
                   bool permanent,
@@ -292,6 +296,7 @@ return QStringList();
 }
 
 
+// KDE 4: Make it const QString &
 bool KSSLCertificateCache::addHost(KSSLCertificate& cert, QString& host) {
      QByteArray data, retval;
      QCString rettype;
@@ -312,6 +317,7 @@ return false;
 }
 
 
+// KDE 4: Make it const QString &
 bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, QString& host) {
      QByteArray data, retval;
      QCString rettype;

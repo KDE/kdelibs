@@ -233,6 +233,7 @@ void ChmodJob::slotResult( KIO::Job * job )
     }
 }
 
+// antlarr: KDE 4: Make owner and group be const QString &
 ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
                       QString owner, QString group,
                       bool recursive, bool showProgressInfo )

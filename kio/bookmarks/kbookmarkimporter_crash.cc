@@ -36,6 +36,7 @@
 
 #define LINELIMIT 4096
 
+/* antlarr: KDE 4: Make it const QString & */
 void KCrashBookmarkImporter::parseCrashLog( QString filename, bool del )
 {
     QFile f(filename);

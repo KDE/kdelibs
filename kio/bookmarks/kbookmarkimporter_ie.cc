@@ -35,6 +35,7 @@
 
 #define LINELIMIT 4096
 
+/* antlarr: KDE 4: Make them const QString & */
 void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString name ) {
 
     QFile f(filename);
@@ -60,6 +61,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
     }
 }
 
+/* antlarr: KDE 4: Make them const QString & */
 void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldername )
 {
 

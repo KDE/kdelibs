@@ -569,6 +569,7 @@ KSSLConnectionInfo& KSSL::connectionInfo() {
 }
 
 
+// KDE 4: Make it const QString &
 void KSSL::setPeerHost(QString realHost) {
 	d->proxyPeer = realHost;
 }
