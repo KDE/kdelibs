@@ -309,7 +309,10 @@ namespace
 	    break;
 
 #ifdef EAI_NODATA
+          // In some systems, EAI_NODATA was #define'd to EAI_NONAME which would break this case.
+#if EAI_NODATA != EAI_NONAME
 	  case EAI_NODATA:	// it was removed in RFC 3493
+#endif
 #endif
 	  case EAI_NONAME:
 	    results.setError(QResolver::NoName);
