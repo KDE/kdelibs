@@ -60,13 +60,6 @@ KHTMLFactory::KHTMLFactory( bool clone )
 {
     if ( clone )
         ref();
-    else
-    {
-        s_instance = 0;
-        s_about = 0;
-        s_settings = 0;
-        s_parts = 0;
-    }
 }
 
 KHTMLFactory::~KHTMLFactory()
