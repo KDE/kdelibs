@@ -764,9 +764,25 @@ void Ftp::mkdir( const QString & path, int permissions )
   }
 
   if ( permissions != -1 )
-    chmod( path, permissions );
-  else
-    finished();
+  {
+    // chmod the file we just put.
+    // We can't call the chmod call implementation
+    // since we want to ignore errors.
+
+    QCString cmd = "SITE CHMOD ";
+
+    char buf[10];
+    // we need to do bit AND 777 to get permissions, in case
+    // we were sent a full mode (unlikely)
+    sprintf(buf, "%o ", permissions & 511 );
+
+    cmd += buf;
+    cmd += path;
+
+    (void) ftpSendCmd( cmd, '2' );
+  }
+
+  finished();
 }
 
 void Ftp::rename( const QString & src, const QString & dst, bool overwrite )
