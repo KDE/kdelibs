@@ -97,7 +97,7 @@ void KFileShare::readConfig() // static
     QString line;
     int length;
     do {
-        length = proc.fgets(line, true);
+        length = proc.readln(line, true);
 	if ( length > 0 )
 	{
             if ( line[length-1] != '/' )
