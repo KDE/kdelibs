@@ -98,6 +98,27 @@ public:
 	{
 		reconnect();
 	}
+	~StereoEffectStack_impl()
+	{
+		// disconnect remaining effects
+		EffectEntry *laste = 0;
+		list<EffectEntry *>::iterator ei;
+
+		for(ei = fx.begin(); ei != fx.end(); ei++)
+		{
+			EffectEntry *e = *ei;
+			if(laste)
+			{
+				xconnect(false,laste->effect,"outleft",e->effect,"inleft");
+				xconnect(false,laste->effect,"outright",e->effect,"inright");
+			}
+			laste = e;
+		}
+		// delete remaining effect entries
+		for(ei = fx.begin(); ei != fx.end(); ei++)
+			delete *ei;
+		fx.clear();
+	}
 	long insertTop(StereoEffect effect, const string& name)
 	{
 		arts_return_val_if_fail(!effect.isNull(),0);
