@@ -586,7 +586,7 @@ Completion WindowFunc::tryExecute(const List &args)
       // scan feature argument
       v = args[2];
       QString features;
-      if (!v.isA(UndefinedType)) {
+      if (v.isDefined()) {
 	features = v.toString().value().qstring();
 	// specifying window params means false defaults
 	winargs.menuBarVisible = false;
@@ -642,7 +642,9 @@ Completion WindowFunc::tryExecute(const List &args)
 	        url = KURL(part->baseURL(), str);
         }
         KParts::URLArgs uargs;
-        uargs.frameName = args[1].toString().value().qstring();
+        uargs.frameName = args[1].isDefined() ?
+			  args[1].toString().value().qstring()
+			  : QString("_blank");
         uargs.serviceType = "text/html";
 
         // request new window
@@ -808,7 +810,7 @@ void WindowQObject::parentDestroyed()
   ScriptMap::Iterator it = script_map->find(part);
   if (it == script_map->end())
     return;
-  KJScript *scr = it.data();
+  //  KJScript *scr = it.data();
   script_map->remove(part);
 }
 
