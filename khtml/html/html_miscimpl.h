@@ -75,8 +75,9 @@ public:
 
     virtual ~HTMLCollectionImpl();
     unsigned long length() const;
-    // This method is o(n), so you should't use it to iterate over all items. Use firstItem/nextItem instead.
+    // Only when iterating forward, it will use caching, ie. making it O(1).
     NodeImpl *item ( unsigned long index ) const;
+    // obsolete and not domtree changes save, virtual too.
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;
 
