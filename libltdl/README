@@ -1,7 +1,7 @@
 This is GNU libltdl, a system independent dlopen wrapper for GNU libtool.
 
 It supports the following dlopen interfaces:
-* dlopen (Solaris, Linux and various BSD flavors)
+* dlopen (Solaris, Linux, but apparently not most BSD flavors)
 * shl_load (HP-UX)
 * LoadLibrary (Win16 and Win32)
 * load_add_on (BeOS)
