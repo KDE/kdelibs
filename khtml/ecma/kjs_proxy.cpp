@@ -166,6 +166,7 @@ void KJSProxyImpl::clear() {
 //        debugWin->leaveSession();
     }
 #endif
+    m_script->clear();
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear( m_script->globalExec() );
