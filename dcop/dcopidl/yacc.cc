@@ -269,7 +269,7 @@ static const short yycheck[] = {    44,
     -1,    -1,    -1,    -1,    -1,    -1,    -1,    51
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
 /* This file comes from bison-1.27.  */
 
 /* Skeleton output parser for bison,
@@ -483,7 +483,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 216 "/usr/share/bison.simple"
+#line 216 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1101,13 +1101,16 @@ case 44:
 #line 324 "yacc.yy"
 {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
-		*tmp = tmp->arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-6]._str) ).arg( *(yyvsp[-3]._str) ).arg( *(yyvsp[-1]._str) );
+		*tmp = tmp->arg( *(yyvsp[-5]._str) );
+		*tmp = tmp->arg( *(yyvsp[-6]._str) );
+		*tmp = tmp->arg( *(yyvsp[-3]._str) );
+		*tmp = tmp->arg( *(yyvsp[-1]._str) );
 		yyval._str = tmp;
 	  ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 542 "/usr/share/bison.simple"
+#line 542 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1327,7 +1330,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 331 "yacc.yy"
+#line 334 "yacc.yy"
 
 
 void dcopidlParse( const char *_code )

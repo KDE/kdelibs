@@ -323,7 +323,10 @@ function
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
 	  {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
-		*tmp = tmp->arg( *($2) ).arg( *($1) ).arg( *($4) ).arg( *($6) );
+		*tmp = tmp->arg( *($2) );
+		*tmp = tmp->arg( *($1) );
+		*tmp = tmp->arg( *($4) );
+		*tmp = tmp->arg( *($6) );
 		$$ = tmp;
 	  }
 	;
