@@ -55,7 +55,6 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
     loadTimer = new QTimer( this );
     connect( loadTimer, SIGNAL( timeout() ),
 	     this, SLOT( slotLoadDir() ) );
-    setViewMode( QIconSet::Large );
     connect( this, SIGNAL( currentChanged( QIconViewItem * ) ),
 	     this, SLOT( slotCurrentChanged( QIconViewItem * ) ) );
     setWordWrapIconText( FALSE );
@@ -107,7 +106,7 @@ void KIconLoaderCanvas::slotLoadDir()
 	    }
 	
 	    QFileInfo fi( *it );
-	    QIconViewItem *item = new QIconViewItem( this, fi.baseName(), QIconSet( new_xpm, QIconSet::Large ) );
+	    QIconViewItem *item = new QIconViewItem( this, fi.baseName(), new_xpm );
 	    item->setKey( *it );
 	    item->setRenameEnabled( FALSE );
 	    item->setDragEnabled( FALSE );

@@ -91,7 +91,7 @@ static const char *unknown[] = {
     "....................##d#b###....",
     "......................####......"};
 
-static QIconSet *unknown_icon = 0;
+static QPixmap *unknown_icon = 0;
 
 /*****************************************************************************
  *
@@ -103,7 +103,6 @@ struct QIconViewPrivate
 {
     QIconViewItem *firstItem, *lastItem;
     unsigned int count;
-    QIconSet::Size mode;
     bool mousePressed, startDrag;
     QIconView::SelectionMode selectionMode;
     QIconViewItem *currentItem, *tmpCurrentItem, *highlightedItem;
@@ -618,7 +617,7 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
     \/ which we want to use as icon
     (void) new QIconViewItem( parent,
 			      "This is the text of the item",
-			      QIconSet(pixmap) );
+			      pixmap );
   \endcode
 
   When the iconview is deleted, all items of it are deleted automatically,
@@ -715,7 +714,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after,
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
-			      const QIconSet &icon )
+			      const QPixmap &icon )
     : view( parent ), itemText( text ), itemIcon( icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
@@ -729,7 +728,7 @@ QIconViewItem::QIconViewItem( QIconView *parent, const QString &text,
   after.
 */
 
-QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QIconSet &icon )
+QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon )
     : view( parent ), itemText( text ), itemIcon( icon ),
       prev( 0 ), next( 0 ), allow_rename( TRUE ), allow_drag( TRUE ), allow_drop( TRUE ),
       selected( FALSE ), selectable( TRUE ), fm( 0 ), renameBox( 0 )
@@ -751,7 +750,6 @@ void QIconViewItem::init( QIconViewItem *after )
 	dirty = TRUE;
 	wordWrapDirty = TRUE;
 	fm = new QFontMetrics( view->font() );
-	itemViewMode = view->viewMode();
 
 	calcRect();
 	view->insertItem( this, after );
@@ -808,7 +806,7 @@ void QIconViewItem::setKey( const QString &k )
   Sets \a icon as item icon of the iconview item.
 */
 
-void QIconViewItem::setIcon( const QIconSet &icon )
+void QIconViewItem::setIcon( const QPixmap &icon )
 {
     itemIcon = icon;
     calcRect();
@@ -816,11 +814,12 @@ void QIconViewItem::setIcon( const QIconSet &icon )
 }
 
 /*!
-  Sets \a text as text of the iconview item. Using \a recalc you can specify,
-  if the iconview should be recalculated and repainted or not.
+  Sets \a text as text of the iconview item. Using \a recalc you can
+  specify, if the iconview should be recalculated and using \a redraw if it 
+  should be repainted or not.
 */
 
-void QIconViewItem::setText( const QString &text, bool recalc )
+void QIconViewItem::setText( const QString &text, bool recalc, bool redraw )
 {
     if ( text == itemText )
 	return;
@@ -828,25 +827,26 @@ void QIconViewItem::setText( const QString &text, bool recalc )
     wordWrapDirty = TRUE;
     itemText = text;
 
-    if ( recalc ) {
+    if ( recalc )
 	calcRect();
+    if ( redraw )
 	repaint();
-    }
 }
 
 /*!
   Sets \a icon as item icon of the iconview item. Using \a recalc you can
-  specify, if the iconview should be recalculated and repainted or not.
+  specify, if the iconview should be recalculated and using \a redraw if it 
+  should be repainted or not.
 */
 
-void QIconViewItem::setIcon( const QIconSet &icon, bool recalc )
+void QIconViewItem::setIcon( const QPixmap &icon, bool recalc, bool redraw )
 {
     itemIcon = icon;
 
-    if ( recalc ) {
+    if ( recalc )
 	calcRect();
+    if ( redraw )
 	repaint();
-    }
 }
 
 /*!
@@ -909,7 +909,7 @@ QString QIconViewItem::key() const
   \sa setIcon()
 */
 
-QIconSet QIconViewItem::icon() const
+QPixmap QIconViewItem::icon() const
 {
     return itemIcon;
 }
@@ -1280,31 +1280,6 @@ QFont QIconViewItem::font() const
 }
 
 /*!
-  Sets the viewmode of the item. This can be QIconSet::Automatic,
-  QIconSet::Small, QIconSet::Large.  QIconSet::Automatic is default. Use
-  QIconView::setViewMode() instead to set the viewmode of all items.
-
-  \sa QIconView::setViewMode()
-*/
-
-void QIconViewItem::setViewMode( QIconSet::Size mode )
-{
-    itemViewMode = mode;
-    calcRect();
-}
-
-/*!
-  Returns the viewmode of the item;
-
-  \sa QIconView::viewMode()
-*/
-
-QIconSet::Size QIconViewItem::viewMode() const
-{
-    return itemViewMode;
-}
-
-/*!
   \fn bool QIconViewItem::acceptDrop( const QMimeSource *mime ) const
 
   Returns TRUE, of the item accepts the QMimeSource \a mime (so it could
@@ -1426,8 +1401,8 @@ void QIconViewItem::calcRect( const QString &text_ )
     int pw = 0;
     int ph = 0;
 
-    pw = itemIcon.pixmap( itemViewMode, QIconSet::Normal ).width() + 2;
-    ph = itemIcon.pixmap( itemViewMode, QIconSet::Normal ).height() + 2;
+    pw = itemIcon.width() + 2;
+    ph = itemIcon.height() + 2;
 
     itemIconRect.setWidth( pw );
     itemIconRect.setHeight( ph );
@@ -1517,20 +1492,14 @@ void QIconViewItem::paintItem( QPainter *p )
 	}
     }
 
-    QIconSet::Mode m = QIconSet::Normal;
-    if ( isSelected() )
- 	m = QIconSet::Active;
-//     else if ( !isSelectable() )
-// 	m = QIconSet::Disabled;
-
     calcTmpText();
 
     if ( view->itemTextPos() == QIconView::Bottom ) {
-	int w = itemIcon.pixmap( itemViewMode, QIconSet::Normal ).width();
+	int w = itemIcon.width();
 
 	if ( isSelected() )
 	    p->fillRect( iconRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() + ( width() - w ) / 2, y(), itemIcon.pixmap( itemViewMode, m ) );
+	p->drawPixmap( x() + ( width() - w ) / 2, y(), itemIcon );
 
 	p->save();
 	if ( isSelected() ) {
@@ -1544,11 +1513,11 @@ void QIconViewItem::paintItem( QPainter *p )
 
 	p->restore();
     } else {
-	int h = itemIcon.pixmap( itemViewMode, QIconSet::Normal ).height();
+	int h = itemIcon.height();
 
 	if ( isSelected() )
 	    p->fillRect( iconRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() , y() + ( height() - h ) / 2, itemIcon.pixmap( itemViewMode, m ) );
+	p->drawPixmap( x() , y() + ( height() - h ) / 2, itemIcon );
 
 	p->save();
 	if ( isSelected() ) {
@@ -2026,15 +1995,13 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     : QScrollView( parent, name, WNorthWestGravity | WRepaintNoErase  | f )
 {
     if ( !unknown_icon ) {
-	QPixmap pix = QPixmap( unknown );
-	unknown_icon = new QIconSet( pix );
+	unknown_icon = new QPixmap( unknown );
     }
 
     d = new QIconViewPrivate;
     d->firstItem = 0;
     d->lastItem = 0;
     d->count = 0;
-    d->mode = QIconSet::Automatic;
     d->mousePressed = FALSE;
     d->selectionMode = Single;
     d->currentItem = 0;
@@ -2133,7 +2100,7 @@ QIconView::~QIconView()
   You should never need to call this method yourself, you should rather do
 
   \code
-    (void) new QIconViewItem( iconview, "This is the text of the item", QIconSet( pixmap ) );
+    (void) new QIconViewItem( iconview, "This is the text of the item", pixmap );
   \endcode
 
   This does everything required for inserting an item.
@@ -2432,37 +2399,6 @@ void QIconView::setSelected( QIconViewItem *item, bool s, bool cb )
 unsigned int QIconView::count() const
 {
     return d->count;
-}
-
-/*!
-  Sets all icons of the iconview to the viewmode \a mode. This can be
-  QIconSet::Automatic, QIconSet::Small, QIconSet::Large.
-  QIconSet::Automatic is default.
-*/
-
-void QIconView::setViewMode( QIconSet::Size mode )
-{
-    d->mode = mode;
-
-    if ( !d->firstItem )
-	return;
-
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	item->setViewMode( mode );
-
-    alignItemsInGrid( TRUE );
-}
-
-/*!
-  Returns the viewmode of the iconview.
-
-  \sa setViewMode()
-*/
-
-QIconSet::Size QIconView::viewMode() const
-{
-    return d->mode;
 }
 
 /*!
@@ -2962,7 +2898,7 @@ void QIconView::invertSelection()
     if ( d->selectionMode == Single ||
 	 d->selectionMode == NoSelection )
 	return;
-    
+
     bool b = signalsBlocked();
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
@@ -4144,7 +4080,7 @@ QDragObject *QIconView::dragObject()
     QPoint orig = viewportToContents( viewport()->mapFromGlobal( QCursor::pos() ) );
 
     QIconDrag *drag = new QIconDrag( viewport() );
-    drag->setPixmap( QPixmap( d->currentItem->icon().pixmap( d->mode, QIconSet::Normal ) ),
+    drag->setPixmap( QPixmap( d->currentItem->icon() ),
  		     QPoint( d->currentItem->iconRect().width() / 2, d->currentItem->iconRect().height() / 2 ) );
     for ( QIconViewItem *item = d->firstItem; item; item = item->next )
 	if ( item->isSelected() )

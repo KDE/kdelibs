@@ -471,7 +471,7 @@ void QAction::setToolTip( const QString& tt )
 }
 
 void QAction::setToolTip( int i, const QString& tt )
-{ 
+{
     QWidget* w = container( i );
     QWidget* r = representative( i );
     if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
@@ -1151,11 +1151,11 @@ void QActionWidget::setCurrentGroup( const QString& grp, bool update )
 	item->setText( (*it)->plainText() );
 	item->setName( (*it)->name() );
 	if ( (*it)->hasIconSet() )
-	    item->setIcon( (*it)->iconSet() );
+	    item->setIcon( (*it)->iconSet().pixmap() );
 	else if ( (*it)->inherits("QActionMenu") )
-	    item->setIcon( QIconSet( QPixmap( folder ) ) );
+	    item->setIcon( QPixmap( folder ) );
 	else
-	    item->setIcon( QIconSet( QPixmap( unknown ) ) );
+	    item->setIcon( QPixmap( unknown ) );
     }
 }
 
@@ -1268,11 +1268,11 @@ void QActionWidget::insertAction( QAction* action )
 	item->setText( action->plainText() );
 	item->setName( action->name() );
 	if ( action->hasIconSet() )
-	    item->setIcon( action->iconSet() );
+	    item->setIcon( action->iconSet() .pixmap());
 	else if ( action->inherits("QActionMenu") )
-	    item->setIcon( QIconSet( QPixmap( folder ) ) );
+	    item->setIcon( QPixmap( folder ) );
 	else
-	    item->setIcon( QIconSet( QPixmap( unknown ) ) );
+	    item->setIcon( QPixmap( unknown ) );
     }
     else
     {
@@ -1314,11 +1314,11 @@ void QActionWidget::updateAction( QAction* action )
 	item->setText( action->plainText() );
 	item->setName( action->name() );
 	if ( action->hasIconSet() )
-	    item->setIcon( action->iconSet() );
+	    item->setIcon( action->iconSet().pixmap() );
 	else if ( action->inherits("QActionMenu") )
-	    item->setIcon( QIconSet( QPixmap( folder ) ) );
+	    item->setIcon( QPixmap( folder ) );
 	else
-	    item->setIcon( QIconSet( QPixmap( unknown ) ) );
+	    item->setIcon( QPixmap( unknown ) );
     }
     else
     {

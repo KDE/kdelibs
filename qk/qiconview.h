@@ -72,7 +72,7 @@ public:
 
     virtual bool operator<( const QIconDragItem &icon )  const;
     virtual bool operator==( const QIconDragItem &icon ) const;
-	
+
     virtual QRect iconRect() const;
     virtual QRect textRect() const;
     virtual QString key() const;
@@ -85,7 +85,7 @@ protected:
 
     QRect iconRect_, textRect_;
     QString key_;
-	
+
 };
 
 /*****************************************************************************
@@ -144,16 +144,16 @@ public:
     QIconViewItem( QIconView *parent, QIconViewItem *after );
     QIconViewItem( QIconView *parent, const QString &text );
     QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text );
-    QIconViewItem( QIconView *parent, const QString &text, const QIconSet &icon );
-    QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QIconSet &icon );
+    QIconViewItem( QIconView *parent, const QString &text, const QPixmap &icon );
+    QIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon );
     virtual ~QIconViewItem();
 
     virtual void setRenameEnabled( bool allow );
     virtual void setDragEnabled( bool allow );
     virtual void setDropEnabled( bool allow );
 
-    virtual QString text() const;
-    virtual QIconSet icon() const;
+    QString text() const;
+    QPixmap icon() const;
     virtual QString key() const;
 
     bool renameEnabled() const;
@@ -196,9 +196,6 @@ public:
     QFont font() const;
     QColor color() const;
 
-    virtual void setViewMode( QIconSet::Size mode );
-    QIconSet::Size viewMode() const;
-
     virtual bool acceptDrop( const QMimeSource *mime ) const;
 
     void rename();
@@ -211,9 +208,9 @@ signals:
 
 public slots:
     virtual void setText( const QString &text );
-    virtual void setIcon( const QIconSet &icon );
-    virtual void setText( const QString &text, bool recalc );
-    virtual void setIcon( const QIconSet &icon, bool recalc );
+    virtual void setIcon( const QPixmap &icon );
+    virtual void setText( const QString &text, bool recalc, bool redraw = TRUE );
+    virtual void setIcon( const QPixmap &icon, bool recalc, bool redraw = TRUE );
     virtual void setKey( const QString &k );
 
 protected slots:
@@ -239,7 +236,7 @@ private:
     QIconView *view;
     QString itemText, itemKey;
     QString tmpText;
-    QIconSet itemIcon;
+    QPixmap itemIcon;
     QIconViewItem *prev, *next;
     bool allow_rename, allow_drag, allow_drop;
     bool selected, selectable;
@@ -247,7 +244,6 @@ private:
     QFontMetrics *fm;
     QFont *f;
     QColor *c;
-    QIconSet::Size itemViewMode;
     QIconViewItemLineEdit *renameBox;
     bool isReady;
     QRect oldRect;
@@ -272,6 +268,7 @@ class Q_EXPORT QIconView : public QScrollView
     Q_OBJECT
 
 public:
+// qproperties:
     enum SelectionMode {
 	Single = 0,
 	Multi,
@@ -291,6 +288,7 @@ public:
 	Right
     };
 
+public:
     QIconView( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
     virtual ~QIconView();
 
@@ -308,29 +306,31 @@ public:
 
     unsigned int count() const;
 
-    virtual void setViewMode( QIconSet::Size mode );
-    QIconSet::Size viewMode() const;
-
+public:
     virtual void showEvent( QShowEvent * );
 
+// qproperties:
     virtual void setSelectionMode( SelectionMode m );
     SelectionMode selectionMode() const;
 
+public:
     virtual void setSingleClickConfiguration( QFont *normalText, QColor *normalTextCol,
 					      QFont *highlightedText, QColor *highlightedTextCol,
 					      QCursor *highlightedCursor, int setCurrentInterval );
     void singleClickConfiguration( QFont *normalText, QColor *normalTextCol,
 				   QFont *highlightedText, QColor *highlightedTextCol,
 				   QCursor *highlightedCursor, int &setCurrentInterval ) const;
+// qproperties:
     virtual void setUseSingleClickMode( bool b );
     bool useSingleClickMode() const;
 
+public:
     QIconViewItem *findItem( const QPoint &pos ) const;
     QIconViewItem *findItem( const QString &text ) const;
     virtual void selectAll( bool select );
     virtual void clearSelection();
     virtual void invertSelection();
-    
+
     virtual void repaintItem( QIconViewItem *item );
 
     void ensureItemVisible( QIconViewItem *item );
@@ -338,6 +338,7 @@ public:
 
     virtual void clear();
 
+// qproperties:
     virtual void setGridX( int rx );
     virtual void setGridY( int ry );
     int gridX() const;
@@ -358,14 +359,19 @@ public:
     int maxItemTextLength() const;
     void setAligning( bool b );
     bool aligning() const;
+
+public:
     void setSorting( bool sort, bool ascending = TRUE );
     bool sorting() const;
     bool sortDirection() const;
+
+//qproperties:
     virtual void setEnableMoveItems( bool b );
     bool enableMoveItems() const;
     virtual void setWordWrapIconText( bool b );
     bool wordWrapIconText() const;
 
+public:
     virtual void setItemFont( const QFont &font );
     virtual void setItemColor( const QColor &color );
 
