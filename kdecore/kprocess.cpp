@@ -20,7 +20,7 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.3.0, Nov 23rd 1997
+//  version 0.3.1, Jan 8th 1998
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -54,7 +54,7 @@ KProcess::KProcess()
 {
   arguments.setAutoDelete(TRUE);
 
-  if (NULL == theKProcessController) {
+  if (0 == theKProcessController) {
 	theKProcessController= new KProcessController();
 	CHECK_PTR(theKProcessController);
   }
@@ -63,9 +63,9 @@ KProcess::KProcess()
   runs = FALSE;
   pid = 0;
   status = 0;
-  innot = outnot = errnot = NULL;
+  innot = outnot = errnot = 0;
   communication = NoCommunication;
-  input_data = NULL;
+  input_data = 0;
   input_sent = 0;
   input_total = 0;
 
@@ -99,7 +99,7 @@ bool KProcess::setExecutable(const char *proc)
   if (runs) return FALSE;
 
   arguments.removeFirst();
-  if (NULL != proc) {
+  if (0 != proc) {
     hlp = strdup(proc);
     CHECK_PTR(hlp);
     arguments.insert(0,hlp);
@@ -126,7 +126,7 @@ KProcess &KProcess::operator<<(const char *arg)
 
 void KProcess::clearArguments()
 {
-  if (NULL != arguments.first()) {
+  if (0 != arguments.first()) {
     while (arguments.remove())
       ;
   }
@@ -140,7 +140,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   uint n = arguments.count();
   char **arglist;
 
-  if (runs) {
+  if (runs || (0 == n)) {
 	return FALSE;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
@@ -151,7 +151,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   CHECK_PTR(arglist);
   for (i=0; i < n; i++)
     arglist[i] = arguments.at(i);
-  arglist[n]= NULL;
+  arglist[n]= 0;
 
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
@@ -183,6 +183,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
 	  debug("Could not finish comm setup in parent!");
+
+	// Discard any data for stdin that might still be there
+	input_data = 0;
 
 	if (run_mode == Block) {
 	  waitpid(pid, &status, 0);
@@ -241,6 +244,12 @@ bool KProcess::writeStdin(char *buffer, int buflen)
 {
   bool rv;
 
+  // if there is still data pending, writing new data
+  // to stdout is not allowed (since it could also confuse
+  // kprocess... 
+  if (0 != input_data)
+    return FALSE;
+
   if ( runs && communication) {
     input_data = buffer;
     input_sent = 0;
@@ -298,6 +307,7 @@ void KProcess::slotSendData(int)
 {
   if (input_sent == input_total) {
     innot->setEnabled(FALSE);
+    input_data = 0;
     emit wroteStdin(this);
   } else
     input_sent += ::write(in[1], input_data+input_sent, input_total-input_sent);
@@ -486,10 +496,10 @@ void KProcess::commClose()
 KShellProcess::KShellProcess(const char *shellname):
   KProcess()
 {
-  if (NULL != shellname)
+  if (0 != shellname)
     shell = strdup(shellname);
   else
-    shell = NULL;
+    shell = 0;
 }
 
 
@@ -500,31 +510,32 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   uint n = arguments.count();
   char **arglist;
 
-  if (runs) {
+
+  if (runs || (0 == n)) {
 	return FALSE;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
+
   run_mode = runmode; 
   status = 0;
 
-debug("eins");
-  if (NULL == shell)
+  if (0 == shell)
     shell = searchShell();
-  if (NULL == shell) {
+  if (0 == shell) {
     debug("Could not find a valid shell\n");
     return FALSE;
   }
-debug("zwei");
+
   arglist = (char **)malloc( (n+3)*sizeof(char *));
   CHECK_PTR(arglist);
-debug("drei");  
+
   arglist[0] = shell;
   arglist[1] = "-c";
-debug("vier");
+
   for (i=0; i < n; i++)
     arglist[i+2] = arguments.at(i);
-  arglist[n+2]= NULL;
-debug("fuenf");
+  arglist[n+2]= 0;
+
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
 
@@ -556,6 +567,9 @@ debug("fuenf");
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
 	  debug("Could not finish comm setup in parent!");
 
+	// Discard any data for stdin that might still be there
+	input_data = 0;
+
 	if (run_mode == Block) {
 	  waitpid(pid, &status, 0);
 	  processHasExited(status);
@@ -569,8 +583,8 @@ debug("fuenf");
 
 char *KShellProcess::searchShell()
 {
-  char *hlp = NULL;
-  char *copy = NULL;
+  char *hlp = 0;
+  char *copy = 0;
   
 
   // CC: now get the name of the shell we have to use
@@ -580,7 +594,7 @@ char *KShellProcess::searchShell()
     CHECK_PTR(copy);
   }
 
-  if (NULL == copy) {
+  if (0 == copy) {
     // CC: hmm, invalid $SHELL in environment -- maybe there are whitespaces to be stripped?
     QString stmp = QString(shell);
     QString shell_stripped = stmp.stripWhiteSpace();
@@ -599,7 +613,7 @@ bool KShellProcess::isExecutable(const char *fname)
 {
   struct stat fileinfo;
 
-  if ((NULL == fname) || (strlen(fname) == 0)) return FALSE;
+  if ((0 == fname) || (strlen(fname) == 0)) return FALSE;
   // CC: filename is invalid
 
   // CC: we've got a valid filename, now let's see whether we can execute that file

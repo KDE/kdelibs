@@ -19,7 +19,7 @@
 //
 //  KPROCESSCONTROLLER -- A helper class for KProcess
 //
-//  version 0.3.0, Nov 23rd 1997
+//  version 0.3.1, Jan, 8th 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
