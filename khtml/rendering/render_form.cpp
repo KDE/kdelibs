@@ -412,22 +412,9 @@ void RenderLineEdit::slotReturnPressed()
     if ( box && box->isVisible() && box->currentItem() != -1 )
 	return;
 
-    bool havesubmit = false;
     HTMLFormElementImpl* fe = m_element->form();
-
-    if (fe ) {
-        for ( unsigned i = 0; i < fe->formElements.count(); i++ )
-            if ( fe->formElements.at( i )->id() == ID_INPUT ) {
-                if ( static_cast<HTMLInputElementImpl*>( fe->formElements.at( i ) )->inputType() == HTMLInputElementImpl::SUBMIT  ||
-                     static_cast<HTMLInputElementImpl*>( fe->formElements.at( i ) )->inputType() == HTMLInputElementImpl::ISINDEX  ) {
-                    havesubmit = true;
-                    break;
-                }
-            }
-
-        if ( havesubmit )
-            m_element->form()->prepareSubmit();
-    }
+    if ( fe )
+        fe->prepareSubmit();
 }
 
 void RenderLineEdit::layout()
