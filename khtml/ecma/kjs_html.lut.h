@@ -222,7 +222,7 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry HTMLFormElementTableEntries[] = {
-   { "action", KJS::HTMLElement::FormAction, DontDelete, 0, &HTMLFormElementTableEntries[12] },
+   { "action", KJS::HTMLElement::FormAction, DontDelete, 0, &HTMLFormElementTableEntries[13] },
    { "enctype", KJS::HTMLElement::FormEncType, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "elements", KJS::HTMLElement::FormElements, DontDelete|ReadOnly, 0, &HTMLFormElementTableEntries[11] },
@@ -233,11 +233,12 @@ const struct HashEntry HTMLFormElementTableEntries[] = {
    { "reset", KJS::HTMLElement::FormReset, DontDelete|Function, 0, 0 },
    { "target", KJS::HTMLElement::FormTarget, DontDelete, 0, 0 },
    { "name", KJS::HTMLElement::FormName, DontDelete, 0, 0 },
+   { "encoding", KJS::HTMLElement::FormEncType, DontDelete, 0, &HTMLFormElementTableEntries[12] },
    { "method", KJS::HTMLElement::FormMethod, DontDelete, 0, 0 },
    { "submit", KJS::HTMLElement::FormSubmit, DontDelete|Function, 0, 0 }
 };
 
-const struct HashTable HTMLFormElementTable = { 2, 13, HTMLFormElementTableEntries, 11 };
+const struct HashTable HTMLFormElementTable = { 2, 14, HTMLFormElementTableEntries, 11 };
 
 }; // namespace
 
