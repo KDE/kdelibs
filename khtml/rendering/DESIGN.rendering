@@ -14,11 +14,46 @@ as no values are changed. The values are divided to groups (fe.
 base, box, border, table...) and when a value in a group is changed,
 that groups data object is copied.
 
+<lars>
+We have to do an additional division here. Some properties are inherited, 
+some others aren't. So we only have to copy the values, which get 
+inherited from the parent. Others will get set, if a style sheet
+defines a value for it, otherwise one should use the default values.
+For example the background color/image isn't inherited, so the style
+derived from the parent elements style shouldn't have it set. We should 
+only have inherited values in the "copy on write" classes, since we
+might run into trouble otherwise.
+
+One big problem we have is, that usually (in almost all cases), only
+computed values are inherited, not the defined ones.
+
+So if e.g. an indent is set to 2.5em, then one has to convert the
+2.5em to pixels, and only the pixel value is inherited.
+
+For some properties the calculation is trivial and can be done directly.
+In this case, the values in style.h can be absolute pixel values instead 
+of Length type values. For some others, like margins, the calculation might
+be more complex, and might have to be done at layouting time. Then
+Length type values are more appropiate.
+</lars>
+
 The base parent style is defined by the documents style sheet, or
 document types default style sheet. This style is then used as a
 base for element specific styles and these are futher modified by
 local style definitions, element attributes or by  scripts. Every
 dom element has a pointer to its style object.
+
+<lars>
+I will provide a method, which returns the style object to use given
+the parents style object, and the sum of all style sheets. So the 
+renderer/parser will just have to do a  CSSObject->getStyle(this)
+to receive the correct style object. This is IMO the cleaner
+solution, and it's also more flexible, since the Selector used 
+in the style sheet might be something weird ( table.special td[bgcolor=red] 
+for example). So the style object might have to look up parent elements and
+attributes, to be able to decide if a certain rule applies to the element
+or not.
+</lars>
 
 Every rendered DOM object has a pointer to a rendering object.  When
 a HTML DOM  object is added to the document tree, it gets a style
@@ -35,6 +70,12 @@ frequently accessed attribute values  may be fetched and temporaliry
 stored to the rendering object. In the end the possible calculated
 attribute values are stored back to the style object.
 
+<lars>
+Don't think we will need that. Attribute values are never modified by
+the layouting process. What gets calculated is the actual geometry
+of the element. I would store this information in the rendering object.
+</lars>
+
 Scripting and event are done in the DOM (not rendering) tree. The
 DOM objects may for example ask element position from their
 rendering objects to invoke  mouse events. Modification to element
@@ -43,21 +84,30 @@ object. Similary, the attribute values can be read from the  style
 object. However if value of elements 'display' attribute is changed,
 the rendering tree must be at least partially reconstructed.
 
+<lars>
+The attribute values need to be stored in the DOM only. We'd be
+asking for trouble if we started storing them in the style objects.
+Attributes are not inherited, just the influence they might have
+on rendering is. So the way to do this is to store them in the DOM, 
+and everytime an attribute gets modified, it'll look if it has to modify
+style object, and if yes, force a relayouting.
+</lars>
+
 /// Replaced elements? Text elements?
 
 
-  Antti 
-  
-    
+  Antti
+
+
 
 Example:
 
-<html> 
-    <head> 
-    	<style> P { color: red } </style> 
-    </head> 
-    <body> 
-    	<p align=center> Jee </p> 
+<html>
+    <head>
+    	<style> P { color: red } </style>
+    </head>
+    <body>
+    	<p align=center> Jee </p>
     </body>
 </html>
 
@@ -67,7 +117,7 @@ stylesheet. The document stylesheet modifies this default style.
     Style* pStyle = new Style( defaultStyleSheet->style("P") );
     pStyle->setColor(QT::Red); docStyleSheet->setStyle("P",pStyle);
 
-When the DOM P element is constructed it gets the document 
+When the DOM P element is constructed it gets the document
 style for P
 
     _style = docStyleSheet->styleFor("P");
@@ -81,10 +131,14 @@ object, which constructs the rendering object for the P element.
 
     _parent->renderer()->add(_style);
 
+<lars>
+Unfortunately it's not that easy due to the complex selection rules one 
+might have. But see my proposal above for getting the right style object.
+</lars>
 
 
 
 
-    
+
 
 
