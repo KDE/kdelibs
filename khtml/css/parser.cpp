@@ -298,16 +298,16 @@ static const short yyrline[] = { 0,
    364,   365,   366,   367,   368,   371,   373,   376,   380,   384,
    389,   393,   400,   415,   417,   426,   448,   452,   457,   461,
    466,   468,   469,   472,   474,   477,   497,   511,   525,   531,
-   535,   540,   546,   551,   555,   561,   563,   571,   573,   574,
-   578,   595,   598,   603,   609,   615,   622,   623,   624,   627,
-   636,   638,   644,   664,   670,   678,   682,   685,   688,   691,
-   694,   699,   701,   704,   710,   718,   722,   727,   730,   736,
-   744,   748,   754,   760,   765,   771,   779,   802,   809,   811,
-   814,   819,   832,   838,   842,   845,   850,   852,   853,   854,
-   860,   861,   862,   864,   869,   871,   872,   873,   874,   875,
-   876,   877,   878,   879,   880,   881,   882,   883,   884,   885,
-   886,   887,   888,   892,   907,   914,   921,   929,   955,   957,
-   960,   962
+   535,   543,   549,   554,   558,   564,   566,   574,   576,   577,
+   581,   598,   601,   606,   614,   620,   627,   628,   629,   632,
+   641,   643,   649,   669,   675,   683,   687,   690,   693,   696,
+   699,   704,   706,   709,   715,   723,   727,   732,   735,   741,
+   749,   753,   759,   765,   770,   776,   784,   807,   814,   816,
+   819,   824,   837,   843,   847,   850,   855,   857,   858,   859,
+   865,   866,   867,   869,   874,   876,   877,   878,   879,   880,
+   881,   882,   883,   884,   885,   886,   887,   888,   889,   890,
+   891,   892,   893,   897,   912,   919,   926,   934,   960,   962,
+   965,   967
 };
 #endif
 
@@ -1395,45 +1395,48 @@ case 60:
 case 61:
 #line 535 "parser.y"
 {
-	yyval.selector = yyvsp[0].selector;
-	yyval.selector->relation = yyvsp[-1].relation;
-	yyval.selector->tagHistory = yyvsp[-2].selector;
+        yyval.selector = yyvsp[0].selector;
+        CSSSelector *end = yyvsp[0].selector;
+        while( end->tagHistory )
+            end = end->tagHistory;
+        end->relation = yyvsp[-1].relation;
+        end->tagHistory = yyvsp[-2].selector;
     ;
     break;}
 case 62:
-#line 540 "parser.y"
+#line 543 "parser.y"
 {
 	delete yyvsp[-1].selector;
 	yyval.selector = 0;
     ;
     break;}
 case 63:
-#line 547 "parser.y"
+#line 550 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->tag = yyvsp[-1].element;
     ;
     break;}
 case 64:
-#line 551 "parser.y"
+#line 554 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
 	yyval.selector->tag = yyvsp[-2].element;
     ;
     break;}
 case 65:
-#line 555 "parser.y"
+#line 558 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
 	yyval.selector->tag = 0xffffffff;
     ;
     break;}
 case 66:
-#line 562 "parser.y"
+#line 565 "parser.y"
 { yyval.element = (yyvsp[-1].ns<<16) | yyvsp[0].element; ;
     break;}
 case 67:
-#line 563 "parser.y"
+#line 566 "parser.y"
 { 
         /* according to the specs this one matches all namespaces if no
 	   default namespace has been specified otherwise the default namespace */
@@ -1442,19 +1445,19 @@ case 67:
     ;
     break;}
 case 68:
-#line 572 "parser.y"
+#line 575 "parser.y"
 { yyval.ns = 0; ;
     break;}
 case 69:
-#line 573 "parser.y"
+#line 576 "parser.y"
 { yyval.ns = 1; /* #### insert correct namespace id here */ ;
     break;}
 case 70:
-#line 574 "parser.y"
+#line 577 "parser.y"
 { yyval.ns = 0xffff; ;
     break;}
 case 71:
-#line 579 "parser.y"
+#line 582 "parser.y"
 {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
@@ -1473,34 +1476,36 @@ case 71:
     ;
     break;}
 case 72:
-#line 595 "parser.y"
+#line 598 "parser.y"
 { yyval.element = 0xffff; ;
     break;}
 case 73:
-#line 599 "parser.y"
+#line 602 "parser.y"
 {
 	yyval.selector = yyvsp[0].selector;
 	yyval.selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     ;
     break;}
 case 74:
-#line 603 "parser.y"
+#line 606 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
-	yyval.selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-	yyval.selector->relation = CSSSelector::SubSelector;
-	yyval.selector->tagHistory = yyvsp[0].selector;
+        CSSSelector *end = yyvsp[-1].selector;
+        while( end->tagHistory )
+            end = end->tagHistory;
+        end->relation = CSSSelector::SubSelector;
+        end->tagHistory = yyvsp[0].selector;
     ;
     break;}
 case 75:
-#line 609 "parser.y"
+#line 614 "parser.y"
 {
 	delete yyvsp[-1].selector;
 	yyval.selector = 0;
 ;
     break;}
 case 76:
-#line 616 "parser.y"
+#line 621 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Id;
@@ -1509,7 +1514,7 @@ case 76:
     ;
     break;}
 case 80:
-#line 628 "parser.y"
+#line 633 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::List;
@@ -1518,18 +1523,18 @@ case 80:
     ;
     break;}
 case 81:
-#line 637 "parser.y"
+#line 642 "parser.y"
 { yyval.attribute = (yyvsp[-1].ns<<16) | yyvsp[0].attribute; ;
     break;}
 case 82:
-#line 638 "parser.y"
+#line 643 "parser.y"
 { 
 	/* opposed to elements, these only match for non namespaced attributes */
 	yyval.attribute = yyvsp[0].attribute; 
     ;
     break;}
 case 83:
-#line 645 "parser.y"
+#line 650 "parser.y"
 {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
@@ -1549,7 +1554,7 @@ case 83:
     ;
     break;}
 case 84:
-#line 665 "parser.y"
+#line 670 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->attr = yyvsp[-1].attribute;
@@ -1557,7 +1562,7 @@ case 84:
     ;
     break;}
 case 85:
-#line 670 "parser.y"
+#line 675 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->attr = yyvsp[-5].attribute;
@@ -1566,43 +1571,43 @@ case 85:
     ;
     break;}
 case 86:
-#line 679 "parser.y"
+#line 684 "parser.y"
 {
 	yyval.val = CSSSelector::Exact;
     ;
     break;}
 case 87:
-#line 682 "parser.y"
+#line 687 "parser.y"
 {
 	yyval.val = CSSSelector::List;
     ;
     break;}
 case 88:
-#line 685 "parser.y"
+#line 690 "parser.y"
 {
 	yyval.val = CSSSelector::Hyphen;
     ;
     break;}
 case 89:
-#line 688 "parser.y"
+#line 693 "parser.y"
 {
 	yyval.val = CSSSelector::Begin;
     ;
     break;}
 case 90:
-#line 691 "parser.y"
+#line 696 "parser.y"
 {
 	yyval.val = CSSSelector::End;
     ;
     break;}
 case 91:
-#line 694 "parser.y"
+#line 699 "parser.y"
 {
 	yyval.val = CSSSelector::Contain;
     ;
     break;}
 case 94:
-#line 705 "parser.y"
+#line 710 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Pseudo;
@@ -1610,7 +1615,7 @@ case 94:
     ;
     break;}
 case 95:
-#line 710 "parser.y"
+#line 715 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Pseudo;
@@ -1619,13 +1624,13 @@ case 95:
     ;
     break;}
 case 96:
-#line 719 "parser.y"
+#line 724 "parser.y"
 {
 	yyval.ok = yyvsp[0].ok;
     ;
     break;}
 case 97:
-#line 722 "parser.y"
+#line 727 "parser.y"
 {
 	yyval.ok = yyvsp[-1].ok;
 	if ( yyvsp[0].ok )
@@ -1633,13 +1638,13 @@ case 97:
     ;
     break;}
 case 98:
-#line 727 "parser.y"
+#line 732 "parser.y"
 {
 	yyval.ok = yyvsp[0].ok;
     ;
     break;}
 case 99:
-#line 730 "parser.y"
+#line 735 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1648,7 +1653,7 @@ case 99:
     ;
     break;}
 case 100:
-#line 736 "parser.y"
+#line 741 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1657,13 +1662,13 @@ case 100:
     ;
     break;}
 case 101:
-#line 745 "parser.y"
+#line 750 "parser.y"
 {
 	yyval.ok = yyvsp[-2].ok;
     ;
     break;}
 case 102:
-#line 748 "parser.y"
+#line 753 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1672,7 +1677,7 @@ case 102:
     ;
     break;}
 case 103:
-#line 754 "parser.y"
+#line 759 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1681,7 +1686,7 @@ case 103:
     ;
     break;}
 case 104:
-#line 760 "parser.y"
+#line 765 "parser.y"
 {
 	yyval.ok = yyvsp[-3].ok;
 	if ( yyvsp[-2].ok )
@@ -1689,7 +1694,7 @@ case 104:
     ;
     break;}
 case 105:
-#line 765 "parser.y"
+#line 770 "parser.y"
 {
 	yyval.ok = yyvsp[-3].ok;
 #ifdef CSS_DEBUG
@@ -1698,7 +1703,7 @@ case 105:
     ;
     break;}
 case 106:
-#line 771 "parser.y"
+#line 776 "parser.y"
 {
 	yyval.ok = yyvsp[-5].ok;
 #ifdef CSS_DEBUG
@@ -1707,7 +1712,7 @@ case 106:
     ;
     break;}
 case 107:
-#line 780 "parser.y"
+#line 785 "parser.y"
 {
 	yyval.ok = false;
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -1730,29 +1735,29 @@ case 107:
     ;
     break;}
 case 108:
-#line 803 "parser.y"
+#line 808 "parser.y"
 {
 	QString str = qString(yyvsp[-1].string);
 	yyval.prop_id = getPropertyID( str.lower().latin1(), str.length() );
     ;
     break;}
 case 109:
-#line 810 "parser.y"
+#line 815 "parser.y"
 { yyval.b = true; ;
     break;}
 case 110:
-#line 811 "parser.y"
+#line 816 "parser.y"
 { yyval.b = false; ;
     break;}
 case 111:
-#line 815 "parser.y"
+#line 820 "parser.y"
 {
 	yyval.valueList = new ValueList;
 	yyval.valueList->addValue( yyvsp[0].value );
     ;
     break;}
 case 112:
-#line 819 "parser.y"
+#line 824 "parser.y"
 {
 	yyval.valueList = yyvsp[-2].valueList;
 	if ( yyval.valueList ) {
@@ -1768,44 +1773,44 @@ case 112:
     ;
     break;}
 case 113:
-#line 832 "parser.y"
+#line 837 "parser.y"
 {
 	delete yyvsp[-1].valueList;
 	yyval.valueList = 0;
     ;
     break;}
 case 114:
-#line 839 "parser.y"
+#line 844 "parser.y"
 {
 	yyval.tok = '/';
     ;
     break;}
 case 115:
-#line 842 "parser.y"
+#line 847 "parser.y"
 {
 	yyval.tok = ',';
     ;
     break;}
 case 116:
-#line 845 "parser.y"
+#line 850 "parser.y"
 {
         yyval.tok = 0;
   ;
     break;}
 case 117:
-#line 851 "parser.y"
+#line 856 "parser.y"
 { yyval.value = yyvsp[0].value; ;
     break;}
 case 118:
-#line 852 "parser.y"
+#line 857 "parser.y"
 { yyval.value = yyvsp[0].value; yyval.value.fValue *= yyvsp[-1].val; ;
     break;}
 case 119:
-#line 853 "parser.y"
+#line 858 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_STRING; ;
     break;}
 case 120:
-#line 854 "parser.y"
+#line 859 "parser.y"
 {
       QString str = qString( yyvsp[-1].string );
       yyval.value.id = getValueID( str.lower().latin1(), str.length() );
@@ -1814,101 +1819,101 @@ case 120:
   ;
     break;}
 case 121:
-#line 860 "parser.y"
+#line 865 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_URI; ;
     break;}
 case 122:
-#line 861 "parser.y"
+#line 866 "parser.y"
 { yyval.value.id = 0; yyval.value.iValue = 0; yyval.value.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;
     break;}
 case 123:
-#line 862 "parser.y"
+#line 867 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[0].string; yyval.value.unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;
     break;}
 case 124:
-#line 864 "parser.y"
+#line 869 "parser.y"
 {
       yyval.value = yyvsp[0].value;
   ;
     break;}
 case 125:
-#line 870 "parser.y"
+#line 875 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_NUMBER; ;
     break;}
 case 126:
-#line 871 "parser.y"
+#line 876 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;
     break;}
 case 127:
-#line 872 "parser.y"
+#line 877 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PX; ;
     break;}
 case 128:
-#line 873 "parser.y"
+#line 878 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_CM; ;
     break;}
 case 129:
-#line 874 "parser.y"
+#line 879 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MM; ;
     break;}
 case 130:
-#line 875 "parser.y"
+#line 880 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_IN; ;
     break;}
 case 131:
-#line 876 "parser.y"
+#line 881 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PT; ;
     break;}
 case 132:
-#line 877 "parser.y"
+#line 882 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PC; ;
     break;}
 case 133:
-#line 878 "parser.y"
+#line 883 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_DEG; ;
     break;}
 case 134:
-#line 879 "parser.y"
+#line 884 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_RAD; ;
     break;}
 case 135:
-#line 880 "parser.y"
+#line 885 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_GRAD; ;
     break;}
 case 136:
-#line 881 "parser.y"
+#line 886 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MS; ;
     break;}
 case 137:
-#line 882 "parser.y"
+#line 887 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_S; ;
     break;}
 case 138:
-#line 883 "parser.y"
+#line 888 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_HZ; ;
     break;}
 case 139:
-#line 884 "parser.y"
+#line 889 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_KHZ; ;
     break;}
 case 140:
-#line 885 "parser.y"
+#line 890 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EMS; ;
     break;}
 case 141:
-#line 886 "parser.y"
+#line 891 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = Value::Q_EMS; ;
     break;}
 case 142:
-#line 887 "parser.y"
+#line 892 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EXS; ;
     break;}
 case 143:
-#line 888 "parser.y"
+#line 893 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_DIMENSION ;
     break;}
 case 144:
-#line 893 "parser.y"
+#line 898 "parser.y"
 {
       Function *f = new Function;
       f->name = yyvsp[-4].string;
@@ -1919,11 +1924,11 @@ case 144:
   ;
     break;}
 case 145:
-#line 908 "parser.y"
+#line 913 "parser.y"
 { yyval.string = yyvsp[-1].string; ;
     break;}
 case 146:
-#line 915 "parser.y"
+#line 920 "parser.y"
 {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
@@ -1932,7 +1937,7 @@ case 146:
     ;
     break;}
 case 147:
-#line 921 "parser.y"
+#line 926 "parser.y"
 {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
@@ -1941,7 +1946,7 @@ case 147:
     ;
     break;}
 case 148:
-#line 930 "parser.y"
+#line 935 "parser.y"
 {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
@@ -2175,6 +2180,6 @@ yyerrhandle:
 #endif    
   return 1;
 }
-#line 965 "parser.y"
+#line 970 "parser.y"
 
 
