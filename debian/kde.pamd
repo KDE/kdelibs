@@ -6,7 +6,6 @@ auth       required     pam_env.so
 account    required     pam_unix.so
 session    required     pam_unix.so
 session    required     pam_limits.so
-session    optional     pam_condev.so
 
 # (Remove `md5' after the module name to disable MD5 passwords
 
