@@ -5,10 +5,70 @@
 
 // Reference: RFC 1738 Uniform Resource Locators
 // Syntax?
-// TODO: user, password, port
 
 #include "kurl.h"
 #include <iostream.h>
+
+QString& KURL::encodeURL( QString& _url ) const {
+    
+    int old_length = _url.length();
+   
+    // make a copy of the old one
+    char *new_url = new char[ old_length ];
+    int new_length = 0;
+     
+    for (int i = 0; i < old_length; i++) {
+	if ( strchr("#@\"&%$:,;?=", _url[i]) ) {
+	    new_url[ new_length++ ] = '%';
+
+	    char c = _url[ i ] / 16;
+	    c += (c > 9) ? ('A' - 10) : '0';
+	    new_url[ new_length++ ] = c;
+
+	    c = _url[ i ] % 16;
+	    c += (c > 9) ? ('A' - 10) : '0';
+	    new_url[ new_length++ ] = c;
+	    
+	} else
+	    new_url[ new_length++ ] = _url[i];
+    };
+    new_url[new_length]=0;
+    _url = new_url;
+    delete new_url;
+    return _url;
+};
+
+static uchar hex2int( char _char ) {
+    if ( _char >= 'A' && _char <='F')
+	return _char - 'A' + 10;
+    if ( _char >= 'a' && _char <='f')
+	return _char - 'a' + 10;
+    if ( _char >= '0' && _char <='9')
+	return _char - '0';
+    return 0;
+};
+
+QString& KURL::decodeURL( QString& _url) const {
+    int old_length = _url.length();
+    int new_length = 0;
+
+    // make a copy of the old one
+    char *new_url = new char[ old_length ];
+        
+    for (int i = 0; i < old_length; i++) 
+	{
+	    uchar character = _url[ i ];
+	    if ( character == '%' ) {
+		character = hex2int( _url[i+1] ) * 16 + hex2int( _url[i+2] );
+		i += 2;
+	    };
+	    new_url [ new_length++ ] = character;
+	};
+    new_url [ new_length ] = 0;
+    _url = new_url;
+    delete new_url;
+    return _url;
+};
 
 void
 KURL::detach()
@@ -28,6 +88,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
   malformed = _base_url.malformed;
   protocol_part = _base_url.protocol_part;
   host_part = _base_url.host_part;
+  port_number = _base_url.port_number;
   path_part = _base_url.path_part;
   ref_part = _base_url.ref_part;
   dir_part = _base_url.dir_part;
@@ -52,8 +113,10 @@ void KURL::parse( const char * _url )
   url.detach();
   malformed = FALSE;
 
-  if ( _url[0] == '/' )
-      url.sprintf( "file:%s", _url );
+  if ( _url[0] == '/' ) {
+      encodeURL(url);
+      url.sprintf( "file:%s", url.data() );
+  };
   
   // We need a : somewhere to determine the protocol
   int pos = url.find( ":" );
@@ -134,6 +197,14 @@ void KURL::parse( const char * _url )
     user_part = "";
   }
   
+  // find a possible port number
+  int p = host_part.find(":");
+  if ( p != -1 ) {
+      port_number = host_part.right( host_part.length() - (p + 1) ).toInt();
+      host_part = host_part.left( p );
+  } else
+      port_number = 0;
+
   // Find the path
   if( pos2 < (int)url.length() && pos2 != -1)
   {
@@ -238,6 +309,9 @@ KURL::url() const
       url += "@";
     }    
     url += host_part;
+    
+    if ( port_number != 0 ) 
+	url.sprintf("%s:%d",url.data(),port_number);
   }
   else
     url += ":";
@@ -252,10 +326,10 @@ KURL::url() const
 
 static inline QString cleanPath( const char* filePath)
 {
-  QString tmp( QDir::cleanDirPath( filePath) );
-  if( tmp == "." || tmp == "/")
+    QString tmp = QDir::cleanDirPath( filePath).copy();
+    if( tmp == "." || tmp == "/")
 	tmp = "";
-  return tmp;
+    return tmp;
 }
 
 void
