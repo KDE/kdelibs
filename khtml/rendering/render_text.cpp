@@ -397,6 +397,8 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
+    
+    m_minOfs = 0;
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
@@ -452,7 +454,7 @@ void RenderText::deleteTextBoxes(RenderArena *arena)
     KHTMLAssert(m_lines.count() == 0);
 }
 
-InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos )
+InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkFirstLetter )
 {
     // The text boxes point to parts of the rendertext's str string
     // (they don't include '\n')
@@ -460,6 +462,20 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos )
     // and return pos, which is the position of the char in the run.
 
     // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
+
+    if (checkFirstLetter && forcedMinOffset()) {
+        kdDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset() << endl;
+        RenderFlow *firstLetter = static_cast<RenderFlow *>(previousSibling());
+        if (firstLetter && firstLetter->isFlow() && firstLetter->isFirstLetter()) {
+            RenderText *letterText = static_cast<RenderText *>(firstLetter->firstChild());
+            kdDebug(6040) << "lettertext: " << letterText << " minOfs: " << letterText->minOffset() << " maxOfs: " << letterText->maxOffset() << endl;
+	    if (offset >= letterText->minOffset() && offset <= letterText->maxOffset()) {
+	        InlineTextBox *result = letterText->findInlineTextBox(offset, pos, false);
+            kdDebug(6040) << "result: " << result << endl;
+		if (result) return result;
+	    }/*end if*/
+        }/*end if*/
+    }/*end if*/
 
     if ( m_lines.isEmpty() )
         return 0L;
@@ -598,10 +614,11 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   }
 
   int pos;
-  InlineTextBox * s = findInlineTextBox( offset, pos );
+  InlineTextBox * s = findInlineTextBox( offset, pos, true );
+  RenderText *t = s->renderText();
 //  kdDebug(6040) << "offset="<<offset << " pos="<<pos << endl;
 
-  const QFontMetrics &fm = metrics( s->m_firstLine );
+  const QFontMetrics &fm = t->metrics( s->m_firstLine );
   height = fm.height(); // s->m_height;
 
   _x = s->m_x + s->width(pos);

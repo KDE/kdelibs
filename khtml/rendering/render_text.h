@@ -248,13 +248,30 @@ public:
      * still point to a valid position.
      */
     virtual long maxOffset() const;
+    
+    /** returns the forced minimum offset
+     */
+    long forcedMinOffset() const { return m_minOfs; }
+    /** sets the forced minimum offset
+     *
+     * The forced minimum offset specifies the character into the DOM string
+     * at which position this render object starts to represent the string.
+     */
+    void setForcedMinOffset(long ofs) { m_minOfs = (short)ofs; }
 
 protected:
     void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 
-    // Find the text box that includes the character at @p offset
-    // and return pos, which is the position of the char in the run.
-    InlineTextBox * findInlineTextBox( int offset, int &pos );
+    /** Find the text box that includes the character at @p offset
+     * and return pos, which is the position of the char in the run.
+     * @param offset zero-based offset into DOM string
+     * @param pos returns relative position within text box
+     * @param checkFirstLetter passing @p true will also regard :first-letter
+     *		boxes, if available.
+     * @return the text box, or 0 if no match has been found
+     */
+    InlineTextBox * findInlineTextBox( int offset, int &pos,
+    					bool checkFirstLetter = false );
 
 protected: // members
     InlineTextBoxArray m_lines;
@@ -271,6 +288,8 @@ protected: // members
 
     ushort m_startMin : 9;
     ushort m_endMin : 9;
+    short m_minOfs : 8;		// forced minimum offset
+    // all 32 bits used
 };
 
 

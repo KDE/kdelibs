@@ -166,6 +166,9 @@ public:
     // 100px.
     virtual int overflowHeight() const { return m_overflowHeight; }
     virtual int overflowWidth() const { return m_overflowWidth; }
+    
+    bool isFirstLetter() const { return m_firstLetter; }
+    void setFirstLetter(bool b = true) { m_firstLetter = b; }
 
 protected:
 
@@ -203,7 +206,8 @@ private:
     EClear m_clearStatus     : 2; // used during layuting of paragraphs
     bool m_topMarginQuirk    : 1;
     bool m_bottomMarginQuirk : 1;
-    uint unused : 9;
+    bool m_firstLetter       : 1; // true if this flow contains a :first-letter element
+    uint unused : 8;
 
     short m_maxTopPosMargin;
     short m_maxTopNegMargin;

@@ -74,6 +74,8 @@ RenderFlow::RenderFlow(DOM::NodeImpl* node)
     m_continuation = 0;
     m_firstLineBox = 0;
     m_lastLineBox = 0;
+    
+    m_firstLetter = false;
 }
 
 void RenderFlow::deleteLineBoxes(RenderArena* arena)
@@ -1600,6 +1602,7 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
 	    pseudoStyle->setDisplay( INLINE );
 	    firstLetter->setStyle(pseudoStyle);
             firstLetter->setIsAnonymousBox(true);
+	    firstLetter->setFirstLetter(true);
 
 	    addChild(firstLetter);
 
@@ -1611,13 +1614,17 @@ void RenderFlow::addChildToFlow(RenderObject* newChild, RenderObject* beforeChil
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
-		RenderText* letter = new (renderArena()) RenderText(0 /* anonymous object */, oldText->substring(0,length));
+		RenderText* letter = new (renderArena()) RenderText(newTextChild->element() /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
                 letter->setIsAnonymousBox(true);
 		firstLetter->addChild(letter);
-		newTextChild->setText(oldText->substring(length,oldText->l-length));
+		//newTextChild->setText(oldText->substring(length,oldText->l-length));
+		// please never ever have the glorious idea to "optimize" away
+		// the render text if it has become empty because of the
+		// application of :first-letter. This will break caret mode (LS)
+		newTextChild->setForcedMinOffset(length);
 	    }
 	    firstLetter->close();
 

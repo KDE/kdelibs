@@ -38,6 +38,7 @@
 #include "render_arena.h"
 #include "render_layer.h"
 #include "render_line.h"
+#include "render_text.h"
 
 #include <assert.h>
 using namespace DOM;
@@ -847,6 +848,8 @@ QString RenderObject::information() const
 	ts << " layer=" << layer();
     if ( continuation() )
 	ts << " continuation=" << continuation();
+    if (isText())
+        ts << " \"" << QConstString(static_cast<const RenderText *>(this)->text(), QMIN(static_cast<const RenderText *>(this)->length(), 10)).string() << "\"";
     return str;
 }
 

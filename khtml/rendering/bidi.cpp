@@ -216,8 +216,9 @@ BidiIterator::BidiIterator(RenderFlow *_par)
 	}
     }
     obj = first( par );
-    pos = 0;
     isText = obj ? obj->isText() : false;
+    pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+    //kdDebug(6041) << "bidiiterator init: pos " << pos << endl;
 }
 
 inline BidiIterator::BidiIterator(const BidiIterator &it)
@@ -232,8 +233,10 @@ inline BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos
 {
     par = _par;
     obj = _obj;
-    pos = _pos;
     isText = obj ? obj->isText() : false;
+    pos = _pos > 0 ? _pos : (
+    		isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0);
+    //kdDebug(6041) << "bidiiterator init(2): pos " << pos << endl;
 }
 
 inline BidiIterator &BidiIterator::operator = (const BidiIterator &it)
@@ -253,12 +256,14 @@ inline void BidiIterator::operator ++ ()
         if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
 	    isText = obj ? obj->isText() : false;
-            pos = 0;
+            pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+//kdDebug(6041) << "bidiiterator ++(1): pos " << pos << endl;
         }
     } else {
         obj = Bidinext( par, obj );
 	isText = obj ? obj->isText() : false;
-        pos = 0;
+        pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+//kdDebug(6041) << "bidiiterator ++(2): pos " << pos << endl;
     }
 }
 
@@ -302,14 +307,18 @@ static void appendRun()
     RenderObject *obj = sor.obj;
     while( obj && obj != eor.obj ) {
         if(!obj->isHidden()) {
-            //kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
+#if BIDI_DEBUG > 1
+            kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
+#endif
             sruns->append( new BidiRun(start, obj->length(), obj, context, dir) );
         }
-        start = 0;
         obj = Bidinext( sor.par, obj );
+        start = obj && obj->isText() ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
     }
     if( obj && !obj->isHidden()) {
-        //kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
+#if BIDI_DEBUG > 1
+        kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
+#endif
         sruns->append( new BidiRun(start, eor.pos + 1, obj, context, dir) );
     }
 
@@ -890,7 +899,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
     kdDebug(6041) << "logical order is:" << endl;
-    QPtrListIterator<BidiRun> it2(runs);
+    QPtrListIterator<BidiRun> it2(*sruns);
     BidiRun *r2;
     for ( ; (r2 = it2.current()); ++it2 )
         kdDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
@@ -929,7 +938,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
-    QPtrListIterator<BidiRun> it3(runs);
+    QPtrListIterator<BidiRun> it3(*sruns);
     BidiRun *r3;
     for ( ; (r3 = it3.current()); ++it3 )
     {
@@ -1025,7 +1034,7 @@ void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* en
         }
 	r->box->setWidth(width);
 #if BIDI_DEBUG > 0
-	kdDebug(6040) << "object="<< r->obj << " placing at vertical=" << r->vertical <<" width=" << r->width <<endl;
+	kdDebug(6040) << "object="<< r->obj << " placing at vertical=" << r->vertical <<" width=" << r->box->width() <<endl;
 #endif
         totWidth += width;
         r = sruns->next();
@@ -1063,7 +1072,7 @@ void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* en
     }
     while ( r ) {
 #if BIDI_DEBUG > 1
-        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " x=" << x << " width=" << r->width << " yPos=" << r->vertical << endl;
+        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " x=" << x << " width=" << r->box->width() << " yPos=" << r->vertical << endl;
 #endif
 	int spaceAdd = 0;
 	if ( numSpaces > 0 ) {

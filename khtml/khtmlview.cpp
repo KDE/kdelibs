@@ -2628,14 +2628,6 @@ protected:
     return result;
   }
 
-  /** finds out if the given box is a :first-letter pseudo-element.
-   *
-   * Furthermore, in case it is a :first-letter, this method will create
-   * a copy of the given box, and make it the current.
-   * @param b given inline box
-   * @return @p true if :first-letter.
-   */
-  bool isFirstLetter(InlineBox *b);
 };
 
 /**
@@ -2971,7 +2963,7 @@ public:
       copy = ebit;
       InlineBox *b = *ebit;
 
-      if (b->object() == _node->renderer()) {
+      if (b == _it.currentInlineBox() || b->object() == _node->renderer()) {
         _offset = QMIN(QMAX(_offset, b->minOffset()), b->maxOffset());
         break;
       }/*end if*/
@@ -3184,7 +3176,7 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   if (r->isText()) do {
     RenderText *t = static_cast<RenderText *>(r);
     int dummy;
-    InlineBox *b = t->findInlineTextBox(offset, dummy);
+    InlineBox *b = t->findInlineTextBox(offset, dummy, true);
     // Actually b should never be 0, but some render texts don't have text
     // boxes, so we insert the last run as an error correction.
     // If there is no last run, we resort to (B)
@@ -3430,6 +3422,7 @@ void LinearDocument::initEndIterator()
 LineIterator::LineIterator(LinearDocument *l, DOM::NodeImpl *node, long offset)
 		: lines(l)
 {
+//  kdDebug(6200) << "LineIterator: node " << node << " offset " << offset << endl;
   flowBox = findFlowBox(node, offset, lines->arena, cb, &currentBox);
   if (!flowBox) {
     kdDebug(6200) << "LineIterator: findFlowBox failed" << endl;
@@ -3562,14 +3555,6 @@ LineIterator &LineIterator::operator -=(int summand)
   return *this;
 }
 
-// == class EditableInlineBoxIterator implementation
-
-bool EditableInlineBoxIterator::isFirstLetter(InlineBox *b)
-{
-  // ### find way to discriminate a :first-letter node against a :before
-  // node or other stuff
-}
-
 // == class EditableCharacterIterator implementation
 
 void EditableCharacterIterator::initFirstChar()
@@ -3656,16 +3641,19 @@ kdDebug(6200) << "_offset: " << _offset /*<< " _peekNext: " << _peekNext*/ << " 
 EditableCharacterIterator &EditableCharacterIterator::operator --()
 {
   _offset--;
+  //kdDebug(6200) << "--: _offset=" << _offset << endl;
 
   InlineBox *b = *ebit;
   InlineBox *_peekPrev = 0;
   InlineBox *_peekNext = 0;
   long minofs = b ? b->minOffset() : _offset + 1;
+  kdDebug(6200) << "b->maxOffset() " << b->maxOffset() << " b->minOffset() " << b->minOffset() << endl;
   if (_offset == minofs) {
+kdDebug(6200) << "_offset == minofs: " << _offset << " == " << minofs << endl;
     _peekNext = b;
     // get character
     if (b && b->isInlineTextBox())
-      _char = static_cast<RenderText *>(b->object())->str->s[_offset].unicode();
+      _char = static_cast<RenderText *>(b->object())->text()[_offset].unicode();
     else
       _char = -1;
 
@@ -3685,16 +3673,19 @@ EditableCharacterIterator &EditableCharacterIterator::operator --()
     if (do_prev) goto prev;
   } else if (_offset < minofs) {
 prev:
+kdDebug(6200) << "_offset < minofs: " << _offset << " < " << minofs /*<< " _peekNext: " << _peekNext*/ << endl;
     if (!_peekPrev) {
       _peekNext = *ebit;
       if (*ebit)
         --ebit;
       if (!*ebit) {		// end of line reached, go to previous line
         --_it;
+kdDebug(6200) << "--_it" << endl;
         if (_it != ld->preBegin()) {
 //	  kdDebug(6200) << "begin from end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 	  ebit = EditableInlineBoxIterator(_it, true);
 	  RenderObject *r = (*ebit)->object();
+kdDebug(6200) << "b " << *ebit << " isText " << (*ebit)->isInlineTextBox() << endl;
 	  _node = r->element();
 	  _offset = r->isBR() ? (*ebit)->minOffset() : (*ebit)->maxOffset();
 	  _char = -1;
@@ -3717,15 +3708,17 @@ prev:
     }/*end if*/
     kdDebug(6200) << "(*ebit)->obj " << (*ebit)->object()->renderName() << "[" << (*ebit)->object() << "]" << " minOffset: " << (*ebit)->minOffset() << " maxOffset: " << (*ebit)->maxOffset() << endl;
     _node = (*ebit)->object()->element();
+kdDebug(6200) << "_node " << _node << ":" << _node->nodeName().string() << endl;
     _offset = (*ebit)->maxOffset()/* - adjacent*/;
+kdDebug(6200) << "_offset " << _offset << endl;
     _peekPrev = 0;
   } else {
 kdDebug(6200) << "_offset: " << _offset << " _peekNext: " << _peekNext << endl;
     // get character
     if (_peekNext && _offset >= b->maxOffset() && _peekNext->isInlineTextBox())
-      _char = static_cast<RenderText *>(_peekNext->object())->str->s[_peekNext->minOffset()].unicode();
+      _char = static_cast<RenderText *>(_peekNext->object())->text()[_peekNext->minOffset()].unicode();
     else if (b && _offset < b->maxOffset() && b->isInlineTextBox())
-      _char = static_cast<RenderText *>(b->object())->str->s[_offset].unicode();
+      _char = static_cast<RenderText *>(b->object())->text()[_offset].unicode();
     else
       _char = -1;
   }/*end if*/
@@ -4829,8 +4822,10 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   if (it.node()) {
     caretNodeRef = it.node();
     offset = it.offset();
+  kdDebug(6200) << "set by valid node. offset: " << offset << endl;
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();
+  kdDebug(6200) << "set by INvalid node. offset: " << offset << endl;
   }/*end if*/
   placeCaretOnChar(it.box());
 }
