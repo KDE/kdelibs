@@ -49,6 +49,9 @@
 #ifdef HAVE_LIBASOUND
 #define HAVE_ALSA_SUPPORT
 
+#ifdef HAVE_LIBASOUND2
+#define HAVE_ALSA_SUPPORT
+
 #include <sys/asoundlib.h>
 #include <linux/asequencer.h>
 #endif
