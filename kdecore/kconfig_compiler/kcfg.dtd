@@ -13,7 +13,7 @@
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>
 
-<!ELEMENT entry (key?,name?,label,code,default,values)>
+<!ELEMENT entry (key?,name?,label,code,default,values,hidden)>
   <!ATTLIST entry name CDATA #REQUIRED>
   <!ATTLIST entry type CDATA #REQUIRED>
   <!ATTLIST entry key CDATA #REQUIRED>
@@ -27,3 +27,5 @@
 
 <!ELEMENT values (value*)>
 <!ELEMENT value (#PCDATA)>
+
+<!ELEMENT hidden (#PCDATA)>

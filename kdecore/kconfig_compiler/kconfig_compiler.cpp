@@ -47,16 +47,16 @@ class CfgEntry
   public:
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label, const QString &code,
-              const QString &defaultValue, const QStringList &values )
+              const QString &defaultValue, const QStringList &values, bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
-        mLabel( label ), mCode( code ), mDefaultValue( defaultValue ), 
-        mValues( values )
+        mLabel( label ), mCode( code ), mDefaultValue( defaultValue ),
+        mValues( values ), mHidden( hidden )
     {
     }
 
     void setGroup( const QString &group ) { mGroup = group; }
     QString group() const { return mGroup; }
-    
+
     void setType( const QString &type ) { mType = type; }
     QString type() const { return mType; }
 
@@ -87,6 +87,8 @@ class CfgEntry
     void setParamValues( const QStringList &d ) { mParamValues = d; }
     QStringList paramValues() const { return mParamValues; }
 
+    bool hidden() const { return mHidden; }
+
     void dump() const
     {
       kdDebug() << "<entry>" << endl;
@@ -99,6 +101,7 @@ class CfgEntry
       kdDebug() << "  values: " << mValues.join(":") << endl;
       kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
       kdDebug() << "  default: " << mDefaultValue << endl;
+      kdDebug() << "  hidden: " << mHidden << endl;
       kdDebug() << "</entry>" << endl;
     }
 
@@ -114,6 +117,7 @@ class CfgEntry
     QString mParamType;
     QStringList mValues;
     QStringList mParamValues;
+    bool mHidden;
 };
 
 static QString varName(const QString &n)
@@ -149,7 +153,7 @@ static QString getFunction(const QString &n)
 static void addQuotes( QString &s )
 {
   if ( s.left( 1 ) != "\"" ) s.prepend( "\"" );
-  if ( s.right( 1 ) != "\"" ) s.append( "\"" );       
+  if ( s.right( 1 ) != "\"" ) s.append( "\"" );
 }
 
 static QString dumpNode(const QDomNode &node)
@@ -157,7 +161,7 @@ static QString dumpNode(const QDomNode &node)
   QString msg;
   QTextStream s(&msg, IO_WriteOnly );
   node.save(s, 0);
-  
+
   msg = msg.simplifyWhiteSpace();
   if (msg.length() > 40)
     return msg.left(37)+"...";
@@ -181,6 +185,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString label;
   QString defaultValue;
   QString code;
+  QString hidden;
   QString param;
   QString paramType;
   QStringList values;
@@ -191,10 +196,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QDomNode n;
   for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
-    QString tag = e.tagName();    
+    QString tag = e.tagName();
     if ( tag == "label" ) label = e.text();
     else if ( tag == "code" ) code = e.text();
-    else if ( tag == "parameter" ) 
+    else if ( tag == "hidden" ) hidden = e.text(); //We could as well just skip all the rest of parsing and just return 0; here
+    else if ( tag == "parameter" )
     {
       param = e.attribute( "name" );
       paramType = e.attribute( "type" );
@@ -257,7 +263,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         return 0;
       }
     }
-    else if ( tag == "default" ) 
+    else if ( tag == "default" )
     {
       if (e.attribute("param").isEmpty())
       {
@@ -276,7 +282,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       }
     }
   }
-  
+
   if ( name.isEmpty() ) {
     kdError() << "Entry must have a name: " << dumpNode(element) << endl;
     return 0;
@@ -293,7 +299,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   if ( label.isEmpty() ) {
     label = key;
   }
-  
+
   if ( type.isEmpty() ) type = "QString";
 
   if (!defaultCode)
@@ -331,7 +337,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       QTextStream cpp( &code, IO_WriteOnly | IO_Append );
       if (!code.isEmpty())
          cpp << endl;
-   
+
       cpp << "  QValueList<int> default" << name << ";" << endl;
       QStringList defaults = QStringList::split( ",", defaultValue );
       QStringList::ConstIterator it;
@@ -342,8 +348,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       defaultValue = "default" + name;
     }
   }
-  
-  CfgEntry *result = new CfgEntry( group, type, key, name, label, code, defaultValue, values );
+
+  CfgEntry *result = new CfgEntry( group, type, key, name, label, code, defaultValue, values,
+                                   hidden == "true" );
   if (!param.isEmpty())
   {
     result->setParam(param);
@@ -384,7 +391,7 @@ QString addFunction( const QString &type )
   QString f = "addItem";
 
   QString t;
-  
+
   if ( type == "QString" || type == "QStringList" || type == "QColor" ||
        type == "QFont" || type == "QSize" ) {
     t = type.mid( 1 );
@@ -394,7 +401,7 @@ QString addFunction( const QString &type )
   }
 
   f += t;
-  
+
   return f;
 }
 
@@ -416,7 +423,7 @@ QString paramString(const QString &group, const QStringList &parameters)
   }
   if (arguments.isEmpty())
     return "\""+group+"\"";
-  
+
   return "QString(\""+paramString+"\")"+arguments;
 }
 
@@ -445,7 +452,7 @@ int main( int argc, char **argv )
 
   QString inputFilename = args->url( 0 ).path();
   QString codegenFilename = args->url( 1 ).path();
-  
+
   if (!codegenFilename.endsWith(".kcfgc"))
   {
     kdError() << "Codegen options file must have extension .kcfgc" << endl;
@@ -455,7 +462,7 @@ int main( int argc, char **argv )
   baseName = baseName.left(baseName.length() - 6);
 
   KSimpleConfig codegenConfig( codegenFilename, true );
-  
+
   QString className = codegenConfig.readEntry("ClassName");
   QString inherits = codegenConfig.readEntry("Inherits");
   bool singleton = codegenConfig.readBoolEntry("Singleton", false);
@@ -464,7 +471,7 @@ int main( int argc, char **argv )
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
-  
+
   QFile input( inputFilename );
 
   QDomDocument doc;
@@ -493,7 +500,7 @@ int main( int argc, char **argv )
   QDomNode n;
   for ( n = cfgElement.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
-    
+
     QString tag = e.tagName();
 
     if ( tag == "include" ) {
@@ -521,17 +528,19 @@ int main( int argc, char **argv )
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
         CfgEntry *entry = parseEntry( group, e2 );
-        if ( entry ) entries.append( entry );
-        else {
+        if ( entry && !entry->hidden() ) entries.append( entry );
+        else if ( !entry ) {
           kdError() << "Can't parse entry." << endl;
           return 1;
+        } else {
+          kdDebug() << "Hidden entry : " <<  entry->name() << ". Skiping." << endl;
         }
       }
     }
   }
 
   if ( inherits.isEmpty() ) inherits = "KConfigSkeleton";
-  
+
   if ( className.isEmpty() ) {
     kdError() << "Class name missing" << endl;
     return 1;
@@ -607,7 +616,7 @@ int main( int argc, char **argv )
   }
 
   h << endl;
-  
+
   // Constructor or singleton accessor
   if ( !singleton ) {
     h << "    " << className << "(";
@@ -642,7 +651,7 @@ int main( int argc, char **argv )
     {
       h << "    /**" << endl;
       h << "      Set " << e->label() << endl;
-      h << "    */" << endl;    
+      h << "    */" << endl;
       if (staticAccessors)
         h << "    static" << endl;
       h << "    void " << setFunction(n) << "( " << param( t ) << " v )" << endl;
@@ -651,7 +660,7 @@ int main( int argc, char **argv )
       h << "        " << This << varName(n) << " = v;" << endl;
       h << "    }" << endl << endl;
     }
-  
+
     // Accessor
     h << "    /**" << endl;
     h << "      Get " << e->label() << endl;
@@ -674,9 +683,9 @@ int main( int argc, char **argv )
     h << "      static_cast<KConfigSkeleton*>(self())->writeConfig();" << endl;
     h << "    }" << endl;
   }
-  
+
   h << "  private:" << endl;
-  
+
   // Private constructor for singleton
   if ( singleton ) {
     h << "    " << className << "();" << endl;
@@ -687,7 +696,7 @@ int main( int argc, char **argv )
   if ( !memberVariables.isEmpty() && memberVariables != "private" ) {
     h << "  " << memberVariables << ":" << endl;
   }
-  
+
   // Class Parameters
   for (QStringList::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
@@ -794,10 +803,10 @@ int main( int argc, char **argv )
       QStringList values = e->values();
       QStringList::ConstIterator it;
       for( it =  values.begin(); it != values.end(); ++it ) {
-        cpp << "  values" << e->name() << ".append( \"" << *it << "\" );" << endl; 
+        cpp << "  values" << e->name() << ".append( \"" << *it << "\" );" << endl;
       }
-      cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() 
-          << " = new KConfigSkeleton::ItemEnum( currentGroup(), " 
+      cpp << "  KConfigSkeleton::ItemEnum *item" << e->name()
+          << " = new KConfigSkeleton::ItemEnum( currentGroup(), "
           << key << ", " << varName(e->name()) << ", values" << e->name();
       if ( !e->defaultValue().isEmpty() )
         cpp << ", " << e->defaultValue();
