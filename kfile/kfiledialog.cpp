@@ -367,7 +367,7 @@ void KFileBaseDialog::initGUI()
     btngroup->addWidget(bHelp);
     boxLayout->activate();
 
-    fileList->connectDirSelected(this, SLOT(dirActivated()));
+    fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
     fileList->connectFileSelected(this, SLOT(fileActivated()));
     fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
 }
@@ -1003,12 +1003,12 @@ void KFileBaseDialog::toolbarPressedCallback(int i)
     }    
 }
 
-void KFileBaseDialog::dirActivated()
+void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
     QString tmp = dir->url();
     if (tmp.right(1)[0] != '/')
 	tmp += "/";
-    QString tmps = fileList->selectedDir()->fileName();
+    QString tmps = item->fileName();
     KURL::encodeURL(tmps);
     tmp += tmps;
     tmp += "/";
@@ -1016,7 +1016,7 @@ void KFileBaseDialog::dirActivated()
     setDir(tmp, true);
 }
 
-void KFileBaseDialog::fileActivated()
+void KFileBaseDialog::fileActivated(KFileInfo *item)
 {
     debugC("fileAct");
 	
@@ -1028,7 +1028,7 @@ void KFileBaseDialog::fileActivated()
     if (filename_.right(1)[0] != '/')
 	filename_ += "/";
     
-    QString tmps= fileList->selectedFile()->fileName();
+    QString tmps= item->fileName();
     
     KURL::encodeURL(tmps);
     filename_ += tmps;
@@ -1036,10 +1036,9 @@ void KFileBaseDialog::fileActivated()
     accept();
 }
 
-void KFileBaseDialog::fileHighlighted()
+void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 {
-    const char *highlighted = 
-	fileList->highlightedFile()->fileName();
+    const char *highlighted = item->fileName();
     
     if (acceptUrls)
 	filename_ = dir->url();

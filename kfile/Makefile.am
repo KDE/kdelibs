@@ -25,7 +25,7 @@ lib_LTLIBRARIES  = libkfile.la
 
 DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
-	kcombiview.moc kpreview.moc kfilepreview.moc
+	kcombiview.moc kpreview.moc kfilepreview.moc kfileinfocontents.moc
 
 include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
@@ -38,18 +38,19 @@ kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
-	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp kfilepreview.cpp \
-	xview.cpp
+	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp \
+	kfilepreview.cpp xview.cpp
 
 toolbar_DATA = configure.xpm 
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
 
-LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) 
+LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
 libkfile_la_LDFLAGS = -version-info 0:90 $(LDFLAGS)
 libkfile_la_LIBADD = -lqt -lXext -lX11 $(LIBSOCKET)
 
 check_PROGRAMS = kfstest
+kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
 kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la -lqt -lXext -lX11 $(LIBSOCKET)
 
 bookmark.cpp:bookmark.moc
@@ -96,4 +97,7 @@ kfilepreview.cpp:kfilepreview.moc
 kfilepreview.moc: kfilepreview.h
 	$(MOC) kfilepreview.h -o kfilepreview.moc
 
+kfileinfocontents.cpp:kfileinfocontents.moc
+kfileinfocontents.moc: kfileinfocontents.h
+	$(MOC) kfileinfocontents.h -o kfileinfocontents.moc
 

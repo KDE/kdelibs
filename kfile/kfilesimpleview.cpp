@@ -239,6 +239,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 int KFileSimpleView::cellWidth ( int col )
 {
     if (cellWidths[col] == -1) {
+	debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
 	for (uint j = 0; j < rowsVisible; j++) {

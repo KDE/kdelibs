@@ -24,8 +24,27 @@
 class KFileInfo;
 class QPixmap;
 class QSignal;
+
 #include <qwidget.h>
 #include "kdir.h"
+
+/**
+ * internal class to make easier to use signals possible
+ * @internal
+ **/
+class KFileInfoContentsSignaler : public QObject {
+    Q_OBJECT
+
+public:
+    void activateDir(KFileInfo *i) { emit dirActivated(i); }
+    void highlightFile(KFileInfo *i) { emit fileHighlighted(i); }
+    void activateFile(KFileInfo *i) { emit fileSelected(i); }
+
+signals:
+    void dirActivated(KFileInfo*);
+    void fileHighlighted(KFileInfo*);
+    void fileSelected(KFileInfo*);
+};
 
 /**
   * A base class for views of the KDE file selector
@@ -172,21 +191,6 @@ public:
     void connectFileSelected( QObject *receiver, const char *member);
 
     /**
-      * @return the last selected directory
-      **/
-    KFileInfo *selectedDir()     { return lastSDir;  }
-    
-    /**
-      * @return the last selected file
-      **/
-    KFileInfo *selectedFile()    { return lastSFile; }
-
-    /**
-      * @return the last highlighted file
-      **/
-    KFileInfo *highlightedFile() { return lastHFile; }
-
-    /**
       * the number of files. 
       **/
     uint numFiles() const { return filesNumber; }
@@ -288,9 +292,21 @@ protected:
     void highlight( int index );
     void highlight( KFileInfo *);
     
+    /**
+     * returns, if the view is using single click to activate directories
+     * Note, that some views do not work completly with single click 
+     **/
     bool useSingle() const { return useSingleClick; }
+    
+    /**
+     * returns true, if the file at the specific position is a directory 
+     **/
     bool isDir( uint index) const { return sortedArray[index]->isDir(); }
 
+    /**
+     * returns the complete file information for the file at the position
+     * index
+     **/
     const KFileInfo *at( uint index ) const { return sortedArray[index]; }
 
     /**
@@ -314,15 +330,10 @@ private:
 
     KFileInfoList *itemsList;
 
-    QSignal *sActivateDir;
-    QSignal *sHighlightFile;
-    QSignal *sSelectFile;
     QStrIList *nameList;
     
-    KFileInfo *lastHFile;
-    KFileInfo *lastSFile;
-    KFileInfo *lastSDir;
     uint filesNumber, dirsNumber;
+    KFileInfoContentsSignaler *sig;
 
   /**
    * @internal

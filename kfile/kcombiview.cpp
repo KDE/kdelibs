@@ -186,19 +186,19 @@ QString KCombiView::findCompletion( const char *base, bool )
     return found;
 }
 
-void KCombiView::dirActivated() 
+void KCombiView::dirActivated(KFileInfo *i) 
 {
-    select(dirList->selectedDir());
+    select(i);
 }
 
-void KCombiView::fileActivated()
+void KCombiView::fileActivated(KFileInfo *i)
 {
-    select(fileList->selectedFile());
+    select(i);
 }
 
-void KCombiView::fileHighlighted()
+void KCombiView::fileHighlighted(KFileInfo *i)
 {
-    highlight(fileList->highlightedFile());
+    highlight(i);
 }
 
 #include "kcombiview.moc"

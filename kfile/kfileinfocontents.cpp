@@ -47,10 +47,6 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 
     useSingleClick = use;
 
-    sActivateDir   = new QSignal(0, "activateDir");
-    sHighlightFile = new QSignal(0, "highlightFile");
-    sSelectFile    = new QSignal(0, "selectFile");
-
     nameList = new QStrIList();
 
     // don't use IconLoader to always get the same icon,
@@ -69,6 +65,7 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 	locked_file = new QPixmap(KApplication::kde_icondir() +
 				  "/mini/locked.xpm");
 
+    sig = new KFileInfoContentsSignaler();
     filesNumber = 0;
     dirsNumber = 0;
 }
@@ -78,10 +75,6 @@ KFileInfoContents::~KFileInfoContents()
     delete [] sortedArray;
     delete itemsList;
     delete nameList;
-
-    delete sActivateDir;
-    delete sHighlightFile;
-    delete sSelectFile;
 }
 
 
@@ -135,21 +128,18 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     setAutoUpdate(false);
     clearView();
 
-    debug("qsort %ld", time(0));
+    debugC("qsort %ld", time(0));
     qsort(sortedArray, sorted_length, sizeof(KFileInfo*), (int (*)(const void *, const void *))&compareItems);
-    debug("qsort %ld", time(0));
+    debugC("qsort %ld", time(0));
     for (uint i = 0; i < sorted_length; i++)
       insertItem(sortedArray[i], -1);
-    debug("qsort %ld", time(0));
+    debugC("qsort %ld", time(0));
     setAutoUpdate(true);
     repaint(true);
 }
 
 void KFileInfoContents::clear()
 {
-    lastHFile = 0;
-    lastSFile = 0;
-    lastSDir = 0;
     sorted_length = 0;
     itemsList->clear();
     nameList->clear();
@@ -161,19 +151,19 @@ void KFileInfoContents::clear()
 void KFileInfoContents::connectDirSelected( QObject *receiver, 
 					    const char *member)
 {
-    sActivateDir->connect(receiver, member);
+    sig->connect(sig, SIGNAL(dirSelected(KFileInfo*)), receiver, member);
 }
 
 void KFileInfoContents::connectFileHighlighted( QObject *receiver, 
 					 const char *member)
 {
-    sHighlightFile->connect(receiver, member);
+    sig->connect(sig, SIGNAL(fileHighlighted(KFileInfo*)), receiver, member);
 }
 
 void KFileInfoContents::connectFileSelected( QObject *receiver, 
 				      const char *member)
 {
-    sSelectFile->connect(receiver, member);
+    sig->connect(sig, SIGNAL(fileSelected(KFileInfo*)), receiver, member);
 }
 
 int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
@@ -279,19 +269,16 @@ void KFileInfoContents::select( int index )
 void KFileInfoContents::select( KFileInfo *entry)
 {
     if ( entry->isDir() ) {
-	lastSDir = entry;
 	debugC("selectDir %s",entry->fileName());
-	sActivateDir->activate();
+	sig->activateDir(entry);
     } else {
-	lastSFile = entry;
-	sSelectFile->activate();
+	sig->activateFile(entry);
     }
 }
 
 void KFileInfoContents::highlight( KFileInfo *entry )
 {
-    lastHFile = entry;
-    sHighlightFile->activate();
+    sig->highlightFile(entry);
 }
 
 void KFileInfoContents::highlight( int index )
@@ -436,15 +423,13 @@ void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
     return;
   }
 
+  // faster repositioning (very fast :)
   memmove(sortedArray + pos+1,
 	 sortedArray + pos,
 	 (sorted_max - 1 - pos) * sizeof(KFileInfo*));
-  /*
-  for ( int i = sorted_length - 1; i >= static_cast<int>(pos); i--) {
-    // debug("move %d", i);
-    sortedArray[i+1] = sortedArray[i];
-  }
-  */
+
   sortedArray[pos] = const_cast<KFileInfo*>(item);
   sorted_length++;
 }
+
+#include "kfileinfocontents.moc" // for the signaler

@@ -51,9 +51,9 @@ public:
 
 protected slots:
     
-    void dirActivated();
-    void fileActivated();
-    void fileHighlighted();
+    void dirActivated(KFileInfo *);
+    void fileActivated(KFileInfo *);
+    void fileHighlighted(KFileInfo *);
 
 protected:
     

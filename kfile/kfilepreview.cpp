@@ -56,9 +56,9 @@ KFilePreview::KFilePreview(
     int pan = kapp->getConfig()->readNumEntry("PannerPosition", 50);
     setSeparatorPos(pan);
 
-    fileList->connectDirSelected(this, SLOT(dirActivated()));
-    fileList->connectFileSelected(this, SLOT(fileActivated()));
-    fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
+    fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo *)));
+    fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo *)));
+    fileList->connectFileHighlighted(this, SLOT(fileHighlighted(KFileInfo *)));
 }
 
 KFilePreview::~KFilePreview()
@@ -127,20 +127,20 @@ QString KFilePreview::findCompletion( const char *base, bool )
     return found;
 }
 
-void KFilePreview::dirActivated() 
+void KFilePreview::dirActivated(KFileInfo *i) 
 {
-    select(fileList->selectedDir());
+    select(i);
 }
 
-void KFilePreview::fileActivated()
+void KFilePreview::fileActivated(KFileInfo *i)
 {
-    select(fileList->selectedFile());
+    select(i);
 }
 
-void KFilePreview::fileHighlighted()
+void KFilePreview::fileHighlighted(KFileInfo *i)
 {
-    highlight(fileList->highlightedFile());
-    myPreview->previewFile(fileList->highlightedFile());
+    highlight(i);
+    myPreview->previewFile(i);
 }
 
 #include "kfilepreview.moc"

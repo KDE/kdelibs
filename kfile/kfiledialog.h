@@ -320,9 +320,9 @@ protected slots:
     void comboActivated(int);
     void toolbarCallback(int);
     void toolbarPressedCallback(int);
-    void dirActivated();
-    void fileActivated();
-    void fileHighlighted();
+    void dirActivated(KFileInfo*);
+    void fileActivated(KFileInfo*);
+    void fileHighlighted(KFileInfo*);
     void updateHistory(bool, bool);
     void filterChanged();
     void locationChanged(const char*);
