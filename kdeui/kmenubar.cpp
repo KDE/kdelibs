@@ -50,7 +50,9 @@ public:
     KMenuBarPrivate()
     {
       topLevel = false;
+      forcedTopLevel = false;
     }
+    bool forcedTopLevel;
     bool topLevel;
     int frameStyle;
 };
@@ -74,6 +76,15 @@ KMenuBar::~KMenuBar()
 
 void KMenuBar::setTopLevelMenu(bool top_level)
 {
+  d->forcedTopLevel = top_level;
+  setTopLevelMenuInternal( top_level );
+}
+
+void KMenuBar::setTopLevelMenuInternal(bool top_level)
+{
+    if (d->forcedTopLevel)
+	top_level = true;
+
     if ( isTopLevelMenu() == top_level )
         return;
   d->topLevel = top_level;
@@ -113,6 +124,7 @@ void KMenuBar::show()
     // why is this still needed? (Simon)
     if ( d->topLevel && isVisible() )
 	return;
+
     QMenuBar::show();
 }
 
@@ -123,7 +135,7 @@ void KMenuBar::slotReadConfig()
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );
-  setTopLevelMenu( config->readBoolEntry( keyMac, false ) );
+  setTopLevelMenuInternal( config->readBoolEntry( keyMac, false ) );
 }
 
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
@@ -132,7 +144,6 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     if ( d->topLevel ) {
 	if ( ev->type() == QEvent::Resize )
 	    return FALSE; // hinder QMenubar to adjust its size
-
 	if ( parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
 
 	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable ) {
@@ -157,7 +168,7 @@ void KMenuBar::showEvent( QShowEvent *e )
         int screen = xineramaConfig.readNumEntry("MenubarScreen",
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);
-        setGeometry(area.left(), area.top()-frameWidth()-2, area.width(), heightForWidth( area.width() ) );
+        QMenuBar::setGeometry(area.left(), area.top()-frameWidth()-2, area.width(), heightForWidth( area.width() ) );
 #ifndef Q_WS_QWS //FIXME
         KWin::setStrut( winId(), 0, 0, height()-frameWidth()-2, 0 );
 #endif
@@ -165,7 +176,19 @@ void KMenuBar::showEvent( QShowEvent *e )
     QMenuBar::showEvent(e);
 }
 
+void KMenuBar::setGeometry( int x, int y, int w, int h )
+{
+   // With the toolbar in toplevel-mode it sometimes has the tendency to cuddle up in
+   // the topleft corner due to a misguided attempt from the layout manager (?) to
+   // size us. The follow line filters out any resize attempt while in toplevel-mode.
+   if ( !d->topLevel ) 
+       QMenuBar::setGeometry(x,y,w,h);
+}
+
 void KMenuBar::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+    
+
 
 #include "kmenubar.moc"

@@ -72,6 +72,8 @@ public:
      */
     bool isTopLevelMenu() const;
 
+    virtual void        setGeometry( int x, int y, int w, int h );
+
     virtual void show();
 protected slots:
     void slotReadConfig();
@@ -83,6 +85,7 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    void setTopLevelMenuInternal(bool top_level = true);
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
 };
