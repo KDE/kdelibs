@@ -24,8 +24,6 @@
 #include <config.h>
 #endif
 
-#include <time.h>
-
 // Overloading of all standard locale functions makes no sense
 // Let application use them
 #ifdef HAVE_LOCALE_H
@@ -41,7 +39,11 @@
 #include "kglobal.h"
 #include "kstddirs.h"
 #include "ksimpleconfig.h"
-#include <kinstance.h>
+#include "kinstance.h"
+#include "kapp.h"
+#include "kconfig.h"
+
+#include "klocale.h"
 
 /**
   * Stephan: I don't want to put this in an extra header file, since
@@ -65,10 +67,6 @@ char *k_bindtextdomain (const char* __domainname,
 			const char* __dirname);
 
 
-#include "klocale.h"
-#include <kapp.h>
-#include <kconfig.h>
-
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
    function.  But some system does not have this defined.  Define it
@@ -77,6 +75,8 @@ char *k_bindtextdomain (const char* __domainname,
 #endif
 
 #define SYSTEM_MESSAGES "kdelibs"
+
+static QString maincatalogue;
 
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
@@ -168,16 +168,30 @@ KLocale::KLocale( const QString& _catalogue )
     if (config)
     {
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
-      chset = config->readEntry(QString::fromLatin1("Charset"), QString::fromLatin1("unicode"));
+      chset = config->readEntry(QString::fromLatin1("Charset"));
     }
-    QString catalogue = _catalogue.isNull()
-        ? QString::fromLatin1(kapp->name())
-        : _catalogue;
+    if (chset.isNull()) chset = QString::fromLatin1("unicode");
 
     catalogues = new QStrList(true);
 
-    initLanguage(config, catalogue);
+    /*
+     * Use the first non-null string.
+     *
+     */
+    initLanguage(config,
+        !maincatalogue.isNull()
+            ? maincatalogue
+            : _catalogue.isNull()
+            ? _catalogue
+            : QString::fromLatin1(kapp->name())
+        );
+
     initFormat(config);
+}
+
+void KLocale::setMainCatalogue(const QString &catalogue)
+{
+    maincatalogue = catalogue;
 }
 
 void KLocale::setEncodingLang(const QString &_lang)

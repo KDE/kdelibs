@@ -371,6 +371,12 @@ public:
      */
     bool inited() const { return _inited; }
 
+    /**
+     * Use this to as main catalogue for *all* KLocales, if not the appname
+     * will be used.
+     */
+    static void setMainCatalogue(const QString &catalogue);
+
 private:
     QStrList *catalogues;
     QIntDict<QString> aliases;
