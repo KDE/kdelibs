@@ -1,16 +1,4 @@
 
-#ifndef HAVE_BOOL
-#define HAVE_BOOL
-typedef int bool;
-#ifdef __cplusplus
-const bool false = 0;
-const bool true = 1;
-#else
-#define false (bool)0;
-#define true (bool)1;
-#endif
-#endif
-
 /* this is needed for Solaris and others */
 #ifndef HAVE_GETDOMAINNAME
 #define HAVE_GETDOMAINNAME
@@ -32,6 +20,12 @@ int gethostname (char *Name, int Namelen);
  * This is an ugly little hack incase someone uses the inline keyword,
  * in a straight C file with AIX's xlc.
  */
+#ifdef __cplusplus
+#ifdef inline
+#undef inline
+#endif
+#endif
+:wq
 #ifndef __AIX32
 #ifndef __cplusplus
 #define inline __inline
