@@ -1243,7 +1243,7 @@ void RenderTextArea::updateFromElement()
         w->blockSignals(true);
         int line, col;
         w->getCursorPosition( &line, &col );
-        w->setText(element()->value().string());
+        w->setText( elementText );
         w->setCursorPosition( line, col );
         w->blockSignals(false);
     }
