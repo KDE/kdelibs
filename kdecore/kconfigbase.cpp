@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.38  1999/03/01 23:33:20  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.37.2.3  1999/02/21 20:55:22  kulow
 // more porting to Qt 2.0. It compiles and links. Jucheisassa :)
 //
@@ -180,6 +183,7 @@
 #include "kdebug.h"
 #include "kapp.h"
 #include "kcharsets.h"
+#include "klocale.h"
 
 static QString printableToString(const QString& s){
   if (!s.contains('\\'))

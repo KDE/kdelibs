@@ -26,6 +26,7 @@
 
 #include <qdialog.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qaccel.h>

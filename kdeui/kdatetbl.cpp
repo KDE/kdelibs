@@ -35,6 +35,7 @@
 #include <qpainter.h>
 #include <qstring.h>
 #include <kapp.h>
+#include <klocale.h>
 
 #include "kdatetbl.h"
 #include "kdatetbl.h"

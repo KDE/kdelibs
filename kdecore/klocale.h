@@ -23,6 +23,10 @@
 #include <qstring.h>
 #include <qstrlist.h>
 
+#ifndef klocale
+#define klocale KApplication::getKApplication()->getLocale()
+#endif
+
 /**
   *
   * KLocale provides support for country specific stuff like
@@ -107,7 +111,7 @@ public:
       *
       * @return List of language codes
       */
-    QStrList languageList()const;
+    QStrList languageList() const;
     
     /**
       * Returns the charset name used by selected locale.
@@ -189,5 +193,7 @@ private:
   KLocale( const KLocale& );
   KLocale& operator= ( const KLocale& );
 };
+
+QString i18n(const char *text);
 
 #endif

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  1999/03/01 23:34:53  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.14.2.1  1999/02/21 20:55:50  kulow
  * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
  *
@@ -116,9 +119,9 @@
 #include <qlayout.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kbuttonbox.h>
 
-#include "kmsgbox.h"
 #include "kmsgbox.h"
 
 KMsgBox::KMsgBox( QWidget *parent, const QString& caption,

@@ -62,6 +62,7 @@ extern "C" {
 	   }
 #include <qbitmap.h>
 #include <kapp.h>
+#include <klocale.h>
 
 // Mirko, March 17 1998:
 const int KDatePicker::PreferredButtonSize=22;

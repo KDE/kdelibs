@@ -19,7 +19,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kfile $(QT_INCLUDES) $(X_INCLUDES) 
+INCLUDES= -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
 lib_LTLIBRARIES = libkdeui.la

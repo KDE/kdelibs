@@ -27,6 +27,7 @@
 #include <qmessagebox.h>
 
 #include <kapp.h>
+#include <klocale.h>
 #include <kdebug.h>
 
 #include "kaccel.h"

@@ -30,24 +30,11 @@
 
 #include <kconfig.h>
 
-#ifndef klocale
-#define klocale KApplication::getKApplication()->getLocale()
-#endif
-
-// klocale->translate is much to long
-#ifndef i18n
-#define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
-#endif
-
 #define Icon(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 #define ICON(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 
 class KIconLoader;
 class KCharsets;
-
-//#ifndef _KLOCALE_H
-#include <klocale.h>
-//#endif
 
 #include <drag.h>
 
@@ -55,6 +42,7 @@ class KCharsets;
 #include <qfile.h>
 #include <qpopupmenu.h>
 #include <qstrlist.h>
+#include <klocale.h>
 
 #define kapp KApplication::getKApplication()
 
@@ -715,6 +703,22 @@ private:
 #endif
 
 // $Log$
+// Revision 1.63  1999/03/02 00:09:41  dfaure
+// Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
+// instead of 0L. Will prevent koffice apps and some others from crashing when
+// not finding an icon. Approved by Reggie.
+//
+// loadIcon not changed, since I tried and it broke kpanel (which uses loadIcon
+// even on empty string in configuration item). This means loadIcon and ICON are
+// no longer equivalent : loadIcon is for apps that want to do complex things
+// with icons, based on whether they're installed or not, ICON() is for apps
+// that just want an Icon and don't want to care about it !
+//
+// Of course, unknown.xpm is WAYS to big for a toolbar - that's the point :
+// you easily see that the icon is missing....   :)))
+//
+// Not tested with Qt2.0, of course, but it's time for binary incompat changes...
+//
 // Revision 1.62  1999/03/01 23:33:11  kulow
 // CVS_SILENT ported to Qt 2.0
 //

@@ -409,4 +409,15 @@ const QString KLocale::getAlias(long key) const
     return aliases[key];
 }
 
+QString i18n(const char* text) {
+  static KLocale *instance = 0;
+  if (!instance) {
+    KApplication *app = KApplication::getKApplication();
+    if (app)
+      instance = app->getLocale();
+    else
+      return text;
+  }
+  return instance->translate(text); 
+}
 

@@ -18,6 +18,7 @@
 */  
 
 #include "knotebook.h"
+#include <klocale.h>
 
 struct KNoteBookProtected
 {
