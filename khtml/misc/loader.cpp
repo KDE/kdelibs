@@ -464,6 +464,9 @@ static QString buildAcceptHeader()
     QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
     if (result.endsWith(", "))
         result.truncate(result.length()-2);
+    if ( result.length() )
+        result += ";q=0.5";
+    result += ",*/*;q=0.1";
     return result;
 }
 

@@ -1,5 +1,8 @@
 2003-11-03  Dirk Mueller  <mueller@kde.org>
 
+	* misc/loader.cpp (buildAcceptHeader): add */* to Accept-Header
+	for image requests with low priority to fix www.tweakers.net (#53515).
+
 	* css/parser.y: lowercase the media we get via CSS stylesheets. 
 	Its true that the media is case insensitive in CSS, but it is
 	case sensitive in HTML, and as we don't want to do the code twice
