@@ -234,6 +234,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeOfFont->setMinValue(4);
 
   sizeListBox->setEnabled( !diff );
+  sizeOfFont->setEnabled( !diff );
   if( sizeIsRelativeState ) {
     QString sizeIsRelativeCBText =
       i18n("relative");
@@ -449,6 +450,7 @@ void KFontChooser::toggled_checkbox()
   familyListBox->setEnabled( familyCheckbox->isChecked() );
   styleListBox->setEnabled( styleCheckbox->isChecked() );
   sizeListBox->setEnabled( sizeCheckbox->isChecked() );
+  sizeOfFont->setEnabled( sizeCheckbox->isChecked() );
 }
 
 void KFontChooser::family_chosen_slot(const QString& family)
