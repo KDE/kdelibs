@@ -319,10 +319,15 @@ bool KListViewLineEdit::event (QEvent *pe)
 
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
-	if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
+	if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
 		terminate(true);
 	else if(e->key() == Qt::Key_Escape)
 		terminate(false);
+        else if (e->key() == Qt::Key_Down || e->key() == Qt::Key_Up)
+        {
+		terminate(true);
+                KLineEdit::keyPressEvent(e);
+        }
 	else
 		KLineEdit::keyPressEvent(e);
 }
