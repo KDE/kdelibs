@@ -40,17 +40,17 @@
 #endif
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
-#include <alsa/asoundlib.h>
+#	include <alsa/asoundlib.h>
 #elif defined(HAVE_SYS_ASOUNDLIB_H)
-#include <sys/asoundlib.h>
+#	include <sys/asoundlib.h>
 #endif
 
 #ifdef HAVE_LIBASOUND2
-#define HAVE_ALSA_SEQ 1
-#define snd_seq_flush_output(x)	snd_seq_drain_output(x)
+#	define HAVE_ALSA_SEQ 1
+#	define snd_seq_flush_output(x)	snd_seq_drain_output(x)
 #elif defined(HAVE_LIBASOUND)
-#include <linux/asequencer.h>
-#define HAVE_ALSA_SEQ 1
+#	define HAVE_ALSA_SEQ 1
+#	include <linux/asequencer.h>
 #endif
 
 

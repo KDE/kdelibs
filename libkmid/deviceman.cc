@@ -46,19 +46,19 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef HAVE_LIBASOUND
-#define HAVE_ALSA_SUPPORT
-#include <linux/asequencer.h>
-#elif defined(HAVE_LIBASOUND2)
-#define HAVE_ALSA_SUPPORT
-#include <sound/asound.h>
-#include <sound/asequencer.h>
+#ifdef HAVE_LIBASOUND2
+#	define HAVE_ALSA_SUPPORT
+#	include <sound/asound.h>
+#	include <sound/asequencer.h>
+#elif defined(HAVE_LIBASOUND)
+#	define HAVE_ALSA_SUPPORT
+#	include <linux/asequencer.h>
 #endif
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
-#include <alsa/asoundlib.h>
+#	include <alsa/asoundlib.h>
 #elif defined(HAVE_SYS_ASOUNDLIB_H)
-#include <sys/asoundlib.h>
+#	include <sys/asoundlib.h>
 #endif
 
 #if 1
