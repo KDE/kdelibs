@@ -171,6 +171,7 @@ protected:
 #endif
     virtual void dragEnterEvent( QDragEnterEvent* );
     virtual void dropEvent( QDropEvent* );
+    virtual void closeEvent ( QCloseEvent * );
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );

@@ -485,6 +485,12 @@ void KHTMLView::closeChildDialogs()
     delete dlgs;
 }
 
+void KHTMLView::closeEvent( QCloseEvent* ev )
+{
+    closeChildDialogs();
+    QScrollView::closeEvent( ev );
+}
+
 //
 // Event Handling
 //
