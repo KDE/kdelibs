@@ -28,7 +28,21 @@ Completion FunctionObject::execute(const List &args)
 }
 
 // ECMA 15.3.2 The Function Constructor
-Object FunctionObject::construct(const List &)
+Object FunctionObject::construct(const List &args)
 {
+  UString p("");
+  UString body;
+  if (args.isEmpty()) {
+    body = "";
+  } if ( args.size() == 1 ) {
+    body = args[0].toString().value();
+  } else {
+    p = args[0].toString().value();
+    for (int k = 1; k < args.size() - 1; k++)
+      p += "," + args[k].toString().value();
+    body = args[args.size()-1].toString().value();
+  }
+
+  /* TODO parse parameter list, create function object */
   return Object::create(NumberClass, Boolean(true));
 }
