@@ -73,10 +73,8 @@ void Buffer::writeBoolSeq(const vector<bool>& seq) {
 }
 
 void Buffer::writeByteSeq(const vector<mcopbyte>& seq) {
-	writeLong(seq.size());
-
-	vector<mcopbyte>::const_iterator i;
-	for(i = seq.begin(); i != seq.end(); i++) writeByte(*i);
+	writeLong(seq.size());	 // bytes are sent raw, so we can call read here
+	write(seq);
 }
 
 void Buffer::writeLongSeq(const vector<long>& seq) {
@@ -216,18 +214,8 @@ mcopbyte Buffer::readByte()
 
 void Buffer::readByteSeq(vector<mcopbyte>& result)
 {
-	// might be optimizable a bit
-	long i,seqlen = readLong();
-
-	result.clear();
-	if(seqlen >= 0 && remaining() >= seqlen)
-	{
-		for(i=0;i<seqlen;i++) result.push_back(readByte());
-	}
-	else
-	{
-		_readError = true;
-	}
+	long seqlen = readLong(); // bytes are sent raw, so we can call read here
+	read(result, seqlen);
 }
 
 long Buffer::readLong()
