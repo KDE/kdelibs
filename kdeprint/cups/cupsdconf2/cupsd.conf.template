@@ -738,7 +738,7 @@ $$
 #  This directive controls whether all specified conditions must
 #  be satisfied to allow access to the resource. If set to "all",
 #  then all authentication and access control conditions must be
-#  satified to allow access.
+#  satisfied to allow access.
 # </p>
 # <p>
 #  Setting Satisfy to "any" allows a user to gain access if the

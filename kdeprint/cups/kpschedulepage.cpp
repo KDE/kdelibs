@@ -39,7 +39,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
        QString whatsThisBillingInfo = i18n(     " <qt> <p>Insert a meaningfull string here to associate"
 						" the current print job with a certain account. This"
 						" string will appear in the CUPS \"page_log\" to help"
-						" with the print accounting in your organisation. (Leave"
+						" with the print accounting in your organization. (Leave"
 						" it empty if you don't need it.)"
 						" <p> It is useful for people"
 						" who print on behalf of different \"customers\", like"
