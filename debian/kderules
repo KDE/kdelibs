@@ -83,7 +83,7 @@ if (@ARGV && $ARGV[0] eq 'echodirs') {
   print STDOUT "export kde_datadir=/usr/share/apps\n";
   print STDOUT "export kde_locale=/usr/share/locale\n";
   print STDOUT "export kde_cgidir=/usr/lib/cgi-bin\n";
-  print STDOUT "export kde_confdir=/etc/kde\n";
+  print STDOUT "export kde_confdir=/etc/kde2\n";
   print STDOUT "export kde_mimedir=/usr/share/mimelnk\n";
   print STDOUT "export kde_toolbardir=/usr/share/toolbar\n";
   print STDOUT "export kde_wallpaperdir=/usr/share/wallpapers\n";
