@@ -21,7 +21,6 @@
       http://cr.yp.to/ftp.html  (by D.J. Bernstein)
 */
 
-// $Id$
 
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
