@@ -60,6 +60,8 @@ public:
     CSSStyleSheetImpl *sheet() const { return m_style; }
 protected:
     CSSStyleSheetImpl *m_style;
+    DOMString bgImage;
+    DOMString bgColor;
 };
 
 // -------------------------------------------------------------------------

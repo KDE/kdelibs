@@ -61,9 +61,6 @@ public:
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
 
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
-
     void setPrintingMode(bool print) { printingMode = print; }
 
 protected:
@@ -76,7 +73,7 @@ protected:
 
     QTime updateTimer;
     int updateCount;
-    
+
     RenderObject* selectionStart;
     RenderObject* selectionEnd;
     int selectionStartPos;

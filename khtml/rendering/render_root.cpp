@@ -86,17 +86,20 @@ void RenderRoot::layout(bool deep)
     calcWidth();
 
     // this fixes frameset resizing
-    if(firstChild())
+    if(firstChild()) {
     	firstChild()->setLayouted(false);
+	//firstChild()->layout();
+    }
+    RenderFlow::layout(deep);
 
-    if (deep)
-    	RenderFlow::layout(true);
-	
-    if (m_height < m_view->visibleHeight())
-    	m_height=m_view->visibleHeight();
-
+    int contentsHeight = m_view->visibleHeight();
+    //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
+    
     if (firstChild())
     {
+	int margins = firstChild()->marginTop() + firstChild()->marginBottom();
+	contentsHeight -= margins;
+	
     	int h;
     	h = firstChild()->lowestPosition();
 	if (h>m_height)
@@ -106,8 +109,16 @@ void RenderRoot::layout(bool deep)
     	    h = firstChild()->firstChild()->lowestPosition();
     	    if (h>m_height)
 	    	m_height=h;
-    	}	
-    }
+    	}
+	//kdDebug(0) << "height = " << m_height << " content = " << contentsHeight << endl;
+	if (m_height < contentsHeight)
+	    m_height = contentsHeight;
+	firstChild()->setHeight(m_height);
+	m_height += margins;
+    } else
+    	m_height = contentsHeight;
+
+    //kdDebug(0) << "root: height = " << m_height << endl;
 }
 
 QScrollView *RenderRoot::view()
@@ -289,39 +300,3 @@ QRect RenderRoot::viewRect() const
     else return QRect();
 }
 
-void RenderRoot::printObject(QPainter *p, int _x, int _y,
-				       int _w, int _h, int _tx, int _ty)
-{
-    QColor c = m_style->backgroundColor();
-    CachedImage* ci = m_style->backgroundImage();
-    if (!ci)
-    {
-    	if (firstChild())
-    	    ci = firstChild()->style()->backgroundImage();
-	if (firstChild()->firstChild() && !ci)
-    	    ci = firstChild()->firstChild()->style()->backgroundImage();
-    }
-
-    if (!ci && !c.isValid())
-    {
-    	if (firstChild())
-    	    c = firstChild()->style()->backgroundColor();
-	if (firstChild()->firstChild() && !c.isValid())
-    	    c = firstChild()->firstChild()->style()->backgroundColor();
-    }
-
-    QPixmap px;
-    if (ci)
-    	px = ci->pixmap();
-
-    int w = m_view->visibleWidth();
-    int h = m_view->visibleHeight();	
-
-    if(!px.isNull())
-    	p->drawTiledPixmap(0, 0, w, h, px);
-    else if(c.isValid())
-	p->fillRect(_tx + m_view->contentsX(),
-	    _ty + m_view->contentsY(), w, h, c);
-
-    RenderFlow::printObject(p,_x,_y,_w,_h,_tx,_ty);
-}

@@ -217,11 +217,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	// ### fix this for frames...
 
        	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
-
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
-
-	
-	//drawContents(tp,ex,ey+py,ew,ph); // in case someone want to extend the widget
 	tp->end();
 
 	delete tp;
@@ -278,10 +274,9 @@ void KHTMLView::layout(bool force)
 	    viewport()->repaint(false);
 	    //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
 	    
-	} 
-	//	else {
-	//   root->layout(false);
-	//}
+	} else {
+	   root->layout(false);
+	}
     } else {
 	_width = visibleWidth();
     }

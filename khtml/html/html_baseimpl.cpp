@@ -72,7 +72,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BACKGROUND:
     {
 	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->baseURL());
-        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
+	bgImage = u.url();
+	if(parentNode()) {
+	    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
+	parentNode()->recalcStyle();
+	}
 	break;
     }
     case ATTR_MARGINWIDTH:
@@ -92,7 +96,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     }
     case ATTR_BGCOLOR:
-	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
+	bgColor = attr->value();
+	if(parentNode()) {
+	    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
+	    parentNode()->recalcStyle();
+	}
 	break;
     case ATTR_TEXT:
 	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
@@ -117,6 +125,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBodyElementImpl::attach(KHTMLView *w)
 {
+    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, bgImage, false);
+    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, bgColor, false);
+    parentNode()->recalcStyle();
+
+    
     if(w->marginWidth() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());

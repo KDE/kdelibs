@@ -349,8 +349,10 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	if(deep) {
 	    //kdDebug(6040) << "layouting " << child->renderName() << endl;
 	    child->layout(deep);
-	} else if (!child->layouted())
-	    _layouted = false;
+	} else if (!child->layouted()) {
+	    child->layout();
+	    _layouted = child->layouted();
+	}
 
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	

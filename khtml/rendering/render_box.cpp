@@ -186,6 +186,7 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 
 void RenderBox::setPixmap(const QPixmap &, CachedObject *, bool *)
 {
+#if 0
     if (style()->htmlHacks() && parent())
     {
     	if (parent()->isRoot())
@@ -193,13 +194,14 @@ void RenderBox::setPixmap(const QPixmap &, CachedObject *, bool *)
 	if (parent()->parent()->isRoot())
 	    parent()->parent()->repaint();
     }
+#endif
     repaint();	//repaint bg when it gets loaded
 }
 
 void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
 
     QColor c = m_style->backgroundColor();
 
@@ -214,10 +216,12 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
     	mh = MIN(_h,h);
 
-    if(c.isValid())
+    if(c.isValid()) {
+	//kdDebug( 6040 ) << "printing bgcolor" << endl;
 	p->fillRect(_tx, my, w, mh, c);
-    if(m_bgImage)
-    {
+    }
+    if(m_bgImage) {
+	//kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
         switch(m_style->backgroundRepeat())
@@ -234,8 +238,8 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
             break;
         case REPEAT:
         default:
-            p->drawTiledPixmap(_tx + borderLeft(), _ty + borderTop(), w, h,
-m_bgImage->tiled_pixmap());
+	    //kdDebug(0) << "drawing tiled pixmap" << endl;
+            p->drawTiledPixmap(_tx, _ty, w, h, m_bgImage->tiled_pixmap());
             return;
         }
     }
