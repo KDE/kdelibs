@@ -220,7 +220,6 @@ private:
   QPixmap defaultPixmap;
   QPixmap activePixmap;
   QPixmap disabledPixmap;
-  QFont   buttonFont;
 
   KToolBarButtonPrivate *d;
 

@@ -301,8 +301,6 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         }
         if (!btext.isNull()){
             int tf = AlignVCenter|AlignLeft;
-            if (!enabled)
-                p->setPen(g.dark());
             if (pixmap)
                 dx= 4 + pixmap->width() + 2;
             else
@@ -349,8 +347,6 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         }
         if (!btext.isNull()){
             int tf = AlignBottom|AlignHCenter;
-            if (!enabled)
-                p->setPen(g.dark());
             dx= (w - fm.width(btext)) / 2;
             dy= h - fm.lineSpacing() - 4;
             if ( sunken ){
