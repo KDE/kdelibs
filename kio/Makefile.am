@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes)
+INCLUDES=  -I$(srcdir)/.. $(all_includes)
 
 SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac \
 	ksasl gzip $(BZIP2DIR)
