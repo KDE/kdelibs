@@ -786,6 +786,11 @@ void KToolBarButton::setToggle(bool flag)
     disconnect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled()));
 }
 
+QSize KToolBarButton::sizeHint() const
+{
+   return minimumSize();
+}
+
 // KToolBarButtonList
 KToolBarButtonList::KToolBarButtonList()
 {

@@ -286,6 +286,7 @@ protected:
   void drawButton(QPainter *p);
   bool eventFilter (QObject *o, QEvent *e);
   void showMenu();
+  QSize sizeHint() const;
 
   void makeDefaultPixmap();
   void makeDisabledPixmap();

@@ -903,6 +903,7 @@ public:
     void setStretchableWidget( QWidget *w );
     QSizePolicy sizePolicy() const;
     bool highlight() const;
+    QSize sizeHint() const;
 
     void hide();
     void show();

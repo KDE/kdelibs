@@ -1309,6 +1309,21 @@ QSizePolicy KToolBar::sizePolicy() const
         return QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
 }
 
+QSize KToolBar::sizeHint() const
+{
+    QSize minSize(6,6);
+    KToolBar *this_too = (KToolBar *)this;
+    for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+    {
+       minSize = minSize.expandedTo(w->sizeHint());
+    }
+    if ( orientation() == Vertical )
+         minSize += QSize(2, 0);
+    else
+         minSize += QSize(0, 2);
+    return minSize;
+}
+
 bool KToolBar::highlight() const
 {
     return d->m_highlight;
