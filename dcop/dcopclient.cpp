@@ -224,7 +224,7 @@ bool DCOPClient::detach()
 
 bool DCOPClient::isAttached() const
 {
-  return (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
+  return (IceConnectionStatus(d->iceConn) == IceConnectAccepted);
 }
 
 int DCOPClient::socket() const
