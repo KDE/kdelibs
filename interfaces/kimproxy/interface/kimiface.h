@@ -38,25 +38,26 @@ class KIMIface : virtual public DCOPObject
 	KIMIface();
 */
 k_dcop:
+// ACCESSOR METHODS
+// classes of contacts
 	virtual QStringList contacts() = 0;
 	virtual QStringList reachableContacts() = 0;
 	virtual QStringList onlineContacts() = 0;
 	virtual QStringList fileTransferContacts() = 0;
-	virtual QStringList contactFileProtocols(const QString &displayName) = 0 ;
 
-	/*void sendFile(const QString &displayName, const KURL &sourceURL,
-		const QString &altFileName = QString::null, uint fileSize = 0) = 0;*/
+	/**
+	 * Get a list of KABC uids who use IM.  The list contains no status info
+	 * @return list of KABC uids
+	 */
+	virtual QStringList imAddresseeUids() = 0;
 
+// all contacts' status
 	// FIXME: Do we *need* this one? Sounds error prone to me, because
 	// nicknames can contain parentheses too.
 	// Better add a contactStatus( const QString id ) I'd say - Martijn
 	virtual QStringList contactsStatus() = 0;
 
-	/**
-	 * Open a chat to a contact, and optionally set some initial text
-	 */
-	virtual void messageContact( const QString &displayName, const QString &messageText = QString::null ) = 0;
-
+// individual status
 	/**
 	 * Describe the status of a contact by their metaContactId,
 	 * aka their uid in KABC.
@@ -78,11 +79,30 @@ k_dcop:
 	 */
 	virtual QPixmap statusIcon ( const QString &metaContactId ) = 0;
 	
-	/**
-	 * Get a list of KABC uids who use IM.  The list contains no status info
-	 * @return list of KABC uids
+// individual info
+	/** 
+	 * Get the display name for a contact
+	 * Probably not needed.  If we know it is in KABC, we can look it up there, unless we're a bash script and KABC has no DCOP interface...
+	 * @param UID the contact you want the name for
+	 * @return the display name
 	 */
-	virtual QStringList imAddresseeUids() = 0;
+	virtual QString displayName( const QString &metaContactId ) = 0;
+	 
+// available IM accounts
+	/**
+	 * return a list of alls accounts.
+	 * form: XXXProtocol||AccountId
+	 */
+	virtual QStringList accounts() = 0;
+
+// protocols usable for file transfer to a contact
+	virtual QStringList contactFileProtocols(const QString &displayName) = 0 ;
+
+// ACTOR METHODS	
+	/**
+	 * Open a chat to a contact, and optionally set some initial text
+	 */
+	virtual void messageContact( const QString &displayName, const QString &messageText = QString::null ) = 0;
 
 	/**
 	 * Message a contact by their metaContactId, aka their uid in KABC.
@@ -93,13 +113,18 @@ k_dcop:
 	 * Message a contact by their metaContactId, aka their uid in KABC.
 	 */
 	virtual void messageContactById( const QString &metaContactId, const QString& message ) = 0;
-
+	
 	/**
 	 * Send the file to the contact
 	 */
 	virtual void sendFileToId(const QString &metaContactId, const KURL &sourceURL,
 		const QString &altFileName = QString::null, uint fileSize = 0) = 0;
 
+	/*void sendFile(const QString &displayName, const KURL &sourceURL,
+		const QString &altFileName = QString::null, uint fileSize = 0) = 0;*/
+
+// MUTATOR METHODS
+// contact list control	
 	/**
 	 * Adds a contact with the specified params.
 	 *
@@ -113,12 +138,7 @@ k_dcop:
 	virtual bool addContact( const QString &protocolName, const QString &accountId, const QString &contactId,
 		const QString &displayName, const QString &groupName = QString::null ) = 0;
 
-	/**
-	 * return a list of alls accounts.
-	 * form: XXXProtocol||AccountId
-	 */
-	virtual QStringList accounts() = 0;
-
+// connection control
 	/**
 	 * connect a given account in the given protocol
 	 */
@@ -138,19 +158,7 @@ k_dcop:
 	 */
 	virtual void disconnectAll() = 0;
 
-	/**
-	 * load a plugin
-	 * the name is the name of the library: example: kopete_msn
-	 * but you can ommit the kopete_ prefix
-	 */
-	virtual bool loadPlugin( const QString& name ) = 0;
-	/**
-	 * unload a plugin
-	 * the name is the name of the library: example: kopete_msn
-	 * but you can ommit the kopete_ prefix
-	 */
-	virtual bool unloadPlugin( const QString& name ) = 0;
-
+// presence control
 	/**
 	 * set all account away using the global away function
 	 */
@@ -169,6 +177,20 @@ k_dcop:
 	 * accounts will return online if activity is detected again
 	 */
 	virtual void setAutoAway() = 0;
+
+// Kopete specific app control
+	/**
+	 * load a plugin
+	 * the name is the name of the library: example: kopete_msn
+	 * but you can ommit the kopete_ prefix
+	 */
+	virtual bool loadPlugin( const QString& name ) = 0;
+	/**
+	 * unload a plugin
+	 * the name is the name of the library: example: kopete_msn
+	 * but you can ommit the kopete_ prefix
+	 */
+	virtual bool unloadPlugin( const QString& name ) = 0;
 
 k_dcop_signals:
 	void contactStatusChanged( const QString &metaContactId);
