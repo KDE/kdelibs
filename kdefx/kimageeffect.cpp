@@ -2198,20 +2198,32 @@ QImage& KImageEffect::contrast(QImage &img, int c)
         g = qGreen(data[i]);
         b = qBlue(data[i]);
         if(qGray(data[i]) <= 127){
-            if(r - c <= 255)
+            if(r - c > 0)
                 r -= c;
-            if(g - c <= 255)
+            else
+                r = 0;
+            if(g - c > 0)
                 g -= c;
-            if(b - c <= 255)
+            else
+                g = 0;
+            if(b - c > 0)
                 b -= c;
+            else
+                b = 0;
         }
         else{
             if(r + c <= 255)
                 r += c;
+            else 
+                r = 255;
             if(g + c <= 255)
                 g += c;
+            else
+                g = 255;
             if(b + c <= 255)
                 b += c;
+            else
+                b = 255;
         }
         data[i] = qRgba(r, g, b, qAlpha(data[i]));
     }

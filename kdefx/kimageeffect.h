@@ -462,6 +462,7 @@ public:
      * @param c A contrast value between -255 to 255.
      * @return The image(), provided for convenience.
      * @author Daniel M. Duley (mosfet)
+     * ### KDE 4: remove
      */
     static QImage& contrast(QImage &image, int c);
 
