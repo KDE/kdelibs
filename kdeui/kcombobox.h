@@ -142,6 +142,7 @@ class KComboBox : public QComboBox, public KCompletionBase
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
   Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
   Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+  Q_PROPERTY( bool trapReturnKey READ trapReturnKey WRITE setTrapReturnKey )
 
 public:
 
