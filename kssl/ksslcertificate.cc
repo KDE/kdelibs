@@ -140,7 +140,7 @@ QString rc = "";
   ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
   if (aint) {
     rc = ASN1_INTEGER_QString(aint);
-    d->kossl->OPENSSL_free(aint);
+    //d->kossl->OPENSSL_free(aint);
   }
 #endif
 return rc;
