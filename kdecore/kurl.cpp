@@ -158,8 +158,9 @@ void KURL::parse( const char * _url )
     if ( _url[0] == '/' )
     {
 	// Create a light weight URL with protocol
-	path_part = url;
-	path_part.detach();
+	path_part_decoded = _url;
+	path_part = path_part_decoded.data();
+	KURL::encodeURL( path_part );
 	protocol_part = "file";
 	return;
     }
