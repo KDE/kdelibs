@@ -41,7 +41,7 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
-	dataslave.cpp dataprotocol.cpp
+	dataslave.cpp dataprotocol.cpp kremoteencoding.cpp
 libksycoca_la_COMPILE_FIRST = kdirnotify_stub.h
 
 include_HEADERS = \
@@ -53,7 +53,7 @@ include_HEADERS = \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
-	kmimetyperesolver.h kdcopservicestarter.h
+	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h
 
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
