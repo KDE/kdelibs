@@ -23,6 +23,7 @@
 #include "klauncher.h"
 #include "kcmdlineargs.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <qcstring.h>
 
 
