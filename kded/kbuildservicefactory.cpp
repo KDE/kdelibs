@@ -191,7 +191,6 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          KService *service = *it2;
          str << (Q_INT32) entry->offset();
          str << (Q_INT32) service->offset();
-         itemCount++;
       }
    }
 
