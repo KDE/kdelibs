@@ -1951,7 +1951,9 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
 #ifndef KHTML_NO_CARET
     // Restart blink frequency timer if it has been killed, but only on
     // editable nodes
-    if (d->m_caretViewContext && d->m_caretViewContext->freqTimerId == -1) {
+    if (d->m_caretViewContext &&
+        d->m_caretViewContext->freqTimerId == -1 &&
+        m_part->xmlDocImpl()) {
         NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
         if (m_part->isCaretMode()
 		|| m_part->isEditable()
