@@ -211,6 +211,12 @@ void KComboBox::connectSignals( bool handle ) const
     }
 }
 
+void KComboBox::selectedItem( int id )
+{
+    if( id == 0 ) id = KGlobalSettings::completionMode();
+    setCompletionMode( (KGlobalSettings::Completion)id );
+}
+
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
     if( m_pEdit != 0 && m_pEdit->hasFocus() )

@@ -271,7 +271,7 @@ protected slots:
     *
     * @param itemID the completion mode type
     */
-    virtual void selectedItem( int itemID ) { setCompletionMode( (KGlobalSettings::Completion)itemID ); }
+    virtual void selectedItem( int );
 
     /**
     * Populates the sub menu before it is displayed.

@@ -156,6 +156,12 @@ void KLineEdit::connectSignals( bool handle ) const
     }
 }
 
+void KLineEdit::selectedItem( int id )
+{
+    if( id == 0 ) id = KGlobalSettings::completionMode();
+    setCompletionMode( (KGlobalSettings::Completion)id );
+}
+
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     // Trap RETURN/ENTER events.  Let people connect to
