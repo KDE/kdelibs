@@ -28,7 +28,7 @@ class QLayoutItem;
 #include <kdelibs_export.h>
 
 /**
- * Dialog with extended nonmodal support and methods for KDE standard
+ * Dialog with extended non-modal support and methods for %KDE standard
  * compliance.
  *
  * Generally, you should not use this class directly, but KDialogBase
@@ -48,8 +48,7 @@ class QLayoutItem;
  *
  * @see KDialogBase
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
- * @version 0.1.2
-*/
+ */
 class KDEUI_EXPORT KDialog : public QDialog
 {
   Q_OBJECT
@@ -173,7 +172,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 
 
  /**
-  * Queue for showing modal dialog one after the other from the main event loop.
+  * \brief Queue for showing modal dialogs one after the other.
   *
   * This is useful if you want to show a modal dialog but are not in the
   * position to start a new event loop at that point in your code.
@@ -185,7 +184,6 @@ class KDEUI_EXPORT KDialog : public QDialog
   * of this class directly.
   *
   * @author Waldo Bastian <bastian@kde.org>
-  * @version 0.1
   */
 class KDialogQueuePrivate;
 class KDEUI_EXPORT KDialogQueue : public QObject

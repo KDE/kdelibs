@@ -35,6 +35,8 @@ class KCompletionBox;
 class KURL;
 
 /**
+ * @short An enhanced combo box.
+ *
  * A combined button, line-edit and a popup list widget.
  *
  * \b Detail \n
@@ -71,7 +73,7 @@ class KURL;
  * key-bindings by usning setKeyBinding() with the default second argument.
  *
  * A non-editable combobox only has one completion mode, @p CompletionAuto.
- * Unlike an editable combobox the CompletionAuto mode, works by matching 
+ * Unlike an editable combobox the CompletionAuto mode, works by matching
  * any typed key with the first letter of entries in the combobox. Please note
  * that if you call setEditable( false ) to change an editable combobox to a
  * non-editable one, the text completion object associated with the combobox will
@@ -83,16 +85,16 @@ class KURL;
  * KComboBox* combo = new KCompletionBox(true, this, "mywidget");
  * KCompletion* comp = combo->completionObject();
  * combo->setEditable( false );
- * comp->clear(); // CRASH: completion object does not exist anymore. 
+ * comp->clear(); // CRASH: completion object does not exist anymore.
  * \endcode
  *
  *
- * A read-only KComboBox will have the same background color as a 
+ * A read-only KComboBox will have the same background color as a
  * disabled KComboBox, but its foreground color will be the one used for
  * the read-write mode. This differs from QComboBox's implementation
- * and is done to give visual distinction between the three different modes: 
+ * and is done to give visual distinction between the three different modes:
  * disabled, read-only, and read-write.
- * 
+ *
  * \b Usage \n
  *
  * To enable the basic completion feature:
@@ -133,7 +135,6 @@ class KURL;
  * combo->setContextMenuEnabled( false );
  * \endcode
  *
- * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase
@@ -291,7 +292,7 @@ public:
 
     /**
      * By default, KComboBox recognizes Key_Return and Key_Enter
-     * and emits the returnPressed() signals, but it also lets the 
+     * and emits the returnPressed() signals, but it also lets the
      * event pass, for example causing a dialog's default-button to
      * be called.
      *
@@ -509,6 +510,8 @@ private:
 class KPixmapProvider;
 
 /**
+ * @short A combobox for offering a history and completion
+ *
  * A combobox which implements a history like a unix shell. You can navigate
  * through all the items by using the Up or Down arrows (configurable of
  * course). Additionally, weighted completion is available. So you should
@@ -522,7 +525,6 @@ class KPixmapProvider;
  * "ignoreboth". Otherwise, duplicates are enabled by default.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
- * @short A combobox for offering a history and completion
  */
 class KDEUI_EXPORT KHistoryCombo : public KComboBox
 {
