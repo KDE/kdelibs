@@ -30,10 +30,6 @@ AC_ENABLE_STATIC(no)
 AC_LIBTOOL_DLOPEN
 KDE_PROG_LIBTOOL
 
-dnl find out some variables (not supported yet)
-AC_AIX
-AC_MINIX
-
 dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files, GNU_GETTEXT for the sources
 AM_KDE_WITH_NLS
@@ -172,7 +168,7 @@ else
   TUTORIALS=""
 fi
 
-all_includes='-I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
+all_includes='-I$(top_srcdir)/kdecore/qk -I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
 AC_SUBST(all_includes)
 
 AC_SUBST(EXTRA_SUBDIRS)
@@ -193,6 +189,11 @@ else
 fi], [AC_MSG_RESULT(no)])
 
 AC_SUBST(LIB_DMALLOC)
+
+ICE_SUBDIR=ICE
+ICE_RLIB=ICE/libkICE.la
+AC_SUBST(ICE_SUBDIR)
+AC_SUBST(ICE_RLIB)
 
 AC_OUTPUT(Makefile \
 	kdecore/Makefile \
@@ -254,5 +255,7 @@ AC_OUTPUT(Makefile \
 	kidl2cpp/Makefile \
 	kparts/Makefile \
 	interfaces/Makefile \
-	dcop/Makefile )
+	dcop/Makefile \
+	dcop/ICE/Makefile )
+
 

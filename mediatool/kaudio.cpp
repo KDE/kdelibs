@@ -37,10 +37,10 @@ KAudio::KAudio()
     // Set connect information
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons( port );
-    if( !inet_aton( host, &socket_addr.sin_addr )) {
+    // if( !inet_aton( host, &socket_addr.sin_addr )) {
       cerr << "couldn't convert " << host << " to inet address\n";
       l_b_contactError = true;
-    }
+    // }
   }
   if ( !l_b_contactError && ::connect( sockFD,
 				       (struct sockaddr *) &socket_addr,

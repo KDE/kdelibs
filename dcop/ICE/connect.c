@@ -499,7 +499,7 @@ char **actualConnectionRet;
 
 	for (retry = ICE_CONNECTION_RETRIES; retry >= 0; retry--)
 	{
-	    if ((trans_conn = _IceTransOpenCOTSClient (address)) == NULL)
+	    if ((trans_conn = (XtransConnInfo)_IceTransOpenCOTSClient (address)) == NULL)
 	    {
 		break;
 	    }

@@ -19,15 +19,15 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+SUBDIRS = $(ICE_SUBDIR) .
 
 INCLUDES=  $(all_includes)
-LDADD = $(LIB_QT)
 LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
 
 lib_LTLIBRARIES  = libDCOP.la
-libDCOP_la_LIBADD = $(LIB_QT)
+libDCOP_la_LIBADD = $(ICE_RLIB) $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopserver.h dcopobject.h dcopglobal.h dcopstub.h dcopref.h
@@ -39,4 +39,5 @@ libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp dcopref.cpp
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
+dcopserver_LDADD   = libDCOP.la
 

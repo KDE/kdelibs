@@ -17,7 +17,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore/qk $(all_includes)
+INCLUDES = $(all_includes)
 
 CXXFLAGS := $(CXXFLAGS) @NOREPO@
 
@@ -53,7 +53,7 @@ libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	klibglobal.cpp kpalette.cpp kipc.cpp klibloader.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
-libkdecore_la_LIBADD = qk/libqk.la -lXext ../dcop/libDCOP.la $(LIBDL) $(LIB_DMALLOC)
+libkdecore_la_LIBADD = qk/libqk.la -lXext $(LIB_DCOP) $(LIBDL) $(LIB_DMALLOC)
 
 libkdecore_la_METASOURCES = AUTO
 
