@@ -52,7 +52,7 @@ public:
    * it is not a request for a new instance, return false.
    */
   bool process(const QCString &fun, const QByteArray &data,
-	       QCString &replyType, QByteArray &reply);
+	       QCString &replyType, QByteArray &replyData);
 
   /**
    * create a new "instance" of the application.  Usually this
@@ -63,8 +63,10 @@ public:
    * @params is the bundled up command line parameters that were passed
    *          on the command line when the application request was initiated,
    *          _after_ being processed by Qt's QApplication.
+   *
+   * @return An exit value. The calling process will exit with this value.
    */
-  virtual void newInstance(QValueList<QCString> params);
+  virtual int newInstance(QValueList<QCString> params);
 };
 
 #endif

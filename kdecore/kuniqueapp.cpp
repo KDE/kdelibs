@@ -30,15 +30,28 @@ KUniqueApplication::KUniqueApplication(int& argc, char** argv,
   if (dc->attach()) {
     if (name() != 0L) {
       if (dc->isApplicationRegistered(name())) {
-	QByteArray data;
+	QByteArray data, reply;
 	QDataStream ds(data, IO_WriteOnly);
 	QValueList<QCString> params;
 	for (int i = 0; i < argc; i++)
 	  params.append(argv[i]);
 
 	ds << params;
-	dc->send(name(), name(), "newInstance(QValueList<QCString>)", data);
-	::exit(0);
+        QCString replyType;
+	if (!dc->call(name(), name(), "newInstance(QValueList<QCString>)", data, replyType, reply))
+        {
+           qDebug("DCOP communication error!");
+           ::exit(255);
+        }
+        if (replyType != "int")
+        {
+           qDebug("DCOP communication error!"); 
+           ::exit(255);
+        }
+        QDataStream rs(reply, IO_ReadOnly);
+        int exitCode;
+        rs >> exitCode;
+	::exit(exitCode);
       }
     }
   }
@@ -50,20 +63,22 @@ KUniqueApplication::~KUniqueApplication()
 }
 
 bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
-				 QCString &replyType, QByteArray &/*reply*/)
+				 QCString &replyType, QByteArray &replyData)
 {
   if (fun == "newInstance(QValueList<QCString>)") {
     QDataStream ds(data, IO_ReadOnly);
     QValueList<QCString> params;
     ds >> params;
-    newInstance(params);
-    replyType = "void";
+    int exitCode = newInstance(params);
+    QDataStream rs(replyData, IO_WriteOnly);
+    rs << exitCode;
+    replyType = "int";
     return true;
   } else
     return false;
 }
 
-void KUniqueApplication::newInstance(QValueList<QCString> /*params*/)
+int KUniqueApplication::newInstance(QValueList<QCString> /*params*/)
 {
-  return; // do nothing in default implementation
+  return 0; // do nothing in default implementation
 }
