@@ -84,7 +84,7 @@ public:
      *
      * \code
      * QString tmpFile;
-     * if( KIO::NetAccess::download( u, tmpFile ) )
+     * if( KIO::NetAccess::download( u, tmpFile, window ) )
      * {
      *   loadFile( tmpFile );
      *   KIO::NetAccess::removeTempFile( tmpFile );
@@ -364,7 +364,7 @@ public:
      * Determines the mimetype of a given URL.
      *
      * This is a convenience function for KIO::mimetype.  You
-     * should call this only when really necessary. 
+     * should call this only when really necessary.
      * KMimeType::findByURL can determine extension a lot faster, but
      * less reliably for remote files. Only when findByURL() returns
      * unknown (application/octet-stream) then this one should be
