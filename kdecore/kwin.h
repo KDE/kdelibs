@@ -157,8 +157,13 @@ public:
     /**
      * Sets window @p win to be present on all virtual desktops if @p
      * is true. Otherwise the window lives only on one single desktop.
-    */
+     */
     static void setOnAllDesktops( WId win, bool b );
+
+    /**
+     * Move window @p win to desktop @p desktop.
+     */
+    static void setOnDesktop( WId win, int desktop);
 
     /**
      * Sets the strut  of window @p win to @p left, @right, @top, @bottom.

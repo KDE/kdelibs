@@ -338,6 +338,12 @@ void KWin::setOnAllDesktops( WId win, bool b )
     }
 }
 
+void KWin::setOnDesktop( WId win, int desktop )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMDesktop );
+    info.setDesktop( desktop );
+}
+
 
 QString KWin::Info::visibleNameWithState() const
 {
