@@ -401,6 +401,9 @@ public:
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
 
+    // check for being (grand-..)father:
+    bool checkNoOwner( NodeImpl *other, int &exceptioncode );
+
 protected:
     NodeImpl *_first;
     NodeImpl *_last;
@@ -410,8 +413,6 @@ protected:
 
     // check for same source document:
     bool checkSameDocument( NodeImpl *newchild, int &exceptioncode );
-    // check for being (grand-..)father:
-    bool checkNoOwner( NodeImpl *other, int &exceptioncode );
     // check for being child:
     bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
     // find out if a node is allowed to be our child
