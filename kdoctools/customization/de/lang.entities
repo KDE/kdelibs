@@ -1,6 +1,4 @@
-<!-- Do NOT change this file: it provides important defaults -->
-
-<!ENTITY language "en">
+<!ENTITY language "de">
 
 <!-- These entities should be translated, should therefore be stored
      separately. -->
@@ -12,15 +10,15 @@
      text                                                          -->
 
 <!-- Licence links; see ksgmltools/TODO -->
-<!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//EN"
+<!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//DE"
   "entities/underGPL.docbook"                       ><!-- level: para -->
-<!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//EN"
+<!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//DE"
   "entities/underFDL.docbook"                       ><!-- level: para -->
-<!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//EN"
+<!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//DE"
   "entities/underBSDLicense.docbook"                ><!-- level: para -->
-<!ENTITY underArtisticLicense PUBLIC "-//KDE//DOCUMENT Artistic Licence Declaration//EN"
+<!ENTITY underArtisticLicense PUBLIC "-//KDE//DOCUMENT Artistic Licence Declaration//DE"
   "entities/underArtisticLicense.docbook"           ><!-- level: para -->
-<!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//EN"
+<!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//DE"
   "entities/underX11License.docbook"                ><!-- level: para -->
 
 <!ENTITY reporting.bugs     SYSTEM
@@ -30,7 +28,7 @@
 
 
 <!-- FDL notice -->
-<!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
+<!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//DE"
          "entities/fdl-notice.docbook">
 <!-- meant to be included, so no NDATA or CDATA (why?) -->
 
