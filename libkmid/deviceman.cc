@@ -146,8 +146,10 @@ DeviceManager::~DeviceManager(void)
     delete device;
     device=0L;
   }
+#ifdef HAVE_OSS_SUPPORT
   delete[] midiinfo;
   delete[] synthinfo;
+#endif
 }
 
 int DeviceManager::ok(void)
