@@ -30,12 +30,18 @@ public:
     KIconEffect();
     ~KIconEffect();
 
+    enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, LastEffect };
+
     /**
      * Reread configuration.
      */
     void init();
 
-    enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, LastEffect };
+    /** 
+     * Returns a fingerprint for the effect selected by 
+     * [@em group, @em state]. This is usefull for caching.
+     */ 
+     QString fingerprint(int group, int state);
 
     /**
      * Apply an effect to an image. The effect to apply depends on the
@@ -50,8 +56,9 @@ public:
     /**
      * Apply an effect to an image.
      * @param src The image.
-     * @param effect The effect to apply.
+     * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @em value <= 1.
+     * @param color Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.                             
      * @return An image with the effect applied.
      */

@@ -121,9 +121,9 @@ KIconLoader::KIconLoader(QString appname)
 	appname = KGlobal::instance()->instanceName();
     addAppDir(appname);
 
-    d->dbgString = "Theme tree: ";
-    printThemeTree(mpThemeRoot);
-    kdDebug(264) << d->dbgString << "\n";
+    //d->dbgString = "Theme tree: ";
+    //printThemeTree(mpThemeRoot);
+    //kdDebug(264) << d->dbgString << "\n";
 
     // Fix default icon sizes
     for (int i=0; i<KIcon::LastGroup; i++)
@@ -332,7 +332,7 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     {
 	if (path_store != 0L)
 	    *path_store = name;
-	key = "$kico_a_";
+	key = "$kicoa_";
 	key += name;
 	if (QPixmapCache::find(key, pix))
 	    return pix;
@@ -344,7 +344,7 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     // Special case for "User" icons.
     if (group == KIcon::User)
     {
-	key = "$kico_u_";
+	key = "$kicou_";
 	key += name;
 	bool inCache = QPixmapCache::find(key, pix);
 	if (inCache && (path_store == 0L))
@@ -399,10 +399,18 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
 	size = mpGroups[group].size;
     }
 
+    // Generate a unique cache key for the icon.
     key = "$kico_";
+    key += name; key += "_";
     key += QString().setNum(size); key += "_";
-    key += QString().setNum(state); key += "-";
-    key += name;
+    if (group >= 0)
+    {
+	key += mpEffect->fingerprint(group, state);
+	if (mpGroups[group].dblPixels)
+	    key += QString::fromLatin1(":dblsize");
+    } else
+	key += QString::fromLatin1("noeffect");
+
     bool inCache = QPixmapCache::find(key, pix);
     if (inCache && (path_store == 0L))
 	return pix;

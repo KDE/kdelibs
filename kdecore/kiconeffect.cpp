@@ -93,6 +93,23 @@ void KIconEffect::init()
     }
 }
 
+QString KIconEffect::fingerprint(int group, int state)
+{
+    QString s, tmp;
+    s += tmp.setNum(mEffect[group][state]);
+    s += ":";
+    s += tmp.setNum(mValue[group][state]);
+    s += ":";
+    s += mTrans[group][state] ? QString::fromLatin1("trans") 
+	    : QString::fromLatin1("notrans");
+    if (mEffect[group][state] == Colorize)
+    {
+	s += ":";
+	s += mColor[group][state].name();
+    }
+    return s;
+}
+    
 QImage KIconEffect::apply(QImage image, int group, int state)
 {
     if (state >= KIcon::LastState)
@@ -105,8 +122,8 @@ QImage KIconEffect::apply(QImage image, int group, int state)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return image;
     }
-    return apply(image, mEffect[group][state], 
-    mValue[group][state],mColor[group][state], mTrans[group][state]);
+    return apply(image, mEffect[group][state], mValue[group][state],
+	    mColor[group][state], mTrans[group][state]);
 }
 
 QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, bool trans)
@@ -137,7 +154,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, boo
     }
     if (trans == true) 
     {
-    semiTransparent(image);  
+	semiTransparent(image);  
     } 
     return image;
 }
@@ -154,10 +171,12 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
-    return apply(pixmap, mEffect[group][state], mValue[group][state], mColor[group][state], mTrans[group][state]);
+    return apply(pixmap, mEffect[group][state], mValue[group][state], 
+	    mColor[group][state], mTrans[group][state]);
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value, const QColor col, bool trans)
+QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value, 
+	const QColor col, bool trans)
 {
     QPixmap result;
     QImage tmpImg;
@@ -193,22 +212,22 @@ void KIconEffect::toGray(QImage &img, float value)
     unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
 	    : (unsigned int *) img.colorTable();
     int rval, gval, bval, val, alpha, i;
-    for(i=0; i<pixels; i++)
+    for (i=0; i<pixels; i++)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
 	if (value < 1.0) 
 	{ 
-        rval = static_cast<int>(value*val+(1.0-value)*qRed(data[i]));
-        gval = static_cast<int>(value*val+(1.0-value)*qGreen(data[i]));
-        bval = static_cast<int>(value*val+(1.0-value)*qBlue(data[i]));
-	data[i] = qRgba(rval, gval, bval, alpha);
-	}
-        else data[i] = qRgba(val, val, val, alpha);
+	    rval = static_cast<int>(value*val+(1.0-value)*qRed(data[i]));
+	    gval = static_cast<int>(value*val+(1.0-value)*qGreen(data[i]));
+	    bval = static_cast<int>(value*val+(1.0-value)*qBlue(data[i]));
+	    data[i] = qRgba(rval, gval, bval, alpha);
+	} else 
+	    data[i] = qRgba(val, val, val, alpha);
     }
 }
 
- void KIconEffect::colorize(QImage &img, const QColor &col, float value)
+void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 {
     int pixels = (img.depth() > 8) ? img.width()*img.height()
 	    : img.numColors();
@@ -216,7 +235,7 @@ void KIconEffect::toGray(QImage &img, float value)
 	    : (unsigned int *) img.colorTable();
     int rval, gval, bval, val, alpha, i;
     float rcol, gcol, bcol;
-    for(i=0; i<pixels; i++)
+    for (i=0; i<pixels; i++)
     {
         rcol = col.red();
         gcol = col.green();
@@ -236,9 +255,9 @@ void KIconEffect::toGray(QImage &img, float value)
         }
 	if (value < 1.0) 
 	{ 
-        rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
-        gval = static_cast<int>(value*gval+(1.0 - value)*qGreen(data[i]));
-        bval = static_cast<int>(value*bval+(1.0 - value)*qBlue(data[i]));
+	    rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
+	    gval = static_cast<int>(value*gval+(1.0 - value)*qGreen(data[i]));
+	    bval = static_cast<int>(value*bval+(1.0 - value)*qBlue(data[i]));
 	}
 
 	alpha = qAlpha(data[i]);
@@ -254,7 +273,7 @@ void KIconEffect::deSaturate(QImage &img, float value)
 	    : (unsigned int *) img.colorTable();
     QColor color;
     int h, s, v, i;
-    for(i=0; i<pixels; i++)
+    for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
         color.hsv(&h, &s, &v);
@@ -263,7 +282,6 @@ void KIconEffect::deSaturate(QImage &img, float value)
 		qAlpha(data[i]));
     }
 }
-
 
 void KIconEffect::toGamma(QImage &img, float value)
 {
@@ -276,7 +294,7 @@ void KIconEffect::toGamma(QImage &img, float value)
     float gamma;
     gamma = 1/(2*value+0.5);
 
-    for(i=0; i<pixels; i++)
+    for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
         color.rgb(&rval, &gval, &bval);
