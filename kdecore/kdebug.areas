@@ -443,6 +443,13 @@
 26004	KSVG - Ecma
 26005	KSVG - Canvas
 
+# KDOM KXInclude
+26500  KXInclude - DOMXIncluder
+26501  KXInclude - XIncludeContext
+
+# KDOM OASIS XML Catalogs
+26600
+
 # libkscan / kooka
 28000   Kooka
 29000   libkscan
