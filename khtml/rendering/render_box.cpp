@@ -736,13 +736,12 @@ void RenderBox::calcHeight()
         if (isTable())
             return;
 
-        Length ch = containingBlock()->style()->height();
-            
         if (h.isFixed())
             m_height = QMAX (h.value + borderTop() + paddingTop()
                 + borderBottom() + paddingBottom() , m_height);
         else if (h.isPercent())
         {
+	    Length ch = containingBlock()->style()->height();
             if (ch.isFixed())
                 m_height = QMAX (h.width(ch.value) + borderTop() + paddingTop()
                     + borderBottom() + paddingBottom(), m_height);
