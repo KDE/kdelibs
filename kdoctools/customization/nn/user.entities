@@ -14,10 +14,14 @@
 <!ENTITY omsetjarLarsNestasMathisen        '<othercredit role="translator"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
 <!ENTITY sprakvaskLarsNestasMathisen       '<othercredit role="reviewer"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
 
+<!ENTITY omsetjarHavardKorsvoll            '<othercredit role="translator"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>gaute@verdsveven.com</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
+<!ENTITY sprakvaskHavardKorsvoll           '<othercredit role="reviewer"><firstname>Håvard</firstname><surname>Korsvoll</surname><affiliation><address><email>korsvoll@stud.ntnu.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
+
 <!-- CREDITS FOR TRANSLATORS -->
 
 <!ENTITY GauteHvoslefKvalnes      'Gaute Hvoslef Kvalnes <email>gaute@verdsveven.com</email>'>
 <!ENTITY LarsNestasMathisen       'Lars Nestås Mathisen <email>orvarodd@start.no</email>'>
+<!ENTITY HavardKorsvoll           'Håvard Korsvoll <email>korsvoll@stud.ntnu.no</email>'>
 
 <!-- OTHER USER ENTITIES -->
 
@@ -26,14 +30,27 @@
 <!ENTITY cdrom	'<hardware>CD-ROM-stasjon</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>ppt</acronym>'>
+<!ENTITY eg	"<abbrev>t.d.</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie     "<abbrev>dvs.</abbrev>">
 <!ENTITY infocenter	"<application>Infosenter</application>">
 <!ENTITY kcontrolcenter	"<application>&kde; Kontrollsenter</application>">
+<!ENTITY kicon	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>Ikonet til &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> meny">
 <!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknapp">
 <!ENTITY MMB    "<mousebutton>midtre</mousebutton> museknapp">
+<!ENTITY OS	"operativ system"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>høgre</mousebutton> museknapp">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemtray "<application>systemtrau</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
