@@ -148,7 +148,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   nameLayout->addWidget( mNewButton );
   connect( mNewButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
-  mEditButton = new QPushButton( i18n("Edit List..."), this );
+  mEditButton = new QPushButton( i18n("Rename List..."), this );
   nameLayout->addWidget( mEditButton );
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editList() ) );
 

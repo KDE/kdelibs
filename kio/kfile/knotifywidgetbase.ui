@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>618</width>
-            <height>512</height>
+            <height>516</height>
         </rect>
     </property>
     <property name="caption">
@@ -213,12 +213,6 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -274,12 +268,6 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -315,12 +303,6 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -348,7 +330,7 @@
                         <cstring>m_affectAllApps</cstring>
                     </property>
                     <property name="text">
-                        <string>Apply to all App&amp;lications</string>
+                        <string>Apply to all app&amp;lications</string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -401,7 +383,7 @@
                                         <cstring>m_buttonDisable</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Turn O&amp;ff All:</string>
+                                        <string>Turn O&amp;ff All</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
                                         <string>Allows you to change the behavior for all events at once</string>
@@ -412,7 +394,7 @@
                                         <cstring>m_buttonEnable</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Turn O&amp;n All:</string>
+                                        <string>Turn O&amp;n All</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
                                         <string>Allows you to change the behavior for all events at once</string>
@@ -439,12 +421,6 @@
                             </property>
                             <property name="sizeType">
                                 <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>0</height>
-                                </size>
                             </property>
                         </spacer>
                     </hbox>
@@ -493,12 +469,6 @@
                     </property>
                     <property name="sizeType">
                         <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>271</width>
-                            <height>0</height>
-                        </size>
                     </property>
                 </spacer>
                 <widget class="QPushButton">

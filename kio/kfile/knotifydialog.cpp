@@ -249,7 +249,7 @@ void KNotifyWidget::showAdvanced( bool show )
     }
     else
     {
-        m_extension->setText( i18n("Advanced Op&tions") );
+        m_extension->setText( i18n("More Op&tions") );
         QToolTip::add( m_extension, i18n("Show advanced options") );
 
         m_logToFile->hide();
