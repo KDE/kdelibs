@@ -571,7 +571,7 @@ void RenderFileButton::handleFocusOut()
 
 void RenderFileButton::slotClicked()
 {
-    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
+    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse"));
     if (!file_name.isNull()) {
         element()->m_value = DOMString(file_name);
         m_edit->setText(file_name);
