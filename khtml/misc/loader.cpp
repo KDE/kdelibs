@@ -100,7 +100,7 @@ void CachedCSSStyleSheet::checkNotify()
 {
     if(loading) return;
 
-    printf("CachedCSSStyleSheet:: finishedLoading %s\n", m_url.string().ascii());
+    kdDebug(300) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -296,7 +296,7 @@ const QPixmap &CachedImage::pixmap() const
 
 void CachedImage::notify( CachedObjectClient *c )
 {
-    printf("Cache::notify()\n");
+    kdDebug(300) << "Cache::notify()" << endl;
 
     if ( m )
     {
@@ -338,7 +338,7 @@ void CachedImage::notify( CachedObjectClient *c )
 
 void CachedImage::movieUpdated( const QRect & )
 {
-    //printf("Cache::movieUpdated()\n");
+    //kdDebug(300) << "Cache::movieUpdated()" << endl;
     QPixmap pixmap = m->framePixmap();
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -368,7 +368,7 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-    printf("in CachedImage::data()\n");
+    kdDebug(300) << "in CachedImage::data()" << endl;
     if ( !typeChecked )
     {
 	clear();
@@ -457,7 +457,7 @@ void Loader::servePendingRequests()
   // get the first pending request
   Request *req = m_requestsPending.take(0);
 
-  printf("starting Loader url=%s\n", req->object->url().string().ascii());
+  kdDebug(300) << "starting Loader url=" << req->object->url().string() << endl;
 
   KIO::Job* job = KIO::get( req->object->url().string(), false);
   //job->setGUImode( KIOJob::NONE );
@@ -481,7 +481,7 @@ void Loader::slotFinished( KIO::Job* job )
     Request *r = m_requestsLoading.take( job );
     if(!r) return;
     r->object->data(r->m_buffer, true);
-    printf("Loader:: JOB FINISHED %s\n", r->object->url().string().ascii());
+    kdDebug(300) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 
     servePendingRequests();
   }
@@ -628,7 +628,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     KURL kurl = completeURL( url, baseUrl );
     if( kurl.isMalformed() )
     {
-      printf("Cache: Malformed url: %s\n", kurl.url().latin1() );
+      kdDebug(300) << "Cache: Malformed url: " << kurl.url() << endl;
       return 0;
     }
 
@@ -636,7 +636,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: new: %s\n", kurl.url().latin1());
+	kdDebug(300) << "Cache: new: " << kurl.url() << endl;
 #endif
 	CachedImage *im = new CachedImage(kurl.url(), baseUrl);
 	cache->insert( kurl.url(), im );
@@ -646,15 +646,15 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 
     if(!o->type() == CachedObject::Image)
     {
-	printf("Cache::Internal Error in requestImage url=%s!\n", kurl.url().ascii());
+	kdDebug(300) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
 	return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	printf("Cache: loading in progress: %s\n", kurl.url().data());
+	kdDebug(300) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	printf("Cache: using cached: %s\n", kurl.url().data());
+	kdDebug(300) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -667,7 +667,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     KURL kurl = completeURL( url, baseUrl );
     if( kurl.isMalformed() )
     {
-      printf("Cache: Malformed url: %s\n", kurl.url().latin1() );
+      kdDebug(300) << "Cache: Malformed url: " << kurl.url() << endl;
       return 0;
     }
 
@@ -675,7 +675,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	printf("Cache: new: %s\n", kurl.url().latin1());
+	kdDebug(300) << "Cache: new: " << kurl.url() << endl;
 #endif
 	CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl);
 	cache->insert( kurl.url(), sheet );
@@ -685,15 +685,15 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
-	printf("Cache::Internal Error in requestStyleSheet url=%s!\n", kurl.url().ascii());
+	kdDebug(300) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
 	return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	printf("Cache: loading in progress: %s\n", kurl.url().data());
+	kdDebug(300) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	printf("Cache: using cached: %s\n", kurl.url().data());
+	kdDebug(300) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -709,7 +709,7 @@ void Cache::flush()
 
 #ifdef CACHE_DEBUG
     statistics();
-    printf("Cache: flush()\n");
+    kdDebug(300) << "Cache: flush()" << endl;
 #endif
     if( actSize < maxSize ) return;
 
@@ -720,7 +720,7 @@ void Cache::flush()
 	    continue; // image is still used or cached permanently
 
 #ifdef CACHE_DEBUG
-	printf("Cache: removing %s\n", url.latin1());
+	kdDebug(300) << "Cache: removing " << url << endl;
 #endif
 	actSize -= o->size();
 	lru->remove( url );
@@ -773,16 +773,16 @@ void Cache::statistics()
     }
     size /= 1024;
 
-    printf("------------------------- image cache statistics -------------------\n");
-    printf("Number of items in cache: %d\n", cache->count() );
-    printf("Number of items in lru  : %d\n", lru->count() );
-    printf("Number of cached images: %d\n", cache->count()-movie);
-    printf("Number of cached movies: %d\n", movie);
-    printf("Number of cached stylesheets: %d\n", stylesheets);
-    printf("calculated allocated space approx. %d kB\n", actSize/1024);
-    printf("pixmaps:   allocated space approx. %d kB\n", size);
-    printf("movies :   allocated space approx. %d kB\n", msize/1024);
-    printf("--------------------------------------------------------------------\n");
+    kdDebug(300) << "------------------------- image cache statistics -------------------" << endl;
+    kdDebug(300) << "Number of items in cache: " << cache->count() << endl;
+    kdDebug(300) << "Number of items in lru  : " << lru->count() << endl;
+    kdDebug(300) << "Number of cached images: " << cache->count()-movie << endl;
+    kdDebug(300) << "Number of cached movies: " << movie << endl;
+    kdDebug(300) << "Number of cached stylesheets: " << stylesheets << endl;
+    kdDebug(300) << "calculated allocated space approx. " << actSize/1024 << " kB" << endl;
+    kdDebug(300) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
+    kdDebug(300) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
+    kdDebug(300) << "--------------------------------------------------------------------" << endl;
 }
 
 KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )

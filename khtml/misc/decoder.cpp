@@ -30,12 +30,12 @@ using namespace khtml;
 #include <qregexp.h>
 
 #include <ctype.h>
-#include <stdio.h> // for the printf debug messages
+#include <kdebug.h>
 
 Decoder::Decoder()
 {
     m_codec = QTextCodec::codecForName("ISO 8859-1");
-printf("INIT HTML Codec name= %s\n", m_codec->name());
+kdDebug(300) << "INIT HTML Codec name= " << m_codec->name() << endl;
     enc = 0;
     body = false;
     beginning = true;
@@ -157,7 +157,7 @@ QString Decoder::decode(const char *data, int len)
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
-			printf("Decoder: found charset: %s\n", enc.data());
+			kdDebug(300) << "Decoder: found charset: " << enc.data() << endl;
 			setEncoding(enc);
 			goto found;
 		    }
