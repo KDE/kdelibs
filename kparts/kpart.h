@@ -13,11 +13,14 @@ class QWidget;
 class QAction;
 class QActionCollection;
 
-class KPartHost : public QObject
+/**
+ * This interface allows a Part to access what "host" has to offer it :
+ * containers (menubar, toolbars, ...), getting and setting the window caption...
+ */
+class KPartHost
 {
-  Q_OBJECT
- public:
-  KPartHost( QObject *parent, const char *name = 0 ) : QObject( parent, name ) {}
+public:
+  KPartHost() {}
   virtual ~KPartHost() {}
 
   virtual QWidget *topLevelContainer( const QString &name ) = 0;
@@ -41,14 +44,14 @@ public:
     virtual KPlugin* plugin( const char* libname );
 
     /**
-	 * Embed this part into a host widget.
-	 * You don't need to do this if you created the widget with the
-	 * correct parent widget - this is just a reparent().
-     * Note that the KPart is still the holder 
-	 * of the QWidget, meaning that if you delete the KPart,
-     * then the widget gets destroyed as well, and vice-versa (TODO).
+     * Embed this part into a host widget.
+     * You don't need to do this if you created the widget with the
+     * correct parent widget - this is just a reparent().
+     * Note that the KPart is still the holder
+     * of the QWidget, meaning that if you delete the KPart,
+     * then the widget gets destroyed as well, and vice-versa.
      */
-	virtual void embed( QWidget * parentWidget );
+    virtual void embed( QWidget * parentWidget );
 
     virtual QWidget *widget() { return m_widget; }
 
@@ -65,7 +68,7 @@ protected:
     virtual QString configFile() const = 0;
     virtual QString readConfigFile( const QString& filename ) const;
 
-    QGuardedPtr<KPartHost> m_host;
+    KPartHost * m_host; // Couldn't keep the QGuardedPtr here (because KPartHost isn't a QObject anymore) (David)
 
 private slots:
     void slotWidgetDestroyed();
@@ -94,16 +97,16 @@ signals:
   void started();
   void completed();
   void canceled( const QString &errMsg );
-  
+
 protected slots:
   void slotJobFinished( int _id );
   void slotJobError( int, int, const char * );
-    
+
 protected:
   // Reimplement this, to open m_file
   virtual bool openFile() = 0;
   virtual void closeURL();
-  
+
   // Remote (or local) url
   KURL m_url;
   // Local file
