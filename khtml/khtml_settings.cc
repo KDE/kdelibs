@@ -326,7 +326,7 @@ void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
 QString KHTMLSettings::settingsToCSS() const
 {
     // lets start with the link properties
-    QString str = "a[href] {\ncolor: ";
+    QString str = "a:link {\ncolor: ";
     str += m_linkColor.name();
     str += ";";
     if(m_underlineLink)
@@ -338,5 +338,15 @@ QString KHTMLSettings::settingsToCSS() const
         str += "\n}\ninput[type=image] { cursor: pointer;";
     }
     str += "\n}\n";
+    str += "a:visited {\ncolor: ";
+    str += m_vLinkColor.name();
+    str += ";";
+    if(m_underlineLink)
+	str += "\ntext-decoration: underline;";
+
+    if( m_bChangeCursor )
+	str += "\ncursor: pointer;";
+    str += "\n}\n";
+
     return str;
 }

@@ -1302,7 +1302,8 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
-                d->m_findNode->renderer()->absolutePosition(x, y);
+	khtml::RenderText *text = static_cast<khtml::RenderText *>(d->m_findNode->renderer());
+                text->posOfChar(d->m_findPos, x, y);
                 d->m_view->setContentsPos(x-50, y-50);
                 return true;
             }
@@ -1361,7 +1362,8 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
-                d->m_findNode->renderer()->absolutePosition(x, y);
+	static_cast<khtml::RenderText *>(d->m_findNode->renderer())
+	    ->posOfChar(d->m_findPos, x, y);
                 d->m_view->setContentsPos(x-50, y-50);
 
                 d->m_selectionStart = d->m_findNode;

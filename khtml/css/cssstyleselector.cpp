@@ -30,6 +30,7 @@
 #include "html/html_baseimpl.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
+#include "khtml_factory.h"
 using namespace khtml;
 using namespace DOM;
 
@@ -55,6 +56,7 @@ using namespace DOM;
 #include <qvaluelist.h>
 #include <qstring.h>
 #include <kdebug.h>
+#include <kurl.h>
 
 #include <assert.h>
 
@@ -71,7 +73,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
 CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
 {
     if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
-
+ 
     authorStyle = new CSSStyleSelectorList();
     // ### go through DOM tree for style elements
 
@@ -81,34 +83,34 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
     if(!test) return;
     while(test && (test->id() != ID_HEAD))
         test = test->nextSibling();
-    if(!test) return;
-    HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
+    if(test) {
+	HTMLHeadElementImpl *head = static_cast<HTMLHeadElementImpl *>(test);
 
     // all LINK and STYLE elements have to be direct children of the HEAD element
-    test = head->firstChild();
-    while(test)
-    {
-        if(test->id() == ID_LINK)
-        {
-            HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
-            authorStyle->append(link->sheet());
-        }
-        else if(test->id() == ID_STYLE)
-        {
-            HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
-            authorStyle->append(style->sheet());
-        }
-        test = test->nextSibling();
+	test = head->firstChild();
+	while(test)
+	{
+	    if(test->id() == ID_LINK)
+	    {
+		HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
+		authorStyle->append(link->sheet());
+	    }
+	    else if(test->id() == ID_STYLE)
+	    {
+		HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
+		authorStyle->append(style->sheet());
+	    }
+	    test = test->nextSibling();
+	}
     }
-
     HTMLElementImpl *e = doc->body();
     if(e && e->id() == ID_BODY)
     {
-        //kdDebug( 6080 ) << "found body element" << endl;
+        kdDebug( 6080 ) << "found body element" << endl;
         HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
         if(body->sheet())
         {
-            //kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
+            kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
             authorStyle->append(body->sheet());
         }
     }
@@ -335,13 +337,32 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
     {
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
-        if(sel->value == ":first-child") {
-            if(e->parentNode()->firstChild() != e)
-                return false;
-        } else if(sel->value == ":link") {
+	if(sel->value == ":first-child") {
+	    if(e->parentNode()->firstChild() != e)
+		return false;
+	} else if(sel->value == ":link") {
 	    if( e->getAttribute(ATTR_HREF).isNull() )
 		return false;
-	} else 
+	    QValueList<KURL> *list = KHTMLFactory::vLinks();
+	    KHTMLView *v = e->ownerDocument()->view();
+	    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
+	    QValueList<KURL>::Iterator it;
+	    for( it = list->begin(); it != list->end(); ++it )
+		if( *it == url )
+		    return false;
+	    return true;
+	} else if ( sel->value == ":visited" ) {
+	    if( e->getAttribute(ATTR_HREF).isNull() )
+		return false;
+	    QValueList<KURL> *list = KHTMLFactory::vLinks();
+	    KHTMLView *v = e->ownerDocument()->view();
+	    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
+	    QValueList<KURL>::Iterator it;
+	    for( it = list->begin(); it != list->end(); ++it )
+		if( *it == url )
+		    return true;
+	    return false;
+	} else
 	    return false;
     }
     // ### add the rest of the checks...

@@ -103,16 +103,22 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_LINK:
     {
-	kdDebug( 6030 ) << "ATTR_LINK" << endl;
-	if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
-	QString aStr = "a[href] { color: " + attr->value().string() + "; }";
+kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl; 
+ if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
+	QString aStr = "a:link { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
 	m_styleSheet->setNonCSSHints();
 	break;
     }
     case ATTR_VLINK:
-	// ### has to be added as stylesheet
-    case ATTR_ALINK:
+    {
+	if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
+	QString aStr = "a:vlink { color: " + attr->value().string() + "; }";
+	m_styleSheet->parseString(aStr);
+	m_styleSheet->setNonCSSHints();
+	break;
+    }
+     case ATTR_ALINK:
       break;
     default:
 	HTMLElementImpl::parseAttribute(attr);

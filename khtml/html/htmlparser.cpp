@@ -372,7 +372,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             current = newNode;
             n->attach(HTMLWidget);
             // ### HACK!!!
-            if(n->id() == ID_BODY)
+            if(n->id() == ID_BODY) 
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
@@ -397,31 +397,49 @@ void KHTMLParser::insertNode(NodeImpl *n)
         {
         case ID_COMMENT:
             break;
-        case ID_TITLE:
-            if(inBody)
-                discard_until = ID_TITLE + ID_CLOSE_TAG;
-            // fall through
         case ID_HEAD:
             // ### alllow not having <HTML> in at all, as per HTML spec
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
                 throw exception;
             break;
-            // We can deal with a <base> element in the body, by just adding the element to head.
+            // We can deal with a base, meta and link element in the body, by just adding the element to head.
+        case ID_META:
+        case ID_LINK:
         case ID_BASE:
-            if(head) {
-                head->addChild(n);
-                n->attach(HTMLWidget);
-                return;
-            }
+	    if( !head )
+		createHead();
+	    if( head ) {
+		head->addChild(n);
+		n->attach(HTMLWidget);
+		return;
+	    }
         case ID_HTML:
             if (!current->isDocumentNode())
                 throw exception;
             break;
-        case ID_META:
-        case ID_LINK:
-            // SCRIPT and OBJECT are allowd in the body.
-            if(inBody) throw exception;
+        case ID_TITLE:
+        case ID_STYLE:
+	    if ( !head )
+		createHead();
+	    if ( head ) {
+                
+		try {
+		    head->addChild(n);
+		    pushBlock(id, tagPriority[id]);
+		    current = n;
+		    n->attach(HTMLWidget);
+		} catch(DOMException e) {
+		    kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
+		    discard_until = ID_STYLE + ID_CLOSE_TAG;
+		    throw e;
+		}
+		return;
+	    } else if(inBody) {
+		discard_until = ID_STYLE + ID_CLOSE_TAG;
+		throw exception;
+	    }
             break;
+            // SCRIPT and OBJECT are allowd in the body.
         case ID_BODY:
             if(inBody && document->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
@@ -430,15 +448,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
                 document->body()->applyChanges(true,false);
-            }
+            } else if ( current->isDocumentNode() )
+		break;
             throw exception;
-            break;
-        case ID_STYLE:
-            if(inBody)
-            {
-                discard_until = ID_STYLE + ID_CLOSE_TAG;
-                throw exception;
-            }
             break;
         case ID_LI:
             e = new HTMLUListElementImpl(document);
@@ -560,15 +572,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     e = new HTMLFrameSetElementImpl(document);
                     inBody = true;
                     haveFrameSet = true;
-                    document->createSelector();
                     insertNode(e);
                     handled = true;
                     break;
                 default:
                 e = new HTMLBodyElementImpl(document);
                 inBody = true;
-                document->createSelector();
                 insertNode(e);
+                document->createSelector();
                 handled = true;
                 break;
             }
@@ -582,8 +593,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 popBlock(ID_HEAD);
                 e = new HTMLBodyElementImpl(document);
                 inBody = true;
-                document->createSelector();
                 insertNode(e);
+                document->createSelector();
                 handled = true;
             }
             break;
@@ -1066,8 +1077,9 @@ void KHTMLParser::processCloseTag(Token *t)
         break;
     case ID_HEAD+ID_CLOSE_TAG:
         //inBody = true;
-        document->createSelector();
-        break;
+	// don't close head neither. the creation of body will do it for us.
+	// fixes some sites, that define stylesheets after </head>
+	return;
     case ID_TITLE+ID_CLOSE_TAG:
         if ( current->id() == ID_TITLE )
           static_cast<HTMLTitleElementImpl *>(current)->setTitle();
@@ -1172,4 +1184,21 @@ void KHTMLParser::freeBlock()
     blockStack = 0;
 }
 
-
+void KHTMLParser::createHead()
+{
+    if(head || !document->firstChild())
+	return;
+    
+    head = new HTMLHeadElementImpl(document);
+    try
+    {
+	HTMLElementImpl *body = document->body();
+	document->firstChild()->insertBefore(head, body);
+    }
+    catch(DOMException e)
+    {
+	kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+	delete head;
+	head = 0;
+    }
+}
