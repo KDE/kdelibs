@@ -127,6 +127,8 @@ public:
     // implementation of the following functions is in bidi.cpp
     void appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
                    BidiContext *context, QChar::Direction dir);
+    void embed( QChar::Direction d, BidiIterator &sor, BidiIterator &eor, BidiContext *&context, 
+		BidiStatus &status, QPtrList<BidiRun> &runs, QChar::Direction &dir );
     BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
     BidiIterator findNextLineBreak(BidiIterator &start);
 

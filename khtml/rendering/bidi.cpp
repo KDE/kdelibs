@@ -181,6 +181,59 @@ void RenderFlow::appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiItera
     }
 }
 
+void RenderFlow::embed( QChar::Direction d, BidiIterator &sor, BidiIterator &eor, BidiContext *&context, BidiStatus &status, QPtrList<BidiRun> &runs, QChar::Direction &dir )
+{
+    if ( d == QChar::DirPDF ) {
+	BidiContext *c = context->parent;
+	if(c) {
+	    appendRun(runs, sor, eor, context, dir);
+	    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
+	    status.last = context->dir;
+	    context->deref();
+	    context = c;
+	    if(context->override)
+		dir = context->dir;
+	    else
+		dir = QChar::DirON;
+	    status.lastStrong = context->dir;
+	}
+    } else {
+	QChar::Direction runDir;
+	if( d == QChar::DirRLE || d == QChar::DirRLO )
+	    runDir = QChar::DirR;
+	else
+	    runDir = QChar::DirL;
+	bool override;
+	if( d == QChar::DirLRO || d == QChar::DirRLO )
+	    override = true;
+	else
+	    override = false;
+	
+	unsigned char level = context->level;
+	if ( runDir == QChar::DirR ) {
+	    if(level%2) // we have an odd level
+		level += 2;
+	    else
+		level++;
+	} else {
+	    if(level%2) // we have an odd level
+		level++;
+	    else
+		level += 2;
+	}
+
+	if(level < 61) {
+	    appendRun(runs, sor, eor, context, dir);
+	    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
+	    context = new BidiContext(level, runDir, context, override);
+	    context->ref();
+	    if ( override )
+		dir = runDir;
+	    status.last = runDir;
+	    status.lastStrong = runDir;
+	}
+    }
+}
 
 // collects one line of the paragraph and transforms it to visual order
 BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed)
@@ -223,93 +276,13 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
             // embedding and overrides (X1-X9 in the Bidi specs)
         case QChar::DirRLE:
-            {
-                unsigned char level = context->level;
-                if(level%2) // we have an odd level
-                    level += 2;
-                else
-                    level++;
-                if(level < 61) {
-                    appendRun(runs, sor, eor, context, dir);
-                    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
-                    context = new BidiContext(level, QChar::DirR, context);
-                    context->ref();
-                    status.last = QChar::DirR;
-                    status.lastStrong = QChar::DirR;
-                }
-                break;
-            }
         case QChar::DirLRE:
-            {
-                unsigned char level = context->level;
-                if(level%2) // we have an odd level
-                    level++;
-                else
-                    level += 2;
-                if(level < 61) {
-                    appendRun(runs, sor, eor, context, dir);
-                    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
-                    context = new BidiContext(level, QChar::DirL, context);
-                    context->ref();
-                    status.last = QChar::DirL;
-                    status.lastStrong = QChar::DirL;
-                }
-                break;
-            }
         case QChar::DirRLO:
-            {
-                unsigned char level = context->level;
-                if(level%2) // we have an odd level
-                    level += 2;
-                else
-                    level++;
-                if(level < 61) {
-                    appendRun(runs, sor, eor, context, dir);
-                    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
-                    context = new BidiContext(level, QChar::DirR, context, true);
-                    context->ref();
-                    dir = QChar::DirR;
-                    status.last = QChar::DirR;
-                    status.lastStrong = QChar::DirR;
-                }
-                break;
-            }
         case QChar::DirLRO:
-            {
-                unsigned char level = context->level;
-                if(level%2) // we have an odd level
-                    level++;
-                else
-                    level += 2;
-                if(level < 61) {
-                    appendRun(runs, sor, eor, context, dir);
-                    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
-                    context = new BidiContext(level, QChar::DirL, context, true);
-                    context->ref();
-                    dir = QChar::DirL;
-                    status.last = QChar::DirL;
-                    status.lastStrong = QChar::DirL;
-                }
-                break;
-            }
         case QChar::DirPDF:
-            {
-                BidiContext *c = context->parent;
-                if(c) {
-                    appendRun(runs, sor, eor, context, dir);
-                    ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
-                    status.last = context->dir;
-                    context->deref();
-                    context = c;
-                    if(context->override)
-                        dir = context->dir;
-                    else
-                        dir = QChar::DirON;
-                    status.lastStrong = context->dir;
-                }
-                break;
-            }
-
+	    embed( dirCurrent, sor, eor, context, status, runs, dir );
+	    break;
+	    
             // strong types
         case QChar::DirL:
             if(dir == QChar::DirON)
@@ -597,6 +570,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
         last = current;
         ++current;
+	
+	// a hack for the CSS unicode-bidi property
+	
     }
 
 #if BIDI_DEBUG > 0
