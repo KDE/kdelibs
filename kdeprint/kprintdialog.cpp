@@ -131,7 +131,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" re-load its configuration files."
 						" To reload the configuration files, either start kprinter again, or use the "
 						" switch the print system away from CUPS and back again once. The print system switch "
-						" can be made through a selection in th dropdown menu at bottom of this dialog when "
+						" can be made through a selection in the drop-down menu at bottom of this dialog when "
 						" fully expanded). </p> "
 						" </qt>" );
 	QString whatsThisPrintJobProperties = i18n( " <qt><b>Print Job Properties:</b> "

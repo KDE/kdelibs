@@ -45,7 +45,7 @@ DriverView::DriverView(QWidget *parent, const char *name)
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPPDOptionsDriverPage = i18n( " <qt> "
 			" <b>List of Driver Options (from PPD)</b>. "
-			" <p>The upper pane of this dialog page contains all printjob options as layed "
+			" <p>The upper pane of this dialog page contains all printjob options as laid "
 			" down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
 			" <p>Click on any item in the list and watch the lower pane of this dialog page "
 			" display the available values. </p> "
@@ -63,14 +63,14 @@ DriverView::DriverView(QWidget *parent, const char *name)
 			" </ul>"
 			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
 			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
-			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thusly not present "
+			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thus is not present "
 			" in the kprinter dialog.</p> "
 			" </qt>" );
 
 	QString whatsThisOptionSettingsDriverPage = i18n( " <qt> "
 			" <b>List of Possible Values for given Option (from PPD)</b>. "
 			" <p>The lower pane of this dialog page contains all possible values of the printoption "
-			" highlighted above, as layed "
+			" highlighted above, as laid "
 			" down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
 			" <p>Select the value you want and proceed. </p> "
 			" <p>Then use one of the pushbuttons below to leave this dialog:</p> "
@@ -87,7 +87,7 @@ DriverView::DriverView(QWidget *parent, const char *name)
 			" </ul>"
 			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
 			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
-			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thusly not present "
+			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thus is not present "
 			" in the kprinter dialog.</p> "
 			" </qt>" );
 

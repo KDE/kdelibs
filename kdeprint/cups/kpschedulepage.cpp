@@ -42,7 +42,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 						" the current print job with a certain account. This"
 						" string will appear in the CUPS \"page_log\" to help"
 						" with the print accounting in your organization. (Leave"
-						" it empty if you don't need it.)"
+						" it empty if you do not need it.)"
 						" <p> It is useful for people"
 						" who print on behalf of different \"customers\", like"
 						" print service bureaux, letter shops, press and prepress"
@@ -101,7 +101,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 
 	QString whatsThisJobPriority = i18n(    " <qt> <p><b>Job Priority</b></p> "
 						" <p>Usually CUPS prints all jobs per queue according to"
-						" the \"FIFO\" priniciple: <em>First In, First Out</em>."
+						" the \"FIFO\" principle: <em>First In, First Out</em>."
 						" <p> The"
 						" job priority option allows you to re-order the queue according"
 						" to your needs."

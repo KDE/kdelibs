@@ -40,7 +40,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" application does not define its margins internally. </p> "
 			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
 			" and Konqueror.. </p>"
-			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" <p><b>Note:</b></p>This margin setting is not intended for KOffice or OpenOffice.org printing, "
 			" because these applications (or rather their users) are expected to do it by themselves. "
 			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
 			" internally.</p> " 
@@ -60,7 +60,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" application does not define its margins internally. </p> "
 			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
 			" and Konqueror. </p>"
-			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" <p><b>Note:</b></p>This margin setting is not intended for KOffice or OpenOffice.org printing, "
 			" because these applications (or rather their users) are expected to do it by themselves. "
 			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
 			" internally.</p> "
@@ -79,7 +79,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" application does not define its margins internally. </p> "
 			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
 			" and Konqueror. </p>"
-			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" <p><b>Note:</b></p>This margin setting is not intended for KOffice or OpenOffice.org printing, "
 			" because these applications (or rather their users) are expected to do it by themselves. "
 			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
 			" internally.</p> "
@@ -98,7 +98,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" application does not define its margins internally. </p> "
 			" <p>The setting works for instance for ASCII text file printing, or for printing from KMail and "
 			" and Konqueror. </p>"
-			" <p><b>Note:</b></p>This margin settning is not intended for KOffice or OpenOffice.org printing, "
+			" <p><b>Note:</b></p>This margin setting is not intended for KOffice or OpenOffice.org printing, "
 			" because these applications (or rather their users) are expected to do it by themselves. "
 			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
 			" internally.</p> "
@@ -136,7 +136,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" </qt>" );
 
 	QString whatsThisDragAndPreviewMarginWidget = i18n( " <qt> "
-			" <p><b>\"Drag-your-Margins!\" </p>. "
+			" <p><b>\"Drag-your-Margins\" </p>. "
 			" <p>Use your mouse to drag and set each margin on this little preview window. </p> "
 			" </qt>" );
 

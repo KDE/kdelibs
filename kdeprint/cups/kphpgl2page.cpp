@@ -52,7 +52,7 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 			" <p>The default is 'fitplot is disabled'. The default will therefore use the absolute "
 			" distances specified in the plot file. (You should be aware that HP-GL files are very "
 			" often CAD drawings intended for large format plotters. On standard office printers "
-			" they will therefor lead to the drawing printout spreading across multiple pages.) </p> "
+			" they will therefore lead to the drawing printout being spread across multiple pages.) </p> "
 			" <p><b>Note:</b>This feature depends upon an accurate plot size (PS) command in the "
 			" HP-GL/2 file. If no plot size is given in the file the filter converting the HP-GL "
 			" to PostScript assumes the plot is ANSI E size. </p> "

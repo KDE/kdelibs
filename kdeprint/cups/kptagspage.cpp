@@ -50,7 +50,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 						" names are named in the various <em>WhatsThis</em> help items..</p>"
 						" <p><b>Custom CUPS job options:</b> CUPS print servers may be customized with additional "
 						" print filters and backends which understand custom job options. You can specify such "
-						" custome job options here. If in doubt, ask your system administrator..</p>"
+						" custom job options here. If in doubt, ask your system administrator..</p>"
 						" <p><b> </b></p>"
 						" <p><b>Operator Messages:</b> You may send additional messages to the operator(s) of your"
 						" production printers (e.g. in your <em>Central Repro Department</p>)"
