@@ -268,6 +268,7 @@ private:
     PartPrivate *d;
 };
 
+class ReadWritePart;
 class ReadOnlyPartPrivate;
 
 /**
@@ -290,6 +291,7 @@ class ReadOnlyPartPrivate;
 class ReadOnlyPart : public Part
 {
   Q_OBJECT
+  friend class ReadWritePart;  
 public:
   /**
    * Constructor
@@ -591,6 +593,12 @@ public slots:
    * Calls @ref saveFile() and @ref saveToURL(), no need to reimplement.
    */
   virtual bool save();
+
+  /**
+   * Waits for any pending upload job to finish and returns whether the
+   * last @ref save() action was successfull.
+   */
+  bool waitSaveComplete();
 
 protected:
   /**

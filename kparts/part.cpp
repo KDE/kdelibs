@@ -24,6 +24,7 @@
 #include <kparts/mainwindow.h>
 #include <kparts/partmanager.h>
 
+#include <qapplication.h>
 #include <qfile.h>
 #include <qpoint.h>
 #include <qpointarray.h>
@@ -277,14 +278,20 @@ public:
   ReadOnlyPartPrivate()
   {
     m_job = 0L;
+    m_uploadJob = 0L;
     m_showProgressInfo = true;
+    m_saveOk = false;
+    m_waitForSave = false;
   }
   ~ReadOnlyPartPrivate()
   {
   }
 
   KIO::FileCopyJob * m_job;
-  bool m_showProgressInfo;
+  KIO::FileCopyJob * m_uploadJob;
+  bool m_showProgressInfo : 1;
+  bool m_saveOk : 1;
+  bool m_waitForSave : 1;
 };
 
 }
@@ -488,9 +495,13 @@ bool ReadWritePart::queryClose()
         if (url.isEmpty())
           return false;
 
-        return saveAs( url );
+        saveAs( url );
     }
-    return save();
+    else
+    {
+        save();
+    }
+    return waitSaveComplete();
   case KMessageBox::No :
     return true;
   default : // case KMessageBox::Cancel :
@@ -517,6 +528,7 @@ bool ReadWritePart::closeURL( bool promptToSave )
 
 bool ReadWritePart::save()
 {
+  d->m_saveOk = false;
   if( saveFile() )
     return saveToURL();
   return false;
@@ -563,10 +575,17 @@ bool ReadWritePart::saveToURL()
     emit completed();
     // if m_url is a local file there won't be a temp file -> nothing to remove
     assert( !m_bTemp );
+    d->m_saveOk = true;
     return true; // Nothing to do
   }
   else
   {
+    if (d->m_uploadJob)
+    {
+       unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
+       d->m_uploadJob->kill();
+       d->m_uploadJob = 0;
+    }
     KTempFile tempFile;
     QString uploadFile = tempFile.name();
     tempFile.unlink();
@@ -576,25 +595,54 @@ bool ReadWritePart::saveToURL()
        // Uh oh, some error happened.
        return false;
     }
-    KIO::Job * job = KIO::file_move( uploadFile, m_url, -1, true /*overwrite*/ );
-    connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
+    d->m_uploadJob = KIO::file_move( uploadFile, m_url, -1, true /*overwrite*/ );
+    connect( d->m_uploadJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
   }
 }
 
-void ReadWritePart::slotUploadFinished( KIO::Job * job )
+void ReadWritePart::slotUploadFinished( KIO::Job * )
 {
-  KIO::FileCopyJob *copyJob = static_cast<KIO::FileCopyJob *>(job);
-  if (job->error())
+  if (d->m_uploadJob->error())
   {
-    unlink(QFile::encodeName(copyJob->srcURL().path()));
-    emit canceled( job->errorString() );
+    unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
+    QString error = d->m_uploadJob->errorString();
+    d->m_uploadJob = 0;
+    emit canceled( error );
   }
   else
   {
+    d->m_uploadJob = 0;
     setModified( false );
     emit completed();
+    d->m_saveOk = true;
   }
+  if (d->m_waitForSave)
+  {
+     qApp->exit_loop();
+  }
+}
+
+// Trolls: Nothing to see here, please step away.
+void qt_enter_modal( QWidget *widget );
+void qt_leave_modal( QWidget *widget );
+
+bool ReadWritePart::waitSaveComplete()
+{
+  if (!d->m_uploadJob)
+     return d->m_saveOk;
+  
+  d->m_waitForSave = true;
+  
+  QWidget dummy(0,0,WType_Dialog | WShowModal);
+  dummy.setFocusPolicy( QWidget::NoFocus );
+  qt_enter_modal(&dummy);
+  qApp->enter_loop();
+  qt_leave_modal(&dummy);
+
+  d->m_waitForSave = false;
+   
+  return d->m_saveOk;
 }
 
 #include "part.moc"
