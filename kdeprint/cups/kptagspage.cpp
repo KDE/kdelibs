@@ -64,9 +64,9 @@ bool KPTagsPage::isValid(QString& msg)
 		QString	tag(m_tags->text(r, 0));
 		if (tag.isEmpty())
 			continue;
-		else if (tag.find(re) != -1 || m_tags->text(r, 1).find(re) != -1)
+		else if (tag.find(re) != -1)
 		{
-			msg = i18n("The tag name and value may contain any space: %1.").arg(tag);
+			msg = i18n("The tag name may not contain any space: <b>%1</b>.").arg(tag);
 			return false;
 		}
 	}
@@ -76,12 +76,14 @@ bool KPTagsPage::isValid(QString& msg)
 void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 {
 	int	r(0);
+	QRegExp	re("^\"|\"$");
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end() && r<m_tags->numCols(); ++it)
 	{
 		if (it.key().startsWith("KDEPrint-"))
 		{
 			m_tags->setText(r, 0, it.key().mid(9));
-			m_tags->setText(r, 1, it.data());
+			QString	data = it.data();
+			m_tags->setText(r, 1, data.replace(re, ""));
 			r++;
 		}
 	}
@@ -100,7 +102,7 @@ void KPTagsPage::getOptions(QMap<QString,QString>& opts, bool)
 		if (!tag.isEmpty())
 		{
 			tag.prepend("KDEPrint-");
-			opts[tag] = val;
+			opts[tag] = val.prepend("\"").append("\"");
 		}
 	}
 }
