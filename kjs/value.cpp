@@ -336,7 +336,12 @@ Number::Number(unsigned int u)
   : Value(SimpleNumber::fits(u) ? SimpleNumber::make(u) : new NumberImp(static_cast<double>(u))) { }
 
 Number::Number(double d)
-  : Value(SimpleNumber::fits(d) ? SimpleNumber::make((long)d) : (KJS::isNaN(d) ? NumberImp::staticNaN : new NumberImp(d))) { }
+#if defined(__alpha) && !defined(_IEEE_FP)
+  // check for NaN first if we werent't compiled with -mieee on Alpha
+ : Value(KJS::isNaN(d) ? NumberImp::staticNaN : (SimpleNumber::fits(d) ? SimpleNumber::make((long)d) : new NumberImp(d))) { }
+#else
+ : Value(SimpleNumber::fits(d) ? SimpleNumber::make((long)d) : (KJS::isNaN(d) ? NumberImp::staticNaN : new NumberImp(d))) { }
+#endif
 
 Number::Number(long int l)
   : Value(SimpleNumber::fits(l) ? SimpleNumber::make(l) : new NumberImp(static_cast<double>(l))) { }
