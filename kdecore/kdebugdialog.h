@@ -104,6 +104,9 @@ public:
 	{ pAbortFatal->setChecked( bAbort ); }
   bool abortFatal() const
 	{ return pAbortFatal->isChecked(); }
+
+public slots:
+  void showHelp();
 };
 
 #endif

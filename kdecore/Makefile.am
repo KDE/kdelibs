@@ -15,14 +15,14 @@ CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	
-	kshortcut.h
+	kstdaccel.h
 
 noinst_HEADERS = kdebugdialog.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
 	klocale.cpp libintl.cpp setenv.cpp kiconloader.cpp kdebug.cpp	\
-	kshortcut.cpp
+	kstdaccel.cpp
 
 libkdecore_la_LDFLAGS = -version-info 0:11 
 
@@ -37,7 +37,7 @@ kprocess.cpp: kprocess.moc
 kprocctrl.cpp: kprocctrl.moc
 kiconloader.cpp: kiconloader.moc
 kdebug.cpp: kdebugdialog.moc
-kshortcut.cpp: kshortcut.h
+kstdaccel.cpp: kstdaccel.h
 
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
@@ -69,5 +69,5 @@ kiconloader.moc: kiconloader.h
 kdebugdialog.moc: kdebugdialog.h
 	$(MOC) kdebugdialog.h -o kdebugdialog.moc
 
-kshortcut.moc: kshortcut.h
-	$(MOC) kshortcut.h -o kshortcut.moc
+kstdaccel.moc: kstdaccel.h
+	$(MOC) kstdaccel.h -o kstdaccel.moc

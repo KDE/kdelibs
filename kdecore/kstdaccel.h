@@ -3,15 +3,15 @@
  *
  * Author: Stefan Taferner <taferner@salzburg.co.at>
  */
-#ifndef kshortcut_h
-#define kshortcut_h
+#ifndef KSTDACCEL_H
+#define KSTDACCEL_H
 
 #include <kkeyconf.h>
 
-class KShortCut: public KKeyConfig
+class KStdAccel: public KKeyConfig
 {
 public:
-  KShortCut(KConfig* pConfig);
+  KStdAccel(KConfig* pConfig);
 
   uint open(void) const;
   uint openNew(void) const;

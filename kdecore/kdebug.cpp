@@ -331,6 +331,7 @@ KDebugDialog::KDebugDialog() :
   pHelpButton = new QPushButton( "Help", this );
   pHelpButton->setGeometry( 205, 460, 80, 20 );
   pHelpButton->show();
+  connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
 }
 
 KDebugDialog::~KDebugDialog()
@@ -370,7 +371,10 @@ KDebugDialog::~KDebugDialog()
 }
 
 
-
+void KDebugDialog::showHelp()
+{
+  kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
+}
 
 void recalculateAreaBits( QBitArray* pArray, QString* pString )
 {
