@@ -16,6 +16,7 @@
 #define KDOCKWIDGETTEST_H
 
 #include <kdockwidget.h>
+#include <kdockwidget_p.h>
 #include <qtabwidget.h>
 #include <qlabel.h>
 class QPushButton;
