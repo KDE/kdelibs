@@ -72,6 +72,7 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
+  d->m_ssl = NULL;
 
  if (init) initialize();
 }
@@ -182,11 +183,12 @@ return false;
 
 void KSSL::close() {
 #ifdef HAVE_SSL
-  // kdDebug() << "KSSL close" << endl;
+  //kdDebug() << "KSSL close" << endl;
   if (!m_bInit) return;
   if (d->m_ssl) {
      d->kossl->SSL_shutdown(d->m_ssl);
      d->kossl->SSL_free(d->m_ssl);
+     d->m_ssl = NULL;
   }
   d->kossl->SSL_CTX_free(d->m_ctx);
   m_bInit = false;
