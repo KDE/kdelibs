@@ -228,7 +228,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     KCookieWin *kw = new KCookieWin( 0L, currentList,
                                      mCookieJar->defaultRadioButton,
                                      mCookieJar->showCookieDetails );
-    KCookieAdvice userAdvice = kw->advice(mCookieJar, cookie);
+    KCookieAdvice userAdvice = kw->advice(mCookieJar, currentCookie);
     delete kw;
     // Save the cookie config if it has changed
     mCookieJar->saveConfig( kapp->config() );
