@@ -1,7 +1,7 @@
 
-doc_DATA =  kspell.html ksdialog.html ksconfig.html
+doc_DATA =  kspell.html kspell-1.html kspell-2.html kspell-3.html 
 
 docdir = $(kde_htmldir)/en/kspell
 
-EXTRA_DIST =  kspell.html ksdialog.html ksconfig.html
+EXTRA_DIST =  $(doc_DATA)
 
