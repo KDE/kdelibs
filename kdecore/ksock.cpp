@@ -379,6 +379,8 @@ unsigned short int KServerSocket::port()
   if (d == NULL || d->ks == NULL || sock == -1)
     return 0;
   KSocketAddress *sa = d->ks->localAddress();
+  if (sa == NULL)
+    return 0;
 
   // we can use sockaddr_in here even if it isn't IPv4
   sockaddr_in *sin = (sockaddr_in*)sa->address();
