@@ -27,7 +27,7 @@
 #include <dom_misc.h>
 #include <khtmllayout.h>
 
-template<class type> class QList; 
+template<class type> class QList;
 class QChar;
 
 namespace DOM {
@@ -47,14 +47,21 @@ public:
     void truncate(int len);
     void remove(unsigned int pos, int len=1);
     DOMStringImpl *split(unsigned int pos);
-    DOMStringImpl *copy() const;
+    DOMStringImpl *copy() const {
+        return new DOMStringImpl(s,l);
+    };
+
     DOMStringImpl *substring(unsigned int pos, unsigned int len);
 
     const QChar &operator [] (int pos)
 	{ return *(s+pos); }
 
     khtml::Length toLength() const;
-    int toInt() const;
+
+    int toInt() const {
+        return QConstString(s,l).string().toInt();
+    };
+
     QList<khtml::Length> *toLengthList() const;
     bool isLower() const;
     DOMStringImpl *lower();

@@ -49,6 +49,7 @@ DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
     else
     {
         s = QT_ALLOC_QCHAR_VEC( 1 ); // crash protection
+        s[0] = QChar::null;
         l = 0;
     }
 }
@@ -67,6 +68,7 @@ DOMStringImpl::DOMStringImpl(const char *str)
     else
     {
         s = QT_ALLOC_QCHAR_VEC( 1 );  // crash protection
+        s[0] = QChar::null;
         l = 0;
     }
 }
@@ -74,7 +76,7 @@ DOMStringImpl::DOMStringImpl(const char *str)
 DOMStringImpl::DOMStringImpl(const QChar &ch)
 {
     s = QT_ALLOC_QCHAR_VEC( 1 );
-    memcpy(s, &ch, sizeof(QChar));
+    s[0] = ch;
     l = 1;
 }
 
@@ -157,11 +159,6 @@ DOMStringImpl *DOMStringImpl::split(uint pos)
   return str;
 }
 
-DOMStringImpl *DOMStringImpl::copy() const
-{
-    return new DOMStringImpl(s, l);
-}
-
 DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
 {
   if( pos >=l ) return new DOMStringImpl();
@@ -210,12 +207,7 @@ static Length parseLength(QChar *s, unsigned int l)
 
 Length DOMStringImpl::toLength() const
 {
-    return parseLength(s, l);
-}
-
-int DOMStringImpl::toInt() const
-{
-    return QConstString(s, l).string().toInt();
+    return parseLength(s,l);
 }
 
 QList<Length> *DOMStringImpl::toLengthList() const
@@ -256,10 +248,15 @@ bool DOMStringImpl::isLower() const
 
 DOMStringImpl *DOMStringImpl::lower()
 {
-    QChar *c = QT_ALLOC_QCHAR_VEC(l);
-    unsigned int i;
-    for (i = 0; i < l; i++)
-	c[i] = s[i].lower();
-    return new DOMStringImpl(c,l);
+    DOMStringImpl *c = new DOMStringImpl;
+    if(!l) return c;
+
+    c->s = QT_ALLOC_QCHAR_VEC(l);
+    c->l = l;
+
+    for (unsigned int i = 0; i < l; i++)
+	c->s[i] = s[i].lower();
+
+    return c;
 }
 
