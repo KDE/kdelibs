@@ -86,7 +86,7 @@ public:
 
 // Yes, it's ugly to put this here, but this facilitates the cautious startup
 // procedure.
-KArtsServer *soundServer;
+KArtsServer *soundServer = 0;
 
 extern "C"{
 
@@ -195,7 +195,7 @@ int kdemain(int argc, char **argv)
     config.sync();
 
     // start notify service
-    KNotify notify( useArts );
+    KNotify *notify = new KNotify( useArts );
 
     config.writeEntry( "KNotify Init", true );
     config.sync();
@@ -205,6 +205,7 @@ int kdemain(int argc, char **argv)
     // kdDebug() << "knotify starting" << endl;
 
     int ret = app.exec();
+    delete notify;
     delete soundServer;
     delete dispatcher;
     return ret;
