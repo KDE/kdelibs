@@ -234,48 +234,40 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
 
-KService::PropertyPtr KService::property( const QString& _name ) const
+QVariant KService::property( const QString& _name ) const
 {
-  QVariant* p = 0;
-
   if ( _name == "Type" )
-    p = new QVariant( m_strType );
+    return QVariant( m_strType );
   else if ( _name == "Name" )
-    p = new QVariant( m_strName );
+    return QVariant( m_strName );
   else if ( _name == "Exec" )
-    p = new QVariant( m_strExec );
+    return QVariant( m_strExec );
   else if ( _name == "Icon" )
-    p = new QVariant( m_strIcon );
+    return QVariant( m_strIcon );
   else if ( _name == "TerminalOptions" )
-    p = new QVariant( m_strTerminalOptions );
+    return QVariant( m_strTerminalOptions );
   else if ( _name == "Path" )
-    p = new QVariant( m_strPath );
+    return QVariant( m_strPath );
   else if ( _name == "Comment" )
-    p = new QVariant( m_strComment );
+    return QVariant( m_strComment );
   else if ( _name == "ServiceTypes" )
-    p = new QVariant( m_lstServiceTypes );
+    return QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
-    p = new QVariant( m_bAllowAsDefault );
+    return QVariant( m_bAllowAsDefault );
   else if ( _name == "Library" )
-    p = new QVariant( m_strLibrary );
+    return QVariant( m_strLibrary );
   else if ( _name == "LibraryMajor" )
-    p = new QVariant( m_libraryMajor );
+    return QVariant( m_libraryMajor );
   else if ( _name == "LibraryMinor" )
-    p = new QVariant( m_libraryMinor );
+    return QVariant( m_libraryMinor );
   else if ( _name == "LibraryDependencies" )
-    p = new QVariant( m_lstLibraryDeps );
-		
-  if ( p )
-    return KService::PropertyPtr( p );
+    return QVariant( m_lstLibraryDeps );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
-    return (QVariant*)0;
+    return QVariant(); // Invalid variant
 
-  p = (QVariant*)(&(it.data()));
-
-  p->ref();
-  return KService::PropertyPtr( p );
+  return it.data();
 }
 
 QStringList KService::propertyNames() const

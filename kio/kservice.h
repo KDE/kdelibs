@@ -51,7 +51,6 @@ class KService : public KSycocaEntry
 public:
   typedef KSharedPtr<KService> Ptr;
   typedef QValueList<Ptr> List;
-  typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
    * Construct a service and take all informations from a config file
@@ -196,7 +195,7 @@ public:
    *
    * @see KServiceType
    */
-  virtual PropertyPtr property( const QString& _name ) const;
+  virtual QVariant property( const QString& _name ) const;
   /**
    * @return the list of all properties that this service can have.
    *         That means, that some properties may be empty.
@@ -234,7 +233,7 @@ public:
   int startService( const QString &URL, QCString &dcopService, QString &error );
 
   /**
-   * @depreciated Use serviceByXXX instead!
+   * @deprecated Use serviceByXXX instead!
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !

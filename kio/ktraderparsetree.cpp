@@ -382,8 +382,8 @@ bool ParseTreeEXIST::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_BOOL;
 
-  KService::PropertyPtr prop = _context->service->property( m_id );
-  _context->b = ( prop );
+  QVariant prop = _context->service->property( m_id );
+  _context->b = prop.isValid();
 
   return true;
 }
@@ -460,48 +460,48 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
 
 bool ParseTreeID::eval( ParseContext *_context ) const
 {
-  KService::PropertyPtr prop = _context->service->property( m_str );
-  if ( !prop )
+  QVariant prop = _context->service->property( m_str );
+  if ( !prop.isValid() )
     return false;
 
-  if ( prop->type() == QVariant::String )
+  if ( prop.type() == QVariant::String )
   {
-    _context->str = prop->toString();
+    _context->str = prop.toString();
     _context->type = ParseContext::T_STRING;
     return true;
   }
 
-  if ( prop->type() == QVariant::Int )
+  if ( prop.type() == QVariant::Int )
   {
-    _context->i = prop->toInt();
+    _context->i = prop.toInt();
     _context->type = ParseContext::T_NUM;
     return true;
   }
 
-  if ( prop->type() == QVariant::Bool )
+  if ( prop.type() == QVariant::Bool )
   {
-    _context->b = prop->toBool();
+    _context->b = prop.toBool();
     _context->type = ParseContext::T_BOOL;
     return true;
   }
 
-  if ( prop->type() == QVariant::Double )
+  if ( prop.type() == QVariant::Double )
   {
-    _context->f = prop->toDouble();
+    _context->f = prop.toDouble();
     _context->type = ParseContext::T_DOUBLE;
     return true;
   }
 
-  if ( prop->type() == QVariant::List )
+  if ( prop.type() == QVariant::List )
   {
-    _context->seq = prop->toList();
+    _context->seq = prop.toList();
     _context->type = ParseContext::T_SEQ;
     return true;
   }
 
-  if ( prop->type() == QVariant::StringList )
+  if ( prop.type() == QVariant::StringList )
   {
-    _context->strSeq = prop->toStringList();
+    _context->strSeq = prop.toStringList();
     _context->type = ParseContext::T_STR_SEQ;
     return true;
   }
@@ -514,8 +514,8 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  KService::PropertyPtr prop = _context->service->property( m_strId );
-  if ( !prop )
+  QVariant prop = _context->service->property( m_strId );
+  if ( !prop.isValid() )
     return false;
 
   if ( !_context->initMaxima( m_strId ) )
@@ -525,15 +525,15 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
   if ( it == _context->maxima.end() )
     return false;
 
-  if ( prop->type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
+  if ( prop.type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
   {
-    _context->f = (double)( prop->toInt() - it.data().iMin ) /
+    _context->f = (double)( prop.toInt() - it.data().iMin ) /
                   (double)(it.data().iMax - it.data().iMin ) * (-2.0) + 1.0;
     return true;
   }
-  else if ( prop->type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
+  else if ( prop.type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
   {
-    _context->f = ( prop->toDouble() - it.data().fMin ) / (it.data().fMax - it.data().fMin )
+    _context->f = ( prop.toDouble() - it.data().fMin ) / (it.data().fMax - it.data().fMin )
                   * (-2.0) + 1.0;
     return true;
   }
@@ -545,8 +545,8 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  KService::PropertyPtr prop = _context->service->property( m_strId );
-  if ( prop )
+  QVariant prop = _context->service->property( m_strId );
+  if ( !prop.isValid() )
     return false;
 
   // Create extrema
@@ -558,15 +558,15 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
   if ( it == _context->maxima.end() )
     return false;
 
-  if ( prop->type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
+  if ( prop.type() == QVariant::Int && it.data().type == PreferencesMaxima::PM_INT )
   {
-    _context->f = (double)( prop->toInt() - it.data().iMin ) /
+    _context->f = (double)( prop.toInt() - it.data().iMin ) /
                   (double)(it.data().iMax - it.data().iMin ) * 2.0 - 1.0;
     return true;
   }
-  else if ( prop->type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
+  else if ( prop.type() == QVariant::Double && it.data().type == PreferencesMaxima::PM_DOUBLE )
   {
-    _context->f = ( prop->toDouble() - it.data().fMin ) /
+    _context->f = ( prop.toDouble() - it.data().fMin ) /
                   (it.data().fMax - it.data().fMin ) * 2.0 - 1.0;
     return true;
   }
@@ -628,12 +628,12 @@ PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService* 
 bool ParseContext::initMaxima( const QString& _prop )
 {
   // Is the property known ?
-  KService::PropertyPtr prop = service->property( _prop );
-  if ( !prop )
+  QVariant prop = service->property( _prop );
+  if ( !prop.isValid() )
     return false;
 
   // Numeric ?
-  if ( prop->type() != QVariant::Int && prop->type() != QVariant::Double )
+  if ( prop.type() != QVariant::Int && prop.type() != QVariant::Double )
     return false;
 
   // Did we cache the result ?
@@ -644,7 +644,7 @@ bool ParseContext::initMaxima( const QString& _prop )
 
   // Double or Int ?
   PreferencesMaxima extrema;
-  if ( prop->type() != QVariant::Int )
+  if ( prop.type() != QVariant::Int )
     extrema.type = PreferencesMaxima::PM_INVALID_INT;
   else
     extrema.type = PreferencesMaxima::PM_INVALID_DOUBLE;
@@ -653,38 +653,38 @@ bool ParseContext::initMaxima( const QString& _prop )
   KServiceTypeProfile::OfferList::ConstIterator oit = offers.begin();
   for( ; oit != offers.end(); ++it )
   {
-    KService::PropertyPtr p = (*oit).service()->property( _prop );
-    if ( p )
+    QVariant p = (*oit).service()->property( _prop );
+    if ( p.isValid() )
     {
       // Determine new maximum/minimum
       if ( extrema.type == PreferencesMaxima::PM_INVALID_INT )
       {
 	extrema.type = PreferencesMaxima::PM_INT;
-	extrema.iMin = p->toInt();
-	extrema.iMax = p->toInt();
+	extrema.iMin = p.toInt();
+	extrema.iMax = p.toInt();
       }
       // Correct existing extrema
       else if ( extrema.type == PreferencesMaxima::PM_INT )
       {
-	if ( p->toInt() < extrema.iMin )
-	  extrema.iMin = p->toInt();
-	if ( p->toInt() > extrema.iMax )
-	  extrema.iMax = p->toInt();
+	if ( p.toInt() < extrema.iMin )
+	  extrema.iMin = p.toInt();
+	if ( p.toInt() > extrema.iMax )
+	  extrema.iMax = p.toInt();
       }
       // Determine new maximum/minimum
       else if ( extrema.type == PreferencesMaxima::PM_INVALID_DOUBLE )
       {
 	extrema.type = PreferencesMaxima::PM_DOUBLE;
-	extrema.fMin = p->toDouble();
-	extrema.fMax = p->toDouble();
+	extrema.fMin = p.toDouble();
+	extrema.fMax = p.toDouble();
       }
       // Correct existing extrema
       else if ( extrema.type == PreferencesMaxima::PM_DOUBLE )
       {
-	if ( p->toDouble() < it.data().fMin )
-	  it.data().fMin = p->toDouble();
-	if ( p->toDouble() > it.data().fMax )
-	  it.data().fMax = p->toDouble();
+	if ( p.toDouble() < it.data().fMin )
+	  it.data().fMin = p.toDouble();
+	if ( p.toDouble() > it.data().fMax )
+	  it.data().fMax = p.toDouble();
       }
     }
   }
