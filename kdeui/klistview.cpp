@@ -194,7 +194,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
 
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
-        if(e->key() == Qt::Key_Return)
+        if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
             terminate(true);
         else if(e->key() == Qt::Key_Escape)
             terminate(false);
