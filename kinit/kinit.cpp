@@ -1572,7 +1572,7 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid); // Wait for klauncher to be ready
    }
 
-   if ( !suicide )
+   if ( !d.suicide )
    {
       pid = launch( 1, "krandrinithack", 0 );
       if( pid > 0 && d.result == 0 )

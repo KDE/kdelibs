@@ -146,7 +146,11 @@
 
 
 extern void kdeinit_initsetproctitle(int, char **, char **);
-extern void kdeinit_setproctitle(const char *, ...);
+extern void kdeinit_setproctitle(const char *, ...)
+#ifdef __GNUC__
+    __attribute__ (( format ( printf, 1, 2 ) ) )
+#endif
+;
 
 #endif
 
