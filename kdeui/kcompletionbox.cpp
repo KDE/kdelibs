@@ -83,11 +83,14 @@ KCompletionBox::~KCompletionBox()
 QStringList KCompletionBox::items() const
 {
     QStringList list;
-    const uint itemCount = count();
 
-    for ( uint i = 0; i < itemCount; ++i ) {
-        list.append( text( i ) );
+    const QListBoxItem* currItem = firstItem();
+
+    while (currItem) {
+        list.append(currItem->text());
+        currItem = currItem->next();
     }
+
     return list;
 }
 
