@@ -81,6 +81,8 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, 0, 0, 0, KShortcut(), false },
 	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, 0, 0, KShortcut(), false },
 	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M, 0, 0, 0, KShortcut(), false },
+	{ TabNext,             I18N_NOOP("Activate Next Tab"), 0,  Qt::CTRL+Qt::Key_Less, 0, 0, 0, KShortcut(), false },
+	{ TabPrev,             I18N_NOOP("Activate Previous Tab"), 0,   Qt::CTRL+Qt::Key_Greater, 0, 0, 0, KShortcut(), false },
 	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), Qt::CTRL+Qt::SHIFT+Qt::Key_F, 0, 0, 0, KShortcut(), false },
 	{AccelNone,            "Group:Help", I18N_NOOP("Help"), 0, 0, 0, 0, KShortcut(), false },
 	{ Help,                I18N_NOOP("Help"), 0,     Qt::Key_F1, 0, 0, 0, KShortcut(), false },
@@ -92,8 +94,6 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ SubstringCompletion, "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T, 0, 0, 0, KShortcut(), false },
 	{ RotateUp,            "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up, 0, 0, 0, KShortcut(), false },
 	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down, 0, 0, 0, KShortcut(), false },
-	{ TabNext,             I18N_NOOP("Next Tab"), 0,  Qt::CTRL+Qt::Key_Less, 0, 0, 0, KShortcut(), false },
-	{ TabPrev,             I18N_NOOP("Previous Tab"), 0,   Qt::CTRL+Qt::Key_Greater, 0, 0, 0, KShortcut(), false },
 	{ AccelNone,           0, 0, 0, 0, 0, 0, KShortcut(), false }
 };
 
