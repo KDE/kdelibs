@@ -358,7 +358,7 @@ bool KKeySequence::init( const QString& s )
 	m_bTriggerOnRelease = false;
 	//kdDebug(125) << "KKeySequence::init( " << s << " )" << endl;
 	QStringList rgs = QStringList::split( ',', s );
-	if( rgs.size() == 0 ) {
+	if( s == "none" || rgs.size() == 0 ) {
 		clear();
 		return true;
 	} else if( rgs.size() <= MAX_KEYS ) {
@@ -535,7 +535,7 @@ bool KShortcut::init( const QString& s )
 	bool bRet = true;
 	QStringList rgs = QStringList::split( ';', s );
 
-	if( rgs.size() == 0 )
+	if( s == "none" || rgs.size() == 0 )
 		clear();
 	else if( rgs.size() <= MAX_SEQUENCES ) {
 		m_nSeqs = rgs.size();
@@ -551,8 +551,12 @@ bool KShortcut::init( const QString& s )
 		bRet = false;
 	}
 
-	kdDebug(125) << "KShortcut::init( " << s << " ) => "
-		<< " keyCodeQt = " << keyCodeQt() << endl;
+	kdDebug(125) << "KShortcut::init( " << s << " )" << endl;
+	for( uint i = 0; i < m_nSeqs; i++ ) {
+		kdDebug(125) << "\tm_rgseq[" << i << "]: " << QString::number((int) m_rgseq[i].qt(),16) << endl;
+		for( uint j = 0; j < m_rgseq[i].key(0).variationCount(); j++ )
+			kdDebug(125) << "\t\tvariation = " << QString::number(m_rgseq[i].key(0).variation(0),16) << endl;
+	}
 	return bRet;
 }
 
@@ -573,7 +577,9 @@ const KKeySequence& KShortcut::seq( uint i ) const
 
 int KShortcut::keyCodeQt() const
 {
-	if( m_nSeqs >= 1 && m_rgseq[0].count() == 1 )
+	if( m_nSeqs >= 1
+	    && m_rgseq[0].count() == 1
+	    && m_rgseq[0].key(0).variationCount() >= 1 )
 		return m_rgseq[0].key(0).variation(0);
 	return QKeySequence();
 }

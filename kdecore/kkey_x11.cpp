@@ -333,7 +333,7 @@ KKeySequenceOlds KKeySequenceOld::stringToKeys( QString sKey )
 		}
 	}
 
-	if( rgKeys.size() <= 1 ) {
+	/*if( rgKeys.size() <= 1 ) {
 		kdDebug(125) << "stringToKeys( " << sKey << " ):"
 			<< " combqt: " << QString::number(key.m_keyCombQt, 16)
 			<< "/" << QString::number(key.m_keyCombQtExplicit, 16)
@@ -359,7 +359,7 @@ KKeySequenceOlds KKeySequenceOld::stringToKeys( QString sKey )
 			<< " str: " << key.toString()
 			<< endl;
 		}
-	}
+	}*/
 
 	return rgKeys;
 }
