@@ -192,7 +192,11 @@ void KURLRequester::init()
 	d->edit = new KLineEdit( this, "line edit" );
 
     myButton = new KURLDragPushButton( this, "kfile button");
-    myButton->setPixmap(SmallIcon(QString::fromLatin1("fileopen")));
+    QIconSet iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
+    QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+    myButton->setIconSet( iconSet );
+    myButton->setFixedWidth( pixMap.width()+8 );
+    myButton->setFixedHeight( pixMap.height()+8 );
     QToolTip::add(myButton, i18n("Open File Dialog"));
 
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
@@ -201,12 +205,6 @@ void KURLRequester::init()
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
     setFocusProxy( widget );
-
-    // This is really weird, but seems to be the only way to get the button
-    // to not grow to some weird big size and the lineedit take the same
-    // height. Note: order is important here. As I said, weird.
-    myButton->setFixedHeight( myButton->sizeHint().height() );
-    myButton->setFixedWidth( myButton->sizeHint().width() );
 
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
