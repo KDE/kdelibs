@@ -522,7 +522,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   *
   * Your program wants to tell the user something.
