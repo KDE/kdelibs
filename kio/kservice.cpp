@@ -307,19 +307,14 @@ public:
    KServiceReadProperty(const QString &_key, const QCString &_value)
 	: key(_key), value(_value) { }
    
-   bool hasGroup(const QString &) const { qWarning("hasGroup(const QString &)");
-return false; }
-   bool hasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
-return false; }
-   bool hasGroup(const char *) const { qWarning("hasGroup(const char *)");
-return false; }
+   bool hasGroup(const QString &) const { /*qDebug("hasGroup(const QString &)");*/ return false; }
+   bool hasGroup(const QCString &) const { /*qDebug("hasGroup(const QCString &)");*/ return false; }
+   bool hasGroup(const char *) const { /*qDebug("hasGroup(const char *)");*/ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
-   bool hasKey(const QString &pKey) const { qWarning("hasKey(const QString &)");
-return (pKey == key);}      
-   bool hasKey(const char *) const { qWarning("hasKey(const char *)");
-return true;}      
+   bool hasKey(const QString &pKey) const { /*qDebug("hasKey(const QString &)");*/ return (pKey == key);}      
+   bool hasKey(const char *) const { /*qDebug("hasKey(const char *)");*/ return true;}      
 
    QMap<QString,QString> entryMap(const QString &) const 
       { return QMap<QString,QString>(); }
