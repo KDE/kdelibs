@@ -31,7 +31,7 @@
 
 using namespace Arts;
 
-const unsigned int KIOInputStream_impl::PACKET_COUNT = 2;
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 5;
 
 KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
 {
@@ -149,7 +149,7 @@ void KIOInputStream_impl::processQueue()
 
 	if(m_data.size() < (m_packetBuffer * m_packetSize) && !m_firstBuffer)
 	{
-		kdDebug() << "Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
+		kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
 		return;
 	}
 	else
@@ -169,6 +169,8 @@ void KIOInputStream_impl::processQueue()
 	    if(packet->size == 0)
 			return;	    
 
+//		kdDebug() << "STREAMING: Filling one DataPacket with " << packet->size << " bytes of the stream!" << endl;
+
 	    m_sendqueue.pop();
 	    memcpy(packet->contents, m_data.data(), packet->size);
 	    memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);
@@ -179,6 +181,7 @@ void KIOInputStream_impl::processQueue()
 
 void KIOInputStream_impl::request_outdata(DataPacket<mcopbyte> *packet)
 {
+//	kdDebug() << "STREAMING: aRts requests one data packet to be filled with " << packet->size << " bytes of the stream! Stream->aRts packet Queue contains " << m_sendqueue.size() << " unfilled packets!" << endl;
 	m_sendqueue.push(packet);
 	processQueue();
 }
