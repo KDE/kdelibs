@@ -121,7 +121,7 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
    KURL url = item->url();
    // kdDebug(250) << "Item's url is " << url.prettyURL() << endl;
    KURL dirUrl( url );
-   dirUrl.setFileName( "" );
+    dirUrl.setFileName( QString::null );
    // kdDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
 
    parent  = findTVIByURL( dirUrl );
@@ -157,7 +157,8 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 {
 	    QString n = currItem->text();
 	    int mPoint = n.findRev( '.' );
-	    if( mPoint > 0 ) n = n.left( mPoint );
+                if( mPoint > 0 )
+                    n = n.left( mPoint );
 	    newKFTVI->setText( 0, n );
 	 }
       }
@@ -313,7 +314,7 @@ void KFileTreeBranch::slotDirlisterClear()
 
 void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
 {
-   if( oldUrl.cmp( m_startURL, true ))
+    if( oldUrl.equals( m_startURL, true ))
    {
       m_startURL = newUrl;
    }
@@ -336,19 +337,20 @@ void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
 KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
 {
    KFileTreeViewItem *resultItem = 0;
-   if( m_startURL.cmp(url, true) )
+
+    if( m_startURL.equals(url, true) )
    {
       kdDebug(250) << "findByURL: Returning root as a parent !" << endl;
       resultItem = m_root;
    }
-   else if( m_lastFoundURL.cmp( url, true ))
+    else if( m_lastFoundURL.equals( url, true ))
    {
       kdDebug(250) << "findByURL: Returning from lastFoundURL!" << endl;
       resultItem = m_lastFoundItem;
    }
    else
    {
-      kdDebug(250) << "findByURL: searching by dirlister!" << endl;
+        kdDebug(250) << "findByURL: searching by dirlister: " << url.url() << endl;
 
       KFileItem *it = findByURL( url );
 
@@ -359,6 +361,10 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
 	 m_lastFoundURL = url;
       }
    }
+
+    if ( !resultItem ) // file not found? startDir not existant?
+        resultItem = m_root;
+
    return( resultItem );
 }
 
@@ -398,7 +404,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
 	    it != m_openChildrenURLs.end(); ++it )
       {
 	 /* it is only interesting that the url _is_in_ the list. */
-	 if( (*it).cmp( url, true ) )
+            if( (*it).equals( url, true ) )
 	    wantRecurseUrl = true;
       }
 
