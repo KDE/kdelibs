@@ -257,7 +257,7 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 void HTMLFrameElementImpl::layout(bool)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Frame)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
+    printf("%s(Frame)::layout(?) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
     width = availableWidth;
 
