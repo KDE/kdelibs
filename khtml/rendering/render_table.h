@@ -77,7 +77,7 @@ public:
 
     virtual const char *renderName() const { return "RenderTable"; }
 
-    virtual bool isInline() const { return false; }
+    virtual bool isInline() const;
     virtual bool isRendered() const { return true; }
     virtual bool isHTMLTable() const { return m_htmlTable; }
     virtual void setHTMLTable(bool b) { m_htmlTable = b; }
