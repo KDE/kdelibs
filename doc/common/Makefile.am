@@ -7,11 +7,11 @@ commondir = $(kde_htmldir)/en/common
 common_DATA = caution.png home.png important.png next.png note.png \
 	prev.png tip.png toc-blank.png toc-minus.png toc-plus.png \
 	up.png warning.png \
-	fdl-licence.html fdl-licence fdl-notice \
-	gpl-licence.html gpl-licence gpl-notice \
-	lgpl-licence.html lgpl-licence lgpl-notice \
+	fdl-license.html fdl-license fdl-notice \
+	gpl-license.html gpl-license gpl-notice \
+	lgpl-license.html lgpl-license lgpl-notice \
 	mieterra-artistic-license \
 	kde-common.css kde-default.css \
 	xml.dcl logotp3-small.png logotp3.png \
-	artistic-licence.html bsd-licence.html \
-	qpl-licence.html x11-licence.html
+	artistic-license.html bsd-license.html \
+	qpl-license.html x11-license.html
