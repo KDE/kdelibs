@@ -66,21 +66,29 @@ public:
 
     /**
      * The person's name
+     * @return the person's name (can be QString::null, if it has been 
+     *           constructed with a null name)
      */
     QString name() const;
 
     /**
      * The person's task
+     * @return the person's task (can be QString::null, if it has been 
+     *           constructed with a null task)
      */
     QString task() const;
 
     /**
      * The person's email address
+     * @return the person's email address (can be QString::null, if it has been 
+     *           constructed with a null email)
      */
     QString emailAddress() const;
 
     /**
      * The home page or a relevant link
+     * @return the persons home page (can be QString::null, if it has been 
+     *           constructed with a null home page)
      */
     QString webAddress() const;
 
@@ -121,11 +129,15 @@ public:
 
     /** 
      * The translator's name
+     * @return the translators's name (can be QString::null, if it has been 
+     *           constructed with a null name)
      */
     QString name() const;
 
     /**
      * The translator's email
+     * @return the translator's email address (can be QString::null, if it has been 
+     *           constructed with a null email)
      */
     QString emailAddress() const;
     
@@ -154,6 +166,9 @@ private:
 class KAboutData
 {
   public:
+  /**
+   * Descibes the license of the software.
+   */
     enum LicenseKey
     {
       License_Custom = -2,
@@ -226,13 +241,14 @@ class KAboutData
      *
      * @param task What the person is responsible for. This text can contain
      *             newlines. It should be marked for translation like this:
-     *             I18N_NOOP("Task description...")
+     *             I18N_NOOP("Task description..."). Can be 0.
      *
      * @param emailAddress An Email address where the person can be reached.
+     *                     Can be 0.
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
-     *        is correct, "some.domain" is not.
+     *        is correct, "some.domain" is not. Can be 0.
      *
      */
     void addAuthor( const char *name,
@@ -249,12 +265,14 @@ class KAboutData
      * @param task What the person has done to deserve the honor. The
      *        text can contain newlines. It should be marked for 
      *        translation like this: I18N_NOOP("Task description...")
+     *        Can be 0.
      *
      * @param emailAddress An Email address when the person can be reached.
+     *        Can be 0.
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
-     *        is correct, "some.domain" is not.
+     *        is correct, "some.domain" is not. Can be 0.
      *
      */
     void addCredit( const char *name,
@@ -267,8 +285,10 @@ class KAboutData
      * on the language, just use a dummy text marked for translation.
      * 
      * For example:
+     * <pre>
      * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names")
      * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
+     * </pre>
      *
      * The translator can then translate this dummy text with his name
      * or with a list of names separated with ",".
@@ -280,6 +300,8 @@ class KAboutData
      * default strings above are added to the applications po file
      * automatically.
      *
+     * @param name the name of the translator
+     * @param emailAddress the email address of the translator
      * @see KAboutTranslator
      */
     void setTranslator(const char* name, const char* emailAddress);
@@ -287,15 +309,17 @@ class KAboutData
     /**
      * Defines a licence text.
      *
-     * @param license The license text in utf8 encoding.
-     *
      * The text will be translated if it got marked for
      * translations with the I18N_NOOP() macro.
      *
      * Example:
+     * <pre>
      * setLicenseText( I18N_NOOP("This is my license"));
+     * </pre>
      *
      * NOTE: No copy of the text is made.
+     *
+     * @param license The license text in utf8 encoding.
      */
     void setLicenseText( const char *license );
 
@@ -307,58 +331,70 @@ class KAboutData
     void setLicenseTextFile( const QString &file );
 
     /**
+     * Returns the application's internal name.
      * @return the internal program name.
      */
     const char *appName() const;
 
     /**
+     * Returns the translated program name.
      * @return the program name (translated).
      */
     QString programName() const;
 
     /**
+     * Returns the program's version.
      * @return the version string.
      */
     QString version() const;
 
     /**
-     * @return the short description (translated).
+     * Returns a short, translated description.
+     * @return the short description (translated). Can be 
+     *         QString::null if not set.
      */
     QString shortDescription() const;
 
     /**
-     * @return the application homepage URL.
+     * Returns the application homepage.
+     * @return the application homepage URL. Can be QString::null if
+     *         not set.
      */
     QString homepage() const;
 
     /**
-     * @return the email address where to report bugs.
+     * Returns the email address for bugs.
+     * @return the email address where to report bugs. 
      */
     QString bugAddress() const;
 
     /**
+     * Returns a list of authors.
      * @return author information (list of persons).
      */
     const QValueList<KAboutPerson> authors() const;
 
     /**
+     * Returns a list of persons who contributed.
      * @return credit information (list of persons).
      */
     const QValueList<KAboutPerson> credits() const;
 
     /**
+     * Returns a list of translators.
      * @return translators information (list of persons)
      */
     const QValueList<KAboutTranslator> translators() const;
 
     /** 
+     * Returns a message about the translation team.
      * @return a message about the translation team 
      */
     static QString aboutTranslationTeam();
 
-
     /**
-     * @return the free form text (translated). 
+     * Returns a translated, free form text.
+     * @return the free form text (translated). Can be QString::null if not set.
      */
     QString otherText() const;
 
@@ -372,7 +408,8 @@ class KAboutData
     QString license() const;
 
     /**
-     * @return the copyright statement.
+     * Returns the copyright statement.
+     * @return the copyright statement. Can be QString::null if not set.
      */
     QString copyrightStatement() const { return( QString::fromLatin1(mCopyrightStatement )); }
 
