@@ -102,6 +102,11 @@ If you wish to attach again you will need to re-register as well.  If
 you only wish to change the ID under which you are registered, simply
 call DCOPClient::registerAs() with the new name.
 
+KUniqueApplication automatically registers itself to DCOP. If you
+are using KUniqueApplication you should not attach or register
+yourself, this is already done. The appId is by definition
+equal to kapp->name(). You can retrieve the registered DCOP client
+by calling kapp->dcopClient().
 
 Sending Data to a Remote Application:
 -------------------------------------
