@@ -90,8 +90,7 @@ QString transform( const QString &pat, const QString& tss)
     contents.assign(xmlFile.readAll());
     contents.truncate(xmlFile.size());
     xmlFile.close();
-    QString tmp;
-    if (contents.left(5) != "<?xml") {
+    /* if (contents.left(5) != "<?xml") {
         fprintf(stderr, "xmlizer\n");
         INFO(i18n("XMLize document"));
         FILE *p = popen(QString::fromLatin1("xmlizer %1").arg(pat).latin1(), "r");
@@ -105,7 +104,7 @@ QString transform( const QString &pat, const QString& tss)
         }
         xmlFile.close();
         pclose(p);
-    }
+    } */
 
     INFO(i18n("Parsing document"));
     xmlParserCtxtPtr ctxt = xmlCreateMemoryParserCtxt
