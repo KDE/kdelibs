@@ -1607,9 +1607,9 @@ void NETRootInfo::restackRequest(Window window, Window above, int detail)
     e.xclient.display = p->display;
     e.xclient.window = window,
     e.xclient.format = 32;
-    e.xclient.data.l[0] = above;
-    e.xclient.data.l[1] = detail;
-    e.xclient.data.l[2] = 0l;
+    e.xclient.data.l[0] = FromTool;
+    e.xclient.data.l[1] = above;
+    e.xclient.data.l[2] = detail;
     e.xclient.data.l[3] = 0l;
     e.xclient.data.l[4] = 0l;
 
@@ -1801,7 +1801,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 
 	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
 	        this2->restackWindow(event->xclient.window,
-                    event->xclient.data.l[0], event->xclient.data.l[1]);
+                    event->xclient.data.l[1], event->xclient.data.l[2]);
 	} else if (event->xclient.message_type == wm_protocols
 	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
 	    dirty = WMPing;
