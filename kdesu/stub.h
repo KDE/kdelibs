@@ -22,8 +22,9 @@
 typedef QValueList<QCString> QCStringList;
 
 /**
- * StubProcess extends PtyProcess with functionality to chat 
- * with kdesu_stub.
+ * Chat with kdesu_stub.
+ *
+ * StubProcess extends PtyProcess with functionality to chat with kdesu_stub.
  */
 
 class StubProcess: public PtyProcess
@@ -32,19 +33,15 @@ public:
     StubProcess();
     ~StubProcess();
 
-    /**
-     * Set the command.
-     */
+    /** Set the command. */
     void setCommand(QCString command) { m_Command = command; }
 
-    /**
-     * Set the target user.
-     */
+    /** Set the target user.  */
     void setUser(QCString user) { m_User = user; }
 
     /**
      * Set to "X only mode": DCOP is not forwarded and the sycoca is not
-     * built. Relevant only when executing kdesu_stub.
+     * built.
      */
     void setXOnly(bool xonly) { m_bXOnly = xonly; }
 
@@ -67,19 +64,22 @@ public:
     void setScheduler(int sched) { m_Scheduler = sched; }
 
 protected:
-    /**
-     * Have a conversation with kdesu_stub.
-     */
+
+    /** Exchange all parameters with kdesu_stub. */
     int ConverseStub(bool check_only);
 
     /** 
-     * These virtual functions can be overloaded when special behaviour is
-     * desired.
+     * This virtual function can be overloaded when special behaviour is
+     * desired. By default, it returns the value returned by @ref #KCookie.
      */
     virtual QCString display() { return m_pCookie->display(); }
+    /** See @ref #display. */
     virtual QCString displayAuth() { return m_pCookie->displayAuth(); }
+    /** See @ref #display. */
     virtual QCStringList dcopServer() { return m_pCookie->dcopServer(); }
+    /** See @ref #display. */
     virtual QCStringList dcopAuth() { return m_pCookie->dcopAuth(); }
+    /** See @ref #display. */
     virtual QCStringList iceAuth() { return m_pCookie->iceAuth(); }
 
     bool m_bXOnly;

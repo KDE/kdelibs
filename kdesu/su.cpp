@@ -36,9 +36,9 @@
 
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "SuProcess"
+#define ID "SuProcess: "
 #endif
 
 
@@ -84,17 +84,20 @@ int SuProcess::exec(const char *password, int check)
     if (StubProcess::exec(__PATH_SU, args) < 0)
 	return -1;
     
-    if (ConverseSU(password) < 0) {
-	kDebugError("%s: Conversation with su failed", ID);
+    if (ConverseSU(password) < 0) 
+    {
+	kdError(900) << ID << "Conversation with su failed\n";
 	return -1;
     } 
-    if (m_bErase) {
+    if (m_bErase) 
+    {
 	char *ptr = const_cast<char *>(password);
 	for (unsigned i=0; i<strlen(password); i++)
 	    ptr[i] = '\000';
     }
-    if (ConverseStub(check) < 0) {
-	kDebugError("%s: Converstation with kdesu_stub failed", ID);
+    if (ConverseStub(check) < 0) 
+    {
+	kdError(900) << ID << "Converstation with kdesu_stub failed\n";
 	return -1;
     }
     int ret = waitForChild();

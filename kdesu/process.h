@@ -22,8 +22,11 @@ class PTY;
 typedef QValueList<QCString> QCStringList;
 
 /**
- * PtyProcess provides for communications with tty based programs
- * that require a terminal.
+ * Synchronous communication with tty programs.
+ *
+ * PtyProcess provides synchronous communication with tty based programs. 
+ * The communications channel used is a pseudo tty (instead of a pipe, what
+ * is normally used). This means that programs which require a terminal will work.
  */
 
 class PtyProcess
@@ -33,43 +36,37 @@ public:
     virtual ~PtyProcess();
 
     /**
-     * Fork off and execute a command. The command's standard in/output is
-     * connected to a pty. This pty can be accessed by #ref readLine and
-     * #ref writeLine.
+     * Fork off and execute a command. The command's standard in and output 
+     * are connected to a pseudo tty. They are accessible with @ref #readLine 
+     * and @ref #writeLine.
      * @param command The command to execute.
      * @param args The arguments to the command.
      */
     int exec(QCString command, QCStringList args);
 
     /**
-     * Read a line from the pty. This call blocks until a single, full line
-     * is read. This does not return with EINTR when the read() system call
-     * is interrupted by a signal.
+     * Read a line from the program's standard out. Depending on the @em block 
+     * parameter, this call blocks until a single, full line is read. 
+     * @param block Block until a full line is read?
+     * @return The output string.
      */
     QCString readLine(bool block=true);
 
     /**
-     * Write a line of text to the pty.
+     * Write a line of text to the program's standard in.
      * @param line The text to write.
      * @param addNewline Adds a '\n' to the line.
      */
     void writeLine(QCString line, bool addNewline=true);
 
-    /** Enable/disable terminal output.  */
-    void setTerminal(bool terminal) { m_bTerminal = terminal; }
-
-    /** Overwritte the password as soon as it is used. */
-    void setErase(bool erase) { m_bErase = erase; }
-
     /**
      * Set exit string. If a line of program output matches this,
-     * @ref #waitForChild() will kill it.
+     * @ref #waitForChild() will terminate the program and return.
      */
     void setExitString(QCString exit) { m_Exit = exit; }
 
     /**
-     * Wait for the child to exit. If a line of output matches the exit
-     * string set by @ref #setExitString, the child is terminated.
+     * Wait for the child to exit. See also @ref #setExitString.
      */
     int waitForChild();
 
@@ -80,8 +77,16 @@ public:
      */
     int WaitSlave();
 
-    /** Enables/disables the ECHO flag.  */
+    /** Enables/disables local echo on the pseudo tty. */
     int enableLocalEcho(bool enable=true);
+
+    /** Enable/disable terminal output. Relevant only to some subclasses. */
+    void setTerminal(bool terminal) { m_bTerminal = terminal; }
+
+    /** Overwritte the password as soon as it is used. Relevant only to
+     * some subclasses. */
+    void setErase(bool erase) { m_bErase = erase; }
+
 
 protected:
     bool m_bErase, m_bTerminal;

@@ -34,10 +34,12 @@
 #include "client.h"
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "KDEsuClient"
+#define ID "KDEsuClient: "
 #endif
+
+#define ERR strerror(errno)
 
 #ifndef SUN_LEN
 #define SUN_LEN(ptr) ((ksize_t) (((struct sockaddr_un *) 0)->sun_path) \
@@ -46,11 +48,12 @@
 
 KDEsuClient::KDEsuClient()
 {
+    d = new KDEsuClientPrivate;
     sockfd = -1;
     char *dpy = getenv("DISPLAY");
     if (dpy == 0L) 
     {
-	kDebugWarning("%s: $DISPLAY is not set", ID);
+	kdWarning(900) << ID << "$DISPLAY is not set\n";
 	return;
     }
     sock.sprintf("/tmp/kdesud_%d_%s", (int) getuid(), dpy);
@@ -64,45 +67,55 @@ KDEsuClient::~KDEsuClient()
 	close(sockfd);
 }
 
-
+// BCI: remove me
 int KDEsuClient::connect()
+{
+    return _connect();
+}
+
+// BCI: rename to connect
+int KDEsuClient::_connect()
 {
     if (sockfd >= 0)
 	close(sockfd);
-    if (access(sock, R_OK|W_OK)) {
+    if (access(sock, R_OK|W_OK)) 
+    {
 	sockfd = -1;
 	return -1;
     }
 
     sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-	kDebugWarning("%s: socket(): %m", ID);
+    if (sockfd < 0) 
+    {
+	kdWarning(900) << ID << "socket(): " << ERR << "\n";
 	return -1;
     }
     struct sockaddr_un addr;
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, sock);
 
-    if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) {
-	kDebugWarning("%s: connect(): %m", ID);
+    if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) 
+    {
+	kdWarning(900) << ID << "connect():" << ERR << "\n";
 	close(sockfd); sockfd = -1;
 	return -1;
     }
     return 0;
 }
 
-
 QCString KDEsuClient::escape(QCString str)
 {
     QCString copy = str;
 
     int n = 0;
-    while ((n = copy.find("\\", n)) != -1) {
+    while ((n = copy.find("\\", n)) != -1) 
+    {
 	copy.insert(n, '\\');
 	n += 2;
     }
     n = 0;
-    while ((n = copy.find("\"", n)) != -1) {
+    while ((n = copy.find("\"", n)) != -1) 
+    {
 	copy.insert(n, '\\');
 	n += 2;
     }
@@ -112,7 +125,6 @@ QCString KDEsuClient::escape(QCString str)
 
     return copy;
 }
-
 
 int KDEsuClient::command(QCString cmd, QCString *result)
 {
@@ -126,7 +138,7 @@ int KDEsuClient::command(QCString cmd, QCString *result)
     int nbytes = recv(sockfd, buf, 1023, 0);
     if (nbytes <= 0) 
     {
-	kDebugWarning("%s: no reply from daemon", ID);
+	kdWarning(900) << ID << "no reply from daemon\n";
 	return -1;
     }
     buf[nbytes] = '\000';
@@ -140,7 +152,6 @@ int KDEsuClient::command(QCString cmd, QCString *result)
     return 0;
 }
 
-
 int KDEsuClient::setPass(const char *pass, int timeout)
 {
     QCString cmd = "PASS ";
@@ -151,25 +162,28 @@ int KDEsuClient::setPass(const char *pass, int timeout)
     return command(cmd);
 }
 
+// BCI: remove
+int KDEsuClient::exec(QCString cmd)
+{
+    return exec(cmd, d->user);
+}
 
-int KDEsuClient::exec(QCString key)
+int KDEsuClient::exec(QCString prog, QCString user)
 {
     QCString cmd;
     cmd = "EXEC ";
-    cmd += escape(key);
-    cmd += "\n";
-    return command(cmd);
-}
-
-
-int KDEsuClient::setUser(QCString user)
-{
-    QCString cmd = "USER ";
+    cmd += escape(prog);
+    cmd += " ";
     cmd += escape(user);
     cmd += "\n";
     return command(cmd);
 }
 
+// BCI: remove me
+int KDEsuClient::setUser(QCString user)
+{
+    d->user = user;
+}
 
 int KDEsuClient::setHost(QCString host)
 {
@@ -179,7 +193,6 @@ int KDEsuClient::setHost(QCString host)
     return command(cmd);
 }
 
-
 int KDEsuClient::setPriority(int prio)
 {
     QCString cmd;
@@ -187,14 +200,12 @@ int KDEsuClient::setPriority(int prio)
     return command(cmd);
 }
 
-
 int KDEsuClient::setScheduler(int sched)
 {
     QCString cmd;
     cmd.sprintf("SCHD %d\n", sched);
     return command(cmd);
 }
-
 
 int KDEsuClient::delCommand(QCString key)
 {
@@ -204,12 +215,20 @@ int KDEsuClient::delCommand(QCString key)
     return command(cmd);
 }
 
+// BCI: remove
 int KDEsuClient::setVar(QCString key, QCString value)
 {
-    return setVar(key, value, 0);
+    return setVar(key, value, 0, 0);
 }
 
+// BCI: remove
 int KDEsuClient::setVar(QCString key, QCString value, int timeout)
+{
+    return setVar(key, value, timeout, 0);
+}
+
+int KDEsuClient::setVar(QCString key, QCString value, int timeout, 
+	QCString group)
 {
     QCString cmd = "SET ";
     cmd += escape(key);
@@ -217,6 +236,8 @@ int KDEsuClient::setVar(QCString key, QCString value, int timeout)
     cmd += escape(value);
     cmd += " ";
     cmd += QCString().setNum(timeout);
+    cmd += " ";
+    cmd += escape(group);
     cmd += "\n";
     return command(cmd);
 }
@@ -239,11 +260,18 @@ int KDEsuClient::delVar(QCString key)
     return command(cmd);
 }
 
+int KDEsuClient::delGroup(QCString group)
+{
+    QCString cmd = "DELG ";
+    cmd += escape(group);
+    cmd += "\n";
+    return command(cmd);
+}
+
 int KDEsuClient::ping()
 {
     return command("PING\n");
 }
-
 
 int KDEsuClient::stopServer()
 {
@@ -257,15 +285,16 @@ int KDEsuClient::startServer()
 	return -1;
 
     struct stat sbuf;
-    if (stat(daemon.latin1(), &sbuf) < 0) {
-	kDebugWarning("%s: stat(): %m", ID);
-	return -1;
-    }
-    if (!(sbuf.st_mode & S_ISGID)) {
-	kDebugWarning("%s: kdesud not setgid: not using it", ID);
-	return -1;
+    if (stat(daemon.latin1(), &sbuf) < 0) 
+    {
+	kdWarning(900) << ID << "stat(): " << ERR << "\n";
+    } else if (!(sbuf.st_mode & S_ISGID)) 
+    {
+	kdWarning(900) << ID << "kdesud not setgid!\n";
     }
 
+    // kdesud only forks to the background after it is accepting
+    // connections.
     int ret = system("kdesud");
     connect();
     return ret;

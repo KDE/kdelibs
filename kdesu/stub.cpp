@@ -24,9 +24,9 @@
 #include "kcookie.h"
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "StubProcess"
+#define ID "StubProcess: "
 #endif
 
 
@@ -64,7 +64,8 @@ QCString StubProcess::commaSeparatedList(QCStringList lst)
 
     QCStringList::Iterator it = lst.begin();
     QCString str = *it;
-    for (it++; it!=lst.end(); it++) {
+    for (it++; it!=lst.end(); it++) 
+    {
 	str += ',';
 	str += *it;
     }
@@ -82,7 +83,8 @@ int StubProcess::ConverseStub(bool check_only)
     enableLocalEcho(false);
 
     QCString line, tmp;
-    while (1) {
+    while (1) 
+    {
 	line = readLine();
 	if (line.isNull())
 	    return -1;
@@ -116,7 +118,7 @@ int StubProcess::ConverseStub(bool check_only)
 	} else if (line == "end") {
 	    return 0;
 	} else {
-	    kDebugWarning("%s: Unknown request: -->%s<--", ID, line.data());
+	    kdWarning(900) << ID << "Unknown request: -->" << line << "<--\n";
 	    return -1;
 	}
     }

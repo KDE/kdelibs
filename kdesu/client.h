@@ -19,9 +19,21 @@
 #include <qcstring.h>
 
 /**
- * A client class to access kdesud, the KDE su daemon.
- * As a trusted third party, it can execute commands for you 
- * and store variables.
+ * A client class to access kdesud, the KDE su daemon. Kdesud can assist in 
+ * password caching in two ways:
+ *
+ * @li For high security passwords, like for su and ssh, it executes the
+ * password requesting command for you. It feeds the password to the
+ * command, without ever returning it to you, the user. The daemon should 
+ * be installed setgid nogroup, in order to be able to act as an inaccessible, 
+ * trusted 3rd party. 
+ * See @ref #exec, @ref #setPass, @ref #delCommand.
+ *
+ * @li For lower security passwords, like web and ftp passwords, it can act
+ * as a persistent storage for string variables. These variables are
+ * returned to the user, and the daemon doesn't need to be setgid nogroup
+ * for this.
+ * See @ref #setVar, @ref #delVar, @ref #delGroup.
  */
 
 class KDEsuClient {
@@ -30,13 +42,16 @@ public:
     ~KDEsuClient();
 
     /**
-     * Execute a command through kdesud. If a password is already set, the 
-     * command and password are stored and the command can be executed later
-     * on without having to supply a password. 
+     * Lets kdesud execute a command. If the daemon does not have a password 
+     * for this command, this will fail and you need to call @ref #setPass().
      *
      * @param command The command to execute.
+     * @param user The user to run the command as.
      * @return Zero on success, -1 on failure.
      */
+    int exec(QCString command, QCString user);
+
+    /* BCI: remove me */
     int exec(QCString command);
 
     /**
@@ -48,9 +63,7 @@ public:
      */
     int setPass(const char *pass, int timeout);
 
-    /**
-     * Set the target user.
-     */
+    /** BCI: remove me. */
     int setUser(QCString user);
 
     /**
@@ -59,20 +72,24 @@ public:
     int setHost(QCString host);
 
     /**
-     * Set the desired priority, see @ref #StubProcess.
+     * Set the desired priority (optional), see @ref #StubProcess.
      */
     int setPriority(int priority);
 
     /**
-     * Set the desired scheduler, see @ref #StubProcess.
+     * Set the desired scheduler (optional), see @ref #StubProcess.
      */
     int setScheduler(int scheduler);
 
     /**
-     * Remove a command and it's password from kdesud.
-     * @param command The command to remove.
+     * Remove a password for a user/command.
+     * @param command The command.
+     * @param user The user.
      * @return zero on success, -1 on an error
      */
+    int delCommand(QCString command, QCString user);
+
+    /** BCI: remove me. */
     int delCommand(QCString command);
 
     /**
@@ -81,8 +98,12 @@ public:
      * @param value Its value.
      * @param timeout The timeout in seconds for this key. Zero means 
      * no timeout.
+     * @param group Make the key part of a group. See @ref #delGroup.
      * @return zero on success, -1 on failure.
      */
+    int setVar(QCString key, QCString value, int timeout, QCString group);
+
+    /** BCI: remove me. */
     int setVar(QCString key, QCString value, int timeout);
 
     /** BCI: remove me. */
@@ -103,6 +124,12 @@ public:
     int delVar(QCString key);
 
     /**
+     * Delete all persistent variables in a group.
+     * @param group The group name. See @ref #setVar.
+     */
+    int delGroup(QCString group);
+
+    /**
      * Ping kdesud. This can be used for diagnostics.
      * @return Zero on success, -1 on failure
      */
@@ -118,13 +145,17 @@ public:
      */
     int startServer();
 
-    /**
-     * re(connect) to kdesud
-     */
+    /** BCI: remove me. */
     int connect();
 
 private:
-    class KDEsuClientPrivate;
+    int _connect();
+
+    class KDEsuClientPrivate
+    {
+    public:
+	QCString user;
+    };
     KDEsuClientPrivate *d;
 
     int sockfd;

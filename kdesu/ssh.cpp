@@ -39,9 +39,9 @@
 
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "SshProcess"
+#define ID "SshProcess: "
 #endif
 
 
@@ -79,11 +79,13 @@ int SshProcess::exec(const char *password, int check)
 	setTerminal(true);
 
     QCStringList args;
-    if (!m_bXOnly) {
+    if (!m_bXOnly) 
+    {
 	// Install DCOP forward
 	QCString fwd = dcopForward();
-	if (fwd.isEmpty()) {
-	    kDebugError("%s: Could not get DCOP forward", ID);
+	if (fwd.isEmpty()) 
+	{
+	    kdError(900) << ID << "Could not get DCOP forward\n";
 	    return -1;
 	}
 	args += "-R"; args += fwd;
@@ -96,23 +98,28 @@ int SshProcess::exec(const char *password, int check)
 	return -1;
 
     int ret = ConverseSsh(password, check);
-    if (ret < 0) {
-	kDebugError("%s: Conversation with ssh failed", ID);
+    if (ret < 0) 
+    {
+	kdError(900) << ID << "Conversation with ssh failed\n";
 	return -1;
     } 
-    if (m_bErase) {
+    if (m_bErase) 
+    {
 	char *ptr = const_cast<char *>(password);
 	for (unsigned i=0; i<strlen(password); i++)
 	    ptr[i] = '\000';
     }
     setExitString("Waiting for forwarded connections to terminate");
-    if (ret == 0) {
-	if (ConverseStub(check) < 0) {
-	    kDebugError("%s: Converstation with kdesu_stub failed", ID);
+    if (ret == 0) 
+    {
+	if (ConverseStub(check) < 0) 
+	{
+	    kdError(900) << ID << "Converstation with kdesu_stub failed\n";
 	    kill(m_Pid, SIGTERM);
 	}
 	ret = waitForChild();
-    } else {
+    } else 
+    {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
     }
@@ -133,7 +140,8 @@ QCString SshProcess::dcopForward()
     QCString result, host;
     QCStringList srv = StubProcess::dcopServer();
     QCStringList::Iterator it;
-    for (m_dcopSrv=0,it=srv.begin(); it!=srv.end(); m_dcopSrv++, it++) {
+    for (m_dcopSrv=0,it=srv.begin(); it!=srv.end(); m_dcopSrv++, it++) 
+    {
 	i = (*it).find('/');
 	if (i == -1)
 	    continue;
@@ -176,7 +184,8 @@ int SshProcess::ConverseSsh(const char *password, int check)
     QCString line;
     int state = 0;
 
-    while (state < 2) {
+    while (state < 2) 
+    {
 	line = readLine();
 	if (line.isNull())
 	    return -1;

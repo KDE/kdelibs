@@ -47,11 +47,11 @@ public:
     int exec(const char *password, int check=0);
 
 protected:
-    QCString display();
-    QCString displayAuth();
-    QCStringList dcopServer();
-    QCStringList dcopAuth();
-    QCStringList iceAuth();
+    virtual QCString display();
+    virtual QCString displayAuth();
+    virtual QCStringList dcopServer();
+    virtual QCStringList dcopAuth();
+    virtual QCStringList iceAuth();
 
 private:
     QCString dcopForward();
