@@ -268,7 +268,7 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 	do {
 	    --x;
 	    --y;
-	    if ( (**x) < (**y) ) {
+	    if ( !((**x) < (**y)) ) {
 		swapped = TRUE;
 		swap( x, y );
 	    }
