@@ -24,6 +24,7 @@
 
 
 #include "rgb.h"
+#include <qimage.h>
 #include <kdebug.h>
 
 
@@ -535,7 +536,7 @@ bool SGIImage::writeImage(QImage& img)
 
 	img = img.convertDepth(32);
 	if (img.isNull()) {
-		kdDebug(399) << "can't convert this image to depth 32" << endl;
+		kdDebug(399) << "can't convert image to depth 32" << endl;
 		return false;
 	}
 
@@ -548,6 +549,12 @@ bool SGIImage::writeImage(QImage& img)
 
 	uint i;
 	m_numrows = m_ysize * m_zsize;
+
+	// compressing a row with up to 11 pixels takes 11 or more bytes
+	// (start/length table: 8, smallest possible RLE packet: 3)
+	if (m_xsize <= 11)
+		return writeVerbatim(img);
+
 	m_starttab = new Q_UINT32[m_numrows];
 	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
 
