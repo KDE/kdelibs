@@ -305,6 +305,7 @@ class QActionCollection : public QObject
     Q_OBJECT
 public:
     QActionCollection( QObject* parent = 0, const char* name = 0 );
+    QActionCollection( const QActionCollection& copy );
     ~QActionCollection();
 
     virtual void insert( QAction* );
@@ -318,6 +319,10 @@ public:
     virtual QStringList groups() const;
     virtual QValueList<QAction*> actions( const QString& group );
     virtual QValueList<QAction*> actions();
+
+    QActionCollection operator+ (const QActionCollection& ) const;
+    QActionCollection& operator= (const QActionCollection& );
+    QActionCollection& operator+= (const QActionCollection& );
 
 //    bool setConfiguration( const QDomElement& element );
 //    QDomElement configuration( QDomDocument& doc, bool properties ) const;

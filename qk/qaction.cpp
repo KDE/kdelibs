@@ -1037,6 +1037,38 @@ QValueList<QAction*> QActionCollection::actions()
 
     return lst;
 }
+
+QActionCollection::QActionCollection(const QActionCollection& copy)
+{
+  m_actions = copy.m_actions;
+}
+
+QActionCollection QActionCollection::operator+(const QActionCollection& c) const
+{
+  QActionCollection ret( *this );
+
+  QListIterator<QAction> it(c.m_actions);
+  for ( ; it.current(); ++it )
+    ret.insert( it.current() );
+
+  return ret;
+}
+
+QActionCollection& QActionCollection::operator= (const QActionCollection& c)
+{
+  m_actions = c.m_actions;
+  return *this;
+}
+
+QActionCollection& QActionCollection::operator+= (const QActionCollection& c)
+{
+  QListIterator<QAction> it(c.m_actions);
+  for ( ; it.current(); ++it )
+    insert( it.current() );
+
+  return *this;
+}
+
 /*
 bool QActionCollection::setConfiguration( const QDomElement& element )
 {
