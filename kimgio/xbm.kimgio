@@ -14,6 +14,7 @@ Name[no]=X Window-bitmaps
 Name[no_NY]=X Window-bitmap
 Name[pt]=Pixmaps do XWindow
 Name[pt_BR]=Bitmaps XWindow
+Name[ro]=Bitmap-uri XWindow
 Name[sl]=Bitne slike za Xwindow
 Name[sv]=XWindow bitmappar
 Read=true
