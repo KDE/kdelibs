@@ -253,6 +253,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
 
     showAdvanced( false );
+    
+    slotEventChanged( 0L ); // disable widgets by default
 }
 
 KNotifyWidget::~KNotifyWidget()
@@ -315,7 +317,7 @@ Application * KNotifyWidget::addApplicationEvents( const QString& path )
         m_allApps.append( app );
         return app;
     }
-
+    
     return 0L;
 }
 
@@ -329,6 +331,7 @@ void KNotifyWidget::clearVisible()
 {
     m_visibleApps.clear();
     m_listview->clear();
+    slotEventChanged( 0L ); // disable widgets
 }
 
 void KNotifyWidget::showEvent( QShowEvent *e )
@@ -410,7 +413,7 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
                 !event.commandline.isEmpty();
     item->setPixmap( COL_EXECUTE, doIt ? d->pixmaps[COL_EXECUTE] : emptyPix );
 
-    doIt = (event.presentation & KNotifyClient::Sound) && 
+    doIt = (event.presentation & KNotifyClient::Sound) &&
            !event.soundfile.isEmpty();
     item->setPixmap( COL_SOUND, doIt ? d->pixmaps[COL_SOUND] : emptyPix );
 
@@ -595,7 +598,7 @@ void KNotifyWidget::logfileChanged( const QString& text )
     currentEvent()->logfile = text;
     bool ok = !text.isEmpty() && m_logToFile->isChecked();
     item->setPixmap( COL_LOGFILE, ok ? d->pixmaps[COL_LOGFILE] : QPixmap() );
-    
+
     emit changed( true );
 }
 
