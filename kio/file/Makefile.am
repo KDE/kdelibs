@@ -14,5 +14,3 @@ noinst_HEADERS = file.h
 kioconfig_DATA = file.desktop
 kioconfigdir = $(kde_confdir)/protocols
 
-messages:
-

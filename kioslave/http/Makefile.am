@@ -17,5 +17,3 @@ noinst_HEADERS = http.h extern_md5.h
 kioconfig_DATA = http.desktop https.desktop
 kioconfigdir = $(kde_confdir)/protocols
 
-messages:
-

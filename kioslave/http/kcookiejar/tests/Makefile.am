@@ -11,5 +11,3 @@ bin_PROGRAMS = kcookiejartest
 
 kcookiejartest_SOURCES = kcookiejartest.cpp 
 
-messages:
-

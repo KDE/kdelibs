@@ -15,5 +15,3 @@ kcookiejar_SOURCES = kcookiejar.cpp kcookiejar.h 	\
 
 kcookiejar_METASOURCES = AUTO
 
-messages:
-

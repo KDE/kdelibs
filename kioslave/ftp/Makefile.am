@@ -14,5 +14,3 @@ noinst_HEADERS = main.h ftp.h
 kioconfig_DATA = ftp.desktop
 kioconfigdir = $(kde_confdir)/protocols
 
-messages:
-
