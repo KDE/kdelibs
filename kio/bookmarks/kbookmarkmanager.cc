@@ -59,6 +59,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
     m_toolbarDoc.clear();
 
     m_update = true;
+    m_showNSBookmarks = true;
 
     Q_ASSERT( !bookmarksFile.isEmpty() );
     m_bookmarksFile = bookmarksFile;
@@ -117,7 +118,7 @@ void KBookmarkManager::parse() const
         {
             kdWarning() << "Old style bookmarks found. Calling convertToXBEL." << endl;
             docElem.setTagName("xbel");
-            if ( docElem.hasAttribute( "HIDE_NSBK" ) ) // non standard either, but we need it
+            if ( docElem.hasAttribute( "HIDE_NSBK" ) && m_showNSBookmarks ) // non standard either, but we need it
             {
                 docElem.setAttribute( "hide_nsbk", docElem.attribute( "HIDE_NSBK" ) == "1" ? "yes" : "no" );
                 docElem.removeAttribute( "HIDE_NSBK" );
@@ -389,6 +390,7 @@ bool KBookmarkManager::showNSBookmarks() const
 
 void KBookmarkManager::setShowNSBookmarks( bool show )
 {
+    m_showNSBookmarks = show;
     root().internalElement().setAttribute("hide_nsbk", show ? "no" : "yes");
 }
 
