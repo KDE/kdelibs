@@ -15,20 +15,21 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#include "kprotocolmanager.h"
 
 #include <string.h>
 #include <sys/utsname.h>
 
+#include <kstaticdeleter.h>
+#include <kstringhandler.h>
+#include <klibloader.h>
 #include <kstddirs.h>
 #include <kglobal.h>
 #include <klocale.h>
-
 #include <kconfig.h>
-#include <kstringhandler.h>
-#include <klibloader.h>
-#include <kstaticdeleter.h>
 #include <kio/kpac.h>
+
+#include "kprotocolmanager.h"
+
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
@@ -43,7 +44,7 @@
 #define DEFAULT_PROXY_CONNECT_TIMEOUT    10           // 10 SEC
 
 // MINIMUM TIMEOUT VALUE ALLOWED
-#define MIN_TIMEOUT_VALUE                 5           //  5 SEC
+#define MIN_TIMEOUT_VALUE                 2           //  2 SEC
 
 // DEFUALT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
@@ -93,13 +94,6 @@ KPAC *KProtocolManager::pac()
   return _pac;
 }
 
-int KProtocolManager::readTimeout()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readNumEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT ); // 15 seconds
-}
-
 bool KProtocolManager::markPartial()
 {
   KConfig *cfg = config();
@@ -128,34 +122,36 @@ bool KProtocolManager::persistentConnections()
   return cfg->readBoolEntry( "PersistentConnections", true );
 }
 
+int KProtocolManager::readTimeout()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  int val = cfg->readNumEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
+  return QMAX(MIN_TIMEOUT_VALUE, val);
+}
+
 int KProtocolManager::connectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int mrct = cfg->readNumEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
-  if( mrct < MIN_TIMEOUT_VALUE )
-    mrct = DEFAULT_CONNECT_TIMEOUT;
-  return mrct;
+  int val = cfg->readNumEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
+  return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::proxyConnectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int mpct = cfg->readNumEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
-  if( mpct < MIN_TIMEOUT_VALUE )
-    mpct = DEFAULT_PROXY_CONNECT_TIMEOUT;
-  return mpct;
+  int val = cfg->readNumEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
+  return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::responseTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int mrrt = cfg->readNumEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
-  if( mrrt < MIN_TIMEOUT_VALUE )
-    mrrt = DEFAULT_RESPONSE_TIMEOUT;
-  return mrrt;
+  int val = cfg->readNumEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
+  return QMAX(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::defaultConnectTimeout()
@@ -171,6 +167,11 @@ int KProtocolManager::defaultProxyConnectTimeout()
 int KProtocolManager::defaultResponseTimeout()
 {
   return DEFAULT_RESPONSE_TIMEOUT;
+}
+
+int KProtocolManager::defaultReadTimeout()
+{
+  return DEFAULT_READ_TIMEOUT;
 }
 
 int KProtocolManager::minimumTimeoutThreshold()
@@ -278,10 +279,33 @@ void KProtocolManager::setReadTimeout( int _timeout )
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  cfg->writeEntry( "ReadTimeout", _timeout );
+  cfg->writeEntry("ReadTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
   cfg->sync();
 }
 
+void KProtocolManager::setConnectTimeout( int _timeout )
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  cfg->writeEntry("ConnectTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
+  cfg->sync();
+}
+
+void KProtocolManager::setProxyConnectTimeout( int _timeout )
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  cfg->writeEntry("ProxyConnectTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
+  cfg->sync();
+}
+
+void KProtocolManager::setResponseTimeout( int _timeout )
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  cfg->writeEntry("ResponseTimeout", QMAX(MIN_TIMEOUT_VALUE,_timeout));
+  cfg->sync();
+}
 
 void KProtocolManager::setMarkPartial( bool _mode )
 {
@@ -291,7 +315,6 @@ void KProtocolManager::setMarkPartial( bool _mode )
   cfg->sync();
 }
 
-
 void KProtocolManager::setMinimumKeepSize( int _size )
 {
   KConfig *cfg = config();
@@ -300,7 +323,6 @@ void KProtocolManager::setMinimumKeepSize( int _size )
   cfg->sync();
 }
 
-
 void KProtocolManager::setAutoResume( bool _mode )
 {
   KConfig *cfg = config();
@@ -308,7 +330,6 @@ void KProtocolManager::setAutoResume( bool _mode )
   cfg->writeEntry( "AutoResume", _mode );
   cfg->sync();
 }
-
 
 void KProtocolManager::setPersistentConnections( bool _mode )
 {
