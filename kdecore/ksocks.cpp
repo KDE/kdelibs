@@ -199,6 +199,17 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
 
    cfg = new KConfig("ksocksrc", false, false);
 
+   // Add the custom library paths here
+   QStringList newlibs = cfg->readListEntry("Lib Path");
+
+   for (QStringList::Iterator it = newlibs.begin();
+                              it != newlibs.end();
+                              ++it) {
+      QString thisone = *it;
+      if (thisone[thisone.length()-1] != '/') thisone += "/";
+      _libPaths << thisone;
+      kdDebug() << "KSocks added a new library path: " << thisone << endl;
+   }
 
    // Load the proper libsocks and KSocksTable
    KLibLoader *ll = KLibLoader::self();
