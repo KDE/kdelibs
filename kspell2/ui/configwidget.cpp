@@ -66,7 +66,9 @@ void ConfigWidget::init( Broker *broker )
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui->m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
     d->ui->m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
-    d->ui->m_ignoreListBox->insertStringList( d->broker->settings()->currentIgnoreList() );
+    QStringList ignoreList = d->broker->settings()->currentIgnoreList();
+    ignoreList.sort();
+    d->ui->m_ignoreListBox->insertStringList( ignoreList );
     d->ui->m_bgSpellCB->setChecked( d->broker->settings()->backgroundCheckerEnabled() );
     d->ui->m_bgSpellCB->hide();//hidden by default
     connect( d->ui->m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
