@@ -34,7 +34,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
 		knotebooktest kwizardtest kquickhelptest kurltest kformulatest \
-		kcharselecttest kstddirstest
+		kcharselecttest kstddirstest khtmltest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -87,3 +87,6 @@ kwizardtest_SOURCES = kwizardtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
 kstddirstest_SOURCES = kstddirstest.cpp
 kstddirstest_LDADD = $(LIB_KDECORE)
+khtmltest_SOURCES = khtmltest.cpp
+khtmltest_LDADD = $(LIB_KHTML)
+
