@@ -592,6 +592,21 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
                 ch[len-1-i] = ch[len-1-i].mirroredChar();
         }
     }
+    else if ( reverse && !m_style->visuallyOrdered() &&
+              (font().charSet() == QFont::ISO_8859_8 || font().charSet() == QFont::ISO_8859_6 ) ) {
+        deleteChar = true;
+        QString aStr = QConstString(str->s+from, len).string();
+        aStr.compose();
+        len = aStr.length();
+        ch = new QChar[len];
+        const QChar *s = aStr.unicode();
+        for( int i = 0; i < len; i++ ) {
+            if( s[i].mirrored() )
+                ch[i] = s[i].mirroredChar();
+            else
+                ch[i] = s[i];
+        }
+    }
     else
         ch = str->s+from;
 
