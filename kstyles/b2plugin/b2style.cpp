@@ -440,7 +440,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             addPageR.y());
                 p->drawLine(addPageR.x(), addPageR.bottom(), addPageR.right(),
                             addPageR.bottom());
-                p->setPen(activeControl==AddPage ? g.mid() : g.button());
+                p->setPen(activeControl==AddPage ? g.mid() : g.background());
                 p->drawLine(addPageR.x(), addPageR.y()+1, addPageR.right(),
                             addPageR.y()+1);
             }
@@ -449,7 +449,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             addPageR.bottom());
                 p->drawLine(addPageR.right(), addPageR.y(), addPageR.right(),
                             addPageR.bottom());
-                p->setPen(activeControl==AddPage ? g.mid() : g.button());
+                p->setPen(activeControl==AddPage ? g.mid() : g.background());
                 p->drawLine(addPageR.x()+1, addPageR.y(), addPageR.x()+1,
                             addPageR.bottom());
             }
@@ -466,7 +466,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             subPageR.y());
                 p->drawLine(subPageR.x(), subPageR.bottom(), subPageR.right(),
                             subPageR.bottom());
-                p->setPen(activeControl==SubPage ? g.mid() : g.button());
+                p->setPen(activeControl==SubPage ? g.mid() : g.background());
                 p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.right(),
                             subPageR.y()+1);
                 p->drawLine(subPageR.x(), subPageR.y()+1, subPageR.x(),
@@ -477,7 +477,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             subPageR.bottom());
                 p->drawLine(subPageR.right(), subPageR.y(), subPageR.right(),
                             subPageR.bottom());
-                p->setPen(activeControl==SubPage ? g.mid() : g.button());
+                p->setPen(activeControl==SubPage ? g.mid() : g.background());
                 p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.x()+1,
                             subPageR.bottom());
                 p->drawLine(subPageR.x()+1, subPageR.y(), subPageR.right()-1,
@@ -498,7 +498,7 @@ void B2Style::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
     p->setPen(g.dark());
     p->drawRect(r);
     p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
-                g.brush(down ? QColorGroup::Midlight : QColorGroup::Button));
+                g.brush(down ? QColorGroup::Midlight : QColorGroup::Background));
 
     p->setPen(down ? g.light() : g.mid());
     p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
@@ -675,7 +675,7 @@ void B2Style::drawIndicator(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x2-1, y+2, x2-1, y2-1);
     p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-    p->fillRect(x+2, y+2, w-4, h-4, down ? g.brush(QColorGroup::Button) :
+    p->fillRect(x+2, y+2, w-4, h-4, down ? g.brush(QColorGroup::Background) :
                 g.brush(QColorGroup::Light));
 
     if(state != QButton::Off){
@@ -794,7 +794,7 @@ void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool, QBrush *)
 {
     if(h > w){
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
         int x2 = x+w-1;
         int y2 = y+h-1;
 
@@ -816,7 +816,7 @@ void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 
     }
     else{
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
         int x2 = x+w-1;
         int y2 = y+h-1;
 
@@ -844,13 +844,15 @@ void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 void B2Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, QBrush *)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
+    qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                    &g.brush(QColorGroup::Background));
 }
 
 void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
+    qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                    &g.brush(QColorGroup::Background));
 }
 
 void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -885,7 +887,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
     else
     {
-            p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+            p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
     }
     p->setPen(g.text());
 
@@ -1196,6 +1198,29 @@ void B2Style::tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
         KStyle::tabbarMetrics(t, hFrame, vFrame, overlap);
 }
 */
+
+
+void B2Style::drawSplitter(QPainter *p, int x, int y, int w, int h,
+                           const QColorGroup &g, Orientation)
+{
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    p->setPen(g.dark());
+    p->drawRect(x, y, w, h);
+    p->setPen(g.background());
+    p->drawPoint(x, y);
+    p->drawPoint(x2, y);
+    p->drawPoint(x, y2);
+    p->drawPoint(x2, y2);
+    p->setPen(g.light());
+    p->drawLine(x+1, y+1, x+1, y2-1);
+    p->drawLine(x+1, y+1, x2-1, y+1);
+    p->setPen(g.mid());
+    p->drawLine(x2-1, y+1, x2-1, y2-1);
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    p->fillRect(x+2, y+2, w-4, h-4, g.brush(QColorGroup::Background));
+}
+                
 #include "b2style.moc"
 
 

@@ -146,7 +146,12 @@ public:
                  bool selected);
     void drawTabMask( QPainter*, const QTabBar*, QTab*, bool selected );
     void tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
-                       int &overlap);*/
+    int &overlap);*/
+
+    void drawSplitter(QPainter *p, int x, int y, int w, int h,
+                      const QColorGroup &g, Orientation orient);
+    int splitterWidth() const {return(6);}
+    
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
