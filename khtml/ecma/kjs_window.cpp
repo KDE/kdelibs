@@ -168,7 +168,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 
 /*
-@begin WindowTable 77
+@begin WindowTable 86
   closed	Window::Closed		DontDelete|ReadOnly
   crypto	Window::Crypto		DontDelete|ReadOnly
   defaultStatus	Window::DefaultStatus	DontDelete
@@ -228,6 +228,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   setInterval	Window::SetInterval	DontDelete|Function 2
   clearInterval	Window::ClearInterval	DontDelete|Function 1
   captureEvents	Window::CaptureEvents	DontDelete|Function 0
+  print		Window::Print		DontDelete|Function 0
 # Warning, when adding a function to this object you need to add a case in Window::get
   onabort	Window::Onabort		DontDelete
   onblur	Window::Onblur		DontDelete
@@ -509,6 +510,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case ClearTimeout:
     case SetInterval:
     case ClearInterval:
+    case Print:
       if (isSafeScript(exec))
         return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
       else
@@ -1378,6 +1380,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   }
   case Window::CaptureEvents:
     // Do nothing. This is a NS-specific call that isn't needed in Konqueror.
+    break;
+  case Window::Print:
+    if ( widget ) {
+      // ### TODO emit onbeforeprint event
+      widget->print();
+      // ### TODO emit onafterprint event
+    }
     break;
   }
   return Undefined();
