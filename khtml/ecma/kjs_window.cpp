@@ -21,6 +21,7 @@
 #include <qinputdialog.h>
 #include <qstringlist.h>
 #include <qptrdict.h>
+#include <qpaintdevicemetrics.h>
 #include <qapplication.h>
 #include <dom_string.h>
 #include <kurl.h>
@@ -91,14 +92,15 @@ private:
 KJSO Screen::get(const UString &p) const
 {
   
-  KWinModule info; 
+  KWinModule info;
+  QPaintDeviceMetrics m(QApplication::desktop());
 
   if (p == "height")
     return Number(QApplication::desktop()->height());
   else if (p == "width")
     return Number(QApplication::desktop()->width());
   else if (p == "colorDepth")
-    return Number(QPixmap::defaultDepth());
+    return Number(m.depth());
   else if (p == "availHeight")
     return Number(info.workArea().width());
   else if (p == "availWidth")
