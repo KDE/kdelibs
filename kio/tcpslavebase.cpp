@@ -161,12 +161,14 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
            int rc = d->kssl->connect(m_iSock);
            if (rc < 0) { 
               CloseDescriptor();
+	      error( ERR_COULD_NOT_CONNECT, host);
               return false;
            }
            setMetaData("ssl_in_use", "TRUE");
            rc = verifyCertificate();
            if (rc != 1) {
               CloseDescriptor();
+	      error( ERR_COULD_NOT_CONNECT, host);
               return false;
            }
         } else setMetaData("ssl_in_use", "FALSE");
@@ -283,6 +285,7 @@ int rc = 0;
 bool permacache = false;
 bool isChild = false;
 QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
+bool _IPmatchesCN;
 
    if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -325,18 +328,10 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
 
-      //  - does the IP match? 
-/*
-      if (!d->kssl->peerInfo().certMatchesAddress()) {
-           messageBox( WarningYesNo,
-                 i18n("The server's certificate does not match it's IP."),
-                 i18n("Server Authentication"));
-      }
-*/
-
+      _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
       //  - validation code
-      if (ksv != KSSLCertificate::Ok) {
+      if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
@@ -359,12 +354,21 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
            {
            int result;
              do {
-                result = messageBox( WarningYesNoCancel,
+                if (ksv == KSSLCertificate::Ok && !_IPmatchesCN) {
+                   result = messageBox( WarningYesNoCancel,
+                              i18n("The IP address of the host does not match "
+                                   "the one the certificate was issued to."),
+                              i18n("Server Authentication"),
+                              i18n("&Details..."),
+                              i18n("Co&ntinue") );
+                } else {
+                   result = messageBox( WarningYesNoCancel,
                               i18n("The server's certificate failed the "
                                    "authenticity test."),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
+                }
 
                 if (result == KMessageBox::Yes) {
                    sendMetaData();
@@ -380,7 +384,8 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
                                   i18n("Would you like to accept this "
                                        "certificate forever without "
                                        "being prompted?"),
-                                  i18n("Server Authentication"));
+                                  i18n("Server Authentication"),
+                                  i18n("&Forever"), i18n("&Current Sessions Only"));
                    if (result == KMessageBox::Yes) permacache = true;
                    else permacache = false;
              } else {
@@ -396,6 +401,7 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
           break;
          }
       }
+
 
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
@@ -418,7 +424,7 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
 
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
-   if (metaData("ssl_was_in_use") != "TRUE" &&
+   if (metaData("ssl_was_in_use") == "FALSE" &&
                                         d->kssl->settings()->warnOnEnter()) {
       int result = messageBox( WarningYesNo,
                              i18n("You are about to enter secure mode."
@@ -482,9 +488,9 @@ kdDebug() << "SSL connection information follows:" << endl
           << "| Subject: " << d->kssl->peerInfo().getPeerCertificate().getSubject() << endl
           << "| Issuer: " << d->kssl->peerInfo().getPeerCertificate().getIssuer() << endl
           << "| Validation: " << (int)ksv << endl
+          << "| Certificate matches IP: " << _IPmatchesCN << endl
           << "+-----------------------------------------------"
           << endl;
-//          << "| Certificate matches CN: " << matchingCN << endl
 
    sendMetaData();
 return rc;
