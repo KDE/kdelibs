@@ -367,7 +367,7 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
       kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
       if ( m_pass.isEmpty() ) {
         QString tmp = m_user + "@" + m_host;
-        if ( !openPassDlg( tmp, m_user, m_pass ) ) ;
+        if ( !openPassDlg( tmp, m_user, m_pass, m_host ) ) ;
         // return false;
       }
       kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
