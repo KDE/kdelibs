@@ -708,7 +708,7 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId
   int parseError = kjsyyparse();
   ProgramNode *prog = progNode;
   progNode = 0;
-  sid = -1;
+  //sid = -1;
 
   if (parseError) {
     int eline = Lexer::curr()->lineNo();
@@ -1031,9 +1031,13 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
 
 void InterpreterImp::setDebugger(Debugger *d)
 {
-  if (d)
-    d->detach(m_interpreter);
+  if (d == dbg)
+    return;
+  // avoid recursion
+  Debugger *old = dbg;
   dbg = d;
+  if ( old )
+    old->detach(m_interpreter);
 }
 
 // ------------------------------ InternalFunctionImp --------------------------

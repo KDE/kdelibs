@@ -37,7 +37,7 @@ namespace KJS {
   struct AttachedInterpreter
   {
   public:
-    AttachedInterpreter(Interpreter *i) : interp(i) {}
+    AttachedInterpreter(Interpreter *i) : interp(i), next(0L) {}
     Interpreter *interp;
     AttachedInterpreter *next;
   };
@@ -77,8 +77,10 @@ void Debugger::attach(Interpreter *interp)
 void Debugger::detach(Interpreter *interp)
 {
   if (interp->imp()->debugger() == this)
-    interp->imp()->setDebugger(this);
+    interp->imp()->setDebugger(0L);
 
+  if (!rep->interps)
+    return;
   // remove from the list of attached interpreters
   if (rep->interps->interp == interp) {
     AttachedInterpreter *old = rep->interps;
@@ -87,6 +89,8 @@ void Debugger::detach(Interpreter *interp)
   }
 
   AttachedInterpreter *ai = rep->interps;
+  if (!ai)
+    return;
   while (ai->next && ai->next->interp != interp)
     ai = ai->next;
   if (ai->next) {
