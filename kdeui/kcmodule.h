@@ -82,8 +82,12 @@ public:
    * module to reflect the current settings stored in the
    * configuration files.
    *
-   * load is called after startup, but also when the user
-   * clicks the "Reset" button.
+   * This method is invoked whenever the module should read its configuration
+   * (most of the times from a config file) and update the user interface.
+   * This happens when the user clicks the "Reset" button in the control
+   * center, to undo all of his changes and restore the currently valid
+   * settings. NOTE that this is not called after the modules is loaded,
+   * so you probably want to call this method in the constructor.
    */
   virtual void load() {};
 
