@@ -906,9 +906,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     if(a.id || !attrName.isNull())
                     {
                         if(!a.id) a.setName( attrName );
-                        while(dest > buffer+1 &&
-                              (*(dest-1) == ' ' || *(dest-1) == '\t' || *(dest-1) == '\n' || *(dest-1) == '\r'))
-                            dest--; // remove trailing whitespaces
+                        // some <input type=hidden> rely on trailing spaces. argh
+                        while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
+                            dest--; // remove trailing newlines
                         a.setValue(buffer+1, dest-buffer-1);
                         currToken->attrs.add(a);
                     }
