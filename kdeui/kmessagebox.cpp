@@ -120,7 +120,7 @@ int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &caption,
                            const QString &buttonYes,
-                           const QString &buttonNo, 
+                           const QString &buttonNo,
                            const QString &dontAskAgainName,
                            bool notify)
 {
@@ -134,7 +134,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
                            const QString &buttonYes,
-                           const QString &buttonNo, 
+                           const QString &buttonNo,
                            const QString &dontAskAgainName,
                            bool /*notify*/)
 {
@@ -163,7 +163,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                        buttonYes, buttonNo);
 
     bool checkboxResult;
-    int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist, 
+    int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist,
                        dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
                        &checkboxResult);
 
@@ -199,12 +199,87 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
 
     return Yes; // Default
 }
+int
+KMessageBox::questionYesNoCancel(QWidget *parent,
+                          const QString &text,
+                          const QString &caption,
+                          const QString &buttonYes,
+                          const QString &buttonNo,
+                          const QString &buttonCancel,
+                          const QString &dontAskAgainName,
+                          bool notify)
+{
+    KConfig *config = 0;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+
+    if (!dontAskAgainName.isEmpty())
+    {
+       config = kapp->config();
+       KConfigGroupSaver saver( config, grpNotifMsgs );
+       QString dontAsk = config->readEntry( dontAskAgainName).lower();
+       if (dontAsk == "yes")
+       {
+          return Yes;
+       }
+       if (dontAsk == "no")
+       {
+          return No;
+       }
+    }
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Question") : caption,
+                       KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
+                       KDialogBase::Yes, KDialogBase::Cancel,
+                       parent, "questionYesNoCancel", true, true,
+                       buttonYes, buttonNo, buttonCancel);
+
+    bool checkboxResult;
+    int result = createKMessageBox(dialog, QMessageBox::Information
+, text, QStringList(),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       &checkboxResult);
+
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         if (!dontAskAgainName.isEmpty())
+         {
+            if (checkboxResult)
+            {
+               KConfigGroupSaver saver( config, grpNotifMsgs );
+               config->writeEntry( dontAskAgainName, "Yes");
+            }
+            config->sync();
+         }
+         return Yes;
+
+      case KDialogBase::No:
+         if (!dontAskAgainName.isEmpty())
+         {
+            if (checkboxResult)
+            {
+               KConfigGroupSaver saver( config, grpNotifMsgs );
+               config->writeEntry( dontAskAgainName, "No");
+            }
+            config->sync();
+         }
+         return No;
+
+      case KDialogBase::Cancel:
+         return Cancel;
+
+      default: // Huh?
+         break;
+    }
+
+    return Cancel; // Default
+}
 
 int
 KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &caption,
                           const QString &buttonYes,
-                          const QString &buttonNo, 
+                          const QString &buttonNo,
                           const QString &dontAskAgainName,
                           bool /*notify*/)
 {
@@ -271,10 +346,10 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 }
 
 int
-KMessageBox::warningContinueCancel(QWidget *parent, 
+KMessageBox::warningContinueCancel(QWidget *parent,
                                    const QString &text,
                                    const QString &caption,
-                                   const QString &buttonContinue, 
+                                   const QString &buttonContinue,
                                    const QString &dontAskAgainName,
                                    bool notify)
 {
@@ -286,7 +361,7 @@ int
 KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                              const QStringList &strlist,
                              const QString &caption,
-                             const QString &buttonContinue, 
+                             const QString &buttonContinue,
                              const QString &dontAskAgainName,
                              bool /*notify*/)
 {
@@ -313,7 +388,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                        buttonContinue, i18n("&Cancel"));
 
     bool checkboxResult;
-    int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist, 
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
                        dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
                        &checkboxResult);
 
@@ -333,7 +408,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
          }
          return Continue;
       }
-   
+
       case KDialogBase::No:
          return Cancel;
 
@@ -349,7 +424,7 @@ int
 KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &caption,
                                 const QString &buttonYes,
-                                const QString &buttonNo, 
+                                const QString &buttonNo,
                                 const QString &dontAskAgainName,
                                 bool /*notify*/)
 {
@@ -378,7 +453,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                        buttonYes, buttonNo);
 
     bool checkboxResult;
-    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), 
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(),
                        dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
                        &checkboxResult);
 
@@ -504,7 +579,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     bool checkboxResult;
 
-    createKMessageBox(dialog, QMessageBox::Information, text, QStringList(), 
+    createKMessageBox(dialog, QMessageBox::Information, text, QStringList(),
 		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"), 
                 &checkboxResult);
 
@@ -566,12 +641,15 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
-int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo, const QString &buttonCancel )
 {
     switch (type) {
         case QuestionYesNo:
             return KMessageBox::questionYesNo( parent,
                                                text, caption, buttonYes, buttonNo );
+        case QuestionYesNoCancel:
+            return KMessageBox::questionYesNoCancel( parent,
+                                               text, caption, buttonYes, buttonNo, buttonCancel );
         case WarningYesNo:
             return KMessageBox::warningYesNo( parent,
                                               text, caption, buttonYes, buttonNo );
