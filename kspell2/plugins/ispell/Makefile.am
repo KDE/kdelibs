@@ -14,7 +14,7 @@ kspell_ispell_la_SOURCES = kspell_ispellclient.cpp kspell_ispelldict.cpp \
 	ispell_checker.cpp
 
 kspell_ispell_la_LDFLAGS = -module -no-undefined $(KDE_PLUGIN)
-kspell_ispell_la_LIBADD = ../../libkspell2.la 
+kspell_ispell_la_LIBADD = ../../ui/libkspell2.la 
 
 service_DATA = kspell_ispell.desktop
 servicedir = $(kde_servicesdir)
