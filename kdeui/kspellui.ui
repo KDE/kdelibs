@@ -29,7 +29,7 @@
                 <cstring>m_unknownWord</cstring>
             </property>
             <property name="text">
-                <string>&lt;b&gt;mispeled&lt;/b&gt;</string>
+                <string>&lt;b&gt;misspelled&lt;/b&gt;</string>
             </property>
         </widget>
         <widget class="QLabel" row="8" column="0">
@@ -51,7 +51,7 @@
                 <enum>Box</enum>
             </property>
             <property name="text">
-                <string>... the &lt;b&gt;mispeled&lt;/b&gt; word shown in context ...</string>
+                <string>... the &lt;b&gt;misspelled&lt;/b&gt; word shown in context ...</string>
             </property>
             <property name="alignment">
                 <set>WordBreak|AlignCenter</set>

@@ -377,7 +377,7 @@ KSpell::cleanFputsWord( const QString & s, bool appendCR )
     }
   }
 
-  // don't check empty words, otherwise synchronisation will lost
+  // don't check empty words, otherwise synchronization will lost
   if (empty)
     return false;
 

@@ -15,7 +15,7 @@ from Wolfram Diestel:
 - rewrite the all the stuff to make it more asynchronous:
    o one process should send data
    o one process should read data
-  synchronisation is done only by counting empty output lines from ispell
+  synchronization is done only by counting empty output lines from ispell
 
 old todo from David Sweet
 -------------------------

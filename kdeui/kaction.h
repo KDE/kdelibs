@@ -81,7 +81,7 @@ class KMainWindow;
  * instance, in the "normal" way of dealing with actions like "cut",
  * you would manually insert a item for Cut into a menu and a button
  * into a toolbar.  If you want to disable the cut action for a moment
- * (maybe nothing is selected), you woud have to hunt down the pointer
+ * (maybe nothing is selected), you would have to hunt down the pointer
  * to the menu item and the toolbar button and disable both
  * individually.  Setting the menu item and toolbar item up uses very
  * similar code - but has to be done twice!

@@ -760,7 +760,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
   // In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason
   // for this is maninly that KPalette reads from and writes to files using
   // "locate()". The colors used in "i18n_namedColors" mode comes from the
-  // X11 diretory and is not writable. I dont think this fit in KPalette.
+  // X11 diretory and is not writable. I don't think this fit in KPalette.
   //
   if( mPalette == 0 || mPalette->name() != paletteName )
   {

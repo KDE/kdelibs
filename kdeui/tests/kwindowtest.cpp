@@ -327,7 +327,7 @@ void testWindow::slotCompletion()
 
   completions->popup(QCursor::pos()); // This popup should understunf keys up and down
 
-  /* This is just an example. KLined automaticly sets cursor at end of string
+  /* This is just an example. KLined automatically sets cursor at end of string
    when ctrl-d or ctrl-s is pressed. KToolBar will also put cursor at end of text in Lined
    after inserting text with setLinedText (...).
   */
@@ -350,7 +350,7 @@ void testWindow::slotCompletionsMenu(int id)
 {
   // Now set text in lined
   QString s =completions->text(id);
-  tb->setLinedText(5, s);  // Cursor is automaticly at the end of string after this
+  tb->setLinedText(5, s);  // Cursor is automatically at the end of string after this
 }
 
 void testWindow::slotHide2 ()

@@ -583,7 +583,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
                 // don't call queryExit() twice
                 disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
                 d->shuttingDown = true;
-                kapp->deref();             // ...and quit aplication.
+                kapp->deref();             // ...and quit application.
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
                 e->ignore();

@@ -220,7 +220,7 @@ public:
      * Note that these two KNumInput's need not to have the same parent widget
      * or be in the same layout group.
      * The effect is that it'll adjust it's layout in correspondence
-     * with the layout of the other KNumInput's (you can build an arbitary long
+     * with the layout of the other KNumInput's (you can build an arbitrary long
      * chain).
      *
      * @param below  append KIntNumInput to the KNumInput chain
@@ -493,7 +493,7 @@ public:
      * widget.  Note that these two KNumInput's need not to have the
      * same parent widget or be in the same layout group.  The effect
      * is that it'll adjust it's layout in correspondence with the
-     * layout of the other KNumInput's (you can build an arbitary long
+     * layout of the other KNumInput's (you can build an arbitrary long
      * chain).
      *
      * @param below  append KDoubleNumInput to the KDoubleNumInput chain
@@ -801,7 +801,7 @@ private:
 
    \code
    // sets precision,
-   // then min/max value (rounded to precison and clipped to obtainable range if needed)
+   // then min/max value (rounded to precision and clipped to obtainable range if needed)
    // then value and lineStep
    KDoubleSpinBox * spin = new KDoubleSpinBox( 0, 9.999, 0.001, 4.321, 3, this );
 
@@ -855,7 +855,7 @@ public:
 
   /** @return the current number of decimal points displayed. */
   int precision() const;
-  /** Equivalent to setPrecsion( @p precison, @p false ); Needed
+  /** Equivalent to setPrecsion( @p precision, @p false ); Needed
       since Qt's moc doesn't ignore trailing parameters with default
       args when searching for a property setter method. */
   void setPrecision( int precision );

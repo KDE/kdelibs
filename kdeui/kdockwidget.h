@@ -1190,7 +1190,7 @@ private:
   /**
    * State variable if there is a drag process active.
    */
-  bool draging;
+  bool dragging;
 
   /**
    * State variable if there is an undock process active

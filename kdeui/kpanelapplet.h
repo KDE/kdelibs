@@ -43,7 +43,7 @@ class QPopupMenu;
  *
  * The panel locates available applets by searching for applet desktop
  * files in (ALL_KDEDIRS)/share/apps/kicker/applets. Every panel applet should
- * install a desktop file there to be recognised by the panel.
+ * install a desktop file there to be recognized by the panel.
  *
  * Besides standard keys like "Name", "Comment" and "Icon" there are
  * two panel applet specific keys:

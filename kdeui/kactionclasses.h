@@ -1006,7 +1006,7 @@ public:
     //Not all constructors - because we need an icon, since this action only makes
     // sense when being plugged at least in a toolbar.
     /**
-     * Create a KToolBarPopupAction, with a text, an icon, an optionnal accelerator,
+     * Create a KToolBarPopupAction, with a text, an icon, an optional accelerator,
      * parent and name.
      *
      * @param text The text that will be displayed.

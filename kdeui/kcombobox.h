@@ -696,7 +696,7 @@ protected:
     virtual void wheelEvent( QWheelEvent *ev );
 
     /**
-     * Inserts @p items into the combo, honouring pixmapProvider()
+     * Inserts @p items into the combo, honoring pixmapProvider()
      * Does not update the completionObject.
      *
      * Note: duplicatesEnabled() is not honored here.

@@ -186,7 +186,7 @@ public:
    * KConfigDialog automatically gives the dialog a common KDE
    * configuration caption. This function is provided for dialogs other
    * then the normal application configuration such as plugin configurations.
-   * Do not include the applications name as it will automaticly be added
+   * Do not include the applications name as it will automatically be added
    * via the KDE rules. KDialog::setCaption()
    * @param caption - The new name for the dialog's caption such as:
    * "Configure Audio Plugin"

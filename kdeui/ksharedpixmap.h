@@ -74,7 +74,7 @@ public:
      * @param name The shared pixmap name.
      * @param rect If you pass a nonzero rectangle, a tile is generated which 
      * is able to fill up the specified rectangle completely. This is solely 
-     * for optimisation: in some cases the tile will be much smaller than the 
+     * for optimization: in some cases the tile will be much smaller than the 
      * original pixmap. It reflects KSharedPixmap's original use: sharing
      * of the desktop background to achieve pseudo transparency.
      * @return True if the shared pixmap exists and loading has started

@@ -42,7 +42,7 @@ class KPanelExtensionPrivate;
  *
  * The panel locates available extensions by searching for extension desktop
  * files in (ALL_KDEDIRS)/share/apps/kicker/extensions. Every panel extension should
- * install a desktop file there to be recognised by the panel.
+ * install a desktop file there to be recognized by the panel.
  *
  * Besides standard keys like "Name", "Comment" and "Icon" there are
  * two panel extension specific keys:

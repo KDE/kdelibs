@@ -321,7 +321,7 @@ KDatePicker::selectMonthClicked()
 
   popup.setActiveItem(calendar->month(date) - 1);
 
-  if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // cancelled
+  if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // canceled
 
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
