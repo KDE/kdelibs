@@ -551,7 +551,7 @@ bool KHTMLView::gotoNextLink()
     NodeImpl *n = d->currentNode;
     NodeImpl *begin = 0;
 
-    kdDebug( 6000 ) << "gotoNextLink: old tabindex: "<< d->tabIndex << "\n";
+    //kdDebug( 6000 ) << "gotoNextLink: old tabindex: "<< d->tabIndex << "\n";
 
     if (d->tabIndex!=-1)
       {
@@ -563,7 +563,7 @@ bool KHTMLView::gotoNextLink()
 	  }
       }
 
-    kdDebug( 6000 ) << "gotoNextLink: current tabindex: "<< d->tabIndex << "\n";
+    //kdDebug( 6000 ) << "gotoNextLink: current tabindex: "<< d->tabIndex << "\n";
 
     if(!n) n = m_part->docImpl()->body();
     while(n) {
@@ -591,7 +591,7 @@ bool KHTMLView::gotoNextLink()
 	    }
 	  if (wrap)
 	    {
-	      //	      printf("wrapped around document border.\n");
+	      //	kdDebug(6000)<<"wrapped around document border.\n";
 	      if (d->tabIndex==-1)
 		d->tabIndex++;
 	      else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
@@ -607,7 +607,7 @@ bool KHTMLView::gotoNextLink()
 	    if ((a->tabIndex()==d->tabIndex))
 	      {
 		d->currentNode = n;
-		kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
+		//kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
 
 		return gotoLink();
 	      }
@@ -621,7 +621,7 @@ bool KHTMLView::gotoNextLink()
 		  d->tabIndex++;
 		if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
 		  {
-		    kdDebug(6000) << "\n gotoNextLink: last tabindex "<<d->tabIndex<<" reached. now processing non-tabindex-elements\n";
+		    //kdDebug(6000) << "\n gotoNextLink: last tabindex "<<d->tabIndex<<" reached. now processing non-tabindex-elements\n";
 		    d->tabIndex=-1;
 		  }
 	      }
@@ -636,28 +636,27 @@ bool KHTMLView::gotoPrevLink()
 
     if (!(m_part->docImpl()))
       {
-	kdDebug(6000)<<"gotoPrevLink: No Document!!\n";
+	//kdDebug(6000)<<"gotoPrevLink: No Document!!\n";
 	return false;
       }
 
-    kdDebug( 6000 ) << "gotoPrevLink: old tabindex: "<< d->tabIndex << "\n";
+    //kdDebug( 6000 ) << "gotoPrevLink: old tabindex: "<< d->tabIndex << "\n";
 
     // find next link
     NodeImpl *n = d->currentNode;
     NodeImpl *begin=0;
 
-    // ###
     if(d->tabIndex!=-1)
       {
 	d->tabIndex--;
 	if (d->tabIndex==-1)
 	  {
 	    n=0;
-	    kdDebug(6000)<< "tabindex wrapped backwards\n";
+	    //kdDebug(6000)<< "tabindex wrapped backwards\n";
 	  }
       }
 
-    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
+    //    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
 
 
     if(!n) n = m_part->docImpl()->body();
@@ -684,11 +683,11 @@ bool KHTMLView::gotoPrevLink()
 	    }
 	    if (wrap)
 	      {
-		//		printf("wrapped from %d\n", d->tabIndex);
+		//		kdDebug(6000)<<"wrapped from "<< d->tabIndex <<endl;
 		if (d->tabIndex==-1)
 		  {
 		    d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-		    //		    printf("to %d\n", d->tabIndex);
+		    //		    kdDebug"to "<< d->tabIndex<<endl;
 		    if (d->tabIndex!=-1)
 		      begin=0L;
 		  }
@@ -701,7 +700,7 @@ bool KHTMLView::gotoPrevLink()
 	    if (a->tabIndex()==d->tabIndex)
 	      {
 		d->currentNode = n;
-		kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
+		//kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
 
 		return gotoLink();
 	      }
@@ -709,7 +708,7 @@ bool KHTMLView::gotoPrevLink()
 	if (!begin)
 	  {
 	    begin=n;
-	    //	    printf("marked %d as beginning of search\n", d->tabIndex);
+	    //	  kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
 	  }
 	else if (begin==n)
 	  {
@@ -720,17 +719,13 @@ bool KHTMLView::gotoPrevLink()
 	    else
 	      {
 		d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-		//		printf("end of non-tabindex-link-mode. restarting search\n");
+		//	kdDebug(6000)<<"end of non-tabindex-link-mode. restarting search\n";
 		if (d->tabIndex==-1)
 		  return false;
 	      }
 	  }
     }
     return false;
-    //} else {
-    //  NodeImpl *n=d->currentNode;
-    // ### insert search for tabindex here
-    //}
 }
 
 void KHTMLView::print()
