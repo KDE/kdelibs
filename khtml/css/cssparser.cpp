@@ -1905,7 +1905,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
       {
 	  const struct css_value *cssval = findValue(val, len);
-	  if (cssval->id == CSS_VAL_AUTO || cssval->id == CSS_VAL_FIXED)
+	  if (cssval && 
+              (cssval->id == CSS_VAL_AUTO || cssval->id == CSS_VAL_FIXED))
 	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  break;
       }
