@@ -911,6 +911,9 @@ void RenderTable::calcColMinMax()
     hasPercent=false;
     bool hasRel=false;
     bool hasVar=false;
+    
+    int maxPercentColumn=0;    
+    int maxTentativePercentWidth=0;
 
     m_minWidth = spacing;
     m_maxWidth = spacing;
@@ -928,8 +931,14 @@ void RenderTable::calcColMinMax()
                 minPercent=maxPercent=spacing;
             }
             totalPercent += colValue[i];
+            
+            maxPercentColumn = KMAX(colValue[i],maxPercentColumn);
+            
             minPercent += colMinWidth[i] + spacing;
             maxPercent += colMaxWidth[i] + spacing;
+            
+            maxTentativePercentWidth = KMAX(colValue[i]==0?0:colMaxWidth[i]*100/colValue[i], 
+                    maxTentativePercentWidth);
             break;
         case Relative:
             if (!hasRel){
@@ -963,14 +972,18 @@ void RenderTable::calcColMinMax()
     delete[] spanPercent;
 
     if (widthType <= Relative && hasPercent) {
-	    int tot = KMIN(100u, totalPercent );
+	int tot = KMIN(100u, totalPercent );
+
         if (tot>0)
-	        m_maxWidth = maxPercent*100/tot;
+    	    m_maxWidth = maxPercent*100/tot;        
+  
         if (tot<100)
             m_maxWidth = KMAX( short((maxVar+maxRel)*100/(100-tot)), m_maxWidth );
-	// the next two lines completely break eg. www.konqueror.org. What are they supposed to fix?
-//         else 
-//             m_maxWidth = 10000;
+        else if (hasRel || hasVar || (totalPercent>maxPercentColumn && maxPercentColumn>=100))
+            m_maxWidth = 10000;
+        else if (totalPercent>0)
+            m_maxWidth = KMAX(short(maxTentativePercentWidth*100/totalPercent), m_maxWidth);
+
     }
 
 
