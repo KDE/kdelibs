@@ -627,6 +627,7 @@ void HTMLFormElementImpl::submit(  )
         }
     }
 
+    m_walletMap.clear(); // done with it
     m_doingsubmit = m_insubmit = false;
 }
 
