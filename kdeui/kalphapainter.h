@@ -32,7 +32,7 @@ class KAlphaPainter
   /**
    * Draws an image ( @p icon ) which has an alpha channel using the painter
    * @p p. 
-   * @background is the background image over which the icon is being painted
+   * @p background is the background image over which the icon is being painted
    * (note that @p background contains the whole picture, and doesn't have to
    * be of the same size than @p icon).
    *

@@ -48,12 +48,12 @@ class KEditListBox : public QGroupBox
       /**
        * Create an editable listbox.
        *
-       * If @checkAtEntering is true, after every character you type
+       * If @p checkAtEntering is true, after every character you type
        * in the line edit KEditListBox will enable or disable
        * the Add-button, depending whether the current content of the
        * line edit is already in the listbox. Maybe this can become a
        * performance hit with large lists on slow machines.
-       * If @checkAtEntering is false,
+       * If @p checkAtEntering is false,
        * it will be checked if you press the Add-button. It is not
        * possible to enter items twice into the listbox.
        */
