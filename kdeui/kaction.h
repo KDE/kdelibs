@@ -640,7 +640,7 @@ public:
          { setToolTip( text ); }
 
     /**
-     * @deprecated. for backwards compatibility.
+     * @deprecated. for backwards compatibility. Use itemId()
      */
     int menuId( int i ) { return itemId( i ); }
 #endif // !KDE_NO_COMPAT
