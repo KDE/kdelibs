@@ -2147,11 +2147,16 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
                    i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes ) 
               block = false;
 	    
+          } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {
+            if( static_cast<KJS::ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed() ) {
+              // This submission has been triggered by the user
+              block = false;
+            }
           }
         }
 
         if( !block ) 
-	  form.submit();
+          form.submit();
 
         return Undefined();
       }
