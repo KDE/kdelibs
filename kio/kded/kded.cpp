@@ -295,7 +295,7 @@ void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
   if ( dirWatch->contains( path ) ) // Already seen this one?
      return;
 
-  QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
+  QDir d( _path, QString::null, QDir::Unsorted, QDir::Readable | QDir::Executable | QDir::Dirs | QDir::Hidden );
   // set QDir ...
 
 
