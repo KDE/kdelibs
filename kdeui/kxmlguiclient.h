@@ -272,6 +272,9 @@ protected:
    */
    virtual void stateChanged(const QString &newstate, ReverseStateChange reverse = StateNoReverse);
 
+   // Use this one for KDE 4.0
+   //virtual void stateChanged(const QString &newstate, bool reverse = false);
+
 private:
   struct DocStruct
   {

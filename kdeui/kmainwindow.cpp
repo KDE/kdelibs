@@ -463,14 +463,27 @@ void KMainWindow::appHelpActivated( void )
 
 void KMainWindow::slotStateChanged(const QString &newstate)
 {
-  stateChanged(newstate);
+  stateChanged(newstate, KXMLGUIClient::StateNoReverse);
 }
 
+/*
+ * Get rid of this for KDE 4.0
+ */
 void KMainWindow::slotStateChanged(const QString &newstate,
                                    KXMLGUIClient::ReverseStateChange reverse)
 {
   stateChanged(newstate, reverse);
 }
+
+/*
+ * Enable this for KDE 4.0
+ */
+// void KMainWindow::slotStateChanged(const QString &newstate,
+//                                    bool reverse)
+// {
+//   stateChanged(newstate,
+//                reverse ? KXMLGUIClient::StateReverse : KXMLGUIClient::StateNoReverse);
+// }
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
