@@ -86,6 +86,7 @@ using namespace DOM;
 
 
 #include <qclipboard.h>
+#include <qfile.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
 
@@ -2802,7 +2803,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
   KService::Ptr service = *offers.begin();
 
-  KLibFactory *factory = KLibLoader::self()->factory( service->library().latin1() );
+  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
 
   if ( !factory )
     return 0L;
