@@ -83,6 +83,11 @@ QString KDesktopFile::readPath()
   return readEntry(QString::fromLatin1("Path"));
 }
 
+QString KDesktopFile::readDevice()
+{
+  return readEntry(QString::fromLatin1("Dev"));
+}
+
 QString KDesktopFile::readURL()
 {
     return readEntry(QString::fromLatin1("URL"));
