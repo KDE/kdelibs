@@ -61,8 +61,9 @@ private:
   * copy : copy selected items to clipboard (and notifies it's not a cut)
   * pastecut : called when doing a paste after a cut
   * pastecopy : called when doing a paste after a copy
-  * del : delete selected items (couldn't call it delete!)
   * trash : move selected items to trash
+  * del : delete selected items (couldn't call it delete!)
+  * shred : shred selected items (secure deletion)
   * print : print :-)
   *
   * reparseConfiguration : re-read configuration and apply it
