@@ -242,7 +242,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 {
   if ( d->mode != Execute )
   {
-    kdDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
+    // kdDebug() << "KIconView::emitExecute : not in execute mode !" << endl;
     return;
   }
 
