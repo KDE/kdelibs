@@ -551,7 +551,7 @@ bool KZip::openArchive( int mode )
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
-                if (os_madeby != 3) access |= S_IFDIR | 0111;
+                if (os_madeby != 3) access = S_IFDIR | 0755;
 		else Q_ASSERT(access & S_IFDIR);
             }
 
@@ -565,7 +565,7 @@ bool KZip::openArchive( int mode )
             KArchiveEntry* entry;
             if ( isdir )
             {
-                QString path = QDir::cleanDirPath( name.left( pos ) );
+                QString path = QDir::cleanDirPath( name );
                 KArchiveEntry* ent = rootDir()->entry( path );
                 if ( ent && ent->isDirectory() )
                 {
