@@ -441,6 +441,10 @@ QString RenderSubmitButton::defaultLabel() {
     return i18n("Submit");
 }
 
+short RenderSubmitButton::baselinePosition( bool f ) const
+{
+    return RenderFormElement::baselinePosition( f );
+}
 
 // -------------------------------------------------------------------------------
 

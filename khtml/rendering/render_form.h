@@ -165,6 +165,8 @@ public:
     virtual QString defaultLabel();
 
     virtual void calcMinMaxWidth();
+    virtual short baselinePosition( bool ) const;
+
 };
 
 // -------------------------------------------------------------------------
