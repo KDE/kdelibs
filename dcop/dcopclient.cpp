@@ -215,22 +215,31 @@ bool DCOPClient::detach()
 {
   int status;
 
-  IceProtocolShutdown(d->iceConn, d->majorOpcode);
-  status = IceCloseConnection(d->iceConn);
-  if (status != IceClosedNow)
-    return false;
-  else
+  if (d->iceConn) {
+    IceProtocolShutdown(d->iceConn, d->majorOpcode);
+    status = IceCloseConnection(d->iceConn);
+    if (status != IceClosedNow)
+      return false;
+    else
+      return true;
+  } else
     return true;
 }
 
 bool DCOPClient::isAttached() const
 {
+  if (!d->iceConn)
+    return false;
+
   return (IceConnectionStatus(d->iceConn) == IceConnectAccepted);
 }
 
 int DCOPClient::socket() const
 {
-  return IceConnectionNumber(d->iceConn);
+  if (d->iceConn)
+    return IceConnectionNumber(d->iceConn);
+  else
+    return 0;
 }
 
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
