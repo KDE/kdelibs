@@ -1058,7 +1058,6 @@ AddressBook::ErrorCode
 AddressBook::makeEntryFromSection(Section* section, Entry& entry)
 {
   // ###########################################################################
-  // -----
   Section *addresses;
   Section *addressSection;
   Section::StringSectionMap::iterator pos;
@@ -1102,14 +1101,16 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
     "emails",
     "keywords",
     "telephone",
-    "URLs"
+    "URLs",
+    "custom"  
   };
   QStringList* StringListValues[]= {
     &temp.talk,
     &temp.emails,
     &temp.keywords,
     &temp.telephone,
-    &temp.URLs
+    &temp.URLs,
+    &temp.custom  
   };
   const int StringListKeySize=sizeof(StringListKeys)/sizeof(StringListKeys[0]);
   // ----- first parse "addresses" subsection:
@@ -1141,20 +1142,24 @@ AddressBook::makeEntryFromSection(Section* section, Entry& entry)
     {
       if(!keys->get(StringKeys[count], *StringValues[count]))
 	{
-	  kdDebug(KAB_KDEBUG_AREA)
+	  /* Spits out lots of warnings:
+	    kdDebug(KAB_KDEBUG_AREA)
 	    << "AddressBook::makeEntryFromSection: error: could not get "
 	    << "value for key " << (const char*)StringKeys[count]
 	    << "." << endl;
+	  */
 	}
     }
   for(count=0; count<StringListKeySize; ++count)
     {
       if(!keys->get(StringListKeys[count], *StringListValues[count]))
 	{
-	  kdDebug(KAB_KDEBUG_AREA)
-	    << "AddressBook::makeEntryFromSection: error: could not get "
-	    << "value for key " << (const char*)StringListKeys[count]
-	    << "." << endl;
+	  /* Spits out lots of warnings:
+	     kdDebug(KAB_KDEBUG_AREA)
+	     << "AddressBook::makeEntryFromSection: error: could not get "
+	     << "value for key " << (const char*)StringListKeys[count]
+	     << "." << endl;
+	  */
 	}
     }
   // ----- finally get the birthday:
@@ -1264,7 +1269,8 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
 	 !keys->insert("country", (*addPos).country) ||
 	 !keys->insert("state", (*addPos).state))
 	{
-	  kdDebug() << "AddressBook::makeSectionFromEntry: cannot completely " << endl;
+	  kdDebug() << "AddressBook::makeSectionFromEntry: cannot completely "
+		    << "insert this address." << endl;
 	  return InternError;
 	}
     }
@@ -1287,9 +1293,11 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
      !keys->insert("user1", entry.user1) ||
      !keys->insert("user2", entry.user2) ||
      !keys->insert("user3", entry.user3) ||
-     !keys->insert("user4", entry.user4))
+     !keys->insert("user4", entry.user4),
+     !keys->insert("custom", entry.custom))
     {
-      kdDebug() << "AddressBook::makeEntryFromSection: cannot insert all fields of the " << endl;
+      kdDebug() << "AddressBook::makeEntryFromSection: cannot insert "
+		<< "all fields of the entry." << endl;
       return InternError;
     }
   // -----
