@@ -2312,7 +2312,7 @@ SSL_METHOD *meth;
     if (!sc)
       break;
     // Leak of sc*?
-    if (QString(sc->name).left(3) == "ADH") {
+    if (QString(sc->name).contains("ADH-")) {
       continue;
     }
     k = SSL_CIPHER_get_bits(sc, &j);
@@ -2339,7 +2339,7 @@ SSL_METHOD *meth;
     if (!sc)
       break;
     // Leak of sc*?
-    if (QString(sc->name).left(3) == "ADH") {
+    if (QString(sc->name).contains("ADH-")) {
       continue;
     }
     k = SSL_CIPHER_get_bits(sc, &j);
