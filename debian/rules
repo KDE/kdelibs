@@ -14,7 +14,7 @@ KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CFLAGS=-O0 CXXFLAGS=-O0
+  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
