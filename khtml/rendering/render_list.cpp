@@ -70,6 +70,16 @@ static QString toRoman( int number, bool upper )
     return roman;
 }
 
+static QString toLetter( int number, int base ) {
+    number--;
+    QString letter = (QChar) (base + (number % 24));
+    // Add a "'" at the end of the alphabet
+    for (int i = 0; i < (number / 24); i++) {
+       letter += QString::fromLatin1("'");
+    }
+    return letter;
+}
+
 // -------------------------------------------------------------------------
 
 RenderListItem::RenderListItem()
@@ -394,14 +404,15 @@ void RenderListMarker::calcMinMaxWidth()
         item = toRoman( val, true );
         break;
     case LOWER_GREEK:
-        // ### unsupported, use low-alpha instead
+        item = toLetter( val, 945 ); // 945: GREEK SMALL LETTER ALPHA
+	break;
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        item = (QChar) ((int)('a' + val - 1));
+        item = toLetter( val, 97 ); // 97: LATIN SMALL LETTER A
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        item = (QChar) ((int)('A' + val - 1));
+        item = toLetter( val, 65 ); // 65: LATIN CAPITAL LETTER A
         break;
     case LNONE:
         break;
