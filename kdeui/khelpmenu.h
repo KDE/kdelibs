@@ -26,7 +26,6 @@
 #include <qstring.h>
 
 class KActionCollection;
-class QMessageBox;
 class QPopupMenu;
 class QWidget;
 

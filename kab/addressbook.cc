@@ -27,7 +27,6 @@
 
 #include "addressbook.h"
 #include "qconfigDB.h"
-#include <qmessagebox.h>
 
 #include <qfileinfo.h>
 #include <qstringlist.h>
@@ -318,8 +317,8 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	  state=NoError;
 	} else {
 	  switch
-	    (QMessageBox::information
-	     (this, i18n("File error"),
+	    (KMessageBox::questionYesNo
+	     (this,
 	      i18n("The currently loaded file\n\"")
 	      +oldfile.absFilePath()+"\"\n"+
 	      i18n
@@ -327,6 +326,7 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	       "Save it if you accidently deleted your data file.\n"
 	       "Close it if you intended to do so.\n"
 	       "Your file will be closed by default."),
+	      i18n("File error"),
 	      i18n("&Close"), i18n("&Save")))
 	    {
 	    case 1: // save
@@ -362,11 +362,11 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	      rc=NoSuchFile;
 	    }
 	} else {
-	  if(QMessageBox::information
-	     (this, i18n("No such file"),
+	  if(KMessageBox::questionYesNo
+	     (this,
 	      i18n("The file\n\"")
 	      +filename+"\"\n"+
-	      i18n(" cannot be found. Create a new one?"),
+	      i18n(" cannot be found. Create a new one?"), i18n("No such file"),
 	      i18n("OK"), i18n("Cancel"))==0)
 	    {
 	      if(createNew(filename)==NoError)

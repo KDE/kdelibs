@@ -39,7 +39,8 @@
  /**
   * Easy MessageBox Dialog.
   *
-  * Provides convenience functions for some i18n'ed standard dialogs.
+  * Provides convenience functions for some i18n'ed standard dialogs,
+  * as well as audible notification via @ref KNotifyClient
   *
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$

@@ -22,7 +22,6 @@
 // I (espen) prefer that header files are included alphabetically
 #include <qhbox.h>
 #include <qlabel.h>
-#include <qmessagebox.h>
 #include <qpopupmenu.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
