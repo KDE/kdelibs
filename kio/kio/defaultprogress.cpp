@@ -405,9 +405,16 @@ void DefaultProgress::slotKeepOpenToggled(bool keepopen)
 }
 
 void DefaultProgress::checkDestination(const KURL& dest) {
-  KStandardDirs kstddirs;
-  QString test=kstddirs.findResource("tmp",dest.fileName());
-  if (test.isEmpty()) {
+  bool ok = true;
+  if ( dest.isLocalFile() ) {
+      QString path = dest.path( -1 );
+      QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
+      for ( QStringList::Iterator it = tmpDirs.begin() ; ok && it != tmpDirs.end() ; ++it )
+          if ( path.contains( *it ) )
+              ok = false; // it's in the tmp resource
+  }
+
+  if ( ok ) {
     d->openFile->show();
     d->openLocation->show();
     d->keepOpen->show();
