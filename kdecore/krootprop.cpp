@@ -120,7 +120,7 @@ QString KRootProp::readEntry( const QString& rKey,
 	
 		QString *aValue = propDict[ rKey ];
 
-		if (aValue && !pDefault.isNull() )
+		if (!aValue && !pDefault.isNull() )
 		    *aValue = pDefault;
 
 		return *aValue;
