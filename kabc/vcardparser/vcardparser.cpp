@@ -94,7 +94,8 @@ VCard::List VCardParser::parseVCards( const QString& text )
         if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
           QByteArray input, output;
           input = value.local8Bit();
-          if ( vCardLine.parameter( "encoding" ).lower() == "b" )
+          if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
+               vCardLine.parameter( "encoding" ).lower() == "base64" )
             KCodecs::base64Decode( input, output );
           else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" )
             KCodecs::quotedPrintableDecode( input, output );
