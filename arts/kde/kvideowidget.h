@@ -33,7 +33,8 @@ public:
     bool isDoubleSize();
 
     QSize sizeHint() const;
-    QSizePolicy sizePolicy() const;
+
+    virtual int heightForWidth ( int w ) const;
 
 protected:
     virtual void focusInEvent ( QFocusEvent * );

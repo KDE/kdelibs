@@ -120,6 +120,7 @@ KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
 {
     setEraseColor( lightGray );
     setFocusPolicy( ClickFocus );
+    setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
     fullscreenWidget = 0;
     embedded	     = false;
@@ -230,9 +231,9 @@ QSize KVideoWidget::sizeHint() const
     return QSize( videoWidth, videoHeight );
 }
 
-QSizePolicy KVideoWidget::sizePolicy() const
+int KVideoWidget::heightForWidth( int w ) const
 {
-    return QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+    return int( double(w)*double(videoHeight)/double(videoWidth) );
 }
 
 void KVideoWidget::focusInEvent( QFocusEvent * )
