@@ -1515,7 +1515,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 
 	    if ( !parent->appended( c ) )
 	    {
-	        obj->calcSize();
+	        obj->calcSize( this );
 
 	        if ( c->getHAlign() == Left )
 	        {
@@ -1558,7 +1558,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		    newLine = true;
 		    break;		
 		}
-		run->calcSize(parent);
+		run->calcSize( this );
 		runWidth += run->getWidth();
 
 		// If this run cannot fit in the allowed area, break it
