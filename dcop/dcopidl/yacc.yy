@@ -189,9 +189,9 @@ return_params
 	  {
 		$$ = $1;
 	  }
-	| T_IDENTIFIER T_COMMA typedef_params
+	| T_IDENTIFIER T_COMMA return_params
 	  {
-		$$ = new QString( *($1) + *($3) );
+		$$ = new QString( *($1) + "," + *($3) );
 	  }
 	;
 
@@ -204,7 +204,7 @@ return
 	  }
 	| T_CONST T_IDENTIFIER T_AMPERSAND
 	  {
-		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"&\"/>");
+		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"&amp;\"/>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;		
 	  }
@@ -216,7 +216,7 @@ return
 	  }
 	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND
 	  {
-		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"&\"/>");
+		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"&amp;\"/>");
 		*tmp = tmp->arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
@@ -240,7 +240,7 @@ params
 param
 	: T_CONST T_IDENTIFIER T_AMPERSAND T_IDENTIFIER default
 	  {
-		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"&\"/>");
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"&amp;\"/>");
 		*tmp = tmp->arg( *($4) ).arg( *($2) );
 		$$ = tmp;		
 	  }
@@ -248,6 +248,24 @@ param
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\"/>");
 		*tmp = tmp->arg( *($2) ).arg( *($1) );
+		$$ = tmp;		
+	  }
+	| T_IDENTIFIER T_LESS return_params T_GREATER T_IDENTIFIER
+	  {
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\"/>");
+		*tmp = tmp->arg( *($5) ).arg( *($1) ).arg( *($3) );
+		$$ = tmp;		
+	  }
+	| T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
+	  {
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\" qright=\"&amp;\"/>");
+		*tmp = tmp->arg( *($6) ).arg( *($1) ).arg( *($3) );
+		$$ = tmp;		
+	  }
+	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
+	  {
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%1<%2>\" qleft=\"const\" qright=\"&amp;\"/>");
+		*tmp = tmp->arg( *($7) ).arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
 	;
