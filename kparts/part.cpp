@@ -32,6 +32,7 @@
 
 #include <kinstance.h>
 #include <klocale.h>
+#include <ktempfile.h>
 #include <kmessagebox.h>
 #include <kio/job.h>
 #include <kstddirs.h>
@@ -120,6 +121,7 @@ Part::Part( QObject *parent, const char* name )
 
 Part::~Part()
 {
+  kdDebug(1000) << "Part::~Part " << this << endl;
   if ( m_widget )
   {
     // We need to disconnect first, to avoid calling it !
@@ -166,7 +168,7 @@ void Part::setWidget( QWidget *widget )
   assert ( !m_widget ); // otherwise we get two connects
   m_widget = widget;
   connect( m_widget, SIGNAL( destroyed() ),
-	   this, SLOT( slotWidgetDestroyed() ) );
+           this, SLOT( slotWidgetDestroyed() ) );
 }
 
 void Part::setSelectable( bool selectable )
@@ -291,11 +293,10 @@ bool ReadOnlyPart::openURL( const KURL &url )
   else
   {
     m_bTemp = true;
-    m_file = tmpnam(0);
-    // We can't use mkstemp since we don't want to create the file here
-    // KIO::Job has to create it
+    KTempFile tempFile;
+    m_file = tempFile.name();
 
-    d->m_job = KIO::file_copy( m_url, m_file, 0600, false, false, d->m_showProgressInfo );
+    d->m_job = KIO::file_copy( m_url, m_file, 0600, true, false, d->m_showProgressInfo );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
