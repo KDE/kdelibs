@@ -84,7 +84,7 @@ bool CupsdBrowsingTimeoutPage::saveConfig(CupsdConf *conf, QString& msg)
 		if (ok) conf->browseinterval_ = v1;
 		else
 		{
-			msg = i18n("%1 wrong argument !").arg(i18n("Browse interval:"));
+			msg = i18n("%1 wrong argument!").arg(i18n("Browse interval:"));
 			return false;
 		}
 	}
@@ -94,7 +94,7 @@ bool CupsdBrowsingTimeoutPage::saveConfig(CupsdConf *conf, QString& msg)
 		if (ok) conf->browsetimeout_ = v2;
 		else
 		{
-			msg = i18n("%1 wrong argument !").arg(i18n("Browse timeout:"));
+			msg = i18n("%1 wrong argument!").arg(i18n("Browse timeout:"));
 			return false;
 		}
 	}
