@@ -504,7 +504,7 @@ Object Object::create(Class c, const KJSO& val, const Object& p)
 Object Object::dynamicCast(const KJSO &obj)
 {
   // return null object on type mismatch
-  if (!obj.isA(ObjectType))
+  if (!obj.isObject())
     return Object(0L);
 
   return Object(obj.imp());
