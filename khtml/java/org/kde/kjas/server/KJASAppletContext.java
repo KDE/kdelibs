@@ -12,6 +12,10 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.5  2000/01/29 04:22:28  rogozin
+ * Preliminary support for archive tag.
+ * Fix size problem.
+ *
  * Revision 1.4  2000/01/27 23:41:57  rogozin
  * All applet parameters are passed to KJAS now
  * Next step - make use of them.
@@ -104,26 +108,21 @@ public class KJASAppletContext implements AppletContext
    {
       if ( applets.contains( app ) ) {
          final Frame f = new Frame( title );
-         f.add( app, "Center" );
+         AppletPanel p = new AppletPanel( app.getSize() );
 
-         Dimension s = app.getSize();
-         
-         // HACK: the real size seems to be off by these constants
-         // We adjust the size to get the correct one
-         s.width += 10;
-         s.height += 30;
-         
-         f.setSize( s );
+         p.add("Center", app);
+         f.add("Center", p);
+         f.pack();
 
          f.addWindowListener( new WindowAdapter() {
-            public void windowClosing( WindowEvent e ) {
-               f.setVisible( false );
-               // Should stop the applet thread
-            }
-         } );
+               public void windowClosing( WindowEvent e ) {
+                  f.setVisible( false );
+                  // Should stop the applet thread
+               }
+            });
 
          f.setVisible( true );
-
+         
          app.init();
          app.start();
       }
@@ -170,4 +169,21 @@ public class KJASAppletContext implements AppletContext
    {
       System.out.println( "showstatus!" + message );
    }
-};
+
+   class AppletPanel 
+      extends Panel 
+   {
+      Dimension appletSize;
+
+      AppletPanel(Dimension size) 
+      {
+         super(new BorderLayout());
+         appletSize = size;
+      }
+      
+      public Dimension preferredSize()
+      {
+         return appletSize;
+      }
+   }
+}

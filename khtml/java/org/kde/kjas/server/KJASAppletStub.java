@@ -10,6 +10,9 @@ import java.net.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 21:55:27  rich
+ * More consts
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:08  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -59,7 +62,9 @@ public class KJASAppletStub implements AppletStub
    }
 
     public void setParameter( String name, String value ) {
-       System.err.println( "setParameter() " + name + "=" + value );
+       
+      if(Main.debug)
+          System.out.println( "setParameter() " + name + "=" + value );
 
        if ( ( name != null ) && ( value != null ) )
           params.put( name, value );

@@ -15,6 +15,9 @@ import java.util.zip.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.6  2000/02/13 23:05:36  rich
+ * Fixed the problem with the lake testcase
+ *
  * Revision 1.5  2000/01/29 04:22:28  rogozin
  * Preliminary support for archive tag.
  * Fix size problem.
@@ -193,7 +196,8 @@ public class KJASAppletClassLoader
    {
       String cname = name;
 
-      System.err.println( "findURLClass: name=" + name );
+      if(Main.debug)
+         System.out.println( "findURLClass: name=" + name );
       
       if ( !cname.endsWith( ".class" ) )
          cname = cname + ".class";
@@ -204,8 +208,6 @@ public class KJASAppletClassLoader
       
       try {
          URL classURL = new URL( codeBase, cname );
-
-      System.err.println( "findURLClass: classURL=" + classURL );
 
          URLConnection connection = classURL.openConnection();
          int len = connection.getContentLength();

@@ -167,7 +167,7 @@ void KJavaAppletWidget::stop()
 void KJavaAppletWidget::setWindow( WId w )
 {
    XTextProperty titleProperty;
-
+   
    XGetWMName( qt_xdisplay(), w, &titleProperty );
 
    if ( strcmp( swallowTitle.data(), (char *) titleProperty.value ) == 0 )
@@ -183,9 +183,9 @@ void KJavaAppletWidget::setWindow( WId w )
 void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
-
+   
    KWM::prepareForSwallowing( w );
-
+   
    XReparentWindow( qt_xdisplay(), w, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), w );
    XResizeWindow( qt_xdisplay(), window, width(), height() );
