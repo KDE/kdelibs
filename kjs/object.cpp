@@ -836,7 +836,7 @@ void Imp::operator delete(void*, size_t)
   // Do nothing. So far.
 }
 
-ObjectImp::ObjectImp(Class c) : cl(c) { }
+ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
 
 ObjectImp::ObjectImp(Class c, const KJSO &v) : cl(c), val(v.imp()) { }
 
