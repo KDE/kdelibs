@@ -47,36 +47,40 @@ using namespace KABC;
 
 LockWidget::LockWidget( const QString &identifier )
 {
-  mLock = new Lock( identifier );
-
   QVBoxLayout *topLayout = new QVBoxLayout( this );
   topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
 
-  int pid = getpid();
+  if ( identifier.isEmpty() ) {
+    mLock = 0;
+  } else {
+    mLock = new Lock( identifier );
 
-  QLabel *pidLabel = new QLabel( "Process ID: " + QString::number( pid ),
-                                 this );
-  topLayout->addWidget( pidLabel );
+    int pid = getpid();
 
-  QHBoxLayout *identifierLayout = new QHBoxLayout( topLayout );
-  
-  QLabel *resourceLabel = new QLabel( "Identifier:", this );
-  identifierLayout->addWidget( resourceLabel );
-  
-  QLabel *resourceIdentifier = new QLabel( identifier, this );
-  identifierLayout->addWidget( resourceIdentifier );
+    QLabel *pidLabel = new QLabel( "Process ID: " + QString::number( pid ),
+                                   this );
+    topLayout->addWidget( pidLabel );
 
-  mStatus = new QLabel( "Status: Unlocked", this );
-  topLayout->addWidget( mStatus );
-    
-  QPushButton *button = new QPushButton( "Lock", this );
-  topLayout->addWidget( button );
-  connect( button, SIGNAL( clicked() ), SLOT( lock() ) );
+    QHBoxLayout *identifierLayout = new QHBoxLayout( topLayout );
 
-  button = new QPushButton( "Unlock", this );
-  topLayout->addWidget( button );
-  connect( button, SIGNAL( clicked() ), SLOT( unlock() ) );
+    QLabel *resourceLabel = new QLabel( "Identifier:", this );
+    identifierLayout->addWidget( resourceLabel );
+
+    QLabel *resourceIdentifier = new QLabel( identifier, this );
+    identifierLayout->addWidget( resourceIdentifier );
+
+    mStatus = new QLabel( "Status: Unlocked", this );
+    topLayout->addWidget( mStatus );
+
+    QPushButton *button = new QPushButton( "Lock", this );
+    topLayout->addWidget( button );
+    connect( button, SIGNAL( clicked() ), SLOT( lock() ) );
+
+    button = new QPushButton( "Unlock", this );
+    topLayout->addWidget( button );
+    connect( button, SIGNAL( clicked() ), SLOT( unlock() ) );
+  }
 
   mLockView = new QListView( this );
   topLayout->addWidget( mLockView );
@@ -86,9 +90,9 @@ LockWidget::LockWidget( const QString &identifier )
 
   updateLockView();
 
-  button = new QPushButton( "Quit", this );
-  topLayout->addWidget( button );
-  connect( button, SIGNAL( clicked() ), SLOT( close() ) );
+  QPushButton *quitButton = new QPushButton( "Quit", this );
+  topLayout->addWidget( quitButton );
+  connect( quitButton, SIGNAL( clicked() ), SLOT( close() ) );
   
   KDirWatch *watch = KDirWatch::self();
   connect( watch, SIGNAL( dirty( const QString & ) ),
@@ -167,13 +171,15 @@ int main(int argc,char **argv)
 
   KApplication app;
 
+  QString identifier;
+
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-  if ( args->count() != 1 ) {
+  if ( args->count() == 1 ) {
+    identifier = args->arg( 0 );
+  } else if ( args->count() != 0 ) {
     cerr << "Usage: testlock <identifier>" << endl;
     return 1;
   }
-
-  QString identifier = args->arg( 0 );
 
   LockWidget mainWidget( identifier );
 
