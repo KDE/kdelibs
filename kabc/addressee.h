@@ -197,6 +197,31 @@ class Addressee
     static QString birthdayLabel();
 
     /*
+      Return translated label for homePhone field.
+    */
+    static QString homePhoneLabel();
+
+    /*
+      Return translated label for businessPhone field.
+    */
+    static QString businessPhoneLabel();
+
+    /*
+      Return translated label for mobilePhone field.
+    */
+    static QString mobilePhoneLabel();
+
+    /*
+      Return translated label for homeFax field.
+    */
+    static QString homeFaxLabel();
+
+    /*
+      Return translated label for businessFax field.
+    */
+    static QString businessFaxLabel();
+
+    /*
       Return translated label for email field.
     */
     static QString emailLabel();

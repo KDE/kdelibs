@@ -292,6 +292,36 @@ QString Addressee::birthdayLabel()
 }
 
 
+QString Addressee::homePhoneLabel()
+{
+  return i18n("Home Phone");
+}
+
+
+QString Addressee::businessPhoneLabel()
+{
+  return i18n("Business Phone");
+}
+
+
+QString Addressee::mobilePhoneLabel()
+{
+  return i18n("Mobile Phone");
+}
+
+
+QString Addressee::homeFaxLabel()
+{
+  return i18n("Home Fax");
+}
+
+
+QString Addressee::businessFaxLabel()
+{
+  return i18n("Business Fax");
+}
+
+
 QString Addressee::emailLabel()
 {
   return i18n("Email Address");

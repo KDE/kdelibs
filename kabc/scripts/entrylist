@@ -18,7 +18,11 @@ ALF,birthday,QDateTime,birthday,.toString()
 #QString label (part of Address)
 
 #phoneNumbers
-
+LF,home phone,QString,homePhone
+LF,business phone,QString,businessPhone
+LF,mobile phone,QString,mobilePhone
+LF,home fax,QString,homeFax
+LF,business fax,QString,businessFax
 
 #emails
 LF,email address,QString,email

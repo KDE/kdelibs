@@ -87,6 +87,16 @@ QString Field::value( const KABC::Addressee &a )
         return QString::null;
     case FieldImpl::Url:
       return a.url().prettyURL();
+    case FieldImpl::HomePhone:
+      return a.phoneNumber( PhoneNumber::Home ).number();
+    case FieldImpl::BusinessPhone:
+      return a.phoneNumber( PhoneNumber::Work ).number();
+    case FieldImpl::MobilePhone:
+      return a.phoneNumber( PhoneNumber::Cell ).number();
+    case FieldImpl::HomeFax:
+      return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
+    case FieldImpl::BusinessFax:
+      return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
     default:
       return QString::null;
   }
@@ -96,7 +106,6 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
 {
   switch ( mImpl->fieldId() ) {
     --CASESETVALUE--
-    case FieldImpl::Email:
     default:
       return false;
   }

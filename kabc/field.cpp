@@ -43,6 +43,11 @@ class Field::FieldImpl
       Suffix,
       NickName,
       Birthday,
+      HomePhone,
+      BusinessPhone,
+      MobilePhone,
+      HomeFax,
+      BusinessFax,
       Email,
       Mailer,
       Title,
@@ -93,6 +98,16 @@ QString Field::label()
       return Addressee::nickNameLabel();
     case FieldImpl::Birthday:
       return Addressee::birthdayLabel();
+    case FieldImpl::HomePhone:
+      return Addressee::homePhoneLabel();
+    case FieldImpl::BusinessPhone:
+      return Addressee::businessPhoneLabel();
+    case FieldImpl::MobilePhone:
+      return Addressee::mobilePhoneLabel();
+    case FieldImpl::HomeFax:
+      return Addressee::homeFaxLabel();
+    case FieldImpl::BusinessFax:
+      return Addressee::businessFaxLabel();
     case FieldImpl::Email:
       return Addressee::emailLabel();
     case FieldImpl::Mailer:
@@ -149,6 +164,16 @@ QString Field::value( const KABC::Addressee &a )
         return QString::null;
     case FieldImpl::Url:
       return a.url().prettyURL();
+    case FieldImpl::HomePhone:
+      return a.phoneNumber( PhoneNumber::Home ).number();
+    case FieldImpl::BusinessPhone:
+      return a.phoneNumber( PhoneNumber::Work ).number();
+    case FieldImpl::MobilePhone:
+      return a.phoneNumber( PhoneNumber::Cell ).number();
+    case FieldImpl::HomeFax:
+      return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
+    case FieldImpl::BusinessFax:
+      return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
     default:
       return QString::null;
   }
@@ -190,7 +215,6 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
     case FieldImpl::Organization:
       a.setOrganization( value );
       return true;
-    case FieldImpl::Email:
     default:
       return false;
   }
@@ -212,6 +236,11 @@ Field::List Field::allFields()
     createField( FieldImpl::Suffix );
     createField( FieldImpl::NickName );
     createField( FieldImpl::Birthday );
+    createField( FieldImpl::HomePhone );
+    createField( FieldImpl::BusinessPhone );
+    createField( FieldImpl::MobilePhone );
+    createField( FieldImpl::HomeFax );
+    createField( FieldImpl::BusinessFax );
     createField( FieldImpl::Email );
     createField( FieldImpl::Mailer );
     createField( FieldImpl::Title );
