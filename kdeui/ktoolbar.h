@@ -23,8 +23,9 @@
 #define _KTOOLBAR_H
 
 #include <qframe.h>
-#include <qcombobox.h>
+
 #include <kiconloader.h>
+#include "kcombobox.h"
 
 class QSize;
 class QPixmap;
@@ -247,7 +248,7 @@ public:
                    int size = 70, int index =-1);
 
   /**
-   * Insert @ref QComboBox with list.
+   * Insert @ref KComboBox with list.
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
@@ -257,7 +258,7 @@ public:
    *
    * @see setFullWidth()
    * @see setItemAutoSized()
-   * @see QComboBox
+   * @see KComboBox
    * @return Item index.
    */
   int insertCombo (QStrList *list, int id, bool writable,
@@ -268,7 +269,7 @@ public:
                    QComboBox::Policy policy = QComboBox::AtBottom);
 
   /**
-   * Insert @ref QComboBox with list.
+   * Insert @ref KComboBox with list.
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
@@ -278,7 +279,7 @@ public:
    *
    * @see setFullWidth()
    * @see setItemAutoSized()
-   * @see QComboBox
+   * @see KComboBox
    * @return Item index.
    */
   int insertCombo (const QStringList &list, int id, bool writable,
@@ -289,12 +290,12 @@ public:
                    QComboBox::Policy policy = QComboBox::AtBottom);
 
   /**
-   * Insert @ref QComboBox with text.
+   * Insert @ref KComboBox with text.
    *
    *  The rest is the same as above.
    * @see setItemAutoSized()
    *
-   * @see QComboBox
+   * @see KComboBox
    * @return Item index.
    */
   int insertCombo (const QString& text, int id, bool writable,
@@ -525,12 +526,12 @@ public:
    *
    * Example:
    * <pre>
-   * QComboBox *combo = toolbar->getCombo(combo_id);
+   * KComboBox *combo = toolbar->getCombo(combo_id);
    * </pre>
    * That way you can get access to other public methods
-   * that @ref QComboBox provides.
+   * that @ref KComboBox provides.
    */
-  QComboBox * getCombo(int id);
+  KComboBox * getCombo(int id);
 
   /**
    * Retrieve a pointer to KToolBarLined.

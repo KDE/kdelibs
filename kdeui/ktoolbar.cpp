@@ -1695,7 +1695,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                            int size, int index,
                            QComboBox::Policy policy)
 {
-  QComboBox *combo = new QComboBox (writable, this);
+  KComboBox *combo = new KComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
@@ -1744,7 +1744,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                            int size, int index,
                            QComboBox::Policy policy)
 {
-  QComboBox *combo = new QComboBox (writable, this);
+  KComboBox *combo = new KComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
@@ -1790,7 +1790,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                            const QString& tooltiptext, int size, int index,
                            QComboBox::Policy policy)
 {
-  QComboBox *combo = new QComboBox (writable, this);
+  KComboBox *combo = new KComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
@@ -2067,10 +2067,10 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->insertItem(text, index);
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->insertItem(text, index);
       else
-        kdWarning(220) << "insertComboItem : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "insertComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2080,10 +2080,10 @@ void KToolBar::insertComboList (int id, QStrList *list, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->insertStrList(list, index);
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->insertStrList(list, index);
       else
-        kdWarning(220) << "insertComboList : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "insertComboList : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2093,10 +2093,10 @@ void KToolBar::insertComboList (int id, const QStringList &list, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->insertStringList(list, index);
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->insertStringList(list, index);
       else
-        kdWarning(220) << "insertComboList : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "insertComboList : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2106,10 +2106,10 @@ void KToolBar::setCurrentComboItem (int id, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->setCurrentItem(index);
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->setCurrentItem(index);
       else
-        kdWarning(220) << "setCurrentComboItem : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "setCurrentComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2119,10 +2119,10 @@ void KToolBar::removeComboItem (int id, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->removeItem(index);
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->removeItem(index);
       else
-        kdWarning(220) << "setCurrentComboItem : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "setCurrentComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2132,18 +2132,18 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
+      if ( b->getItem()->inherits("KComboBox") )
         if (index == -1)
         {
-          index = ((QComboBox *) b->getItem())->currentItem();
-          ((QComboBox *) b->getItem())->changeItem(text, index);
+          index = ((KComboBox *) b->getItem())->currentItem();
+          ((KComboBox *) b->getItem())->changeItem(text, index);
         }
         else
         {
-          ((QComboBox *) b->getItem())->changeItem(text, index);
+          ((KComboBox *) b->getItem())->changeItem(text, index);
         }
       else
-        kdWarning(220) << "changeComboItem : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "changeComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2153,10 +2153,10 @@ void KToolBar::clearCombo (int id)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        ((QComboBox *) b->getItem())->clear();
+      if ( b->getItem()->inherits("KComboBox") )
+        ((KComboBox *) b->getItem())->clear();
       else
-        kdWarning(220) << "clearCombo : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "clearCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
 }
@@ -2166,28 +2166,28 @@ QString KToolBar::getComboItem (int id, int index)
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
+      if ( b->getItem()->inherits("KComboBox") )
       {
         if (index == -1)
-          index = ((QComboBox *) b->getItem())->currentItem();
-        return ((QComboBox *) b->getItem())->text(index);
+          index = ((KComboBox *) b->getItem())->currentItem();
+        return ((KComboBox *) b->getItem())->text(index);
       }
       else
-        kdWarning(220) << "clearCombo : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "clearCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
   return QString::null;
 }
 
-QComboBox *KToolBar::getCombo (int id)
+KComboBox *KToolBar::getCombo (int id)
 {
   for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      if ( b->getItem()->inherits("QComboBox") )
-        return ((QComboBox *) b->getItem());
+      if ( b->getItem()->inherits("KComboBox") )
+        return ((KComboBox *) b->getItem());
       else
-        kdWarning(220) << "getCombo : item " << id << " is not a QComboBox." << endl;
+        kdWarning(220) << "getCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
   return 0;
