@@ -36,7 +36,9 @@
 KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
-       QString whatsThisBillingInfo = i18n(     " <qt> <p>Insert a meaningful string here to associate"
+	//WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisBillingInfo = i18n(    " <qt> <p><b>Print Job Billing and Accounting</b></p> "
+						" <p>Insert a meaningful string here to associate"
 						" the current print job with a certain account. This"
 						" string will appear in the CUPS \"page_log\" to help"
 						" with the print accounting in your organization. (Leave"
@@ -45,9 +47,17 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 						" who print on behalf of different \"customers\", like"
 						" print service bureaux, letter shops, press and prepress"
 						" companies, or secretaries who serve different bosses, etc."
+                                                " <hr> "
+                                                " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                                                " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o job-billing=...         # example: \"Marketing_Department\" or \"Joe_Doe\" "
+						" </pre>"
+						" </p> "
                                                 " </qt>" );
 
-       QString whatsThisScheduledPrinting = i18n(" <qt> <p>Scheduled printing lets you control the time"
+	QString whatsThisScheduledPrinting = i18n(" <qt> <p><b>Scheduled Printing</b></p> "
+						" <p>Scheduled printing lets you control the time"
 						" of the actual printout, while you can still send away your"
 						" job <b>now</b> and have it out of your way."
 						" <p> Especially useful"
@@ -63,15 +73,31 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 						" sheets of pink paper which is required by the Marketing"
 						" Department for a particular job are available and loaded"
 						" into the paper trays)."
-                                                " </qt>" );
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o job-hold-until=...      # example: \"indefinite\" or \"no-hold\" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 
-       QString whatsThisPageLabel = i18n(       " <qt> <p>Page Labels are printed by CUPS at the top and bottom"
+	QString whatsThisPageLabel = i18n(      " <qt> <p><b>Page Labels</b></p> "
+						" <p>Page Labels are printed by CUPS at the top and bottom"
 						" of each page. They appear on the pages surrounded by a little"
 						" frame box."
 						" <p>They contain any string you type into the line edit field."
-                                                " </qt>" );
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o page-label=\"...\"      # example: \"Company Confidential\" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 
-       QString whatsThisJobPriority = i18n(     " <qt> <p>Usually CUPS prints all jobs per queue according to"
+	QString whatsThisJobPriority = i18n(    " <qt> <p><b>Job Priority</b></p> "
+						" <p>Usually CUPS prints all jobs per queue according to"
 						" the \"FIFO\" priniciple: <em>First In, First Out</em>."
 						" <p> The"
 						" job priority option allows you to re-order the queue according"
@@ -82,9 +108,16 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 						" <p> Since the default job priority is \"50\", any job sent"
 						" with, for example, \"49\" will be printed only after all those"
 						" others have finished. Conversely, a"
-						" \"51\" or higher priority job will go right at the top of"
+						" \"51\" or higher priority job will go right to the top of"
 						" a populated queue (if no other, higher prioritized one is present)."
-                                                " </qt>" );
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o job-priority=...   # example: \"10\" or \"66\" or \"99\" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 
 	setTitle(i18n("Advanced Options"));
 	setOnlyRealPrinters(true);
@@ -120,7 +153,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
         QWhatsThis::add(m_priority, whatsThisJobPriority);
 	m_priority->setRange(1, 100, 10, true);
 
-	QLabel	*lab = new QLabel(i18n("&Schedule printing:"), this);
+	QLabel	*lab = new QLabel(i18n("&Scheduled printing:"), this);
 	lab->setBuddy(m_time);
         QWhatsThis::add(lab, whatsThisScheduledPrinting);
 	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
