@@ -3,12 +3,12 @@ SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tests
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_includes)
 
-kde_module_LTLIBRARIES = libkded_kdeprintd.la
+kde_module_LTLIBRARIES = kded_kdeprintd.la
 
-libkded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
-libkded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_KIO) $(LIB_KFILE)
-libkded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
-#libkded_kdeprintd_la_METASOURCES = AUTO
+kded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
+kded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_KIO) $(LIB_KFILE)
+kded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
+#kded_kdeprintd_la_METASOURCES = AUTO
 
 lib_LTLIBRARIES = libkdeprint.la
 
