@@ -462,6 +462,8 @@ public class KJASAppletContext implements AppletContext
             Field field = c.getField(name);
             ret = getJSTypeValue(field.get(o), objid, value);
         } catch (Exception ex) {
+            if (name.equals("getClass"))
+                return ret;
             Method [] m = c.getMethods();
             for (int i = 0; i < m.length; i++)
                 if (m[i].getName().equals(name)) {

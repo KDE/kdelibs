@@ -188,7 +188,7 @@ public final class KJASAppletStub
         public void run() {
             while (true) {
                 int nstate = getRequestState();
-                if (nstate == TERMINATE)
+                if (nstate >= TERMINATE)
                     return;
                 try {
                     doState(nstate);
