@@ -83,6 +83,8 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0),
         connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
+    // Don't exit while this job is running
+    kapp->ref();
 }
 
 Job::~Job()
@@ -90,6 +92,7 @@ Job::~Job()
     if ( m_progressId ) // Did we get an ID from the observer ?
         Observer::self()->jobFinished( m_progressId );
     delete m_speedTimer;
+    kapp->deref();
 }
 
 void Job::addSubjob(Job *job)
