@@ -6,7 +6,4 @@
 indent-tabs-mode: nil
 tab-width: 8
 c-basic-offset: 4
-;;this is so kde-emacs doesn't insert a space after and before
-;;parens e.g. func(a, b); instead func( a, b );
-kde-emacs-after-parent-string: ""
 evaluate: (c-set-offset 'innamespace '0)
