@@ -398,6 +398,7 @@ class TextAreaWidget : public KTextEdit
 public:
     TextAreaWidget(int wrap, QWidget* parent);
     ~TextAreaWidget();
+    void highLightWord( unsigned int length, unsigned int pos );
 protected:
     virtual bool event (QEvent *e );
     virtual QPopupMenu *createPopupMenu(const QPoint &pos);
@@ -435,6 +436,7 @@ public:
     { return static_cast<DOM::HTMLTextAreaElementImpl*>(RenderObject::element()); }
 
     QString text();
+    void highLightWord( unsigned int length, unsigned int pos );
 
     void select();
 

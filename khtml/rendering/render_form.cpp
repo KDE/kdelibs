@@ -1289,10 +1289,17 @@ void TextAreaWidget::slotCheckSpelling()
 //code from kedit.
 void TextAreaWidget::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos)
 {
+    highLightWord( text.length(),pos );
+}
+
+void TextAreaWidget::highLightWord( unsigned int length, unsigned int pos )
+{
     unsigned int l = 0;
     unsigned int cnt = 0;
     posToRowCol (pos, l, cnt);
-    setSelection(l, cnt, l, cnt+text.length());
+    kdDebug()<<" pos :"<<pos<<endl;
+    kdDebug()<<" l :"<<l<<endl;
+    setSelection(l, cnt, l, cnt+length);
 }
 
 void TextAreaWidget::spellCheckerCorrected( const QString &oldWord, const QString &newWord, unsigned int pos)
@@ -1358,6 +1365,13 @@ RenderTextArea::~RenderTextArea()
         element()->m_value = text();
         element()->m_dirtyvalue = false;
     }
+}
+
+void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    if ( w )
+        w->highLightWord( length, pos );
 }
 
 void RenderTextArea::handleFocusOut()

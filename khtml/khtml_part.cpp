@@ -98,6 +98,7 @@ using namespace DOM;
 
 #include "khtmlpart_p.h"
 #include "kpopupmenu.h"
+#include <rendering/render_form.h>
 
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
@@ -1913,7 +1914,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  qDebug( "comparing %s and %s", 
+  qDebug( "comparing %s and %s",
    cUrl.url().latin1(), url.url().latin1() );
   if (!kapp || !kapp->kapp->authorizeURLAction("redirect", cUrl, url))
   {
@@ -2407,9 +2408,9 @@ void KHTMLPart::findTextNext()
   d->m_paFindNext->setEnabled( d->m_find != 0L  ); // true, except when completely done
 }
 
-void KHTMLPart::slotHighlight( const QString &, int index, int length )
+void KHTMLPart::slotHighlight( const QString &text, int index, int length )
 {
-  //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
+  kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
   // We stop at the first portion whose index is 'greater than', and then use the previous one
@@ -2425,15 +2426,20 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   d->m_selectionStart = node;
   d->m_startOffset = index - (*prev).index;
 
-  Q_ASSERT( node->renderer() );
-  if ( node->renderer() )
+  khtml::RenderObject* obj = node->renderer();
+  khtml::RenderTextArea *parent = 0L;
+  bool renderAreaText =false;
+  Q_ASSERT( obj );
+  if ( obj )
   {
     int x = 0, y = 0;
+    renderAreaText = (obj->parent()->renderName()=="RenderTextArea");
+    if( renderAreaText )
+      parent= static_cast<khtml::RenderTextArea *>(obj->parent());
     if (static_cast<khtml::RenderText *>(node->renderer())
       ->posOfChar(d->m_startOffset, x, y))
         d->m_view->setContentsPos(x-50, y-50);
   }
-
   // Now look for end node
   it = prev; // no need to start from beginning again
   while ( it != d->m_stringPortions.end() && (*it).index < index + length )
@@ -2454,8 +2460,16 @@ void KHTMLPart::slotHighlight( const QString &, int index, int length )
   for ( ; it != d->m_stringPortions.end() ; ++it )
     kdDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node << endl;
 #endif
-  d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
-                          d->m_selectionEnd.handle(), d->m_endOffset );
+  if( !renderAreaText )
+  {
+    d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+                            d->m_selectionEnd.handle(), d->m_endOffset );
+  }
+  else
+  {
+    if( parent )
+      parent->highLightWord( length, d->m_endOffset-length );
+  }
   emitSelectionChanged();
 }
 
