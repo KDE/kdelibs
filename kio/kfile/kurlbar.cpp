@@ -18,6 +18,7 @@
 
 #include <unistd.h>
 
+#include <qapplication.h>
 #include <qcheckbox.h>
 #include <qdrawutil.h>
 #include <qfontmetrics.h>
@@ -180,6 +181,26 @@ void KURLBarItem::paint( QPainter *p )
     int w = width( box );
     static const int margin = KDialog::spacingHint();
 
+    // draw sunken selection
+    if ( isCurrent() || isSelected() ) {
+        int h = height( box );
+
+        QBrush brush = box->colorGroup().brush( QColorGroup::Highlight );
+        brush.setColor( brush.color().light( 115 ) );
+        p->fillRect( 1, 0, w - 2, h - 1, brush );
+        QPen pen = p->pen();
+        QPen oldPen = pen;
+        pen.setColor( box->colorGroup().mid() );
+        p->setPen( pen );
+
+        p->drawPoint( 1, 0 );
+        p->drawPoint( 1, h - 2 );
+        p->drawPoint( w - 2, 0 );
+        p->drawPoint( w - 2, h - 2 );
+
+        p->setPen( oldPen );
+    }
+
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
         // small icon -> draw icon next to text
 
@@ -199,7 +220,16 @@ void KURLBarItem::paint( QPainter *p )
             yPos += margin;
             int stringWidth = box->width() - pm->width() - 2 - (margin * 2);
             QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
-            p->drawText( pm->width() + margin + 2, yPos, visibleText );
+            int xPos = pm->width() + margin + 2;
+
+            if ( isCurrent() || isSelected() ) {
+                p->setPen( box->colorGroup().highlight().dark(115) );
+                p->drawText( xPos + ( QApplication::reverseLayout() ? -1 : 1),
+                             yPos + 1, visibleText );
+                p->setPen( box->colorGroup().highlightedText() );
+            }
+
+            p->drawText( xPos, yPos, visibleText );
         }
         // end cut & paste (modulo pixmap centering)
     }
@@ -224,14 +254,15 @@ void KURLBarItem::paint( QPainter *p )
             int x = (w - fm.width( visibleText )) / 2;
             x = QMAX( x, margin );
 
+            if ( isCurrent() || isSelected() ) {
+                p->setPen( box->colorGroup().highlight().dark(115) );
+                p->drawText( x + ( QApplication::reverseLayout() ? -1 : 1),
+                             y + 1, visibleText );
+                p->setPen( box->colorGroup().highlightedText() );
+            }
+
             p->drawText( x, y, visibleText );
         }
-    }
-
-    // draw sunken selection
-    if ( isCurrent() || isSelected() ) {
-        qDrawShadePanel( p, 1, 0, w -2, height(box),
-                         box->colorGroup(), true, 1, 0L );
     }
 }
 
@@ -375,8 +406,8 @@ void KURLBar::setListBox( KURLBarListBox *view )
 
     m_listBox->setSelectionMode( KListBox::Single );
     paletteChange( palette() );
-    m_listBox->viewport()->setBackgroundMode( PaletteMid );
     m_listBox->setFocusPolicy( TabFocus );
+    m_listBox->setFrameStyle( QFrame::NoFrame );
 
     connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
              SLOT( slotSelected( int, QListBoxItem * )));
@@ -421,7 +452,7 @@ void KURLBar::resizeEvent( QResizeEvent *e )
 void KURLBar::paletteChange( const QPalette & )
 {
     QPalette pal = palette();
-    QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
+    QColor gray = pal.color( QPalette::Normal, QColorGroup::Background );
     QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
     QColor foreground = pal.color( QPalette::Normal, QColorGroup::Foreground );
     pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
