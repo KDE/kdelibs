@@ -57,7 +57,7 @@ class KKeyChooser : public QWidget
 public:
 
     enum { NoKey = 1, DefaultKey, CustomKey };
-	
+
     /**
      * Constructor.
      *
@@ -90,27 +90,26 @@ protected slots:
 
     void toChange( QListViewItem *item );
     void changeKey();
+    void capturedKey( uint key );
     void updateAction( QListViewItem *item );
     void defaultKey();
     void noKey();
     void keyMode( int _mode );
+
+    // These 5 functions are now empty, and should be deleted during the next cleanup
     void shiftClicked();
     void ctrlClicked();
     void altClicked();
-    void metaClicked();
     void editKey();
     void editEnd();
+
     void readGlobalKeys();
     void readStdKeys();
 
 protected:
 
-    virtual bool event( QEvent *e );
-
-    void keyPressEvent( QKeyEvent* _event );
     void fontChange( const QFont& _font );
     void readKeysInternal( QDict< int >* dict, const QString& group );
-    void modifierClicked( uint keyMod, Qt::Key keySymEquiv, bool select );
 
 protected:
 

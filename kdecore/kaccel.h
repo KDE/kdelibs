@@ -35,7 +35,6 @@ class QObject;
 class QWidget;
 class KAccelPrivate;
 
-
 /**
  * Accelerator information, similar to an action.
  *
@@ -528,16 +527,31 @@ class KAccel : public QAccel
 		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
 		MOD_KEYS
 	};
-	static uint stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 	static void setupMasks();
-	static int keyMapXIndex( uint keySym );
+	static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static uint keyCodeXToKeySymX( uchar keyCodeX, uint keyModX );
+	static void keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static uint keyEventXToKeyQt( const XEvent *pEvent );
+	static int keySymXIndex( uint keySym );
 	static void keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX );
-	static uint keyXToKeyQt( uint keySymX, uint keyModX );
-	static void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-	static QString keyCodeXToString( unsigned char keyCodeX, uint keyModX, bool bi18n );
+	static uint keyCodeXToKeyQt( uchar keyCodeX, uint keyModX );
+	static uint keySymXToKeyQt( uint keySymX, uint keyModX );
+	static void keyQtToKeyX( uint keyCombQt, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static uint keyEventQtToKeyQt( const QKeyEvent* );
+	static QString keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n );
 	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
-	static uint accelModMaskQt();
-	static uint accelModMaskX();
+
+	static uint keyModXShift();		// ShiftMask
+	static uint keyModXLock();		// LockMask
+	static uint keyModXCtrl();		// ControlMask
+	static uint keyModXAlt();		// Normally Mod1Mask
+	static uint keyModXNumLock();		// Normally Mod2Mask
+	static uint keyModXModeSwitch();	// Normally Mod3Mask
+	static uint keyModXMeta();		// Normally Mod4Mask
+	static uint keyModXScrollLock();	// Normally Mod5Mask
+
+	static uint accelModMaskQt();		// Normally Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1)
+	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
 
 signals:
 	void keycodeChanged();

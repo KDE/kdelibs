@@ -281,6 +281,7 @@ KKeyEntryMap KAccel::keyDict() const
 
 void KAccel::readSettings( KConfig* config )
 {
+    kdDebug(125) << "KAccel::readSettings(...)\n";
     readKeyMap( aKeyMap, aGroup, config );
 
     for (KKeyEntryMap::Iterator it = aKeyMap.begin();
@@ -536,13 +537,13 @@ static ModKeyXQt g_aModKeys[] =
 	{ "Ctrl",	Qt::CTRL,	ControlMask },
 	{ "Alt",	Qt::ALT,	Mod1Mask },
 	{ "NumLock",	0,		Mod2Mask },
-	{ "Alt-Gr",	0,		Mod3Mask },
+	{ "ModeSwitch",	0,		Mod3Mask },
 	{ "Meta",	(Qt::ALT<<1), 	Mod4Mask },
 	{ "ScrollLock", 0,		Mod5Mask },
 	{ 0, 0, 0 }
 };
 
-static TransKey g_aTransKeySyms[] = {
+static const TransKey g_aTransKeySyms[] = {
 	{ Qt::Key_Backspace,	XK_BackSpace },
 	{ Qt::Key_Backtab,	XK_ISO_Left_Tab },
 	{ Qt::Key_Enter,	XK_KP_Enter },
@@ -551,6 +552,30 @@ static TransKey g_aTransKeySyms[] = {
 	{ Qt::Key_NumLock,	XK_Num_Lock },
 	{ Qt::Key_ScrollLock,	XK_Scroll_Lock }
 };
+
+// This function probably shouldn't be called for Qt reasons:
+//  Qt assumes that Alt is always Mod1Mask.
+void KAccel::setupMasks()
+{
+	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
+
+	for( int i = 3; i < 8; i++ ) {
+		int j = -1;
+		switch( xmk->modifiermap[xmk->max_keypermod * i + j] ) {
+			case XK_Alt_L:
+			case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
+			case XK_Num_Lock:	j = 4; break;	// Normally Mod2Mask
+			case XK_Mode_switch:	j = 5; break;	// Normally Mod3Mask
+			case XK_Meta_L:
+			case XK_Meta_R:		j = 6; break;	// Normally Mod4Mask
+			case XK_Scroll_Lock:	j = 7; break;	// Normally Mod5Mask
+		}
+		if( j >= 0 )
+			g_aModKeys[j].keyModMaskX = (1<<i);
+	}
+
+	XFreeModifiermap(xmk);
+}
 
 QString KAccel::keyToString( int keyCombQt, bool bi18n )
 {
@@ -613,7 +638,7 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 		}
 	}
 
-	return keyModStr + keyStr;
+	return !keyStr.isEmpty() ? (keyModStr + keyStr) : QString::null;
 }
 
 int KAccel::stringToKey(const QString& key)
@@ -628,6 +653,8 @@ int KAccel::stringToKey(const QString& key)
                 keyStr = key.mid( 8, pos - 8 );
         }
 
+	kdDebug(125) << QString("stringToKey("+key+") = %1\n").arg(stringToKey( keyStr, 0, 0, 0 ), 0, 16);
+
 	return stringToKey( keyStr, 0, 0, 0 );
 }
 
@@ -639,12 +666,12 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	uint	keyModX = 0;
 	uint	keyCombQt = 0;
 	QString sKeySym;
+	QChar	c;
 
-	//QString t;
-	//for( int i = 0; i < keyStr.length(); i++ ) {
-	//	t += QString( "[%1]" ).arg( keyStr[i] );
-	//}
-	//kdDebug() << t << endl;
+	// Initialize
+	if( pKeySymX )	*pKeySymX = 0;
+	if( pKeyCodeX )	*pKeyCodeX = 0;
+	if( pKeyModX )	*pKeyModX = 0;
 
 	if( keyStr.isNull() || keyStr.isEmpty() )
 		return 0;
@@ -664,104 +691,113 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		sKeySym = keyStr.mid( iOffset, iOffsetToken - iOffset ).stripWhiteSpace();
 		iOffset = iOffsetToken + 1;
 
-		//if( sKeySym.isEmpty() ) { kdWarning(125) << "stringToKey::Empty token" << endl; return 0; }
-
-		// Check if this is a modifier key.
+		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
 		for( i = 0; i < MOD_KEYS; i++ ) {
-			if( stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 )
+			if( stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
+				// If there is no X mod flag defined for this key,
+				//  then abort.  Ex: Meta+F1, but X hasn't assigned Meta.
+				if( g_aModKeys[i].keyModMaskX == 0 )
+					return 0;
+				keyCombQt |= g_aModKeys[i].keyModMaskQt;
+				keyModX |= g_aModKeys[i].keyModMaskX;
 				break;
+			}
 		}
 
-		// If a mod key was found (Shift, Ctrl, Alt, Meta),
-		if( i < MOD_KEYS ) {
-			keyCombQt |= g_aModKeys[i].keyModMaskQt;
-			keyModX |= g_aModKeys[i].keyModMaskX;
-		}
-		// Otherwise, look key up,
-		else {
+		// If this was not a modifier key,
+		//  search for 'normal' key.
+		if( i == MOD_KEYS ) {
 			// Abort if already found primary key.
-			if( keySymX ) {
-				keySymX = keyModX = keyCodeX = keyCombQt = 0;
+			if( !c.isNull() || keySymX ) {
+				c = QChar::null;
+				keySymX = keyModX = keyCombQt = 0;
 				break;
 			}
 			//if( keySymX ) { kdWarning(125) << "keystrToKey: Tried to set more than one key in key code." << endl; return 0; }
 
-			if( sKeySym.length() == 1 ) {
-				QChar c = sKeySym[0];
-				keyCombQt |= c.unicode();
-				keySymX = c.unicode();
-
-				// If this is an ASCII alpha without the SHIFT-key held down,
-				//  then use lower-case;
-				if( keySymX >= 'A' && keySymX <= 'Z' && !(keyCombQt & Qt::SHIFT) )
-					keySymX = QChar(int(keySymX)).lower().unicode();
-			}
+			if( sKeySym.length() == 1 )
+				c = sKeySym[0];
 			else {
 				// Search for Qt keycode
 				for( i = 0; i < NB_KEYS; i++ ) {
-					if( sKeySym == KKEYS[i].name ) {
+					if( stricmp( sKeySym.ascii(), KKEYS[i].name ) == 0 ) {
 						keyCombQt |= KKEYS[i].code;
 						keyQtToKeyX( KKEYS[i].code, 0, &keySymX, 0 );
+						if( KKEYS[i].code < 0x1000 && QChar(KKEYS[i].code).isLetter() )
+							c = KKEYS[i].code;
 						break;
 					}
 				}
 
 				//if( i == NB_KEYS ) { kdWarning(125) << "keystrToKey: Unknown key name " << sKeySym << endl; return 0; }
 				if( i == NB_KEYS ) {
-					keySymX = keyModX = keyCodeX = keyCombQt = 0;
+					c = QChar::null;
+					keySymX = keyModX = keyCombQt = 0;
 					break;
 				}
 			}
-
-			// Find X key code (code of key send from keyboard)
-			keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
-
-			// Find which index this key symbol is at for the given key code.
-			for( i = 0; i < 4; i++ ) {
-				if( keySymX == XKeycodeToKeysym( qt_xdisplay(), keyCodeX, i ) )
-					break;
-			}
-			// If this symbol is 'Shifted',
-			//  ***: What to do about index 2 and 3 and the Mode_switch key?
-			if( i == 1 || i == 3 ) {
-				keyCombQt |= Qt::SHIFT;
-				keyModX |= ShiftMask;
-			}
 		}
 	} while( (uint)iOffsetToken < keyStr.length() );
+
+	if( !c.isNull() ) {
+		if( c.isLetter() && !(keyModX & ShiftMask) )
+			c = c.lower();
+		keySymX = c.unicode();
+		// For some reason, Qt always wants 'a-z' as 'A-Z'.
+		if( c >= 'a' && c <= 'z' )
+			c = c.upper();
+		keyCombQt |= c.unicode();
+	}
+
+	if( keySymX ) {
+		// Find X key code (code of key sent from keyboard)
+		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
+
+		// If 'Shift' has been explicitly give, i.e. 'Shift+1',
+		if( keyModX & ShiftMask ) {
+			int index = keySymXIndex( keySymX );
+			// But symbol given is unshifted,
+			if( index == 0 || index == 2 ) {
+				keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index+1 );
+				keyCombQt = keySymXToKeyQt( keySymX, keyModX );
+			}
+		}
+
+		// If keySym requires Shift or ModeSwitch to activate,
+		//  then add the flags.
+		keySymXMods( keySymX, &keyCombQt, &keyModX );
+	}
 
 	if( pKeySymX )	*pKeySymX = keySymX;
 	if( pKeyCodeX )	*pKeyCodeX = keyCodeX;
 	if( pKeyModX )	*pKeyModX = keyModX;
 
-	//kdDebug(125) << "KAccel::stringToKey( " << keyStr << " ) = " << QString().setNum( keyCombQt, 16 ) << endl;
-
 	return keyCombQt;
 }
 
-void KAccel::setupMasks()
+uint KAccel::keyCodeXToKeySymX( uchar keyCodeX, uint keyModX )
 {
-	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
-
-	for( int i = 3; i < 8; i++ ) {
-		int j = -1;
-		switch( xmk->modifiermap[xmk->max_keypermod * i + j] ) {
-			case XK_Alt_L:
-			case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
-			case XK_Num_Lock:	j = 4; break;	// Normally Mod2Mask
-			case XK_Mode_switch:	j = 5; break;	// Normally Mod3Mask
-			case XK_Meta_L:
-			case XK_Meta_R:		j = 6; break;	// Normally Mod4Mask
-			case XK_Scroll_Lock:	j = 7; break;	// Normally Mod5Mask
-		}
-		if( j >= 0 )
-			g_aModKeys[j].keyModMaskX = (1<<i);
-	}
-
-	XFreeModifiermap(xmk);
+	// I don't know where it's documented, but Mode_shift sometimes sets the 13th bit in 'state'.
+	int index = ((keyModX & ShiftMask) ? 1 : 0) +
+		((keyModX & (0x2000 | keyModXModeSwitch())) ? 2 : 0);
+	return XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index );
 }
 
-int KAccel::keyMapXIndex( uint keySym )
+void KAccel::keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX )
+{
+	if( pKeyCodeX )	*pKeyCodeX = pEvent->xkey.keycode;
+	if( pKeySymX )	*pKeySymX = keyCodeXToKeySymX( pEvent->xkey.keycode, pEvent->xkey.state );
+	if( pKeyModX )	*pKeyModX = pEvent->xkey.state;
+}
+
+uint KAccel::keyEventXToKeyQt( const XEvent *pEvent )
+{
+	uint keySymX, keyModX;
+	keyEventXToKeyX( pEvent, 0, &keySymX, &keyModX );
+	return keySymXToKeyQt( keySymX, keyModX );
+}
+
+int KAccel::keySymXIndex( uint keySym )
 {
 	unsigned char keyCode = XKeysymToKeycode( qt_xdisplay(), keySym );
 
@@ -779,21 +815,26 @@ int KAccel::keyMapXIndex( uint keySym )
 void KAccel::keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX )
 {
 	uint keyModQt = 0, keyModX = 0;
-	int i = keyMapXIndex( keySym );
+	int i = keySymXIndex( keySym );
 
 	if( i == 1 || i == 3 ) {
 		keyModQt |= Qt::SHIFT;
 		keyModX |= ShiftMask;
 	}
 	if( i == 2 || i == 3 ) {
-		keyModX |= g_aModKeys[ModModeSwitchIndex].keyModMaskX;
+		keyModX |= keyModXModeSwitch();
 	}
 
 	if( pKeyModQt )	*pKeyModQt |= keyModQt;
 	if( pKeyModX )	*pKeyModX |= keyModX;
 }
 
-uint KAccel::keyXToKeyQt( uint keySymX, uint keyModX )
+uint KAccel::keyCodeXToKeyQt( uchar keyCodeX, uint keyModX )
+{
+	return keySymXToKeyQt( keyCodeXToKeySymX( keyCodeX, keyModX ), keyModX );
+}
+
+uint KAccel::keySymXToKeyQt( uint keySymX, uint keyModX )
 {
 	uint	keyCombQt = 0;
 
@@ -892,6 +933,8 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 	if( keySymX != NoSymbol ) {
 		// Get X keyboard code
 		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
+		// Add ModeSwitch modifier bit, if necessary
+		keySymXMods( keySymX, 0, &keyModX );
 
 		// Get X modifier flags
 		for( int i = 0; i < MOD_KEYS; i++ ) {
@@ -905,28 +948,44 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 	if( pKeyModX )  *pKeyModX = keyModX;
 }
 
-QString KAccel::keyCodeXToString( unsigned char keyCodeX, uint keyModX, bool bi18n )
+uint KAccel::keyEventQtToKeyQt( const QKeyEvent* pke )
 {
-	int index = ((keyModX & ShiftMask) ? 1 : 0) + ((keyModX & Mod3Mask) ? 2 : 0);
-	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index );
-	uint keyCombQt = keyXToKeyQt( keySymX, keyModX );
-	return keyToString( keyCombQt, bi18n );
+        uint keyCombQt;
+
+	// Set the modifier bits.
+	keyCombQt = (pke->state() & Qt::KeyButtonMask) * (Qt::SHIFT / Qt::ShiftButton);
+
+	if( pke->key() )
+		keyCombQt |= pke->key();
+	// If key() == 0, then it may be a compose character, so we need to
+	//  look at text() instead.
+	else {
+		QChar c = pke->text()[0];
+		// Looks like Qt allows unicode character up to 0x0fff.
+		if( pke->text().length() == 1 && c.unicode() < 0x1000 )
+			keyCombQt |= c.unicode();
+		else
+			keyCombQt |= Qt::Key_unknown;
+	}
+
+	return keyCombQt;
 }
 
+QString KAccel::keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n )
+	{ return keyToString( keyCodeXToKeyQt( keyCodeX, keyModX ), bi18n ); }
 QString KAccel::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
-{
-	uint keyCombQt = keyXToKeyQt( keySymX, keyModX );
-	return keyToString( keyCombQt, bi18n );
-}
+	{ return keyToString( keySymXToKeyQt( keySymX, keyModX ), bi18n ); }
 
-uint KAccel::accelModMaskQt()
-{
-	return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1);
-}
+uint KAccel::keyModXShift()		{ return ShiftMask; }
+uint KAccel::keyModXLock()		{ return LockMask; }
+uint KAccel::keyModXCtrl()		{ return ControlMask; }
+uint KAccel::keyModXAlt()		{ return g_aModKeys[ModAltIndex].keyModMaskX; }
+uint KAccel::keyModXNumLock()		{ return g_aModKeys[ModNumLockIndex].keyModMaskX; }
+uint KAccel::keyModXModeSwitch()	{ return g_aModKeys[ModModeSwitchIndex].keyModMaskX; }
+uint KAccel::keyModXMeta()		{ return g_aModKeys[ModMetaIndex].keyModMaskX; }
+uint KAccel::keyModXScrollLock()	{ return g_aModKeys[ModScrollLockIndex].keyModMaskX; }
 
-uint KAccel::accelModMaskX()
-{
-	return ShiftMask | ControlMask | Mod1Mask | Mod4Mask;
-}
+uint KAccel::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
+uint KAccel::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
 
 #include "kaccel.moc"

@@ -9,7 +9,6 @@
 class KKeyButton: public QPushButton
 {
   Q_OBJECT
-  Q_PROPERTY( bool editing READ isEditing WRITE setEditing )
 
 public:
 
@@ -21,6 +20,9 @@ public:
    * Destructs the key button widget.
    */
   ~KKeyButton();
+
+  void setKey( uint key );
+  uint getKey()			{ return key; }
   /**
    * Reimplemented for internal purposes.
    */
@@ -30,11 +32,22 @@ public:
    * In editing mode, the widget has a different
    * look.
    */
-  void setEditing(bool _editing);
+  //void setEditing(bool _editing);
+  void captureKey( bool bCapture );
   /**
    * @return whether the widget is in editing mode.
    */
-  bool isEditing() const;
+  bool isCapturing() const	{ return editing; }
+
+signals:
+  void capturedKey( uint key );
+
+public slots:
+  void captureKey();
+
+protected:
+  virtual bool x11Event( XEvent *pEvent );
+  void keyPressEventX( XEvent *pEvent );
 
 protected:
   /**
@@ -44,9 +57,10 @@ protected:
 
 private:
   bool editing;
+  uint key;
 
-  class KKeyButtonPrivate;
-  KKeyButtonPrivate *d;
+  //class KKeyButtonPrivate;
+  //KKeyButtonPrivate *d;
 };
 
 
