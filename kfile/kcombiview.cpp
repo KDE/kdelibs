@@ -67,7 +67,7 @@ void KCombiView::setRight(KFileView *view)
     right->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 }
 
-void KCombiView::insertSorted(KFileViewItem *tfirst, uint )
+void KCombiView::insertSorted(KFileViewItem *tfirst, uint)
 {
     kdDebug(kfile_area) << "KCombiView::insertSorted\n";
     KFileViewItem *f_first = 0, *d_first = 0;
@@ -107,6 +107,8 @@ void KCombiView::insertSorted(KFileViewItem *tfirst, uint )
     if (files)
 	right->insertSorted(f_first, files);
 
+    // ### OUCH! With this, KFileView only knows about the files, not the dirs!
+    // Dunno what this breaks, at least completing of dirs is broken.
     setFirstItem( right->firstItem() );
 }
 
