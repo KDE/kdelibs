@@ -2585,7 +2585,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if (child->m_bNotify)
   {
       child->m_bNotify = false;
-      emit d->m_extension->openURLNotify();
+      if ( !child->m_args.lockHistory() )
+          emit d->m_extension->openURLNotify();
       // why change the locationbar URL here? Other browsers don't do it
       // either for framesets and it's actually confusing IMHO, as it
       // makes the user think he's visiting that new URL while he actually
@@ -3463,7 +3464,8 @@ bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs 
     return false;
 
   // Inform someone that we are about to show something else.
-  emit d->m_extension->openURLNotify();
+  if ( !urlArgs.lockHistory() )
+      emit d->m_extension->openURLNotify();
 
   requestObject( &(*it), url, urlArgs );
 
