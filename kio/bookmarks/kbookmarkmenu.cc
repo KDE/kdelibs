@@ -113,7 +113,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
 
-    if ( KBookmarkSettings::self()->m_advanced ) 
+    if ( KBookmarkSettings::self()->m_advanced )
     {
       (void) _parentMenu->contextMenu();
       connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
@@ -175,7 +175,7 @@ QString KBookmarkMenu::s_highlightedImportLocation;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
-  if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
+  if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction"))
   {
     s_highlightedAddress = action->property("address").toString();
     //kdDebug() << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
@@ -185,7 +185,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
     s_highlightedImportType = action->property("type").toString();
     s_highlightedImportLocation = action->property("location").toString();
   }
-  else 
+  else
   {
     s_highlightedAddress = QString::null;
     s_highlightedImportType = QString::null;
@@ -219,10 +219,10 @@ bool RMB::invalid( int val )
 {
   bool valid = true;
 
-  if (val == 1) 
+  if (val == 1)
     s_highlightedAddress = m_parentAddress;
 
-  if (s_highlightedAddress.isNull()) 
+  if (s_highlightedAddress.isNull())
     valid = false;
 
   return !valid;
@@ -260,7 +260,7 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
-  } 
+  }
   else
   {
     id = contextMenu->insertItem( i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
@@ -294,13 +294,13 @@ void RMB::slotRMBActionProperties( int val )
   KBookmark bookmark = atAddress(s_highlightedAddress);
 
   QString folder = bookmark.isGroup() ? QString::null : bookmark.url().url();
-  KBookmarkEditDialog dlg( bookmark.fullText(), folder, 
+  KBookmarkEditDialog dlg( bookmark.fullText(), folder,
                            m_pManager, KBookmarkEditDialog::ModifyMode );
   if ( dlg.exec() != KDialogBase::Accepted )
     return;
 
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
-  if ( !dlg.finalUrl().isNull() ) 
+  if ( !dlg.finalUrl().isNull() )
     bookmark.internalElement().setAttribute("href", dlg.finalUrl());
 
   kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
@@ -328,14 +328,14 @@ void RMB::slotRMBActionInsert( int val )
 
   // TODO use unique title
 
-  if (bookmark.isGroup()) 
+  if (bookmark.isGroup())
   {
     KBookmarkGroup parentBookmark = bookmark.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
     parentBookmark.addBookmark( m_pManager, title, url );
     m_pManager->emitChanged( parentBookmark );
   }
-  else 
+  else
   {
     KBookmarkGroup parentBookmark = bookmark.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
@@ -351,7 +351,7 @@ void RMB::slotRMBActionRemove( int val )
   if (invalid(val)) { hidePopup(); return; }
 
   if (KMessageBox::warningYesNo(
-          m_parentMenu, "Are you sure you wish to remove this bookmark?", 
+          m_parentMenu, "Are you sure you wish to remove this bookmark?",
           "Bookmark Removal", i18n("Remove"), i18n("Cancel"))
         != KMessageBox::Yes
      )
@@ -375,7 +375,7 @@ void RMB::slotRMBActionCopyLocation( int val )
 
   if ( !bookmark.isGroup() )
   {
-    kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0), 
+    kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
                                 QClipboard::Clipboard );
   }
 }
@@ -391,8 +391,8 @@ void RMB::slotRMBActionOpen( int val )
   m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
-void RMB::hidePopup() { 
-  KPopupMenu::contextMenuFocus()->hideContextMenu(); 
+void RMB::hidePopup() {
+  KPopupMenu::contextMenuFocus()->hideContextMenu();
 }
 
 /********************************************************************/
@@ -400,7 +400,7 @@ void RMB::hidePopup() {
 /********************************************************************/
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
-{ 
+{
   RMB::begin_rmb_action(this); rmbSelf(this)->fillContextMenu(contextMenu, address, val);
   emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu );
 }
@@ -464,7 +464,7 @@ void KBookmarkMenu::addAddBookmarksList()
 {
   if (!kapp->authorizeKAction("bookmarks"))
      return;
-  
+
   QString title = i18n( "Bookmark Tabs as Folder..." );
 
   KAction * paAddBookmarksList = new KAction( title,
@@ -484,7 +484,7 @@ void KBookmarkMenu::addAddBookmark()
 {
   if (!kapp->authorizeKAction("bookmarks"))
      return;
-  
+
   QString title = i18n( "&Add Bookmark" );
   int p;
   while ( ( p = title.find( '&' ) ) >= 0 )
@@ -558,14 +558,14 @@ void KBookmarkMenu::fillBookmarkMenu()
       addNewFolder();
   }
 
-  if ( m_bIsRoot 
+  if ( m_bIsRoot
     && KBookmarkManager::userBookmarksManager()->path() == m_pManager->path() )
   {
     bool haveSep = false;
 
     QValueList<QString> keys = KBookmarkMenu::dynamicBookmarksList();
     QValueList<QString>::const_iterator it;
-    for ( it = keys.begin(); it != keys.end(); ++it ) 
+    for ( it = keys.begin(); it != keys.end(); ++it )
     {
        DynMenuInfo info;
        info = showDynamicBookmarks((*it));
@@ -573,15 +573,15 @@ void KBookmarkMenu::fillBookmarkMenu()
        if ( !info.show || !QFile::exists( info.location ) )
           continue;
 
-       if (!haveSep) 
+       if (!haveSep)
        {
           m_parentMenu->insertSeparator();
           haveSep = true;
        }
 
        KActionMenu * actionMenu;
-       actionMenu = new KImportedBookmarksActionMenu( 
-                              info.name, info.type, 
+       actionMenu = new KImportedBookmarksActionMenu(
+                              info.name, info.type,
                               m_actionCollection, "kbookmarkmenu" );
 
        actionMenu->setProperty( "type", info.type );
@@ -590,7 +590,7 @@ void KBookmarkMenu::fillBookmarkMenu()
        actionMenu->plug( m_parentMenu );
        m_actions.append( actionMenu );
 
-       KBookmarkMenu *subMenu = 
+       KBookmarkMenu *subMenu =
           new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
                              m_actionCollection, false,
                              m_bAddBookmark, QString::null );
@@ -607,7 +607,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   {
     QString text = bm.text();
     text.replace( '&', "&&" );
-    if ( !separatorInserted && m_bIsRoot) { 
+    if ( !separatorInserted && m_bIsRoot) {
       // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
       m_parentMenu->insertSeparator();
       separatorInserted = true;
@@ -638,7 +638,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     {
       //kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
       KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
-                                                          m_actionCollection, 
+                                                          m_actionCollection,
                                                           "kbookmarkmenu" );
       actionMenu->setProperty( "address", bm.address() );
       actionMenu->plug( m_parentMenu );
@@ -648,7 +648,7 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
-      connect(subMenu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ), 
+      connect(subMenu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ),
                  this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ));
       m_lstSubMenus.append( subMenu );
     }
@@ -666,7 +666,7 @@ void KBookmarkMenu::fillBookmarkMenu()
       actionMenu->plug( m_parentMenu );
       m_actions.append( actionMenu );
     }
-    else 
+    else
     {
       addAddBookmark();
       if ( extOwner() )
@@ -695,7 +695,7 @@ void KBookmarkMenu::slotAddBookmarksList()
     return; // user canceled i guess
 
   KExtendedBookmarkOwner::QStringPairList::const_iterator it;
-  for ( it = list.begin(); it != list.end(); ++it ) 
+  for ( it = list.begin(); it != list.end(); ++it )
     group.addBookmark( m_pManager, (*it).first, KURL((*it).second) );
 
   m_pManager->emitChanged( parentBookmark );
@@ -759,26 +759,26 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
   grid->addWidget( m_title, 0, 1 );
   grid->addWidget( new QLabel( m_title, i18n( "Name:" ), main ), 0, 0 );
 
-  if (isF) 
+  if (isF)
   {
     m_url = new KLineEdit( main );
     grid->addWidget( m_url, 1, 1 );
     grid->addWidget( new QLabel( m_url, i18n( "Location:" ), main ), 1, 0 );
   }
-  else 
+  else
   {
     m_url = 0;
   }
 }
 
 void KBookmarkEditFields::setName(const QString &str)
-{ 
-  m_title->setText(str); 
+{
+  m_title->setText(str);
 }
 
-void KBookmarkEditFields::setLocation(const QString &str) 
-{ 
-  m_url->setText(str); 
+void KBookmarkEditFields::setLocation(const QString &str)
+{
+  m_url->setText(str);
 }
 
 /********************************************************************/
@@ -787,9 +787,9 @@ void KBookmarkEditFields::setLocation(const QString &str)
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
                                          QWidget * parent, const char * name, const QString& caption)
-  : KDialogBase(parent, name, true, caption, 
-                url.isNull() ? (Ok|Cancel) : (User1|Ok|Cancel), 
-                Ok, false, KGuiItem()), 
+  : KDialogBase(parent, name, true, caption,
+                url.isNull() ? (Ok|Cancel) : (User1|Ok|Cancel),
+                Ok, false, KGuiItem()),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
   setButtonOKText( (editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" ) );
@@ -802,8 +802,8 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   setMainWidget( m_main );
 
   QBoxLayout *vbox = new QVBoxLayout( m_main, spacingHint() );
-  KBookmarkEditFields::FieldsSet fs = 
-    folder ? KBookmarkEditFields::FolderFieldsSet 
+  KBookmarkEditFields::FieldsSet fs =
+    folder ? KBookmarkEditFields::FolderFieldsSet
            : KBookmarkEditFields::BookmarkFieldsSet;
   m_fields = new KBookmarkEditFields(m_main, vbox, fs);
   m_fields->setName(title);
@@ -813,7 +813,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   if ( !folder )
   {
     m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
-    connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
+    connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ),
              this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
     vbox->addWidget( m_folderTree );
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
@@ -827,29 +827,29 @@ void KBookmarkEditDialog::slotDoubleClicked( QListViewItem* item )
   accept();
 }
 
-void KBookmarkEditDialog::slotOk() 
-{ 
-  accept(); 
+void KBookmarkEditDialog::slotOk()
+{
+  accept();
 }
 
-void KBookmarkEditDialog::slotCancel() 
-{ 
-  reject(); 
-} 
+void KBookmarkEditDialog::slotCancel()
+{
+  reject();
+}
 
 QString KBookmarkEditDialog::finalAddress() const
-{ 
+{
   Q_ASSERT( m_folderTree );
-  return KBookmarkFolderTree::selectedAddress( m_folderTree ); 
+  return KBookmarkFolderTree::selectedAddress( m_folderTree );
 }
 
 QString KBookmarkEditDialog::finalUrl() const
-{ 
+{
   return m_fields->m_url ? m_fields->m_url->text() : QString::null;
 }
 
 QString KBookmarkEditDialog::finalTitle() const
-{ 
+{
   return m_fields->m_title ? m_fields->m_title->text() : QString::null;
 }
 
@@ -858,7 +858,7 @@ void KBookmarkEditDialog::slotUser1()
   // kdDebug(7043) << "KBookmarkEditDialog::slotUser1" << endl;
   Q_ASSERT( m_folderTree );
 
-  QString address = KBookmarkFolderTree::selectedAddress( m_folderTree ); 
+  QString address = KBookmarkFolderTree::selectedAddress( m_folderTree );
   if ( address.isNull() ) return;
   KBookmarkGroup bm = m_mgr->findByAddress( address ).toGroup();
   Q_ASSERT(!bm.isNull());
@@ -917,7 +917,7 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
   return listview;
 }
 
-void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr ) 
+void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr )
 {
   listview->clear();
 
@@ -931,24 +931,26 @@ void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr )
   rootItem->setSelected( true );
 }
 
-static KBookmarkFolderTreeItem* ft_cast( QListViewItem *i ) 
-{ 
-  return static_cast<KBookmarkFolderTreeItem*>( i ); 
+static KBookmarkFolderTreeItem* ft_cast( QListViewItem *i )
+{
+  return static_cast<KBookmarkFolderTreeItem*>( i );
 }
 
 QString KBookmarkFolderTree::selectedAddress( QListView *listview )
 {
+  if ( !listview)
+    return QString::null;
   KBookmarkFolderTreeItem *item = ft_cast( listview->currentItem() );
   return item ? item->m_bookmark.address() : QString::null;
 }
 
-void KBookmarkFolderTree::setAddress( QListView *listview, const QString & address ) 
+void KBookmarkFolderTree::setAddress( QListView *listview, const QString & address )
 {
   KBookmarkFolderTreeItem* it = ft_cast( listview->firstChild() );
   while ( true ) {
     kdDebug(7043) << it->m_bookmark.address() << endl;
     it = ft_cast( it->itemBelow() );
-    if ( !it ) 
+    if ( !it )
       return;
     if ( it->m_bookmark.address() == address )
       break;
@@ -981,7 +983,7 @@ KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *paren
 /********************************************************************/
 /********************************************************************/
 
-// NOTE - KBookmarkMenuNSImporter is really === KBookmarkMenuImporter 
+// NOTE - KBookmarkMenuNSImporter is really === KBookmarkMenuImporter
 //        i.e, it is _not_ ns specific. and in KDE4 it should be renamed.
 
 void KBookmarkMenuNSImporter::openNSBookmarks()
@@ -1017,7 +1019,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString 
 {
   QString _text = text;
   _text.replace( '&', "&&" );
-  KAction * action = new KBookmarkAction(_text, "html", 0, 
+  KAction * action = new KBookmarkAction(_text, "html", 0,
                                          m_menu, SLOT( slotBookmarkSelected() ),
                                          m_actionCollection, 0);
   action->setProperty( "url", url );
@@ -1095,13 +1097,13 @@ QStringList KBookmarkMenu::dynamicBookmarksList()
   QStringList mlist;
   if (config.hasKey("DynamicMenus"))
     mlist = config.readListEntry("DynamicMenus");
-  else 
+  else
     mlist << "netscape";
 
   return mlist;
 }
 
-void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu) 
+void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu)
 {
   KConfig config("kbookmarkrc", false, false);
 
