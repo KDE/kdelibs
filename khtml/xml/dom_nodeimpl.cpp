@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -912,12 +913,63 @@ bool NodeImpl::isReadOnly()
     return false;
 }
 
+RenderObject * NodeImpl::previousRenderer()
+{
+    for (NodeImpl *n = previousSibling(); n; n = n->previousSibling()) {
+        if (n->renderer())
+            return n->renderer();
+    }
+    return 0;
+}
+
 RenderObject * NodeImpl::nextRenderer()
 {
     for (NodeImpl *n = nextSibling(); n; n = n->nextSibling()) {
         if (n->renderer())
             return n->renderer();
     }
+    return 0;
+}
+
+void NodeImpl::createRendererIfNeeded()
+{
+#ifdef APPLE_CHANGES
+    if (!getDocument()->shouldCreateRenderers())
+        return;
+#endif
+        
+    assert(!attached());
+    assert(!m_render);
+    
+    NodeImpl *parent = parentNode();    
+    assert(parent);
+    
+    RenderObject *parentRenderer = parent->renderer();
+    if (parentRenderer && parentRenderer->childAllowed()) {
+        RenderStyle *style = styleForRenderer(parentRenderer);
+        style->ref();
+        if (rendererIsNeeded(style)) {
+            m_render = createRenderer(getDocument()->renderArena(), style);
+            m_render->setStyle(style);
+            parentRenderer->addChild(m_render, nextRenderer());
+        }
+        style->deref();
+    }
+}
+
+RenderStyle *NodeImpl::styleForRenderer(RenderObject *parent)
+{
+    return parent->style();
+}
+
+bool NodeImpl::rendererIsNeeded(RenderStyle *style)
+{
+    return (getDocument()->documentElement() == this) || (style->display() != NONE);
+}
+
+RenderObject *NodeImpl::createRenderer(RenderArena *arena, RenderStyle *style)
+{
+    assert(false);
     return 0;
 }
 

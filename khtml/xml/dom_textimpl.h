@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) Apple Computer, Inc
+ *           (C) 2003 Apple Computer, Inc
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -124,6 +124,8 @@ public:
     virtual bool isTextNode() const { return true; }
     virtual Id id() const;
     virtual void attach();
+    virtual bool rendererIsNeeded(khtml::RenderStyle *);
+    virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
     virtual void recalcStyle( StyleChange = NoChange );
     virtual bool childTypeAllowed( unsigned short type );
 

@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -375,20 +375,58 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/)
     return getDocument()->createTextNode(str);
 }
 
+bool TextImpl::rendererIsNeeded(RenderStyle *style)
+{
+    if (!CharacterDataImpl::rendererIsNeeded(style)) {
+        return false;
+    }
+    bool onlyWS = containsOnlyWhitespace();
+    if (!onlyWS) {
+        return true;
+    }
+    
+    RenderObject *par = parentNode()->renderer();
+    
+    if (par->isTable() || par->isTableRow() || par->isTableSection()) {
+        return false;
+    }
+    
+    if (style->whiteSpace() == PRE) {
+        return true;
+    }
+    
+    if (par->isInline()) {
+        // <span><div/> <div/></span>
+        RenderObject *prev = previousRenderer();
+        if (prev && prev->isRenderBlock()) {
+            return false;
+        }
+    } else {
+        RenderObject *prev = previousRenderer();
+        if (par->isRenderBlock() && !par->childrenInline() && (!prev || !prev->isInline())) {
+            return false;
+        }
+        
+        RenderObject *first = par->firstChild();
+        RenderObject *next = nextRenderer();
+        if (!first || next == first) {
+            // Whitespace at the start of a block just goes away.  Don't even
+            // make a render object for this text.
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+RenderObject *TextImpl::createRenderer(RenderArena *arena, RenderStyle *style)
+{
+    return new (arena) RenderText(this, str);
+}
+
 void TextImpl::attach()
 {
-    assert(!m_render);
-    assert(!attached());
-    assert(parentNode() && parentNode()->isElementNode());
-
-    ElementImpl* element = static_cast<ElementImpl*>(parentNode());
-    if (element->renderer() && element->renderer()->childAllowed()) {
-        khtml::RenderStyle* _style = element->renderer()->style();
-        m_render = new (getDocument()->renderArena()) RenderText(this, str);
-        m_render->setStyle(_style);
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-    }
-
+    createRendererIfNeeded();
     CharacterDataImpl::attach();
 }
 

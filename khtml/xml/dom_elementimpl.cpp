@@ -466,6 +466,22 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
+RenderStyle *ElementImpl::styleForRenderer(RenderObject *parentRenderer)
+{
+    return getDocument()->styleSelector()->styleForElement(this);
+}
+
+RenderObject *ElementImpl::createRenderer(RenderArena *arena, RenderStyle *style)
+{
+    if (getDocument()->documentElement() == this && style->display() == NONE) {
+        // Ignore display: none on root elements.  Force a display of block in that case.
+        RenderBlock* result = new (arena) RenderBlock(this);
+        if (result) result->setStyle(style);
+        return result;
+    }
+    return RenderObject::createObject(this, style);
+}
+
 void ElementImpl::attach()
 {
     assert(!attached());
@@ -473,16 +489,7 @@ void ElementImpl::attach()
     assert(parentNode());
 
 #if SPEED_DEBUG < 1
-    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()) {
-        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-        _style->ref();
-        m_render = RenderObject::createObject(this, _style);
-        if(m_render) {
-            m_render->setStyle(_style);
-            parentNode()->renderer()->addChild(m_render, nextRenderer());
-        }
-        _style->deref();
-    }
+    createRendererIfNeeded();
 #endif
 
     NodeBaseImpl::attach();

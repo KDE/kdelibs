@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -184,6 +185,8 @@ public:
 
     virtual void attach();
     virtual void close();
+    virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
+    virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
     virtual void recalcStyle( StyleChange = NoChange );
 
     virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {}

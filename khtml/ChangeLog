@@ -1,12 +1,19 @@
+2004-12-19  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * xml/dom_nodeimpl.{h,cpp}: Merge createRendererIfNeeded() and friends from WebCore
+        * xml/dom_elementimpl.{h,cpp}: Simplify attach to createRendererIfNeeded
+        * xml/dom_textimpl.{h,cpp}: Don't create unneeded empty text-runs.
+
 2004-12-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
-        Fix structural pseudo-classes :empty, :last-*, :only-* and :nth-last-*
+        Fix structural pseudo-classes :empty, :last-*, :only-* and :nth-last-* by introducing a late restyling
+        run when needed.
 
         * xml/dom_nodeimpl.{h,cpp}: Add new function close() to notify that the close tag have been parsed and no
           more static children will be added.
         * xml/dom_elementimpl.{h,cpp}: Add flags restyleChildrenLate, restyleSelfLate and restyleLate. To indicate
           self, children or self in relation to parent needs restyling at closing time.
-        * xml/xmltokenizer.cpp: Call close when close-tags are parsed
+        * xml/xml_tokenizer.cpp: Call close when close-tags are parsed
         * html/htmlparser.cpp: Call close where closeRenderer was previously called
         * css/cssstylerenderer.cpp: Set restyleLate flags where necessary
 

@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,6 +45,7 @@ class QTextStream;
 namespace khtml {
     class RenderStyle;
     class RenderObject;
+    class RenderArena;
 }
 
 namespace DOM {
@@ -275,6 +277,7 @@ public:
 
     khtml::RenderObject *renderer() const { return m_render; }
     khtml::RenderObject *nextRenderer();
+    khtml::RenderObject *previousRenderer();
     void setRenderer(khtml::RenderObject* renderer) { m_render = renderer; }
 
     void checkSetPrefix(const DOMString &_prefix, int &exceptioncode);
@@ -319,6 +322,11 @@ public:
     virtual void close();
 
     void closeRenderer();
+    
+    void createRendererIfNeeded();
+    virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
+    virtual bool rendererIsNeeded(khtml::RenderStyle *);
+    virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
 
     // -----------------------------------------------------------------------------
     // Methods for maintaining the state of the element between history navigation
