@@ -195,6 +195,7 @@ public:
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     void activate();
     virtual void attach();
+    void click();
 
 protected:
     DOMString m_value;
