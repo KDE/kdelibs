@@ -3,7 +3,7 @@ INCLUDES = \
 	-I$(srcdir)/include/generated \
 	$(all_includes)
 
-noinst_LTLIBRARIES = libvcard.la
+lib_LTLIBRARIES = libvcard.la
 
 libvcard_la_SOURCES = vCard-all.cpp
 libvcard_la_LIBADD = $(LIB_KDECORE)
