@@ -66,6 +66,8 @@ bool AddressBook::load( const QString &fileName )
 
 bool AddressBook::save( Ticket *ticket )
 {
+  kdDebug(5700) << "AddressBook::save() '" << ticket->fileName << "'" << endl;
+  
   bool success = mFormat->save( this, ticket->fileName );
 
   setFileName( ticket->fileName );
@@ -90,12 +92,18 @@ void AddressBook::clear()
 
 AddressBook::Ticket *AddressBook::requestSaveTicket( const QString &fn )
 {
+  kdDebug(5700) << "AddressBook::requestSaveTicket(): '" << fn << "'" << endl; 
+
   QString saveFileName;
 
   if ( fn.isEmpty() ) saveFileName = fileName();
   else saveFileName = fn;
 
-  if ( !lock( saveFileName ) ) return 0;
+  if ( !lock( saveFileName ) ) {
+    kdDebug() << "AddressBook::requestSaveTicket(): Can't lock file '"
+              << saveFileName << "'" << endl;
+    return 0;
+  }
   return new Ticket( saveFileName );
 }
 

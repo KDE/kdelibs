@@ -27,6 +27,11 @@ using namespace KABC;
 
 AddressBook *StdAddressBook::mSelf = 0;
 
+QString StdAddressBook::fileName()
+{
+  return locateLocal( "data", "kabc/std.vcf" );
+}
+
 AddressBook *StdAddressBook::self()
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
@@ -39,7 +44,8 @@ AddressBook *StdAddressBook::self()
 
 bool StdAddressBook::save()
 {
-  Ticket *ticket = self()->requestSaveTicket( locateLocal( "data", "kabc/std.vcf" ) );
+  kdDebug() << "StdAddressBook::save()" << endl;
+  Ticket *ticket = self()->requestSaveTicket();
   if ( !ticket ) {
     kdError() << "Can't save to standard addressbook. It's locked." << endl;
     return false;
@@ -50,7 +56,7 @@ bool StdAddressBook::save()
 
 StdAddressBook::StdAddressBook()
 {
-  load( locateLocal( "data", "kabc/std.vcf" ) );
+  load( fileName() );
 }
 
 StdAddressBook::~StdAddressBook()

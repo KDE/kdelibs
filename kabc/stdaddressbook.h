@@ -45,6 +45,11 @@ class StdAddressBook : public AddressBook
       Save the standard address book to disk.
     */
     static bool save();
+
+    /**
+      Get the file name of the standard address book.
+    */
+    static QString fileName();
     
   protected:
     StdAddressBook();
