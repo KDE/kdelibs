@@ -111,11 +111,14 @@ KPopupMenu* KHelpMenu::menu()
     // I use hardcoded menu id's here. Reason is to stay backward
     // compatible.
     //
+    const KAboutData *aboutData = KGlobal::instance()->aboutData();
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+
     mMenu = new KPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
-		       i18n( "&Contents" ),menuHelpContents );
+		       i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
 
@@ -135,8 +138,6 @@ KPopupMenu* KHelpMenu::menu()
 
     mMenu->insertSeparator();
 
-    const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
 
     mMenu->insertItem( kapp->miniIcon(),
       i18n( "&About %1" ).arg(appName), menuAboutApp );

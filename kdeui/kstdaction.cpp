@@ -823,7 +823,9 @@ KAction *KStdAction::help(const QObject *recvr, const char *slot,
 KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
                                                           QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Contents"), "contents",
+    const KAboutData *aboutData = KGlobal::instance()->aboutData();
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
+    return new KAction(i18n("%1 &Handbook").arg(appName), "contents",
                        KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
                        name ? name : stdName(HelpContents));
 }
