@@ -35,6 +35,7 @@
 
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
+static bool no_query_exit = FALSE;
 
 template class QList<KTMainWindow>;
 template class QList<KToolBar>;
@@ -75,10 +76,16 @@ public:
 	    bool cancelled = false;
 	    QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
 	    KTMainWindow* last = 0;
+	    no_query_exit = TRUE;
 	    for (it.toFirst(); it.current() && !cancelled; ++it){
-		last = it.current();
-		cancelled = !last->queryClose();
+		if ( !it.current()->testWState( Qt::WState_ForceHide ) ) {
+		    last = it.current();
+		    QCloseEvent e;
+		    QApplication::sendEvent( last, &e );
+		    cancelled = !e.isAccepted();
+		}
 	    }
+	    no_query_exit = FALSE;
 	    if ( !cancelled && last )
 		cancelled = !last->queryExit();
 	    return !cancelled;
@@ -212,7 +219,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
 	      not_withdrawn++;
       }
 
-      if ( not_withdrawn <= 1 ) { // last window close accepted?
+      if ( !no_query_exit && not_withdrawn <= 1 ) { // last window close accepted?
 	  if ( queryExit() ) {            // Yes, Quit app?
 	      kapp->quit();             // ...and quit aplication.
 	  }  else {

@@ -350,6 +350,31 @@ void KApplication::commitData( QSessionManager& sm )
     }
     if ( cancelled )
 	sm.cancel();
+    
+    if ( sm.allowsInteraction() ) {
+	QWidgetList done;
+	QWidgetList *list = QApplication::topLevelWidgets();
+	bool cancelled = FALSE;
+	QWidget* w = list->first();
+	while ( !cancelled && w ) {
+	    if ( !w->testWState( WState_ForceHide ) && !w->inherits("KTMainWindow") ) {
+		QCloseEvent e;
+		sendEvent( w, &e );
+		cancelled = !e.isAccepted();
+		if ( !cancelled )
+		    done.append( w );
+		delete list; // one never knows...
+		list = QApplication::topLevelWidgets();
+		w = list->first();
+	    } else {
+		w = list->next();
+	    }
+	    while ( w && done.containsRef( w ) )
+		w = list->next();
+	}
+	delete list;
+    }
+
 
     if ( !bSessionManagement ) {
 	sm.setRestartHint( QSessionManager::RestartNever );
@@ -716,7 +741,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
       {
 	readSettings(true);
 	kdisplaySetPalette();
-	
+
 	return true;
       }
 
@@ -959,7 +984,7 @@ void KApplication::readSettings(bool reparse)
 
   //  Read the font specification from config.
   //  Initialize fonts to default first or it won't work !!
-	
+
   // cursor blink rate
   //
   int num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
@@ -968,7 +993,7 @@ void KApplication::readSettings(bool reparse)
   if ( num > 2000 ) num = 2000;
   setCursorFlashTime(num);
 
-	
+
 }
 
 
@@ -1055,7 +1080,7 @@ void KApplication::kdisplaySetFont()
     emit appearanceChanged();
 
     resizeAll();
-}	
+}
 
 
 void KApplication::kdisplaySetStyle()
@@ -1064,7 +1089,7 @@ void KApplication::kdisplaySetStyle()
   emit kdisplayStyleChanged();
   emit appearanceChanged();
   resizeAll();
-}	
+}
 
 
 void KApplication::kdisplaySetStyleAndFont()
@@ -1075,7 +1100,7 @@ void KApplication::kdisplaySetStyleAndFont()
     emit kdisplayFontChanged();
 
     resizeAll();
-}	
+}
 
 
 void KApplication::resizeAll()
@@ -1099,8 +1124,8 @@ void KApplication::resizeAll()
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 {
 	QApplication::flushX();
-  if ( fork() == 0 )	
-    {		
+  if ( fork() == 0 )
+    {
 	  if( filename.isEmpty() )
 	    filename = QString(name()) + "/index.html";
 
@@ -1118,7 +1143,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	     file.append( "#" );
 	     file.append(topic);
 	 }
-	
+
 	  /* Since this is a library, we must conside the possibilty that
 	   * we are being used by a suid root program. These next two
 	   * lines drop all privileges.
@@ -1139,7 +1164,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
 	QApplication::flushX();
   if( fork() == 0 )
-  {	
+  {
     QString mailClient( "kmail");
     QString exec = QString("%1 %2 -s %3").arg(mailClient).arg(address).
       arg(subject);
@@ -1246,7 +1271,7 @@ KApplication::launcher()
    QCString name;
    name.sprintf("klauncher_%s_%d", host, getuid());
    return name;
-}   
+}
 
 static int
 startServiceInternal( const QCString &function,

@@ -66,13 +66,14 @@ class KTMainWindowPrivate;
  * not supported.
  *
  * KTMainWindow will set icon, mini icon and caption, which it gets
- * from @ref KApplication. It provides full session management, and will save
- * its position, geometry and positions of toolbars and menubar on
- * logout. If you want to save additional data, overload @ref saveProperties() and
- * (to read them again on next login) @ref readProperties(). To save special
- * data about your data, overload @ref saveGlobalProperties(). To warn user
- * that application or windows have unsaved data on close or logout,
- * reimplement @ref queryClose() and/or @ref queryExit().
+ * from @ref KApplication. It provides full session management, and
+ * will save its position, geometry and positions of toolbars and
+ * menubar on logout. If you want to save additional data, reimplement
+ * @ref saveProperties() and (to read them again on next login) @ref
+ * readProperties(). To save special data about your data, reimplement
+ * @ref saveGlobalProperties(). To warn user that application or
+ * windows have unsaved data on close or logout, reimplement @ref
+ * queryClose() and/or @ref queryExit().
  *
  * There is also a macro RESTORE which can restore all your windows
  * on next login.
@@ -472,13 +473,10 @@ protected:
 
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
-     * Please do not reimplement closeEvent directly but use queryClose()
-     * in your KDE applications.
      *
-     * Rationale: queryClose() also works when the session manager shuts
-     * your application down. closeEvent() on the other hand only works when the
-     * user actually closes the window.
-     *
+     * We recommend to reimplement the handlers rather than closeEvent().
+     * If you do it anyway, ensure to call the base implementation to keep
+     * queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
 
@@ -547,9 +545,9 @@ protected:
      * invoked when the session manager requests your application
      * to save its state.
      *
-     * You MUST NOT change the group of the kconfig object,
-     * since KTMainWindow uses one group for each window.
-     * Please overload these function in childclasses.
+     * You MUST NOT change the group of the kconfig object, since
+     * KTMainWindow uses one group for each window.  Please
+     * reimplement these function in childclasses.
      *
      * Note that no user interaction is allowed
      * in this function!
