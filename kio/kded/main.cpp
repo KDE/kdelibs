@@ -18,14 +18,14 @@
 */
 
 #include "kbuildsycoca.h"
-#include <kapp.h>
+#include <kuniqueapp.h>
 #include <dcopclient.h>
 #include <unistd.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[])
 {
-     KApplication k(argc,argv, "kded", false /* not GUI */);
+     KUniqueApplication k(argc,argv, "kded", false /* not GUI */);
 
      kapp->dcopClient()->attach();
      kapp->dcopClient()->registerAs( kapp->name() );
