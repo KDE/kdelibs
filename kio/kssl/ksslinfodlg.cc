@@ -102,12 +102,12 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     QPushButton *button;
 
     if (KSSL::doesSSLWork()) {
-      button = new QPushButton(i18n("Cryptography Configuration..."), this);
+      button = new QPushButton(i18n("C&ryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
 
-    button = new QPushButton(i18n("Close"), this);
+    button = new QPushButton(i18n("&Close"), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
     buttonLayout->addWidget( button );
 
@@ -238,7 +238,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("MD5 digest:"), this), 6, 0);
     layout->addWidget(d->_digest = new QLabel("", this), 6, 1);
 
-    layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 7, 0);
+    layout->addWidget(new QLabel(i18n("Cipher in use:"), this), 7, 0);
     layout->addWidget(new QLabel(cipher, this), 7, 1);
     layout->addWidget(new QLabel(i18n("Details:"), this), 8, 0);
     layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 8, 1);
@@ -348,7 +348,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         new QLabel(tmp, _frame);
     }
     if (!(tmp = cert.getValue("OU")).isEmpty()) {
-        label = new QLabel(i18n("Organizational Unit:"), _frame);
+        label = new QLabel(i18n("Organizational unit:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, _frame);
     }
@@ -368,7 +368,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         new QLabel(tmp, _frame);
     }
     if (!(tmp = cert.getValue("CN")).isEmpty()) {
-        label = new QLabel(i18n("Common Name:"), _frame);
+        label = new QLabel(i18n("Common name:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, _frame);
     }
