@@ -65,6 +65,7 @@ extern "C" {
 #include <time.h>
 #endif
 
+
 // Play it safe, use a reasonable default, if SOMAXCONN was nowhere defined.
 #ifndef SOMAXCONN
 #warning Your header files do not seem to support SOMAXCONN
@@ -75,6 +76,7 @@ extern "C" {
 #include <qsocketnotifier.h>
 
 #include "netsupp.h"		// leave this last
+
 
 // I moved this into here so we could accurately detect the domain, for
 // posterity.  Really.
@@ -210,11 +212,11 @@ unsigned long KSocket::ipv4_addr()
   if (sa == NULL)
     return 0;
 
-  if (sa->address() != NULL && (sa->address()->sa_family == PF_INET 
+  if (sa->address() != NULL && (sa->address()->sa_family == PF_INET
 #ifdef PF_INET6
-				|| sa->address()->sa_family == PF_INET6)
+				|| sa->address()->sa_family == PF_INET6
 #endif
-      )
+      ))
     {
       KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
       const sockaddr_in *sin = ksin->addressV4();
