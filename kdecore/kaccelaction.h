@@ -144,9 +144,8 @@ class KAccelAction
 	void decConnections();
 
  private:
+	static int g_bUseFourModifierKeys;
 	class KAccelActionPrivate* d;
-    static int g_bUseFourModifierKeys;
-
 
 	friend class KAccelActions;
 	friend class KAccelBase;

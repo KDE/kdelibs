@@ -1022,17 +1022,20 @@ void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 			//  differs from the default, then we want to write.
 			if( bWriteAll || !bSameAsDefault )
 				bWriteAction = true;
-			// Otherwise, this key is the same as default
-			//  but exists in config file.  Remove it.
-			else if( bConfigHasAction ) {
-				s = "";
-				bWriteAction = true;
-			}
 
 			if( bWriteAction ) {
 				kdDebug(125) << "\twriting " << action.m_sName << " = " << s << endl;
+				// Is passing bGlobal irrelevant, since if it's true,
+				//  then we're using the global config anyway? --ellis
 				pConfig->writeEntry( action.m_sName, s, true, bGlobal );
 			}
+			// Otherwise, this key is the same as default
+			//  but exists in config file.  Remove it.
+			else if( bConfigHasAction ) {
+				kdDebug(125) << "\tremoving " << action.m_sName << " because == default" << endl;
+				pConfig->deleteEntry( action.m_sName, bGlobal );
+			}
+
 		}
 	}
 
