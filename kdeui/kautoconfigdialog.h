@@ -107,7 +107,7 @@ public:
    * Helper function to find out what KConfig is being used by this dialog.
    * @return pointer to the KConfig that is being used by this KAutoConfigDialog
    */ 
-  KConfig *getKConfig();
+  KConfig *kconfig();
   
   /**
    * Adds page to the dialog and to @ref KAutoConfig.  When an application is
