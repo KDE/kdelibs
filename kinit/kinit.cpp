@@ -1262,6 +1262,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
+   int suicide = 0;
    //int libkmapnotify = 0;
 
    /** Save arguments first... **/
@@ -1275,6 +1276,8 @@ int main(int argc, char **argv, char **envp)
          launch_klauncher = 0;
       if (strcmp(safe_argv[i], "--no-kded") == 0)
          launch_kded = 0;
+      if (strcmp(safe_argv[i], "--suicide") == 0)
+         suicide = 1;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
       //if (strcmp(safe_argv[i], "--libkmapnotify") == 0)
@@ -1323,7 +1326,10 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_dcop)
    {
-      pid = launch( 2, "dcopserver", "--nosid" );
+      if (suicide)
+         pid = launch( 3, "dcopserver", "--nosid\0--suicide" );
+      else
+         pid = launch( 2, "dcopserver", "--nosid" );
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched DCOPServer, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
