@@ -2383,9 +2383,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       drag->setPixmap(p);
     else
       kdDebug( 6000 ) << "null pixmap" << endl;
- 
+
     kdDebug(0) << "drag = " << drag;
-    
+
     stopAutoScroll();
     if(drag)
 	drag->drag();
@@ -2548,6 +2548,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 	}
 	// get selected text and paste to the clipboard
 	QString text = selectedText();
+	text.replace(QRegExp(QChar(0xa0)), " ");
 	QClipboard *cb = QApplication::clipboard();
 	cb->setText(text);
 	//kdDebug( 6000 ) << "selectedText = " << text << endl;
