@@ -146,7 +146,7 @@ KGuiItem KStdGuiItem::close()
 
 KGuiItem KStdGuiItem::defaults()
 {
-  return KGuiItem( i18n( "&Defaults" ), ,
+  return KGuiItem( i18n( "&Defaults" ), "defaults",
                    i18n( "Reset all items to their default values" ) );
 }
 
