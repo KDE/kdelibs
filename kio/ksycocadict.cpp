@@ -78,7 +78,7 @@ KSycocaDict::add(const QString &key, KSycocaEntry *payload)
 int 
 KSycocaDict::find_string(const QString &key )
 {
-   kdebug(KDEBUG_INFO, 7011, QString("KSycocaDict::find_string(%1)").arg(key));
+   //kdebug(KDEBUG_INFO, 7011, QString("KSycocaDict::find_string(%1)").arg(key));
 
    if (!mStr || !mOffset)
    {
@@ -116,7 +116,7 @@ KSycocaDict::find_string(const QString &key )
        if (offset == 0) break;
        QString dupkey;
        (*mStr) >> dupkey;
-       kdebug(KDEBUG_INFO, 7011, QString(">> %1 %2").arg(offset,8,16).arg(dupkey));
+       //kdebug(KDEBUG_INFO, 7011, QString(">> %1 %2").arg(offset,8,16).arg(dupkey));
        if (dupkey == key) return offset;
    }
    kdebug(KDEBUG_WARN, 7011, "Not found!");

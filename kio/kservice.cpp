@@ -119,7 +119,14 @@ KService::KService( KSimpleConfig& config )
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
 
-  m_bAllowAsDefault = config.readBoolEntry( "AllowDefault" );
+  if ( m_strType == "Application" )
+    // Specify AllowDefault = false to explicitely forbid it.
+    // Most service files don't have that field, so true is the default
+    m_bAllowAsDefault = config.readBoolEntry( "AllowDefault", true );
+  else
+    // Doesn't exist for generic services, since KRun has to be able
+    // to run the default service. It can't run a lib...
+    m_bAllowAsDefault = false;
 
   // Load all additional properties
   QStringList::Iterator it = m_lstServiceTypes.begin();
