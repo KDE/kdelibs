@@ -1,22 +1,25 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1998	Mark Donohoe <donohoe@kde.org>
-						Stephan Kulow				  
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1998	Mark Donohoe <donohoe@kde.org>
+ * 			Stephan Kulow <coolo@kde.org>
+ *
+ *  $Id$
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
 
 #ifndef __KPIXMAP_H__
 #define __KPIXMAP_H__
@@ -51,17 +54,17 @@ class KPixmap : public QPixmap
 {
 public:
 	enum ColorMode { Auto, Color, Mono, LowColor, WebColor };
-    
+
 	/**
 	 * Creates a null pixmap
 	 */
 	KPixmap() {};
-	
+
 	/**
 	 * Destroys the pixmap.
 	 */
 	~KPixmap() {};
-    
+
 	/**
 	 * Copies the QPixmap pix
          */
@@ -84,14 +87,14 @@ public:
 	 */
 	void gradientFill( QColor ca, QColor cb, bool upDown = TRUE, 
 			int ncols = 3 );
-	
+
 	/**
 	 * Fills the pixmap with a two color pattern, specified by the
 	 * pattern bits in pattern[], the color ca to be used for the
 	 * background and the color cb to be used for the foreground.
 	 */
 	void patternFill( QColor ca, QColor cb, uint pattern[8] );
-	
+
 	/** 
 	 * Converts an image and sets this pixmap. Returns TRUE if
 	 * successful. 
@@ -146,14 +149,14 @@ public:
 	 * options.
 	 */
 	bool convertFromImage( const QImage &img, int conversion_flags );
-	
+
 	/*
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
 	 */
 	bool convertFromImage( const QImage &img, ColorMode mode = WebColor );
-	
+
 	/**
 	 * Loads a pixmap from the file fileName. Returns TRUE if
 	 * successful, or FALSE if the pixmap could not be loaded. 
@@ -171,7 +174,7 @@ public:
 	 */
 	bool load( const QString& fileName, const char *format, 
 		int conversion_flags );
-	
+
 	/*
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
@@ -180,6 +183,7 @@ public:
 	bool load( const QString& fileName, 
 		const char *format = 0,
 		ColorMode mode = WebColor );
+
 	/*
 	 * Returns TRUE of the image is posessed of a color table that
 	 * matches the Icon palette or FALSE otherwise.
@@ -192,4 +196,3 @@ public:
 };
 
 #endif
-
