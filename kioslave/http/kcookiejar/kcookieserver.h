@@ -64,7 +64,7 @@ k_dcop:
   void shutdown();
 
 public:
-  bool cookiesPending(const QString &url);
+  bool cookiesPending(const QString &url, KHttpCookieList *cookieList=0);
   void addCookies(const QString &url, const QCString &cookieHeader,
                   long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);

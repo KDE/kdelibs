@@ -246,20 +246,47 @@ KCookieJar::~KCookieJar()
     // Not much to do here
 }
 
+static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr)
+{
+    QString domain1 = cookiePtr->domain();
+    if (domain1.isEmpty())
+       domain1 = cookiePtr->host();
+
+    for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
+    {
+       QString domain2 = cookie->domain();
+       if (domain2.isEmpty())
+          domain2 = cookie->host();
+
+       if ( domain1 == domain2 &&
+            cookiePtr->name() == cookie->name() &&
+            cookiePtr->path() == cookie->path() )
+       {
+          KHttpCookiePtr old_cookie = cookie;
+          cookie = list->next();
+          list->removeRef( old_cookie );
+          break;
+       }
+       else
+       {
+          cookie = list->next();
+       }
+    }
+}
+
+
 //
 // Looks for cookies in the cookie jar which are appropriate for _url.
 // Returned is a string containing all appropriate cookies in a format
 // which can be added to a HTTP-header without any additional processing.
 //
-QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long windowId)
+QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long windowId, KHttpCookieList *pendingCookies)
 {
     QString cookieStr;
     QStringList domains;
     QString fqdn;
     QString path;
     KHttpCookiePtr cookie;
-    int protVersion = 1;
-    int cookieCount = 0;
     KCookieAdvice advice = m_globalAdvice;
 
     if (!parseURL(_url, fqdn, path))
@@ -271,14 +298,27 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
     extractDomains(fqdn, domains);
 
+    KHttpCookieList allCookies;
+
     for(QStringList::ConstIterator it = domains.begin();
-        it != domains.end();
+        true;
         ++it)
     {
-       QString key = (*it).isNull() ? "" : (*it);
-       KHttpCookieList *cookieList = m_cookieDomains[key];
-       if (!cookieList)
-          continue; // No cookies for this domain
+       KHttpCookieList *cookieList;
+       if (it == domains.end())
+       {
+          cookieList = pendingCookies; // Add pending cookies
+          pendingCookies = 0;
+          if (!cookieList)
+             break;
+       }
+       else
+       {
+          QString key = (*it).isNull() ? "" : (*it);
+          cookieList = m_cookieDomains[key];
+          if (!cookieList)
+             continue; // No cookies for this domain
+       }
 
        if (cookieList->getAdvice() != KCookieDunno)
           advice = cookieList->getAdvice();
@@ -288,7 +328,11 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
        // session cookies...
        if (advice == KCookieReject &&
            !(m_ignoreCookieExpirationDate && m_autoAcceptSessionCookies))
+       {
+          if (it == domains.end())
+             break; // Finished.
           continue;
+       }
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
@@ -316,36 +360,51 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           {
              cookie->windowIds().append(windowId);
           }
+          
+          if (it == domains.end()) // Only needed when processing pending cookies
+             removeDuplicateFromList(&allCookies, cookie);
 
-          // Use first cookie to determine protocol version
-          if (cookieCount == 0)
-          {
-             protVersion = cookie->protocolVersion();
-          }
-          if (useDOMFormat)
-          {
-             if (cookieCount > 0)
-                cookieStr += "; ";
-             cookieStr += cookie->cookieStr(true);
-          }
-          else if (protVersion == 0)
-          {
-             if (cookieCount == 0)
-                cookieStr += "Cookie: ";
-             else
-                cookieStr += "; ";
-             cookieStr += cookie->cookieStr(false);
-          }
-          else
-          {
-             if (cookieCount > 0)
-                cookieStr += "\r\n";
-             cookieStr += "Cookie: ";
-             cookieStr += cookie->cookieStr(false);
-          }
-          cookieCount++;
+          allCookies.append(cookie);
        }
+       if (it == domains.end())
+          break; // Finished.
     }
+    
+
+    int protVersion = 1;
+    int cookieCount = 0;
+
+    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
+    {
+       // Use first cookie to determine protocol version
+       if (cookieCount == 0)
+       {
+          protVersion = cookie->protocolVersion();
+       }
+       if (useDOMFormat)
+       {
+          if (cookieCount > 0)
+             cookieStr += "; ";
+          cookieStr += cookie->cookieStr(true);
+       }
+       else if (protVersion == 0)
+       {
+          if (cookieCount == 0)
+             cookieStr += "Cookie: ";
+          else
+             cookieStr += "; ";
+          cookieStr += cookie->cookieStr(false);
+       }
+       else
+       {
+          if (cookieCount > 0)
+             cookieStr += "\r\n";
+          cookieStr += "Cookie: ";
+          cookieStr += cookie->cookieStr(false);
+       }
+       cookieCount++;
+    }
+    
     return cookieStr;
 }
 
@@ -751,6 +810,7 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
      return cookieList;
 }
 
+
 //
 // This function hands a KHttpCookie object over to the cookie jar.
 //
@@ -761,9 +821,6 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     QStringList domains;
     KHttpCookieList *cookieList = 0L;
 
-    QString domain1 = cookiePtr->domain();
-    if (domain1.isEmpty())
-       domain1 = cookiePtr->host();
     // We always need to do this to make sure that the
     // that cookies of type hostname == cookie-domainname
     // are properly removed and/or updated as necessary!
@@ -776,26 +833,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         KHttpCookieList *list= m_cookieDomains[key];
         if ( !list ) continue;
 
-        for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
-        {
-            QString domain2 = cookie->domain();
-            if (domain2.isEmpty())
-               domain2 = cookie->host();
-
-            if ( domain1 == domain2 &&
-                 cookiePtr->name() == cookie->name() &&
-                 cookiePtr->path() == cookie->path() )
-            {
-                KHttpCookiePtr old_cookie = cookie;
-                cookie = list->next();
-                list->removeRef( old_cookie );
-                break;
-            }
-            else
-            {
-                cookie = list->next();
-            }
-        }
+        removeDuplicateFromList(list, cookiePtr);
     }
 
     QString domain = stripDomain( cookiePtr );

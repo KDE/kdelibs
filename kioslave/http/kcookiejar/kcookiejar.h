@@ -157,8 +157,11 @@ public:
      *
      * If @p useDOMFormat is true, the string is formatted in a format
      * in compliance with the DOM standard.
+     * @p pendingCookies contains a list of cookies that have not been
+     * approved yet by the user but that will be included in the result
+     * none the less.
      */
-    QString findCookies(const QString &_url, bool useDOMFormat, long windowId);
+    QString findCookies(const QString &_url, bool useDOMFormat, long windowId, KHttpCookieList *pendingCookies=0);
 
     /**
      * This function parses cookie_headers and returns a linked list of

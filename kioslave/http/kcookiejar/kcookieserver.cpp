@@ -120,7 +120,7 @@ KCookieServer::~KCookieServer()
    delete mConfig;
 }
 
-bool KCookieServer::cookiesPending( const QString &url )
+bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieList )
 {
   QString fqdn;
   QStringList domains;
@@ -137,9 +137,15 @@ bool KCookieServer::cookiesPending( const QString &url )
        cookie = mPendingCookies->next())
   {
        if (cookie->match( fqdn, domains, path))
-          return true;
+       {
+          if (!cookieList)
+             return true;
+          cookieList->append(cookie);
+       }
   }
-  return false;
+  if (!cookieList)
+     return false;
+  return cookieList->isEmpty();
 }
 
 void KCookieServer::addCookies( const QString &url, const QCString &cookieHeader,
@@ -456,20 +462,11 @@ KCookieServer::findDOMCookies(QString url, long windowId)
 {
    // We don't wait for pending cookies because it locks up konqueror 
    // which can cause a deadlock if it happens to have a popup-menu up.
-#if 0
-   if (cookiesPending(url))
-   {
-      CookieRequest *request = new CookieRequest;
-      request->client = callingDcopClient();
-      request->transaction = request->client->beginTransaction();
-      request->url = url;
-      request->DOM = true;
-      request->windowId = windowId;
-      mRequestList->append( request );
-      return QString::null; // Talk to you later :-)
-   }
-#endif
-   return mCookieJar->findCookies(url, true, windowId);
+   // Instead we just return pending cookies as if they had been accepted already.
+   KHttpCookieList pendingCookies;
+   cookiesPending(url, &pendingCookies);
+
+   return mCookieJar->findCookies(url, true, windowId, &pendingCookies);
 }
 
 // DCOP function
