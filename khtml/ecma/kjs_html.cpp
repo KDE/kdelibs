@@ -47,7 +47,7 @@
 #include "ecma/kjs_events.h"
 #include "ecma/kjs_html.h"
 #include "ecma/kjs_window.h"
-#include "ecma/kjs_html.lut.h"
+#include "kjs_html.lut.h"
 
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"

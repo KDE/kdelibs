@@ -34,18 +34,34 @@ libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp
 libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
 libkjs_html_la_METASOURCES = AUTO
 
-hashtables:
-	cd $(srcdir); \
-	../../kjs/create_hash_table kjs_dom.cpp > kjs_dom.lut.h; \
-	../../kjs/create_hash_table kjs_html.cpp > kjs_html.lut.h; \
-	../../kjs/create_hash_table kjs_css.cpp > kjs_css.lut.h; \
-	../../kjs/create_hash_table kjs_events.cpp > kjs_events.lut.h; \
-	../../kjs/create_hash_table kjs_navigator.cpp > kjs_navigator.lut.h; \
-	../../kjs/create_hash_table kjs_mozilla.cpp > kjs_mozilla.lut.h; \
-	../../kjs/create_hash_table kjs_range.cpp > kjs_range.lut.h; \
-	../../kjs/create_hash_table kjs_traversal.cpp > kjs_traversal.lut.h; \
-	../../kjs/create_hash_table kjs_views.cpp > kjs_views.lut.h; \
-	../../kjs/create_hash_table kjs_window.cpp > kjs_window.lut.h
+LUT_FILES = kjs_dom.lut.h kjs_html.lut.h kjs_css.lut.h kjs_events.lut.h kjs_navigator.lut.h \
+	    kjs_mozilla.lut.h kjs_range.lut.h kjs_traversal.lut.h kjs_views.lut.h kjs_window.lut.h
+
+CREATE_HASH_TABLE = $(top_srcdir)/kjs/create_hash_table
+
+kjs_dom.lut.h : $(srcdir)/kjs_dom.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_html.lut.h : $(srcdir)/kjs_html.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_css.lut.h : $(srcdir)/kjs_css.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_events.lut.h : $(srcdir)/kjs_events.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_navigator.lut.h : $(srcdir)/kjs_navigator.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_mozilla.lut.h : $(srcdir)/kjs_mozilla.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_range.lut.h : $(srcdir)/kjs_range.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_traversal.lut.h : $(srcdir)/kjs_traversal.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_views.lut.h : $(srcdir)/kjs_views.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+kjs_window.lut.h : $(srcdir)/kjs_window.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+
+CLEANFILES = $(LUT_FILES)
+libkjs_html_la_COMPILE_FIRST = $(LUT_FILES)
 
 # interactive test program
 #check_PROGRAMS = testecma

@@ -19,8 +19,8 @@
  */
 
 #include "ecma/kjs_views.h"
-#include "ecma/kjs_views.lut.h"
 #include "ecma/kjs_css.h"
+#include "kjs_views.lut.h"
 
 using namespace KJS;
 
