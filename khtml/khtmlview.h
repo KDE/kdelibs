@@ -113,11 +113,14 @@ public:
 
     void layout(bool force = false);
 
+    void setDNDEnabled( bool b );
+    bool dndEnabled() const;
+
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
 signals:
     void selectionChanged();
-    
+
 protected:
     void clear();
 

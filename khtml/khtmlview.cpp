@@ -93,6 +93,8 @@ public:
     bool linkPressed;
 
     QPoint m_dragStartPos;
+
+    bool m_bDnd;
 };
 
 
@@ -120,6 +122,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     setHScrollBarMode(Auto);
 
     d = new KHTMLViewPrivate;
+    d->m_bDnd = true;
 }
 
 KHTMLView::~KHTMLView()
@@ -342,7 +345,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     if(!m_part->docImpl()) return;
 
     d->m_dragStartPos = _mouse->pos();
-    
+
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
@@ -447,7 +450,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // drag of URL
 
     if(pressed && !m_strSelectedURL.isEmpty() &&
-       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() )
+       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
+       d->m_bDnd )
     {
 	QStringList uris;
 	KURL u( m_part->completeURL( m_strSelectedURL) );
@@ -923,4 +927,14 @@ void KHTMLView::print()
 	m_part->docImpl()->applyChanges();
     }
     delete printer;
+}
+
+void KHTMLView::setDNDEnabled( bool b )
+{
+  d->m_bDnd = b;
+}
+
+bool KHTMLView::dndEnabled() const
+{
+  return d->m_bDnd;
 }
