@@ -704,7 +704,8 @@ KAction *KStdAction::gotoPage(const QObject *recvr, const char *slot,
 KAction *KStdAction::gotoLine(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Go to Line..."), 0, recvr, slot, parent,
+    return new KAction(i18n("&Go to Line..."),
+                       KStdAccel::key(KStdAccel::GotoLine), recvr, slot, parent,
                        name ? name : stdName(GotoLine));
 }
 

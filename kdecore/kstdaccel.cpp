@@ -89,6 +89,7 @@ QString KStdAccel::action(StdAccel id)
      case End:              return "End";
      case Prior:            return "Prior";
      case Next:             return "Next";
+     case GotoLine:         return "GotoLine";
      case AddBookmark:      return "AddBookmark";
      case Help:             return "Help";
      case TextCompletion:   return "TextCompletion";
@@ -134,6 +135,7 @@ uint KStdAccel::defaultKey(StdAccel id)
      case End:              return Qt::CTRL + Qt::Key_End;
      case Prior:            return Qt::Key_Prior;
      case Next:             return Qt::Key_Next;
+     case GotoLine:         return Qt::CTRL + Qt::Key_G;
      case AddBookmark:      return Qt::CTRL + Qt::Key_B;
      case Help:             return Qt::Key_F1;
      case TextCompletion:   return Qt::CTRL + Qt::Key_E;
@@ -180,6 +182,7 @@ QString KStdAccel::description(StdAccel id)
      case End:              return i18n("End");
      case Prior:            return i18n("Prior");
      case Next:             return i18n("Next");
+     case GotoLine:         return i18n("Go to Line");
      case AddBookmark:      return i18n("Add Bookmark");
      case Help:             return i18n("Help");
      case TextCompletion:   return i18n("Text Completion");
@@ -311,6 +314,11 @@ uint KStdAccel::prior()
 uint KStdAccel::next()
 {
   return key(Next);
+}
+
+uint KStdAccel::gotoLine()
+{
+  return key(GotoLine);
 }
 
 uint KStdAccel::addBookmark()

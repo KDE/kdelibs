@@ -39,7 +39,7 @@ public:
 
   enum StdAccel {
     Open=0, New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-    Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
+    Find, Replace, Insert, Home, End, Prior, Next, GotoLine, Help, FindNext, FindPrev,
     ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion, NextCompletion,
     RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, SelectAll, Up, Back,
     Forward, ShowMenubar, NB_STD_ACCELS
@@ -110,6 +110,9 @@ public:
 
   /** Scroll down one page. Default: Next */
   static uint next();
+
+  /** Go to line. Default: Ctrl+G */
+  static uint gotoLine();
 
   /** Add current page to bookmarks. Default: Ctrl+B */
   static uint addBookmark();
