@@ -234,6 +234,8 @@ public:
    *  SizeHint. For now returns height() and width().
    */
   QSize sizeHint() const;
+
+  KStatusBarItem *item( int id );
   
 public slots:
 

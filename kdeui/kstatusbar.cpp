@@ -25,6 +25,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.22  1999/06/09 21:52:26  cschlaeg
+// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
+//
 // Revision 1.21  1999/06/06 17:29:44  cschlaeg
 // New layout management implemented for KTMainWindow. This required
 // updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
@@ -393,6 +396,13 @@ QSize KStatusBar::sizeHint() const
   return QSize(width(), height());
 }
 
+KStatusBarItem *KStatusBar::item( int id )
+{
+  for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 
+    if ( b->ID() == id )
+      return b;
+  return 0L;
+}
 
 #include "kstatusbar.moc"
 
