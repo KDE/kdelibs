@@ -1,0 +1,99 @@
+<html> <head> <title>Table Test 4</title> </head>
+
+
+<body>
+<H1>Table Test 4</H1>
+This page is the fourth regression test out of a set for Table handling.<BR>
+
+It starts with simple tests and gradually moves on to more complex tables. 
+All test start with a horizontal rule, some text explianing the test and finally the table. 
+The layout of the tables should be sensible and remain so when this windows is being resized.
+All tables have border=1 set, to be able to view the size of the columns and rows.
+<HR>
+This is a double column, double row table. No explicit widths are set.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+  <TD>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. The first column has a fixed width of 200 pixels.
+<TABLE border=1>
+<TR>
+  <TD width=200>This is the first column in the first row</TD>
+  <TD>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. The second column has a fixed width of 100 pixels.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+  <TD width=100>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. The two columns have fixed widths of 200 resp. 100 pixels.
+<TABLE border=1>
+<TR>
+  <TD width=200>This is the first column in the first row</TD>
+  <TD width=100>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+<HR>
+This is a double column, double row table. The first column has a width of 60%.
+<TABLE border=1>
+<TR>
+  <TD width=60%>This is the first column in the first row</TD>
+  <TD>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. The second column has a fixed width of 40%.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+  <TD width=40%>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. The two columns have fixed widths of 60% resp 40%.
+<TABLE border=1>
+<TR>
+  <TD width=60%>This is the first column in the first row</TD>
+  <TD width=40%>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+</body>
+</html>

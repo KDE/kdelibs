@@ -4,18 +4,48 @@
 <body>
 <H1>Table Test 3</H1>
 This page is the third regression test out of a set for Table handling.<BR>
-
-<TABLE width=100% border=2><TR>
-  <TD width=50%><center>Column 1</Center>
-    <TABLE width=100% border=1><TR>
-      <TD width=50%><center>A</Center></TD>
-      <TD width=50%><center>B</Center></TD>
-    </TR></TABLE>
-  </TD>
-  <TD width=50%><center>Column 2</Center></TD>
-  </TR>
+It starts with simple tests and gradually moves on to more complex tables. 
+All test start with a horizontal rule, some text explianing the test and finally the table. 
+The layout of the tables should be sensible and remain so when this windows is being resized.
+All tables have border=1 set, to be able to view the size of the columns and rows.
+<HR>
+This is a single column, single row table. No explicit widths are set.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, single row table. No explicit widths are set.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+  <TD>This is the second column in the first row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a single column, double row table. No explicit widths are set.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+</TR>
+</TABLE>
+<HR>
+This is a double column, double row table. No explicit widths are set.
+<TABLE border=1>
+<TR>
+  <TD>This is the first column in the first row</TD>
+  <TD>This is the second column in the first row</TD>
+</TR>
+<TR>
+  <TD>This is the first column in the second row</TD>
+  <TD>This is the second column in the second row</TD>
+</TR>
 </TABLE>
 
 </body>
-
 </html>
+
