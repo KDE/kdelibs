@@ -362,6 +362,8 @@ void RenderTable::recalcColInfos()
 
 void RenderTable::recalcColInfo( ColInfo *col )
 {
+    //qDebug("------------- recalcColinfo: line=%d, span=%d", col->start, col->span-1);
+    
     KHTMLAssert( colInfos[col->span-1]->data()[col->start] == col );
     ColInfoLine *line = (colInfos[col->span-1]);
     ColInfo **data = line->data() + col->start;
@@ -392,6 +394,8 @@ void RenderTable::recalcColInfo( ColInfo *col )
     }
     delete col;
     setMinMaxKnown( false );
+    
+    //qDebug("------------- end recalcColinfo");
 }
 
 
@@ -410,7 +414,7 @@ void RenderTable::addColInfo(RenderTableCol *colel)
 
     for (int n=0; n<span; ++n) {
 #ifdef TABLE_DEBUG
-        kdDebug( 6040 ) << "COL" << endl;
+        kdDebug( 6040 ) << "COL Element" << endl;
         kdDebug( 6040 ) << "    startCol=" << _startCol << " span=" << span << endl;
         kdDebug( 6040 ) << "    min=" << _minSize << " max=" << _maxSize << " val=" << _width.value << endl;
 #endif
@@ -1546,7 +1550,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
                                   int _w, int _h, int _tx, int _ty)
 {
 
-//    if(!layouted()) return;
+    if(!layouted()) return;
 
     _tx += xPos();
     _ty += yPos();
