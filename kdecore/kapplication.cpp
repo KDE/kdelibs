@@ -458,7 +458,7 @@ public:
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
 
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
     QString sessionKey;
 #endif
     QString pSessionConfigFile;
@@ -573,10 +573,10 @@ static QPtrList<KSessionManaged>* sessionClients()
  */
 QString KApplication::sessionConfigName() const
 {
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
     return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(d->sessionKey);
 #else
-    return QString("session/%1_%2").arg(name()).arg(sessionId());
+    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(sessionKey());
 #endif
 }
 
@@ -1114,7 +1114,7 @@ void KApplication::saveState( QSessionManager& sm )
         return;
     }
 
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
     {
         // generate a new session key
         timeval tv;
@@ -1141,7 +1141,7 @@ void KApplication::saveState( QSessionManager& sm )
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
     restartCommand.clear();
     restartCommand  << argv()[0] << "-session" << sm.sessionId() << "-smkey" << d->sessionKey;
     sm.setRestartCommand( restartCommand );
@@ -1290,7 +1290,7 @@ static const KCmdLineOptions kde_options[] =
    { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager."), 0},
    { "style <style>", I18N_NOOP("sets the application GUI style."), 0},
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
-#if  QT_VERSION <  310
+#if QT_VERSION < 0x030100
    { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
 #endif
    { 0, 0, 0 }
@@ -1391,7 +1391,7 @@ void KApplication::parseCommandLine( )
         d->geometry_arg = args->getOption("geometry");
     }
 
-#if QT_VERSION < 310
+#if QT_VERSION < 0x030100
     if (args->isSet("smkey"))
     {
         d->sessionKey = args->getOption("smkey");
