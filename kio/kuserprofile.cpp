@@ -44,7 +44,7 @@ void KServiceTypeProfile::initStatic()
 
   s_lstProfiles = new QList<KServiceTypeProfile>;
 
-  KConfig config( "profilerc");
+  KSimpleConfig config( "profilerc");
 
   QStringList tmpList = config.groupList();
   for (QStringList::Iterator aIt = tmpList.begin(); 

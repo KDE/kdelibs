@@ -185,6 +185,7 @@ void KDirWatch::slotRescan()
          (*it).m_ctime != NO_NOTIFY)
     {
       (*it).m_ctime = statbuff.st_ctime;
+      qDebug("KDirWatch emitting dirty");
       emit dirty( it.key() );
     }
   }
