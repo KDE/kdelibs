@@ -31,7 +31,7 @@ KMPropWidget::KMPropWidget(QWidget *parent, const char *name)
 	m_pixmap = "folder";
 	m_title = m_header = "Title";
 	m_printer = 0;
-	m_canchange = (KMFactory::self()->manager()->printerOperationMask() & KMManager::PrinterCreation);
+	m_canchange = ((KMFactory::self()->manager()->printerOperationMask() & KMManager::PrinterCreation) && KMFactory::self()->manager()->hasManagement());
 
 	connect(this,SIGNAL(enable(bool)),this,SIGNAL(enableChange(bool)));
 }

@@ -68,6 +68,7 @@ protected slots:
 	void slotServerConfigure();
 	void slotToggleToolBar(bool);
 	void slotManagerConfigure();
+	void slotAddSpecial();
 
 protected:
 	void initActions();

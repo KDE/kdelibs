@@ -74,13 +74,6 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	m_actions = new KActionCollection(this);
 	initActions();
 
-	// check if management supported
-	if (!m_manager->hasManagement())
-	{
-		m_printerpages->setManagement(false);
-		m_toolbar->setEnabled(false);
-	}
-
 	// first update
 	restoreSettings();
 	loadParameters();
@@ -138,12 +131,13 @@ void KMMainView::initActions()
 	new KAction(i18n("Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"printer_remove");
 	new KAction(i18n("Configure"),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
 	new KAction(i18n("Add printer/class..."),"wizard",0,this,SLOT(slotAdd()),m_actions,"printer_add");
+	new KAction(i18n("Add special (pseudo) printer..."),"filequickprint",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
 	new KAction(i18n("Set as local default"),"kdeprint_printer",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
 	new KAction(i18n("Set as user default"),"exec",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
 	new KAction(i18n("Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
 	new KAction(i18n("Configure manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
-	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation));
+	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation) && m_manager->hasManagement());
 
 	KSelectAction	*dact = new KSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
 	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false));
@@ -161,6 +155,7 @@ void KMMainView::initActions()
 
 	// add actions to the toolbar
 	m_actions->action("printer_add")->plug(m_toolbar);
+	m_actions->action("printer_add_special")->plug(m_toolbar);
 	m_toolbar->insertLineSeparator();
 	m_actions->action("printer_disable")->plug(m_toolbar);
 	m_actions->action("printer_enable")->plug(m_toolbar);
@@ -209,9 +204,9 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 	// problem).
 	if (m_toolbar->isEnabled())
 	{
-		int 	mask = m_manager->printerOperationMask();
+		int 	mask = (m_manager->hasManagement() ? m_manager->printerOperationMask() : 0);
 		bool	sp = !(p && p->isSpecial());
-		m_actions->action("printer_remove")->setEnabled((sp && (mask & KMManager::PrinterRemoval) && p));
+		m_actions->action("printer_remove")->setEnabled(!sp || ((mask & KMManager::PrinterRemoval) && p));
 		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) && p->isLocal()));
 		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
 		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
@@ -247,45 +242,45 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 {
 	// construct popup menu
 	m_pop->clear();
-	if (m_manager->hasManagement())
-		if (printer)
+	if (printer)
+	{
+		m_current = printer;
+		if (printer->state() == KMPrinter::Stopped)
+			m_actions->action("printer_enable")->plug(m_pop);
+		else
+			m_actions->action("printer_disable")->plug(m_pop);
+		m_pop->insertSeparator();
+		if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
+		if (printer->isLocal())
 		{
-			m_current = printer;
-			if (printer->state() == KMPrinter::Stopped)
-				m_actions->action("printer_enable")->plug(m_pop);
-			else
-				m_actions->action("printer_disable")->plug(m_pop);
+			if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
+			m_actions->action("printer_remove")->plug(m_pop);
 			m_pop->insertSeparator();
-			if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
-			if (printer->isLocal())
+			if (!printer->isClass(true))
 			{
-				if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
-				m_actions->action("printer_remove")->plug(m_pop);
-				m_pop->insertSeparator();
-				if (!printer->isClass(true))
-				{
-					m_actions->action("printer_configure")->plug(m_pop);
-					m_actions->action("printer_test")->plug(m_pop);
-					m_pop->insertSeparator();
-				}
-			}
-			else if (!printer->isClass(true))
-			{
+				m_actions->action("printer_configure")->plug(m_pop);
 				m_actions->action("printer_test")->plug(m_pop);
 				m_pop->insertSeparator();
 			}
 		}
-		else
+		else if (!printer->isClass(true))
 		{
-			m_actions->action("printer_add")->plug(m_pop);
-			m_pop->insertSeparator();
-			m_actions->action("server_restart")->plug(m_pop);
-			m_actions->action("server_configure")->plug(m_pop);
-			m_pop->insertSeparator();
-			m_actions->action("manager_configure")->plug(m_pop);
-			m_actions->action("view_refresh")->plug(m_pop);
+			m_actions->action("printer_test")->plug(m_pop);
 			m_pop->insertSeparator();
 		}
+	}
+	else
+	{
+		m_actions->action("printer_add")->plug(m_pop);
+		m_actions->action("printer_add_special")->plug(m_pop);
+		m_pop->insertSeparator();
+		m_actions->action("server_restart")->plug(m_pop);
+		m_actions->action("server_configure")->plug(m_pop);
+		m_pop->insertSeparator();
+		m_actions->action("manager_configure")->plug(m_pop);
+		m_actions->action("view_refresh")->plug(m_pop);
+		m_pop->insertSeparator();
+	}
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
@@ -325,7 +320,9 @@ void KMMainView::slotRemove()
 		KMTimer::blockTimer();
 		bool	result(false);
 		if (KMessageBox::warningYesNo(this,i18n("<nobr>Do you really want to remove <b>%1</b> ?</nobr>").arg(m_current->printerName())) == KMessageBox::Yes)
-			if (!(result=m_manager->removePrinter(m_current)))
+			if (m_current->isSpecial())
+				showErrorMsg(i18n("Not implemented yet."),false);
+			else if (!(result=m_manager->removePrinter(m_current)))
 				showErrorMsg(i18n("Unable to remove printer <b>%1</b>.").arg(m_current->printerName()));
 		KMTimer::releaseTimer(result);
 	}
@@ -471,5 +468,12 @@ void KMMainView::slotManagerConfigure()
 		loadParameters();
 	}
 	KMTimer::releaseTimer(refresh);
+}
+
+void KMMainView::slotAddSpecial()
+{
+	KMTimer::blockTimer();
+	KMessageBox::error(this,i18n("Not implemented yet."));
+	KMTimer::releaseTimer(true);
 }
 #include "kmmainview.moc"

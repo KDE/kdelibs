@@ -35,7 +35,6 @@ public:
 	~KMPages();
 
 	void setPrinter(KMPrinter *p);
-	void setManagement(bool on = true);
 
 protected:
 	void initialize();

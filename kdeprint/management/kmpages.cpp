@@ -46,12 +46,6 @@ void KMPages::setPrinter(KMPrinter *p)
 		it.current()->setPrinter(p);
 }
 
-void KMPages::setManagement(bool on)
-{
-	((QWidget*)child("JobViewer","QWidget"))->setEnabled(on);
-	((QWidget*)child("Property","QWidget"))->setEnabled(on);
-}
-
 void KMPages::initialize()
 {
 	setMargin(10);
