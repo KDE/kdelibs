@@ -111,6 +111,7 @@ void KApplet::setupGeometry( Orientation orientation , int width, int height  )
     QApplication::flushX();
     d->orientation = orientation;
     resize(width, height );
+    updateGeometry();
 }
 
 
