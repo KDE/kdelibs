@@ -365,6 +365,10 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
          return;
       }
    }
+   QByteArray params;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << pid;
+   kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
 }
 
 void
