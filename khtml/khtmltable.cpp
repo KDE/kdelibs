@@ -64,8 +64,9 @@ HTMLTableCell::HTMLTableCell( int _percent, int _width, int rs, int cs, int pad 
 bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter )
 {
-	if ( _y + _height < y - getAscent() || _y > y )
-		return false;
+	if ( (_y + _height < y - getAscent() - padding) || 
+	     (_y > y + padding ))
+            return false;
     
  	if ( bg.isValid() )
 	{
