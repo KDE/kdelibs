@@ -880,9 +880,10 @@ bool Ftp::ftpOpenDataConnection()
     if (m_extControl & epsvAllSent)
       return false;
 
-    if (ftpOpenEPRTDataConnection())
-      return true;
   }
+
+  if (ftpOpenEPRTDataConnection())
+    return true;
   ////////////// Fallback : PORT mode
   m_bPasv = false;
 
