@@ -519,7 +519,7 @@ void KKeyChooser::updateAction( int index )
 
 void KKeyChooser::readGlobalKeys()
 {
-	debug("KKeyChooser::readGlobalKeys()");
+        //debug("KKeyChooser::readGlobalKeys()");
 	
 	globalDict->clear();
 	
@@ -551,7 +551,7 @@ void KKeyChooser::readGlobalKeys()
 
 void KKeyChooser::readStdKeys()
 {
-	debug("KKeyChooser::readStdKeys()");
+        // debug("KKeyChooser::readStdKeys()");
 	
 	stdDict->clear();
 	
