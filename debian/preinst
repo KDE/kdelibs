@@ -12,7 +12,7 @@ case "$1" in
       if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
         if [ -d /etc/kde2 ]; then
           if [ -d /etc/kde2/applnk ]; then
-            mv /usr/share/applnk/* /etc/kde2/applnk/ >/dev/null 2>&1
+            cp -R /usr/share/applnk/* /etc/kde2/applnk/ >/dev/null 2>&1
             rm -rf /usr/share/applnk >/dev/null 2>&1
           else
             mv /usr/share/applnk /etc/kde2/applnk >/dev/null 2>&1

@@ -1,10 +1,17 @@
-kdelibs-cvs (4:2.0-20000515-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-20000518-1.0) experimental; urgency=low
+ 
+  * More CVS updates
+  * Fixing some issues with khelpcenter and other config probs
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 May 2000 22:30:00 -0700
+
+kdelibs-cvs (4:2.0-20000517-1.0) experimental; urgency=low
  
   * More CVS updates
   * Turning on debugging
   * Fixes to preinst script
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 15 May 2000 20:30:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 17 May 2000 22:30:00 -0700
 
 kdelibs-cvs (4:2.0-20000512-1.2) experimental; urgency=low
 

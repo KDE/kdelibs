@@ -58,8 +58,9 @@ binary-arch:  build
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/$(kde_confdir)" >> $$debianrc ;\
-	echo "dir_html=/$(kde_htmldir)" >> $$debianrc
-
+	echo "dir_html=/$(kde_htmldir)" >> $$debianrc ;\
+	echo "dir_apps=/$(kde_confdir)/applnk" >> $$debianrc 
+	cp $$debianrc debian/tmp/etc
 	perl -w admin/debianrules kdelibs3-cvs
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
