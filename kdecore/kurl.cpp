@@ -233,9 +233,9 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
           result = textCodec->toUnicode( array, new_length );
           array.resetRawData(new_segment, new_length);
           QCString validate = textCodec->fromUnicode(result);
-          if (validate.data() == new_segment)
+          if (strcmp(validate.data(), new_segment) == 0)
           {
-          bKeepEncoded = false;
+             bKeepEncoded = false;
           }
           else
           {
