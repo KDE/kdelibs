@@ -1,0 +1,11 @@
+Tue Dec  7 23:32:21 GMT 1999
+
+Many improvements to string handling
+Moved to value based collections
+Addition of a d pointer for future binary compatability
+Added some accessor methods
+Improvements to kjavaprocess
+ - Now handles system property settings
+ - Detects death of the server
+ - Supports bidirectional comms
+Applets and contexts are destroyed properly
