@@ -21,13 +21,12 @@
 <!ENTITY underX11License    SYSTEM
   "entities/underX11License.docbook"                -- level: para -->
 
-<!-- ONLY FOR BACKWARDS COMPATIBILITY: USE underGPL -->
-<!ENTITY license-links SYSTEM "entities/underGPL.docbook">
-
-<!ENTITY help-menu          SYSTEM
+<!ENTITY help.menu          SYSTEM
   "entities/help-menu.docbook"                         -- level: ? -->
-<!ENTITY report-bugs        SYSTEM
+<!ENTITY reporting.bugs     SYSTEM
   "entities/report-bugs.docbook"                       -- level: ? -->
+<!ENTITY updating.documentation SYSTEM
+  "entities/update-doc.docbook"                     -- level: para -->
 
 
 <!-- FDL notice -->

@@ -23,21 +23,17 @@
 <!ENTITY underX11License    SYSTEM
   "entities/underX11License.docbook"                -- level: para -->
 
-<!-- ONLY FOR BACKWARDS COMPATIBILITY: USE underGPL -->
-<!ENTITY license-links SYSTEM "entities/underGPL.docbook">
-
-<!ENTITY help-menu          SYSTEM
+<!ENTITY help.menu          SYSTEM
   "entities/help-menu.docbook"                         -- level: ? -->
-<!ENTITY report-bugs        SYSTEM
+<!ENTITY reporting.bugs     SYSTEM
   "entities/report-bugs.docbook"                       -- level: ? -->
+<!ENTITY updating.documentation SYSTEM
+  "entities/update-doc.docbook"                     -- level: para -->
+
 
 <!-- FDL notice -->
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
  -- meant to be included, so no NDATA or CDATA (why?) -->
-
-<!-- Proposal (do not translate yet!) for string to update documentation -->
-<!ENTITY kde.update.documentation SYSTEM
-  "entities/update-doc.docbook"                     -- level: para -->
 
 <!-- These entities may be extended by the authors and translators.
      They should therefore be stored separately.  Moreover, they MUST
