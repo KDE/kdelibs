@@ -49,7 +49,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_hasId( false ),
       m_hasClass( false ),
       m_hasStyle( false ),
-      m_hasTooltip( false ),
       m_pressed( false ),
       m_mouseInside( false ),
       m_attached( false ),

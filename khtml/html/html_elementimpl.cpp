@@ -88,10 +88,6 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
         setHasStyle();
         addCSSProperty(attr->value());
         break;
-    case ATTR_TITLE:
-        // additional title for the element, may be displayed as tooltip
-        setHasTooltip();
-        break;
     case ATTR_TABINDEX:
         indexstring=getAttribute(ATTR_TABINDEX);
         if (indexstring.length())

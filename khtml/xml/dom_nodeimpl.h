@@ -204,7 +204,6 @@ public:
     bool hasID() const      { return m_hasId; }
     bool hasClass() const   { return m_hasClass; }
     bool hasStyle() const   { return m_hasStyle; }
-    bool hasTooltip() const { return m_hasTooltip; }
     bool pressed() const    { return m_pressed; }
     bool active() const     { return m_active; }
     bool mouseInside() const { return m_mouseInside; }
@@ -216,7 +215,6 @@ public:
     void setHasID(bool b=true) { m_hasId = b; }
     void setHasClass(bool b=true) { m_hasClass = b; }
     void setHasStyle(bool b=true) { m_hasStyle = b; }
-    void setHasTooltip(bool b=true) { m_hasTooltip = b; }
     void setPressed(bool b=true) { m_pressed = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
@@ -297,7 +295,6 @@ protected:
     bool m_hasId : 1;
     bool m_hasClass : 1;
     bool m_hasStyle : 1;
-    bool m_hasTooltip : 1;
     bool m_pressed : 1;
     bool m_mouseInside : 1;
     bool m_attached : 1;
