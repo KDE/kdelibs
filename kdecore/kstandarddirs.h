@@ -147,6 +147,24 @@ public:
 	void addPrefix( const QString& dir );
 
 	/**
+	 * Adds another search dir to front of the XDG_CONFIG_XXX list 
+	 * of prefixes.
+	 * This prefix is only used for resources that start with "xdgconf-"
+	 *
+	 * @param dir The directory to append relative paths to.
+	 */
+	void addXdgConfigPrefix( const QString& dir );
+
+	/**
+	 * Adds another search dir to front of the XDG_DATA_XXX list 
+	 * of prefixes.
+	 * This prefix is only used for resources that start with "xdgdata-"
+	 *
+	 * @param dir The directory to append relative paths to.
+	 */
+	void addXdgDataPrefix( const QString& dir );
+
+	/**
 	 * Adds suffixes for types.
 	 *
 	 * You may add as many as you need, but it is advised that there
@@ -513,6 +531,18 @@ public:
 	 * @return the toplevel directory
 	 */
 	QString localkdedir() const;
+
+	/**
+	 * @return $XDG_DATA_HOME
+	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+	 */
+	QString localxdgdatadir() const;
+
+	/**
+	 * @return $XDG_CONFIG_HOME
+	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+	 */
+	QString localxdgconfdir() const;
 
 	/**
 	 * Checks for existence and accessability.

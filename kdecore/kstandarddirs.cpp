@@ -64,18 +64,23 @@ public:
    bool restrictionsActive;
    bool dataRestrictionActive;
    QAsciiDict<bool> restrictions;
+   QStringList xdgdata_prefixes;
+   QStringList xdgconf_prefixes;
 };
 
 static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates", "module", "qtplugins", 0 };
+			      "wallpaper", "lib", "pixmap", "templates", 
+			      "module", "qtplugins", 
+			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu", 0 };
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs( ) : addedCustoms(false), d(0)
+KStandardDirs::KStandardDirs( ) : addedCustoms(false)
 {
+    d = new KStandardDirsPrivate;
     dircache.setAutoDelete(true);
     relatives.setAutoDelete(true);
     absolutes.setAutoDelete(true);
@@ -143,6 +148,37 @@ void KStandardDirs::addPrefix( const QString& _dir )
 	dircache.clear();
     }
 }
+
+void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
+{
+    if (_dir.isNull())
+	return;
+
+    QString dir = _dir;
+    if (dir.at(dir.length() - 1) != '/')
+	dir += '/';
+
+    if (!d->xdgconf_prefixes.contains(dir)) {
+	d->xdgconf_prefixes.append(dir);
+	dircache.clear();
+    }
+}
+
+void KStandardDirs::addXdgDataPrefix( const QString& _dir )
+{
+    if (_dir.isNull())
+	return;
+
+    QString dir = _dir;
+    if (dir.at(dir.length() - 1) != '/')
+	dir += '/';
+
+    if (!d->xdgdata_prefixes.contains(dir)) {
+	d->xdgdata_prefixes.append(dir);
+	dircache.clear();
+    }
+}
+
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
@@ -599,8 +635,16 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
         if (dirs)
         {
             bool local = true;
-            for (QStringList::ConstIterator pit = prefixes.begin();
-                 pit != prefixes.end();
+            const QStringList *prefixList = 0;
+            if (strncmp(type, "xdgdata-", 8) == 0)
+                prefixList = &(d->xdgdata_prefixes);
+            else if (strncmp(type, "xdgconf-", 8) == 0)
+                prefixList = &(d->xdgconf_prefixes);
+            else
+                prefixList = &prefixes;
+               
+            for (QStringList::ConstIterator pit = prefixList->begin();
+                 pit != prefixList->end();
                  pit++)
             {
                 for (QStringList::ConstIterator it = dirs->begin();
@@ -809,6 +853,12 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "lib/kde3/";
     if (!strcmp(type, "qtplugins"))
         return "lib/kde3/plugins";
+    if (!strcmp(type, "xdgdata-apps"))
+        return "applications/";
+    if (!strcmp(type, "xdgdata-dirs"))
+        return "desktop-directories/";
+    if (!strcmp(type, "xdgconf-menu"))
+        return "menus/";
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
@@ -834,7 +884,12 @@ QString KStandardDirs::saveLocation(const char *type,
        if (dirs)
        {
           // Check for existance of typed directory + suffix
-          pPath = new QString(realPath(localkdedir() + dirs->last()));
+          if (strncmp(type, "xdgdata-", 8) == 0)
+             pPath = new QString(realPath(localxdgdatadir() + dirs->last()));
+          else if (strncmp(type, "xdgconf-", 8) == 0)
+             pPath = new QString(realPath(localxdgconfdir() + dirs->last()));
+          else
+             pPath = new QString(realPath(localkdedir() + dirs->last()));
        }
        else {
           dirs = absolutes.find(type);
@@ -853,11 +908,11 @@ QString KStandardDirs::saveLocation(const char *type,
 #ifndef NDEBUG
 	    qDebug("save location %s doesn't exist", fullPath.latin1());
 #endif
-	    return localkdedir()+suffix;
+	    return fullPath;
 	}
 	if(!makeDir(fullPath, 0700)) {
             qWarning("failed to create %s", fullPath.latin1());
-	    return localkdedir()+suffix;
+	    return fullPath;
 	}
         dircache.remove(type);
     }
@@ -946,6 +1001,7 @@ void KStandardDirs::addKDEDefaults()
 {
     QStringList kdedirList;
 
+    // begin KDEDIRS
     QString kdedirs = readEnvPath("KDEDIRS");
     if (!kdedirs.isEmpty())
     {
@@ -1013,6 +1069,105 @@ void KStandardDirs::addKDEDefaults()
         fixHomeDir(dir);
 	addPrefix(dir);
     }
+    // end KDEDIRS
+
+    // begin XDG_CONFIG_XXX
+    QStringList xdgdirList;
+    QString xdgdirs = readEnvPath("XDG_CONFIG_DIRS");
+    if (!xdgdirs.isEmpty())
+    {
+	tokenize(xdgdirList, xdgdirs, ":");
+    }
+    else
+    {
+	xdgdirList.clear();
+        xdgdirList.append("/etc/xdg");
+    }
+
+    QString localXdgDir = readEnvPath("XDG_CONFIG_HOME");
+    if (!localXdgDir.isEmpty())
+    {
+       if (localXdgDir[localXdgDir.length()-1] != '/')
+          localXdgDir += '/';
+    }
+    else
+    {
+       if (getuid())
+       {
+          localXdgDir =  QDir::homeDirPath() + "/.config/";
+       }
+       else
+       {
+          struct passwd *pw = getpwuid(0);
+          localXdgDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.config/";
+       }
+    }
+
+    fixHomeDir(localXdgDir);
+    addXdgConfigPrefix(localXdgDir);
+
+    for (QStringList::ConstIterator it = xdgdirList.begin();
+	 it != xdgdirList.end(); it++)
+    {
+        QString dir = *it;
+        fixHomeDir(dir);
+	addXdgConfigPrefix(dir);
+    }
+    // end XDG_CONFIG_XXX
+
+    // begin XDG_DATA_XXX
+    xdgdirs = readEnvPath("XDG_DATA_DIRS");
+    if (!xdgdirs.isEmpty())
+    {
+	tokenize(xdgdirList, xdgdirs, ":");
+    }
+    else
+    {
+	xdgdirList.clear();
+        for (QStringList::ConstIterator it = kdedirList.begin();
+           it != kdedirList.end(); it++)
+        {
+           QString dir = *it;
+           if (dir[dir.length()-1] != '/')
+             dir += '/';
+           xdgdirList.append(dir+"share/");
+        }
+	
+        xdgdirList.append("/usr/local/share/");
+        xdgdirList.append("/usr/share/");
+    }
+
+    localXdgDir = readEnvPath("XDG_DATA_HOME");
+    if (!localXdgDir.isEmpty())
+    {
+       if (localXdgDir[localXdgDir.length()-1] != '/')
+          localXdgDir += '/';
+    }
+    else
+    {
+       if (getuid())
+       {
+          localXdgDir =  QDir::homeDirPath() + "/.local/share/";
+       }
+       else
+       {
+          struct passwd *pw = getpwuid(0);
+          localXdgDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.local/share/";
+       }
+    }
+
+    fixHomeDir(localXdgDir);
+    addXdgDataPrefix(localXdgDir);
+
+    for (QStringList::ConstIterator it = xdgdirList.begin();
+	 it != xdgdirList.end(); it++)
+    {
+        QString dir = *it;
+        fixHomeDir(dir);
+	addXdgDataPrefix(dir);
+    }
+    // end XDG_DATA_XXX
+
 
     uint index = 0;
     while (types[index] != 0) {
@@ -1076,11 +1231,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	QString key = it2.key();
         if (!config->readBoolEntry(key, true))
         {
-           if (!d)
-           {
-               d = new KStandardDirsPrivate;
-               d->restrictionsActive = true;
-           }
+           d->restrictionsActive = true;
            d->restrictions.insert(key.latin1(), &d->restrictionsActive); // Anything will do
            dircache.remove(key.latin1());
         }
@@ -1098,6 +1249,18 @@ QString KStandardDirs::localkdedir() const
 {
     // Return the prefix to use for saving
     return prefixes.first();
+}
+
+QString KStandardDirs::localxdgdatadir() const
+{
+    // Return the prefix to use for saving
+    return d->xdgdata_prefixes.first();
+}
+
+QString KStandardDirs::localxdgconfdir() const
+{
+    // Return the prefix to use for saving
+    return d->xdgconf_prefixes.first();
 }
 
 // just to make code more readable without macros
