@@ -214,6 +214,7 @@ static long from_oct(int, char *);
 #define L_CPP    0x080          /* C++ */
 #define L_MAIL   0x100          /* Electronic mail */
 #define L_NEWS   0x200          /* Usenet Netnews */
+#define L_DIFF   0x400          /* Output of diff */
 
 #define P_HTML   0          /* HTML */
 #define P_C      1          /* first and foremost on UNIX */
@@ -225,6 +226,7 @@ static long from_oct(int, char *);
 #define P_CPP    7          /* C++ */
 #define P_MAIL   8          /* Electronic mail */
 #define P_NEWS   9          /* Usenet Netnews */
+#define P_DIFF  10          /* Output of diff */
 
 typedef struct asc_type {
 	const char *type;
@@ -242,7 +244,8 @@ static asc_type types[] = {
 	{ "text/x-java",       14, 1 },
 	{ "text/x-c++",        14, 1 },
 	{ "message/rfc822",     4, 1.9 },
-	{ "message/news",       3, 2 }
+	{ "message/news",       3, 2 },
+        { "text/x-diff",        4, 2 }
 };
 
 #define NTYPES (sizeof(types)/sizeof(asc_type))
@@ -389,6 +392,18 @@ static struct names {
 	},
 	{
 		"Organization:", L_NEWS
+	},
+	{
+		"---", L_DIFF
+	},
+	{
+		"+++", L_DIFF
+	},
+	{
+		"***", L_DIFF
+	},
+	{
+		"@@", L_DIFF
 	},
 	{
 		NULL, 0
