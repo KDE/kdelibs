@@ -72,35 +72,8 @@ public:
 	KPixmap(const QPixmap& pix);
 
 	/**
-	 * This function is obsolete. Use KPixmapEffect::gradient() now.
-	 */
-	void gradientFill( QColor ca, QColor cb, bool upDown = true, 
-                           int ncols = 3 );
-
-        /**
-	 * This function is obsolete. Use KPixmapEffect::gradient() now.
-         */
-        void gradientFill(QColor ca, QColor cb, GradientMode direction,
-                          int ncols = 3);
-
-	/**
-	 * This function is obsolete. Use KPixmapEffect::pattern() now.
-	 */
-	void patternFill( QColor ca, QColor cb, uint pattern[8] );
-
-	/**
-	 * This function is obsolete. Use KPixmapEffect::pattern() now.
-	 **/
-	void mapFill( QColor ca, QColor cb, const QString& map );
-
-	/**
-	 * Tiles a pixmap into this one.
-	 */
-	void tile(const QPixmap &pm);
-
-	/** 
 	 * Converts an image and sets this pixmap. Returns true if
-	 * successful. 
+	 * successful.
 	 *
 	 * The conversion_flags argument is a bitwise-OR from the
 	 * following choices. The options marked (default) are the
@@ -139,7 +112,7 @@ public:
 	 * @li ThresholdAlphaDither (default) - no dithering
 	 *
 	 * Color matching versus dithering preference
-	 * 
+	 *
 	 * @li PreferDither - always dither 32-bit images when the image
 	 * is being converted to 8-bits. This is the default when
 	 * converting to a pixmap.
@@ -162,8 +135,8 @@ public:
 
 	/**
 	 * Loads a pixmap from the file fileName. Returns true if
-	 * successful, or false if the pixmap could not be loaded. 
-	 * 
+	 * successful, or false if the pixmap could not be loaded.
+	 *
 	 * If format is specified, the loader attempts to read the
 	 * pixmap using the specified format. If format is not
 	 * specified (default), the loader reads a few bytes from the
@@ -175,7 +148,7 @@ public:
 	 * The QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
 	 */
-	bool load( const QString& fileName, const char *format, 
+	bool load( const QString& fileName, const char *format,
 		int conversion_flags );
 
 	/*
@@ -183,7 +156,7 @@ public:
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
 	 */
-	bool load( const QString& fileName, 
+	bool load( const QString& fileName,
 		const char *format = 0,
 		ColorMode mode = WebColor );
 

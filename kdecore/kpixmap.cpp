@@ -161,7 +161,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 	    for (x=0; x<sw; x++)
 		*b++ = INDEXOF(pv[2][x],pv[1][x],pv[0][x]);
 	} else {
-	    for (x=0; x<sw; x++) 
+	    for (x=0; x<sw; x++)
 		*b++ = INDEXOF(pv[0][x],pv[1][x],pv[2][x]);
 	}
 
@@ -185,136 +185,6 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     return true;
 }
 
-void KPixmap::gradientFill(QColor , QColor , GradientMode,
-                           int )
-{
-    warning("KPixmap: gradientFill(QColor, QColor, enum GradientMode, int) is obsolete");
-    warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
-}
-
-void KPixmap::gradientFill(QColor , QColor , bool , int )
-{
-    warning("KPixmap: gradientFill(QColor, QColor, bool, int) is obsolete");
-    warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
-}
-
-void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
-{
-    warning("KPixmap: patternFill(QColor, QColor, unsigned) is obsolete");
-    warning("KPixmap: use KPixmapEffect::pattern(KPixmap&, QColor, QColor, unsigned)");
-
-    QPixmap tile( 8, 8 );
-    tile.fill( cb );
-	
-    QPainter pt;
-    pt.begin( &tile );
-    pt.setBackgroundColor( cb );
-    pt.setPen( ca );
-
-    for ( int y = 0; y < 8; y++ ) {
-	uint v = pattern[y];
-	for ( int x = 0; x < 8; x++ ) {
-	    if ( v & 1 )
-		pt.drawPoint( 7 - x, y );
-	    v /= 2;
-	}
-    }
-
-    pt.end();
-
-    QSize _size = size();
-    bool changed = false;
-    if (_size.width() < 8) {
-	_size.setWidth(8);
-	changed = true;
-    }
-    if (_size.height() < 8) {
-	changed = true;
-	_size.setHeight(8);
-    }
-    if (changed)
-	resize(_size);
-
-    int sx, sy = 0;
-    while ( sy < height() ) {
-	sx = 0;
-	while (sx < width()) {
-	bitBlt( this, sx, sy, &tile, 0, 0, 8, 8 );
-	sx += 8;
-	}
-	sy += 8;
-    }
-}
-
-static const char *default_map[] = {
-    "2 2 2 1",
-    ". c #000000",
-    "# c #ffffff",
-    ".#",
-    "#.",
-};
-
-void KPixmap::mapFill( QColor ca, QColor cb, const QString& map )
-{
-    warning("KPixmap: mapFill(QColor, QColor, QString) is obsolete");
-    warning("KPixmap: use KPixmapEffect::pattern(KPixmap&, QColor, QColor, QImage)");
-
-    QString filename = map;
-    if (map.at(0) != '/')
-	filename = locate("data", "kdisplay/maps/" + map);
-    QImage *img = 0;
-    if (!filename.isNull()) {
-	img = new QImage(filename);
-	if (img->isNull()) {
-	    delete img;
-	    img = 0;
-	}
-    }
-    if (!img)
-	img = new QImage(default_map);
-
-    int r1 = ca.red();
-    int r2 = cb.red();
-    int g1 = ca.green();
-    int g2 = cb.green();
-    int b1 = ca.blue();
-    int b2 = cb.blue();
-    int u = 255, o = 0;
-    for (int i = 0; i < img->numColors(); i++) {
-	QRgb t = img->color(i);
-	int mean = (qRed(t) + qGreen(t) + qBlue(t)) / 3;
-	u = QMIN(u, mean);
-	o = QMAX(o, mean);
-    }
-    
-    for (int i = 0; i < img->numColors(); i++) {
-	QRgb t = img->color(i);
-	int mean = (qRed(t) + qGreen(t) + qBlue(t)) / 3;
-	int r = (int)((double(mean - u) / double(o - u)) * (r2 - r1)) + r1;
-	int g = (int)((double(mean - u) / double(o - u)) * (g2 - g1)) + g1;
-	int b = (int)((double(mean - u) / double(o - u)) * (b2 - b1)) + b1;
-	img->setColor(i, qRgb(r, g, b));
-    }
-    
-    convertFromImage(*img, 0);
-    delete img;
-}
-
-void KPixmap::tile(const QPixmap &pm)
-{
-    int x, y;
-    for (y=0; y<height(); y += pm.height())
-	for (x=0; x<width(); x += pm.width())
-	    bitBlt(this, x, y, &pm, 0, 0, pm.width(), pm.height());
-
-    if (pm.mask() != 0L) {
-	QBitmap bm(width(), height());
-	for (y=0; y<height(); y += pm.height())
-	    for (x=0; x<width(); x += pm.width())
-		bitBlt(&bm, x, y, pm.mask(), 0, 0, pm.width(), pm.height());
-	setMask(bm);
-    }
-}
 
 bool KPixmap::load( const QString& fileName, const char *format,
 		    int conversion_flags )
@@ -392,7 +262,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	 ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
 	    return QPixmap::convertFromImage ( img, conversion_flags );
     }
-    
+
     // If the default pixmap depth is not 8bpp, KPixmap color modes have no
     // effect. Ignore them and use AutoColor instead.
     if ( dd > 8 ) {
@@ -425,7 +295,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	    tImage.setAlphaBuffer( true );
 	    isMask = mask.convertFromImage( img.createAlphaMask() );
 	}
-	    
+	
 	kdither_32_to_8( &image, &tImage );
 		
 	if( QPixmap::convertFromImage( tImage ) ) {
@@ -541,5 +411,4 @@ bool KPixmap::checkColorTable( const QImage &image )
 KPixmap::KPixmap(const QPixmap& p)
     : QPixmap(p)
 {
-   //*((QPixmap*)this) = p;
 }
