@@ -355,6 +355,7 @@ void KLocale::initFormat()
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
+  // Monetary
   KSimpleConfig monentry(locate("locale", "l10n/" + money + "/entry.desktop"), true);
   monentry.setGroup("KCM Locale");
 
@@ -417,6 +418,13 @@ void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QSt
   if (!_number.isNull()) number = _number;
   if (!_money.isNull()) money = _money;
   if (!_time.isNull()) time = _time;
+
+  QStrList *cats = catalogues;
+  catalogues = new QStrList;
+  for (const char* catalogue = cats->first(); catalogue;
+       catalogue = cats->next())
+    insertCatalogue( catalogue );
+  delete cats;
   initFormat();
 }
 
