@@ -136,6 +136,13 @@ public:
     KDialogBase* replaceNextDialog( bool create = false );
 
     /**
+     * Close the "replace next?" dialog. The application should do this when
+     * the last match was hit. If the application deletes the KReplace, then
+     * "find previous" won't be possible anymore.
+     */
+    void closeReplaceNextDialog();
+
+    /**
      * Search the given string, replaces with the given replacement string,
      * and returns whether a match was found. If one is,
      * the replacement string length is also returned.
@@ -162,8 +169,14 @@ public:
      *
      * @param forceAsking set to true if the user modified the document during the
      * search. In that case it makes sense to restart the search again.
+     *
+     * @param showNumMatches set to true if the dialog should show the number of
+     * matches. Set to false if the application provides a "find previous" action,
+     * in which case the match count will be erroneous when hitting the end,
+     * and we could even be hitting the beginning of the document (so not all
+     * matches have even been seen).
      */
-    virtual bool shouldRestart( bool forceAsking = false ) const;
+    virtual bool shouldRestart( bool forceAsking = false, bool showNumMatches = true ) const;
 
     /**
      * Displays the final dialog telling the user how many replacements were made.
