@@ -33,6 +33,7 @@ public:
 	~KPlayObjectFactory();
 
 	KPlayObject *createPlayObject(KURL url, bool createBUS);
+	KPlayObject *createPlayObject(KURL url, const QString &mimetype, bool createBUS);
 
 	bool setAllowStreaming(bool s) { m_allowStreaming = s; }
 	bool allowStreaming() { return m_allowStreaming; }

@@ -38,10 +38,15 @@ KPlayObjectFactory::~KPlayObjectFactory()
 
 KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 {
+	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
+	return createPlayObject(url, mimetype->name(), createBUS);
+}
+
+KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, const QString &mimetype, bool createBUS)
+{
 	if(!m_server.isNull())
 	{
-		KMimeType::Ptr mimetype = KMimeType::findByURL(url);
-		if(mimetype->name() == "application/octet-stream" && m_allowStreaming)
+		if(mimetype == "application/octet-stream" && m_allowStreaming)
 		{
 			Arts::KIOInputStream instream;
 			instream.openURL(url.prettyURL().latin1());
@@ -50,7 +55,7 @@ KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 			return new KPlayObject(m_server.createPlayObjectForStream(instream, string("audio/x-mp3"), createBUS), true);
 		}
 		else
-			return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype->name().latin1()), createBUS), false);
+			return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype.latin1()), createBUS), false);
 	}
 	else
 		return new KPlayObject();
