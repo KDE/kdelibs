@@ -874,9 +874,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_TYPE: {
             typeEnum newType;
 
-            if ( strcasecmp( attr->value(), "text" ) == 0 )
-                newType = TEXT;
-            else if ( strcasecmp( attr->value(), "password" ) == 0 )
+            if ( strcasecmp( attr->value(), "password" ) == 0 )
                 newType = PASSWORD;
             else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
                 newType = CHECKBOX;
@@ -962,6 +960,24 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLInputElementImpl::attach()
 {
+    // make sure we don't inherit a color to the form elements
+    // by adding a non-CSS color property. this his higher
+    // priority than inherited color, but lesser priority than
+    // any color specified by CSS for the elements.
+    switch( m_type ) {
+    case TEXT:
+    case PASSWORD:
+    case ISINDEX:
+    case FILE:
+        addCSSProperty(CSS_PROP_COLOR, "text");
+        break;
+    case SUBMIT:
+    case RESET:
+    case BUTTON:
+        addCSSProperty(CSS_PROP_COLOR, "buttontext" );
+        break;
+    };
+
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     view = ownerDocument()->view();
 
@@ -972,7 +988,7 @@ void HTMLInputElementImpl::attach()
     }
 
     khtml::RenderObject *r = _parent ? _parent->renderer() : 0;
-    if(r)
+    if(r && m_style->display() != NONE)
     {
         switch(m_type)
         {
@@ -1553,11 +1569,13 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLSelectElementImpl::attach()
 {
+    addCSSProperty(CSS_PROP_COLOR, "text");
+
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     view = ownerDocument()->view();
 
     khtml::RenderObject *r = _parent->renderer();
-    if(r)
+    if(r && m_style->display() != NONE)
     {
         RenderSelect *f = new RenderSelect(view, this);
         if (f)
@@ -1980,11 +1998,13 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTextAreaElementImpl::attach()
 {
+    addCSSProperty(CSS_PROP_COLOR, "text");
+
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     view = ownerDocument()->view();
 
     khtml::RenderObject *r = _parent->renderer();
-    if(r)
+    if(r && m_style->display() != NONE)
     {
         RenderTextArea *f = new RenderTextArea(view, this);
         if (f)
