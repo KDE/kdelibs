@@ -310,7 +310,7 @@ public:
   /**
    * @return true if the document has been modified.
    */
-  virtual bool isModified() { return m_bModified; }
+  virtual bool isModified() const { return m_bModified; }
 
   /**
    * Called when closing the current url (e.g. document), for instance
