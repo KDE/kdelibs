@@ -21,6 +21,7 @@
  */
 
 #include "kwm.h"
+#include "kwin.h"
 #include <unistd.h>
 #include <qwmatrix.h>
 #include <qbitmap.h>
@@ -348,10 +349,7 @@ void KWM::setIcon(Window w, const QPixmap &pm){
 
 
 void KWM::setDockWindow(Window w){
-  static Atom a = 0;
-  if (!a)
-    a = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
-  setSimpleProperty(w, a, 1);
+    KWin::setDockWindow( w, 0 );
 }
 
 void KWM::setDecoration(Window w, long value){
@@ -1226,12 +1224,7 @@ QString KWM::ontoCurrentDesktopString(){
 }
 
 bool KWM::isDockWindow(Window w){
-  static Atom a = 0;
-  if (!a)
-    a = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
-  long result = 0;
-  getSimpleProperty(w, a, result);
-  return result != 0;
+    return KWin::isDockWindow( w );
 }
 
 int KWM::windowState(Window w){

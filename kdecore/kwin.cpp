@@ -46,12 +46,14 @@ static bool atoms = FALSE;
 static Atom net_number_of_desktops;
 static Atom net_current_desktop;
 static Atom net_active_window;
+static Atom net_kde_docking_window_for;
 
 static void createAtoms() {
     if (!atoms){
 	net_number_of_desktops = XInternAtom(qt_xdisplay(), "_NET_NUMBER_OF_DESKTOPS", False);
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
+	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
 	atoms = True;
     }
 }
@@ -139,8 +141,8 @@ WId KWin::activeWindow()
 			     &length, &after, &data ) == Success ) {
 	if ( data ) {
 	    result = ( (WId*)data)[0];
+	    XFree( data );
 	}
-	XFree( data );
     }
     return result;
 }
@@ -152,3 +154,32 @@ void KWin::setActiveWindow( WId win)
     sendClientMessage( qt_xrootwin(), net_active_window, win);
 }
 
+
+void KWin::setDockWindow(WId dockWin, WId forWin ){
+    createAtoms();
+    long data = forWin;
+    XChangeProperty(qt_xdisplay(), dockWin, net_kde_docking_window_for, XA_WINDOW, 32,
+		    PropModeReplace, (unsigned char *)&data, 1);
+}
+
+
+bool KWin::isDockWindow( WId dockWin, WId *forWin = 0 )
+{
+    createAtoms();
+    Atom type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data;
+    bool result = FALSE;
+    if ( XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
+			     FALSE, XA_WINDOW, &type, &format,
+			     &length, &after, &data ) == Success ) {
+	if ( data ) {
+	    result = TRUE;
+	    if ( forWin )
+		*forWin = ( (WId*)data)[0];
+	    XFree( data );
+	}
+    }
+    return result;
+}

@@ -1,3 +1,23 @@
+/* This file is part of the KDE libraries
+
+    Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef KAPPLET_H
 #define KAPPLET_H
 
@@ -20,12 +40,14 @@ class KApplet : public QWidget, DCOPObject
 public:
 
     /**
-   * Construct a KApplet object.
+       Constructs a KApplet widget just like any other widget.
    */
     KApplet( QWidget* parent = 0, const char* name = 0 );
-    /*
-     * Destroy a KApplet object.
-     */
+
+
+    /**
+       Destructor
+    */
     ~KApplet();
 
     /**
@@ -42,9 +64,9 @@ public:
        Sets up the applets geometry. This function needs to be
        reimplemented by subclasses.
 
-       @param orientation is the applets orientation, either Qt::Horizontal 
+       @param orientation is the applets orientation, either Qt::Horizontal
        or Qt::Vertical
-       @param width and 
+       @param width and
        @param height define the size of the applet.
 
        The size parameter is meant as a hint in case an applet
@@ -57,7 +79,7 @@ public:
        space, ensure to set a proper minimum size with
        QWidget::setMinimumWidth() or QWidget::setMinimumHeight()
        depending on the applets orientation.
-       
+
        Keep in mind that setupGeometry() may be called several times
        during a life-cycle of your applet, for example when the applet
        container is resized, moved or changes orientation.
@@ -73,8 +95,8 @@ public:
     */
     Orientation orientation() const;
 
-    
-    
+
+
     // dcop internal
     bool process(const QCString &fun, const QByteArray &data,
 		 QCString& replyType, QByteArray &replyData);
@@ -95,7 +117,7 @@ public slots:
      */
     void moveRequest();
 
-    
+
 
 private:
     KAppletData* d;
