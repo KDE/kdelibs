@@ -36,12 +36,16 @@ int main()
 
   KURL u2("/home/dfaure/");
   u2.cd("..");
-  printf("\n* URL is %s",u2.url().data());
+  printf("\n* URL is %s\n",u2.url().data());
   check("KURL::cd(\"..\")", u2.url(), "file:/home");
   u2.cd("thomas");
   check("KURL::cd(\"thomas\")", u2.url(), "file:/home/thomas");
   u2.cd("/opt/kde/bin/");
   check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:/opt/kde/bin");
+  u2 = "ftp://ftp.kde.org";
+  printf("\n* URL is %s\n",u2.url().data());
+  u2.cd("pub");
+  check("KURL::cd(\"pub\")", u2.url(), "ftp://ftp.kde.org/pub");
 
   char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
