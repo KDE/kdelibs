@@ -367,6 +367,12 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
     if (sound.isEmpty()) {
         return false;
     }
+    
+    //If we disabled using aRts, just return, 
+    //(If we don't, we'll blow up accessing the null soundServer)
+    if (!d->useArts)
+	return false;
+    
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
