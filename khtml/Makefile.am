@@ -83,7 +83,7 @@ check_PROGRAMS 	= testkhtml testcss
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
-testkhtml_LDADD = $(LIB_KHTML)
+testkhtml_LDADD = libkhtml.la
 testcss_SOURCES = testcss.cpp
-testcss_LDADD = $(LIB_KHTML)
+testcss_LDADD = libkhtml.la
 
