@@ -259,9 +259,7 @@ QString KShell::joinArgs( const QStringList &args )
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (it != args.begin())
             ret += "' '";
-        QString trsts( *it );
-        trsts.replace( q, "'\\''" );
-        ret += trsts;
+        ret += QString( *it ).replace( q, "'\\''" );
     }
 #endif
     ret += q;
@@ -277,9 +275,7 @@ QString KShell::joinArgs( const char * const *args, int nargs )
     for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
         if (argp != args)
             ret += "' '";
-        QString trsts( QFile::decodeName( *argp ) );
-        trsts.replace( q, "'\\''" );
-        ret += trsts;
+        ret += QFile::decodeName( *argp ).replace( q, "'\\''" );
     }
     ret += q;
     return ret;

@@ -714,11 +714,8 @@ KPty *KProcess::pty() const
 
 QString KProcess::quote(const QString &arg)
 {
-    QString res = arg, q("'");
-    res.replace(q, QString::fromLatin1("'\\''"));
-    res.prepend(q);
-    res.append(q);
-    return res;
+    QChar q('\'');
+    return QString(arg).replace(q, "'\\''").prepend(q).append(q);
 }
 
 
