@@ -20,23 +20,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include "../../kdecore/kdatastream.h"
+#include "../../kdecore/kdatastream.cpp"
 #include "../dcopclient.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 static DCOPClient* dcop = 0;
 
-bool queryApplications()
+void queryApplications()
 {
     QCStringList apps = dcop->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
 	if ( (*it) != dcop->appId() && (*it).left(9) != "anonymous" )
 	    fprintf( stdout, "%s\n", (*it).data() );
 
-    return dcop->isAttached();
+    if ( !dcop->isAttached() )
+	qFatal( "server not accessible" );
 }
 
-bool queryObjects( const char* app )
+void queryObjects( const char* app )
 {
     bool ok = false;
     QCStringList objs = dcop->remoteObjects( app, &ok );
@@ -46,11 +49,11 @@ bool queryObjects( const char* app )
 	else
 	    fprintf( stdout, "%s\n", (*it).data() );
     }
-
-    return ok;
+    if ( !ok )
+	qFatal( "application not accessible" );
 }
 
-bool queryFunctions( const char* app, const char* obj )
+void queryFunctions( const char* app, const char* obj )
 {
     bool ok = false;
     QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
@@ -59,24 +62,145 @@ bool queryFunctions( const char* app, const char* obj )
 	    continue;
 	fprintf( stdout, "%s\n", (*it).data() );
     }
-
-    return ok;
+    if ( !ok )
+	 qFatal( "object not accessible" );
 }
 
-bool callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
+
+bool mkBool( const QString& s ) 
 {
-    bool ok = false;
+    if ( s.lower()  == "true" )
+	return TRUE;
+    if ( s.lower()  == "yes" )
+	return TRUE;
+    if ( s.lower()  == "on" )
+	return TRUE;
+    if ( s.toInt() != 0 )
+	return TRUE;
+    
+    return FALSE;
+}
 
+void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
+{
+    
+    QString f = func; // Qt is better with unicode strings, so use one.
+    int left = f.find( '(' );
+    int right = f.find( ')' );
+    
+    if ( right <  left )
+	qFatal( "parantheses do not match" );
 
-    return ok;
+    if ( left < 0 ) {
+	// try to get the interface from the server
+	bool ok = false;
+	QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
+	QCString realfunc;
+	if ( !ok )
+	    qFatal( "object not accessible" );
+	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
+	    int l = (*it).find( '(' );
+	    int s = (*it).find( ' ');
+	    if ( s < 0 )
+		s = 0;
+	    else
+		s++;
+	    
+	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
+		realfunc = (*it).mid( s );
+		int a = (*it).contains(',');
+		if ( a + argc == 0 || a + 1 == argc )
+		    break;
+	    }
+	}
+	if ( realfunc.isEmpty() )
+	    qFatal("no such function");
+	f = realfunc;
+	left = f.find( '(' );
+	right = f.find( ')' );
+    }
+
+    QStringList types;
+    if ( left >0 && left + 1 < right - 1) {
+	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
+	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+	    (*it).stripWhiteSpace();
+    }
+
+    if ( (int) types.count() != argc ) {
+	qFatal( "arguments do not match" );
+    }
+    
+    QByteArray data, replyData;
+    QCString replyType;
+    QDataStream arg(data, IO_WriteOnly);
+
+    int i = 0;
+    for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
+	QString type = *it;
+	QString s = args[i++];
+	if ( type == "int" )
+	    arg << s.toInt();
+ 	else if ( type == "long" )
+ 	    arg << s.toLong();
+	else if ( type == "float" )
+	    arg << s.toFloat();
+	else if ( type == "double" )
+	    arg << s.toDouble();
+ 	else if ( type == "bool" )
+ 	    arg << mkBool( s );
+	else if ( type == "QString" )
+	    arg << s;
+	else if ( type == "QCString" )
+	    arg << QCString( s.latin1() );
+	else
+	    qFatal( "cannot handle datatype '%s'", type.latin1() );
+    }
+    
+    if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {
+	qFatal( "call failed");
+    } else {
+	QDataStream reply(replyData, IO_ReadOnly);
+	if ( replyType == "int" ) {
+	    int i;
+	    reply >> i;
+	    fprintf( stdout, "%d\n", i );
+	} else if ( replyType == "long" ) {
+	    long l;
+	    reply >> l;
+	    fprintf( stdout, "%ld\n", l );
+	} else if ( replyType == "long" ) {
+	    long l;
+	    reply >> l;
+	    fprintf( stdout, "%ld\n", l );
+	} else if ( replyType == "float" ) {
+	    float f;
+	    reply >> f;
+	    fprintf( stdout, "%f\n", (double) f );
+	} else if ( replyType == "double" ) {
+	    double d;
+	    reply >> d;
+	    fprintf( stdout, "%f\n", d );
+	} else if (replyType == "bool") {
+	    bool b;
+	    reply >> b;
+	    fprintf( stdout, "%s\n", b ? "true" : "false" );
+	} else if (replyType == "QString") {
+	    QString r;
+	    reply >> r;
+	    fprintf( stdout, "%s\n", r.latin1() );
+	} else if (replyType == "QCString") {
+	    QCString r;
+	    reply >> r;
+	    fprintf( stdout, "%s\n", r.data() );
+	}
+    }
 }
 
 
 
 int main( int argc, char** argv )
 {
-    bool ok = false;
-
     DCOPClient client;
     client.attach();
     dcop = &client;
@@ -84,19 +208,20 @@ int main( int argc, char** argv )
     switch ( argc ) {
     case 0:
     case 1:
-	ok = queryApplications();
+	queryApplications();
 	break;
     case 2:
-	ok = queryObjects( argv[1] );
+	queryObjects( argv[1] );
 	break;
     case 3:
-	ok = queryFunctions( argv[1], argv[2] );
+	queryFunctions( argv[1], argv[2] );
 	break;
     case 4:
-	ok = callFunction( argv[1], argv[2], argv[3], argc - 4, &argv[4] );
+    default:
+	callFunction( argv[1], argv[2], argv[3], argc - 4, &argv[4] );
 	break;
 	
     }
 
-    return ok ? 0: 1 ;
+    return 0;
 }
