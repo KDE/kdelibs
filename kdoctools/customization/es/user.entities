@@ -25,3 +25,4 @@
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
 <!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
+<!ENTITY kmenu  "menú <guimenu>K</guimenu>">
