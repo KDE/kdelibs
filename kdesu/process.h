@@ -20,6 +20,8 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 class PTY;
 typedef QValueList<QCString> QCStringList;
 
@@ -31,7 +33,7 @@ typedef QValueList<QCString> QCStringList;
  * This means that programs which require a terminal will work.
  */
 
-class PtyProcess
+class KDESU_EXPORT PtyProcess
 {
 public:
     PtyProcess();
