@@ -158,18 +158,18 @@ static QCString stringToPrintable(const QCString& str){
   return result;
 }
 
-void KConfigBackEnd::changeFileName(const QString &_fileName, 
+void KConfigBackEnd::changeFileName(const QString &_fileName,
                                     const char * _resType,
                                     bool _useKDEGlobals)
-{ 
-   mfileName = _fileName; 
+{
+   mfileName = _fileName;
    resType = _resType;
    useKDEGlobals = _useKDEGlobals;
    if (mfileName.isEmpty())
       mLocalFileName = QString::null;
-   else if (mfileName[0] == '/') 
+   else if (mfileName[0] == '/')
       mLocalFileName = mfileName;
-   else 
+   else
       mLocalFileName = KGlobal::dirs()->saveLocation(resType) + mfileName;
 
    if (useKDEGlobals)
@@ -196,7 +196,7 @@ void KConfigBackEnd::setFileWriteMode(int mode)
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
-  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK)) 
+  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK))
      mConfigState = KConfigBase::ReadWrite;
   else
      mConfigState = KConfigBase::ReadOnly;
@@ -270,9 +270,13 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
    const char *s, *eof;
    QByteArray data;
+
+   unsigned int ll = localeString.length();
+
 #ifdef HAVE_MMAP
    const char *map = ( const char* ) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE,
                                           rFile.handle(), 0);
+
    if (map)
    {
       s = map;
@@ -314,7 +318,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          while ((s < eof) && (*s != '\n') && (*s != ']')) s++; // Search till end of group
          const char *e = s;
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
-         if ((e >= eof) || (*e != ']')) 
+         if ((e >= eof) || (*e != ']'))
          {
             fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
             continue;
@@ -328,7 +332,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             fileOptionImmutable = true;
             continue;
          }
-              
+
          aCurrentGroup = QCString(startLine + 1, e - startLine);
          //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
@@ -413,7 +417,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                  optionImmutable = true;
               else if ((*option == 'd'))
               {
-                 optionDeleted = true; 
+                 optionDeleted = true;
                  goto haveeq;
               }
             }
@@ -438,24 +442,26 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
 
       if (locale) {
-	  unsigned int ll = localeString.length();
-          if ((ll != static_cast<unsigned int>(elocale - locale)) ||
-	      memcmp(locale, localeString.data(), ll))
+          unsigned int cl = static_cast<unsigned int>(elocale - locale);
+          if ((ll != cl) || memcmp(locale, localeString.data(), ll))
           {
-            //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
-            // We can ignore this one
-            if (!pWriteBackMap)
-               continue; // We just ignore it
-            // We just store it as is to be able to write it back later.
-	    endOfKey = elocale;
-            locale = 0;
+              // backward compatibility. C == en_US
+              if ( cl != 1 || ll != 5 || memcmp(locale, "C", 1) || memcmp(localeString.data(), "en_US", 5)) {
+                  //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
+                  // We can ignore this one
+                  if (!pWriteBackMap)
+                      continue; // We just ignore it
+                  // We just store it as is to be able to write it back later.
+                  endOfKey = elocale;
+                  locale = 0;
+              }
           }
       }
 
       // insert the key/value line
       QCString key(startLine, endOfKey - startLine + 2);
       QCString val = printableToString(st, s - st);
-      //cout<<"found key '"<<key<<"' with value '"<<val<<"'"<<endl;
+      //qDebug("found key '%s' with value '%s'", key.data(), val.data());
 
       KEntryKey aEntryKey(aCurrentGroup, key);
       aEntryKey.bLocal = (locale != 0);
@@ -481,7 +487,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    }
    if (fileOptionImmutable)
       bFileImmutable = true;
-   
+
 #ifdef HAVE_MMAP
    if (map)
       munmap(( char* )map, rFile.size());
@@ -538,17 +544,17 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 {
   // now write out all other groups.
   QCString currentGroup;
-  for (KEntryMapConstIterator aIt = entryMap.begin(); 
-       aIt != entryMap.end(); ++aIt) 
+  for (KEntryMapConstIterator aIt = entryMap.begin();
+       aIt != entryMap.end(); ++aIt)
   {
      const KEntryKey &key = aIt.key();
 
      // Either proces the default group or all others
      if ((key.mGroup != "<default>") == defaultGroup)
         continue; // Skip
-     
+
      // Skip default values and group headers.
-     if ((key.bDefault) || key.mKey.isEmpty()) 
+     if ((key.bDefault) || key.mKey.isEmpty())
         continue; // Skip
 
      const KEntry &currentEntry = *aIt;
@@ -565,12 +571,12 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
             (defaultKey.bLocal != key.bLocal))
            hasDefault = false;
      }
- 
 
-     if (hasDefault) 
+
+     if (hasDefault)
      {
         // Entry had a default value
-        if ((currentEntry.mValue == (*aTestIt).mValue) && 
+        if ((currentEntry.mValue == (*aTestIt).mValue) &&
             (currentEntry.bDeleted == (*aTestIt).bDeleted))
            continue; // Same as default, don't write.
      }
@@ -595,7 +601,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
         // Deleted entry
         if ( currentEntry.bNLS )
         {
-           // localized 
+           // localized
            fprintf(pStream, "%s[%s][$d]\n",
                    key.mKey.data(), localeString.data());
         }
@@ -607,7 +613,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
         }
      }
      else
-     {  
+     {
         if ( currentEntry.bNLS )
         {
            fprintf(pStream, "%s[%s]=%s\n",
@@ -656,7 +662,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       if(aIt.key().bDefault)
       {
          aTempMap.replace(aIt.key(), currentEntry);
-         continue; 
+         continue;
       }
 
       if (!currentEntry.bDirty)
@@ -670,7 +676,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
         bEntriesLeft = true;
         continue;
       }
-      
+
       // put this entry from the config object into the
       // temporary map, possibly replacing an existing entry
       aTempMap.replace(aIt.key(), currentEntry);
@@ -732,7 +738,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
         fileMode = mFileMode;
 
      if (fileMode != -1)
-     {   
+     {
         fchmod(pConfigFile->handle(), fileMode);
      }
 
@@ -740,7 +746,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   }
   else
   {
-     // Open existing file. 
+     // Open existing file.
      // We use open() to ensure that we call without O_CREAT.
      int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC);
      if (fd < 0)
