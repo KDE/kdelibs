@@ -105,7 +105,7 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
     args = new List();
     dummyList = true;
   }
-  
+
   Context *save = Context::current();
 
   Context::setCurrent(new Context(codeType(), save, this, args, thisV));
@@ -136,6 +136,12 @@ UString FunctionImp::name() const
 
 InternalFunctionImp::InternalFunctionImp()
 {
+}
+
+InternalFunctionImp::InternalFunctionImp(int l)
+{
+    if (l >= 0)
+	put("length", Number(l), ReadOnly|DontDelete|DontEnum);
 }
 
 InternalFunctionImp::InternalFunctionImp(const UString &n)

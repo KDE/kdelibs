@@ -516,7 +516,8 @@ void KJScriptImp::clear()
   }
 }
 
-bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
+bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
+			   bool onlyCheckSyntax)
 {
   init();
 
@@ -543,6 +544,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
     //    Node::deleteAllNodes();
     return false;
   }
+
+  if (onlyCheckSyntax)
+      return true;
 
   Context *context = Context::current();
   context->clearError();

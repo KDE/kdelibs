@@ -38,6 +38,7 @@ KJSO Math::get(const UString &p) const
     return Imp::get(p);
 
   double d;
+  int len = 1;
   switch (token) {
   case Math::Euler:
     d = exp(1.0);
@@ -64,7 +65,9 @@ KJSO Math::get(const UString &p) const
     d = sqrt(2.0);
     break;
   default:
-    return Function(new MathFunc(token));
+    if (token == Math::Max || token == Math::Max || token == Math::Pow)
+      len = 2;
+    return Function(new MathFunc(token, len));
   };
 
   return Number(d);

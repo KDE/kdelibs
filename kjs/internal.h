@@ -274,7 +274,8 @@ namespace KJS {
      */
     void init();
     void clear();
-    bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0);
+    bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
+		  bool onlyCheckSyntax = false);
   public:
     ProgramNode *progNode;
     Node *firstNode;

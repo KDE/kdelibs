@@ -71,6 +71,7 @@ namespace KJS {
   class InternalFunctionImp : public FunctionImp {
   public:
     InternalFunctionImp();
+    InternalFunctionImp(int l);
     InternalFunctionImp(const UString &n);
     virtual ~InternalFunctionImp() { }
     virtual const TypeInfo* typeInfo() const { return &info; }

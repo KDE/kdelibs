@@ -36,7 +36,7 @@ namespace KJS {
 
   class MathFunc : public InternalFunctionImp {
   public:
-    MathFunc(int i) : id(i) { }
+    MathFunc(int i, int l) : InternalFunctionImp(l), id(i) { }
     Completion execute(const List &);
   private:
     int id;

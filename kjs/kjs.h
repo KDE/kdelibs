@@ -109,6 +109,12 @@ public:
    */
   const char *errorMsg() const;
   /**
+   * Check the syntax of a piece of code. Return true if the code could be
+   * parsed without errors, false otherwise. @ref errorLine() will tell you
+   * approximately where the syntax error happened.
+   */
+  bool checkSyntax(const KJS::UString &code);
+  /**
    * Adds a debug() function to the set of pre-defined properties.
    * debug(arg) tries to convert 'arg' to a string and prints the result
    * to stderr. If you want to debug self defined Host Objects this way

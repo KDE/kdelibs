@@ -1,3 +1,8 @@
+2000-12-11  Harri Porten  <harri@trolltech.com>
+
+	* regexp.h: compile fix for buggy libc
+	* ustring.cpp: format string conversion of numbers with %g
+
 2000-12-10  Harri Porten  <harri@trolltech.com>
 
 	* lexer.cpp: parsing != was broken, added \v escape in strings,

@@ -85,6 +85,11 @@ const char* KJScript::errorMsg() const
   return rep->errMsg.ascii();
 }
 
+bool KJScript::checkSyntax(const KJS::UString &code )
+{
+  return rep->evaluate(code.data(), code.size(), 0, true);
+}
+
 /**
  * @short Print to stderr for debugging purposes.
  */
