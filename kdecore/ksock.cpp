@@ -129,6 +129,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include <signal.h>
+
+#ifndef UNIX_PATH_MAX
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
