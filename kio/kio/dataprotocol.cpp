@@ -19,12 +19,7 @@
 #include "dataprotocol.h"
 
 #include <kdebug.h>
-//#include <kglobal.h>
-//#include <kinstance.h>
-//#include <klocale.h>
 #include <kmdcodec.h>
-//#include <kmessagebox.h>
-//#include <kstddirs.h>
 #include <kurl.h>
 #include <kio/global.h>
 
@@ -32,12 +27,10 @@
 #include <qstring.h>
 #include <qtextcodec.h>
 
-//#include <stdlib.h>
-//#include <math.h>
-//#include <unistd.h>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <netdb.h>
+#ifdef DATAKIOSLAVE
+#  include <kinstance.h>
+#  include <stdlib.h>
+#endif
 #ifdef TESTKIO
 #  include <iostream.h>
 #endif
@@ -240,11 +233,9 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
   }/*wend*/
 }
 
-#if defined(DATAKIOSLAVE)
+#ifdef DATAKIOSLAVE
 DataProtocol::DataProtocol(const QCString &pool_socket, const QCString &app_socket)
 	: SlaveBase("kio_data", pool_socket, app_socket) {
-#elif defined(TESTKIO)
-DataProtocol::DataProtocol() : TestSlave("kio_data", "", "") {
 #else
 DataProtocol::DataProtocol() {
 #endif
