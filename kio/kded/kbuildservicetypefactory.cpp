@@ -52,7 +52,7 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
    KSycocaEntry::Ptr * servType = (*m_entryDict)[ _name ];
-   if (!servType) 
+   if (!servType)
       return 0;
    return (KServiceType *) ((KSycocaEntry*)*servType);
 }
@@ -80,7 +80,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   if ( mime.isEmpty() && service.isEmpty() )
   {
     QString tmp = QString("The service/mime type config file\n%1\n"
-		  "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
+                  "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
     kdWarning(7012) << tmp << endl;
     return 0;
   }
@@ -96,6 +96,12 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
     e = new KMimeType( &desktopFile );
   else
     e = new KServiceType( &desktopFile );
+
+  if (e->isDeleted())
+  {
+    delete e;
+    return 0;
+  }
 
   if ( !(e->isValid()) )
   {
