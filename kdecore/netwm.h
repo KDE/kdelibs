@@ -26,7 +26,7 @@
 #ifndef   __net_wm_h
 #define   __net_wm_h
 
-#include <qwidget.h>
+#include <qglobal.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
