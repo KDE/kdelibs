@@ -550,7 +550,7 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
    }
    else
    {
-      kdError() << "error << ": couldn't create slave : " << errortext << endl;
+      kdError() <<": couldn't create slave : " << errortext << endl;
       if (job)
       {
          protInfo->joblist.removeRef(job);
