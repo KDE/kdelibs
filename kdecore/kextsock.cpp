@@ -108,8 +108,8 @@ public:
 
   QSocketNotifier *qsnIn, *qsnOut;
   int inMaxSize, outMaxSize;
-  bool emitRead, emitWrite;
-  bool addressReusable;
+  bool emitRead : 1, emitWrite : 1;
+  mutable bool addressReusable : 1, ipv6only : 1;
 
   KExtendedSocketLookup *dns, *dnsLocal;
 
@@ -118,7 +118,7 @@ public:
     host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
     resolution(0), bindres(0), current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
-    addressReusable(false), dns(0), dnsLocal(0)
+    addressReusable(false), ipv6only(false), dns(0), dnsLocal(0)
   {
     timeout.tv_sec = timeout.tv_usec = 0;
   }
@@ -783,6 +783,67 @@ bool KExtendedSocket::addressReusable()
 }
 
 /*
+ * Set the IPV6_V6ONLY flag
+ */
+bool KExtendedSocket::setIPv6Only(bool enable)
+{
+#ifdef IPV6_V6ONLY
+  cleanError();
+
+  d->ipv6only = enable;
+  if (sockfd == -1)
+    return true;		// can't set on a non-existing socket
+
+  int on = enable;
+
+  if (setsockopt(sockfd, IPPROTO_IPV6, IPV6_V6ONLY,
+		 (char *)&on, sizeof(on)) == -1)
+    {
+      setError(IO_UnspecifiedError, errno);
+      return false;
+    }
+  else
+    return true;
+
+#else
+  // we don't have the IPV6_V6ONLY constant in this system
+  d->ipv6only = enable;
+
+  setError(IO_UnspecifiedError, ENOSYS);
+  return false;			// can't set if we don't know about this flag
+#endif
+}
+
+/*
+ * retrieve the IPV6_V6ONLY flag
+ */
+bool KExtendedSocket::isIPv6Only()
+{
+#ifdef IPV6_V6ONLY
+  cleanError();
+
+  if (d->status < created || sockfd == -1)
+    return d->ipv6only;
+
+  int on;
+  socklen_t onsiz = sizeof(on);
+  if (getsockopt(sockfd, IPPROTO_IPV6, IPV6_V6ONLY,
+		 (char *)&on, &onsiz) == -1)
+    {
+      setError(IO_UnspecifiedError, errno);
+      return false;
+    }
+
+  return d->ipv6only = on;
+
+#else
+  // we don't have the constant
+  setError(IO_UnspecifiedError, ENOSYS);
+  return false;
+#endif
+}
+
+/*
  * Sets the buffer sizes in this socket
  * Also, we create or delete the socket notifiers
  */
@@ -1086,6 +1147,8 @@ int KExtendedSocket::listen(int N)
 
       if (d->addressReusable)
 	setAddressReusable(sockfd, true);
+      setIPv6Only(d->ipv6only);
+      cleanError();
       if (KSocks::self()->bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  kdDebug(170) << "Failed to bind: " << perror << endl;
@@ -1264,6 +1327,8 @@ int KExtendedSocket::connect()
 	    continue;		// cannot create this socket
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Bind failed: " << perror << endl;
@@ -1281,6 +1346,10 @@ int KExtendedSocket::connect()
 	      setError(IO_ConnectError, errno);
 	      continue;
 	    }
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	}
 
 //      kdDebug(170) << "Socket " << sockfd << " created" << endl;
@@ -2092,6 +2161,8 @@ void KExtendedSocket::connectionEvent()
 	    continue;		// cannot create this socket
 	  if (d->addressReusable)
 	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      ::close(sockfd);
@@ -2109,6 +2180,10 @@ void KExtendedSocket::connectionEvent()
 	      errcode = errno;
 	      continue;
 	    }
+	  if (d->addressReusable)
+	    setAddressReusable(sockfd, true);
+	  setIPv6Only(d->ipv6only);
+	  cleanError();
 	}
 
       setBlockingMode(false);
