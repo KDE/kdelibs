@@ -302,12 +302,13 @@ Addressee::List Resource::findByEmail( const QString &email )
 {
   Addressee::List results;
   QStringList mailList;
+  QString lowerEmail = email.lower();
 
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
     mailList = (*it).emails();
     for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
-      if ( email == (*ite) )
+      if ( lowerEmail == (*ite).lower() )
         results.append( *it );
     }
   }
