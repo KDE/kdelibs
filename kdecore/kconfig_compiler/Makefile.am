@@ -9,6 +9,7 @@ kconfig_compiler_LDADD = $(LIB_KDECORE)
 kconfig_compiler_SOURCES = kconfig_compiler.cpp
 
 check_PROGRAMS = example # autoexample
+EXTRA_PROGRAMS = autoexample
 
 example_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 example_LDADD = $(LIB_KDECORE)
