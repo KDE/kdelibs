@@ -332,7 +332,7 @@ short RenderImage::baselineOffset() const
     return 0;
 }
 
-int RenderImage::bidiHeight() const
+int RenderImage::lineHeight() const
 {
     return height();
 }

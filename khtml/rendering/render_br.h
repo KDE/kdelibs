@@ -51,7 +51,7 @@ public:
 
     // from BiDiObject
     // height of the contents (without paddings, margins and borders)
-    virtual int bidiHeight() const { return 0; }
+    virtual int lineHeight() const;
 
     // overrides
     virtual void calcMinMaxWidth() {}

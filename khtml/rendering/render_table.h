@@ -267,7 +267,7 @@ public:
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
-    virtual int bidiHeight() const { return 0; }
+    virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 
@@ -302,7 +302,7 @@ public:
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
-    virtual int bidiHeight() const { return 0; }
+    virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 
@@ -423,7 +423,7 @@ public:
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
-    virtual int bidiHeight() const { return 0; }
+    virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 

@@ -86,7 +86,7 @@ public:
     virtual short baselineOffset() const;
 
     virtual short verticalPositionHint() const;
-    virtual int bidiHeight() const;
+    virtual int lineHeight() const;
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
     virtual unsigned int width( int, int) const { return width(); }

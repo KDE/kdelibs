@@ -402,8 +402,8 @@ public:
     virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
 
-    // for discussion of bidiHeight see CSS2 spec
-    virtual int bidiHeight() const { return 0; }
+    // for discussion of lineHeight see CSS2 spec
+    virtual int lineHeight() const { return 0; }
     // helper function for layoutInlineChildren to position the
     // children RenderObjects
     virtual void position(int, int, int, int, int, bool, bool) {}

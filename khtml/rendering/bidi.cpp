@@ -694,7 +694,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     int maxDescent = 0;
     r = runs.first();
     while ( r ) {
-        int height = r->obj->bidiHeight();
+        int height = r->obj->lineHeight();
         int offset = r->obj->verticalPositionHint();
         //kdDebug(6041) << "object="<< r->obj << " height="<<height<<" offset="<<offset<<endl;
         r->yOffset = -offset;
@@ -715,7 +715,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         if(r->yOffset == -PositionTop)
             r->yOffset = m_height;
         else if(r->yOffset == -PositionBottom)
-            r->yOffset = maxHeight + m_height - r->obj->bidiHeight();
+            r->yOffset = maxHeight + m_height - r->obj->lineHeight();
         else
             r->yOffset += maxAscent + m_height;
         if(r->obj->isText())

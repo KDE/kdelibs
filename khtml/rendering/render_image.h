@@ -61,7 +61,7 @@ public:
 
     virtual short baselineOffset() const;
 
-    virtual int bidiHeight() const;
+    virtual int lineHeight() const;
 
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;

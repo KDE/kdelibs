@@ -44,14 +44,13 @@ class TextSlave
 {
 public:
     TextSlave(int x, int y, QChar *text, int len,
-              int height, int baseline, int width,
+	      int baseline, int width,
               bool reversed = false, bool firstLine = false)
     {
         m_x = x;
         m_y = y;
         m_text = text;
         m_len = len;
-        m_height = height;
         m_baseline = baseline;
         m_width = width;
         m_reversed = reversed;
@@ -63,24 +62,23 @@ public:
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
-    bool checkPoint(int _x, int _y, int _tx, int _ty);
+    bool checkPoint(int _x, int _y, int _tx, int _ty, int height);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset);
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, int lineheight);
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
      * of a view, would the @ref _y -coordinate be inside the vertical range
      * of this object's representation?
      */
-    bool checkVerticalPoint(int _y, int _ty, int _h)
-    { if((_ty + m_y > _y + _h) || (_ty + m_y + m_height < _y)) return false; return true; }
+    bool checkVerticalPoint(int _y, int _ty, int _h, int height)
+    { if((_ty + m_y > _y + _h) || (_ty + m_y + height < _y)) return false; return true; }
 
     QChar* m_text;
     int m_y;
     unsigned short m_len;
     unsigned short m_x;
-    unsigned short m_height;
     unsigned short m_baseline;
     unsigned short m_width;
 
@@ -154,7 +152,7 @@ public:
 
     // from BiDiObject
     // height of the contents (without paddings, margins and borders)
-    virtual int bidiHeight() const;
+    virtual int lineHeight() const;
 
     // overrides
     virtual void calcMinMaxWidth();
@@ -197,7 +195,7 @@ protected:
     QFontMetrics *fm;
     DOM::DOMStringImpl *str; //
 
-    int m_contentHeight;
+    int m_lineHeight;
     short m_minWidth;
     short m_maxWidth;
 
