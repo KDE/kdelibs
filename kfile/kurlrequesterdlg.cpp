@@ -82,7 +82,7 @@ void KURLRequesterDlg::initDialog(const QString &_text,const QString &urlName,bo
 
 void KURLRequesterDlg::slotClear()
 {
-    urlRequester_->lineEdit()->clear();
+    urlRequester_->clear();
 }
 
 KURL KURLRequesterDlg::selectedURL() const

@@ -28,9 +28,9 @@ class KURLCompletion;
 class KURLRequester;
 
 /**
- * Dialog in which a user can enter a filename or url. It is a dialog 
- * encapsulating @ref KURLRequester. The API is derived from 
- * @ref KFileDialog. 
+ * Dialog in which a user can enter a filename or url. It is a dialog
+ * encapsulating @ref KURLRequester. The API is derived from
+ * @ref KFileDialog.
  *
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <j.w.greven@student.utwente.nl>
@@ -42,16 +42,16 @@ class KURLRequesterDlg : public KDialogBase
 public:
     /**
      * Constructs a KURLRequesterDlg
-     * 
+     *
      * @param urlName   The url of the directory to start in. Use QString::null
      *                  to start in the current working directory, or the last
      *                  directory where a file has been selected.
      * @param modal     Specifies whether the dialog should be opened as modal
      *                  or not.
      */
-    KURLRequesterDlg( const QString& urlName, QWidget *parent, 
+    KURLRequesterDlg( const QString& urlName, QWidget *parent,
             const char *name, bool modal = true );
-    
+
     /**
      * Constructs a KURLRequesterDlg
      * 
@@ -72,10 +72,10 @@ public:
      * Retrieve the fully qualified filename.
      */
     KURL selectedURL() const;
-    
+
     /**
      * Create a modal dialog and return the selected URL.
-     * 
+     *
      * @param url This specifies the initial path of the input line.
      * @param parent The widget the dialog will be centered on initially.
      */
@@ -88,7 +88,7 @@ protected slots:
  
 protected:
 
-    KURLCompletion *    urlCompletion_;
+    KURLCompletion *    urlCompletion_; // ### remove in 3.0, this is unused.
     KURLRequester *     urlRequester_;
 
 private:
