@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -33,15 +33,19 @@
 
 HTMLFontManager* pFontManager = 0;
 
-HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7], 
+HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7],
                     int _weight, bool _italic, QFont::CharSet _charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
     textCol = Qt::black;
     fsize = _size;
-    if(KGlobal::charsets()->hasUnicode(_family))
-	_charset = QFont::Unicode;
-    else if (_charset) setCharset(_charset);
+    // ### FIXME: We have to get unicode support back.
+    // This doesn't work, because it triggers a XListFonts every time hasUnicode() is called.
+    // Either fix kcharsets, or... ???
+    //if(KGlobal::charsets()->hasUnicode(_family))
+    //_charset = QFont::Unicode;
+    //    else 
+    if (_charset) setCharset(_charset);
     else setCharset(KGlobal::charsets()->charsetForLocale());
     pointsize = fontSizes[ _size ];
     dirty = true;
