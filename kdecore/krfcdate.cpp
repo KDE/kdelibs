@@ -1,7 +1,8 @@
 /*
  *
  *  This file is part of the KDE libraries
- *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
+ *  Copyright (c) 2000-2002 Waldo Bastian <bastian@kde.org>
+ *                2002 Rik Hemsley <rik@kde.org>
  *
  * $Id$
  *
@@ -26,10 +27,40 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include <qstringlist.h>
+
 #include <krfcdate.h>
 
 static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {
+    if (sizeof(time_t) == 4)
+    {
+       if ((time_t)-1 < 0)
+       {
+          if (year >= 2038)
+          {
+             year = 2038;
+             mon = 0;
+             day = 1;
+             hour = 0;
+             minute = 0;
+             second = 0;
+          }
+       }
+       else
+       {
+          if (year >= 2115)
+          {
+             year = 2115;
+             mon = 0;
+             day = 1;
+             hour = 0;
+             minute = 0;
+             second = 0;
+          }
+       }
+    }
+
     unsigned int ret = (day - 32075)       /* days */
             + 1461L * (year + 4800L + (mon - 14) / 12) / 4
             + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
@@ -225,33 +256,6 @@ KRFCDate::parseDate(const QString &_date)
            }
         }
      }
-     if (sizeof(time_t) == 4)
-     {
-         if ((time_t)-1 < 0)
-         {
-            if (year >= 2038)
-            {
-               year = 2038;
-               month = 0;
-               day = 1;
-               hour = 0;
-               minute = 0;
-               second = 0;
-            }
-         }
-         else
-         {
-            if (year >= 2115)
-            {
-               year = 2115;
-               month = 0;
-               day = 1;
-               hour = 0;
-               minute = 0;
-               second = 0;
-            }
-         }
-     }
 
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
 
@@ -267,6 +271,100 @@ KRFCDate::parseDate(const QString &_date)
      if (result < 1) result = 1;
 
      return result;
+}
+
+time_t
+KRFCDate::parseDateISO8601( const QString& input)
+{
+  // These dates look like this:
+  // YYYY-MM-DDTHH:MM:SS
+  // But they may also have 0, 1 or 2 suffixes.
+  // Suffix 1: .secfrac (fraction of second)
+  // Suffix 2: Either 'Z' or +zone or -zone, where zone is HHMM
+
+  unsigned int year     = 0;
+  unsigned int month    = 0;
+  unsigned int mday     = 0;
+  unsigned int hour     = 0;
+  unsigned int min      = 0;
+  unsigned int sec      = 0;
+
+  int offset = 0;
+
+  // First find the 'T' separator.
+  int tPos = input.find('T');
+
+  if (-1 == tPos)
+    return 0;
+
+  // Now parse the date part.
+
+  QString dateString = input.left(tPos).stripWhiteSpace();
+
+  QString timeString = input.mid(tPos + 1).stripWhiteSpace();
+
+  QStringList l = QStringList::split('-', dateString);
+
+  year   = l[0].toUInt();
+  month  = l[1].toUInt();
+  mday   = l[2].toUInt();
+
+  // Z suffix means UTC.
+  if ('Z' == timeString.at(timeString.length() - 1)) {
+    timeString.remove(timeString.length() - 1, 1);
+  }
+
+  // +zone or -zone suffix (offset from UTC).
+
+  int plusPos = timeString.findRev('+');
+
+  if (-1 != plusPos) {
+    QString offsetString = timeString.mid(plusPos + 1);
+
+    offset = offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt();
+
+    timeString = timeString.left(plusPos);
+  } else {
+    int minusPos = timeString.findRev('-');
+
+    if (-1 != minusPos) {
+      QString offsetString = timeString.mid(minusPos + 1);
+
+      offset = - (offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt());
+
+      timeString = timeString.left(minusPos);
+    }
+  }
+
+  // secfrac suffix.
+  int dotPos = timeString.findRev('.');
+
+  if (-1 != dotPos) {
+    timeString = timeString.left(dotPos);
+  }
+
+  // Now parse the time part.
+
+  l = QStringList::split(':', timeString);
+
+  hour   = l[0].toUInt();
+  min    = l[1].toUInt();
+  sec    = l[2].toUInt();
+
+  time_t result = ymdhms_to_seconds(year, month+1, mday, hour, min, sec);
+
+  // avoid negative time values
+  if ((offset > 0) && (offset > result))
+     offset = 0;
+
+  result -= offset*60;
+
+  // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
+  // This is so that parse error and valid epoch 0 return values won't
+  // be the same for sensitive applications...
+  if (result < 1) result = 1;
+
+  return result;
 }
 
 

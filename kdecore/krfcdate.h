@@ -44,6 +44,20 @@ public:
     */
    static time_t parseDate(const QString &date);
 
+   /**
+    * This function tries to parse a string containing a date/time in 
+    * any of the formats specified by http://www.w3.org/TR/NOTE-datetime
+    *
+    * This is a subset of the formats specified in ISO8601.
+    *
+    * If the date/time could not be parsed, 0 is returned.  If the
+    * parsed date is epoch, then epoch+1 is returned so that a valid
+    * date will not be confused with an improper date string.
+    *
+    * The date/time returned is converted to UTC.
+    *
+    */
+   static time_t parseDateISO8601(const QString &date);
 
   /**
    * Returns the local timezone offset to UTC in seconds
