@@ -744,7 +744,8 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
 {
     init();
 
-    m_autocomplete = f->autoComplete();
+    if ( f )
+        m_autocomplete = f->autoComplete();
 }
 
 void HTMLInputElementImpl::init()
