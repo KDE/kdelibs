@@ -146,7 +146,7 @@ class DCOPClient : public QObject
    * if the registration wasn't successful.
    */
   QCString registerAs( QCString appId, bool addPID = true );
-    
+
     ///############FIXME, this should be
     // QCString registerAs( const QCString& appId, bool addPID = true );
 
@@ -213,7 +213,9 @@ class DCOPClient : public QObject
    * Note that @p fun is normalized. See @ref normalizeFunctionSignature().
    *
    * If you do not want to reimplement this function for whatever reason,
-   * you can also use a @ref DCOPObjectProxy.
+   * you can also use a default object  or a @ref DCOPObjectProxy.
+   * 
+   * @see setDefaultObject()
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
@@ -355,9 +357,6 @@ public slots:
  private:
     DCOPClientPrivate *d;
 
-    friend class DCOPObjectProxy;
-    void installObjectProxy( DCOPObjectProxy*);
-    void removeObjectProxy( DCOPObjectProxy*);
     bool attachInternal( bool registerAsAnonymous = TRUE );
 
 

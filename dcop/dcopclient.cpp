@@ -68,13 +68,11 @@ public:
 
     QCString senderId;
 
-    QList<DCOPObjectProxy> proxies;
-
     QCString defaultObject;
     QList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
-    
+
     CARD32 time;
 };
 
@@ -89,7 +87,7 @@ struct ReplyStruct
 {
 
     enum ReplyStatus { Pending, Ok, Rejected, Failed };
-    ReplyStruct() { 
+    ReplyStruct() {
 	status = Pending;
 	replyType = 0;
 	replyData = 0;
@@ -140,7 +138,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     DCOPClient *c = d->parent;
 
     IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-    
+
     if ( pMsg->time > d->time )
 	d->time = pMsg->time;
 
@@ -230,7 +228,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	QCString app, objId, fun;
 	QByteArray data;
 	ds >> d->senderId >> app >> objId >> fun >> data;
-	    
+	
 	QCString replyType;
 	QByteArray replyData;
 	bool b = c->receive( app, objId, fun,
@@ -668,7 +666,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
     if (objId[objId.length()-1] == '*') {
 	// handle a multicast to several objects.
 	// doesn't handle proxies currently.  should it?
-	QList<DCOPObject> matchList = 
+	QList<DCOPObject> matchList =
 	    DCOPObject::match(objId.left(objId.length()-1));
 	for (DCOPObject *objPtr = matchList.first();
 	     objPtr != 0L; objPtr = matchList.next()) {
@@ -677,10 +675,11 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	}
 	return true;
     } else if (!DCOPObject::hasObject(objId)) {
-
-	for ( DCOPObjectProxy* proxy = d->proxies.first(); proxy; proxy = d->proxies.next() ) {
-	    if ( proxy->process( objId, fun, data, replyType, replyData ) )
-		return TRUE;
+	if ( DCOPObjectProxy::proxies ) {
+	    for ( QListIterator<DCOPObjectProxy> it( *DCOPObjectProxy::proxies ); it.current();  ++it ) {
+		if ( it.current()->process( objId, fun, data, replyType, replyData ) )
+		    return true;
+	    }
 	}
 	return false;
 
@@ -695,7 +694,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
     return true;
 }
 
-    
+
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData, bool)
@@ -704,7 +703,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 	return false;
 
     bool success = FALSE;
-    
+
     while ( 1 ) {
 	DCOPMsg *pMsg;
 
@@ -740,7 +739,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 	Bool readyRet = False;
 	IceProcessMessagesStatus s;
 
-    
+
 	do {
 	    s = IceProcessMessages(d->iceConn, &waitInfo,
 				   &readyRet);
@@ -773,16 +772,6 @@ void DCOPClient::processSocketData(int)
 	qWarning("received an error processing data from the DCOP server!");
 	return;
     }
-}
-
-void DCOPClient::installObjectProxy( DCOPObjectProxy* obj)
-{
-    d->proxies.append( obj );
-}
-
-void DCOPClient::removeObjectProxy( DCOPObjectProxy* obj)
-{
-    d->proxies.removeRef( obj );
 }
 
 void DCOPClient::setDefaultObject( const QCString& objId )

@@ -4,7 +4,7 @@
 			   October 14, 1999
 
 	 Revised and extended by Matthias Ettrich <ettrich@kde.org>
-			   Mar 29, 2000, 
+			   Mar 29, 2000,
 
 
 Motivation and Background:
@@ -227,8 +227,8 @@ needs to do more complex tasks you might want to do the processing
 out of 'process' function call and send the result back later when
 it becomes available.
 
-For this you can ask your DCOPClient for a transactionId. You can 
-then return from the 'process' function and when the result is 
+For this you can ask your DCOPClient for a transactionId. You can
+then return from the 'process' function and when the result is
 available finish the transaction. In the mean time your application
 can receive incoming DCOP function calls from other clients.
 
@@ -242,7 +242,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     int i; // parameter
     arg >> i;
     QString result = self->doIt(i);
-    
+
     DCOPClientTransaction *myTransaction;
     myTransaction = kapp->dcopClient()->beginTransaction();
 
@@ -260,7 +260,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 {
     QCString replyType = "QString";
-    QByteArray replyData;  
+    QByteArray replyData;
     QDataStream reply(replyData, IO_WriteOnly);
     reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
@@ -276,25 +276,28 @@ manually, you can let dcopidl create the necessary code on your behalf.
 This also allows you to describe the interface for your class in a
 single, separate header file.
 
-Writing an IDL file is very similar to writing a normal C++ header.
+Writing an IDL file is very similar to writing a normal C++ header. An
+exception is the keyword 'ASYNC'. It indicates that a call to this
+function shall be processed asynchronously. For the C++ compiler, it
+expands to 'void'.
 
 Example:
 
 #ifndef MY_INTERFACE_H
 #define MY_INTERFACE_H
- 
+
 #include <dcopobject.h>
- 
+
 class MyInterface : virtual public DCOPObject
 {
   K_DCOP
-    
+
   k_dcop:
-      
-    virtual void myAsynchronousMethod(QString someParameter) = 0;
+
+    virtual ASYNC myAsynchronousMethod(QString someParameter) = 0;
     virtual QRect mySynchronousMethod() = 0;
 };
- 
+
 #endif
 
 As you can see, you're essentially declaring an abstract base class, which
@@ -320,16 +323,20 @@ Example:
 
 class MyClass: public QObject, virtual public MyInterface
 {
+  Q_OBJECT
+  
   public:
+    MyClass(); 
+    ~MyClass();
 
-    virtual void myAsynchronousMethod(QString someParameter);
-    virtual void mySynchronousMethod();
+    ASYNC myAsynchronousMethod(QString someParameter);
+    QRect mySynchronousMethod();
 };
 
 Note: (Qt issue) Remember that if you are inheriting from QObject, you must
 place it first in the list of inherited classes.
 
-In the implementation of your class' ctor, you must explicitly initialise
+In the implementation of your class' ctor, you must explicitly initialize
 those classes from which you are inheriting from. This is, of course, good
 practise, but it is essential here as you need to tell DCOPObject the name of
 the interface which your are implementing.
@@ -348,10 +355,34 @@ exactly the same as you would normally.
 
 Example:
 
-MyClass::myAsynchronousMethod(QString someParameter)
+void MyClass::myAsynchronousMethod(QString someParameter)
 {
   qDebug("myAsyncMethod called with param `" + someParameter + "'");
 }
+
+
+It is not necessary (though very clean) to define an interface as an
+abstract class of its own, like we did in the example above. We could
+just as well have defined a k_dcop section directly within MyClass:
+
+class MyClass: public QObject, virtual public DCOPObject
+{
+  Q_OBJECT
+  K_DCOP
+
+  public:
+    MyClass(); 
+    ~MyClass();
+
+  k_dcop:
+    ASYNC myAsynchronousMethod(QString someParameter);
+    QRect mySynchronousMethod();
+};
+
+In addition to skeletons, dcopidl2cpp also generate stubs. Those make
+it easy to call a DCOP interface without doing the marshalling
+manually. To use a stub, add MyInterface.stub to the SOURCES list of
+your Makefile.am. The stub class will then be called MyInterface_stub.
 
 Conclusion:
 -----------

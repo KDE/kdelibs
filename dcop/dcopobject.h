@@ -147,7 +147,7 @@ public:
    */
   static DCOPObject *find(const QCString &objId);
 
-    
+
   /**
    *
    * @return a list of DCOPObjects beginning with the string
@@ -157,7 +157,7 @@ public:
    * several objects inside a single process.
    */
   static QList<DCOPObject> match(const QCString &partialId);
-       
+
   /**
    * Creates an object id for the QObject @p obj. This is done
    * using the @ref QObject::name function.
@@ -177,19 +177,26 @@ private:
 /**
  * You must use a proxy if you want to dispatch method calls for
  * object IDs which dont have (yet) a corresponding @ref DCOPObject.
- * This is known as virtual object references in CORBA.
+ * This is somewhat like virtual object references in CORBA.
  *
- * @author Matthias Ettrich <ettrich@troll.no>
+ * @author Matthias Ettrich <ettrich@kde.org>
  */
 class DCOPObjectProxy
 {
 public:
     /**
-     * Create a new proxy and register it at the server.
+     * Create a new proxy
      */
-    DCOPObjectProxy( DCOPClient* client );
+    DCOPObjectProxy();
+
+    /** 
+     * Obsolete, do not use. DCOP clients know about object proxies
+     * automatically.
+     */
+    DCOPObjectProxy( DCOPClient*);
+    
     /**
-     * Destroy the proxy.
+     * Destroys the proxy.
      */
     virtual ~DCOPObjectProxy();
 
@@ -206,10 +213,10 @@ public:
     virtual bool process( const QCString& obj, const QCString& fun, const QByteArray& data,
 			  QCString& replyType, QByteArray &replyData );
 private:
-    DCOPClient* parent;
-
-    class DCOPObjectPrivate;
-    DCOPObjectPrivate *d;
+    void* unused;
+    void* unused_too;
+    friend class DCOPClient;
+    static QList<DCOPObjectProxy>* proxies;
 };
 
 

@@ -143,20 +143,26 @@ QCString DCOPObject::functions()
     return "functions();";
 }
 
-DCOPObjectProxy::DCOPObjectProxy( DCOPClient* client )
+QList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;
+
+DCOPObjectProxy::DCOPObjectProxy()
 {
-    parent = client;
-    if ( !parent ) {
-	qWarning("DCOPObjectProxy: no client specified" );
-	return;
-    }
-    parent->installObjectProxy( this );
+    if ( !proxies )
+	proxies = new QList<DCOPObjectProxy>;
+    proxies->append( this );
+}
+
+DCOPObjectProxy::DCOPObjectProxy( DCOPClient*)
+{
+    if ( !proxies )
+	proxies = new QList<DCOPObjectProxy>;
+    proxies->append( this );
 }
 
 DCOPObjectProxy:: ~DCOPObjectProxy()
 {
-    if ( parent )
-	parent->removeObjectProxy( this );
+    if ( proxies )
+	proxies->removeRef( this );
 }
 
 bool DCOPObjectProxy::process( const QCString& /*obj*/,

@@ -24,7 +24,7 @@
 #define DCOPGLOBAL_H "$Id$"
 
 #define DCOPVendorString "KDE"
-#define DCOPReleaseString "1.0"
+#define DCOPReleaseString "1.1"
 #define DCOPVersionMajor 1
 #define DCOPVersionMinor 1
 
@@ -49,7 +49,7 @@
  * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
  *
  * DCOPReply is the successfull reply to a DCOPCall message
- * data: << replyType << replyData
+ * data: << replyType << replyDataSize + replyData[replyDataSize]
  *
  * DCOPReplyFailed indicates failure of a DCOPCall message
  * data:
@@ -62,9 +62,9 @@
  * after a DCOPReplyWait message.
  * data: << fromId << toId << transactionId << replyType << replyData
  *
- * All c-strings (fromId, toId, objId and fun), are marshalled with
+ * All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
  * their respective  length as 32 bit unsigned integer first:
- * data: << length << string[length]
+ * data: length + string[length]
  * Note: This happens automatically when using QCString on a
  * QDataStream.
  *
