@@ -27,7 +27,7 @@
 #define MIN_TIMEOUT_VALUE                    2     //  2 secs.
 
 // MINMUM SIZE FOR ABORTED DOWNLOAD TO BE KEPT
-#define DEFAULT_MINIMUM_KEEP_SIZE         5000  //  5 Kbs
+#define DEFAULT_MINIMUM_KEEP_SIZE         5120  //  5 Kbs
 
 // NORMAL PORT DEFAULTS
 #define DEFAULT_FTP_PORT                    21
