@@ -14,7 +14,7 @@ CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
-	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	
+	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h
 
 noinst_HEADERS = kdebugdialog.h
