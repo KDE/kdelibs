@@ -342,7 +342,7 @@ namespace KIO {
         virtual void start( Slave *slave );
 
     protected slots:
-        virtual void slotData( KIO::Job *, const QByteArray &data);
+        virtual void slotData( const QByteArray &data );
         void slotMimetype( const QString &mimetype );
         virtual void slotFinished( );
 

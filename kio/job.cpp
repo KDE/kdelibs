@@ -464,7 +464,7 @@ MimetypeJob::MimetypeJob( const KURL& url, int command,
 }
 
 // Slave sends data
-void MimetypeJob::slotData( KIO::Job *, const QByteArray &_data)
+void MimetypeJob::slotData( const QByteArray &_data)
 {
     if (m_mimetype.isEmpty())
     {
@@ -476,6 +476,7 @@ void MimetypeJob::slotData( KIO::Job *, const QByteArray &_data)
           m_mimetype = QString::fromLatin1("application/octet-stream");
        else
           m_mimetype = result->mimeType();
+       kdDebug(7007) << "MimetypeJob::slotData() mimetype = " << m_mimetype << endl;
     }
 }
 
