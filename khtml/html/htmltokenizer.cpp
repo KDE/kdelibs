@@ -122,6 +122,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     parser = new KHTMLParser( i, _doc );
     cachedScript = 0;
     m_executingScript = 0;
+    loadingExtScript = 0;
     onHold = false;
 
     reset();
@@ -153,6 +154,7 @@ void HTMLTokenizer::reset()
 void HTMLTokenizer::begin()
 {
     m_executingScript = 0;
+    loadingExtScript = false;
     onHold = false;
     reset();
     size = 254;
