@@ -609,9 +609,9 @@ void FileCopyJob::startCopyJob()
 void FileCopyJob::startDataPump()
 {
     kdDebug(7007) << "FileCopyJob::startDataPump()" << endl;
-    m_getJob = get( m_src, false );
+    m_getJob = get( m_src, false, false /* no GUI */ );
     kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
-    m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false);
+    m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false /* no GUI */);
     kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << endl;
     m_putJob->suspend();
     addSubjob( m_getJob );
