@@ -216,6 +216,25 @@ int KDEsuClient::exec(QCString prog, QCString user)
     return command(cmd);
 }
 
+int KDEsuClient::exec(QCString prog, QCString user, QCString options, QCStringList env)
+{
+    QCString cmd;
+    cmd = "EXEC ";
+    cmd += escape(prog);
+    cmd += " ";
+    cmd += escape(user);
+    cmd += " ";
+    cmd += escape(options);
+    for(QCStringList::ConstIterator it = env.begin(); 
+        it != env.end(); ++it)
+    {
+        cmd += " ";
+        cmd += escape(*it);
+    }
+    cmd += "\n";
+    return command(cmd);
+}
+
 int KDEsuClient::setHost(QCString host)
 {
     QCString cmd = "HOST ";

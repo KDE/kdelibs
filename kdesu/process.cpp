@@ -54,12 +54,19 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
+class PtyProcess::PtyProcessPrivate
+{
+public:
+    QCStringList env;
+};
+
 
 PtyProcess::PtyProcess()
 {
     m_bTerminal = false;
     m_bErase = false;
     m_pPTY = 0L;
+    d = new PtyProcessPrivate;
 }
 
 
@@ -85,8 +92,14 @@ int PtyProcess::init()
 PtyProcess::~PtyProcess()
 {
     delete m_pPTY;
+    delete d;
 }
-    
+
+/** Set additinal environment variables. */
+void PtyProcess::setEnvironment( const QCStringList &env )
+{
+    d->env = env;
+}
 
 /*
  * Read one line of input. The terminal is in canonical mode, so you always
@@ -214,6 +227,12 @@ int PtyProcess::exec(QCString command, QCStringList args)
     // Child
     if (SetupTTY(slave) < 0)
 	_exit(1);
+
+    for(QCStringList::ConstIterator it = d->env.begin();
+        it != d->env.end(); it++)
+    {
+        putenv((*it).data());
+    }
 
     // From now on, terminal output goes through the tty.
 

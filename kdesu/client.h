@@ -22,6 +22,8 @@
 #include <qcstring.h>
 #include <qvaluelist.h>
 
+typedef QValueList<QCString> QCStringList;
+
 /**
  * A client class to access kdesud, the KDE su daemon. Kdesud can assist in 
  * password caching in two ways:
@@ -51,8 +53,12 @@ public:
      *
      * @param command The command to execute.
      * @param user The user to run the command as.
+     * @param options Extra options.
+     * @param env Extra environment variables.
      * @return Zero on success, -1 on failure.
      */
+    // KDE 3.0: TODO merge and use default arguments.     
+    int exec(QCString command, QCString user, QCString options, QCStringList env);
     int exec(QCString command, QCString user);
 
     /**

@@ -94,6 +94,9 @@ public:
      * some subclasses. */
     void setErase(bool erase) { m_bErase = erase; }
 
+    /** Set additinal environment variables. */
+    void setEnvironment( const QCStringList &env );
+
     /** Returns the filedescriptor of the process. */
     int fd() {return m_Fd;};
 
