@@ -1,6 +1,6 @@
 /**********************************************************************
 **
-** $Id: $
+** $Id$
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 **
@@ -57,10 +57,9 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   int  val = 0;
   QString newStr;
 
-  if (_base > 10)
-    str = str.upper();
-
   newStr = str.stripWhiteSpace();
+  if (_base > 10)
+    newStr = newStr.upper();
 
   if (newStr == "-") // a special case
     if ((_min || _max) && _min >= 0)
