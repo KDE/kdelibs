@@ -1075,7 +1075,12 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 		case PE_DockWindowSeparator:
 		{
-			renderToolbarEntryBackground(p, 0, r, cg, (flags & Style_Horizontal) );
+			QWidget*  paintWidget = dynamic_cast<QWidget*>(p->device());
+			QToolBar* parent      = 0;
+			if (paintWidget)
+				parent = ::qt_cast<QToolBar*>(paintWidget->parentWidget());
+			
+			renderToolbarEntryBackground(p, parent, r, cg, (flags & Style_Horizontal) );
 			if ( !(flags & Style_Horizontal) )
 			{
 				p->setPen(cg.mid());
