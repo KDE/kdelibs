@@ -33,15 +33,42 @@ namespace KJS {
 
   /**
    * @short Unicode character.
+   *
+   * UChar represents a 16 bit Unicode character. It's internal data
+   * representation is compatible to XChar2b and QChar. It's therefore
+   * possible to exchange data with X and Qt with shallow copies.
    */
-  // XChar2b and QChar compatible character representation
   struct UChar {
+    /**
+     * Construct a character with value 0.
+     */ 
     UChar() : hi(0), lo(0) { }
+    /**
+     * Construct a character with the value denoted by the arguments.
+     * @param h higher byte
+     * @param l lower byte
+     */ 
     UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+    /**
+     * Construct a character with the given value.
+     * @param u 16 bit Unicode value
+     */ 
     UChar(unsigned short u) : hi(u & 0xff00), lo(u & 0x00ff) { }
+    /**
+     * @return the 16 bit Unicode value of the character
+     */
     unsigned short unicode() const { return hi << 8 | lo; }
+    /**
+     * The higher byte of the character.
+     */
     unsigned char hi;
+    /**
+     * The lower byte of the character.
+     */
     unsigned char lo;
+    /**
+     * A static instance of UChar(0).
+     */
     static UChar null;
   };
 

@@ -274,19 +274,63 @@ namespace KJS {
    */
   class ListIterator {
     friend List;
+    ListIterator();
+    ListIterator(const ListNode *n) : node(n) { }
   public:
-    ListIterator(ListNode *n) : node(n) { }
-
+    /**
+     * Construct an iterator that points to the first element of the list.
+     * @param l The list the iterator will operate on.
+     */
+    ListIterator(const List &list);
+    /**
+     * Assignment constructor.
+     */
+    ListIterator& operator=(const ListIterator &iterator)
+      { node=iterator.node; return *this; }
+    /**
+     * Copy constructor.
+     */
+    ListIterator(const ListIterator &i) : node(i.node) { }
+    /**
+     * Dereference the iterator.
+     * @return A pointer to the element the iterator operates on.
+     */
     KJSO* operator->() const { return node->member; }
+    /**
+     * Conversion to @ref KJS::KJSO*
+     * @return A pointer to the element the iterator operates on.
+     */
     operator KJSO*() const { return node->member; }
-    ListNode* operator++() { node = node->next; return node; }
-    ListNode* operator++(int) { ListNode *n = node; ++*this; return n; }
-    ListNode* operator--() { node = node->prev; return node; }
-    ListNode* operator--(int) { ListNode *n = node; --*this; return n; }
-    bool operator==(ListIterator i) const { return (node==i.node); }
-    bool operator!=(ListIterator i) const { return (node!=i.node); }
+    /**
+     * Postfix increment operator.
+     * @return The element after the increment.
+     */
+    KJSO* operator++() { node = node->next; return node->member; }
+    /**
+     * Prefix increment operator.
+     */
+    KJSO* operator++(int) { const ListNode *n = node; ++*this; return n->member; }
+    /**
+     * Postfix decrement operator.
+     */
+    KJSO* operator--() { node = node->prev; return node->member; }
+    /**
+     * Prefix decrement operator.
+     */
+    KJSO* operator--(int) { const ListNode *n = node; --*this; return n->member; }
+    /**
+     * Compare the iterator with another one.
+     * @return True if the two iterators operate on the same list element.
+     * False otherwise.
+     */
+    bool operator==(const ListIterator &it) const { return (node==it.node); }
+    /**
+     * Check for inequality with another iterator.
+     * @return True if the two iterators operate on different list elements.
+     */
+    bool operator!=(const ListIterator &it) const { return (node!=it.node); }
   private:
-    ListNode *node;
+    const ListNode *node;
   };
 
   /**
@@ -299,6 +343,7 @@ namespace KJS {
    * The class takes care of memory management via reference counting.
    */
   class List : public KJSO {
+    friend ListIterator;
   public:
     /**
      * Constructor.
@@ -371,7 +416,7 @@ namespace KJS {
      */
     static const List *empty();
   private:
-    void erase(ListIterator it);
+    void erase(ListNode *n);
     ListNode *hook;
     static List *emptyList;
   };

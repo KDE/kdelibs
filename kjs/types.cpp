@@ -52,6 +52,11 @@ Reference::~Reference()
   value.base->deref();
 }
 
+ListIterator::ListIterator(const List &l)
+  : node(l.hook->next)
+{
+}
+
 List::List()
 {
   hook = new ListNode(0L, 0L, 0L);
@@ -81,13 +86,12 @@ void List::prepend(KJSO *obj)
 
 void List::removeFirst()
 {
-  erase(begin());
+  erase(hook->next);
 }
 
 void List::removeLast()
 {
-  ListIterator it(end());
-  erase(--it);
+  erase(hook->prev);
 }
 
 void List::clear()
@@ -102,10 +106,8 @@ void List::clear()
   hook->prev = hook;
 }
 
-void List::erase(ListIterator it)
+void List::erase(ListNode *n)
 {
-  ListNode *n = it.node;
-
   if (n != hook) {
     n->next->prev = n->prev;
     n->prev->next = n->next;
