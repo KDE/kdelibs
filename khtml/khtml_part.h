@@ -1551,6 +1551,7 @@ private:
    */
   bool isExtendingSelection() const;
   khtml::Decoder *createDecoder();
+  QString defaultEncoding() const;
 
   /** @internal
    * generic zoom in

@@ -1,3 +1,8 @@
+2004-09-11  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (defaultEncoding, encoding, createDecoder): 
+        Make default charset latin1 over HTTP, keep default to locale on other protocols.
+
 2004-08-05  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren): when positionning floats,
