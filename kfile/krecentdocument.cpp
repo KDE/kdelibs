@@ -103,6 +103,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     QTextStream stream(&dFile);
     stream << "[Desktop Entry]\n";
     stream << "Type=Application\n";
+    stream << "URL=" << openStr << "\n";
     stream << "Exec=" << kapp->argv()[0] << " " << openStr << "\n";
     if(!isUrl)
         stream << "Name=" << fi.fileName() << "\n";
