@@ -700,6 +700,8 @@
  *
  * You will need to install at least one language.  Follow the instructions that come
  * with Festival.  (Festival in combination with mbrola does work.)
+ * Additional festival voices are available from
+ * <a href="<a href="http://hts.ics.nitech.ac.jp/">http://hts.ics.nitech.ac.jp/</a>.
  *
  * Start kttsmgr, choose the appropriate language code and add Festival Interactive.
  * Click the Configure button.  If the Festival voice files are not in the default
