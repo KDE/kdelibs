@@ -66,8 +66,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
 		ktextedit.h kpassivepopup.h kdockwidget_p.h \
-		kdatetimewidget.h ktimewidget.h kpreferencesdialog.h \
-		kpreferencesmodule.h kpluginselector.h \
+		kdatetimewidget.h ktimewidget.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h
 		
@@ -112,8 +111,7 @@ libkdeui_la_SOURCES = \
 		kstringvalidator.cpp kactivelabel.cpp  \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
-		kpreferencesdialog.cpp kpreferencesmodule.cpp \
-		kpluginselector.cpp ksconfig.cpp kspelldlg.cpp \
+		ksconfig.cpp kspelldlg.cpp \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
 		ksplashscreen.cpp
 
@@ -149,5 +147,5 @@ kdepackages:
 dummy.cpp:
 	echo > dummy.cpp
 
-DOXYGEN_REFERENCES = kdecore kdefx dcop kio
+DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
 include ../admin/Doxyfile.am
