@@ -591,16 +591,22 @@ void KWin::deIconifyWindow( WId win, bool animation )
 void KWin::raiseWindow( WId win )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    NETRootInfo info( qt_xdisplay(), 0 );
-    info.restackRequest( win, None, Above );
+    NETRootInfo info( qt_xdisplay(), NET::Supported );
+    if( info.isSupported( NET::WM2RestackWindow ))
+        info.restackRequest( win, None, Above );
+    else
+        XRaiseWindow( qt_xdisplay(), win );
 #endif
 }
 
 void KWin::lowerWindow( WId win )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    NETRootInfo info( qt_xdisplay(), 0 );
-    info.restackRequest( win, None, Below );
+    NETRootInfo info( qt_xdisplay(), NET::Supported );
+    if( info.isSupported( NET::WM2RestackWindow ))
+        info.restackRequest( win, None, Below );
+    else
+        XLowerWindow( qt_xdisplay(), win );
 #endif
 }
 
