@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 200
-#define KDE_VERSION_STRING "2.0 >= 20001022"
+#define KDE_VERSION_STRING "2.0 >= 20001117"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 0
 #define KDE_VERSION_RELEASE 0
@@ -788,6 +788,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.195  2000/11/14 23:29:59  faure
+// Added a new KIPC msg and a new signal out of kapp, toolbarAppearanceChanged,
+// so that pressing apply after changing the widget style doesn't look
+// like a toolbar change - now that the latter works.
+//
 // Revision 1.194  2000/10/22 20:12:11  hausmann
 // - removing the very last traces of the KDE-CORBA age from kdelibs ;-)
 //
