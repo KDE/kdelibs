@@ -29,6 +29,13 @@
 class KFileIconView;
 class QIconViewItem;
 
+/**
+ * This view is designed to combine two KFileViews into one widget, to show
+ * directories on the left side and files on the right side.
+ * 
+ * Methods like selectedItems() to query status _only_ work on the right side,
+ * i.e. on the files.
+ */
 class KCombiView : public QSplitter,
 		   public KFileView
 {

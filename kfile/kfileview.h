@@ -232,7 +232,7 @@ public:
      * view.
      */
     virtual void clearSelection() = 0;
-    
+
     /**
      * Selects all items. You may want to override this, if you can implement
      * it more efficiently than calling highlightItem() with every item.
@@ -245,7 +245,7 @@ public:
      * Must be implemented by the view.
      */
     virtual bool isSelected( const KFileViewItem * ) const = 0;
-    
+
     /**
      * @returns all currently highlighted items.
      */
@@ -255,13 +255,27 @@ public:
      * @returns all items currently available
      */
     const KFileViewItemList * items() const;
-    
+
+    /**
+     * Inserts "counter" KFileViewItems and sorts them conforming to the
+     * current sort-order.
+     * If you override this method, you have to call @ref setFirstItem()
+     * to set the first item of your newly sorted items.
+     */
     virtual void insertSorted(KFileViewItem *first, uint counter);
+
+    /**
+     * @returns the first (depending on sort order) item. It forms sort of a
+     * list, as each item holds a pointer to the next item.
+     * This is only public for internal reasons, DON'T call it unless you
+     * implement a View yourself and really need to.
+     */
+    KFileViewItem *firstItem() const { return first; }
 
 protected:
 
     /**
-      * Tells the view that it should highlight the item. 
+      * Tells the view that it should highlight the item.
       * This function must be implemented by the view
       **/
     virtual void highlightItem(const KFileViewItem *) = 0;
@@ -273,7 +287,7 @@ protected:
     void select( const KFileViewItem *entry);
 
     /**
-     * emits the highlighted signal for item. Call this in your subclass, 
+     * emits the highlighted signal for item. Call this in your subclass,
      * whenever the selection changes.
      */
     void highlight( const KFileViewItem *item);
@@ -305,7 +319,12 @@ protected:
      **/
     KFileViewSignaler *sig;
 
-    KFileViewItem *firstItem() const { return first; }
+    /**
+     * Call this method to set the first item after you call your own
+     * insertSorted(). You only need to call it when you override
+     * insertSorted().
+     */
+    void setFirstItem( KFileViewItem * item ) { first = item; }
 
 private:
 

@@ -103,6 +103,8 @@ void KCombiView::insertSorted(KFileViewItem *first, uint )
 	left->insertSorted(d_first, dirs);
     if (files)
 	right->insertSorted(f_first, files);
+ 
+    setFirstItem( right->firstItem() );
 }
 
 void KCombiView::insertItem( KFileViewItem * )
@@ -143,7 +145,7 @@ void KCombiView::clearSelection()
 
 bool KCombiView::isSelected( const KFileViewItem *item ) const
 {
-    return left->isSelected( item ) || right->isSelected( item );
+    return (left->isSelected( item ) || right->isSelected( item ));
 }
 
 void KCombiView::setSelectMode( KFileView::SelectionMode sm )
