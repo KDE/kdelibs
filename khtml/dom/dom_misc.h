@@ -27,11 +27,11 @@ namespace DOM {
 
 /*
  * This implements the reference counting scheme used for all internal
- * DOM objects. 
+ * DOM objects.
  *
  * Other objects should overload deleteMe() to fit their needs. The default
  * implementation deletes the object if the ref count drops to 0.
- */ 
+ */
 class DomShared
 {
 public:
@@ -43,14 +43,16 @@ public:
   virtual bool deleteMe();
 
   void ref() { _ref++; }
-  void deref() { if(_ref) _ref--; if(!_ref && deleteMe()) delete this; } 
-  bool hasOneRef() { return _ref==1; }
+  void deref() { if(_ref) _ref--; if(!_ref && deleteMe()) delete this; }
+  // ###  KDE 3.0: add const
+  bool hasOneRef() { return _ref == 1; }
+  unsigned int refCount() const { return _ref; }
 
 protected:
     // the number of DOMObjects referencing this Node
     // An implementation object will delete itself, if it has
     // no DOMObject referencing it, and no deleteMe() returns true.
-    unsigned int _ref; 
+    unsigned int _ref;
 };
 
 }; // namespace
