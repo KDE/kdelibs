@@ -74,6 +74,13 @@ class Wallet : public QObject, public DCOPObject {
 		static QStringList walletList();
 
 		/**
+		 *  Determine if the KDE wallet is enabled.  Normally you do
+		 *  not need to use this because open() will just fail.
+		 *  @return Returns true if the wallet enabled, else false.
+		 */
+		static bool isEnabled();
+
+		/**
 		 *  Determine if the wallet @p name is open by any application.
 		 *  @param name The name of the wallet to check.
 		 *  @return Returns true if the wallet is open, else false.

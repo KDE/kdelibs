@@ -104,6 +104,16 @@ DCOPRef("kded", "kwalletd").send("changePassword", name);
 }
 
 
+bool Wallet::isEnabled() {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("isEnabled");
+bool rc = false;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return rc;
+}
+
+
 bool Wallet::isOpen(const QString& name) {
 DCOPReply r = DCOPRef("kded", "kwalletd").call("isOpen", name);
 bool rc = false;
