@@ -5182,9 +5182,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   info.nonce = "";
   info.qop = "";
 
-  // Use some random # b/n 1 and 100,000 for generating the nonce value...
-  info.cnonce.setNum((1 + static_cast<int>(100000.0*rand()/(RAND_MAX+1.0))));
-  info.cnonce = KCodecs::base64Encode( info.cnonce );
+  // cnonce is recommended to contain about 64 bits of entropy
+  info.cnonce = KApplication::randomString(16).latin1();
 
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
   info.nc = "00000001";
