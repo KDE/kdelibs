@@ -367,6 +367,17 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            QString qno_proxy = noProxy.stripWhiteSpace().lower();
            const char *no_proxy = qno_proxy.latin1();
            isRevMatch = revmatch(host, no_proxy);
+
+           // If no match is found and the request url has a port
+           // number, try the combination of "host:port". This allows
+           // users to enter host:port in the No-proxy-For list.
+           if (!isRevMatch && url.port() > 0)
+           {
+              qhost += ':' + QString::number (url.port());
+              host = qhost.latin1();
+              isRevMatch = revmatch (host, no_proxy);
+           }
+
            // If the hostname does not contain a dot, check if
            // <local> is part of noProxy.
            if (!isRevMatch && host && (strchr(host, '.') == NULL))
