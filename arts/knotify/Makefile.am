@@ -21,5 +21,5 @@ knotifytest_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
 noinst_HEADERS	=  knotify.h
 
 messages:
-	$(XGETTEXT) $(knotify_SOURCES) -o $(podir)/knotify.pot
+	$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
 
