@@ -1228,7 +1228,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
   m_cmd = CMD_COPY;
 
   KIOSlave slave( exec );
-  if ( slave.pid() == -1 ) {
+  if ( !slave.isRunning() ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     m_cmd = CMD_NONE;
     return;
