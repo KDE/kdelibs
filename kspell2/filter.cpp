@@ -224,18 +224,20 @@ QString Filter::context() const
 bool Filter::trySkipLinks() const
 {
     QChar currentChar = m_buffer[ m_currentPosition ];
+
+    int length = m_buffer.length();
     //URL - if so skip
     if ( currentChar == ':' &&
-         ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= m_buffer.length() ) ) {
+         ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= length ) ) {
         //in both cases url is considered finished at the first whitespace occurence
-        while ( !m_buffer[ m_currentPosition++ ].isSpace() )
+        while ( !m_buffer[ m_currentPosition++ ].isSpace() && m_currentPosition < length )
             ;
         return true;
     }
 
     //Email - if so skip
     if ( currentChar == '@' ) {
-        while ( !m_buffer[ ++m_currentPosition ].isSpace() )
+        while ( !m_buffer[ ++m_currentPosition ].isSpace() && m_currentPosition < length )
             ;
         return true;
     }

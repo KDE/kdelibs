@@ -109,7 +109,7 @@ Broker *BackgroundChecker::broker() const
 
 bool BackgroundChecker::checkWord( const QString& word )
 {
-    kdDebug()<<"checking word \""<<word<< "\""<<endl;
+    //kdDebug()<<"checking word \""<<word<< "\""<<endl;
     return d->engine->checkWord( word );
 }
 
