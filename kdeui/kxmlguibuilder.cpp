@@ -46,7 +46,6 @@ public:
     QString tagMenu;
     QString tagToolBar;
     QString tagStatusBar;
-    QString tagState;
 
     QString tagSeparator;
     QString tagTearOffHandle;
@@ -82,7 +81,6 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->tagMenu = QString::fromLatin1( "menu" );
   d->tagToolBar = QString::fromLatin1( "toolbar" );
   d->tagStatusBar = QString::fromLatin1( "statusbar" );
-  d->tagState = QString::fromLatin1( "state" );
 
   d->tagSeparator = QString::fromLatin1( "separator" );
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
@@ -115,8 +113,7 @@ KXMLGUIBuilder::~KXMLGUIBuilder()
 QStringList KXMLGUIBuilder::containerTags() const
 {
   QStringList res;
-  res << d->tagMenu << d->tagToolBar << d->tagMainWindow << d->tagMenuBar << d->tagStatusBar
-      << d->tagState;
+  res << d->tagMenu << d->tagToolBar << d->tagMainWindow << d->tagMenuBar << d->tagStatusBar;
 
   return res;
 }
