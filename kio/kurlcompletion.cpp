@@ -377,7 +377,7 @@ bool DirLister::listBatch()
 						
 					}
 					else {
-						kdError() << "Could not stat file " << file << endl;
+						kdDebug() << "Could not stat file " << file << endl;
 						continue;
 					}
 				}
@@ -1491,7 +1491,7 @@ void KURLCompletion::postProcessMatch( QString *match )
 					match->append( '/' );
 			}
 			else {
-				kdError() << "Could not stat file " << copy << endl;
+				kdDebug() << "Could not stat file " << copy << endl;
 			}
 		}
 	}
