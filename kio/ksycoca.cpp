@@ -188,7 +188,6 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    while(true)
    {
       (*m_str) >> aId;
-      assert( aId >= 0 && aId <= 2 ); // to update in case of new factories
       //kdDebug(7011) << QString("KSycoca::findFactory : found factory %1").arg(aId) << endl;
       if (aId == 0)
       {
