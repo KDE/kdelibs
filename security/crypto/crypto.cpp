@@ -910,7 +910,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
   if (cert->isValid()) {
      KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
   } else {
-     KMessageBox::detailedSorry(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(cert->validate()), i18n("SSL"));
+     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(cert->validate()), i18n("SSL"));
   }
 
   delete cert;
