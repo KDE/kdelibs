@@ -31,9 +31,9 @@
  * @ref KAboutData that is specified at the start of you program in 
  * main(). Normally you should not use this class directly but 
  * rather the @ref KHelpMenu class or even better just subclass your 
- * toplevel window from @ref KTMainWindow. If you do the latter, the help
+ * toplevel window from @ref KMainWindow. If you do the latter, the help
  * menu and thereby this dialog box is available through the 
- * @ref KTMainWindow::helpMenu() function.
+ * @ref KMainWindow::helpMenu() function.
  *
  * @short Standard "About Application" dialog box.
  * @author Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
