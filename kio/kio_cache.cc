@@ -18,6 +18,8 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 /************************************************
  *
