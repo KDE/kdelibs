@@ -538,6 +538,10 @@ public:
    * Add dockwidget management actions to @ref QWidget::show. 
    */
   virtual void show();
+  /**
+   * @return the parent widget of this if it inherits class KDockTabGroup
+   */
+  KDockTabGroup* parentDockTabGroup() { return parentTabGroup(); };
 
 public slots:
   /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
@@ -560,6 +564,7 @@ protected:
   
   /**
    * @return the parent widget of this if it inherits class KDockTabGroup
+   * Warning: This will be removed in KDE-3.0. Use parentDockTabGroup instead.
    */
   KDockTabGroup* parentTabGroup();
 
