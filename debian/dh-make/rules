@@ -7,6 +7,12 @@
 
 # This is the debhelper compatability version to use.
 export DH_COMPAT=3
+ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ifeq ($(ARCH),alpha)
+  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
+else
+  COMPILER_FLAGS=CXX=g++ CC=gcc
+endif
 
 configure: configure-stamp
 
@@ -18,6 +24,7 @@ debian/debiandirs: debian/debianrules
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
+	$(COMPILER_FLAGS) \
 	#CONFIGURE#
 
 	touch configure-stamp
