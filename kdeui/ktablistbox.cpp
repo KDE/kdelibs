@@ -537,7 +537,7 @@ void KTabListBox::changeItem(const char* aStr, int row)
 
   if (needsUpdate(row)) lbox.repaint();
 
-  delete str;
+  delete [] str;
 }
 
 
