@@ -24,7 +24,7 @@ Send suggestions, comments, etc. to Frederik Fouvry
 -- DocBook --
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "kde.dtd"
-PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
+PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
        "kde-next.dtd"
 
 -- Read the rest from the standard catalogue --
