@@ -38,6 +38,7 @@
 #include <qlined.h>
 #include <qpushbt.h>
 #include <qcombo.h>
+#include <qtimer.h>
 
 #include <kapp.h>
 #include <kiconloader.h>
@@ -55,12 +56,15 @@ public:
   KIconLoaderCanvas (QWidget *parent=0, const char *name=0);
   ~KIconLoaderCanvas ();
 
-  void loadDir(QString dir_name, QString filter);
+  void loadDir(QString dirname, QString filter);
   QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list.at(sel_id); }
 
 signals:
   void nameChanged( const char * );
   void doubleClicked();
+
+protected slots:
+  void process();
 
 protected:
   virtual void resizeEvent( QResizeEvent *e );
@@ -75,8 +79,12 @@ protected:
   int            sel_id;
   int            max_width;
   int            max_height;
+  int            curr_indx;
   QList<QPixmap> pixmap_list;
+  QStrList       file_list;
   QStrList       name_list;
+  QTimer         *timer;
+  QString        dir_name;
 };
 
 /** 

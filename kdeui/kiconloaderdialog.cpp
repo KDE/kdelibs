@@ -46,19 +46,25 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
   pixmap_list.setAutoDelete(TRUE);
   name_list.setAutoDelete(TRUE);
   sel_id = 0;
+  timer = new QTimer( this );
+  connect( timer, SIGNAL( timeout() ), SLOT( process() ) );
 }
 
 KIconLoaderCanvas::~KIconLoaderCanvas()
 {
+  delete timer;
   name_list.clear();
   pixmap_list.clear(); 
 }
 
-void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
+void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
 {
-  max_width  = 0;
-  max_height = 0;
-  KPixmap *new_xpm = 0;
+  if ( timer->isActive() )
+    {
+      timer->stop();
+      QApplication::restoreOverrideCursor();
+    }
+  dir_name = dirname;
   QDir d(dir_name);
   name_list.clear();
   pixmap_list.clear();
@@ -68,42 +74,65 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
     }
   if( d.exists() )
     {
-      const QStrList *file_list = d.entryList( QDir::Files | QDir::Readable, QDir::Name );
-      QStrListIterator it(*file_list);
-      QString current;
-      it.toFirst();
+      file_list = *d.entryList( QDir::Files | QDir::Readable, QDir::Name );
       QApplication::setOverrideCursor( waitCursor );
-      for( ; it.current(); ++it )
-	{
-	  new_xpm = new KPixmap;
-	  current = it.current();
-	  new_xpm->load( dir_name + '/' + current, 0, KPixmap::LowColor );
-	  if( new_xpm->isNull() )
-	    {
-	      delete new_xpm;
-	      continue;
-	    }
-	  if( new_xpm->width() > 60 || new_xpm->height() > 60 )
-	    { // scale pixmap to a size of 60*60
-	      QWMatrix m;
-	      float scale;
-	      if( new_xpm->width() > new_xpm->height() )
-		scale = 60 / (float) new_xpm->width();
-	      else
-		scale = 60 / (float) new_xpm->height();
-	      m.scale( scale, scale );
-		  QPixmap tmp_xpm = new_xpm->xForm(m);
-		  new_xpm->resize( tmp_xpm.width(), tmp_xpm.height() );
-		  bitBlt( new_xpm, 0, 0, &tmp_xpm );
-		  new_xpm->setMask( *tmp_xpm.mask() );
-	    }
-	  max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
-	  max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
-	  name_list.append(current);
-	  pixmap_list.append(new_xpm);
-	}
-      QApplication::restoreOverrideCursor();
+      curr_indx = 0;
+      sel_id = 0;
+      max_width  = 16;
+      max_height = 16;
+      setTopLeftCell(0,0);
+      timer->start( 0, true );
     }
+}
+
+void KIconLoaderCanvas::process()
+{
+  KPixmap *new_xpm = 0;
+  const char *current = file_list.at( curr_indx );
+
+  for( int i = 0; i < 10 && current != 0; i++, curr_indx++ )
+    {
+      new_xpm = new KPixmap;
+      new_xpm->load( dir_name + '/' + current, 0, KPixmap::LowColor );
+      if( new_xpm->isNull() )
+        {
+          delete new_xpm;
+          continue;
+        }
+      if( new_xpm->width() > 60 || new_xpm->height() > 60 )
+        { // scale pixmap to a size of 60*60
+          QWMatrix m;
+          float scale;
+          if( new_xpm->width() > new_xpm->height() )
+            scale = 60 / (float) new_xpm->width();
+	  else
+	    scale = 60 / (float) new_xpm->height();
+	  m.scale( scale, scale );
+	       QPixmap tmp_xpm = new_xpm->xForm(m);
+	       new_xpm->resize( tmp_xpm.width(), tmp_xpm.height() );
+	       bitBlt( new_xpm, 0, 0, &tmp_xpm );
+	       if ( tmp_xpm.mask() )
+		   new_xpm->setMask( *tmp_xpm.mask() );
+	 }
+       max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
+       max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
+       name_list.append(current);
+       pixmap_list.append(new_xpm);
+       current = file_list.next();
+    }
+
+  if ( !current )
+    {
+      QApplication::restoreOverrideCursor();
+      file_list.clear();
+    }
+  else
+      timer->start( 0, true );
+
+  // progressive display is nicer if these don't change too often
+  max_width  = ( max_width + 7 ) / 8 * 8;
+  max_height = ( max_height + 7 ) / 8 * 8;
+
   if( name_list.count() == 0 )
     {
       setNumCols( 0 );
@@ -112,6 +141,7 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
       max_height = 20;
       setCellWidth(max_width+4);
       setCellHeight(max_height+4);
+      repaint();
     }
   else
     {
@@ -119,10 +149,10 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
       setNumRows( name_list.count() / numCols() + 1 );
       setCellWidth(max_width+4);
       setCellHeight(max_height+4);
+      if ( rowIsVisible( curr_indx / numCols() ) )
+	  repaint();
     }
-  setTopLeftCell(0,0);
-  sel_id = 0;
-  repaint();
+
 }
 
 void KIconLoaderCanvas::paintCell( QPainter *p, int r, int c )
