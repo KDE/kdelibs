@@ -52,8 +52,9 @@
 
 #include <qstring.h>
 #include <qstrlist.h>
-#include <qlist.h>
-#include <qdict.h>
+#include <qptrlist.h>
+#include <qptrdict.h>
+#include <qfile.h>
 
 #include <kurl.h>
 #include <krfcdate.h>
@@ -65,8 +66,8 @@
 
 #define READ_BUFFER_SIZE 8192
 
-template class QList<KHttpCookie>;
-template class QDict<KHttpCookieList>;
+template class QPtrList<KHttpCookie>;
+template class QPtrDict<KHttpCookieList>;
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
