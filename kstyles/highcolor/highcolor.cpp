@@ -1003,11 +1003,15 @@ void HighColorStyle::drawControl( ControlElement element,
            			QPixmap *pixmap = mi->pixmap();
 
 					// Draw the pixmap
-					if ( pixmap->depth() == 1 ) {
-						p->setBackgroundMode( OpaqueMode );
-						p->drawPixmap( x+xm, y+motifItemFrame, *pixmap );
-						p->setBackgroundMode( TransparentMode );
-					}
+                                        if ( pixmap->depth() == 1 )
+                                                p->setBackgroundMode( OpaqueMode );
+
+                                        int diffw = ( ( w - pixmap->size().width() ) / 2 )
+                                                  + ( ( w - pixmap->size().width() ) % 2 );
+                                        p->drawPixmap( x+diffw, y+motifItemFrame, *pixmap );
+
+                                        if ( pixmap->depth() == 1 )
+                                                p->setBackgroundMode( TransparentMode );
 				}
 			}
 
