@@ -1717,8 +1717,7 @@ QString RenderTextArea::text()
         }
     }
     else 
-        if (w)
-            txt = w->text();
+        txt = w->text();
 
     return txt;
 }
