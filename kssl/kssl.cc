@@ -64,9 +64,7 @@ public:
   bool lastInitTLS;
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
   bool proxying;
-  QString proxy;
-  QString proxyPeerIP;
-  int proxyPeerPort;
+  QString proxyPeer;
 
 #ifdef HAVE_SSL
     SSL *m_ssl;
@@ -351,8 +349,7 @@ void KSSL::setPeerInfo(int sock) {
       m_pi.setPeerAddress(x);
     }
   } else {
-    KInetSocketAddress x(d->proxyPeerIP, d->proxyPeerPort);
-    m_pi.setPeerAddress(x);
+    m_pi.setProxying(d->proxying, d->proxyPeer);
   }
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
   STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
@@ -375,11 +372,12 @@ KSSLConnectionInfo& KSSL::connectionInfo() {
 }
 
 
-void KSSL::setProxyUse(bool active, QString realIP, int realPort, QString proxy) {
+void KSSL::setProxy(bool active, QString realHost) {
    d->proxying = active;
-   d->proxy = proxy;
-   d->proxyPeerIP = realIP;
-   d->proxyPeerPort = realPort;
+   d->proxyPeer = realHost;
+}
+
+void KSSL::setProxyUse(bool, QString, int, QString) {
 }
 
 

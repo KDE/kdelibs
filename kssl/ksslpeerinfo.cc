@@ -34,9 +34,11 @@
 
 class KSSLPeerInfoPrivate {
 public:
-  KSSLPeerInfoPrivate() : host(NULL) {}
+  KSSLPeerInfoPrivate() : host(NULL), proxying(false) {}
   ~KSSLPeerInfoPrivate() { if (host) delete host; }
   KInetSocketAddress *host;
+  bool proxying;
+  QString proxyHost;
 };
 
 
@@ -53,6 +55,11 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 
+void KSSLPeerInfo::setProxying(bool active, QString realHost) {
+	d->proxying = active;
+	d->proxyHost = realHost;
+}
+
 void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
   if (!d->host)
     d->host = new KInetSocketAddress(addr);
@@ -66,15 +73,26 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   QString cn = certinfo.getValue("CN");
 
+  if (d->proxying) {
+	if (cn.startsWith("*")) {
+		QRegExp cnre(cn.lower(), false, true);
+		if (cnre.match(d->proxyHost.lower()) >= 0) return true;
+	} else {
+		if (cn.lower() == d->proxyHost.lower()) return true;
+	}
+	return false;
+  }
+
+
   if (cn.startsWith("*")) {   // stupid wildcard cn
-     QRegExp cnre(cn, false, true);
+     QRegExp cnre(cn.lower(), false, true);
      QString host, port;
 
      if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) 
         host = d->host->nodeName();
 
      kdDebug(7029) << "Matching CN=" << cn << " to " << host << endl;
-     if (cnre.match(host) >= 0) return true;
+     if (cnre.match(host.lower()) >= 0) return true;
   } else {
      int err = 0;
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
