@@ -21,7 +21,9 @@
 
 #include "audiosubsys.h"
 #include <assert.h>
+#ifdef linux
 #include <sys/soundcard.h>
+#endif
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -105,6 +107,7 @@ void AudioSubSystem::detachConsumer()
 int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
                          bool wantfullduplex)
 {
+#ifdef linux
 	int mode;
 
 	if(wantfullduplex)
@@ -260,6 +263,10 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 
 	fullDuplex = wantfullduplex;
 	return audio_fd;
+#else
+	cerr << "Sorry: arts doesn't support sound I/O on non linux systems, yet";
+	return -1;
+#endif
 }
 
 void AudioSubSystem::close()
