@@ -127,7 +127,7 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
  */
 ContainerNode *ContainerNode::findContainer( const QString &name, const QString &tagName,
                                              const QPtrList<QWidget> *excludeList,
-                                             KXMLGUIClient *currClient )
+                                             KXMLGUIClient */*currClient*/ )
 {
     ContainerNode *res = 0L;
     ContainerNodeListIt nIt( children );
