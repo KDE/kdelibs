@@ -42,7 +42,10 @@ public:
         : QShared(),
           mimeTypeInfo( mti ),
           key( _key ),
-          value( _value )
+          value( _value ),
+          dirty( false ),
+          added( false ),
+          removed( false )
     {}
 
     // wee use this one for the streaming operators
@@ -282,6 +285,11 @@ bool KFileMetaInfoItem::isValid() const
 void KFileMetaInfoItem::setAdded()
 {
     d->added = true;
+}
+
+void KFileMetaInfoItem::setRemoved()
+{
+    d->removed = true;
 }
 
 void KFileMetaInfoItem::ref()
@@ -982,7 +990,10 @@ class KFileMetaInfoGroup::Data : public QShared
 public:
     Data(const QString& _name)
         : QShared(),
-          name(_name)
+          name(_name),
+          mimeTypeInfo(0L),
+          dirty( false ),
+          added( false )
     {}
 
     // wee use this one for the streaming operators
@@ -994,7 +1005,6 @@ public:
     QStringList                         removedItems;
     bool                                dirty   :1;
     bool                                added   :1;
-    bool                                removed :1;
 
     static Data* null;
     static Data* makeNull();
@@ -1223,8 +1233,10 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
         return false;
     }
     
+    (*it).setRemoved();
     d->items.remove(it);
     d->removedItems.append(key);
+    d->dirty = true;
     return true;
 }
   
