@@ -15,7 +15,7 @@ old way will still be honoured.
 What used to happen is that the application looks up both the old and the
 new configuration option and then decides which one to use. This method has 
 several drawbacks:
-* The application may needs to read more configuration files than strictly
+* The application may need to read more configuration files than strictly
 needed, resulting in a slower startup.
 * The application becomes bigger with code that will only be used once.
 
@@ -39,8 +39,9 @@ section describing a configuration change has been applied, the Id will be
 stored in the file "kconf_updaterc". This information is used to make sure
 that a configuration update is only performed once.
 
-If you overwrite an existing update file with a new version with an extra 
-section, only this extra section will be performed.
+If you overwrite an existing update file with a new version that contains a 
+new section, only the update instructions from this extra section will be 
+performed.
 
 Example update file
 ===================
