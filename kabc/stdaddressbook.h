@@ -81,6 +81,12 @@ class StdAddressBook : public AddressBook
     static bool save();
 
     /**
+      Call this method in your crash handler to allow the library clean up
+      possible locks.
+     */
+    static void handleCrash();
+
+    /**
       Returns the default file name for vcard-based addressbook
     */
     static QString fileName();

@@ -35,31 +35,6 @@
 
 using namespace KABC;
 
-extern "C" {
-
-// Crash recovery signal handler
-static void crashHandler( int )
-{
-  /**
-    To avoid all such 'KAddressBook crashes' mails I comment it out now.
-    There seems to be a problem with KCrash, since this crashHandler is
-    called, even if you close KAddressBook the normal way. Nevertheless
-    if you comment out KCrash::setEmergencySaveFunction in init(), no
-    crash happens at closing the app :/
-   */
-//  fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
-
-  // try to cleanup all lock files
-  AddressBook *ab = StdAddressBook::self();
-  if ( ab )
-    ab->cleanUp();
-
-  ::exit( 0 );
-  // Return to DrKonqi.
-}
-
-}
-
 AddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
@@ -73,6 +48,11 @@ QString StdAddressBook::fileName()
 QString StdAddressBook::directoryName()
 {
   return locateLocal( "data", "kabc/stdvcf" );
+}
+
+void StdAddressBook::handleCrash()
+{
+  StdAddressBook::self()->cleanUp();
 }
 
 AddressBook *StdAddressBook::self()
@@ -93,33 +73,6 @@ AddressBook *StdAddressBook::self( bool onlyFastResources )
     addressBookDeleter.setObject( mSelf, new StdAddressBook( onlyFastResources ) );
 
   return mSelf;
-}
-
-bool StdAddressBook::save()
-{
-  kdDebug(5700) << "StdAddressBook::save()" << endl;
-
-  bool ok = true;
-  AddressBook *ab = self();
-
-  ab->deleteRemovedAddressees();
-
-  KRES::ResourceManager<Resource>::ActiveIterator it;
-  KRES::ResourceManager<Resource> *manager = ab->resourceManager();
-  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
-    if ( !(*it)->readOnly() ) {
-      Ticket *ticket = ab->requestSaveTicket( *it );
-      if ( !ticket ) {
-        ab->error( i18n( "Unable to save to standard addressbook. It is locked." ) );
-        return false;
-      }
-
-      if ( !ab->save( ticket ) )
-        ok = false;
-    }
-  }
-
-  return ok;
 }
 
 StdAddressBook::StdAddressBook()
@@ -166,8 +119,33 @@ void StdAddressBook::init( bool )
   manager->sync(); // write config file
 
   load();
+}
 
-  KCrash::setEmergencySaveFunction( crashHandler );
+bool StdAddressBook::save()
+{
+  kdDebug(5700) << "StdAddressBook::save()" << endl;
+
+  bool ok = true;
+  AddressBook *ab = self();
+
+  ab->deleteRemovedAddressees();
+
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::ResourceManager<Resource> *manager = ab->resourceManager();
+  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
+    if ( !(*it)->readOnly() ) {
+      Ticket *ticket = ab->requestSaveTicket( *it );
+      if ( !ticket ) {
+        ab->error( i18n( "Unable to save to standard addressbook. It is locked." ) );
+        return false;
+      }
+
+      if ( !ab->save( ticket ) )
+        ok = false;
+    }
+  }
+
+  return ok;
 }
 
 void StdAddressBook::close()
