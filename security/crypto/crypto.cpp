@@ -455,7 +455,7 @@ SSL_METHOD *meth;
 int j, k;
  
   meth = SSLv2_client_method();
-  OpenSSL_add_ssl_algorithms();
+  SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return;
  
@@ -477,7 +477,7 @@ int j, k;
 
   // repeate for v3 method
   meth = SSLv3_client_method();
-  OpenSSL_add_ssl_algorithms();
+  SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return;
  
@@ -517,7 +517,7 @@ SSL *ssl;
 SSL_METHOD *meth;
  
   meth = SSLv2_client_method();
-  OpenSSL_add_ssl_algorithms();
+  SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
  
@@ -540,7 +540,7 @@ SSL_METHOD *meth;
 
   // We repeat for SSLv3
   meth = SSLv3_client_method();
-  OpenSSL_add_ssl_algorithms();
+  SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
  
