@@ -761,12 +761,30 @@ KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *paren
 
 // -----------------------------------------------------------------------------
 
+
+// NOTE - KBookmarkMenuNSImporter is really === KBookmarkMenuImporter 
+//        i.e, it is _not_ ns specific. and in KDE4 it should be renamed.
+
 void KBookmarkMenuNSImporter::openNSBookmarks()
 {
+  openBookmarks( KNSBookmarkImporter::netscapeBookmarksFile(), "netscape" );
+}
+
+void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QString &type )
+{
   mstack.push(m_menu);
-  KNSBookmarkImporter importer( KNSBookmarkImporter::netscapeBookmarksFile() );
-  connectToImporter(importer);
-  importer.parseNSBookmarks();
+  if (type == "netscape")
+  {
+    KNSBookmarkImporter importer( location );
+    connectToImporter(importer);
+    importer.parseNSBookmarks(false);
+  } 
+  else if (type == "mozilla")
+  {
+    KNSBookmarkImporter importer( location );
+    connectToImporter(importer);
+    importer.parseNSBookmarks(true);
+  }
 }
 
 void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
