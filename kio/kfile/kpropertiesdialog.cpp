@@ -1139,7 +1139,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   {
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished " << m_sRelativePath << endl;
     KURL newURL;
-    newURL.setPath( locateLocal("apps", m_sRelativePath) );
+    newURL.setPath( KDesktopFile::locateLocal(m_sRelativePath) );
     kdDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path() << endl;
     properties->updateUrl( newURL );
   }
