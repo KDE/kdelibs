@@ -583,7 +583,7 @@ void KRun::init()
   kdDebug(7010) << "Testing directory (stating)" << endl;
 
   // It may be a directory or a file, let's stat
-  KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
+  KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
@@ -896,7 +896,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
   }
   if( !id_.none())
   {
-      KStartupInfoData data; 
+      KStartupInfoData data;
       data.addPid( pid()); // announce this pid for the startup notification has finished
       data.setHostname();
       KStartupInfo::sendFinish( id_, data );
