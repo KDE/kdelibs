@@ -1,5 +1,8 @@
 2004-01-25  Dirk Mueller  <mueller@kde.org>
 
+        * rendering/render_object (offsetLeft/offsetTop): fix Heirmenus which expect to get the
+        <body> offset when the offsetParent is the <body> itself.
+
 	* misc/loader.cpp (class ImageSource): by default, we're rewindable.
 
 	* rendering/render_block.cpp (positionNewFloats): when somebody says
