@@ -1035,7 +1035,7 @@ private:
  *  This class is an action to handle a recent files submenu.
  *  The best way to create the action is to use KStdAction::openRecent.
  *  Then you simply need to call @ref loadEntries on startup, @ref saveEntries
- *  on shutdown, @ref addURL when your application opens a file.
+ *  on shutdown, @ref addURL when your application loads/saves a file.
  *
  *  @author Michael Koch
  *  @short Recent files action
