@@ -127,6 +127,7 @@
 <!ENTITY artsshell "<application>artsshell</application>">
 <!ENTITY artswrapper "<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
+<!ENTITY atlantik "<application>Atlantik</application>">
 <!ENTITY brahms "<application>Brahms</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
@@ -212,6 +213,7 @@
 <!ENTITY kiconedit "<application>KIconEdit</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
+<!ENTITY kiten	"<application>Kiten</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
