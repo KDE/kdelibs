@@ -1,7 +1,7 @@
 SUBDIRS = libxslt
 
-INCLUDES= $(all_includes) -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(LIBXML_CFLAGS) 
-LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIBXML_RPATH)
+INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(LIBXML_CFLAGS)  $(all_includes)
+LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
 FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
