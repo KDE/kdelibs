@@ -55,7 +55,6 @@ private:
 	void setShortcut( const KShortcut & shortcut );
 	void updateShortcutDisplay();
 	//void displayMods();
-	void keyEvent( QKeyEvent * pEvent );
 	void keyPressed( KKey key );
 	void updateDetails();
 
@@ -64,6 +63,10 @@ private:
 	//void x11EventKeyPress( XEvent *pEvent );
 	void x11KeyPressEvent( XEvent* pEvent );
 	void x11KeyReleaseEvent( XEvent* pEvent );
+	#endif
+	#ifdef Q_WS_WIN
+	virtual void keyPressEvent( QKeyEvent * e );
+	virtual bool event(QEvent * e);
 	#endif
 
 private slots:

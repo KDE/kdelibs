@@ -37,6 +37,8 @@
 		#undef FocusOut
 		#undef FocusIn
 	#endif
+#elif defined(Q_WS_WIN)
+# include <kkeyserver.h>
 #endif
 
 #include <kshortcutdialog_simple.h>
@@ -232,7 +234,7 @@ void KShortcutDialog::slotSelectPrimary()
 	m_ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
-        
+
 void KShortcutDialog::slotSelectAlternate()
 {
 	m_bRecording = false;
@@ -276,6 +278,9 @@ void KShortcutDialog::slotMultiKeyMode( bool bOn )
 }
 
 #ifdef Q_WS_X11
+/* we don't use the generic Qt code on X11 because it allows us 
+ to grab the keyboard so that all keypresses are seen
+ */
 bool KShortcutDialog::x11Event( XEvent *pEvent )
 {
 	switch( pEvent->type ) {
@@ -385,8 +390,103 @@ void KShortcutDialog::x11KeyReleaseEvent( XEvent* pEvent )
 		updateShortcutDisplay();
 	}
 }
+#elif defined(Q_WS_WIN)
+void KShortcutDialog::keyPressEvent( QKeyEvent * e )
+{
+	kdDebug() << e->text() << " " << (int)e->text()[0].latin1()<<  " " << (int)e->ascii() << endl;
+	//if key is a letter, it must be stored as lowercase
+	int keyQt = QChar( e->key() & 0xff ).isLetter() ? 
+		(QChar( e->key() & 0xff ).lower().latin1() | (e->key() & 0xffff00) )
+		: e->key();
+	int modQt = KKeyServer::qtButtonStateToMod( e->state() );
+	KKeyNative keyNative( KKey(keyQt, modQt) );
+	m_mod = keyNative.mod();
+	uint keySym = keyNative.sym();
 
-#endif // QT_WS_X11
+	switch( keySym ) {
+		case Key_Shift: 
+			m_mod |= KKey::SHIFT;
+			m_bRecording = true;
+			break;
+		case Key_Control:
+			m_mod |= KKey::CTRL;
+			m_bRecording = true;
+			break;
+		case Key_Alt:
+			m_mod |= KKey::ALT;
+			m_bRecording = true;
+			break;
+		case Key_Menu:
+		case Key_Meta: //unused
+			break;
+		default:
+			if( keyNative.sym() == Key_Return && m_iKey > 0 ) {
+				accept();
+				return;
+			}
+			//accept
+			if (keyNative.sym()) {
+				KKey key = keyNative;
+				key.simplify();
+				KKeySequence seq;
+				if( m_iKey == 0 )
+					seq = key;
+				else {
+					seq = m_shortcut.seq( m_iSeq );
+					seq.setKey( m_iKey, key );
+				}
+				m_shortcut.setSeq( m_iSeq, seq );
+
+				if(m_adv->m_btnMultiKey->isChecked())
+					m_iKey++;
+
+				m_bRecording = true;
+
+				updateShortcutDisplay();
+
+				if( !m_adv->m_btnMultiKey->isChecked() )
+					QTimer::singleShot(500, this, SLOT(accept()));
+			}
+			return;
+	}
+
+	// If we are editing the first key in the sequence,
+	//  display modifier keys which are held down
+	if( m_iKey == 0 ) {
+		updateShortcutDisplay();
+	}
+}
+
+bool KShortcutDialog::event ( QEvent * e )
+{
+	if (e->type()==QEvent::KeyRelease) {
+		int modQt = KKeyServer::qtButtonStateToMod( static_cast<QKeyEvent*>(e)->state() );
+		KKeyNative keyNative( KKey(static_cast<QKeyEvent*>(e)->key(), modQt) );
+		uint keySym = keyNative.sym();
+
+		bool change = true;
+		switch( keySym ) {
+		case Key_Shift: 
+			if (m_mod & KKey::SHIFT)
+				m_mod ^= KKey::SHIFT;
+			break;
+		case Key_Control:
+			if (m_mod & KKey::CTRL)
+				m_mod ^= KKey::CTRL;
+			break;
+		case Key_Alt:
+			if (m_mod & KKey::ALT)
+				m_mod ^= KKey::ALT;
+			break;
+		default:
+			change = false;
+		}
+		if (change)
+			updateShortcutDisplay();
+	}
+	return KDialogBase::event(e);
+}
+#endif
 
 void KShortcutDialog::keyPressed( KKey key )
 {
