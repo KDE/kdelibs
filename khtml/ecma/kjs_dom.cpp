@@ -664,8 +664,16 @@ KJSO DOMElement::tryGet(const UString &p) const
     return new DOMElementFunction(element, DOMElementFunction::HasAttribute);
   else if (p == "hasAttributeNS") // new for DOM2 - not yet in khtml
     return new DOMElementFunction(element, DOMElementFunction::HasAttributeNS);*/
+
   else
-    return DOMNode::tryGet(p);
+  {
+    DOM::DOMString attr = element.getAttribute( p.string() );
+    // Give access to attributes
+    if ( !attr.isNull() )
+      return getString( attr );
+    else
+      return DOMNode::tryGet(p);
+  }
 }
 
 
