@@ -23,7 +23,7 @@
 #include <qobject.h>
 
 #include <qcstring.h>
-#include <arts/stdsynthmodule.h>
+#include <stdsynthmodule.h>
 
 class KArtsServer;
 namespace Arts { class StereoEffectStack; }
