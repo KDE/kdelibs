@@ -857,7 +857,8 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                   "var doflicker = 1;\n"
                   "var t = 1;\n"
                   "var lastb=0;\n"
-                  "function show() { document.getElementById('image').src = pics[t].src; }\n"
+                  "function show() { document.getElementById('image').src = pics[t].src; "
+                  "document.getElementById('image').style.borderColor = t && !doflicker ? 'red' : 'gray';}"
                   "function runSlideShow(){\n"
                   "   show()\n"
                   "   if (doflicker)\n"
@@ -884,7 +885,7 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                    "<span id=b3 class=button onclick=doflicker=0;t=1;show();m(3)>OUT</span>&nbsp;"
                    "<a class=button href=\"%5\">HTML</a>&nbsp;"
                    "<hr>"
-                   "<img width='%3' height='%4' src=\"%1\" id='image'></html>" )
+                   "<img style='border: solid 5px gray' width='%3' height='%4' src=\"%1\" id='image'></html>" )
          .arg( relpath+"/baseline/"+test+"-dump.png" )
          .arg( baseSize.width() ).arg( baseSize.height() )
          .arg( relpath+"/tests/"+test );
