@@ -202,7 +202,7 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			p2.setPen(cg.background());	// ### debug
 			p2.setFont(fnt);
 			p2.drawText(pix.rect(), AlignCenter,
-						wid->property("caption").toString());
+						wid->caption());
 			p2.end();
 
 			// Draw a sunken bevel
@@ -1171,3 +1171,4 @@ void TransparencyHandler::renderBlendToPixmap(const QPopupMenu* p, const QColorG
 
 // vim: set noet ts=4 sw=4:
 
+#include "kstyle.moc"
