@@ -1758,7 +1758,10 @@ void KToolBar::loadState( const QDomElement &element )
 	{
 	    //kdDebug(220) << name() << " loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
             // Use global setting
-            setIconText( iconTextSetting() );
+            if (d->m_honorStyle) 
+                setIconText( iconTextSetting() );
+            else
+                setIconText( d->IconTextDefault);
 	}
     }
 
