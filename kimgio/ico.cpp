@@ -112,40 +112,40 @@ void kimgio_ico_read(QImageIO *io)
     ico.setByteOrder(QDataStream::LittleEndian);
     IcoHeader hdr;
     ico >> hdr.reserved >> hdr.type >> hdr.count;
-    if (hdr.type != Icon || !hdr.count)
+    if ((hdr.type != Icon && hdr.type != Cursor) || !hdr.count)
         return;
 
-	QPaintDeviceMetrics metrics(QApplication::desktop());
-	uchar prefSize = 32;
-	uint prefDepth = metrics.depth() > 8 ? 0 : 16;
-	if (io->parameters())
-	{
-		QStringList params = QStringList::split(':', io->parameters());
-		if (params.count())
-			prefSize = params[0].toInt();
-		if (params.count() >= 2)
-			prefDepth = params[1].toInt();
-	}
-	QValueList<IconRec> iconList;
-	uint preferred = 0;
-	for (uint i = 0; i < hdr.count; ++i)
-	{
-		if (ico.atEnd())
+    QPaintDeviceMetrics metrics(QApplication::desktop());
+    uchar prefSize = 32;
+    uint prefDepth = metrics.depth() > 8 ? 0 : 16;
+    if (io->parameters())
+    {
+        QStringList params = QStringList::split(':', io->parameters());
+        if (params.count())
+            prefSize = params[0].toInt();
+        if (params.count() >= 2)
+            prefDepth = params[1].toInt();
+    }
+    QValueList<IconRec> iconList;
+    uint preferred = 0;
+    for (uint i = 0; i < hdr.count; ++i)
+    {
+        if (ico.atEnd())
                    return;
-		IconRec rec;
-		ico >> rec.width >> rec.height >> rec.colors
-			>> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
-		iconList.append(rec);
-		if (abs(rec.width - prefSize) > abs(iconList[preferred].width - prefSize))
-			continue;
-		if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
-			preferred = i;
+        IconRec rec;
+        ico >> rec.width >> rec.height >> rec.colors
+            >> rec.hotspotX >> rec.hotspotY >> rec.dibSize >> rec.dibOffset;
+        iconList.append(rec);
+        if (abs(rec.width - prefSize) > abs(iconList[preferred].width - prefSize))
+            continue;
+        if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
+            preferred = i;
         if (prefDepth == 0 && (iconList[preferred].colors == 0 || iconList[preferred].colors > rec.colors))
             continue;
         if (abs(int(rec.colors - prefDepth)) < abs(int(iconList[preferred].colors - prefDepth)))
-			preferred = i;
-	}
-	IconRec header = iconList[preferred];
+            preferred = i;
+    }
+    IconRec header = iconList[preferred];
 
     if (ico.device()->size() < header.dibOffset + BMP_WIN)
        return;
@@ -194,12 +194,15 @@ void kimgio_ico_read(QImageIO *io)
         return;
     if (icon.width() != header.width || icon.height() != header.height)
         return;
-        
+
     QBitmap mask;
     mask.convertFromImage(icon);
     p.setMask(mask);
-        
-    io->setImage(p.convertToImage());
+
+    icon = p.convertToImage();
+    icon.setText( "X-HotspotX", 0, QString::number( header.hotspotX ) );
+    icon.setText( "X-HotspotY", 0, QString::number( header.hotspotY ) );
+    io->setImage(icon);
     io->setStatus(0);
 }
 
@@ -211,17 +214,22 @@ void kimgio_ico_write(QImageIO *io)
     QByteArray dibData;
     QDataStream dib(dibData, IO_ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
-    if (!qt_write_dib(dib, io->image()))
-        return;
 
+    QImage pixels = io->image();
     QImage mask;
     if (io->image().hasAlphaBuffer())
         mask = io->image().createAlphaMask();
     else
         mask = io->image().createHeuristicMask();
     mask.invertPixels();
+    for ( int y = 0; y < pixels.height(); ++y )
+        for ( int x = 0; x < pixels.width(); ++x )
+            if ( mask.pixel( x, y ) == 0 ) pixels.setPixel( x, y, 0 );
 
-    uint hdrPos = dib.device()->at();
+    if (!qt_write_dib(dib, pixels))
+        return;
+
+   uint hdrPos = dib.device()->at();
     if (!qt_write_dib(dib, mask))
         return;
     memmove(dibData.data() + hdrPos, dibData.data() + hdrPos + BMP_WIN + 8, dibData.size() - hdrPos - BMP_WIN - 8);
@@ -252,11 +260,11 @@ void kimgio_ico_write(QImageIO *io)
     ico << rec.dibOffset;
 
     BMP_INFOHDR dibHeader;
-	dib.device()->at(0);
+    dib.device()->at(0);
     dib >> dibHeader;
-	dibHeader.biHeight = io->image().height() << 1;
-	dib.device()->at(0);
-	dib << dibHeader;
+    dibHeader.biHeight = io->image().height() << 1;
+    dib.device()->at(0);
+    dib << dibHeader;
 
     ico.writeRawBytes(dibData.data(), dibData.size());
     io->setStatus(0);
