@@ -127,7 +127,7 @@ private:
  * respectivelly.  NOTE the extra byte in the latter format is is a
  * NULL character to terminate the string.
  *
- * @section Example:
+ * @sect Example:
  *
  * The simplest way of using this class through one of the
  * accessor methods:

@@ -62,8 +62,8 @@ public:
     virtual int ungetch( int );
 
     /**
-     * Call this to create the appropriate filter device for @base
-     * working on @file . The returned QIODevice has to be deleted
+     * Call this to create the appropriate filter device for @p base
+     * working on @p file . The returned QIODevice has to be deleted
      * after using.
      */
     static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);

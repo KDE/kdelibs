@@ -227,8 +227,8 @@ k_dcop:
   /**
    * Prompts the user for authorization info.
    *
-   * @prompt    See @p AuthInfo in kio/global.cpp.
-   * @return    @p a modified and seralized authorization info object.
+   * @param info See @p AuthInfo in kio/global.cpp.
+   * @return a modified and seralized authorization info object.
    */
   QByteArray openPassDlg( const KIO::AuthInfo &info );
 
