@@ -119,7 +119,7 @@ Part::~Part()
     // We need to disconnect first, to avoid calling it !
     disconnect( m_widget, SIGNAL( destroyed() ),
                 this, SLOT( slotWidgetDestroyed() ) );
-    kdDebug(1000) << "deleting widget " << m_widget->name() << endl;
+    kdDebug(1000) << "deleting widget " << m_widget << " " << m_widget->name() << endl;
     delete (QWidget *)m_widget;
   }
 
@@ -293,6 +293,7 @@ void ReadOnlyPart::abortLoad()
 {
   if ( d->m_job )
   {
+    //kdDebug(1000) << "Aborting job " << d->m_job << endl;
     d->m_job->kill();
     d->m_job = 0;
   }
@@ -381,7 +382,7 @@ bool ReadWritePart::closeURL()
   abortLoad(); //just in case
   if ( m_bModified && m_bReadWrite )
   {
-    int res = KMessageBox::warningYesNoCancel( 0L,
+    int res = KMessageBox::warningYesNoCancel( widget(),
             i18n( "The document has been modified\nDo you want to save it ?" ));
 
     switch(res) {
