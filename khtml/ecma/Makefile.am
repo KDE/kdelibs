@@ -32,7 +32,7 @@ kjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
-kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la
+kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
 kjs_html_la_METASOURCES = AUTO
 
 hashtables:
