@@ -24,20 +24,21 @@ int main( int argc, char** argv )
         fprintf(stderr, "Can't open input file\n");
         return -1;
     }
-    
+
     QByteArray arr = file.readAll();
     int len = arr.size();
     arr.resize( len + 1 );
     arr[ len ] = 0;
-    
+
 #ifdef YYDEBUG
     char *debug = getenv("DEBUG");
     if (debug)
 	yydebug = 1;
 #endif
+    idl_line_no = 1;
 
     dcopidlParse( arr.data() );
-		     
+		
     file.close();
     return 0;
 }

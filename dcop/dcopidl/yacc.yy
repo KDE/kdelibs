@@ -2,16 +2,19 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include <qstring.h>
 
 #define AMP_ENTITY "&amp;"
 #define YYERROR_VERBOSE
- 
+
 extern int yylex();
 
 // extern QString idl_lexFile;
 extern int idl_line_no;
+
+static int dcop_area = 0;
 
 void dcopidlInitFlex( const char *_code );
 
@@ -48,10 +51,16 @@ void yyerror( const char *s )
 %token T_COLON
 %token T_SEMICOLON
 %token T_PUBLIC
+%token T_PROTECTED
+%token T_PRIVATE
 %token T_VIRTUAL
 %token T_CONST
+%token T_SIGNAL
+%token T_SLOT
 %token T_TYPEDEF
 %token T_COMMA
+%token T_ASTERISK
+%token T_TILDE
 %token T_LESS
 %token T_GREATER
 %token T_AMPERSAND
@@ -83,6 +92,7 @@ void yyerror( const char *s )
 main
 	: includes rest
 	  {
+	     dcop_area = 0; // reset
 	  }
 	;
 	
@@ -109,6 +119,21 @@ rest
 	  }
 	;
 
+nodcop_area: T_PRIVATE | T_PROTECTED | T_PUBLIC ;
+
+sigslot: T_SIGNAL | T_SLOT | ;
+
+nodcop_area_begin
+	: nodcop_area sigslot T_COLON
+        {
+	  dcop_area = 0;
+	}
+
+dcop_area_begin
+	: T_DCOP_AREA T_COLON
+	{
+	  dcop_area = 1;
+	}
 super_class_name
 	: T_IDENTIFIER
 	  {
@@ -169,10 +194,17 @@ body
 	  {
 		$$ = new QString( *($1) + *($2) );
 	  }
-	| T_DCOP_AREA T_COLON  body
+	| dcop_area_begin body
 	  {
-		$$ = $3;
+		$$ = $2;
 	  }
+	| nodcop_area_begin body
+	  {	
+	        $$ = $2;
+	  }
+	| member body {
+ 	        $$ = $2;
+	}
 	;
 
 typedef
@@ -246,7 +278,17 @@ return
 		*tmp = tmp->arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
+	| pointer_type
+	  {
+	 	if (dcop_area)
+	           yyerror("pointers are not allowed in kdcop areas!");
+	  }
 	;
+
+pointer_type
+	: T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_ASTERISK {}
+	| T_IDENTIFIER T_LESS return_params T_GREATER T_ASTERISK {}
+	| T_IDENTIFIER T_ASTERISK {}
 
 params
 	: /* empty */
@@ -295,6 +337,11 @@ param
 		*tmp = tmp->arg( *($7) ).arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
+	| pointer_type T_IDENTIFIER {
+	       if (dcop_area)
+	           yyerror("pointers are not allowed in kdcop areas!");
+	       $$ = new QString("");
+	}
 	;
 
 default
@@ -324,34 +371,64 @@ default
 function
 	: T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
 	  {
+	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *($3) );
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($5) );
 		*tmp = tmp->arg( *($7) );
 		$$ = tmp;
+   	     } else
+	        $$ = new QString("");
+	  }
+	| T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_SEMICOLON
+	  {
+	      /* The constructor */
+	      assert(!dcop_area);
+              $$ = new QString("");
+	  }
+	| T_TILDE T_IDENTIFIER T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS T_SEMICOLON
+	  {
+	    /* The destructor */
+	    assert(!dcop_area);
+            $$ = new QString("");
 	  }
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
 	  {
+	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *($2) ).arg( *($1) ).arg( *($4) ).arg( *($6) );
 		$$ = tmp;
+	     } else
+	        $$ = new QString("");
 	  }
 	| T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
 	  {
+	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *($3) ).arg( *($2) ).arg( *($5) ).arg( *($7) );
 		$$ = tmp;
+	     } else
+	        $$ = new QString("");
 	  }
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
 	  {
+	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($1) );
 		*tmp = tmp->arg( *($4) );
 		*tmp = tmp->arg( *($6) );
 		$$ = tmp;
+	     } else
+	        $$ = new QString("");
 	  }
+	;
+
+member
+	: return T_SEMICOLON {
+	   debug("member %s", ($1)->ascii());
+	}
 	;
 
 %%

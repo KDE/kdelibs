@@ -19,8 +19,13 @@ class Test3;
 class Test : public MyNamespace::MyParentClass, virtual public DCOPObject
 {
     K_DCOP
+
 public:
     Test();
+    ~Test();
+    int getPageOfObj( int obj );
+    void setCell( KSpreadTable *table,
+		  const QPoint& point );
 
 k_dcop:
     virtual QString url();
@@ -31,9 +36,10 @@ k_dcop:
     virtual int getNumPages();
     virtual DCOPRef getPage( int num );
     int getPageOfObj( int obj );
-    
+    void setCell( const int& point = 3 );
+
 private:
-    Test3 *doc;
+    Test3 *doc();
 
 };
 

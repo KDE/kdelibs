@@ -113,8 +113,6 @@ Float_Literal3          {Digits}"."{Digits}
 Float_Literal4		"."{Digits}
 Float_Literal5		"."{Digits}(e|E)("+"|"-")?{Digits}
 
-KDCOP			([^k]|k[^_]|k_[^d]|k_d[^c]|k_dc[^o]|k_dco[^p])*
-
 /*--------------------------------------------------------------------------*/
 
 Kidl_Identifier2	[_a-zA-Z][a-zA-Z0-9_]*
@@ -152,7 +150,9 @@ Kidl_Identifier          ({Kidl_Identifier2}::)*{Kidl_Identifier2}
 "("			return T_LEFT_PARANTHESIS;
 ")"			return T_RIGHT_PARANTHESIS;
 ":"			return T_COLON;
+"~"			return T_TILDE;
 ","			return T_COMMA;
+"*"			return T_ASTERISK;
 ";"			return T_SEMICOLON;
 "&"			return T_AMPERSAND;
 "<"			return T_LESS;
@@ -166,18 +166,15 @@ class			return T_CLASS;
 struct			return T_STRUCT;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
+protected		return T_PROTECTED;
+private			return T_PRIVATE;
+signal			return T_SIGNAL;
+slot			return T_SLOT;
 "k_dcop"		return T_DCOP_AREA;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 Q_OBJECT		;
 "0"			return T_NULL;
-
-"private:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
-"private:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
-"public:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
-"public:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
-"protected:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
-"public slots:"{KDCOP}"}"	return T_RIGHT_CURLY_BRACKET;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );
