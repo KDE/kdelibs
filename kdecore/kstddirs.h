@@ -399,7 +399,9 @@ public:
 
 /**
  * This function is just for convience. It simply calls
- * KGlobal::dirs()->findResource(type, filename)
+ * KGlobal::dirs()->findResource(type, filename).
+ * But if you pass a KLibGlobal, then library->dirs() is
+ * queried for the desired resource.
  **/
 QString locate( const QString& type, const QString& filename, KLibGlobal* library = 0 );
 
