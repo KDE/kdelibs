@@ -426,7 +426,7 @@ KXMLGUIFactory *KMainWindow::guiFactory()
 int KMainWindow::configureToolbars()
 {
     saveMainWindowSettings(KGlobal::config());
-    KEditToolbar dlg(guiFactory(), this, "KEditToolbar");
+    KEditToolbar dlg(actionCollection(), xmlFile(), this, false, "KEditToolbar");
     connect(&dlg, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
     return dlg.exec();
 }
