@@ -154,6 +154,11 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
 
 	case EntityRevision:
 	  a.setRevision( readDateTimeValue( cl ) );
+          break;
+
+	case EntityGeo:
+	  a.setGeo( readGeoValue( cl ) );
+          break;
 
         case EntityVersion:
           break;
@@ -255,6 +260,7 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
 
     addDateValue( v, EntityBirthday, (*it).birthday().date() );
     addDateTimeValue( v, EntityRevision, (*it).revision() );
+    addGeoValue( v, EntityGeo, (*it).geo() );
 
     vcardlist.append( v );
   }
@@ -367,6 +373,26 @@ void VCardFormatImpl::addAddressParam( ContentLine *cl, int type )
   if ( type & Address::Home ) params.append( new Param( "TYPE", "home" ) );
   if ( type & Address::Pref ) params.append( new Param( "TYPE", "pref" ) );
   cl->setParamList( params );
+}
+
+void VCardFormatImpl::addGeoValue( VCard *vcard, EntityType type,
+                                    const Geo &geo )
+{
+    kdDebug() << "addGeoValue()=" << geo.latitude() << endl;
+
+  if ( !geo.isValid() ) return;
+
+    kdDebug() << "is valid" << endl;
+
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  GeoValue *v = new GeoValue;
+  v->setLatitude( geo.latitude() );
+  v->setLongitude( geo.longitude() );
+
+  cl.setValue( v );
+  vcard->add(cl);
 }
 
 
@@ -503,11 +529,27 @@ QString VCardFormatImpl::readTextValue( ContentLine *cl )
 QDate VCardFormatImpl::readDateValue( ContentLine *cl )
 {
   DateValue *dateValue = (DateValue *)cl->value();
-  return dateValue->qdate();
+  if ( dateValue )
+    return dateValue->qdate();
+  else
+    return QDate();
 }
 
 QDateTime VCardFormatImpl::readDateTimeValue( ContentLine *cl )
 {
   DateValue *dateValue = (DateValue *)cl->value();
-  return dateValue->qdt();
+  if ( dateValue )
+    return dateValue->qdt();
+  else
+    return QDateTime();
+}
+
+Geo VCardFormatImpl::readGeoValue( ContentLine *cl )
+{
+  GeoValue *geoValue = (GeoValue *)cl->value();
+  if ( geoValue ) {
+    Geo geo( geoValue->latitude(), geoValue->longitude() );
+    return geo;
+  } else
+    return Geo();
 }

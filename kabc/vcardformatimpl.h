@@ -70,6 +70,9 @@ class VCardFormatImpl {
 
     void addAddressParam( VCARD::ContentLine *, int );
     int readAddressParam( VCARD::ContentLine * );
+
+    void addGeoValue( VCARD::VCard *, VCARD::EntityType, const Geo & );
+    Geo readGeoValue( VCARD::ContentLine * );
 };
 
 }
