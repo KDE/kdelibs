@@ -856,6 +856,12 @@ public:
     int iconSize() const;
 
   /**
+   * Returns the default size for this type of toolbar.
+   * @return the default size for this type of toolbar.
+   */
+    int iconSizeDefault() const;
+
+  /**
    * This allows you to enable or disable the context menu.
    *
    * @param enable If false, then the context menu will be disabled

@@ -226,8 +226,6 @@ KToolBar::~KToolBar()
 void KToolBar::init( bool readConfig, bool honorStyle )
 {
     d = new KToolBarPrivate;
-    // Get the default iconSize sense m_iconSize == 0 which isn't the default
-    d->IconSizeDefault = iconSize();
     setFullSize( true );
     d->m_honorStyle = honorStyle;
     context = 0;
@@ -901,15 +899,18 @@ void KToolBar::setIconSize(int size, bool update)
 int KToolBar::iconSize() const
 {
     if ( !d->m_iconSize ) // default value?
-    {
-         if (!::qstrcmp(QObject::name(), "mainToolBar"))
-             return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
-         else
-             return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
-    }
-    return d->m_iconSize;
+		return iconSizeDefault();
+    
+	return d->m_iconSize;
 }
 
+int KToolBar::iconSizeDefault() const
+{
+	if (!::qstrcmp(QObject::name(), "mainToolBar"))
+		return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
+            
+	return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
+}
 
 void KToolBar::setEnableContextMenu(bool enable )
 {
@@ -1066,7 +1067,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
       config->writeEntry("IconText", icontext);
     }
 
-    if(!config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault )
+    if(!config->hasDefault("IconSize") && iconSize() == iconSizeDefault() )
       config->revertToDefault("IconSize");
     else
       config->writeEntry("IconSize", iconSize());
@@ -1193,7 +1194,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
                 break;
             default:
                 if ( i >= CONTEXT_ICONSIZES )
-                    setIconSize( i - CONTEXT_ICONSIZES );
+					setIconSize( i - CONTEXT_ICONSIZES );
                 else
                     return; // assume this was an action handled elsewhere, no need for setSettingsDirty()
             }
