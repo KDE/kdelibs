@@ -992,7 +992,7 @@ public:
   KDockWidget* getDockWidgetFromName( const QString& dockName );
 
   /**
-   * Enables opaque resizing. Opaque resizing is initially turned off.
+   * Enables opaque resizing. Opaque resizing defaults to KGlobalSettings::opaqueResize().
    * Call this method before you create any dock widgets!
    */
   void setSplitterOpaqueResize(bool b=true);

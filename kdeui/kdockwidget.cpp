@@ -40,6 +40,7 @@
 #include <kpopupmenu.h>
 #include <kwin.h>
 #include <kdebug.h>
+#include <kglobalsettings.h>
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
@@ -1599,7 +1600,13 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 {
   d = new KDockManagerPrivate;
   d->mainDockWidget=0;
+  
+#ifndef NO_KDE2
+  d->splitterOpaqueResize = KGlobalSettings::opaqueResize();
+#else
   d->splitterOpaqueResize = false;
+#endif
+  
   d->splitterKeepSize = false;
   d->splitterHighResolution = false;
 
