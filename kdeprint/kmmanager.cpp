@@ -527,4 +527,9 @@ QString KMManager::stateInformation()
 	return i18n("No plugin information available");
 }
 
+void KMManager::checkUpdatePossible()
+{
+	emit updatePossible( true );
+}
+
 #include "kmmanager.moc"

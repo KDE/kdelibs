@@ -26,6 +26,7 @@
 
 class IppRequest;
 class KLibrary;
+class KExtendedSocket;
 
 class KMCupsManager : public KMManager
 {
@@ -64,9 +65,16 @@ public:
 	void validatePluginActions(KActionCollection*, KMPrinter*);
 	QString stateInformation();
 
+	void checkUpdatePossible();
+
 public slots:
 	void exportDriver();
 	void printerIppReport();
+
+protected slots:
+	void slotConnectionFailed( int );
+	void slotConnectionSuccess();
+	void slotAsyncConnect();
 
 protected:
 	// the real printer listing job is done here
@@ -86,6 +94,7 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
+	KExtendedSocket *m_socket;
 };
 
 #endif

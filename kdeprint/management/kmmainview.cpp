@@ -114,6 +114,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	connect(m_printerview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SLOT(slotRightButtonClicked(const QString&,const QPoint&)));
 	connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 	connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
+	connect( m_manager, SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
 	// actions
     if (coll)
@@ -127,7 +128,9 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	loadParameters();
 
 	//slotRefresh();
-	KMTimer::self()->release(true);
+	//KMTimer::self()->release(true);
+	KMTimer::self()->hold();
+	m_manager->checkUpdatePossible();
 }
 
 KMMainView::~KMMainView()
@@ -568,7 +571,8 @@ void KMMainView::slotServerRestart()
 	bool	result = m_manager->restartServer();
 	if (!result)
 		showErrorMsg(i18n("Unable to restart print server."));
-	KMTimer::self()->release(result);
+	//KMTimer::self()->release(result);
+	m_manager->checkUpdatePossible();
 }
 
 void KMMainView::slotServerConfigure()
@@ -577,7 +581,8 @@ void KMMainView::slotServerConfigure()
 	bool	result = m_manager->configureServer(this);
 	if (!result)
 		showErrorMsg(i18n("Unable to configure print server."));
-	KMTimer::self()->release(result);
+	//KMTimer::self()->release(result);
+	m_manager->checkUpdatePossible();
 }
 
 void KMMainView::slotToggleToolBar(bool on)
@@ -646,6 +651,10 @@ void KMMainView::reload()
 {
 	removePluginActions();
 	loadPluginActions();
+
+	// redo the connection as the old manager object has been removed
+	connect( m_manager, SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
+
 	// We must delay the refresh such that all objects has been
 	// correctly reloaded (otherwise, crash in KMJobViewer).
 	slotRefresh();
@@ -722,6 +731,14 @@ void KMMainView::slotToggleFilter(bool on)
 void KMMainView::configChanged()
 {
 	slotRefresh();
+}
+
+void KMMainView::slotUpdatePossible( bool flag )
+{
+	if ( flag )
+		KMTimer::self()->release( true );
+	else
+		showErrorMsg( i18n( "Unable to retrieve the printer list." ) );
 }
 
 #include "kmmainview.moc"

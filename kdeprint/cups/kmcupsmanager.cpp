@@ -37,6 +37,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qtimer.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -46,6 +47,7 @@
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kdialogbase.h>
+#include <kextendedsocket.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
@@ -65,6 +67,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 	CupsInfos::self();
 	m_cupsdconf = 0;
 	m_currentprinter = 0;
+	m_socket = 0;
 
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
@@ -78,6 +81,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 
 KMCupsManager::~KMCupsManager()
 {
+	delete m_socket;
 }
 
 QString KMCupsManager::driverDbCreationProgram()
@@ -955,6 +959,43 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 QString KMCupsManager::stateInformation()
 {
 	return i18n("Connected to %1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+}
+
+void KMCupsManager::checkUpdatePossible()
+{
+	delete m_socket;
+	m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
+	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
+	connect( m_socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
+	m_socket->setTimeout( 1 );
+	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
+}
+
+void KMCupsManager::slotConnectionSuccess()
+{
+	emit updatePossible( true );
+}
+
+void KMCupsManager::slotAsyncConnect()
+{
+	m_socket->startAsyncConnect();
+}
+
+void KMCupsManager::slotConnectionFailed( int errno )
+{
+	int to = m_socket->timeout().tv_sec;
+	if ( to < 5 )
+	{
+		m_socket->setTimeout( ++to );
+		m_socket->cancelAsyncConnect();
+		QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
+		return;
+	}
+
+	setErrorMsg( i18n( "Connection to server %1 on port %2 failed: %3" ).arg( CupsInfos::self()->host() )
+			.arg( CupsInfos::self()->port() )
+			.arg( strerror( errno ) ) );
+	emit updatePossible( false );
 }
 
 //*****************************************************************************************************

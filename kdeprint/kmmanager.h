@@ -129,6 +129,12 @@ public:
 	virtual void createPluginActions(KActionCollection*);
 	virtual void validatePluginActions(KActionCollection*, KMPrinter*);
 
+	// utility function
+	virtual void checkUpdatePossible();
+
+signals:
+	void updatePossible( bool );
+
 protected:
 	// the real printer listing job is done here
 	virtual void listPrinters();

@@ -79,6 +79,7 @@ protected slots:
 	void slotToggleToolBar(bool);
 	void slotChangeView(int);
 	void slotChangeDirection(int);
+	void slotUpdatePossible( bool );
 
 protected:
 	void initActions();
