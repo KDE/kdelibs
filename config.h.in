@@ -34,7 +34,11 @@
 
 #define VERSION 0.8
 
-#undef PACKAGE kdelibs
+#define PACKAGE kdelibs
+
+#undef HAVE_GIFLIB 
+
+#undef HAVE_JPEGLIB
 
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET

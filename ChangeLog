@@ -20,3 +20,4 @@
 	updated khtmlw, kfm and kdehelp
 	added kcalc and kpaint
 	KConfig reads and writes colors and fonts
+	added to the search path of jpeg/giflib KDEDIR/lib

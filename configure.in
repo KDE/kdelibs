@@ -40,19 +40,19 @@ dnl find out some variables (not supported yet)
 AC_AIX
 AC_MINIX
 
+dnl Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h)
+
 dnl Checks for libraries.
 AC_PATH_KDE
 
 dnl Checks for libraries. 
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
-
-dnl Checks for header files.
-AC_HEADER_DIRENT
-AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h)
-all_includes="-I$x_includes -I$qt_includes -I$kde_includes"
-all_libraries="-L$x_libraries -L$qt_libraries -L$kde_libraries"
+AC_FIND_GIF
+AC_FIND_JPEG
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -77,7 +77,11 @@ AC_SUBST(topdir)
 AC_SUBST(MISCOBJS)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
-KDEDIR=${KDEDIR:-/usr/local/kde}
+if test "${prefix}" = NONE; then
+  KDEDIR=$ac_default_prefix
+ else
+  KDEDIR=$prefix
+fi
 AC_SUBST(KDEDIR)
 
 AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile)

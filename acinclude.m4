@@ -244,6 +244,63 @@ AC_SUBST(all_libraries)
 
 ])
 
+AC_DEFUN(AC_FIND_GIF,
+   [AC_MSG_CHECKING(for giflib)
+AC_CACHE_VAL(ac_cv_lib_gif,
+[ac_save_LIBS="$LIBS"
+LIBS="$all_libraries -lgif -lX11"
+AC_TRY_LINK(dnl
+ifelse([main], [main], , dnl Avoid conflicting decl of main.
+[/* Override any gcc2 internal prototype to avoid an error.  */
+]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+extern "C"
+#endif
+])dnl
+[/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char main();
+]),
+            [main()],
+            eval "ac_cv_lib_gif=yes",
+            eval "ac_cv_lib_gif=no")
+LIBS="$ac_save_LIBS"
+])dnl
+if eval "test \"`echo $ac_cv_lib_gif`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_GIFLIB)
+else
+  AC_MSG_ERROR(You need giflib23. Please install the kdesupport package)
+fi
+])
+
+AC_DEFUN(AC_FIND_JPEG,
+   [AC_MSG_CHECKING(for jpeglib)
+AC_CACHE_VAL(ac_cv_lib_jpeg,
+[ac_save_LIBS="$LIBS"
+LIBS="$all_libraries -ljpeg -lm"
+AC_TRY_LINK(dnl
+ifelse([main], [main], , dnl Avoid conflicting decl of main.
+[/* Override any gcc2 internal prototype to avoid an error.  */
+]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+extern "C"
+#endif
+])dnl
+[/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char main();
+]),
+            [main()],
+            eval "ac_cv_lib_jpeg=yes",
+            eval "ac_cv_lib_jpeg=no")
+LIBS="$ac_save_LIBS"
+])dnl
+if eval "test \"`echo $ac_cv_lib_jpeg`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_JPEGLIB)
+else
+  AC_MSG_ERROR(You need jpeglib6a. Please install the kdesupport package)
+fi
+])
 
 AC_DEFUN(AC_CHECK_BOOL,
         [AC_MSG_CHECKING(for bool);
