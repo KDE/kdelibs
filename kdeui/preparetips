@@ -1,3 +1,4 @@
+#! /usr/bin/perl
 # little script to extract the text from the tips file
 # and output it, so xgettext can add the tips to the po file
 #
