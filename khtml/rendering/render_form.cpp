@@ -143,7 +143,7 @@ QString RenderFormElement::decodeString( QString e )
 
 void RenderFormElement::layout(bool)
 {
-    kdDebug( 6040 ) << "inside RenderFormElement::layout()" << endl;
+    //kdDebug( 6040 ) << "inside RenderFormElement::layout()" << endl;
 
     // honor style sheet stuff
     int h = 0;
@@ -173,7 +173,7 @@ void RenderFormElement::calcMinMaxWidth()
 {
     layout(false);
 
-    kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
+    //kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
@@ -455,7 +455,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
     m_size = size;
     m_widget = edit;
 }
- 
+
 void RenderLineEdit::slotReturnPressed()
 {
     m_form->maybeSubmit();

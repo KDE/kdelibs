@@ -217,7 +217,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
 
   autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
-  
+
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As.." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
@@ -235,7 +235,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   if ( !autoloadImages() )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
-  
+
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -612,7 +612,7 @@ void KHTMLPart::checkCompleted()
       return;
 
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
-  kdDebug() << "number of loader requests: " << requests << endl;
+  kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
     return;
 
@@ -1725,7 +1725,7 @@ void KHTMLPart::slotLoadImages()
 {
   autoloadImages( false );
   autoloadImages( true );
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
