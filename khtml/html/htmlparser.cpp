@@ -190,11 +190,13 @@ void KHTMLParser::parseToken(Token *t)
       kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->id << endl;
       return;
     }
-    if(discard_until)
-    {
+    if(discard_until) {
         if(t->id == discard_until)
             discard_until = 0;
-        return;
+
+        // do not skip </iframe>
+        if ( discard_until || current->id() + ID_CLOSE_TAG != t->id )
+            return;
     }
 
 #ifdef PARSER_DEBUG
@@ -742,6 +744,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
         n = new HTMLIFrameElementImpl(document);
+        discard_until = ID_IFRAME+ID_CLOSE_TAG;
         break;
 
 // form elements
