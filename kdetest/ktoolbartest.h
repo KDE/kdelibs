@@ -1,7 +1,7 @@
 #include <kmenubar.h>
 #include <qpopmenu.h>
 #include <kstatusbar.h>
-#include "ktoolbar.h"
+#include "kdocktoolbar.h"
 
 
 class testWindow  : public KTopLevelWidget
@@ -39,7 +39,7 @@ protected:
   QPopupMenu *completions;
   QPopupMenu *toolBarMenu;
   KStatusBar *statusBar;
-  KToolBar *toolBar;
+  KDockToolBar *toolBar;
   KToolBar *tb1;
   int toolbar1;
   int toolbar2;

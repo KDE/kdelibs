@@ -12,7 +12,7 @@
 #include <kmenubar.h>
 #include <qmlined.h>
 #include "ktoolbartest.moc"
-#include "ktoolbar.h"
+#include "kdocktoolbar.h"
 
 testWindow::testWindow (QWidget *, const char *name)
   : KTopLevelWidget (name)
@@ -27,8 +27,8 @@ testWindow::testWindow (QWidget *, const char *name)
   toolBarMenu = new QPopupMenu;
   menuBar->insertItem ("&Toolbars", toolBarMenu);
     
-  toolBarMenu->insertItem ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
-  toolBarMenu->insertItem ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
+  toolBarMenu->insertItem ("(Un)Hide toolbar 1", this, SLOT(slotHide1()));
+  toolBarMenu->insertItem ("(Un)Hide toolbar 2", this, SLOT(slotHide2()));
 
   itemsMenu = new QPopupMenu;
   menuBar->insertItem ("&Items", itemsMenu);
@@ -54,7 +54,7 @@ testWindow::testWindow (QWidget *, const char *name)
 	+ QString("/lib/pics/toolbar/");
 
     // Create toolbar
-  toolBar = new KToolBar(this);
+  toolBar = new KDockToolBar(this);
 
   // set full width
 
