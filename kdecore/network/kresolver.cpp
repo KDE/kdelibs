@@ -893,7 +893,7 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
 
   // Do we allow IDN names for this TLD?
   if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
-    return unicodeDomain.latin1(); // No IDN allowed for this TLD
+    return unicodeDomain.lower().latin1(); // No IDN allowed for this TLD
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce
@@ -941,7 +941,7 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 
   // Do we allow IDN names for this TLD?
   if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
-    return asciiDomain; // No TLDs allowed
+    return asciiDomain.lower(); // No TLDs allowed
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce
