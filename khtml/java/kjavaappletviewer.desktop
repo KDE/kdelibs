@@ -57,3 +57,4 @@ MimeType=application/x-java-applet;
 ServiceTypes=KParts/ReadOnlyPart,Browser/View
 Type=Service
 InitialPreference=2
+X-KDE-BrowserView-PluginsInfo=kjava/pluginsinfo
