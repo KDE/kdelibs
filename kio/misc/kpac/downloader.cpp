@@ -20,6 +20,7 @@
 // $Id$
 
 #include <cstdlib>
+#include <cstring>
 
 #include <qtextcodec.h>
 
