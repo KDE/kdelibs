@@ -44,8 +44,8 @@ on the home page of the DocBook tools :
 
 	http://sourceware.cygnus.com/docbook-tools
 
-The KDE-specific stuff is located in the directory ksgmltools of the kdesdk
-package. The kdesdk package can be found at :
+The KDE-specific stuff is located in the directory ksgmltools of the kdelibs
+package. The kdelibs package can be found at :
 
 	ftp://ftp.kde.org/pub/kde/unstable/CVS/snapshots/current
 
@@ -171,10 +171,10 @@ Now the Cygnus distribution is installed, you must add the KDE specific stuff.
 3 - KDE customization :
 -----------------------
 
-You will find the necessary files in the kdesdk package.
+You will find the necessary files in the kdelibs package.
 
 If you have installed RPM packages, go to the directory where you
-have downloaded the kdesdk package, enter the "ksgmltools"
+have downloaded the kdelibs package, enter the "ksgmltools"
 subdirectory and type (as normal user) the commands :
 
 	make -f Makefile.cvs
@@ -243,7 +243,7 @@ pages. This will be fixed soon.
 
 Where will you go next ? Maybe you will try to learn how the DocBook syntax.
 
-You might find two other tools (also in the kdesdk package) very useful for
+You might find two other documents (also in the kdelibs package) very useful for
 that purpose :
 
 - the template file : if you have to write a new docbook file, just fill in
@@ -252,12 +252,10 @@ the blanks
 - the crash-course : it will explain you the docbook syntax
 
 The DocBook Reference Manual is NOT included in the Cygnus distribution.
-But the distribution conforms to the version 3.1 of the DocBook norm,
-whereas the Reference Manual still conforms to version 3.0, so maybe it is
-better like that... Anyway, if you do want to download the older version, it
-can be found at :
+It can be found at:
 
-	http://www.oasis-open.org/docbook/documentation/reference/dbhref.zip
+	http://www.oasis-open.org/docbook/
+(Or the locations listed in the crash course).
 
 
 Conclusion
