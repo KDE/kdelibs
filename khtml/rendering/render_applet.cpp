@@ -86,27 +86,13 @@ int RenderApplet::intrinsicHeight() const
     return rval;
 }
 
-void RenderApplet::calcMinMaxWidth()
-{
-    if(minMaxKnown())
-        return;
-
-    calcWidth();
-    m_maxWidth = m_minWidth = m_width;
-
-    setMinMaxKnown();
-}
-
 void RenderApplet::layout()
 {
     //kdDebug(6100) << "RenderApplet::layout" << endl;
 
-    if(layouted())
-        return;
+    if(layouted()) return;
 
-    if(!minMaxKnown())
-        calcMinMaxWidth();
-
+    calcWidth();
     calcHeight();
 
     KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
@@ -166,37 +152,12 @@ RenderEmptyApplet::RenderEmptyApplet(QScrollView *view)
 
 short RenderEmptyApplet::intrinsicWidth() const
 {
-    //kdDebug(6100) << "RenderEmptyApplet::intrinsicWidth()" << endl;
-
-    if( m_widget )
-    {
-        //kdDebug(6100) << "intrinsicWidth, applet width = " << m_widget->width() << endl;
-    }
-
     return (m_widget ? m_widget->sizeHint().width() : 150);
 }
 
 int RenderEmptyApplet::intrinsicHeight() const
 {
-    //kdDebug(6100) << "RenderEmptyApplet::intrinsicHeight()" << endl;
-
-    if( m_widget )
-    {
-        //kdDebug(6100) << "intrinsicHeight, applet height = " << m_widget->height() << endl;
-    }
-
     return (m_widget ? m_widget->sizeHint().height() : 150);
-}
-
-void RenderEmptyApplet::calcMinMaxWidth()
-{
-    if(minMaxKnown())
-        return;
-
-    calcWidth();
-    m_maxWidth = m_minWidth = m_width;
-
-    setMinMaxKnown();
 }
 
 void RenderEmptyApplet::layout()
@@ -204,9 +165,7 @@ void RenderEmptyApplet::layout()
     if(layouted())
         return;
 
-    if(!minMaxKnown())
-        calcMinMaxWidth();
-
+    calcWidth();
     calcHeight();
 
     if(m_widget)

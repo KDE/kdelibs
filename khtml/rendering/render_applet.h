@@ -43,7 +43,6 @@ public:
     virtual const char *renderName() const { return "RenderApplet"; }
 
     virtual void layout();
-    virtual void calcMinMaxWidth();
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
@@ -60,7 +59,6 @@ public:
 
     virtual const char *renderName() const { return "RenderEmptyApplet"; }
 
-    virtual void calcMinMaxWidth();
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
     virtual void layout();
