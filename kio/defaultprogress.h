@@ -5,18 +5,16 @@
 
 #include <kprogress.h>
 
-#include "kio/progressbase.h"
+#include "progressbase.h"
 
-class KIOJob;
-
-class KIOSimpleProgressDlg : public KIOProgressBase {
+class DefaultProgress : public KIOProgressBase {
 
   Q_OBJECT
 
 public:
 
-  KIOSimpleProgressDlg();
-  ~KIOSimpleProgressDlg() {}
+  DefaultProgress();
+  ~DefaultProgress() {}
 
 protected slots:
 

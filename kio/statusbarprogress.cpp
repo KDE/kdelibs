@@ -5,10 +5,10 @@
 #include <kapp.h>
 #include <klocale.h>
 
-#include "kio_job.h"
-#include "kio_littleprogress_dlg.h"
+#include "jobclasses.h"
+#include "statusbarprogress.h"
 
-KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button )
+StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   : KIOProgressBase( parent ) {
 
   m_bShowButton = button;
@@ -43,7 +43,7 @@ KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent, bool button )
 }
 
 
-void KIOLittleProgressDlg::setJob( KIOJob *job ) {
+void StatusbarProgress::setJob( KIOJob *job ) {
   KIOProgressBase::setJob( job );
 
   connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
@@ -52,7 +52,7 @@ void KIOLittleProgressDlg::setJob( KIOJob *job ) {
 }
 
 
-void KIOLittleProgressDlg::setMode() {
+void StatusbarProgress::setMode() {
   switch ( mode ) {
   case None:
     if ( m_bShowButton ) {
@@ -81,7 +81,7 @@ void KIOLittleProgressDlg::setMode() {
 }
 
 
-void KIOLittleProgressDlg::clean() {
+void StatusbarProgress::clean() {
   m_pJob = 0L;
   m_pProgressBar->setValue( 0 );
   m_pLabel->clear();
@@ -91,16 +91,16 @@ void KIOLittleProgressDlg::clean() {
 }
 
 
-void KIOLittleProgressDlg::slotTotalSize( int, unsigned long _size ) {
+void StatusbarProgress::slotTotalSize( int, unsigned long _size ) {
   m_iTotalSize = _size;
 }
 
-void KIOLittleProgressDlg::slotPercent( int, unsigned long _percent ) {
+void StatusbarProgress::slotPercent( int, unsigned long _percent ) {
   m_pProgressBar->setValue( _percent );
 }
 
 
-void KIOLittleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second ) {
+void StatusbarProgress::slotSpeed( int, unsigned long _bytes_per_second ) {
   if ( _bytes_per_second == 0 ) {
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
@@ -109,7 +109,7 @@ void KIOLittleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second ) {
 }
 
 
-bool KIOLittleProgressDlg::eventFilter( QObject *, QEvent *ev ) {
+bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
   if ( ! m_pJob ) { // don't react when there isn't any job doing IO
     return true;
   }

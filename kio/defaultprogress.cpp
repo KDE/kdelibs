@@ -1,6 +1,5 @@
 // $Id$
 
-#include "kio_job.h"
 #include <qpushbutton.h>
 #include <qtimer.h>
 #include <qlayout.h>
@@ -8,12 +7,13 @@
 #include <kapp.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <kwm.h>
+#include <kwin.h>
 
-#include "kio_simpleprogress_dlg.h"
+#include "jobclasses.h"
+#include "defaultprogress.h"
 
 
-KIOSimpleProgressDlg::KIOSimpleProgressDlg()
+DefaultProgress::DefaultProgress()
   : KIOProgressBase() {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
@@ -69,25 +69,25 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg()
 }
 
 
-void KIOSimpleProgressDlg::slotTotalSize( int, unsigned long _bytes )
+void DefaultProgress::slotTotalSize( int, unsigned long _bytes )
 {
   m_iTotalSize = _bytes;
 }
 
 
-void KIOSimpleProgressDlg::slotTotalFiles( int, unsigned long _files )
+void DefaultProgress::slotTotalFiles( int, unsigned long _files )
 {
   m_iTotalFiles = _files;
 }
 
 
-void KIOSimpleProgressDlg::slotTotalDirs( int, unsigned long _dirs )
+void DefaultProgress::slotTotalDirs( int, unsigned long _dirs )
 {
   m_iTotalDirs = _dirs;
 }
 
 
-void KIOSimpleProgressDlg::slotPercent( int, unsigned long _percent )
+void DefaultProgress::slotPercent( int, unsigned long _percent )
 {
   QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIOJob::convertSize(m_iTotalSize)));
   m_pProgressBar->setValue( _percent );
@@ -113,7 +113,7 @@ void KIOSimpleProgressDlg::slotPercent( int, unsigned long _percent )
 }
 
 
-void KIOSimpleProgressDlg::slotProcessedSize( int, unsigned long _bytes ) {
+void DefaultProgress::slotProcessedSize( int, unsigned long _bytes ) {
   QString tmp;
 
   tmp = i18n( "%1 of %2 ").arg( KIOJob::convertSize(_bytes) ).arg( KIOJob::convertSize(m_iTotalSize));
@@ -121,7 +121,7 @@ void KIOSimpleProgressDlg::slotProcessedSize( int, unsigned long _bytes ) {
 }
 
 
-void KIOSimpleProgressDlg::slotProcessedDirs( int, unsigned long _dirs )
+void DefaultProgress::slotProcessedDirs( int, unsigned long _dirs )
 {
   m_iProcessedDirs = _dirs;
 
@@ -132,7 +132,7 @@ void KIOSimpleProgressDlg::slotProcessedDirs( int, unsigned long _dirs )
 }
 
 
-void KIOSimpleProgressDlg::slotProcessedFiles( int, unsigned long _files )
+void DefaultProgress::slotProcessedFiles( int, unsigned long _files )
 {
   m_iProcessedFiles = _files;
 
@@ -145,7 +145,7 @@ void KIOSimpleProgressDlg::slotProcessedFiles( int, unsigned long _files )
 }
 
 
-void KIOSimpleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second )
+void DefaultProgress::slotSpeed( int, unsigned long _bytes_per_second )
 {
   if ( _bytes_per_second == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
@@ -155,14 +155,14 @@ void KIOSimpleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second )
 }
 
 
-void KIOSimpleProgressDlg::slotScanningDir( int , const char *_dir)
+void DefaultProgress::slotScanningDir( int , const char *_dir)
 {
   setCaption(i18n("Scanning %1").arg( _dir ) );
   mode = Scan;
 }
 
 
-void KIOSimpleProgressDlg::slotCopyingFile( int, const char *_from,
+void DefaultProgress::slotCopyingFile( int, const char *_from,
 					    const char *_to )
 {
   setCaption(i18n("Copy file(s) progress"));
@@ -172,7 +172,7 @@ void KIOSimpleProgressDlg::slotCopyingFile( int, const char *_from,
 }
 
 
-void KIOSimpleProgressDlg::slotMakingDir( int, const char *_dir )
+void DefaultProgress::slotMakingDir( int, const char *_dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
@@ -180,7 +180,7 @@ void KIOSimpleProgressDlg::slotMakingDir( int, const char *_dir )
 }
 
 
-void KIOSimpleProgressDlg::slotGettingFile( int, const char *_url )
+void DefaultProgress::slotGettingFile( int, const char *_url )
 {
   setCaption(i18n("Fetch file(s) progress"));
   mode = Fetch;
@@ -188,7 +188,7 @@ void KIOSimpleProgressDlg::slotGettingFile( int, const char *_url )
 }
 
 
-void KIOSimpleProgressDlg::slotDeletingFile( int, const char *_url )
+void DefaultProgress::slotDeletingFile( int, const char *_url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
@@ -196,7 +196,7 @@ void KIOSimpleProgressDlg::slotDeletingFile( int, const char *_url )
 }
 
 
-void KIOSimpleProgressDlg::slotCanResume( int, bool _resume )
+void DefaultProgress::slotCanResume( int, bool _resume )
 {
   if ( _resume ) {
     resumeLabel->setText( i18n("Resumable") );

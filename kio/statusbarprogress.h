@@ -6,9 +6,9 @@
 
 #include <kprogress.h>
 
-#include "kio/progressbase.h"
+#include "progressbase.h"
 
-class KIOJob;
+class KIO::Job;
 
 /**
 * This is a special IO progress widget.
@@ -19,34 +19,34 @@ class KIOJob;
 * Instead of creating a separate window, this is only a widget that can be
 * easily embedded in a statusbar.
 *
-* Usage of KIOLittleProgressDialog is little different.
+* Usage of StatusbarProgress is little different.
 * This dialog will be a part of some application.
 * <pre>
 * // create a dialog
-* KIOLittleProgressDlg *littleProgress;
-* littleProgress = new KIOLittleProgressDlg( statusBar() );
-* statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
+* StatusbarProgress *statusProgress;
+* statusProgress = new StatusbarProgress( statusBar() );
+* statusBar()->insertWidget( statusProgress, statusProgress->width() , 0 );
 * ...
 * // create KIOJob and set the progress
 * KIOJob* job;
 * job->setGUImode( KIOJob::CUSTOM );
-* job->setProgressDlg( littleProgress );
+* job->setProgressDlg( statusProgress );
 * ...
 * </pre>
 *
 * @short IO progress widget for embedding in a statusbar.
 * @author Matej Koss <koss@miesto.sk>
 */
-class KIOLittleProgressDlg : public KIOProgressBase {
+class StatusbarProgress : public KIOProgressBase {
 
   Q_OBJECT
 
 public:
 
-  KIOLittleProgressDlg( QWidget* parent, bool button = true );
-  ~KIOLittleProgressDlg() {}
+  StatusbarProgress( QWidget* parent, bool button = true );
+  ~StatusbarProgress() {}
 
-  virtual void setJob( KIOJob * );
+  virtual void setJob( KIO::Job * );
   virtual void clean();
 
 protected slots:
