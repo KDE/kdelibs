@@ -261,7 +261,7 @@ void KSystemTray::minimizeRestore( bool restore )
 	if( d->on_all_desktops )
 	    KWin::setOnAllDesktops( pw->winId(), true );
 	else
-	    KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
+	    KWin::setCurrentDesktop( info.desktop() );
         pw->move( info.geometry().topLeft() ); // avoid placement policies
         pw->show();
         pw->raise();
