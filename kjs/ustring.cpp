@@ -34,6 +34,7 @@
 
 #include "ustring.h"
 #include "operations.h"
+#include <math.h>
 
 namespace KJS {
   extern const double NaN;
@@ -393,7 +394,7 @@ double UString::toDouble() const
     // regular number ?
     char *end;
     d = strtod(c, &end);
-    if (d != 0.0 || end != c) {
+    if ((d != 0.0 || end != c) && d != HUGE_VAL && d != -HUGE_VAL) {
       c = end;
     } else {
       // infinity ?

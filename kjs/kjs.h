@@ -67,8 +67,8 @@ public:
    * Using this constructor instead of KJScript() allows you to supply your
    * own custom object to be used as the global object for the interpreter.
    * Doing so, however, has a couple of implications:
-   * - Your object should derive directly from KJS::Imp, to avoid an invalid
-   *   prototype being set on your object
+   * - Your object should derive directly from KJS::ObjectImp, to avoid an
+   *   invalid prototype being set on your object
    * - The Global::current() method will return 0 when this interpreter is
    *   active, as it is only designed to work with the internal global
    *   object implementation used by KJS.

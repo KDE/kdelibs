@@ -81,7 +81,7 @@ namespace KJS {
     InternalFunctionImp(int l);
     InternalFunctionImp(const UString &n);
     virtual ~InternalFunctionImp() { }
-    virtual KJSO toPrimitive(Type) const { return toString(); }
+    virtual KJSO toPrimitive(Type) const { return toString(); } // ### crashes
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
     virtual Completion execute(const List &);

@@ -106,8 +106,7 @@ GlobalImp::GlobalImp()
     filter(0L),
     extraData(0L)
 {
-  KJScriptImp::initGlobal(this);
-};
+}
 
 void GlobalImp::init()
 {
