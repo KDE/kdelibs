@@ -283,7 +283,6 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     dest_part += QString::fromLatin1(".part");
     QCString _dest_part( QFile::encodeName(dest_part));
 
-    int fd = -1;
     KDE_struct_stat buff_orig;
     bool orig_exists = (KDE_stat( _dest_orig.data(), &buff_orig ) != -1);
     bool part_exists = false;
@@ -311,6 +310,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     int result;
     QString dest;
     QCString _dest;
+
+    int fd = -1;
 
     // Loop until we got 0 (end of data)
     do
@@ -404,21 +405,23 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     }
     while ( result > 0 );
 
-
     // An error occurred deal with it.
     if (result < 0)
     {
         kdDebug(7101) << "Error during 'put'. Aborting." << endl;
 
         if (fd != -1)
+        {
           close(fd);
 
-        KDE_struct_stat buff;
-        int size = config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
-
-        if (bMarkPartial &&
-            (KDE_stat( _dest.data(), &buff ) == -1 || buff.st_size <  size))
-            remove(_dest.data());
+          KDE_struct_stat buff;
+          if (bMarkPartial && KDE_stat( _dest.data(), &buff ) == 0)
+          {
+            int size = config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+            if (buff.st_size <  size)
+              remove(_dest.data());
+          }
+        }
 
         ::exit(255);
     }
