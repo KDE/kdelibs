@@ -185,11 +185,8 @@ void KDEStyle::polish(QWidget *w)
     if (w->isTopLevel())
         return;
     if(w->inherits("QButton") ) {
-        if(!w->parent() || ( !w->parent()->inherits("KToolBar") &&
-           !w->parent()->inherits("KHTMLView")))
+        if(!w->parent() || ( !w->parent()->inherits("KToolBar")))
             w->setBackgroundOrigin(QWidget::ParentOrigin);
-        else
-            w->setAutoMask(true);
     }
 
     // this needs updated draw routine that doesn't depend on being masked
@@ -207,11 +204,8 @@ void KDEStyle::unPolish(QWidget *w)
         return;
 
     if(w->inherits("QButton")){
-        if(!w->parent() || (!w->parent()->inherits("KToolBar") &&
-           !w->parent()->inherits("KHTMLView")))
+        if(!w->parent() || (!w->parent()->inherits("KToolBar")))
             w->setBackgroundOrigin(QWidget::WidgetOrigin);
-        else
-            w->setAutoMask(false);
     }
 
     if(w->inherits("QComboBox"))
