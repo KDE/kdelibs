@@ -66,6 +66,7 @@ class KKeyChooser : public QWidget
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 **/
+	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KGlobalAccel* actions, QWidget* parent );
@@ -77,7 +78,7 @@ class KKeyChooser : public QWidget
  protected:
 	enum { NoKey = 1, DefaultKey, CustomKey };
 
-	void init( KAccelActions& actions, ActionType type, bool bAllowLetterShortcuts );
+	void init( KActionCollection*, KAccelActions*, ActionType type, bool bAllowLetterShortcuts );
 	void buildListView();
 
 	void readGlobalKeys();
@@ -120,7 +121,7 @@ class KKeyChooser : public QWidget
 	void capturedShortcut( const KShortcut& cut );
 
  protected:
-	ActionType type;
+	ActionType m_type;
 	bool m_bAllowLetterShortcuts;
 	bool m_bAllowWinKey;
 	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
