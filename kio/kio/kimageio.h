@@ -29,6 +29,7 @@
  * Currently supported formats include:
  * @li BMP     \<read\> \<write\>
  * @li EPS     \<read\> \<write\>
+ * @li EXR     \<read\>
  * @li G3      \<read\>
  * @li GIF     \<read\>
  * @li ICO     \<read\>
