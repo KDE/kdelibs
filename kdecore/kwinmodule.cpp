@@ -34,7 +34,7 @@ extern void kwin_net_create_atoms();
 
 static KWinModulePrivate* static_d = 0;
 
-class KWinModulePrivate : public QWidget, public NETRootInfo, public QShared
+class KWinModulePrivate : public QWidget, public NETRootInfo
 {
 public:
     KWinModulePrivate()
@@ -84,10 +84,7 @@ KWinModule::KWinModule( QObject* parent )
     if ( !static_d ) {
 	static_d = new KWinModulePrivate;
 	static_d->activate();
-    } else {
-	static_d->ref();
     }
-
     d = static_d;
     d->modules.append( this );
 
@@ -96,7 +93,7 @@ KWinModule::KWinModule( QObject* parent )
 KWinModule::~KWinModule()
 {
     d->modules.removeRef( this );
-    if ( d->deref() == 0 ) {
+    if ( d->modules.isEmpty() ) {
 	delete d;
 	static_d = 0;
     }
