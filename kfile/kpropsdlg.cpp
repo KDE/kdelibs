@@ -1174,7 +1174,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     {
       isMyFile = (strOwner == QString::fromLocal8Bit(myself->pw_name));
     } else
-      kdWarning() << "I don't exist !??!! geteuid=" << geteuid() << endl;
+      kdWarning() << "I don't exist ?! geteuid=" << geteuid() << endl;
   } else {
     //We don't know, for remote files, if they are ours or not.
     //So we let the user change permissions, and
