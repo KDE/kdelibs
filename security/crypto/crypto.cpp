@@ -79,7 +79,6 @@
 
 #include <ksslall.h>
 #include <kopenssl.h>
-#include <ksslsigners.h>
 
 #include "crypto.h"
 #include "certexport.h"
@@ -1801,6 +1800,15 @@ QString certtext;
 	qf.readLine(certtext, qf.size());
 
 	if (certtext.contains("-----BEGIN CERTIFICATE-----")) {
+		qf.reset();
+		certtext = "";
+		while (!qf.atEnd()) {
+			QString xx;
+			qf.readLine(xx, qf.size());
+			certtext += xx;
+		}
+		//certtext = certtext.replace(certtext.find("-----BEGIN CERTIFICATE-----"), 27, "");
+		//certtext = certtext.replace(certtext.find("-----END CERTIFICATE-----"), 25, "");
 		certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
 		certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
 		certtext = certtext.stripWhiteSpace();
@@ -1819,12 +1827,20 @@ QString certtext;
 	
 	qf.close();
 
-	x = KSSLCertificate::fromString(certtext.local8Bit());
+	kdDebug() << "CERT TEXT: " << certtext << endl;
+	x = KSSLCertificate::fromString(certtext.latin1());
 
 	if (!x) {
 		KMessageBox::sorry(this, 
 			i18n("The certificate file could not be loaded."), 
 			i18n("SSL"));
+		return;
+	}
+
+	if (!x->x509V3Extensions().certTypeCA()) {
+		KMessageBox::sorry(this,
+				i18n("This is not a signer certificate."),
+				i18n("SSL"));
 		return;
 	}
 
@@ -1909,17 +1925,23 @@ void KCryptoConfig::slotCAItemChanged() {
 CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);   
-    caSite->setEnabled(true);
-    caEmail->setEnabled(true);
-    caCode->setEnabled(true);
-    caSite->setChecked(x->getSite());
-    caEmail->setChecked(x->getEmail());
-    caCode->setChecked(x->getCode());
     caSubject->setValues(x ? x->getName() : QString(""));
     KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().local8Bit());
     if (!cert) {
        caIssuer->setValues(QString(""));
+       caSite->setEnabled(false);
+       caEmail->setEnabled(false);
+       caCode->setEnabled(false);
+       caSite->setChecked(false);
+       caEmail->setChecked(false);
+       caCode->setChecked(false);
     } else {
+       caSite->setEnabled(cert->x509V3Extensions().certTypeSSLCA());
+       caEmail->setEnabled(cert->x509V3Extensions().certTypeEmailCA());
+       caCode->setEnabled(cert->x509V3Extensions().certTypeCodeCA());
+       caSite->setChecked(x->getSite());
+       caEmail->setChecked(x->getEmail());
+       caCode->setChecked(x->getCode());
        caIssuer->setValues(cert->getIssuer());
        delete cert;
     }
