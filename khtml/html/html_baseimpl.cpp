@@ -122,8 +122,6 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBodyElementImpl::attach(KHTMLView *w)
 {
-    bool recalc = false;
-
     if(w->marginWidth() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());
@@ -305,14 +303,18 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
 	m_totalCols = m_cols->count();
 	break;
     case ATTR_FRAMEBORDER:
-	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
+	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 ) {
 	    frameborder = false;
+	    m_border = 0;
+	}
 	break;
     case ATTR_NORESIZE:
 	noresize = true;
 	break;
     case ATTR_BORDER:
 	m_border = attr->val()->toInt();
+	if(!m_border)
+	    frameborder = false;
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);

@@ -482,8 +482,6 @@ void RenderFrame::slotViewCleared()
         QScrollView *view = static_cast<QScrollView *>(m_widget);
         if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
-	if(m_frame->scrolling == QScrollView::AlwaysOff)
-	    kdDebug(6031) << "no scrollbar"<<endl;
         view->setVScrollBarMode(m_frame->scrolling);
         view->setHScrollBarMode(m_frame->scrolling);
         if(view->inherits("KHTMLView")) {
