@@ -797,8 +797,10 @@ namespace KIO {
          * Data from the slave has arrived.
 	 * @param job the job that emitted this signal
          * @param data data received from the slave.
-         * End of data (EOD) has been reached if data.size() == 0
-         */
+         * End of data (EOD) has been reached if data.size() == 0, however, you
+         * should not be certain of data.size() ever happening and just use signal
+         * @ref result()
+		 */
         void data( KIO::Job *job, const QByteArray &data);
 
         /**
