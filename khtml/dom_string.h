@@ -82,7 +82,7 @@ public:
      */
     const QChar &operator [](unsigned int i);
 
-    int find(const QChar c);
+    int find(const QChar c, int start = 0);
 
     uint length() const;
     void truncate( unsigned int len );
@@ -97,7 +97,7 @@ public:
 
     bool isNull() { return (impl == 0); }
     bool isEmpty();
-    
+
     /**
      * @internal get a handle to the imlementation of the DOMString
      * Use at own risk!!!

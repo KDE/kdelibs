@@ -68,9 +68,11 @@ protected:
 };
 
 // ----------------------------------------------------------------------------
-
+class HTMLElementImpl;
+    
 class TextImpl : public CharacterDataImpl
 {
+    friend class HTMLPreElementImpl;
 public:
     TextImpl(DocumentImpl *impl, const DOMString &_text);
     TextImpl(DocumentImpl *impl);
@@ -93,7 +95,7 @@ public:
 			int tx, int ty);
 
     void deleteSlaves();
-    
+
     khtml::TextSlave *first;
 
     // overrides

@@ -164,10 +164,11 @@ const QChar &DOMString::operator [](unsigned int i)
     return *(impl->s+i);
 }
 
-int DOMString::find(const QChar c)
+int DOMString::find(const QChar c, int start)
 {
-    unsigned int l = 0;
+    unsigned int l = start;
     if(!impl) return -1;
+    if( l > impl->l ) return -1;
     while( l < impl->l )
     {
 	if( *(impl->s+l) == c ) return l;
@@ -256,8 +257,8 @@ int DOM::strcasecmp( const DOMString &a, const DOMString &b )
 
 
 bool DOMString::isEmpty()
-{ 
-    if (impl == 0) return true; 
+{
+    if (impl == 0) return true;
     return (impl->l == 0);
 }
 

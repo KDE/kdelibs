@@ -71,7 +71,7 @@ public:
 
     virtual tagStatus startTag() { return DIVStartTag; }
     virtual tagStatus endTag() { return DIVEndTag; }
-    
+
     void parseAttribute(Attribute *token);
 };
 
@@ -93,9 +93,9 @@ public:
     virtual tagStatus endTag() { return HREndTag; }
 
     virtual void layout(bool deep = false);
-    virtual void print(QPainter *p, int x, int y, int w, int h, 
+    virtual void print(QPainter *p, int x, int y, int w, int h,
 		       int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h, 
+    virtual void printObject(QPainter *p, int x, int y, int w, int h,
 		       int xoff, int yoff);
 
 protected:
@@ -115,7 +115,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-    
+
     virtual void layout(bool deep);
 
     virtual void setStyle(CSSStyle *currentStyle);
@@ -131,9 +131,9 @@ protected:
 // -------------------------------------------------------------------------
 
 /*
- * were not using HTMLBlockElementImpl as parent class, since a 
+ * were not using HTMLBlockElementImpl as parent class, since a
  * paragraph should be able to flow around aligned objects. Thus
- * a <p> element has to be inline, and is rendered by 
+ * a <p> element has to be inline, and is rendered by
  * HTMLBlockImpl::calcParagraph
  */
 class HTMLParagraphElementImpl : public HTMLElementImpl
@@ -169,7 +169,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    //virtual void layout( bool deep = false );
+    virtual void calcMinMaxWidth();
 
     virtual tagStatus startTag() { return PREStartTag; }
     virtual tagStatus endTag() { return PREEndTag; }

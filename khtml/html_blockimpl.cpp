@@ -29,6 +29,7 @@
 #include <qdrawutil.h>
 
 #include "dom_string.h"
+#include "dom_textimpl.h"
 #include "html_blockimpl.h"
 using namespace DOM;
 
@@ -62,7 +63,7 @@ ushort HTMLBlockquoteElementImpl::id() const
 void HTMLBlockquoteElementImpl::setAvailableWidth(int w)
 {
     if(w != -1)
-    { 
+    {
 	if(w != availableWidth + 2*BLOCKQUOTEINDENT)
 	    setLayouted(false);
 
@@ -428,4 +429,58 @@ void HTMLPreElementImpl::setStyle(CSSStyle *s)
 {
     s->font.family = pSettings->fixedFontFace;
     _style = new CSSStyle(*s);
+}
+
+void HTMLPreElementImpl::calcMinMaxWidth()
+{
+#ifdef DEBUG_LAYOUT
+    printf("%s(PreElement)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
+#endif
+
+    if(minMaxKnown()) return;
+
+    minWidth = 0;
+    maxWidth = 0;
+
+    int inlineMax=0;
+    int inlineMin=0;
+
+    NodeImpl *child = firstChild();
+    while(child)
+    {
+	if(child->isTextNode())
+	{
+	    TextImpl *t = static_cast<TextImpl *>(child);
+	    // we can only break at \n's in pre
+	    int pos = 0;
+	    int pos2 = 0;
+	    while((pos2 = t->data().find('\n', pos)) != -1)
+	    {
+		QFontMetrics fm(*t->font);
+		inlineMin += fm.width('a')*(pos2-pos); // can do this because <pre> is fixed width
+		inlineMax += fm.width('a')*(pos2-pos);
+		if(minWidth < inlineMin) minWidth = inlineMin;
+		if(maxWidth < inlineMax) maxWidth = inlineMax;
+		inlineMin=0;
+		inlineMax=0;
+		pos = pos2 + 1;
+	    }
+	}
+	else if(child->firstChild() == 0)
+	{
+	    inlineMin+=child->getMinWidth();
+	    inlineMax+=child->getMaxWidth();
+	}
+	NodeImpl *next = child->firstChild();
+	if(!next) next = child->nextSibling();
+	while(child != this && !next)
+	{
+	    child = child->parentNode();
+	    next = child->nextSibling();
+	}
+	child = next;
+    }		
+    if(minWidth < inlineMin) minWidth = inlineMin;
+    if(maxWidth < inlineMax) maxWidth = inlineMax;
+    if(maxWidth < minWidth) maxWidth = minWidth;
 }
