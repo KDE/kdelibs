@@ -40,6 +40,7 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   addItem( "MouseActionmid", itemMouseAction );
   itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "left_mouse_action", mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
   addItem( "MouseActionleft", itemMouseAction );
+  addItemString( "FooBar", mFooBar, "", "foo bar" );
 }
 
 Test4::~Test4()

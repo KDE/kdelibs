@@ -29,6 +29,7 @@
       <default param="mid">Encrypt</default>
       <default param="left">PumpNDump</default>
     </entry>
+    <entry name="FooBar" key="foo bar" type="String"/>
   </group>
 
 </kcfg>

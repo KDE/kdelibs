@@ -519,7 +519,7 @@ QString cppType( const QString &type )
 
 QString defaultValue( const QString &type )
 {
-    if ( type == "String" )           return "QString::null";
+    if ( type == "String" )           return "\"\""; // Use empty string, not null string!
     else if ( type == "StringList" )  return "QStringList()";
     else if ( type == "Font" )        return "KGlobalSettings::generalFont()";
     else if ( type == "Rect" )        return "QRect()";
@@ -535,7 +535,7 @@ QString defaultValue( const QString &type )
     else if ( type == "UInt64" )      return "0";
     else if ( type == "IntList" )     return "QValueList<int>()";
     else if ( type == "Enum" )        return "0";
-    else if ( type == "Path" )        return "QString::null";
+    else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
     else {
         kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better

@@ -60,6 +60,25 @@ class Test4 : public KConfigSkeleton
       return self()->mMouseAction[i];
     }
 
+    /**
+      Set foo bar
+    */
+    static
+    void setFooBar( const QString & v )
+    {
+      if (!self()->isImmutable( "FooBar" ))
+        self()->mFooBar = v;
+    }
+
+    /**
+      Get foo bar
+    */
+    static
+    QString fooBar()
+    {
+      return self()->mFooBar;
+    }
+
     static
     void writeConfig()
     {
@@ -73,6 +92,7 @@ class Test4 : public KConfigSkeleton
     // Foo
     QColor mColor[4];
     int mMouseAction[3];
+    QString mFooBar;
 
   private:
 };
