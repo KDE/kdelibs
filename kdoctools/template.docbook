@@ -1,14 +1,23 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
-  <!ENTITY kappname "&kapp;"><!-- replace kapp here, do *not* replace kappname-->
-  <!ENTITY package "kde-module"><!-- kdebase, kdeadmin, etc -->
+  <!-- Define an entity for your application if it is not part of KDE
+       CVS -->
+  <!ENTITY kmyapplication "<application>KMyApp</application>">
+  <!ENTITY kappname "&kmyapplication;"><!-- replace kmyapplication here
+                                            do *not* replace kappname-->
+  <!ENTITY package "kde-module"><!-- kdebase, kdeadmin, etc.  Leave
+                                     this unchanged if your
+                                     application is not maintained in KDE CVS -->
   <!ENTITY % addindex "IGNORE">
-  <!ENTITY % English "INCLUDE"><!-- change language only here -->
+  <!ENTITY % English "INCLUDE"> <!-- ONLY If you are writing non-English 
+                                     original documentation, change 
+                                     the language here -->
     
   <!-- Do not define any other entities; instead, use the entities
        from entities/general.entities and $LANG/user.entities. -->
 ]>
-<!-- kdoctemplate v0.8 October 1 1999 
+<!-- kdoctemplate v0.9 January 10 2003
+     Changes to comments to clarify entity usage January 10 2003
      Minor update to "Credits and Licenses" section on August 24, 2000
      Removed "Revision history" section on 22 January 2001
      Changed to Installation/Help menu entities 18 October 2001
@@ -35,14 +44,15 @@ thanks ;-).
 <!-- ................................................................ -->
 
 <!-- The language must NOT be changed here. -->
-
+<!-- If you are writing original documentation in a language other -->
+<!-- than English, change the language above ONLY, not here -->
 <book lang="&language;">
 
 <!-- This header contains all of the meta-information for the document such
 as Authors, publish date, the abstract, and Keywords -->
 
 <bookinfo>
-<title>The &kapp; Handbook</title>
+<title>The &kmyapplication; Handbook</title>
 
 <authorgroup>
 <author>
@@ -79,14 +89,14 @@ Please respect the format of the date (YYYY-MM-DD) and of the version
 (V.MM.LL), it could be used by automation scripts.
 Do NOT change these in the translation. -->
 
-<date>2002-11-29</date>
+<date>2003-01-10</date>
 <releaseinfo>1.01.00</releaseinfo>
 
 <!-- Abstract about this handbook -->
 
 <abstract>
 <para>
-&kapp; is an application specially designed to do nothing you would
+&kmyapplication; is an application specially designed to do nothing you would
 ever want.
 </para>
 </abstract>
@@ -123,13 +133,13 @@ problems. Basically a long version of the abstract.  Don't include a
 revision history. (see installation appendix comment) -->
 
 <para>
-&kapp; is a program that lets you do absolutely nothing. Please report
+&kmyapplication; is a program that lets you do absolutely nothing. Please report
 any problems or feature requests to the &kde; mailing lists.
 </para>
 </chapter>
 
 <chapter id="using-kapp">
-<title>Using &kapp;</title>
+<title>Using &kmyapplication;</title>
 
 <!-- This chapter should tell the user how to use your app. You should use as
 many sections (Chapter, Sect1, Sect3, etc...) as is necessary to fully document
@@ -141,7 +151,7 @@ your application. -->
 patent issues. -->
 
 <screenshot>
-<screeninfo>Here's a screenshot of &kapp;</screeninfo>
+<screeninfo>Here's a screenshot of &kmyapplication;</screeninfo>
 	<mediaobject>
 	  <imageobject>
 	    <imagedata fileref="screenshot.png" format="PNG"/>
@@ -158,7 +168,7 @@ patent issues. -->
 
 
 <sect1 id="kapp-features">
-<title>More &kapp; features</title>
+<title>More &kmyapplication; features</title>
 
 <para>It slices! It dices! and it comes with a free toaster!</para>
 <para>
@@ -173,7 +183,7 @@ The Squiggle Tool <guiicon><inlinemediaobject>
 	    <phrase>Squiggle</phrase>
 	  </textobject>
 </inlinemediaobject></guiicon> is used to draw squiggly lines all over
-the &kapp; main window. It's not a bug, it's a feature!
+the &kmyapplication; main window. It's not a bug, it's a feature!
 </para>
 
 </sect1>
@@ -189,7 +199,7 @@ menus or toolbars. This may not be necessary for small apps or apps with no tool
 or menu bars. -->
 
 <sect1 id="kapp-mainwindow">
-<title>The main &kapp; window</title>
+<title>The main &kmyapplication; window</title>
 
 <sect2>
 <title>The File Menu</title>
@@ -223,7 +233,7 @@ or menu bars. -->
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Quits</action> &kapp;</para></listitem>
+<listitem><para><action>Quits</action> &kmyapplication;</para></listitem>
 </varlistentry>
 </variablelist>
 </para>
@@ -234,7 +244,7 @@ or menu bars. -->
 <title>The <guimenu>Help</guimenu> Menu</title>
 
 <!-- Assuming you have a standard help menu (help, what's this, about -->
-<!-- &kapp;, about KDE) then the documentation is already written. -->
+<!-- &kmyapplication;, about KDE) then the documentation is already written. -->
 <!-- The following entity is valid anywhere that a variablelist is -->
 <!-- valid.  -->
 
@@ -246,14 +256,14 @@ or menu bars. -->
 </chapter>
 
 <chapter id="developers">
-<title>Developer's Guide to &kapp;</title>
+<title>Developer's Guide to &kmyapplication;</title>
 
 <!-- (OPTIONAL) A Programming/Scripting reference chapter should be
 used for apps that use plugins or that provide their own scripting hooks
 and/or development libraries. -->
 
 <para>
-Programming &kapp; plugins is a joy to behold. Just read through the next
+Programming &kmyapplication; plugins is a joy to behold. Just read through the next
 66 pages of API's to learn how!
 </para>
 
@@ -408,7 +418,7 @@ application work. -->
 <qandaset id="faqlist">
 <qandaentry>
 <question>
-<para>My Mouse doesn't work. How do I quit &kapp;?</para>
+<para>My Mouse doesn't work. How do I quit &kmyapplication;?</para>
 </question>
 <answer>
 <para>You silly goose! Check out the <link linkend="commands">Commands
@@ -437,7 +447,7 @@ distribution. -->
 <title>Credits and License</title>
 
 <para>
-&kapp;
+&kmyapplication;
 </para>
 <para>
 Program copyright 1997 John Q. Hacker <email>jqh@kde.org</email>
@@ -453,7 +463,7 @@ Contributors:
 </para>
 
 <para>
-Documentation copyright 1999 George N. Ugnacious <email>gnu@kde.org</email>
+Documentation Copyright &copy; 1999 George N. Ugnacious <email>gnu@kde.org</email>
 </para>
 
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
@@ -477,7 +487,7 @@ Documentation copyright 1999 George N. Ugnacious <email>gnu@kde.org</email>
 <title>Installation</title>
 
 <sect1 id="getting-kapp">
-<title>How to obtain &kapp;</title>
+<title>How to obtain &kmyapplication;</title>
 
 <!-- This first entity contains boiler plate for applications that are
 part of KDE CVS.  You should remove it if you are releasing your
@@ -502,15 +512,15 @@ information here.
 -->
 
 <para>
-In order to successfully use &kapp;, you need &kde; 1.1. Foobar.lib is
-required in order to support the advanced &kapp; features. &kapp; uses
+In order to successfully use &kmyapplication;, you need &kde; 1.1. Foobar.lib is
+required in order to support the advanced &kmyapplication; features. &kmyapplication; uses
 about 5 megs of memory to run, but this may vary depending on your
 platform and configuration.
 </para>
 
 <para>
-All required libraries as well as &kapp; itself can be found
-on <ulink url="ftp://ftp.kapp.org">The &kapp; home page</ulink>.
+All required libraries as well as &kmyapplication; itself can be found
+on <ulink url="ftp://ftp.kapp.org">The &kmyapplication; home page</ulink>.
 </para>
 
 <!-- For a list of updates, you may refer to the application web site
@@ -536,7 +546,7 @@ url="http://apps.kde.org/kapp">http://apps.kde.org/kapp</ulink>.
 <title>Configuration</title>
 
 <para>Don't forget to tell your system to start the <filename>dtd</filename>
-dicer-toaster daemon first, or &kapp; won't work !</para>
+dicer-toaster daemon first, or &kmyapplication; won't work !</para>
 
 </sect1>
 
