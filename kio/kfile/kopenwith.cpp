@@ -223,8 +223,6 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
          text = serviceGroup->caption();
          relPath = serviceGroup->relPath();
          isDir = true;
-         if ( text[0] == '.' ) // skip ".hidden" like kicker does
-           continue;
       }
       else
       {
