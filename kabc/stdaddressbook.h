@@ -32,7 +32,7 @@ namespace KABC {
   applications.
  
   It's implemented as a singleton. Use @ref self() to get the address book
-  object.
+  object. On the first self() call the address book also gets loaded.
   
   Example:
  
@@ -63,7 +63,8 @@ class StdAddressBook : public AddressBook
     ~StdAddressBook();
 
     /**
-      Return the standard addressbook object.
+      Return the standard addressbook object. It also loads slow resources.
+      It is the same as self(false); .
     */
     static StdAddressBook *self();
 
@@ -73,6 +74,7 @@ class StdAddressBook : public AddressBook
 
       @param onlyFastResource Only resources marked as 'fast' should be loaded
     */
+    // FIXME for KDE4 return StdAddressBook and merge with the metod above -zecke
     static StdAddressBook *self( bool onlyFastResources );
 
     /**
