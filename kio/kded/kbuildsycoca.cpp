@@ -303,6 +303,7 @@ static const char *appVersion = "1.0";
 
 int main(int argc, char **argv)
 {
+   KLocale::setMainCatalogue("kdelibs");
    //time_t Time1 = time(0);
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
