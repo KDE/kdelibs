@@ -1133,7 +1133,6 @@ void KXMLGUIFactory::processStateElement( const QDomElement &element )
 void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );
-    static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
 
     QDomElement e = actionPropElement.firstChild().toElement();
     for (; !e.isNull(); e = e.nextSibling().toElement() )
@@ -1145,36 +1144,48 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
         if ( !action )
             continue;
 
-        QDomNamedNodeMap attributes = e.attributes();
-        for ( uint i = 0; i < attributes.length(); i++ )
-        {
-            QDomAttr attr = attributes.item( i ).toAttr();
-            if ( attr.isNull() )
-                continue;
-            QString attrName = attr.name();
-
-            //don't let someone change the name of the action! (Simon)
-            if ( attr.name() == d->attrName )
-                continue;
-
-            QVariant propertyValue;
-
-            QVariant::Type propertyType = action->property( attr.name().latin1() ).type();
-
-            // If the attribute is a depricated "accel", change to "shortcut".
-            if ( attrName.lower() == "accel" )
-                attrName = attrShortcut;
-
-            if ( propertyType == QVariant::Int )
-                propertyValue = QVariant( attr.value().toInt() );
-            else if ( propertyType == QVariant::UInt )
-                propertyValue = QVariant( attr.value().toUInt() );
-            else
-                propertyValue = QVariant( attr.value() );
-
-            action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
-        }
+        configureAction( action, e.attributes() );
     }
+}
+
+void KXMLGUIFactory::configureAction( KAction *action, const QDomNamedNodeMap &attributes )
+{
+    for ( uint i = 0; i < attributes.length(); i++ )
+    {
+        QDomAttr attr = attributes.item( i ).toAttr();
+        if ( attr.isNull() )
+            continue;
+
+        configureAction( action, attr );
+    }
+}
+
+void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute )
+{
+    static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
+
+    QString attrName = attribute.name();
+
+    //don't let someone change the name of the action! (Simon)
+    if ( attribute.name() == d->attrName )
+        return;
+
+    QVariant propertyValue;
+
+    QVariant::Type propertyType = action->property( attribute.name().latin1() ).type();
+
+    // If the attribute is a depricated "accel", change to "shortcut".
+    if ( attrName.lower() == "accel" )
+        attrName = attrShortcut;
+
+    if ( propertyType == QVariant::Int )
+        propertyValue = QVariant( attribute.value().toInt() );
+    else if ( propertyType == QVariant::UInt )
+        propertyValue = QVariant( attribute.value().toUInt() );
+    else
+        propertyValue = QVariant( attribute.value() );
+
+    action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
 }
 
 #include "kxmlguifactory.moc"
