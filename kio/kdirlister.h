@@ -194,7 +194,9 @@ public:
   KFileItem * rootItem() const { return m_rootFileItem; }
 
   /**
-   * ## problem, if there are more jobs running (merge?)
+   * Returns the job currently running, if any (this can return 0L).
+   * If many jobs are concurrently running, this returns one of the currently
+   * running jobs (!).
    */
   KIO::ListJob * job() const { return m_job; }
 
@@ -330,7 +332,6 @@ signals:
   /**
    * Tell the view that the listing of the directory @p _url is finished.
    * There might be other running jobs left.
-   * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
   void completed( const KURL& _url );
@@ -343,7 +344,6 @@ signals:
   /**
    * Tell the view that the listing of the directory @p _url was canceled.
    * There might be other running jobs left.
-   * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
   void canceled( const KURL& _url );

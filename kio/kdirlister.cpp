@@ -159,7 +159,8 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     return;
   }
 
-  m_url = _url;
+  if ( !_keep )
+    m_url = _url;
 
   m_bComplete = false;
   d->urlChanged = false;
@@ -261,15 +262,13 @@ void KDirLister::slotResult( KIO::Job* j )
   {
     job->showErrorDialog();
 
-    if ( m_lstDirs.count() > 1 )
-      emit canceled( job->url() );
+    emit canceled( job->url() );
     if ( m_bComplete )
       emit canceled();
   }
   else
   {
-    if ( m_lstDirs.count() > 1 )
-      emit completed( job->url() );
+    emit completed( job->url() );
     if ( m_bComplete )
       emit completed();
   }
@@ -308,7 +307,7 @@ void KDirLister::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
 
     if ( name == dot )
     {
-      if ( !m_rootFileItem ) // only if we didn't keep the previous dir
+      if ( !m_rootFileItem && url == m_url ) // only if we didn't keep the previous dir
       {
         m_rootFileItem = createFileItem( *it, url, m_bDelayedMimeTypes );
       }
