@@ -141,7 +141,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QWhatsThis::add( familyCheckbox, familyCBWhatsThisText );
     QToolTip::add(   familyCheckbox, familyCBToolTipText );
   } else {
-    familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
+    familyLabel = new QLabel( i18n("Font:"), page, "familyLabel" );
     familyLayout->addWidget(familyLabel, 1, Qt::AlignLeft);
   }
   gridLayout->addLayout(familyLayout, row, 0 );
@@ -158,7 +158,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QWhatsThis::add( styleCheckbox, styleCBWhatsThisText );
     QToolTip::add(   styleCheckbox, styleCBToolTipText );
   } else {
-    styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
+    styleLabel = new QLabel( i18n("Font style:"), page, "styleLabel");
     styleLayout->addWidget(styleLabel, 1, Qt::AlignLeft);
   }
   styleLayout->addSpacing( checkBoxGap );
@@ -176,7 +176,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QWhatsThis::add( sizeCheckbox, sizeCBWhatsThisText );
     QToolTip::add(   sizeCheckbox, sizeCBToolTipText );
   } else {
-    sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
+    sizeLabel = new QLabel( i18n("Size:"), page, "sizeLabel");
     sizeLayout->addWidget(sizeLabel, 1, Qt::AlignLeft);
   }
   sizeLayout->addSpacing( checkBoxGap );
