@@ -276,8 +276,11 @@ void KURLBar::setListBox( KURLBarListBox *view )
     m_listBox->setSelectionMode( KListBox::Single );
     QPalette pal = palette();
     QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
+    QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
     pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
     pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
+    pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
 
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
