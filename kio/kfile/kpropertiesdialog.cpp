@@ -424,10 +424,18 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
+
   if ( KFileSharePropsPlugin::supports( m_items ) )
   {
-    KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
-    insertPlugin (p);
+
+      QString path = m_items.first()->url().path(-1);
+      bool isLocal = m_items.first()->url().isLocalFile();
+      bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
+      if ( !isIntoTrash )
+      {
+          KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
+          insertPlugin (p);
+      }
   }
 
   //plugins
