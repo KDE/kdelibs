@@ -135,6 +135,11 @@ X509 *x = NULL;
 
   assert(_pkcs);   // if you're calling this before pkcs gets set, it's a BUG!
 
+   if (_pkey) kossl->EVP_PKEY_free(_pkey);
+   if (_caStack) sk_X509_free(_caStack);
+   _pkey = NULL;
+   _caStack = NULL;
+
   int rc = kossl->PKCS12_parse(_pkcs, pass.latin1(), &_pkey, &x, &_caStack);
 
   if (rc == 1) {
@@ -143,10 +148,13 @@ X509 *x = NULL;
         _cert = new KSSLCertificate;
         _cert->setCert(x);
         if (_caStack) {
-           _cert->setChain(_caStack);
+           _cert->setChain(sk_X509_dup((STACK_OF(X509)*)_caStack));
         }
         return true;
      }
+  } else {
+    _caStack = NULL;
+    _pkey = NULL;
   }
 #endif
 return false;  
