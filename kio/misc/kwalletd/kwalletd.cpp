@@ -128,11 +128,11 @@ bool brandNew = false;
 			KPasswordDialog *kpd;
 			if (KWallet::Backend::exists(wallet)) {
 				b = new KWallet::Backend(wallet);
-				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'.  Please enter the password for this wallet below if you wish to open it, or cancel to deny access.").arg(dc->senderId()).arg(wallet), false);
+				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below if you wish to open it, or cancel to deny access.").arg(dc->senderId()).arg(wallet), false);
 				brandNew = true;
 			} else {
 				b = new KWallet::Backend(wallet);
-				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'.  Please choose a password for this wallet, or cancel to deny the application's request.").arg(dc->senderId()).arg(wallet), false);
+				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(dc->senderId()).arg(wallet), false);
 			}
 			kpd->setCaption(i18n("KDE Wallet Service"));
 			const char *p = 0L;
@@ -164,7 +164,7 @@ bool brandNew = false;
 			int response = KMessageBox::Yes;
 			
 			if (_openPrompt && !_handles[dc->senderId()].contains(rc)) {
-				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'.  Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
+				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'. Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
 			}
 
 			if (response == KMessageBox::Yes) {
@@ -212,7 +212,7 @@ bool reclose = false;
 	if (!it.current()) {
 		handle = open(wallet);
 		if (-1 == handle) {
-			KMessageBox::sorry(0, i18n("Unable to open wallet.  The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
+			KMessageBox::sorry(0, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
 		}
 
@@ -236,12 +236,12 @@ bool reclose = false;
 			pa.duplicate(p, strlen(p));
 			int rc = w->close(pa);
 			if (rc < 0) {
-				KMessageBox::sorry(0, i18n("Error re-encrypting the wallet.  Password was not changed."), i18n("KDE Wallet Service"));
+				KMessageBox::sorry(0, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
 				reclose = true;
 			} else {
 				rc = w->open(pa);
 				if (rc < 0) {
-					KMessageBox::sorry(0, i18n("Error reopening the wallet.  Data may be lost."), i18n("KDE Wallet Service"));
+					KMessageBox::sorry(0, i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
 					reclose = true;
 				}
 			}
@@ -645,7 +645,7 @@ KWallet::Backend *w = _wallets.find(handle);
 	}
 
 	if (++_failed > 5) {
-		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet.  An application may be misbehaving."), i18n("KDE Wallet Service"));
+		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
 		_failed = 0;
 	}
 
