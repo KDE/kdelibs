@@ -291,7 +291,7 @@ void KFileReader::startLoading()
     if (myJob != 0) // sorry, get out of my way
 	myJob->kill();
     // debug("KFileReader::startLoading( %s )", this->url().latin1());
-    myJob = KIO::listDir(*this);
+    myJob = KIO::listDir(*this, false /* no progress info */);
     CHECK_PTR(myJob);
 
     connect(myJob, SIGNAL(result(KIO::Job*)),
