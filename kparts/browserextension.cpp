@@ -23,6 +23,7 @@
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qstrlist.h>
+
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 #include <assert.h>
@@ -60,12 +61,14 @@ struct URLArgsPrivate
 {
     URLArgsPrivate() {
       doPost = false;
+      redirectedRequest = false;
       lockHistory = false;
       newTab = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
+    bool redirectedRequest;
     bool lockHistory;
     bool newTab;
 };
@@ -120,7 +123,8 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
 
 URLArgs::~URLArgs()
 {
-  delete d; d = 0;
+  delete d;
+  d = 0;
 }
 
 void URLArgs::setContentType( const QString & contentType )
@@ -128,6 +132,18 @@ void URLArgs::setContentType( const QString & contentType )
   if (!d)
     d = new URLArgsPrivate;
   d->contentType = contentType;
+}
+
+void URLArgs::setEnableRedirectedRequest( bool enable )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->redirectedRequest = enable;
+}
+
+bool URLArgs::redirectedRequest ()
+{
+  return d ? d->redirectedRequest : false;
 }
 
 QString URLArgs::contentType() const
@@ -177,6 +193,7 @@ bool URLArgs::newTab() const
 {
     return d ? d->newTab : false;
 }
+
 
 namespace KParts
 {

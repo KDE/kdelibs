@@ -92,6 +92,7 @@ struct URLArgs
    * KHTML-specific field, contents of the HTTP POST data.
    */
   QByteArray postData;
+  
   /**
    * KHTML-specific field, header defining the type of the POST data.
    */
@@ -105,6 +106,7 @@ struct URLArgs
    * for the next openURL.
    */
   void setDoPost( bool enable );
+  
   /**
    * KHTML-specific field, whether to do a POST instead of a GET,
    * for the next openURL.
@@ -142,6 +144,19 @@ struct URLArgs
    * 'trusted' whereas HTML pages are not trusted in that respect.
    */
   bool trustedSource;
+
+  /**
+   * @return true if the request was a result of a META refresh/redirect request.
+   */
+  bool redirectedRequest ();
+
+  /**
+   * Set the redirect flag to indicate URL is a result of a META
+   * redirect request.
+   *
+   * @param enable
+   */
+  void setEnableRedirectedRequest (bool enable);
 
   URLArgsPrivate *d;
 };
