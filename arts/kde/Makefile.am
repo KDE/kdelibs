@@ -1,4 +1,5 @@
-SUBDIRS = . mcop-dcop
+#SUBDIRS = . mcop-dcop
+SUBDIRS = . 
 INCLUDES = -I$(top_srcdir)/arts \
 		   -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/qtmcop -I$(top_srcdir)/arts/flow \
            -I$(top_builddir)/arts/flow \
