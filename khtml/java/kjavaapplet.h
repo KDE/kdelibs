@@ -52,7 +52,6 @@ class KJavaLiveConnect : public KParts::LiveConnectExtension
 Q_OBJECT
 
 public:
-
     KJavaLiveConnect(KJavaAppletContext*, KJavaApplet*);
 
     bool get( const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
@@ -78,6 +77,17 @@ class KJavaApplet : public QObject
 Q_OBJECT
 
 public:
+    // states describing the life cycle of an applet.
+    // keep in sync with applet state in KJASAppletStub.java !
+    typedef enum {
+         UNKNOWN      = 0,
+         CLASS_LOADED = 1,
+         INSTANCIATED = 2,
+         INITIALIZED  = 3,
+         STARTED      = 4,
+         STOPPED      = 5,
+         DESTROYED    = 6
+    } AppletState;
     KJavaApplet( KJavaAppletWidget* _parent, KJavaAppletContext* _context = 0 );
     ~KJavaApplet();
 
@@ -219,8 +229,20 @@ public:
     void setAppletId( int id );
     
     KJavaAppletContext* getContext() const { return context; }
+    
+    /**
+    * called from the protocol engine
+    * changes the status according to the one on the java side.
+    * Do not call this yourself!
+    */
+    void stateChange ( const int newState );
+    void setFailed ();
+    AppletState state();
+    bool failed();
+    bool isAlive();
 
 private:
+    void showStatus( const QString &msg);
     KJavaAppletPrivate*    d;
     QMap<QString, QString> params;
     KJavaAppletContext*    context;

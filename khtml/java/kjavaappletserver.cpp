@@ -63,6 +63,8 @@
 #define KJAS_AUDIOCLIP_PLAY    (char)20
 #define KJAS_AUDIOCLIP_LOOP    (char)21
 #define KJAS_AUDIOCLIP_STOP    (char)22
+#define KJAS_APPLET_STATE      (char)23
+#define KJAS_APPLET_FAILED     (char)24
 
 
 class JSStackNode {
@@ -470,7 +472,14 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             cmd = QString::fromLatin1( "audioclip_stop" );
             kdDebug(6100) << "Audio Stop: url=" << args[0] << endl;
             break;
-
+        case KJAS_APPLET_STATE:
+            kdDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
+            cmd = QString::fromLatin1( "AppletStateNotification" );
+            break;
+        case KJAS_APPLET_FAILED:
+            kdDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
+            cmd = QString::fromLatin1( "AppletFailed" );
+            break;
         default:
             return;
             break;
@@ -491,10 +500,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             return;
         }
 
-        KJavaAppletContext* tmp = d->contexts[ contextID_num ];
-        if( tmp )
-            tmp->processCmd( cmd, args );
-        else
+        KJavaAppletContext* context = d->contexts[ contextID_num ];
+        if( context )
+            context->processCmd( cmd, args );
+        else if (cmd != "AppletStateNotification") 
             kdError(6100) << "no context object for this id" << endl;
     }
 }

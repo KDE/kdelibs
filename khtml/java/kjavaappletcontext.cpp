@@ -22,6 +22,8 @@
 #include "kjavaappletcontext.h"
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 #include <kdebug.h>
 #include <qmap.h>
 #include <qguardedptr.h>
@@ -189,7 +191,40 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         } 
         else
             kdError(6002) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
-    } 
+    }
+    else if ( cmd == QString::fromLatin1( "AppletStateNotification" ) )
+    {
+        bool ok;
+        int appletID = arg[0].toInt(&ok);
+        if (ok)
+        {
+            KJavaApplet * applet = d->applets[appletID];
+            int newState   = arg[1].toInt(&ok);
+            if (ok)
+            {
+                applet->stateChange(newState);
+            } else {
+                kdError(6002) << "AppletStateNotification: status is not numerical" << endl;
+            }
+        } else {
+            kdWarning(6002) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
+        }
+            
+    }
+    else if ( cmd == QString::fromLatin1( "AppletFailed" ) ) {
+        bool ok;
+        int appletID = arg[0].toInt(&ok);
+        if (ok)
+        {
+            KJavaApplet * applet = d->applets[appletID];
+            /*
+            QString errorDetail(arg[1]);
+            errorDetail.replace(QRegExp(":\\s*"), ":\n");
+            KMessageBox::detailedError(0L, i18n("Java error while loading applet."), errorDetail);
+            */
+            applet->setFailed();
+        }
+    }
 }
 
 bool KJavaAppletContext::getMember(KJavaApplet * applet, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {

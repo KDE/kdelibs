@@ -22,12 +22,15 @@
 #include "kjavaappletwidget.h"
 #include "kjavaappletcontext.h"
 
+#include <klocale.h>
 #include <kdebug.h>
+
+
+
 
 class KJavaAppletPrivate
 {
-friend class KJavaApplet;
-private:
+public:
    bool    reallyExists;
    QString className;
    QString appName;
@@ -36,6 +39,8 @@ private:
    QString archives;
    QSize   size;
    QString windowName;
+   KJavaApplet::AppletState state;
+   bool    failed;
 
    KJavaAppletWidget* UIwidget;
 };
@@ -48,6 +53,8 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
     d = new KJavaAppletPrivate;
 
     d->UIwidget = _parent;
+    d->state = UNKNOWN;
+    d->failed = false;
 
     if( _context )
         context = _context;
@@ -202,7 +209,8 @@ KJavaLiveConnect::KJavaLiveConnect(KJavaAppletContext* c, KJavaApplet* a)
 
 bool KJavaLiveConnect::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & rid, QString & value )
 {
-    //return context->getMember(applet, objid, field, (int&) type, rid, value);
+    if (!applet->isAlive())
+        return false;
     int itype;
     bool ret = context->getMember(applet, objid, field, itype, rid, value);
     type = (KParts::LiveConnectExtension::Type) itype;
@@ -211,11 +219,15 @@ bool KJavaLiveConnect::get(const unsigned long objid, const QString & field, KPa
 
 bool KJavaLiveConnect::put(const unsigned long objid, const QString & name, const QString & value)
 {
+    if (!applet->isAlive())
+        return false;
     return context->putMember(applet, objid, name, value);
 }
 
 bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value )
 {
+    if (!applet->isAlive())
+        return false;
     int itype;
     bool ret = context->callMember(applet, objid, func, args, itype, retobjid, value);
     type = (KParts::LiveConnectExtension::Type) itype;
@@ -225,6 +237,85 @@ bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, co
 void KJavaLiveConnect::unregister(const unsigned long objid)
 {
     context->derefObject(applet, objid);
+}
+
+void KJavaApplet::stateChange( const int newStateInt ) {
+    AppletState newState = (AppletState)newStateInt;
+    bool ok = false;
+    if (d->failed) {
+        return;
+    }
+    switch ( newState ) {
+        case CLASS_LOADED:
+            ok = (d->state == UNKNOWN);
+            break;
+        case INSTANCIATED:
+            if (ok) {
+                // FIXME enable after 3.1
+                //showStatus(i18n("Java Applet \"$1\" loaded").arg(appletName()));
+            }
+            ok = (d->state == CLASS_LOADED);
+            break;
+        case INITIALIZED:
+            ok = (d->state == INSTANCIATED);
+            if (ok) { 
+                // FIXME enable after 3.1
+                //showStatus(i18n("Java Applet \"%1\" initialized").arg(appletName()));
+                start();
+            }
+            break;
+        case STARTED:
+            ok = (d->state == INITIALIZED || d->state == STOPPED);
+            if (ok) {    
+                // FIXME enable after 3.1
+                //showStatus(i18n("Java Applet \"%1\" started").arg(appletName()));
+            }
+            break;
+        case STOPPED:
+            ok = (d->state == INITIALIZED || d->state == STARTED);
+            if (ok) {    
+                // FIXME enable after 3.1
+                //showStatus(i18n("Java Applet \"%1\" stopped").arg(appletName()));
+            }
+            break;
+        case DESTROYED:
+            ok = true;
+            break;
+        default:
+            break;
+    }
+    if (ok) {
+        d->state = newState;
+    } else {
+        kdError(6100) << "KJavaApplet::stateChange : don't want to switch from state "
+            << d->state << " to " << newState << endl;
+    } 
+}
+
+void KJavaApplet::showStatus(const QString &msg) {
+    QStringList args;
+    args << msg;
+    context->processCmd("showstatus", args); 
+}
+
+void KJavaApplet::setFailed() {
+    d->failed = true;
+}
+
+bool KJavaApplet::isAlive() {
+   return (
+        !d->failed 
+        && d->state >= INSTANCIATED
+        && d->state < DESTROYED
+   ); 
+}
+
+KJavaApplet::AppletState KJavaApplet::state() {
+    return d->state;
+}
+
+bool KJavaApplet::failed() {
+    return d->failed;
 }
 
 #include "kjavaapplet.moc"
