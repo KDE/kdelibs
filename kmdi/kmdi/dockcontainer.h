@@ -44,13 +44,49 @@ class DockContainer: public QWidget, public KDockContainer
     DockContainer(QWidget *parent, QWidget *win, int position, int flags);
     virtual ~DockContainer();
 
+    /** Get the KDockWidget that is our parent */
     KDockWidget *parentDockWidget();
 
+    /**
+     * Add a widget to this container.
+     * \param w the KDockWidget object to add
+     * \TODO Remove the extra parameters that we don't use?
+     */
     virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
+
+    /**
+     * Show a KDockWidget in our DockContainer
+     * \param w the KDockWidget to show
+     */
     virtual void showWidget (KDockWidget *w);
+
+    /**
+     * Set a tooltip for a widget
+     *
+     * \TODO Actually implement it? Right now, it looks just it
+     * does exactly nothing
+     */
     virtual void setToolTip (KDockWidget *, QString &);
-    virtual void setPixmap(KDockWidget*,const QPixmap&);
-    virtual void undockWidget(KDockWidget*);
+
+    /**
+     * Set a pixmap for one of our dock widgets
+     * \param widget the KDockWidget to set the pixmap for
+     * \param pixmap the pixmap you want to give the widget
+     */
+    virtual void setPixmap(KDockWidget* widget, const QPixmap& pixmap);
+
+    /**
+     * Undock a widget from the container. This function is called
+     * when you've dragged a tab off the dock it's attached to. 
+     * \param dwdg the KDockWidget to undock
+     */
+    virtual void undockWidget(KDockWidget* dwdg);
+
+    /**
+     * Remove a widget from the container. The caller
+     * of this function is responsible for deleting the widget after calling
+     * this function.
+     */
     virtual void removeWidget(KDockWidget*);
 
     void hideIfNeeded();

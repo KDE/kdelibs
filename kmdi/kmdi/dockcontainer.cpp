@@ -343,6 +343,8 @@ void DockContainer::removeWidget(KDockWidget* dwdg)
   if (!m_map.contains(w)) return;
   int id=m_map[w];
   if (m_tb->isTabRaised(id)) {
+    //why do we hide the tab if we're just going
+    //to remove it? - mattr 2004-10-26
           m_tb->setTab(id,false);
           tabClicked(id);
   }
