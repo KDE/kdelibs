@@ -713,22 +713,24 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       break;
     case QVariant::IntList:
 
-      iIt = prop.intListValue().begin();
-      iEnd = prop.intListValue().end();
+      intList = prop.intListValue();
+      iIt = intList.begin();
+      iEnd = intList.end();
 
       for (; iIt != iEnd; ++iIt )
-        strList.append( QString().setNum( *iIt ) );
+        strList.append( QString::number( *iIt ) );
 	
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
 
       break;
     case QVariant::DoubleList:
 
-      dIt = prop.doubleListValue().begin();
-      dEnd = prop.doubleListValue().end();
+      doubleList = prop.doubleListValue();
+      dIt = doubleList.begin();
+      dEnd = doubleList.end();
 
       for (; dIt != dEnd; ++dIt )
-        strList.append( QString().setNum( *dIt ) );
+        strList.append( QString::number( *dIt ) );
 	
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
 
