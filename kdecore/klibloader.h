@@ -113,7 +113,7 @@ private:
  * The KLibLoader allows you to load libraries dynamically at runtime.
  * Dependend libraries are loaded automatically.
  *
- * KLibLoader follows the singleton pattern. You can not creare multiple
+ * KLibLoader follows the singleton pattern. You can not create multiple
  * instances. Use @ref #self to get a pointer to the loader.
  *
  * @author Torben Weis <weis@kde.org>
