@@ -859,8 +859,7 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
 		"to the \"%2\" action.\n"
 		"Do you want to reassign it from that action to the current one?");
         }
-	s =
- s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
+	s = s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
 
 	return KMessageBox::warningYesNo( this, s, sTitle ) == KMessageBox::Yes;
 }
