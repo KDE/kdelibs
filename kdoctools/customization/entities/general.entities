@@ -129,6 +129,7 @@
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
+<!ENTITY email  "email">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
 <!ENTITY gcc	"<command>gcc</command>">
@@ -149,6 +150,7 @@
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
+<!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
@@ -298,7 +300,7 @@
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY SMTP	"<acronym>SMTP<acronym>">
+<!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
