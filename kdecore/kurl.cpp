@@ -216,8 +216,13 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
   }
   new_segment [ new_length ] = 0;
   QString result;
+  
+  if (isAscii)
+  {
+     result = QString( new_usegment, new_length);
+  }
   // Encoding specified
-  if ( encoding_hint )
+  else if ( encoding_hint )
   {
       QTextCodec * textCodec = codecForHint( encoding_hint );
       if (textCodec)
@@ -236,7 +241,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
   {
      result = QString::fromLocal8Bit(new_segment, new_length);
   }
-  else
+  // Fallback
+  else 
   {
      result = QString( new_usegment, new_length);
   }
@@ -1562,41 +1568,38 @@ void KURL::setQuery( const QString &_txt, int encoding_hint)
    else
       m_strQuery_encoded = _txt;
 
-   bool keepEncoded;
-   QString tmp = decode( m_strQuery_encoded, &keepEncoded, encoding_hint );
-   if (!keepEncoded)
+   int l = m_strQuery_encoded.length();
+   int i = 0;
+   QString result;
+   while (i < l)
    {
-      int l = m_strQuery_encoded.length();
-      int i = 0;
-      QString result;
-      while (i < l)
+      int s = i;
+      // Re-encode. Break encoded string up according to the reserved
+      // characters '&:;=/?' and re-encode part by part.
+      while(i < l)
       {
-         int s = i;
-         // Re-encode. Break encoded string up according to the reserved
-         // characters '&:;=/?' and re-encode part by part.
-         while(i < l)
-         {
-            char c = m_strQuery_encoded[i].latin1();
-            if ((c == '&') || (c == ':') || (c == ';') || 
-                (c == '=') || (c == '/') || (c == '?'))
-               break;
-            i++;
-         }
-         if (i > s)
-         {
-            tmp = m_strQuery_encoded.mid(s, i-s);
-            tmp = decode( tmp, 0, encoding_hint );
-            tmp = encode( tmp, false, encoding_hint);
-            result += tmp;
-         }
-         if (i < l)
-         {
-            result += m_strQuery_encoded[i];
-            i++;
-         }
+         char c = m_strQuery_encoded[i].latin1();
+         if ((c == '&') || (c == ':') || (c == ';') || 
+             (c == '=') || (c == '/') || (c == '?'))
+            break;
+         i++;
       }
-      m_strQuery_encoded = result;
+      if (i > s)
+      {
+         bool keepEncoded;
+         QString tmp = m_strQuery_encoded.mid(s, i-s);
+         QString newTmp = decode( tmp, &keepEncoded, encoding_hint );
+         if (!keepEncoded)
+            tmp = encode( newTmp, false, encoding_hint);
+         result += tmp;
+      }
+      if (i < l)
+      {
+         result += m_strQuery_encoded[i];
+         i++;
+      }
    }
+   m_strQuery_encoded = result;
 }
 
 QString KURL::query() const
