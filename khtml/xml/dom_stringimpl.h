@@ -37,6 +37,9 @@ namespace DOM {
 
 class DOMStringImpl : public khtml::Shared<DOMStringImpl>
 {
+private:
+    DOMStringImpl(const DOMStringImpl&);
+    DOMStringImpl& operator=(const DOMStringImpl&);
 protected:
     DOMStringImpl() { s = 0, l = 0; }
 public:
@@ -104,5 +107,5 @@ public:
     QChar *s;
 };
 
-};
+}
 #endif

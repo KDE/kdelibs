@@ -275,6 +275,7 @@ public:
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
     QString completeURL(const QString& url) const { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
+    DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
@@ -535,5 +536,5 @@ protected:
     DOMString m_subset;
 };
 
-}; //namespace
+} //namespace
 #endif

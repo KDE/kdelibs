@@ -151,5 +151,5 @@ protected:
 
 
 
-}; //namespace
+} //namespace
 #endif

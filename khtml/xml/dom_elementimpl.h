@@ -274,6 +274,6 @@ protected:
     unsigned long m_attrCount;
 };
 
-}; //namespace
+} //namespace
 
 #endif

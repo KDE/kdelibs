@@ -190,7 +190,7 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif
 
