@@ -80,7 +80,11 @@ public:
     int     bind        (int sockfd, sockaddr *my_addr, 
                                      ksocklen_t addrlen);
 
-
+   /*
+    *  If you're using this, you're probably doing something wrong.
+    *  Please don't use it.
+    */
+   void die();
 
 private:
    KSocks();

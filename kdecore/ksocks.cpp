@@ -360,6 +360,14 @@ KSocks::~KSocks() {
 }
 
 
+void KSocks::die() {
+  if (_me) {
+    _me = NULL;
+    delete this;
+  }
+}
+
+
 void KSocks::stopSocks() {
    if (_hasSocks) {
         // This library doesn't even provide the basics.
