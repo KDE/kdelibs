@@ -32,7 +32,7 @@ SUBDIRS = malloc $(SVGICONS) . tests
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a
 
-include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h \
+include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
 	kconfigbase.h kdesktopfile.h kurl.h ksock.h kaboutdata.h \
 	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
@@ -76,7 +76,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
 	kstandarddirs.cpp ksock.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
