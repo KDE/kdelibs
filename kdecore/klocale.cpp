@@ -301,7 +301,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     QString stmp;
     for(int i=0;_categories[i]!=0;i++) {
       stmp = QString(_categories[i])+ "=" + getLocale(_categories[i]);
-      // SunOS has putenv(char*) 
+      // SunOS has putenv(char*)
       putenv( const_cast<char*>(stmp.ascii()) );
     }
   }
@@ -349,20 +349,20 @@ void KLocale::initFormat()
   numentry.setGroup("KCM Locale");
 
   _decimalSymbol = config->readEntry("DecimalSymbol");
-  if (_decimalSymbol.isNull())
+  if (_decimalSymbol.isEmpty())
     _decimalSymbol = numentry.readEntry("DecimalSymbol", ".");
 
   _thousandsSeparator = config->readEntry("ThousandsSeparator");
-  if (_thousandsSeparator.isNull())
+  if (_thousandsSeparator.isEmpty())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
   _positiveSign = config->readEntry("PositiveSign");
-  if (_positiveSign.isNull())
+  if (_positiveSign.isEmpty())
     _positiveSign = numentry.readEntry("PositiveSign");
 
   config->readEntry("NegativeSign");
   _negativeSign = config->readEntry("NegativeSign");
-  if (_negativeSign.isNull())
+  if (_negativeSign.isEmpty())
     _negativeSign = numentry.readEntry("NegativeSign", "-");
 
   // Monetary
@@ -370,15 +370,15 @@ void KLocale::initFormat()
   monentry.setGroup("KCM Locale");
 
   _currencySymbol = config->readEntry("CurrencySymbol");
-  if (_currencySymbol.isNull())
+  if (_currencySymbol.isEmpty())
     _currencySymbol = monentry.readEntry("CurrencySymbol", "$");
 
   _monetaryDecimalSymbol = config->readEntry("MonetaryDecimalSymbol");
-  if (_monetaryDecimalSymbol.isNull())
+  if (_monetaryDecimalSymbol.isEmpty())
     _monetaryDecimalSymbol = monentry.readEntry("MonetaryDecimalSymbol", ".");
 
   _monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
-  if (_monetaryThousandsSeparator.isNull())
+  if (_monetaryThousandsSeparator.isEmpty())
     _monetaryThousandsSeparator = monentry.readEntry("MonetaryThousandsSeparator", ",");
 
   _fracDigits = config->readNumEntry("FractDigits", -1);
@@ -404,15 +404,15 @@ void KLocale::initFormat()
   timentry.setGroup("KCM Locale");
 
   _timefmt = config->readEntry("TimeFormat");
-  if (_timefmt.isNull())
+  if (_timefmt.isEmpty())
     _timefmt = timentry.readEntry("TimeFormat", "%I:%M:%S %p");
 
   _datefmt = config->readEntry("DateFormat");
-  if (_datefmt.isNull())
+  if (_datefmt.isEmpty())
     _datefmt = timentry.readEntry("DateFormat", "%A %d %B %Y");
 
   _datefmtshort = config->readEntry("DateFormatShort");
-  if (_datefmtshort.isNull())
+  if (_datefmtshort.isEmpty())
     _datefmtshort = timentry.readEntry("DateFormatShort", "%m/%d/%y");
 }
 
