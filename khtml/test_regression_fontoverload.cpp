@@ -222,6 +222,11 @@ const QString &KHTMLSettings::availableFamilies()
   return *avFamilies;
 }
 
+bool KHTMLSettings::unfinishedImageFrame() const
+{
+  return false;
+}
+
 int QPaintDevice::x11AppDpiY( int )
 {
     return 100;
