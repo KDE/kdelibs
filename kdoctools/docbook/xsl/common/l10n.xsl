@@ -13,7 +13,7 @@
      This file contains localization templates (for internationalization)
      ******************************************************************** -->
 
-<xsl:param name="l10n.xml" select="document('../common/l10n.xml')"/>
+<xsl:param name="l10n.xml" select="document('/home/coolo/prod/KDE/share/apps/ksgmltools2/xsl/common/l10n.xml')"/>
 
 <xsl:param name="l10n.gentext.language" select="''"/>
 <xsl:param name="l10n.gentext.default.language" select="'en'"/>
