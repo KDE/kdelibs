@@ -74,8 +74,8 @@ execute <module.arts>
 
 #include <unistd.h>
 #include <iostream>
-#include <arts/soundserver.h>
-#include <arts/dispatcher.h>
+#include "soundserver.h"
+#include "dispatcher.h"
 
 bool quiet = false;
 
