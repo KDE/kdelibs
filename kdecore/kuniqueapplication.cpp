@@ -422,6 +422,9 @@ int KUniqueApplication::newInstance()
     {
       mainWidget()->show();
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    // This is the line that handles window activation if necessary,
+    // and what's important, it does it properly. If you reimplement newInstance(),
+    // and don't call the inherited one, use this.
       KStartupInfo::setNewStartupId( mainWidget(), kapp->startupId());
 #endif
     }
