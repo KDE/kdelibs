@@ -724,8 +724,14 @@ void RegressionTest::testStaticFile(const QString & filename)
         KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate("setUpPage(); " + functionname + "();" );
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
         QString description = filename;
-        if ( comp2.complType() == Throw )
-            description = comp2.value().toString( exec ).qstring();
+        if ( comp2.complType() == Throw ) {
+            KJS::Value val = comp2.value();
+            KJS::Object obj = Object::dynamicCast(val);
+            if ( !obj.isNull() && obj.hasProperty( exec, "jsUnitMessage" ) )
+                description = obj.get( exec, "jsUnitMessage" ).toString( exec ).qstring();
+            else
+                description = comp2.value().toString( exec ).qstring();
+        }
         reportResult( success,  description );
         return;
     }
