@@ -391,7 +391,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 #endif
 }
 
-RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
+RenameDlg_Result Observer::open_RenameDlg( KIO::Job * /*job*/,
                                            const QString & caption,
                                            const QString& src, const QString & dest,
                                            RenameDlg_Mode mode, QString& newDest,
@@ -404,70 +404,18 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
                                            )
 {
   kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg" << endl;
-  /*
-  QByteArray resultArgs = m_uiserver->open_RenameDlg64( job ? job->progressId() : 0, caption, src, dest, mode,
-                                                      sizeSrc, sizeDest,
-                                                      (unsigned long) ctimeSrc, (unsigned long) ctimeDest,
-                                                      (unsigned long) mtimeSrc, (unsigned long) mtimeDest );
-  if ( m_uiserver->ok() )  [...]
-    QDataStream stream( resultArgs, IO_ReadOnly );
-  */
-
-  // We have to do it manually, to set useEventLoop to true.
-  QByteArray data, replyData;
-  QCString replyType;
-  QDataStream arg( data, IO_WriteOnly );
-  arg << (job ? job->progressId() : 0);
-  arg << caption;
-  arg << src;
-  arg << dest;
-  arg << (int) mode;
-  arg << sizeSrc;
-  arg << sizeDest;
-  arg << (unsigned long) ctimeSrc;
-  arg << (unsigned long) ctimeDest;
-  arg << (unsigned long) mtimeSrc;
-  arg << (unsigned long) mtimeDest;
-  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_RenameDlg64(int,QString,QString,QString,int,KIO::filesize_t,KIO::filesize_t,unsigned long int,unsigned long int,unsigned long int,unsigned long int)", data, replyType, replyData, true ) &&
-       replyType == "QByteArray" )
-  {
-    QDataStream stream( replyData, IO_ReadOnly );
-    QByteArray res;
-    stream >> res;
-
-    QDataStream stream2( res, IO_ReadOnly );
-    Q_UINT8 result;
-    stream2 >> result >> newDest;
-    kdDebug(KDEBUG_OBSERVER) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
-    return (RenameDlg_Result) result;
-  }
-  kdDebug(KDEBUG_OBSERVER) << "open_RenameDlg call failed" << endl;
-  return R_CANCEL;
+  // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
+  return KIO::open_RenameDlg( caption, src, dest, mode, newDest, sizeSrc, sizeDest,
+                              ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
 }
 
-SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
+SkipDlg_Result Observer::open_SkipDlg( KIO::Job * /*job*/,
                                        bool _multi,
                                        const QString& _error_text )
 {
   kdDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg" << endl;
-  //int result = m_uiserver->open_SkipDlg( job ? job->progressId() : 0, (int)_multi, _error_text );
-  int result;
-  QByteArray data, replyData;
-  QCString replyType;
-  QDataStream arg( data, IO_WriteOnly );
-  arg << ( job ? job->progressId() : 0 );
-  arg << (int)_multi;
-  arg << _error_text;
-  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_SkipDlg(int,int,QString)", data, replyType, replyData, true )
-       && replyType == "int" )
-  {
-    QDataStream stream( replyData, IO_ReadOnly );
-    stream >> result;
-    kdDebug(KDEBUG_OBSERVER) << "UIServer::open_SkipDlg returned " << result << endl;
-    return (SkipDlg_Result) result;
-  }
-  kdDebug(KDEBUG_OBSERVER) << "open_SkipDlg call failed" << endl;
-  return S_CANCEL;
+  // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
+  return KIO::open_SkipDlg( _multi, _error_text );
 }
 
 void Observer::virtual_hook( int id, void* data )
