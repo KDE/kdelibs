@@ -689,6 +689,12 @@ bool KHTMLPart::closeURL()
     if ( !( *it ).m_part.isNull() )
       ( *it ).m_part->closeURL();
   }
+  // tell all objects to stop as well
+  for (it = d->m_objects.begin(); it != d->m_objects.end(); ++it )
+  {
+    if ( !( *it ).m_part.isNull() )
+      ( *it ).m_part->closeURL();
+  }
 
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )

@@ -86,6 +86,7 @@ public class KJASProtocolHandler
                 catch( NumberFormatException e )
                 {
                     Main.kjas_err( "Could not parse out message length", e );
+                    e.printStackTrace();
                     System.exit( 1 );
                 }
                 catch( Throwable t )
@@ -98,6 +99,7 @@ public class KJASProtocolHandler
         catch( Exception i )
         {
             Main.kjas_err( "commandLoop exited on exception: ", i );
+                    i.printStackTrace();
             System.exit( 1 );
         }
     }
@@ -229,28 +231,28 @@ public class KJASProtocolHandler
         {
             Main.debug( "URLData recieved" );
             
-            String loaderID = getArg( command );
-            String requestedURL = getArg( command );
-            Main.debug( "data is for loader: " + loaderID );
-            Main.debug( "URL is " + requestedURL );
+            String id = getArg( command );
+            String code = getArg( command );
+            Main.debug( "data is for job: " + id );
+            Main.debug( "Code is " + code );
 
             //rest of the command should be the data...
-            byte[] data = new byte[ cmd_length - cmd_index ];
-            System.arraycopy( command, cmd_index, data, 0, data.length );
-
-            KJASAppletClassLoader loader = KJASAppletClassLoader.getLoader( loaderID );
-            if( loader != null )
-            {
-                Main.info( "this is a class loader request and should not happen!" );
-                // loader.addResource( requestedURL, data );
+            byte[] data = null;
+            if (cmd_length - cmd_index > 0) {
+                data = new byte[ cmd_length - cmd_index ];
+                System.arraycopy( command, cmd_index, data, 0, data.length );
             }
-            else //see if there is a context with that ID, could be an image request
-            {
-                KJASAppletContext context = (KJASAppletContext) contexts.get( loaderID );
-                if( context != null )
-                {
-                    Main.debug( "this is  a context request for an image" );
-                    context.addImage( requestedURL, data );
+            synchronized (KIOConnection.jobs) {
+                KIOConnection job = (KIOConnection) KIOConnection.jobs.get(id);
+                if (job == null)
+                    Main.info("KJASHttpURLConnection already gone (timeout)");
+                else {
+                    job.setData(Integer.parseInt(code), data);
+                    if (job.thread != null) {
+                        try {
+                            job.thread.interrupt();
+                        } catch (SecurityException sex) {}
+                    }
                 }
             }
         } else
@@ -342,48 +344,40 @@ public class KJASProtocolHandler
     /**************************************************************
      *****  Methods for talking to the applet server **************
      **************************************************************/
-    public void sendGetURLDataCmd( String loaderID, String file )
+    public void sendGetURLDataCmd( String ID_str, String file )
     {
-        Main.info( "sendGetURLCmd from loader: " + loaderID + " url = " + file );
-        String ID_str = null;
-        String file_str = null;
-        try
-        {
-            ID_str = loaderID;
-            file_str = new URL( new URL(loaderID), file ).toString();
-        } catch( MalformedURLException e )
-        {
-            //this is an image request, take the file argument as is
-            ID_str = loaderID;
-            file_str = file;
-        }
-        finally
-        {
-            //length  = length of args plus 1 for code, 2 for seps and 1 for end
-            int length = ID_str.length() + file_str.length() + 4;
-            char[] chars = new char[ length + 8 ];
-            char[] tmpchar = getPaddedLength( length );
-            int index = 0;
+        Main.info( "sendGetURLCmd from : " + ID_str + " url = " + file );
+        //length  = length of args plus 1 for code, 2 for seps and 1 for end
+        int length = ID_str.length() + file.length() + 4;
+        char[] chars = new char[ length + 8 ];
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
 
-            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-            index += tmpchar.length;
-            chars[index++] = (char) GetURLDataCode;
-            chars[index++] = sep;
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) GetURLDataCode;
+        chars[index++] = sep;
 
-                tmpchar = ID_str.toCharArray();
-            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-            index += tmpchar.length;
-            chars[index++] = sep;
+        tmpchar = ID_str.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
 
-                tmpchar = file_str.toCharArray();
-            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-            index += tmpchar.length;
-            chars[index++] = sep;
+        tmpchar = file.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
 
-            signals.print( chars );
-        }
+        signals.print( chars );
     }
 
+    public void sendPutURLDataCmd( String id, String file )
+    {
+    }
+
+    public void sendData( String id, int cmd, byte [] b, int off, int len )
+    {
+    }
     /**
     * sends notification about the state of the applet.
     * @see org.kde.kjas.server.KJASAppletStub for valid states

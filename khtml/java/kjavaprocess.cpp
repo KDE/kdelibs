@@ -180,7 +180,7 @@ void KJavaProcess::storeSize( QByteArray* buff )
 void KJavaProcess::sendBuffer( QByteArray* buff )
 {
     d->BufferList.append( buff );
-    if( d->BufferList.count() == 1 && d->sync_count == 0)
+    if( d->BufferList.count() == 1)
     {
         popBuffer();
     }
@@ -320,7 +320,7 @@ void KJavaProcess::slotWroteData( )
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
     kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
-    if ( d->BufferList.count() >= 1 && d->sync_count == 0 )
+    if ( d->BufferList.count() > 0 )
     {
         popBuffer();
     }

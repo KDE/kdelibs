@@ -37,7 +37,9 @@
 
 #include <qtimer.h>
 #include <qguardedptr.h>
+#include <qvaluelist.h>
 #include <qdir.h>
+#include <qeventloop.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -70,10 +72,12 @@
 
 class JSStackNode {
 public:
-    JSStackNode() : ready(false) {}
-    bool ready;
+    JSStackNode() : ready(false), exit (false) {}
     QStringList args;
     int size;
+    int timerid;
+    bool ready : 1;
+    bool exit : 1;
 };
 
 // For future expansion
@@ -81,12 +85,15 @@ class KJavaAppletServerPrivate
 {
 friend class KJavaAppletServer;
 private:
+   KJavaAppletServerPrivate() : ticketcounter(0), locked_context(-1) {}
    int counter;
    int ticketcounter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
    QMap< int, JSStackNode* > jsstack;
    bool javaProcessFailed;
+   int locked_context;
+   QValueList<QByteArray> java_requests;
 };
 
 static KJavaAppletServer* self = 0;
@@ -94,7 +101,6 @@ static KJavaAppletServer* self = 0;
 KJavaAppletServer::KJavaAppletServer()
 {
     d = new KJavaAppletServerPrivate;
-    d->ticketcounter = 0;
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),
@@ -247,6 +253,11 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
                               "org.kde.kjas.server.KJASSecurityManager" );
     }
 
+    if( config.readBoolEntry( "UseKio", false) )
+    {
+        p->setSystemProperty( "kjas.useKio", QString::null );
+    }
+
     //check for http proxies...
     if( KProtocolManager::useProxy() )
     {
@@ -387,13 +398,11 @@ void KJavaAppletServer::stopApplet( int contextId, int appletId )
     process->send( KJAS_STOP_APPLET, args );
 }
 
-void KJavaAppletServer::sendURLData( const QString& loaderID,
-                                     const QString& url,
-                                     const QByteArray& data )
+void KJavaAppletServer::sendURLData( int loaderID, int code, const QByteArray& data )
 {
     QStringList args;
-    args.append( loaderID );
-    args.append( url );
+    args.append( QString::number(loaderID) );
+    args.append( QString::number(code) );
 
     process->send( KJAS_URLDATA, args, data );
 
@@ -425,6 +434,20 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     {
         contextID += qb[ index++ ];
     }
+    bool ok;
+    int contextID_num = contextID.toInt( &ok );
+    /*if (d->locked_context > -1 && 
+        contextID_num != d->locked_context &&
+        (cmd_code == KJAS_JAVASCRIPT_EVENT ||
+         cmd_code == KJAS_APPLET_STATE ||
+         cmd_code == KJAS_APPLET_FAILED))
+    {
+        / * Don't allow requests from other contexts if we're waiting
+         * on a return value that can trigger JavaScript events
+         * /
+        d->java_requests.push_back(qb);
+        return;
+    }*/
     ++index; //skip the sep
 
     //now parse out the arguments
@@ -479,7 +502,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 args.pop_front();
                 it.data()->args = args;
                 it.data()->ready = true;
-                process->syncCommandReceived(ticket);
+                it.data()->exit = true;
             } else
                 kdDebug(6100) << "Error: Missed return member data" << endl;
             return;
@@ -509,27 +532,48 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             break;
     }
 
+
+    if( !ok )
+    {
+        kdError(6100) << "could not parse out contextID to call command on" << endl;
+        return;
+    }
+
     if( cmd_code == KJAS_GET_URLDATA )
     {
-        new KJavaDownloader( contextID, args[0] );
+        new KJavaDownloader( contextID_num, args[0] );
     }
     else
     {
-        bool ok;
-        int contextID_num = contextID.toInt( &ok );
-
-        if( !ok )
-        {
-            kdError(6100) << "could not parse out contextID to call command on" << endl;
-            return;
-        }
-
         KJavaAppletContext* context = d->contexts[ contextID_num ];
         if( context )
             context->processCmd( cmd, args );
         else if (cmd != "AppletStateNotification") 
             kdError(6100) << "no context object for this id" << endl;
     }
+}
+
+void KJavaAppletServer::endWaitForReturnData() {
+    killTimers();
+    QMap<int, JSStackNode*>::iterator it = d->jsstack.begin();
+    for (; it != d->jsstack.end(); ++it)
+        it.data()->exit = true;
+}
+
+void KJavaAppletServer::timerEvent(QTimerEvent *) {
+    endWaitForReturnData();
+    kdDebug(6100) << "KJavaAppletServer::timerEvent timeout" << endl;
+}
+
+void KJavaAppletServer::waitForReturnData(JSStackNode * frame) {
+    kdDebug(6100) << ">KJavaAppletServer::waitForReturnData context:" << endl;
+    killTimers();
+    startTimer(15000);
+    while (!frame->exit)
+        kapp->eventLoop()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMore);
+    if (d->jsstack.size() <= 1)
+        killTimers();
+    kdDebug(6100) << "<KJavaAppletServer::waitForReturnData frame stack:" << d->jsstack.size() << endl;
 }
 
 bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
@@ -544,7 +588,8 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
     JSStackNode * frame = new JSStackNode;
     d->jsstack.insert(ticket, frame); 
     kdDebug(6100) << "KJavaAppletServer::getMember " << name << " " << ticket << endl;
-    process->sendSync( ticket, KJAS_GET_MEMBER, args );
+    process->send( KJAS_GET_MEMBER, args );
+    waitForReturnData(frame);
 
     bool retval = frame->ready;
     if (retval && frame->args.count() == 3) {
@@ -578,7 +623,8 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
     d->jsstack.insert(ticket, frame); 
     kdDebug(6100) << "KJavaAppletServer::putMember " << name << " " << ticket << endl;
 
-    process->sendSync( ticket, KJAS_PUT_MEMBER, args );
+    process->send( KJAS_PUT_MEMBER, args );
+    waitForReturnData(frame);
 
     bool retval = frame->ready;
     if (retval) {
@@ -608,7 +654,8 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
     d->jsstack.insert(ticket, frame); 
 
     kdDebug(6100) << "KJavaAppletServer::callMember " << name << " " << ticket << endl;
-    process->sendSync( ticket, KJAS_CALL_MEMBER, args );
+    process->send( KJAS_CALL_MEMBER, args );
+    waitForReturnData(frame);
 
     bool retval = frame->ready;
     if (retval) {

@@ -38,6 +38,7 @@
 
 class KJavaAppletContext;
 class KJavaAppletServerPrivate;
+class JSStackNode;
 
 class KJavaAppletServer : public QObject
 {
@@ -118,8 +119,7 @@ public:
      * class loader.
      * (This is currently unimplemented on the java side.
      */
-    void sendURLData( const QString& loaderID, const QString& url,
-                      const QByteArray& data );
+    void sendURLData( int loaderID, int code, const QByteArray& data );
 
     /**
      * Shut down the KJAS server.
@@ -128,6 +128,8 @@ public:
 
     QString appletLabel();
 
+    void waitForReturnData(JSStackNode *);
+    void endWaitForReturnData();
     bool getMember(int contextId, int appletId, const unsigned long, const QString &, int &, unsigned long &, QString &);
     bool putMember(int contextId, int appletId, const unsigned long, const QString &, const QString &);
     bool callMember(int contextId, int appletId, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
@@ -140,6 +142,7 @@ protected:
 protected slots:
     void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
+    void timerEvent(QTimerEvent *);
 
 private:
     KJavaAppletServerPrivate* d;

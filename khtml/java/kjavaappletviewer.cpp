@@ -289,10 +289,10 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
 }
 
 bool KJavaAppletViewer::closeURL () {
-    // TODO stop liveconnect calls/...
     KJavaApplet * applet = m_view->applet ();
     if (applet->isCreated ())
         applet->stop ();
+    applet->getContext()->getServer()->endWaitForReturnData();
     return true;
 }
 

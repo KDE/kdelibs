@@ -41,6 +41,9 @@ public class Main
         else
             show_console = false;
 
+        if( System.getProperty( "kjas.useKio" ) != null )
+            URL.setURLStreamHandlerFactory( new KJASURLStreamHandlerFactory() );
+
         if( System.getProperty( "kjas.log" ) != null )
             log = true;
         else

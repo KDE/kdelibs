@@ -109,6 +109,7 @@ public:
     bool callMember(KJavaApplet *, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
     void derefObject(KJavaApplet *, const unsigned long id);
 
+    KJavaAppletServer* getServer() const { return server; }
 signals:
     /**
      * Signals the KHMTL Part to show this as the status message.

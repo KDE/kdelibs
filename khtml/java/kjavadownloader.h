@@ -41,11 +41,13 @@ class KJavaDownloader : public QObject
 Q_OBJECT
 
 public:
-	KJavaDownloader( QString& ID, QString& url );
-	~KJavaDownloader();
+    KJavaDownloader( int ID, const QString& url );
+    ~KJavaDownloader();
 
 protected slots:
     void slotData( KIO::Job*, const QByteArray& );
+    void slotConnected( KIO::Job* );
+    void slotMimetype( KIO::Job*, const QString& );
     void slotResult( KIO::Job* );
 
 private:
