@@ -1,2 +1,2 @@
 
-bin_SCRIPTS = conv-ro conv-ru
+bin_SCRIPTS = conv-ro conv-ru conv-sl
