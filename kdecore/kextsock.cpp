@@ -1506,15 +1506,22 @@ void KExtendedSocket::closeNow()
   if (sockfd == -1 || d->status >= done)
     return;			// nothing to close
 
-  d->status = done;
-
   // close the socket
   delete d->qsnIn;
   delete d->qsnOut;
   d->qsnIn = d->qsnOut = NULL;
 
-  ::close(sockfd);
-  sockfd = -1;
+  if (d->status > connecting)
+    {
+      ::close(sockfd);
+      sockfd = -1;
+    }
+  else if (d->status == connecting)
+    cancelAsyncConnect();
+  else if (d->status == lookupInProgress)
+    cancelAsyncLookup();
+
+  d->status = done;
 
   emit closed(closedNow |
 	      (readBufferSize() != 0 ? availRead : 0) |
