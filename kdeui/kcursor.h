@@ -51,73 +51,73 @@ public:
     KCursor();
 
     /**
-     * Retrieve the proper hand cursor according to
+     * Returns the proper hand cursor according to
      * the current GUI style (static function).
      */
     static QCursor handCursor();
 
     /**
-     * Retrieve the proper arrow cursor according to
+     * Returns the proper arrow cursor according to
      * the current GUI style (static function).
      */
     static QCursor arrowCursor();
 
     /**
-     * Retrieve the proper up arrow cursor according to
+     * Returns the proper up arrow cursor according to
      * the current GUI style (static function).
      */
     static QCursor upArrowCursor();
 
     /**
-     * Retrieve the proper cross-hair cursor according to
+     * Returns the proper cross-hair cursor according to
      * the current GUI style (static function).
      */
     static QCursor crossCursor();
 
     /**
-     * Retrieve the proper hourglass cursor according to
+     * Returns the proper hourglass cursor according to
      * the current GUI style (static function).
      */
     static QCursor waitCursor();
 
     /**
-     * Retrieve the proper text cursor according to
+     * Returns the proper text cursor according to
      * the current GUI style (static function).
      */
     static QCursor ibeamCursor();
 
     /**
-     * Retrieve the proper vertical resize cursor
+     * Returns the proper vertical resize cursor
      * according to the current GUI style (static function).
      */
     static QCursor sizeVerCursor();
 
     /**
-     * Retrieve the proper horizontal resize cursor
+     * Returns the proper horizontal resize cursor
      * according to the current GUI style (static function).
      */
     static QCursor sizeHorCursor();
 
     /**
-     * Retrieve the proper diagonal resize (/) cursor
+     * Returns the proper diagonal resize (/) cursor
      * according to the current GUI style (static function).
      */
     static QCursor sizeBDiagCursor();
 
     /**
-     * Retrieve the proper diagonal resize (\) cursor
+     * Returns the proper diagonal resize (\) cursor
      * according to the current GUI style (static function).
      */
     static QCursor sizeFDiagCursor();
 
     /**
-     * Retrieve the proper all-directions resize cursor
+     * Returns the proper all-directions resize cursor
      * according to the current GUI style (static function).
      */
     static QCursor sizeAllCursor();
 
     /**
-     * Retrieve a blank or invisible cursor (static function).
+     * Returns a blank or invisible cursor (static function).
      */
     static QCursor blankCursor();
 

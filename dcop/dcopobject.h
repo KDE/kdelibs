@@ -153,7 +153,7 @@ public:
   void emitDCOPSignal( const QCString &signal, const QByteArray &data);
 
   /**
-   * Connect to a DCOP signal
+   * Connects to a DCOP signal.
    * @param sender the name of the client that emits the signal. When empty
    * the signal will be passed from any client.
    * @param senderObj the name of the sending object that emits the signal.
@@ -177,7 +177,7 @@ public:
                           bool Volatile);
 
   /**
-   * Disconnect a DCOP signal
+   * Disconnects a DCOP signal.
    * @param sender the name of the client that emits the signal.
    * @param senderObj the name of the object that emits the signal.
    * If empty all objects will be disconnected.
@@ -198,7 +198,7 @@ public:
 
 
   /**
-   * @return @p true if an obejct with the questionable @p objId is
+   * @return true if an object with the questionable @p objId is
    *         known in this process. This query does not ask proxies.
    *
    * @ref DCOPObjectProxy
@@ -250,7 +250,7 @@ class DCOPObjectProxy
 {
 public:
     /**
-     * Create a new proxy.
+     * Creates a new proxy.
      */
     DCOPObjectProxy();
 
@@ -268,7 +268,7 @@ public:
     virtual ~DCOPObjectProxy();
 
     /**
-     * Reimplement this method to disptatch method calls.
+     * Reimplement this method to dispatch method calls.
      *
      * This method is called of all proxies if the @ref DCOPClient
      * knows no object with the id @p obj. If the first proxy returns

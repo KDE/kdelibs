@@ -152,7 +152,7 @@ public:
   virtual ~KApplication();
 
   /**
-   * Retrieve the current application object.
+   * Returns the current application object.
    *
    * This is similar to the global @ref QApplication pointer @ref qApp. It
    * allows access to the single global KApplication object, since
@@ -163,7 +163,7 @@ public:
   static KApplication* kApplication() { return KApp; }
 
   /**
-   * Retrieve the application session config object.
+   * Returns the application session config object.
    *
    * @return A pointer to the application's instance specific
    *    @ref KConfig object.

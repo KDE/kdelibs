@@ -294,7 +294,7 @@ public:
   bool normalExit() const;
 
   /**
-   * Retrieve the exit status of the process.
+   * Returns the exit status of the process.
    *
    * Please use
    * @ref KProcess::normalExit() to check whether the process has exited

@@ -84,7 +84,7 @@ public:
   static bool canRead(const QString& type);
 
   /**
-   * Retrieves a list of all KImageIO supported formats. 
+   * Returns a list of all KImageIO supported formats. 
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    */
@@ -92,7 +92,7 @@ public:
 
 
   /**
-   * Retrieve a list of patterns of all KImageIO supported formats. 
+   * Returns a list of patterns of all KImageIO supported formats. 
    *
    * These patterns can be passed to @ref KFileDialog::getOpenFileName()
    * or @ref KFileDialog::getSaveFileName(), for example.
@@ -103,17 +103,17 @@ public:
   static QString pattern(Mode mode = Reading);
 
   /**
-   *  Retrieve the suffix of an image type.
+   *  Returns the suffix of an image type.
    */
   static QString suffix(const QString& type);
 
   /**
-   *  Retrieve the type of given filename.
+   *  Returns the type of given filename.
    */
   static QString type(const QString& filename);
 
   /**
-   *  Retrieve a list of MIME types for all KImageIO supported formats. 
+   *  Returns a list of MIME types for all KImageIO supported formats. 
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    */
@@ -123,7 +123,7 @@ public:
    **/
   static bool isSupported( const QString& _mimeType, Mode _mode = Writing );
   /**
-   * Return the MIME type of @p _filename.
+   * Returns the MIME type of @p _filename.
    **/
   static QString mimeType( const QString& _filename );
 };

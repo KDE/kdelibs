@@ -256,7 +256,7 @@ void KValueSelector::drawContents( QPainter *painter )
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
 }
 
-void KValueSelector::drawPalette( QPixmap *pixmap)
+void KValueSelector::drawPalette( QPixmap *pixmap )
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
 	QImage image( xSize, ySize, 32 );
@@ -1342,8 +1342,8 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
   d->hsSelector->setValues( h, s );
   d->valuePal->setHue( h );
   d->valuePal->setSaturation( s );
-  d->valuePal->updateContents();
-  d->valuePal->repaint( FALSE );
+  //  d->valuePal->updateContents();
+  //  d->valuePal->repaint( FALSE );
   d->valuePal->setValue( v );
   d->bRecursion = false;
 }

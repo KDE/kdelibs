@@ -82,7 +82,7 @@ public:
     static void clear();
 
     /**
-     * Retrieve the maximum amount of recent document entries allowed.
+     * Returns the maximum amount of recent document entries allowed.
      */
     static int maximumItems();
 

@@ -63,8 +63,6 @@ public:
    */
   KHSSelector( QWidget *parent=0, const char *name=0 );
 
-  void updateContents();
-
 protected:
   /**
    * Draws the contents of the widget on a pixmap,
@@ -83,6 +81,7 @@ protected:
   virtual void drawContents( QPainter *painter );
 
 private:
+  void updateContents();
   QPixmap pixmap;
 
   class KHSSelectorPrivate;
@@ -91,7 +90,7 @@ private:
 
 
 /**
- * Dialog for colour value selection.
+ * Widget for color value selection.
  *
  * @see KHSSelector, KColorDialog
  * @author Martin Jones (mjones@kde.org)
@@ -114,12 +113,11 @@ public:
   int hue() const
         { return _hue; }
   void setHue( int h )
-        { _hue = h; }
+        { _hue = h; update(); }
   int saturation() const
         { return _sat; }
   void setSaturation( int s )
-        { _sat = s; }
-  void updateContents();
+        { _sat = s; update(); }
 
 protected:
   /**
@@ -139,6 +137,7 @@ protected:
   virtual void drawContents( QPainter *painter );
 
 private:
+  void updateContents();
   int _hue;
   int _sat;
   QPixmap pixmap;
@@ -227,7 +226,7 @@ private:
 
 
 /**
-* A table of editable colour cells.
+* A table of editable color cells.
 * @author Martin Jones <mjones@kde.org>
 * @version $Id$
 */

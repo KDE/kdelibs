@@ -347,7 +347,7 @@ class KDoubleLine;
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses KFloatValidator validator class. KDoubleNumInput enforces the
+ * It uses @ref KFloatValidator validator class. KDoubleNumInput enforces the
  * value to be in the given range.
  *
  * @see KIntNumInput

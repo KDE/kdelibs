@@ -43,43 +43,43 @@ class KIntValidator : public QValidator {
     */
     KIntValidator ( QWidget * parent, int base = 10, const char * name = 0 );
     /**
-      Constuctor.  Also sets the minimum, maximum, and numeric base values.
-    */
+     * Constructor.  Also sets the minimum, maximum, and numeric base values.
+     */
     KIntValidator ( int bottom, int top, QWidget * parent, int base = 10, const char * name = 0 );
     /**
-      Destructor.
-    */
+     * Destructs the validator.
+     */
     virtual ~KIntValidator ();
     /**
-      Validate the text, and return the result.  Does not modify the paramaters.
-    */
+     * Validates the text, and return the result.  Does not modify the parameters.
+     */
     virtual State validate ( QString &, int & ) const;
     /**
-      Fix the text if possible, providing a valid string.  The parameter may be modified.
-    */
+     * Fixes the text if possible, providing a valid string.  The parameter may be modified.
+     */
     virtual void fixup ( QString & ) const;
     /**
-      Set the minimum and maximum values allowed.
-    */
+     * Sets the minimum and maximum values allowed.
+     */
     virtual void setRange ( int bottom, int top );
     /**
-      Set the numeric base value.
-    */
+     * Sets the numeric base value.
+     */
     virtual void setBase ( int base );
     /**
-      Return the current minimum value allowed.
-    */
+     * Returns the current minimum value allowed.
+     */
     virtual int bottom () const;
     /**
-      Return the current maximum value allowed.
-    */
+     * Returns the current maximum value allowed.
+     */
     virtual int top () const;
     /**
-      Return the current numeric base.
-    */
+     * Returns the current numeric base.
+     */
     virtual int base () const;
 
-  protected:
+  private:
     int _base;
     int _min;
     int _max;
@@ -101,45 +101,53 @@ class KFloatValidator : public QValidator {
 
   public:
     /**
-      Constuctor.
-    */
+     * Constructor.
+     */
     KFloatValidator ( QWidget * parent, const char * name = 0 );
     /**
-      Constuctor.  Also sets the minimum and maximum values.
-    */
+     * Constructor.  Also sets the minimum and maximum values.
+     */
     KFloatValidator ( double bottom, double top, QWidget * parent, const char * name = 0 );
     /**
-      Destructor.
-    */
+     * Destructs the validator.
+     */
     virtual ~KFloatValidator ();
     /**
-      Validate the text, and return the result.  Does not modify the paramaters.
-    */
+     * Validates the text, and return the result. Does not modify the parameters.
+     */
     virtual State validate ( QString &, int & ) const;
     /**
-      Fix the text if possible, providing a valid string.  The parameter may be modified.
-    */
+     * Fixes the text if possible, providing a valid string. The parameter may be modified.
+     */
     virtual void fixup ( QString & ) const;
     /**
-      Set the minimum and maximum value allowed.
-    */
+     * Sets the minimum and maximum value allowed.
+     */
     virtual void setRange ( double bottom, double top );
     /**
-      Return the current minimum value allowed.
-    */
+     * Returns the current minimum value allowed.
+     */
     virtual double bottom () const;
     /**
-      Return the current maximum value allowed.
-    */
+     * Returns the current maximum value allowed.
+     */
     virtual double top () const;
-    
-    void setAcceptLocalizedNumbers(bool _b);
+    /**
+     * Sets the validator to be locale aware if @p is true. In this case, the
+     * character KLocale::decimalSymbol() from the global locale is recognized
+     * as decimal separator.
+     */
+    void setAcceptLocalizedNumbers(bool b);
+    /**
+     * Returns true if the validator is locale aware.
+     * @see setAcceptLocalizedNumbers().
+     */
+    bool acceptLocalizedNumbers() const;
 
-
-  protected:
+ private:
     double _min;
     double _max;
- private:
+
     KFloatValidatorPrivate *d;
 };
 

@@ -408,7 +408,7 @@ class KAccel : public QAccel
 	bool setKeyDict( const KKeyEntryMap& nKeyDict );
 
 	/**
-	 * Retrieve the dictionary of accelerator action names and
+	 * Returns the dictionary of accelerator action names and
 	 * @ref KKeyEntry
 	 * objects. Note that only a shallow copy is returned so that
 	 * items will be lost when the @ref KKeyEntry objects are deleted.

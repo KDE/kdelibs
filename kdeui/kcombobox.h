@@ -195,7 +195,7 @@ public:
     void changeURL( const QPixmap& pixmap, const KURL& url, int index );
 
     /**
-    * Retrieves the current cursor position.
+    * Returns the current cursor position.
     *
     * This method always returns a -1 if the combo-box is @em not
     * editable (read-write).

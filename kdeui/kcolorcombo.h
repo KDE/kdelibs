@@ -32,30 +32,47 @@
 
 
 /**
- * Combobox for colours.
+ * Combobox for colors.
  */
 class KColorCombo : public QComboBox
 {
-	Q_OBJECT
-	Q_PROPERTY( QColor color READ color WRITE setColor )
+    Q_OBJECT
+    Q_PROPERTY( QColor color READ color WRITE setColor )
+
 public:
-	KColorCombo( QWidget *parent, const char *name = 0L );
+    /**
+     * Constructs a color combo box.
+     */ 
+    KColorCombo( QWidget *parent, const char *name = 0L );
 
-	void setColor( const QColor &col );
-	QColor color() const;
-public slots:
-	void slotActivated( int index );
-	void slotHighlighted( int index );
-
+    /**
+     * Selects the color @p col.
+     */
+    void setColor( const QColor &col );
+    /** 
+     * Returns the currently selected color. 
+     **/
+    QColor color() const;
+    
 signals:
-	void activated( const QColor &col );
-	void highlighted( const QColor &col );
+    /**
+     * Emitted when a new color box has been selected.
+     */
+    void activated( const QColor &col );
+    /**
+     * Emitted when a new item has been highlighted.
+     */
+    void highlighted( const QColor &col );
 
 protected:
         /**
          * @reimplemented
          */
 	virtual void resizeEvent( QResizeEvent *re );
+
+private slots:
+	void slotActivated( int index );
+	void slotHighlighted( int index );
 
 private:
 	void addColors();

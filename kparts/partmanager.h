@@ -56,7 +56,7 @@ public:
   enum SelectionPolicy { Direct, TriState };
 
   /**
-   * Create a part manager.
+   * Constructs a part manager.
    *
    * @param parent The toplevel widget (window / dialog) the
    *               partmanager should monitor for activation/selection
@@ -64,7 +64,7 @@ public:
    */
   PartManager( QWidget * parent, const char * name = 0L );
   /**
-   * Create a part manager.
+   * Constructs a part manager.
    *
    * @param topLevel The toplevel widget (window / dialog ) the
    *                 partmanager should monitor for activation/selection
@@ -75,16 +75,16 @@ public:
   virtual ~PartManager();
 
   /**
-   * Set the selection policy of the partmanager.
+   * Sets the selection policy of the partmanager.
    */
   void setSelectionPolicy( SelectionPolicy policy );
   /**
-   * Retrieve the current selection policy.
+   * Returns the current selection policy.
    */
   SelectionPolicy selectionPolicy() const;
 
   /**
-   * Specify whether the partmanager should handle/allow nested parts
+   * Specifies whether the partmanager should handle/allow nested parts
    * or not.
    *
    *  This is a property the shell has to set/specify. Per
@@ -102,7 +102,7 @@ public:
   bool allowNestedParts() const;
 
   /**
-   * Specify whether the partmanager should ignore mouse click events for
+   * Specifies whether the partmanager should ignore mouse click events for
    * scrollbars or not. If the partmanager ignores them, then clicking on the
    * scrollbars of a non-active/non-selected part will not change the selection
    * or activation state.
@@ -121,14 +121,14 @@ public:
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   /**
-   * Add a Part to the manager.
+   * Adds a part to the manager.
    *
    * Sets it to the active part automatically if @p setActive is true (default ).
    */
   virtual void addPart( Part *part, bool setActive = true );
 
   /**
-   * Remove a part from the manager (this does not delete the object) .
+   * Removes a part from the manager (this does not delete the object) .
    *
    * Sets the active part to 0 if @p part is the @ref activePart() .
    */
@@ -142,7 +142,7 @@ public:
   virtual void replacePart( Part * oldPart, Part * newPart, bool setActive = true );
 
   /**
-   * Set the active part.
+   * Sets the active part.
    *
    * The active part receives activation events.
    *
@@ -152,17 +152,17 @@ public:
   virtual void setActivePart( Part *part, QWidget *widget = 0L );
 
   /**
-   * Retrieve the active part.
+   * Returns the active part.
    **/
   virtual Part *activePart() const;
 
   /**
-   * Retrieve the active widget of the current active part (see @ref activePart ).
+   * Returns the active widget of the current active part (see @ref activePart ).
    */
   virtual QWidget *activeWidget() const;
 
   /**
-   * Set the selected part.
+   * Sets the selected part.
    *
    * The selected part receives selection events.
    *
@@ -172,17 +172,17 @@ public:
   virtual void setSelectedPart( Part *part, QWidget *widget = 0L );
 
   /**
-   * Retrieve the current selected part.
+   * Returns the current selected part.
    */
   virtual Part *selectedPart() const;
 
   /**
-   * Retrieve the selected widget of the current selected part (see @ref selectedPart ).
+   * Returns the selected widget of the current selected part (see @ref selectedPart ).
    */
   virtual QWidget *selectedWidget() const;
 
   /**
-   * Retrieve the list of parts being managed by the partmanager.
+   * Returns the list of parts being managed by the partmanager.
    */
   const QPtrList<Part> *parts() const;
 

@@ -764,7 +764,7 @@ class KDialogBase : public KDialog
     bool showPage( int index );
 
     /**
-     * Retrieve the index of the active page.
+     * Returns the index of the active page.
      *
      * This method will only work when the dialog is using the 
      * predefined shape of Tabbed, TreeList or IconList.
@@ -808,7 +808,7 @@ class KDialogBase : public KDialog
     void setMainWidget( QWidget *widget );
 
     /**
-     * Retrieve the main widget if any.
+     * Returns the main widget if any.
      *
      * @return The current main widget. Can be 0 if no widget has been defined.
      */
@@ -985,7 +985,7 @@ class KDialogBase : public KDialog
     static bool haveBackgroundTile();
     
     /** 
-     * Retrieve a pointer to the background tile if there is one. 
+     * Returns a pointer to the background tile if there is one. 
      *
      * @return The tile pointer or 0 if no tile is defined.
      *
@@ -1059,7 +1059,7 @@ class KDialogBase : public KDialog
     QSize calculateSize( int w, int h );
 
     /**
-     * Retrieve the help link text.
+     * Returns the help link text.
      *
      *  If no text has been defined, 
      * "Get help..." (internationalized) is returned.
@@ -1069,7 +1069,7 @@ class KDialogBase : public KDialog
     QString helpLinkText();
 
     /**
-     * Retrieve the action button that corresponds to the @p id.
+     * Returns the action button that corresponds to the @p id.
      *
      * Normally
      * you should not use this function. @em Never delete the object returned

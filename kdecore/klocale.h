@@ -48,7 +48,7 @@ QString i18n(const char *text);
 /**
  *  If the string is too ambigious to be translated well to a non-english
  *  language, use this form of i18n to separate lookup string and english
- *  text
+ *  text.
  *  @see translate
  **/
 QString i18n(const char *index, const char *text);
@@ -83,7 +83,7 @@ class KLocale
   friend class KGlobal; // for initInstance()
 public:
   /**
-   * Create a KLocale with the given catalogue name.
+   * Constructs a KLocale with the given catalogue name.
    * The constructor looks for an entry Locale/Language in the
    * configuration file.
    * If no config file is specified, it will also look for languages
@@ -116,7 +116,7 @@ public:
   ~KLocale();
 
   /**
-   * Translate the string into the corresponding string in
+   * Translates the string into the corresponding string in
    * the national language, if available. If not, returns
    * the string itself.
    * There is a KDE wide message file that contains the most
@@ -131,7 +131,7 @@ public:
   QString translate( const char *index ) const;
 
   /**
-   * Translate the string into the corresponding string in the
+   * Translates the string into the corresponding string in the
    * national language, if available.
    *
    * The real contents of the string is in the argument fallback,
@@ -222,7 +222,7 @@ public:
 		      BeforeMoney = 3, AfterMoney = 4 };
 
   /**
-   * Retrieve what a decimal point should look like ("." or "," etc.)
+   * Returns what a decimal point should look like ("." or "," etc.)
    * according to the current locale or user settings.
    *
    * @return The decimal symbol used by locale.
@@ -230,7 +230,7 @@ public:
   QString decimalSymbol() const;
 
   /**
-   * Retrieve what the thousands separator should look
+   * Returns what the thousands separator should look
    * like ("," or "." etc.)
    * according to the current locale or user settings.
    *
@@ -239,7 +239,7 @@ public:
   QString thousandsSeparator() const;
 
   /**
-   * Retrieve what the symbol denoting currency in the current locale
+   * Returns what the symbol denoting currency in the current locale
    * as as defined by user settings should look like.
    *
    * @return The default currecy symbol used by locale.
@@ -247,7 +247,7 @@ public:
   QString currencySymbol() const;
   
   /**
-   * Retrieve what a decimal point should look like ("." or "," etc.)
+   * Returns what a decimal point should look like ("." or "," etc.)
    * for monetary values, according to the current locale or user
    * settings.
    *
@@ -256,7 +256,7 @@ public:
   QString monetaryDecimalSymbol() const;
 
   /**
-   * Retrieve what a thousands separator for monetary values should
+   * Returns what a thousands separator for monetary values should
    * look like ("," or " " etc.) according to the current locale or
    * user settings.
    *
@@ -265,7 +265,7 @@ public:
   QString monetaryThousandsSeparator() const;
 
   /**
-   * Retrieve what a positive sign should look like ("+", " ", etc.)
+   * Returns what a positive sign should look like ("+", " ", etc.)
    * according to the current locale or user settings.
    *
    * @return The positive sign used by locale.
@@ -273,7 +273,7 @@ public:
   QString positiveSign() const;
 
   /**
-   * Retrieve what a negative sign should look like ("-", etc.)
+   * Returns what a negative sign should look like ("-", etc.)
    * according to the current locale or user settings.
    *
    * @return The negative sign used by locale.
@@ -305,7 +305,7 @@ public:
   bool negativePrefixCurrencySymbol() const;
 
   /**
-   * Retrieve the position of a positive sign in relation to a
+   * Returns the position of a positive sign in relation to a
    * monetary value.
    *
    * @return Where/how to print the positive sign.
@@ -323,7 +323,7 @@ public:
   SignPosition negativeMonetarySignPosition() const;
 
   /**
-   * Given a double, convert that to a numeric string containing
+   * Given a double, converts that to a numeric string containing
    * the localized monetary equivalent.
    *
    * e.g. given 123456, return "$ 123,456.00".
@@ -351,7 +351,7 @@ public:
 #endif
   
   /**
-   * Given a double, convert that to a numeric string containing
+   * Given a double, converts that to a numeric string containing
    * the localized numeric equivalent.
    *
    * e.g. given 123456.78, return "123,456.78" (for some European country).
@@ -377,7 +377,7 @@ public:
 #endif
 
   /**
-   * Return a string formatted to the current locale's conventions
+   * Returns a string formatted to the current locale's conventions
    * regarding dates.
    *
    * @param pDate The date to be formated.
@@ -388,7 +388,7 @@ public:
   QString formatDate(const QDate &pDate, bool shortFormat = false) const;
 
   /**
-   * Return a string formatted to the current locale's conventions
+   * Returns a string formatted to the current locale's conventions
    * regarding times.
    *
    * @param pTime The time to be formated.
@@ -414,7 +414,7 @@ public:
   bool weekStartsMonday() const;
 
   /**
-   * Return a string containing the name of the month name.
+   * Returns a string containing the name of the month name.
    *
    * @param i the month number of the year starting at 1/January.
    * @param shortName we will return the short versoin of the string.
@@ -424,7 +424,7 @@ public:
   QString monthName(int i, bool shortName = false) const;
 
   /**
-   * Return a string containing the name of the week day.
+   * Returns a string containing the name of the week day.
    *
    * @param i the day number of the week starting at 1/Monday.
    * @param shortName we will return the short versoin of the string.
@@ -434,7 +434,7 @@ public:
   QString weekDayName(int i, bool shortName = false) const;
 
   /**
-   * Return a string formated to the current locale's conventions
+   * Returns a string formated to the current locale's conventions
    * regarding both date and time. Defaults to short date format.
    *
    * @param pDateTime The date and time to be formated.
@@ -444,7 +444,7 @@ public:
   QString formatDateTime(const QDateTime &pDateTime) const;
 
   /**
-   * Return a string formated to the current locale's conventions
+   * Returns a string formated to the current locale's conventions
    * regarding both date and time.
    *
    * @param pDateTime The date and time to be formated.
@@ -532,7 +532,7 @@ public:
 #endif
 
   /**
-   * Retrieves the prefered languages as ISO 639-1 codes. This means
+   * Returns the prefered languages as ISO 639-1 codes. This means
    * that information about country is removed. If the internal language
    * code might be represented by more than one 639-1 code, they will all be
    * listed (but only once).
@@ -571,7 +571,7 @@ public:
 #endif
 
   /**
-   * Retrives the user's prefered encoding
+   * Returns the user's prefered encoding.
    *
    * @return The name of the prefered encoding
    *
@@ -581,7 +581,7 @@ public:
   const char * encoding() const;
 
   /**
-   * Retrieves the user's prefered encoding.
+   * Returns the user's prefered encoding.
    *
    * @return The Mib of the prefered encoding
    *
@@ -590,7 +590,7 @@ public:
    */
   int encodingMib() const;
   /**
-   * Retrieves the user's prefered encoding. Should never be NULL.
+   * Returns the user's prefered encoding. Should never be NULL.
    *
    * @return The codec for the prefered encoding
    *
@@ -612,7 +612,7 @@ public:
    */
   void setDateFormatShort(const QString & format);
   /**
-   * Chagnes the current time format.
+   * Changes the current time format.
    *
    * @param format The new time format
    */
@@ -625,19 +625,19 @@ public:
    */
   void setWeekStartsMonday(bool start);
   /**
-   * Retrieves the currently selected date format.
+   * Returns the currently selected date format.
    *
    * @return Current date format.
    */
   QString dateFormat() const;
   /**
-   * Retrieves the currently selected short date format.
+   * Returns the currently selected short date format.
    *
    * @return Current short date format.
    */
   QString dateFormatShort() const;
   /**
-   * Retrieves the currently selected time format.
+   * Returns the currently selected time format.
    *
    * @return Current time format.
    */
@@ -723,7 +723,7 @@ public:
   void setCurrencySymbol(const QString & symbol);
 
   /**
-   * Retrieves the prefered page size for printing.
+   * Returns the prefered page size for printing.
    *
    * @return The prefered page size, cast it to QPrinter::PageSize
    */
@@ -743,7 +743,7 @@ public:
   enum MeasureSystem { Metric, Imperial };
 
   /**
-   * Retrieves which measuring system we use.
+   * Returns which measuring system we use.
    *
    * @return The prefered measuring system
    */
@@ -776,7 +776,7 @@ public:
   QString translateQt(const char *context, const char *sourceText) const;
 
   /**
-   * Retrieves the parts of the parameter str understood as language setting
+   * Returns the parts of the parameter str understood as language setting
    * the format is language_COUNTRY.charset
    *
    * @param str The string to split.
@@ -798,7 +798,7 @@ public:
   static void setMainCatalogue(const char *catalogue);
 
   /**
-   * Find localized resource in resourceDir( rtype ) + <lang> + fname.
+   * Finds localized resource in resourceDir( rtype ) + <lang> + fname.
    *
    * @param fname relative path to find
    * @param rtype resource type to use
@@ -806,14 +806,14 @@ public:
   static QString langLookup(const QString &fname, const char *rtype = "html");
 
   /**
-   * Retrieves the name of the internal language
+   * Returns the name of the internal language.
    *
    * @return Name of the default language
    */
   static QString defaultLanguage();
 
   /**
-   * Retrieves the name of the default country
+   * Returns the name of the default country.
    *
    * @return Name of the default country
    */
@@ -828,7 +828,7 @@ protected:
 
 private:
   /**
-   * @internal Init the localization part of the instance with the config
+   * @internal Inits the localization part of the instance with the config
    * object.
    *
    * @param config The configuration object used for init.
@@ -836,7 +836,7 @@ private:
   void initFormat(KConfig *config);
 
   /**
-   * @internal Init the language part of the instance with the given config
+   * @internal Inits the language part of the instance with the given config
    * object. It should be valid and contain the global entries.
    *
    * @param config The configuration object used for init
@@ -845,21 +845,21 @@ private:
   void initLanguage(KConfig * config, bool useEnv);
   
   /**
-   * @internal Figure out which charset the user prefers.
+   * @internal Figures out which charset the user prefers.
    *
    * @param config The configuration object used for init
    */
   void initCharset(KConfig * config);
 
   /**
-   * @internal Figure out which encoding the user prefers.
+   * @internal Figures out which encoding the user prefers.
    * 
    * @param config The configuration object used for init
    */
   void initEncoding(KConfig * config);
 
   /**
-   * @internal Figure out which catalogues to use.
+   * @internal Figures out which catalogues to use.
    * 
    * @param catalogue The name of the main catalogue
    */
@@ -882,7 +882,7 @@ private:
   void initCatalogue( KCatalogue & catalogue );
 
   /**
-   * @internal Read the language and format configuration form disk.
+   * @internal Reads the language and format configuration form disk.
    */
   void doBindInit();
 

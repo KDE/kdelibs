@@ -183,6 +183,12 @@ void KFloatValidator::setAcceptLocalizedNumbers(bool _b)
 {
     d->acceptLocalizedNumbers=_b;
 }
+
+bool KFloatValidator::acceptLocalizedNumbers() const
+{
+    return d->acceptLocalizedNumbers;
+}
+
 #include <kdebug.h>
 QValidator::State KFloatValidator::validate ( QString &str, int & ) const
 {

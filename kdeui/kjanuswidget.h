@@ -140,7 +140,7 @@ class KJanusWidget : public QWidget
     virtual bool showPage( int index );
 
     /**
-     * Retrieve the index of the page that are currently displayed.
+     * Returns the index of the page that are currently displayed.
      *
      * @return The index or -1 if the face is not Tabbed, TreeList or
      *         IconList.
@@ -156,14 +156,14 @@ class KJanusWidget : public QWidget
     virtual bool isValid() const;
 
     /**
-     * Retrieve the face type.
+     * Returns the face type.
      *
      * @return The face type.
      */
     virtual int face() const;
 
     /**
-     * Retrieve the minimum size that must be made available for the widget
+     * Returns the minimum size that must be made available for the widget
      * so that UIs can be displayed properly
      *
      * @return The minimum size.
@@ -179,7 +179,7 @@ class KJanusWidget : public QWidget
     virtual QSize sizeHint() const;
 
     /**
-     * Retrieve the empty widget that is available in Plain mode.
+     * Returns the empty widget that is available in Plain mode.
      *
      * @return The widget or 0 if the face in not Plain.
      */

@@ -309,7 +309,7 @@ public slots:
 
 public:
   /**
-   *  Retrieves the currently in part used URL.
+   *  Returns the currently in part used URL.
    *
    *  @return The current used URL.
    */

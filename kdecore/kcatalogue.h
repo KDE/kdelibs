@@ -58,7 +58,7 @@ public:
   virtual ~KCatalogue();
 
   /**
-   * Retrieves the name of the catalogue.
+   * Returns the name of the catalogue.
    *
    * @return The name of the catalogue
    */

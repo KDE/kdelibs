@@ -319,7 +319,7 @@ namespace KJS {
      */
     int size() const;
     /**
-     * Retrieve an element at an indexed position. If you want to iterate
+     * Retrieves an element at an indexed position. If you want to iterate
      * trough the whole list using @ref KJS::ListIterator will be faster.
      *
      * @param i List index.

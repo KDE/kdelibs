@@ -712,7 +712,7 @@ public:
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
     /**
-     * Retrieves the current completion mode.
+     * Returns the current completion mode.
      *
      * The return values are of type @ref KGlobalSettings::Completion.
      * See @ref setCompletionMode() for details.

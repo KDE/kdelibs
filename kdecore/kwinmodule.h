@@ -64,30 +64,30 @@ public:
      **/
     ~KWinModule();
 
-  /**
-   * Retrurns the list of all toplevel windows currently managed by the
-   * windowmanger in the order of creation. Please do not rely on
-   * indexes of this list: Whenever you enter Qt's eventloop in your
-   * application it may happen that entries are removed or added.
-   * Your module should perhaps work on a copy of this list and verify a
-   * window with @ref hasWindow() before any operations.
-   *
-   * Iteration over this list can be done easily with
-   * <pre>
-   *  QValueList<WId>::ConstIterator it;
-   *  for ( it = module->windows().begin();
-   *        it != modules->windows().end(); ++it ) {
-   *     ... do something here,  (*it) is the current WId.
-   *       }
-   * </pre>
-   */
+    /**
+     * Returns the list of all toplevel windows currently managed by the
+     * window manager in the order of creation. Please do not rely on
+     * indexes of this list: Whenever you enter Qt's event loop in your
+     * application, it may happen that entries are removed or added.
+     * Your module should perhaps work on a copy of this list and verify a
+     * window with @ref hasWindow() before any operations.
+     *
+     * Iteration over this list can be done easily with
+     * <pre>
+     *  QValueList<WId>::ConstIterator it;
+     *  for ( it = module->windows().begin();
+     *        it != modules->windows().end(); ++it ) {
+     *     ... do something here,  (*it) is the current WId.
+     *       }
+     * </pre>
+     */
     const QValueList<WId>& windows() const;
 
-  /**
-   * Returns the list of all toplevel windows currently managed by the
-   * windowmanger in the current stacking order (from lower to
-   * higher). May be useful for pagers.
-   **/
+    /**
+     * Returns the list of all toplevel windows currently managed by the
+     * windowmanger in the current stacking order (from lower to
+     * higher). May be useful for pagers.
+     */
     const QValueList<WId>& stackingOrder() const;
 
     /**
@@ -96,17 +96,17 @@ public:
     bool hasWId(WId) const;
 
     /**
-     * Retrieves a list of the system tray windows.
+     * Returns a list of the system tray windows.
      **/
     const QValueList<WId>& systemTrayWindows() const;
 
     /**
-     * Returns the current virtual desktop
+     * Returns the current virtual desktop.
      **/
     int currentDesktop() const;
 
     /**
-     * Returns the number of  virtual desktops
+     * Returns the number of virtual desktops.
      **/
     int numberOfDesktops() const;
 
@@ -130,12 +130,12 @@ public:
     QRect workArea( const QValueList<WId>&, int desktop = -1) const;
 
     /**
-     * Returns the name of the specified desktop
+     * Returns the name of the specified desktop.
      **/
     QString desktopName( int desktop ) const;
 
     /**
-     * Sets the name of the specified desktop
+     * Sets the name of the specified desktop.
      **/
     void setDesktopName( int desktop, const QString& name );
 
@@ -153,59 +153,59 @@ public:
 signals:
 
     /**
-   * Switched to another virtual desktop
-   */
+     * Switched to another virtual desktop.
+     */
     void currentDesktopChanged( int );
 
     /**
-   * A window has been added
-   */
+     * A window has been added.
+     */
     void windowAdded(WId);
 
     /**
-   * A window has been removed
-   */
+     * A window has been removed.
+     */
     void windowRemoved(WId);
 
     /**
-   * Hint that <Window> is active (= has focus) now.
-   */
+     * Hint that <Window> is active (= has focus) now.
+     */
     void activeWindowChanged(WId);
 
     /**
-    * Desktops have been renamed
-    */
+     * Desktops have been renamed.
+     */
     void desktopNamesChanged();
 
     /**
-    * The number of desktops changed
-    */
+     * The number of desktops changed.
+     */
     void numberOfDesktopsChanged(int);
 
     /**
-   * Add a dock window
-   */
+     * Emitted when a dock window has been added.
+     */
     void systemTrayWindowAdded(WId);
 
     /**
-   * Remove a dock window
-   */
+     * Emitted when a dock window has been removed.
+     */
     void systemTrayWindowRemoved(WId);
 
     /**
-   * The workarea has changed
-   */
+     * The workarea has changed.
+     */
     void workAreaChanged();
 
-    /* 
-       Something changed with the struts, may or may not have changed
+    /** 
+     * Something changed with the struts, may or may not have changed
      * the work area.
-   */
+     */
     void strutChanged();
     
     /**
-     * The stacking order of the window changed. The new order
-     * can be obtained with @ref stackingOrder()
+     * Emitted when the stacking order of the window changed. The new order
+     * can be obtained with @ref stackingOrder().
      */
     void stackingOrderChanged();
 

@@ -54,7 +54,7 @@ public:
 	static bool qtSupportsMetaKey();
 
 	/**
-	 * Retrieve the key code corresponding to the string @p sKey or
+	 * Returns the key code corresponding to the string @p sKey or
 	 * zero if the string is not recognized.
 	 *
 	 * The string must be something like "Shift+A",
@@ -68,8 +68,10 @@ public:
 	static uint stringToKeyQt( const QString& keyStr )
 		{ return stringToKey( keyStr ).key(); }
 
-	// Retrieve a string corresponding to the key code @p keyCode,
-	//  which is empty if @p keyCode is not recognized or zero.
+        /**
+         * Returns a string corresponding to the key code @p keyCode,
+	 * which is empty if @p keyCode is not recognized or zero.
+         */
 	static QString keyToString( int keyCode, bool i18_n = false );
 
 	// X11-Related Functions

@@ -47,8 +47,6 @@ class KSocketPrivate;
 class KServerSocketPrivate;
 
 /** 
- * A TCP/IP client socket.
- *
  * You can connect this socket to any Internet address. 
  *
  * The socket gives you three signals: When ready for reading, 
@@ -64,19 +62,19 @@ class KServerSocketPrivate;
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
  * @version $Id$
- * @short a TCP/IP client socket.
+ * @short A TCP/IP client socket.
  */
 class KSocket : public QObject
 {
     Q_OBJECT
 public:
     /** 
-     * Create a KSocket with the provided file descriptor.
+     * Constructs a KSocket with the provided file descriptor.
      * @param _sock	The file descriptor to use.
      */
     KSocket( int _sock );    
     /** 
-     * Create a socket and connect to a host.
+     * Creates a socket and connects to a host.
      * @param _host	The remote host to which to connect.
      * @param _port	The port on the remote host.
      * @param timeOut	The number of seconds waiting for connect (default 30).
@@ -109,7 +107,7 @@ public:
     int socket() const { return sock; }
     
     /** 
-     * Enable the socket for reading.
+     * Enables the socket for reading.
      *
      * If you enable read mode, the socket will emit the signal
      * @ref readEvent() whenever there is something to read out of this
@@ -118,7 +116,7 @@ public:
     void enableRead( bool );
     
     /** 
-     * Enable the socket for writing.
+     * Enables the socket for writing.
      *
      * If you enable write mode, the socket will emit the signal
      * @ref writeEvent() whenever the socket is ready for writing.
@@ -216,8 +214,6 @@ private:
 
 
 /**
- * Monitor a port for incoming TCP/IP connections.
- *
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
  * is created and the signal accepted is raised. Make sure you
@@ -228,7 +224,7 @@ private:
  *
  * @author Torben Weis <weis@stud.uni-frankfurt.de>
  * @version $Id$
- * @short Monitor a port for incoming TCP/IP connections.
+ * @short Monitors a port for incoming TCP/IP connections.
 */
 class KServerSocket : public QObject
 {
@@ -269,7 +265,7 @@ public:
     virtual ~KServerSocket();
 
     /**
-     * Bind the socket and start listening. This should only be called
+     * Binds the socket and start listening. This should only be called
      * once when the constructor was called with _bind false.
      * @return true on success. false on error.
      * On error the socket will be closed.
@@ -277,7 +273,7 @@ public:
     bool bindAndListen();
     
     /** 
-     * Get the file descriptor associated with the socket.
+     * Returns the file descriptor associated with the socket.
      * Returns -1 when an error occured during construction or
      * @ref bindAndListen
      */

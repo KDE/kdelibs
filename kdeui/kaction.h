@@ -637,7 +637,7 @@ public:
     virtual int plug( QWidget*, int index = -1 );
 
     /**
-     *  Retrieves the actual state of the action.
+     *  Returns the actual state of the action.
      */
     bool isChecked() const;
 
@@ -1183,7 +1183,7 @@ public:
 
 public slots:
   /**
-   *  Retrieves the maximum of items in the recent files list.
+   *  Returns the maximum of items in the recent files list.
    */
   uint maxItems() const;
 

@@ -57,11 +57,11 @@ public:
    * Sets the current values in horizontal and
    * vertical direction.
    */
-  void setValues( int _xPos, int _yPos );
+  void setValues( int xPos, int yPos );
   /**
    * Sets the range of possible values.
    */
-  void setRange( int _minX, int _minY, int _maxX, int _maxY );
+  void setRange( int minX, int minY, int maxX, int maxY );
 
   /**
    * @return the current value in horizontal direction.
@@ -82,7 +82,7 @@ signals:
    * This signal is emitted whenever the user chooses a value,
    * e. g. by clicking with the mouse on the widget.
    */
-  void valueChanged( int _x, int _y );
+  void valueChanged( int x, int y );
 
 protected:
   /**
@@ -112,8 +112,6 @@ protected:
 
 private:
   void setPosition( int xp, int yp );
-
-protected:
   int px;
   int py;
   int xPos;

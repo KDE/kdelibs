@@ -188,7 +188,7 @@ public:
   virtual bool openURL( const KURL &url );
 
   /**
-   * Stop loading the document and kill all data requests (for images, etc.)
+   * Stops loading the document and kill all data requests (for images, etc.)
    */
   virtual bool closeURL();
 
@@ -201,27 +201,27 @@ public:
   virtual void showError(KIO::Job* job);
 
   /**
-   * Retrieve a reference to the DOM HTML document (for non-HTML documents, returns null)
+   * Returns a reference to the DOM HTML document (for non-HTML documents, returns null)
    */
   DOM::HTMLDocument htmlDocument() const;
 
   /**
-   * Retrieve a reference to the DOM document.
+   * Returns a reference to the DOM document.
    */
   DOM::Document document() const;
 
   /**
-   * Retrieve the node that has the keyboard focus
+   * Returns the node that has the keyboard focus.
    */
   DOM::Node activeNode() const;
 
   /**
-   * Retrieve a pointer to the @ref KParts::BrowserExtension
+   * Returns a pointer to the @ref KParts::BrowserExtension.
    */
   KParts::BrowserExtension *browserExtension() const;
 
   /**
-   * Retrieve a pointer to the HTML document's view.
+   * Returns a pointer to the HTML document's view.
    */
   KHTMLView *view() const;
 
@@ -263,7 +263,7 @@ public:
   QVariant executeScript( const DOM::Node &n, const QString &script );
 
   /**
-   * Enable or disable Drag'n'Drop support. A drag operation is started if
+   * Enables or disables Drag'n'Drop support. A drag operation is started if
    * the users drags a link.
    */
   void setDNDEnabled( bool b );
@@ -273,7 +273,7 @@ public:
   bool dndEnabled() const;
 
   /**
-   * Enable/disable Java applet support. Note that calling this function
+   * Enables/disables Java applet support. Note that calling this function
    * will permanently override the User settings about Java applet support.
    * Not calling this function is the only way to let the default settings
    * apply.
@@ -286,35 +286,35 @@ public:
   bool javaEnabled() const;
 
   /**
-   * Return the java context of the applets. If no applet exists, 0 is returned.
+   * Returns the java context of the applets. If no applet exists, 0 is returned.
    */
   KJavaAppletContext *javaContext();
 
   /**
-   * Return the java context of the applets. If no context exists yet, a new one is
+   * Returns the java context of the applets. If no context exists yet, a new one is
    * created.
    */
   KJavaAppletContext *createJavaContext();
 
   /**
-   * Enable or disable plugins via, default is enabled
+   * Enables or disables plugins via, default is enabled
    */
   void setPluginsEnabled( bool enable );
 
   /**
-   * Return if plugins are enabled/disabled.
+   * Returns trie if plugins are enabled/disabled.
    */
   bool pluginsEnabled() const;
 
   /**
-   * Specify whether images contained in the document should be loaded
+   * Specifies whether images contained in the document should be loaded
    * automatically or not.
    *
    * @note Request will be ignored if called before @ref begin().
    */
   void setAutoloadImages( bool enable );
   /**
-   * Return whether images contained in the document are loaded automatically
+   * Returns whether images contained in the document are loaded automatically
    * or not.
    * @note that the returned information is unrelieable as long as no begin()
    * was called.
@@ -322,7 +322,7 @@ public:
   bool autoloadImages() const;
 
   /**
-   * Security option
+   * Security option.
    *
    * Specify whether only local references ( stylesheets, images, scripts, subdocuments )
    * should be loaded. ( default false - everything is loaded, if the more specific
@@ -331,7 +331,7 @@ public:
   void setOnlyLocalReferences(bool enable);
 
   /**
-   * Return whether references should be loaded ( default false )
+   * Returnd whether references should be loaded ( default false )
    **/
   bool onlyLocalReferences() const;
 
@@ -348,12 +348,12 @@ public:
 #endif
 
   /**
-   * schedules a redirection after delay seconds
+   * Schedules a redirection after @p delay seconds.
    */
   void scheduleRedirection( int delay, const QString &url );
 
   /**
-   * Clear the widget and prepares it for new content.
+   * Clears the widget and prepares it for new content.
    *
    * If you want @ref url() to return
    * for example "file:/tmp/test.html", you can use the following code:
@@ -377,7 +377,7 @@ public:
   virtual void begin( const KURL &url = KURL(), int xOffset = 0, int yOffset = 0 );
 
   /**
-   * Write another part of the HTML code to the widget.
+   * Writes another part of the HTML code to the widget.
    *
    * You may call
    * this function many times in sequence. But remember: The fewer calls
@@ -399,7 +399,7 @@ public:
   virtual void write( const char *str, int len = -1 );
 
   /**
-   * Write another part of the HTML code to the widget.
+   * Writes another part of the HTML code to the widget.
    *
    * You may call
    * this function many times in sequence. But remember: The fewer calls
@@ -413,7 +413,7 @@ public:
   virtual void end();
 
   /*
-   * Print current HTML page layed out for the printer.
+   * Prints the current HTML page layed out for the printer.
    *
    * (not implemented at the moment)
    */
@@ -425,7 +425,7 @@ public:
   void paint(QPainter *, const QRect &, int = 0, bool * = 0);
 
   /**
-   * Set the charset to use for displaying HTML pages.
+   * Sets the charset to use for displaying HTML pages.
    *
    * If override is @p true,
    * it will override charset specifications of the document.
@@ -433,7 +433,7 @@ public:
   bool setCharset( const QString &name, bool override = false );
 
   /**
-   * Set the encoding the page uses.
+   * Sets the encoding the page uses.
    *
    * This can be different from the charset. The widget will try to reload the current page in the new
    * encoding, if url() is not empty.
@@ -441,14 +441,14 @@ public:
   bool setEncoding( const QString &name, bool override = false );
 
   /**
-   * return the encoding the page currently uses.
+   * Returns the encoding the page currently uses.
    *
    * Note that the encoding might be different from the charset.
    */
   QString encoding() const;
 
   /**
-   * Set a user defined style sheet to be used on top of the HTML 4
+   * Sets a user defined style sheet to be used on top of the HTML 4
    * default style sheet.
    *
    * This gives a wide range of possibilities to
@@ -457,7 +457,7 @@ public:
   void setUserStyleSheet(const KURL &url);
 
   /**
-   * Set a user defined style sheet to be used on top of the HTML 4
+   * Sets a user defined style sheet to be used on top of the HTML 4
    * default style sheet.
    *
    * This gives a wide range of possibilities to
@@ -466,7 +466,7 @@ public:
   void setUserStyleSheet(const QString &styleSheet);
 
   /**
-   * Set point sizes to be associated with the HTML-sizes used in
+   * Sets point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
    * Html-Font-Sizes range from 0 (smallest) to 6 (biggest), but you
@@ -478,7 +478,7 @@ public:
   void setFontSizes(const QValueList<int> &newFontSizes );
 
   /**
-   * Get point sizes to be associated with the HTML-sizes used in
+   * Returns the list of point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
    * Html-Font-Sizes range from 0 (smallest) to 6 (biggest).
@@ -488,7 +488,7 @@ public:
   QValueList<int> fontSizes() const;
 
   /**
-   * Reset the point sizes to be associated with the HTML-sizes used in
+   * Resets the point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size> to their default.
    *
    * Html-Font-Sizes range from 0 (smallest) to 6 (biggest).
@@ -496,14 +496,14 @@ public:
   void resetFontSizes();
 
   /**
-   * Set the standard font style.
+   * Sets the standard font style.
    *
    * @param name The font name to use for standard text.
    */
   void setStandardFont( const QString &name );
 
   /**
-   * Set the fixed font style.
+   * Sets the fixed font style.
    *
    * @param name The font name to use for fixed text, e.g.
    * the <tt>&lt;pre&gt;</tt> tag.
@@ -511,7 +511,7 @@ public:
   void setFixedFont( const QString &name );
 
   /**
-   * Find the anchor named @p name.
+   * Finds the anchor named @p name.
    *
    * If the anchor is found, the widget
    * scrolls to the closest position. Returns @p if the anchor has
@@ -520,38 +520,38 @@ public:
   bool gotoAnchor( const QString &name );
 
   /**
-   * Set the cursor to use when the cursor is on a link.
+   * Sets the cursor to use when the cursor is on a link.
    */
   void setURLCursor( const QCursor &c );
 
   /**
-   * Retrieve the cursor which is used when the cursor is on a link.
+   * Returns the cursor which is used when the cursor is on a link.
    */
   QCursor urlCursor() const;
 
   /**
-   * Initiate a text search.
+   * Initiates a text search.
    */
   void findTextBegin();
 
   /**
-   * Find the next occurence of the string or expression.
+   * Finds the next occurence of the string or expression.
    * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
   /**
-   * Get the text the user has marked.
+   * Returns the text the user has marked.
    */
   virtual QString selectedText() const;
 
   /**
-   * Retrieve the selected part of the HTML.
+   * Returns the selected part of the HTML.
    */
   DOM::Range selection() const;
 
   /**
-   * set the current selection
+   * Sets the current selection.
    */
   void setSelection( const DOM::Range & );
 
@@ -585,13 +585,13 @@ public:
   void hide();
 
   /**
-   * Retrieve a reference to the partmanager instance which
+   * Returns a reference to the partmanager instance which
    * manages html frame objects.
    */
   KParts::PartManager *partManager();
 
   /**
-   * Save the KHTMLPart's complete state (including child frame
+   * Saves the KHTMLPart's complete state (including child frame
    * objects) to the provided @ref QDataStream.
    *
    * This is called from the @ref saveState() method of the
@@ -599,7 +599,7 @@ public:
    */
   virtual void saveState( QDataStream &stream );
   /**
-   * Restore the KHTMLPart's previously saved state (including
+   * Restores the KHTMLPart's previously saved state (including
    * child frame objects) from the provided QDataStream.
    *
    * @see saveState()
@@ -610,7 +610,7 @@ public:
   virtual void restoreState( QDataStream &stream );
 
   /**
-   * Retrieve the @p Node currently under the mouse
+   * Returns the @p Node currently under the mouse
    */
   DOM::Node nodeUnderMouse() const;
 
@@ -620,7 +620,7 @@ public:
   const KHTMLSettings *settings() const;
 
   /**
-   * Retrieve a pointer to the parent KHTMLPart if the part is a frame
+   * Returns a pointer to the parent KHTMLPart if the part is a frame
    * in an HTML frameset.
    *
    *  Returns 0L otherwise.
@@ -628,7 +628,7 @@ public:
   KHTMLPart *parentPart();
 
   /**
-   * Retrieve a list of names of all frame (including iframe) objects of
+   * Returns a list of names of all frame (including iframe) objects of
    * the current document. Note that this method is not working recursively
    * for sub-frames.
    */
@@ -641,7 +641,7 @@ public:
 #endif
 
   /**
-   * Find a frame by name. Returns 0L if frame can't be found.
+   * Finds a frame by name. Returns 0L if frame can't be found.
    */
   KHTMLPart *findFrame( const QString &f );
 

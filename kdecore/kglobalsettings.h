@@ -136,7 +136,7 @@ class KGlobalSettings
     static bool showContextMenusOnPress ();
 
     /**
-     * Retrieve the configured completion mode.
+     * Returns the configured completion mode.
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
      *

@@ -123,7 +123,7 @@ public:
 	 */
 	enum StandardPageType { CopiesPage = 0x01, Custom = 0x10 };
 	/**
-	 * Defines wether the application can perform page selection itself or not.
+	 * Defines whether the application can perform page selection itself or not.
 	 * Some print systems (like CUPS) can do page selection, in this case the
 	 * page selection will be enabled in the print dialog, otherwise it will be
 	 * disabled. However some applications (word processor) can do page selection
@@ -222,126 +222,125 @@ public:
 
 	// constructors / destructor
 	/**
-	 * Contructor. This also restores/saves the state from a previous KPrinter object created within
+	 * Constructor. This also restores/saves the state from a previous KPrinter object created within
 	 * the same application run, if @p restore is true. Setting @p restore to false may
 	 * be useful if you want an independant/clean KPrinter object.
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
 	 */
 	KPrinter(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution );
 	/**
-	 * Destructor. This also saves the current KPrinter state for future printing
+	 * Destructor. This also saves the current KPrinter state for future printing.
 	 */
 	~KPrinter();
 
 	// QPrinter interface (+ some extensions)
 	/**
-	 * See @ref QPrinter::newPage()
+	 * See @ref QPrinter::newPage().
 	 */
 	bool newPage();
 	/**
-	 * See @ref QPrinter::abort()
+	 * See @ref QPrinter::abort().
 	 */
 	bool abort();
 	/**
-	 * See @ref QPrinter::aborted()
+	 * See @ref QPrinter::aborted(.)
 	 */
 	bool aborted() const;
 	/**
-	 * See @ref QPrinter::outputToFile()
+	 * See @ref QPrinter::outputToFile().
 	 */
 	bool outputToFile() const;
 	/**
-	 * See @ref QPrinter::setOutputToFile()
+	 * See @ref QPrinter::setOutputToFile().
 	 */
 	void setOutputToFile(bool);
 	/**
-	 * See @ref QPrinter::outputFileName()
+	 * See @ref QPrinter::outputFileName().
 	 */
 	QString outputFileName() const;
 	/**
-	 * See @ref QPrinter::setOutputFileName()
+	 * See @ref QPrinter::setOutputFileName().
 	 */
 	void setOutputFileName(const QString&);
 	/**
-	 * See @ref QPrinter::docName()
+	 * See @ref QPrinter::docName().
 	 */
 	QString docName() const;
 	/**
-	 * See @ref QPrinter::setDocName()
+	 * See @ref QPrinter::setDocName().
 	 */
 	void setDocName(const QString&);
 	/**
-	 * See @ref QPrinter::creator()
+	 * See @ref QPrinter::creator().
 	 */
 	QString creator() const;
 	/**
-	 * See @ref QPrinter::setCreator()
+	 * See @ref QPrinter::setCreator().
 	 */
 	void setCreator(const QString&);
 	/**
-	 * See @ref QPrinter::fullPage()
+	 * See @ref QPrinter::fullPage().
 	 */
 	bool fullPage() const;
 	/**
-	 * See @ref QPrinter::setFullPage()
+	 * See @ref QPrinter::setFullPage().
 	 */
 	void setFullPage(bool);
 	/**
-	 * See @ref QPrinter::colorMode()
+	 * See @ref QPrinter::colorMode().
 	 */
 	ColorMode colorMode() const;
 	/**
-	 * See @ref QPrinter::setColorMode()
+	 * See @ref QPrinter::setColorMode().
 	 */
 	void setColorMode(ColorMode);
 	/**
-	 * See @ref QPrinter::numCopies()
+	 * See @ref QPrinter::numCopies().
 	 */
 	int numCopies() const;
 	/**
-	 * See @ref QPrinter::setNumCopies()
+	 * See @ref QPrinter::setNumCopies().
 	 */
 	void setNumCopies(int n);
 	/**
-	 * See @ref QPrinter::orientation()
+	 * See @ref QPrinter::orientation().
 	 */
 	Orientation orientation() const;
 	/**
-	 * See @ref QPrinter::setOrientation()
+	 * See @ref QPrinter::setOrientation().
 	 */
 	void setOrientation(Orientation);
 	/**
-	 * See @ref QPrinter::pageOrder()
+	 * See @ref QPrinter::pageOrder().
 	 */
 	PageOrder pageOrder() const;
 	/**
-	 * See @ref QPrinter::setPageOrder()
+	 * See @ref QPrinter::setPageOrder().
 	 */
 	void setPageOrder(PageOrder);
 	/**
-	 * Get the collate status of the current KPrinter
-	 * @returns the collate status
+	 * Returns the collate status of the current KPrinter.
 	 */
 	CollateType collate() const;
 	/**
-	 * Set the collate status for the current KPrinter
-	 * @param _type the collate type
+	 * Sets the collate status for the current KPrinter to @p type.
 	 */
-	void setCollate(CollateType);
+	void setCollate(CollateType type);
 	/**
-	 * See @ref QPrinter::minPage()
+	 * See @ref QPrinter::minPage().
 	 */
 	int minPage() const;
 	/**
-	 * See @ref QPrinter::maxPage()
+	 * See @ref QPrinter::maxPage().
 	 */
 	int maxPage() const;
 	/**
-	 * See @ref QPrinter::setMinMax()
+	 * See @ref QPrinter::setMinMax().
 	 */
 	void setMinMax(int, int);
 	/**
-	 * Get the first page to be printed. This function is deprecated and applications
+	 * Returns the first page to be printed.
+         * @deprecated Applications
 	 * should use @ref pageList() instead, which takes into account all options: collate,
 	 * page order, ranges, page set, ...
 	 *
@@ -349,7 +348,8 @@ public:
 	 */
 	int fromPage() const;
 	/**
-	 * Get the last page to be printed. This function is deprecated and applications
+	 * Returns the last page to be printed.
+         * @deprecated Applications
 	 * should use @ref pageList() instead, which takes into account all options: collate,
 	 * page order, ranges, page set, ...
 	 *
@@ -357,23 +357,23 @@ public:
 	 */
 	int toPage() const;
 	/**
-	 * Set the first and last page to be printed. See @ref QPrinter::setFromTo()
+	 * Sets the first and last page to be printed. See @ref QPrinter::setFromTo().
 	 */
 	void setFromTo(int, int);
 	/**
-	 * See @ref QPrinter::pageSize()
+	 * See @ref QPrinter::pageSize().
 	 */
 	PageSize pageSize() const;
 	/**
-	 * See @ref QPrinter::setPageSize()
+	 * See @ref QPrinter::setPageSize().
 	 */
 	void setPageSize(PageSize);
 	/**
-	 * See @ref QPrinter::printerName()
+	 * See @ref QPrinter::printerName().
 	 */
 	QString printerName() const;
 	/**
-	 * See @ref QPrinter::setPrinterName()
+	 * See @ref QPrinter::setPrinterName().
 	 */
 	void setPrinterName(const QString&);
 	/**
@@ -421,12 +421,12 @@ public:
 	 */
 	void setPrinterSelectionOption(const QString&);
 	/**
-	 * Get the current page number.
+	 * Returns the current page number.
 	 * @see setCurrentPage()
 	 */
 	int currentPage() const;
 	/**
-	 * Set the current page number. This page number will be used if the user
+	 * Sets the current page number. This page number will be used if the user
 	 * selected "current page" in the print dialog. This option will only be
 	 * enabled if the application does page selection itself and the application
 	 * has called @ref setCurrentPage() before opening the print dialog:
@@ -454,19 +454,18 @@ public:
 	 */
 	void setCurrentPage(int p = 0);
 	/**
-	 * Get the page set of the current KPrinter object.
-	 * @returns the page set
+	 * Returns the page set of the current KPrinter object.
 	 */
 	PageSetType pageSet() const;
 	/**
-	 * Setup the KPrinter object using the print dialog, returns true if the user clicked OK.
+	 * Sets up the KPrinter object using the print dialog, returns true if the user clicked OK.
 	 * @param parent the parent widget to use for the print dialog
 	 * @param caption the caption to use in the print dialog
 	 * @returns boolean value corresponding to the button clicked by the user
 	 */
 	bool setup(QWidget *parent = 0, const QString& caption = QString::null);
 	/**
-	 * See @ref QPrinter::margins()
+	 * See @ref QPrinter::margins().
 	 */
 	QSize margins() const;
 	/**
@@ -474,29 +473,27 @@ public:
 	 */
 	void setMargins(QSize m);
 	/**
-	 * Get the real page size in points. Some print system (like CUPS) allows to customize the
+	 * Returns the real page size in points. Some print system (like CUPS) allows to customize the
 	 * page size through printer description files (PPD). The size returned corresponds to this
 	 * size.
-	 * @returns the page size
 	 * @see setRealPageSize
 	 */
 	QSize realPageSize() const;
 	/**
-	 * Set the real page size. For internal use only.
+	 * Sets the real page size. For internal use only.
 	 * @param p the page size
 	 * @see realPageSize()
 	 */
 	void setRealPageSize(QSize p);
 	/**
-	 * Get the page list to be printed, correpsonding to the options selected by the user. This
+	 * Returns the page list to be printed, correpsonding to the options selected by the user. This
 	 * takes into account collate, page order, page set, ranges, ... This is useful when the
 	 * application does page selection itself.
-	 * @returns the page list to be printed
 	 * @see setCurrentPage()
 	 */
 	QValueList<int> pageList() const;
 	/**
-	 * Set the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
+	 * Sets the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
 	 * printed but only a preview dialog will be popped up with the single "Close" action. Using
 	 * this mode, any application can easily implement a preview action:
 	 * <pre>
@@ -516,8 +513,7 @@ public:
 	 */
 	void setPreviewOnly(bool on);
 	/**
-	 * Get the preview-only state for this KPrinter object.
-	 * @returns the preview-only state
+	 * Returns the preview-only state for this KPrinter object.
 	 * @see setPreviewOnly()
 	 */
 	bool previewOnly() const;
@@ -527,7 +523,7 @@ public:
 	 */
 	KPrinterImpl* implementation() const;
 	/**
-	 * Print the files given in argument. This will first filter the files accorsing to the filtering
+	 * Prints the files given in argument. This will first filter the files accorsing to the filtering
 	 * options selected by the user in the print dialog, then send the filtered files to the printer
 	 * with the print options selected. This function is called automatically when calling
 	 * @ref QPainter::end() for a painter object constructed on KPrinter. In normal use, you don't need
@@ -536,7 +532,7 @@ public:
 	bool printFiles(const QStringList& files, bool removeafter = false);
 
 	/**
-	 * Add a customized page to the print dialog. The pages will appear in a tab widget in the
+	 * Adds a customized page to the print dialog. The pages will appear in a tab widget in the
 	 * bottom half of the dialog, along with the standard "Copies" page. The page must be created
 	 * and added each time you want open a print dialog with @ref setup(). If you correctly
 	 * reimplemented @ref KPrintDialogPage::setOptions(), the settings will be restored from call
@@ -546,40 +542,40 @@ public:
 	 */
 	static void addDialogPage(KPrintDialogPage*);
 	/**
-	 * Set the page selection mode of the application. If needed, call this method somewhere at
+	 * Sets the page selection mode of the application. If needed, call this method somewhere at
 	 * the beginning of your code. The default value is @p SystemSide.
 	 * @param _mode the mode for the application
 	 * @see pageSelection()
 	 */
 	static void setPageSelection(PageSelectionType);
 	/**
-	 * Get the page selection mode of the current application.
+	 * Returns the page selection mode of the current application.
 	 * @returns the page selection mode
 	 * @see setPageSelection()
 	 */
 	static PageSelectionType pageSelection();
 	/**
-	 * Set the application type concerning the print dialog. You probably don't want to use it.
+	 * Sets the application type concerning the print dialog. You probably don't want to use it.
 	 * For internal use only.
-	 * @param _type the type for this application
+	 * @param type the type for this application
 	 * @see applicationType()
 	 */
-	static void setApplicationType(ApplicationType);
+	static void setApplicationType(ApplicationType type);
 	/**
-	 * Get the application type concerning the print dialog. For internal uase only.
+	 * Returns the application type concerning the print dialog. For internal use only.
 	 * @returns the type for the current application
 	 * @see setApplicationType()
 	 */
 	static ApplicationType applicationType();
 	/**
-	 * Add a standard page to the print dialog. This is not useful yet as there's only one
+	 * Adds a standard page to the print dialog. This is not useful yet as there's only one
 	 * standard page defines @p CopiesPage.
 	 * @param p the page identifier
 	 * @see StandardPageType
 	 */
 	static void addStandardPage(int p);
 	/**
-	 * Remove a standard page from the print dialog. If your application doesn't want a
+	 * Removes a standard page from the print dialog. If your application doesn't want a
 	 * standard page in the dialog, simply call this method with the correct identifier.
 	 * By default, the print dialog includes the @p CopiesPage page.
 	 * @param p the page identifier
@@ -587,7 +583,7 @@ public:
 	 */
 	static void removeStandardPage(int p);
 	/**
-	 * Start the add printer wizard. This utility function allows any application for
+	 * Starts the add printer wizard. This utility function allows any application for
 	 * adding a printer using the KDEPrint powerful wizard.
 	 * @param parent the parent widget for the wizard
 	 * @returns 1: success, 0: cancel, -1: error
@@ -626,7 +622,7 @@ public:
 	 */
 	const QString& option(const QString& key) const;
 	/**
-	 * Add or modify an option in the KPrinter object. You probably don't need to use this function
+	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
 	 * explicitely. This will be done implicitely for example when reimplementing @ref
 	 * KPrintDialogPage::getOptions().
 	 * @param key the option name
@@ -635,12 +631,12 @@ public:
 	 */
 	void setOption(const QString& key, const QString& value);
 	/**
-	 * Get the complete set of print options from the KPrinter object. For internale use.
+	 * Returns the complete set of print options from the KPrinter object. For internal use.
 	 * @returns the option set as a QMap object
 	 */
 	const QMap<QString,QString>& options() const;
 	/**
-	 * Set the option set in one operation. This method has some side effects like merging
+	 * Sets the option set in one operation. This method has some side effects like merging
 	 * the internal map with the one given in argument, but only for option in the form
 	 * "kde-...". For internal use only.
 	 * @param opts the option set to be merged in the KPrinter object
@@ -655,25 +651,25 @@ public:
 	void initOptions(const QMap<QString,QString>& opts);
 
 	/**
-	 * Get the search name of the printer selected by the user. Each printer is identified by
+	 * Returns the search name of the printer selected by the user. Each printer is identified by
 	 * a unique name. This method is mainly used for state restoration. For internal use.
 	 * @returns the unique printer search name
 	 * @see setSearchName
 	 */
 	QString searchName() const;
 	/**
-	 * Set the search name of the KPrinter object. For internal use.
+	 * Sets the search name of the KPrinter object. For internal use.
 	 * @param the unique printer search name
 	 * @see searchName()
 	 */
 	void setSearchName(const QString& n);
 	/**
-	 * Retrieve the last error messgae issued by the print system. Unimplemented yet.
+	 * Returns the last error message issued by the print system. Unimplemented yet.
 	 * @returns the last error message
 	 */
 	QString errorMessage() const;
 	/**
-	 * Set the last error message. For internal use.
+	 * Sets the last error message. For internal use.
 	 * @param msg the error message
 	 */
 	void setErrorMessage(const QString& msg);

@@ -606,7 +606,7 @@ public:
     QString getComboItem (int id, int index=-1);
 
     /**
-   * Retrieve a pointer to the combobox.
+   * Returns a pointer to the combobox.
    *
    * Example:
    * <pre>
@@ -618,7 +618,7 @@ public:
     KComboBox * getCombo(int id);
 
     /**
-   * Retrieve a pointer to KToolBarLined.
+   * Returns a pointer to KToolBarLined.
    *
    * Example:
    * <pre>
@@ -631,7 +631,7 @@ public:
     KLineEdit * getLined (int id);
 
     /**
-   * Retrieve a pointer to KToolBarButton.
+   * Returns a pointer to KToolBarButton.
    *
    * Example:
    * <pre>
@@ -653,7 +653,7 @@ public:
     void alignItemRight (int id, bool right = true);
 
     /**
-   * Retrieve a pointer to an inserted widget.
+   * Returns a pointer to an inserted widget.
    *
    * Wrong ids are not tested.
    * You can do with this whatever you want,
@@ -735,7 +735,7 @@ public:
     void setBarPos (BarPosition bpos);
 
     /**
-   * Retrieve position of toolbar.
+   * Returns position of toolbar.
    */
     BarPosition barPos() const;
 
@@ -758,7 +758,7 @@ public:
   /**
    * @deprecated
    * Use maximumHeight() instead.
-   * Retrieve the value that was set with @ref setMaxHeight().
+   * Returns the value that was set with @ref setMaxHeight().
    */
     int maxHeight();
 
@@ -772,7 +772,7 @@ public:
   /**
    * @deprecated
    * Use maximumWidth() instead.
-   * Retrieve the value that was set with @ref setMaxWidth().
+   * Returns the value that was set with @ref setMaxWidth().
    */
     int maxWidth();
 

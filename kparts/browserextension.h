@@ -77,7 +77,7 @@ struct URLArgs
   QStringList docState;
 
   /**
-   * @p reload is set when the cache shouldn't be used (forced reload)
+   * @p reload is set when the cache shouldn't be used (forced reload).
    */
   bool reload;
   /**
@@ -87,7 +87,7 @@ struct URLArgs
    */
   int xOffset;
   /**
-   * @p yOffset vertical scrolling position, @ref xOffset
+   * @p yOffset vertical scrolling position, @ref xOffset.
    */
   int yOffset;
   /**
@@ -96,7 +96,7 @@ struct URLArgs
   QString serviceType;
 
   /**
-   * KHTML-specific field, contents of the HTTP POST data
+   * KHTML-specific field, contents of the HTTP POST data.
    */
   QByteArray postData;
   /**
@@ -109,19 +109,19 @@ struct URLArgs
   QString contentType() const;
   /**
    * KHTML-specific field, whether to do a POST instead of a GET,
-   * for the next openURL
+   * for the next openURL.
    */
   void setDoPost( bool enable );
   /**
    * KHTML-specific field, whether to do a POST instead of a GET,
-   * for the next openURL
+   * for the next openURL.
    */
   bool doPost() const;
 
   /**
    * Whether to lock the history when opening the next URL.
    * This is used during e.g. a redirection, to avoid a new entry
-   * in the history
+   * in the history.
    */
   void setLockHistory( bool lock );
   bool lockHistory() const;
@@ -133,7 +133,7 @@ struct URLArgs
   QMap<QString, QString> &metaData();
 
   /**
-   * The frame in which to open the URL. KHTML/Konqueror-specific
+   * The frame in which to open the URL. KHTML/Konqueror-specific.
    */
   QString frameName;
 
@@ -350,7 +350,7 @@ public:
 
   typedef QMap<QCString,QCString> ActionSlotMap;
   /**
-   * Retrieve a map containing the action names as keys and corresponding
+   * Returns a map containing the action names as keys and corresponding
    * SLOT()'ified method names as data entries.
    *
    * This is very useful for
@@ -398,14 +398,14 @@ signals:
 #undef signals
 #define signals protected
   /**
-   * Enable or disable a standard action held by the browser.
+   * Enables or disable a standard action held by the browser.
    *
    * See class documentation for the list of standard actions.
    */
   void enableAction( const char * name, bool enabled );
 
   /**
-   * Ask the host (browser) to open @p url
+   * Asks the host (browser) to open @p url.
    * To set a reload, the x and y offsets, the service type etc., fill in the
    * appropriate fields in the @p args structure.
    * Hosts should not connect to this signal but to @ref openURLRequestDelayed.
@@ -421,7 +421,7 @@ signals:
   void openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * Tell the hosting browser that the part opened a new URL (which can be
+   * Tells the hosting browser that the part opened a new URL (which can be
    * queried via @ref KParts::Part::url().
    *
    * This helps the browser to update/create an entry in the history.
@@ -433,22 +433,22 @@ signals:
    * a proper history functionality to the user.
    * An example of usage is a html rendering component which wants to emit
    * this signal when a child frame document changed its URL.
-   * Conclusion: you probably want to use @ref openURLRequest() instead
+   * Conclusion: you probably want to use @ref openURLRequest() instead.
    */
   void openURLNotify();
 
   /**
-   * Update the URL shown in the browser's location bar to @p url.
+   * Updates the URL shown in the browser's location bar to @p url.
    */
   void setLocationBarURL( const QString &url );
 
   /**
-   * URL of an icon for the currently displayed page
+   * Sets the URL of an icon for the currently displayed page.
    */
   void setIconURL( const KURL &url );
 
   /**
-   * Ask the hosting browser to open a new window for the given @p url.
+   * Asks the hosting browser to open a new window for the given @p url.
    *
    * The @p args argument is optional additionnal information for the
    * browser,
@@ -457,7 +457,7 @@ signals:
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * Ask the hosting browser to open a new window for the given @p url
+   * Asks the hosting browser to open a new window for the given @p url
    * and return a reference to the content part.
    * The request for a reference to the part is only fullfilled/processed
    * if the serviceType is set in the @p args . (otherwise the request cannot be

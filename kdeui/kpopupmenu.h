@@ -38,37 +38,37 @@ class KPopupTitle : public QWidget
 {
 public:
     /**
-     * Create a title widget with the user specified gradient, pixmap,
+     * Constructs a title widget with the user specified gradient, pixmap,
      * and colors.
      */
     KPopupTitle(QWidget *parent=0, const char *name=0);
     /**
-     * Create a title widget with the specified gradient and colors.
+     * Constructs a title widget with the specified gradient and colors.
      */
     KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
                 const char *name=0);
     /**
-     * Create a title widget with the specified pixmap and colors.
+     * Constructs a title widget with the specified pixmap and colors.
      */
     KPopupTitle(const KPixmap &background, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
                 const char *name=0);
     /**
-     * Set the title string and optional icon for the title widget.
+     * Sets the title string and optional icon for the title widget.
      *
-     * You will
-     * want to call this before inserting into a menu.
+     * You will want to call this before inserting into a menu.
      */
     void setTitle(const QString &text, const QPixmap *icon=NULL);
     /**
-     * Retrieve the current title.
+     * Returns the current title.
      */
     QString title() const { return(titleStr); }
     /**
-     * Retrieve the current icon.
+     * Returns the current icon.
      */
     QPixmap icon() const { return(miniicon); }
+
     QSize sizeHint() const;
 protected:
     void paintEvent(QPaintEvent *ev);

@@ -72,25 +72,25 @@ class KDirWatch : public QObject
    ~KDirWatch();
 
    /**
-    * Add a directory to the list of directories to be watched.
+    * Adds a directory to the list of directories to be watched.
     *
     */
    void addDir(const QString& path);
 
    /**
-    * Retrieve the time the directory was last changed.
+    * Returns the time the directory was last changed.
     */
    time_t ctime(const QString& path);
 
    /**
-    * Remove a directory from the list of scanned directories.
+    * Removes a directory from the list of scanned directories.
     *
     * If specified path is not in the list this does nothing.
     */
    void removeDir(const QString& path);
 
    /**
-    * Stop scanning the specified path.
+    * Stops scanning the specified path.
     *
     * The @p path is not deleted from the interal just, it is just skipped.
     * Call this function when you perform an huge operation
@@ -101,7 +101,7 @@ class KDirWatch : public QObject
    bool stopDirScan(const QString& path);
 
    /**
-    * Restart scanning for specified path.
+    * Restarts scanning for specified path.
     *
     * Resets ctime. It doesn't notify
     * the change (by emitted a signal), since the ctime value is reset.
@@ -113,7 +113,7 @@ class KDirWatch : public QObject
    bool restartDirScan(const QString& path);
 
    /**
-    * Start scanning of all dirs in list.
+    * Starts scanning of all dirs in list.
     *
     * If notify is @p true, all changed directories (since @ref
     * stopScan() call) will be notified for refresh. If notify is
@@ -131,7 +131,7 @@ class KDirWatch : public QObject
    void startScan( bool notify=false, bool skippedToo=false );
 
    /**
-    * Stop scanning of all directories in internal list.
+    * Stops scanning of all directories in internal list.
     *
     * The timer is stopped, but the list is not cleared.
     */

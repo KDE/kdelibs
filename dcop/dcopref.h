@@ -39,7 +39,7 @@ class DCOPRef
 {
 public:
     /**
-     * Create a null reference.
+     * Creates a null reference.
      */
     DCOPRef();
 
@@ -48,7 +48,7 @@ public:
      */
     DCOPRef( const DCOPRef& ref );
     /**
-     * Create a reference to a certain object in a
+     * Creates a reference to a certain object in a
      * certain application.
      *
      * @param app The name of an application as registered
@@ -57,7 +57,7 @@ public:
     DCOPRef( const QCString& app, const QCString& obj );
 
     /**
-     * Create a reference to a certain object in a
+     * Creates a reference to a certain object in a
      * certain application.
      *
      * @param object The dcop object to create the ref to.
@@ -65,7 +65,7 @@ public:
     DCOPRef( DCOPObject *object );
     
     /**
-     * Create a reference to a certain object in a
+     * Creates a reference to a certain object in a
      * certain application.
      *
      * @param app The name of an application as registered
@@ -74,7 +74,7 @@ public:
     DCOPRef( const QCString& app, const QCString& obj, const QCString& type );
     
     /**
-     * Test wether it is a null reference.
+     * Tests wether it is a null reference.
      */
     bool isNull() const;
 
@@ -97,18 +97,18 @@ public:
     DCOPRef& operator=( const DCOPRef& );
 
     /**
-     * Change the referenced object. Resets the type to unknown (null).
+     * Changes the referenced object. Resets the type to unknown (null).
      */
     void setRef( const QCString& app, const QCString& obj );
     
     /**
-     * Change the referenced object
+     * Changes the referenced object
      */
     void setRef( const QCString& app, const QCString& obj, const QCString& type );
 
     
     /**
-     * Make it a null reference.
+     * Makes this a null reference.
      */
     void clear();
 

@@ -32,8 +32,6 @@
 #include "kasyncio.h"
 
 /**
- * Buffered I/O
- *
  * This abstract class implements basic functionality for buffered
  * input/output.
  *
@@ -62,7 +60,7 @@
  *
  * @author Thiago Macieira <thiagom@mail.com>
  * @version $Id$
- * @short buffered I/O
+ * @short Buffered I/O
  */
 class KBufferedIO: public KAsyncIO
 {

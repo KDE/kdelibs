@@ -56,7 +56,7 @@ class KTempFile
    friend class KSaveFile;
 public:
    /**
-    * Create a temporary file with the name:
+    * Creates a temporary file with the name:
     *  <filePrefix><six letters><fileExtension>
     *
     * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname"

@@ -2,6 +2,7 @@
 #define _KKEYBUTTON_H_
 
 #include "qpushbutton.h"
+
 /**
  *  A push button that looks like a keyboard key.
  *  @short A push button that looks like a keyboard key.

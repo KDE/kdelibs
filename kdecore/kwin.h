@@ -104,12 +104,12 @@ public:
     };
 
     /**
-     * Retrieves information about window @p win.
+     * Returns information about window @p win.
      */
     static Info info( WId win );
 
     /**
-     * Retrieves an icon for window @p win.
+     * Returns an icon for window @p win.
      *
      * If  @p width and @p height are specified, the best icon for the requested
      * size is returned.

@@ -56,7 +56,7 @@ class KHTMLPart;
 class KHTMLViewPrivate;
 
 /**
- * Render and display HTML in a @ref QScrollView.
+ * Renders and displays HTML in a @ref QScrollView.
  *
  * Suitable for use as an application's main view.
  **/
@@ -83,7 +83,7 @@ public:
     virtual ~KHTMLView();
 
     /**
-     * Retrieves a pointer to the KHTMLPart that is
+     * Returns a pointer to the KHTMLPart that is
      * rendering the page.
      **/
     KHTMLPart *part() const { return m_part; }
@@ -91,56 +91,56 @@ public:
     int frameWidth() const { return _width; }
 
     /**
-     * Set a margin in x direction.
+     * Sets a margin in x direction.
      */
     void setMarginWidth(int x) { _marginWidth = x; }
 
     /**
-     * Retrieve the margin width.
+     * Returns the margin width.
      *
      * A return value of -1 means the default value will be used.
      */
     int marginWidth() const { return _marginWidth; }
 
     /*
-     * Set a margin in y direction.
+     * Sets a margin in y direction.
      */
     void setMarginHeight(int y) { _marginHeight = y; }
 
-    /*
-     * Retrieve the margin height.
+    /**
+     * Returns the margin height.
      *
      * A return value of -1 means the default value will be used.
      */
     int marginHeight() { return _marginHeight; }
 
-    /*
-     * Set vertical scrollbar mode. Reimplemented for internal reasons.
+    /**
+     * Sets verticals scrollbar mode. Reimplemented for internal reasons.
      */
     virtual void setVScrollBarMode ( ScrollBarMode mode );
 
-    /*
-     * Set horizontal scrollbar mode. Reimplemented for internal reasons.
+    /**
+     * Sets horizontal scrollbar mode. Reimplemented for internal reasons.
      */
     virtual void setHScrollBarMode ( ScrollBarMode mode );
 
     /**
-     * override the scrollbar mode
+     * Overrides the scrollbar mode.
      */
     void forceHScrollBarMode( ScrollBarMode mode );
     
     /**
-     * override the scrollbar mode
+     * Overrides the scrollbar mode.
      */
     void forceVScrollBarMode( ScrollBarMode mode );
 
     /**
-     * Print the HTML document.
-     **/
+     * Prints the HTML document.
+     */
     void print();
 
     /**
-     * Paint the HTML document to a QPainter.
+     * Paints the HTML document to a QPainter.
      * The document will be scaled to match the width of
      * rc and clipped to fit in the height.
      * yOff determines the vertical offset in the document to start with.

@@ -70,16 +70,16 @@ class DCOPClient : public QObject
 
  public:
   /**
-   * Create a new DCOP client, but do not attach to any server.  */
+   * Constructs a new DCOP client, but does not attach to any server.  */
   DCOPClient();
 
   /**
-   * Clean up any open connections and dynamic data.
+   * Cleans up any open connections and dynamic data.
    */
   virtual ~DCOPClient();
 
   /**
-   * Specify the address of a server to use upon attaching.
+   * Sets the address of a server to use upon attaching.
    *
    * If no server address is ever specified, attach will try its best to
    * find the server anyway.
@@ -87,7 +87,7 @@ class DCOPClient : public QObject
   static void setServerAddress(const QCString &addr);
 
   /**
-   * Attach to the DCOP server.
+   * Attaches to the DCOP server.
    *
    * If the connection was already attached,
    * the connection will be re-established with the current server address.
@@ -115,17 +115,17 @@ class DCOPClient : public QObject
   void bindToApp();
 
   /**
-   * Detach from the DCOP server.
+   * Detaches from the DCOP server.
    */
   bool detach();
 
   /**
-   * Query whether or not the client is attached to the server.
+   * Returns whether or not the client is attached to the server.
    */
   bool isAttached() const;
 
   /**
-   * Register at the DCOP server.
+   * Registers at the DCOP server.
    *
    * If the application was already registered,
    * the registration will be re-done with the new @ref appId.
@@ -150,14 +150,14 @@ class DCOPClient : public QObject
   QCString registerAs( const QCString &appId, bool addPID = true );
 
   /**
-   * Query whether or not the client is registered at the server.
+   * Returns whether or not the client is registered at the server.
    */
   bool isRegistered() const;
 
- /**
-  * Returns the current app id or a null string if the application
-  * hasn't yet been registered.
-  */
+  /**
+   * Returns the current app id or a null string if the application
+   * hasn't yet been registered.
+   */
   QCString appId() const;
 
   /**
@@ -166,7 +166,7 @@ class DCOPClient : public QObject
   int socket() const;
 
   /**
-   * Temporarily suspend processing of DCOP events.
+   * Temporarily suspends processing of DCOP events.
    * This can be usefull if you need to show e.g. a dialog before
    * your application is ready to accept DCOP requests. Normally the
    * dialog would start an event loop and in this event loop DCOP
@@ -178,13 +178,13 @@ class DCOPClient : public QObject
   void suspend();
 
   /**
-   * Resume the processing of DCOP events.
+   * Resumes the processing of DCOP events.
    * See @ref suspend().
    */
   void resume();
 
   /**
-   * Send a data block to the server.
+   * Sends a data block to the server.
    *
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
@@ -211,7 +211,7 @@ class DCOPClient : public QObject
 	    bool fast=false);
 
   /**
-   * Perform a synchronous send and receive.
+   * Performs a synchronous send and receive.
    *
    *  The parameters are the same as for send, with the exception of
    *  another @ref QByteArray being provided for results to be
@@ -232,7 +232,7 @@ class DCOPClient : public QObject
 	    bool useEventLoop=false, bool fast=false);
 
   /**
-   * Search for an object which matches a criteria.
+   * Searches for an object which matches a criteria.
    *
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
@@ -274,8 +274,8 @@ class DCOPClient : public QObject
 
 
   /**
-   * Emit @p signal as DCOP signal from object @p object with @p data as
-   * arguments
+   * Emits @p signal as DCOP signal from object @p object with @p data as
+   * arguments.
    */
   void emitDCOPSignal( const QCString &object, const QCString &signal,
                        const QByteArray &data);
@@ -284,7 +284,7 @@ class DCOPClient : public QObject
   void emitDCOPSignal( const QCString &signal, const QByteArray &data);
 
   /**
-   * Connect to a DCOP signal
+   * Connects to a DCOP signal.
    * @param sender the name of the client that emits the signal. When empty
    * the signal will be passed from any client.
    * @param senderObj the name of the sending object that emits the signal.
@@ -314,7 +314,7 @@ class DCOPClient : public QObject
                           bool Volatile);
 
   /**
-   * Disconnect a DCOP signal
+   * Disconnects a DCOP signal.
    * @param sender the name of the client that emits the signal.
    * @param senderObj the name of the object that emits the signal.
    * If empty all objects will be disconnected.
@@ -339,7 +339,7 @@ class DCOPClient : public QObject
                           const QCString &receiverObj, const QCString &slot);
 
   /**
-   * Reimplement to handle app-wide function calls unassociated w/an object.
+   * Reimplement this function to handle app-wide function calls unassociated w/an object.
    *
    * Note that @p fun is normalized. See @ref normalizeFunctionSignature().
    *
@@ -352,7 +352,7 @@ class DCOPClient : public QObject
 		       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Delay the reply of the current function call
+   * Delays the reply of the current function call
    * until @ref endTransaction() is called.
    *
    * This allows a server to queue requests.
@@ -362,7 +362,7 @@ class DCOPClient : public QObject
   DCOPClientTransaction *beginTransaction( );
 
   /**
-   * Send the delayed reply of a function call.
+   * Sends the delayed reply of a function call.
    */
   void endTransaction( DCOPClientTransaction *, QCString& replyType, QByteArray &replyData);
 
@@ -376,24 +376,25 @@ class DCOPClient : public QObject
   Q_INT32 transactionId() const;
 
   /**
-   * Check whether @p remApp is registered with the @ref DCOPServer.
+   * Checks whether @p remApp is registered with the @ref DCOPServer.
    * @return @p true if the remote application is registered, otherwise @p false.
    */
   bool isApplicationRegistered( const QCString& remApp);
 
   /**
-   * Retrieves the list of all currently registered applications.
+   * Retrieves the list of all currently registered applications
+   * from dcopserver.
    */
   QCStringList registeredApplications();
 
   /**
-   * Retrieves the list of objects of the remote application @p remApp
+   * Retrieves the list of objects of the remote application @p remApp.
    */
   QCStringList remoteObjects( const QCString& remApp, bool *ok = 0 );
 
   /**
    * Retrieves the list of interfaces of the remote object @p remObj
-   * of application @p remApp
+   * of application @p remApp.
   */
   QCStringList remoteInterfaces( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
 
@@ -404,7 +405,7 @@ class DCOPClient : public QObject
   QCStringList remoteFunctions( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
 
   /**
-   * Receive a DCOPSend or DCOPCall message from the server.
+   * Receives a DCOPSend or DCOPCall message from the server.
    *
    * @param app The application the message was intended for.  Should be
    *        equal to our appId that we passed when the DCOPClient was
@@ -419,7 +420,7 @@ class DCOPClient : public QObject
 	       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Receive a @p DCOPFind message from the server.
+   * Receives a @p DCOPFind message from the server.
    *
    * @param app The application the message was intended for.  Should be
    *        equal to our appId that we passed when the DCOPClient was
@@ -434,7 +435,7 @@ class DCOPClient : public QObject
 	    QCString& replyType, QByteArray &replyData);
 
   /**
-   * Normalize the function signature @p fun.
+   * Normalizes the function signature @p fun.
    *
    * A normalized signature doesn't contain any unnecessary whitespace
    * anymore. The remaining whitespace consists of single blanks only (0x20).
@@ -452,7 +453,7 @@ class DCOPClient : public QObject
 
 
   /**
-   * Retrieve the @p appId of the last application that talked to us.
+   * Returns the @p appId of the last application that talked to us.
    */
   QCString senderId() const;
 
@@ -466,7 +467,7 @@ class DCOPClient : public QObject
   void setDefaultObject( const QCString& objId );
 
     /**
-     * Retrieve the current default object or an empty string if no object is
+     * Returns the current default object or an empty string if no object is
      * installed as default object.
      *
      * A default object receives application-wide messages that have not
@@ -475,7 +476,7 @@ class DCOPClient : public QObject
   QCString defaultObject() const;
 
   /**
-   * Enable / disable the @ref applicationRegistered() /
+   * Enables / disables the @ref applicationRegistered() /
    * @ref applicationRemoved() signals.
    * Note that a counter is maintained about how often this method
    * was called. If this method is called twice with @p enabled set to
@@ -540,24 +541,24 @@ class DCOPClient : public QObject
 
 signals:
   /**
-   * Indicate that the application @p appId has been registered with
+   * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    *
    * You need to call @ref setNotifications() first, to tell the @ref DCOPServer
-   * that you want to get these events
+   * that you want to get these events.
    */
   void applicationRegistered( const QCString& appId );
   /**
-   * Indicate that the formerly registered application @p appId has
+   * Indicates that the formerly registered application @p appId has
    * been removed.
    *
    * You need to call @ref setNotifications() first, to tell the @ref
-   * DCOPServer that you want to get these events
+   * DCOPServer that you want to get these events.
    */
   void applicationRemoved( const QCString& appId );
 
   /**
-   * Indicate that the process of establishing DCOP communications failed
+   * Indicates that the process of establishing DCOP communications failed
    * in some manner.
    *
    *  Usually attached to a dialog box or some other visual
@@ -566,7 +567,7 @@ signals:
   void attachFailed(const QString &msg);
 
   /**
-   * Indicate that user input shall be blocked or released,
+   * Indicates that user input shall be blocked or released,
    * depending on the argument.
    *
    * The signal is emitted whenever the client has to wait too long

@@ -129,8 +129,6 @@ void KXYSelector::mouseMoveEvent( QMouseEvent *e )
 
 void KXYSelector::setPosition( int xp, int yp )
 {
-	QPainter painter;
-
 	if ( xp < 2 )
 		xp = 2;
 	else if ( xp > width() - 2 )
@@ -141,6 +139,7 @@ void KXYSelector::setPosition( int xp, int yp )
 	else if ( yp > height() - 2 )
 		yp = height() - 2;
 
+	QPainter painter;
 	painter.begin( this );
 
 	bitBlt( this, px - STORE_W, py - STORE_W, &store, 0, 0,

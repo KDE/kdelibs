@@ -156,9 +156,9 @@ public:
 			  bool showWhatsThis = TRUE );
 
     /**
-     * Retrieve the standard help menu.
+     * Returns the help menu. Creates a standard help menu if none exists yet.
      *
-     * It contains entires for the
+     * It contains entries for the
      * help system (activated by F1), an optional "What's This?" entry
      * (activated by Shift F1), an application specific dialog box,
      * and an "About KDE" dialog box. You must create the application
@@ -230,7 +230,7 @@ public:
     static bool canBeRestored( int number );
 
     /**
-     * Retrieve the @ref className() of the @p number of the toplevel window which
+     * Returns the @ref className() of the @p number of the toplevel window which
      * should be restored.
      *
      *  This is only useful if your application uses
@@ -280,14 +280,14 @@ public:
     bool isHelpMenuEnabled();
 
     /**
-     * Retrieve a pointer to the menu bar.
+     * Returns a pointer to the menu bar.
      *
      * If there is no menu bar yet on will be created.
      **/
     KMenuBar *menuBar();
 
     /**
-     * Retrieve a pointer to the status bar.
+     * Returns a pointer to the status bar.
      *
      *  If there is no
      * status bar yet one will be created.
@@ -300,7 +300,7 @@ public:
     static QPtrList<KMainWindow>* memberList;
 
     /**
-     * Retrieve a pointer to the toolbar with the specified name.
+     * Returns a pointer to the toolbar with the specified name.
      * This refers to toolbars created dynamically from the XML UI
      * framework.  If the toolbar does not exist one will be created.
      *

@@ -122,7 +122,7 @@ public:
     ~KPanelApplet();
 
     /**
-     * Retrieve a suggested width for a given height.
+     * Returns a suggested width for a given height.
      *
      * Every applet should reimplement this function.
      *
