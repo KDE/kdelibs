@@ -27,6 +27,13 @@ extern int kjsyyparse();
 
 using namespace KJS;
 
+FunctionObject::FunctionObject(const Object& funcProto)
+  : ConstructorImp(funcProto, 1)
+{
+  // ECMA 15.3.3.1 Function.prototype
+  setPrototypeProperty(funcProto);
+}
+
 // ECMA 15.3.1 The Function Constructor Called as a Function
 Completion FunctionObject::execute(const List &args)
 {
@@ -98,7 +105,7 @@ Object FunctionObject::construct(const List &args)
   }
 
   fimp->setLength(params);
-  fimp->setPrototype(Global::current().functionPrototype());
+  fimp->setPrototypeProperty(Global::current().functionPrototype());
   return Object(fimp);
 }
 

@@ -27,7 +27,7 @@ namespace KJS {
 
   class RegExpObject : public ConstructorImp {
   public:
-    RegExpObject(const Object& proto) : ConstructorImp(proto, 2) { }
+    RegExpObject(const Object& funcProto, const Object &regProto);
     Completion execute(const List &);
     Object construct(const List &);
   };

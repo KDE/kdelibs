@@ -25,6 +25,13 @@
 
 using namespace KJS;
 
+BooleanObject::BooleanObject(const KJSO& funcProto, const KJSO &booleanProto)
+  : ConstructorImp(funcProto, 1)
+{
+  // Boolean.prototype
+  setPrototypeProperty(booleanProto);
+}
+
 // ECMA 15.6.1
 Completion BooleanObject::execute(const List &args)
 {

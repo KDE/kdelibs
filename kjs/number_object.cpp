@@ -23,6 +23,13 @@
 
 using namespace KJS;
 
+NumberObject::NumberObject(const Object& funcProto, const Object &numProto)
+  : ConstructorImp(funcProto, 1)
+{
+  // Number.Prototype
+  setPrototypeProperty(numProto);
+}
+
 // ECMA 15.7.3
 KJSO NumberObject::get(const UString &p) const
 {

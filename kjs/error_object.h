@@ -27,7 +27,8 @@ namespace KJS {
 
   class ErrorObject : public ConstructorImp {
   public:
-    ErrorObject(const Object& proto, ErrorType t = GeneralError);
+    ErrorObject(const Object &funcProto, const Object &errProto,
+		ErrorType t = GeneralError);
     ErrorObject(const Object& proto, ErrorType t, const char *m, int l = -1);
     Completion execute(const List &);
     Object construct(const List &);

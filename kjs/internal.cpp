@@ -378,7 +378,7 @@ Completion DeclaredFunctionImp::execute(const List &)
   return Completion(Normal, Undefined()); /* TODO: or ReturnValue ? */
 }
 
-// ECMA 13.2.2
+// ECMA 13.2.2 [[Construct]]
 Object DeclaredFunctionImp::construct(const List &args)
 {
   Object obj(ObjectClass);
@@ -386,7 +386,7 @@ Object DeclaredFunctionImp::construct(const List &args)
   if (p.isObject())
     obj.setPrototype(p);
   else
-    obj.setPrototype(Global::current().get("[[Object.prototype]]"));
+    obj.setPrototype(Global::current().objectPrototype());
 
   KJSO res = executeCall(obj.imp(), &args);
 

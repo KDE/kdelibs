@@ -27,7 +27,7 @@ namespace KJS {
 
   class BooleanObject : public ConstructorImp {
   public:
-    BooleanObject(const KJSO& p) : ConstructorImp(p, 1) { }
+    BooleanObject(const KJSO& funcProto, const KJSO &booleanProto);
     Completion execute(const List &);
     Object construct(const List &);
   };

@@ -24,6 +24,13 @@
 
 using namespace KJS;
 
+ObjectObject::ObjectObject(const Object &funcProto, const Object &objProto)
+    : ConstructorImp(funcProto, 1)
+{
+  // ECMA 15.2.3.1
+  setPrototypeProperty(objProto);
+}
+
 Completion ObjectObject::execute(const List &args)
 {
   KJSO result;

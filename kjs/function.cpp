@@ -198,7 +198,7 @@ Completion InternalFunctionImp::execute(const List &)
 }
 
 ConstructorImp::ConstructorImp() {
-  //  setPrototype(KJScript::global().functionPrototype());
+  setPrototype(Global::current().functionPrototype());
   // TODO ???  put("constructor", this);
   setLength(1);
 }

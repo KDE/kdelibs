@@ -37,9 +37,12 @@ const char *ErrorObject::errName[] = {
   "URIError"
 };
 
-ErrorObject::ErrorObject(const Object& proto, ErrorType t)
-  : ConstructorImp(proto, 1), errType(t)
+ErrorObject::ErrorObject(const Object &funcProto, const Object &errProto,
+			 ErrorType t)
+  : ConstructorImp(funcProto, 1), errType(t)
 {
+  // ECMA 15.11.3.1 Error.prototype
+  setPrototypeProperty(errProto);
   const char *n = errName[errType];
 
   put("name", String(n));

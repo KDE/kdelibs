@@ -27,7 +27,7 @@ namespace KJS {
 
   class ArrayObject : public ConstructorImp {
   public:
-    ArrayObject(const Object& p) : ConstructorImp(p, 1) { }
+    ArrayObject(const Object &funcProto, const Object &arrayProto);
     Completion execute(const List &);
     Object construct(const List &);
   };

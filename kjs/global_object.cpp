@@ -155,15 +155,15 @@ GlobalImp::GlobalImp()
   put("[[RegExp.prototype]]", regexpProto);
   put("[[Error.prototype]]", errorProto);
 
-  Object objectObj(new ObjectObject(objProto));
+  Object objectObj(new ObjectObject(funcProto, objProto));
   Object funcObj(new FunctionObject(funcProto));
-  Object arrayObj(new ArrayObject(funcProto));
-  Object boolObj(new BooleanObject(funcProto));
-  Object stringObj(new StringObject(funcProto));
-  Object numObj(new NumberObject(funcProto));
-  Object dateObj(new DateObject(dateProto));
-  Object regObj(new RegExpObject(regexpProto));
-  Object errObj(new ErrorObject(errorProto));
+  Object arrayObj(new ArrayObject(funcProto, arrayProto));
+  Object stringObj(new StringObject(funcProto, stringProto));
+  Object boolObj(new BooleanObject(funcProto, booleanProto));
+  Object numObj(new NumberObject(funcProto, numberProto));
+  Object dateObj(new DateObject(funcProto, dateProto));
+  Object regObj(new RegExpObject(funcProto, regexpProto));
+  Object errObj(new ErrorObject(funcProto, errorProto));
 
   Imp::put("Object", objectObj, DontEnum);
   Imp::put("Function", funcObj, DontEnum);

@@ -32,7 +32,7 @@ namespace KJS {
 
   class FunctionObject : public ConstructorImp {
   public:
-    FunctionObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    FunctionObject(const Object &funcProto);
     Completion execute(const List &);
     Object construct(const List &);
   };

@@ -27,7 +27,7 @@ namespace KJS {
 
   class StringObject : public ConstructorImp {
   public:
-    StringObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    StringObject(const Object &funcProto, const Object &stringProto);
     KJSO get(const UString &p) const;
     Completion execute(const List &);
     Object construct(const List &);

@@ -1340,6 +1340,7 @@ void FuncDeclNode::processFuncDecl()
   const List *sc = Context::current()->pScopeChain();
   /* TODO: let this be an object with [[Class]] property "Function" */
   FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
+  fimp->put("prototype", Object::create(ObjectClass), DontDelete);
 
   int plen = 0;
   for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)

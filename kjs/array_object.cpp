@@ -25,6 +25,14 @@
 
 using namespace KJS;
 
+ArrayObject::ArrayObject(const Object &funcProto,
+			 const Object &arrayProto)
+    : ConstructorImp(funcProto, 1)
+{
+  // ECMA 15.4.3.1 Array.prototype
+  setPrototypeProperty(arrayProto);
+}
+
 // ECMA 15.6.1
 Completion ArrayObject::execute(const List &args)
 {

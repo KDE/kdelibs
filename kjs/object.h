@@ -240,10 +240,16 @@ namespace KJS {
 
     // Properties
     /**
-     * Set the internal [[prototype]] property of this object.
+     * Set the internal [[Prototype]] property of this object.
      * @param p A prototype object.
      */
-    void setPrototype(const KJSO& p);
+    void setPrototype(const KJSO &p);
+    /**
+     * Set the "prototype" property of this object. Different from
+     * the internal [[Prototype]] property.
+     * @param p A prototype object.
+     */
+    void setPrototypeProperty(const KJSO &p);
     /**
      * @return The internal [[prototype]] property.
      */
@@ -407,6 +413,7 @@ namespace KJS {
     virtual const TypeInfo* typeInfo() const { return &info; }
 
     void setPrototype(const KJSO& p);
+    void setPrototypeProperty(const KJSO &p);
     void setConstructor(const KJSO& c);
 
     void* operator new(size_t);

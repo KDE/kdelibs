@@ -349,9 +349,12 @@ ErrorType KJSO::putValue(const KJSO& v)
 void KJSO::setPrototype(const KJSO& p)
 {
   assert(rep);
-  /* TODO: the internal [[prototype]] and "prototype" prop
-     are two different things */
   rep->proto = p.imp() /*? p.imp()->ref() : 0L*/;
+}
+
+void KJSO::setPrototypeProperty(const KJSO& p)
+{
+  assert(rep);
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
@@ -839,6 +842,10 @@ void Imp::mark(Imp*)
 void Imp::setPrototype(const KJSO& p)
 {
   proto = p.imp() /*? p.imp()->ref() : 0L*/;
+}
+
+void Imp::setPrototypeProperty(const KJSO &p)
+{
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 

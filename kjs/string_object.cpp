@@ -26,6 +26,13 @@
 
 using namespace KJS;
 
+StringObject::StringObject(const Object &funcProto, const Object &stringProto)
+  : ConstructorImp(funcProto, 1)
+{
+  // ECMA 15.5.3.1 String.prototype
+  setPrototypeProperty(stringProto);
+}
+
 KJSO StringObject::get(const UString &p) const
 {
   if (p == "fromCharCode")

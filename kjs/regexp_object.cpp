@@ -28,6 +28,13 @@
 
 using namespace KJS;
 
+RegExpObject::RegExpObject(const Object& funcProto, const Object &regProto)
+    : ConstructorImp(funcProto, 2)
+{
+  // ECMA 15.10.5.1 RegExp.prototype
+  setPrototypeProperty(regProto);
+}
+
 // ECMA 15.9.2
 Completion RegExpObject::execute(const List &)
 {

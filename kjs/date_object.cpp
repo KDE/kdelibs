@@ -132,6 +132,13 @@ KJSO KJS::timeClip(const KJSO &t)
   return t;
 }
 
+DateObject::DateObject(const Object& funcProto, const Object &dateProto)
+    : ConstructorImp(funcProto, 7)
+{
+  // ECMA 15.9.4.1 Date.prototype
+  setPrototypeProperty(dateProto);
+}
+
 // ECMA 15.9.2
 Completion DateObject::execute(const List &)
 {

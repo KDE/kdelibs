@@ -27,7 +27,7 @@ namespace KJS {
 
   class DateObject : public ConstructorImp {
   public:
-    DateObject(const Object& proto) : ConstructorImp(proto, 7) { }
+    DateObject(const Object& funcProto, const Object &dateProto);
     Completion execute(const List &);
     Object construct(const List &);
     KJSO get(const UString &p) const;

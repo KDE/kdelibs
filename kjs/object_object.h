@@ -27,7 +27,7 @@ namespace KJS {
 
   class ObjectObject : public ConstructorImp {
   public:
-    ObjectObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    ObjectObject(const Object &funcProto, const Object &objProto);
     Completion execute(const List &);
     Object construct(const List &);
   };
