@@ -531,8 +531,9 @@ public:
 
     /**
        Clients (such as pagers/taskbars) that wish to start a WMMoveResize
-       (where the window manager controls the resize/movement) should call
-       this function.  This will send a request to the Window Manager.
+       (where the window manager controls the resize/movement,
+       i.e. _NET_WM_MOVERESIZE) should call this function.
+       This will send a request to the Window Manager.
 
        @param window The client window that would be resized/moved.
 
@@ -546,6 +547,17 @@ public:
     void moveResizeRequest(Window window, int x_root, int y_root,
 			   Direction direction);
 
+    /**
+       Clients (such as pagers/taskbars) that wish to move/resize a window
+       using WM2MoveResizeWindow (_NET_MOVERESIZE_WINDOW) should call this function.
+       This will send a request to the Window Manager. See _NET_MOVERESIZE_WINDOW
+       description for details.
+
+       @param window The client window that would be resized/moved.
+       
+       @since 3.2
+    **/
+    void moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height );
 
     /**
        @since 3.2
@@ -752,6 +764,16 @@ protected:
     **/
     // virtual void restackWindow(Window window, Window above, int detail) { }
     virtual void restackWindow(Window, Window, int) { }
+
+    /**
+       A Window Manager should subclass NETRootInfo2 and reimplement this function
+       when it wants to know when a pager made a request to move/resize a window.
+       See _NET_MOVERESIZE_WINDOW for details.
+
+       @param window the id of the window to more/resize
+    **/
+    // virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { }
+    virtual void moveResizeWindow( Window, int, int, int, int, int ) { }
 
 // no private data, use NETRootInfoPrivate
 };

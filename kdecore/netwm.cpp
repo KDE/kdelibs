@@ -60,6 +60,7 @@ static Atom net_virtual_roots        = 0;
 static Atom net_close_window         = 0;
 static Atom net_restack_window         = 0;
 static Atom net_wm_moveresize        = 0;
+static Atom net_moveresize_window    = 0;
 
 // application window properties
 static Atom net_wm_name              = 0;
@@ -222,7 +223,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 70;
+static const int netAtomCount = 71;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -243,6 +244,7 @@ static void create_atoms(Display *d) {
             "_NET_RESTACK_WINDOW",
 
 	    "_NET_WM_MOVERESIZE",
+            "_NET_MOVERESIZE_WINDOW",
 	    "_NET_WM_NAME",
 	    "_NET_WM_VISIBLE_NAME",
 	    "_NET_WM_ICON_NAME",
@@ -326,6 +328,7 @@ static void create_atoms(Display *d) {
             &net_restack_window,
 
 	    &net_wm_moveresize,
+            &net_moveresize_window,
 	    &net_wm_name,
 	    &net_wm_visible_name,
 	    &net_wm_icon_name,
@@ -1091,6 +1094,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & WMMoveResize)
 	atoms[pnum++] = net_wm_moveresize;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2MoveResizeWindow)
+	atoms[pnum++] = net_moveresize_window;
+
     if (p->properties[ PROTOCOLS ] & WMName)
 	atoms[pnum++] = net_wm_name;
 
@@ -1294,6 +1300,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     // Application window properties/messages
     else if( atom == net_wm_moveresize )
         p->properties[ PROTOCOLS ] |= WMMoveResize;
+
+    else if( atom == net_moveresize_window )
+        p->properties[ PROTOCOLS2 ] |= WM2MoveResizeWindow;
 
     else if( atom == net_wm_name )
         p->properties[ PROTOCOLS ] |= WMName;
@@ -1560,6 +1569,31 @@ void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
+void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height )
+{
+
+#ifdef    NETWMDEBUG
+    fprintf(stderr,
+	    "NETRootInfo::moveResizeWindowRequest: resizing/moving 0x%lx (%d, %d, %d, %d, %d)\n",
+	    window, flags, x, y, width, height);
+#endif
+
+    XEvent e;
+
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = net_moveresize_window;
+    e.xclient.display = p->display;
+    e.xclient.window = window,
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = flags;
+    e.xclient.data.l[1] = x;
+    e.xclient.data.l[2] = y;
+    e.xclient.data.l[3] = width;
+    e.xclient.data.l[4] = height;
+
+    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+}
+
 void NETRootInfo::restackRequest(Window window, Window above, int detail)
 {
 #ifdef    NETWMDEBUG
@@ -1732,6 +1766,26 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		       event->xclient.data.l[0],
 		       event->xclient.data.l[1],
 		       event->xclient.data.l[2]);
+	} else if (event->xclient.message_type == net_moveresize_window) {
+
+#ifdef    NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo::event: moveResizeWindow(%ld, %ld, %ld, %ld, %ld, %ld)\n",
+		    event->xclient.window,
+		    event->xclient.data.l[0],
+		    event->xclient.data.l[1],
+		    event->xclient.data.l[2],
+		    event->xclient.data.l[3],
+		    event->xclient.data.l[4]
+		    );
+#endif
+
+	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
+	        this2->moveResizeWindow(event->xclient.window,
+		           event->xclient.data.l[0],
+		           event->xclient.data.l[1],
+		           event->xclient.data.l[2],
+		           event->xclient.data.l[3],
+		           event->xclient.data.l[4]);
 	} else if (event->xclient.message_type == net_close_window) {
 
 #ifdef   NETWMDEBUG

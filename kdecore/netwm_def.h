@@ -500,6 +500,7 @@ public:
         @li WM2GroupLeader  group leader (window_group in WM_HINTS)
         @li WM2AllowedActions
         @li WM2RestackWindow
+        @li WM2MoveResizeWindow
 
     **/
     enum Property2 {
@@ -508,7 +509,8 @@ public:
         WM2TransientFor        = 1<<2,
         WM2GroupLeader         = 1<<3,
         WM2AllowedActions      = 1<<4,
-        WM2RestackWindow       = 1<<5
+        WM2RestackWindow       = 1<<5,
+        WM2MoveResizeWindow    = 1<<6
     };
 
     /**
