@@ -28,6 +28,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include <netinet/tcp.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>         // Needed on some systems.
 #endif
@@ -78,7 +79,7 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*8)
 
 // Default expire time in seconds: 1 min.
-#define DEFAULT_EXPIRE (1*60)
+#define DEFAULT_EXPIRE (10)
 
 // time frame in which the cache cleaner is run
 // (30 Minutes)
@@ -470,6 +471,9 @@ HTTPProtocol::http_openConnection()
         }
         m_sock = ks.fd();
 
+        int on = 1;
+        int r = setsockopt( m_sock, SOL_TCP, TCP_NODELAY, &on, sizeof( on ) );
+
         // SSL proxying requires setting up a tunnel through the proxy server
         // with the CONNECT directive.
 #ifdef DO_SSL
@@ -699,6 +703,7 @@ bool HTTPProtocol::http_open()
           fclose(m_fcache);
         m_fcache = 0;
      }
+
      m_bCachedWrite = true;
 
      if (m_fcache && !m_bMustRevalidate)
@@ -1784,8 +1789,8 @@ bool HTTPProtocol::readHeader()
       m_request.method == HTTP_HEAD) &&
       m_request.url.filename() != "favicon.ico" )
   {
-     kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
-     mimeType( m_strMimeType );
+    kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
+    mimeType( m_strMimeType );
   }
 
   if (m_request.method == HTTP_HEAD)
@@ -1795,7 +1800,7 @@ bool HTTPProtocol::readHeader()
      setMetaData("modified", m_lastModified);
 
   if (!mayCache)
-     setMetaData("no-cache", "true");
+    setMetaData("no-cache", "true");
 
   // Do we want to cache this request?
   if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
@@ -2522,9 +2527,7 @@ int HTTPProtocol::readLimited()
   bytesReceived = read(m_bufReceive.data(), bytesToReceive);
 
   if (bytesReceived > 0)
-  {
      m_iBytesLeft -= bytesReceived;
-  }
 
   return bytesReceived;
 }
@@ -2572,6 +2575,8 @@ bool HTTPProtocol::readBody( )
 
   if (m_bCachedRead)
   {
+    kdDebug( 7113 ) << "HTTPProtocol::readBody: read data from cache!" << endl;
+
      char buffer[ MAX_IPC_SIZE ];
      // Jippie! It's already in the cache :-)
      while (!feof(m_fcache) && !ferror(m_fcache))
@@ -2605,8 +2610,6 @@ bool HTTPProtocol::readBody( )
 
   if (m_bChunked)
     m_iBytesLeft = -1;
-
-  kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
   // Main incoming loop...  Gather everything while we can...
   KMD5 context;
@@ -3056,6 +3059,8 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    QString filename = m_state.cef + ".new";  // Create a new cache entryexpireDate
 
+   kdDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
+
    m_fcache = fopen( filename.latin1(), "w");
    if (!m_fcache)
    {
@@ -3121,9 +3126,8 @@ void HTTPProtocol::closeCacheEntry()
    if (result == 0)
    {
       if (::rename( filename.latin1(), m_state.cef.latin1()) == 0)
-      {
          return; // Success
-      }
+
       kdWarning(7103) << "closeCacheEntry: error renaming cache entry. ("
                    << filename << " -> " << m_state.cef << ")" << endl;
    }
