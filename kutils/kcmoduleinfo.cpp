@@ -167,11 +167,8 @@ KCModuleInfo::loadAll()
   // get the documentation path
   setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
 
-  //kdDebug(712) << "FOO" << endl;
-  //tmp = _service->property( "X-KDE-Test-Module", QVariant::Bool );
-  //bool test = ( tmp.isValid() ? tmp.asBool() : false );
-  //setNeedsTest( test );
-  //kdDebug(712) << "BAR" << endl;
+  tmp = _service->property( "X-KDE-Test-Module", QVariant::Bool );
+  setNeedsTest( tmp.isValid() ? tmp.asBool() : false );
 }
 
 QString
