@@ -56,3 +56,5 @@ kipctest_SOURCES = kipctest.cpp
 cplusplustest_SOURCES = cplusplustest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp
 kresolvertest_SOURCES = kresolvertest.cpp
+kmdcodectest_SOURCES = kmdcodectest.cpp 
+
