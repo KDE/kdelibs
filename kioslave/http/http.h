@@ -460,6 +460,9 @@ protected:
   short unsigned int m_iProxyAuthCount;
   short unsigned int m_iWWWAuthCount;
 
+  // First request on a connection
+  bool m_bFirstRequest;
+
   // Persistent connections
   bool m_bKeepAlive;
 
