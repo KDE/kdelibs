@@ -20,9 +20,8 @@
                 left : 0px;
                 width : 100%;
                 color : #000000;">
-        <h1><!-- Why was this used in fact: could the text not just be copied?
-	<xsl:apply-templates select="/" mode="title.ref"/>-->
-	<xsl:apply-templates select="title"/><!-- probably not safe: more than one title might be found? -->
+        <h1><!-- Why was this used in fact: could the text not just be copied?-->
+	<xsl:apply-templates select="." mode="title.markup"/>
         </h1>
        </div>
 
@@ -89,7 +88,7 @@ style="position : absolute;
        <td align="center" class="center">
           <xsl:choose>
              <xsl:when test="count($up) > 0 and $up != $home">
-               <xsl:apply-templates select="$up//title"/>
+               <xsl:apply-templates select="$up" mode="title.markup"/>
              </xsl:when>
              <xsl:otherwise>&#160;</xsl:otherwise>
           </xsl:choose>
@@ -199,7 +198,7 @@ style="position : absolute;
 
         <tr>
           <td width="33%" align="left">
-            <xsl:apply-templates select="$prev//title"/>
+            <xsl:apply-templates select="$prev" mode="title.markup"/>
             <xsl:text>&#160;</xsl:text>
           </td>
           <td width="34%" align="center">
@@ -219,7 +218,7 @@ style="position : absolute;
           </td>
           <td width="33%" align="right">
             <xsl:text>&#160;</xsl:text>
-            <xsl:apply-templates select="$next//title"/>
+            <xsl:apply-templates select="$next" mode="title.markup"/>
           </td>
         </tr>
       </table>
