@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 
 	/* drop root priviliges if running setuid root
 	   (due to realtime priority stuff) */
-	if (geteuid() != getuid()) seteuid(getuid());
+	if (geteuid() != getuid()) setreuid(-1, getuid());
 
 	execv(execute,argv);
 	return 0;
