@@ -65,7 +65,6 @@ KConfig	*KGlobal::instanceConfig()
 KIconLoader *KGlobal::iconLoader()
 {
     if( _iconLoader == 0 ) {
-	assert( kApp() );
 	_iconLoader = new KIconLoader();
     }
     

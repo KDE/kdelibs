@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.49  1999/06/17 11:50:37  kulow
+   yet another addition to make KIconLoader flexible (some kcontrol apps tried
+   really hard to ruin all internals of KIconLoader ;(
+   You can now kiconLoader->setIconType("kpanel_pics") and add a standard resource
+   type into KGlobal::dirs() with this type name and then ICON will load from this
+   directories. Way more flexible than the old hacks
+
    Revision 1.48  1999/06/17 10:20:24  kulow
    some changes to make KIconloader flexible enough to let konqueror load
    kwm icons :)
@@ -181,23 +188,25 @@ void KIconLoader::initPath()
     KGlobal::dirs()->addResourceType("toolbar", 
 				     KStandardDirs::kde_data_relative() + "/pics/");
     
-    // default
-    iconType = "toolbar"; 
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
 			  const QString &app_name, const QString &var_name ) : 
   config(conf), appname(app_name), varname(var_name)
 {
+  iconType = "toolbar";
   initPath();
 }
 
-KIconLoader::KIconLoader() : varname("IconPath")
+KIconLoader::KIconLoader() : config(0), varname("IconPath")
 {
-  config = KApplication::getKApplication()->getConfig();
-  config->setGroup("KDE Setup");
-	
-  appname = KApplication::getKApplication()->name();
+  KApplication *app = KApplication::getKApplication();
+  if (app) {
+    config = KApplication::getKApplication()->getConfig();
+    config->setGroup("KDE Setup");
+    appname = KApplication::getKApplication()->name();
+  }
+  iconType = "toolbar";
 
   initPath();
 }
