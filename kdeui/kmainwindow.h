@@ -321,7 +321,7 @@ public:
 
     /**
      * Call this to enable "auto-save" of toolbar/menubar/statusbar settings
-     * (and optionnally window size).
+     * (and optionally window size).
      * If the *bars were moved around/shown/hidden when the window is closed,
      * saveMainWindowSettings( KGlobal::config(), groupName ) will be called.
      *
@@ -333,9 +333,9 @@ public:
      * @param saveWindowSize set it to true to include the window size
      * when saving.
      *
-     * Note that you'll have to call applyMainWindowSettings yourself,
-     * calling KGlobal::config()->setGroup( groupName ) first, for instance from
-     * your mainwindow's constructor.
+     * Typically, you will call setAutoSaveSettings( QString::null, true );
+     * in your KMainWindow-inherited class constructor, and it will take care
+     * of restoring and saving automatically.
      */
     void setAutoSaveSettings( const QString & groupName, bool saveWindowSize );
 

@@ -98,6 +98,8 @@ public:
                     QCloseEvent e;
                     QApplication::sendEvent( last, &e );
                     cancelled = !e.isAccepted();
+                    if ( !cancelled && it.current()->testWState( Qt::WDestructiveClose ) )
+                      delete it.current();
                 }
             }
             no_query_exit = FALSE;
@@ -591,6 +593,8 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     // Get notified when the user moves a toolbar around
     connect( this, SIGNAL( endMovingToolBar( QToolBar * ) ),
              this, SLOT( setSettingsDirty() ) );
+    // Now read the previously saved settings
+    applyMainWindowSettings( KGlobal::config(), groupName );
 }
 
 void KMainWindow::resetAutoSaveSettings()
