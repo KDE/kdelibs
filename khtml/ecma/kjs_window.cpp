@@ -250,7 +250,7 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::ScrollBy));
   else if (p == "scrollTo")
     return Function(new WindowFunc(this, WindowFunc::ScrollTo));
-  else if (p == "self")
+  else if (p == "self" || p == "window")
     return KJSO(newWindow(part));
   else if (p == "top") {
     KHTMLPart *p = part;
