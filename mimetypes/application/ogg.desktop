@@ -50,4 +50,5 @@ MimeType=application/ogg
 Icon=multimedia
 Patterns=*.ogg;*.OGG
 # Previous name of this mimetype
+X-KDE-HasSubtypes=true
 X-KDE-IsAlso=application/x-ogg
