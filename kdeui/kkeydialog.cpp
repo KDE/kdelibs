@@ -48,6 +48,7 @@
 #include <kshortcutlist.h>
 #include <kxmlguifactory.h>
 #include <kaboutdata.h>
+#include <kstaticdeleter.h>
 
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
@@ -196,8 +197,17 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 	insert( actions );
 }
 
+// list of all existing KKeyChooser's of type Global
+// used when checking global shortcut for a possible conflict
+// (just checking against kdeglobals isn't enough, the shortcuts
+// might have changed in KKeyChooser and not being saved yet)
+static QValueList< KKeyChooser* >* globalChoosers = NULL;
+static KStaticDeleter< QValueList< KKeyChooser* > > globalChoosersDeleter;
+
 KKeyChooser::~KKeyChooser()
 {
+        if( m_type == Global && globalChoosers != NULL )
+            globalChoosers->remove( this );
 	// Delete allocated KShortcutLists
 	for( uint i = 0; i < d->rgpListsAllocated.count(); i++ )
 		delete d->rgpListsAllocated[i];
@@ -394,6 +404,12 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //d->stdDict->setAutoDelete( true );
   //if (type == Application || type == ApplicationGlobal)
   //  readStdKeys();
+  connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
+  if( m_type == Global ) {
+      if( globalChoosers == NULL )
+          globalChoosers = globalChoosersDeleter.setObject( new QValueList< KKeyChooser* > );
+      globalChoosers->append( this );
+  }
 }
 
 // Add all shortcuts to the list
@@ -515,10 +531,19 @@ void KKeyChooser::slotCustomKey()
 
 void KKeyChooser::readGlobalKeys()
 {
+        d->mapGlobals.clear();
+        if( m_type == Global )
+            return; // they will be checked normally, because we're configuring them
 	QMap<QString, QString> mapEntry = KGlobal::config()->entryMap( "Global Shortcuts" );
 	QMap<QString, QString>::Iterator it( mapEntry.begin() );
 	for( uint i = 0; it != mapEntry.end(); ++it, i++ )
 		d->mapGlobals[it.key()] = KShortcut(*it);
+}
+
+void KKeyChooser::slotSettingsChanged( int category )
+{
+    if( category == KApplication::SETTINGS_SHORTCUTS )
+        readGlobalKeys(); // reread
 }
 
 void KKeyChooser::fontChange( const QFont & )
@@ -700,6 +725,17 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 		}
 	}
 
+        // check also other Global KKeyChooser's
+        if( m_type == Global && globalChoosers != NULL ) {
+            for( QValueList< KKeyChooser* >::ConstIterator it = globalChoosers->begin();
+                 it != globalChoosers->end();
+                 ++it ) {
+                // this will also again check standard accels etc. and display wrong dialog title, but who cares 
+                if( (*it)->isKeyPresent( cut, bWarnUser )) {
+                    return true;
+                }
+            }
+        }
 	return false;
 }
 

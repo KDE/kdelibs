@@ -146,6 +146,7 @@ class KKeyChooser : public QWidget
 	void slotCustomKey();
 	void slotListItemSelected( QListViewItem *item );
 	void capturedShortcut( const KShortcut& cut );
+        void slotSettingsChanged( int );
 
  protected:
 	ActionType m_type;
