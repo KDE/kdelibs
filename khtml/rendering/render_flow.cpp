@@ -239,12 +239,9 @@ void RenderFlow::layout( bool deep )
 
     int oldWidth = m_width;
     
-    bool hasSo = (specialObjects!=0);
-    
-    clearFloats();
     calcWidth();
 
-    if (!hasSo)
+    if (specialObjects==0)
     	if (oldWidth == m_width && layouted() && !isAnonymousBox()
 	    && !containsPositioned() && !isPositioned()) return;
     else
@@ -261,7 +258,9 @@ void RenderFlow::layout( bool deep )
 	setLayouted();
 	return;
     }
-        
+    
+
+    clearFloats();
 
     // Block elements usually just have descent.
     // ascent != 0 will give a separation.
@@ -993,7 +992,7 @@ void RenderFlow::calcMinMaxWidth()
             else if (mr.type == Fixed)
                 margin += child->marginRight();    
             
-            if (margin<0) margin=0;                
+            if (margin<0) margin=0;              
                         
 	    int w = child->minWidth() + margin;
 
