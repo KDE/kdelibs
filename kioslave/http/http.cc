@@ -2878,7 +2878,6 @@ bool HTTPProtocol::readHeader()
           if ( mediaAttribute.lower() == "charset")
           {
             mediaValue = mediaValue.lower();
-            setMetaData("charset", mediaValue);
             m_request.strCharset = mediaValue;
           }
           else
@@ -3197,6 +3196,8 @@ bool HTTPProtocol::readHeader()
         }
      }
   }
+
+  setMetaData("charset", m_request.strCharset);
 
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
