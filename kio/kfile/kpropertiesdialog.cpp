@@ -1572,10 +1572,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
   /**** Group: Ownership ****/
-  gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
+  gl = new QGridLayout (gb->layout(), 4, 3);
   gl->addRowSpacing(0, 10);
 
   /*** Set Owner ***/
@@ -1737,10 +1739,12 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   QGridLayout *gl;
 
   // Group: Access Permissions
-  gb = new QGroupBox ( i18n("Access Permissions"), &dlg );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   dlg.setMainWidget(gb);
 
-  gl = new QGridLayout (gb, 6, 6, 15);
+  gl = new QGridLayout (gb->layout(), 6, 6);
   gl->addRowSpacing(0, 10);
 
   l = new QLabel(i18n("Class"), gb);

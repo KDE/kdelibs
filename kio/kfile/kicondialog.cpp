@@ -265,10 +265,12 @@ void KIconDialog::init()
     QVBoxLayout *top = new QVBoxLayout(main);
     top->setSpacing( spacingHint() );
 
-    QButtonGroup *bgroup = new QButtonGroup(i18n("Icon Source"), main);
+    QButtonGroup *bgroup = new QButtonGroup(0, Qt::Vertical, i18n("Icon Source"), main);
+    bgroup->layout()->setSpacing(KDialog::spacingHint());
+    bgroup->layout()->setMargin(KDialog::marginHint());
     top->addWidget(bgroup);
     connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
-    QGridLayout *grid = new QGridLayout(bgroup, 3, 2, marginHint(), spacingHint());
+    QGridLayout *grid = new QGridLayout(bgroup->layout(), 3, 2);
     grid->addRowSpacing(0, 15);
     mpRb1 = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     grid->addWidget(mpRb1, 1, 0);
