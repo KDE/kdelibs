@@ -1,7 +1,7 @@
 
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp
-libkhtmlw_la_LIBADD = -lkdecore -lqt -lX11 -lgif -ljpeg -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs
+libkhtmlw_la_LIBADD = -lkdecore -lqt -lX11 -lgif -ljpeg -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs @QT_LDFLAGS@
 
 BUILT_SOURCES = html.moc htmlform.moc
 CLEANFILES = $(BUILT_SOURCES)

@@ -121,7 +121,7 @@ DIST_COMMON =  README AUTHORS Makefile.am Makefile.in NEWS TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/Kconfig.P .deps/drag.P .deps/kapp.P \
 .deps/kcolorgroup.P .deps/kkeyconf.P .deps/kpixmap.P .deps/ksock.P \

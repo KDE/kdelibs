@@ -185,7 +185,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/kcolordlgtest.P .deps/kconfigtest.P \
 .deps/kdatepicktest.P .deps/kdatepicktestdlg.P .deps/kfontdialogtest.P \
