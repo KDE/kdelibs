@@ -30,6 +30,7 @@
 #include "misc/helper.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 //#define BOX_DEBUG
 
@@ -185,8 +186,10 @@ void RenderListItem::layout( )
     if (m_marker && !m_marker->layouted())
         m_marker->layout();
     RenderFlow::layout();
-    const QFontMetrics &fm = style()->fontMetrics();
-    m_height = QMAX( m_marker->height() + fm.descent(),  m_height );
+
+    m_height = kMax ( m_height, int ( lineHeight( true ) ) );
+    if (m_marker) 
+        m_height = kMax( m_height, m_marker->height() );
 }
 
 // -----------------------------------------------------------
