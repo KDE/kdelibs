@@ -461,6 +461,19 @@ class KFilePermissionsPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
+  enum PermissionsMode {
+    PermissionsOnlyFiles = 0,
+    PermissionsOnlyDirs = 1,
+    PermissionsOnlyLinks = 2,
+    PermissionsMixed = 3
+  };
+  
+  enum PermissionsTarget {
+    PermissionsOwner  = 0,
+    PermissionsGroup  = 1,
+    PermissionsOthers = 2
+  };
+
   /**
    * Constructor
    */
@@ -477,12 +490,28 @@ public:
 private slots:
 
   void slotChmodResult( KIO::Job * );
-  void slotRecursiveClicked();
+  void slotShowAdvancedPermissions();
 
 private:
+  void setComboContent(QComboBox *combo, PermissionsTarget target, 
+		       mode_t permissions, mode_t partial);
+  bool isIrregular(mode_t permissions, bool isDir, bool isLink);
+  void enableAccessControls(bool enable);
+  void updateAccessControls();
+  void getPermissionMasks(mode_t &andFilePermissions, 
+			  mode_t &andDirPermissions, 
+			  mode_t &orFilePermissions,
+			  mode_t &orDirPermissions);
+
+  static const mode_t permissionsMasks[3];
+  static const mode_t standardPermissions[4];
+  static const char *permissionsTexts[4][4];
+
+  // unused, for binary compatibility!
   QCheckBox *permBox[3][4];
 
   QComboBox *grpCombo;
+
   KLineEdit *usrEdit, *grpEdit;
 
   /**
@@ -498,9 +527,7 @@ private:
    */
   QString strOwner;
 
-  /**
-   * Changeable Permissions
-   */
+  // unused, for compatibility
   static mode_t fperm[3][4];
 
   class KFilePermissionsPropsPluginPrivate;
