@@ -28,6 +28,18 @@
 
 #include "kfm.h"
 
+QString displayName()
+{
+    QString d( getenv( "DISPLAY" ) );
+    int i = d.find( ':' );
+    if ( i != -1 )
+	d[i] = '_';
+    if ( d.find( '.' ) == -1 )
+	d += ".0";
+    
+    return d;
+}
+
 KFM::KFM()
 {
     flag = 0;
@@ -48,6 +60,7 @@ void KFM::init()
 {
     QString file = QDir::homeDirPath();
     file += "/.kde/share/apps/kfm/pid";
+    file += displayName();
     
     // Try to open the pid file
     FILE *f = fopen( file.data(), "rb" );
