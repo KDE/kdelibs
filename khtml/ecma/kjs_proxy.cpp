@@ -257,7 +257,8 @@ void KJSProxyImpl::initScript()
   m_script->setDebuggingEnabled(m_debugEnabled);
 #endif
   //m_script->enableDebug();
-  globalObject.put(m_script->globalExec(),"debug",new TestFunctionImp(),Internal);
+  globalObject.put(m_script->globalExec(),
+		   "debug", Value(new TestFunctionImp()), Internal);
 
   QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||

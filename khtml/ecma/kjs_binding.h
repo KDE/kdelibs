@@ -125,11 +125,11 @@ namespace KJS {
       return Null();
     ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
     if ((ret = interp->getDOMObject(domObj.handle())))
-      return ret;
+      return Value(ret);
     else {
       ret = new KJSDOMObj(exec, domObj);
       interp->putDOMObject(domObj.handle(),ret);
-      return ret;
+      return Value(ret);
     }
   }
 
@@ -223,7 +223,7 @@ namespace KJS {
       return Object::dynamicCast(Value(obj));
     else
     {
-      Object newObject = new ClassCtor(exec);
+      Object newObject(new ClassCtor(exec));
       exec->interpreter()->globalObject().put(exec, propertyName, newObject, Internal);
       return newObject;
     }

@@ -361,14 +361,14 @@ Value Plugin::get(ExecState *exec, const UString &propertyName) const
         if( ok && i<m_info->mimes.count() )
         {
             //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
-            return new MimeType( exec, m_info->mimes.at(i) );
+            return Value(new MimeType(exec, m_info->mimes.at(i)));
         }
 
         // plugin["name"]
         for ( PluginBase::MimeClassInfo *m=m_info->mimes.first();
               m!=0; m=m_info->mimes.next() ) {
             if ( m->type==propertyName.string() )
-                return new MimeType( exec, m );
+                return Value(new MimeType(exec, m));
         }
 
     }
@@ -391,7 +391,7 @@ Value MimeType::get(ExecState *exec, const UString &propertyName) const
     else if ( propertyName == "description" )
         return String( m_info->desc );
     else if ( propertyName == "enabledPlugin" )
-        return new Plugin( exec, m_info->plugin );
+        return Value(new Plugin(exec, m_info->plugin));
 
     return ObjectImp::get(exec,propertyName);
 }

@@ -275,7 +275,7 @@ Value KJS::getDOMStyleSheet(ExecState *exec, DOM::StyleSheet ss)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(ss.handle())))
-    return ret;
+    return Value(ret);
   else {
     if (ss.isCSSStyleSheet()) {
       DOM::CSSStyleSheet cs;
@@ -285,7 +285,7 @@ Value KJS::getDOMStyleSheet(ExecState *exec, DOM::StyleSheet ss)
     else
       ret = new DOMStyleSheet(exec,ss);
     interp->putDOMObject(ss.handle(),ret);
-    return ret;
+    return Value(ret);
   }
 }
 
@@ -364,11 +364,11 @@ Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::D
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(ssl.handle())))
-    return ret;
+    return Value(ret);
   else {
     ret = new DOMStyleSheetList(exec, ssl, doc);
     interp->putDOMObject(ssl.handle(),ret);
-    return ret;
+    return Value(ret);
   }
 }
 
@@ -881,7 +881,7 @@ Value KJS::getDOMCSSValue(ExecState *exec, DOM::CSSValue v)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(v.handle())))
-    return ret;
+    return Value(ret);
   else {
     if (v.isCSSValueList())
       ret = new DOMCSSValueList(exec,v);
@@ -890,7 +890,7 @@ Value KJS::getDOMCSSValue(ExecState *exec, DOM::CSSValue v)
     else
       ret = new DOMCSSValue(exec,v);
     interp->putDOMObject(v.handle(),ret);
-    return ret;
+    return Value(ret);
   }
 }
 
@@ -1121,7 +1121,7 @@ Value DOMRGBColor::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getDOMRGBColor(ExecState *, DOM::RGBColor c)
 {
   // ### implement equals for RGBColor since they're not refcounted objects
-  return new DOMRGBColor(c);
+  return Value(new DOMRGBColor(c));
 }
 
 // -------------------------------------------------------------------------

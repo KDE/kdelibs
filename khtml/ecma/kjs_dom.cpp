@@ -1192,7 +1192,7 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(n.handle())))
-    return ret;
+    return Value(ret);
 
   switch (n.nodeType()) {
     case DOM::Node::ELEMENT_NODE:
@@ -1240,22 +1240,22 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
   }
   interp->putDOMObject(n.handle(),ret);
 
-  return ret;
+  return Value(ret);
 }
 
 Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
 {
-  return cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m);
+  return Value(cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m));
 }
 
 Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
 {
-  return cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l);
+  return Value(cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l));
 }
 
 Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 {
-  return cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i);
+  return Value(cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i));
 }
 
 // -------------------------------------------------------------------------
@@ -1321,7 +1321,7 @@ Value NodeConstructor::getValueProperty(ExecState *, int token) const
 
 Object KJS::getNodeConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<NodeConstructor>(exec, "[[node.constructor]]");
+  return Object(cacheGlobalObject<NodeConstructor>(exec, "[[node.constructor]]"));
 }
 
 // -------------------------------------------------------------------------

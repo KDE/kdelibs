@@ -259,7 +259,7 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(e.handle())))
-    return ret;
+    return Value(ret);
 
   DOM::DOMString module = e.eventModuleName();
   if (module == "UIEvents")
@@ -272,7 +272,7 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
     ret = new DOMEvent(exec, e);
 
   interp->putDOMObject(e.handle(),ret);
-  return ret;
+  return Value(ret);
 }
 
 DOM::Event KJS::toEvent(const Value& val)

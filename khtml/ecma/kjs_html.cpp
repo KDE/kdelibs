@@ -180,7 +180,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       Q_ASSERT(view);
       Q_ASSERT(view->part());
       if ( view && view->part() )
-        return Window::retrieveWindow( view->part() )->location();
+        return Value(Window::retrieveWindow(view->part())->location());
       else
         return Undefined();
     case Cookie:
@@ -2729,7 +2729,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
-      return new DOMNamedNodesCollection(exec,nodes);
+      return Value(new DOMNamedNodesCollection(exec,nodes));
     }
   }
 #ifdef KJS_VERBOSE
@@ -2962,10 +2962,10 @@ Value KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
   if ((ret = interp->getDOMObject(c.handle())))
-    return ret;
+    return Value(ret);
   else {
     ret = new HTMLSelectCollection(exec, c, e);
     interp->putDOMObject(c.handle(),ret);
-    return ret;
+    return Value(ret);
   }
 }
