@@ -407,6 +407,8 @@ public:
   void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
                     const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList());
+
+public slots:
   /**
    * Invokes the standard browser.
    *
@@ -414,6 +416,7 @@ public:
    */
   void invokeBrowser( const QString &url );
 
+public:
   /**
    * Returns the DCOP name of the service launcher. This will be something like
    * klaucher_$host_$uid.
