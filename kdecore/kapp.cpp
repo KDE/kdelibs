@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.41  1997/10/05 12:52:40  kalle
+// Three new methods from Mark Donohoe
+//
 // Revision 1.40  1997/10/04 20:29:11  kulow
 // I just waited for Kalle' "I go to bed" ;)
 //
@@ -230,6 +233,8 @@
 // DND stuff by Torben Weis <weis@stud.uni-frankfurt.de>
 // 09.12.96
 //
+// Revision 1.70  1997/11/09 04:08:54  wuebben
+// Bernd: iso charset changes (minimal and harmless )
 //
 // Revision 1.69  1997/11/03 14:41:28  ettrich
 #ifndef _KAPP_H
@@ -263,6 +268,9 @@
 // Fixed bug with default help menu (Thanks, Bernd! This one was just in time!)
 //
 // Matthias: bugfixes for session management.
+// Revision 1.64  1997/10/22 20:42:52  kalle
+// Help menu works as advertised
+//
 // Revision 1.63  1997/10/21 20:44:41  kulow
 // removed all NULLs and replaced it with 0L or "".
 //
@@ -320,6 +328,13 @@
 #include "kwm.h"
   pIconLoader = NULL;
   pConfigStream = NULL;
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <qfile.h>
+#include <qmsgbox.h>
 #include <qtstream.h>
 #include <qregexp.h>
   QString aGlobalAppConfigName = kdedir() + "/config/" + aAppName + "rc";
