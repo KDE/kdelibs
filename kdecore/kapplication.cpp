@@ -1941,7 +1941,7 @@ QPalette KApplication::createApplicationPalette()
 
 QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
 {
-    QColor kde31Background( 238, 238, 230 );
+    QColor kde31Background( 239, 239, 239 );
     QColor kde34Blue( 103,141,178 );
 
     QColor kde31Button;
