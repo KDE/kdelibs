@@ -52,7 +52,7 @@ MainWindow::MainWindow( const char *name, WFlags f )
   : KTMainWindow( name, f )
 {
   d = new MainWindowPrivate();
-  PartBase::setObject( this );
+  PartBase::setPartObject( this );
 }
 
 MainWindow::~MainWindow()
@@ -74,7 +74,7 @@ void MainWindow::createGUI( Part * part )
   if ( d->m_activePart )
   {
     kdDebug(1000) << QString("deactivating GUI for %1").arg(d->m_activePart->name()) << endl;
-
+    
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
 
@@ -120,10 +120,10 @@ void MainWindow::createGUI( Part * part )
     connect( part, SIGNAL( setStatusBarText( const QString & ) ),
              this, SLOT( slotSetStatusBarText( const QString & ) ) );
 
+    factory->addClient( part );
+    
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
-
-    factory->addClient( part );
 
     plugins = Plugin::pluginClients( part );
     pIt = plugins.begin();

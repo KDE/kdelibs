@@ -70,7 +70,8 @@ public:
   /**
    *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
    */
-  void setObject( QObject *object );
+  void setPartObject( QObject *object );
+  QObject *partObject() const;
 
 protected:
   /**

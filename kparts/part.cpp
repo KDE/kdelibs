@@ -86,10 +86,15 @@ PartBase::~PartBase()
   delete d;
 }
 
-void PartBase::setObject( QObject *obj )
+void PartBase::setPartObject( QObject *obj )
 {
   m_obj = obj;
 }
+
+QObject *PartBase::partObject() const
+{
+  return m_obj; 
+} 
 
 void PartBase::setInstance( KInstance *inst )
 {
@@ -109,7 +114,7 @@ Part::Part( QObject *parent, const char* name )
   d = new PartPrivate;
   m_widget = 0L;
   m_manager = 0L;
-  PartBase::setObject( this );
+  PartBase::setPartObject( this );
 }
 
 Part::~Part()
