@@ -38,19 +38,17 @@ public:
 		None=0,
 		Sound=1,
 		Messagebox=2,
-		Logwindow=4,
-		Logfile=8,
-		Stderr=16
+		Logfile=4,
+		Stderr=8
 	};
 
 protected:
 	void processNotification(const QString &event, const QString &fromApp,
-	                         const QString &text, QString sound, QString file
+	                         const QString &text, QString sound, QString file,
 	                         Presentation present);
 
 	bool notifyBySound(const QString &sound);
 	bool notifyByMessagebox(const QString &text);
-	bool notifyByLogwindow(const QString &text);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 };

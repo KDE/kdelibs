@@ -34,9 +34,10 @@
 
 #include <iostream.h>
 
-#include "qiomanager.h"
-#include "dispatcher.h"
-#include "soundserver.h"
+#include <qiomanager.h>
+#include <dispatcher.h>
+#include <qtextstream.h>
+#include <soundserver.h>
 
 KApplication *app;
 SimpleSoundServer_base *server;
@@ -84,16 +85,17 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 bool KNotify::process(const QCString &fun, const QByteArray &data,
                       QCString& /*replyType*/, QByteArray& /*replyData*/ )
 {
-	if (fun == "notify(QString,QString,QString,QString,Presentation)")
+	if (fun == "notify(QString,QString,QString,QString,QString, Presentation)")
 	{
 		QDataStream dataStream( data, IO_ReadOnly );
 		QString event;
 		QString fromApp;
 		QString text;
 		QString sound;
+		QString file;
 	 	int present;
-		dataStream >> event >>fromApp >> text >> sound >> present;
-		processNotification(event, fromApp, text, sound, (Presentation)present);
+		dataStream >> event >>fromApp >> text >> sound >> file>> present;
+		processNotification(event, fromApp, text, sound, file, (Presentation)present);
  
 		return true;
 	}
@@ -101,7 +103,7 @@ bool KNotify::process(const QCString &fun, const QByteArray &data,
 }
 
 void KNotify::processNotification(const QString &event, const QString &fromApp,
-                                  const QString &text, QString sound, QString file
+                                  const QString &text, QString sound, QString file,
                                   Presentation present)
 {
 	static bool eventRunning=true;
@@ -125,13 +127,11 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 	}
 	
 	eventRunning=true;
-	if ((present & Sound) && (QFile(sound).readable()))
+	if ((present & Sound) && (QFile(sound).isReadable()))
 		notifyBySound(sound);
 	if (present & Messagebox)
 		notifyByMessagebox(text);
-	if (present & Logwindow)
-		notifyByLogwindow(text);
-	if (present & Logfile && (QFile(file).readable()))
+	if (present & Logfile && (QFile(file).isReadable()))
 		notifyByLogfile(text, file);
 	if (present & Stderr)
 		notifyByStderr(text);
@@ -172,13 +172,10 @@ bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 
 bool KNotify::notifyByStderr(const QString &text)
 {
-	QFile f(file);
-	if (!f.open(IO_WriteOnly)) return false;
-	QTextStream t(&f);
+	QTextStream t(stderr, IO_WriteOnly);
 
 	t<< "KNotify: " << QDateTime::currentDateTime().toString() << '\n';
 	t<< text<< "\n\n";
-	f.close();
 	return true;
 }
 
