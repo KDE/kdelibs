@@ -1005,7 +1005,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
                     //lBreak.obj = last;
                     lBreak.pos = 0;//last->length() - 1;
                 }
-                else if ( pos >= o->length() ) {
+                else if ( unsigned ( pos ) >= o->length() ) {
                     lBreak.obj = start.par->next(o);
                     lBreak.pos = 0;
                 }
