@@ -20,6 +20,11 @@
 
 //$Id$
 //$Log$
+//Revision 1.9  1998/08/31 00:52:12  torben
+//Torben: One new function and made others virtual
+//=> binary incompatible. Sorry. Please use virtual whenever it is
+//not a performance problem.
+//
 //Revision 1.8  1998/05/07 23:13:23  radej
 //Moving with KToolBoxManager
 //
@@ -60,7 +65,7 @@ class KMenuBar : public QFrame
    Q_OBJECT
 
  public:
-   enum menuPosition{Top, Bottom, Floating};
+   enum menuPosition{Top, Bottom, Floating, Flat};
    /**
     * Positions of menubar.
     */
@@ -126,6 +131,8 @@ class KMenuBar : public QFrame
    
    int heightForWidth ( int max_width ) const; 
    virtual void setItemEnabled(int id, bool flag);
+   virtual int idAt( int index );
+   
    int heightForWidth ( int max_width ) const;
 
    void setFlat (bool);

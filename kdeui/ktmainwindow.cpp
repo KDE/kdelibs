@@ -203,6 +203,11 @@ void KTMainWindow::updateRects()
   int freeHeight, freeWidth;
   int widest; // To find widest toolbar
   bool fixedY = FALSE;
+  int flatX=0;
+  int flatY=0;
+  int FlatHeight=0;
+  
+#define vSpace 2
 
   if (kmainwidget && kmainwidget->minimumSize().height() ==
       kmainwidget->maximumSize().height())
@@ -266,12 +271,32 @@ void KTMainWindow::updateRects()
 
       if (kmenubar && kmenubar->isVisible())   // (gulp)
 	if (kmenubar->menuBarPos() == KMenuBar::Top)      // !? This beer isn't cold!
-	  {
-	    int mh = kmenubar->heightForWidth(w);
-	    kmenubar->setGeometry(0, 0, w, mh);
-	    t += mh;
-	  }
+        {
+          int mh = kmenubar->heightForWidth(w);
+          kmenubar->setGeometry(0, 0, w, mh);
+          t += mh;
+          flatY=t;
+          flatX=0;
+        }
+        else if (kmenubar->menuBarPos() == KMenuBar::Flat) //flat menubar
+        {
+          kmenubar->move(0, 0);
+          FlatHeight=kmenubar->height();
+          flatX += kmenubar->width() + vSpace;
+          flatY=0;
+        }
+      //flat toolbars
+      for (toolbar=toolbars.first(); toolbar != 0L; toolbar=toolbars.next())
+        if (toolbar->barPos() == KToolBar::Flat && toolbar->isVisible() )
+        {
+          toolbar->move(flatX, flatY);
+          flatX+=toolbar->width()+vSpace;
+          FlatHeight=toolbar->height();
+        }
 
+      if (FlatHeight)
+        t+=FlatHeight;
+      
       // Top toolbars
       for ( toolbar = toolbars.first() ;
 	    toolbar != 0L ; toolbar = toolbars.next() )
@@ -368,9 +393,29 @@ void KTMainWindow::updateRects()
         {
           int mh = kmenubar->heightForWidth(w);
           kmenubar->setGeometry(0, 0, w, mh);
-          t += mh;
+          t = mh;
+          flatY=t;
+          flatX=0;
+        }
+        else if (kmenubar->menuBarPos() == KMenuBar::Flat) //flat menubar
+        {
+          kmenubar->move(0, 0);
+          FlatHeight=kmenubar->height();
+          flatX = kmenubar->width() + vSpace;
+          flatY=0;
+        }
+      //flat toolbars
+      for (toolbar=toolbars.first(); toolbar != 0L; toolbar=toolbars.next())
+        if (toolbar->barPos() == KToolBar::Flat && toolbar->isVisible() )
+        {
+          toolbar->move(flatX, flatY);
+          flatX+=toolbar->width()+vSpace;
+          FlatHeight=toolbar->height();
         }
 
+      if (FlatHeight)
+        t+=FlatHeight;
+      
       // top toolbars
       for (toolbar = toolbars.first(); toolbar != 0L ; toolbar = toolbars.next())
         if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
@@ -615,6 +660,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
             entryList.append("Disabled");
         switch (kmenubar->menuBarPos())
         {
+            case KMenuBar::Flat:   //ignore
             case KMenuBar::Top:
                 entryList.append("Top");
                 break;
@@ -640,6 +686,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
             entryList.append("Disabled");
         switch (toolbar->barPos())
         {
+            case KToolBar::Flat:   //ignore
             case KToolBar::Top:
                 entryList.append("Top");
                 break;

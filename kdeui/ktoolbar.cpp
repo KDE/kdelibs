@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.89  1998/11/10 14:12:46  radej
+// sven: windows-style handle smaller
+//
 // Revision 1.88  1998/11/09 17:58:34  radej
 // sven: Fix for IconText=3 (pixmap wider then text; kfm's wheel)
 // sven: windows-style handle smaller
@@ -1151,12 +1154,14 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
   {
     pointerOffset = m->pos();
     if (moving)
-      if (m->button() != LeftButton)
+      if (m->button() == RightButton)
 	{
 	  context->popup( mapToGlobal( m->pos() ), 0 );
 	  ContextCallback(0);
-	}
-      else
+        }
+      else if (m->button() == MidButton && position != Floating)
+        setFlat (position != Flat);
+      else if (position != Flat)
       {
         //QRect rr(KWM::geometry(Parent->winId(), false));
         QRect rr(Parent->geometry());
@@ -1433,8 +1438,8 @@ void KToolBar::paintEvent(QPaintEvent *)
 
         paint->setClipRect(2, 0, w-4, 6);
 
-        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
-                         g.mid(), 0, &b);
+        //qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
+        //                 g.mid(), 0, &b);
 
         paint->setPen( g.light() );
         int a = 0-h;
@@ -2114,6 +2119,7 @@ void KToolBar::setBarPos(BarPosition bpos)
             resize((int) (0.7*width()), height()); // narrow us on 70%
         updateRects (true); // we need this to set us up
         emit moved (bpos);  // this sets up KTW but not toolbar which floats
+        setMinimumSize (item_size, item_size);
         return;
       }
      else if (position == Floating) // was floating
@@ -2121,13 +2127,13 @@ void KToolBar::setBarPos(BarPosition bpos)
         position = bpos;
         hide();
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), true);
-        setMinimumSize (item_size, item_size);
+        setMinimumSize (30,10); // for flat
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         setMouseTracking(true);
         mouseEntered = false;
         fullWidth=wasFullWidth;
         // updateRects (true);
-        emit moved (bpos); // another bar::updateRects (damn)
+        emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
         return;
       }
      else
@@ -2252,14 +2258,42 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
 void KToolBar::mouseReleaseEvent ( QMouseEvent * )
 {
   if (mgr)
-    {
-      //debug ("KToolBar: mouseRelease event (stoping mgr)");
       mgr->stop();
-    }
-//  else
-//    debug ("KToolBar: mouseRelease event (no mgr)");
 }
 
+void KToolBar::setFlat (bool flag)
+{
+
+#define also
+  
+  if (flag && (position == Floating && position == Flat))
+    return;
+  if (!flag && (position != Flat))
+    also return;
+
+  
+  if (flag) //flat
+  {
+    lastPosition = position; // test float. I did and it works by miracle!?
+    debug ("Flat");
+    position = Flat;
+    horizontal = false;
+    resize(30, 10);
+    if (items.first())                // Nasty hack: if we have items...
+      items.first()->move (100, 100); // ...move first Out of Sight.
+    enableFloating(false);
+    emit moved(Flat); // KTM will block this->updateRects
+  }
+  else //unflat
+  {
+    debug ("Unflat");
+    setBarPos(lastPosition);
+    enableFloating(true);
+    emit moved (position); // KTM will call this->updateRects
+  }
+}
+    context->changeItem (i18n("Flat"), CONTEXT_FLAT);
+    //debug ("Unflat");
     setBarPos(lastPosition);
     enableFloating(true);
     emit moved (position); // KTM will call this->updateRects
@@ -2302,6 +2336,7 @@ void KRadioGroup::slotToggled(int id)
     }
   }
 }
+    {
         it.current()->on(false);
 
 

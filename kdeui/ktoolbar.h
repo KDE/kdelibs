@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.43  1998/11/09 00:28:43  radej
+// sven: Docs update (more to come)
+//
 // Revision 1.42  1998/11/06 12:54:54  radej
 // sven: radioGroup is in. handle changed again (broken in vertical mode)
 //
@@ -242,7 +245,7 @@ class KToolBarButton : public QButton
   
 public:
   enum BarStatus{Toggle, Show, Hide};
-  enum BarPosition{Top, Left, Bottom, Right, Floating};
+  enum BarPosition{Top, Left, Bottom, Right, Floating, Flat};
 
   /**
    * Constructor.
@@ -709,6 +712,8 @@ public:
      * has only one row.
      */
   QSize sizeHint();
+
+  void setFlat (bool flag);
     
 signals:
     /**

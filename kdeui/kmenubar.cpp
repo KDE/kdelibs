@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.44  1998/11/11 14:32:10  radej
+// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
+//
 // Revision 1.43  1998/11/10 14:12:47  radej
 // sven: windows-style handle smaller
 //
@@ -152,6 +155,9 @@ int KMenuBar::idAt( int index )
 int KMenuBar::heightForWidth ( int max_width ) const
 {
   return menu->heightForWidth( max_width - 9);
+}
+
+  
      frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()));
      menu->resize(frame->width(), frame->height());
      handle->setGeometry(0,0,9,height());
@@ -360,12 +366,15 @@ void KMenuBar::leaveEvent (QEvent *e){
     if (ev->type() == Event_MouseButtonPress)
 
       //pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
-      if ( moving && ((QMouseEvent*)ev)->button() != LeftButton)
+        //  KWM::sendKWMCommand(QString("krootwm:go")+x+y);
         return false; //or true? Bah...
       buttonDownOnHandle = TRUE;
       if ( moving && ((QMouseEvent*)ev)->button() == RightButton)
 	{
-      else
+	  buttonDownOnHandle = FALSE;
+	  context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
+	  ContextCallback(0);
+      else if (position != Flat)
       {
         //Move now
         QRect rr(Parent->geometry());
@@ -429,9 +438,29 @@ void KMenuBar::leaveEvent (QEvent *e){
       
 
           return(true);
+      }
+
+      if (style() == MotifStyle) //Motif style handle
+                           g , FALSE, 1, &b );
+        {
+          qDrawShadePanel( &paint, 0, 0, w, 9,
+			   g , FALSE, 1, &b );
+	  paint.setPen( g.light() );
+          stipple_height = 3;
+          while ( stipple_height < w-4 ) {
+            paint.drawPoint( stipple_height+1, 1);
+            paint.drawPoint( stipple_height, 4 );
+            stipple_height+=3;
+          }
+          paint.setPen( g.dark() );
+          stipple_height = 4;
+          }
+            paint.drawPoint( stipple_height, 5);
+            stipple_height+=3;
 	  }
-                         g , FALSE, 1, &b );
+	  paint.drawLine( 1, 9, w, 9);
           return true;
+        
         qDrawShadePanel( &paint, 0, 0, 9, h,
                            g , FALSE, 1, &b );
 
@@ -450,10 +479,37 @@ void KMenuBar::leaveEvent (QEvent *e){
           paint.drawPoint( 5, stipple_height);
           stipple_height+=3;
         }
+        return TRUE;
+      }
+      else //windows style handle
+      {
+        if (position == Flat)
+        {
+          qDrawPlainRect ( &paint, 0, 0, handle->width(), 9,
+                           g.mid(), 0, &b);
+
+          h = 16;
+          paint.setClipRect(2, 0, w-4, 6);
+          paint.setPen( g.light() );
+          int a = 0-h;
+          while (a <= w+h)
+          {
+            paint.drawLine(w-a, h, w-a+h, 0);
+            paint.drawLine(w-a+1, h, w-a+1+h, 0);
+            a +=6;
+          }
+          a = 0-h;
+          paint.setPen( g.dark() );
+          while (a <= w+h)
+          {
+            paint.drawLine(w-a+2, h, w-a+2+h, 0);
+            paint.drawLine(w-a+3, h, w-a+3+h, 0);
+            a +=6;
           }
          return true;
         }
 
+        qDrawPlainRect ( &paint, 0, 0, 6, handle->height(),
                          g.mid(), 0, &b);
         w=6;
         paint.setClipRect(0, 2, w, h-4);
@@ -470,8 +526,6 @@ void KMenuBar::leaveEvent (QEvent *e){
         paint.setPen( g.dark() );
         while (a <= h+5)
         {
-
-
           paint.drawLine(0, h-a+2, h, 0-a+2);
           paint.drawLine(0, h-a+3, h, 0-a+3);
           a +=6;
@@ -654,6 +708,38 @@ void KMenuBar::slotActivated (int id)
 {
   emit activated(id);
 }
+
+void KMenuBar::slotHighlighted (int id)
+{
+  emit highlighted (id);
+}
+
+  
+  if (flag && (position == Floating && position == Flat))
+
+  if (!flag && (position != Flat))
+
+  if (position == Floating  || position == FloatingSystem)
+  
+    return;
+  if ( flag == (position == Flat))
+
+    debug ("Flat");
+  {
+    context->changeItem (i18n("UnFlat"), CONTEXT_FLAT);
+    lastPosition = position; // test float. I did and it works by miracle!?
+    //debug ("Flat");
+    position = Flat;
+    resize(30, 10);
+    handle->resize(30, 10);
+    frame->move(100, 100); // move menubar out of sight
+    enableFloating(false);
+    debug ("Unflat");
+  else //unflat
+  {
+    context->changeItem (i18n("Flat"), CONTEXT_FLAT);
+    //debug ("Unflat");
+    setMenuBarPos(lastPosition);
 
     emit moved (position); // KTM will call this->updateRects
   }
