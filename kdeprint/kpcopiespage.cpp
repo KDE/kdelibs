@@ -45,7 +45,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	m_printer = prt;
 	m_useplugin = true;
 
-	setTitle(i18n("Copies"));
+	setTitle(i18n("C&opies"));
 	setId(KPrinter::CopiesPage);
 
 	// widget creation
@@ -77,6 +77,14 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	m_pagesetlabel->setBuddy(m_pageset);
 	KSeparator	*sepline = new KSeparator(Horizontal, m_pagebox);
 	sepline->setMinimumHeight(10);
+
+	QWidget::setTabOrder( m_all, m_current );
+	QWidget::setTabOrder( m_current, m_range );
+	QWidget::setTabOrder( m_range, m_rangeedit );
+	QWidget::setTabOrder( m_rangeedit, m_pageset );
+	QWidget::setTabOrder( m_pageset, m_copies );
+	QWidget::setTabOrder( m_copies, m_collate );
+	QWidget::setTabOrder( m_collate, m_order );
 
 	// layout creation
 	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 5);

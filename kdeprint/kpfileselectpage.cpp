@@ -30,7 +30,7 @@
 KPFileSelectPage::KPFileSelectPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
-	setTitle(i18n("Files"));
+	setTitle(i18n("&Files"));
 	m_first = true;
 
 	m_files = new KFileList(this);

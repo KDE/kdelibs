@@ -137,6 +137,19 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
 	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
 
+	QWidget::setTabOrder( d->m_printers, d->m_filter );
+	QWidget::setTabOrder( d->m_filter, d->m_wizard );
+	QWidget::setTabOrder( d->m_wizard, d->m_properties );
+	QWidget::setTabOrder( d->m_properties, d->m_preview );
+	QWidget::setTabOrder( d->m_preview, d->m_file );
+	QWidget::setTabOrder( d->m_file, d->m_cmd );
+	QWidget::setTabOrder( d->m_plugin, d->m_persistent );
+	QWidget::setTabOrder( d->m_persistent, d->m_extbtn );
+	QWidget::setTabOrder( d->m_extbtn, d->m_options );
+	QWidget::setTabOrder( d->m_options, m_help );
+	QWidget::setTabOrder( m_help, d->m_ok );
+	QWidget::setTabOrder( d->m_ok, m_cancel );
+
 	// layout creation
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
 	l1->addWidget(m_pbox,0);
