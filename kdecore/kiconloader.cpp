@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.62  1999/08/08 17:55:19  mosfet
+   Moved the appending of .png into the check for .xpm, or else you get
+   .png.png ;-)
+
    Revision 1.61  1999/08/07 18:56:59  kulow
    strip away the extension if it's .xpm and look for .png first and then .xpm
 
@@ -325,9 +329,10 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
         if (full_path.isNull())
             full_path = locate(iconType, path + ".xpm" );
       }
+      else full_path = locate(iconType, path);
     }
     if (full_path.isNull() && always_valid)
-	full_path = locate(iconType, "unknown.xpm");
+	full_path = locate(iconType, "unknown.png");
     
     return full_path;
 }
