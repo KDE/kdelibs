@@ -2110,8 +2110,12 @@ void KHTMLPart::checkCompleted()
   {
     // DA: Do not start redirection for frames here! That action is
     // deferred until the parent emits a completed signal.
-    if ( parentPart() == 0 )
+    if ( parentPart() == 0 ) {
+      //kdDebug(6050) << this << " starting redirection timer" << endl;
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    } else {
+      //kdDebug(6050) << this << " not toplevel -> not starting redirection timer. Waiting for slotParentCompleted." << endl;
+    }
 
     pendingAction = true;
   }
@@ -2123,6 +2127,7 @@ void KHTMLPart::checkCompleted()
   // the view will emit completed on our behalf,
   // either now or at next repaint if one is pending
 
+  //kdDebug(6050) << this << " asks the view to emit completed. pendingAction=" << pendingAction << endl;
   d->m_view->complete( pendingAction );
 
   // find the alternate stylesheets
@@ -2225,7 +2230,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug() << k_funcinfo << endl;
+  kdDebug(6050) << this << " slotRedirect()" << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -3501,7 +3506,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     // ### ERROR HANDLING
     return;
 
-  kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
+  kdDebug(6050) << this << "urlSelected: complete URL:" << cURL.url() << " target=" << target << endl;
 
   if ( state & ControlButton )
   {
@@ -3543,7 +3548,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if (args.redirectedRequest() && parentPart())
       args.metaData().insert("cross-domain", toplevelURL().url());
 
-  if ( hasTarget )
+  if ( hasTarget && target != "_self" && target != "_top" && target != "_blank" && target != "_parent" )
   {
     // unknown frame names should open in a new window.
     khtml::ChildFrame *frame = recursiveFrameRequest( this, cURL, args, false );
@@ -3896,7 +3901,7 @@ QString KHTMLPart::requestFrameName()
 bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                                const QStringList &params )
 {
-    kdDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame << endl;
+  //kdDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame << endl;
   khtml::ChildFrame *child = new khtml::ChildFrame;
   FrameIt it = d->m_objects.append( child );
   (*it)->m_frame = frame;
@@ -3928,6 +3933,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     child->m_bPreloaded = false;
     return true;
   }
+
+  //kdDebug(6005) << "KHTMLPart::requestObject child=" << child << " child->m_part=" << child->m_part << endl;
 
   KParts::URLArgs args( _args );
 
@@ -4507,9 +4514,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 
 void KHTMLPart::slotParentCompleted()
 {
+  //kdDebug(6050) << this << " slotParentCompleted()" << endl;
   if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
   {
-    // kdDebug(6050) << this << ": Child redirection -> " << d->m_redirectURL << endl;
+    //kdDebug(6050) << this << ": starting timer for child redirection -> " << d->m_redirectURL << endl;
     d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
   }
 }
