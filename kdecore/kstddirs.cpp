@@ -296,11 +296,10 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 static int tokenize( QStringList& tokens, const QString& str,
 		     const QString& delim )
 {
-	int index = 0;
 	int len = str.length();
 	QString token = "";
 	
-	while( index < len ) {
+	for( int index = 0; index < len; index++) {
 		if ( delim.find( str[ index ] ) >= 0 ) {
 			tokens.append( token );
 			token = "";
