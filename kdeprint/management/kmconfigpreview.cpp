@@ -41,7 +41,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "
 					  "KDE built-in preview system. Note that if the KDE default PS viewer "
-					  "(kghostview) can be found, KDE tries automatically to find another "
+					  "(KGhostView) cannot be found, KDE tries automatically to find another "
 					  "external PostScript viewer"));
 	lab->setTextFormat(Qt::RichText);
 

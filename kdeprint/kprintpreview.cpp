@@ -273,7 +273,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			// in that case, the PS viewer component could not be loaded and no service
 			// could be found to view PS
 			QString	msg = i18n("Preview failed: neither the internal KDE PostScript "
-			                   "viewer (kghostview) nor any other external PostScript "
+			                   "viewer (KGhostView) nor any other external PostScript "
 			                   "viewer could be found.");
 			return continuePrint(msg, parentW, previewOnly);
 		}
