@@ -382,8 +382,8 @@ void RMB::slotRMBActionRemove( int val )
 
   if (KMessageBox::warningYesNo(
           m_parentMenu,
-          folder ? i18n("Are you sure you wish to remove this bookmark folder?")
-                 : i18n("Are you sure you wish to remove this bookmark?"),
+          folder ? i18n("Are you sure you wish to remove the bookmark folder\n\"%1\"?").arg(bookmark.text())
+                 : i18n("Are you sure you wish to remove the bookmark\n\"%1\"?").arg(bookmark.text()),
           folder ? i18n("Bookmark Folder Deletion")
                  : i18n("Bookmark Deletion"),
           KGuiItem( i18n("&Delete"), "editdelete"), KStdGuiItem::cancel())
