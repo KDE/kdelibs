@@ -4,6 +4,20 @@ kdelibs (4:3.2.92-1) experimental; urgency=low
 
  -- Christopher L Cheney <ccheney@debian.org>  Mon, 26 Jul 2004 16:00:00 -0500
 
+kdelibs (4:3.2.3-4) unstable; urgency=high
+
+  * KDE_3_2_BRANCH Update.
+  * Apply patch for mktemp security issue. (Closes: #261386)
+  * Build-Depends: libtiff4-dev. (Closes: #262589, #262832)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Mon,  2 Aug 2004 22:00:00 -0500
+
+kdelibs (4:3.2.3-3) unstable; urgency=low
+
+  * KDE_3_2_BRANCH Update.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 22 Jul 2004 03:00:00 -0500
+
 kdelibs (4:3.2.3-2) unstable; urgency=low
 
   * KDE_3_2_BRANCH Update.

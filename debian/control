@@ -73,7 +73,7 @@ Description: KDE core libraries
 Package: kdelibs4-dev
 Section: libdevel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libarts1-dev (>> 1.2.1), libcupsys2-dev, libfam-dev, libpcre3-dev, libssl-dev, libxml2-utils, libxrender-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libarts1-dev (>> 1.2.92), libcupsys2-dev, libfam-dev, libpcre3-dev, libssl-dev, libxml2-utils, libxrender-dev
 Provides: kdelibs-dev
 Conflicts: kdelibs-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs4 (<< 4:3.2.0), kdepim-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0), libkonq4-dev (<< 4:3.2.0)
