@@ -223,6 +223,9 @@ bool KURL::isRelativeURL(const QString &_url)
         i++;
         if ((i < len) && (str[i].latin1() == '/'))
            return false; 
+        // Make an expection for mailto:user@host
+        if ((i == 7) && (_url.left(7).lower() == "mailto:"))
+           return false;
         return true; // "xxx:" or "xxx::yyy"
      }
 
