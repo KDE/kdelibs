@@ -238,7 +238,7 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
       if (gethostname(hostName, sizeof(hostName)))
          fName += "localhost";
       else {
-	 hostName[sizeof(hostname)-1] = '\0';
+	 hostName[sizeof(hostName)-1] = '\0';
          fName += hostName;
       }
    }
