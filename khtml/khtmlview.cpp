@@ -183,13 +183,13 @@ void KHTMLView::clear()
 
     d->reset();
     emit cleared();
- 
-    QScrollView::setHScrollBarMode(d->hmode);       
+
+    QScrollView::setHScrollBarMode(d->hmode);
     if (d->vmode==Auto)
         QScrollView::setVScrollBarMode(AlwaysOn);
     else
-        QScrollView::setVScrollBarMode(d->vmode);    
-    resizeContents(visibleWidth(), visibleHeight());    
+        QScrollView::setVScrollBarMode(d->vmode);
+    resizeContents(visibleWidth(), visibleHeight());
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -267,7 +267,7 @@ void KHTMLView::layout(bool)
 
         if (document->isHTMLDocument()) {
             NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
-            if(body && body->id() == ID_FRAMESET) {
+            if(body && body->renderer() && body->id() == ID_FRAMESET) {
                 QScrollView::setVScrollBarMode(AlwaysOff);
                 QScrollView::setHScrollBarMode(AlwaysOff);
                 _width = visibleWidth();
