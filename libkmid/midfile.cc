@@ -196,12 +196,6 @@ track **readMidiFile(const char *name,midifileinfo *info,int &ok)
     
     fclose(fh);
     
-    /*
-     parseInfoData(info,Tracks,1.0);
-     
-     Since now, this function will be called from the player.
-     */
-    
     return Tracks;
     
 }

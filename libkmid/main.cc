@@ -97,14 +97,20 @@ void consoleOutput(void)
 
 int IsLineFeed(char c,int type, int *delta)
 {
-    *delta=1;
+    *delta=0;
     switch (type)
     {
-    case (1) : if (/*(c==0)||*/(c=='\\')||(c=='/')||(c=='@')) return 1;break;
-    case (5) : if (/*(c==0)||*/(c==10)||(c==13)) return 1;break;
-    default :  if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')||(c=='@')) return 1;break;
+    case (1) :  if (/*(c==0)||*/(c=='\\')||(c=='/')) { *delta=1; return 1; };
+		if (c=='@') return 1;
+		break;
+    case (5) :  if (/*(c==0)||*/(c==10)||(c==13)) { *delta=1; return 1; };
+		if (c=='@') return 1;
+		break;
+    default :   if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')) 
+						{ *delta=1; return 1; };
+		if (c=='@') return 1;
+		break;
     };
-    *delta=0;
     return 0;
 }
 
@@ -122,12 +128,12 @@ void displayLyrics(player *p)
 	if (i==1)
  	{
 	if (IsLineFeed(spev->text[0],1,&delta)) printf("\n");
-	printf("%s",&spev->text[delta]);
+	printf("%s", &spev->text[delta] );
 	} 
 	else if (i==5)
  	{
 	if (IsLineFeed(spev->text[0],5,&delta)) printf("\n");
-	printf("%s",&spev->text[delta]);
+	printf("%s", &spev->text[delta] );
 	}
       }
       spev=spev->next;
@@ -268,8 +274,11 @@ int main(int argc, char **argv)
     
     
     DeviceManager * devman=new DeviceManager(device);
-    devman->initManager();
-    if (!devman->OK()) exit(0);
+    if (!justtext)
+    {
+       devman->initManager();
+       if (!devman->OK()) exit(0);
+    };
     
     if (list_dev)
     {

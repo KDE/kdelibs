@@ -45,22 +45,32 @@
 
 track::track(FILE *file,int tpcn,int Id)
 {
-    
     id=Id;
     tPCN=tpcn;
     currentpos=0;
+    size=0;
+    data=0L;
+    if (feof(file)) 
+	{
+	clear();
+	return; 
+	};
     size=readLong(file);
 #ifdef TRACKDEBUG
-    printf("Track %d : Size %ld\n",id,size);
+    fprintf(stderr,"Track %d : Size %ld\n",id,size);
 #endif
     data=(uchar *)malloc(size);
     if (data==NULL)
     {
-        perror("Not enough memory ?");
+        perror("track: Not enough memory ?");
         exit(-1);
     }
-    if (fread(data,1,size,file)!=size)
-        printf("File is corrupt : Couldn't load track !!\n");
+    ulong rsize=0;
+    if ((rsize=fread(data,1,size,file))!=size)
+    {
+        fprintf(stderr,"track (%d): File is corrupt : Couldn't load track (%ld!=%ld) !!\n", id, rsize, size);
+        size=rsize;
+    };
     /*
      ptrdata=data;
      current_ticks=0;
@@ -103,7 +113,7 @@ ulong track::readVariableLengthValue(void)
         if (currentpos>=size)
         {
             endoftrack=1;
-            printf("EndofTrack %d encountered !\n",id);
+            fprintf(stderr, "track (%d) : EndofTrack found by accident !\n",id);
             delta_ticks = wait_ticks = ~0;	
             time_at_next_event=10000 * 60000L;
             return 0;
@@ -124,7 +134,7 @@ ulong track::readVariableLengthValue(void)
     if (currentpos>=size)
     {
         endoftrack=1;
-        printf("EndofTrack %d encountered 2 !\n",id);
+        fprintf(stderr,"track (%d): EndofTrack found by accident 2 !\n",id);
         dticks=0;
         delta_ticks = wait_ticks = ~0;	
         time_at_next_event=10000 * 60000L;
@@ -132,7 +142,7 @@ ulong track::readVariableLengthValue(void)
     }
 #endif
 #ifdef TRACKDEBUG
-    printf("DTICKS : %ld\n",dticks);
+    fprintf(stderr,"track(%d): DTICKS : %ld\n",id,dticks);
     usleep(10);
 #endif
     return dticks;
@@ -141,7 +151,11 @@ ulong track::readVariableLengthValue(void)
 int track::ticksPassed (ulong ticks)
 {
     if (endoftrack==1) return 0;
-    if (ticks>wait_ticks) {printf("ERROR : TICKS PASSED > WAIT TICKS\n");return 1;};
+    if (ticks>wait_ticks) 
+	{
+	fprintf(stderr, "track (%d): ERROR : TICKS PASSED > WAIT TICKS\n", id);
+	return 1;
+	}
     wait_ticks-=ticks;
     return 0;
 }
@@ -151,9 +165,13 @@ int track::msPassed (ulong ms)
     if (endoftrack==1) return 0;
     current_time+=ms;
     //printf("old + %ld = CURR %g  ",ms,current_time);
-    if (current_time>time_at_next_event) {printf("ERROR : MS PASSED > WAIT MS\n");return 1;}
+    if (current_time>time_at_next_event) 
+	{
+	fprintf(stderr, "track (%d): ERROR : MS PASSED > WAIT MS\n", id);
+	return 1;
+	}
 #ifdef TRACKDEBUG
-    if (current_time==time_at_next_event) printf("_OK_");
+    if (current_time==time_at_next_event) fprintf(stderr,"track(%d): _OK_",id);
 #endif
     return 0;
 }
@@ -166,7 +184,7 @@ int track::currentMs(double ms)
 #ifdef PEDANTIC_TRACK
     if (current_time>time_at_next_event) 
     {
-        printf("ERROR : MS PASSED > WAIT MS\n");
+        fprintf(stderr,"track(%d): ERROR : MS PASSED > WAIT MS\n", id);
         exit(-1);
         return 1;
     }
@@ -209,7 +227,7 @@ void track::readEvent(Midi_event *ev)
         ev->command=MIDI_SYSTEM_PREFIX;
         ev->chn=0xF;
         ev->d1=ME_END_OF_TRACK;
-        printf("EndofTrack %d reached 2\n",id);
+        fprintf(stderr, "track (%d): EndofTrack found by accident 3\n",id);
         return;
     }
 #endif
@@ -228,14 +246,14 @@ void track::readEvent(Midi_event *ev)
         
 #ifdef TRACKDEBUG2
         if (ev->chn==6) {
-            if (ev->vel==0) printf("Note Onf\n");
-            else printf ("Note On\n");
+            if (ev->vel==0) fprintf(stderr,"Note Onf\n");
+            else fprintf (stderr,"Note On\n");
         };
 #endif
 break;
     case (MIDI_NOTEOFF) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Note Off\n");
+        if (ev->chn==6) fprintf (stderr, "Note Off\n");
 #endif
         ev->note = *ptrdata;ptrdata++;currentpos++; 
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
@@ -244,52 +262,52 @@ break;
         break;
     case (MIDI_KEY_PRESSURE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Key press\n");
+        if (ev->chn==6) fprintf (stderr,"Key press\n");
 #endif
         ev->note = *ptrdata;ptrdata++;currentpos++; 
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_PGM_CHANGE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Pgm\n");
+        if (ev->chn==6) fprintf (stderr, "Pgm\n");
 #endif
         ev->patch = *ptrdata;ptrdata++;currentpos++; 
         break;
     case (MIDI_CHN_PRESSURE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Chn press\n");
+        if (ev->chn==6) fprintf (stderr, "Chn press\n");
 #endif
         ev->vel  = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_PITCH_BEND) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Pitch\n");
+        if (ev->chn==6) fprintf (stderr, "Pitch\n");
 #endif
         ev->d1 = *ptrdata;ptrdata++;currentpos++; 
         ev->d2 = *ptrdata;ptrdata++;currentpos++;
         break;
     case (MIDI_CTL_CHANGE) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Ctl\n");
+        if (ev->chn==6) fprintf (stderr, "Ctl\n");
 #endif
         ev->ctl = *ptrdata;ptrdata++; currentpos++;
         ev->d1  = *ptrdata;ptrdata++;currentpos++;
         /*
          switch (ev->ctl)
          {
-         case (96) : printf("RPN Increment\n");break;
-         case (97) : printf("RPN Decrement\n");break;
-         case (98) : printf("nRPN 98 %d\n",ev->d1);break;
-         case (99) : printf("nRPN 99 %d\n",ev->d1);break;
-         case (100) : printf("RPN 100 %d\n",ev->d1);break;
-         case (101) : printf("RPN 101 %d\n",ev->d1);break;
+         case (96) : fprintf(stderr,"RPN Increment\n");break;
+         case (97) : fprintf(stderr,"RPN Decrement\n");break;
+         case (98) : fprintf(stderr,"nRPN 98 %d\n",ev->d1);break;
+         case (99) : fprintf(stderr,"nRPN 99 %d\n",ev->d1);break;
+         case (100) : fprintf(stderr,"RPN 100 %d\n",ev->d1);break;
+         case (101) : fprintf(stderr,"RPN 101 %d\n",ev->d1);break;
          };
          */
         break;
         
     case (MIDI_SYSTEM_PREFIX) :
 #ifdef TRACKDEBUG2
-        if (ev->chn==6) printf ("Sys Prefix\n");
+        if (ev->chn==6) fprintf (stderr,"Sys Prefix\n");
 #endif
         switch ((ev->command|ev->chn))
         {
@@ -312,7 +330,7 @@ break;
             break;
         case (0xFE):
         case (0xF8):
-            //		printf("Active sensing\n");
+            //		fprintf(stderr,"Active sensing\n");
             break;
         case (META_EVENT) : 
             ev->d1=*ptrdata;ptrdata++;currentpos++;
@@ -334,7 +352,7 @@ break;
                     ev->note = j;
                     ev->vel  = 0;
                     note[ev->chn][ev->note]=FALSE;
-                    printf("Note Off(simulated)\n");
+                    fprintf(stderr,"Note Off(simulated)\n");
                     return;
                 }
                 else
@@ -343,7 +361,7 @@ break;
                     delta_ticks = wait_ticks = ~0;
                     time_at_next_event=10000 * 60000L;
 #ifdef TRACKDEBUG
-                    printf("EndofTrack %d event\n",id);
+                    fprintf(stderr,"EndofTrack %d event\n",id);
 #endif
                 }
                 break;
@@ -365,7 +383,7 @@ break;
                     //  ticks_from_previous_tempochange=0;
                     // 	time_at_previous_tempochange=current_time;
 #ifdef TRACKDEBUG
-                    printf("Set Tempo : %ld (track %d)\n",tempo,id);
+                    fprintf(stderr,"Set Tempo : %ld (track %d)\n",tempo,id);
 #endif
 #ifdef CHANGETEMPO_ONLY_IN_TRACK0
                     if (id!=0) skip_event=1;
@@ -379,10 +397,10 @@ break;
                 ev->d4=*ptrdata;ptrdata++;currentpos++;
                 ev->d5=*ptrdata;ptrdata++;currentpos++;
 #ifdef TRACKDEBUG
-                printf("TIME SIGNATURE :\n");	
-                printf("%d\n",ev->d2);
-                printf("----  %d metronome , %d number of 32nd notes per quarter note\n",ev->d4,ev->d5);
-                printf("%d\n",ev->d3);
+                fprintf(stderr,"TIME SIGNATURE :\n");	
+                fprintf(stderr,"%d\n",ev->d2);
+                fprintf(stderr,"----  %d metronome , %d number of 32nd notes per quarter note\n",ev->d4,ev->d5);
+                fprintf(stderr,"%d\n",ev->d3);
 #endif
                 break;
             case (ME_TRACK_SEQ_NUMBER) :
@@ -414,8 +432,8 @@ break;
                 break;
             default: 
 #ifdef GENERAL_DEBUG_MESSAGES
-                printf("Warning : Default handler for meta event " \
-                       "0x%x\n", ev->d1);
+                fprintf(stderr,"track (%d) : Default handler for meta event " \
+                       "0x%x\n", id, ev->d1);
 #endif
                 ev->length=readVariableLengthValue();
 #ifdef PEDANTIC_TRACK
@@ -435,14 +453,14 @@ break;
             }
             break;
         default : 
-            printf("Warning: Default handler for system event 0x%x\n",
-                   (ev->command|ev->chn));
+            fprintf(stderr,"track (%d): Default handler for system event 0x%x\n",
+                   id, (ev->command|ev->chn));
             break;
         }
         break;
     default : 
-        printf("Warning: Default handler for event 0x%x\n",
-               (ev->command|ev->chn));
+        fprintf(stderr,"track (%d): Default handler for event 0x%x\n",
+               id, (ev->command|ev->chn));
         break;
     }
 #ifdef PEDANTIC_TRACK
@@ -451,7 +469,7 @@ break;
         endoftrack=1;
         delta_ticks = wait_ticks = ~0;	
         time_at_next_event=10000 * 60000L;
-        printf("EndofTrack %d reached\n",id);
+        fprintf(stderr,"track (%d): EndofTrack reached\n",id);
     }
 #endif
     if (endoftrack==0)
@@ -481,8 +499,31 @@ break;
     if (skip_event) readEvent(ev);
 }
 
+
+void track::clear(void)
+{
+    endoftrack=1;
+    ptrdata=data;
+    current_ticks=0;
+    currentpos=0;
+    
+    for (int i=0;i<16;i++)
+        for (int j=0;j<128;j++)
+            note[i][j]=FALSE;
+    
+    delta_ticks = wait_ticks = ~0;	
+    time_at_previous_tempochange=0;
+    current_time=0;
+    ticks_from_previous_tempochange=0;
+    tempo=1000000;
+    time_at_next_event=10000 * 60000L;
+ 
+}
+
+
 void track::init(void)
 {
+    if (data==0L) { clear(); return; };
     endoftrack=0;
     ptrdata=data;
     current_ticks=0;

@@ -102,6 +102,7 @@ public:
 
         void	readEvent(Midi_event *ev);
 	void	init(void);
+	void	clear(void);
 
 };
 
