@@ -259,7 +259,7 @@ if (argc == 2)
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("Hello");
   test( "readEntry()", sc2.readEntry( "Test" ) == LOCAL8BITENTRY );
-  test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel") == "" );
+  test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel").isEmpty() );
   test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
   test( "readEntry() 2", sc2.readEntry( "stringEntry2" ) == STRINGENTRY2 );
   test( "readEntry() 3", sc2.readEntry( "stringEntry3" ) == STRINGENTRY3 );
