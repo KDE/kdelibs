@@ -72,10 +72,11 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 {
     if(!m_lstValues) return 0;
 
-    unsigned int i = m_lstValues->count();
-    while(i--)
+    unsigned int i = 0;
+    while(i < m_lstValues->count())
     {
 	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->value();
+	i++;
     }
     return 0;
 }
@@ -87,19 +88,17 @@ DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName
     return removeProperty(id);
 }
 
-DOMString CSSStyleDeclarationImpl::removeProperty( int id)
+DOMString CSSStyleDeclarationImpl::removeProperty(int id)
 {
     if(!m_lstValues) return 0;
 
-    unsigned int i = m_lstValues->count();
-    while(i--)
-    {
-	if(id == m_lstValues->at(i)->m_id)
-	{
-	    m_lstValues->remove(i);
-            // Continue, a property can occur in the list multiple times.
-	}
-    }
+    QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    lstValuesIt.toLast();
+    while (lstValuesIt.current() && lstValuesIt.current()->m_id != id)
+        --lstValuesIt;
+    if (lstValuesIt.current())
+        m_lstValues->removeRef(lstValuesIt.current());
+
     return 0;
 }
 
@@ -115,11 +114,11 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
 {
     if(!m_lstValues) return false;
 
-    unsigned int i = m_lstValues->count();
-    while(i--)
+    unsigned int i = 0;
+    while(i < m_lstValues->count())
     {
-	if(propertyID == m_lstValues->at(i)->m_id ) 
-            return m_lstValues->at(i)->m_bImportant;
+	if(propertyID == m_lstValues->at(i)->m_id ) return m_lstValues->at(i)->m_bImportant;
+	i++;
     }
     return false;
 }
@@ -151,9 +150,9 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	m_lstValues = new QList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
+    removeProperty(id);
     int pos = m_lstValues->count();
-    if (!parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues))
-       return;
+    parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
 
     if(nonCSSHint) {
 	CSSProperty *p = m_lstValues->at(pos);
@@ -186,7 +185,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     {
 	//kdDebug( 6080 ) << "setting property" << endl;
 	CSSProperty *prop = props->at(i);
-	removeProperty(prop->m_id); // Not strictly needed any more
+	removeProperty(prop->m_id);
 	m_lstValues->append(prop);
 	i++;
     }
@@ -234,14 +233,12 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 unsigned long CSSStyleDeclarationImpl::length() const
 {
     if(!m_lstValues) return 0;
-    // Hmmm. This sucks, we have to remove duplicates here first.
     return m_lstValues->count();
 }
 
 DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ )
 {
     // ###
-    // Hmmm. This sucks, we have to remove duplicates here first.
     //return m_lstValues->at(index);
     return 0;
 }
