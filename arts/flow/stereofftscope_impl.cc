@@ -10,8 +10,14 @@ class StereoFFTScope_impl : public StereoFFTScope_skel, public StdSynthModule {
 protected:
 	enum { SAMPLES = 4096 };
 	vector<float> _scope;
-	float window[SAMPLES];
-	float inbuffer[SAMPLES];
+	/*
+	 * some gcc versions expose ugly behaviour with virtual inheritance:
+	 * putting window[4096] & inbuffer[4096] here bloats the vtable then,
+	 * and tells you to recompile with -fhuge-objects ... so allocate them
+	 * dynamically
+	 */
+	float *window;
+	float *inbuffer;
 	long inbufferpos;
 public:
 	void do_fft()
@@ -80,6 +86,16 @@ public:
 			outleft[i] = inleft[i];
 			outright[i] = inright[i];
 		}
+	}
+
+	/* prevent vtable overflows (see above) */
+	StereoFFTScope_impl() {
+		window = new float[SAMPLES];
+		inbuffer = new float[SAMPLES];
+	}
+	~StereoFFTScope_impl() {
+		delete [] window;
+		delete [] inbuffer;
 	}
 };
 
