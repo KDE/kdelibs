@@ -40,6 +40,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qlist.h>
 
 #include <dcopclient.h>
+#include <kconfig.h>
 
 class CookieRequest {
 public:
@@ -107,6 +108,11 @@ KCookieServer::newInstance()
 	quit();
    }
 
+   if(args->isSet("reload-config"))
+   {
+	mCookieJar->loadConfig( kapp->config(), true );
+   }
+
    return 0;
 }
 
@@ -149,8 +155,8 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
     }
     else if (fun == "reloadPolicy" )
     {
-	kdDebug(7104) << "got \"reload the cookie config policy file\"" << endl;
-	mCookieJar->loadConfig( kapp->config() );
+	kdDebug(7104) << "got \"reload the cookie config policy file\"..." << endl;
+	mCookieJar->loadConfig( kapp->config(), true );
         replyType = "void";
         return true;
     }
@@ -205,8 +211,8 @@ KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
 
 void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
 {
-    KCookieAdvice userAdvice = KCookieDunno;
     QString host;
+    KCookieAdvice userAdvice = KCookieDunno;
     if (cookie) host = cookie->host();
     while (cookie)
     {
@@ -240,7 +246,7 @@ void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
         switch(advice)
         {
         case KCookieAccept:
-            kdDebug(7104) << "Accepting cookie from " << cookie->host() << endl;
+            kdDebug(7104) << "Accepting cookies from " << cookie->host() << endl;
             mCookieJar->addCookie(cookie);
 	    break;
 	
@@ -308,7 +314,6 @@ void KCookieServer::slotSave()
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
    mCookieJar->saveCookies(filename);
-   // mCookieJar->saveConfig( kapp->config() );
 }
 
 #include "kcookieserver.moc"

@@ -64,19 +64,19 @@ protected:
     QString cookieStr(void);
 public:
     KHttpCookie(const QString &_host=QString::null,
-            const QString &_domain=QString::null,
-            const QString &_path=QString::null,
-            const QString &_name=QString::null,
-            const QString &_value=QString::null,
-            time_t _expireDate=0,
-            int _protocolVersion=0);
+                const QString &_domain=QString::null,
+                const QString &_path=QString::null,
+                const QString &_name=QString::null,
+                const QString &_value=QString::null,
+                time_t _expireDate=0,
+                int _protocolVersion=0);
 
     QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
     QString value(void) { return mValue; }
-    void fixDomain(const QString &domain) { mDomain = domain; }
+    void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
 
@@ -143,7 +143,7 @@ public:
     /**
      * Load the cookie configuration
      */
-    void loadConfig(KConfig *_config);
+    void loadConfig(KConfig *_config, bool reparse = false);
 
     /**
      * Looks for cookies in the cookie jar which are appropriate for _url.
@@ -248,6 +248,12 @@ public:
      * calling this function.
      */
     void eatCookie(KHttpCookiePtr cookiePtr);
+
+    /**
+     * Same as the above method except this function will
+     * delete all cookies for a specific domain (list).
+     */
+    void eatCookies(KHttpCookieList* /*cookieList*/ );
 
     /**
      * Remove & delete all cookies

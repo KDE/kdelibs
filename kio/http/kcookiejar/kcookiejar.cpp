@@ -437,7 +437,7 @@ bool KCookieJar::extractDomain(const QString &_url,
 // which start with "Set-Cookie". The lines should be separated by '\n's.
 //
 KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
-                                   const QCString &cookie_headers)
+                                       const QCString &cookie_headers)
 {
     KHttpCookiePtr cookieChain = 0;
     KHttpCookiePtr lastCookie = 0;
@@ -560,12 +560,17 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 
         // Make a new cookie list
         cookieList = new KHttpCookieList();
-        cookieList->setAdvice( KCookieDunno );
 
+        // All cookies whose domain is not already
+        // known to us should be added with the default
+        // value set to global policy, not the hard-coded
+        // "KCookieDunno" value.  This allows us to
+        // automatically follow what the user has already
+        // set. (DA)
+        cookieList->setAdvice( globalAdvice );
         cookieDomains.insert( domain, cookieList);
-
         // Update the list of domains
-        domainList.append( domain);
+        domainList.append(domain);
     }
 
     // Look for matching existing cookies
@@ -643,13 +648,15 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 
     if (cookieList)
     {
+        kdDebug(7104) << "Found domain specific policy. Use it..." << endl;
         advice = cookieList->getAdvice();
     }
     else
     {
+        kdDebug(7104) << "No domain specific policy found for. Use the global policy instead..." << endl;
         advice = globalAdvice;
     }
-
+    kdDebug(7104) << "Domain name: " << domain << "\tCookie Advice: " << adviceToStr( advice ) << endl;
     return advice;
 }
 
@@ -687,9 +694,11 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
     if (cookieList)
     {
         if (cookieList->getAdvice() != _advice);
+        {
            configChanged = true;
-        // domain is already known
-        cookieList->setAdvice( _advice);
+           // domain is already known
+           cookieList->setAdvice( _advice);
+        }
 
         if ((cookieList->isEmpty()) &&
             (_advice == KCookieDunno))
@@ -780,6 +789,25 @@ void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
 
             domainList.remove(domain);
         }
+    }
+}
+
+void KCookieJar::eatCookies( KHttpCookieList* cookieList )
+{
+    if (cookieList)
+    {
+        QString domain;
+        KHttpCookiePtr cookiePtr = cookieList->first();
+        stripDomain( cookiePtr->host(), domain);
+        for ( ; cookieList != 0; cookieList->next() )
+            cookieList->removeRef( cookiePtr );
+
+        // Delete cookie list.
+        cookieDomains.remove(domain);
+        // Remove from the domain list.
+        domainList.remove(domain);
+        // set the cookies changed flag.
+        cookiesChanged = true;
     }
 }
 
@@ -1017,22 +1045,17 @@ void KCookieJar::saveConfig(KConfig *_config)
 // Load the cookie configuration
 //
 
-void KCookieJar::loadConfig(KConfig *_config)
+void KCookieJar::loadConfig(KConfig *_config, bool reparse )
 {
     QString value;
     QStringList domainSettings;
 
+    if( reparse )
+        _config->reparseConfiguration();
+
     _config->setGroup(QString::null);
     defaultRadioButton = _config->readNumEntry("DefaultRadioButton", 0);
 
-    // Reset current domain settings first
-    for ( QStringList::Iterator it=domainList.begin();
-    	  it != domainList.end();)
-    {
-         QString domain = *it++;
-         // Be carefull, setDomainAdvice might change "domainList"
-         setDomainAdvice( domain, KCookieDunno);
-    }
     // Read the old group name if we did not yet save to
     // the new group name.
     if( _config->hasGroup( "Browser Settings/HTTP" ) &&
@@ -1044,17 +1067,34 @@ void KCookieJar::loadConfig(KConfig *_config)
     globalAdvice = strToAdvice(value);
     domainSettings = _config->readListEntry("CookieDomainAdvice");
 
+    // Reset current domain settings first.  Always reset to what
+    // the user choose as default!!  Don't know why it was hard-coded
+    // to the wrong value.  This has caused many bug reports.(DA)
+    for ( QStringList::Iterator it=domainList.begin(); it != domainList.end();)
+    {
+         QString domain = *it++;
+         setDomainAdvice(domain, globalAdvice);
+    }
+
+    // Now apply the
     for ( QStringList::Iterator it=domainSettings.begin();
     	  it != domainSettings.end();)
     {
         const QString &value = *it++;
-        kdDebug(7104) << "The Cookie Domain advice being processed is " << value.latin1() << endl;
         int sepPos = value.find(':');
-        if (sepPos <= 0)
-             continue;
+        if (sepPos <= 0) { continue; }
         QString domain(value.left(sepPos));
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
-        setDomainAdvice( domain, advice);
+        setDomainAdvice(domain, advice);
     }
+
+    kdDebug(7104) << "********** COOKIE POLICY CONFIG **********\n" << endl;
+    kdDebug(7104) << "Global Cookie Policy: " << adviceToStr(globalAdvice) << endl;
+    kdDebug(7104) << "Domain Specific Policies: " << endl;
+    for ( QStringList::Iterator it = domainSettings.begin(); it != domainSettings.end(); ++it )
+        kdDebug(7104) << (*it) << endl;
+    kdDebug(7104) << "\n****************************************" << endl;
+
+
 }
 
