@@ -20,6 +20,7 @@
 #define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
 #include <kapp.h>
+#include <kdebug.h>
 
 /**
  * @internal
@@ -33,16 +34,22 @@ public:
                     const QString &text, 
                     const QString &caption = QString::null)
     {
-      kapp->enableStyles();
-      KMessageBox::error( parent, text, caption );
+	if (kapp) {
+     	  kapp->enableStyles();
+      	  KMessageBox::error( parent, text, caption );
+	} else 
+	  kdWarning() << text << endl;
     }
 
   static void sorry(QWidget *parent, 
                     const QString &text,
                     const QString &caption = QString::null)
     {
-      kapp->enableStyles();
-      KMessageBox::sorry( parent, text, caption );
+      if (kapp) {
+	 kapp->enableStyles();
+         KMessageBox::sorry( parent, text, caption );
+      } else
+	kdWarning() << text << endl;
     }
   
 };
