@@ -1,33 +1,39 @@
 /* 
-   This file is part of the KDE libraries
-   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
-   
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-*/
+ *   This file is part of the KDE libraries
+ *   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+ *
+ *   $Id$
+ *   
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License version 2 as published by the Free Software Foundation.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public License
+ *   along with this library; see the file COPYING.LIB.  If not, write to
+ *   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *   Boston, MA 02111-1307, USA.
+ **/
 
 #ifndef _KTEMPFILE_H_
 #define _KTEMPFILE_H_
 
-#include <qstring.h>
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
+
+#include <qtextstream.h>
+#include <qfile.h>
+#include <qstring.h>
 
 /**
  * The KTempFile class creates and opens a unique file for temporary use.
  */
-class KTempFile
+class KTempFile :
+     public QTextStream
 {
 public:
    /**
@@ -76,11 +82,6 @@ public:
    int handle();
    
    /**
-    * A FILE* stream open for writing to the file
-    **/
-   FILE *fstream();
-
-   /**
     * Unlinks the file from the directory. The file is
     * deleted once the last reader/writer closes it.
     **/
@@ -92,11 +93,12 @@ public:
     * See status() for details about errors.
     **/
    bool close();
-private:
+
+protected:
    int mError;
    QString mTmpName;
    int mFd;
-   FILE *mStream;
+   QFile qIODevice;
    bool bOpen;
    bool bAutoDelete;
 };
