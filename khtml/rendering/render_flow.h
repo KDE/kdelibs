@@ -100,6 +100,7 @@ protected:
     inline int floatBottom();
     inline int leftBottom();
     inline int rightBottom();
+    bool checkClear(RenderObject *child);
 
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
