@@ -704,19 +704,19 @@ void KFileDialog::updateLocationWhatsThis (void)
     QString whatsThisText;
     if (d->operationMode == KFileDialog::Saving)
     {
-        whatsThisText = i18n("<qt>This is the name to save the file as.") +
+        whatsThisText = "<qt>" + i18n("This is the name to save the file as.") +
                              autocompletionWhatsThisText;
     }
     else if (ops->mode() & KFile::Files)
     {
-        whatsThisText = i18n("<qt>This is the list of files to open. More than "
+        whatsThisText = "<qt>" + i18n("This is the list of files to open. More than "
                              "one file can be specified by listing several "
                              "files, separated by spaces.") +
                               autocompletionWhatsThisText;
     }
     else
     {
-        whatsThisText = i18n("<qt>This is the name of the file to open.") +
+        whatsThisText = "<qt>" + i18n("This is the name of the file to open.") +
                              autocompletionWhatsThisText;
     }
 
@@ -757,9 +757,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
-    QWhatsThis::add( d->pathCombo, i18n("<qt>Commonly used locations are listed here. "
-                                        "This includes standard locations, such as your home directory, as well as "
-                                        "locations that have been visited recently.") + autocompletionWhatsThisText);
+    QWhatsThis::add( d->pathCombo, "<qt>" + i18n("Commonly used locations are listed here. "
+                                                 "This includes standard locations, such as your home directory, as well as "
+                                                 "locations that have been visited recently.") + autocompletionWhatsThisText);
 
     KURL u;
     u.setPath( QDir::rootDirPath() );
@@ -1471,7 +1471,9 @@ KURL::List& KFileDialog::parseSelectedURLs() const
             d->urlList.append( u );
         else
             KMessageBox::error( d->mainWidget,
-                                i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid Filename(s)") );
+                                i18n("The chosen filenames don't\n"
+                                     "appear to be valid."),
+                                i18n("Invalid Filenames") );
     }
 
     else
@@ -1501,7 +1503,11 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 
     if ( (count % 2) == 1 ) { // odd number of " -> error
         QWidget *that = const_cast<KFileDialog *>(this);
-        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in double quotes.").arg(line), i18n("Filename Error"));
+        KMessageBox::sorry(that, i18n("The requested filenames\n"
+                                      "%1\n"
+                                      "don't look valid to me.\n"
+                                      "Make sure every filename is enclosed in double quotes.").arg(line),
+                           i18n("Filename Error"));
         return urls;
     }
 
