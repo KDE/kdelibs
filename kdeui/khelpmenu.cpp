@@ -133,7 +133,7 @@ QPopupMenu* KHelpMenu::menu()
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
-		       i18n( "&Contents" ),menuHelpContents );
+		       i18n( "&Contents..." ),menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
 
