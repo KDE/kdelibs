@@ -169,8 +169,11 @@ sub output() {
     print "\n";
     $i++;
   }
-  print "};\n";
-  print "\nstatic const struct HashTable $name = ";
+  print "};\n\n";
+  if (index($name, "::") == -1) {
+    print "static ";
+  }
+  print "const struct HashTable $name = ";
   print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "} // namespace\n";
 }
