@@ -89,6 +89,9 @@
  * is less than 4.
  * Instead of the other meaning, make sure that the numeric value of "X-KDE-Blah" is less than 4.
  *
+ * Please read http://developer.kde.org/documentation/library/tradersyntax.html for
+ * a more complete description of the trader language syntax.
+ *
  * @short Provides a way to query the KDE infrastructure for specific
  *        applications or components.
  * @author Torben Weis <weis@kde.org>
