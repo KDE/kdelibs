@@ -30,10 +30,6 @@
 
 #include <string.h>
 
-// avoid crashes if this is not defined
-#undef CORRECT_BEHAVIOUR
-//#define CORRECT_BEHAVIOUR 1
-
 using namespace DOM;
 using namespace khtml;
 
@@ -52,14 +48,6 @@ DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
         memcpy( s, str, len * sizeof(QChar) );
         l = len;
     }
-#ifndef CORRECT_BEHAVIOUR
-    else if(len == 0)
-    {
-        //kdDebug( 6030 ) << "DOMStringImpl::DOMStringImpl(const QChar, len): incorrect behaviour!" << endl;
-        s = new QChar;
-        l = 0;
-    }
-#endif
     else
     {
         s = 0; l = 0;
@@ -77,14 +65,6 @@ DOMStringImpl::DOMStringImpl(const char *str)
         while( i-- )
             *ptr++ = *str++;
     }
-#ifndef CORRECT_BEHAVIOUR
-    else if(str && strlen(str) == 0)
-    {
-        //kdDebug( 6030 ) << "DOMStringImpl::DOMStringImpl(const char*): incorrect behaviour!" << endl;
-        s = new QChar;
-        l = 0;
-    }
-#endif
     else
     {
         s = 0; l = 0;
