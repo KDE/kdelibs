@@ -32,6 +32,7 @@
 
 #include <qtextcodec.h>
 #include <qmap.h>
+#include <qcstring.h>
 
 template class QList<QFont::CharSet>;
 
@@ -160,46 +161,64 @@ public:
         delete availableCharsets;
     }
     QFontDatabase *db;
-    QMap<QFont::CharSet, QStringList> *availableCharsets;
+    QMap<QFont::CharSet, QValueList<QCString> > *availableCharsets;
 
-    void getAvailableCharsets(const KCharsets *charsets);
+    void getAvailableCharsets();
 };
 
-void KCharsetsPrivate::getAvailableCharsets(const KCharsets *charsets)
+static QFont::CharSet xNameToID(QCString &name)
+{
+    name = name.lower();
+
+    int i = 0;
+    while(i < CHARSETS_COUNT)
+    {
+       if( name == xNames[i] )
+            return charsetsIds[i];
+        i++;
+    }
+    return QFont::AnyCharSet;
+}
+
+void KCharsetsPrivate::getAvailableCharsets()
 {
     if(availableCharsets)
         return;
     if(!db)
         db = new QFontDatabase;
 
-    availableCharsets = new QMap<QFont::CharSet, QStringList>;
+    availableCharsets = new QMap<QFont::CharSet, QValueList<QCString> >;
 
     QStringList f = db->families(false);
 
     for ( QStringList::Iterator it = f.begin(); it != f.end(); ++it ) {
-        QStringList chSets = db->charSets(*it, false);
-	QString family = *it;
+	QStringList chSets = db->charSets(*it, false);
+	QCString family = (*it).latin1(); // can only be latin1
 	if ( family. contains('-') ) // remove foundry
 	    family = family.right( family.length() - family.find('-' ) - 1);
 	//kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *it << " " << family <<endl;
-        for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
+	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
 	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << charsets->xNameToID( *ch ) << endl;
-            if( !availableCharsets->contains( charsets->xNameToID( *ch ) ) ) {
-                QStringList strList;
-                strList.append( family );
-                availableCharsets->insert( charsets->xNameToID( *ch ), strList );
-            } else
-                ((*availableCharsets)[charsets->xNameToID( *ch )]).append(family);
-        }
+	    QCString cs = (*ch).latin1();
+	    QFont::CharSet qcs = xNameToID( cs );
+	    if( !availableCharsets->contains( qcs ) ) {
+		QValueList<QCString> strList;
+		strList.append( family );
+		availableCharsets->insert( qcs, strList );
+	    } else
+		((*availableCharsets)[qcs]).append(family);
+	}
     }
 
 #if 0
-    for( QMap<QFont::CharSet, QStringList>::Iterator it = availableCharsets->begin();
+    for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = availableCharsets->begin();
          it != availableCharsets->end(); ++it ) {
         kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << it.key() << " " << endl;
     }
 #endif
 }
+
+
 
 // --------------------------------------------------------------------------
 
@@ -289,11 +308,11 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
         return chSets;
     }
 
-    d->getAvailableCharsets(this);
+    d->getAvailableCharsets();
 
     QList<QFont::CharSet> chSets;
     chSets.setAutoDelete(true);
-    for( QMap<QFont::CharSet, QStringList>::Iterator it = d->availableCharsets->begin();
+    for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = d->availableCharsets->begin();
          it != d->availableCharsets->end(); ++it ) {
             QFont::CharSet *i = new QFont::CharSet;
             *i = it.key();
@@ -310,10 +329,10 @@ QStringList KCharsets::availableCharsetNames(QString family)
     if( !family.isNull() )
         return d->db->charSets(family, false);
 
-    d->getAvailableCharsets(this);
+    d->getAvailableCharsets();
 
     QStringList chSets;
-    for( QMap<QFont::CharSet, QStringList>::Iterator it = d->availableCharsets->begin();
+    for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = d->availableCharsets->begin();
          it != d->availableCharsets->end(); ++it )
             chSets.append( xCharsetName(it.key()) );
     return chSets;
@@ -388,18 +407,18 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     if(!d->db)
         d->db = new QFontDatabase;
 
-    d->getAvailableCharsets(this);
+    d->getAvailableCharsets();
 
-    QString family = f.family();
+    QCString family = f.family().latin1();
 
-    QStringList chFamilies = (*d->availableCharsets)[charset];
+    QValueList<QCString> chFamilies = (*d->availableCharsets)[charset];
     if(chFamilies.contains(family)) {
 	//kdDebug() << "KCharsets::setQFont: charsetAvailable in family" << endl; 
         f.setCharSet(charset);
         return;
     }
 
-    QStringList ucFamilies = (*d->availableCharsets)[QFont::Unicode];
+    QValueList<QCString> ucFamilies = (*d->availableCharsets)[QFont::Unicode];
     if(ucFamilies.contains(family)) {
 	//kdDebug() << "KCharsets::setQFont: using unicode" << endl; 
 	// just setting the charset to unicode should work
@@ -438,7 +457,7 @@ bool KCharsets::isAvailable(const QString &charset)
 
 bool KCharsets::isAvailable(QFont::CharSet charset)
 {
-    d->getAvailableCharsets(this);
+    d->getAvailableCharsets();
 
     if(d->availableCharsets->contains(charset))
         return true;
@@ -452,11 +471,11 @@ QFont::CharSet KCharsets::charsetForLocale()
 
 bool KCharsets::hasUnicode(QString family) const
 {
-    d->getAvailableCharsets(this);
+    d->getAvailableCharsets();
     if(!d->availableCharsets->contains(QFont::Unicode))
         return false;
-    QStringList lst = (*d->availableCharsets)[QFont::Unicode];
-    if(lst.contains(family))
+    QValueList<QCString> lst = (*d->availableCharsets)[QFont::Unicode];
+    if(lst.contains(family.latin1()))
         return true;
     return false;
 }
