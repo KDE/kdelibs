@@ -904,7 +904,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
           l = new QLabel(i18n("Mounted on:"), d->m_frame );
           grid->addWidget(l, curRow, 0);
 
-          l = new QLabel( mountPoint, d->m_frame );
+          l = new KSqueezedTextLabel( mountPoint, d->m_frame );
           grid->addWidget( l, curRow++, 2 );
       }
 
