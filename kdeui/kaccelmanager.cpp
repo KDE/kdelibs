@@ -40,13 +40,21 @@
 
 #include "kaccelmanager.h"
 
-
+// Default control weight
 const int KAccelManagerAlgorithm::DEFAULT_WEIGHT = 50;
+// Additional weight for first character in string
 const int KAccelManagerAlgorithm::FIRST_CHARACTER_EXTRA_WEIGHT = 50;
+// Additional weight for the beginning of a word
 const int KAccelManagerAlgorithm::WORD_BEGINNING_EXTRA_WEIGHT = 50;
+// Additional weight for the dialog buttons (large, we basically never want these reassigned)
+const int KAccelManagerAlgorithm::DIALOG_BUTTON_EXTRA_WEIGHT = 300;
+// Additional weight for a 'wanted' accelerator
 const int KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT = 150;
+// Default weight for an 'action' widget (ie, pushbuttons)
 const int KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT = 50;
+// Default weight for group boxes (low priority)
 const int KAccelManagerAlgorithm::GROUP_BOX_WEIGHT = 0;
+// Default weight for menu titles
 const int KAccelManagerAlgorithm::MENU_TITLE_WEIGHT = 250;
 
 
@@ -269,6 +277,10 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
           // don't put weight on group boxes, as usally the contents are more important
           if (w->inherits("QGroupBox"))
               weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
+
+          // put a lot of extra weight on the KDialogBaseButton's
+          if (w->inherits("KDialogBaseButton"))
+              weight += KAccelManagerAlgorithm::DIALOG_BUTTON_EXTRA_WEIGHT;
 
           i->m_content = KAccelString(content, weight);
           item->addChild(i);

@@ -94,6 +94,7 @@ public:
   static const int FIRST_CHARACTER_EXTRA_WEIGHT;
   static const int WORD_BEGINNING_EXTRA_WEIGHT;
   static const int WANTED_ACCEL_EXTRA_WEIGHT;
+  static const int DIALOG_BUTTON_EXTRA_WEIGHT;
 
   static const int ACTION_ELEMENT_WEIGHT;
   static const int GROUP_BOX_WEIGHT;
