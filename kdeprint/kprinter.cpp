@@ -21,6 +21,7 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <qmessagebox.h>
+#include <qfile.h>
 #include <klocale.h>
 #include <krun.h>
 
@@ -81,7 +82,7 @@ KPrinter::~KPrinter()
 {
 	// remove temporary file
 qDebug("removing tmpfile: %s",tmpbuffer_.latin1());
-	::unlink(tmpbuffer_.latin1());
+	::unlink(QFile::encodeName(tmpbuffer_));
 
 	// delete Wrapper object
 	delete wrapper_;
@@ -163,7 +164,7 @@ bool KPrinter::printFile(const QString& filename)
 bool KPrinter::printFiles(const QStringList&)
 {
 	QString	cmd = QString("kprintjob -d %1").arg(printerName());
-	KRun::runCommand(cmd);
+	KRun::runCommand(QFile::encodeName(cmd));
 	return false;
 }
 

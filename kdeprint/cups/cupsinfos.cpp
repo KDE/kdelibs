@@ -40,7 +40,7 @@ CupsInfos::CupsInfos()
 void CupsInfos::setHost(const QString& s)
 {
 	host_ = s;
-	cupsSetServer(s.latin1());
+	cupsSetServer(s.local8Bit());
 	save();
 }
 
@@ -54,7 +54,7 @@ void CupsInfos::setPort(int p)
 void CupsInfos::setLogin(const QString& s)
 {
 	login_ = s;
-	cupsSetUser(s.latin1());
+	cupsSetUser(s.local8Bit());
 	save();
 }
 
@@ -65,7 +65,7 @@ void CupsInfos::setPassword(const QString& s)
 
 const char* CupsInfos::getPasswordCB()
 {
-	if (count_ == 0 && !password_.isEmpty()) return password_.latin1();
+	if (count_ == 0 && !password_.isEmpty()) return password_.local8Bit();
 	else
 	{
 		QString	msg = i18n("<p>The access to the requested resource on the CUPS server running on <b>%1</b> (port <b>%2</b>) requires a password.</p>").arg(host_).arg(port_);
@@ -75,7 +75,7 @@ const char* CupsInfos::getPasswordCB()
 		{
 			setLogin(dlg.username());
 			setPassword(dlg.password());
-			return password_.latin1();
+			return password_.local8Bit();
 		}
 		else
 			return NULL;
@@ -87,15 +87,15 @@ void CupsInfos::load()
 {
 	KConfig	conf_("kdeprintrc");
 	conf_.setGroup("CUPS");
-	host_ = conf_.readEntry("Host",QString::fromLatin1(cupsServer()));
+	host_ = conf_.readEntry("Host",QString::fromLocal8Bit(cupsServer()));
 	port_ = conf_.readNumEntry("Port",ippPort());
-	login_ = conf_.readEntry("Login",QString::fromLatin1(cupsUser()));
+	login_ = conf_.readEntry("Login",QString::fromLocal8Bit(cupsUser()));
 	password_ = QString::null;
 	if (login_.isEmpty()) login_ = QString::null;
 
 	// synchronize with CUPS
-	cupsSetServer(host_.latin1());
-	cupsSetUser(login_.latin1());
+	cupsSetServer(host_.local8Bit());
+	cupsSetUser(login_.local8Bit());
 	ippSetPort(port_);
 }
 

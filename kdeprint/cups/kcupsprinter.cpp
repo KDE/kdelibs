@@ -110,10 +110,10 @@ void KCupsPrinter::translateOptions(const OptionSet& opts)
 	  // PPD value.
 		if (!printername_.isEmpty())
 		{
-			QString	str = cupsGetPPD(printername_.local8Bit());
+			QString	str = cupsGetPPD(printername_);
 			if (!str.isEmpty())
 			{
-				ppd_file_t	*ppd = ppdOpenFile(str.latin1());
+				ppd_file_t	*ppd = ppdOpenFile(QFile::encodeName(str));
 				if (ppd)
 				{
 					QString	psize = opts["PageSize"];
@@ -137,7 +137,7 @@ qDebug("Page margins = (%d,%d)",margins_.width(),margins_.height());
 					}
 					ppdClose(ppd);
 				}
-				::unlink(str.latin1());
+				::unlink(QFile::encodeName(str));
 			}
 		}
 		// default values (A4)

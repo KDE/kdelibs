@@ -60,7 +60,7 @@ void KPrintDialog::reloadPrinters()
 void KPrintDialog::initialize()
 {
 	// default output filename
-	outputfilename_->setText(QString("%1/print.ps").arg(QString::fromLatin1(getenv("HOME"))));
+	outputfilename_->setText(QString("%1/print.ps").arg(QString::fromLocal8Bit(getenv("HOME"))));
 
 	reloadPrinters();
 

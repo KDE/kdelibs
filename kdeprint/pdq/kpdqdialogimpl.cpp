@@ -61,7 +61,7 @@ void KPdqDialogImpl::slotSaveRequested(KPrinterItem *item, const OptionSet& opts
 
 	PDQPrinter	*npr = printerWithOptions(item->name(),opts);
 	PDQMain		*tmp_ = new PDQMain();
-	QString		filename = getenv("HOME") + QString::fromLatin1("/.printrc");
+	QString		filename = QString::fromLocal8Bit(getenv("HOME")) + QString::fromLatin1("/.printrc");
 
 	tmp_->parseFile(filename,false);
 	tmp_->setPrinter(npr);
@@ -171,7 +171,7 @@ void KPdqDialogImpl::setDefaultPrinter(KPrintDialog *dlg, int index)
 	if (item && !item->name().isEmpty())
 	{
 		PDQMain	*tmp_ = new PDQMain();
-		QString	filename = getenv("HOME") + QString::fromLatin1("/.printrc");
+		QString	filename = QString::fromLocal8Bit(getenv("HOME")) + QString::fromLatin1("/.printrc");
 
 		tmp_->parseFile(filename,false);
 		tmp_->setDefaultPrinter(item->name());
@@ -183,7 +183,7 @@ void KPdqDialogImpl::setDefaultPrinter(KPrintDialog *dlg, int index)
 
 void KPdqDialogImpl::reload()
 {
-	QFileInfo	gl(PdqInfos::self()->pdqGlobalRcFile()), loc(getenv("HOME")+QString::fromLatin1("/.printrc"));
+	QFileInfo	gl(PdqInfos::self()->pdqGlobalRcFile()), loc(QString::fromLocal8Bit(getenv("HOME"))+QString::fromLatin1("/.printrc"));
 
 	if (checktime_.isValid() && checktime_ >= QMAX(gl.lastModified(),loc.lastModified()))
 		return;

@@ -235,7 +235,7 @@ void KCupsDialogImpl::loadOptionsFile(const QString& filename)
 
 void KCupsDialogImpl::loadOptionsFiles()
 {
-	QFileInfo	global(QString::fromLatin1(CUPSCONFIGDIR)+"/lpoptions"), local(getenv("HOME")+QString::fromLatin1("/.lpoptions"));
+	QFileInfo	global(QString::fromLocal8Bit(CUPSCONFIGDIR)+"/lpoptions"), local(QString::fromLocal8Bit(getenv("HOME"))+QString::fromLatin1("/.lpoptions"));
 	if (!checktime_.isValid() || global.lastModified() > checktime_ || local.lastModified() > checktime_)
 	{
 		checktime_ = QMAX(global.lastModified(),local.lastModified());
@@ -290,7 +290,7 @@ void KCupsDialogImpl::slotSaveRequested(KPrinterItem *pr, const OptionSet& opts)
 	pr->setEdited(false);
 
 	// file to save
-	QString	fname = getenv("HOME") + QString::fromLatin1("/.lpoptions");
+	QString	fname = QString::fromLocal8Bit(getenv("HOME")) + QString::fromLatin1("/.lpoptions");
 
 	// save the printer list
 qDebug("saving options to %s",fname.latin1());
@@ -300,7 +300,7 @@ qDebug("saving options to %s",fname.latin1());
 void KCupsDialogImpl::setDefaultPrinter(KPrintDialog *dlg, int index)
 {
 	KDialogImpl::setDefaultPrinter(dlg,index);
-	QString	fname = getenv("HOME") + QString::fromLatin1("/.lpoptions");
+	QString	fname = QString::fromLocal8Bit(getenv("HOME")) + QString::fromLatin1("/.lpoptions");
 	saveOptionsFile(fname);
 }
 
@@ -339,11 +339,11 @@ KPrinterPropertyDialog* KCupsDialogImpl::buildPropertyDialog(KPrintDialog *dlg, 
 		QString	str;
 		bool hasPPD((printer->type() & KPrinterItem::Printer) && (printer->type() & KPrinterItem::Local) && !(printer->type() & KPrinterItem::Implicit));
 
-		str = (hasPPD ? QString::fromLatin1(cupsGetPPD(printer->printerName().latin1())) : QString::null);
+		str = (hasPPD ? QString::fromLocal8Bit(cupsGetPPD(printer->printerName().local8Bit())) : QString::null);
 		if (!str.isEmpty())
 		{
-			ppd_ = globalPpdOpenFile(str.latin1());
-			::unlink(str.latin1());
+			ppd_ = globalPpdOpenFile(QFile::encodeName(str));
+			::unlink(QFile::encodeName(str));
 			if (ppd_)
 			{
 				// update PPD from printer options

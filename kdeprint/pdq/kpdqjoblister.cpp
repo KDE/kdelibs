@@ -10,10 +10,10 @@
 QString jobDir()
 {
 	PDQMain	main_;
-	main_.parseFile(getenv("HOME")+QString::fromLatin1("/.printrc"),false);
+	main_.parseFile(QString::fromLocal8Bit(getenv("HOME"))+QString::fromLatin1("/.printrc"),false);
 	QString	dir_ = main_.jobdir_;
 	if (dir_.isEmpty())
-		dir_ = getenv("HOME") + QString::fromLatin1("/.printjobs/");
+		dir_ = QString::fromLocal8Bit(getenv("HOME")) + QString::fromLatin1("/.printjobs/");
 	return dir_;
 }
 
@@ -66,7 +66,7 @@ bool readJob(KJob *job, const QString& stfile)
 		job->ID = fi.baseName().toInt();
 		job->printer = items["printer"];
 		job->name = QFileInfo(items["input_filename"]).fileName();
-		job->user = getenv("USER");
+		job->user = QString::fromLocal8Bit(getenv("USER"));
 		job->size = 0;
 		job->state = stateFromString(items["status"]);
 		return true;

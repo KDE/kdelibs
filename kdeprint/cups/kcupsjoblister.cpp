@@ -24,7 +24,7 @@ bool KCupsJobLister::sendCommand(const QList<KJob>& jobs, int action, const QStr
 	for (;it.current() && value;++it)
 	{
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri);
-		req.addName(IPP_TAG_OPERATION,"requesting-user-name",QString::fromLatin1(cupsUser()));
+		req.addName(IPP_TAG_OPERATION,"requesting-user-name",QString::fromLocal8Bit(cupsUser()));
 
 		switch (action)
 		{
