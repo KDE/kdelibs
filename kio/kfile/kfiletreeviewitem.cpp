@@ -51,6 +51,12 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
    setText( 0, item->text());
 }
 
+KFileTreeViewItem::~KFileTreeViewItem()
+{
+    if ( m_kfileitem )
+        m_kfileitem->removeExtraData( m_branch );
+}
+
 bool KFileTreeViewItem::alreadyListed() const
 {
    return m_wasListed;

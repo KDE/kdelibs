@@ -391,7 +391,7 @@ bool KFileTreeView::removeBranch( KFileTreeBranch *branch )
 {
    if(m_branches.contains(branch))
    {
-      takeItem(branch->root());
+      delete (branch->root());
       m_branches.remove( branch );
       return true;
    }
