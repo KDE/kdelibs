@@ -1076,7 +1076,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   if ( _offset > 0 ) {
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
-    sprintf(buf, "rest %ld", _offset);
+    sprintf(buf, "rest %lld", _offset);
     if ( !ftpSendCmd( buf ) )
        return false;
     if ( rspbuf[0] != '3' ) {
