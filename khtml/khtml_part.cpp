@@ -636,8 +636,8 @@ void KHTMLPart::end()
 
 void KHTMLPart::checkCompleted()
 {
-  kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing
-            << "complete: " << d->m_bComplete << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing
+  //          << " complete: " << d->m_bComplete << endl;
   int requests = 0;
 
   if ( d->m_bParsing || d->m_bComplete )
