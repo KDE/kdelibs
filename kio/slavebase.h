@@ -763,6 +763,8 @@ protected:
     Connection * m_pConnection;
 
 private:
+    bool storeAuthInfo( const QCString&, const QCString&, const AuthInfo& );
+
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;

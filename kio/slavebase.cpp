@@ -815,10 +815,15 @@ QString SlaveBase::createAuthCacheKey( const KURL& url )
         return QString::null;
 
     // Generate the basic key sequence.
-    QString key = url.protocol() + "-" + url.host();
+    QString key = url.protocol();
+    key += '-';
+    key += url.host();
     int port = url.port();
     if( port )
-      key += ':' + QString::number( port );
+    {
+      key += ':';
+      key += QString::number(port);
+    }
 
     return key;
 }
@@ -840,7 +845,8 @@ bool SlaveBase::pingCacheDaemon() const
     return true;
 }
 
-bool SlaveBase::checkCachedAuthentication( const KURL& url, QString& user, QString& passwd )
+bool SlaveBase::checkCachedAuthentication( const KURL& url, QString& user,
+                                           QString& passwd )
 {
     AuthInfo info;
     info.url = url;
@@ -850,11 +856,11 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url, QString& user, QStri
 }
 
 bool SlaveBase::checkCachedAuthentication( const KURL& url,
-                                          QString& user,
-                                          QString& passwd,
-                                          QString& realm,
-                                          QString& extra,
-                                          bool verify )
+                                           QString& user,
+                                           QString& passwd,
+                                           QString& realm,
+                                           QString& extra,
+                                           bool verify )
 {
     AuthInfo info;
     info.url = url;
@@ -868,24 +874,32 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
-    QCString auth_key = createAuthCacheKey( info.url ).utf8();
-    QCString grp_key = auth_key.copy();
-
-    if ( auth_key.isEmpty() )
+    if ( !pingCacheDaemon() )
         return false;
 
-    if ( !pingCacheDaemon() )
+    QCString auth_key = createAuthCacheKey(info.url).utf8();
+    if ( auth_key.isEmpty() )
         return false;
 
     KDEsuClient client;
     bool found = false;
+    bool foundGroup = false;
+    QCString grp_key = auth_key.copy();
+    if ( info.multipleUserCaching && !info.username.isEmpty() )
+    {
+        if ( client.findGroup(grp_key + ':' + info.username.utf8()) )
+        {
+            grp_key += ':';
+            grp_key += info.username.utf8();
+            foundGroup = true;
+        }
+    }
 
-    // Always ask for the keys that belong in a single
-    // group. This single check will determine whether
-    // we need to do further tests to find a matching
-    // stored authentication key and hence reduce the
-    // number of unnecessary calls to kdesud.
-    if ( client.findGroup( grp_key ) )
+    // Always ask for the keys that belong in a single group.  This
+    // single check will determine whether we need to do further tests
+    // to find a matching stored authentication key and hence reduce
+    // the number of unnecessary calls to kdesud.
+    if ( foundGroup || client.findGroup(grp_key) )
     {
         AuthKeysList list = client.getKeys(grp_key);
         int count = list.count();
@@ -1059,6 +1073,38 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
     return cacheAuthentication( info );
 }
 
+bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
+                               const AuthInfo& info )
+{
+    if ( !pingCacheDaemon() )
+        return false;
+
+    KDEsuClient client;
+
+    // Add the new Authentication entry...
+    client.setVar( (key+"-user"), info.username.utf8(), 0, group );
+    client.setVar( (key+"-pass"), info.password.utf8(), 0, group );
+    if ( !info.realmValue.isEmpty() )
+    {
+      client.setVar( (key+"-realm"), info.realmValue.utf8(), 0, group );
+      QString new_path = info.url.path();
+      if( new_path.isEmpty() )
+        new_path = '/';
+      client.setVar( (key+"-path"), new_path.utf8(), 0, group );
+    }
+    if ( !info.digestInfo.isEmpty() )
+      client.setVar( (key+"-extra"), info.digestInfo.utf8(), 0, group );
+
+    kdDebug(7019) << "Cached new authentication for: " << key << endl
+                  << "  User= " << info.username << endl
+                  << "  Password= [hidden]" << endl
+                  << "  Realm= " << info.realmValue << endl
+                  << "  Extra= " << info.digestInfo << endl;
+
+    sendAuthenticationKey (key, group, info.keepPassword );
+    return true;
+}
+
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
     QCString auth_key = createAuthCacheKey( info.url ).utf8();
@@ -1072,38 +1118,22 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
         info.username.isEmpty() || info.password.isNull() )
         return false;
 
-    if ( !pingCacheDaemon() )
-        return false;
-
-    KDEsuClient client;
-    kdDebug(7019) << "Caching Authentication for: " << auth_key << endl;
     if ( !info.realmValue.isEmpty() )
     {
       auth_key += ':';
       auth_key += info.realmValue.utf8();
     }
-    // Add the new Authentication entry...
-    client.setVar( (auth_key+"-user"), info.username.utf8(), 0, grp_key );
-    client.setVar( (auth_key+"-pass"), info.password.utf8(), 0, grp_key );
-    if ( !info.realmValue.isEmpty() )
+
+    bool isCached = storeAuthInfo(auth_key, grp_key, info);
+    if ( info.multipleUserCaching )
     {
-      client.setVar( (auth_key+"-realm"), info.realmValue.utf8(), 0, grp_key );
-      QString new_path = info.url.path();
-      if( new_path.isEmpty() )
-        new_path = '/';
-      client.setVar( (auth_key+"-path"), new_path.utf8(), 0, grp_key );
+      auth_key += ':';
+      auth_key += info.username.utf8();
+      grp_key += ':';
+      grp_key += info.username.utf8();
+      isCached &= storeAuthInfo(auth_key, grp_key, info);
     }
-    if ( !info.digestInfo.isEmpty() )
-      client.setVar( (auth_key+"-extra"), info.digestInfo.utf8(), 0, grp_key );
-
-    kdDebug(7019) << "Cached new authentication for: " << auth_key << endl
-                  << "  User= " << info.username << endl
-                  << "  Password= [hidden]" << endl
-                  << "  Realm= " << info.realmValue << endl
-                  << "  Extra= " << info.digestInfo << endl;
-
-    sendAuthenticationKey (auth_key, grp_key, info.keepPassword );
-    return true;
+    return isCached;
 }
 
 int SlaveBase::connectTimeout()
