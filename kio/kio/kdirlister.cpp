@@ -412,13 +412,19 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
 
-  for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
-        it != lister->d->lstDirs.end(); ++it )
+  // clear lister->d->lstDirs before calling forgetDirs(), so that
+  // it doesn't contain things that itemsInUse doesn't. When emitting
+  // the canceled signals, lstDirs must not contain anything that
+  // itemsInUse does not contain. (otherwise it might crash in findByName()).
+  KURL::List lstDirsCopy = lister->d->lstDirs;
+  lister->d->lstDirs.clear();
+  
+  for ( KURL::List::Iterator it = lstDirsCopy.begin();
+        it != lstDirsCopy.end(); ++it )
   {
     forgetDirs( lister, *it, false );
   }
 
-  lister->d->lstDirs.clear();
   emit lister->clear();
 }
 
