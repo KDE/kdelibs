@@ -997,27 +997,27 @@ KSelectAction::~KSelectAction()
 
 void KSelectAction::setCurrentItem( int id )
 {
-  if ( id >= (int)d->m_list.count() )
-    return;
+    if ( id >= (int)d->m_list.count() )
+	return;
 
-  if ( d->m_menu )
-  {
-    if ( d->m_current >= 0 )
-      d->m_menu->setItemChecked( d->m_current, FALSE );
-    if ( id >= 0 )
-      d->m_menu->setItemChecked( id, TRUE );
-  }
+    if ( d->m_menu )
+    {
+	if ( d->m_current >= 0 )
+	    d->m_menu->setItemChecked( d->m_current, FALSE );
+	if ( id >= 0 )
+	    d->m_menu->setItemChecked( id, TRUE );
+    }
 
-  d->m_current = id;
+    d->m_current = id;
 
-  int len = containerCount();
+    int len = containerCount();
 
-  for( int i = 0; i < len; ++i )
-    setCurrentItem( i, id );
+    for( int i = 0; i < len; ++i )
+	setCurrentItem( i, id );
 
-  emit KAction::activated();
-  emit activated( currentItem() );
-  emit activated( currentText() );
+    emit KAction::activated();
+    emit activated( currentItem() );
+    emit activated( currentText() );
 }
 
 QPopupMenu* KSelectAction::popupMenu()
@@ -1760,32 +1760,33 @@ void KFontSizeAction::init()
 
 void KFontSizeAction::setFontSize( int size )
 {
-  if ( size == fontSize() )
-    return;
+    if ( size == fontSize() ) {
+	setCurrentItem( items().findIndex( QString::number( size ) ) );
+	return;
+    }
+    
+    if ( size < 1 || size > 128 ) {
+	qDebug( "KFontSizeAction: Size %i is out of range", size );
+	return;
+    }
+  
+    int index = items().findIndex( QString::number( size ) );
+    if ( index == -1 ) {
+	QStringList lst = items();
+	lst.append( QString::number( size ) );
+	qHeapSort( lst );
+	KSelectAction::setItems( lst );
+	index = lst.findIndex( QString::number( size ) );
+	setCurrentItem( index );
+    }
+    else
+	setCurrentItem( index );
 
-  if ( size < 1 || size > 128 )
-  {
-    qDebug( "KFontSizeAction: Size %i is out of range", size );
-    return;
-  }
-
-  int index = items().findIndex( QString::number( size ) );
-  if ( index == -1 )
-  {
-    QStringList lst = items();
-    lst.append( QString::number( size ) );
-    qHeapSort( lst );
-    KSelectAction::setItems( lst );
-    index = lst.findIndex( QString::number( size ) );
-    setCurrentItem( index );
-  }
-  else
-    setCurrentItem( index );
-
-  emit KAction::activated();
-  emit activated( index );
-  emit activated( QString::number( size ) );
-  emit fontSizeChanged( size );
+  
+    emit KAction::activated();
+    emit activated( index );
+    emit activated( QString::number( size ) );
+    emit fontSizeChanged( size );
 }
 
 int KFontSizeAction::fontSize() const
