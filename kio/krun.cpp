@@ -194,7 +194,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
     if ( !url.isLocalFile() )
       b_local_files = false;
 
-    QString tmp = (*it).url();
+    QString tmp = (*it).isLocalFile() ? (*it).path() : (*it).url(); // Non-kde applications prefer paths when possible (eg xmms)
     shellQuote( tmp );
     U += tmp;
     U += " ";
@@ -436,6 +436,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
+  : m_timer(0,"KRun::timer")
 {
   m_bFault = false;
   m_bAutoDelete = true;
@@ -454,7 +455,7 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
-
+  kdDebug(7010) << " new KRun " << this << " timer=" << &m_timer << endl;
 }
 
 void KRun::init()
@@ -529,9 +530,10 @@ void KRun::init()
 
 KRun::~KRun()
 {
-  kdDebug(7010) << "KRun::~KRun()" << endl;
+  kdDebug(7010) << "KRun::~KRun() " << this << endl;
   m_timer.stop();
   killJob();
+  kdDebug(7010) << "KRun::~KRun() done " << this << endl;
 }
 
 void KRun::scanFile()
@@ -563,7 +565,7 @@ void KRun::scanFile()
     m_timer.start( 0, true );
     return;
   }
-  kdDebug(7010) << "Scanning file " << m_strURL.url() << endl;
+  kdDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL, m_bProgressInfo );
   connect(job, SIGNAL( result( KIO::Job *)),
@@ -573,7 +575,7 @@ void KRun::scanFile()
 
 void KRun::slotTimeout()
 {
-  kdDebug(7010) << "slotTimeout called" << endl;
+  kdDebug(7010) << this << " slotTimeout called" << endl;
   if ( m_bInit )
   {
     m_bInit = false;
@@ -613,8 +615,9 @@ void KRun::slotStatResult( KIO::Job * job )
   m_job = 0L;
   if (job->error())
   {
-    kdError(7010) << "ERROR " << job->error() << " " << job->errorString() << endl;
+    kdError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
+    kdDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
 
     m_bFault = true;
     m_bFinished = true;
@@ -734,6 +737,7 @@ void KRun::killJob()
 {
   if ( m_job )
   {
+    kdDebug() << "KRun::killJob run=" << this << " m_job=" << m_job << endl;
     m_job->kill();
     m_job = 0L;
   }
