@@ -76,7 +76,13 @@ public:
 	delete spell;
     }
 
-    static QDict<int> sDict;
+    static QDict<int>* sDict()
+    {
+	if (!statDict)
+	    statDict = new QDict<int>(50021);
+	return statDict;
+    }
+    
     QDict<int> autoDict;
     QDict<int> autoIgnoreDict;
     static QObject *sDictionaryMonitor;
@@ -85,7 +91,13 @@ public:
     QString spellKey;
     int wordCount, errorCount;
     bool active, automatic, autoReady;
+private:
+    static QDict<int>* statDict;
+    
 };
+
+QDict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
+
 
 KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
 					  bool colorQuoting,
@@ -234,7 +246,6 @@ void KSpellingHighlighter::flushCurrentWord()
     d->currentWord = "";
 }
 
-QDict<int> KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDict( 50021 );
 QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
 
 KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
@@ -300,7 +311,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	d->autoIgnoreDict.replace( word, Ignore );
 
     // "dict" is used as a cache to store the results of KSpell
-    if ( !d->sDict.isEmpty() && d->sDict[word] == NotOkay ) {
+    if ( !d->sDict()->isEmpty() && (*d->sDict())[word] == NotOkay ) {
 	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
 	    if ( !d->autoIgnoreDict[word] ) {
 		++d->errorCount;
@@ -311,7 +322,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	}
 	return d->active;
     }
-    if ( !d->sDict.isEmpty() && d->sDict[word] == Okay ) {
+    if ( !d->sDict()->isEmpty() && (*d->sDict())[word] == Okay ) {
 	if ( d->autoReady && !d->autoDict[word] ) {
 	    d->autoDict.replace( word, Okay );
 	    if ( !d->autoIgnoreDict[word] )
@@ -321,7 +332,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
     }
 
     // there is no 'spelt correctly' signal so default to Okay
-    d->sDict.replace( word, Okay );
+    d->sDict()->replace( word, Okay );
 
     // yes I tried checkWord, the docs lie and it didn't give useful signals :-(
     if ( d->spell )
@@ -343,7 +354,7 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
 {
     Q_UNUSED( suggestions );
     // kdDebug() << suggestions.join( " " ).latin1() << endl;
-    d->sDict.replace( originalWord, NotOkay );
+    d->sDict()->replace( originalWord, NotOkay );
 
     // this is slow but since kspell is async this will have to do for now
     d->rehighlightRequest->start( 0, true );
@@ -353,7 +364,7 @@ void KDictSpellingHighlighter::dictionaryChanged()
 {
     QObject *oldMonitor = KDictSpellingHighlighterPrivate::sDictionaryMonitor;
     KDictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
-    KDictSpellingHighlighterPrivate::sDict.clear();
+    KDictSpellingHighlighterPrivate::sDict()->clear();
     delete oldMonitor;
 }
 
