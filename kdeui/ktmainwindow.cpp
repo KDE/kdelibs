@@ -77,11 +77,14 @@ KTMainWindow::~KTMainWindow()
 
   // delete all toolbars (necessary if they are floating)
   KToolBar *toolbar = 0;
-  for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() ) 
-    delete toolbar;
-
+  for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() ) {
+    if (toolbar->barPos() == KToolBar::Floating 
+	&& !QApplication::closingDown())
+      delete toolbar;
+  }
   // delete the menubar (necessary if floating)
-  if (kmenubar)
+  if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating  
+      && !QApplication::closingDown())
     delete kmenubar;
 
   

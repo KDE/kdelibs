@@ -173,7 +173,8 @@ void KMenuBar::ContextCallback( int index )
 //  if (position == Floating)
 //      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
   
-  delete context; 
+
+    delete context; 
 KMenuBar::~KMenuBar()
 {
   if (!QApplication::closingDown())

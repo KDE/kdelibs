@@ -515,7 +515,8 @@ int KToolBar::insertLineSeparator( int index )
   //for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
   // items.remove();
   
-  delete context;
+  if (!QApplication::closingDown())
+    delete context;
   
   debug ("KToolBar destructor");
 }
