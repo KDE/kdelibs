@@ -281,12 +281,6 @@ void KIconView::leaveEvent( QEvent *e )
   QIconView::leaveEvent( e );
 }
 
-void KIconView::wheelEvent( QWheelEvent *e )
-{
-  // TODO: remove me
-  QIconView::wheelEvent( e );
-}
-
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
