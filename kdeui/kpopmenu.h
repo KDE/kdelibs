@@ -1,66 +1,123 @@
 #ifndef _KPOPUP_H
 #define _KPOPUP_H
 
+#define INCLUDE_MENUITEM_DEF
+
 #include <qpopupmenu.h>
+#include <kpixmapeffect.h>
 
-
-/// Popup menus with a title bar
 /**
-Here's a popup menu widget for KDE apps. It differs from Qt popup menu in
-that it has a title -- thus it is *not* to be used in a menu bar. Only two
-new methods are added -- setTitle(char *) and title() and a new constructor,
-taking the title as a first argument. The main API difference from Qt's
-QPopupMenu is that you should *not* expect the first item you insert into
-KPopupMenu to have index (an ID) 0! So the following is wrong:
-	
-<pre>
-	KPopupMenu menu("Window operations");
-	menu->insertItem("Move");
-	menu->insertItem("Minimize");
-	menu->insertItem("Close");
+ * Title widget for use in KPopupMenu. You usually don't have to create this
+ * manually since KPopupMenu::insertTitle will do it for you, but it is allowed
+ * if you wish to customize it's look.
+ *
+ * @author Daniel M. Duley <mosfet@kde.org>
+ * @short KPopupMenu title widget.
+ */
+class KPopupTitle : public QWidget
+{
+public:
+    /**
+     * Creates a title widget with the user specified gradient, pixmap,
+     * and colors.
+     */
+    KPopupTitle(QWidget *parent=0, const char *name=0);
+    /**
+     * Creates a title widget with the specified gradient and colors.
+     */
+    KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
+                const QColor &textColor, QWidget *parent=0,
+                const char *name=0);
+    /**
+     * Creates a title widget with the specified pixmap and colors.
+     */
+    KPopupTitle(const KPixmap &background, const QColor &color,
+                const QColor &textColor, QWidget *parent=0,
+                const char *name=0);
+    /**
+     * Sets the title string and optional icon for the title widget. You will
+     * want to call this before inserting into a menu.
+     */
+    void setTitle(const QString &text, const QPixmap *icon=NULL);
+    /**
+     * Returns the current title.
+     */
+    QString title(){ return(titleStr); }
+    /**
+     * Returns the current icon.
+     */
+    QPixmap icon(){ return(miniicon); }
+    QSize sizeHint() const;
+protected:
+    void paintEvent(QPaintEvent *ev);
 
-	menu->connectItem(0, this, SLOT(moveWindow()));		// WRONG!!!
-	menu->connectItem(1, this, SLOT(minimizeWindow()));	// WRONG!!!
-	menu->connectItem(2, this, SLOT(closeWindow()));	// WRONG!!!
-</pre>
+    KPixmapEffect::GradientType grType;
+    QString titleStr;
+    KPixmap fill;
+    QPixmap miniicon;
+    QColor fgColor, bgColor, grHigh, grLow;
+    bool useGradient;
+};
 
-The reason is that the title and a double line (actually, two separators) are
-stored as menu items too, so the first item you insert has index 3. There's
-a constant KPM_FirstItem so use one of those approaches instead of the above:
-
-<pre>
-[1] int move_item = menu->insertItem("Move");
-    ...
-    menu->connectItem(move_item, this, SLOT(moveWindow()));
-
-[2] menu->insertItem("Move");
-    ...
-    menu->connectItem(KPM_FirstItem+0, this, SLOT(moveWindow()));
-
-[3] The best one!
-     menu->insertItem("Move", this, SLOT(moveWindow()));
-</pre>
-
-* @short Popup menu with title.
-* @version $Id$
-*/
+/**
+ * KPopupMenu is a class for menus with standard title items. It acts
+ * identically to QPopupMenu, with the addition of insertTitle() and
+ * changeTitle() methods.
+ *
+ * The titles support a text string, an icon, plus user defined gradients,
+ * colors, and background pixmaps.
+ *
+ * @short A menu with title items.
+ * @author Daniel M. Duley <mosfet@kde.org>
+ */
 class KPopupMenu : public QPopupMenu {
     Q_OBJECT
 public:
+    /**
+     * Creates a new KPopupMenu.
+     */
     KPopupMenu(QWidget *parent=0, const char *name=0);
-    KPopupMenu(const QString& title, QWidget *parent=0, const char *name=0);
-    ~KPopupMenu();
-    
-    void setTitle(const QString& );
-    QString title() const;
-    
+    /**
+     * Inserts a title item with no icon.
+     */
+    int insertTitle(const QString &text, int id=-1, int index=-1);
+    /**
+     * Inserts a title item with the given icon and title.
+     */
+    int insertTitle(const QPixmap &icon, const QString &text, int id=-1,
+                    int index=-1);
+    /**
+     * Changes the title of the item at the specified id. If a icon was
+     * previously set it is cleared.
+     */
+    void changeTitle(int id, const QString &text);
+    /**
+     * Changes the title and icon of the title item at the specified id.
+     */
+    void changeTitle(int id, const QPixmap &icon, const QString &text);
+    /**
+     * Returns the title of the title item at the specified id. The default
+     * id of -1 is for backwards compatibility only, you should always specify
+     * the id.
+     */
+    QString title(int id=-1);
+    /**
+     * Returns the icon of the title item at the specified id.
+     */
+    QPixmap titlePixmap(int id);
+    /**
+     * Obselete method provided for backwards compatibility only. Use the
+     * normal constructor and insertTitle instead.
+     */
+    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0);
+    /**
+     * Obselete method provided for backwards compatibility only. Use
+     * insertTitle and changeTitle instead.
+     */
+    void setTitle(const QString &title);
 private:
-    void paintCell(QPainter *, int, int);
-    void initialize(const QString& );
-
+    // For backwards compatibility
+    QString lastTitle;
 };         
-
-const int KPM_FirstItem = 3;
-
 
 #endif
