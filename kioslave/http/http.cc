@@ -4797,7 +4797,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
     info.readOnly = !m_request.url.user().isEmpty();
     info.prompt = i18n( "You need to supply a username and a "
                         "password to access this site." );
-    //info.keepPassword = true; // Prompt the user for persistence as well.
+    info.keepPassword = true; // Prompt the user for persistence as well.
     if ( !m_strRealm.isEmpty() )
     {
       info.realmValue = m_strRealm;
