@@ -477,9 +477,19 @@ void KDirWatch::famEventReceived()
            // If the watch path is the same as the path,
            // we have been created!
         }
-	kdDebug(7001) << "KDirWatch emitting dirty " << path << endl;
-	emit dirty( path );
-	return;
+        QString filename = path + "/" + fe.filename;
+        QFileInfo info(filename);
+        if (info.isDir() || fe.code == FAMCreated)
+        {
+            kdDebug(7001) << "KDirWatch emitting dirty " << path << endl;
+            emit dirty( path );
+        }
+        else
+        {
+            kdDebug(7001) << "KDirWatch emitting fileDirty " << filename << endl;
+            emit fileDirty(filename);
+        }
+        return;
       }
   }
 }
