@@ -68,3 +68,6 @@ if HAVE_WAVSUPPORT
 mcopclass_DATA = WavPlayObject.mcopclass
 endif
 
+install-exec-local: install-binPROGRAMS
+	@(chown root $(bindir)/artswrapper && chmod 4755 $(bindir)/artswrapper) \
+		|| echo "please make $(bindir)/artswrapper suid root"
