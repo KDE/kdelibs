@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <qtextcodec.h>
 #include <qfileinfo.h>
+#include <kprocess.h>
 
 extern int xmlLoadExtDtdDefaultValue;
 
@@ -147,7 +148,11 @@ int main(int argc, char **argv) {
                 exe = locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
-            FILE *xmllint = popen( QString( exe + " --catalogs --valid --noout %1 2>&1" ).arg( file.fileName() ).local8Bit().data(), "r");
+            QString cmd = exe;
+            cmd += " --catalogs --valid --noout ";
+            cmd += KProcess::quote(file.fileName());
+            cmd += " 2>&1";
+            FILE *xmllint = popen( QFile::encodeName( cmd ), "r");
             bool noout = true;
             while ( !feof( xmllint ) ) {
                 int c;
