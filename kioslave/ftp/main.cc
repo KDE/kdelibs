@@ -540,7 +540,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       if ( skip )
 	continue;
     
-      // emit sigCanResume( m_bCanResume )
+      // this will emit sigCanResume( m_bCanResume )
       canResume( m_bCanResume );
 
       QString realpath = "ftp:"; realpath += (*fit).m_strAbsSource;
@@ -570,7 +570,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       if ( job.hasError() ) {
 	int currentError = job.errorId();
 
-	kdebug( KDEBUG_ERROR, 0, "################# COULD NOT PUT %d",currentError);
+	kdebug( KDEBUG_ERROR, 7102, "################# COULD NOT PUT %d",currentError);
 	// if ( /* m_bGUI && */ job.errorId() == ERR_WRITE_ACCESS_DENIED )
 	if ( /* m_bGUI && */  currentError != ERR_DOES_ALREADY_EXIST &&
 			      currentError != ERR_DOES_ALREADY_EXIST_FULL )
@@ -699,7 +699,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       kdebug( KDEBUG_INFO, 7102, "Offset = %ld", offset );
     }
 
-    KURL tmpurl( "ftp:/" );
+    KURL tmpurl( "ftp:/" ); // prepend protocol
     tmpurl.setPath( (*fit).m_strAbsSource );
 
     kdebug( KDEBUG_INFO, 7102, "Opening %s", (*fit).m_strAbsSource.ascii() );
@@ -717,9 +717,9 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 
     char buffer[ 4096 ];
     int n;
-    int read_size = 0;
+    int read_size = 0; // this variable is needed for a correct speed calculation
     do {
-      setup_alarm( KProtocolManager::self().readTimeout() ); // start timeout
+//       setup_alarm( KProtocolManager::self().readTimeout() ); // start timeout
       n = ftp.read( buffer, 2048 );
 
       // !!! slow down loop for local testing
@@ -730,23 +730,24 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       read_size += n;
 
       time_t t = time( 0L );
-      if ( t - t_last >= 1 )
-      {
+      if ( t - t_last >= 1 ) {
 	processedSize( processed_size );
 	speed( read_size / ( t - t_start ) );
 	t_last = t;
       }
       
       // Check parent
-      while ( check( connection() ) )
+      while ( check( connection() ) ) {
 	dispatch();
+      }
+
       // Check for error messages from slave
-      while ( check( &slave ) )
+      while ( check( &slave ) ) {
 	job.dispatch();
-      
+      }
+
       // An error ?
-      if ( job.hasFinished() )
-      {
+      if ( job.hasFinished() ) {
 	ftp.ftpDisconnect();
 	ftp.ftpClose();
 	finished();
@@ -755,18 +756,28 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
       }
     } while ( n > 0 );
 
+    // check whether file was fully copied
+    int saved_size = read_size + offset;
+    if ( saved_size< (*fit).m_size ) {
+      kdebug( KDEBUG_INFO, 7102, "Sizes don't match." );
+      ftp.ftpClose();
+      error( ERR_UNKNOWN_INTERRUPT, (*fit).m_strRelDest ); // correct URL for message ?
+      m_cmd = CMD_NONE;
+      return;
+    }
+
     job.dataEnd();
   
     ftp.ftpClose();
 
-    while( !job.hasFinished() )
+    while( !job.hasFinished() ) {
       job.dispatch();
+    }
 
     time_t t = time( 0L );
     
     processedSize( processed_size );
-    if ( t - t_start >= 1 )
-    {
+    if ( t - t_start >= 1 ) {
       speed( read_size / ( t - t_start ) );
       t_last = t;
     }
@@ -784,6 +795,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
   finished();
   m_cmd = CMD_NONE;
 }
+
 
 void FtpProtocol::slotGet( const char *_url )
 {
@@ -863,6 +875,7 @@ void FtpProtocol::slotGet( const char *_url )
   finished();
   m_cmd = CMD_NONE;
 }
+
 
 void FtpProtocol::slotGetSize( const char* _url ) {
   
@@ -963,40 +976,40 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   FtpEntry* e;
 
-  if ( ( e = ftp.ftpStat( udest_orig ) ) ) {
-    // if original file exists, but we are using mark partial -> rename it to XXX.part
-    if ( m_bMarkPartial )
-      ftp.ftpRename( udest_orig.path(), udest_part.path() );
-
-    if ( !_overwrite && !_resume ) {
-      if ( e->size == _size )
+  if ( ( e = ftp.ftpStat( udest_orig ) ) ) { // original file exists
+    if ( e->size == 0 ) {  // delete files with zero size
+      ftp.ftpDelete( udest_orig.path() );
+    } else if ( !_overwrite && !_resume ) {
+      if ( e->size == _size ) {
 	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
-      else
+      } else {
 	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
-      
+      }
       ftp.ftpDisconnect( true );
       m_cmd = CMD_NONE;
       finished();
       return;
+    } else if ( m_bMarkPartial ) { // when using mark partial, append .part extension
+      ftp.ftpRename( udest_orig.path(), udest_part.path() );
     }
-  } else if ( ( e = ftp.ftpStat( udest_part ) ) ) {
-    // if file with extension .part exists but we are not using mark partial
-    // -> rename XXX.part to original name
-    if ( ! m_bMarkPartial )
-      ftp.ftpRename( udest_part.path(), udest_orig.path() );
-
-    if ( !_overwrite && !_resume )
-      {
-	if ( e->size == _size )
-	  error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
-	else
-	  error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
-
-	ftp.ftpDisconnect( true );
-	m_cmd = CMD_NONE;
-	finished();
-	return;
+  } else if ( ( e = ftp.ftpStat( udest_part ) ) ) { // file with extension .part exists
+    if ( e->size == 0 ) {  // delete files with zero size
+      ftp.ftpDelete( udest_part.path() );
+    } else if ( !_overwrite && !_resume ) {
+      if ( e->size == _size ) {
+	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
+      } else {
+	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
       }
+
+      ftp.ftpDisconnect( true );
+      m_cmd = CMD_NONE;
+      finished();
+      return;
+    } else if ( ! m_bMarkPartial ) { // when using mark partial, remove .part extension
+      ftp.ftpRename( udest_part.path(), udest_orig.path() );
+    }
+
   }
 
   KURL udest;
@@ -1011,7 +1024,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   /* if ( access( udest.path(), W_OK ) == -1 )
   {
-    kdebug( KDEBUG_ERROR, 0, "Write Access denied for '%s' %d",udest.path(), errno );
+    kdebug( KDEBUG_ERROR, 7102, "Write Access denied for '%s' %d",udest.path(), errno );
     
     error( ERR_WRITE_ACCESS_DENIED, url );
     m_cmd = CMD_NONE;
@@ -1028,7 +1041,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   }
 
   if ( !ftp.ftpOpen( udest, Ftp::WRITE, offset ) ) {
-    kdebug( KDEBUG_ERROR, 0, "########## COULD NOT WRITE %s", udest.path().ascii() );
+    kdebug( KDEBUG_ERROR, 7102, "########## COULD NOT WRITE %s", udest.path().ascii() );
 
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
@@ -1074,10 +1087,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 	    return;
 	  }
       }
-
-    } // if the size is less then minimum -> delete the file
-    else if ( e->size < KProtocolManager::self().minimumKeepSize() ) {
-	ftp.ftpDelete( udest.path() );
+    } else if ( e->size < KProtocolManager::self().minimumKeepSize() ) {
+      ftp.ftpDelete( udest.path() ); // if the size is less then minimum -> delete the file
     }
   }
 
