@@ -56,13 +56,36 @@ public:
     NoAdjustements = 0,
     StripFileProtocol = 1
   };
-  
+
+  /**
+   * KURL::List is a QValueList that contains KURLs with a few
+   * convenience methods.
+   * @see KURL
+   * @see QValueList
+   */
   class List : public QValueList<KURL>
   {
   public:
+    /**
+     * Creates an empty List.
+     */
       List() { }
-      List(const KURL &);
-      List(const QStringList &);
+      /**
+       * Creates a list that contains the given URL as only
+       * item.
+       * @param url the url to add.
+       */
+      List(const KURL &url);
+      /**
+       * Creates a list that contains the URLs from the given
+       * list.
+       * @param list the list containing the URLs as strings
+       */
+      List(const QStringList &list);
+      /**
+       * Converts the URLs of this list to a list of strings.
+       * @return the list of strings
+       */
       QStringList toStringList() const;
   };
   /**
