@@ -612,7 +612,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 }
 
 //Enable this to see all JS scripts being executed
-#define KJS_VERBOSE
+//#define KJS_VERBOSE
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
