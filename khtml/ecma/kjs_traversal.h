@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -29,10 +30,10 @@ namespace KJS {
   public:
     DOMNodeIterator(DOM::NodeIterator ni) : nodeIterator(ni) {}
     ~DOMNodeIterator();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::NodeIterator nodeIterator;
   };
@@ -40,8 +41,9 @@ namespace KJS {
   class DOMNodeIteratorFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMNodeIteratorFunc(DOM::NodeIterator ni, int i) : nodeIterator(ni), id(i) { }
-    Completion tryExecute(const List &);
+    DOMNodeIteratorFunc(DOM::NodeIterator ni, int i)
+        : DOMFunction(), nodeIterator(ni), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { NextNode, PreviousNode, Detach };
   private:
     DOM::NodeIterator nodeIterator;
@@ -52,20 +54,20 @@ namespace KJS {
   class NodeFilterPrototype : public DOMObject {
   public:
     NodeFilterPrototype() { }
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class DOMNodeFilter : public DOMObject {
   public:
     DOMNodeFilter(DOM::NodeFilter nf) : nodeFilter(nf) {}
     ~DOMNodeFilter();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
     virtual DOM::NodeFilter toNodeFilter() const { return nodeFilter; }
   protected:
     DOM::NodeFilter nodeFilter;
@@ -74,9 +76,10 @@ namespace KJS {
   class DOMNodeFilterFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMNodeFilterFunc(DOM::NodeFilter nf, int i): nodeFilter(nf), id(i) {}
+    DOMNodeFilterFunc(DOM::NodeFilter nf, int i)
+        : DOMFunction(), nodeFilter(nf), id(i) {}
 
-    Completion tryExecute(const List &);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { AcceptNode };
   private:
     DOM::NodeFilter nodeFilter;
@@ -88,10 +91,11 @@ namespace KJS {
   public:
     DOMTreeWalker(DOM::TreeWalker tw) : treeWalker(tw) {}
     ~DOMTreeWalker();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName,
+                        const Value& value, int attr = None);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::TreeWalker treeWalker;
   };
@@ -99,8 +103,9 @@ namespace KJS {
   class DOMTreewalkerFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMTreewalkerFunc(DOM::TreeWalker tw, int i) : treeWalker(tw), id(i) { }
-    Completion tryExecute(const List &);
+    DOMTreewalkerFunc(DOM::TreeWalker tw, int i)
+        : DOMFunction(), treeWalker(tw), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { ParentNode, FirstChild, LastChild, PreviousSibling, NextSibling,
            PreviousNode, NextNode };
   private:
@@ -108,23 +113,23 @@ namespace KJS {
     int id;
   };
 
-  KJSO getDOMNodeIterator(DOM::NodeIterator ni);
-  KJSO getNodeFilterPrototype();
-  KJSO getDOMNodeFilter(DOM::NodeFilter nf);
-  KJSO getDOMTreeWalker(DOM::TreeWalker tw);
+  Value getDOMNodeIterator(DOM::NodeIterator ni);
+  Value getNodeFilterPrototype(ExecState *exec);
+  Value getDOMNodeFilter(DOM::NodeFilter nf);
+  Value getDOMTreeWalker(DOM::TreeWalker tw);
 
   /**
    * Convert an object to a NodeFilter. Returns a null Node if not possible.
    */
-  DOM::NodeFilter toNodeFilter(const KJSO&);
+  DOM::NodeFilter toNodeFilter(const Value&);
 
   class JSNodeFilter : public DOM::CustomNodeFilter {
   public:
-    JSNodeFilter(KJSO _filter);
+    JSNodeFilter(Object & _filter);
     virtual ~JSNodeFilter();
     virtual short acceptNode (const DOM::Node &n);
   protected:
-    KJSO filter;
+    Object filter;
   };
 
 }; // namespace

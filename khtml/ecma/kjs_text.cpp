@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -17,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
+#include "kjs_text.h"
+#include "kjs_dom.h"
 
-#include <kjs/operations.h>
 #include <dom_string.h>
 #include <dom_exception.h>
 
@@ -27,18 +28,15 @@
 #include <kdebug.h>
 #endif
 
-#include "kjs_dom.h"
-#include "kjs_text.h"
-
 using namespace KJS;
 
-const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
+const ClassInfo DOMCharacterData::info = { "CharacterImp",
 					  &DOMNode::info, 0, 0 };
 
-KJSO DOMCharacterData::tryGet(const UString &p) const
+Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070)<<"DOMCharacterDataFunction::tryGet "<<p.string().string()<<endl;
+  kdDebug(6070)<<"DOMCharacterData::tryGet "<<p.string().string()<<endl;
 #endif
   DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
   if (p == "data")
@@ -56,85 +54,75 @@ KJSO DOMCharacterData::tryGet(const UString &p) const
   else if (p == "replaceData")
     return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::ReplaceData);
   else
-    return DOMNode::tryGet(p);
+    return DOMNode::tryGet(exec, p);
 }
 
-void DOMCharacterData::tryPut(const UString &p, const KJSO& v)
+void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-  if (p == "data")
-    static_cast<DOM::CharacterData>(node).setData(v.toString().value().string());
+  if (propertyName == "data")
+    static_cast<DOM::CharacterData>(node).setData(value.toString(exec).value().string());
   else
-    DOMNode::tryPut(p,v);
+    DOMNode::tryPut(exec, propertyName,value,attr);
 }
 
-DOMCharacterDataFunction::DOMCharacterDataFunction(DOM::CharacterData d, int i)
-  : data(d), id(i)
+Value DOMCharacterDataFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-}
-
-Completion DOMCharacterDataFunction::tryExecute(const List &args)
-{
-  KJSO result;
+  Value result;
 
   switch(id) {
     case SubstringData:
-      result = getString(data.substringData(args[0].toNumber().intValue(),args[1].toNumber().intValue()));
+      result = getString(data.substringData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue()));
       break;
     case AppendData:
-      data.appendData(args[0].toString().value().string());
+      data.appendData(args[0].toString(exec).value().string());
       result = Undefined();
       break;
     case InsertData:
-      data.insertData(args[0].toNumber().intValue(),args[1].toString().value().string());
+      data.insertData(args[0].toNumber(exec).intValue(),args[1].toString(exec).value().string());
       result = Undefined();
       break;
     case DeleteData:
-      data.deleteData(args[0].toNumber().intValue(),args[1].toNumber().intValue());
+      data.deleteData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue());
       result = Undefined();
       break;
     case ReplaceData:
-      data.replaceData(args[0].toNumber().intValue(),args[1].toNumber().intValue(),args[2].toString().value().string());
+      data.replaceData(args[0].toNumber(exec).intValue(),args[1].toNumber(exec).intValue(),args[2].toString(exec).value().string());
       result = Undefined();
       break;
     default:
       result = Undefined();
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMText::info = { "Text", HostType,
+const ClassInfo DOMText::info = { "Text",
 				 &DOMCharacterData::info, 0, 0 };
 
-KJSO DOMText::tryGet(const UString &p) const
+Value DOMText::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "")
     return Undefined(); // ### TODO
   else if (p == "splitText")
     return new DOMTextFunction(static_cast<DOM::Text>(node), DOMTextFunction::SplitText);
   else
-    return DOMCharacterData::tryGet(p);
+    return DOMCharacterData::tryGet(exec, p);
 }
 
-DOMTextFunction::DOMTextFunction(DOM::Text t, int i)
-  : text(t), id(i)
+Value DOMTextFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-}
-
-Completion DOMTextFunction::tryExecute(const List &args)
-{
-  KJSO result;
+  Value result;
 
   switch(id) {
     case SplitText:
-      result = getDOMNode(text.splitText(args[0].toNumber().intValue()));
+      result = getDOMNode(text.splitText(args[0].toNumber(exec).intValue()));
       break;
     default:
       result = Undefined();
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 

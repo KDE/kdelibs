@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -26,7 +27,7 @@ QPtrDict<DOMRange> ranges;
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMRange::info = { "Range", HostType, 0, 0, 0 };
+const ClassInfo DOMRange::info = { "Range", 0, 0, 0 };
 
 
 DOMRange::~DOMRange()
@@ -34,9 +35,9 @@ DOMRange::~DOMRange()
   ranges.remove(range.handle());
 }
 
-KJSO DOMRange::tryGet(const UString &p) const
+Value DOMRange::tryGet(ExecState *exec, const UString &p) const
 {
-  KJSO r;
+  Value r;
 
   if (p == "startContainer")
     return getDOMNode(range.startContainer());
@@ -89,22 +90,22 @@ KJSO DOMRange::tryGet(const UString &p) const
   else if (p == "detach")
     return new DOMRangeFunc(range,DOMRangeFunc::Detach);
   else
-    r = DOMObject::tryGet(p);
+    r = DOMObject::tryGet(exec, p);
 
   return r;
 }
 
-Completion DOMRangeFunc::tryExecute(const List &args)
+Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case SetStart:
-      range.setStart(toNode(args[0]),args[1].toNumber().intValue());
+      range.setStart(toNode(args[0]),args[1].toNumber(exec).intValue());
       result = Undefined();
       break;
     case SetEnd:
-      range.setEnd(toNode(args[0]),args[1].toNumber().intValue());
+      range.setEnd(toNode(args[0]),args[1].toNumber(exec).intValue());
       result = Undefined();
       break;
     case SetStartBefore:
@@ -124,7 +125,7 @@ Completion DOMRangeFunc::tryExecute(const List &args)
       result = Undefined();
       break;
     case Collapse:
-      range.collapse(args[0].toBoolean().value());
+      range.collapse(args[0].toBoolean(exec).value());
       result = Undefined();
       break;
     case SelectNode:
@@ -136,7 +137,7 @@ Completion DOMRangeFunc::tryExecute(const List &args)
       result = Undefined();
       break;
     case CompareBoundaryPoints:
-      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toNumber().intValue()),toRange(args[1])));
+      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0].toNumber(exec).intValue()),toRange(args[1])));
       break;
     case DeleteContents:
       range.deleteContents();
@@ -168,10 +169,10 @@ Completion DOMRangeFunc::tryExecute(const List &args)
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
-KJSO KJS::getDOMRange(DOM::Range r)
+Value KJS::getDOMRange(DOM::Range r)
 {
   DOMRange *ret;
   if (r.isNull())
@@ -187,10 +188,10 @@ KJSO KJS::getDOMRange(DOM::Range r)
 
 // -------------------------------------------------------------------------
 
-const TypeInfo RangePrototype::info = { "RangePrototype", HostType, 0, 0, 0 };
+const ClassInfo RangePrototype::info = { "RangePrototype", 0, 0, 0 };
 // ### make this protype of Range objects? (also for Node)
 
-KJSO RangePrototype::tryGet(const UString &p) const
+Value RangePrototype::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "START_TO_START")
     return Number((unsigned int)DOM::Range::START_TO_START);
@@ -201,27 +202,26 @@ KJSO RangePrototype::tryGet(const UString &p) const
   else if (p == "END_TO_START")
     return Number((unsigned int)DOM::Range::END_TO_START);
 
-  return DOMObject::tryGet(p);
+  return DOMObject::tryGet(exec, p);
 }
 
-KJSO KJS::getRangePrototype()
+Value KJS::getRangePrototype(ExecState *exec)
 {
-    KJSO proto = Global::current().get("[[range.prototype]]");
-    if (proto.isDefined())
-        return proto;
-    else
-    {
-        Object rangeProto( new RangePrototype );
-        Global::current().put("[[range.prototype]]", rangeProto);
-        return rangeProto;
-    }
+  Value proto = exec->interpreter()->globalObject().get(exec, "[[range.prototype]]");
+  if (!proto.isNull())
+    return proto;
+  else
+  {
+    Object rangeProto( new RangePrototype );
+    exec->interpreter()->globalObject().put(exec, "[[range.prototype]]", rangeProto);
+    return rangeProto;
+  }
 }
 
-
-
-DOM::Range KJS::toRange(const KJSO& obj)
+DOM::Range KJS::toRange(const Value& val)
 {
-  if (!obj.derivedFrom("Range"))
+  Object obj = Object::dynamicCast(val);
+  if (obj.isNull() || !obj.inherits(&DOMRange::info))
     return DOM::Range();
 
   const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -24,13 +25,10 @@
 #include "kjs_views.h"
 #include "kjs_proxy.h"
 #include "kjs_debugwin.h"
-#include <dom_string.h>
 #include <qptrdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kdebug.h>
-#include "khtml_part.h"
 #include <xml/dom_nodeimpl.h>
-#include <kjs/kjs.h>
 
 using namespace KJS;
 
@@ -38,7 +36,7 @@ QPtrDict<DOMEvent> events;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(KJSO _listener, const KJSO &_win, bool _html)
+JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _html)
 {
     listener = _listener;
     html = _html;
@@ -57,28 +55,33 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (KJSDebugWin::instance() && KJSDebugWin::instance()->inSession())
     return;
 #endif
-  if (listener.implementsCall() && static_cast<Window*>(win.imp())->part() ) {
-    KJScript *scr = static_cast<Window*>(win.imp())->part()->jScript()->jScript();
-    scr->init(); // set a valid current interpreter, before anything else
+  KHTMLPart *part = static_cast<Window*>(win.imp())->part();
+  if (part && listener.implementsCall()) {
+
+    KJS::Interpreter *interpreter = KJSProxy::proxy( part )->interpreter();
 
     List args;
     args.append(getDOMEvent(evt));
 
     // Add the event's target element to the scope
-    KJSO thisVal = getDOMNode(evt.currentTarget());
+    Object thisObj = Object::dynamicCast(getDOMNode(evt.currentTarget()));
     List *scope = 0;
-    if (thisVal.type() != NullType)
-      scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
+    //if (thisVal.type() != NullType)
+    if ( !thisObj.isNull() )
+      scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope();
 
     // Set the current part as the "extra" pointer in KJS
     Window *window = static_cast<Window*>(win.imp());
-    Global::current().setExtra(window->part());
-    
+    //Global::current().setExtra(window->part());
+
+    ExecState *exec = interpreter->globalExec();
+
     // Set the event we're handling in the Window object
     window->setCurrentEvent( &evt );
-    
-    scr->call(listener, thisVal, args, *scope);
-    QVariant ret = KJSOToVariant(scr->returnValue());
+
+    Value retval = listener.call(exec, thisObj, args /*, scope*/); // ### check this
+    // ## test comp.complType ?
+    QVariant ret = ValueToVariant(exec, retval);
     if (scope)
       delete scope;
     window->setCurrentEvent( 0 );
@@ -95,7 +98,7 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_JSEventListener";
 }
 
-KJSO KJS::getNodeEventListener(DOM::Node n, int eventId)
+Value KJS::getNodeEventListener(DOM::Node n, int eventId)
 {
     DOM::EventListener *listener = n.handle()->getHTMLEventListener(eventId);
     if (listener)
@@ -106,10 +109,10 @@ KJSO KJS::getNodeEventListener(DOM::Node n, int eventId)
 
 // -------------------------------------------------------------------------
 
-const TypeInfo EventPrototype::info = { "EventPrototype", HostType, 0, 0, 0 };
+const ClassInfo EventPrototype::info = { "EventPrototype", 0, 0, 0 };
 // ### make this protype of Event objects?
 
-KJSO EventPrototype::tryGet(const UString &p) const
+Value EventPrototype::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "CAPTURING_PHASE")
     return Number((unsigned int)DOM::Event::CAPTURING_PHASE);
@@ -118,25 +121,25 @@ KJSO EventPrototype::tryGet(const UString &p) const
   else if (p == "BUBBLING_PHASE")
     return Number((unsigned int)DOM::Event::BUBBLING_PHASE);
 
-  return DOMObject::tryGet(p);
+  return DOMObject::tryGet(exec,p);
 }
 
-KJSO KJS::getEventPrototype()
+Value KJS::getEventPrototype(ExecState *exec)
 {
-    KJSO proto = Global::current().get("[[event.prototype]]");
-    if (proto.isDefined())
-        return proto;
-    else
-    {
-        Object eventProto( new EventPrototype );
-        Global::current().put("[[event.prototype]]", eventProto);
-        return eventProto;
-    }
+  Value proto = exec->interpreter()->globalObject().get(exec, "[[event.prototype]]");
+  if (!proto.isNull())
+    return proto;
+  else
+  {
+    Object eventProto( new EventPrototype );
+    exec->interpreter()->globalObject().put(exec, "[[event.prototype]]", eventProto);
+    return eventProto;
+  }
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMEvent::info = { "Event", HostType, 0, 0, 0 };
+const ClassInfo DOMEvent::info = { "Event", 0, 0, 0 };
 
 
 DOMEvent::~DOMEvent()
@@ -145,7 +148,7 @@ DOMEvent::~DOMEvent()
 }
 
 
-KJSO DOMEvent::tryGet(const UString &p) const
+Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::DOMEvent::tryGet " << p.qstring() << endl;
@@ -172,12 +175,12 @@ KJSO DOMEvent::tryGet(const UString &p) const
   else if (p == "initEvent")
     return new DOMEventFunc(event,DOMEventFunc::InitEvent);
   else
-    return DOMObject::tryGet(p);
+    return DOMObject::tryGet(exec,p);
 }
 
-Completion DOMEventFunc::tryExecute(const List &args)
+Value DOMEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case StopPropagation:
@@ -189,15 +192,15 @@ Completion DOMEventFunc::tryExecute(const List &args)
       result = Undefined();
       break;
     case InitEvent:
-      event.initEvent(args[0].toString().value().string(),args[1].toBoolean().value(),args[2].toBoolean().value());
+      event.initEvent(args[0].toString(exec).value().string(),args[1].toBoolean(exec).value(),args[2].toBoolean(exec).value());
       result = Undefined();
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
-KJSO KJS::getDOMEvent(DOM::Event e)
+Value KJS::getDOMEvent(DOM::Event e)
 {
   DOMEvent *ret;
   if (e.isNull())
@@ -219,9 +222,10 @@ KJSO KJS::getDOMEvent(DOM::Event e)
   return ret;
 }
 
-DOM::Event KJS::toEvent(const KJSO& obj)
+DOM::Event KJS::toEvent(const Value& val)
 {
-  if (!obj.derivedFrom("Event"))
+  Object obj = Object::dynamicCast(val);
+  if (obj.isNull() || !obj.inherits(&DOMEvent::info))
     return DOM::Event();
 
   const DOMEvent *dobj = static_cast<const DOMEvent*>(obj.imp());
@@ -231,33 +235,33 @@ DOM::Event KJS::toEvent(const KJSO& obj)
 // -------------------------------------------------------------------------
 
 
-const TypeInfo EventExceptionPrototype::info = { "EventExceptionPrototype", HostType, 0, 0, 0 };
+const ClassInfo EventExceptionPrototype::info = { "EventExceptionPrototype", 0, 0, 0 };
 // ### make this protype of EventException objects?
 
-KJSO EventExceptionPrototype::tryGet(const UString &p) const
+Value EventExceptionPrototype::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "UNSPECIFIED_EVENT_TYPE_ERR")
     return Number((unsigned int)DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR);
 
-  return DOMObject::tryGet(p);
+  return DOMObject::tryGet(exec, p);
 }
 
-KJSO KJS::getEventExceptionPrototype()
+Value KJS::getEventExceptionPrototype(ExecState *exec)
 {
-    KJSO proto = Global::current().get("[[eventException.prototype]]");
-    if (proto.isDefined())
-        return proto;
-    else
-    {
-        Object eventExceptionProto( new EventExceptionPrototype );
-        Global::current().put("[[eventException.prototype]]", eventExceptionProto);
-        return eventExceptionProto;
-    }
+  Value proto = exec->interpreter()->globalObject().get(exec, "[[eventException.prototype]]");
+  if (!proto.isNull())
+    return proto;
+  else
+  {
+    Object eventExceptionProto( new EventExceptionPrototype );
+    exec->interpreter()->globalObject().put(exec, "[[eventException.prototype]]", eventExceptionProto);
+    return eventExceptionProto;
+  }
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMUIEvent::info = { "UIEvent", HostType, &DOMEvent::info, 0, 0 };
+const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, 0, 0 };
 
 
 DOMUIEvent::~DOMUIEvent()
@@ -265,7 +269,7 @@ DOMUIEvent::~DOMUIEvent()
 }
 
 
-KJSO DOMUIEvent::tryGet(const UString &p) const
+Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "view")
     return getDOMAbstractView(static_cast<DOM::UIEvent>(event).view());
@@ -274,32 +278,32 @@ KJSO DOMUIEvent::tryGet(const UString &p) const
   else if (p == "initUIEvent")
     return new DOMUIEventFunc(static_cast<DOM::UIEvent>(event),DOMUIEventFunc::InitUIEvent);
   else
-    return DOMEvent::tryGet(p);
+    return DOMEvent::tryGet(exec, p);
 }
 
-Completion DOMUIEventFunc::tryExecute(const List &args)
+Value DOMUIEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case InitUIEvent: {
       DOM::AbstractView v = toAbstractView(args[3]);
-      static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0].toString().value().string(),
-                                                     args[1].toBoolean().value(),
-                                                     args[2].toBoolean().value(),
+      static_cast<DOM::UIEvent>(uiEvent).initUIEvent(args[0].toString(exec).value().string(),
+                                                     args[1].toBoolean(exec).value(),
+                                                     args[2].toBoolean(exec).value(),
                                                      v,
-                                                     args[4].toNumber().intValue());
+                                                     args[4].toNumber(exec).intValue());
       }
       result = Undefined();
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMMouseEvent::info = { "MouseEvent", HostType, &DOMUIEvent::info, 0, 0 };
+const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, 0, 0 };
 
 
 DOMMouseEvent::~DOMMouseEvent()
@@ -307,7 +311,7 @@ DOMMouseEvent::~DOMMouseEvent()
 }
 
 
-KJSO DOMMouseEvent::tryGet(const UString &p) const
+Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMMouseEvent::get " << p.qstring() << endl;
@@ -341,44 +345,44 @@ KJSO DOMMouseEvent::tryGet(const UString &p) const
   else if (p == "initMouseEvent")
     return new DOMMouseEventFunc(static_cast<DOM::MouseEvent>(event),DOMMouseEventFunc::InitMouseEvent);
   else
-    return DOMUIEvent::tryGet(p);
+    return DOMUIEvent::tryGet(exec,p);
 }
 
-Completion DOMMouseEventFunc::tryExecute(const List &args)
+Value DOMMouseEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case InitMouseEvent:
-      mouseEvent.initMouseEvent(args[0].toString().value().string(), // typeArg
-                                args[1].toBoolean().value(), // canBubbleArg
-                                args[2].toBoolean().value(), // cancelableArg
+      mouseEvent.initMouseEvent(args[0].toString(exec).value().string(), // typeArg
+                                args[1].toBoolean(exec).value(), // canBubbleArg
+                                args[2].toBoolean(exec).value(), // cancelableArg
                                 toAbstractView(args[3]), // viewArg
-                                args[4].toNumber().intValue(), // detailArg
-                                args[5].toNumber().intValue(), // screenXArg
-                                args[6].toNumber().intValue(), // screenYArg
-                                args[7].toNumber().intValue(), // clientXArg
-                                args[8].toNumber().intValue(), // clientYArg
-                                args[9].toBoolean().value(), // ctrlKeyArg
-                                args[10].toBoolean().value(), // altKeyArg
-                                args[11].toBoolean().value(), // shiftKeyArg
-                                args[12].toBoolean().value(), // metaKeyArg
-                                args[13].toNumber().intValue(), // buttonArg
+                                args[4].toNumber(exec).intValue(), // detailArg
+                                args[5].toNumber(exec).intValue(), // screenXArg
+                                args[6].toNumber(exec).intValue(), // screenYArg
+                                args[7].toNumber(exec).intValue(), // clientXArg
+                                args[8].toNumber(exec).intValue(), // clientYArg
+                                args[9].toBoolean(exec).value(), // ctrlKeyArg
+                                args[10].toBoolean(exec).value(), // altKeyArg
+                                args[11].toBoolean(exec).value(), // shiftKeyArg
+                                args[12].toBoolean(exec).value(), // metaKeyArg
+                                args[13].toNumber(exec).intValue(), // buttonArg
                                 toNode(args[14])); // relatedTargetArg
       result = Undefined();
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo MutationEventPrototype::info = { "MutationEventPrototype", HostType, 0, 0, 0 };
+const ClassInfo MutationEventPrototype::info = { "MutationEventPrototype", 0, 0, 0 };
 // ### make this protype of MutationEvent objects?
 // ### should the prototype of this be EventPrototype?
 
-KJSO MutationEventPrototype::tryGet(const UString &p) const
+Value MutationEventPrototype::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "MODIFICATION")
     return Number((unsigned int)DOM::MutationEvent::MODIFICATION);
@@ -387,25 +391,25 @@ KJSO MutationEventPrototype::tryGet(const UString &p) const
   else if (p == "REMOVAL")
     return Number((unsigned int)DOM::MutationEvent::REMOVAL);
 
-  return DOMObject::tryGet(p);
+  return DOMObject::tryGet(exec,p);
 }
 
-KJSO KJS::getMutationEventPrototype()
+Value KJS::getMutationEventPrototype(ExecState *exec)
 {
-    KJSO proto = Global::current().get("[[mutationEvent.prototype]]");
-    if (proto.isDefined())
-        return proto;
-    else
-    {
-        Object mutationEventProto( new MutationEventPrototype );
-        Global::current().put("[[mutationEvent.prototype]]", mutationEventProto);
-        return mutationEventProto;
-    }
+  Value proto = exec->interpreter()->globalObject().get(exec, "[[mutationEvent.prototype]]");
+  if (!proto.isNull())
+    return proto;
+  else
+  {
+    Object mutationEventProto( new MutationEventPrototype );
+    exec->interpreter()->globalObject().put(exec, "[[mutationEvent.prototype]]", mutationEventProto);
+    return mutationEventProto;
+  }
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMMutationEvent::info = { "MutationEvent", HostType, &DOMEvent::info, 0, 0 };
+const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, 0, 0 };
 
 
 DOMMutationEvent::~DOMMutationEvent()
@@ -413,7 +417,7 @@ DOMMutationEvent::~DOMMutationEvent()
 }
 
 
-KJSO DOMMutationEvent::tryGet(const UString &p) const
+Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "relatedNode")
     return getDOMNode(static_cast<DOM::MutationEvent>(event).relatedNode());
@@ -428,27 +432,26 @@ KJSO DOMMutationEvent::tryGet(const UString &p) const
   else if (p == "initMutationEvent")
     return new DOMMutationEventFunc(static_cast<DOM::MutationEvent>(event),DOMMutationEventFunc::InitMutationEvent);
   else
-    return DOMEvent::tryGet(p);
+    return DOMEvent::tryGet(exec,p);
 }
 
-Completion DOMMutationEventFunc::tryExecute(const List &args)
+Value DOMMutationEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case InitMutationEvent:
-      mutationEvent.initMutationEvent(args[0].toString().value().string(), // typeArg,
-                                      args[1].toBoolean().value(), // canBubbleArg
-                                      args[2].toBoolean().value(), // cancelableArg
+      mutationEvent.initMutationEvent(args[0].toString(exec).value().string(), // typeArg,
+                                      args[1].toBoolean(exec).value(), // canBubbleArg
+                                      args[2].toBoolean(exec).value(), // cancelableArg
                                       toNode(args[3]), // relatedNodeArg
-                                      args[4].toString().value().string(), // prevValueArg
-                                      args[5].toString().value().string(), // newValueArg
-                                      args[6].toString().value().string(), // attrNameArg
-                                      args[7].toNumber().intValue()); // attrChangeArg
+                                      args[4].toString(exec).value().string(), // prevValueArg
+                                      args[5].toString(exec).value().string(), // newValueArg
+                                      args[6].toString(exec).value().string(), // attrNameArg
+                                      args[7].toNumber(exec).intValue()); // attrChangeArg
       result = Undefined();
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
-

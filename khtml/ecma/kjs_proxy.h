@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999 Harri Porten (porten@kde.org)
@@ -24,7 +25,6 @@
 #include <qvariant.h>
 #include <qstring.h>
 
-class KJScript;
 class KHTMLPart;
 class KJSDebugWin;
 
@@ -34,8 +34,8 @@ namespace DOM {
 };
 
 namespace KJS {
-  class KJSO;
   class List;
+  class Interpreter;
 }
 
 /**
@@ -47,11 +47,10 @@ class KJSProxy {
 public:
   KJSProxy() { m_handlerLineno = 0; }
   virtual ~KJSProxy() { }
-  virtual QVariant evaluate(QString filename, int baseLine, const QChar *c,
-			    unsigned int l, const DOM::Node &n) = 0;
+  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n) = 0;
   virtual void clear() = 0;
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code) = 0;
-  virtual KJScript *jScript() = 0;
+  virtual KJS::Interpreter *interpreter() = 0;
 
   virtual void setDebugEnabled(bool enabled) = 0;
   virtual bool paused() const = 0;
@@ -62,6 +61,9 @@ public:
 
   KHTMLPart *m_part;
   int m_handlerLineno;
+
+  // Helper method, to access the private KHTMLPart::jScript()
+  static KJSProxy *proxy( KHTMLPart *part );
 };
 
 #endif

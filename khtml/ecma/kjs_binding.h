@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
@@ -20,52 +21,82 @@
 #ifndef _KJS_BINDING_H_
 #define _KJS_BINDING_H_
 
-#include <kjs/object.h>
-#include <kjs/function.h>
+#include <kjs/interpreter.h>
 #include <dom/dom_node.h>
-#include <dom/dom_doc.h>
+#include <qvariant.h>
 #include <kurl.h>
-#include <qguardedptr.h>
+
+class KHTMLPart;
 
 namespace KJS {
 
   /** Base class for all objects in this binding - get() and put() run
       tryGet() and tryPut() respectively, and catch exceptions if they
       occur. */
-  class DOMObject : public HostImp {
+  class DOMObject : public ObjectImp {
   public:
-    KJSO get(const UString &p) const;
-    virtual KJSO tryGet(const UString &p) const { return HostImp::get(p); }
-    void put(const UString &p, const KJSO& v);
-    virtual void tryPut(const UString &p, const KJSO& v) { HostImp::put(p,v); }
-    virtual String toString() const;
+    virtual Value get(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const
+      { return ObjectImp::get(exec, propertyName); }
+
+    virtual void put(ExecState *exec, const UString &propertyName,
+                     const Value &value, int attr = None);
+    virtual void tryPut(ExecState *exec, const UString &propertyName,
+                        const Value& value, int attr = None)
+      { ObjectImp::put(exec,propertyName,value,attr); }
+
+    virtual String toString(ExecState *exec) const;
   };
 
-  /** Base class for all functions in this binding - get() and execute() run
-      tryGet() and tryExecute() respectively, and catch exceptions if they
+  /** Base class for all functions in this binding - get() and call() run
+      tryGet() and tryCall() respectively, and catch exceptions if they
       occur. */
-  class DOMFunction : public InternalFunctionImp {
+  class DOMFunction : public ObjectImp {
   public:
-    KJSO get(const UString &p) const;
-    virtual KJSO tryGet(const UString &p) const { return InternalFunctionImp::get(p); }
-    Completion execute(const List &);
-    virtual Completion tryExecute(const List &args) { return InternalFunctionImp::execute(args); }
-    virtual Boolean toBoolean() const { return Boolean(true); }
-    virtual String toString() const { return UString("[function]"); }
+    DOMFunction() : ObjectImp() {}
+    virtual Value get(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const
+      { return ObjectImp::get(exec, propertyName); }
+
+    virtual bool implementsCall() const { return true; }
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
+      { return ObjectImp::call(exec, thisObj, args); }
+    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual String toString(ExecState *) const { return UString("[function]"); }
+  };
+
+  /**
+   * We inherit from Interpreter, to save a pointer to the HTML part
+   * that the interpreter runs for.
+   */
+  class ScriptInterpreter : public Interpreter
+  {
+  public:
+    ScriptInterpreter( const Object &global, KHTMLPart* part )
+      : Interpreter( global ), m_part( part )
+      {}
+    KHTMLPart* part() const { return m_part; }
+  private:
+    KHTMLPart* m_part;
   };
 
   /**
    * Convert an object to a Node. Returns a null Node if not possible.
    */
-  DOM::Node toNode(const KJSO&);
+  DOM::Node toNode(const Value&);
   /**
    *  Get a String object, or Null() if s is null
    */
-  KJSO getString(DOM::DOMString s);
+  String getString(DOM::DOMString s);
 
   bool originCheck(const KURL &kurl1, const KURL &url2);
 
-  QVariant KJSOToVariant(KJSO obj);
+  /**
+   * Convery a KJS value into a QVariant
+   */
+  QVariant ValueToVariant(ExecState* exec, const Value& val);
 
 }; // namespace
 

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -19,39 +20,30 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qvector.h>
-#include <dom_string.h>
-#include <kmessagebox.h>
 #include <klocale.h>
-#include <kglobal.h>
 
-#include <kjs/types.h>
-#include <kjs/function.h>
-#include <kjs/operations.h>
-#include <kurl.h>
 #include <kstandarddirs.h>
-#include <kglobal.h>
 #include <kconfig.h>
 #include <kdebug.h>
 
 #include <kio/kprotocolmanager.h>
 #include "kjs_navigator.h"
+#include "kjs_binding.h"
 #include "khtml_part.h"
-
 
 using namespace KJS;
 
 namespace KJS {
 
-    class PluginBase : public HostImp {
+    class PluginBase : public ObjectImp {
     public:
         PluginBase();
         virtual ~PluginBase();
 
-        struct MimeTypeInfo;
+        struct MimeClassInfo;
         struct PluginInfo;
 
-        struct MimeTypeInfo {
+        struct MimeClassInfo {
             QString type;
             QString desc;
             QString suffixes;
@@ -62,11 +54,11 @@ namespace KJS {
             QString name;
             QString file;
             QString desc;
-            QList<MimeTypeInfo> mimes;
+            QList<MimeClassInfo> mimes;
         };
 
         static QList<PluginInfo> *plugins;
-        static QList<MimeTypeInfo> *mimes;
+        static QList<MimeClassInfo> *mimes;
 
     private:
         static int m_refCount;
@@ -76,60 +68,59 @@ namespace KJS {
     class Plugins : public PluginBase {
     public:
         Plugins() {};
-        virtual KJSO get(const UString &p) const;
-        virtual const TypeInfo* typeInfo() const { return &info; }
-        static const TypeInfo info;
+        virtual Value get(ExecState *exec, const UString &propertyName) const;
+        virtual const ClassInfo* classInfo() const { return &info; }
+        static const ClassInfo info;
     private:
     };
-    const TypeInfo Plugins::info = { "PluginArray", HostType, 0, 0, 0 };
+    const ClassInfo Plugins::info = { "PluginArray", 0, 0, 0 };
 
 
     class MimeTypes : public PluginBase {
     public:
         MimeTypes() { };
-        virtual KJSO get(const UString &p) const;
-        virtual const TypeInfo* typeInfo() const { return &info; }
-        static const TypeInfo info;
+        virtual Value get(ExecState *exec, const UString &propertyName) const;
+        virtual const ClassInfo* classInfo() const { return &info; }
+        static const ClassInfo info;
     private:
     };
-    const TypeInfo MimeTypes::info = { "MimeTypeArray", HostType, 0, 0, 0 };
+    const ClassInfo MimeTypes::info = { "MimeTypeArray", 0, 0, 0 };
 
 
-    class Plugin : public HostImp {
+    class Plugin : public ObjectImp {
     public:
         Plugin( PluginBase::PluginInfo *info ) { m_info = info; };
-        virtual KJSO get(const UString &p) const;
-        virtual const TypeInfo* typeInfo() const { return &info; }
-        static const TypeInfo info;
+        virtual Value get(ExecState *exec, const UString &propertyName) const;
+        virtual const ClassInfo* classInfo() const { return &info; }
+        static const ClassInfo info;
     private:
         PluginBase::PluginInfo *m_info;
     };
-    const TypeInfo Plugin::info = { "Plugin", HostType, 0, 0, 0 };
+    const ClassInfo Plugin::info = { "Plugin", 0, 0, 0 };
 
 
-    class MimeType : public HostImp {
+    class MimeType : public ObjectImp {
     public:
-        MimeType( PluginBase::MimeTypeInfo *info ) { m_info = info; };
-        virtual KJSO get(const UString &p) const;
-        virtual const TypeInfo* typeInfo() const { return &info; }
-        static const TypeInfo info;
+        MimeType( PluginBase::MimeClassInfo *info ) { m_info = info; };
+        virtual Value get(ExecState *exec, const UString &propertyName) const;
+        virtual const ClassInfo* classInfo() const { return &info; }
+        static const ClassInfo info;
     private:
-        PluginBase::MimeTypeInfo *m_info;
+        PluginBase::MimeClassInfo *m_info;
     };
-    const TypeInfo MimeType::info = { "MimeType", HostType, 0, 0, 0 };
+    const ClassInfo MimeType::info = { "MimeType", 0, 0, 0 };
 
     class PluginsFunc : public DOMFunction {
     public:
-        PluginsFunc() { };
-        Completion tryExecute(const List &);
+        PluginsFunc() : DOMFunction() { }
+        virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
     };
 
 
-    class NavigatorFunc : public InternalFunctionImp {
+    class NavigatorFunc : public DOMFunction /*InternalFunctionImp*/ {
     public:
-        NavigatorFunc(KHTMLPart *p) : part(p) { }
-        Completion execute(const List &);
-
+        NavigatorFunc(KHTMLPart *p) : DOMFunction(), part(p) { }
+        virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
     private:
         KHTMLPart *part;
     };
@@ -137,10 +128,12 @@ namespace KJS {
 
 
 QList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
-QList<PluginBase::MimeTypeInfo> *KJS::PluginBase::mimes = 0;
+QList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
 int KJS::PluginBase::m_refCount = 0;
 
-bool Navigator::hasProperty(const UString &p, bool recursive) const
+const ClassInfo Navigator::info = { "Navigator", 0, 0, 0 };
+
+bool Navigator::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
   if (p == "javaEnabled" ||
       p == "appCodeName" ||
@@ -151,21 +144,21 @@ bool Navigator::hasProperty(const UString &p, bool recursive) const
       p == "platform" ||
       p == "plugins" ||
       p == "mimeTypes" ||
-      HostImp::hasProperty(p, recursive) )
+      ObjectImp::hasProperty(exec, p, recursive) )
     return true;
   return false;
 }
 
-KJSO Navigator::get(const UString &p) const
+Value Navigator::get(ExecState *exec, const UString &propertyName) const
 {
   KURL url = part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
 
-  if (p == "javaEnabled")
-     return Function (new NavigatorFunc(part));
-  else if (p == "appCodeName")
+  if (propertyName == "javaEnabled")
+     return /*Function*/ (new NavigatorFunc(part));
+  else if (propertyName == "appCodeName")
     return String("Mozilla");
-  else if (p == "appName") {
+  else if (propertyName == "appName") {
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
         userAgent.find(QString::fromLatin1("compatible")) == -1)
@@ -181,19 +174,19 @@ KJSO Navigator::get(const UString &p) const
     }
     //kdDebug() << "appName -> Konqueror" << endl;
     return String("Konqueror");
-  } else if (p == "appVersion"){
+  } else if (propertyName == "appVersion"){
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
-  } else if (p == "product") {
+  } else if (propertyName == "product") {
       return String("Konqueror/khtml");
-  } else if (p == "vendor") {
+  } else if (propertyName == "vendor") {
       return String("KDE");
-  } else if (p == "language") {
+  } else if (propertyName == "language") {
     return String(KGlobal::locale()->language() == "C" ?
                   QString::fromLatin1("en") : KGlobal::locale()->language());
-  } else if (p == "userAgent") {
+  } else if (propertyName == "userAgent") {
     return String(userAgent);
-  } else if (p == "platform") {
+  } else if (propertyName == "platform") {
     // yet another evil hack, but necessary to spoof some sites...
     if ( (userAgent.find(QString::fromLatin1("Win"),0,false)>=0) )
       return String(QString::fromLatin1("Win32"));
@@ -202,16 +195,16 @@ KJSO Navigator::get(const UString &p) const
       return String(QString::fromLatin1("MacPPC"));
     else
       return String(QString::fromLatin1("X11"));
-  } else if (p == "plugins") {
-      return KJSO(new Plugins());
-  } else if (p == "mimeTypes") {
-      return KJSO(new MimeTypes());
+  } else if (propertyName == "plugins") {
+      return Value(new Plugins());
+  } else if (propertyName == "mimeTypes") {
+      return Value(new MimeTypes());
   } else
-    return HostImp::get(p);
+    return ObjectImp::get(exec, propertyName);
 }
 
 
-String Navigator::toString() const
+String Navigator::toString(ExecState *) const
 {
   return UString("[object Navigator]");
 }
@@ -222,7 +215,7 @@ PluginBase::PluginBase()
 {
     if ( !plugins ) {
         plugins = new QList<PluginInfo>;
-        mimes = new QList<MimeTypeInfo>;
+        mimes = new QList<MimeClassInfo>;
         plugins->setAutoDelete( true );
         mimes->setAutoDelete( true );
 
@@ -248,7 +241,7 @@ PluginBase::PluginBase()
             for ( type=types.begin(); type!=types.end(); ++type ) {
 
                 // get mime information
-                MimeTypeInfo *mime = new MimeTypeInfo;
+                MimeClassInfo *mime = new MimeClassInfo;
                 QStringList tokens = QStringList::split(':', *type, TRUE);
                 QStringList::Iterator token;
 
@@ -289,122 +282,119 @@ PluginBase::~PluginBase()
 /*******************************************************************/
 
 
-KJSO Plugins::get(const UString &p) const
+Value Plugins::get(ExecState *exec, const UString &propertyName) const
 {
-    if (p == "refresh")
-        return Function(new PluginsFunc());
-    else if( p=="length" )
+    if (propertyName == "refresh")
+        return /*Function*/(new PluginsFunc());
+    else if ( propertyName =="length" )
         return Number(plugins->count());
     else {
 
         // plugins[#]
         bool ok;
-        unsigned int i = p.toULong(&ok);
+        unsigned int i = propertyName.toULong(&ok);
         if( ok && i<plugins->count() )
-            return KJSO( new Plugin( plugins->at(i) ) );
+            return Value( new Plugin( plugins->at(i) ) );
 
         // plugin[name]
         for ( PluginInfo *pl = plugins->first(); pl!=0; pl = plugins->next() ) {
-            if ( pl->name==p.string() )
-                return KJSO( new Plugin( pl ) );
+            if ( pl->name==propertyName.string() )
+                return Value( new Plugin( pl ) );
         }
     }
 
-    return PluginBase::get(p);
+    return PluginBase::get(exec, propertyName);
 }
 
 /*******************************************************************/
 
-
-KJSO MimeTypes::get(const UString &p) const
+Value MimeTypes::get(ExecState *exec, const UString &propertyName) const
 {
-    if( p=="length" )
+    if( propertyName=="length" )
         return Number( mimes->count() );
     else {
 
         // mimeTypes[#]
         bool ok;
-        unsigned int i = p.toULong(&ok);
+        unsigned int i = propertyName.toULong(&ok);
         if( ok && i<mimes->count() )
-            return KJSO( new MimeType( mimes->at(i) ) );
+            return Value( new MimeType( mimes->at(i) ) );
 
         // mimeTypes[name]
-        //kdDebug(6070) << "MimeTypes[" << p.ascii() << "]" << endl;
-        for ( MimeTypeInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
+        //kdDebug(6070) << "MimeTypes[" << propertyName.ascii() << "]" << endl;
+        for ( MimeClassInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
             //kdDebug(6070) << "m->type=" << m->type.ascii() << endl;
-            if ( m->type==p.string() )
-                return KJSO( new MimeType( m ) );
+            if ( m->type == propertyName.string() )
+                return Value( new MimeType( m ) );
         }
     }
 
-    return PluginBase::get(p);
+    return PluginBase::get(exec, propertyName);
 }
 
 
 /************************************************************************/
 
-
-KJSO Plugin::get(const UString &p) const
+Value Plugin::get(ExecState *exec, const UString &propertyName) const
 {
-    if ( p=="name" )
+    if ( propertyName=="name" )
         return String( m_info->name );
-    else if ( p=="filename" )
+    else if ( propertyName == "filename" )
         return String( m_info->file );
-    else if ( p=="description" )
+    else if ( propertyName == "description" )
         return String( m_info->desc );
-    else if ( p=="length" )
+    else if ( propertyName == "length" )
         return Number( m_info->mimes.count() );
     else {
 
         // plugin[#]
         bool ok;
-        unsigned int i = p.toULong(&ok);
+        unsigned int i = propertyName.toULong(&ok);
         //kdDebug(6070) << "Plugin::get plugin[" << i << "]" << endl;
         if( ok && i<m_info->mimes.count() )
         {
             //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
-            return KJSO( new MimeType( m_info->mimes.at(i) ) );
+            return new MimeType( m_info->mimes.at(i) );
         }
 
         // plugin["name"]
-        for ( PluginBase::MimeTypeInfo *m=m_info->mimes.first();
+        for ( PluginBase::MimeClassInfo *m=m_info->mimes.first();
               m!=0; m=m_info->mimes.next() ) {
-            if ( m->type==p.string() )
-                return KJSO( new MimeType( m ) );
+            if ( m->type==propertyName.string() )
+                return new MimeType( m );
         }
 
     }
 
-    return HostImp::get(p);
+    return ObjectImp::get(exec,propertyName);
 }
 
 
 /*****************************************************************************/
 
-
-KJSO MimeType::get(const UString &p) const
+Value MimeType::get(ExecState *exec, const UString &propertyName) const
 {
-    if ( p=="type" )
+    if ( propertyName == "type" )
         return String( m_info->type );
-    else if ( p=="suffixes" )
+    else if ( propertyName == "suffixes" )
         return String( m_info->suffixes );
-    else if ( p=="description" )
+    else if ( propertyName == "description" )
         return String( m_info->desc );
-    else if ( p=="enabledPlugin" )
-        return KJSO( new Plugin( m_info->plugin ) );
+    else if ( propertyName == "enabledPlugin" )
+        return new Plugin( m_info->plugin );
 
-    return HostImp::get(p);
+    return ObjectImp::get(exec,propertyName);
 }
 
 
-Completion PluginsFunc::tryExecute(const List &)
+Value PluginsFunc::tryCall(ExecState *, Object &, const List &)
 {
-  return Completion(Normal);
+  return Undefined();
 }
 
 
-Completion NavigatorFunc::execute(const List &)
+Value NavigatorFunc::tryCall(ExecState *, Object &, const List &)
 {
   // javaEnabled()
-  return Completion(ReturnValue, Boolean(part->javaEnabled()));
+  return Boolean(part->javaEnabled());
 }

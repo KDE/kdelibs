@@ -26,9 +26,6 @@
 #include <html_form.h>
 #include "misc/loader_client.h"
 
-#include <kjs/object.h>
-#include <kjs/function.h>
-
 #include "kjs_binding.h"
 #include "kjs_dom.h"
 
@@ -39,9 +36,10 @@ namespace KJS {
 
   class HTMLDocFunction : public DOMFunction {
   public:
-    HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
-    virtual KJSO tryGet(const UString &p) const;
-    Completion tryExecute(const List &);
+    HTMLDocFunction(DOM::HTMLDocument d, int i)
+        : DOMFunction(), doc(d), id(i) { };
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Images, Applets, Links, Forms, Anchors, All, Open, Close,
 	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
@@ -52,30 +50,31 @@ namespace KJS {
   class HTMLDocument : public DOMDocument {
   public:
     HTMLDocument(DOM::HTMLDocument d) : DOMDocument(d) { }
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class HTMLElement : public DOMElement {
   public:
     HTMLElement(DOM::HTMLElement e) : DOMElement(e) { }
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    virtual String toString() const;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    virtual String toString(ExecState *exec) const;
     virtual List *eventHandlerScope() const;
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
 
   class HTMLElementFunction : public DOMFunction {
   public:
-    HTMLElementFunction(DOM::HTMLElement e, int i) : element(e), id(i) { };
-    Completion tryExecute(const List &);
+    HTMLElementFunction(DOM::HTMLElement e, int i)
+        : DOMFunction(), element(e), id(i) { };
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Submit, Reset, Add, Remove, Blur, Focus, Select, Click,
            CreateTHead, DeleteTHead, CreateTFoot, DeleteTFoot,
            CreateCaption, DeleteCaption, InsertRow, DeleteRow,
@@ -89,8 +88,8 @@ namespace KJS {
   public:
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
     ~HTMLCollection();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual Boolean toBoolean() const { return Boolean(true); }
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
   protected:
     DOM::HTMLCollection collection;
   };
@@ -99,8 +98,8 @@ namespace KJS {
   public:
     HTMLSelectCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
       : HTMLCollection(c), element(e) { }
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
   private:
       DOM::Element dummyElement();
       DOM::HTMLSelectElement element;
@@ -108,8 +107,9 @@ namespace KJS {
 
   class HTMLCollectionFunc : public DOMFunction {
   public:
-    HTMLCollectionFunc(DOM::HTMLCollection c, int i) : coll(c), id(i) { };
-    Completion tryExecute(const List &);
+    HTMLCollectionFunc(DOM::HTMLCollection c, int i)
+        : DOMFunction(), coll(c), id(i) { };
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item, NamedItem, Tags };
   private:
     DOM::HTMLCollection coll;
@@ -118,12 +118,12 @@ namespace KJS {
 
   ////////////////////// Option Object ////////////////////////
 
-  class OptionConstructor : public ConstructorImp {
+  class OptionConstructorImp : public ObjectImp {
   public:
-    OptionConstructor(const Global &global, const DOM::Document &d);
-    Object construct(const List &);
+    OptionConstructorImp(ExecState *exec, const DOM::Document &d);
+    virtual bool implementsConstruct() const;
+    virtual Object construct(ExecState *exec, const List &args);
   private:
-    Global global;
     DOM::Document doc;
   };
 
@@ -133,18 +133,18 @@ namespace KJS {
   class ImageObject : public DOMFunction {
   public:
     ImageObject(const Global &global);
-    Completion tryExecute(const List &);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
   private:
     UString src;
   };
 #endif
 
-  class ImageConstructor : public ConstructorImp {
+  class ImageConstructorImp : public ObjectImp {
   public:
-    ImageConstructor(const Global& global, const DOM::Document &d);
-    Object construct(const List &);
+    ImageConstructorImp(ExecState *exec, const DOM::Document &d);
+    virtual bool implementsConstruct() const;
+    virtual Object construct(ExecState *exec, const List &args);
   private:
-    Global global;
     DOM::Document doc;
   };
 
@@ -152,17 +152,17 @@ namespace KJS {
   public:
     Image(const DOM::Document &d) : doc(d), img(0) { }
     ~Image();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual Boolean toBoolean() const { return Boolean(true); }
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
   private:
     UString src;
     DOM::Document doc;
     khtml::CachedImage* img;
   };
 
-  KJSO getHTMLCollection(DOM::HTMLCollection c);
-  KJSO getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e);
+  Value getHTMLCollection(DOM::HTMLCollection c);
+  Value getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e);
 
 
 }; // namespace

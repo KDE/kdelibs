@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -22,9 +23,6 @@
 
 #include <dom_text.h>
 
-#include <kjs/object.h>
-#include <kjs/function.h>
-
 #include "kjs_binding.h"
 #include "kjs_dom.h"
 
@@ -33,17 +31,18 @@ namespace KJS {
   class DOMCharacterData : public DOMNode {
   public:
     DOMCharacterData(DOM::CharacterData d) : DOMNode(d) { }
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
 
   class DOMCharacterDataFunction : public DOMFunction {
   public:
-    DOMCharacterDataFunction(DOM::CharacterData d, int i);
-    Completion tryExecute(const List &);
+    DOMCharacterDataFunction(DOM::CharacterData d, int i)
+      : DOMFunction(), data(d), id(i) {}
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
   private:
     DOM::CharacterData data;
@@ -54,15 +53,16 @@ namespace KJS {
   class DOMText : public DOMCharacterData {
   public:
     DOMText(DOM::Text t) : DOMCharacterData(t) { }
-    virtual KJSO tryGet(const UString &p) const;
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class DOMTextFunction : public DOMFunction {
   public:
-    DOMTextFunction(DOM::Text t, int i);
-    Completion tryExecute(const List &);
+    DOMTextFunction(DOM::Text t, int i)
+      : DOMFunction(), text(t), id(i) {}
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { SplitText };
   private:
     DOM::Text text;

@@ -24,8 +24,9 @@
 #include <qglobal.h>
 
 #if QT_VERSION >= 300
-#define KJS_DEBUGGER
-#endif  
+#warning TODO port the debugger
+//#define KJS_DEBUGGER
+#endif
 
 #ifdef KJS_DEBUGGER
 
@@ -144,7 +145,7 @@ public:
 	      Next     = 1, // Will break on next statement in current context
 	      Step     = 2, // Will break on next statement in current or deeper context
 	      Continue = 3, // Will continue until next breakpoint
-	      Stop     = 4  // The script will stop execution completely, 
+	      Stop     = 4  // The script will stop execution completely,
 	                    // as soon as possible
   };
 
@@ -179,14 +180,14 @@ protected:
 		     int errorType, const KJS::UString &errorMessage);
 
   virtual bool atLine(KJScript *script, int sourceId, int lineno,
-		      const KJS::ExecutionContext *execContext);
+		      const KJS::ExecState *execContext);
 
   virtual bool callEvent(KJScript *script, int sourceId, int lineno,
-			 const KJS::ExecutionContext *execContext,
+			 const KJS::ExecState *execContext,
 			 KJS::FunctionImp *function, const KJS::List *args);
 
   virtual bool returnEvent(KJScript *script, int sourceId, int lineno,
-			   const KJS::ExecutionContext *execContext,
+			   const KJS::ExecState *execContext,
 			   KJS::FunctionImp *function);
 
 private:
@@ -236,7 +237,7 @@ private:
   QString m_nextSourceUrl;
   int m_nextSourceBaseLine;
   FakeModal m_fakeModal;
-  const KJS::ExecutionContext *m_curContext;
+  //const KJS::ExecutionContext *m_curContext;
   KJScript *m_curScript;
 };
 

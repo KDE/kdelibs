@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -18,6 +19,12 @@
  */
 
 #include "kjs_traversal.h"
+#include "kjs_window.h"
+#include "kjs_proxy.h"
+#include <dom/dom_node.h>
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <khtmlview.h>
 #include <qptrdict.h>
 
 using namespace KJS;
@@ -28,14 +35,14 @@ QPtrDict<DOMTreeWalker> treeWalkers;
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMNodeIterator::info = { "NodeIterator", HostType, 0, 0, 0 };
+const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, 0, 0 };
 
 DOMNodeIterator::~DOMNodeIterator()
 {
   nodeIterators.remove(nodeIterator.handle());
 }
 
-KJSO DOMNodeIterator::tryGet(const UString &p) const
+Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::NodeIterator ni(nodeIterator);
   if (p == "root")
@@ -53,12 +60,12 @@ KJSO DOMNodeIterator::tryGet(const UString &p) const
   else if (p == "detach")
     return new DOMNodeIteratorFunc(nodeIterator,DOMNodeIteratorFunc::Detach);
   else
-    return DOMObject::tryGet(p);
+    return DOMObject::tryGet(exec, p);
 }
 
-Completion DOMNodeIteratorFunc::tryExecute(const List &/*args*/)
+Value DOMNodeIteratorFunc::tryCall(ExecState *, Object &, const List &)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case PreviousNode:
@@ -73,10 +80,10 @@ Completion DOMNodeIteratorFunc::tryExecute(const List &/*args*/)
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
-KJSO KJS::getDOMNodeIterator(DOM::NodeIterator ni)
+Value KJS::getDOMNodeIterator(DOM::NodeIterator ni)
 {
   DOMNodeIterator *ret;
   if (ni.isNull())
@@ -93,10 +100,10 @@ KJSO KJS::getDOMNodeIterator(DOM::NodeIterator ni)
 
 // -------------------------------------------------------------------------
 
-const TypeInfo NodeFilterPrototype::info = { "NodeFilterPrototype", HostType, 0, 0, 0 };
+const ClassInfo NodeFilterPrototype::info = { "NodeFilterPrototype", 0, 0, 0 };
 // ### make this protype of Range objects? (also for Node)
 
-KJSO NodeFilterPrototype::tryGet(const UString &p) const
+Value NodeFilterPrototype::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "FILTER_ACCEPT")
     return Number((long unsigned int)DOM::NodeFilter::FILTER_ACCEPT);
@@ -131,18 +138,18 @@ KJSO NodeFilterPrototype::tryGet(const UString &p) const
   if (p == "SHOW_NOTATION")
     return Number((long unsigned int)DOM::NodeFilter::SHOW_NOTATION);
 
-  return DOMObject::tryGet(p);
+  return DOMObject::tryGet(exec, p);
 }
 
-KJSO KJS::getNodeFilterPrototype()
+Value KJS::getNodeFilterPrototype(ExecState *exec)
 {
-    KJSO proto = Global::current().get("[[nodeFilter.prototype]]");
-    if (proto.isDefined())
+    Value proto = exec->interpreter()->globalObject().get(exec, "[[nodeFilter.prototype]]");
+    if (!proto.isNull())
         return proto;
     else
     {
         Object nodeFilterProto( new NodeFilterPrototype );
-        Global::current().put("[[nodeFilter.prototype]]", nodeFilterProto);
+        exec->interpreter()->globalObject().put(exec, "[[nodeFilter.prototype]]", nodeFilterProto);
         return nodeFilterProto;
     }
 }
@@ -150,7 +157,7 @@ KJSO KJS::getNodeFilterPrototype()
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMNodeFilter::info = { "NodeFilter", HostType, 0, 0, 0 };
+const ClassInfo DOMNodeFilter::info = { "NodeFilter", 0, 0, 0 };
 
 
 DOMNodeFilter::~DOMNodeFilter()
@@ -158,17 +165,17 @@ DOMNodeFilter::~DOMNodeFilter()
   nodeFilters.remove(nodeFilter.handle());
 }
 
-KJSO DOMNodeFilter::tryGet(const UString &p) const
+Value DOMNodeFilter::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "acceptNode")
     return new DOMNodeFilterFunc(nodeFilter,DOMNodeFilterFunc::AcceptNode);
   else
-    return DOMObject::tryGet(p);
+    return DOMObject::tryGet(exec, p);
 }
 
-Completion DOMNodeFilterFunc::tryExecute(const List &args)
+Value DOMNodeFilterFunc::tryCall(ExecState *, Object &, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case AcceptNode:
@@ -176,10 +183,10 @@ Completion DOMNodeFilterFunc::tryExecute(const List &args)
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
-KJSO KJS::getDOMNodeFilter(DOM::NodeFilter nf)
+Value KJS::getDOMNodeFilter(DOM::NodeFilter nf)
 {
   DOMNodeFilter *ret;
   if (nf.isNull())
@@ -197,7 +204,7 @@ KJSO KJS::getDOMNodeFilter(DOM::NodeFilter nf)
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMTreeWalker::info = { "TreeWalker", HostType, 0, 0, 0 };
+const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, 0, 0 };
 
 
 DOMTreeWalker::~DOMTreeWalker()
@@ -205,7 +212,7 @@ DOMTreeWalker::~DOMTreeWalker()
   treeWalkers.remove(treeWalker.handle());
 }
 
-KJSO DOMTreeWalker::tryGet(const UString &p) const
+Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::TreeWalker tw(treeWalker);
   if (p == "root")
@@ -233,22 +240,22 @@ KJSO DOMTreeWalker::tryGet(const UString &p) const
   if (p == "nextNode")
     return new DOMTreewalkerFunc(treeWalker,DOMTreewalkerFunc::NextNode);
   else
-    return DOMObject::tryGet(p);
+    return DOMObject::tryGet(exec, p);
 }
 
-
-void DOMTreeWalker::tryPut(const UString &p, const KJSO& v)
+void DOMTreeWalker::tryPut(ExecState *exec, const UString &propertyName,
+                           const Value& value, int attr)
 {
-  if (p == "currentNode") {
-    treeWalker.setCurrentNode(toNode(v));
+  if (propertyName == "currentNode") {
+    treeWalker.setCurrentNode(toNode(value));
   }
   else
-    Imp::put(p, v);
+    ObjectImp::put(exec, propertyName, value, attr);
 }
 
-Completion DOMTreewalkerFunc::tryExecute(const List &/*args*/)
+Value DOMTreewalkerFunc::tryCall(ExecState *, Object &, const List &)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case ParentNode:
@@ -274,10 +281,10 @@ Completion DOMTreewalkerFunc::tryExecute(const List &/*args*/)
       break;
   };
 
-  return Completion(ReturnValue,result);
+  return result;
 }
 
-KJSO KJS::getDOMTreeWalker(DOM::TreeWalker tw)
+Value KJS::getDOMTreeWalker(DOM::TreeWalker tw)
 {
   DOMTreeWalker *ret;
   if (tw.isNull())
@@ -291,9 +298,10 @@ KJSO KJS::getDOMTreeWalker(DOM::TreeWalker tw)
   }
 }
 
-DOM::NodeFilter KJS::toNodeFilter(const KJSO& obj)
+DOM::NodeFilter KJS::toNodeFilter(const Value& val)
 {
-  if (!obj.derivedFrom("NodeFilter"))
+  Object obj = Object::dynamicCast(val);
+  if (obj.isNull() || !obj.inherits(&DOMNodeFilter::info))
     return DOM::NodeFilter();
 
   const DOMNodeFilter *dobj = static_cast<const DOMNodeFilter*>(obj.imp());
@@ -302,7 +310,7 @@ DOM::NodeFilter KJS::toNodeFilter(const KJSO& obj)
 
 // -------------------------------------------------------------------------
 
-JSNodeFilter::JSNodeFilter(KJSO _filter) : DOM::CustomNodeFilter()
+JSNodeFilter::JSNodeFilter(Object & _filter) : DOM::CustomNodeFilter()
 {
     filter = _filter;
 }
@@ -313,13 +321,18 @@ JSNodeFilter::~JSNodeFilter()
 
 short JSNodeFilter::acceptNode(const DOM::Node &n)
 {
-    KJSO acceptNodeFunc = filter.get("acceptNode");
+  KHTMLPart *part = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr()->document() )->view()->part();
+  KJSProxy *proxy = KJSProxy::proxy( part );
+  if (proxy) {
+    ExecState *exec = proxy->interpreter()->globalExec();
+    Object acceptNodeFunc = Object::dynamicCast( filter.get(exec, "acceptNode") );
     if (acceptNodeFunc.implementsCall()) {
-	List args;
-	args.append(getDOMNode(n));
-	KJSO result = acceptNodeFunc.executeCall(filter,&args);
-	return result.toNumber().intValue();
+      List args;
+      args.append(getDOMNode(n));
+      Value result = acceptNodeFunc.call(exec,filter,args);
+      return result.toNumber(exec).intValue();
     }
-    else
-	return DOM::NodeFilter::FILTER_REJECT;
+  }
+
+  return DOM::NodeFilter::FILTER_REJECT;
 }

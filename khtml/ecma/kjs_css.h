@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -34,11 +35,11 @@ namespace KJS {
   public:
     DOMCSSStyleDeclaration(DOM::CSSStyleDeclaration s) : styleDecl(s) { }
     virtual ~DOMCSSStyleDeclaration();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::CSSStyleDeclaration styleDecl;
   };
@@ -46,8 +47,9 @@ namespace KJS {
   class DOMCSSStyleDeclarationFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMCSSStyleDeclarationFunc(DOM::CSSStyleDeclaration s, int i) : styleDecl(s), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSStyleDeclarationFunc(DOM::CSSStyleDeclaration s, int i)
+        : DOMFunction(), styleDecl(s), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { GetPropertyValue, GetPropertyCSSValue, RemoveProperty, GetPropertyPriority,
            SetProperty, Item };
   private:
@@ -55,43 +57,44 @@ namespace KJS {
     int id;
   };
 
-  KJSO getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration n);
+  Value getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration n);
 
   class DOMStyleSheet : public DOMObject {
   public:
     DOMStyleSheet(DOM::StyleSheet ss) : styleSheet(ss) { }
     virtual ~DOMStyleSheet();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    virtual Boolean toBoolean() const { return Boolean(true); }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::StyleSheet styleSheet;
   };
 
-  KJSO getDOMStyleSheet(DOM::StyleSheet ss);
+  Value getDOMStyleSheet(DOM::StyleSheet ss);
 
   class DOMStyleSheetList : public DOMObject {
   public:
     DOMStyleSheetList(DOM::StyleSheetList ssl) : styleSheetList(ssl) { }
     virtual ~DOMStyleSheetList();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean() const { return Boolean(true); }
-    static const TypeInfo info;
+    static const ClassInfo info;
   private:
     DOM::StyleSheetList styleSheetList;
   };
 
-  KJSO getDOMStyleSheetList(DOM::StyleSheetList ss);
+  Value getDOMStyleSheetList(DOM::StyleSheetList ss);
 
   class DOMStyleSheetListFunc : public DOMFunction {
     friend class DOMStyleSheetList;
   public:
-    DOMStyleSheetListFunc(DOM::StyleSheetList ssl, int i) : styleSheetList(ssl), id(i) { }
-    Completion tryExecute(const List &);
+    DOMStyleSheetListFunc(DOM::StyleSheetList ssl, int i)
+        : styleSheetList(ssl), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item };
   private:
     DOM::StyleSheetList styleSheetList;
@@ -102,22 +105,23 @@ namespace KJS {
   public:
     DOMMediaList(DOM::MediaList ml) : mediaList(ml) { }
     virtual ~DOMMediaList();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean() const { return Boolean(true); }
-    static const TypeInfo info;
+    static const ClassInfo info;
   private:
     DOM::MediaList mediaList;
   };
 
-  KJSO getDOMMediaList(DOM::MediaList ss);
+  Value getDOMMediaList(DOM::MediaList ss);
 
   class DOMMediaListFunc : public DOMFunction {
     friend class DOMMediaList;
   public:
-    DOMMediaListFunc(DOM::MediaList ml, int i) : mediaList(ml), id(i) { }
-    Completion tryExecute(const List &);
+    DOMMediaListFunc(DOM::MediaList ml, int i)
+        : mediaList(ml), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item, DeleteMedium, AppendMedium };
   private:
     DOM::MediaList mediaList;
@@ -128,17 +132,18 @@ namespace KJS {
   public:
     DOMCSSStyleSheet(DOM::CSSStyleSheet ss) : DOMStyleSheet(ss) { }
     virtual ~DOMCSSStyleSheet();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class DOMCSSStyleSheetFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMCSSStyleSheetFunc(DOM::CSSStyleSheet ss, int i) : styleSheet(ss), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSStyleSheetFunc(DOM::CSSStyleSheet ss, int i)
+        : DOMFunction(), styleSheet(ss), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { InsertRule, DeleteRule };
   private:
     DOM::CSSStyleSheet styleSheet;
@@ -149,34 +154,35 @@ namespace KJS {
   public:
     DOMCSSRuleList(DOM::CSSRuleList rl) : cssRuleList(rl) { }
     virtual ~DOMCSSRuleList();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::CSSRuleList cssRuleList;
   };
 
   class DOMCSSRuleListFunc : public DOMFunction {
   public:
-    DOMCSSRuleListFunc(DOM::CSSRuleList rl, int i) : cssRuleList(rl), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSRuleListFunc(DOM::CSSRuleList rl, int i)
+        : DOMFunction(), cssRuleList(rl), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item };
   private:
     DOM::CSSRuleList cssRuleList;
     int id;
   };
 
-  KJSO getDOMCSSRuleList(DOM::CSSRuleList rl);
+  Value getDOMCSSRuleList(DOM::CSSRuleList rl);
 
   class DOMCSSRule : public DOMObject {
   public:
     DOMCSSRule(DOM::CSSRule r) : cssRule(r) { }
     virtual ~DOMCSSRule();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
     DOM::CSSRule toCSSRule() const { return cssRule; }
   protected:
     DOM::CSSRule cssRule;
@@ -184,73 +190,75 @@ namespace KJS {
 
   class DOMCSSRuleFunc : public DOMFunction {
   public:
-    DOMCSSRuleFunc(DOM::CSSRule r, int i) : cssRule(r), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSRuleFunc(DOM::CSSRule r, int i)
+        : DOMFunction(), cssRule(r), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item, InsertRule, DeleteRule };
   private:
     DOM::CSSRule cssRule;
     int id;
   };
 
-  KJSO getDOMCSSRule(DOM::CSSRule r);
+  Value getDOMCSSRule(DOM::CSSRule r);
 
   /**
-   * Convert an object to a Node. Returns a null Node if not possible.
+   * Convert an object to a CSSRule. Returns a null CSSRule if not possible.
    */
-  DOM::CSSRule toCSSRule(const KJSO&);
+  DOM::CSSRule toCSSRule(const Value&);
 
   // Prototype object CSSRule
   class CSSRulePrototype : public DOMObject {
   public:
     CSSRulePrototype() { }
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
-  KJSO getCSSRulePrototype();
+  Value getCSSRulePrototype(ExecState *exec);
 
   class DOMCSSValue : public DOMObject {
   public:
     DOMCSSValue(DOM::CSSValue v) : cssValue(v) { }
     virtual ~DOMCSSValue();
-    virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::CSSValue cssValue;
   };
 
-  KJSO getDOMCSSValue(DOM::CSSValue v);
+  Value getDOMCSSValue(DOM::CSSValue v);
 
   // Prototype object CSSValue
   class CSSValuePrototype : public DOMObject {
   public:
     CSSValuePrototype() { }
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
-  KJSO getCSSValuePrototype();
+  Value getCSSValuePrototype(ExecState *exec);
 
   class DOMCSSPrimitiveValue : public DOMCSSValue {
   public:
     DOMCSSPrimitiveValue(DOM::CSSPrimitiveValue v) : DOMCSSValue(v) { }
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class DOMCSSPrimitiveValueFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMCSSPrimitiveValueFunc(DOM::CSSPrimitiveValue v, int i) : val(v), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSPrimitiveValueFunc(DOM::CSSPrimitiveValue v, int i)
+        : DOMFunction(), val(v), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { SetFloatValue, GetFloatValue, SetStringValue, GetStringValue,
            GetCounterValue, GetRectValue, GetRGBColorValue };
   private:
@@ -261,28 +269,29 @@ namespace KJS {
   // Prototype object CSSPrimitiveValue
   class CSSPrimitiveValuePrototype : public CSSValuePrototype {
   public:
-    CSSPrimitiveValuePrototype() { }
-    virtual KJSO tryGet(const UString &p) const;
+    CSSPrimitiveValuePrototype() { } // ### classname
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
-  KJSO getCSSPrimitiveValuePrototype();
+  Value getCSSPrimitiveValuePrototype(ExecState *exec);
 
   class DOMCSSValueList : public DOMCSSValue {
   public:
-    DOMCSSValueList(DOM::CSSValueList v) : DOMCSSValue(v) { }
-    virtual KJSO tryGet(const UString &p) const;
+    DOMCSSValueList(DOM::CSSValueList v) : DOMCSSValue(v) { } //## classname missing
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   class DOMCSSValueListFunc : public DOMFunction {
   public:
-    DOMCSSValueListFunc(DOM::CSSValueList vl, int i) : valueList(vl), id(i) { }
-    Completion tryExecute(const List &);
+    DOMCSSValueListFunc(DOM::CSSValueList vl, int i)
+        : DOMFunction(), valueList(vl), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Item };
   private:
     DOM::CSSValueList valueList;
@@ -293,43 +302,43 @@ namespace KJS {
   public:
     DOMRGBColor(DOM::RGBColor c) : rgbColor(c) { }
     ~DOMRGBColor();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::RGBColor rgbColor;
   };
 
-  KJSO getDOMRGBColor(DOM::RGBColor c);
+  Value getDOMRGBColor(DOM::RGBColor c);
 
   class DOMRect : public DOMObject {
   public:
     DOMRect(DOM::Rect r) : rect(r) { }
     ~DOMRect();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::Rect rect;
   };
 
-  KJSO getDOMRect(DOM::Rect r);
+  Value getDOMRect(DOM::Rect r);
 
   class DOMCounter : public DOMObject {
   public:
     DOMCounter(DOM::Counter c) : counter(c) { }
     ~DOMCounter();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   protected:
     DOM::Counter counter;
   };
 
-  KJSO getDOMCounter(DOM::Counter c);
+  Value getDOMCounter(DOM::Counter c);
 
 }; // namespace
 

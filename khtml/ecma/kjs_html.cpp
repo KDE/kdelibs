@@ -18,36 +18,23 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-
-#include <qptrdict.h>
-
 #include <khtml_part.h>
 #include <misc/loader.h>
-#include <dom/html_base.h>
 #include <dom/html_block.h>
-#include <dom/html_document.h>
-#include <dom/html_element.h>
-#include <dom/html_form.h>
 #include <dom/html_head.h>
 #include <dom/html_image.h>
 #include <dom/html_inline.h>
 #include <dom/html_list.h>
-#include <dom/html_misc.h>
 #include <dom/html_table.h>
 #include <dom/html_object.h>
-#include <dom/dom_node.h>
-#include <dom_string.h>
 #include <dom_exception.h>
 
 // ### HACK
 #include <html/html_baseimpl.h>
-#include <xml/dom_docimpl.h>
 #include <xml/dom2_eventsimpl.h>
 #include <khtmlview.h>
 
-#include <kjs/operations.h>
-#include "kjs_dom.h"
+#include "kjs_css.h"
 #include "kjs_html.h"
 #include "kjs_window.h"
 #include "kjs_events.h"
@@ -59,7 +46,7 @@ using namespace KJS;
 
 QPtrDict<KJS::HTMLCollection> htmlCollections;
 
-KJSO KJS::HTMLDocFunction::tryGet(const UString &p) const
+Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::HTMLCollection coll;
 
@@ -86,19 +73,19 @@ KJSO KJS::HTMLDocFunction::tryGet(const UString &p) const
     return Undefined();
   }
 
-  KJSO tmp(new KJS::HTMLCollection(coll));
+  Object tmp(new KJS::HTMLCollection(coll));
 
-  return tmp.get(p);
+  return tmp.get(exec, p);
 }
 
-Completion KJS::HTMLDocFunction::tryExecute(const List &args)
+Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
 {
-  KJSO result;
+  Value result;
   String s;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
 
-  KJSO v = args[0];
+  Value v = args[0];
 
   switch (id) {
   case Images:
@@ -133,9 +120,9 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   case Write:
   case WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
-    UString str = v.toString().value();
+    UString str = v.toString(exec).value();
     for (int i = 1; i < args.size(); i++)
-      str += args[i].toString().value();
+      str += args[i].toString(exec).value();
     if (id == WriteLn)
       str += "\n";
     doc.write(str.string());
@@ -143,11 +130,11 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     break;
   }
   case GetElementById:
-    s = v.toString();
+    s = v.toString(exec);
     result = getDOMNode(doc.getElementById(s.value().string()));
     break;
   case GetElementsByName:
-    s = v.toString();
+    s = v.toString(exec);
     result = getDOMNodeList(doc.getElementsByName(s.value().string()));
     break;
   }
@@ -156,7 +143,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   if (id == Images || id == Applets || id == Links ||
       id == Forms || id == Anchors || id == All) {
     bool ok;
-    UString s = args[0].toString().value();
+    UString s = args[0].toString(exec).value();
     unsigned int u = s.toULong(&ok);
     if (ok)
       element = coll.item(u);
@@ -165,13 +152,13 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     result = getDOMNode(element);
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
-const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
+const ClassInfo KJS::HTMLDocument::info = { "HTMLDocument",
 					   &DOMDocument::info, 0, 0 };
 
-bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
+bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
   if (p == "title" || p == "referrer" || p == "domain" || p == "URL" ||
       p == "body" || p == "location" || p == "images" || p == "applets" ||
@@ -183,10 +170,10 @@ bool KJS::HTMLDocument::hasProperty(const UString &p, bool recursive) const
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
     return true;
-  return recursive && DOMDocument::hasProperty(p, true);
+  return recursive && DOMDocument::hasProperty(exec, p, true);
 }
 
-KJSO KJS::HTMLDocument::tryGet(const UString &p) const
+Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
@@ -237,8 +224,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 //    return Undefined();
   else if (p == "cookie")
     return String(doc.cookie());
-  else if (DOMDocument::hasProperty(p))	// expandos override functions
-    return DOMDocument::tryGet(p);
+  else if (DOMDocument::hasProperty(exec, p, true))	// expands override functions
+    return DOMDocument::tryGet(exec, p);
   else if (p == "open")
     return new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
@@ -273,54 +260,55 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "width")
     return Number(part->view() ? part->view()->visibleWidth() : 0);
   else {
+    kdDebug() << "KJS::HTMLDocument::tryGet " << p.qstring() << " not found, returning element" << endl;
     if(!element.isNull())
       return getDOMNode(element);
     return Undefined();
   }
 }
 
-void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
+void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::tryPut " << p.qstring() << endl;
+  kdDebug() << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
-  if (p == "title")
-    doc.setTitle(v.toString().value().string());
-  else if (p == "body")
-    doc.setBody((new DOMNode(KJS::toNode(v)))->toNode());
-  else if (p == "cookie")
-    doc.setCookie(v.toString().value().string());
-  else if (p == "location") {
+  if (propertyName == "title")
+    doc.setTitle(value.toString(exec).value().string());
+  else if (propertyName == "body")
+    doc.setBody((new DOMNode(KJS::toNode(value)))->toNode());
+  else if (propertyName == "cookie")
+    doc.setCookie(value.toString(exec).value().string());
+  else if (propertyName == "location") {
     KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
-    QString str = v.toString().value().qstring();
+    QString str = value.toString(exec).value().qstring();
     part->scheduleRedirection(0, str);
   }
-  else if (p == "onclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "ondblclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "onkeydown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "onkeypress")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "onkeyup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "onmousedown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
-  else if (p == "onmouseup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
+  else if (propertyName == "onclick")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "ondblclick")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "onkeydown")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "onkeypress")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "onkeyup")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "onmousedown")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
+  else if (propertyName == "onmouseup")
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
   else
-    DOMDocument::tryPut(p,v);
+    DOMDocument::tryPut(exec,propertyName,value,attr);
 }
 
 // -------------------------------------------------------------------------
 
-const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
+const ClassInfo KJS::HTMLElement::info = { "HTMLElement",
 					  &DOMElement::info, 0, 0 };
 
-KJSO KJS::HTMLElement::tryGet(const UString &p) const
+Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -413,7 +401,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
       else
-        return DOMElement::tryGet(p);
+        return DOMElement::tryGet(exec, p);
     }
     break;
     case ID_SELECT: {
@@ -953,23 +941,23 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       return getDOMNode(element.ownerDocument());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
-    return DOMElement::tryGet(p);
+    return DOMElement::tryGet(exec, p);
 }
 
-bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
+bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
-    KJSO tmp = tryGet(p);
-    if (tmp.isDefined())
+    Value tmp = tryGet(exec, propertyName);
+    if (!tmp.isNull())
 	return true;
-    return recursive && DOMElement::hasProperty(p, true);
+    return recursive && DOMElement::hasProperty(exec, propertyName, true);
 }
 
-String KJS::HTMLElement::toString() const
+String KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
   else
-    return DOMElement::toString();
+    return DOMElement::toString(exec);
 }
 
 List *KJS::HTMLElement::eventHandlerScope() const
@@ -989,9 +977,9 @@ List *KJS::HTMLElement::eventHandlerScope() const
   return scope;
 }
 
-Completion KJS::HTMLElementFunction::tryExecute(const List &args)
+Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (element.elementId()) {
     case ID_FORM: {
@@ -1013,7 +1001,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
         result = Undefined();
       }
       else if (id == Remove) {
-        select.remove(args[0].toNumber().intValue());
+        select.remove(args[0].toNumber(exec).intValue());
         result = Undefined();
       }
       else if (id == Blur) {
@@ -1095,9 +1083,9 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
         result = Undefined();
       }
       else if (id == InsertRow)
-        result = getDOMNode(table.insertRow(args[0].toNumber().intValue()));
+        result = getDOMNode(table.insertRow(args[0].toNumber(exec).intValue()));
       else if (id == DeleteRow) {
-        table.deleteRow(args[0].toNumber().intValue());
+        table.deleteRow(args[0].toNumber(exec).intValue());
         result = Undefined();
       }
     }
@@ -1107,9 +1095,9 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
       if (id == InsertRow)
-        result = getDOMNode(tableSection.insertRow(args[0].toNumber().intValue()));
+        result = getDOMNode(tableSection.insertRow(args[0].toNumber(exec).intValue()));
       else if (id == DeleteRow) {
-        tableSection.deleteRow(args[0].toInt32());
+        tableSection.deleteRow(args[0].toInt32(exec));
         result = Undefined();
       }
     }
@@ -1117,21 +1105,21 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if (id == InsertCell)
-        result = getDOMNode(tableRow.insertCell(args[0].toNumber().intValue()));
+        result = getDOMNode(tableRow.insertCell(args[0].toNumber(exec).intValue()));
       else if (id == DeleteCell) {
-        tableRow.deleteCell(args[0].toInt32());
+        tableRow.deleteCell(args[0].toInt32(exec));
         result = Undefined();
       }
     }
     break;
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
-void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
+void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v, int attr)
 {
-  DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString().value().string();
+  DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString(exec).value().string();
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -1151,7 +1139,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     break;
     case ID_LINK: {
       DOM::HTMLLinkElement link = element;
-      if      (p == "disabled")        { link.setDisabled(v.toBoolean().value()); return; }
+      if      (p == "disabled")        { link.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "charset")         { link.setCharset(str); return; }
       else if (p == "href")            { link.setHref(str); return; }
       else if (p == "hreflang")        { link.setHreflang(str); return; }
@@ -1189,7 +1177,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     break;
     case ID_STYLE: {
       DOM::HTMLStyleElement style = element;
-      if      (p == "disabled")        { style.setDisabled(v.toBoolean().value()); return; }
+      if      (p == "disabled")        { style.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "media")           { style.setMedia(str); return; }
       else if (p == "type")            { style.setType(str); return; }
     }
@@ -1222,32 +1210,33 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       // read-only: type
-      if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber().intValue()); return; }
+      if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "value")           { select.setValue(str); return; }
       else if (p == "length")          { // read-only according to the NS spec, but webpages need it writeable
-                                         KJSO coll = getSelectHTMLCollection(select.options(), select);
-                                         coll.put( p, v );
+                                         Object coll = Object::dynamicCast( getSelectHTMLCollection(select.options(), select) );
+                                         if ( !coll.isNull() )
+                                           coll.put(exec,p,v);
                                          return;
                                        }
       // read-only: form
       // read-only: options
-      else if (p == "disabled")        { select.setDisabled(v.toBoolean().value()); return; }
-      else if (p == "multiple")        { select.setMultiple(v.toBoolean().value()); return; }
+      else if (p == "disabled")        { select.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "multiple")        { select.setMultiple(v.toBoolean(exec).value()); return; }
       else if (p == "name")            { select.setName(str); return; }
-      else if (p == "size")            { select.setSize(v.toNumber().intValue()); return; }
-      else if (p == "tabIndex")        { select.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "size")            { select.setSize(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { select.setTabIndex(v.toNumber(exec).intValue()); return; }
     }
     break;
     case ID_OPTGROUP: {
       DOM::HTMLOptGroupElement optgroup = element;
-      if      (p == "disabled")        { optgroup.setDisabled(v.toBoolean().value()); return; }
+      if      (p == "disabled")        { optgroup.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "label")           { optgroup.setLabel(str); return; }
     }
     break;
     case ID_OPTION: {
       DOM::HTMLOptionElement option = element;
       // read-only: form
-      if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean().value()); return; }
+      if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean(exec).value()); return; }
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
       else if (p == "text")            { DOM::NodeList nl(option.childNodes());
@@ -1261,29 +1250,29 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
                                          return;
       }
       // read-only: index
-      else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
+      else if (p == "disabled")        { option.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
-      else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
+      else if (p == "selected")        { option.setSelected(v.toBoolean(exec).value()); return; }
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElement input = element;
       if      (p == "defaultValue")    { input.setDefaultValue(str); return; }
-      else if (p == "defaultChecked")  { input.setDefaultChecked(v.toBoolean().value()); return; }
+      else if (p == "defaultChecked")  { input.setDefaultChecked(v.toBoolean(exec).value()); return; }
       // read-only: form
       else if (p == "accept")          { input.setAccept(str); return; }
       else if (p == "accessKey")       { input.setAccessKey(str); return; }
       else if (p == "align")           { input.setAlign(str); return; }
       else if (p == "alt")             { input.setAlt(str); return; }
-      else if (p == "checked")         { input.setChecked(v.toBoolean().value()); return; }
-      else if (p == "disabled")        { input.setDisabled(v.toBoolean().value()); return; }
-      else if (p == "maxLength")       { input.setMaxLength(v.toNumber().intValue()); return; }
+      else if (p == "checked")         { input.setChecked(v.toBoolean(exec).value()); return; }
+      else if (p == "disabled")        { input.setDisabled(v.toBoolean(exec).value()); return; }
+      else if (p == "maxLength")       { input.setMaxLength(v.toNumber(exec).intValue()); return; }
       else if (p == "name")            { input.setName(str); return; }
-      else if (p == "readOnly")        { input.setReadOnly(v.toBoolean().value()); return; }
+      else if (p == "readOnly")        { input.setReadOnly(v.toBoolean(exec).value()); return; }
       else if (p == "size")            { input.setSize(str); return; }
       else if (p == "src")             { input.setSrc(str); return; }
-      else if (p == "tabIndex")        { input.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "tabIndex")        { input.setTabIndex(v.toNumber(exec).intValue()); return; }
       // read-only: type
       else if (p == "useMap")          { input.setUseMap(str); return; }
       else if (p == "value")           { input.setValue(str); return; }
@@ -1294,12 +1283,12 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       if      (p == "defaultValue")    { textarea.setDefaultValue(str); return; }
       // read-only: form
       else if (p == "accessKey")       { textarea.setAccessKey(str); return; }
-      else if (p == "cols")            { textarea.setCols(v.toNumber().intValue()); return; }
-      else if (p == "disabled")        { textarea.setDisabled(v.toBoolean().value()); return; }
+      else if (p == "cols")            { textarea.setCols(v.toNumber(exec).intValue()); return; }
+      else if (p == "disabled")        { textarea.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "name")            { textarea.setName(str); return; }
-      else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean().value()); return; }
-      else if (p == "rows")            { textarea.setRows(v.toNumber().intValue()); return; }
-      else if (p == "tabIndex")        { textarea.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean(exec).value()); return; }
+      else if (p == "rows")            { textarea.setRows(v.toNumber(exec).intValue()); return; }
+      else if (p == "tabIndex")        { textarea.setTabIndex(v.toNumber(exec).intValue()); return; }
       // read-only: type
       else if (p == "value")           { textarea.setValue(str); return; }
     }
@@ -1308,9 +1297,9 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       DOM::HTMLButtonElement button = element;
       // read-only: form
       if (p == "accessKey")            { button.setAccessKey(str); return; }
-      else if (p == "disabled")        { button.setDisabled(v.toBoolean().value()); return; }
+      else if (p == "disabled")        { button.setDisabled(v.toBoolean(exec).value()); return; }
       else if (p == "name")            { button.setName(str); return; }
-      else if (p == "tabIndex")        { button.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "tabIndex")        { button.setTabIndex(v.toNumber(exec).intValue()); return; }
       // read-only: type
       else if (p == "value")           { button.setValue(str); return; }
     }
@@ -1336,36 +1325,36 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     break;
     case ID_UL: {
       DOM::HTMLUListElement uList = element;
-      if      (p == "compact")         { uList.setCompact(v.toBoolean().value()); return; }
+      if      (p == "compact")         { uList.setCompact(v.toBoolean(exec).value()); return; }
       else if (p == "type")            { uList.setType(str); return; }
     }
     break;
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
-      if      (p == "compact")         { oList.setCompact(v.toBoolean().value()); return; }
-      else if (p == "start")           { oList.setStart(v.toNumber().intValue()); return; }
+      if      (p == "compact")         { oList.setCompact(v.toBoolean(exec).value()); return; }
+      else if (p == "start")           { oList.setStart(v.toNumber(exec).intValue()); return; }
       else if (p == "type")            { oList.setType(str); return; }
     }
     break;
     case ID_DL: {
       DOM::HTMLDListElement dList = element;
-      if      (p == "compact")         { dList.setCompact(v.toBoolean().value()); return; }
+      if      (p == "compact")         { dList.setCompact(v.toBoolean(exec).value()); return; }
     }
     break;
     case ID_DIR: {
       DOM::HTMLDirectoryElement directory = element;
-      if      (p == "compact")         { directory.setCompact(v.toBoolean().value()); return; }
+      if      (p == "compact")         { directory.setCompact(v.toBoolean(exec).value()); return; }
     }
     break;
     case ID_MENU: {
       DOM::HTMLMenuElement menu = element;
-      if      (p == "compact")         { menu.setCompact(v.toBoolean().value()); return; }
+      if      (p == "compact")         { menu.setCompact(v.toBoolean(exec).value()); return; }
     }
     break;
     case ID_LI: {
       DOM::HTMLLIElement li = element;
       if      (p == "type")            { li.setType(str); return; }
-      else if (p == "value")           { li.setValue(v.toNumber().intValue()); return; }
+      else if (p == "value")           { li.setValue(v.toNumber(exec).intValue()); return; }
     }
     break;
     case ID_DIV: {
@@ -1399,7 +1388,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     break;
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
-      if      (p == "width")           { pre.setWidth(v.toNumber().intValue()); return; }
+      if      (p == "width")           { pre.setWidth(v.toNumber(exec).intValue()); return; }
     }
     break;
     case ID_BR: {
@@ -1424,7 +1413,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
     case ID_HR: {
       DOM::HTMLHRElement hr = element;
       if      (p == "align")           { hr.setAlign(str); return; }
-      else if (p == "noShade")         { hr.setNoShade(v.toBoolean().value()); return; }
+      else if (p == "noShade")         { hr.setNoShade(v.toBoolean(exec).value()); return; }
       else if (p == "size")            { hr.setSize(str); return; }
       else if (p == "width")           { hr.setWidth(str); return; }
     }
@@ -1447,7 +1436,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "rel")             { anchor.setRel(str); return; }
       else if (p == "rev")             { anchor.setRev(str); return; }
       else if (p == "shape")           { anchor.setShape(str); return; }
-      else if (p == "tabIndex")        { anchor.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "tabIndex")        { anchor.setTabIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "target")          { anchor.setTarget(str); return; }
       else if (p == "type")            { anchor.setType(str); return; }
     }
@@ -1461,7 +1450,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "border")          { image.setBorder(str); return; }
       else if (p == "height")          { image.setHeight(str); return; }
       else if (p == "hspace")          { image.setHspace(str); return; }
-      else if (p == "isMap")           { image.setIsMap(v.toBoolean().value()); return; }
+      else if (p == "isMap")           { image.setIsMap(v.toBoolean(exec).value()); return; }
       else if (p == "longDesc")        { image.setLongDesc(str); return; }
       else if (p == "src")             { image.setSrc(str); return; }
       else if (p == "useMap")          { image.setUseMap(str); return; }
@@ -1479,12 +1468,12 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "codeBase")        { object.setCodeBase(str); return; }
       else if (p == "codeType")        { object.setCodeType(str); return; }
       else if (p == "data")            { object.setData(str); return; }
-      else if (p == "declare")         { object.setDeclare(v.toBoolean().value()); return; }
+      else if (p == "declare")         { object.setDeclare(v.toBoolean(exec).value()); return; }
       else if (p == "height")          { object.setHeight(str); return; }
       else if (p == "hspace")          { object.setHspace(str); return; }
       else if (p == "name")            { object.setName(str); return; }
       else if (p == "standby")         { object.setStandby(str); return; }
-      else if (p == "tabIndex")        { object.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "tabIndex")        { object.setTabIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "type")            { object.setType(str); return; }
       else if (p == "useMap")          { object.setUseMap(str); return; }
       else if (p == "vspace")          { object.setVspace(str); return; }
@@ -1528,9 +1517,9 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "alt")             { area.setAlt(str); return; }
       else if (p == "coords")          { area.setCoords(str); return; }
       else if (p == "href")            { area.setHref(str); return; }
-      else if (p == "noHref")          { area.setNoHref(v.toBoolean().value()); return; }
+      else if (p == "noHref")          { area.setNoHref(v.toBoolean(exec).value()); return; }
       else if (p == "shape")           { area.setShape(str); return; }
-      else if (p == "tabIndex")        { area.setTabIndex(v.toNumber().intValue()); return; }
+      else if (p == "tabIndex")        { area.setTabIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "target")          { area.setTarget(str); return; }
     }
     break;
@@ -1540,7 +1529,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "htmlFor")         { script.setHtmlFor(str); return; }
       else if (p == "event")           { script.setEvent(str); return; }
       else if (p == "charset")         { script.setCharset(str); return; }
-      else if (p == "defer")           { script.setDefer(v.toBoolean().value()); return; }
+      else if (p == "defer")           { script.setDefer(v.toBoolean(exec).value()); return; }
       else if (p == "src")             { script.setSrc(str); return; }
       else if (p == "type")            { script.setType(str); return; }
     }
@@ -1573,7 +1562,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       if      (p == "align")           { tableCol.setAlign(str); return; }
       else if (p == "ch")              { tableCol.setCh(str); return; }
       else if (p == "chOff")           { tableCol.setChOff(str); return; }
-      else if (p == "span")            { tableCol.setSpan(v.toNumber().intValue()); return; }
+      else if (p == "span")            { tableCol.setSpan(v.toNumber(exec).intValue()); return; }
       else if (p == "vAlign")          { tableCol.setVAlign(str); return; }
       else if (p == "width")           { tableCol.setWidth(str); return; }
     }
@@ -1611,11 +1600,11 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "bgColor")         { tableCell.setBgColor(str); return; }
       else if (p == "ch")              { tableCell.setCh(str); return; }
       else if (p == "chOff")           { tableCell.setChOff(str); return; }
-      else if (p == "colSpan")         { tableCell.setColSpan(v.toNumber().intValue()); return; }
+      else if (p == "colSpan")         { tableCell.setColSpan(v.toNumber(exec).intValue()); return; }
       else if (p == "headers")         { tableCell.setHeaders(str); return; }
       else if (p == "height")          { tableCell.setHeight(str); return; }
-      else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean().value()); return; }
-      else if (p == "rowSpan")         { tableCell.setRowSpan(v.toNumber().intValue()); return; }
+      else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean(exec).value()); return; }
+      else if (p == "rowSpan")         { tableCell.setRowSpan(v.toNumber(exec).intValue()); return; }
       else if (p == "scope")           { tableCell.setScope(str); return; }
       else if (p == "vAlign")          { tableCell.setVAlign(str); return; }
       else if (p == "width")           { tableCell.setWidth(str); return; }
@@ -1634,7 +1623,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "marginHeight")    { frameElement.setMarginHeight(str); return; }
       else if (p == "marginWidth")     { frameElement.setMarginWidth(str); return; }
       else if (p == "name")            { frameElement.setName(str); return; }
-      else if (p == "noResize")        { frameElement.setNoResize(v.toBoolean().value()); return; }
+      else if (p == "noResize")        { frameElement.setNoResize(v.toBoolean(exec).value()); return; }
       else if (p == "scrolling")       { frameElement.setScrolling(str); return; }
       else if (p == "src")             { frameElement.setSrc(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
@@ -1675,7 +1664,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
   else if ( p == "innerText")
     element.setInnerText(str);
   else
-    DOMElement::tryPut(p,v);
+    DOMElement::tryPut(exec,p,v,attr);
 }
 
 // -------------------------------------------------------------------------
@@ -1685,9 +1674,9 @@ HTMLCollection::~HTMLCollection()
   htmlCollections.remove(collection.handle());
 }
 
-KJSO KJS::HTMLCollection::tryGet(const UString &p) const
+Value KJS::HTMLCollection::tryGet(ExecState *, const UString &p) const
 {
-  KJSO result;
+  Value result;
 
   if (p == "length")
     result = Number(collection.length());
@@ -1728,34 +1717,34 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
   return result;
 }
 
-Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
+Value KJS::HTMLCollectionFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
   case Item:
-    result = getDOMNode(coll.item(args[0].toUInt32()));
+    result = getDOMNode(coll.item(args[0].toUInt32(exec)));
     break;
   case Tags:
   {
     DOM::HTMLElement e = coll.base();
-    result = getDOMNodeList( e.getElementsByTagName( args[0].toString().value().string() ) );
+    result = getDOMNodeList( e.getElementsByTagName( args[0].toString(exec).value().string() ) );
     break;
   }
   case NamedItem:
-    result = getDOMNode(coll.namedItem(args[0].toString().value().string()));
+    result = getDOMNode(coll.namedItem(args[0].toString(exec).value().string()));
     break;
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
-KJSO KJS::HTMLSelectCollection::tryGet(const UString &p) const
+Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "selectedIndex")
     return Number(element.selectedIndex());
 
-  return  HTMLCollection::tryGet(p);
+  return  HTMLCollection::tryGet(exec, p);
 }
 
 DOM::Element KJS::HTMLSelectCollection::dummyElement()
@@ -1768,14 +1757,14 @@ DOM::Element KJS::HTMLSelectCollection::dummyElement()
   return dummy;
 }
 
-void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
+void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLSelectCollection::tryPut " << p.qstring() << endl;
+  kdDebug() << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
 #endif
   // resize ?
-  if (p == "length") {
-    long newLen = v.toInt32();
+  if (propertyName == "length") {
+    long newLen = value.toInt32(exec);
     long diff = element.length() - newLen;
 
     if (diff < 0) { // add dummy elements
@@ -1791,18 +1780,18 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
   }
   // an index ?
   bool ok;
-  unsigned int u = p.toULong(&ok);
+  unsigned int u = propertyName.toULong(&ok);
   if (!ok)
     return;
 
-  if (v.isA(NullType) || v.isA(UndefinedType)) {
+  if (value.isA(NullType) || value.isA(UndefinedType)) {
     // null and undefined delete. others, too ?
     element.remove(u);
     return;
   }
 
   // is v an option element ?
-  DOM::Node node = KJS::toNode(v);
+  DOM::Node node = KJS::toNode(value);
   if (node.isNull() || node.elementId() != ID_OPTION)
     return;
 
@@ -1825,13 +1814,23 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
 
 ////////////////////// Option Object ////////////////////////
 
-OptionConstructor::OptionConstructor(const Global &g, const DOM::Document &d)
-    : global(g), doc(d)
+OptionConstructorImp::OptionConstructorImp(ExecState *exec, const DOM::Document &d)
+    : ObjectImp(), doc(d)
 {
-  setPrototype(global.functionPrototype());
+  // ## isn't there some redundancy between ObjectImp::_proto and the "prototype" property ?
+  //put(exec,"prototype", ...,DontEnum|DontDelete|ReadOnly);
+
+  // no. of arguments for constructor
+  // ## is 4 correct ? 0 to 4, it seems to be
+  put(exec,"length", Number(4), ReadOnly|DontDelete|DontEnum);
 }
 
-Object OptionConstructor::construct(const List &args)
+bool OptionConstructorImp::implementsConstruct() const
+{
+  return true;
+}
+
+Object OptionConstructorImp::construct(ExecState *exec, const List &args)
 {
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
@@ -1839,18 +1838,18 @@ Object OptionConstructor::construct(const List &args)
   DOM::Text t = doc.createTextNode("");
   try { opt.appendChild(t); }
   catch(DOM::DOMException& e) {
-    // oh well
+    // #### exec->setException ?
   }
   if (sz > 0)
-    t.setData( args[0].toString().value().string() ); // set the text
+    t.setData( args[0].toString(exec).value().string() ); // set the text
   if (sz > 1)
-    opt.setValue(args[1].toString().value().string());
+    opt.setValue(args[1].toString(exec).value().string());
   if (sz > 2)
-    opt.setDefaultSelected( args[2].toBoolean().value() );
+    opt.setDefaultSelected( args[2].toBoolean(exec).value() );
   if (sz > 3)
-    opt.setSelected( args[3].toBoolean().value() );
+    opt.setSelected( args[3].toBoolean(exec).value() );
 
-  return Object(getDOMNode(opt).imp());
+  return Object::dynamicCast(getDOMNode(opt));
 }
 
 ////////////////////// Image Object ////////////////////////
@@ -1865,20 +1864,23 @@ ImageObject::ImageObject(const Global& global)
   put("length", Number(2), DontEnum);
 }
 
-Completion ImageObject::tryExecute(const List &)
+Value ImageObject::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  return Completion(ReturnValue);
+  return ...;
 }
 #endif
 
-ImageConstructor::ImageConstructor(const Global& glob, const DOM::Document &d)
-  : global(glob),
-    doc(d)
+ImageConstructorImp::ImageConstructorImp(ExecState *, const DOM::Document &d)
+    : ObjectImp(), doc(d)
 {
-  setPrototype(global.functionPrototype());
 }
 
-Object ImageConstructor::construct(const List &)
+bool ImageConstructorImp::implementsConstruct() const
+{
+  return true;
+}
+
+Object ImageConstructorImp::construct(ExecState *, const List &)
 {
   /* TODO: fetch optional height & width from arguments */
 
@@ -1888,30 +1890,30 @@ Object ImageConstructor::construct(const List &)
   return result;
 }
 
-KJSO Image::tryGet(const UString &p) const
+Value Image::tryGet(ExecState *exec, const UString &p) const
 {
-  KJSO result;
+  Value result;
 
   if (p == "src")
     result = String(src);
   else if (p == "complete")
     result = Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
   else
-    result = DOMObject::tryGet(p);
+    result = DOMObject::tryGet(exec, p);
 
   return result;
 }
 
-void Image::tryPut(const UString &p, const KJSO& v)
+void Image::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-  if (p == "src") {
-    String str = v.toString();
+  if (propertyName == "src") {
+    String str = value.toString(exec);
     src = str.value();
     if ( img ) img->deref(this);
     img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
     if ( img ) img->ref(this);
   } else {
-    DOMObject::tryPut(p, v);
+    DOMObject::tryPut(exec, propertyName, value, attr);
   }
 }
 
@@ -1920,7 +1922,7 @@ Image::~Image()
   if ( img ) img->deref(this);
 }
 
-KJSO KJS::getHTMLCollection(DOM::HTMLCollection c)
+Value KJS::getHTMLCollection(DOM::HTMLCollection c)
 {
   HTMLCollection *ret;
   if (c.isNull())
@@ -1934,7 +1936,7 @@ KJSO KJS::getHTMLCollection(DOM::HTMLCollection c)
   }
 }
 
-KJSO KJS::getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+Value KJS::getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
 {
   HTMLCollection *ret;
   if (c.isNull())

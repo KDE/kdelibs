@@ -28,7 +28,7 @@ QPtrDict<DOMAbstractView> abstractViews;
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMAbstractView::info = { "AbstractView", HostType, 0, 0, 0 };
+const ClassInfo DOMAbstractView::info = { "AbstractView", 0, 0, 0 };
 
 
 DOMAbstractView::~DOMAbstractView()
@@ -36,19 +36,19 @@ DOMAbstractView::~DOMAbstractView()
   abstractViews.remove(abstractView.handle());
 }
 
-KJSO DOMAbstractView::tryGet(const UString &p) const
+Value DOMAbstractView::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "document")
     return getDOMNode(abstractView.document());
   else if (p == "getComputedStyle")
     return new DOMAbstractViewFunc(abstractView,DOMAbstractViewFunc::GetComputedStyle);
   else
-    return DOMObject::tryGet(p);
+    return DOMObject::tryGet(exec,p);
 }
 
-Completion DOMAbstractViewFunc::tryExecute(const List &args)
+Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
+  Value result;
 
   switch (id) {
     case GetComputedStyle: {
@@ -57,15 +57,15 @@ Completion DOMAbstractViewFunc::tryExecute(const List &args)
           result = Undefined(); // throw exception?
         else
           result = getDOMCSSStyleDeclaration(abstractView.getComputedStyle(static_cast<DOM::Element>(arg0),
-									   args[1].toString().value().string()));
+									   args[1].toString(exec).value().string()));
       }
       break;
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
-KJSO KJS::getDOMAbstractView(DOM::AbstractView av)
+Value KJS::getDOMAbstractView(DOM::AbstractView av)
 {
   DOMAbstractView *ret;
   if (av.isNull())
@@ -80,9 +80,10 @@ KJSO KJS::getDOMAbstractView(DOM::AbstractView av)
 }
 
 
-DOM::AbstractView KJS::toAbstractView (const KJSO& obj)
+DOM::AbstractView KJS::toAbstractView (const Value& val)
 {
-  if (!obj.derivedFrom("AbstractView"))
+  Object obj = Object::dynamicCast(val);
+  if (obj.isNull() || !obj.inherits(&DOMAbstractView::info))
     return DOM::AbstractView ();
 
   const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj.imp());

@@ -29,10 +29,10 @@ namespace KJS {
   public:
     DOMRange(DOM::Range r) : range(r) {}
     ~DOMRange();
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
     virtual DOM::Range toRange() const { return range; }
 //    virtual String toString() const;
   protected:
@@ -42,8 +42,9 @@ namespace KJS {
   class DOMRangeFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMRangeFunc(DOM::Range r, int i) : range(r), id(i) { }
-    Completion tryExecute(const List &);
+    DOMRangeFunc(DOM::Range r, int i)
+        : DOMFunction(), range(r), id(i) { }
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { SetStart, SetEnd, SetStartBefore, SetStartAfter, SetEndBefore,
            SetEndAfter, Collapse, SelectNode, SelectNodeContents,
            CompareBoundaryPoints, DeleteContents, ExtractContents,
@@ -58,19 +59,19 @@ namespace KJS {
   class RangePrototype : public DOMObject {
   public:
     RangePrototype() { }
-    virtual KJSO tryGet(const UString &p) const;
+    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
-  KJSO getDOMRange(DOM::Range r);
-  KJSO getRangePrototype();
+  Value getDOMRange(DOM::Range r);
+  Value getRangePrototype(ExecState *exec);
 
   /**
    * Convert an object to a Range. Returns a null Node if not possible.
    */
-  DOM::Range toRange(const KJSO&);
+  DOM::Range toRange(const Value&);
 
 }; // namespace
 
