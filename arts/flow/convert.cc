@@ -29,6 +29,10 @@
 #ifdef HAVE_X86_FLOAT_INT
 static inline long QRound (float inval)
 {
+#if (__GNUC__ == 3 && __GNUC_MINOR__ == 0)
+  volatile
+#warning "workaround for gcc-3.0 bug c++/2733 enabled"
+#endif
   long ret;
   asm ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
   return ret;
