@@ -243,8 +243,6 @@ void KLineEdit::rotateText( const QString& input )
     if( input.length() == 0 )
         return;
 
-    debug( "Attempting to rotate through text" );
-
     if( m_pCompObj != 0 && m_pCompObj->hasMultipleMatches() )
     {
         if( m_iCompletionMode == KGlobal::CompletionShell )
@@ -265,13 +263,17 @@ void KLineEdit::rotateText( const QString& input )
 void KLineEdit::iterateUpInList()
 {
     if( m_pCompObj != 0 )
+
     {
         // This clears KCompletion so that if the user
         // deleted the current text and pressed the rotation
         // keys,  KCompletion will properly rotate through
         // all enteries :)))
-        if( cursorPosition() == 0 )
+        if( displayText().length() == 0 &&
+            m_pCompObj->lastMatch().length() != 0 )
+        {
             m_pCompObj->makeCompletion( QString::null );
+        }
         rotateText( m_pCompObj->previousMatch() );
     }
 }
@@ -284,8 +286,11 @@ void KLineEdit::iterateDownInList()
         // deleted the current text and pressed the rotation
         // keys,  KCompletion will properly rotate through
         // all enteries.  Hack to the max :)
-        if( cursorPosition() == 0 )
+        if( displayText().length() == 0 &&
+            m_pCompObj->lastMatch().length() != 0 )
+        {
             m_pCompObj->makeCompletion( QString::null );
+        }
         rotateText(  m_pCompObj->nextMatch() );
     }
 }
@@ -381,11 +386,10 @@ void KLineEdit::init( bool hsig )
 
 void KLineEdit::slotReturnPressed()
 {
-    // Do not emit at all if the widget's echo
-    // mode is not Qt::Normal OR Qt::NoEcho.
-    if( echoMode() == QLineEdit::Normal ||
-        echoMode() == QLineEdit::NoEcho )
-        emit returnPressed( displayText() );
+    // No need to emit this if the echo mode
+    // is not QLineEdit::Normal
+    if( echoMode() == QLineEdit::Normal )
+        emit returnPressed( text() );
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *ev )
@@ -427,8 +431,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     }
     // Let QLineEdit handle the other keys events.
     QLineEdit::keyPressEvent ( ev );
-    // Always update the position holder if the user
-    // pressed the END key in auto completion mode.
+    // Always update the position variable in auto completion
+    // mode whenu user moes the cursor to EOL using the END key.
     if( m_iCompletionMode == KGlobal::CompletionAuto )
     {
         int pos = cursorPosition();

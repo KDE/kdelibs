@@ -5,8 +5,6 @@
     Copyright (C) 1997 Sven Radej <sven.radej@iname.com>
     Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-
-    Re-designed with addional functionality:
     Copyright (c) 1999-2000 Dawit Alemayehu <adawit@earthlink.net>
 
     This library is free software; you can redistribute it and/or
@@ -58,12 +56,12 @@
  *
  * The default key-bindings for completion and rotation are determined
  * from the global settings in @ref KStdAccel.  However, these values can
- * be set locally overriding the global settings.  Simply invoking @see
+ * be set locally overriding the global settings.  Simply invoking @ref
  * useGlobalSettings allows you to immediately default the bindings back to
  * the global settings again.  Also if you are interested in only defaulting
  * the key-bindings individually for each action, simply call the setXXXKey
  * methods without any argumet.  For example, after locally customizing the
- * key-binding that invokes manual completion, simply invoking @see
+ * key-binding that invokes manual completion, simply invoking @ref
  * setCompletionKey(), without any argument, will result in the completion
  * key being set to 0. This will then force the key-event filter to use the
  * global value.
@@ -74,7 +72,7 @@
  *
  * <pre>
  * // Make sure the boolean paramter is set to true.  Otherwise,
- * // you have to turn on each feature manually. See below.
+ * // you have to turn on each of the new feature manually.
  * KLineEdit *edit = new KLineEdit( this, "mywidget", true );
  * // Insert the enteries on RETURN pressed into the completion object's list
  * connect( edit, SIGNAL( returnPressed(const QString& ) ), edit->completionObject(), SLOT( addItem( const QString& ) ) );
@@ -100,11 +98,10 @@
  * connect( edit, SIGNAL( returnPressed( const QString& ) ), edit->CompletionObject(), SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * And do not forget to enable the popup menu :
+ * And do not forget to enable the context (popup) menu :
  *
  * <pre>
- * edit->setEnableContextMenu( true );
- * edit->
+ * edit->setEnableContextMenu();
  * </pre>
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
@@ -144,10 +141,10 @@ public:
     /**
     * Puts cursor at the end of the string.
     * 
-    * This method is deprecated.  Use @see QLineEdit::end instead.
+    * This method is deprecated.  Use @ref QLineEdit::end instead.
     *
     * @deprecated
-    * @see QLineEdit::end
+    * @ref QLineEdit::end
     */
     void cursorAtEnd() { end( false ); }
 
@@ -225,7 +222,7 @@ public:
     * Note that if you invoke this function with the argument se to false,
     * no rotation signals will be emitted.   Thus, this widget will not be
     * able to handle the rotation signals even if @ref setHandleRotation has
-    * been or is called.  See also @see setHandleRotation.
+    * been or is called.  See also @ref setHandleRotation.
     */
     void setEnableRotationSignal( bool enable ) { m_bEmitRotation = enable; }
 
@@ -361,7 +358,7 @@ public:
     * Returns the key-binding used for completion.
     *
     * If the key binding contains modifier key(s), the @bf sum of the key and
-    * the modifier will be returned. See also @see setCompletionKey.
+    * the modifier will be returned. See also @ref setCompletionKey.
     *
     * @return the key-binding used for rotating through a list.
     */
@@ -555,10 +552,10 @@ protected slots:
     virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionShell
+    * Sets the comepltion mode to the global default setting
+    * defined by @ref KGlobal::completionMode().
     */
     virtual void modeDefault()  { useGlobalSettings(); }
-
 
     /**
     * Populates the context menu before it is displayed.
@@ -566,27 +563,28 @@ protected slots:
     virtual void aboutToShowMenu();
 
     /**
-    * Populates the sub menu before it is displayed.
+    * Populates the sub menu before it is displayed.  Needed
+    * to put the "check mark" before displaying.
     */
     virtual void aboutToShowSubMenu( int );
 
     /**
-    * Deals with text changes and auto completion in this
-    * widget.
+    * Deals with text changes in auto completion mode.
     */
     virtual void entryChanged( const QString& );
 
     /**
-    * Fills in the remaining text.
+    * Completes the remaining text with a matching one from
+    * a given list.
     */
     virtual void makeCompletion( const QString& );
 
-    /*
+    /**
     * Resets the completion object if it is deleted externally.
     */
     void completionDestroyed() { m_pCompObj = 0; }
 
-    /*
+    /**
     * Re-emitts the returnPressed signal with the current
     * text as its argument.
     */
