@@ -624,6 +624,9 @@ void KApplication::init(bool GUIenabled)
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
+ 
+  // Trigger creation of locale.
+  (void) KGlobal::locale(); 
 
   if (GUIenabled)
   {
