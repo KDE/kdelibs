@@ -59,6 +59,7 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     virtual void save(QDomElement&);
     virtual void load(QDomElement&);
 
+    void setStyle(int);
 
   public slots:
     void init();

@@ -54,7 +54,7 @@ MainWidget::MainWidget(QDomElement& dockConfig,KMdi::MdiMode mode)
 
    KMdiToolViewAccessor *tva=createToolWindow();
    tva->setWidgetToWrap(new QMultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
-   tva->show(KDockWidget::DockCenter,mle,70);   
+   tva->placeAndShow(KDockWidget::DockCenter,mle,70);   
 
    QListView* lv = new QListView(0L,"theListViewWidget");
 #include "../res/filenew.xpm"

@@ -98,6 +98,10 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 
 }
 
+void KMdiDockContainer::setStyle(int style) {
+	if (m_tb)  m_tb->setStyle(KMultiTabBar::KMultiTabBarStyle(style));
+}
+
 KMdiDockContainer::~KMdiDockContainer()
 {
   QMap<KDockWidget*,int>::iterator it;

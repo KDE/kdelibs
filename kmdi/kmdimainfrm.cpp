@@ -1531,6 +1531,25 @@ void KMdiMainFrm::setupTabbedDocumentViewSpace() {
 void KMdiMainFrm::setIDEAlModeStyle(int flags)
 {
     d->m_styleIDEAlMode = flags; // see KMultiTabBar for the first 3 bits
+    if (m_leftContainer) {
+	KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
+	if (tmpL) tmpL->setStyle(flags);
+   }
+
+    if (m_rightContainer) {
+	KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
+	if (tmpR) tmpR->setStyle(flags);
+   }
+
+    if (m_topContainer) {
+	KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
+	if (tmpT) tmpT->setStyle(flags);
+   }
+
+    if (m_bottomContainer) {
+	KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
+	if (tmpB) tmpB->setStyle(flags);
+   }
 }
 
 /**
