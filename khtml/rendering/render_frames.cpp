@@ -600,7 +600,7 @@ void RenderPartObject::updateWidget()
 
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
       url = o->url.string();
-      if( url.isEmpty()) return;
+      if( url.isEmpty() || !o->getDocument()->isURLAllowed(url) ) return;
       part->requestFrame( this, url, o->name.string(), QStringList(), true );
   // ### this should be constant true - move iframe to somewhere else
   } else {
@@ -704,7 +704,7 @@ void RenderPartObject::updateWidget()
               }
           }
       }
-      if (url.isEmpty() || !part->requestObject( this, url, serviceType, params ))
+      if (url.isEmpty() || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
       else
           objbase->setLiveConnect(part->liveConnectExtension(this));

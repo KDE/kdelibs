@@ -1,3 +1,9 @@
+2004-03-23  Dirk Mueller  <mueller@kde.org>
+
+	* khtml_part.cpp (checkLinkSecurity): Be stricter.
+
+	* rendering/render_frames.cpp (updateWidget): readd the recursion protection.
+
 2004-03-21  Arend van Beelen jr. <arend@auton.nl>
 	* khtml_part.cpp/.h: if text in a link is highlighted, the link now receives
 	focus.
