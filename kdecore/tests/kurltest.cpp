@@ -392,14 +392,14 @@ int main(int argc, char *argv[])
   // IPV6
   waba1 = "http://[::FFFF:129.144.52.38]:81/index.html";
   check("http: IPV6 host", waba1.host(),
-        "::FFFF:129.144.52.38");
+        "::ffff:129.144.52.38");
   check("http: IPV6 port", QString("%1").arg(waba1.port()),
         "81");
 
   // IPV6
   waba1 = "http://waba:pass@[::FFFF:129.144.52.38]:81/index.html";
   check("http: IPV6 host", waba1.host(),
-        "::FFFF:129.144.52.38");
+        "::ffff:129.144.52.38");
   check("http: IPV6 host", waba1.user(),
         "waba");
   check("http: IPV6 host", waba1.pass(),
@@ -409,9 +409,9 @@ int main(int argc, char *argv[])
 
   // IPV6
   waba1 = "http://www.kde.org/cgi/test.cgi";
-  waba1.setHost("::FFFF:129.144.52.38");
+  waba1.setHost("::ffff:129.144.52.38");
   check("http: IPV6 host", waba1.url(),
-        "http://[::FFFF:129.144.52.38]/cgi/test.cgi");
+        "http://[::ffff:129.144.52.38]/cgi/test.cgi");
 
   // Broken stuff
   waba1 = "file:a";

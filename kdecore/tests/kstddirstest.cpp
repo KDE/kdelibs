@@ -10,12 +10,15 @@ int main(int argc, char **argv)
   KStandardDirs t;
   KConfig config; // to add custom entries - a bit tricky :/
 
+  QStringList list;
+  QString s;
+
   t.saveLocation("icon");
 
-  QString s = t.findResource("icon", "xv.xpm");
+  s = t.findResource("icon", "xv.xpm");
   if (!s.isNull()) kdDebug() << s << endl;
 
-  QStringList list = t.findAllResources("data", "kfind/toolbar", true);
+  list = t.findAllResources("data", "kfind/toolbar", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     kdDebug() << "data " << (*it).ascii() << endl;
   }
@@ -30,8 +33,12 @@ int main(int argc, char **argv)
     kdDebug() << "config2 " << (*it).ascii() << endl;
   }
 
+  list = t.findAllResources("html", "en/*/index.html", false);
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
+    kdDebug() << "docs " << (*it).ascii() << endl;
+  }
 
-  list = t.findAllResources("html", "en/*/index.html", true);
+  list = t.findAllResources("html", "*/*/*.html", false);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     kdDebug() << "docs " << (*it).ascii() << endl;
   }
