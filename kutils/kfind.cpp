@@ -62,11 +62,18 @@ struct KFind::Private
       patternChanged(false),
       matchedPattern(""),
       incrementalPath(29, true),
+      emptyMatch(0),
       currentId(0),
       customIds(false)
     {
         incrementalPath.setAutoDelete(true);
         data.setAutoDelete(true);
+    }
+
+    ~Private()
+    {
+        delete emptyMatch;
+        emptyMatch = 0;
     }
 
     struct Match
@@ -100,6 +107,7 @@ struct KFind::Private
     bool                  patternChanged;
     QString               matchedPattern;
     QDict<Match>          incrementalPath;
+    Match *               emptyMatch;
     QPtrVector<Data>      data;
     int                   currentId;
     bool                  customIds;
@@ -236,7 +244,7 @@ KFind::Result KFind::find()
         // probably look up the match in the incrementalPath
         if ( m_pattern.length() < d->matchedPattern.length() )
         {
-            Private::Match *match = d->incrementalPath[m_pattern];
+            Private::Match *match = m_pattern.isEmpty() ? d->emptyMatch : d->incrementalPath[m_pattern];
             QString previousPattern = d->matchedPattern;
             d->matchedPattern = m_pattern;
             if ( match != 0 )
@@ -357,7 +365,11 @@ KFind::Result KFind::find()
 
                 if ( m_options & KFindDialog::FindIncremental )
                 {
-                    d->incrementalPath.replace(m_pattern, new Private::Match(d->currentId, m_index, m_matchedLength));
+                    if ( m_pattern.isEmpty() ) {
+                        delete d->emptyMatch;
+                        d->emptyMatch = new Private::Match( d->currentId, m_index, m_matchedLength );
+                    } else
+                        d->incrementalPath.replace(m_pattern, new Private::Match(d->currentId, m_index, m_matchedLength));
 
                     if ( m_pattern.length() < d->matchedPattern.length() )
                     {
@@ -418,7 +430,7 @@ KFind::Result KFind::find()
 
 void KFind::startNewIncrementalSearch()
 {
-    Private::Match *match = d->incrementalPath[""];
+    Private::Match *match = d->emptyMatch;
     if(match == 0)
     {
         m_text = QString::null;
@@ -433,6 +445,8 @@ void KFind::startNewIncrementalSearch()
     }
     m_matchedLength = 0;
     d->incrementalPath.clear();
+    delete d->emptyMatch;
+    d->emptyMatch = 0;
     d->matchedPattern = m_pattern;
     m_pattern = QString::null;
 }
