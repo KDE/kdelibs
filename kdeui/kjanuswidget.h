@@ -22,6 +22,7 @@
 
 #include <qgrid.h>
 #include <qlist.h>
+#include <qsplitter.h>
 #include <qwidget.h>
 
 #include <klistview.h>
@@ -226,7 +227,7 @@ class KJanusWidget : public QWidget
 			const QString &header=QString::null );
 
     /**
-     * Define the widget to be swallowed. 
+     * Defines the widget to be swallowed. 
      *
      * This method can be used several 
      * times. Only the latest defined widget will be shown.
@@ -236,11 +237,30 @@ class KJanusWidget : public QWidget
      */
     bool setSwallowedWidget( QWidget *widget );
 
+    /**
+     * This function has only effect in TreeList mode.
+     *
+     * Defines how the tree list is resized when the widget is resized
+     * horizontally. By default the tree list keeps its width when the  
+     * widget becomes wider.
+     *
+     * @param state The resize mode. If false (default) the TreeList keeps
+     *              its current width when the widget becomes wider.
+     */
+     void setTreeListAutoResize( bool state );
+
   public slots:
     /**
      * Give the keyboard input focus to the widget.
      */
     virtual void setFocus( void ); 
+
+  protected:
+    /**
+     * Reimplemented to handle the splitter width when the the face
+     * is TreeList
+     */
+    virtual void showEvent( QShowEvent * );
 
   private slots:
     bool slotShowPage( void );
@@ -268,6 +288,7 @@ class KJanusWidget : public QWidget
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;
     int          mActivePageIndex;
+    QSplitter::ResizeMode mTreeListResizeMode;
 };
 
 #endif

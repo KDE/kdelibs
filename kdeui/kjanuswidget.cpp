@@ -60,6 +60,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     QSplitter *splitter = new QSplitter( this );
     if( splitter == 0 ) { return; }
     topLayout->addWidget( splitter, 10 );
+    mTreeListResizeMode = QSplitter::KeepSize;
 
     //
     // Tree list
@@ -278,13 +279,6 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
 
 
 
-
-
-
-
-
-
-
 QVBox *KJanusWidget::addVBoxPage( const QString &itemName, 
 				  const QString &header )
 {
@@ -434,7 +428,6 @@ void KJanusWidget::addPageWidget( QFrame *page, const QString &itemName,
   }
 
 }
-
 
 
 bool KJanusWidget::setSwallowedWidget( QWidget *widget )
@@ -653,4 +646,30 @@ QSize KJanusWidget::sizeHint( void ) const
 }
 
 
+void KJanusWidget::setTreeListAutoResize( bool state )
+{
+  if( mFace == TreeList )
+  {
+    mTreeListResizeMode = state == false ? 
+      QSplitter::KeepSize : QSplitter::Stretch;
+    QSplitter *splitter = (QSplitter*)(mTreeList->parentWidget());
+    splitter->setResizeMode( mTreeList, mTreeListResizeMode );
+  }
+}
+
+
+
+void KJanusWidget::showEvent( QShowEvent * )
+{
+  if( mFace == TreeList )
+  {
+    QSplitter *splitter = (QSplitter*)(mTreeList->parentWidget());
+    splitter->setResizeMode( mTreeList, mTreeListResizeMode );
+  }
+}
+
+
 #include "kjanuswidget.moc"
+
+
+

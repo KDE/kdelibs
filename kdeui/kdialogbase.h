@@ -624,6 +624,19 @@ class KDialogBase : public KDialog
      */
     void setButtonWhatsThis( ButtonCode id, const QString &text );
 
+    
+    /**
+     * This function has only effect in TreeList mode.
+     *
+     * Defines how the tree list widget is resized when the dialog is 
+     * resized horizontally. By default the tree list keeps its width 
+     * when the dialog becomes wider.
+     *
+     * @param state The resize mode. If false (default) the tree list keeps
+     *              its current width when the dialog becomes wider.
+     */
+     void setTreeListAutoResize( bool state );
+
     /** 
      * Check whether the background tile is set or not. 
      *

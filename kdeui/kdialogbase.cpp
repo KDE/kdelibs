@@ -670,6 +670,15 @@ void KDialogBase::setButtonFocus( QPushButton *p,bool isDefault, bool isFocus )
 }
 
 
+void KDialogBase::setTreeListAutoResize( bool state )
+{
+  if( mJanus != 0 )
+  {
+    mJanus->setTreeListAutoResize( state );
+  }
+}
+
+
 void KDialogBase::slotHelp( void ) 
 {
   emit helpClicked();
