@@ -244,7 +244,7 @@ void KAboutContributor::updateLayout( void )
 }
 
 
-void KAboutContributor::fontChange( const QFont &oldFont )
+void KAboutContributor::fontChange( const QFont &/*oldFont*/ )
 {
   if( mShowBold == true )
   {
@@ -280,9 +280,8 @@ void KAboutContributor::emailClickedSlot( const QString &e )
 KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *parent,
 					  char *name )
   : QWidget( parent, name ),
-    mTitleLabel(0),
-    mImageLabel(0),mIconLabel(0),mVersionLabel(0),mAuthorLabel(0), 
-    mImageFrame(0),mPageTab(0),mPlainSpace(0)
+    mImageLabel(0), mTitleLabel(0), mIconLabel(0),mVersionLabel(0),
+    mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0)
 {
   mTopLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
   if( mTopLayout == 0 ) { return; }
@@ -425,7 +424,7 @@ QSize KAboutContainerBase::sizeHint( void )
 }
 
 
-void KAboutContainerBase::fontChange( const QFont &oldFont )
+void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
 {
   if( mTitleLabel != 0 )
   {
@@ -1550,7 +1549,7 @@ void KAboutDialog::setVersion(const QString& name)
   // #################################################################
 }
 
-void KAboutDialog::sendEmailSlot(const QString& name, const QString& email)
+void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
   kapp->invokeMailer( email, QString::null );
   /*
@@ -1568,7 +1567,7 @@ void KAboutDialog::openURLSlot(const QString& url)
 }
 
 
-void KAboutDialog::mouseTrackSlot( int mode, const QMouseEvent *e )
+void KAboutDialog::mouseTrackSlot( int /*mode*/, const QMouseEvent */*e*/ )
 {
   // By default we do nothing. This method must be reimplemented.
 }
