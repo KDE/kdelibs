@@ -267,6 +267,18 @@ class MetaData : public QMap<QString, QString>
 {
 public:
    MetaData() : QMap<QString, QString>() { };
+
+   MetaData & operator+= ( const QMap<QString,QString> &metaData )
+   {
+      QMap<QString,QString>::ConstIterator it;
+      for( it = metaData.begin();
+           it !=  metaData.end();
+           ++it)
+      {
+         replace(it.key(), it.data());
+      }
+      return *this;
+   }
 };
 
 };
