@@ -184,7 +184,8 @@ public:
    * @internal
    * Pointer to parent serice type
    */
-  KServiceType::Ptr parentType();
+  // gcc 2.95.x doesn't understand KServiceType::Ptr here
+  /* KServiceType:: */ Ptr parentType(); 
   /**
    * @internal
    * Register service that provides this service type
