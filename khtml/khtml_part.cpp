@@ -79,6 +79,7 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
+#include <kmultipledrag.h>
 
 #include <kssl.h>
 #include <ksslinfodlg.h>
@@ -3719,14 +3720,16 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
           KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-          KURL::List uris;
-          uris.append(u);
-          drag = KURLDrag::newDrag( uris, d->m_view->viewport() );
+          drag = KURLDrag::newDrag( u, d->m_view->viewport() );
           p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
-            drag = new QImageDrag( i->currentImage() , d->m_view->viewport() );
+            KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
+            mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
+            KURL u( d->m_doc->completeURL( splitUrlTarget( i->imageURL().string() ) ) );
+            mdrag->addDragObject( KURLDrag::newDrag( u, 0L ) );
+            drag = mdrag;
             p = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
           }
       }
