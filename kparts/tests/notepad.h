@@ -29,7 +29,6 @@ protected slots:
 
 protected:
   QMultiLineEdit * m_edit;
-  KInstance *m_instance;
 };
 
 #endif
