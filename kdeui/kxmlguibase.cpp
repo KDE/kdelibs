@@ -118,14 +118,16 @@ void KXMLGUIClient::setInstance( KInstance *instance )
   d->m_instance = instance;
 }
 
-void KXMLGUIClient::setXMLFile( QString file, bool merge )
+void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
 {
+  QString file = _file;
+
   if ( file[0] != '/' )
   {
     file = locate( "data", QString(instance()->instanceName())+"/"+file );
     if ( file.isEmpty() )
     {
-      kDebugError( 1000, "File not found : %s", file.ascii() );
+      kdError( 1000) << "File not found: " << _file << endl;
       return;
     }
   }

@@ -95,7 +95,7 @@ protected:
    *             in the "data" resource, under a directory named like
    *             the instance.
    **/
-  virtual void setXMLFile( QString file, bool merge = false );
+  virtual void setXMLFile( const QString& file, bool merge = false );
 
   /**
    * Set the XML for the part.
