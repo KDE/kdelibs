@@ -27,9 +27,13 @@
 #include <kcharsets.h>
 
 #define MAXFONTSIZES 15
-const int defaultSmallFontSizes[MAXFONTSIZES] = { 6, 7, 8, 9, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68 };
-const int defaultMediumFontSizes[MAXFONTSIZES] = { 7, 8, 9, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82 };
-const int defaultLargeFontSizes[MAXFONTSIZES] = { 8, 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
+// xx-small, x-small, small, medium, large, x-large, xx-large, ...
+const int defaultSmallFontSizes[MAXFONTSIZES] =
+  {  8,  8,  9, 10, 12, 14, 16, 18, 24, 28, 34, 40, 48, 56, 68 };
+const int defaultMediumFontSizes[MAXFONTSIZES] =
+  {  9, 10, 11, 12, 14, 16, 20, 24, 28, 34, 40, 48, 56, 68, 82 };
+const int defaultLargeFontSizes[MAXFONTSIZES] =
+  { 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
@@ -116,8 +120,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "FontSize" ) )
   {
-    m_fontSize = config->readNumEntry( "FontSize", 0 );
-        resetFontSizes();
+    m_fontSize = config->readNumEntry( "FontSize", 1 );
+    resetFontSizes();
   }
 
   if ( reset || config->hasKey( "MinimumFontSize" ) )
@@ -140,7 +144,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     for ( QStringList::Iterator it = chSets.begin(); it != chSets.end(); ++it ) {
 	if ( reset || config->hasKey( *it ) ){
 	    QStringList fonts = config->readListEntry( *it );
-	    if( fonts.count() != 6 ) 
+	    if( fonts.count() != 6 )
 		fonts = defaultFonts;
 	    fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
 	}
@@ -148,7 +152,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "DefaultEncoding" ) )
     {
-        setCharset(KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") ) );
+        setCharset(KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") ));
     };
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
@@ -275,14 +279,14 @@ bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 
 void KHTMLSettings::resetFontSizes()
 {
-  m_fontSizes.clear();
-  for ( int i = 0; i < MAXFONTSIZES; i++ )
+    m_fontSizes.clear();
+    for ( int i = 0; i < MAXFONTSIZES; i++ )
         if( m_fontSize == 0 ) // small
-          m_fontSizes << defaultSmallFontSizes[ i ];
+            m_fontSizes << defaultSmallFontSizes[ i ];
         else if( m_fontSize == 2 ) // large
-          m_fontSizes << defaultLargeFontSizes[ i ];
+            m_fontSizes << defaultLargeFontSizes[ i ];
         else
-          m_fontSizes << defaultMediumFontSizes[ i ];
+            m_fontSizes << defaultMediumFontSizes[ i ];
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
@@ -323,9 +327,9 @@ QString KHTMLSettings::settingsToCSS() const
     if( m_bChangeCursor )
 	str += "\ncursor: pointer;";
     str += "\n}\n";
-    
+
     if(!m_underlineLink) // needs own key
-        str += "a:hover { text-decoration: underline; }\n";
+        str += "a[href]:hover { text-decoration: underline; }\n";
 
     return str;
 }
@@ -337,11 +341,11 @@ QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
     if (fontList.count() > (uint) i)
        font = fontList[i];
     if (font.isEmpty())
-       font = defaultFonts[i]; 
+       font = defaultFonts[i];
     return font;
 }
 
-QString KHTMLSettings::stdFontName() const 
+QString KHTMLSettings::stdFontName() const
 {
     return lookupFont(m_charset,0);
 }
@@ -389,8 +393,8 @@ void KHTMLSettings::setFixedFontName(const QString &n)
     setFont(m_charset, 1, n);
 }
 
-void KHTMLSettings::setCharset( QFont::CharSet c) 
-{ 
-    if(!enforceCharset) m_charset = c; 
+void KHTMLSettings::setCharset( QFont::CharSet c)
+{
+    if(!enforceCharset) m_charset = c;
     availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
 }
