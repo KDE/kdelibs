@@ -273,7 +273,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
         popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
         popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
-        popup->insertItem( i18n( "Clear" ), Clear );
+        popup->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
         // Create and insert the completion sub-menu iff
         // a completion object is present.
         if( compObj() )
