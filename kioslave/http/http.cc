@@ -301,6 +301,7 @@ void HTTPProtocol::resetSessionSettings()
   // unless the remote side tells us otherwise or we determine
   // the persistent link has been terminated by the remote end.  
   m_bKeepAlive = true;
+  m_keepAliveTimeout = 0;
   m_bCanResume = false;
   m_bUnauthorized = false;  
   
@@ -1680,7 +1681,12 @@ void HTTPProtocol::httpCheckConnection()
   if ( !m_bFirstRequest && (m_iSock != -1) )
   {
      bool closeDown = false;
-     if ( m_request.method != HTTP_GET )
+     if ( !isConnectionValid())
+     {
+  kdDebug(7113) << "(" << m_pid << ") Connection lost!" << endl;
+        closeDown = true;
+     }
+     else if ( m_request.method != HTTP_GET )
      {
         closeDown = true;
      }
@@ -2601,6 +2607,22 @@ bool HTTPProtocol::readHeader()
       if (strncasecmp(trimLead(buf + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
+    // Keep Alive
+    else if (strncasecmp(buf, "Keep-Alive:", 11) == 0) {
+      m_bKeepAlive = true;
+      QStringList options = QStringList::split(',',
+                                     QString::fromLatin1(trimLead(buf+11)));
+      for(QStringList::ConstIterator it = options.begin();
+          it != options.end();
+          it++)
+      {
+         QString option = (*it).stripWhiteSpace().lower();
+         if (option.startsWith("timeout="))
+         {
+            m_keepAliveTimeout = option.mid(8).toInt();
+         }
+      }
+    }
 
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
@@ -2828,7 +2850,7 @@ bool HTTPProtocol::readHeader()
         m_bKeepAlive = false;
       else if (strncasecmp(trimLead(buf + 17), "Keep-Alive", 10)==0)
         m_bKeepAlive = true;
-      }
+    }
     else if (strncasecmp(buf, "Link:", 5) == 0) {
       // We only support Link: <url>; rel="type"   so far
       QStringList link = QStringList::split(";", QString(buf)
@@ -3430,7 +3452,16 @@ void HTTPProtocol::httpClose( bool keepAlive )
   if (keepAlive && (!m_bUseProxy ||
       m_bPersistentProxyConnection || m_bIsTunneled))
   {
-    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
+    if (!m_keepAliveTimeout)
+       m_keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+    else if (m_keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
+       m_keepAliveTimeout = 2*DEFAULT_KEEP_ALIVE_TIMEOUT;
+
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")" << endl;
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly ); 
+    stream << int(99); // special: Close connection
+    setTimeoutSpecialCommand(m_keepAliveTimeout, data);
     return;
   }
 
@@ -3449,6 +3480,7 @@ void HTTPProtocol::httpCloseConnection ()
   m_bIsTunneled = false;
   m_bKeepAlive = false;
   closeDescriptor();
+  setTimeoutSpecialCommand(-1); // Cancel any connection timeout
 }
 
 void HTTPProtocol::slave_status()
@@ -3527,6 +3559,12 @@ void HTTPProtocol::special( const QByteArray &data )
       int method;
       stream >> url >> method; 
       davGeneric( url, (KIO::HTTP_METHOD) method );
+      break;
+    }
+    case 99: // Close Connection
+    {
+      httpCloseConnection();
+      break;
     }
     default:
       // Some command we don't understand.

@@ -467,6 +467,7 @@ protected:
 
   // Persistent connections
   bool m_bKeepAlive;
+  int m_keepAliveTimeout; // Timeout in seconds.
 
   // Persistent proxy connections
   bool m_bPersistentProxyConnection;
