@@ -149,7 +149,7 @@ KJSO DOMEvent::tryGet(const UString &p) const
     return String(event.type());
   else if (p == "target")
     return getDOMNode(event.target());
-  else if (p == "currentTarget")
+  else if (p == "currentTarget" || p == "toElement" /*MSIE extension*/)
     return getDOMNode(event.currentTarget());
   else if (p == "eventPhase")
     return Number((unsigned int)event.eventPhase());
@@ -330,7 +330,7 @@ KJSO DOMMouseEvent::tryGet(const UString &p) const
     int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
     return Number( (unsigned int)button );
   }
-  else if (p == "relatedTarget")
+  else if (p == "relatedTarget" || p == "fromElement" /*MSIE extension*/)
     return getDOMNode(static_cast<DOM::MouseEvent>(event).relatedTarget());
   else if (p == "initMouseEvent")
     return new DOMMouseEventFunc(static_cast<DOM::MouseEvent>(event),DOMMouseEventFunc::InitMouseEvent);
