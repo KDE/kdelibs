@@ -277,6 +277,27 @@ public:
 		return _pool->base->_defaultPortsOut();
 	}
 	
+	// aggregation
+	inline std::string _addChild(Arts::Object child, const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_addChild(child, name);
+	}
+	inline bool _removeChild(const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_removeChild(name);
+	}
+	inline Arts::Object _getChild(const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_getChild(name);
+	}
+	inline std::vector<std::string> * _queryChildren() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_queryChildren();
+	}
 	// Do we really need those in the Wrapper?
 	// And would it really be sensible to make _cast wrappers?
 /*	inline void _release() const {
@@ -285,7 +306,7 @@ public:
 		return _pool->base->_release();
 	}
 	inline Object_base *_copy() const {
-		_pool->checkcreate();
+		_poo->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_copy();
 	}
