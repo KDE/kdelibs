@@ -34,69 +34,68 @@ class KConfig;
 class KStdAccel //: public KKeyConfig
 {
 public:
-  KStdAccel(KConfig* cfg = 0);
+  KStdAccel();
   ~KStdAccel();
 
   /** Open file. Default: Ctrl-o */
-  uint open() const;
+  static uint open();
 
   /** Create a new document (or whatever). Default: Ctrl-n */
-  uint openNew() const;
+  static uint openNew();
 
   /** Close current document. Default: Ctrl-w */
-  uint close() const;
+  static uint close();
 
   /** Save current document. Default: Ctrl-s */
-  uint save() const;
+  static uint save();
 
   /** Print current document. Default: Ctrl-p */
-  uint print() const;
+  static uint print();
 
   /** Quit the program. Default: Ctrl-q */
-  uint quit() const;
+  static uint quit();
 
   /** Cut selected area and store it in the clipboard. Default: Ctrl-x */
-  uint cut() const;
+  static uint cut();
 
   /** Copy selected area into the clipboard. Default: Ctrl-c */
-  uint copy() const;
+  static uint copy();
 
   /** Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v */
-  uint paste() const;
+  static uint paste();
 
   /** Undo last operation. Default: Ctrl-z */
-  uint undo() const;
+  static uint undo();
 
   /** Redo. Default: Ctrl-y */
-  uint redo() const;
+  static uint redo();
 
   /** Find, search. Default: Ctrl-f */
-  uint find() const;
+  static uint find();
 
   /** Find and replace matches. Default: Ctrl-r */
-  uint replace() const;
+  static uint replace();
 
   /** Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert */
-  uint insert() const;
+  static uint insert();
 
   /** Goto beginning of current line. Default: Home */
-  uint home() const;
+  static uint home();
 
   /** Goto end of current line. Default: End */
-  uint end() const;
+  static uint end();
 
   /** Scroll up one page. Default: Prior */
-  uint prior() const;
+  static uint prior();
 
   /** Scroll down one page. Default: Next */
-  uint next() const;
+  static uint next();
 
   /** Help the user in the current situation. Default: F1 */
-  uint help() const;
+  static uint help();
 
 protected:
-  uint readKey(KAccel::StdAccel accel, uint defaultKey=0) const;
-  KConfig* config;
+  static uint readKey(KAccel::StdAccel accel, uint defaultKey=0);
 };
 
 #endif /*kshortcut_h*/

@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.34  1999/10/10 08:18:56  bero
+// Code cleanup ((void) stuff)
+//
 // Revision 1.33  1999/07/25 20:51:42  reggie
 // fixing problems helps more than adding #error :-)
 //
@@ -984,6 +987,8 @@ public:
         { _config->setGroup( group ); }
 
   ~KConfigGroupSaver() { _config->setGroup( _oldgroup ); }
+    
+    KConfigBase* config() { return _config; };
 
 private:
   KConfigBase* _config;
