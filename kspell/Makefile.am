@@ -28,7 +28,7 @@ libkspell_la_LIBADD = ../kdeui/libkdeui.la
 
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
 noinst_HEADERS = version.h
-libkspell_la_SOURCES = kspelldlg.cpp kspell.cpp ksconfig.cpp kprocio.cpp
+libkspell_la_SOURCES = ksconfig.cpp kspelldlg.cpp kspell.cpp kprocio.cpp
 
 libkspell_la_METASOURCES = kprocio.moc ksconfig.moc kspell.moc kspelldlg.moc
 
