@@ -497,6 +497,8 @@ void KHTMLView::clear()
     if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
 #endif
 
+    if( d->typeAheadActivated )
+        findTimeout();
     d->reset();
     killTimers();
     emit cleared();
