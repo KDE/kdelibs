@@ -328,9 +328,11 @@ public:
 #include "reference.h"
 
 class InterfaceRepo : virtual public SmartWrapper {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	InterfaceRepo_base *cache;
 	inline InterfaceRepo_base *_method_call() {
 		_pool->checkcreate();
@@ -349,6 +351,7 @@ public:
 	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
+		if (_pool == target._pool) return *this;
 		cacheOK=false;
 		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
@@ -414,9 +417,11 @@ public:
 #include "reference.h"
 
 class FlowSystemSender : virtual public SmartWrapper {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	FlowSystemSender_base *cache;
 	inline FlowSystemSender_base *_method_call() {
 		_pool->checkcreate();
@@ -435,6 +440,7 @@ public:
 	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
+		if (_pool == target._pool) return *this;
 		cacheOK=false;
 		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
@@ -497,9 +503,11 @@ public:
 #include "reference.h"
 
 class FlowSystemReceiver : virtual public SmartWrapper {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	FlowSystemReceiver_base *cache;
 	inline FlowSystemReceiver_base *_method_call() {
 		_pool->checkcreate();
@@ -518,6 +526,7 @@ public:
 	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
+		if (_pool == target._pool) return *this;
 		cacheOK=false;
 		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
@@ -590,9 +599,11 @@ public:
 #include "reference.h"
 
 class FlowSystem : virtual public SmartWrapper {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	FlowSystem_base *cache;
 	inline FlowSystem_base *_method_call() {
 		_pool->checkcreate();
@@ -611,6 +622,7 @@ public:
 	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline FlowSystem& operator=(const FlowSystem& target) {
+		if (_pool == target._pool) return *this;
 		cacheOK=false;
 		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
@@ -682,9 +694,11 @@ public:
 #include "reference.h"
 
 class GlobalComm : virtual public SmartWrapper {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	GlobalComm_base *cache;
 	inline GlobalComm_base *_method_call() {
 		_pool->checkcreate();
@@ -703,6 +717,7 @@ public:
 	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline GlobalComm& operator=(const GlobalComm& target) {
+		if (_pool == target._pool) return *this;
 		cacheOK=false;
 		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
@@ -765,9 +780,11 @@ public:
 #include "reference.h"
 
 class TmpGlobalComm : virtual public GlobalComm {
+protected:
+	bool cacheOK;
+
 private:
 	static Object_base* _Creator();
-	bool cacheOK;
 	TmpGlobalComm_base *cache;
 	inline TmpGlobalComm_base *_method_call() {
 		_pool->checkcreate();
@@ -786,6 +803,8 @@ public:
 	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
 	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
+		if (_pool == target._pool) return *this;
+		GlobalComm::cacheOK=false;
 		cacheOK=false;
 		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();

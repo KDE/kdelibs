@@ -976,6 +976,30 @@ void createDispatchFunction(FILE *source, long mcount,
 	fprintf(source,"}\n\n");
 }
 
+// generate a list of all parents. There can be repetitions
+vector<std::string> allParents(InterfaceDef& iface)
+{
+	vector<std::string> ret;
+	list<InterfaceDef *>::iterator interIt;
+	vector<std::string>::iterator si;
+	// For all inherited interfaces
+	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
+	{
+		ret.push_back(*si);
+		// Find the corresponding interface definition
+		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
+			InterfaceDef *parent = *interIt;
+			if (parent->name == (*si)) {
+				// Now add this parent's parents
+				vector<std::string> ppar = allParents(*parent);
+				ret.insert(ret.end(), ppar.begin(), ppar.end());
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -1215,27 +1239,11 @@ void doInterfacesHeader(FILE *header)
 		if (hasParent) inherits = ": " + inherits;
 		else inherits = ": virtual public SmartWrapper";
 
-/*		// Now create the constructor init list
-		string parentConstructorsInit = "";
-		string parentAssignBase = "";
-		if (hasParent) {
-			vector<string>::const_iterator ii;
-			for (ii = d->inheritedInterfaces.begin();
-				ii != d->inheritedInterfaces.end(); ii++)
-			{
-				//if (!first) parentConstructorsInit += ", "; else first = false;
-				parentConstructorsInit += "" + *ii + "(), ";
-				parentAssignBase = "\t\t_" + (*ii) + "_redirect = base;\n";
-			}
-		}
-		parentConstructorsInit = " : " + parentConstructorsInit;
-		parentConstructorsInit += "_"+d->name+"_redirect(0)";
-*/
-
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
+		fprintf(header,"protected:\n");
+		fprintf(header,"\tbool cacheOK;\n\n");
 		fprintf(header,"private:\n");
 		fprintf(header,"\tstatic Object_base* _Creator();\n");
-		fprintf(header,"\tbool cacheOK;\n");
 		fprintf(header,"\t%s_base *cache;\n",d->name.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
@@ -1268,6 +1276,23 @@ void doInterfacesHeader(FILE *header)
 		// copy operator. copy from _base* extraneous (uses implicit const object)
 		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
 			d->name.c_str(),d->name.c_str());
+		// test for equality
+		fprintf(header,"\t\tif (_pool == target._pool) return *this;\n");
+		// Invalidate all parent caches
+		vector<std::string> parents = allParents(*d); // can repeat values
+		vector<std::string> done; // don't repeat values
+		// Loop through all the values
+		for (vector<std::string>::iterator si = parents.begin(); si != parents.end(); si++)
+		{
+				// repeated value? (virtual public like merging...)
+				bool skipIt = false;
+				for (vector<std::string>::iterator di = done.begin(); di != done.end(); di++) {
+						if ((*di)==(*si)) {skipIt = true; break;}
+				}
+				if (skipIt) continue;
+				fprintf(header,"\t\t%s::cacheOK=false;\n",(*si).c_str());
+				done.push_back(*si);
+		}
 		fprintf(header,"\t\tcacheOK=false;\n");
 		fprintf(header,"\t\t%s_base *sav = dynamic_cast<%s_base *>(_pool->base);\n",
 			d->name.c_str(),d->name.c_str());
@@ -1466,31 +1491,7 @@ bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& por
 	}
 	return false;
 }
-/*
-// generate a list of all parents. There can be repetitions
-vector<std::string> allParents(InterfaceDef& iface)
-{
-	vector<std::string> ret;
-	list<InterfaceDef *>::iterator interIt;
-	vector<std::string>::iterator si;
-	// For all inherited interfaces
-	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
-	{
-		ret.push_back(*si);
-		// Find the corresponding interface definition
-		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
-			InterfaceDef *parent = *interIt;
-			if (parent->name == (*si)) {
-				// Now add this parent's parents
-				vector<std::string> ppar = allParents(*parent);
-				ret.insert(ret.end(), ppar.begin(), ppar.end());
-				break;
-			}
-		}
-	}
-	return ret;
-}
-*/
+
 void doInterfacesSource(FILE *source)
 {
 	list<InterfaceDef *>::iterator ii;

@@ -51,6 +51,18 @@ public:
 
 REGISTER_IMPLEMENTATION(D_impl);
 
+class B_impl: virtual public B_skel {
+private:
+	long _value;
+public:
+	void value(long newVal) { _value = newVal; }
+	long value() { return _value; }
+	B_impl() :_value(0) {}
+	string a() { return "a"; }
+	string b() { return "b"; }
+};
+REGISTER_IMPLEMENTATION(B_impl);
+
 #define CALLS 100000000
 
 void check(const char *name,bool passed)
@@ -76,6 +88,19 @@ void test0()
 	   assignments
 	 */
 	assert(active_d_objects == 1);
+	
+	// Test isNull() and error()
+	bool notnull = d.isNull();
+	bool noterror1 = d.error();
+	d = 0;
+	bool null = d.isNull();
+	bool cnotnull = c.isNull();
+	bool noterror2 = d.error();
+	check("nullity and error conditions",!notnull && !noterror1 && null && !cnotnull && !noterror2);
+	
+	c = 0;
+	assert(active_d_objects == 0);
+	
 }
 
 /*
@@ -110,15 +135,39 @@ void test1()
 	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
 
+D afunc(D arg)
+{
+	arg.value(42);
+	return arg;
+}
+
 void test2()
 {
+	// test cache invalidation
+	B b;
+	b.value(3); // stores 3 using parent method
+	assert(active_d_objects == 0);
+	D d;
+	d.value(6);
+	assert(active_d_objects == 1);
+	b = d; // uses operator, not constructor. should invalidate A::cacheOK
+	check("proper cache handling",b.value()==6);
+	assert(active_d_objects == 1);
+	
+	A a = afunc(d);
+	assert(active_d_objects == 1);
+	check("SmartWrapper as argument",a.value()==42 && b.value()==42 && d.value()==42);
+	
 }
+
 int main()
 {
 	Dispatcher dispatcher;
 
 	assert(active_d_objects == 0);
 	test0();
+	assert(active_d_objects == 0);
+	test2();
 	assert(active_d_objects == 0);
 	test1();
 	assert(active_d_objects == 0);
