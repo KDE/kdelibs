@@ -70,6 +70,7 @@ enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
 
 static RenderStyle::PseudoId dynamicPseudo;
+static bool lastSelectorPart;
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
@@ -266,6 +267,7 @@ CSSOrderedRule::~CSSOrderedRule()
 bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
 {
     dynamicPseudo=RenderStyle::NOPSEUDO;
+    lastSelectorPart = true;
     CSSSelector *sel = selector;
     NodeImpl *n = e;
     // first selector has to match
@@ -342,6 +344,9 @@ static void checkPseudoState( DOM::ElementImpl *e )
 
 bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
+    bool last = lastSelectorPart;
+    lastSelectorPart = false;
+    
     if(!e || !e->isHTMLElement())
     {
         // ### no support for xml elements at the moment
@@ -403,7 +408,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    DOM::NodeImpl *n = e->parentNode()->firstChild();
 	    while( n && !n->isElementNode() )
 		n = n->nextSibling();
-	    if(n == e)
+	    if( n == e )
 		return true;
 	} else if(sel->value == ":link") {
 	    if ( pseudoState == PseudoUnknown )
@@ -421,10 +426,10 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 		    dynamicPseudo = RenderStyle::LINK;
 		return true;
 	    }
-	} else if ( sel->value == ":first-line" ) {
+	} else if ( sel->value == ":first-line" && last ) { // first-line and first-letter are only allowed at the end of a selector
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
 	    return true;
-	} else if ( sel->value == ":first-letter" ) {
+	} else if ( sel->value == ":first-letter" && last ) {
 	    dynamicPseudo=RenderStyle::FIRST_LETTER;
 	    return true;
 	} else if ( sel->value == ":hover" ) {
