@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-7), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
+Build-Depends: debhelper (>> 3.0.0), autoconf2.13, automake, flex, bison, gettext, libqt-dev (>= 2:2.3.1-7), libqt-dev (>= 2:2.3.1-7.0.1) [i386], libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev, g++-3.0 [alpha], gcc-3.0 [alpha]
 Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
@@ -10,7 +10,7 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1)
-Depends: ${shlibs:Depends}, python-base
+Depends: ${shlibs:Depends}, python-base, xbase-clients
 Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
 Conflicts: kdelibs3-crypto (<< 4:2.2.0-0beta1-1)
