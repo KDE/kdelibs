@@ -1,14 +1,13 @@
-kdelibs (4:2.2-0alpha1-1) experimental; urgency=low
+kdelibs (4:2.2-alpha1-1) experimental; urgency=low
  
-  * New upstream pre alpha.  This is not the alpha1 release.  This is a
-    snapshot done prior to the alpha1 release to get packaging issues 
-    worked out.
+  * New upstream alpha version.
   * Reseting all lintian overrides
   * And lets list the bug fixes
          None yet..have to figure them out
   * Add flex to build-depends as well as other deps
   * Add Debian menu items: cupsdconf
-  
+  * New packages: libkdb-mysql libkdb-postgres
+
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 11 Apr 2001 12:23:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
