@@ -267,6 +267,12 @@ private:
   KConfigPrivate *d;
 };
 
+/**
+ * KConfig variant using shared memory
+ *
+ * KSharedConfig provides a reference counted, shared memory variant
+ * of KConfig.
+ */
 class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
   friend class QValueList<KSharedConfig*>;
@@ -276,7 +282,8 @@ public:
 public:  
   /**
    * Returns a ref-counted pointer to a shared read-write config object.
-   * @param immutable, if true, force the config object to be read-only.
+   * @param fileName the name of the file to use for the configuration
+   * @param immutable if true, force the config object to be read-only.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    */
   static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
