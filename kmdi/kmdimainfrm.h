@@ -51,7 +51,7 @@
 class QTimer;
 class QPopupMenu;
 class QMenuBar;
-#include <kmditoolviewaccessor.h>
+#include "kmditoolviewaccessor.h"
 
 class QToolButton;
 
@@ -70,7 +70,7 @@ class KMdiMainFrmPrivate;
 class KMdiViewCloseEvent : public QCustomEvent
 {
 public:
-   KMdiViewCloseEvent( KMdiChildView* pWnd) : QCustomEvent(QEvent::User,pWnd) {};
+   KMdiViewCloseEvent( KMdiChildView* pWnd) : QCustomEvent(QEvent::User,pWnd) {}
 };
 
 /**
