@@ -11,10 +11,6 @@ and Stephan Kulow took them over, when he orphaned them.
 Since then Ivan Moore has taken them over.
 
 ---
-
-To enable SSL support you must install kdelibs3-crypto and kdebase-crypto.
-
----
 INFORMATIONS ABOUT KDE
 ======================
 

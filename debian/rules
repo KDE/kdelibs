@@ -38,7 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa \
+	--includedir=/usr/include/kde --with-ssl --without-alsa \
 	--disable-cups
 
 	$(MAKE)
@@ -53,7 +53,7 @@ alsa-stamp:
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+	./configure $(configkde) --with-alsa --with-ssl --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
@@ -159,14 +159,12 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
-	# ssl cleanup
-	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
-	for i in `find debian/ -type l -name "common"`; do \
-		rm $$i; \
-		ln -s ../common $$i ;\
-	done
+	#for i in `find debian/ -type l -name "common"`; do \
+	#	rm $$i; \
+	#	ln -s ../common $$i ;\
+	#done
 	dh_perl -a
 	dh_link -a
 	dh_compress -a -X.docbook -X.css -X-license -X.dcl

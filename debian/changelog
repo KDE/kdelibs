@@ -12,6 +12,7 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Use libasound2
   * Fix printing to files with spaces in the name (Closes: #117962)
   * Fix build with libxml (Closes: #118638)
+  * Include SSL support in main package
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 07 Nov 2001 12:14:00 -0700
 
