@@ -78,7 +78,30 @@ in the khtml sourcecode.
 # xml
 ===========================================================================
 
-- dom_docimpl.cpp: currently only merged the following trivial changes: 
-   the addition to DOMImplementationImpl::hasFeature()
-   the recalcStyle() reentrency protection
-   double parsing for redirect timeouts.
+- dom2_eventsimpl.cpp: computeLayerPos, requires mering of rendering/
+
+- dom2_rangeimpl.cpp: crateContextualFragmet.. merging needed
+
+- dom_docimpl.cpp: 
+    renderArena support.. merging needed. 
+    lowercase attribute names.. requires confirmation
+    preferred style sheet / delay recalcing style selector till
+    all external stylesheets are loaded. 
+
+- dom_nodeimpl.cpp: rendererNeedsClose. I don't fully understand this
+  seems to be only required for the avoid-unstyled-elements-flicker
+  restoreState -> QStringList change. will merge. 
+  setLayouted(false) calls in attach(). this should imho be handled
+  in the rendering tree. needs feedback. 
+
+- dom_nodeimpl.cpp / .h: setMalformed() hack. 
+  isInline() fixes. 
+  previous/nextrenderer addition
+
+- dom_stringimpl.cpp: toLengthArray alternative implementation not merged
+
+- dom_textimpl.cpp: setNodeValue: whitespace nuking needs merged!!
+
+- xml_tokenizer.cpp/.h: completely skipped. unfinished work. 
+
+
