@@ -9,6 +9,7 @@
 #include <kcharsets.h>
 #include <qtextcodec.h>
 #include <qdatastream.h>
+#include <assert.h>
 
 static bool check(QString txt, QString a, QString b)
 {
