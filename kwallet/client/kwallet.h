@@ -30,6 +30,8 @@
 #include "kwalletentry.h"
 
 
+class DCOPClient;
+
 namespace KWallet {
 
 class Wallet {
@@ -44,7 +46,7 @@ class Wallet {
 		int close(const QByteArray& password);
 
 		// Returns true if the current wallet is open
-		bool isOpen() const;
+		bool isOpen();
 
 		// Returns the current wallet name
 		const QString& walletName() const;
@@ -63,6 +65,7 @@ class Wallet {
 		WalletPrivate *d;
 		QString _name;
 		bool _open;
+		DCOPClient *_dcopClient;
 };
 
 };

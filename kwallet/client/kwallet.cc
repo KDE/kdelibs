@@ -20,14 +20,16 @@
 
 #include "kwallet.h"
 #include <kdebug.h>
+#include <dcopclient.h>
 
 #include <assert.h>
 
 
 using namespace KWallet;
 
-Wallet::Wallet(const QString& name) : _name(name) {
+Wallet::Wallet(const QString& name) : _name(name), _dcopClient(new DCOPClient) {
 	_open = false;
+	_dcopClient->attach();
 }
 
 
@@ -35,18 +37,68 @@ Wallet::~Wallet() {
 	if (_open) {
 		// FIXME: Discard changes
 	}
+
+	delete _dcopClient;
 }
 
 
 int Wallet::open(const QByteArray& password) {
-	Q_UNUSED(password);
-	return 0;
+	if (!_dcopClient->isAttached())
+		return -100;
+
+	if (_open) {
+		return -1;
+	}
+
+	QByteArray data, retval;
+	QCString rettype;
+	QDataStream arg(data, IO_WriteOnly);
+	arg << _name;
+	arg << password;
+	bool rc = _dcopClient->call("kded", "kwalletd",
+				"open(const QString&, const QByteArray&)",
+				data, rettype, retval, true);
+
+	if (rc && rettype == "int") {
+		QDataStream retStream(retval, IO_ReadOnly);
+		int drc;
+		retStream >> drc;
+		if (drc == 0) {
+			_open = true;
+		}
+		return drc;
+	}
+	return -99;
 }
 
 	
 int Wallet::close(const QByteArray& password) {
-	Q_UNUSED(password);
-	return 0;
+	if (!_dcopClient->isAttached())
+		return -100;
+
+	if (!_open) {
+		return -1;
+	}
+
+	QByteArray data, retval;
+	QCString rettype;
+	QDataStream arg(data, IO_WriteOnly);
+	arg << _name;
+	arg << password;
+	bool rc = _dcopClient->call("kded", "kwalletd",
+				"close(const QString&, const QByteArray&)",
+				data, rettype, retval, true);
+
+	if (rc && rettype == "int") {
+		QDataStream retStream(retval, IO_ReadOnly);
+		int drc;
+		retStream >> drc;
+		if (drc == 0) {
+			_open = false;
+		}
+		return drc;
+	}
+	return -99;
 }
 
 
@@ -55,27 +107,49 @@ const QString& Wallet::walletName() const {
 }
 
 
-bool Wallet::isOpen() const {
-	return _open;
+bool Wallet::isOpen() {
+	if (!_dcopClient->isAttached())
+		return false;
+	QByteArray data, retval;
+	QCString rettype;
+	QDataStream arg(data, IO_WriteOnly);
+	arg << _name;
+	bool rc = _dcopClient->call("kded", "kwalletd",
+				"isOpen(const QString&)",
+				data, rettype, retval, true);
+
+	if (rc && rettype == "bool") {
+		QDataStream retStream(retval, IO_ReadOnly);
+		bool drc;
+		retStream >> drc;
+		_open = drc;
+		return drc;
+	}
+	return false;
 }
 
 
 bool Wallet::changeWallet(const QString& name) {
-	Q_UNUSED(name);
 	if (_open)
 		return false;
+
+	_name = name;
 
 	return true;
 }
 
 
 const QPtrList<Entry>& Wallet::getEntriesByType(const QString& type) const {
+	if (!_dcopClient->isAttached())
+		return QPtrList<Entry>();
 	Q_UNUSED(type);
 return QPtrList<Entry>();
 }
 
 
 const QStringList Wallet::getTypeList() const {
+	if (!_dcopClient->isAttached())
+		return QStringList();
 return QStringList();
 }
 
