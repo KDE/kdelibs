@@ -107,13 +107,13 @@ public:
    *
    * @return @p false by default.
    *
-   * @see process(), DCOPClient::normalizeFunctionSignature(), functions(), 
+   * @see process(), DCOPClient::normalizeFunctionSignature(), functions(),
    */
   virtual bool processDynamic(const QCString &fun, const QByteArray &data,
 			      QCString& replyType, QByteArray &replyData);
 
-    
-  /** 
+
+  /**
    * Returns a semicolon-separated list of functions understood by
    * the object. It gets reimplemented by the IDL compiler. If you
    * don't use the IDL compiler, consider implementing this function
@@ -128,7 +128,7 @@ public:
    * @see process(), processDynamic(), DCOPClient::normalizeFunctionSignature()
    */
   virtual QCString functions();
-    
+
   /**
    * @return @p true if an obejct with the questionable @p objId is
    *         known in this process. This query does not ask proxies.
@@ -149,7 +149,7 @@ public:
    * using the @ref QObject::name function.
    */
   static QCString objectName( QObject* obj );
-    
+
 private:
   /**
    * The object id of this DCOPObject.
@@ -180,7 +180,7 @@ public:
     virtual ~DCOPObjectProxy();
 
     /**
-     * Overload this method to disptatch method calls.
+     * Reimplement this method to disptatch method calls.
      *
      * This method is called of all proxies if the @ref DCOPClient
      * knows no object with the id @p obj. If the first proxy returns
