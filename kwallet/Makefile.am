@@ -1,5 +1,5 @@
 
-SUBDIRS=client backend
+SUBDIRS=client backend tests
 
 DOXYGEN_REFERENCES=dcop
 DOXYGEN_EXCLUDE=backend
