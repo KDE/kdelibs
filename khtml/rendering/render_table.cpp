@@ -1164,6 +1164,10 @@ void RenderTableSection::recalcCells()
 	    cell = cell->nextSibling();
 	}
 	row = row->nextSibling();
+	cRow++;
+	cCol = 0;
+
+	ensureRows( cRow+1 );
     }
     needCellRecalc = false;
     setLayouted( false );
