@@ -81,7 +81,16 @@ bool NetAccess::copy( const KURL & src, const KURL & target )
 bool NetAccess::exists( const KURL & url )
 {
   NetAccess kioNet;
-  return kioNet.existsInternal( url );
+  return kioNet.statInternal( url );
+}
+
+bool NetAccess::stat( const KURL & url, KIO::UDSEntry & entry )
+{
+  NetAccess kioNet;
+  bool ret = kioNet.statInternal( url );
+  if (ret)
+    entry = kioNet.m_entry;
+  return ret;
 }
 
 bool NetAccess::del( const KURL & url )
@@ -115,7 +124,7 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target)
   return bJobOK;
 }
 
-bool NetAccess::existsInternal( const KURL & url )
+bool NetAccess::statInternal( const KURL & url )
 {
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::stat( url );
@@ -156,6 +165,8 @@ void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
 void NetAccess::slotResult( KIO::Job * job )
 {
   bJobOK = !job->error();
+  if ( job->isA("KIO::StatJob") )
+    m_entry = static_cast<KIO::StatJob *>(job)->statResult();
   qApp->exit_loop();
 }
 

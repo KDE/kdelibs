@@ -126,6 +126,17 @@ public:
     static bool exists(const KURL& url);
 
     /**
+     * Test whether a url exists and returns information on it
+     * This is a convenience function for KIO::stat
+     * (it saves creating a slot and testing for the job result)
+     *
+     * @param url the url we are testing
+     * @param entry the result of the stat. Iterate over the list
+     * of atoms to get hold of name, type, size, etc., or use KFileItem.
+     */
+    static bool stat(const KURL& url, KIO::UDSEntry & entry);
+
+    /**
      * Delete a file or a directory in an synchronous way
      * This is a convenience function for KIO::del
      * (it saves creating a slot and testing for the job result)
@@ -154,7 +165,8 @@ protected:
     ~NetAccess() {}
     /** Internal methods */
     bool copyInternal(const KURL& src, const KURL& target);
-    bool existsInternal(const KURL & url);
+    bool statInternal(const KURL & url);
+    UDSEntry m_entry;
     bool delInternal(const KURL & url);
     QString mimetypeInternal(const KURL & url);
     QString m_mimetype;
