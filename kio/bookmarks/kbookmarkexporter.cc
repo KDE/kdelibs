@@ -38,7 +38,7 @@ void KNSBookmarkExporter::write( bool utf8 )
 
     if ( !file.open( IO_WriteOnly ) )
     {
-        kdError(1203) << "Can't write to file " << m_fileName << endl;
+        kdError(7043) << "Can't write to file " << m_fileName << endl;
         return;
     }
 

@@ -60,7 +60,7 @@ KBookmarkDrag::KBookmarkDrag( const QValueList<KBookmark> & bookmarks, const QSt
     for ( QValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
        elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
     }
-    kdDebug(1203) << "KBookmarkDrag::KBookmarkDrag " << m_doc.toString() << endl;
+    //kdDebug(7043) << "KBookmarkDrag::KBookmarkDrag " << m_doc.toString() << endl;
 }
 
 const char* KBookmarkDrag::format( int i ) const
@@ -83,7 +83,7 @@ QByteArray KBookmarkDrag::encodedData( const char* mime ) const
     else if ( mimetype == "application/x-xbel" )
     {
         a = m_doc.toCString();
-        kdDebug() << "KBookmarkDrag::encodedData " << m_doc.toCString() << endl;
+        //kdDebug(7043) << "KBookmarkDrag::encodedData " << m_doc.toCString() << endl;
     }
     else if ( mimetype == "text/plain" )
     {
@@ -116,7 +116,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     if ( e->provides("application/x-xbel") )
     {
         QCString s( e->encodedData("application/x-xbel") );
-        kdDebug(1203) << "KBookmarkDrag::decode s=" << s << endl;
+        //kdDebug(7043) << "KBookmarkDrag::decode s=" << s << endl;
         QDomDocument doc;
         doc.setContent( s );
         QDomElement elem = doc.documentElement();
@@ -135,7 +135,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
             // FIXME iterate through them!!!
             if ( m_lstDragURLs.count() > 1 )
                 kdWarning() << "Only first URL inserted, known limitation" << endl;
-            //kdDebug(1203) << "KBookmarkDrag::decode url=" << m_lstDragURLs.first().url() << endl;
+            //kdDebug(7043) << "KBookmarkDrag::decode url=" << m_lstDragURLs.first().url() << endl;
             bookmarks.append( KBookmark::standaloneBookmark( m_lstDragURLs.first().fileName(), m_lstDragURLs.first() ));
             return bookmarks;
         }

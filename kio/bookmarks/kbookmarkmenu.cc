@@ -84,7 +84,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
   m_bNSBookmark = m_parentAddress.isNull();
   if ( !m_bNSBookmark ) // not for the netscape bookmark
   {
-    //kdDebug(1203) << "KBookmarkMenu::KBookmarkMenu " << this << " address : " << m_parentAddress << endl;
+    //kdDebug(7043) << "KBookmarkMenu::KBookmarkMenu " << this << " address : " << m_parentAddress << endl;
 
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
@@ -116,7 +116,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 
 KBookmarkMenu::~KBookmarkMenu()
 {
-  //kdDebug(1203) << "KBookmarkMenu::~KBookmarkMenu() " << this << endl;
+  //kdDebug(7043) << "KBookmarkMenu::~KBookmarkMenu() " << this << endl;
   QPtrListIterator<KAction> it( m_actions );
   for (; it.current(); ++it )
     it.current()->unplugAll();
@@ -154,7 +154,7 @@ QString KBookmarkMenu::contextMenuItemAddress()
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
 {
   QString address = contextMenuItemAddress();
-  kdDebug(1203) << "slotAboutToShowContextMenu" << address << endl;
+  kdDebug(7043) << "slotAboutToShowContextMenu" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -174,7 +174,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
 void KBookmarkMenu::slotRMBActionRemoveBookmark()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(1203) << "slotRMBActionRemoveBookmark" << address << endl;
+  kdDebug(7043) << "slotRMBActionRemoveBookmark" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -190,7 +190,7 @@ void KBookmarkMenu::slotRMBActionRemoveBookmark()
 void KBookmarkMenu::slotRMBActionOpenBookmark()
 {
   QString address = contextMenuItemAddress();
-  kdDebug(1203) << "slotRMBActionOpenBookmark" << address << endl;
+  kdDebug(7043) << "slotRMBActionOpenBookmark" << address << endl;
   if (address.isNull())
      return;
   KBookmark bookmark = m_pManager->findByAddress( address );
@@ -206,7 +206,7 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 
   if ( groupAddress == m_parentAddress )
   {
-    //kdDebug(1203) << "KBookmarkMenu::slotBookmarksChanged -> setting m_bDirty on " << groupAddress << endl;
+    //kdDebug(7043) << "KBookmarkMenu::slotBookmarksChanged -> setting m_bDirty on " << groupAddress << endl;
     m_bDirty = true;
   }
   else
@@ -222,7 +222,7 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 
 void KBookmarkMenu::refill()
 {
-  //kdDebug(1203) << "KBookmarkMenu::refill()" << endl;
+  //kdDebug(7043) << "KBookmarkMenu::refill()" << endl;
   m_lstSubMenus.clear();
 
   QPtrListIterator<KAction> it( m_actions );
@@ -345,7 +345,7 @@ void KBookmarkMenu::fillBookmarkMenu()
       }
       else
       {
-        // kdDebug(1203) << "Creating URL bookmark menu item for " << bm.text() << endl;
+        // kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
         // create a normal URL item, with ID as a name
         KAction * action = new KAction( text, bm.icon(), 0,
                                         this, SLOT( slotBookmarkSelected() ),
@@ -359,7 +359,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     }
     else
     {
-      // kdDebug(1203) << "Creating bookmark submenu named " << bm.text() << endl;
+      // kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
       KActionMenu * actionMenu = new KActionMenu( text, bm.icon(),
                                                   m_actionCollection, 0L );
       actionMenu->plug( m_parentMenu );
@@ -440,7 +440,7 @@ void KBookmarkMenu::slotAddBookmark()
       delete dlg;
       return;
     }
-    kdDebug(1203) << "DEBUG! " << dlg->finalAddress() 
+    kdDebug(7043) << "DEBUG! " << dlg->finalAddress() 
                   << ", " << dlg->finalUrl() 
                   << ", " << dlg->finalTitle() << endl;
 
@@ -469,9 +469,9 @@ void KBookmarkMenu::slotNewFolder()
 
 void KBookmarkMenu::slotBookmarkSelected()
 {
-  //kdDebug(1203) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
+  //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
-  //kdDebug(1203) << sender()->name() << endl;
+  //kdDebug(7043) << sender()->name() << endl;
 
   // The name of the action is the URL to open
   m_pOwner->openBookmarkURL( QString::fromUtf8(sender()->name()) );

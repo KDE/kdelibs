@@ -98,7 +98,7 @@ const QDomDocument &KBookmarkManager::internalDocument() const
 void KBookmarkManager::parse() const
 {
     m_docIsLoaded = true;
-    //kdDebug(1203) << "KBookmarkManager::parse " << m_bookmarksFile << endl;
+    //kdDebug(7043) << "KBookmarkManager::parse " << m_bookmarksFile << endl;
     QFile file( m_bookmarksFile );
     if ( !file.open( IO_ReadOnly ) )
     {
@@ -180,7 +180,7 @@ void KBookmarkManager::convertToXBEL( QDomElement & group )
                     titleElem.appendChild( e.ownerDocument().createTextNode( text ) );
                 }
                 else
-                    kdWarning(1203) << "Unknown tag " << e.tagName() << endl;
+                    kdWarning(7043) << "Unknown tag " << e.tagName() << endl;
         n = n.nextSibling();
     }
 }
@@ -199,7 +199,7 @@ void KBookmarkManager::importDesktopFiles()
     KBookmarkImporter importer( const_cast<QDomDocument *>(&internalDocument()) );
     QString path(KGlobal::dirs()->saveLocation("data", "kfm/bookmarks", true));
     importer.import( path );
-    //kdDebug(1203) << internalDocument().toCString() << endl;
+    //kdDebug(7043) << internalDocument().toCString() << endl;
 
     save();
 }
@@ -211,7 +211,7 @@ bool KBookmarkManager::save( bool toolbarCache ) const
 
 bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) const
 {
-    //kdDebug(1203) << "KBookmarkManager::save " << filename << endl;
+    //kdDebug(7043) << "KBookmarkManager::save " << filename << endl;
 
     // Save the bookmark toolbar folder for quick loading
     // but only when it will actually make things quicker
@@ -258,11 +258,11 @@ KBookmarkGroup KBookmarkManager::root() const
 
 KBookmarkGroup KBookmarkManager::toolbar()
 {
-    kdDebug(1203) << "KBookmarkManager::toolbar begin" << endl;
+    kdDebug(7043) << "KBookmarkManager::toolbar begin" << endl;
     // Only try to read from a toolbar cache if the full document isn't loaded
     if(!m_docIsLoaded)
     {
-        kdDebug(1203) << "KBookmarkManager::toolbar trying cache" << endl;
+        kdDebug(7043) << "KBookmarkManager::toolbar trying cache" << endl;
         const QString cacheFilename = m_bookmarksFile + QString::fromLatin1(".tbcache");
         QFileInfo bmInfo(m_bookmarksFile);
         QFileInfo cacheInfo(cacheFilename);
@@ -270,19 +270,19 @@ KBookmarkGroup KBookmarkManager::toolbar()
             QFile::exists(cacheFilename) &&
             bmInfo.lastModified() < cacheInfo.lastModified())
         {
-            kdDebug(1203) << "KBookmarkManager::toolbar reading file" << endl;
+            kdDebug(7043) << "KBookmarkManager::toolbar reading file" << endl;
             QFile file( cacheFilename );
 
             if ( file.open( IO_ReadOnly ) )
             {
                 m_toolbarDoc = QDomDocument("cache");
                 m_toolbarDoc.setContent( &file );
-                kdDebug(1203) << "KBookmarkManager::toolbar opened" << endl;
+                kdDebug(7043) << "KBookmarkManager::toolbar opened" << endl;
             }
         }
         if (!m_toolbarDoc.isNull())
         {
-            kdDebug(1203) << "KBookmarkManager::toolbar returning element" << endl;
+            kdDebug(7043) << "KBookmarkManager::toolbar returning element" << endl;
             QDomElement elem = m_toolbarDoc.firstChild().toElement();
             return KBookmarkGroup(elem);
         }
@@ -299,7 +299,7 @@ KBookmarkGroup KBookmarkManager::toolbar()
 
 KBookmark KBookmarkManager::findByAddress( const QString & address, bool tolerant )
 {
-    //kdDebug(1203) << "KBookmarkManager::findByAddress " << address << endl;
+    //kdDebug(7043) << "KBookmarkManager::findByAddress " << address << endl;
     KBookmark result = root();
     // The address is something like /5/10/2+
     QStringList addresses = QStringList::split(QRegExp("[/+]"),address);
@@ -339,7 +339,7 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
     save();
 
     // Tell the other processes too
-    //kdDebug(1203) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
+    //kdDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
     stream << group.address();
@@ -355,7 +355,7 @@ void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
 {
     if (!m_update) return;
 
-    //kdDebug(1203) << "KBookmarkManager::notifyCompleteChange" << endl;
+    //kdDebug(7043) << "KBookmarkManager::notifyCompleteChange" << endl;
     // The bk editor tells us we should reload everything
     // Reparse
     parse();
@@ -376,7 +376,7 @@ void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
     // Of course, if we are the emitter this is a bit stupid....
     parse();
 
-    //kdDebug(1203) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
+    //kdDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
     //KBookmarkGroup group = findByAddress( groupAddress ).toGroup();
     //Q_ASSERT(!group.isNull());
     emit changed( groupAddress, QString::null );

@@ -41,7 +41,7 @@ void KBookmarkImporter::import( const QString & path )
 
 void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _path )
 {
-    kdDebug(1203) << "KBookmarkImporter::scanIntern " << _path << endl;
+    kdDebug(7043) << "KBookmarkImporter::scanIntern " << _path << endl;
     // Substitute all symbolic links in the path
     QDir dir( _path );
     QString canonical = dir.canonicalPath();
@@ -69,7 +69,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
             file.setPath( QString( _path ) + '/' + QFile::decodeName(ep->d_name) );
 
             KMimeType::Ptr res = KMimeType::findByURL( file, 0, true );
-            //kdDebug(1203) << " - " << file.url() << "  ->  " << res->name() << endl;
+            //kdDebug(7043) << " - " << file.url() << "  ->  " << res->name() << endl;
 
             if ( res->name() == "inode/directory" )
             {
@@ -93,7 +93,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
                 if ( type == "Link" )
                     parseBookmark( parentElem, ep->d_name, cfg, 0 /* desktop group */ );
                 else
-                    kdWarning(1203) << "  Not a link ? Type=" << type << endl;
+                    kdWarning(7043) << "  Not a link ? Type=" << type << endl;
             }
             else if ( res->name() == "text/plain")
             {
@@ -108,7 +108,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
                 if (!url.isEmpty() )
                     parseBookmark( parentElem, ep->d_name, cfg, *grp.begin() );
             } else
-                kdWarning(1203) << "Invalid bookmark : found mimetype='" << res->name() << "' for file='" << file.path() << "'!" << endl;
+                kdWarning(7043) << "Invalid bookmark : found mimetype='" << res->name() << "' for file='" << file.path() << "'!" << endl;
         }
     }
 
@@ -144,7 +144,7 @@ void KBookmarkImporter::parseBookmark( QDomElement & parentElem, QCString _text,
     QDomElement textElem = m_pDoc->createElement( "title" );
     elem.appendChild( textElem );
     textElem.appendChild( m_pDoc->createTextNode( text ) );
-    kdDebug(1203) << "KBookmarkImporter::parseBookmark text=" << text << endl;
+    kdDebug(7043) << "KBookmarkImporter::parseBookmark text=" << text << endl;
 }
 
 ////
