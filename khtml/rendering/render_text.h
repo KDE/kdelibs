@@ -260,10 +260,6 @@ public:
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
-protected:
-    void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
-
-public:
     /** Find the text box that includes the character at @p offset
      * and return pos, which is the position of the char in the run.
      * @param offset zero-based offset into DOM string

@@ -1505,8 +1505,6 @@ void NodeBaseImpl::setFocus(bool received)
     if (m_focused == received) return;
 
     NodeImpl::setFocus(received);
-    for(NodeImpl *it=_first;it;it=it->nextSibling())
-        it->setFocus(received);
 
     // note that we need to recalc the style
     setChanged();

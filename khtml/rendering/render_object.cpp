@@ -1704,6 +1704,13 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
     }
 }
 
+int RenderObject::maximalOutlineSize(PaintAction p) const
+{
+    if (p != PaintActionOutline)
+        return 0;
+    return static_cast<RenderCanvas*>(document()->renderer())->maximalOutlineSize();
+}
+
 void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles)
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())

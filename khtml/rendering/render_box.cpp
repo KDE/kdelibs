@@ -36,6 +36,7 @@
 #include "render_layer.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_docimpl.h"
 #include "render_line.h"
 
 #include <khtmlview.h>
@@ -123,6 +124,9 @@ void RenderBox::setStyle(RenderStyle *_style)
                 style()->setHasAutoZIndex();
         }
     }
+    // ### outlineSize() and outlineOffset() not merged yet
+    if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
+        static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineWidth());
 }
 
 RenderBox::~RenderBox()

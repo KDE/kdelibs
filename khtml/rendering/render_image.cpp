@@ -199,10 +199,13 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty) 
+void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
-     if (paintInfo.phase != PaintActionForeground)
-         return;
+    if (paintInfo.phase == PaintActionOutline && style()->outlineWidth() && style()->visibility() == VISIBLE)
+        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
+
+    if (paintInfo.phase != PaintActionForeground && paintInfo.phase != PaintActionSelection)
+        return;
 
     // not visible or not even once layouted?
     if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
@@ -343,8 +346,6 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 		    Qt::Dense4Pattern));
 	}
     }
-    if(style()->outlineWidth())
-        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::layout()

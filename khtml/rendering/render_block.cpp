@@ -139,9 +139,9 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                     length++;
                 length++;
                 kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-                newTextChild->setText( oldText->l > length ? 
+                newTextChild->setText( oldText->l > length ?
                                        oldText->substring(length,oldText->l-length) : new DOMStringImpl(""));
-                NodeImpl* letterElement = newTextChild->element() ? (NodeImpl*) newTextChild->element() : (NodeImpl*) document(); 
+                NodeImpl* letterElement = newTextChild->element() ? (NodeImpl*) newTextChild->element() : (NodeImpl*) document();
                 RenderText* letter = new (renderArena()) RenderText(letterElement, oldText->substring(0,length));
                 RenderStyle* newStyle = new RenderStyle();
                 newStyle->inheritFrom(pseudoStyle);
@@ -1124,7 +1124,8 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
         if (m_firstLineBox && m_firstLineBox->topOverflow() < 0)
             yPos += m_firstLineBox->topOverflow();
 
-        if( (yPos > pI.r.bottom()) || (_ty + h <= pI.r.y()))
+        int os = 2*maximalOutlineSize(pI.phase);
+        if( (yPos > pI.r.bottom() + os) || (_ty + h <= pI.r.y() - os))
             return;
     }
 
@@ -1170,8 +1171,8 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty)
         paintFloats(pI, scrolledX, scrolledY, pI.phase == PaintActionSelection);
 
     // 4. paint outline.
-    if (!inlineFlow && pI.phase == PaintActionForeground &&
-        !childrenInline() && style()->outlineWidth())
+    if (!inlineFlow && pI.phase == PaintActionOutline &&
+        style()->outlineWidth() && style()->visibility() == VISIBLE)
         paintOutline(pI.p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
@@ -1216,6 +1217,10 @@ void RenderBlock::paintFloats(PaintInfo& pI, int _tx, int _ty, bool paintSelecti
                                _tx + r->left - r->node->xPos() + r->node->marginLeft(),
                                _ty + r->startY - r->node->yPos() + r->node->marginTop());
                 pI.phase = PaintActionForeground;
+                r->node->paint(pI,
+                               _tx + r->left - r->node->xPos() + r->node->marginLeft(),
+                               _ty + r->startY - r->node->yPos() + r->node->marginTop());
+                pI.phase = PaintActionOutline;
                 r->node->paint(pI,
                                _tx + r->left - r->node->xPos() + r->node->marginLeft(),
                                _ty + r->startY - r->node->yPos() + r->node->marginTop());

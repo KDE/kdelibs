@@ -873,15 +873,6 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
         }
 
         InlineTextBox* s;
-        int minx =  1000000;
-        int maxx = -1000000;
-        int outlinebox_y = m_lines[si]->m_y;
-	QPtrList <QRect> linerects;
-        linerects.setAutoDelete(true);
-        linerects.append(new QRect());
-
-	bool renderOutline = style()->outlineWidth()!=0;
-
 	const Font *font = &style()->htmlFont();
 
         bool haveSelection = !isPrinting && selectionState() != SelectionNone && startPos != endPos;
@@ -979,25 +970,6 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);
 
             }
-            if(renderOutline) {
-                if(outlinebox_y == s->m_y) {
-                    if(minx > s->m_x)  minx = s->m_x;
-                    int newmaxx = s->m_x+s->m_width;
-                    //if (parent()->isInline() && si==0) newmaxx-=paddingLeft();
-                    if (parent()->isInline() && si==int(m_lines.count())-1) newmaxx-=paddingRight();
-                    if(maxx < newmaxx) maxx = newmaxx;
-                }
-                else {
-                    QRect *curLine = new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight);
-                    linerects.append(curLine);
-
-                    outlinebox_y = s->m_y;
-                    minx = s->m_x;
-                    maxx = s->m_x+s->m_width;
-                    //if (parent()->isInline() && si==0) maxx-=paddingLeft();
-                    if (parent()->isInline() && si==int(m_lines.count())-1) maxx-=paddingRight();
-                }
-            }
 #ifdef BIDI_DEBUG
             {
                 int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
@@ -1011,13 +983,6 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(pI.r.y()-ow, ty, pI.r.height(), m_lineHeight));
 
-        if(renderOutline)
-	  {
-	    linerects.append(new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight));
-	    linerects.append(new QRect());
-	    for (unsigned int i = 1; i < linerects.count() - 1; i++)
-                paintTextOutline(pI.p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
-	  }
     }
 }
 
@@ -1432,88 +1397,6 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
             }
         }
     }
-}
-
-
-void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
-{
-  int ow = style()->outlineWidth();
-  EBorderStyle os = style()->outlineStyle();
-  QColor oc = style()->outlineColor();
-
-  int t = ty + thisline.top();
-  int l = tx + thisline.left();
-  int b = ty + thisline.bottom() + 1;
-  int r = tx + thisline.right() + 1;
-
-  // left edge
-  drawBorder(p,
-	     l - ow,
-	     t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 0),
-	     l,
-	     b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 0),
-	     BSLeft,
-	     oc, style()->color(), os,
-	     (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
-	     (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
-	     true);
-
-  // right edge
-  drawBorder(p,
-	     r,
-	     t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 0),
-	     r + ow,
-	     b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 0),
-	     BSRight,
-	     oc, style()->color(), os,
-	     (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
-	     (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
-	     true);
-  // upper edge
-  if ( thisline.left() < lastline.left())
-      drawBorder(p,
-		 l - ow,
-		 t - ow,
-		 kMin(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
-		 t ,
-		 BSTop, oc, style()->color(), os,
-		 ow,
-		 (lastline.isValid() && tx+lastline.left()+1<r+ow ? -ow : ow),
-		 true);
-
-  if (lastline.right() < thisline.right())
-      drawBorder(p,
-		 kMax(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
-		 t - ow,
-		 r + ow,
-		 t ,
-		 BSTop, oc, style()->color(), os,
-		 (lastline.isValid() && l-ow < tx+lastline.right()+1 ? -ow : ow),
-		 ow,
-		 true);
-
-  // lower edge
-  if ( thisline.left() < nextline.left())
-      drawBorder(p,
-		 l - ow,
-		 b,
-		 kMin(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
-		 b + ow,
-		 BSBottom, oc, style()->color(), os,
-		 ow,
-		 (nextline.isValid() && tx+nextline.left()+1<r+ow? -ow : ow),
-		 true);
-
-  if (nextline.right() < thisline.right())
-      drawBorder(p,
-		 kMax(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
-		 b,
-		 r + ow,
-		 b + ow,
-		 BSBottom, oc, style()->color(), os,
-		 (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),
-		 ow,
-		 true);
 }
 
 #ifdef ENABLE_DUMP

@@ -394,8 +394,9 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 #endif
     if (!overhangingContents() && !isRelPositioned() && !isPositioned())
     {
-        if((_ty > pI.r.y() + pI.r.height()) || (_ty + height() < pI.r.y())) return;
-        if((_tx > pI.r.x() + pI.r.width()) || (_tx + width() < pI.r.x())) return;
+        int os = 2*maximalOutlineSize(pI.phase);
+        if((_ty > pI.r.y() + pI.r.height() + os) || (_ty + height() < pI.r.y() - os)) return;
+        if((_tx > pI.r.x() + pI.r.width() + os) || (_tx + width() < pI.r.x() - os)) return;
     }
 
 #ifdef TABLE_PRINT
@@ -1406,25 +1407,26 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     int x = pI.r.x(), y = pI.r.y(), w = pI.r.width(), h = pI.r.height();
     // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
+    int os = 2*maximalOutlineSize(pI.phase);
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
     for ( ; startrow < totalRows; startrow++ ) {
-	if ( ty + rowPos[startrow+1] + cbsw21 > y )
+	if ( ty + rowPos[startrow+1] + cbsw21 > y - os )
 	    break;
     }
     for ( ; endrow > 0; endrow-- ) {
-	if ( ty + rowPos[endrow-1] - cbsw2 < y + h )
+	if ( ty + rowPos[endrow-1] - cbsw2 < y + h + os )
 	    break;
     }
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
     if ( style()->direction() == LTR ) {
 	for ( ; startcol < totalCols; startcol++ ) {
-	    if ( tx + table()->columnPos[startcol+1] + cbsw21 > x )
+	    if ( tx + table()->columnPos[startcol+1] + cbsw21 > x - os )
 		break;
 	}
 	for ( ; endcol > 0; endcol-- ) {
-	    if ( tx + table()->columnPos[endcol-1] - cbsw2 < x + w )
+	    if ( tx + table()->columnPos[endcol-1] - cbsw2 < x + w + os )
 		break;
 	}
     }
@@ -2201,7 +2203,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     RenderTable *tbl = table();
 
     // check if we need to do anything at all...
-    int os = kMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0,0/*2*maximalOutlineSize(pI.phase)*/);
+    int os = kMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
     if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
                                    || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
 
@@ -2215,8 +2217,9 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 
 #if 0
     // check if we need to do anything at all...
-    if(!overhangingContents() && ((_ty-_topExtra > pI.r.y() + pI.r.height())
-        || (_ty + m_height + _bottomExtra < pI.r.y()))) return;
+    int os = 2*maximalOutlineSize(pI.phase);
+    if(!overhangingContents() && ((_ty-_topExtra > pI.r.y() + pI.r.height() + os)
+        || (_ty + m_height + _bottomExtra < pI.r.y() - os))) return;
 
     paintObject(pI, _tx, _ty);
 #endif

@@ -719,6 +719,8 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
             paintInfo.phase = PaintActionForeground;
             renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            paintInfo.phase = PaintActionOutline;
+            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
         }
 
         // Now restore our clip.

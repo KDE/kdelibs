@@ -1,3 +1,36 @@
+2004-05-09  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_block.cpp: (paint, paintObject, paintFloat)
+	Introduced maximalOutlineSize, PaintActionOutline phase.
+
+	* rendering/render_box.cpp: (setStyle) Updating maximumOutlineSize.
+
+	* rendering/render_canvas.{cpp,h}: Added maximumOutlineSize
+	member, setter, and getter.
+
+	* rendering/render_image.cpp: (paint) Added handling new
+	PaintActionOutline phase.
+
+	* rendering/render_inline.{cpp,h}: Moved paintOutline{s,} from RenderText
+	to RenderInline.
+	(paint) Handled PaintActionOutline phase.
+
+	* rendering/render_layer.cpp: (paintLayer) Added invokation of
+	PaintActionOutline phase.
+
+	* rendering/render_object.{cpp,h}: Added PaintActionOutline phase and
+	maximumOutlineSize.
+
+	* rendering/render_table.cpp: Added code for handling outlines.
+
+	* rendering/render_text.{cpp,h}: (paint) Removed outline painting
+	code from there.
+	Moved paintOutline{s,} to RenderInline.
+
+	* xml/dom_nodeimpl.cpp: (NodeBaseImpl::setFocus) Fixed recursive
+	application of focus to child elements now that outline correctly
+	handles block elements.
+
 2004-05-06 Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
 
 	* html/htmlparser.cpp (class KHTMLParser): use setCurrent() after reset()

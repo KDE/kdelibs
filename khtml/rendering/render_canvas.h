@@ -83,6 +83,9 @@ public:
 
     QRect selectionRect() const;
 
+    void setMaximalOutlineSize(int o) { m_maximalOutlineSize = o; }
+    int maximalOutlineSize() const { return m_maximalOutlineSize; }
+
 protected:
 
     virtual void selectionStartEnd(int& spos, int& epos);
@@ -106,6 +109,8 @@ protected:
     bool m_printingMode;
     bool m_printImages;
     int m_truncatedAt;
+
+    int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
 };
 
 }

@@ -30,6 +30,8 @@
 #include "rendering/render_block.h"
 #include "xml/dom_docimpl.h"
 
+#include <qvaluevector.h>
+
 using namespace khtml;
 
 void RenderInline::setStyle(RenderStyle* _style)
@@ -276,6 +278,155 @@ void RenderInline::paint(PaintInfo& i,
     paintLineBoxDecorations(i, _tx, _ty);
 
     i.phase = oldphase;
+    if (style()->visibility() == VISIBLE && i.phase == PaintActionOutline) {
+#ifdef APPLE_CHANGES
+        if (style()->outlineStyleIsAuto())
+            paintFocusRing(i.p, _tx, _ty);
+        else
+#endif
+        paintOutlines(i.p, _tx, _ty);
+    }
+}
+
+#ifdef APPLE_CHANGES
+void RenderInline::addFocusRingRects(QPainter *p, int _tx, int _ty)
+{
+    for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
+        p->addFocusRingRect(_tx + curr->xPos(),
+                            _ty + curr->yPos(),
+                            curr->width(),
+                            curr->height());
+    }
+
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
+        if (!curr->isText())
+            curr->addFocusRingRects(p, _tx + curr->xPos(), _ty + curr->yPos());
+    }
+
+    if (continuation())
+        continuation()->addFocusRingRects(p,
+                                          _tx - containingBlock()->xPos() + continuation()->xPos(),
+                                          _ty - containingBlock()->yPos() + continuation()->yPos());
+}
+
+void RenderInline::paintFocusRing(QPainter *p, int tx, int ty)
+{
+    int ow = style()->outlineWidth();
+    if (ow == 0 || m_isContinuation) // Continuations get painted by the original inline.
+        return;
+
+    QColor oc = style()->outlineColor();
+    if (!oc.isValid())
+        oc = style()->color();
+
+    p->initFocusRing(ow,  style()->outlineOffset(), oc);
+    addFocusRingRects(p, tx, ty);
+    p->drawFocusRing();
+    p->clearFocusRing();
+}
+#endif
+
+void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
+{
+    if (style()->outlineWidth() == 0 || style()->outlineStyle() <= BHIDDEN)
+        return;
+
+    QValueVector<QRect> rects;
+
+    rects.append(QRect(0,0,0,0));
+    for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
+        rects.append(QRect(curr->xPos(), curr->yPos(), curr->width(), curr->height()));
+    }
+    rects.append(QRect(0,0,0,0));
+
+    for (unsigned int i = 1; i < rects.count() - 1; i++)
+        paintOutline(p, _tx, _ty, rects[i-1], rects[i], rects[i+1]);
+}
+
+void RenderInline::paintOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
+{
+    int ow = style()->outlineWidth();
+    if (ow == 0 || m_isContinuation) // Continuations get painted by the original inline.
+        return;
+
+    EBorderStyle os = style()->outlineStyle();
+    QColor oc = style()->outlineColor();
+
+    int offset = 0;// style()->outlineOffset(); ### to be assessed and ported
+
+    int t = ty + thisline.top() - offset;
+    int l = tx + thisline.left() - offset;
+    int b = ty + thisline.bottom() + offset + 1;
+    int r = tx + thisline.right() + offset + 1;
+
+    // left edge
+    drawBorder(p,
+               l - ow,
+               t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 0),
+               l,
+               b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 0),
+               BSLeft,
+               oc, style()->color(), os,
+               (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
+               (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
+               true);
+
+    // right edge
+    drawBorder(p,
+               r,
+               t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 0),
+               r + ow,
+               b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 0),
+               BSRight,
+               oc, style()->color(), os,
+               (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
+               (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
+               true);
+    // upper edge
+    if ( thisline.left() < lastline.left())
+        drawBorder(p,
+                   l - ow,
+                   t - ow,
+                   kMin(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
+                   t ,
+                   BSTop, oc, style()->color(), os,
+                   ow,
+                   (lastline.isValid() && tx+lastline.left()+1<r+ow ? -ow : ow),
+                   true);
+
+    if (lastline.right() < thisline.right())
+        drawBorder(p,
+                   kMax(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
+                   t - ow,
+                   r + ow,
+                   t ,
+                   BSTop, oc, style()->color(), os,
+                   (lastline.isValid() && l-ow < tx+lastline.right()+1 ? -ow : ow),
+                   ow,
+                   true);
+
+    // lower edge
+    if ( thisline.left() < nextline.left())
+        drawBorder(p,
+                   l - ow,
+                   b,
+                   kMin(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
+                   b + ow,
+                   BSBottom, oc, style()->color(), os,
+                   ow,
+                   (nextline.isValid() && tx+nextline.left()+1<r+ow? -ow : ow),
+                   true);
+
+    if (nextline.right() < thisline.right())
+        drawBorder(p,
+                   kMax(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
+                   b,
+                   r + ow,
+                   b + ow,
+                   BSBottom, oc, style()->color(), os,
+                   (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),
+                   ow,
+                   true);
 }
 
 void RenderInline::calcMinMaxWidth()
