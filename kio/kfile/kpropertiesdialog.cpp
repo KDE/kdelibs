@@ -22,7 +22,7 @@
 */
 
 /*
- * kpropsdlg.cpp
+ * kpropertiesdialog.cpp
  * View/Edit Properties of files, locally or remotely
  *
  * some FilePermissionsPropsPlugin-changes by
@@ -92,7 +92,7 @@ extern "C" {
 #include <kparts/componentfactory.h>
 #include <kmetaprops.h>
 
-#include "kpropsdlg.h"
+#include "kpropertiesdialog.h"
 
 #ifdef Q_WS_X11
 extern "C" {
@@ -2500,4 +2500,4 @@ void KDevicePropsPlugin::applyChanges()
   config.sync();
 }
 
-#include "kpropsdlg.moc"
+#include "kpropertiesdialog.moc"
