@@ -1842,6 +1842,8 @@ bool HTTPProtocol::httpOpen()
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
+  m_expireDate = 0;
+  m_creationDate = 0;
 
   if (m_bUseCache)
   {
@@ -2330,6 +2332,8 @@ bool HTTPProtocol::readHeader()
      QString tmp;
      tmp.setNum(m_expireDate);
      setMetaData("expire-date", tmp);
+     tmp.setNum(m_creationDate);
+     setMetaData("cache-creation-date", tmp);
      mimeType(m_strMimeType);
      forwardHttpResponseHeader();
      return true;
@@ -4124,6 +4128,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    if (ok)
    {
       date = (time_t) strtoul(buffer, 0, 10);
+      m_creationDate = date;
       if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
       {
          m_bMustRevalidate = true;
@@ -4261,7 +4266,8 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    fputc('\n', m_fcache);
 
    QString date;
-   date.setNum( time(0) );
+   m_creationDate = time(0);
+   date.setNum( m_creationDate );
    date = date.leftJustify(16);
    fputs(date.latin1(), m_fcache);      // Creation date
    fputc('\n', m_fcache);

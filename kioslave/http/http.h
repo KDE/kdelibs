@@ -432,7 +432,8 @@ protected:
   bool m_bMustRevalidate; // Cache entry is expired.
   long m_cacheExpireDateOffset; // Position in the cache entry where the
                                 // 16 byte expire date is stored.
-  time_t m_expireDate;
+  time_t m_expireDate;	// Date when the cache entry will expire
+  time_t m_creationDate; // Date when the cache entry was created
 
   // Language/Encoding
   QStringList m_qTransferEncodings;
