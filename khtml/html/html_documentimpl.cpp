@@ -346,7 +346,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 void HTMLDocumentImpl::detach()
 {
     // onunload script...
-    if(m_view->part()->jScriptEnabled()) {
+    if(m_view && m_view->part() && m_view->part()->jScriptEnabled()) {
 	DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
 	if(script.length()) {
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
