@@ -153,7 +153,7 @@ public:
   void appendSourceFile(QString url, QString code);
   bool inSession() const { return m_inSession; }
   void setMode(Mode m) { m_mode = m; }
-  ExecState * getExecState() const { return m_curExecState; }
+  KJS::ExecState * getExecState() const { return m_curExecState; }
 
   // functions overridden from KJS:Debugger
   bool sourceParsed(KJS::ExecState *exec, int sourceId,
