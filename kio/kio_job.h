@@ -9,7 +9,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qdatetime.h>
 
 #include <time.h>
@@ -142,15 +142,12 @@ public:
   void connectProgress( KIOLittleProgressDlg *dlg );
 
   virtual bool copy( QStringList& _source, const char *_dest, bool _move = false );
-  virtual bool copy( QStrList& _source, const char *_dest, bool _move = false );
   virtual bool copy( const char* _source, const char *_dest, bool _move = false );
 
   virtual bool move( QStringList& _source, const char *_dest );
-  virtual bool move( QStrList& _source, const char *_dest );
   virtual bool move( const char* _source, const char *_dest );
 
   virtual bool del( QStringList& _source );
-  virtual bool del( QStrList& _source );
   virtual bool del( const char* _source );
 
   virtual bool get( const char *_url );

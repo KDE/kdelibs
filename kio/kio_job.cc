@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_job.h"
 #include "kio_simpleprogress_dlg.h"
 #include "kio_listprogress_dlg.h"
@@ -311,17 +313,6 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 }
 
 
-bool KIOJob::copy( QStrList& _source, const char *_dest, bool _move )
-{
-  QStringList stlurls;
-  QString s;
-  for( s = _source.first(); s != _source.last(); s = _source.next() )
-    stlurls.append( s );
-
-  return copy( stlurls, _dest, _move );
-}
-
-
 bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move )
 {
   assert( !m_pSlave );
@@ -374,12 +365,6 @@ bool KIOJob::move( const char *_source, const char *_dest )
 }
 
 
-bool KIOJob::move( QStrList& _source, const char *_dest )
-{
-  return copy( _source, _dest, true );
-}
-
-
 bool KIOJob::move( QStringList& _source, const char *_dest )
 {
   return copy( _source, _dest, true );
@@ -406,17 +391,6 @@ bool KIOJob::del( const char *_source )
   createGUI();
 
   return IOJob::del( _source );
-}
-
-
-bool KIOJob::del( QStrList& _source )
-{
-  QStringList stlurls;
-  QString s;
-  for( s = _source.first(); s != _source.last(); s = _source.next() )
-    stlurls.append( s );
-
-  return del( stlurls );
 }
 
 
