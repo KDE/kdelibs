@@ -809,19 +809,6 @@ bool Window::isSafeScript(ExecState *exec) const
   if ( activePart == m_part ) // Not calling from another frame, no problem.
     return true;
 
-  // First check that protocol, user and password match.
-  KURL kurl1 = m_part->url();
-  KURL kurl2 = activePart->url();
-  if ( !kurl1.isEmpty() && !kurl2.isEmpty() && // ok if one is empty
-    ( kurl1.protocol() != kurl2.protocol() ||
-      //kurl1.port() != kurl2.port() || // commented out, to fix www.live365.com (uses ports 80 and 89)
-      kurl1.user() != kurl2.user() ||
-      kurl1.pass() != kurl2.pass() ) )
-  {
-    kdDebug(6070) << "Window::isSafeScript: DENIED! " << kurl1.url() << " <-> " << kurl2.url() << endl;
-    return false;
-  }
-
   if ( m_part->document().isNull() )
     return true; // allow to access a window that was just created (e.g. with window.open("about:blank"))
 
