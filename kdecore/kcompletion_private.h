@@ -23,7 +23,6 @@
 
 #include <qlist.h>
 #include <qstring.h>
-#include "kdebug.h"
 
 class KCompTreeNode;
 typedef QValueList<KCompTreeNode *> KCompTreeChildren;
@@ -61,15 +60,16 @@ class KCompTreeNode : public QChar
 {
 public:
     KCompTreeNode() : QChar(), myWeight(0) {}
-    KCompTreeNode( const QChar& ch ) : QChar( ch ), myWeight(0) {}
+    KCompTreeNode( const QChar& ch, uint weight = 0 )
+        : QChar( ch ),
+          myWeight( weight ) {}
     ~KCompTreeNode();
 
     // Returns a child of this node matching ch, if available.
     // Otherwise, returns 0L
-    inline KCompTreeNode * find( const QChar& ch, bool /*ignoreCase*/ ) const {
+    inline KCompTreeNode * find( const QChar& ch ) const {
 	KCompTreeChildren::ConstIterator it;
 	for ( it = myChildren.begin(); it != myChildren.end(); ++it )
-	    // if ( isEqual( *(*it), ch, ignoreCase ) ) // wow, this is slooow
 	    if ( *(*it) == ch )
 		return *it;
 
@@ -102,17 +102,7 @@ public:
 private:
     uint myWeight;
     KCompTreeChildren	myChildren;
-    
-    // not used up to now... slows things down
-    inline bool isEqual( const KCompTreeNode& node1,
-			 const KCompTreeNode& node2,
-			 bool ignoreCase ) const
-    {
-	if ( ignoreCase )
-	    return ( node1.lower() == node2.lower() );
-	else
-	    return ( node1 == node2 );
-    }
+
 };
 
 #endif // KCOMPLETION_PRIVATE_H
