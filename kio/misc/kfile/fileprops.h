@@ -26,7 +26,7 @@
 class FileProps
 {
 public:
-    FileProps( const char *argument, const QString& path );
+    FileProps( const QString& path, const QStringList& suppliedGroups );
     virtual ~FileProps();
 
     bool isValid() const;
@@ -35,13 +35,15 @@ public:
     QStringList availableGroups() const;
     QStringList translatedGroups();
 
+    const QStringList& groupsToUse() const { return m_groupsToUse; }
+
     QStringList supportedKeys( const QString& group ) const;
     QStringList availableKeys( const QString& group ) const;
     QStringList preferredKeys( const QString& group ) const;
 
     QStringList supportedKeys() const { return m_info->supportedKeys(); }
     QStringList preferredKeys() const { return m_info->preferredKeys(); }
-    
+
     QString getValue( const QString& group, const QString& key ) const;
     bool setValue( const QString& group,
                    const QString& key, const QString &value );
@@ -49,18 +51,19 @@ public:
     QStringList allValues( const QString& group ) const;
     QStringList preferredValues( const QString& group ) const;
 
-    const char *argument() const { return m_argument; }
-    
     bool isReadOnly( const QString& group, const QString& key );
-    
+
 private:
+    static QString createKeyValue( const KFileMetaInfoGroup& g,
+                                   const QString& key );
     static QStringList createKeyValueList( const KFileMetaInfoGroup&,
                                            const QStringList& );
     bool sync();
 
     KFileMetaInfo *m_info;
-    const char *m_argument;
     bool m_dirty;
+
+    QStringList m_groupsToUse;
 
 };
 

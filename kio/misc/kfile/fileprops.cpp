@@ -29,16 +29,27 @@
 
 #include "fileprops.h"
 
-#define KFILEVERSION "0.1"
+#define KFILEVERSION "0.2"
 #define INDENT "\t"
 
 using namespace std;
 
-FileProps::FileProps( const char *argument, const QString& path )
-    : m_argument( argument ),
-      m_dirty( false )
+static QString beatifyValue( const QString& value )
+{
+    if ( value.isNull() )
+        return QString("(no value for key available)");
+    else if ( value.isEmpty() )
+        return QString("(empty)");
+
+    return value;
+}
+
+FileProps::FileProps( const QString& path, const QStringList& suppliedGroups )
+    : m_dirty( false )
 {
     m_info = new KFileMetaInfo( path );
+    m_groupsToUse = suppliedGroups.isEmpty() ? 
+                    m_info->groups() : suppliedGroups;
 }
 
 FileProps::~FileProps()
@@ -79,7 +90,16 @@ QStringList FileProps::supportedKeys( const QString& group ) const
 QStringList FileProps::availableKeys( const QString& group ) const
 {
     KFileMetaInfoGroup g = m_info->group( group );
-    return g.keys();
+    QStringList allKeys = g.keys();
+    QStringList ret;
+    QStringList::ConstIterator it = allKeys.begin();
+    for ( ; it != allKeys.end(); ++it )
+    {
+        if ( g.item( *it ).isValid() )
+            ret.append( *it );
+    }
+
+    return ret;
 }
 
 QStringList FileProps::preferredKeys( const QString& group ) const
@@ -92,7 +112,7 @@ QString FileProps::getValue( const QString& group,
                              const QString& key ) const
 {
     KFileMetaInfoGroup g = m_info->group( group );
-    return g[key].string();
+    return FileProps::createKeyValue( g, key );
 }
 
 bool FileProps::setValue( const QString& group,
@@ -107,28 +127,38 @@ bool FileProps::setValue( const QString& group,
 QStringList FileProps::allValues( const QString& group ) const
 {
     KFileMetaInfoGroup g = m_info->group( group );
-    return createKeyValueList( g, g.keys() );
+    return FileProps::createKeyValueList( g, g.keys() );
 }
 
 QStringList FileProps::preferredValues( const QString& group ) const
 {
     KFileMetaInfoGroup g = m_info->group( group );
-    return createKeyValueList( g, g.preferredKeys() );
+    return FileProps::createKeyValueList( g, g.preferredKeys() );
 }
 
+// static helper:
+// creates strings like
+// "translatedKey:               value"
+QString FileProps::createKeyValue( const KFileMetaInfoGroup& g,
+                                   const QString& key )
+{
+    static const int MAX_SPACE = 20;
+    KFileMetaInfoItem item = g.item( key );
+    QString result("%1");
+    result = result.arg( item.translatedKey() + ":", -MAX_SPACE );
+    result.append( beatifyValue( item.string() ) );
+    return result;
+}
 
-// helper
+// static
 QStringList FileProps::createKeyValueList( const KFileMetaInfoGroup& g,
-                                            const QStringList& keys )
+                                           const QStringList& keys )
 {
     QStringList result;
     QStringList::ConstIterator it = keys.begin();
 
-    for ( ; it != keys.end(); ++it ) {
-        KFileMetaInfoItem item = g.item( *it );
-        QString tmp = item.translatedKey() + ":\t\t" + item.string();
-        result.append( tmp );
-    }
+    for ( ; it != keys.end(); ++it )
+        result.append( FileProps::createKeyValue( g, *it ) );
 
     return result;
 }
@@ -166,7 +196,7 @@ static KCmdLineOptions options[] =
     { "supportedMimetypes",
       I18N_NOOP("Prints all mimetypes for which metadata support is "
                 "available."), 0 },
-    
+
     { "q", 0, 0 }, // short option for --quiet
     { "quiet",
       I18N_NOOP("Don't print a warning when more than one file was given "
@@ -194,9 +224,12 @@ static KCmdLineOptions options[] =
       I18N_NOOP("Attempts to set the value 'value' for the metadata key "
                 "'key' for the given file(s)"), 0 },
 
+    { "groups <arguments>", I18N_NOOP("The group to get or set values from/to."),
+      0 },
+    
     { "+[files]",
       I18N_NOOP("The file (or a number of files) to operate on."), 0 },
-    { 0, 0, 0 }
+    KCmdLineLastOption
 };
 
 
@@ -209,14 +242,14 @@ static void printSupportedMimeTypes()
     QStringList allMimeTypes = KFileMetaInfoProvider::self()->supportedMimeTypes();
     if ( allMimeTypes.isEmpty() )
     {
-        cout << 
-            i18n("No support for metadata extraction found.").local8Bit() 
+        cout <<
+            i18n("No support for metadata extraction found.").local8Bit()
              << endl;
         return;
     }
-        
+
     cout << i18n("Supported MimeTypes:").local8Bit() << endl;
-        
+
     QStringList::ConstIterator it = allMimeTypes.begin();
     for ( ; it != allMimeTypes.end(); it++ )
         cout << (*it).local8Bit() << endl;
@@ -243,7 +276,7 @@ static void showPropertiesDialog( const KCmdLineArgs *args )
 
 static void printMimeTypes( const KCmdLineArgs *args )
 {
-    for ( int i = 0; i < args->count(); i++ ) 
+    for ( int i = 0; i < args->count(); i++ )
     {
         KURL url = args->url( i );
         KMimeType::Ptr mt = KMimeType::findByURL( url );
@@ -270,21 +303,26 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
     QPtrListIterator<FileProps> it( propList );
     for ( ; (props = it.current()); ++it )
     {
-        cout << props->argument() << ":" << endl;
-        
         if ( args->isSet( "listsupported" ) )
         {
-            cout << "Supported Keys" << endl;
+            cout << "=Supported Keys=" << endl;
             printList( props->supportedKeys() );
         }
         if ( args->isSet( "listpreferred" ) )
         {
-            cout << "Preferred Keys" << endl;
+            cout << "=Preferred Keys=" << endl;
             printList( props->preferredKeys() );
         }
         if ( args->isSet( "listavailable" ) )
         {
-            cout << "TODO :)" << endl;
+            cout << "=Available Keys=" << endl;
+            QStringList groups = props->availableGroups();
+            QStringList::ConstIterator git = groups.begin();
+            for ( ; git != groups.end(); ++git )
+            {
+                cout << "Group: " << (*git).local8Bit() << endl;
+                printList( props->availableKeys( *git ) );
+            }
         }
 //         if ( args->isSet( "listwritable" ) )
 //         {
@@ -292,10 +330,19 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
 //         }
         if ( args->isSet( "getValue" ) )
         {
-            //         QCString key = args->option("getValue");
+            cout << "=Value=" << endl;
+            QString key = QString::fromLocal8Bit( args->getOption("getValue"));
+            QStringList::ConstIterator git = props->groupsToUse().begin();
+            for ( ; git != props->groupsToUse().end(); ++git )
+            {
+                cout << (*git).local8Bit() << endl;
+                cout << props->getValue( *git, key ).local8Bit() << endl;
+            }
         }
+        
         if ( args->isSet( "allValues" ) )
         {
+            cout << "=All Values=" << endl;
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
@@ -306,6 +353,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
         }
         if ( args->isSet( "preferredValues" ) && !args->isSet("allValues") )
         {
+            cout << "=Preferred Values=" << endl;
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
@@ -313,11 +361,9 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
                 cout << (*group).local8Bit() << endl;
                 printList( props->preferredValues( *group ) );
             }
-            
         }
     }
-    
-        
+
 }
 
 int main( int argc, char **argv )
@@ -348,35 +394,48 @@ int main( int argc, char **argv )
 
     if ( args->isSet( "supportedMimetypes" ) )
         printSupportedMimeTypes();
-    
+
     int files = args->count();
     if ( files == 0 )
         KCmdLineArgs::usage( i18n("No files specified") ); // exit()s
+
+    if ( args->isSet( "dialog" ) )
+    {
+        showPropertiesDialog( args );
+        return true;
+    }
+
+    QStringList groupsToUse;
+    QCStringList suppliedGroups = args->getOptionList( "groups" );
+    QCStringList::ConstIterator it = suppliedGroups.begin();
+    for ( ; it != suppliedGroups.end(); ++it )
+        groupsToUse.append( QString::fromLocal8Bit( (*it) ) );
 
     QString mimeType;
 
     for ( int i = 0; i < files; i++ )
     {
-        if ( args->isSet( "dialog" ) )
-        {
-            showPropertiesDialog( args );
-            return true;
-        }
-
         if ( args->isSet( "mimetype" ) )
             printMimeTypes( args );
 
-        FileProps *props = new FileProps( args->arg(i), 
-                                            args->url(i).path() );
+        FileProps *props = new FileProps( args->url(i).path(), groupsToUse );
         if ( props->isValid() )
             m_props.append( props );
-        else if ( !quiet )
-            cerr << args->arg(i) << ": " <<
+        else
+        {
+            if ( !quiet )
+            {
+                cerr << args->arg(i) << ": " <<
                 i18n("Cannot determine metadata").local8Bit() << endl;
+            }
+            delete props;
+        }
     }
-    
-    
+
+
     processMetaDataOptions( m_props, args );
+
+    cout.flush();
     
     return 0;
 }
