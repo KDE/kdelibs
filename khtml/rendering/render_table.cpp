@@ -34,6 +34,8 @@
 
 #include <kglobal.h>
 
+#include <qapplication.h>
+#include <qstyle.h>
 
 #include <kdebug.h>
 #include <assert.h>
@@ -1456,7 +1458,9 @@ void RenderTable::layoutRows(int yoff)
             for (; ro && !ro->isTableCell(); ro=ro->parent());
             if (!ro)
             {
-                th = h.width(viewRect().height())-5;
+		// we need to substract the bodys margins
+		// ### fixme: use exact values here.
+                th = h.width(viewRect().height() - 20 );
                 // not really, but this way the view height change
                 // gets propagated correctly
                 setOverhangingContents();
