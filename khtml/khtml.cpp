@@ -74,7 +74,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
-    //viewport()->setBackgroundMode(NoBackground);
+    viewport()->setBackgroundMode(NoBackground);
 
     kimgioRegister();
 
@@ -98,7 +98,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
   // Initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
-    //viewport()->setBackgroundMode(NoBackground);
+    viewport()->setBackgroundMode(NoBackground);
 
     kimgioRegister();
 
@@ -124,7 +124,7 @@ KHTMLWidget::~KHTMLWidget()
       if(paintBuffer) delete paintBuffer;
       paintBuffer = 0;
   }
-  
+
   clear();
 
   if(cache) delete cache;
@@ -471,11 +471,9 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true )
        && !_post_data )
   {
-    KURL u( m_strWorkingURL );
+    KURL u( _url );
 
-    m_strURL = m_strWorkingURL;
-
-    emit started( m_strWorkingURL );
+    emit started( _url );
 
     if ( !u.htmlRef().isEmpty() )
       gotoAnchor( u.htmlRef() );
