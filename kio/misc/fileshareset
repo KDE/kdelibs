@@ -413,6 +413,9 @@ sub update_server {
       elsif ( -f '/etc/init.d/samba' ) {
 	system('/etc/init.d/samba', $_) foreach 'stop', 'start';
       }
+	  elsif ( -f '/etc/rc.d/rc.samba' ) {
+	system('/etc/rc.d/rc.samba', $_) foreach 'stop', 'start';
+	  }
       else {
 	print STDERR "Error: Can't find the samba init script \n";
       }
