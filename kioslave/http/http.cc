@@ -2747,7 +2747,9 @@ bool HTTPProtocol::readHeader()
          }
          else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
          {
-            maxAge = STRTOLL(cacheControl.mid(8).stripWhiteSpace().latin1(), 0, 10);
+            QString age = cacheControl.mid(8).stripWhiteSpace();
+            if (!age.isNull())
+              maxAge = STRTOLL(age.latin1(), 0, 10);
          }
       }
       hasCacheDirective = true;
@@ -2755,7 +2757,9 @@ bool HTTPProtocol::readHeader()
 
     // get the size of our data
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
-      m_iSize = STRTOLL(trimLead(buf + 15), 0, 10);
+      char* len = trimLead(buf + 15);
+      if (len)
+        m_iSize = STRTOLL(len, 0, 10);
     }
 
     else if (strncasecmp(buf, "Content-location:", 17) == 0) {
