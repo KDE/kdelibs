@@ -177,7 +177,6 @@ KDEStyle::~KDEStyle()
 
 void KDEStyle::polish(QPalette &pal)
 {
-    warning("In palette polish");
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("KDEStyle");
