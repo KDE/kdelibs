@@ -31,10 +31,10 @@
 
 void kimgio_rgb_read(QImageIO *io)
 {
-	SGIImage rgb(io);
+	SGIImage sgi(io);
 	QImage img;
 
-	if (!rgb.readImage(img)) {
+	if (!sgi.readImage(img)) {
 		io->setImage(0);
 		io->setStatus(-1);
 		return;
@@ -47,10 +47,10 @@ void kimgio_rgb_read(QImageIO *io)
 
 void kimgio_rgb_write(QImageIO *io)
 {
-	SGIImage rgb(io);
+	SGIImage sgi(io);
 	QImage img = io->image();
 
-	if (!rgb.writeImage(img))
+	if (!sgi.writeImage(img))
 		io->setStatus(-1);
 
 	io->setStatus(0);
@@ -118,15 +118,15 @@ bool SGIImage::readData(QImage& img)
 {
 	QRgb *c;
 	Q_UINT32 *start = m_starttab;
-        QCString lguard(m_xsize);
-        uchar* line = (uchar*) lguard.data();
+	QCString lguard(m_xsize);
+	uchar *line = (uchar *)lguard.data();
 	unsigned x, y;
 
 	if (!m_rle)
 		m_pos = m_data.begin();
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 		if (m_rle)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
@@ -140,7 +140,7 @@ bool SGIImage::readData(QImage& img)
 
 	if (m_zsize != 2) {
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
@@ -150,7 +150,7 @@ bool SGIImage::readData(QImage& img)
 		}
 
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
@@ -164,7 +164,7 @@ bool SGIImage::readData(QImage& img)
 	}
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 		if (m_rle)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
@@ -183,11 +183,10 @@ bool SGIImage::readImage(QImage& img)
 	Q_INT16 u16;
 	Q_INT32 u32;
 
+	kdDebug(399) << "read " << m_io->fileName() << endl;
+
 	// magic
 	m_stream >> u16;
-	//if (u16 == 0xda01)
-	//	m_stream.setByteOrder(QDataStream::LittleEndian);	// not spec compliant!
-	//else 
 	if (u16 != 0x01da)
 		return false;
 
@@ -199,7 +198,7 @@ bool SGIImage::readImage(QImage& img)
 
 	// bytes per channel
 	m_stream >> m_bpc;
-	kdDebug(399) << "bytes per channel: " << int(m_bpc) << endl;
+	kdDebug(399) << "bytes per channel: " << m_bpc << endl;
 	if (m_bpc == 1)
 		;
 	else if (m_bpc == 2)
@@ -266,8 +265,10 @@ bool SGIImage::readImage(QImage& img)
 	// sanity ckeck
 	if (m_rle)
 		for (uint o = 0; o < m_numrows; o++)
-			if (m_starttab[o] + m_lengthtab[o] > m_data.size())
+			if (m_starttab[o] + m_lengthtab[o] > m_data.size()) {
+				kdDebug(399) << "sanity check failed: image corrupt" << endl;
 				return false;
+			}
 
 	if (!readData(img)) {
 		kdDebug(399) << "image corrupt" << endl;
@@ -345,7 +346,7 @@ uchar SGIImage::intensity(uchar c)
 
 uint SGIImage::compact(uchar *d, uchar *s)
 {
-	uchar *dest = d, *src = s, patt, *cnt;		// make shortcut for s + m_xsize
+	uchar *dest = d, *src = s, patt, *cnt;
 	int n;
 	while (src - s < m_xsize) {
 		if (src - s + 1 == m_xsize) {		// last bit
@@ -373,16 +374,16 @@ uint SGIImage::compact(uchar *d, uchar *s)
 bool SGIImage::scanData(QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
-        QCString lineguard(m_xsize*2);
-        QCString bufguard(m_xsize);
-	uchar* line = (uchar*) lineguard.data();
-	uchar* buf = (uchar*) bufguard.data();
+	QCString lineguard(m_xsize * 2);
+	QCString bufguard(m_xsize);
+	uchar *line = (uchar *)lineguard.data();
+	uchar *buf = (uchar *)bufguard.data();
 	QRgb *c;
 	unsigned x, y;
 	uint len;
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = intensity(qRed(*c++));
 		len = compact(line, buf);
@@ -394,7 +395,7 @@ bool SGIImage::scanData(QImage& img)
 
 	if (m_zsize != 2) {
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = intensity(qGreen(*c++));
 			len = compact(line, buf);
@@ -402,7 +403,7 @@ bool SGIImage::scanData(QImage& img)
 		}
 
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = intensity(qBlue(*c++));
 			len = compact(line, buf);
@@ -414,7 +415,7 @@ bool SGIImage::scanData(QImage& img)
 	}
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = intensity(qAlpha(*c++));
 		len = compact(line, buf);
@@ -432,7 +433,11 @@ void SGIImage::writeHeader()
 	m_stream << Q_UINT32(0);		// dummy
 
 	uint i;
-	for (i = 0; i < 80; i++)		// no name
+	// write an invisible identifier (useful for verifying bug reports)
+	char name[] = "\0KDE kimgio";
+	for (i = 0; i < 11; i++)
+		m_stream << Q_UINT8(name[i]);
+	for (; i < 80; i++)
 		m_stream << Q_UINT8(0);
 
 	m_stream << m_colormap;
@@ -443,8 +448,10 @@ void SGIImage::writeHeader()
 
 bool SGIImage::writeImage(QImage& img)
 {
+	kdDebug(399) << "write " << m_io->fileName() << endl;
+
 	m_rle = 1;
-	m_bpc = 1;				// one byte per pixel & channel
+	m_bpc = 1;
 	if (img.allGray())
 		m_dim = 2, m_zsize = 1;
 	else
@@ -455,16 +462,16 @@ bool SGIImage::writeImage(QImage& img)
 
 	m_xsize = img.width();
 	m_ysize = img.height();
-	m_pixmin = ~0;				// FIXME
+	m_pixmin = ~0;
 	m_pixmax = 0;
 	m_colormap = NORMAL;
-
-	if (img.depth() != 32)
-		img.convertDepth(32);
 
 	m_numrows = m_ysize * m_zsize;
 	m_starttab = new Q_UINT32[m_numrows];
 	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
+
+	if (img.depth() != 32)
+		img.convertDepth(32);
 
 	if (!scanData(img)) {
 		kdDebug(399) << "this can't happen" << endl;
@@ -476,28 +483,10 @@ bool SGIImage::writeImage(QImage& img)
 	kdDebug(399) << "maximum intensity: " << m_pixmax << endl;
 
 	writeHeader();
-	uint i;
 	QPtrVector<RLEData> v = m_rlemap.vector();
-#if 0
-	//*** lazy RLE (no shared scanlines) ***
 
 	// write start table
-	uint offset = 512 + m_numrows * 2 * sizeof(Q_UINT32);
-	for (i = 0; i < m_numrows; i++) {
-		m_stream << Q_UINT32(offset);
-		offset += v[m_starttab[i]]->size();
-	}
-	// write length table
-	for (i = 0; i < m_numrows; i++)
-		m_stream << Q_UINT32(v[m_starttab[i]]->size());
-
-	// write data
-	for (i = 0; i < m_numrows; i++)
-		v[m_starttab[i]]->write(m_stream);
-#else
-	// *** RLE with shared scanlines (GIMP calls it "aggressive") ***
-
-	// write start table
+	uint i;
 	for (i = 0; i < m_numrows; i++)
 		m_stream << v[m_starttab[i]]->offset();
 	// write length table
@@ -507,7 +496,6 @@ bool SGIImage::writeImage(QImage& img)
 	// write data
 	for (i = 0; i < v.size(); i++)
 		v[i]->write(m_stream);
-#endif
 
 	return true;
 }
