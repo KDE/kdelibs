@@ -192,7 +192,7 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
 
 const char* KStdAction::stdName(StdAction act_enum)
 {
-    char *ret;
+    const char *ret;
     switch (act_enum)
     {
     case New:
