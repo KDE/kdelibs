@@ -32,17 +32,18 @@
 class KInstancePrivate
 {
 public:
-  KInstancePrivate ()
-  {
-    mimeSourceFactory = 0L;
-  }
+    KInstancePrivate ()
+    {
+        mimeSourceFactory = 0L;
+    }
 
-  ~KInstancePrivate ()
-  {
-    delete mimeSourceFactory;
-  }
+    ~KInstancePrivate ()
+    {
+        delete mimeSourceFactory;
+    }
 
-  KMimeSourceFactory* mimeSourceFactory;
+    KMimeSourceFactory* mimeSourceFactory;
+    bool ownAboutdata;
 };
 
 KInstance::KInstance( const QCString& name)
@@ -59,6 +60,7 @@ KInstance::KInstance( const QCString& name)
     }
 
     d = new KInstancePrivate ();
+    d->ownAboutdata = true;
 
     kdDebug() << "Instance " << _name.data() << " has no about data" << endl;
 }
@@ -78,12 +80,17 @@ KInstance::KInstance( const KAboutData * aboutData )
     }
 
     d = new KInstancePrivate ();
+    d->ownAboutdata = false;
 }
 
 KInstance::~KInstance()
 {
-  delete d;
-  d = 0;
+    if (d->ownAboutdata)
+        delete _aboutData;
+    _aboutData = 0;
+
+    delete d;
+    d = 0;
 
     delete _iconLoader;
     _iconLoader = 0;
