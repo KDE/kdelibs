@@ -3028,17 +3028,15 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     int textPos = pxWidth;
     
     QRect br(buttonRect(x, y, w, h));
+
+    if (active)
+        p->translate(1,1);
     
     if (icon && ! icon->isNull()) {
 	int dx = (pxWidth - icon->width()) / 2;
 	int dy = (h - icon->height()) / 2;
 	
-	if (active) {
-	    dx++;
-	    dy++;
-	}
-	
-	p->drawPixmap(br.x() + dx, dy, *icon);
+        p->drawPixmap(br.x() + dx, dy, *icon);
     }
     
     QString s(title);
@@ -3048,8 +3046,8 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     int modStrPos = s.find(modStr);
     
     if (modStrPos != -1) {
-	s.remove(modStrPos, 11);
-	
+        s.remove(modStrPos, modStr.length()+1);
+        
 	QPixmap modPixmap = SmallIcon("modified");
 	
 	int dx = (pxWidth - modPixmap.width()) / 2;
@@ -3072,7 +3070,7 @@ void KLegacyStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 	
 	p->setPen((active) ? g.foreground() : g.buttonText());
 	
-	p->drawText(br.x() + textPos, 0, w - textPos, h, AlignVCenter | AlignLeft, s);
+	p->drawText(br.x() + textPos, -1, w - textPos, h, AlignVCenter | AlignLeft, s);
     }
 }
 
