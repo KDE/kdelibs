@@ -32,7 +32,7 @@ public:
      */
     void init();
 
-    enum Effects { NoEffect, ToGray, DeSaturate, SemiTransparent, LastEffect };
+    enum Effects { NoEffect, ToGray, DeSaturate, SemiTransparent, SemiGray, LastEffect };
 
     /**
      * Apply an effect to an image. The effect to apply depends on the 

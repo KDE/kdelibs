@@ -64,6 +64,8 @@ void KIconEffect::init()
 		effect = DeSaturate;
 	    else if (tmp == "semitransparent")
 		effect = SemiTransparent;
+	    else if (tmp == "semigray")
+		effect = SemiGray;
 	    else if (tmp == "none")
 		effect = NoEffect;
 	    else
@@ -109,6 +111,10 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
 	deSaturate(image, value);
 	break;
     case SemiTransparent:
+	semiTransparent(image);
+	break;
+    case SemiGray:
+        toGray(image);                                                          
 	semiTransparent(image);
 	break;
     }
