@@ -125,12 +125,12 @@ public:
 
 };
 
-#define REGISTER_AUDIO_IO(impl,implName,implFullName)			\
-	static class AudioIOFactory ## impl : AudioIOFactory {	\
-	public:													\
-		AudioIO *createAudioIO() { return new impl(); }		\
-		virtual const char *name() { return implName; }		\
-		virtual const char *fullName() { return implFullName; }	\
+#define REGISTER_AUDIO_IO(impl,implName,implFullName)				\
+	static class AudioIOFactory ## impl : public AudioIOFactory {	\
+	public:															\
+		AudioIO *createAudioIO() { return new impl(); }				\
+		virtual const char *name() { return implName; }				\
+		virtual const char *fullName() { return implFullName; }		\
 	} The_ ## impl ## _Factory /* <- add semicolon when calling this macro */
 
 #endif /* ARTS_AUDIOIO_H */
