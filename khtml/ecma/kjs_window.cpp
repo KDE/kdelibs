@@ -1262,8 +1262,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Open:
     return window->openWindow(exec, args);
   case Window::Focus: {
-    if(widget)
+    if(widget) {
+      widget->topLevelWidget()->raise();
       widget->setActiveWindow();
+    }
     return Undefined();
   }
   case Window::Blur:
