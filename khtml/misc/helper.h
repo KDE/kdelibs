@@ -30,7 +30,11 @@ class QPainter;
 
 namespace khtml
 {
-    void setNamedColor(QColor &color, const QString &name, bool strictParsing);
+    enum EColorType {
+        CTSOLID, CTDEFAULT, CTTRANS
+    };
+
+    void setNamedColor(QColor &color, EColorType& colorType,  const QString &name, bool strictParsing);
 
     extern QPainter *printpainter;
     void setPrintPainter( QPainter *printer );

@@ -184,10 +184,12 @@ static HTMLColors *htmlColors = 0L;
 
 static KStaticDeleter<HTMLColors> hcsd;
 
-void khtml::setNamedColor(QColor &color, const QString &_name, bool strictParsing)
+void khtml::setNamedColor(QColor &color, EColorType& colorType, const QString &_name, bool strictParsing)
 {
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
+
+    colorType = CTSOLID;
 
     int pos;
     QString name = _name;
@@ -202,7 +204,8 @@ void khtml::setNamedColor(QColor &color, const QString &_name, bool strictParsin
     }
 
     if(len == 11 && name.find("transparent", 0, false) == 0) {
-        color = QColor(); // invalid color == transparent
+        color = QColor();
+        colorType = CTTRANS; // transparent
         return;
     }
 
@@ -245,9 +248,11 @@ void khtml::setNamedColor(QColor &color, const QString &_name, bool strictParsin
         DOMString rgb = name.mid(4, name.length()-5);
         int count;
         khtml::Length* l = rgb.implementation()->toLengthArray(count);
-        if (count != 3)
+        if (count != 3) {
             // transparent in case of an invalid color.
             color = QColor();
+            colorType = CTTRANS;
+        }
         else {
             int c[3];
             for (int i = 0; i < 3; ++i) {
