@@ -1,6 +1,6 @@
     /*
 
-    Copyright (C) 1999-2000 Stefan Westerfeld
+    Copyright (C) 1999-2001 Stefan Westerfeld
                             stefan@space.twc.de
 
     This program is free software; you can redistribute it and/or modify
@@ -126,6 +126,10 @@ bool PlayStreamJob::done()
  *     ~~~~~~~~~~~~~~~~~~~~~
  *        |            |
  *     ___V____________V____
+ *    |     outVolume       |      (global output volume for the soundserver)
+ *     ~~~~~~~~~~~~~~~~~~~~~
+ *        |            |
+ *     ___V____________V____
  *    |      playSound      |      (output to soundcard)
  *     ~~~~~~~~~~~~~~~~~~~~~
  */
@@ -133,7 +137,8 @@ SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(60), bufferMu
 {
 	soundcardBus.busname("out_soundcard");
 	connect(soundcardBus,_outstack);
-	connect(_outstack,playSound);
+	connect(_outstack,_outVolume);
+	connect(_outVolume,playSound);
 
 	if(AudioSubSystem::the()->fullDuplex())
 	{
@@ -145,6 +150,7 @@ SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(60), bufferMu
 	}
 
 	soundcardBus.start();
+	_outVolume.start();
 	playSound.start();
 
 	asCount = 0; // AutoSuspend

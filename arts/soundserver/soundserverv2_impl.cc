@@ -87,6 +87,10 @@ void SoundServerV2_impl::bufferSizeMultiplier(long newValue) {
 	bufferMultiplier = newValue;
 }
 
+StereoVolumeControl SoundServerV2_impl::outVolume() {
+	return _outVolume;
+}
+
 #ifndef __SUNPRO_CC
 /* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
 REGISTER_IMPLEMENTATION(SoundServerV2_impl);

@@ -148,6 +148,11 @@ interface SoundServerV2 : SoundServer
 	 * version
 	 */
 	readonly attribute string version;
+
+	/**
+	 * global output volume for the sound server
+	 */
+	readonly attribute StereoVolumeControl outVolume;
 };
 
 /**

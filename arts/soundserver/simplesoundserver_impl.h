@@ -82,6 +82,7 @@ protected:
 	Synth_BUS_UPLINK recordBus;
 	std::list<SoundServerJob *> jobs;
 	StereoEffectStack _outstack;
+	StereoVolumeControl _outVolume;
 	long asCount;
 	long autoSuspendTime;
 	long bufferMultiplier;
