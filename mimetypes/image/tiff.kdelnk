@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
 Comment=TIFF Image
 Comment[cs]=Obrázek ve formátu TIFF
+Comment[da]=TIFF billede
 Comment[de]=TIFF Bild
 Comment[es]=Imagen TIFF
 Comment[fi]=TIFF -kuva

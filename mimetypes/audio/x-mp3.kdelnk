@@ -3,6 +3,7 @@
 MimeType=audio/x-mp3
 Comment=MPEG Sound file
 Comment[cs]=Zvukový soubor koprimovaný v MPEG Layer3
+Comment[da]=MPEG lydfil
 Comment[de]=MPEG komprimierte Musik Datei
 Comment[es]=Audio MPEG Layer 3
 Comment[fi]=MPEG -musiikki

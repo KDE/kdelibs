@@ -6,6 +6,7 @@ Icon=binary.xpm
 Patterns=*.o;
 Comment=Object Code
 Comment[cs]=Objektový kód
+Comment[da]=Objektkode
 Comment[de]=Objektcode
 Comment[es]=Código Objeto
 Comment[fi]=Objektikoodi

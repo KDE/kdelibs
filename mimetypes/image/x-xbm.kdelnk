@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.xbm;*.XBM;
 Comment=X bitmap
 Comment[cs]=Obrázek ve formátu XBM
+Comment[da]=X-bitmap
 Comment[de]=X Bitmap
 Comment[es]=Imagen XBM
 Comment[fi]=XMB -kuva

@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.gif;*.GIF;
 Comment=Gif images
 Comment[cs]=Obrázek ve formátu Gif
+Comment[da]=Gif-billeder
 Comment[de]=GIF Bild
 Comment[es]=Imagen GIF
 Comment[fi]=GIF -kuva

@@ -6,6 +6,7 @@ Icon=tgz.xpm
 Patterns=*.tar;
 Comment=Tar archive
 Comment[cs]=Tar archív
+Comment[da]=Tar arkiv
 Comment[de]=Tar Archiv
 Comment[es]=Archivo TAR
 Comment[fi]=Tar -paketti

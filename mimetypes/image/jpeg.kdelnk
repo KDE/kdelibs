@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.jpeg;*.jpg;*.JPG;
 Comment=Jpeg images
 Comment[cs]=Obrázek ve formátu JPEG
+Comment[da]=Jpeg-billeder
 Comment[de]=Jpeg Bild
 Comment[es]=Imagen JPEG
 Comment[fi]=Jpeg -kuva

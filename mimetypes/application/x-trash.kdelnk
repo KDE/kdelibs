@@ -6,6 +6,7 @@ Icon=trash.xpm
 Patterns=*~;*%;*.bak;*.old;*.sik;
 Comment=Trash file
 Comment[cs]=Zálo¾ní soubor
+Comment[da]=Affaldsfil
 Comment[de]=zu löschende Datei
 Comment[es]=Archivo a suprimir
 Comment[fi]=Varmuuskopio

@@ -7,6 +7,7 @@ Patterns=*.mov;*.MOV;
 DefaultApp=aktion
 Comment=Quicktime Video
 Comment[cs]=Filmy ve formátu Quicktime
+Comment[da]=Quicktime video
 Comment[es]=Video Quicktime
 Comment[fi]=Quicktime -elokuva
 Comment[fr]=Vidéo Quicktime

@@ -6,6 +6,7 @@ Icon=sound.xpm
 Patterns=*.mid;*.MID;
 Comment=Midi file
 Comment[cs]=Midi soubor
+Comment[da]=Midi-fil
 Comment[de]=Midi Dokument
 Comment[es]=Música MIDI
 Comment[fi]=Midi -tiedosto

@@ -6,6 +6,7 @@ Icon=binary.xpm
 Patterns=*.class;
 Comment=Java Class
 Comment[cs]=Java tøída
+Comment[da]=Javaklasse
 Comment[de]=Java Klasse
 Comment[es]=Clase Java
 Comment[fi]=Java -luokka

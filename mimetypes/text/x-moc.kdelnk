@@ -3,6 +3,7 @@
 MimeType=text/x-moc
 Comment=Qt Meta Object File
 Comment[cs]=Meta-objektový soubor Qt
+Comment[da]=Qt metaobjektfil
 Comment[de]=Qt Meta Object Datei
 Comment[es]=Fichero Meta-Objeto de QT
 Comment[fi]=Qt Meta -objektitiedosto

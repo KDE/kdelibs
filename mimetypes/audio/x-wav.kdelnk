@@ -6,6 +6,7 @@ Icon=sound.xpm
 Patterns=*.wav;*.WAV;
 Comment=Wav file
 Comment[cs]=oubor wav
+Comment[da]=Wav-fil
 Comment[de]=WAV Dokument
 Comment[es]=Audio en formato WAV
 Comment[fi]=WAV -tiedosto

@@ -6,6 +6,7 @@ Icon=image.xpm
 Patterns=*.png;*.PNG;
 Comment=PNG images
 Comment[cs]=Obrázek ve formátu PNG
+Comment[da]=PNG-billeder
 Comment[de]=PNG Bild
 Comment[es]=Imagen PNG
 Comment[fi]=PNG -kuva
