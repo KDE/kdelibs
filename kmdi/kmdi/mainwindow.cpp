@@ -285,7 +285,7 @@ KMDI::ToolViewAccessor *MainWindow::addToolWindow( QWidget* pWnd, KDockWidget::D
 
   if (pos == KDockWidget::DockNone) {
     mtva->d->widgetContainer->setEnableDocking(KDockWidget::DockNone);
-    mtva->d->widgetContainer->reparent(this, Qt::WType_TopLevel | Qt::WType_Dialog, r.topLeft(), true); //pToolView->isVisible());
+    mtva->d->widgetContainer->reparent(this, Qt::WType_TopLevel | Qt::WType_Dialog, r.topLeft(), isVisible());
   } else {   // add (and dock) the toolview as DockWidget view
     //const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
 
