@@ -18,14 +18,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 #include <qeventloop.h>
 #include <qapplication.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #include <netinet/in.h>
 #include "remoteservice.h"
 #include "responder.h"
 #include "sdevent.h"
 #include <kdebug.h>
-#include <config.h>
 
 namespace DNSSD
 {
