@@ -176,6 +176,13 @@ public:
    */
   static QString proxyForURL( const KURL& /* url */ );
 
+  /*
+   * Returns whether a proxy config script is being used
+   *
+   * @returns true if a proxy config script is used
+   */
+  static bool hasProxyConfigScript();
+
   /**
    * Return the protocol to use in order to handle the given @p protocol
    * It's usually the same, except that FTP, when handled by a proxy,

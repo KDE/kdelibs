@@ -237,6 +237,11 @@ QString KProtocolManager::proxyForURL( const KURL &url )
     return proxyFor( url.protocol() );
 }
 
+bool KProtocolManager::hasProxyConfigScript()
+{
+    return pac() != 0;
+}
+
 QString KProtocolManager::slaveProtocol( const QString & protocol )
 {
   return ( protocol == "ftp" && useProxy() && !proxyFor("ftp").isEmpty() )
