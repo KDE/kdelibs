@@ -89,7 +89,7 @@ bool KJavaEmbed::eventFilter( QObject* o, QEvent* e)
 
             case QEvent::WindowDeactivate:
     	        break;
-                
+            
             case QEvent::Move:
                {
                     // if the browser window is moved or the page scrolled,
@@ -328,16 +328,8 @@ bool KJavaEmbed::x11Event( XEvent* e)
             }
             break;
         case ConfigureRequest:
-            if (e->xconfigurerequest.window == window 
-                && e->xconfigurerequest.value_mask == (CWX|CWY)) 
+            if (e->xconfigurerequest.window == window) 
             {
-                    /*
-                    XMoveResizeWindow(e->xconfigurerequest.display, window,
-                        0,
-                        0,
-                        width(),
-                        height());
-                    */
                     sendSyntheticConfigureNotifyEvent();
             }
             break;
