@@ -3375,7 +3375,7 @@ void CopyJob::slotResultRenaming( Job* job )
                 QString newPath;
                 // Offer overwrite only if the existing thing is a file
                 // If src==dest, use "overwrite-itself"
-                RenameDlg_Mode mode = (RenameDlg_Mode)
+                RenameDlg_Mode mode = (RenameDlg_Mode) (
                                           ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE );
 
                 if ( m_srcList.count() > 1 )
