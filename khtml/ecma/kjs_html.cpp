@@ -42,7 +42,7 @@
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_html.lut.h"
 
-#include "kjavaappletcontext.h"
+#include "java/kjavaappletcontext.h"
 
 #include "misc/htmltags.h"
 
