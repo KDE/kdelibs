@@ -89,11 +89,19 @@ public:
      * library may usually return a pointer to @ref KoDocument.  But
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
-     **/
+     *
+     * When derived classes implement this method, they should emit the signal
+     * @ref objectCreated to tell the factory about their newly created object.
+     * This is very important for reference counting, and allows unloading
+     * the library automatically once all its objects have been destroyed.
+     */
 
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
 signals:
+    /**
+     * Emit this in @ref create
+     */
     void objectCreated( QObject *obj );
 public:
     KLibFactoryPrivate *d;
