@@ -216,9 +216,9 @@ public:
   SelectionModeExt selectionModeExt () const;
 
   /**
-   * Returns the index of @param item within the item tree or -1 if 
-   * @param item doesn't exist in this list view. This function takes 
-   * all items into account not only the visible ones. 
+   * Returns the index of @param item within the item tree or -1 if
+   * @param item doesn't exist in this list view. This function takes
+   * all items into account not only the visible ones.
    */
   int itemIndex( const QListViewItem *item ) const;
 
@@ -390,9 +390,12 @@ public slots:
   virtual void rename(QListViewItem *item, int c);
 
   /**
-   * is column renameable? Set it.  by default, all columns
-   * are not renameable.  If you want more intelligent
-   * selection, you'll have to derive from KListView,
+   * By default, if you called setItemsRenameable(true),
+   * only the first column is renameable.
+   * Use this function to enable the feature on other columns.
+   *
+   * If you want more intelligent (dynamic) selection,
+   * you'll have to derive from KListView,
    * and override @ref rename() and call only call it
    * if you want the item to be renamed.
    **/
@@ -400,6 +403,7 @@ public slots:
 
   /**
    * Set whether items in the list view can be moved.
+   * It is enabled by default.
    *
    * @see itemsMovable()
    */
@@ -407,6 +411,7 @@ public slots:
 
   /**
    * Enables inplace-renaming of items.
+   * It is disabled by default.
    *
    * @see itemsRenameable()
    * @see setRenameable()
@@ -415,6 +420,7 @@ public slots:
 
   /**
    * Enable/Disable the dragging of items.
+   * It is disabled by default.
    */
   virtual void setDragEnabled(bool b);
 
@@ -426,11 +432,13 @@ public slots:
   /**
    * Enable/Disable the drawing of a drop-visualizer
    * (a bar that shows where a dropped item would be inserted).
+   * It is enabled by default, if dragging is enabled
    */
   virtual void setDropVisualizer(bool b);
 
   /**
    * Set the width of the (default) drop-visualizer.
+   * If you don't call this method, the width is set to 4.
    */
   void setDropVisualizerWidth (int w);
 
@@ -619,7 +627,7 @@ protected:
    *
    * @return the rectangle that you painted to.
    */
-  virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);	
+  virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);
 
   /**
    * For future expansion.

@@ -87,7 +87,8 @@ public:
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
       mDropVisualizerWidth (4)
   {
-        connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
+      renameable += 0;
+      connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
   }
 
   ~KListViewPrivate ()
