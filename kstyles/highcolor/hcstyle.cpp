@@ -271,7 +271,6 @@ void HCStyle::polish(QWidget *w)
         if(w->inherits("QLabel") || w->inherits("KToolBarSeparator")){
             w->setAutoMask(true);
         }
-        w->setBackgroundMode(QWidget::NoBackground);
     }
     else if( w->inherits("QButton") || w->inherits("QComboBox"))
         w->setBackgroundOrigin(QWidget::ParentOrigin);
@@ -300,7 +299,6 @@ void HCStyle::unPolish(QWidget *w)
     {
         if(w->inherits("QLabel") || w->inherits("KToolBarSeparator"))
             w->setAutoMask(false);
-        w->setBackgroundMode(QWidget::PaletteBackground);
     }
     else if( w->inherits("QButton") || w->inherits("QComboBox"))
         w->setBackgroundOrigin(QWidget::WidgetOrigin);
