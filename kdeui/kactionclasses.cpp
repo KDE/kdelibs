@@ -1811,7 +1811,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
 
     int id_ = KAction::getToolButtonID();
 
-    if ( !iconSet().isNull() ) {
+    if ( icon().isEmpty() && !iconSet().isNull() ) {
         bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                            SLOT( slotActivated() ), isEnabled(), plainText(),
                            index );
