@@ -351,7 +351,7 @@ void KWin::avoid(WId win, AnchorEdge edge)
 
   XTextProperty avoidProp;
 
-  char * anchorEdge = "0";
+  const char * anchorEdge = "0";
 
   switch (edge) {
     case Top:     anchorEdge = "N"; break;
@@ -361,7 +361,7 @@ void KWin::avoid(WId win, AnchorEdge edge)
     default:                        break;
   }
 
-  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+  Status status = XStringListToTextProperty(const_cast<char**>(&anchorEdge), 1, &avoidProp);
 
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
@@ -378,9 +378,9 @@ void KWin::stopAvoiding(WId win)
 
   XTextProperty avoidProp;
 
-  char * anchorEdge = "0";
+  const char * anchorEdge = "0";
 
-  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+  Status status = XStringListToTextProperty(const_cast<char**>(&anchorEdge), 1, &avoidProp);
 
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
@@ -405,8 +405,8 @@ QRect KWin::clientArea()
 
     if (replyType == "QRect") {
 
-      QDataStream reply(reply, IO_ReadOnly);
-      reply >> retval;
+      QDataStream replys(reply, IO_ReadOnly);
+      replys >> retval;
 
     } else {
 
@@ -434,8 +434,8 @@ QRect KWin::edgeClientArea()
 
     if (replyType == "QRect") {
 
-      QDataStream reply(reply, IO_ReadOnly);
-      reply >> retval;
+      QDataStream replys(reply, IO_ReadOnly);
+      replys >> retval;
 
     } else {
 
