@@ -5,13 +5,14 @@ INCLUDES = -I$(includedir)/arts \
 lib_LTLIBRARIES = libartskde.la
 libartskde_la_SOURCES = artskde.cc kioinputstream_impl.cpp kplayobject.cc \
 						kplayobjectfactory.cc kartsfloatwatch.cpp kartsdispatcher.cc \
-						kartsserver.cpp kdatarequest_impl.cpp kaudioconverter.cc
+						kartsserver.cpp kdatarequest_impl.cpp kaudioconverter.cc \
+						kvideowidget.cpp
 libartskde_la_LIBADD = $(LIB_KIO) -lqtmcop -lsoundserver_idl
 libartskde_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 1:0
 libartskde_la_METASOURCES = AUTO
 
 artskdeincludedir = $(includedir)/arts
-artskdeinclude_HEADERS = kplayobject.h kplayobjectfactory.h kartsfloatwatch.h artskde.h kartsdispatcher.h kartsserver.h
+artskdeinclude_HEADERS = kplayobject.h kplayobjectfactory.h kartsfloatwatch.h artskde.h kartsdispatcher.h kartsserver.h kvideowidget.h
 
 $(srcdir)/kioinputstream_impl.cpp: artskde.h
 $(srcdir)/kdatarequest_impl.cpp: artskde.h
