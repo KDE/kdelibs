@@ -39,6 +39,7 @@
 #include <qrect.h>
 #include <qobjectlist.h>
 #include <qtimer.h>
+#include <qstyle.h>
 
 #include <config.h>
 
@@ -1311,16 +1312,45 @@ QSizePolicy KToolBar::sizePolicy() const
 
 QSize KToolBar::sizeHint() const
 {
-    QSize minSize(6,6);
+    QSize minSize(0,0);
     KToolBar *this_too = (KToolBar *)this;
-    for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+    if (orientation() == Horizontal)
     {
-       minSize = minSize.expandedTo(w->sizeHint());
+       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+       {
+          if ( w->inherits( "KToolBarSeparator" ) &&
+             !( (KToolBarSeparator*)w )->showLine() ) 
+          {
+             minSize += QSize(6, 0);
+          }
+          else
+          {
+             QSize sh = w->sizeHint();
+             minSize = minSize.expandedTo(QSize(0, sh.height()));
+             minSize += QSize(sh.width()+1, 0);
+          }
+       }
+       minSize += QSize(kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
     }
-    if ( orientation() == Vertical )
-         minSize += QSize(2, 0);
     else
-         minSize += QSize(0, 2);
+    {
+       for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
+       {
+          if ( w->inherits( "KToolBarSeparator" ) &&
+             !( (KToolBarSeparator*)w )->showLine() ) 
+          {
+             minSize += QSize(0, 6);
+          }
+          else
+          {
+             QSize sh = w->sizeHint();
+             minSize = minSize.expandedTo(QSize(sh.width(), 0));
+             minSize += QSize(0, sh.height()+1);
+          }
+       }
+       minSize += QSize(0, kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+    }
+    minSize += QSize(2, 2);
     return minSize;
 }
 
