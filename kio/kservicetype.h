@@ -142,8 +142,8 @@ public:
   /**
    * @return all services supporting the given servicetype name
    * This doesn't take care of the user profile.
-   * In fact it is used by the KServiceTypeProfile,
-   * which is the one you should use.
+   * In fact it is used by KServiceTypeProfile,
+   * which is used by KTrader, and that's the one you should use.
    */
   static KService::List offers( const QString& _servicetype );
 

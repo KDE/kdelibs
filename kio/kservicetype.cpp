@@ -22,7 +22,7 @@
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
-
+#include "kuserprofile.h"
 #include <assert.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -209,14 +209,42 @@ KService::List KServiceType::offers( const QString& _servicetype )
 {
   KService::List lst;
 
-  if ( _servicetype.left(4) != "all/" )
+  // Services associated directly with this servicetype (the normal case)
+  KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
+  if ( serv )
+    lst += KServiceFactory::self()->offers( serv->offset() );
+  else
+    kdWarning(7009) << "KServiceType::strictOffers : servicetype " << _servicetype << " not found" << endl;
+  delete serv;
+
+  //QValueListIterator<KService::Ptr> it = lst.begin();
+  //for( ; it != lst.end(); ++it )
+  //    kdDebug() << (*it).data() << " " << (*it)->name() << endl;
+
+  // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
+  // (and makes no sense when querying for an "all" servicetype itself)
+  if ( !KServiceTypeProfile::configurationMode() && _servicetype.left(4) != "all/" )
   {
     // Support for services associated with "all"
     KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
     if ( servAll )
-      lst += KServiceFactory::self()->offers( servAll->offset() );
+    {
+        KService::List newOffers = KServiceFactory::self()->offers( servAll->offset() );
+        // Look if we already have those services from the initial query, to avoid duplicates
+        QValueListIterator<KService::Ptr> it = newOffers.begin();
+        for( ; it != newOffers.end(); ++it )
+        {
+            bool found = false;
+            QValueListIterator<KService::Ptr> it2 = lst.begin();
+            for( ; it2 != lst.end() && !found; ++it2 )
+                found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
+            if ( !found )
+                lst += *it;
+        }
+        //kdDebug(7009) << "all/all found, got " << newOffers.count() << " more offers" << endl;
+    }
     else
-      kdWarning(7009) << QString("KServiceType::offers : servicetype all/all not found") << endl;
+      kdWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
     delete servAll;
 
     // Support for services associated with "allfiles"
@@ -224,20 +252,26 @@ KService::List KServiceType::offers( const QString& _servicetype )
     {
       KServiceType * servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
       if ( servAllFiles )
-        lst += KServiceFactory::self()->offers( servAllFiles->offset() );
+      {
+        KService::List newOffers = KServiceFactory::self()->offers( servAllFiles->offset() );
+        // Look if we already have those services from the initial query, to avoid duplicates
+        QValueListIterator<KService::Ptr> it = newOffers.begin();
+        for( ; it != newOffers.end(); ++it )
+        {
+            bool found = false;
+            QValueListIterator<KService::Ptr> it2 = lst.begin();
+            for( ; it2 != lst.end() && !found; ++it2 )
+                found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
+            if ( !found )
+                lst += *it;
+        }
+        //kdDebug(7009) << "all/allfiles found, got " << newOffers.count() << " more offers" << endl;
+      }
       else
-        kdWarning(7009) << QString("KServiceType::offers : servicetype all/allfiles not found") << endl;
+        kdWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;
       delete servAllFiles;
     }
   }
-
-  // Normal services associated with this servicetype
-  KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
-  if ( serv )
-    lst += KServiceFactory::self()->offers( serv->offset() );
-  else
-    kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
-  delete serv;
 
   return lst;
 }

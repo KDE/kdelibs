@@ -39,6 +39,7 @@ template class QList<KServiceTypeProfile>;
  *********************************************/
 
 QList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
+bool KServiceTypeProfile::s_configurationMode = false;
 
 void KServiceTypeProfile::initStatic()
 {
@@ -74,7 +75,7 @@ void KServiceTypeProfile::initStatic()
           type2 = (pService->type() == "Application") ? "Application" : "KParts/ReadOnlyPart";
       int pref = config.readNumEntry( "Preference" );
 
-      if ( !type.isEmpty() && pref >= 0 )
+      if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
       {
         KServiceTypeProfile* p =
           KServiceTypeProfile::serviceTypeProfile( type, type2 );
@@ -102,13 +103,8 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     OfferList offers;
     kdDebug(7014) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
-    /// ### TODO
-    // It's not enough to return the profile. The user might have installed
-    // something new since the last time he saved the profile.
-    // We should append to the offers, anything that can serve the servicetype,
-    // but that isn't yet in the offers, and that hasn't been disabled by the
-    // profile.
-
+    // Note that KServiceTypeProfile::offers() calls KServiceType::offers(),
+    // so we _do_ get the new services, that are available but not in the profile.
     if ( _genericServiceType.isEmpty() )
     {
         initStatic();
@@ -243,31 +239,36 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
-    if ( (*it)->hasServiceType( serviceType ) ) // we don't necessarily trust the profile on that.
-      if ( genericServiceType.isEmpty() || (*it)->hasServiceType( genericServiceType ) )
-      {
-        QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
+    //kdDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
+    if ( genericServiceType.isEmpty() || (*it)->hasServiceType( genericServiceType ) )
+    {
+      // Now look into the profile, to find this service's preference.
+      QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
 
-        if( it2 != m_mapServices.end() )
-        {
-          if ( it2.data().m_iPreference > 0 ) {
-            bool allow = (*it)->allowAsDefault();
-            if ( allow )
-              allow = it2.data().m_bAllowAsDefault;
-            KServiceOffer o( (*it), it2.data().m_iPreference, allow );
-            offers.append( o );
-          }
-        }
-        else
-        {
-          KServiceOffer o( (*it), 1, (*it)->allowAsDefault() );
+      if( it2 != m_mapServices.end() )
+      {
+        //kdDebug(7014) << "found in mapServices pref=" << it2.data().m_iPreference << endl;
+        if ( it2.data().m_iPreference > 0 ) {
+          bool allow = (*it)->allowAsDefault();
+          if ( allow )
+            allow = it2.data().m_bAllowAsDefault;
+          KServiceOffer o( (*it), it2.data().m_iPreference, allow );
           offers.append( o );
         }
       }
+      else
+      {
+        //kdDebug(7014) << "not found in mapServices. Appending." << endl;
+        KServiceOffer o( (*it), 1, (*it)->allowAsDefault() );
+        offers.append( o );
+      }
+    }/* else
+      kdDebug(7014) << "Doesn't have " << genericServiceType << endl;*/
   }
 
   qBubbleSort( offers );
 
+  //kdDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
   return offers;
 }
 

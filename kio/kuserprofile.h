@@ -147,6 +147,15 @@ public:
    */
   static void clear() { delete s_lstProfiles; s_lstProfiles = 0L; }
 
+  /**
+   * This method activates a special mode of KServiceTypeProfile, in which all/all
+   * and all/allfiles are excluded from the results of the queries.
+   * It is meant for the configuration module _only_. @internal.
+   */
+  static void setConfigurationMode() { s_configurationMode = true; }
+  /** @internal */
+  static bool configurationMode() { return s_configurationMode; }
+
 protected:
   /**
    * Constructor is called when the user profile is read for the
@@ -191,6 +200,7 @@ private:
 
   static void initStatic();
   static QList<KServiceTypeProfile>* s_lstProfiles;
+  static bool s_configurationMode;
 };
 
 #endif
