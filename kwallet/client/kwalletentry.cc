@@ -100,6 +100,10 @@ QPtrList<Entry> Entry::getEntries(const QString& type,
 				  EntryFactory factory,
 				  const QString& keyName,
 				  const QString& keyValue) {
+	Q_UNUSED(type);
+	Q_UNUSED(factory);
+	Q_UNUSED(keyName);
+	Q_UNUSED(keyValue);
 	// TODO: get list of entries (using the backend)
 	return QPtrList<Entry>();
 }
