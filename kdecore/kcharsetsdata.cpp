@@ -322,7 +322,13 @@ const char * KCharsetConverterData::convert(const char * str
     chr=0;
     index=0;
     unicode=0;
-    switch(inputEnc){
+    if (inAmps && str[i]=='&'){
+       kchdebug("Amperstand found\n");
+       unicode=kcharsetsData->decodeAmp(str+i,tmp);
+       kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
+       if (tmp>0) i+=tmp-1;
+    } 
+    if (unicode==0) switch(inputEnc){
        case UTF7:
          if (decodeUTF7(str+i,unicode,tmp)) i+=tmp;
 	 else unicode=(unsigned char)str[i];
@@ -332,15 +338,8 @@ const char * KCharsetConverterData::convert(const char * str
 	 else unicode=(unsigned char)str[i];
 	 break;
        default:
-         if (inAmps && str[i]=='&'){
-           kchdebug("Amperstand found\n");
-	   unicode=kcharsetsData->decodeAmp(str+i,tmp);
-           kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
-	   if (tmp>0) i+=tmp-1;
-	 } 
-	 if (unicode==0)
-           if (inBits<=8) index=(unsigned char)str[i];
-	   else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
+         if (inBits<=8) index=(unsigned char)str[i];
+	 else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
 	 break;
     }
     kchdebug("Got index: %x\n",index);
@@ -400,6 +399,7 @@ const char * KCharsetConverterData::convert(const char * str
 	if (str[i]) return str+i;
 	else return 0;
       }
+      else if (unicode && unicode<0x20) result.cText+=(char)unicode;
       else if (outAmps){
 	if (unicode) result.cText+="&#"+QString().setNum(unicode)+';';
 	else result.cText+="?";
