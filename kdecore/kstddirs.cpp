@@ -82,7 +82,7 @@ QStringList KStandardDirs::allTypes() const
 void KStandardDirs::addPrefix( const QString& _dir )
 {
     if (_dir.isNull())
-      return;
+	return;
 
     QString dir = _dir;   
     if (dir.at(dir.length() - 1) != '/')
@@ -147,7 +147,7 @@ QString KStandardDirs::findResource( const char *type,
 	return filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
-fprintf(stderr, "Find resource:\n");
+fprintf(stderr, "Find resource: %s\n",type);
 for (QStringList::ConstIterator pit = prefixes.begin();
      pit != prefixes.end(); 
      pit++)
@@ -176,6 +176,7 @@ QStringList KStandardDirs::findDirs( const char *type,
         if (testdir.exists())
             list.append(testdir.absPath() + '/');
     }
+
     return list;
 }
 
@@ -450,6 +451,18 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     }
     dircache.insert(type, candidates);
   }
+
+#if 0
+    qDebug("found dirs for resource %s:",type);
+    for (QStringList::ConstIterator pit = candidates->begin();
+	 pit != candidates->end(); 
+	 pit++)
+    {
+	fprintf(stderr, "%s\n", (*pit).latin1());
+    }
+#endif
+
+
   return *candidates;
 }
 
@@ -686,6 +699,8 @@ void KStandardDirs::addKDEDefaults()
             addResourceDir("apps", gnomedir + "/share/gnome/apps");
         }
     }
+
+    addResourceDir("apps", "/etc/X11/applnk");
 
     uint index = 0;
     while (types[index] != 0) {

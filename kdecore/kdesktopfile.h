@@ -98,7 +98,7 @@ public:
   /**
    * Retrieve the value of the "Dev=" entry.
    */
-  QString readDev();
+  QString readDevice();
 
   /**
    * Retrieve the value of the "URL=" entry.
