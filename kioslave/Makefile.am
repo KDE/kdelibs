@@ -1,5 +1,5 @@
 #    This file is part of the KDE libraries
-#    Copyright (C) 2001 George Staikos <staikos@kde.org>
+#    Copyright (C) 1997 Torben Weis (weis@kde.org)
 
 #    This library is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Library General Public
@@ -16,20 +16,4 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(SSL_INCLUDES) -I$(top_srcdir)/kio/kssl $(all_includes)
-
-lib_LTLIBRARIES = libkded_kssld.la
-
-libkded_kssld_la_LDFLAGS = $(all_libraries) -module -avoid-version
-libkded_kssld_la_LIBADD = $(LIB_KSYCOCA)
-libkded_kssld_la_SOURCES = kssld.cpp kssld.skel
-
-METASOURCES = AUTO
-
-include_HEADERS = 
-
-noinst_HEADERS = kssld.h
-
-services_DATA = kssld.desktop
-servicesdir = $(kde_servicesdir)/kded
-
+SUBDIRS = file http ftp gzip $(BZIP2DIR)

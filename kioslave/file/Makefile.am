@@ -2,14 +2,14 @@
 
 AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 
-INCLUDES = -I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
+INCLUDES = $(all_includes)
 
 ####### Files
 
 kde_module_LTLIBRARIES = kio_file.la
 
 kio_file_la_SOURCES = file.cc
-kio_file_la_LIBADD = ../libkio.la
+kio_file_la_LIBADD = $(LIB_KIO)
 kio_file_la_LDFLAGS = -module $(KDE_PLUGIN)
 noinst_HEADERS = file.h
 

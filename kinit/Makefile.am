@@ -15,11 +15,12 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(srcdir)/../libltdl/ -I$(srcdir)/../kio/klauncher/ $(all_includes)
+INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes)
 
-SUBDIRS = .
+SUBDIRS = . tests
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper
+bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper klauncher
+lib_LTLIBRARIES = klauncher.la
 
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
@@ -46,6 +47,18 @@ lnusertemp_LDFLAGS = $(KDE_RPATH)
 kwrapper_SOURCES = kwrapper.c
 kwrapper_LDADD = $(LIBSOCKET)
 
+klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
+klauncher_la_LIBADD = $(LIB_KSYCOCA)
+klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
+
+klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)
+klauncher_LDADD = klauncher.la
+klauncher_SOURCES = dummy.cpp
+
+METASOURCES = AUTO
+
+noinst_HEADERS = klauncher.h autostart.h klauncher_cmds.h setproctitle.h
+
 kwrapper.c : wrapper.c
 # do nothing, it just depends on it
 	
@@ -53,3 +66,6 @@ kwrapper.c : wrapper.c
 shell.c : wrapper.c
 # do nothing, it just depends on it
 	
+
+dummy.cpp:
+	echo > dummy.cpp

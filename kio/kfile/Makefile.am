@@ -17,9 +17,9 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(top_srcdir) -I$(srcdir)/../libltdl/ -I$(top_srcdir)/kio -I$(top_srcdir)/kdefx -I$(top_builddir)/kio $(all_includes)
+INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx -I$(top_builddir)/kio/kio $(all_includes)
 
-lib_LTLIBRARIES  = libkfile.la
+noinst_LTLIBRARIES  = libkfile.la
 
 METASOURCES = AUTO
 
@@ -50,8 +50,9 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 
 EXTRA_DIST = NOTES
 
-libkfile_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 4:0
-libkfile_la_LIBADD =  $(LIB_KSYCOCA)
+libkfile_la_LDFLAGS = $(KDE_MT_LDFLAGS)
+#libkfile_la_LIBADD = = nothing, undefined references will be checked
+# when creating libkio.la
 
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)

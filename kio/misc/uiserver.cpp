@@ -40,7 +40,7 @@
 #include "observer_stub.h"
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
-#include "kio/uiserver.h"
+#include "uiserver.h"
 #include "passdlg.h"
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
