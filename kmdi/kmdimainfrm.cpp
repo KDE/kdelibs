@@ -29,14 +29,11 @@
 //----------------------------------------------------------------------------
 #include "config.h"
 
-#include "kmdimainfrm.h"
-#include "kmdimainfrm.moc"
-#include "kmdidocumentviewtabwidget.h"
-
 #include <qcursor.h>
 #include <qclipboard.h>
 #include <qobjectlist.h>
 #include <qpopupmenu.h>
+#include <qmenubar.h>
 
 #include <kmenubar.h>
 #include <kapplication.h>
@@ -51,8 +48,6 @@
 #include <kiconloader.h>
 #include <kmdidockcontainer.h>
 
-#include "kmditoolviewaccessor_p.h"
-#include "kmdifocuslist.h"
 
 #include <qtoolbutton.h>
 #include <qlayout.h>
@@ -62,12 +57,16 @@
 #include <qmap.h>
 #include <qvaluelist.h>
 
+#include "kmdimainfrm.h"
 #include "kmditaskbar.h"
 #include "kmdichildfrm.h"
 #include "kmdichildarea.h"
 #include "kmdichildview.h"
 #include "kmdidockcontainer.h"
-#include "kmdiguiclient.h"
+#include "kmditoolviewaccessor_p.h"
+#include "kmdifocuslist.h"
+#include "kmdidocumentviewtabwidget.h"
+# include "kmdiguiclient.h"
 
 #include "win_undockbutton.xpm"
 #include "win_minbutton.xpm"
@@ -159,13 +158,14 @@ public:
    ,m_rightContainer(0)
    ,m_topContainer(0)
    ,m_bottomContainer(0)
+   ,d(new KMdiMainFrmPrivate())
    ,m_mdiGUIClient(0)
    ,m_documentTabWidget(0)
-   ,d(new KMdiMainFrmPrivate())
 {
    // Create the local lists of windows
    m_pDocumentViews = new QPtrList<KMdiChildView>;
    m_pDocumentViews->setAutoDelete(false);
+   m_pToolViews = new QMap<QWidget*,KMdiToolViewAccessor*>;
 
    // This seems to be needed (re-check it after Qt2.0 comed out)
    setFocusPolicy(ClickFocus);
@@ -261,6 +261,7 @@ KMdiMainFrm::~KMdiMainFrm()
 #warning fixme    while((pWnd = m_pToolViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
    emit lastChildViewClosed();
    delete m_pDocumentViews;
+   delete m_pToolViews;
    delete m_pDragEndTimer;
 
    delete m_pUndockButtonPixmap;
@@ -491,7 +492,7 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
 {
    QRect r=pWnd->geometry();
    KMdiToolViewAccessor *mtva=new KMdiToolViewAccessor(this,pWnd,tabToolTip,(tabCaption==0)?pWnd->caption():tabCaption);
-   m_pToolViews.insert(pWnd,mtva);
+   m_pToolViews->insert(pWnd,mtva);
 
    if (pos == KDockWidget::DockNone) {
       mtva->d->widgetContainer->setEnableDocking(KDockWidget::DockNone);
@@ -897,7 +898,7 @@ KMdiChildView * KMdiMainFrm::activeWindow()
 bool KMdiMainFrm::windowExists(KMdiChildView *pWnd, ExistsAs as)
 {
    if ((as==ToolView) || (as==AnyView)) {
-  if (m_pToolViews.contains(pWnd)) return true;
+  if (m_pToolViews->contains(pWnd)) return true;
   if (as==ToolView) return false;
    }
 
@@ -964,8 +965,8 @@ void KMdiMainFrm::activateView(KMdiChildView* pWnd)
    }
 
 
-   if ((m_mdiMode == KMdi::TabPageMode) || (m_mdiMode==KMdi::IDEAlMode)) {
-	m_documentTabWidget->showPage(pWnd);
+   if (m_documentTabWidget && m_mdiMode == KMdi::TabPageMode || m_mdiMode==KMdi::IDEAlMode) {
+      m_documentTabWidget->showPage(pWnd);
    }
 #if 0
    if (m_mdiMode == KMdi::TabPageMode) {
@@ -1248,7 +1249,7 @@ void KMdiMainFrm::switchToToplevelMode()
    if ((oldMdiMode == KMdi::TabPageMode) || (oldMdiMode==KMdi::IDEAlMode)) {
       if (!m_pDockbaseAreaOfDocumentViews) {
          m_pDockbaseAreaOfDocumentViews = createDockWidget( "mdiAreaCover", QPixmap(), 0L, "mdi_area_cover");
-   m_pDockbaseAreaOfDocumentViews ->setDockWindowTransient(this,true);
+         m_pDockbaseAreaOfDocumentViews->setDockWindowTransient(this,true);
          m_pDockbaseAreaOfDocumentViews->setEnableDocking(KDockWidget::DockNone);
          m_pDockbaseAreaOfDocumentViews->setDockSite(KDockWidget::DockCorner);
          m_pDockbaseAreaOfDocumentViews->setWidget(m_pMdi);
@@ -1802,9 +1803,22 @@ void KMdiMainFrm::finishIDEAlMode(bool full)
          pView->resize(sz);
          pView->setMinimumSize(mins.width(),mins.height());
          pView->setMaximumSize(maxs.width(),maxs.height());
-         ((KDockWidget*)pParent)->undock(); // this destroys the dockwiget cover, too
-         pParent->close();
-         delete pParent;
+         KDockWidget* pDockW = 0L;
+         // find the oldest ancestor of the current dockwidget that can be undocked
+         do {
+            if (pParent->inherits("KDockWidget") || pParent->inherits("KDockWidget_Compat::KDockWidget")) {
+                pDockW = (KDockWidget*) pParent;
+                pDockW->undock(); // this destroys the dockwiget cover, too
+                if (pParent != m_pDockbaseAreaOfDocumentViews) {
+                    pParent->close();
+                    delete pParent;
+                }
+            }
+            else {
+                pParent = pParent->parentWidget();
+            }
+         }
+         while (pParent && !pDockW);
          if (centralWidget() == pParent) {
             setCentralWidget(0L); // avoid dangling pointer
          }
