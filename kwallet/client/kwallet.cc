@@ -146,6 +146,16 @@ return 0;
 }
 
 
+QStringList Wallet::users(const QString& name) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("users", name);
+QStringList drc;
+	if (r.isValid()) {
+		r.get(drc);
+	}
+return drc;
+}
+
+
 int Wallet::lockWallet() {
 	if (_handle == -1) {
 		return -1;

@@ -51,6 +51,8 @@ class Wallet : public QObject, public DCOPObject {
 
 		static Wallet* openWallet(const QString& name);
 
+		static QStringList users(const QString& wallet);
+
 		static const QString LocalWallet();
 		static const QString NetworkWallet();
 
