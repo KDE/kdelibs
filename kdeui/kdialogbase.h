@@ -1096,18 +1096,26 @@ class KDialogBase : public KDialog
      * The dialog is about to be hidden.
      *
      * A dialog is hidden after a user clicks a button that ends
-     * the dialog.
-     * 
-     * This signal is _NOT_ emitted when the window manager hides the dialog.
-     * (E.g. switching to another desktop, minimizing dialog)
+     * the dialog or when the user switches to another desktop or
+     * minimizes the dialog.
+     */
+    void hidden();
+
+    /**
+     * The dialog has finished.
+     *
+     * A dialog emits finished after a user clicks a button that ends
+     * the dialog. 
+     *
+     * This signal is also emitted when you call @ref hide()
      *
      * If you have stored a pointer to the 
      * dialog do @bf not try to delete the pointer in the slot that is 
      * connected to this signal. 
      * 
-     * You can use @ref delayedDestruct() instead.
+     * You should use @ref delayedDestruct() instead.
      */
-    void hidden();
+    void finished();
 
   protected:
     /**

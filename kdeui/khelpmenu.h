@@ -218,9 +218,9 @@ class KHelpMenu : public QObject
     
     /**
      * Connected to the dialogs (about kde and bug report) to detect 
-     * when they are closed (becomes hidden).
+     * when they are finished.
      */
-    void dialogHidden();
+    void dialogFinished();
 
     /**
      * This slot will delete a dialog (about kde or bug report) if the
