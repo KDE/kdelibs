@@ -223,6 +223,8 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
     connect(_tipOnStart, SIGNAL(toggled(bool)), this, SLOT(showOnStart(bool)));
 
+    ok->setFocus();
+
     nextTip();
 }
 
