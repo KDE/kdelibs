@@ -335,9 +335,12 @@ void Dialog::createDialogFromServices()
 			d->parentmodulenames[ info ] = parentnames;
 		}
 	}
-	else
+	else if( d->moduleinfos.count() > 1 )
 		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
-			i18n( "Preferences" ), d->parentwidget );
+				i18n( "Preferences" ), d->parentwidget );
+	else
+		d->dlg = new KCMultiDialog( KJanusWidget::Plain,
+				i18n( "Preferences" ), d->parentwidget );
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.

@@ -182,8 +182,7 @@ private:
     QPtrDict<LoadInfo> moduleDict;
     QPtrDict<QStringList> moduleParentComponents;
     QString _docPath;
-    QString _baseGroup;
-    bool createTreeList;
+    int dialogface;
 
     // For future use
     class KCMultiDialogPrivate;

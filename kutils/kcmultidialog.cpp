@@ -36,12 +36,12 @@
 #include "kcmultidialog.moc"
 #include "kcmoduleloader.h"
 #include <assert.h>
+#include <qlayout.h>
 
 KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const char *name, bool modal)
   : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply | Ok, Ok,
                 parent, name, modal, true)
-  , _baseGroup(baseGroup)
-  , createTreeList( false )
+    , dialogface( IconList )
 {
     init();
 }
@@ -50,11 +50,9 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget *
     : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok |
             User1, Ok, parent, name, modal, true,
             KGuiItem( i18n( "&Reset" ), "undo" ) )
-    , createTreeList( false )
+    , dialogface( dialogFace )
 {
     showButton( User1, false );;
-    if( dialogFace == KDialogBase::TreeList )
-        createTreeList = true;
     init();
 }
 
@@ -195,18 +193,30 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     kdDebug(710) << "KCMultiDialog::addModule " << moduleinfo.moduleName() <<
         endl;
 
-    QHBox* page = 0;
+    QFrame* page = 0;
     if (!moduleinfo.service()->noDisplay())
-        if( createTreeList )
+        switch( dialogface )
         {
-            parentmodulenames += moduleinfo.moduleName();;
-            page = addHBoxPage(parentmodulenames, moduleinfo.comment(),
-                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(), KIcon::Small));
+            case TreeList:
+                parentmodulenames += moduleinfo.moduleName();;
+                page = addHBoxPage( parentmodulenames, moduleinfo.comment(),
+                        SmallIcon( moduleinfo.icon(),
+                            IconSize( KIcon::Small ) ) );
+                break;
+            case IconList:
+                page = addHBoxPage( moduleinfo.moduleName(),
+                        moduleinfo.comment(), DesktopIcon( moduleinfo.icon(),
+                            KIcon::SizeMedium ) );
+                break;
+            case Plain:
+                page = plainPage();
+                ( new QHBoxLayout( page ) )->setAutoAdd( true );
+                break;
+            default:
+                kdError( 710 ) << "unsupported dialog face for KCMultiDialog"
+                    << endl;
+                break;
         }
-        else
-            page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
-                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
-                        KIcon::Desktop, KIcon::SizeMedium));
     if(!page) {
         KCModuleLoader::unloadModule(moduleinfo);
         return;
