@@ -38,20 +38,25 @@ namespace KRES {
 
 /**
  * Class for loading resource plugins.
- * Do not use this class directly. Use ResourceManager instead
+ * Use this class if you need resources with special
+ * settings, otherwise use KRES::Manager::createResource()
+ * to get resources with the default settings.
  *
  * Example:
  *
  * \code
- * KABC::Factory<Calendar> *factory = KABC::Factory<Calendar>::self();
+ * KABC::Factory *factory = KABC::Factory::self( "contact" );
  *
- * QStringList list = factory->resources();
- * QStringList::Iterator it;
- * for ( it = list.begin(); it != list.end(); ++it ) {
- *   Resource<Calendar> *resource = factory->resource( (*it),
- *        KABC::StdAddressBook::self(), 0 );
- *   // do something with resource
- * }
+ * // to allow a transparent configuration of resources, we have
+ * // to use a kconfig object.
+ * KConfig config( "tst" );
+ * config.writeEntry( "FileName", "/home/foobar/test.vcf" );    // resource dependend
+ * config.writeEntry( "FileFormat", "vcard" );                  // resource dependend
+ *
+ * KABC::Resource *res = factory->resource( "file", &config );
+ *
+ * // do something with resource
+ *
  * \endcode
  */
 class Factory
@@ -69,8 +74,7 @@ class Factory
      * Returns the config widget for the given resource type,
      * or a null pointer if resource type doesn't exist.
      *
-     * @param type   The type of the resource, returned by resources()
-     * @param resource The resource to be editted.
+     * @param type   The type of the resource, returned by typeNames()
      * @param parent The parent widget
      */
     ConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
@@ -79,9 +83,9 @@ class Factory
      * Returns a pointer to a resource object or a null pointer
      * if resource type doesn't exist.
      *
-     * @param type   The type of the resource, returned by resources()
-     * @param ab     The address book, the resource should belong to
-     * @param config The config object where the resource get it settings from, or 0 if a new resource should be created.
+     * @param type   The type of the resource, returned by typeNames()
+     * @param config The config object where the resource get it settings from,
+     *               or 0 if a resource with default values should be created.
      */
     Resource *resource( const QString& type, const KConfig *config );
 
