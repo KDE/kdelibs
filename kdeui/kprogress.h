@@ -187,6 +187,7 @@ protected:
 	
 private:
 	QPixmap		*bar_pixmap;
+	bool		use_supplied_bar_color;
 	QColor		bar_color;
 	QColor		bar_text_color;
 	QColor		text_color;

@@ -68,6 +68,7 @@ void KProgress::initialize()
 	//setLineWidth(2);
         //setMidLineWidth(2);
   format_ = "%p%";
+	use_supplied_bar_color = false;
 	bar_pixmap = 0;
 	bar_style = Solid;
 	bar_color = colorGroup().highlight();
@@ -100,6 +101,7 @@ void KProgress::setBarPixmap(const QPixmap &pixmap)
 void KProgress::setBarColor(const QColor &color)
 {
 	bar_color = color;
+	use_supplied_bar_color = true;
 	if (bar_pixmap) {
 		delete bar_pixmap;
 		bar_pixmap = 0;
@@ -219,7 +221,8 @@ void KProgress::adjustStyle()
 
 void KProgress::paletteChange( const QPalette & )
 {
-	bar_color = colorGroup().highlight();
+	if ( !use_supplied_bar_color )
+		bar_color = colorGroup().highlight();
 	bar_text_color = colorGroup().highlightedText();
 	text_color = colorGroup().text();
 }
