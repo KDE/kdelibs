@@ -837,6 +837,7 @@ int main(int argc, char **argv, char **envp)
    sock_file[0] = 0;
    init_signals();
 
+
    if (keep_running)
    {
       /*
@@ -844,8 +845,6 @@ int main(int argc, char **argv, char **envp)
        * requests.
        */
       init_kdeinit_socket();
-      if (fork() > 0) // Go into background
-         exit(0);
    }
 
    printf("Pre Launcher, pid = %d\n", getpid());
@@ -894,6 +893,13 @@ int main(int argc, char **argv, char **envp)
 
    if (!keep_running)
       exit(0);
+
+   //
+   // Fork here and let parent process exit.
+   // Parent process may only exit after all required services have been
+   // launched. (dcopserver/klauncher and services which start with '+')
+   if (fork() > 0) // Go into background
+       exit(0);
 
    X11fd = initXconnection();
 
