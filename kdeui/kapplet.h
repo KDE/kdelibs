@@ -1,9 +1,4 @@
 /* This file is part of the KDE libraries
-
-
-
-
-
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
@@ -21,7 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef KAPPLET_H
 #define KAPPLET_H
 

@@ -35,6 +35,9 @@ class QVBoxLayout;
 class KURLLabel;
 class QTabWidget;
 
+/**
+ * @internal
+ */
 class KImageTrackLabel : public QLabel
 {
   Q_OBJECT
@@ -61,6 +64,7 @@ class KImageTrackLabel : public QLabel
     virtual void mouseMoveEvent ( QMouseEvent *e );
 };
 
+class KAboutContainerPrivate;
 /**
  *  @internal
  */
@@ -97,8 +101,10 @@ class KAboutContainer : public QFrame
   private:
     QVBoxLayout *mVbox;
     int mAlignment;
+    KAboutContainerPrivate *d;
 };
 
+class KAboutContainerBasePrivate;
 /**
  *  @internal
  */
@@ -166,8 +172,11 @@ class KAboutContainerBase : public QWidget
     QFrame  *mImageFrame;
     QTabWidget *mPageTab;
     QFrame  *mPlainSpace;
+
+    KAboutContainerBasePrivate *d;
 };
 
+class KAboutContributorPrivate;
 /**
  *  @internal
  */
@@ -218,8 +227,11 @@ class KAboutContributor : public QFrame
     QLabel *mText[4];
     bool mShowHeader;
     bool mShowBold;
+
+    KAboutContributorPrivate *d;
 };
 
+class KAboutWidgetPrivate;
 /**
  * KAboutWidget is the main widget for KAboutDialog.
  *
@@ -290,8 +302,12 @@ protected:
   /** A set of people who contributed to the application. */
   QList<KAboutContributor> contributors;
   // #########################################################################
+  //
+private:
+  KAboutWidgetPrivate *d;
 };
 
+class KAboutDialogPrivate;
 /**
  * A @ref KDialogBase with predefined main widget.
  *
@@ -582,7 +598,7 @@ protected:
    */
   KAboutContainerBase *mContainerBase;
 
-  // ----------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 protected slots:
 
   /**
@@ -602,7 +618,9 @@ protected slots:
    */
   virtual void mouseTrackSlot( int mode, const QMouseEvent *e );
 
-  // ############################################################################
+  // #########################################################################
+private:
+  KAboutDialogPrivate *d;
 };
 
 #endif // defined KABOUTDIALOG_H

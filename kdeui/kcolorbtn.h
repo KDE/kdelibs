@@ -87,6 +87,9 @@ private:
         QColor col;
         QPoint mPos;
 	bool dragFlag;
+
+  class KColorButtonPrivate;
+  KColorButtonPrivate *d;
 };
 
 #endif

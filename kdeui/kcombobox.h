@@ -1,5 +1,4 @@
 /* This file is part of the KDE libraries
-
    Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
 
    This library is free software; you can redistribute it and/or
@@ -466,6 +465,9 @@ private :
     QPopupMenu *m_pContextMenu, *m_pSubMenu;
     // Event Filter to trap events
     virtual bool eventFilter( QObject* o, QEvent* e );
+
+    class KComboBoxPrivate;
+    KComboBoxPrivate *d;
 };
 
 #endif

@@ -33,6 +33,8 @@
 
 class QMouseEvent;
 class QSpinBox;
+class KCharSelectTablePrivate;
+class KCharSelectPrivate;
 
 /******************************************************************/
 /* Class: KCharSelectTable                                        */
@@ -87,6 +89,8 @@ signals:
   void tableUp();
   void tableDown();
 
+private:
+  KCharSelectTablePrivate *d;
 };
 
 /******************************************************************/
@@ -160,6 +164,8 @@ signals:
   void focusItemChanged();
   void focusItemChanged( const QChar &c );
 
+private:
+  KCharSelectPrivate *d;
 };
 
 #endif

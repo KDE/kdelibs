@@ -63,6 +63,10 @@ protected:
 
 protected:
   QPixmap pixmap;
+
+private:
+  class KHSSelectorPrivate;
+  KHSSelectorPrivate *d;
 };
 
 /**
@@ -91,6 +95,10 @@ protected:
   int hue;
   int sat;
   QPixmap pixmap;
+
+private:
+  class KValueSelectorPrivate;
+  KValueSelectorPrivate *d;
 };
 
 class KColor : public QColor
@@ -112,6 +120,11 @@ protected:
   int r;
   int g;
   int b;
+
+private:
+  class KColorPrivate;
+  KColorPrivate *d;
+
 };
 
 /**
@@ -153,6 +166,10 @@ protected:
   KPalette *mPalette;
   int mMinWidth;
   int mCols;
+
+private:
+  class KPaletteTablePrivate;
+  KPaletteTablePrivate *d;
 };
 
 
@@ -201,6 +218,10 @@ protected:
   int	selected;
   bool shade;  
   bool acceptDrags;
+
+private:
+  class KColorCellsPrivate;
+  KColorCellsPrivate *d;
 };
 
 /**
@@ -229,6 +250,10 @@ private:
   QColor color;
   uint pixel;
   int colContext;
+
+  class KColorPatchPrivate;
+  KColorPatchPrivate *d;
+
 };
 
 /** 
@@ -341,6 +366,9 @@ class KColorDialog : public KDialogBase
     KPalette *palette;
     KValueSelector *valuePal;
     KColor selColor;
+
+    class KColorDialogPrivate;
+    KColorDialogPrivate *d;
 };
 
 
@@ -372,6 +400,9 @@ private:
 	void addColors();
 	QColor customColor;
 	QColor color;
+
+    class KColorComboPrivate;
+    KColorComboPrivate *d;
 };
 
 #endif		// __KCOLORDLG_H__

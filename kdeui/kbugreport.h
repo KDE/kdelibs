@@ -16,7 +16,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-
 #ifndef _KBUGREPORT_H__
 #define _KBUGREPORT_H__
 
@@ -27,6 +26,7 @@ class QLineEdit;
 class QHButtonGroup;
 class KProcess;
 class KAboutData;
+class KBugReportPrivate;
 
 class KBugReport : public KDialogBase
 {
@@ -54,6 +54,9 @@ protected:
   QLabel * m_version;
   QString m_strVersion;
   QHButtonGroup * m_bgSeverity;
+
+private:
+  KBugReportPrivate *d;
 };
 
 #endif

@@ -269,6 +269,9 @@ protected:
      */
     QSize _sizeHint;
 
+private:
+    class KContainerLayoutPrivate;
+    KContainerLayoutPrivate *d;
 };
 
 #endif // __KCONTAINER_H__

@@ -1,20 +1,28 @@
-//////////////////////////////////////////////////////////////////////
-//      $Id$ 
-// File  : kpopupmenu.h
-// Author: Toivo Pedaste
-//
-//////////////////////////////////////////////////////////////////////
+/* This file is part of the KDE libraries
+   Copyright (C) 1999 Toivo Pedaste <toivo@ucs.uwa.edu.au>
 
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifndef KACCELMENU_H
 #define KACCELMENU_H
-
-// Standard Headers
-#include <stdio.h>
 
 // Qt Headers
 #include <qintdict.h> 
 #include <qpopupmenu.h>
 
+class KAccelMenuPrivate;
 //////////////////////////////////////////////////////////////////////////////
 /**
  * Simplify the use of @ref KAccel and @ref KKeyDialog with menus.
@@ -31,26 +39,28 @@
  * are used for menu accelerators.
  *
  * @sect Usage:
- <pre>
- *  keys = new KAccel(this);
+ * <pre>
+ * keys = new KAccel(this);
  *
  * filemenu = new KAccelMenu(keys);
- * filemenu->insItem(i18n("&Open"), "&Open", kp ,SLOT(fileOpen()), KStdAccel::Open);
- * filemenu->insItem(i18n("Open &URL"), "Open &URL", kp, SLOT(fileOpenUrl()),"CTRL+X");
+ * filemenu->insItem(i18n("&Open"), "&Open", kp ,SLOT(fileOpen()),
+ *                   KStdAccel::Open);
+ * filemenu->insItem(i18n("Open &URL"), "Open &URL", kp, SLOT(fileOpenUrl()),
+ *                   "CTRL+X");
  *
  * keys->readSettings();
- </pre>
+ * </pre>
  *
  * Calling the KKeyDialog:
- <pre>
+ * <pre>
  * KKeyDialog::configureKeys( keys ); 
- </pre>
+ * </pre>
  *
  * On exit you need:
- <pre>
+ * <pre>
  * keys->writeSettings();
- </pre>
-
+ * </pre>
+ *
  **/
 
 class KAccelMenu : public QPopupMenu
@@ -156,6 +166,9 @@ protected slots:
   void highl(int);
   // called befaore a menu is displayed
   void aboutTS();
+
+private:
+  KAccelMenuPrivate *d;
 };
 
 #endif 

@@ -24,6 +24,7 @@
 class QWidget;
 class QPopupMenu;
 class I_really_like_this_class;
+class KContextMenuManagerPrivate;
 #include <qobject.h>
 #include <qptrdict.h>
 
@@ -108,9 +109,8 @@ private:
     int menuKey;
     static KContextMenuManager* manager;
     friend I_really_like_this_class; // avoid warning
+
+    KContextMenuManagerPrivate *d;
 };
-
-
-
 
 #endif

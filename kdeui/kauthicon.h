@@ -1,11 +1,22 @@
-/*
- * KAuthIcon - an icon which shows whether privileges are in effect
- * Part of the KDE Project
- * Copyright (c) 1999 Preston Brown <pbrown@kde.org>
- */
+/* This file is part of the KDE libraries
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifndef _KAUTHICON_H
-#define _KAUTHICON_H "$Id"
+#define _KAUTHICON_H "$Id$"
 
 #include <qfileinfo.h>
 #include <qlabel.h>
@@ -15,6 +26,7 @@
 
 class QPixmap;
 class QHBoxLayout;
+class KAuthIconPrivate;
 
 /**
  * This is the base class from which different authorization icon widget
@@ -72,8 +84,12 @@ protected:
   QPixmap openLockPM;
   QString lockText;
   QString openLockText;
+
+private:
+  KAuthIconPrivate *d;
 };
 
+class KRootPermsIconPrivate;
 /**
  * Icon to show whether or not a user has root permissions.
  * @see KAuthIcon
@@ -97,8 +113,12 @@ public slots:
 
 protected:
   bool root;
+
+private:
+  KRootPermsIconPrivate *d;
 };
 
+class KWritePermsIconPrivate;
 /** 
  * Auth icon for write permission display.
  *
@@ -128,6 +148,9 @@ public slots:
 protected:
   bool writable; 
   QFileInfo fi;
+
+private:
+  KWritePermsIconPrivate *d;
 };
 
 #endif

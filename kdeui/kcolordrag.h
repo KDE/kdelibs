@@ -18,15 +18,6 @@
 */
 /*
  * $Id$
- *
- * $Log$
- * Revision 1.2  1999/12/13 18:17:36  kulow
- * removed ; after Q_OBJECT
- *
- * Revision 1.1  1999/05/06 02:46:13  steffen
- * Drag&drop for colors. Qt drag&drop is really easy to use. We should have stuff like this all over KDE.
- *
- *
  */
 #ifndef _KCOLORDRAG_H
 #define _KCOLORDRAG_H
@@ -58,6 +49,10 @@ public:
      static KColorDrag* makeDrag( const QColor&,QWidget *dragsource);
 protected:
      QColor m_color;
+
+private:
+     class KColorDragPrivate;
+     KColorDragPrivate *d;
 };
 
 

@@ -1,5 +1,4 @@
 /*
-
    This file is part of the KDE libraries
 
    Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
@@ -20,18 +19,16 @@
    Boston, MA 02111-1307, USA.
 
 */
-
-
 #ifndef __KCMODULE_H__
 #define __KCMODULE_H__
-
 
 #include <qwidget.h>
 #include <qdialog.h>
 
 class QPushButton;
 class QFrame;
-
+class KCModulePrivate;
+class KCDialogPrivate;
 
 /**
  * The base class for control center modules.
@@ -182,6 +179,7 @@ private:
 
   int _btn;
 
+  KCModulePrivate *d;
 };
 
 
@@ -216,6 +214,8 @@ private:
   QPushButton *_ok;
   QFrame      *_sep;
   QString     _docpath;
+
+  KCDialogPrivate *d;
 };
 
 
