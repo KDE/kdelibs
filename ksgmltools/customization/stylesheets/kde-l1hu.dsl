@@ -5,7 +5,7 @@
 <!--
     This style sheet is a localisation extension to the DocBook HTML Stylesheet.
 
-    Copyright (C) 2000 Wolfgang Scherer
+    Copyright (C) 2000 
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
     Send suggestions, comments, etc. about
-     the translations to Wolfgang Scherer <Wolfgang.Scherer@gmx.de>
+     the translations to TRANSLATORS PLEASE
      the rest to Frederik Fouvry <fouvry@sfs.nphil.uni-tuebingen.de>.
 -->
 
@@ -32,7 +32,7 @@
 
 (define %kde-gentext-hu-home-url% "http://www.kde.org/")
 (define %kde-gentext-hu-logo-alt% "KDE grafikus fel\U-00FC;let")
-(define %kde-gentext-hu-encoding% "iso-8859-1")
+(define %kde-gentext-hu-encoding% "iso-8859-2")
 (define %kde-gentext-hu-html-header-tags% '())
 (define %kde-gentext-hu-default% "&Default;")
 (define %kde-gentext-hu-language% "&Hungarian;")
