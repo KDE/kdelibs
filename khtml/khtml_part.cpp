@@ -229,6 +229,8 @@ public:
   };
 
   findState m_lastFindState;
+
+  QGuardedPtr<KParts::Part> m_activeFrame;
 };
 
 namespace khtml {
@@ -353,6 +355,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
+  delete d->m_manager;
+
   d->m_redirectionTimer.stop();
   closeURL();
 
@@ -1632,6 +1636,8 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
     if ( child->m_bFrame )
       partManager()->addPart( part );
+    else
+        kdDebug() << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
 
@@ -1739,9 +1745,10 @@ KParts::PartManager *KHTMLPart::partManager()
 {
   if ( !d->m_manager )
   {
-    d->m_manager = new KParts::PartManager( d->m_view );
+    d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget() );
+    d->m_manager->setAllowNestedParts( true );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
-             this, SLOT( updateActions() ) );
+             this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
   }
 
   return d->m_manager;
@@ -2724,6 +2731,29 @@ bool KHTMLPart::checkLinkSecurity(KURL linkURL)
     return false;
   }
   return true;
+}
+
+void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
+{
+    if ( part == this )
+    {
+        kdDebug() << "strange error! we activated ourselves" << endl;
+        assert( false );
+        return;
+    }
+    if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
+    {
+        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
+        frame->setLineWidth( frame->style().defaultFrameWidth() );
+    }
+    d->m_activeFrame = part;
+    if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
+    {
+        QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
+        frame->setLineWidth( frame->lineWidth() + 2 );
+        kdDebug() << "new active frame " << d->m_activeFrame << endl;
+    }
+    updateActions();
 }
 
 #include "khtml_part.moc"

@@ -3,7 +3,7 @@
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
- *		       2000 Simon Hausmann <hausmann@kde.org>
+ *                     2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -588,8 +588,8 @@ protected:
    * @internal
    */
   virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
-					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
-					    const QStringList &params);
+                                            const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
+                                            const QStringList &params);
 
   /**
      * @internal
@@ -600,7 +600,6 @@ protected:
     * @internal
     */
   void setFontBaseInternal( int base, bool absolute );
-
 
 protected slots:
   /**
@@ -666,6 +665,10 @@ private slots:
    * @internal
    */
   void updateActions();
+  /**
+   * @internal
+   */
+  void slotActiveFrameChanged( KParts::Part *part );
   /**
    * @internal
    */
