@@ -1266,13 +1266,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
     if(!parsedValue) return false;
 
-    QListIterator<CSSProperty> propIt(*propList);
-    propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
-    while (propIt.current() && propIt.current()->m_id != propId)
-        --propIt;
-    if (propIt.current())
-        propList->removeRef(propIt.current());
-
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;
     prop->setValue(parsedValue);

@@ -132,6 +132,7 @@ public:
 	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
 	/* parses generic CSSValues, return true, if it found a valid value */
+	/* properties are added at the end of list. */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
 			QList<CSSProperty> *propList);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, 

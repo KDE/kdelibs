@@ -72,11 +72,10 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 {
     if(!m_lstValues) return 0;
 
-    unsigned int i = 0;
-    while(i < m_lstValues->count())
+    unsigned int i = m_lstValues->count();
+    while(i--)
     {
 	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->value();
-	i++;
     }
     return 0;
 }
@@ -92,16 +91,14 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int id)
 {
     if(!m_lstValues) return 0;
 
-    unsigned int i = 0;
-    while(i < m_lstValues->count())
+    unsigned int i = m_lstValues->count();
+    while(i--)
     {
 	if(id == m_lstValues->at(i)->m_id)
 	{
 	    m_lstValues->remove(i);
-	    // ###
-	    return 0;
+            // Continue, a property can occur in the list multiple times.
 	}
-	i++;
     }
     return 0;
 }
@@ -118,11 +115,11 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
 {
     if(!m_lstValues) return false;
 
-    unsigned int i = 0;
-    while(i < m_lstValues->count())
+    unsigned int i = m_lstValues->count();
+    while(i--)
     {
-	if(propertyID == m_lstValues->at(i)->m_id ) return m_lstValues->at(i)->m_bImportant;
-	i++;
+	if(propertyID == m_lstValues->at(i)->m_id ) 
+            return m_lstValues->at(i)->m_bImportant;
     }
     return false;
 }
@@ -155,7 +152,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	m_lstValues->setAutoDelete(true);
     }
     int pos = m_lstValues->count();
-    parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
+    if (!parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues))
+       return;
 
     if(nonCSSHint) {
 	CSSProperty *p = m_lstValues->at(pos);
@@ -188,7 +186,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     {
 	//kdDebug( 6080 ) << "setting property" << endl;
 	CSSProperty *prop = props->at(i);
-	removeProperty(prop->m_id);
+	removeProperty(prop->m_id); // Not strictly needed any more
 	m_lstValues->append(prop);
 	i++;
     }
@@ -236,12 +234,14 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 unsigned long CSSStyleDeclarationImpl::length() const
 {
     if(!m_lstValues) return 0;
+    // Hmmm. This sucks, we have to remove duplicates here first.
     return m_lstValues->count();
 }
 
 DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ )
 {
     // ###
+    // Hmmm. This sucks, we have to remove duplicates here first.
     //return m_lstValues->at(index);
     return 0;
 }
