@@ -34,6 +34,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
     Debugger(0L),
     modal(false)
 {
+  setCaption(i18n("JavaScript Debugger"));
   QVBoxLayout *vl = new QVBoxLayout(this, 5);
   edit = new QMultiLineEdit(this);
   edit->setMinimumSize(600, 100);
@@ -83,7 +84,8 @@ void KJSDebugWin::cont()
 
 bool KJSDebugWin::stopEvent(int line)
 {
-  show();
+  if (!isVisible())
+    show();
   highLight(line);
   enterSession();
   return true;
