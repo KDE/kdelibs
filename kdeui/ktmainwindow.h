@@ -327,7 +327,8 @@ public:
 
     /**
      * Returns the standard help menu which contains entires for the 
-     * help system (activated by F1), an application specific dialog box
+     * help system (activated by F1), an optional "What's This" entry
+     * (activated by Shift F1), an application specific dialog box
      * and an "About KDE" dialog box. 
      *
      * Example (adding a standard help menu to your application):
@@ -340,9 +341,13 @@ public:
      *        specific dialog box. Note: The help menu will not open
      *        this dialog box if you don't define a string.
      *
+     * @param showWhatsThis Set this to false if you do not want to include
+     *        the "What's This" menu entry.
+     * 
      * @return A standard help menu.
      */
-    QPopupMenu* helpMenu( const QString &aboutAppText=QString::null );
+    QPopupMenu* helpMenu( const QString &aboutAppText=QString::null,
+			  bool showWhatsThis=true );
 
 protected:
     /**
@@ -539,6 +544,32 @@ protected slots:
     * This is handled by Qt layout management.
     */
    virtual void updateRects();
+
+   /**
+    * This slot does nothing. It must be reimplemented if you want 
+    * to use a custom About Application dialog box. This slot is
+    * connected to the "About Application" entry in the menu returned
+    * by @ref helpMenu if and only if the text argument to @ref helpMenu 
+    * is empty (QString::null).
+    *
+    * Example:
+    * <pre>
+    * 
+    * void MyTopLevel::setupInterface()
+    * {
+    *   ..
+    *   QPopupMenu *help = helpMenu();
+    *   menuBar()->insertItem( i18n("&Help"), help );
+    *   ..
+    * }
+    *
+    * void MyTopLevel::showAboutApplication( void )
+    * {
+    *   <activate your custom dialog>
+    * }
+    * </pre>
+    */
+   void showAboutApplication( void ); 
 
 private slots:
    /**

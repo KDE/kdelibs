@@ -800,16 +800,20 @@ void KTMainWindow::toolbarKilled()
 
 
 
-QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText )
+QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText,
+				    bool showWhatsThis )
 {
   if( mHelpMenu == 0 )
   {
-    mHelpMenu = new KHelpMenu( this, aboutAppText );
+    mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
     if( mHelpMenu == 0 ) { return( 0 ); }
+    connect( mHelpMenu, SIGNAL(showAboutApplication()), 
+	     this, SLOT(showAboutApplication()));
   }
 
   return( mHelpMenu->menu() );
 }
+
 
 
 void KTMainWindow::appHelpActivated( void )
@@ -823,7 +827,10 @@ void KTMainWindow::appHelpActivated( void )
 }
 
 
-
+void KTMainWindow::showAboutApplication( void )
+{
+  // Just an empty virtual slot
+}
 
 
 
