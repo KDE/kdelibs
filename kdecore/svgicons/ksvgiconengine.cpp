@@ -576,6 +576,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 			data += QString::fromUtf8(buffer);
 		}
 
+		delete []buffer; 
 		gzclose(svgz);
 
 		svgDocument.setContent(data);
