@@ -562,7 +562,7 @@ public:
     bool setValue( const QVariant& value );
 
     /**
-     * Convenience method. It does the same as value()->type().
+     * Return the type of the item.
      * @return the type of the item
      */
     QVariant::Type type() const;
