@@ -101,6 +101,14 @@
 5100        libkdenetwork
 
 # kdepim
+5200        kitchensync
+5201        kitchensync (Konnector)
+5202        kitchensync (OpieKonnector)
+5210        kitchensync (KitchenSyncApp)
+5220        kitchensync (ManipulatorParts)
+5221        kitchensync (overviewpart)
+5222        kitchensync (organizerpart)
+5223        kitchensync (fileviewpart)
 5500        knotes
 5510        kpilot
 5511        kpilotdaemon
