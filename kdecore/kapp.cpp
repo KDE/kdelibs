@@ -712,6 +712,7 @@ DCOPClient *KApplication::dcopClient()
   connect(pDCOPClient, SIGNAL(blockUserInput(bool) ),
           SLOT(dcopBlockUserInput(bool)) );
 
+  DCOPClient::setMainClient( pDCOPClient );
   return pDCOPClient;
 }
 
