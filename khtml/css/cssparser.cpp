@@ -822,13 +822,10 @@ static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
 	} else if ( *nextP == ')' ) {
 	    ignoreSpace = false;
 	}
-	if ( *nextP == ' ' && !ignoreSpace ) {
-	    break;
-	}
-	if ( *nextP == ';' ) {
-	    last = true;
-	    break;
-	}
+	if ( *nextP == ' ' && !ignoreSpace )
+            return nextP;
+	if ( *nextP == ';')
+            break;
 	nextP++;
     }
     last = true;
