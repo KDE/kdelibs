@@ -184,6 +184,13 @@ void KURL::parse( const char * _url )
     ref_part = "";
     bNoPath = false;
 
+    // Empty or Null string ?
+    if ( url.isEmpty() )
+    {
+      malformed = true;
+      return;
+    }
+
     if ( _url[0] == '/' )
     {
 	// Create a light weight URL with protocol
