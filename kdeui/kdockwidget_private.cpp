@@ -171,30 +171,32 @@ void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
 
 void KDockSplitter::setupMinMaxSize()
 {
-  // Set the minimum and maximum sizes
+  // Set the minimum and maximum sizes for the KDockSplitter (this)
   int minx, maxx, miny, maxy;
   if (m_orientation == Horizontal) {
-    miny = child0->minimumSize().height() + child1->minimumSize().height()+4;
-    maxy = child0->maximumSize().height() + child1->maximumSize().height()+4;
-    minx = (child0->minimumSize().width() > child1->minimumSize().width()) ? child0->minimumSize().width() : child1->minimumSize().width();
-    maxx = (child0->maximumSize().width() > child1->maximumSize().width()) ? child0->maximumSize().width() : child1->maximumSize().width();
+    miny = child0->minimumHeight() + child1->minimumHeight() + 4;
+    maxy = child0->maximumHeight() + child1->maximumHeight() + 4;
+    minx = (child0->minimumWidth() > child1->minimumWidth()) ? child0->minimumWidth() : child1->minimumWidth();
+    maxx = (child0->maximumWidth() > child1->maximumWidth()) ? child0->maximumWidth() : child1->maximumWidth();
 
-    miny = (miny > 4) ? miny : 4;
-    maxy = (maxy < 32000) ? maxy : 32000;
-    minx = (minx > 2) ? minx : 2;
-    maxx = (maxx < 32000) ? maxx : 32000;
-  } else {
-    minx = child0->minimumSize().width() + child1->minimumSize().width()+4;
-    maxx = child0->maximumSize().width() + child1->maximumSize().width()+4;
-    miny = (child0->minimumSize().height() > child1->minimumSize().height()) ? child0->minimumSize().height() : child1->minimumSize().height();
-    maxy = (child0->maximumSize().height() > child1->maximumSize().height()) ? child0->maximumSize().height() : child1->maximumSize().height();
-
-    minx = (minx > 4) ? minx : 4;
-    maxx = (maxx < 32000) ? maxx : 32000;
-    miny = (miny > 2) ? miny : 2;
-    maxy = (maxy < 32000) ? maxy : 32000;
-
+    if (miny < 4)     miny = 4;
+    if (maxy > 32000) maxy = 32000;
+    if (minx < 2)     minx = 2;
+    if (maxx > 32000) maxx = 32000;
   }
+  else
+  {
+    minx = child0->minimumWidth() + child1->minimumWidth() + 4;
+    maxx = child0->maximumWidth() + child1->maximumWidth() + 4;
+    miny = (child0->minimumHeight() > child1->minimumHeight()) ? child0->minimumHeight() : child1->minimumHeight();
+    maxy = (child0->maximumHeight() > child1->maximumHeight()) ? child0->maximumHeight() : child1->maximumHeight();
+
+    if (miny < 2)     miny = 2;
+    if (maxy > 32000) maxy = 32000;
+    if (minx < 4)     minx = 4;
+    if (maxx > 32000) maxx = 32000;
+  }
+
   setMinimumSize(minx, miny);
   setMaximumSize(maxx, maxy);
 }
@@ -442,19 +444,19 @@ int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget
   if (initialised) {
     if (m_orientation == Vertical) {
       if (child0==overlappingWidget) {
-        if (position < child0->minimumSize().width() || position > width())
-          position = child0->minimumSize().width();
+        if (position < child0->minimumWidth() || position > width())
+          position = child0->minimumWidth();
       } else {
-        if (position > (width()-child1->minimumSize().width()-4) || position < 0)
-          position = width()-child1->minimumSize().width()-4;
+        if (position > (width()-child1->minimumWidth()-4) || position < 0)
+          position = width()-child1->minimumWidth()-4;
       }
     } else {// orientation  == Horizontal
       if (child0==overlappingWidget) {
-        if (position < (child0->minimumSize().height()) || position > height())
-          position = child0->minimumSize().height();
+        if (position < (child0->minimumHeight()) || position > height())
+          position = child0->minimumHeight();
       } else {
-        if (position>(height()-child1->minimumSize().height()-4) || position < 0)
-          position = height()-child1->minimumSize().height()-4;
+        if (position>(height()-child1->minimumHeight()-4) || position < 0)
+          position = height()-child1->minimumHeight()-4;
       }
     }
   }
@@ -465,15 +467,15 @@ int KDockSplitter::checkValue( int position ) const
 {
   if (initialised) {
     if (m_orientation == Vertical) {
-      if (position < child0->minimumSize().width())
-        position = child0->minimumSize().width();
-      if ((width()-4-position) < (child1->minimumSize().width()))
-        position = width() - (child1->minimumSize().width()) - 4;
+      if (position < child0->minimumWidth())
+        position = child0->minimumWidth();
+      if ((width()-4-position) < (child1->minimumWidth()))
+        position = width() - (child1->minimumWidth()) - 4;
     } else {
-      if (position < (child0->minimumSize().height()))
-        position = child0->minimumSize().height();
-      if ((height()-4-position) < child1->minimumSize().height())
-        position = height() - (child1->minimumSize().height()) - 4;
+      if (position < (child0->minimumHeight()))
+        position = child0->minimumHeight();
+      if ((height()-4-position) < child1->minimumHeight())
+        position = height() - (child1->minimumHeight()) - 4;
     }
   }
 
@@ -565,7 +567,8 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
 bool KDockSplitter::event( QEvent* e )
 {
   if ( e->type() == QEvent::LayoutHint ){
-    // change children min/max size
+    // change children min/max size. This is needed, otherwise
+    // it is possible the divider get's out of bounds.
     setupMinMaxSize();
     resizeEvent(0);
   }

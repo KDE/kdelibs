@@ -190,6 +190,11 @@ protected slots:
   void delayedResize();*/
 
 private:
+  /**
+   * updates the minimum and maximun sizes for the KDockSplitter.
+   * The sizes depend on the minimum and maximum sizes of the two child
+   * widgets.
+   */
   void setupMinMaxSize();
   /**
    * child0 and child1 contain the embeded widgets. They are always valid
@@ -204,6 +209,7 @@ private:
   bool initialised;
   /**
    * The splitter controller which is between child0 and child1.
+   * Its size is 4 pixel.
    */
   QFrame* divider;
   /**
