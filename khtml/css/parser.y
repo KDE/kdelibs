@@ -107,7 +107,7 @@ static inline int getValueID(const char *tagStr, int len)
 
 static inline int cssyyerror(const char *x ) {
 #ifdef CSS_DEBUG
-    qDebug( x );
+    qDebug( "%s", x );
 #else
     Q_UNUSED( x );
 #endif
