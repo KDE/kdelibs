@@ -529,10 +529,15 @@ void KKeyChooser::readGlobalKeys()
         d->mapGlobals.clear();
         if( m_type == Global )
             return; // they will be checked normally, because we're configuring them
+        readGlobalKeys( d->mapGlobals );
+}
+
+void KKeyChooser::readGlobalKeys( QMap< QString, KShortcut >& map )
+{
 	QMap<QString, QString> mapEntry = KGlobal::config()->entryMap( "Global Shortcuts" );
 	QMap<QString, QString>::Iterator it( mapEntry.begin() );
 	for( uint i = 0; it != mapEntry.end(); ++it, i++ )
-		d->mapGlobals[it.key()] = KShortcut(*it);
+		map[it.key()] = KShortcut(*it);
 }
 
 void KKeyChooser::slotSettingsChanged( int category )
@@ -695,20 +700,8 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 	// If editing global shortcuts, check them for conflicts with the stdaccels.
 	if( m_type == ApplicationGlobal || m_type == Global ) {
-		// For each key sequence in the shortcut,
-		for( uint i = 0; i < cut.count(); i++ ) {
-			const KKeySequence& seq = cut.seq(i);
-
-			KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
-			if( id != KStdAccel::AccelNone
-			    && keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
-				if( bWarnUser ) {
-					if( !promptForReassign( seq, KStdAccel::label(id), Standard ))
-                                                return true;
-                                        removeStandardShortcut( KStdAccel::label(id));
-                                }
-			}
-		}
+                if( checkStandardShortcutsConflict( cut, bWarnUser, this ))
+                    return true;
 	}
 
         bool has_global_chooser = false;
@@ -718,17 +711,9 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
             has_global_chooser |= ((*it)->m_type == Global);
         // only check the global keys if one of the keychoosers isn't global
         if( !has_global_chooser ) {
-	    QMap<QString, KShortcut>::ConstIterator it;
-	    for( it = d->mapGlobals.begin(); it != d->mapGlobals.end(); ++it ) {
-		    int iSeq = keyConflict( cut, (*it) );
-		    if( iSeq > -1 ) {
-		    	if( m_type != Global || it.key() != pItem->actionName() ) {
-				if( !promptForReassign( cut.seq(iSeq), it.key(), Global ))
-                                        return true;
-                                removeGlobalShortcut( it.key());
-			}
-		}
-	    }
+            if( checkGlobalShortcutsConflict( cut, bWarnUser, this, d->mapGlobals,
+                m_type == Global ? pItem->actionName() : QString::null ))
+                return true;
         }
 
         if( isKeyPresentLocally( cut, pItem, bWarnUser ))
@@ -762,7 +747,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			int iSeq = keyConflict( cut, pItem2->shortcut() );
 			if( iSeq > -1 ) {
 				if( bWarnUser ) {
-                                        if( !promptForReassign( cut.seq(iSeq), pItem2->text(0), Application ))
+                                        if( !promptForReassign( cut.seq(iSeq), pItem2->text(0), Application, this ))
 				                return true;
                                         // else remove the shortcut from it
                                         pItem2->setShortcut( KShortcut());
@@ -775,14 +760,60 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
         return false;
 }
 
-void KKeyChooser::removeStandardShortcut( const QString& name )
+bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent )
+{
+    // For each key sequence in the shortcut,
+    for( uint i = 0; i < cut.count(); i++ ) {
+	const KKeySequence& seq = cut.seq(i);
+	KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
+	if( id != KStdAccel::AccelNone
+	    && keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
+		if( bWarnUser ) {
+			if( !promptForReassign( seq, KStdAccel::label(id), Standard, parent ))
+                                return true;
+                        removeStandardShortcut( KStdAccel::label(id), dynamic_cast< KKeyChooser* > ( parent ));
+                }
+	}
+    }
+    return false;
+}
+
+bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent )
+{
+    QMap< QString, KShortcut > map;
+    readGlobalKeys( map );
+    return checkGlobalShortcutsConflict( cut, bWarnUser, parent, map, QString::null );
+}
+
+bool KKeyChooser::checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent,
+    const QMap< QString, KShortcut >& map, const QString& ignoreAction )
+{
+    QMap<QString, KShortcut>::ConstIterator it;
+    for( it = map.begin(); it != map.end(); ++it ) {
+	    int iSeq = keyConflict( cut, (*it) );
+	    if( iSeq > -1 ) {
+	    	if( ignoreAction.isEmpty() || it.key() != ignoreAction ) {
+                    if( bWarnUser ) {
+			if( !promptForReassign( cut.seq(iSeq), it.key(), Global, parent ))
+                                    return true;
+                            removeGlobalShortcut( it.key(), dynamic_cast< KKeyChooser* >( parent ));
+                    }
+		}
+	}
+    }
+    return false;
+}
+
+void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* chooser )
 {
     bool was_in_choosers = false;
-    for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
-         it != allChoosers->end();
-         ++it ) {
-        if( (*it) != this && (*it)->m_type == Standard ) {
-            was_in_choosers |= ( (*it)->resetShortcut( name ));
+    if( allChoosers != NULL ) {
+        for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+             it != allChoosers->end();
+             ++it ) {
+            if( (*it) != chooser && (*it)->m_type == Standard ) {
+                was_in_choosers |= ( (*it)->resetShortcut( name ));
+            }
         }
     }
     if( !was_in_choosers ) { // not edited, needs to be changed in config file
@@ -792,14 +823,16 @@ void KKeyChooser::removeStandardShortcut( const QString& name )
     }
 }
 
-void KKeyChooser::removeGlobalShortcut( const QString& name )
+void KKeyChooser::removeGlobalShortcut( const QString& name, KKeyChooser* chooser )
 {
     bool was_in_choosers = false;
-    for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
-         it != allChoosers->end();
-         ++it ) {
-        if( (*it) != this && (*it)->m_type == Global ) {
-            was_in_choosers |= ( (*it)->resetShortcut( name ));
+    if( allChoosers != NULL ) {
+        for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+             it != allChoosers->end();
+             ++it ) {
+            if( (*it) != chooser && (*it)->m_type == Global ) {
+                was_in_choosers |= ( (*it)->resetShortcut( name ));
+            }
         }
     }
     if( !was_in_choosers ) { // not edited, needs to be changed in config file
@@ -837,7 +870,7 @@ void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sT
 	KMessageBox::sorry( this, s, sTitle );
 }
 
-bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType type )
+bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType type, QWidget* parent )
 {
         QString sTitle;
         QString s;
@@ -861,7 +894,7 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
         }
 	s = s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
 
-	return KMessageBox::warningYesNo( this, s, sTitle ) == KMessageBox::Yes;
+	return KMessageBox::warningYesNo( parent, s, sTitle ) == KMessageBox::Yes;
 }
 
 //---------------------------------------------------
