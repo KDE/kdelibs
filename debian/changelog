@@ -1,3 +1,14 @@
+kdelibs (4:2.1.0-1) unstable; urgency=low
+ 
+   * Re-pulling from CVS instead of using the official tarballs.  The
+     official tarballs had problems which made it hard to handle patches
+   * Version changed to 2.1.0 instead of 2.1-final as we are post 2.1-final
+     and pre 2.1.1 which will be released in about a month.  This also allows
+     for the source upload.
+   * Updating build-depends
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Feb 2001 19:00:00 -0700
+
 kdelibs (4:2.1-final-1) unstable; urgency=low
  
    * New upstream version

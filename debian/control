@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake, autoconf, libtool, debhelper, gettext, libqt-dev (>= 2:2.2.4-0), libtiff3g-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, docbook-stylesheets, libasound1-dev
+Build-Depends: automake, autoconf, libtool, debhelper, gettext, libqt-dev (>= 2:2.3.0), libtiff3g-dev, libaudiofile-dev, qt-doc, jade, sgml-base, kdoc, docbook, docbook-stylesheets, libasound1-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -118,7 +118,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0), kdelibs3-dev
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev, libaudiofile-dev, gettext, libtiff3g-dev, jade, sgml-base, docbook, docbook-stylesheets
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0), libaudiofile-dev, gettext, libtiff3g-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3-dev
 Suggests: kdelibs3-doc, kdoc, libasound1-dev, automake, autoconf, libtool
 Provides: kdelibs3-dev
