@@ -30,6 +30,7 @@
 #include <kxmlguifactory.h>
 #include <kaction.h>
 #include <kparts/partmanager.h>
+#include <qtimer.h>
 
 #include "khtml_run.h"
 #include "khtml_find.h"
@@ -335,6 +336,8 @@ public:
   unsigned long m_loadedObjects;
   unsigned long m_totalObjectCount;
   unsigned int m_jobPercent;
+  
+  QTimer m_progressUpdateTimer;
 
   KHTMLFind *m_findDialog;
 
