@@ -207,6 +207,11 @@ bool ProgressItem::keepOpen() const
     return defaultProgress->keepOpen();
 }
 
+void ProgressItem::finished()
+{
+    defaultProgress->finished();
+}
+
 ProgressItem::~ProgressItem() {
     delete defaultProgress;
 }
@@ -808,7 +813,10 @@ void UIServer::jobFinished( int id )
   ProgressItem *item = findItem( id );
 
   // remove item from the list and delete the corresponding defaultprogress
-  if ( item && !item->keepOpen()) {
+  if ( item ) {
+    if ( item->keepOpen() )
+      item->finished();
+    else
     delete item;
   }
 }

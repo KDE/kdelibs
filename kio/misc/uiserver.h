@@ -116,6 +116,8 @@ public:
   int jobId() { return m_iJobId; }
 
     bool keepOpen() const;
+  void finished();
+
   void setVisible( bool visible );
   void setDefaultProgressVisible( bool visible );
   bool isVisible() const { return m_visible; }
