@@ -3684,8 +3684,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   if ( args.serviceType.isEmpty() ) {
     kdDebug() << "Running new KHTMLRun for " << this << " and child=" << child << endl;
-    child->m_run = new KHTMLRun( this, child, url, child->m_args,
-                                 child->m_type != khtml::ChildFrame::Frame );
+    child->m_run = new KHTMLRun( this, child, url, child->m_args, true );
     return false;
   } else {
     return processObjectRequest( child, url, args.serviceType );

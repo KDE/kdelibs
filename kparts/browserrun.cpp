@@ -73,7 +73,10 @@ void BrowserRun::init()
     // ### KRun doesn't call a virtual method when it finds out that the URL
     // is either malformed, or points to a non-existing local file...
     // So we need to reimplement some of the checks, to handle m_bHideErrorDialog
-    m_bFault = !m_strURL.isValid();
+    if ( !m_strURL.isValid() ) {
+        redirectToError( KIO::ERR_MALFORMED_URL, m_strURL.url() );
+        return;
+    }
     if ( !m_bIsLocalFile && !m_bFault && m_strURL.isLocalFile() )
       m_bIsLocalFile = true;
 
@@ -81,18 +84,11 @@ void BrowserRun::init()
       struct stat buff;
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
-        m_bFault = true;
         kdDebug(1000) << "BrowserRun::init : " << m_strURL.prettyURL() << " doesn't exist." << endl;
+        redirectToError( KIO::ERR_DOES_NOT_EXIST, m_strURL.path() );
+        return;
       }
       m_mode = buff.st_mode; // while we're at it, save it for KRun::init() to use it
-    }
-
-    if ( m_bFault )
-    {
-      m_bFinished = true;
-      m_timer.start( 0, true );
-      handleError( 0 );
-      return;
     }
   }
   KRun::init();
@@ -389,9 +385,41 @@ void BrowserRun::handleError( KIO::Job * job )
         return;
     }
 
+    if (d->m_bHideErrorDialog && job->error() != KIO::ERR_NO_CONTENT)
+    {
+        redirectToError( job->error(), job->errorText() );
+        return;
+    }
+
     // Reuse code in KRun, to benefit from d->m_showingError etc.
-    // KHTMLRun and KonqRun reimplement handleError anyway.
     KRun::slotStatResult( job );
+}
+
+void BrowserRun::redirectToError( int error, const QString& errorText )
+{
+    /**
+     * To display this error in KHTMLPart instead of inside a dialog box,
+     * we tell konq that the mimetype is text/html, and we redirect to
+     * an error:/ URL that sends the info to khtml.
+     *
+     * The format of the error:/ URL is error:/?query#url,
+     * where two variables are passed in the query:
+     * error = int kio error code, errText = QString error text from kio
+     * The sub-url is the URL that we were trying to open.
+     */
+    QString errText( errorText );
+    errText.replace( '#', "%23" ); // a # in the error string would really muck things up...
+    KURL newURL(QString("error:/?error=%1&errText=%2")
+                .arg( error ).arg( errText ), 106 );
+    m_strURL.setPass( QString::null ); // don't put the password in the error URL
+
+    KURL::List lst;
+    lst << newURL << m_strURL;
+    m_strURL = KURL::join( lst );
+    //kdDebug(1202) << "BrowserRun::handleError m_strURL=" << m_strURL.prettyURL() << endl;
+
+    m_job = 0;
+    foundMimeType( "text/html" );
 }
 
 void BrowserRun::slotCopyToTempFileResult(KIO::Job *job)
