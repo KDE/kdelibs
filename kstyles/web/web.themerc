@@ -39,7 +39,6 @@ Name[vi]=Kiểu Web
 Name[xh]=Uhlobo lwe Web
 Name[xx]=xx
 Name[zh_CN]=网站风格
-Name[zh_TW]=網站風格
 Name[zu]=Uhlobo lwe Web
 Comment=Web widget style
 Comment[af]=web gui-element styl
@@ -80,7 +79,6 @@ Comment[vi]=Kiểu Wed widget
 Comment[xh]=Uhlobo lwe widget ye Web
 Comment[xx]=xx
 Comment[zh_CN]=Web 部件风格
-Comment[zh_TW]=Web 元件風格
 Comment[zu]=Uhlobo lwe widget ye Web
 [KDE]
 widgetStyle=webstyle.la

@@ -48,7 +48,6 @@ Name[vi]=Mặc định Màu sáng
 Name[xh]=Umbala ophezulu ongagqibekanga
 Name[xx]=xx
 Name[zh_CN]=默认的高色彩
-Name[zh_TW]=預設的高彩
 Name[zu]=Umbala Ophezulu Ongaqedekanga
 Comment=Highcolor version of the default style
 Comment[af]=hoë-kleur weergawe van die verstek styl
@@ -98,7 +97,6 @@ Comment[vi]=Kiểu mặc định cho phiên bản sáng màu
 Comment[xh]=Uguqulelo oluthile lombala ophezulu lohlobo olungagqibekanga
 Comment[xx]=xx
 Comment[zh_CN]=默认风格的高色彩版本
-Comment[zh_TW]=預設風格的高彩版本
 Comment[zu]=Ukuguqulwa Kombala ophezulu lohlobo olungaqedekanga
 [KDE]
 WidgetStyle=HighColor
