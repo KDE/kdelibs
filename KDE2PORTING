@@ -4,6 +4,17 @@ KDE1.1 when you want to port them to KDE2.0.
 
 As a start you should have a look at doc/porting.doc in the Qt package.
 
+//////////////////////////////////////////////////////////////////////
+// * General
+
+We did our best to clean up the header files out of kdelibs, so they do
+not include unnessary bloat for your application. As a consequence you
+may notice that some header files are missing from your source files as
+they have been included before by kapp.h for example. There is a script
+in kdesdk/scripts called fixheaders that takes care of most of these
+cases. Just call "make -k 2>&1 | perl .../fixheaders" and it will try
+to look after the error messages and add includes as it recognize the
+errors
 
 //////////////////////////////////////////////////////////////////////
 // * kdelibs/khtmlw
@@ -53,11 +64,10 @@ khtmlw has been replaced with khtml.
 // * KApplication
 
   doesn't hold any longer a KLocale instance. With this getLocale()
-  and isLocaleInstantiated are now replaced by KGlobal::locale().
-  This function won't create an instance on the fly.
+  and isLocaleInstantiated are now replaced by KGlobal::locale()
 
   it also doesn't hold a KiconLoader instance. As this also getIconLoader()
-  has been removed. Replace it getIconLoader()->loadIcon() with
+  has been removed. Replace kapp->getIconLoader()->loadIcon() with
   ICON() or use KGlobal::iconLoader() instead of getIconLoader()
 
   kde_*dir() have been removed as they require a unique toplevel directory
@@ -66,8 +76,8 @@ khtmlw has been replaced with khtml.
 
   Replace code that uses kde_*dir() + filename with calls to
   locate(filetype, filename) where filetype is what * used to be
-  the * in kde_*dir(). locate is defined as a macro to
-  KGlobal::dirs()->findResource and defined in kstddirs.h
+  in kde_*dir(). locate is defined as function in kstddirs.h to call
+  KGlobal::dirs()->findResource
 
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobal::generalFont() and KGlobal::fixedFont() instead.
