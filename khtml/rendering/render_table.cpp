@@ -459,7 +459,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         col->type = _width.type;
 
     if (_width.type == col->type)
-        col->value = KMAX( _width.value, col->value );
+        col->value = _width.value > col->value ? _width.value : col->value;
 
     setMinMaxKnown(false);
 
