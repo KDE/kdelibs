@@ -259,17 +259,15 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
 
 /** 
  * Handle a QDragMoveEvent event on a toolbar drop
- * @return the action to be dropped after (@see @param atFirst)
- *         else a NULL if event should be ignored, this occurs
- *         frequently and should be handled by ignoring the return
- *         value and @param atFirst.
+ * @return the address of the bookmark to be dropped after/before
+ *         else a QString::null if event should be ignored
  * @param pos the current QDragMoveEvent position
  * @param the toolbar
  * @param actions the list of actions plugged into the bar
  * @param atFirst bool reference, when true the position before the 
  *        returned action was dropped on
  */
-static KAction* handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KAction> actions, bool &atFirst, KBookmarkManager *mgr)
+static QString handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KAction> actions, bool &atFirst, KBookmarkManager *mgr)
 {
     static int sepIndex;
     Q_ASSERT( actions.isEmpty() || (tb == dynamic_cast<KToolBar*>(actions.first()->container(0))) );
@@ -281,6 +279,7 @@ static KAction* handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KA
 
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
     KAction *a = 0;
+    QString address;
     atFirst = false;
 
     if (b)
@@ -303,14 +302,9 @@ static KAction* handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KA
         index = 0;
         // we skip the action related stuff
         // and do what it should have...
-        // FIXME - for the moment we can't
-        // do anything special here other
-        // than prevent the crash and
-        // draw the line seperator correctly,
-        // we can't actually insert as its
-        // all based on the returned action,
-        // which, in this case of course
-        // doesn't even exist...
+        // FIXME - here we want to get the 
+        // parent address of the bookmark 
+        // bar itself and return that + "/0"
         goto skipact; 
     }
     else // (!b)
@@ -324,26 +318,25 @@ static KAction* handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KA
 
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
+    address = a->property("address").toString();
     sepIndex = index + (atFirst ? 0 : 1);
 
-    {//
+    {// ugly workaround to fix the goto scoping problems...
 
-    QString address = a->property("address").toString();
     KBookmark bk = mgr->findByAddress( address );
-    kdDebug() << "popping up " << bk.text() << endl; // TODO - fix this ****!!!, manhatten distance should be used!!!
-    if (bk.isGroup())
+    if (bk.isGroup()) // TODO - fix this ****!!!, manhatten distance should be used!!!
     {
+        kdDebug() << "popping up " << bk.text() << endl; 
         KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
         Q_ASSERT(menu);
         menu->popup(tb->mapToGlobal(b->geometry().center()));
     } 
 
-    }
-    //
+    } //
 
 skipact:
     tb->insertLineSeparator(sepIndex, sepId);
-    return a;
+    return address;
 }
 
 // TODO - document!!!!
@@ -410,8 +403,8 @@ void KBookmarkBar::slotRMBActionOpen( int val )
 
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
-    static bool atFirst = false;
-    static KAction* a = 0;
+    static bool ls_atFirst = false;
+    static QString ls_dropAddress = 0;
 
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
@@ -452,7 +445,7 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
     else if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep();
-        a = 0;
+        ls_dropAddress = QString::null;
     }
     else if ( e->type() == QEvent::Drop )
     {
@@ -465,18 +458,17 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
             kdWarning(7043) << "Sorry, currently you can only drop one address "
                 "onto the bookmark bar!" << endl;
         KBookmark toInsert = list.first();
-        QString address = a->property("address").toString();
-        KBookmark bookmark = m_pManager->findByAddress( address );
+        KBookmark bookmark = m_pManager->findByAddress( ls_dropAddress );
         Q_ASSERT(!bookmark.isNull());
         kdDebug(7043) << "inserting " 
-            << QString(atFirst ? "before" : "after")
-            << " address == " << address << endl;
+            << QString(ls_atFirst ? "before" : "after")
+            << " ls_dropAddress == " << ls_dropAddress << endl;
         KBookmarkGroup parentBookmark = bookmark.parentGroup();
         Q_ASSERT(!parentBookmark.isNull());
         KBookmark newBookmark = parentBookmark.addBookmark( 
                 m_pManager, toInsert.fullText(),
                 toInsert.url() );
-        parentBookmark.moveItem( newBookmark, atFirst ? KBookmark() : bookmark );
+        parentBookmark.moveItem( newBookmark, ls_atFirst ? KBookmark() : bookmark );
         m_pManager->emitChanged( parentBookmark );
         return true;
     }
@@ -486,13 +478,13 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
         bool _atFirst;
-        KAction *_a; 
+        QString dropAddress; 
         KToolBar *tb = (KToolBar*)o;
-        _a = handleToolbarDragMoveEvent(tb, dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
-        if (_a)
+        dropAddress = handleToolbarDragMoveEvent(tb, dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
+        if (!dropAddress.isNull())
         {
-            a = _a;
-            atFirst = _atFirst;
+            ls_dropAddress = dropAddress;
+            ls_atFirst = _atFirst;
             dme->accept();
         }
     }
