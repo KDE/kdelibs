@@ -443,7 +443,6 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
     if (w->readMap(key, map))
         return; // failed, abort
 
-    HTMLInputElementImpl *last = 0L;
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
@@ -451,13 +450,11 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
                     current->inputType() == HTMLInputElementImpl::TEXT) &&
                     !current->readOnly() &&
                     map.contains(current->name().string())) {
+                getDocument()->setFocusNode(current);
                 current->setValue(map[current->name().string()]);
-                last = current;
             }
         }
     }
-
-    getDocument()->setFocusNode(last);
 }
 
 void HTMLFormElementImpl::submitFromKeyboard()
