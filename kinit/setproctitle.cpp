@@ -16,6 +16,10 @@
 
 #include "setproctitle.h"
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdarg.h>                                                      
