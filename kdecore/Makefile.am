@@ -30,6 +30,7 @@ endif
 SUBDIRS = malloc $(SVGICONS) . tests
 
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
+lib_LIBRARIES = libkdefakes_nonpic.a
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
@@ -57,6 +58,16 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
 libkdefakes_la_LIBADD  = $(LIBSOCKET)
+
+libkdefakes_nonpic_a_SOURCES = fakes_nonpic.c vsnprintf_nonpic.c
+
+fakes_nonpic.c:$(srcdir)/fakes.c
+	-rm -f fakes_nonpic.c
+	$(LN_S) $(srcdir)/fakes.c fakes_nonpic.c
+
+vsnprintf_nonpic.c:  $(srcdir)/vsnprintf.c
+	-rm -f vsnprintf_nonpic.c
+	$(LN_S) $(srcdir)/vsnprintf.c vsnprintf_nonpic.c
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
