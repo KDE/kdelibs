@@ -30,7 +30,7 @@ messages:
 	make -f admin/Makefile.common package-messages
 
 messages-local:
-	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp */*.cpp */*.cc && mv messages.po po/kdelibs.pot
+	$(XGETTEXT) -C -ktranslate -ki18n -x qt-messages.pot common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > po/kdelibs.pot; rm messages.po
 	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po po/kde.pot
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in

@@ -47,6 +47,7 @@
 #include <qcdestyle.h>
 #include <kconfig.h>
 #include <kstddirs.h>
+#include <qtranslator.h>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -117,6 +118,14 @@ int KApplication::xioErrhandler()
   return 0;
 }
 
+class KDETranslator : public QTranslator
+{
+public:
+  KDETranslator(QObject *parent) : QTranslator(parent, "kdetranslator") {}
+  virtual QString find(const char*, const char* message) const {
+    return i18n(message);
+  }
+};
 
 void KApplication::init()
 {
@@ -150,6 +159,8 @@ void KApplication::init()
   readSettings(false);
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
+
+  installTranslator(new KDETranslator(this));
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")

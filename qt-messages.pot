@@ -1,0 +1,612 @@
+# Messages extracted from Qt
+
+#: dialogs/qcolordialog.cpp:450
+msgid "Hu&e:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:457
+msgid "&Sat:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:464
+msgid "&Val:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:471
+msgid "&Red:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:478
+msgid "&Green:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:485
+msgid "Bl&ue:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:492
+msgid "A&lpha channel:"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:676
+msgid "&Basic colors"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:688
+msgid "&Custom colors"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:693
+msgid "&Define Custom Colors >>"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:701 dialogs/qfiledialog.cpp:1588
+#: dialogs/qfiledialog.cpp:2410 dialogs/qfontdialog.cpp:281
+#: dialogs/qmessagebox.cpp:949 dialogs/qmessagebox.cpp:970
+#: dialogs/qprintdialog.cpp:606 dialogs/qtabdialog.cpp:215
+#: dialogs/qtabdialog.cpp:1069
+msgid "OK"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:704 dialogs/qfiledialog.cpp:1593
+#: dialogs/qfontdialog.cpp:292 dialogs/qprintdialog.cpp:615
+#: dialogs/qprogressdialog.cpp:163 dialogs/qtabdialog.cpp:844
+#: dialogs/qwizard.cpp:128
+msgid "Cancel"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:737
+msgid "&Add To Custom Colors"
+msgstr ""
+
+#: dialogs/qcolordialog.cpp:781
+msgid "Select color"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:132
+msgid "Scope/Key"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:154 dialogs/qdeveloper.cpp:159
+msgid "Class"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:158
+msgid "Object"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:160
+msgid "Address"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:335 dialogs/qtranslatordialog.cpp:185
+msgid "&File"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:338
+msgid "&Edit"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:345
+msgid "&Mode"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:347
+msgid "&Explorer"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:348
+msgid "&Translator"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:354
+msgid "Qt Developer - %1 classes"
+msgstr ""
+
+#: dialogs/qdeveloper.cpp:358
+msgid ""
+"Sorry, your compiler/platform is insufficient for the Qt Developer to operate"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1462 dialogs/qfiledialog.cpp:1486
+msgid "All files (*)"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1544
+msgid "Name"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1545
+msgid "Size"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1547
+msgid "Type"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1548
+msgid "Date"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1549
+msgid "Attributes"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1618
+msgid "Look &in:"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1619
+msgid "File &name:"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1620
+msgid "File &type:"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1625
+msgid "One directory up"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1631
+msgid "Create New Folder"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1646
+msgid "List View"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1651
+msgid "Detail View"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1657
+msgid "Preview File Info"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1663
+msgid "Preview File Contents"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1741
+msgid "Read-write"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1742
+msgid "Read-only"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1743
+msgid "Write-only"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1744
+msgid "Inaccessible"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1746
+msgid "Symlink to File"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1747
+msgid "Symlink to Directory"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1748
+msgid "Symlink to Special"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1749
+msgid "File"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1750
+msgid "Dir"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:1751
+msgid "Special"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2194 dialogs/qfiledialog.cpp:2408
+#: dialogs/qfiledialog.cpp:2568 dialogs/qfiledialog.cpp:2592
+#: dialogs/qfiledialog.cpp:3453
+msgid "Open"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2281
+msgid "Save as"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2410 dialogs/qtranslatordialog.cpp:190
+msgid "Save"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2753 dialogs/qfiledialog.cpp:2756
+msgid "&Open"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2755
+msgid "&Save"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2760
+msgid "&Rename"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2761
+msgid "&Delete"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2785
+msgid "R&eload"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2789
+msgid "Sort by &Name"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2790
+msgid "Sort by &Type"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2791
+msgid "Sort by &Size"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2792
+msgid "Sort by &Date"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2794
+msgid "&Unsorted"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2809
+msgid "Sort"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2813
+msgid "Show &hidden files"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2851
+#, c-format
+msgid "Delete %1"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2852
+msgid "<qt>Do you really want to delete the %1 \"%2\"?</qt>"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2854
+msgid "&Yes"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2854
+msgid "&No"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2864
+msgid "ERROR"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2902
+msgid "New Folder 1"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2907
+msgid "New Folder"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2912
+#, c-format
+msgid "New Folder %1"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2955
+msgid "Find Directory"
+msgstr ""
+
+#: dialogs/qfiledialog.cpp:2960
+msgid "Directories"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:159
+msgid "&Font"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:167
+msgid "Font st&yle"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:175
+msgid "&Size"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:179
+msgid "Effects"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:181
+msgid "Stri&keout"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:183
+msgid "&Underline"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:189
+msgid "&Color"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:193
+msgid "Sample"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:206
+msgid "Scr&ipt"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:281 dialogs/qtabdialog.cpp:706
+msgid "Apply"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:292 dialogs/qtranslatordialog.cpp:191
+msgid "Close"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:393
+msgid "Select Font"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:662
+msgid "Print destination"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:674
+msgid "Print to printer:"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:688
+msgid "Printer"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:689
+msgid "Host"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:690
+msgid "Comment"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:784
+msgid "Print to file:"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:797
+msgid "Browse..."
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:814
+msgid "Options"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:835
+msgid "Print all"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:840
+msgid "Print range"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:849
+msgid "From page:"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:863
+msgid "To page:"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:880
+msgid "Print first page first"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:887
+msgid "Print last page first"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:899
+msgid "Print in color if available"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:906
+msgid "Print in grayscale"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:922
+msgid "Number of copies:"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:947
+msgid "Paper format"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:964
+msgid "Portrait"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:973
+msgid "Landscape"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:1040
+msgid "Setup Printer"
+msgstr ""
+
+#: dialogs/qprintdialog.cpp:1101
+msgid "Postscript files (*.ps);;All files (*)"
+msgstr ""
+
+#: dialogs/qtabdialog.cpp:749 dialogs/qwizard.cpp:132
+msgid "Help"
+msgstr ""
+
+#: dialogs/qtabdialog.cpp:794
+msgid "Defaults"
+msgstr ""
+
+#: dialogs/qtranslatordialog.cpp:198
+msgid "Key"
+msgstr ""
+
+#: dialogs/qtranslatordialog.cpp:199
+msgid "Translation"
+msgstr ""
+
+#: dialogs/qwizard.cpp:129
+msgid "< Back"
+msgstr ""
+
+#: dialogs/qwizard.cpp:130
+msgid "Next >"
+msgstr ""
+
+#: dialogs/qwizard.cpp:131
+msgid "Finish"
+msgstr ""
+
+#: kernel/qaccel.cpp:493 kernel/qaccel.cpp:624
+msgid "Ctrl"
+msgstr ""
+
+#: kernel/qaccel.cpp:497 kernel/qaccel.cpp:502 kernel/qaccel.cpp:592
+msgid "+"
+msgstr ""
+
+#: kernel/qaccel.cpp:498 kernel/qaccel.cpp:628
+msgid "Alt"
+msgstr ""
+
+#: kernel/qaccel.cpp:503 kernel/qaccel.cpp:626
+msgid "Shift"
+msgstr ""
+
+#: kernel/qaccel.cpp:510
+#, c-format
+msgid "F%1"
+msgstr ""
+
+#: kernel/qaccel.cpp:516
+msgid "Space"
+msgstr ""
+
+#: kernel/qaccel.cpp:519
+msgid "Esc"
+msgstr ""
+
+#: kernel/qaccel.cpp:522
+msgid "Tab"
+msgstr ""
+
+#: kernel/qaccel.cpp:525
+msgid "Backtab"
+msgstr ""
+
+#: kernel/qaccel.cpp:528
+msgid "Backspace"
+msgstr ""
+
+#: kernel/qaccel.cpp:531
+msgid "Return"
+msgstr ""
+
+#: kernel/qaccel.cpp:534
+msgid "Enter"
+msgstr ""
+
+#: kernel/qaccel.cpp:537
+msgid "Ins"
+msgstr ""
+
+#: kernel/qaccel.cpp:540
+msgid "Del"
+msgstr ""
+
+#: kernel/qaccel.cpp:543
+msgid "Pause"
+msgstr ""
+
+#: kernel/qaccel.cpp:546
+msgid "Print"
+msgstr ""
+
+#: kernel/qaccel.cpp:549
+msgid "SysReq"
+msgstr ""
+
+#: kernel/qaccel.cpp:552
+msgid "Home"
+msgstr ""
+
+#: kernel/qaccel.cpp:555
+msgid "End"
+msgstr ""
+
+#: kernel/qaccel.cpp:558
+msgid "Left"
+msgstr ""
+
+#: kernel/qaccel.cpp:561
+msgid "Up"
+msgstr ""
+
+#: kernel/qaccel.cpp:564
+msgid "Right"
+msgstr ""
+
+#: kernel/qaccel.cpp:567
+msgid "Down"
+msgstr ""
+
+#: kernel/qaccel.cpp:570
+msgid "PgUp"
+msgstr ""
+
+#: kernel/qaccel.cpp:573
+msgid "PgDown"
+msgstr ""
+
+#: kernel/qaccel.cpp:576
+msgid "CapsLock"
+msgstr ""
+
+#: kernel/qaccel.cpp:579
+msgid "NumLock"
+msgstr ""
+
+#: kernel/qaccel.cpp:582
+msgid "ScrollLock"
+msgstr ""
+
+#: kernel/qurl.cpp:761
+msgid "Error in parsing `%1'"
+msgstr ""
+
+#: kernel/qurl.cpp:1272
+msgid "Could not read directory\n"
+msgstr ""
+
+#: kernel/qurl.cpp:1293 kernel/qurl.cpp:1318 kernel/qurl.cpp:1338
+#: kernel/qurl.cpp:1354 kernel/qurl.cpp:1423 kernel/qurl.cpp:1440
+#: kernel/qurl.cpp:1461
+msgid "The protocol `%1' is not supported"
+msgstr ""
+
+#: kernel/qurl.cpp:1312
+msgid "Could not create directory\n"
+msgstr ""
+
+#: kernel/qurl.cpp:1332
+msgid "Could not delete file\n"
+msgstr ""

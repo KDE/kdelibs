@@ -96,6 +96,9 @@ i18n( "Redo");
 i18n( "&Redo");
 i18n( "&Game");
 i18n( "Information");
+i18n( "Portrait");
+i18n( "Landscape");
+i18n( "locally connected"); // Qt bug
 i18n( "Browse...");
 i18n( "Stop");
 i18n( "&Remove");
