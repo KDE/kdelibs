@@ -790,7 +790,7 @@ void KBookmarkEditFields::setLocation(const QString &str)
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
                                          QWidget * parent, const char * name, const QString& caption)
   : KDialogBase(parent, name, true, caption,
-                url.isNull() ? (Ok|Cancel) : (User1|Ok|Cancel),
+                /*url.isNull()*/(editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel) ,
                 Ok, false, KGuiItem()),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
