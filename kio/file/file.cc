@@ -109,6 +109,7 @@ void FileProtocol::slotMkdir( const char *_url, int _mode )
   }
 
   if ( S_ISDIR( buff.st_mode ) ) {
+    debug("ERR_DOES_ALREADY_EXIST");
     error( ERR_DOES_ALREADY_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
@@ -367,7 +368,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       // Tell what we are doing
       makingDir( d );
 
-      // kdebug( KDEBUG_INFO, 0, "Making remote dir %s", d );
+      kdebug( KDEBUG_INFO, 0, "Making remote dir %s", d.ascii() );
       // Create the directory
       job.mkdir( d, (*dir_it).m_mode );
       while( !job.hasFinished() )
@@ -838,10 +839,8 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   if ( stat( udest_orig.path(), &buff ) != -1 ) {
 
-    // if original file exists but we are using mark partial -> rename it to XXX.part
-    if ( m_bMarkPartial )
-      rename ( udest_orig.path(), udest_part.path() );
-
+    // If destination already exists and we can't do anything about it
+    // (not overwrite nor resume a download), return
     if ( !_overwrite && !_resume ) {
       if ( buff.st_size == _size )
 	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
@@ -852,6 +851,11 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
       m_cmd = CMD_NONE;
       return;
     }
+
+    // if original file exists but we are using mark partial -> rename it to XXX.part
+    if ( m_bMarkPartial )
+      rename ( udest_orig.path(), udest_part.path() );
+    
   } else if ( stat( udest_part.path(), &buff ) != -1 ) {
     // if file with extension .part exists but we are not using mark partial
     // -> rename XXX.part to original name
