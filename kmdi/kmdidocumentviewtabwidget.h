@@ -1,9 +1,11 @@
-#include <ktabwidget.h>
-
 #ifndef _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 #define _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 
-class KMdiDocumentViewTabWidget: public KTabWidget {
+#include <ktabwidget.h>
+
+class KMdiDocumentViewTabWidget:
+ public KTabWidget
+{
 	Q_OBJECT
 public:
 	KMdiDocumentViewTabWidget(QWidget* parent, const char* name=0);
@@ -17,6 +19,8 @@ public:
 	virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
 	virtual void removePage ( QWidget * w );
 
+private slots:
+	void closeTab(QWidget* w);
 };
 
 

@@ -1,15 +1,19 @@
-#include <qtabbar.h>
+#include <ktabbar.h>
 #include "kmdidocumentviewtabwidget.h"
 
 KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char* name):KTabWidget(parent,name) {
 //	QTabBar *bar=tabBar();
 	tabBar()->hide();
-	setHoverCloseButton(false);
+	setHoverCloseButton(true);
+        connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
 }
 	
 KMdiDocumentViewTabWidget::~KMdiDocumentViewTabWidget() {
 }
 
+void KMdiDocumentViewTabWidget::closeTab(QWidget* w) {
+	w->close();
+}
 void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QString & label ) {
 	KTabWidget::addTab(child,label);
     showPage(child);
@@ -32,7 +36,6 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & lab
 	KTabWidget::insertTab(child,label,index);
     showPage(child);
 	if (count()>1) tabBar()->show();
-	
 }
 
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index ) {
