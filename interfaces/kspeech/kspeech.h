@@ -28,7 +28,7 @@
  *
  * kspeech - the KDE Text-to-speech API.
  *
- * @version 1.0 Draft 3
+ * @version 1.0 Draft 4
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
@@ -957,6 +957,15 @@ class kspeech : virtual public DCOPObject {
         * @param jobNum         Job number of the text job.
         */
         void textSet(const QCString& appId, const uint jobNum);
+        
+        /**
+        * This signal is emitted whenever a new part is appended to a text job.
+        * @param appId          The DCOP senderId of the application that created the job.
+        * @param jobNum         Job number of the text job.
+        * @param partNum        Part number of the new part.  Parts are numbered starting
+        *                       at 1.
+        */
+        void textAppended(const QCString& appId, const uint jobNum, const int partNum);
     
         /**
         * This signal is emitted whenever speaking of a text job begins.

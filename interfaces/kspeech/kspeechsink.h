@@ -108,6 +108,15 @@ class KSpeechSink : virtual public DCOPObject {
         virtual ASYNC textSet(const QCString&, const uint) { };
     
         /**
+        * This signal is emitted whenever a new part is appended to a text job.
+        * @param appId          The DCOP senderId of the application that created the job.
+        * @param jobNum         Job number of the text job.
+        * @param partNum        Part number of the new part.  Parts are numbered starting
+        *                       at 1.
+        */
+        virtual ASYNC textAppended(const QCString&, const uint, const int) { };
+        
+        /**
          * This signal is emitted whenever speaking of a text job begins.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
