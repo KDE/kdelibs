@@ -2515,7 +2515,14 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
 
 bool KHTMLPart::frameExists( const QString &frameName )
 {
-    return d->m_frames.find( frameName ) != d->m_frames.end();
+  ConstFrameIt it = d->m_frames.find( frameName );
+  if ( it == d->m_frames.end() )
+    return false;
+
+  // WABA: We only return true if the child actually has a frame
+  // set. Otherwise we might find our preloaded-selve.
+  // This happens when we restore the frameset.
+  return ((*it).m_frame != 0);
 }
 
 KHTMLPart *KHTMLPart::parentPart()
