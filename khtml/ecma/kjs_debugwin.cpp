@@ -19,6 +19,7 @@
  */
 
 #include "kjs_debugwin.h"
+#include "kjs_proxy.h"
 
 #ifdef KJS_DEBUGGER
 
@@ -27,7 +28,7 @@
 #include <qpushbutton.h>
 #include <qtextedit.h>
 #include <qlistbox.h>
-#include <qlineedit.h>
+#include <qmultilineedit.h>
 #include <qapplication.h>
 #include <qsplitter.h>
 #include <qcombobox.h>
@@ -118,26 +119,32 @@ SourceFragment::~SourceFragment()
 }
 
 //-------------------------------------------------------------------------
+void KJSDebugWin::setExecState(ExecState *exec) {
+  m_curExecState = exec;
+  m_evalEdit->setReadOnly(!exec);
+}
 
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   : QWidget(parent, name),
     m_inSession(false),
-    m_curSourceFile(0)
+    m_curSourceFile(0),
+    m_curExecState(0)
 {
   setCaption(i18n("JavaScript Debugger"));
   QVBoxLayout *vl = new QVBoxLayout(this, 5);
 
   // frame list & code
-  QSplitter *splitter = new QSplitter(this);
+  QSplitter *hsplitter = new QSplitter(Qt::Vertical, this);
+  QSplitter *vsplitter = new QSplitter(hsplitter);
   QFont font("courier",10);
 
-  m_frameList = new QListBox(splitter);
+  m_frameList = new QListBox(vsplitter);
   m_frameList->setFont(font);
   m_frameList->setMinimumSize(100,200);
   connect(m_frameList,SIGNAL(highlighted(int)),this,SLOT(showFrame(int)));
 
   // source selection & display
-  QWidget *sourceSelDisplay = new QWidget(splitter);
+  QWidget *sourceSelDisplay = new QWidget(vsplitter);
   QVBoxLayout *ssdvl = new QVBoxLayout(sourceSelDisplay);
   
   
@@ -149,23 +156,24 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_sourceDisplay->setFont(font);
   ssdvl->addWidget(m_sourceDisplay);
 
-  vl->addWidget(splitter);
-
-  QValueList<int> splitSizes;
-  splitSizes.insert(splitSizes.end(),200);
-  splitSizes.insert(splitSizes.end(),400);
-  splitter->setSizes(splitSizes);
+  QValueList<int> vsplitSizes;
+  vsplitSizes.insert(vsplitSizes.end(),200);
+  vsplitSizes.insert(vsplitSizes.end(),400);
+  vsplitter->setSizes(vsplitSizes);
 
 
   // evaluate
-  QHBoxLayout *hl1 = new QHBoxLayout(vl);
-  m_evalEdit = new QLineEdit(this);
-  m_evalButton = new QPushButton(i18n("&Evaluate"),this);
-  m_evalButton->setEnabled(false);
-  hl1->addWidget(m_evalEdit);
-  hl1->addWidget(m_evalButton);
-  connect(m_evalButton, SIGNAL(clicked()), SLOT(eval()));
+  m_evalEdit = new QMultiLineEdit(hsplitter);
+  m_evalEdit->setReadOnly(true);
+  m_evalEdit->setWordWrap(QMultiLineEdit::NoWrap);
   connect(m_evalEdit, SIGNAL(returnPressed()), SLOT(eval()));
+
+  QValueList<int> hsplitSizes;
+  hsplitSizes.insert(hsplitSizes.end(),400);
+  hsplitSizes.insert(hsplitSizes.end(),200);
+  hsplitter->setSizes(hsplitSizes);
+
+  vl->addWidget(hsplitter);
 
   // control buttons
   QHBoxLayout *hl2 = new QHBoxLayout(vl);
@@ -223,7 +231,6 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   updateFrameList();
   m_inSession = false;
-  m_curExecState = 0;
 }
 
 KJSDebugWin::~KJSDebugWin()
@@ -326,24 +333,34 @@ void KJSDebugWin::sourceSelected(int sourceSelIndex)
 void KJSDebugWin::eval()
 {
   // evaluate the js code from m_evalEdit
-/*
-  if (!m_inSession)
+  if (!m_inSession || !m_curExecState)
     return;
+  int para, index;
+  m_evalEdit->getCursorPosition(&para, &index);
+  Interpreter *interp = m_curExecState->interpreter();
+  UString code(m_evalEdit->text(para-1));
 
-  // create function
-  KJS::Constructor constr(KJS::Global::current().get("Function").imp());
-  KJS::List args;
-  args.append(KJS::String("event"));
-  args.append(KJS::String("return "+m_evalEdit->text()+";"));
-  KJS::KJSO func = constr.construct(args);
-  // execute
-  Mode oldMode = m_mode;
-  m_mode = Continue; // prevents us from stopping during evaluation
+  Object obj = Object::dynamicCast(interp->globalObject().get(m_curExecState, "eval"));
+  List args;
+  args.append(String(code));
 
-  KJSO ret = m_curContext->executeCall(m_curScript,func,func,0);
-  KMessageBox::information(this, ret.toString().value().qstring(), "JavaScript eval");
-  m_mode = oldMode;
-  */
+  KJSCPUGuard guard;
+  guard.start();
+  //Completion comp = interp->evaluate(code);
+  Object thisobj = m_curExecState->context().thisValue();
+  Value comp = obj.call(m_curExecState, thisobj, args);
+  guard.stop();
+
+  if (comp.isValid()) {
+    if (comp.type() == KJS::CompletionType) {
+      CompletionImp *cimp = static_cast<CompletionImp*>(comp.imp());
+      comp = cimp->value();
+    }
+    m_evalEdit->insertParagraph(comp.toString(interp->globalExec()).qstring(), para);
+    m_evalEdit->moveCursor(QMultiLineEdit::MoveDown, false);
+  }
+  if (m_curExecState->hadException())
+    m_curExecState->clearException();
 }
 
 void KJSDebugWin::closeEvent(QCloseEvent *e)
@@ -353,7 +370,7 @@ void KJSDebugWin::closeEvent(QCloseEvent *e)
   return QWidget::closeEvent(e);
 }
 
-bool KJSDebugWin::sourceParsed(KJS::ExecState * exec, int sourceId,
+bool KJSDebugWin::sourceParsed(KJS::ExecState * /*exec*/, int sourceId,
                                const KJS::UString &source, int /*errorLine*/)
 {
   // the interpreter has parsed some js code - store it in a SourceFragment object
@@ -412,8 +429,9 @@ bool KJSDebugWin::exception(KJS::ExecState *exec, int /*sourceId*/,
 bool KJSDebugWin::atStatement(KJS::ExecState *exec, int sourceId, 
                               int firstLine, int lastLine)
 {
-  KJS::ExecState *oldCurExecState = m_curExecState;
-  m_curExecState = exec;
+  if (m_curExecState)
+    return true;
+  setExecState(exec);
   
   if (haveBreakpoint(sourceId,firstLine, lastLine)) {
     m_mode = Next;
@@ -428,39 +446,41 @@ bool KJSDebugWin::atStatement(KJS::ExecState *exec, int sourceId,
       enterSession();
   }
 
-  m_curExecState = oldCurExecState;
+  setExecState(0L);
   return (m_mode != Stop);
 }
 
 bool KJSDebugWin::callEvent(KJS::ExecState *exec, int sourceId, int lineno,
         KJS::Object &function, const KJS::List & /*args*/)
 {
+  if (m_curExecState)
+    return true;
+  setExecState(exec);
   //  highLight(sourceId,lineno);
-  KJS::ExecState *oldCurExecState = m_curExecState;
-  m_curExecState = exec;
   KJS::FunctionImp *fimp = static_cast<KJS::FunctionImp*>(function.imp()); 
   QString name = fimp->name().qstring();
   StackFrame *sf = new StackFrame(sourceId,lineno,name,m_mode == Step);
   m_frames.append(sf);
   if (m_mode == Step)
     enterSession();
-  m_curExecState = oldCurExecState;
+  setExecState(0L);
   return (m_mode != Stop);
 }
 
 bool KJSDebugWin::returnEvent(KJS::ExecState *exec, int sourceId, int lineno,
         KJS::Object & /*function*/)
 {
+  if (m_curExecState)
+    return true;
   //  highLight(sourceId,lineno);
-  KJS::ExecState *oldCurExecState = m_curExecState;
-  m_curExecState = exec;
+  setExecState(exec);
   m_frames.last()->sourceId = sourceId;
   m_frames.last()->lineno = lineno;
   if (m_frames.last()->step)
     enterSession();
   m_frames.removeLast();
   //  m_frameList->removeItem(m_frameList->count()-1);
-  m_curExecState = oldCurExecState;
+  setExecState(0L);
   return (m_mode != Stop);
 }
 
@@ -558,7 +578,6 @@ void KJSDebugWin::enterSession()
   m_stepButton->setEnabled(true);
   m_continueButton->setEnabled(true);
   m_stopButton->setEnabled(true);
-  m_evalButton->setEnabled(true);
   m_breakButton->setEnabled(false);
   m_breakpointButton->setEnabled(true);
   updateFrameList();
@@ -578,7 +597,6 @@ void KJSDebugWin::leaveSession()
   m_stepButton->setEnabled(false);
   m_continueButton->setEnabled(false);
   m_stopButton->setEnabled(false);
-  m_evalButton->setEnabled(false);
   m_breakButton->setEnabled(true);
   m_breakpointButton->setEnabled(false);
   m_inSession = false;

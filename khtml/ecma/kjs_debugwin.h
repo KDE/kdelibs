@@ -37,7 +37,7 @@
 
 class QListBox;
 class QComboBox;
-class QLineEdit;
+class QMultiLineEdit;
 class QPushButton;
 
 namespace KJS {
@@ -203,6 +203,7 @@ private:
   void clearAllBreakpoints(int sourceId = -1);
   int breakpointLine(int sourceId, int line0, int line1);
   bool haveBreakpoint(int sourceId, int line0, int line1);
+  void setExecState(KJS::ExecState *exec);
 
   bool m_inSession;
 
@@ -217,8 +218,7 @@ private:
   QComboBox *m_sourceSel;
   QPixmap m_stopIcon;
   QPixmap m_emptyIcon;
-  QLineEdit *m_evalEdit;
-  QPushButton *m_evalButton;
+  QMultiLineEdit *m_evalEdit;
 
   SourceFile *m_curSourceFile;
   QPtrList<StackFrame> m_frames;
@@ -233,8 +233,6 @@ private:
   QString m_nextSourceUrl;
   int m_nextSourceBaseLine;
   FakeModal m_fakeModal;
-  //const KJS::ExecutionContext *m_curContext;
-  //KJScript *m_curScript;
   KJS::ExecState *m_curExecState;
   static KJSDebugWin *kjs_html_debugger;
 };
