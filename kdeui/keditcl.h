@@ -129,6 +129,7 @@ public:
 
 protected slots:
     void slotCancel( void );
+    void slotClose( void );
     void slotUser1( void );
     void slotUser2( void );
     void slotUser3( void );
