@@ -29,7 +29,7 @@ kspell_LIBS = -lkdecore -lkdeui -lqt
 khtml_FILES = *.h
 khtml_LIBS = -lkparts -lkdecore -lkdeui -lkimgio -lqt
 
-kjs_FILES = kjs.h object.h function.h operations.h ustring.h
+kjs_FILES = kjs.h object.h types.h function.h operations.h ustring.h
 kjs_LIBS = -lqt
 
 kdejava_FILES = *.h
