@@ -283,6 +283,12 @@ bool DOMString::isEmpty()
     return (impl->l == 0);
 }
 
+QChar *DOMString::stringPtr() const
+{
+    if (impl) return impl->s;
+    return 0;
+}
+
 //-----------------------------------------------------------------------------
 
 bool DOM::operator==( const DOMString &a, const DOMString &b )

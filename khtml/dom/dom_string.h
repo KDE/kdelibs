@@ -108,6 +108,13 @@ public:
      * Use at own risk!!!
      */
     DOMStringImpl *implementation() const { return impl; }
+
+    /**
+     * @internal get a pointer to start of the string
+     * Needed by kBackpage
+     */
+    QChar *stringPtr() const;
+    
 protected:
     DOMStringImpl *impl;
 };
