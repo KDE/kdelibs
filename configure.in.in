@@ -257,6 +257,7 @@ AC_SUBST(DCOPIDL, '$(top_builddir)/dcop/dcopidl/dcopidl')
 AC_SUBST(DCOPIDLNG, '$(top_srcdir)/dcop/dcopidlng/dcopidlng')
 AC_SUBST(DCOPIDL2CPP, '$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp')
 AC_SUBST(MAKEKDEWIDGETS, '$(top_builddir)/kdewidgets/makekdewidgets')
+AC_SUBST(KCONFIG_COMPILER, '$(top_builddir)/kdecore/kconfig_compiler/kconfig_compiler')
 
 ac_save_LIBS="$LIBS"
 LIBS="$LIBS $X_LDFLAGS -lICE"
