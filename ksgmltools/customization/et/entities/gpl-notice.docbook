@@ -1,16 +1,16 @@
-<para>This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.</para>
+<para>Käesolev programm on vaba tarkvara. Te võite seda edasi levitada
+ja/või muuta vastavalt GNU Üldise Avaliku Litsentsi tingimustele, nagu
+need on Vaba Tarkvara Fondi poolt avaldatud; kas Litsentsi versioon number
+2 või (vastavalt Teie valikule) ükskõik milline hilisem versioon.</para>
 
-<para>This program is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.</para>
+<para>Seda programmi levitatakse lootuses, et see on kasulik, kuid ILMA
+IGASUGUSE GARANTIITA; isegi KESKMISE/TAVALISE KVALITEEDI GARANTIITA või
+SOBIVUSELE TEATUD KINDLAKS EESMÄRGIKS. Üksikasjade suhtes vaata GNU Üldist
+Avalikku Litsentsi.</para>
 
-<para>You should have received a copy of the GNU General Public
-License along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
+<para>Te peaks olema saanud GNU Üldise Avaliku Litsentsi koopia koos selle
+programmiga, kui ei, siis kontakteeruge Free Software Foundation'iga,
+59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</para>
 <!--
 Local variables:
 mode: sgml
