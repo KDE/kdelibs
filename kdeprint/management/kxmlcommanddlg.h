@@ -33,6 +33,7 @@ class QWidgetStack;
 class QPushButton;
 class KListBox;
 class QListBoxItem;
+class QTextEdit;
 
 class DrGroup;
 class DrBase;
@@ -82,6 +83,7 @@ private:
 	QPushButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
 	QPushButton	*m_addval, *m_delval;
+	QTextEdit *m_comment;
 
 	KXmlCommand	*m_xmlcmd;
 	QMap<QString, DrBase*>	m_opts;

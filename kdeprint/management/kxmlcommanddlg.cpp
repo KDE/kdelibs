@@ -30,7 +30,9 @@
 #include <qwidgetstack.h>
 #include <kpushbutton.h>
 #include <qtooltip.h>
+#include <qtextedit.h>
 #include <qheader.h>
+#include <qregexp.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -163,6 +165,10 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_outputfile = new QLineEdit(gb_output);
 	m_outputpipe = new QLineEdit(gb_output);
 
+	m_comment = new QTextEdit( this );
+	m_comment->setTextFormat( Qt::PlainText );
+	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
+
 	QVBoxLayout	*l2 = new QVBoxLayout(this, 10, 10);
 	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
 	QVBoxLayout	*l7 = new QVBoxLayout(0, 0, 0);
@@ -230,6 +236,12 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 
 	QVBoxLayout	*l11 = new QVBoxLayout(gb->layout());
 	l11->addWidget(m_stack);
+
+	QVBoxLayout *l12 = new QVBoxLayout( 0, 0, 0 );
+	l2->addSpacing( 10 );
+	l2->addLayout( l12 );
+	l12->addWidget( m_commentlab );
+	l12->addWidget( m_comment );
 
 	connect(m_view, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotSelectionChanged(QListViewItem*)));
 	connect(m_values, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotValueSelected(QListViewItem*)));
@@ -303,6 +315,7 @@ void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 	m_inputpipe->setText(xmlcmd->io(true, true));
 	m_outputfile->setText(xmlcmd->io(false, false));
 	m_outputpipe->setText(xmlcmd->io(false, true));
+	m_comment->setText( xmlcmd->comment() );
 
 	viewItem(0);
 }
@@ -713,6 +726,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 		xmlcmd->setIo(xmldlg->m_inputpipe->text(), true, true);
 		xmlcmd->setIo(xmldlg->m_outputfile->text(), false, false);
 		xmlcmd->setIo(xmldlg->m_outputpipe->text(), false, true);
+		xmlcmd->setComment( xmldlg->m_comment->text().replace( QRegExp( "\n" ), " " ) );
 
 		// need to recreate the driver tree structure
 		DrMain	*driver = (xmldlg->m_opts.contains("__root__") ? static_cast<DrMain*>(xmldlg->m_opts["__root__"]) : 0);
