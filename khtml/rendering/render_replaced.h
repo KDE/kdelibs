@@ -107,7 +107,7 @@ public:
     void deref(RenderArena *arena);
 
     static void paintWidget(QPainter *p, QWidget *w, int x, int y, int w, int h, int tx, int ty);
-    void handleEvent(const DOM::MouseEventImpl& ev);
+    virtual bool handleEvent(const DOM::EventImpl& ev);
 
 public slots:
     void slotWidgetDestructed();

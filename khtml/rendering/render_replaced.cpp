@@ -478,19 +478,25 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
 class EventPropagator : public QWidget {
 public:
-    void sendEvent(QMouseEvent *e) {
+    void sendEvent(QEvent *e) {
 	switch(e->type()) {
 	case QEvent::MouseButtonPress:
-	    mousePressEvent(e);
+	    mousePressEvent(static_cast<QMouseEvent *>(e));
 	    break;
 	case QEvent::MouseButtonRelease:
-	    mouseReleaseEvent(e);
+	    mouseReleaseEvent(static_cast<QMouseEvent *>(e));
 	    break;
 	case QEvent::MouseButtonDblClick:
-	    mouseDoubleClickEvent(e);
+	    mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
 	    break;
 	case QEvent::MouseMove:
-	    mouseMoveEvent(e);
+	    mouseMoveEvent(static_cast<QMouseEvent *>(e));
+	    break;
+	case QEvent::KeyPress:
+	    keyPressEvent(static_cast<QKeyEvent *>(e));
+	    break;
+	case QEvent::KeyRelease:
+	    keyReleaseEvent(static_cast<QKeyEvent *>(e));
 	    break;
 	default:
 	    break;
@@ -498,66 +504,84 @@ public:
     }
 };
 
-void RenderWidget::handleEvent(const DOM::MouseEventImpl& ev)
+bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
-    QMouseEvent *me = ev.qEvent();
+    switch(ev.id()) {
+    case EventImpl::MOUSEDOWN_EVENT:
+    case EventImpl::MOUSEUP_EVENT:
+    case EventImpl::MOUSEMOVE_EVENT: {
+	const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
+	QMouseEvent *qme = me.qEvent();
 
-    int absx = 0;
-    int absy = 0;
+	int absx = 0;
+	int absy = 0;
 
-    absolutePosition(absx, absy);
+	absolutePosition(absx, absy);
 
-    QPoint p(ev.clientX() - absx + m_view->contentsX(),
-	     ev.clientY() - absy + m_view->contentsY());
-    QMouseEvent::Type type;
-    int button = 0;
-    int state = 0;
+	QPoint p(me.clientX() - absx + m_view->contentsX(),
+		 me.clientY() - absy + m_view->contentsY());
+	QMouseEvent::Type type;
+	int button = 0;
+	int state = 0;
 
-    if (me) {
-	button = me->button();
-	state = me->state();
-	type = me->type();
-    } else {
-	switch(ev.id())  {
-	case EventImpl::MOUSEDOWN_EVENT:
-	    type = QMouseEvent::MouseButtonPress;
-	    break;
-	case EventImpl::MOUSEUP_EVENT:
-	    type = QMouseEvent::MouseButtonRelease;
-	    break;
-	case EventImpl::MOUSEMOVE_EVENT:
-	default:
-	    type = QMouseEvent::MouseMove;
-	    break;
+	if (qme) {
+	    button = qme->button();
+	    state = qme->state();
+	    type = qme->type();
+	} else {
+	    switch(me.id())  {
+	    case EventImpl::MOUSEDOWN_EVENT:
+		type = QMouseEvent::MouseButtonPress;
+		break;
+	    case EventImpl::MOUSEUP_EVENT:
+		type = QMouseEvent::MouseButtonRelease;
+		break;
+	    case EventImpl::MOUSEMOVE_EVENT:
+	    default:
+		type = QMouseEvent::MouseMove;
+		break;
+	    }
+	    switch (me.button()) {
+	    case 0:
+		button = LeftButton;
+		break;
+	    case 1:
+		button = MidButton;
+		break;
+	    case 2:
+		button = RightButton;
+		break;
+	    default:
+		break;
+	    }
+	    if (me.ctrlKey())
+		state |= ControlButton;
+	    if (me.altKey())
+		state |= AltButton;
+	    if (me.shiftKey())
+		state |= ShiftButton;
+	    if (me.metaKey())
+		state |= MetaButton;
 	}
-	switch (ev.button()) {
-	case 0:
-	    button = LeftButton;
-	    break;
-	case 1:
-	    button = MidButton;
-	    break;
-	case 2:
-	    button = RightButton;
-	    break;
-	default:
-	    break;
-	}
-	if (ev.ctrlKey())
-	    state |= ControlButton;
-	if (ev.altKey())
-	    state |= AltButton;
-	if (ev.shiftKey())
-	    state |= ShiftButton;
-	if (ev.metaKey())
-	    state |= MetaButton;
-    }
 
 //     kdDebug(6000) << "sending event to widget "
 // 		  << " pos=" << p << " type=" << type
 // 		  << " button=" << button << " state=" << state << endl;
-    QMouseEvent e(type, p, button, state);
-    static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+	QMouseEvent e(type, p, button, state);
+	static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+	break;
+    }
+    case EventImpl::KHTML_KEYDOWN_EVENT:
+    case EventImpl::KHTML_KEYUP_EVENT:
+    case EventImpl::KHTML_KEYPRESS_EVENT: {
+	QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+	if (ke)
+	    static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+    }
+    default:
+	break;
+    }
+    return true;
 }
 
 void RenderWidget::deref(RenderArena *arena)

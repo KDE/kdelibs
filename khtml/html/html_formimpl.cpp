@@ -750,19 +750,31 @@ bool HTMLGenericFormElementImpl::isSelectable() const
         static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus;
 }
 
+class FocusHandleWidget : public QWidget
+{
+public:
+    void focusNextPrev(bool n) {
+	focusNextPrevChild(n);
+    }
+};
+
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->target() == this && evt->isMouseEvent() &&
-        renderer() && renderer()->isWidget() &&
-        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView"))
+    if (evt->target() == this && renderer() && renderer()->isWidget() &&
+        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView")) {
         switch(evt->id())  {
         case EventImpl::MOUSEDOWN_EVENT:
         case EventImpl::MOUSEUP_EVENT:
         case EventImpl::MOUSEMOVE_EVENT:
-            static_cast<RenderWidget*>(renderer())->handleEvent(*static_cast<MouseEventImpl*>(evt));
+	case EventImpl::KHTML_KEYDOWN_EVENT:
+	case EventImpl::KHTML_KEYUP_EVENT:
+	case EventImpl::KHTML_KEYPRESS_EVENT:
+            if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
+		evt->setDefaultHandled();
         default:
             break;
         }
+    }
 
     if (evt->target()==this && !m_disabled)
     {
@@ -790,13 +802,17 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
             }
         }
 
-	if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
-	    evt->id()==EventImpl::KHTML_KEYUP_EVENT)
-	{
+	if (evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
 	    TextEventImpl * k = static_cast<TextEventImpl *>(evt);
-	    if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
-		QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->widget(), k->qKeyEvent);
+	    int key = k->qKeyEvent ? k->qKeyEvent->key() : 0;
+	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
+		QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
+		if (widget)
+		    static_cast<FocusHandleWidget *>(widget)
+			->focusNextPrev(key == Qt::Key_Tab);
+	    }
 	}
+
 
 	if (view && evt->id() == EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
@@ -884,8 +900,16 @@ void HTMLButtonElementImpl::attach()
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT) && !m_disabled)
-        activate();
+    if (m_type != BUTTON && !m_disabled) {
+	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
+	if (!act && evt->id()==EventImpl::KHTML_KEYDOWN_EVENT) {
+	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+	    if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter))
+		act = true;
+	}
+	if (act)
+	    activate();
+    }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
@@ -1425,6 +1449,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( !m_disabled )
     {
+
         if (evt->isMouseEvent() &&
             evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
             // record the mouse position for when we get the DOMActivate event
@@ -1435,23 +1460,32 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             yPos = me->clientY()-offsetY;
         }
 
-        if (evt->id() == EventImpl::DOMACTIVATE_EVENT
-            && m_type == RADIO) {
-            setChecked(true);
+        if (m_type == RADIO || m_type == CHECKBOX) {
+	    bool check = evt->id() == EventImpl::DOMACTIVATE_EVENT;
+	    if (!check && evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
+		TextEventImpl *te = static_cast<TextEventImpl *>(evt);
+		if (te->keyVal() == ' ')
+		    check = true;
+	    }
+	    if (check)
+		setChecked(m_type == RADIO ? true : !checked());
         }
 
-        if (evt->id() == EventImpl::DOMACTIVATE_EVENT
-            && m_type == CHECKBOX) {
-            setChecked(!checked());
-        }
 
         // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
         // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
         // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
         // must dispatch a DOMActivate event - a click event will not do the job.
-        if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
-            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET))
-            activate();
+        if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
+	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
+	    if (!act && evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
+		QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+		if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter))
+		    act = true;
+	    }
+	    if (act)
+		activate();
+	}
     }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }

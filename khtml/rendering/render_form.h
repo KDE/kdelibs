@@ -121,6 +121,8 @@ public:
     virtual void updateFromElement();
     virtual void calcMinMaxWidth();
 
+    virtual bool handleEvent(const DOM::EventImpl& ev) { return false; }
+
     QCheckBox *widget() const { return static_cast<QCheckBox*>(m_widget); }
 
 public slots:
@@ -138,6 +140,8 @@ public:
 
     virtual void calcMinMaxWidth();
     virtual void updateFromElement();
+
+    virtual bool handleEvent(const DOM::EventImpl& ev) { return false; }
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
 };

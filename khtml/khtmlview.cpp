@@ -1007,12 +1007,11 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     if (m_part->xmlDocImpl()) {
-        if (m_part->xmlDocImpl()->focusNode())
-            if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
-            {
-                _ke->accept();
-                return;
-            }
+        if (m_part->xmlDocImpl()->focusNode()
+            && m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke)) {
+	    _ke->accept();
+	    return;
+	}
         if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT))
             if (m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke))
             {
@@ -1310,7 +1309,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (!w->inherits("QScrollBar")) {
+		if (!::qt_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
@@ -1327,6 +1326,16 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                 }
 		break;
 	    }
+	    case QEvent::KeyPress:
+	    case QEvent::KeyRelease:
+		if (!::qt_cast<QScrollBar *>(w)) {
+		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
+		    if (e->type() == QEvent::KeyPress)
+			keyPressEvent(ke);
+		    else
+			keyReleaseEvent(ke);
+		    block = true;
+		}
 	    default:
 		break;
 	    }
