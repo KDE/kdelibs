@@ -1868,7 +1868,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 
 void HTTPProtocol::configAuth( const char *p, bool b )
 {
-  HTTP_AUTH f = AUTH_NONE;
+  HTTP_AUTH f = AUTH_None;
   const char *strAuth = p;
 
   while( *p == ' ' ) p++;
