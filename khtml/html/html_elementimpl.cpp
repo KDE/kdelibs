@@ -125,9 +125,9 @@ void HTMLElementImpl::calcMinMaxWidth()
     maxWidth = 0;
 
     int inlineMax=0;
-    int inlineMin=0;    
-    
-    bool noBreak=false;        
+    int inlineMin=0;
+
+    bool noBreak=false;
 
     NodeImpl *child = firstChild();
     while(child != 0)
@@ -138,12 +138,12 @@ void HTMLElementImpl::calcMinMaxWidth()
 	    // we have to take care about nbsp's, and places were
 	    // we can't break between two inline objects...
 	    // But for the moment, this will do...
-	    
+	
 	    // mostly done -antti
-	    
+	
 
 	    if (child->isTextNode())
-	    {	    
+	    {	
 	    	bool hasNbsp=false;
 	    	TextImpl* t = static_cast<TextImpl*>(child);
 		if (t->data()[0]==nbsp) //inline starts with nbsp
@@ -151,7 +151,7 @@ void HTMLElementImpl::calcMinMaxWidth()
 		    inlineMin+=child->getMinWidth();
 		    inlineMax+=child->getMaxWidth();
 		    hasNbsp=true;
-		} 
+		}
 		if (hasNbsp && t->data()[t->length()-1]==nbsp)
 		{   	    	    	//inline starts and ends with nbsp
 		    noBreak=true;
@@ -168,7 +168,7 @@ void HTMLElementImpl::calcMinMaxWidth()
 		if (hasNbsp)
 		{
 		    child=child->nextSibling();
-		    hasNbsp=false;		    
+		    hasNbsp=false;		
 		    continue;
 		}
 	    }
@@ -178,14 +178,14 @@ void HTMLElementImpl::calcMinMaxWidth()
 		inlineMax+=child->getMaxWidth();
 		noBreak=false;
 	    }
-	    else	    
+	    else	
 	    {
 		int w = child->getMinWidth();
 		if(inlineMin < w) inlineMin = w;
 		w = child->getMaxWidth();
 		inlineMax += w;	
 		
-	    }	    
+	    }	
 	}
 	else
 	{
@@ -198,7 +198,7 @@ void HTMLElementImpl::calcMinMaxWidth()
 	    if(maxWidth < inlineMax) maxWidth = inlineMax;
 	    inlineMin=0;
             inlineMax=0;
-	    
+	
 	    noBreak=false;
 	}
 	child = child->nextSibling();
@@ -231,12 +231,12 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
     if(inside) printf("    --> inside\n");
 #endif
     // dynamic HTML...
-    if(inside) mouseEventHandler(button, type);
+    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
 
     return inside;
 }
 
-void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type )
+void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bool inside )
 {
     if(!hasEvents()) return;
 
@@ -286,6 +286,21 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type )
 	    printf("emit executeScript( %s )\n", script.string().ascii());
 	}
     }
+
+    if(inside != mouseInside())
+    {
+	// onmouseover and onmouseout
+	int id = ATTR_ONMOUSEOVER;
+	if(!inside)
+	    id = ATTR_ONMOUSEOUT;
+	script = getAttribute(ATTR_ONCLICK);
+	if(script.length())
+	{
+	    htmlwidget->executeScript( script.string() );
+	    printf("emit executeScript( %s )\n", script.string().ascii());
+	}
+    }
+    setMouseInside(inside);
 }
 
 void HTMLElementImpl::getAbsolutePosition(int &xPos, int &yPos)
@@ -544,13 +559,18 @@ bool HTMLPositionedElementImpl::mouseEvent( int _x, int _y, int button,
 	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url)) break;
 	child = child->nextSibling();
     }
+    if(!child) 
+    {
+	if(mouseInside()) mouseEventHandler(button, type, false);
+	return false;
+    }
 
 #ifdef EVENT_DEBUG
     printf("    --> inside\n");
 #endif
 
     // dynamic HTML...
-    mouseEventHandler(button, type);
+    mouseEventHandler(button, type, true);
 
     return true;
 }

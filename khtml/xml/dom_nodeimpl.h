@@ -44,7 +44,7 @@ class DocumentImpl;
 
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementatin, and derive all other
-// Node classes from it. This is done to reduce memory overhead. 
+// Node classes from it. This is done to reduce memory overhead.
 // Derived classes will only implement the functionality needed, and only
 // use as much storage as they really need; i.e. if a node has no children
 // or even no parent; it does not need to store null pointers.
@@ -123,18 +123,18 @@ public:
      */
 
     /**
-     * Print the object and it's children, but only if it fits in the 
+     * Print the object and it's children, but only if it fits in the
      * rectangle given by x,y,w,h. (tx|ty) is parents position.
      */
-    virtual void print( QPainter *p, int x, int y, 
+    virtual void print( QPainter *p, int x, int y,
 			int w, int h, int tx, int ty)
 	{ printObject(p, x, y, w, h, tx, ty); }
 
     /**
-     * Print the object, but only if it fits in the 
+     * Print the object, but only if it fits in the
      * rectangle given by x,y,w,h. tx/ty specifies the objects's position
      */
-    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/, 
+    virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
 			      int /*w*/, int /*h*/, int /*tx*/, int /*ty*/)
 	{ }
 
@@ -171,7 +171,7 @@ public:
     virtual void setMaxAscent( int ) { }
     virtual void setMaxDescent( int ) { }
     virtual void setAvailableWidth( int = -1 ) { }
- 
+
     virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
     virtual void setXPos( int /*xPos*/ ) { }
     virtual void setYPos( int /*yPos*/ ) { }
@@ -201,7 +201,7 @@ public:
 
     virtual khtml::VAlign vAlign() { return khtml::VNone; }
     virtual khtml::HAlign hAlign() { return khtml::HNone; }
-    
+
     virtual int vSpace() { return 0; }
     virtual int hSpace() { return 0; }
 
@@ -224,7 +224,7 @@ public:
      *  this in the body element
      * @param url returns the url under the mouse, or an empty string otherwise
      */
-    virtual bool mouseEvent( int /*x*/, int /*y*/, int /*button*/, 
+    virtual bool mouseEvent( int /*x*/, int /*y*/, int /*button*/,
 			     MouseEventType /*type*/, int /*_tx*/, int /*_ty*/,
 			     DOMString &/*url*/) { return false; }
 
@@ -232,7 +232,7 @@ public:
     virtual void setStyle(CSSStyle *) { }
     virtual CSSStyle *style() { return 0; }
 
-    enum SpecialFlags { 
+    enum SpecialFlags {
 	Layouted    = 0x0001,
 	Blocking    = 0x0002,
 	Parsing     = 0x0004,
@@ -242,7 +242,8 @@ public:
 	HasClass    = 0x0040,
 	HasStyle    = 0x0080,
 	HasTooltip  = 0x0100,
-	Pressed     = 0x0200
+	Pressed     = 0x0200,
+	MouseInside = 0x0400
     };
     bool layouted()    { return (flags & Layouted);    }
     bool blocking()    { return (flags & Blocking);    }
@@ -254,29 +255,32 @@ public:
     bool hasStyle()    { return (flags & HasStyle);    }
     bool hasTooltip()  { return (flags & HasTooltip);  }
     bool pressed()     { return (flags & Pressed);     }
-    void setLayouted(bool b=true) 
+    bool mouseInside()     { return (flags & MouseInside);     }
+    void setLayouted(bool b=true)
 	{ b ? flags|=Layouted : flags&=~Layouted; }
-    void setBlocking(bool b=true) 
+    void setBlocking(bool b=true)
 	{ b ? flags|=Blocking : flags&=~Blocking; }
-    void setParsing(bool b=true) 
+    void setParsing(bool b=true)
 	{ b ? flags|=Parsing : flags&=~Parsing; }
-    void setMinMaxKnown(bool b=true) 
+    void setMinMaxKnown(bool b=true)
 	{ b ? flags|=MinMaxKnown : flags&=~MinMaxKnown; }
-    void setHasEvents(bool b=true) 
+    void setHasEvents(bool b=true)
 	{ b ? flags|=HasEvents : flags&=~HasEvents; }
-    void setHasID(bool b=true) 
+    void setHasID(bool b=true)
 	{ b ? flags|=HasID : flags&=~HasID; }
-    void setHasClass(bool b=true) 
+    void setHasClass(bool b=true)
 	{ b ? flags|=HasClass : flags&=~HasClass; }
-    void setHasStyle(bool b=true) 
+    void setHasStyle(bool b=true)
 	{ b ? flags|=HasStyle : flags&=~HasStyle; }
-    void setHasTooltip(bool b=true) 
+    void setHasTooltip(bool b=true)
 	{ b ? flags|=HasTooltip : flags&=~HasTooltip; }
-    void setPressed(bool b=true) 
+    void setPressed(bool b=true)
 	{ b ? flags|=Pressed : flags&=~Pressed; }
+    void setMouseInside(bool b=true)
+	{ b ? flags|=MouseInside : flags&=~MouseInside; }
 
     /**
-     * attach to a KHTMLWidget. Additional info (like style information, 
+     * attach to a KHTMLWidget. Additional info (like style information,
      * frames, etc...) will only get loaded, when attached to a widget.
      */
     virtual void attach(KHTMLWidget *) {}
@@ -360,7 +364,7 @@ protected:
     NodeImpl *_last;
 
     // helper functions for inserting children:
-    
+
     // check for same source document:
     void checkSameDocument( NodeImpl *newchild );
     // check for being (grand-..)father:
@@ -407,7 +411,7 @@ protected:
 
 /**
  * NodeList which lists all Nodes in a document with a given tag name
- */ 
+ */
 class TagNodeListImpl : public NodeListImpl
 {
 public:
@@ -429,7 +433,7 @@ protected:
 
 /**
  * NodeList which lists all Nodes in a document with a given "name=" tag
- */ 
+ */
 class NameNodeListImpl : public NodeListImpl
 {
 public:

@@ -141,7 +141,7 @@ void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
 {
     bgPixmap = p;
     if(layouted())
-	static_cast<HTMLDocumentImpl *>(document)->print(this, true);    
+	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
 }
 
 void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
@@ -489,7 +489,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 		rowHeight[i] += toAdd;
 		remainingHeight -= toAdd;
 	    }
-	}	    
+	}	
     }
     else
 	rowHeight[0] = descent;
@@ -681,7 +681,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	    if(child->mouseEvent( _x, _y, button, type, _tx, _ty, url)) return true;
 	child = child->nextSibling();
     }
-
+    
     if(noresize) return true;
 
     if(!resizing && type == MouseMove || type == MousePress)

@@ -78,7 +78,7 @@ public:
 
     virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url);
-    virtual void mouseEventHandler( int button, MouseEventType type );
+    virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
 
     virtual void getAbsolutePosition(int &xPos, int &yPos);
     virtual NodeImpl *addChild(NodeImpl *newChild);
