@@ -162,6 +162,8 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	QPixmap::resize(width, height);
 	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 		0, 0, width, height, 0, 0);
+
+        XFree(pixmap_id);
 	XDeleteProperty(qt_xdisplay(), winId(), ev->property);
 	d->selection = None;
 	emit done(true);
@@ -186,6 +188,8 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	    xa, 0, t1w, th-t1h, 0, t1h);
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
+
+    XFree(pixmap_id);
 
     d->selection = None;
     XDeleteProperty(qt_xdisplay(), winId(), ev->property);
