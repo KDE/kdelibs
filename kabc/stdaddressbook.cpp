@@ -103,8 +103,13 @@ void StdAddressBook::init( bool )
   manager->load();
 
   KRES::ResourceManager<Resource>::ActiveIterator it;
-  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it )
+  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
     (*it)->setAddressBook( this );
+    if ( !(*it)->open() ) {
+      error( QString( "Unable to open resource '%1'!" ).arg( (*it)->resourceName() ) );
+      manager->remove( *it );
+    }
+  }
 
   Resource *res = standardResource();
   if ( !res ) {

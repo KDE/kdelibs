@@ -60,11 +60,11 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( mHost, 2, 1 );
 
   label = new QLabel( i18n( "Port:" ), this );
-  QVBox *box = new QVBox(this);
-  mPort = new QSpinBox(0, 65535, 1, box );
-  mPort->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
-  mPort->setValue(389);
-  new QWidget(box, "dummy");
+  QVBox *box = new QVBox( this );
+  mPort = new QSpinBox( 0, 65535, 1, box );
+  mPort->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
+  mPort->setValue( 389 );
+  new QWidget( box, "dummy" );
 
   mainLayout->addWidget( label, 3, 0 );
   mainLayout->addWidget( box, 3, 1 );

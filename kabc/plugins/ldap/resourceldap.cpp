@@ -46,11 +46,9 @@ extern "C"
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value );
 
 ResourceLDAP::ResourceLDAP( const KConfig *config )
-  : Resource( config )
+  : Resource( config ), mPort( 389 ), mLdap( 0 )
 {
-  mLdap = 0;
-  if ( config )
-  {
+  if ( config ) {
      mUser = config->readEntry( "LdapUser" );
      mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
      mDn = config->readEntry( "LdapDn" );
@@ -59,7 +57,6 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
      mFilter = config->readEntry( "LdapFilter" );
      mAnonymous = config->readBoolEntry( "LdapAnonymous" );
   }
-  else mPort = 389;
 }
 
 void ResourceLDAP::writeConfig( KConfig *config )
@@ -106,6 +103,13 @@ bool ResourceLDAP::doOpen()
     }
 
     kdDebug(5700) << "ResourceLDAP: bind to server successfully" << endl;
+  } else {
+    if ( ldap_simple_bind_s( mLdap, NULL, NULL ) != LDAP_SUCCESS ) {
+      addressBook()->error( i18n( "Unable to bind anonymously to server '%1'" ).arg( mHost ) );
+      return false;
+    }
+
+    kdDebug( 5700 ) << "ResourceLDAP: bind anonymously to server successfully" << endl;
   }
 
   int deref = LDAP_DEREF_ALWAYS;
@@ -151,9 +155,16 @@ bool ResourceLDAP::load()
     "uid",
     0 };
 
-  if ( ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).local8Bit(),
-      (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
-    addressBook()->error( i18n( "Unable to search on server '%1'" ).arg( mHost ) );
+  QString filter = mFilter;
+  if ( filter.isEmpty() )
+    filter = "objectclass=*";
+
+  int result;
+  if ( ( result = ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( filter ).local8Bit(),
+       (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) ) {
+    addressBook()->error( i18n( "Unable to search on server '%1': %2" )
+                          .arg( mHost )
+                          .arg( ldap_err2string( result ) ) );
     return false;
   }
 
