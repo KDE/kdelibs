@@ -810,6 +810,7 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 	e.xclient.data.l[1] = viewport.y;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
+	e.xclient.data.l[4] = 0l;
 
 	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
