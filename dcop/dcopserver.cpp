@@ -537,54 +537,61 @@ Status SetAuthentication_local (int count, IceListenObj *listenObjs)
     return 1;
 }
 
+// get a(n) unique filename, open it and return true/false
+// depending on whether everything was correctly opened/created
+// on successful exit 
+// _unique will be set to address of filename 
+// fp will be the FILE* of the opened file
+// on unsucessful exit _unique and fp are  NULL;
+bool openUniqueFilename(char *_unique,FILE *fp)
+{
+    const char *path = getenv ("DCOP_SAVE_DIR");
+    if (!path) 	path = "/tmp";
+#ifndef HAVE_MKSTEMP				
+	  _unique=unique_filename(path, "dcop");
+		if(_unique==NULL) {fp=NULL;return false;}
+    fp = fopen (_unique, "w");
+		if(fp==NULL) {unlink(_unique) free(_unique); _unique=NULL;return false;}
+		return true;
+#else
+		int fd;
+	  _unique=unique_filename(path, "dcop",&fd);
+		if(_unique==NULL) {fp=NULL;return false;}
+    fp = fdopen(fd, "wb");
+		if(fp==NULL) {unlink(_unique); free(_unique); _unique=NULL;return false;}
+		return true;
+#endif		
+}				
+
 Status
 SetAuthentication (int count, IceListenObj *_listenObjs,
 		   IceAuthDataEntry **_authDataEntries)
 {
     FILE        *addfp = NULL;
     FILE        *removefp = NULL;
-    const char  *path;
     int         original_umask;
     char        command[256];
     int         i;
-#ifdef HAVE_MKSTEMP
-    int         fd;
-#endif
 
     original_umask = umask (0077);      /* disallow non-owner access */
 
-    path = getenv ("DCOP_SAVE_DIR");
-    if (!path)
-	path = "/tmp";
-#ifndef HAVE_MKSTEMP
-    if ((addAuthFile = unique_filename (path, "dcop")) == NULL)
-	goto bad;
 
-    if (!(addfp = fopen (addAuthFile, "w")))
-	goto bad;
+// From what I could fathom from the original sources we tried to
+// create 2 unique filenames and then open them if any of the 4 steps
+// failed we then tested and closed the open fp's ,unlinked the filenames
+// and then free'd the global memory.
 
-    if ((remAuthFile = unique_filename (path, "dcop")) == NULL)
-	goto bad;
-
-    if (!(removefp = fopen (remAuthFile, "w")))
-	goto bad;
-#else
-    if ((addAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
-	goto bad;
-
-    if (!(addfp = fdopen(fd, "wb")))
-	goto bad;
-
-    if ((remAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
-	goto bad;
-
-    if (!(removefp = fdopen(fd, "wb")))
-	goto bad;
-#endif
-
-    if ((*_authDataEntries = static_cast<IceAuthDataEntry *>(malloc (count * 2 * sizeof (IceAuthDataEntry)))) == NULL)
-	goto bad;
-
+    if ((*_authDataEntries = static_cast<IceAuthDataEntry *>(malloc (count * 2 * sizeof (IceAuthDataEntry)))) == NULL) 
+		{ umask(original_umask);
+		  return 0;
+		}
+//  if either of these fail then bail
+		if(!(openUniqueFilename(addAuthFile,addfp) && openUniqueFilename(remAuthFile,removefp) ))
+		{
+		umask(original_umask); 
+		return 0;										
+		}
+						
     for (i = 0; i < numTransports * 2; i += 2) {
 	(*_authDataEntries)[i].network_id =
 	    IceGetListenConnectionString (_listenObjs[i/2]);
@@ -623,27 +630,6 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     unlink(addAuthFile);
 
     return (1);
-
- bad:
-
-    if (addfp)
-	fclose (addfp);
-
-    if (removefp)
-	fclose (removefp);
-
-    if (addAuthFile) {
-	unlink(addAuthFile);
-	free(addAuthFile);
-    }
-    if (remAuthFile) {
-	unlink(remAuthFile);
-	free(remAuthFile);
-    }
-
-    umask (original_umask);
-
-    return (0);
 }
 
 /*
