@@ -44,6 +44,11 @@
 
 QString KIO::convertSize( unsigned long size )
 {
+    return convertSize64( size );
+}
+
+QString KIO::convertSize64( long long size )
+{
     float fsize;
     QString s;
     // Giga-byte
@@ -128,6 +133,11 @@ QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedS
 
 QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize)
 {
+    return itemsSummaryString64(items, files, dirs, size, showSize);
+}
+
+QString KIO::itemsSummaryString64(uint items, uint files, uint dirs, long long size, bool showSize)
+{
     QString text;
     if (items == 1)
         text = i18n("One Item");
@@ -141,7 +151,7 @@ QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long
     if ( showSize && files > 0 )
     {
         text += " ";
-        text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
+        text += i18n("(%1 Total)").arg(KIO::convertSize64( size ) );
     }
     text += " - ";
     if (dirs == 1)

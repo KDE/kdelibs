@@ -43,6 +43,16 @@ namespace KIO
   QString convertSize( unsigned long size );
 
   /**
+   * Convert size from bytes to the string representation.
+   *
+   * @param  size  size in bytes
+   * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
+   *
+   * ### KDE 3.0: remove 64 suffix (for now it's needed to not break SC)
+   */
+  QString convertSize64( long long size );
+
+  /**
    * Convert size from kilo-bytes to the string representation.
    * Don't use convertSize( size * 1024 ), this easily goes off the 32-bit limit.
    *
@@ -70,6 +80,16 @@ namespace KIO
    * @param showSize whether to show the size in the result
    */
   QString itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize);
+
+  /**
+   * Helper for showing information about a set of files and directories
+   * @p items = @p files + @p dirs + number of symlinks :)
+   * @param size the sum of the size of the _files_
+   * @param showSize whether to show the size in the result
+   *
+   * ### KDE 3.0: remove 64 suffix (for now it's needed to not break SC)
+   */
+  QString itemsSummaryString64(uint items, uint files, uint dirs, long long size, bool showSize);
 
   /**
    * Encode (from the text displayed to the real filename)
