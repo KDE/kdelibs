@@ -108,7 +108,10 @@ public:
     void slaveStatus(const QString &host, bool connected);
 
     /**
-     * Call this once in stat()
+     * Call this from stat() to express details about an object, the
+     * UDSEntry customarily contains the atoms describing file name, size,
+     * mimetype, etc.
+     * @param _entry The UDSEntry containing all of the object attributes.
      */
     void statEntry( const UDSEntry& _entry );
 
