@@ -27,10 +27,6 @@ static int registered = 0;
 #include <kglobal.h>
 #include <kmimetype.h>
 
-#ifdef LINKED_png
-extern "C" void kimgio_init_png();
-#endif
-
 #ifdef LINKED_jpeg
 extern "C" void kimgio_init_jpeg();
 #endif
@@ -94,10 +90,6 @@ void kimgioRegister()
 		func();
 	    }
 	}
-
-#ifdef LINKED_png
-	kimgio_init_png();
-#endif
 
 #ifdef LINKED_jpeg
 	kimgio_init_jpeg();
