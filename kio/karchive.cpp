@@ -108,14 +108,27 @@ const KArchiveDirectory* KArchive::directory() const
 
 bool KArchive::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
+
     if ( !prepareWriting( name, user, group, size ) )
+    {
+        kdWarning() << "KArchive::writeFile prepareWriting failed" << endl;
         return false;
+    }
 
     // Write data
-    if ( device()->writeBlock( data, size ) != (int)size )
+    // Note: if data is 0L, don't call writeBlock, it would terminate the KFilterDev
+    if ( data && device()->writeBlock( data, size ) != (int)size )
+    {
+        kdWarning() << "KArchive::writeFile writeBlock failed" << endl;
         return false;
+    }
 
-    return doneWriting( size );
+    if ( ! doneWriting( size ) )
+    {
+        kdWarning() << "KArchive::writeFile doneWriting failed" << endl;
+        return false;
+    }
+    return true;
 }
 
 KArchiveDirectory * KArchive::rootDir()
