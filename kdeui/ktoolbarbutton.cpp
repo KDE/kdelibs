@@ -61,7 +61,6 @@ public:
     m_highlight   = false;
     m_isRaised    = false;
     m_isActive    = false;
-    m_isDelayedPopup = false;
 
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
@@ -80,7 +79,6 @@ public:
   bool    m_highlight: 1;
   bool    m_isRaised: 1;
   bool    m_isActive: 1;
-  bool    m_isDelayedPopup: 1;
 
   QString m_iconName;
 
@@ -351,18 +349,7 @@ QPopupMenu *KToolBarButton::popup()
 void KToolBarButton::setPopup(QPopupMenu *p, bool)
 {
   QToolButton::setPopup(p);
-  QToolButton::setPopupDelay(QApplication::startDragTime());
-  d->m_isDelayedPopup = false;
-  // BEGIN HACK
-  // The following hack is needed because QToolButton::openPopup()
-  // does not stop the timer for the delayed popup.
-  // It can be removed when QToolButton::openPopup()
-  // contains d->popupTimer->stop();
-  if (p)
-  {
-     disconnect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
-  }
-  // END HACK
+  QToolButton::setPopupDelay(1);
 }
 
 
@@ -370,18 +357,6 @@ void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool)
 {
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(QApplication::startDragTime());
-  d->m_isDelayedPopup = true;
-  // BEGIN HACK
-  // The following hack is needed because QToolButton::openPopup()
-  // does not stop the timer for the delayed popup.
-  // It can be removed when QToolButton::openPopup()
-  // contains d->popupTimer->stop();
-  if (p)
-  {
-     disconnect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
-     connect( this, SIGNAL( pressed() ), this, SLOT( popupPressed() ) );
-  }
-  // END HACK
 }
 
 void KToolBarButton::leaveEvent(QEvent *)
@@ -417,43 +392,21 @@ void KToolBarButton::enterEvent(QEvent *)
   emit highlighted(d->m_id, true);
 }
 
-
-void KToolBarButton::mousePressEvent( QMouseEvent *e )
-{
-  QToolButton::mousePressEvent( e );
-  if (QToolButton::popup())
-  {
-     d->m_mousePressPos = e->pos();
-     if (!d->m_isDelayedPopup)
-     {
-       openPopup();
-     }
-  }  
-}
-
-
-
 bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 {
   if ((KToolBarButton *)o == this)
   {
-    // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
-    if (ev->type() == QEvent::MouseButtonDblClick)
-    {
-      emit doubleClicked(d->m_id);
-      return true;
-    }
-
-    if ((ev->type() == QEvent::MouseButtonPress ||
-         ev->type() == QEvent::MouseButtonRelease ||
-         ev->type() == QEvent::MouseButtonDblClick) && d->m_isRadio && isOn())
-      return true;
 
     // Popup the menu when the left mousebutton is pressed and the mouse
     // is moved by a small distance.
     if (QToolButton::popup())
     {
-      if (ev->type() == QEvent::MouseMove)
+      if (ev->type() == QEvent::MouseButtonPress)
+      {
+        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+        d->m_mousePressPos = mev->pos();
+      }
+      else if (ev->type() == QEvent::MouseMove)
       {
         QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
         if ((mev->pos() - d->m_mousePressPos).manhattanLength()
@@ -463,6 +416,18 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
           return true;
         }
       }
+    }
+
+    if ((ev->type() == QEvent::MouseButtonPress ||
+         ev->type() == QEvent::MouseButtonRelease ||
+         ev->type() == QEvent::MouseButtonDblClick) && d->m_isRadio && isOn())
+      return true;
+
+    // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
+    if (ev->type() == QEvent::MouseButtonDblClick)
+    {
+      emit doubleClicked(d->m_id);
+      return true;
     }
   }
 

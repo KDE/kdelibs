@@ -265,7 +265,6 @@ protected:
   void paletteChange(const QPalette &);
   void leaveEvent(QEvent *e);
   void enterEvent(QEvent *e);
-  void mousePressEvent( QMouseEvent *e );
   void drawButton(QPainter *p);
   bool eventFilter (QObject *o, QEvent *e);
   void showMenu();
