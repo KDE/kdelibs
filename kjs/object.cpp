@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include "value.h"
@@ -201,15 +200,12 @@ ObjectImp::ObjectImp()
 ObjectImp::~ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::~ObjectImp %p\n",(void*)this);
-#if 0 // Those could be already deleted. The collector ensures no order
-      // ### Check if this leads to memory leaks....
   if (_proto)
     _proto->setGcAllowed();
   if (_internalValue)
     _internalValue->setGcAllowed();
   if (_scope)
     _scope->setGcAllowed();
-#endif
   delete _prop;
 }
 
