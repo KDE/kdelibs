@@ -267,6 +267,7 @@ IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
 Window::Window(KHTMLPart *p)
   : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), m_frames(0), loc(0), m_evt(0)
 {
+  jsEventListeners.setAutoDelete(true);
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
 }
@@ -1022,6 +1023,8 @@ void Window::clear( ExecState *exec )
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
+  jsEventListeners.clear();
+
   // Really delete those properties, so that the DOM nodes get deref'ed
   while(KJS::Interpreter::collect())
       ;
