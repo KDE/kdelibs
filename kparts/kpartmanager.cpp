@@ -7,6 +7,8 @@
 
 using namespace KParts;
 
+template class QList<Part>;
+
 PartManager::PartManager( QWidget * parent, const char * name )
  : QObject( parent, name )
 {

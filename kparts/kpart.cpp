@@ -21,6 +21,9 @@ using namespace KParts;
 
 namespace KParts
 {
+
+template class QList<XMLGUIServant>;
+
 class PartPrivate
 {
 public:

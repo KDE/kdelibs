@@ -61,13 +61,13 @@ public:
     virtual QValueList<QDomDocument> pluginDocuments();
 
     /**
-     * @return a (cached) list of @ref KXMLGUIServant s, serving the plugin documents returned by
+     * @return a (cached) list of @ref XMLGUIServant s, serving the plugin documents returned by
                @ref pluginDocuments()
      */
     virtual const QList<XMLGUIServant> *pluginServants();
 
     /**
-     * @return a (cached) @ref KXMLGUIServant for the part.
+     * @return a (cached) @ref XMLGUIServant for the part.
      */
     virtual XMLGUIServant *servant();
 
