@@ -433,6 +433,17 @@ public:
   bool use12Clock() const;
 
   /**
+   * @deprecated
+   *
+   * Please use the @ref weekStartDay method instead.
+   *
+   * Use this to determine if the user wants the week to start on Monday.
+   *
+   * @return true if the week starts on Monday
+   */
+  bool weekStartsMonday() const; //### remove for KDE 4.0
+
+  /**
    * Use this to determine which day is the first day of the week.
    *
    * @return an integer (Monday=1..Sunday=7)
@@ -440,6 +451,45 @@ public:
    */
   int weekStartDay() const;
   
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the name of the month name used in the Gregorian calendar.
+   *
+   * @param i the month number of the year starting at 1/January.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The name of the month
+   */
+  QString monthName(int i, bool shortName = false) const;
+
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the possessive form of the month name used in the Gregorian calendar.
+   * ("of January", "of February", etc.)
+   * It's needed in long format dates in some languages.
+   *
+   * @param i the month number of the year starting at 1/January.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The possessive form of the name of the month
+   * @since 3.1
+  */
+  QString monthNamePossessive(int i, bool shortName = false) const;
+
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the name of the week day used in the Gregorian calendar.
+   *
+   * @param i the day number of the week starting at 1/Monday.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The name of the day
+   */
+  QString weekDayName(int i, bool shortName = false) const;
+
   /**
    * Returns a pointer to the calendar system object.
    *
@@ -672,6 +722,17 @@ public:
    * @param format The new time format
    */
   void setTimeFormat(const QString & format);
+
+  /**
+   * @deprecated
+   *
+   * Please use @ref setWeekStartDay instead.
+   *
+   * Changes how KLocale defines the first day in week.
+   *
+   * @param start True if Monday is the first day in the week
+   */
+  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
 
   /**
    * Changes how KLocale defines the first day in week.
@@ -936,67 +997,6 @@ public:
 #ifdef KDE_NO_COMPAT
 private:
 #endif
-  /**
-   * @deprecated
-   *
-   * Returns a string containing the name of the month name used in the Gregorian calendar.
-   *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the month
-   */
-  QString monthName(int i, bool shortName = false) const;
-
-  /**
-   * @deprecated
-   *
-   * Returns a string containing the possessive form of the month name used in the Gregorian calendar.
-   * ("of January", "of February", etc.)
-   * It's needed in long format dates in some languages.
-   *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The possessive form of the name of the month
-   * @since 3.1
-  */
-  QString monthNamePossessive(int i, bool shortName = false) const;
-
-  /**
-   * @deprecated
-   *
-   * Returns a string containing the name of the week day used in the Gregorian calendar.
-   *
-   * @param i the day number of the week starting at 1/Monday.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the day
-   */
-  QString weekDayName(int i, bool shortName = false) const;
-
-  /**
-   * @deprecated
-   *
-   * Please use the @ref weekStartDay method instead.
-   *
-   * Use this to determine if the user wants the week to start on Monday.
-   *
-   * @return true if the week starts on Monday
-   */
-  bool weekStartsMonday() const; //### remove for KDE 4.0
-
-  /**
-   * @deprecated
-   *
-   * Please use @ref setWeekStartDay instead.
-   *
-   * Changes how KLocale defines the first day in week.
-   *
-   * @param start True if Monday is the first day in the week
-   */
-  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
-
   /**
    * @deprecated
    * use formatMoney(double)
