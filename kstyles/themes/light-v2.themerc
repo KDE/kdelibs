@@ -21,6 +21,7 @@ Name[ro]=Stil fin, versiunea 2
 Name[sk]=Štýl Light, 2. revízia
 Name[sl]=Slog ,Light`, 2. revizija
 Name[sv]=Lätt stil, andra revisionen
+Name[ven]=Tshitaela tshisi tshau konda, ndulamiso ya vhuvhili
 Name[xh]=Ukukanya Uhlobo, Impinda Yesibini
 Name[xx]=xx
 Comment=Second revision of the simple and elegant 'Light' widget style.
@@ -45,6 +46,7 @@ Comment[ro]=A doua revizie a stilului 'Fin' simplu şi elegant
 Comment[sk]=Druhá revízia jednoduchého a elegantného štýlu prvkov 'Light'.
 Comment[sl]=Druga revizija preprostega in elegantnega sloga gradnikov ,Light`.
 Comment[sv]=Andra revisionen av den simpla och eleganta komponentstilen "Lätt".
+Comment[ven]=Ndulamiso ya vhuvhili isa kondi na tshitaela tshileluwaho
 Comment[xx]=xx
 [KDE]
 WidgetStyle=Light, 2nd revision

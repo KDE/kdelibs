@@ -1,5 +1,7 @@
 [Misc]
 Name=Keramik
+Name[it]=Ceramica
+Name[nn]=Keramikk
 Comment=A style using alphablending 
 
 [KDE]
