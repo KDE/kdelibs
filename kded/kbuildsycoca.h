@@ -48,6 +48,8 @@ public:
    static bool checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs );
 
    static QStringList existingResourceDirs();
+   
+   void setTrackId(const QString &id) { m_trackId = id; }
 
 protected slots:
    void slotCreateEntry(const QString &file, KService **entry);
@@ -94,6 +96,7 @@ protected:
    virtual bool isBuilding() { return true; }
 
    QStringList m_allResourceDirs;
+   QString m_trackId;
 };
 
 #endif

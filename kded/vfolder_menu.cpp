@@ -104,6 +104,13 @@ QStringList VFolderMenu::allDirectories()
    return m_allDirectories;
 }
 
+static void 
+track(const QString &menuId, const QString &menuName, QDict<KService> *includeList, QDict<KService> *excludeList, QDict<KService> *itemList, const QString &comment)
+{
+   if (itemList->find(menuId))
+      printf("%s: %s INCL %d EXCL %d\n", menuName.latin1(), comment.latin1(), includeList->find(menuId) ? 1 : 0, excludeList->find(menuId) ? 1 : 0);
+}
+
 void
 VFolderMenu::includeItems(QDict<KService> *items1, QDict<KService> *items2)
 {
@@ -163,6 +170,11 @@ VFolderMenu::takeSubMenu(SubMenu *parentMenu, const QString &menuName)
 void
 VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority)
 {
+   if (m_track)
+   {
+      track(m_trackId, menu1->name, &(menu1->items), &(menu1->excludeItems), &(menu2->items), QString("Before MenuMerge w. %1 (incl)").arg(menu2->name));
+      track(m_trackId, menu1->name, &(menu1->items), &(menu1->excludeItems), &(menu2->excludeItems), QString("Before MenuMerge w. %1 (excl)").arg(menu2->name));
+   }
    if (reversePriority)
    {
       // Merge menu1 with menu2, menu1 takes precedent
@@ -204,6 +216,12 @@ VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority)
          menu1->defaultLayoutNode = menu2->defaultLayoutNode;
       if (!menu2->layoutNode.isNull())
          menu1->layoutNode = menu2->layoutNode;
+   }
+
+   if (m_track)
+   {
+      track(m_trackId, menu1->name, &(menu1->items), &(menu1->excludeItems), &(menu2->items), QString("After MenuMerge w. %1 (incl)").arg(menu2->name));
+      track(m_trackId, menu1->name, &(menu1->items), &(menu1->excludeItems), &(menu2->excludeItems), QString("After MenuMerge w. %1 (excl)").arg(menu2->name));
    }
 
    delete menu2;
@@ -1261,8 +1279,13 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                QDomElement e2 = n2.toElement(); 
                items.clear();
                processCondition(e2, &items);
+               if (m_track)
+                  track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "Before <Include>");
                includeItems(&(m_currentMenu->items), &items);
                excludeItems(&(m_currentMenu->excludeItems), &items);
+               if (m_track)
+                  track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "After <Include>");
+
                n2 = n2.nextSibling();
             }
          }
@@ -1276,8 +1299,12 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                QDomElement e2 = n2.toElement(); 
                items.clear();
                processCondition(e2, &items);
+               if (m_track)
+                  track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "Before <Exclude>");
                excludeItems(&(m_currentMenu->items), &items);
                includeItems(&(m_currentMenu->excludeItems), &items);
+               if (m_track)
+                  track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "After <Exclude>");
                n2 = n2.nextSibling();
             }
          }
@@ -1489,6 +1516,13 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    }
 
    return m_rootMenu;   
+}
+
+void
+VFolderMenu::setTrackId(const QString &id)
+{
+   m_track = !id.isEmpty();
+   m_trackId = id;
 }
 
 #include "vfolder_menu.moc"

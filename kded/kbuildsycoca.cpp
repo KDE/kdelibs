@@ -370,6 +370,8 @@ bool KBuildSycoca::build()
      g_changed = false;
 
      g_vfolder = new VFolderMenu;
+     if (!m_trackId.isEmpty())
+        g_vfolder->setTrackId(m_trackId);
 
      connect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
              this, SLOT(slotCreateEntry(const QString &, KService **)));
@@ -686,6 +688,7 @@ static KCmdLineOptions options[] = {
    { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
    { "global", I18N_NOOP("Create global database."), 0 },
    { "menutest", I18N_NOOP("Perform menu generation test run only."), 0 },
+   { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes."), 0 },
    KCmdLineLastOption
 };
 
@@ -866,6 +869,8 @@ qWarning("Reusing existing ksycoca");
       cSycocaPath = 0;
 
       KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
+      if (args->isSet("track"))
+         sycoca->setTrackId(QString::fromLocal8Bit(args->getOption("track")));
       sycoca->recreate();
    }
 

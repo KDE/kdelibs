@@ -59,6 +59,12 @@ public:
    */
   QStringList allDirectories();
 
+  /**
+   * Debug function to enable tracking of what happens with a specific
+   * menu item id
+   */
+  void setTrackId(const QString &id);
+
 signals:
   void newService(const QString &path, KService **entry);
 
@@ -137,6 +143,8 @@ public:
   SubMenu *m_currentMenu;
   bool m_forcedLegacyLoad;
   bool m_legacyLoaded;
+  bool m_track;
+  QString m_trackId;
 
 private:
   /**
