@@ -63,11 +63,11 @@ public:
     /**
      * Retrieve the current title.
      */
-    QString title(){ return(titleStr); }
+    QString title() const { return(titleStr); }
     /**
      * Retrieve the current icon.
      */
-    QPixmap icon(){ return(miniicon); }
+    QPixmap icon() const { return(miniicon); }
     QSize sizeHint() const;
 protected:
     void paintEvent(QPaintEvent *ev);
@@ -124,11 +124,11 @@ public:
      * id of -1 is for backwards compatibility only, you should always specify
      * the id.
      */
-    QString title(int id=-1);
+    QString title(int id=-1) const;
     /**
      * Returns the icon of the title item at the specified id.
      */
-    QPixmap titlePixmap(int id);
+    QPixmap titlePixmap(int id) const;
     /**
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.

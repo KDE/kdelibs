@@ -22,7 +22,7 @@ public:
   ~KKeyButton();
 
   void setKey( uint key );
-  uint getKey()			{ return key; }
+  uint getKey() const { return key; }
   /**
    * Reimplemented for internal purposes.
    */

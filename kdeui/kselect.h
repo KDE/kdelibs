@@ -66,11 +66,11 @@ public:
   /**
    * @return the current value in horizontal direction.
    */
-  int xValue()	{	return xPos; }
+  int xValue() const {	return xPos; }
   /**
    * @return the current value in vertical direction.
    */
-  int yValue()	{	return yPos; }
+  int yValue() const {	return yPos; }
 
   /**
    * @return the rectangle on which subclasses should draw.

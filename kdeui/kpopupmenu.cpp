@@ -217,7 +217,7 @@ void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
         qWarning("KPopupMenu: changeTitle() called with invalid id %d.", id);
 }
 
-QString KPopupMenu::title(int id)
+QString KPopupMenu::title(int id) const
 {
     if(id == -1) // obselete
         return(lastTitle);
@@ -233,7 +233,7 @@ QString KPopupMenu::title(int id)
     return(QString::null);
 }
 
-QPixmap KPopupMenu::titlePixmap(int id)
+QPixmap KPopupMenu::titlePixmap(int id) const
 {
     QMenuItem *item = findItem(id);
     if(item){

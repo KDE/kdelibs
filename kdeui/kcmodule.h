@@ -166,7 +166,7 @@ public:
    *
    * @see KCModule::setButtons
    */
-  int buttons() { return _btn; };
+  int buttons() const { return _btn; };
 
 
 signals:

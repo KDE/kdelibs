@@ -294,6 +294,8 @@ private:
     Direction    _dir;
     KConfig*     _config;
     int          _actions;
+    class Private;
+    Private *d;
 };
 
 #endif
