@@ -303,7 +303,10 @@ bool KFind::shouldRestart( bool forceAsking ) const
     message += i18n("Do you want to restart search at the beginning?");
 
     int ret = KMessageBox::questionYesNo( parentWidget(), message );
-    return( ret == KMessageBox::Yes );
+    bool yes = ( ret == KMessageBox::Yes );
+    if ( yes )
+        const_cast<KFind*>(this)->m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
+    return yes;
 }
 
 #include "kfind.moc"
