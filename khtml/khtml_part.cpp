@@ -1173,7 +1173,6 @@ void KHTMLPart::clear()
 
 
   findTextBegin(); // resets d->m_findNode and d->m_findPos
-
   d->m_mousePressNode = DOM::Node();
 
 
@@ -1983,11 +1982,11 @@ void KHTMLPart::checkCompleted()
   }
 
   setJSDefaultStatusBarText(QString::null);
-  
+
   if ( !m_url.encodedHtmlRef().isEmpty() )
     if ( !gotoAnchor( m_url.encodedHtmlRef()) )
        gotoAnchor( m_url.htmlRef() );
-  
+
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
@@ -2374,6 +2373,8 @@ void KHTMLPart::findTextBegin()
   d->m_findNode = 0;
   d->m_findPosEnd = -1;
   d->m_findNodeEnd= 0;
+  delete d->m_find;
+  d->m_find = 0L;
 }
 
 bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
