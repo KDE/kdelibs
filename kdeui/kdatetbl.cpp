@@ -538,7 +538,7 @@ KDateInternalYearSelector::setYear(int year)
   setText(temp);
 }
 
-QPopupFrame::QPopupFrame(QWidget* parent, const char*  name)
+KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
   : QFrame(parent, name, WType_Popup),
     result(0), // rejected
     main(0)
@@ -548,7 +548,7 @@ QPopupFrame::QPopupFrame(QWidget* parent, const char*  name)
 }
 
 void
-QPopupFrame::keyPressEvent(QKeyEvent* e)
+KPopupFrame::keyPressEvent(QKeyEvent* e)
 {
   if(e->key()==Key_Escape)
     {
@@ -558,14 +558,14 @@ QPopupFrame::keyPressEvent(QKeyEvent* e)
 }
 
 void
-QPopupFrame::close(int r)
+KPopupFrame::close(int r)
 {
   result=r;
   kapp->exit_loop();
 }
 
 void
-QPopupFrame::setMainWidget(QWidget* m)
+KPopupFrame::setMainWidget(QWidget* m)
 {
   main=m;
   if(main!=0)
@@ -575,7 +575,7 @@ QPopupFrame::setMainWidget(QWidget* m)
 }
 
 void
-QPopupFrame::resizeEvent(QResizeEvent*)
+KPopupFrame::resizeEvent(QResizeEvent*)
 {
   if(main!=0)
     {
@@ -586,13 +586,13 @@ QPopupFrame::resizeEvent(QResizeEvent*)
 }
 
 int
-QPopupFrame::exec(QPoint p)
+KPopupFrame::exec(QPoint p)
 {
   return exec(p.x(), p.y());
 }
 
 int
-QPopupFrame::exec(int x, int y)
+KPopupFrame::exec(int x, int y)
 {
   move(x, y);
   show();

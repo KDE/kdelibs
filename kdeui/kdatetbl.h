@@ -104,7 +104,7 @@ private:
  @author Tim Gilman, Mirko Sucker
  @version $Id$
 */
-class QPopupFrame : public QFrame
+class KPopupFrame : public QFrame
 {
   Q_OBJECT
 protected:
@@ -120,7 +120,7 @@ public slots:
   void close(int r);
 public:
   /** The contructor. Creates a dialog without buttons. */
-  QPopupFrame(QWidget* parent=0, const char*  name=0);
+  KPopupFrame(QWidget* parent=0, const char*  name=0);
   /** Set the main widget. You cannot set the main widget from the constructor,
       since it must be a child of the frame itselfes.
       Be careful: the size is set to the main widgets size. It is up to you to

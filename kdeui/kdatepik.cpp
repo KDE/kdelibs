@@ -273,7 +273,7 @@ void
 KDatePicker::selectMonthClicked()
 {
   int month;
-  QPopupFrame popup;
+  KPopupFrame popup;
   KDateInternalMonthPicker picker(fontsize, &popup);
   // -----
   picker.resize(picker.sizeHint());
@@ -301,7 +301,7 @@ void
 KDatePicker::selectYearClicked()
 {
   int year;
-  QPopupFrame popup;
+  KPopupFrame popup;
   KDateInternalYearSelector picker(fontsize, &popup);
   // -----
   picker.resize(picker.sizeHint());
