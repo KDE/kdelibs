@@ -2273,7 +2273,7 @@ void KHTMLPartPrivate::setFlagRecursively(
     KHTMLPart *part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it).m_part);
     if (part->inherits("KHTMLPart"))
       part->d->setFlagRecursively(flag, value);
-  }/*next it*/
+  }
 
   // do the same again for objects
   it = m_objects.begin();
