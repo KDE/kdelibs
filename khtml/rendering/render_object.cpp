@@ -880,7 +880,24 @@ QString RenderObject::information() const
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element() && element()->focused()) ts << "focus ";
-    if (element()) ts << " <" <<  getTagName(element()->id()) << ">";
+    if (element()) {
+        ts << " <" <<  getTagName(element()->id());
+        if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+            QString pseudo;
+            switch (style()->styleType()) {
+              case RenderStyle::FIRST_LETTER: 
+                pseudo = ":first-letter"; break;
+              case RenderStyle::BEFORE:
+                pseudo = ":before"; break;
+              case RenderStyle::AFTER:
+                pseudo = ":after"; break;
+              default:
+                pseudo = ":pseudo-element";
+            }
+            ts << pseudo;
+        }
+        ts << ">";
+    }
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
        << " [" << minWidth() << "-" << maxWidth() << "]"
        << " { mT: " << marginTop() << " qT: " << isTopMarginQuirk()
@@ -939,7 +956,22 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (element()) {
         QString tagName(getTagName(element()->id()));
         if (!tagName.isEmpty()) {
-            ts << " {" << tagName << "}";
+            ts << " {" << tagName;
+            if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+                QString pseudo;
+                switch (style()->styleType()) {
+                  case RenderStyle::FIRST_LETTER: 
+                    pseudo = ":first-letter"; break;
+                  case RenderStyle::BEFORE:
+                    pseudo = ":before"; break;
+                  case RenderStyle::AFTER:
+                    pseudo = ":after"; break;
+                  default:
+                    pseudo = ":pseudo-element";
+                }
+                ts << pseudo;
+            }
+            ts << "}";
         }
     }
 
