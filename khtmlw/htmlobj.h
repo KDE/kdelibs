@@ -246,9 +246,9 @@ protected:
 class HTMLText : public HTMLObject
 {
 public:
-    HTMLText( const char*, const HTMLFont *, QPainter * );
+    HTMLText( const char*, const HTMLFont *, QPainter * ,bool _autoDelete=FALSE);
     HTMLText( const HTMLFont *, QPainter * );
-    virtual ~HTMLText() { }
+    virtual ~HTMLText() { if (autoDelete) delete text; }
 
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
 	int _x2, int _y2, int _tx, int _ty );
@@ -268,6 +268,7 @@ protected:
     // way at the moment.
     short selStart;
     short selEnd;
+    bool autoDelete;
 };
 
 //-----------------------------------------------------------------------------
@@ -279,8 +280,8 @@ class HTMLLinkText : public HTMLText
 {
 public:
     HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    char *_url, const char *_target )
-	: HTMLText( _str, _font, _painter )
+	    char *_url, const char *_target, bool _autoDelete=FALSE )
+	: HTMLText( _str, _font, _painter,_autoDelete )
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkText() { }
 

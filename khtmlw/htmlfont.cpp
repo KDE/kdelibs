@@ -20,6 +20,8 @@
 
 #include "htmlfont.h"
 #include <string.h>
+#include <qstring.h>
+#include <kapp.h>
 
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
@@ -27,11 +29,13 @@
 static int fontSizes[7] = { 8, 10, 12, 14, 18, 24, 32 };
 
 
-HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic )
+HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic,
+                    const char *_charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
     textCol = black;
     fsize = _size;
+    if (_charset) setCharset(_charset);
 }
 
 int HTMLFont::pointSize( int _size )
@@ -39,6 +43,12 @@ int HTMLFont::pointSize( int _size )
     return fontSizes[ _size ];
 }
 
+void HTMLFont::setCharset( const char *ch )
+{
+  KApplication::getKApplication()->getCharsets()->setQFont(font,ch);
+  chset=ch;
+}
+		
 HTMLFontManager::HTMLFontManager()
 {
     list.setAutoDelete( TRUE );
@@ -55,33 +65,8 @@ const HTMLFont *HTMLFontManager::getFont( const HTMLFont &f )
     }
 
     cf = new HTMLFont( f );
-    cf->setCharset(charset);
 
     list.append( cf );
 
     return cf;
-}
-
-const char * HTMLFontManager::charsets[9]={"iso-8859-1",
-                                       "any",
-                           	       "iso-8859-2",
-                                       "iso-8859-3",
- 				       "iso-8859-4",
- 				       "iso-8859-5",
- 				       "iso-8859-6",
- 				       "iso-8859-7",
- 				       "iso-8859-8"};
-
-void HTMLFontManager::setCharset( const char * ch){
-
-  charset=QFont::AnyCharSet;
-  for(int c=QFont::ISO_8859_1;c<=QFont::ISO_8859_8;c++)
-    if ( stricmp(ch,charsets[c])==0 ){
-      charset=(QFont::CharSet)c;
-      break;
-    }
-  
-  HTMLFont *cf;
-  for ( cf = list.first(); cf; cf = list.next() )
-    cf->setCharset(charset);
 }

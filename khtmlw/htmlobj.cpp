@@ -24,7 +24,6 @@
 #include <kurl.h>
 
 #include "htmlobj.h"
-#include "ampseq.h"
 #include "html.h"
 
 #include <stdio.h>
@@ -221,9 +220,11 @@ HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
 
 //-----------------------------------------------------------------------------
 
-HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter)
+HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
+                   ,bool _autoDelete)
     : HTMLObject()
 {
+    autoDelete=_autoDelete;
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();

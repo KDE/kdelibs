@@ -28,13 +28,14 @@
 #include <qlist.h>
 #include <qcolor.h>
 #include <qfont.h>
+#include <kcharsets.h>
 
 #define MAXFONTSIZES 7
 
 class HTMLFont
 {
 public:
-	HTMLFont( const char *_family, int _size, int _weight=QFont::Normal, bool _italic=FALSE );
+	HTMLFont( const char *_family, int _size, int _weight=QFont::Normal, bool _italic=FALSE, const char *charset=0 );
 	HTMLFont( const HTMLFont &f );
 
 	void setWeight( int w )
@@ -47,8 +48,9 @@ public:
 		{	font.setStrikeOut( s ); }
 	void setTextColor( const QColor &col )
 		{	textCol = col; }
-	void setCharset( QFont::CharSet ch )
-		{	font.setCharSet( ch ); }
+	void setCharset( const KCharsetConversionResult &ch )
+		{	ch.setQFont(font); chset=ch.charset(); }
+	void setCharset( const char *ch );
 
 	const char *family() const
 		{	return font.family(); }
@@ -66,8 +68,8 @@ public:
 		{	return textCol; }
 	int size() const
 		{	return fsize; }
-	const Charset () const
-		{	return font.charSet(); }
+	const QString charset () const
+	        {	return chset; }
 
 	const HTMLFont &operator=( const HTMLFont &f );
 	bool operator==( const HTMLFont &f );
@@ -79,6 +81,7 @@ public:
 private:
 	QFont  font;
 	QColor textCol;
+	QString chset;
 	int    fsize;
 };
 
@@ -86,6 +89,7 @@ inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )
 {
 	textCol = f.textCol;
 	fsize = f.fsize;
+	chset = f.chset;
 }
 
 inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
@@ -93,6 +97,7 @@ inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
 	font = f.font;
 	textCol = f.textCol;
 	fsize = f.fsize;
+	chset = f.chset;
 
 	return *this;
 }
@@ -107,7 +112,8 @@ inline bool HTMLFont::operator==( const HTMLFont &f )
 		textCol.red() == f.textCol.red() &&
 		textCol.green() == f.textCol.green() &&
 		textCol.blue() == f.textCol.blue() &&
-		fsize == f.fsize );
+		fsize == f.fsize &&
+		chset == f.chset );
 }
 
 //-----------------------------------------------------------------------------
@@ -116,14 +122,11 @@ class HTMLFontManager
 {
 public:
 	HTMLFontManager();
-        void setCharset( const char *chars );
 
 	const HTMLFont *getFont( const HTMLFont &f );
 
 private:
 	QList<HTMLFont> list;
-        QFont::CharSet charset;
-        static const char *charsets[9];
 };
 
 //-----------------------------------------------------------------------------

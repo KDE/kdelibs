@@ -57,6 +57,8 @@ class KHTMLWidget;
 //#define TORBENSDEBUG
 //#define MARTINSDEBUG
 
+class KCharsetConverter;
+
 void debugT( const char *msg , ...);
 void debugM( const char *msg , ...);
 
@@ -523,6 +525,16 @@ public:
      * @see #frameList
      */
     QList<KHTMLWidget>* getFrameList() { return &frameList; }
+    
+     /**
+     * Set document charset. 
+     *
+     * Any <META ...> setting charsets overrides this setting
+     *
+     * @return TRUE if successfull
+     *
+     */
+    bool setCharset(const char *name); 
                                        
 signals:
     /**
@@ -1325,6 +1337,7 @@ protected:
      * to run java script.
      */
     JSEnvironment *jsEnvironment;      
+    KCharsetConverter *charsetConverter;
 };
 
 #endif // HTML

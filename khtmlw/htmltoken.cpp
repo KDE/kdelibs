@@ -27,7 +27,6 @@
 #endif
 
 #include "htmltoken.h"
-#include "ampseq.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -260,100 +259,53 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    char *endptr;
 		    int z = (int) strtol( src+2, &endptr, 10 );
-		    if ( z > 255 )
-		    {
-			if ( z > 912 && z < 938 ) {
-			    // Capital greek letters
-			}
-			else if ( z > 944 && z < 970 ) {
-			    // lower greek letters
-			}
-			else if ( (z>976 && z<979) || (z=982)) {
-			    // lower var letters
-			}
+		    // parse only ascii characters
+		    if (z<128){
+		        debugM("Adding character: '%c'\n",z);
+			*dest++ = z;
 		    }
-		    else
-		    {
-			*dest = z;
-			dest++;
+		    else{
+		      *dest=0;
+		      // add currend token
+		      appendToken(buffer,dest-buffer);
+		      
+		      // add token with the amp-sequence for further conversion
+		      memcpy(buffer,src,endptr-src);
+		      buffer[endptr-src]=0;
+		      debugM("Adding token: '%s'\n",buffer);
+		      appendToken(buffer,endptr-src);
+		      
+		      dest=buffer;
 		    }
 		    src = endptr;
 		    // Skip a trailing ';' ?
 		    if ( *src == ';' )
-			src++;
+		        src++;
 		}
 		// Special character ?
 		else if ( isalpha( *(src + 1) ) )
 		{
-		    int tmpleft=0;
-		    int tmpright=NUM_AMPSEQ;
-		    int tmpcnt;
-		    int tmpcmprslt;
-
-		    // binary search for a matching AmpSequence
-		    do
-		    {
-			tmpcnt = (tmpleft + tmpright) / 2;
-			tmpcmprslt = strncmp( AmpSequences[ tmpcnt ].tag,
-			    src+1, strlen( AmpSequences[ tmpcnt ].tag ) );
-			if ( tmpcmprslt > 0 )
-			    tmpright = tmpcnt - 1;
-			else
-			    tmpleft = tmpcnt + 1;
-		    }
-		    while ( ( tmpcmprslt != 0 ) && ( tmpright >= tmpleft ) );
-
-		    if ( tmpcmprslt == 0 )
-		    {
-			char ampBuffer[80];
-			char ampFontId = AmpSequences[ tmpcnt ].fontid;
-
-			if ( ampFontId > 0 )
-			{
-			    // add current tag
-			    *dest = 0;
-			    appendToken( buffer, dest-buffer );
-			    dest = buffer;
-
-			    // set the new font
-			    sprintf( ampBuffer, "%c<font face=\"%s\">",
-				(char)TAG_ESCAPE, AmpSeqFontFaces[ampFontId] );
-			    appendToken( ampBuffer, strlen( ampBuffer ) );
-			}
-
-			*dest = AmpSequences[ tmpcnt ].value;
-			dest++;
-			src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
-			if ( *src == ';' )
-			    src++;
-
-			if ( ampFontId > 0 )
-			{
-			    *dest = 0;
-			    appendToken( buffer, dest-buffer );
-			    dest = buffer;
-
-			    sprintf( ampBuffer, "%c</font>", (char)TAG_ESCAPE );
-			    appendToken( ampBuffer, strlen( ampBuffer ) );
-			}
-		    }
-		    else
-		    {
-			*dest = *src++;
-			dest++;
-		    }
+		     *dest=0;
+		     // add currend token
+		     appendToken(buffer,dest-buffer);
+		     dest=buffer;
+		    
+		     const char *endptr=src+1;
+		     while(*endptr && isalpha(*endptr)) endptr++;
+		     if (*endptr==';') endptr++;
+		     // add token with the amp-sequence for further conversion
+		     memcpy(buffer,src,endptr-src);
+		     buffer[endptr-src]=0;
+		     debugM("Adding token: '%s'\n",buffer);
+		     appendToken(buffer,endptr-src);
+		     src=endptr;
+		     *dest=0;
 		}
 		else
-		{
-		    *dest = *src++;
-		    dest++;
-		}
+		    *dest++ = *src++;
 	    }
 	    else
-	    {
-		*dest = *src++;
-		dest++;
-	    }
+		*dest++ = *src++;
 	}
 	else if ( *src == '<' )
 	{
@@ -514,7 +466,7 @@ void HTMLTokenizer::write( const char *str )
 		pre_pos++;
 		*dest = ' ';
 		dest++;
-	    }
+	    }	
 	    else if ( !space )
 	    {
 		*dest = 0;
@@ -771,4 +723,3 @@ StringTokenizer::~StringTokenizer()
     if ( buffer != 0 )
 	delete [] buffer;
 }
-

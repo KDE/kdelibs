@@ -23,6 +23,7 @@
 
 #include <kurl.h>
 #include <kapp.h>
+#include <kcharsets.h>
 
 #include "html.h"
 
@@ -162,6 +163,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     granularity   = 600;
     linkCursor    = arrowCursor;
     bIsTextSelected = false;
+    charsetConverter = 0;
 
     framesetStack.setAutoDelete( false );
     framesetList.setAutoDelete( false );
@@ -1127,7 +1129,8 @@ void KHTMLWidget::selectFont( const char *_fontfamily, int _fontsize, int _weigh
     else if ( _fontsize >= MAXFONTSIZES )
 	_fontsize = MAXFONTSIZES - 1;
 
-    HTMLFont f( _fontfamily, _fontsize, _weight, _italic );
+    HTMLFont f( _fontfamily, _fontsize, _weight, _italic,
+            font_stack.top()->charset());
     f.setTextColor( *(colorStack.top()) );
     const HTMLFont *fp = pFontManager->getFont( f );
 
@@ -1151,7 +1154,7 @@ void KHTMLWidget::selectFont( int _relative_font_size )
 	fontsize = MAXFONTSIZES - 1;
 
     HTMLFont f( font_stack.top()->family(), fontsize, weight,
-	italic );
+	italic,  font_stack.top()->charset() );
 
     f.setUnderline( underline );
     f.setStrikeOut( strikeOut );
@@ -1176,7 +1179,7 @@ void KHTMLWidget::selectFont()
     }
 
     HTMLFont f( font_stack.top()->family(), fontsize, weight,
-	italic );
+	italic,  font_stack.top()->charset() );
 
     f.setUnderline( underline );
     f.setStrikeOut( strikeOut );
@@ -1520,11 +1523,51 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		    flow->setHAlign( divAlign );
 		    _clue->append( flow );
 		}
-		if ( url || target )
-		    flow->append( new HTMLLinkText( str, currentFont(), painter,
-			 url, target ) );
-		else
-		    flow->append( new HTMLText( str, currentFont(), painter ) );
+		
+    	        if (charsetConverter){
+		   QList<KCharsetConversionResult> rl=
+		           charsetConverter->multipleConvert(str);
+		   KCharsetConversionResult *r;
+		   for(r=rl.first();r;r=rl.next()){ 
+		      	char *str1=r->copy();
+		        HTMLFont f=*currentFont();
+			debugM("%s(%s)\n",str1,r->charset());
+			f.setCharset(*r);
+	                const HTMLFont *fp = pFontManager->getFont( f );
+		       
+		   	if ( url || target )
+		       		flow->append( new HTMLLinkText( str1, fp,
+					painter, url, target,TRUE ) );
+		   	else
+		       		flow->append( new HTMLText( str1, fp,
+				        painter,TRUE ) );
+		  }		
+		}
+		else{
+		  bool autoDelete;
+		  if (*str=='&'){ // we don't need converter for this
+		     char *buffer=new char(strlen(str)+2); // buffer will never
+		                                           // have to be longer
+		     int l;
+		     const char *str1;
+		     debugM("Token: %s\n",str);
+                     str1=KApplication::getKApplication()->getCharsets()
+		                                          ->convertTag(str,l);
+	             debugM("Converted to: %s (length: %i)\n",str1,l);
+		     strcpy(buffer,str1);
+		     if (l) strcat(buffer,str+l);
+		     str=buffer;
+	             debugM("Result:%s\n",str);
+		     autoDelete=TRUE;
+		  }
+		  else autoDelete=FALSE;
+		
+		  if ( url || target )
+		      flow->append( new HTMLLinkText( str, currentFont(), painter,
+		  	 url, target,autoDelete ) );
+		  else
+		      flow->append( new HTMLText( str, currentFont(), painter,autoDelete ) );
+		}      
 	    }
 	}
 	else
@@ -2874,10 +2917,8 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	   		{
 				const char* token = stringTok->nextToken();
 				debugM("token: %s\n",token);
-				if ( strncasecmp( token, "charset=", 8 ) == 0){
-					debugM("Setting charset to: %s\n",token+8);
-					pFontManager->setCharset(token+8);
-				}
+				if ( strncasecmp( token, "charset=", 8 ) == 0)
+				  	setCharset(token+8);
 			}                         
 		}
 			 
@@ -4335,6 +4376,35 @@ KHTMLWidget::~KHTMLWidget()
 
     if ( jsEnvironment )
 	delete jsEnvironment;            
+}
+
+bool KHTMLWidget::setCharset(const char *name){
+
+	KCharsets *charsets=kapp->getCharsets();
+	if (!charsets->isDisplayable(name)){
+		if (!charsets->isAvailable(name)){
+			warning("Charset not available");
+			return FALSE;
+		}
+		if (charsetConverter) delete charsetConverter;
+		debugM("Initializing conversion from %s\n",name);
+		charsetConverter=new KCharsetConverter(name
+						,KCharsetConverter::AMP_SEQUENCES);
+		if (!charsetConverter->ok()){
+			warning("Couldn't initialize converter");
+			delete charsetConverter;
+			charsetConverter=0;
+			return FALSE;
+		}
+	        name=charsetConverter->outputCharset();
+	}
+ 	debugM("Setting charset to: %s\n",name);
+        HTMLFont f( *font_stack.top());
+	f.setCharset(name);
+        const HTMLFont *fp = pFontManager->getFont( f );
+        font_stack.push( fp );
+        painter->setFont( *(font_stack.top()) );
+	return TRUE;
 }
 
 #include "html.moc"
