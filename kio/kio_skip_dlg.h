@@ -1,9 +1,6 @@
 #ifndef __kio_skip_dlg__
 #define __kio_skip_dlg__
 
-enum SkipDlg_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
-SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi );
-
 #include <qwidget.h>
 #include <qdialog.h>
 #include <qpushbt.h>
@@ -12,6 +9,9 @@ SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi );
 #include <qlayout.h>
 
 #include <string>
+
+enum SkipDlg_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
+SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi );
 
 class KIOSkipDlg : public QDialog
 {

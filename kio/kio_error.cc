@@ -99,8 +99,14 @@ QString kioErrorString( int _errid, const char *_errortext )
     case  ERR_SLAVE_DIED:
       ksprintf( &result, i18n( "The process for the\n%s protocol\ndied unexpectedly" ), _errortext );
       break;
-    case ERR_COULD_NOT_STAT:
+    case  ERR_COULD_NOT_STAT:
       ksprintf( &result, i18n( "Could not access\n%s" ), _errortext );
+      break;
+    case  ERR_CANNOT_RESUME:
+      ksprintf( &result, i18n( "Could not resume file %s" ), _errortext );
+      break;
+    case  ERR_CANNOT_DELETE:
+      ksprintf( &result, i18n( "Could not delete file %s" ), _errortext );
       break;
     default:
       ksprintf( &result, i18n( "Unknown error code %i\n%s\n\nPlease send a full bugreport to kde-bugs@kde.org" ),
