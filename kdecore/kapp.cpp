@@ -20,6 +20,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.88  1998/02/07 20:44:05  kulow
+// good news: KDE is relocatable again. kdelibs's configure is now inserting KDEDIR in the directories name and the kde_dir functions check for this.
+// This way we can have the advantages of both sides. It's relocatable with $KDEDIR
+// and you can hardcode specific directories, if you don't use relative paths.
+// All, that is needed now is to patch the applications to use the kapp::kde_ functions
+//
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // applied patch by Kalle to make invokeHTMLHelp use the locale setting.
 //
@@ -426,7 +432,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 {
   QPopupMenu* pMenu = new QPopupMenu();
 
-  int id = pMenu->insertItem( klocale->translate( "&Help..." ) );
+  int id = pMenu->insertItem( klocale->translate( "&Contents" ) );
   pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
 
   pMenu->insertSeparator();
