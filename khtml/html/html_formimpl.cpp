@@ -83,7 +83,7 @@ HTMLFormElementImpl::~HTMLFormElementImpl()
 {
     QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
-        it.current()->setForm(0);
+        it.current()->m_form = 0;
 }
 
 NodeImpl::Id HTMLFormElementImpl::id() const
@@ -598,6 +598,15 @@ void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
     }
 }
 
+void HTMLGenericFormElementImpl::recalcStyle( StyleChange ch )
+{
+    //bool changed = changed();
+    HTMLElementImpl::recalcStyle( ch );
+
+    if (m_render /*&& changed*/)
+        m_render->updateFromElement();
+}
+
 
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
@@ -1044,13 +1053,6 @@ DOMString HTMLInputElementImpl::altText() const
         alt = i18n( "Submit" );
 
     return alt;
-}
-
-void HTMLInputElementImpl::recalcStyle( StyleChange ch )
-{
-    HTMLGenericFormElementImpl::recalcStyle( ch );
-
-    // reload all important widget settings (disabled, colors, checked state etc)
 }
 
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)

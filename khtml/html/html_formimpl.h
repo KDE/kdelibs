@@ -138,7 +138,7 @@ public:
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
 
-    void setForm(HTMLFormElementImpl *f) { m_form = f; }
+    virtual void recalcStyle( StyleChange );
 
     DOMString name() const;
     void setName(const DOMString& name);
@@ -264,7 +264,6 @@ public:
 
     virtual void init();
     virtual void attach();
-    virtual void recalcStyle( StyleChange );
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     typeEnum inputType() const { return m_type; }
