@@ -29,7 +29,6 @@
 
 class KHTMLView;
 class DOM::DOMStringImpl;
-using namespace DOM;
 
 // -------------------------------------------------------------------------
 namespace DOM {
