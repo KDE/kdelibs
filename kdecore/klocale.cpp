@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 1997 Stephan Kulow <coolo@kde.org>
+    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
     Copyright (c) 1999-2000 Hans Petter Bieker <bieker@kde.org>
 
@@ -543,7 +543,8 @@ QString put_n_in(const QString &orig, unsigned long n)
 
 #define EXPECT_LENGTH(x) \
    if (forms.count() != x) \
-      kdFatal() << "translation of \"" << singular << "\" doesn't contain " << x << " different plural forms as expected\n";
+      kdError() << "translation of \"" << singular << "\" doesn't contain " << x << " different plural forms as expected\n"; \
+      return QString( "BROKEN TRANSLATION %1" ).arg( singular );
 
 QString KLocale::translate( const char *singular, const char *plural,
                             unsigned long n ) const
