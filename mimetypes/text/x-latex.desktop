@@ -47,3 +47,7 @@ Icon=latex
 MimeType=text/x-latex
 Patterns=*.latex;*.tex;
 Type=MimeType
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

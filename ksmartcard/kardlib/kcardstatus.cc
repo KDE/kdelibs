@@ -39,8 +39,7 @@ KCardStatus::KCardStatus(const KCardStatus& x) {
 KCardStatus::KCardStatus(long ctx, QString reader, unsigned long oldState) {
 	_state.dwCurrentState = oldState;
 	_name = reader;
-	_c_name = new char[_name.length()+1];
-	strcpy(_c_name, _name.local8Bit());
+	_c_name = strdup(_name.local8Bit());
 	_state.szReader = _c_name;
 	_ctx = ctx;
 	_present = false;
@@ -57,8 +56,7 @@ KCardStatus& KCardStatus::operator=(const KCardStatus &y) {
 		_name = y._name;
 		_ctx = y._ctx;
 		_present = y._present;
-		_c_name = new char[_name.length()+1];
-		strcpy(_c_name, _name.local8Bit());
+		_c_name = strdup(_name.local8Bit());
 		_state.szReader = _c_name;
 	}
 return *this;
@@ -67,7 +65,7 @@ return *this;
 
 KCardStatus::~KCardStatus() {
 	if (_c_name)
-		delete[] _c_name;
+		free(_c_name);
 }
 
 

@@ -20,7 +20,7 @@
 #define KDIRCOMBOBOX_H
 
 #include <qevent.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 #include <qpixmap.h>
 #include <qstringlist.h>

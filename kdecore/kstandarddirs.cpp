@@ -517,7 +517,8 @@ KStandardDirs::findAllResources( const char *type,
     return findAllResources(type, filter, recursive, uniq, relList);
 }
 
-static QString realPath(const QString &dirname)
+QString 
+KStandardDirs::realPath(const QString &dirname)
 {
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);

@@ -24,6 +24,7 @@
 #include <qdom.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kprocess.h>
 
 #include <unistd.h>
 
@@ -75,7 +76,10 @@ DrMain* KMFoomaticManager::loadPrinterDriver(KMPrinter *printer, bool)
 		return NULL;
 	}
 
-	QString	cmd = QString::fromLatin1("foomatic-combo-xml -p %1 -d %2").arg(printer->option("printer")).arg(printer->option("driver"));
+	QString	cmd = "foomatic-combo-xml -p ";
+	cmd += KProcess::quote(printer->option("printer"));
+	cmd += " -d ";
+	cmd += KProcess::quote(printer->option("driver"));
 	KPipeProcess	proc(cmd);
 	QDomDocument	doc;
 	doc.setContent(&proc);

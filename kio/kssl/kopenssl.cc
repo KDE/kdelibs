@@ -29,7 +29,7 @@
 #include "kopenssl.h"
 
 extern "C" {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 static int (*K_SSL_connect)     (SSL *) = NULL;
 static int (*K_SSL_accept)      (SSL *) = NULL;
 static int (*K_SSL_read)        (SSL *, void *, int) = NULL;
@@ -316,7 +316,7 @@ KConfig *cfg;
 #endif
 
    if (_cryptoLib) {
-#ifdef HAVE_SSL 
+#ifdef KSSL_HAVE_SSL 
       K_X509_free = (void (*) (X509 *)) _cryptoLib->symbol("X509_free");
       K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
       K_RAND_load_file = (int (*)(const char *, long)) _cryptoLib->symbol("RAND_load_file");
@@ -441,7 +441,7 @@ KConfig *cfg;
 #endif
 
    if (_sslLib) {
-#ifdef HAVE_SSL 
+#ifdef KSSL_HAVE_SSL 
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
       K_SSL_accept = (int (*)(SSL *)) _sslLib->symbol("SSL_accept");
@@ -488,7 +488,18 @@ KConfig *cfg;
       if (_cryptoLib) {
          if (x) ((int (*)())x)();
          x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
-         if (x) ((void (*)())x)();
+         if (x) {
+           ((void (*)())x)();
+         } else {
+           x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_conf");
+           if (x) {
+             ((void (*)())x)();
+           } else {
+             x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_noconf");
+             if (x)
+               ((void (*)())x)();
+           }
+         }
          x = _cryptoLib->symbol("OpenSSL_add_all_ciphers");
          if (x) ((void (*)())x)();
          x = _cryptoLib->symbol("OpenSSL_add_all_digests");
@@ -516,7 +527,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
 // FIXME: we should check "ok" and allow this to init the lib if !ok.
 
 KOpenSSLProxy *KOpenSSLProxy::self() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
    if (!_me) {
       _me = med.setObject(new KOpenSSLProxy);
    }
@@ -530,7 +541,7 @@ KOpenSSLProxy *KOpenSSLProxy::self() {
 
 
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 
 
 

@@ -54,7 +54,6 @@ protected:
 
 private:
   khtml::ChildFrame *m_child;
-  bool m_bHideErrorDialog;
 };
 
 #endif

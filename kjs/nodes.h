@@ -205,6 +205,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~GroupNode();
+    Reference2 evaluate(ExecState *exec) const;
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:

@@ -28,7 +28,7 @@
 
 #include "kopenssl.h"
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 // This code is mostly taken from OpenSSL v0.9.5a
 // by Eric Young
 QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt) {

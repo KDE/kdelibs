@@ -37,6 +37,7 @@
 #include <kurl.h>
 #include <kurldrag.h>
 #include <kiconloader.h>
+#include <kapplication.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -107,6 +108,9 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
 
+    if ( !kapp->authorize("lineedit_text_completion") )
+        mode = KGlobalSettings::CompletionNone;
+    
     KCompletionBase::setCompletionMode( mode );
 }
 
@@ -564,7 +568,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
-    if ( compObj() && !isReadOnly() )
+    if ( compObj() && !isReadOnly() && kapp->authorize("lineedit_text_completion"))
     {
         QPopupMenu *subMenu = new QPopupMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),
@@ -689,9 +693,11 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
                 bool trap = d->completionBox && d->completionBox->isVisible();
+                bool stopEvent = trap || (d->grabReturnKeyEvents &&
+                                          (e->state() == NoButton));
 
                 // Qt will emit returnPressed() itself if we return false
-                if ( d->grabReturnKeyEvents || trap )
+                if ( stopEvent )
                     emit QLineEdit::returnPressed();
 
                 emit returnPressed( displayText() );
@@ -700,7 +706,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                     d->completionBox->hide();
 
                 // Eat the event if the user asked for it, or if a completionbox was visible
-                return d->grabReturnKeyEvents || trap;
+                return stopEvent;
             }
         }
     }

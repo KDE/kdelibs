@@ -35,7 +35,6 @@
 #include "kio/job.h"
 
 #include <kdebug.h>
-#include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
@@ -1250,6 +1249,7 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
+#define HASMNTOPT(var, opt) hasmntopt(var, opt)
 #define FSNAME(var) var->mnt_fsname
 #elif defined(_AIX)
 /* we don't need this stuff */
@@ -1261,6 +1261,7 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) (getmntent(file, &var) == 0)
 #define MOUNTPOINT(var) var.mnt_mountp
 #define MOUNTTYPE(var) var.mnt_fstype
+#define HASMNTOPT(var, opt) hasmntopt(&var, opt)
 #define FSNAME(var) var.mnt_special
 #endif
 
@@ -1499,7 +1500,35 @@ static bool is_my_mountpoint( const char *mountpoint, const char *realname, int 
     return false;
 }
 
-QString KIO::findPathMountPoint( const QString & filename )
+typedef enum { Unseen, Right, Wrong } MountState;
+
+/**
+ * Idea and code base by Olaf Kirch <okir@caldera.de>
+ **/
+static void check_mount_point(const char *mounttype,
+                              const char *fsname,
+                              MountState &isslow, MountState &isautofs)
+{
+    bool nfs = !strcmp(mounttype, "nfs");
+    bool autofs = !strcmp(mounttype, "autofs");
+    bool pid = (strstr(fsname, ":(pid") != 0);
+
+    if (nfs && !pid)
+        isslow = Right;
+    else if (isslow == Right)
+        isslow = Wrong;
+
+    /* Does this look like automounted? */
+    if (autofs || (nfs && pid)) {
+        isautofs = Right;
+        isslow = Right;
+    }
+}
+
+// returns the mount point, checks the mount state.
+// if ismanual == Wrong this function does not check the manual mount state
+static QString get_mount_info(const QString& filename, 
+    MountState& isautofs, MountState& isslow, MountState& ismanual)
 {
     char realname[MAXPATHLEN];
 
@@ -1507,13 +1536,22 @@ QString KIO::findPathMountPoint( const QString & filename )
 
     /* If the path contains symlinks, get the real name */
     if (realpath(QFile::encodeName(filename), realname) == 0) {
-        if (filename.length() >= sizeof(realname))
+        if( strlcpy(realname, QFile::encodeName(filename),MAXPATHLEN)>=MAXPATHLEN)
             return QString::null;
-        strcpy(realname, QFile::encodeName(filename));
     }
 
     int max = 0;
     QString mountPoint;
+
+    /* Loop over all file systems and see if we can find our
+     * mount point.
+     * Note that this is the mount point with the longest match.
+     * XXX: Fails if me->mnt_dir is not a realpath but goes
+     * through a symlink, e.g. /foo/bar where /foo is a symlink
+     * pointing to /local/foo.
+     *
+     * How kinky can you get with a filesystem?
+     */
 
 #ifdef HAVE_GETMNTINFO
 
@@ -1531,8 +1569,25 @@ QString KIO::findPathMountPoint( const QString & filename )
         if (realpath(device_name, realpath_buffer) != 0)
             // succes, use result from realpath
             device_name = realpath_buffer;
+#ifdef __osf__
+        char * mounttype = mnt_names[mounted[i].f_type];
+#else
+        char * mounttype = mounted[i].f_fstypename;
+#endif
         if ( is_my_mountpoint( mounted[i].f_mntonname, realname, max ) )
+        {
             mountPoint = QFile::decodeName(mounted[i].f_mntonname);
+            check_mount_point( mounttype, mounted[i].f_mntfromname,
+                               isautofs, isslow );
+            // keep going, looking for a potentially better one
+
+            if (ismanual == Unseen)
+            {
+                struct fstab *ft = getfsfile(mounted[i].f_mntonname);
+                if (!ft || strstr(ft->fs_mntops, "noauto"))
+                  ismanual = Right;
+            }
+        }
     }
 
 #elif defined(_AIX)
@@ -1579,8 +1634,24 @@ QString KIO::findPathMountPoint( const QString & filename )
                 // success, use result from realpath
                 device_name = realpath_buffer;
 
+	    /* Look up the string for the file system type,
+             * as listed in /etc/vfs.
+             * ex.: nfs,jfs,afs,cdrfs,sfs,cachefs,nfs3,autofs
+             */
+            struct vfs_ent* ent = getvfsbytype(vm->vmt_gfstype);
+
             if ( is_my_mountpoint( mountedto, realname, max ) )
+            {
                 mountPoint = QFile::decodeName(mountedto);
+                check_mount_point(ent->vfsent_name, device_name, isautofs, isslow);
+
+                if (ismanual == Unseen)
+                {
+                    // TODO: add check for ismanual, I couldn't find any way
+                    // how to get the mount attribute from /etc/filesystems
+                    ismanual == Wrong;                
+                }
+            }
 
             free(mountedfrom);
             free(mountedto);
@@ -1611,189 +1682,72 @@ QString KIO::findPathMountPoint( const QString & filename )
             break;
 
         if ( is_my_mountpoint( MOUNTPOINT(me), realname, max ) )
+        {
             mountPoint = QFile::decodeName( MOUNTPOINT(me) );
+            check_mount_point(MOUNTTYPE(me), FSNAME(me), isautofs, isslow);
+            // we don't check if ismanual is Right, if /a/b is manually
+            // mounted /a/b/c can't be automounted. At least IMO.
+            if (ismanual == Unseen)
+            {
+                // The next GETMNTENT call may destroy 'me'
+                // Copy out the info that we need
+                QCString fsname_me = FSNAME(me);
+                QCString mounttype_me = MOUNTTYPE(me);
+            
+                STRUCT_SETMNTENT fstab;
+                // TODO: #define FSTAB (FSTAB_FILE?), important for Solaris
+                if ((fstab = SETMNTENT("/etc/fstab", "r")) == 0)
+                    continue;
+
+                bool found = false;
+                STRUCT_MNTENT fe;
+                while (GETMNTENT(fstab, fe))
+                {
+                    if (fsname_me == FSNAME(fe))
+                    {
+                        found = true;
+                        if (HASMNTOPT(fe, "noauto") || 
+                            !strcmp(MOUNTTYPE(fe), "supermount"))
+                            ismanual = Right;
+                        break;
+                    }
+                }
+                if (!found || (mounttype_me == "supermount"))
+                  ismanual = Right;
+
+                ENDMNTENT(fstab);
+            }
+        }
     }
 
     ENDMNTENT(mtab);
 
 #endif
+
+    if (isautofs == Right && isslow == Unseen)
+        isslow = Right;
 
     return mountPoint;
 }
 
-typedef enum { Unseen, Right, Wrong } MountState;
-
-/**
- * Idea and code base by Olaf Kirch <okir@caldera.de>
- **/
-static void check_mount_point(const char *mounttype,
-                              const char *fsname,
-                              MountState &isslow, MountState &isauto)
+QString KIO::findPathMountPoint(const QString& filename)
 {
-    bool nfs = !strcmp(mounttype, "nfs");
-    bool autofs = !strcmp(mounttype, "autofs");
-    bool pid = (strstr(fsname, ":(pid") != 0);
+  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
+  return get_mount_info(filename, isautofs, isslow, ismanual);
+}
 
-    if (nfs && !pid)
-        isslow = Right;
-    else if (isslow == Right)
-        isslow = Wrong;
-
-    /* Does this look like automounted? */
-    if (autofs || (nfs && pid)) {
-        isauto = Right;
-        isslow = Right;
-    }
+bool KIO::manually_mounted(const QString& filename)
+{
+  MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
+  QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual);
+  return (mountPoint != QString::null) && (ismanual == Right);
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
-    char realname[MAXPATHLEN];
-
-    memset(realname, 0, MAXPATHLEN);
-
-    /* If the path contains symlinks, get the real name */
-    if (realpath(QFile::encodeName(filename), realname) == 0) {
-        if (filename.length() >= sizeof(realname))
-            return false;
-        strcpy(realname, QFile::encodeName(filename));
-    }
-
-    MountState isauto = Unseen, isslow = Unseen;
-    int max = 0;
-
-    /* Loop over all file systems and see if we can find our
-     * mount point.
-     * Note that this is the mount point with the longest match.
-     * XXX: Fails if me->mnt_dir is not a realpath but goes
-     * through a symlink, e.g. /foo/bar where /foo is a symlink
-     * pointing to /local/foo.
-     *
-     * How kinky can you get with a filesystem?
-     */
-
-#ifdef HAVE_GETMNTINFO
-
-    struct statfs *mounted;
-    char    realpath_buffer[MAXPATHLEN];
-
-    int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
-
-    for (int i=0;i<num_fs;i++) {
-
-        QCString device_name = mounted[i].f_mntfromname;
-
-        // If the path contains symlinks, get
-        // the real name
-        if (realpath(device_name, realpath_buffer) != 0)
-            // succes, use result from realpath
-            device_name = realpath_buffer;
-#ifdef __osf__
-        char * mounttype = mnt_names[mounted[i].f_type];
-#else
-        char * mounttype = mounted[i].f_fstypename;
-#endif
-        if ( is_my_mountpoint( mounted[i].f_mntonname, realname, max ) )
-        {
-            check_mount_point( mounttype, mounted[i].f_mntfromname,
-                               isauto, isslow );
-            // keep going, looking for a potentially better one
-        }
-    }
-
-#elif defined(_AIX)
-
-    struct vmount *mntctl_buffer;
-    struct vmount *vm;
-    char *mountedfrom;
-    char *mountedto;
-    int fsname_len, num;
-    char    realpath_buffer[MAXPATHLEN];
-    int buf_sz = 4096;
-
-    mntctl_buffer = (struct vmount*)malloc(buf_sz);
-    num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
-    if (num == 0)
-    {
-	buf_sz = *(int*)mntctl_buffer;
-	free(mntctl_buffer);
-	mntctl_buffer = (struct vmount*)malloc(buf_sz);
-	num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
-    }
-
-    if (num > 0)
-    {
-        /* iterate through items in the vmount structure: */
-        vm = (struct vmount *)mntctl_buffer;
-        for ( ; num > 0; num-- )
-        {
-            /* get the name of the mounted file systems: */
-            fsname_len = vmt2datasize(vm, VMT_STUB);
-            mountedto     = (char*)malloc(fsname_len + 1);
-	    mountedto[fsname_len] = '\0';
-            strncpy(mountedto, (char *)vmt2dataptr(vm, VMT_STUB), fsname_len);
-
-            fsname_len = vmt2datasize(vm, VMT_OBJECT);
-            mountedfrom     = (char*)malloc(fsname_len + 1);
-	    mountedfrom[fsname_len] = '\0';
-            strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
-
-            /* get the mount-from information: */
-            QCString device_name = mountedfrom;
-
-            if (realpath(device_name, realpath_buffer) != 0)
-                // success, use result from realpath
-                device_name = realpath_buffer;
-
-	    /* Look up the string for the file system type,
-             * as listed in /etc/vfs.
-             * ex.: nfs,jfs,afs,cdrfs,sfs,cachefs,nfs3,autofs
-             */
-            struct vfs_ent* ent = getvfsbytype(vm->vmt_gfstype);
-
-            if ( is_my_mountpoint( mountedto, realname, max ) )
-                check_mount_point(ent->vfsent_name, device_name, isauto, isslow);
-
-            free(mountedfrom);
-            free(mountedto);
-
-            /* goto the next vmount structure: */
-            vm = (struct vmount *)((char *)vm + vm->vmt_length);
-        }
-
-	endvfsent( );
-    }
-
-    free( mntctl_buffer );
-
-#else
-
-    STRUCT_SETMNTENT mtab;
-    /* Get the list of mounted file systems */
-
-    if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
-        perror("setmntent");
-        return false;
-    }
-
-    STRUCT_MNTENT me;
-
-    while (true) {
-        if (!GETMNTENT(mtab, me))
-            break;
-
-        if ( is_my_mountpoint( MOUNTPOINT(me), realname, max ) )
-            check_mount_point(MOUNTTYPE(me), FSNAME(me), isauto, isslow);
-    }
-
-    ENDMNTENT(mtab);
-
-#endif
-
-    if (isauto == Right && isslow == Unseen)
-        isslow = Right;
-
-    return (isslow == Right);
+  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
+  QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual);
+  return (mountPoint != QString::null) && (isslow == Right);
 }
 
 KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)

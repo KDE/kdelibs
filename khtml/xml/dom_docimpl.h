@@ -26,6 +26,7 @@
 #define _DOM_DocumentImpl_h_
 
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_textimpl.h"
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
 
@@ -131,10 +132,12 @@ public:
     ElementImpl *documentElement() const;
     virtual ElementImpl *createElement ( const DOMString &tagName );
     DocumentFragmentImpl *createDocumentFragment ();
-    TextImpl *createTextNode ( const DOMString &data );
-    CommentImpl *createComment ( const DOMString &data );
-    CDATASectionImpl *createCDATASection ( const DOMString &data );
-    ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
+    TextImpl *createTextNode ( DOMStringImpl* data ) { return new TextImpl( docPtr(), data); }
+    TextImpl *createTextNode ( const QString& data )
+        { return createTextNode(new DOMStringImpl(data.unicode(), data.length())); }
+    CommentImpl *createComment ( DOMStringImpl* data );
+    CDATASectionImpl *createCDATASection ( DOMStringImpl* data );
+    ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
     Attr createAttribute(NodeImpl::Id id);
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
@@ -224,7 +227,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
+    QString completeURL(const QString& url) const { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
 
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
@@ -295,7 +298,7 @@ public:
     void setFocusNode(NodeImpl *newFocusNode);
 
     bool isDocumentChanged()	{ return m_docChanged; }
-    virtual void setDocumentChanged(bool);
+    virtual void setDocumentChanged(bool = true);
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);
@@ -367,6 +370,7 @@ public:
      * @param content The header value (value of the meta tag's "content" attribute)
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
+    bool isURLAllowed(const QString& url) const;
 
 signals:
     void finishedParsing();
@@ -428,6 +432,7 @@ protected:
     bool m_bParsing;
     bool m_docChanged;
     bool m_styleSelectorDirty;
+    bool m_inStyleRecalc;
 
     DOMString m_title;
     int m_decoderMibEnum;

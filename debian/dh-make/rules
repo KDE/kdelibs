@@ -22,6 +22,13 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
+  # Uncomment the following 2 lines to enable i686 optimziation
+  # You may want to tweak the settings to your likings
+  #export CFLAGS=-O3 -march=i686 -ffast-math -finline-functions
+  #export CXXFLAGS=-O3 -march=i686 -ffast-math -finline-functions
+endif
+
 ifeq ($(DEB_BUILD_GNU_TYPE),alpha-linux)
   export CFLAGS +=-O0 -mieee
   export CXXFLAGS +=-O0 -mieee
@@ -29,14 +36,18 @@ endif
 
 -include debian/debiandirs
 
-debian/debiandirs: debian/debianrules
-	perl -w debian/debianrules echodirs > debian/debiandirs
+# To be used with kde-style admin subdirectories if desired. debian/debiandirs is included in
+# this template. 
+#debian/debiandirs: admin/debianrules
+#	perl -w admin/debianrules echodirs > debian/debiandirs
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	#CONFIGURE#
+
+ 	# run configure with build tree $(objdir)
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(configkde) 
 
 	touch configure-stamp
 
@@ -47,17 +58,22 @@ build-stamp: configure-stamp
 	# Add here commands to compile the package.
 	$(MAKE)
 
+	# generate manpages
+	#for i in debian/*.sgml; do \
+	#        docbook-to-man $$i > `dirname $$i`/`basename $$i .sgml`.1 ;\
+	#done
+
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp debian/debiandirs
+	rm -f build-stamp configure-stamp 
 
 	# Add here commands to clean up after the build process.
 	-#CLEAN#
 
-	dh_clean
+	dh_clean 
 
 install: build
 	dh_testdir
@@ -65,8 +81,8 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tmp
-	#INSTALL#
+	# Add here commands to install the package into debian/#PACKAGE#
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/#PACKAGE#
 
 
 # Build architecture-independent files here.
@@ -77,7 +93,6 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_movefiles
 
 #	dh_installdebconf	
 	dh_installdocs
@@ -91,7 +106,7 @@ binary-arch: build install
 	dh_installcron
 	dh_installman
 	dh_installinfo
-#	dh_undocumented
+	dh_undocumented #PACKAGE#.1
 	dh_installchangelogs #CHANGELOGS#
 	dh_link
 	dh_strip

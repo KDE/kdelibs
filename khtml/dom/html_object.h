@@ -150,17 +150,27 @@ public:
     void setHeight( const DOMString & );
 
     /**
-     * Horizontal space to the left and right of this image, applet,
+     * Horizontal space, in pixels, to the left and right of this image, applet,
      * or object. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-hspace">
      * hspace attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
      *
      */
+    long getHspace() const;
+
+     /**
+      * see @ref hspace
+      */
+    void setHspace( long );
+
+    /**
+     * @deprecated
+     */
     DOMString hspace() const;
 
     /**
-     * see @ref hspace
+     * @deprecated
      */
     void setHspace( const DOMString & );
 
@@ -193,17 +203,27 @@ public:
     void setObject( const DOMString & );
 
     /**
-     * Vertical space above and below this image, applet, or object.
+     * Vertical space, in pixels, above and below this image, applet, or object.
      * See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-vspace">
      * vspace attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
      *
      */
+    long getVspace() const;
+
+     /**
+      * see @ref vspace
+      */
+    void setVspace( long );
+
+    /**
+     * @deprecated
+     */
     DOMString vspace() const;
 
     /**
-     * see @ref vspace
+     * @deprecated
      */
     void setVspace( const DOMString & );
 
@@ -382,17 +402,27 @@ public:
     void setHeight( const DOMString & );
 
     /**
-     * Horizontal space to the left and right of this image, applet,
+     * Horizontal space, in pixels, to the left and right of this image, applet,
      * or object. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-hspace">
      * hspace attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
      *
      */
+    long getHspace() const;
+
+     /**
+      * see @ref hspace
+      */
+    void setHspace( long );
+
+    /**
+     * @deprecated
+     */
     DOMString hspace() const;
 
     /**
-     * see @ref hspace
+     * @deprecated
      */
     void setHspace( const DOMString & );
 
@@ -465,17 +495,27 @@ public:
     void setUseMap( const DOMString & );
 
     /**
-     * Vertical space above and below this image, applet, or object.
+     * Vertical space, in pixels, above and below this image, applet, or object.
      * See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-vspace">
      * vspace attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
      *
      */
+    long getVspace() const;
+
+     /**
+      * see @ref vspace
+      */
+    void setVspace( long );
+
+    /**
+     * @deprecated
+     */
     DOMString vspace() const;
 
     /**
-     * see @ref vspace
+     * @deprecated
      */
     void setVspace( const DOMString & );
 

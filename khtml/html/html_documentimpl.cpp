@@ -140,15 +140,11 @@ DOMString HTMLDocumentImpl::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString, int)", params,
-                                  replyType, reply)) {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KApplication::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                       "findDOMCookies(QString)", params, replyType, reply)) {
-           kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-           return DOMString();
-         }
+                                  "findDOMCookies(QString,long int)", params,
+                                  replyType, reply)) 
+    {
+       kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+       return DOMString();
     }
 
     QDataStream stream2(reply, IO_ReadOnly);
@@ -312,6 +308,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
     // determines the parse mode for HTML
     // quite some hints here are inspired by the mozilla code.
+    int oldPMode = pMode;
 
     // default parsing mode is Loose
     pMode = Compat;
@@ -406,6 +403,9 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 //         kdDebug(6020) << " using compatibility parseMode" << endl;
 //     else
 //         kdDebug(6020) << " using transitional parseMode" << endl;
+
+    if ( pMode != oldPMode && styleSelector() )
+	recalcStyleSelector();
 }
 
 #include "html_documentimpl.moc"

@@ -458,8 +458,8 @@ protected:
 
   // Processing related
   bool m_bChunked; // Chunked tranfer encoding
-  int m_iSize; // Expected size of message
-  long m_iBytesLeft; // # of bytes left to receive in this message.
+  KIO::filesize_t m_iSize; // Expected size of message
+  KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
   bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
@@ -478,7 +478,7 @@ protected:
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
-  QString m_intData;
+  QByteArray m_bufWebDavData;
   QString m_davVersions;
 
   bool m_davHostOk;

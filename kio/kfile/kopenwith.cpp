@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>
+#include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -157,6 +158,19 @@ bool KApplicationTree::isDirSel()
 
 // ----------------------------------------------------------------------
 
+static QPixmap appIcon(const QString &iconName)
+{
+    QPixmap normal = KGlobal::iconLoader()->loadIcon(iconName, KIcon::Small, 0, KIcon::DefaultState, 0L, true);
+    // make sure they are not larger than 20x20
+    if (normal.width() > 20 || normal.height() > 20) 
+    {
+       QImage tmp = normal.convertToImage();
+       tmp = tmp.smoothScale(20, 20);
+       normal.convertFromImage(tmp);
+    }
+    return normal;
+}
+
 void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
 {
    KServiceGroup::Ptr root = KServiceGroup::group(relPath);
@@ -203,7 +217,7 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
          continue;
       }
 
-      QPixmap pixmap = SmallIcon( icon );
+      QPixmap pixmap = appIcon( icon );
 
       if (item)
          newItem = new KAppTreeListItem( item, text, pixmap, false, isDir,
@@ -367,6 +381,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
     int max = kc->readNumEntry( QString::fromLatin1("Maximum history"), 15 );
     combo->setMaxCount( max );
+    int mode = kc->readNumEntry(QString::fromLatin1("CompletionMode"),
+				KGlobalSettings::completionMode());
+    combo->setCompletionMode((KGlobalSettings::Completion)mode);
     QStringList list = kc->readListEntry( QString::fromLatin1("History") );
     combo->setHistoryItems( list, true );
     edit = new KURLRequester( combo, this );
@@ -421,12 +438,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KButtonBox* b = new KButtonBox( this );
   b->addStretch( 2 );
 
-  ok = b->addButton(  i18n ( "&OK" ) );
+  QPushButton* ok = b->addButton(  i18n ( "&OK" ) );
   ok->setDefault( true );
-  connect(  ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
+  connect( ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
-  cancel = b->addButton(  i18n( "&Cancel" ) );
-  connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
+  QPushButton* cancel = b->addButton(  i18n( "&Cancel" ) );
+  connect( cancel, SIGNAL( clicked() ), SLOT( reject() ) );
 
   b->layout();
   topLayout->addWidget( b );
@@ -511,6 +528,7 @@ void KOpenWithDlg::slotOK()
 
   QString serviceName;
   QString pathName;
+  QString initialServiceName;
   if (!m_pService) {
     // No service selected - check the command line
 
@@ -521,14 +539,16 @@ void KOpenWithDlg::slotOK()
       // TODO add a KMessageBox::error here after the end of the message freeze
       return;
     }
-    QString initialServiceName = serviceName;
+    initialServiceName = serviceName;
     int i = 1; // We have app, app-2, app-3... Looks better for the user.
     // Check if there's already a service by that name, with the same Exec line
+    bool ok = false;
     do {
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
-        bool ok = !serv; // ok if no such service yet
+        ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
-        if ( serv && (
+        if ( serv &&
+             serv->type() == "Application" && ( // only apps
                  serv->exec() == fullExec ||
                  serv->exec() == fullExec + " %u" ||
                  serv->exec() == fullExec + " %U" ||
@@ -557,6 +577,7 @@ void KOpenWithDlg::slotOK()
   {
     // Existing service selected
     serviceName = m_pService->name();
+    initialServiceName = serviceName;
     pathName = m_pService->desktopEntryPath();
   }
 
@@ -596,7 +617,7 @@ void KOpenWithDlg::slotOK()
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), serviceName);
+  desktop.writeEntry(QString::fromLatin1("Name"), initialServiceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), fullExec);
   desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
   if (remember)
@@ -666,6 +687,8 @@ void KOpenWithDlg::accept()
         KConfig *kc = KGlobal::config();
         KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
         kc->writeEntry( QString::fromLatin1("History"), combo->historyItems() );
+	kc->writeEntry(QString::fromLatin1("CompletionMode"),
+		       combo->completionMode());
         // don't store the completion-list, as it contains all of KURLCompletion's
         // executables
         kc->sync();

@@ -302,7 +302,12 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	if (in.open(exe + " -t lpd -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	QString cmd = KProcess::quote(exe);
+	cmd += " -t lpd -d ";
+	cmd += KProcess::quote(comps[2]);
+	cmd += " -p ";
+	cmd += KProcess::quote(comps[1]);
+	if (in.open(cmd) && out.open(IO_WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -504,7 +509,7 @@ QString MaticHandler::printOptions(KPrinter *printer)
 	QString	str;
 	for (QMap<QString,QString>::Iterator it=opts.begin(); it!=opts.end(); ++it)
 	{
-		if (it.key().startsWith("kde-") || it.key().startsWith("_kde"))
+		if (it.key().startsWith("kde-") || it.key().startsWith("_kde-") || it.key().startsWith( "app-" ))
 			continue;
 		str += (" " + it.key() + "=" + (*it));
 	}

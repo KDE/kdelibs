@@ -65,7 +65,7 @@ manpage.1: manpage.sgml
       <arg><option>-a<replaceable></replaceable></option></arg>
       <arg><option>-l<replaceable></replaceable></option></arg>
       application
-      <arg><option><replaceable>object <arg><option><replaceable>function<arg><option><replaceable>arg1</replaceable></option></arg><arg><option><replaceable>arg2</replaceable></option></arg>... </replaceable></option></arg></replaceable></option></arg>
+      <arg><option><replaceable>object <optional><replaceable>function<optional><replaceable>arg1</replaceable></optional><optional><replaceable>arg2</replaceable></optional>... </replaceable></optional></replaceable></option></arg>
 
     </cmdsynopsis>
   </refsynopsisdiv>

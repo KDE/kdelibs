@@ -43,33 +43,29 @@ namespace khtml
      * %multiLength and %Length
      */
     enum LengthType { Variable = 0, Relative, Percent, Fixed, Static };
-    struct Length
+    class Length
     {
-	Length() { *((Q_UINT32 *)this) = 0; }
-        Length(LengthType t) { type = t; value = 0; }
-        Length(int v, LengthType t) : value(v), type(t) {}
-        Length(const Length &o)
-	    { *((Q_UINT32 *)this) = *((Q_UINT32 *)&o); }
+    public:
+	Length() : _length(0) {}
+        Length(LengthType t) { l.value = 0; l.type = t; }
+        Length(int v, LengthType t) { l.value = v; l.type = t; }
 
-        Length& operator=(const Length& o)
-            { *((Q_UINT32 *)this) = *((Q_UINT32 *)&o); return *this; }
         bool operator==(const Length& o) const
-            { return *((Q_UINT32 *)this) == *((Q_UINT32 *)&o); }
+            { return _length == o._length; }
         bool operator!=(const Length& o) const
-            { return *((Q_UINT32 *)this) != *((Q_UINT32 *)&o); }
-
+            { return _length != o._length ; }
 
 	/*
 	 * works only for Fixed and Percent, returns -1 otherwise
 	 */
 	int width(int maxWidth) const
 	    {
-		switch(type)
+		switch(l.type)
 		{
 		case Fixed:
-		    return value;
+		    return l.value;
 		case Percent:
-		    return maxWidth*value/100;
+		    return maxWidth*l.value/100;
 		case Variable:
 		    return maxWidth;
 		default:
@@ -81,35 +77,40 @@ namespace khtml
 	 */
 	int minWidth(int maxWidth) const
 	    {
-		switch(type)
+		switch(l.type)
 		{
 		case Fixed:
-		    return value;
+		    return l.value;
 		case Percent:
-		    return maxWidth*value/100;
+		    return maxWidth*l.value/100;
 		case Variable:
 		default:
 		    return 0;
 		}
 	    }
-        bool isVariable() const { return (type == Variable); }
-        bool isRelative() const { return (type == Relative); }
-        bool isPercent() const { return (type == Percent); }
-        bool isFixed() const { return (type == Fixed); }
-        bool isStatic() const { return (type == Static); }
+        bool isVariable() const { return (l.type == Variable); }
+        bool isRelative() const { return (l.type == Relative); }
+        bool isPercent() const { return (l.type == Percent); }
+        bool isFixed() const { return (l.type == Fixed); }
+        bool isStatic() const { return (l.type == Static); }
 
-        int value : 29;
-        LengthType type : 3;
+        int value() const { return l.value; }
+        LengthType type() const { return l.type; }
+        union {
+          struct {
+            int value : 29;
+            LengthType type : 3;
+          } l;
+          Q_UINT32 _length;
+       };
     };
 
 };
 
-#ifdef __GNUC__
-#if __GNUC__ < 3 // stupid stl_relops.h
+#if __GNUC__ -  0 < 3 // stupid stl_relops.h
 inline bool operator!=(khtml::LengthType __x, khtml::LengthType __y) {
   return !(__x == __y);
 }
-#endif
 #endif
 
 #endif

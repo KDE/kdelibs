@@ -47,3 +47,7 @@ Icon=xslt
 MimeType=text/x-xslt
 Patterns=*.xslt;
 Type=MimeType
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

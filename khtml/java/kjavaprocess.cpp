@@ -26,6 +26,9 @@
 
 #include <qtextstream.h>
 #include <qmap.h>
+
+#include <config.h>
+
 #include <unistd.h>
 #include <qptrlist.h>
 #include <sys/time.h>

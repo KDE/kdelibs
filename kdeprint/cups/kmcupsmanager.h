@@ -75,6 +75,9 @@ protected slots:
 	void slotConnectionSuccess();
 	void slotAsyncConnect();
 
+	void hostPingSlot();
+	void hostPingFailedSlot();
+
 protected:
 	// the real printer listing job is done here
 	void listPrinters();
@@ -95,6 +98,8 @@ private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
 	QSocket *m_socket;
+	bool m_hostSuccess;
+	bool m_lookupDone;
 };
 
 #endif

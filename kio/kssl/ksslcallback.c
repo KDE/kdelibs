@@ -20,7 +20,7 @@
 
 // DON'T INCLUDE ANYTHING IN HERE.  THIS FILE IS NOT COMPILED AS IT IS.
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #ifndef _kde_ksslcallback_c
 #define _kde_ksslcallback_c
 

@@ -50,3 +50,7 @@ Comment[zu]=Uhlu lwamafayela lwe-SGML
 Icon=txt
 Type=MimeType
 Patterns=*.sgml;*.SGML;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

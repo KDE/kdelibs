@@ -1,7 +1,8 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -65,10 +66,6 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   KJS_CHECK_THIS( HTMLDocument, thisObj );
 
   DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
-  String s;
-  DOM::HTMLElement element;
-
-  Value v = args[0];
 
   switch (id) {
   case HTMLDocument::Clear: // even IE doesn't support that one...
@@ -95,8 +92,9 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
-    UString str = v.toString(exec);
-    for (int i = 1; i < args.size(); i++)
+    // or no arguments
+    UString str = "";
+    for (int i = 0; i < args.size(); i++)
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
@@ -107,7 +105,11 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
     return Undefined();
   }
   case HTMLDocument::GetElementsByName:
-    return getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
+    return getDOMNodeList(exec,doc.getElementsByName(args[0].toString(exec).string()));
+  case HTMLDocument::CaptureEvents:
+  case HTMLDocument::ReleaseEvents:
+    // Do nothing for now. These are NS-specific legacy calls.
+    break;
   }
 
   return Undefined();
@@ -137,6 +139,8 @@ const ClassInfo KJS::HTMLDocument::info =
   write			HTMLDocument::Write		DontDelete|Function 1
   writeln		HTMLDocument::WriteLn		DontDelete|Function 1
   getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
+  captureEvents		HTMLDocument::CaptureEvents	DontDelete|Function 0
+  releaseEvents		HTMLDocument::ReleaseEvents	DontDelete|Function 0
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
   alinkColor		HTMLDocument::AlinkColor	DontDelete
@@ -190,6 +194,10 @@ void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
       (*this)(n);
     }
 }
+
+KJS::HTMLDocument::HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d)
+  /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
+  : DOMDocument(exec, d) { }
 
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName) const
 {
@@ -259,7 +267,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     // (IE does that). Hard to do with findFrame :}
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
     if (kp)
-      return Value(Window::retrieve(kp));
+      return Window::retrieve(kp);
   }
 
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
@@ -319,6 +327,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Write:
     case WriteLn:
     case GetElementsByName:
+    case CaptureEvents:
+    case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
     }
   }
@@ -342,10 +352,10 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return String(body.vLink());
     case LastModified:
       return String(doc.lastModified());
-    case Height:
-      return Number(view ? view->visibleHeight() : 0);
-    case Width:
-      return Number(view ? view->visibleWidth() : 0);
+    case Height: // NS-only, not available in IE
+      return Number(view ? view->contentsHeight() : 0);
+    case Width: // NS-only, not available in IE
+      return Number(view ? view->contentsWidth() : 0);
     case Dir:
       return String(body.dir());
     case Frames:
@@ -388,9 +398,13 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Title:
     doc.setTitle(value.toString(exec).string());
     break;
-  case Body:
-    doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
+  case Body: {
+    DOMNode *node = new DOMNode(exec, KJS::toNode(value));
+    // This is required to avoid leaking the node.
+    Value nodeValue(node);
+    doc.setBody(node->toNode());
     break;
+  }
   case Domain: { // not part of the DOM
     DOM::HTMLDocumentImpl* docimpl = static_cast<DOM::HTMLDocumentImpl*>(doc.handle());
     if (docimpl)
@@ -400,12 +414,11 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Cookie:
     doc.setCookie(value.toString(exec).string());
     break;
-  case Location: {
+  case Location:
+  {
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
-    if ( view && view->part() ) {
-      QString str = value.toString(exec).qstring();
-      view->part()->scheduleRedirection(-1, str);
-    }
+    if ( view )
+      Window::retrieveWindow(view->part())->goURL(exec, value.toString(exec).qstring());
     break;
   }
   case BgColor:
@@ -688,6 +701,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   name		KJS::HTMLElement::FormName	DontDelete
   acceptCharset	KJS::HTMLElement::FormAcceptCharset	DontDelete
   action	KJS::HTMLElement::FormAction	DontDelete
+  encoding	KJS::HTMLElement::FormEncType	DontDelete
   enctype	KJS::HTMLElement::FormEncType	DontDelete
   method	KJS::HTMLElement::FormMethod	DontDelete
   target	KJS::HTMLElement::FormTarget	DontDelete
@@ -875,7 +889,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
 @end
-@begin HTMLImageElementTable 12
+@begin HTMLImageElementTable 14
   name		KJS::HTMLElement::ImageName		DontDelete
   align		KJS::HTMLElement::ImageAlign		DontDelete
   alt		KJS::HTMLElement::ImageAlt		DontDelete
@@ -889,6 +903,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   useMap	KJS::HTMLElement::ImageUseMap		DontDelete
   vspace	KJS::HTMLElement::ImageVspace		DontDelete
   width		KJS::HTMLElement::ImageWidth		DontDelete
+  x     	KJS::HTMLElement::ImageX		DontDelete|ReadOnly
+  y     	KJS::HTMLElement::ImageY		DontDelete|ReadOnly
 @end
 @begin HTMLObjectElementTable 20
   form		  KJS::HTMLElement::ObjectForm		  DontDelete|ReadOnly
@@ -1066,14 +1082,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 
 class EmbedLiveConnect : public ObjectImp {
 public:
-    EmbedLiveConnect(DOM::HTMLElement elm, UString n, KParts::LiveConnectExtension::Type t, int id)
+    EmbedLiveConnect(const DOM::HTMLElement& elm, UString n, KParts::LiveConnectExtension::Type t, int id)
         : element (elm), name(n), objtype(t), objid(id) {}
     ~EmbedLiveConnect() {
         DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         if (elm)
             elm->unregister(objid);
     }
-    static Value getValue(const DOM::HTMLElement elm, const QString & name,
+    static Value getValue(const DOM::HTMLElement& elm, const QString & name,
                           const KParts::LiveConnectExtension::Type t,
                           const QString & value, int id)
     {
@@ -1192,6 +1208,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
     }
       break;
   case ID_APPLET:
+  case ID_OBJECT:
   case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
       QString retvalue;
@@ -1384,7 +1401,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputMaxLength:       return Number(input.maxLength());
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
-    case InputSize:            return getString(input.size());
+    case InputSize:            return Number(input.getSize());
     case InputSrc:             return getString(input.src());
     case InputTabIndex:        return Number(input.tabIndex());
     case InputType:            return getString(input.type());
@@ -1551,7 +1568,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case BaseFontColor:           return getString(baseFont.color());
     case BaseFontFace:            return getString(baseFont.face());
-    case BaseFontSize:            return getString(baseFont.size());
+    case BaseFontSize:            return Number(baseFont.getSize());
     }
   }
   break;
@@ -1622,7 +1639,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
-    case ImageBorder:          return Number(image.border());
+    case ImageBorder:          return String(image.getBorder());
     case ImageComplete:        return Boolean(static_cast<DOM::HTMLImageElementImpl*>( image.handle() )->complete());
     case ImageHeight:          return Number(image.height());
     case ImageHspace:          return Number(image.hspace());
@@ -1632,6 +1649,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageUseMap:          return getString(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
+    case ImageX:               return Undefined(); // TODO Number(image.x());
+    case ImageY:               return Undefined(); // TODO Number(image.y());
     }
   }
   break;
@@ -1645,17 +1664,18 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ObjectBorder:          return getString(object.border());
     case ObjectCodeBase:        return getString(object.codeBase());
     case ObjectCodeType:        return getString(object.codeType());
-    case ObjectContentDocument: return getDOMNode(exec, object.contentDocument());
+    case ObjectContentDocument: return checkNodeSecurity(exec,object.contentDocument()) ? 
+				       getDOMNode(exec, object.contentDocument()) : Undefined();
     case ObjectData:            return getString(object.data());
     case ObjectDeclare:         return Boolean(object.declare());
     case ObjectHeight:          return getString(object.height());
-    case ObjectHspace:          return getString(object.hspace());
+    case ObjectHspace:          return Number(object.getHspace());
     case ObjectName:            return getString(object.name());
     case ObjectStandby:         return getString(object.standby());
     case ObjectTabIndex:        return Number(object.tabIndex());
     case ObjectType:            return getString(object.type());
     case ObjectUseMap:          return getString(object.useMap());
-    case ObjectVspace:          return getString(object.vspace());
+    case ObjectVspace:          return Number(object.getVspace());
     case ObjectWidth:           return getString(object.width());
     }
   }
@@ -1679,10 +1699,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AppletCode:            return getString(applet.code());
     case AppletCodeBase:        return getString(applet.codeBase());
     case AppletHeight:          return getString(applet.height());
-    case AppletHspace:          return getString(applet.hspace());
+    case AppletHspace:          return Number(applet.getHspace());
     case AppletName:            return getString(applet.name());
     case AppletObject:          return getString(applet.object());
-    case AppletVspace:          return getString(applet.vspace());
+    case AppletVspace:          return Number(applet.getVspace());
     case AppletWidth:           return getString(applet.width());
     }
   }
@@ -1858,7 +1878,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_FRAME: {
     DOM::HTMLFrameElement frameElement = element;
     switch (token) {
-    case FrameContentDocument: return getDOMNode(exec, frameElement.contentDocument());
+    case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ? 
+				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
     case FrameFrameBorder:     return getString(frameElement.frameBorder());
     case FrameLongDesc:        return getString(frameElement.longDesc());
     case FrameMarginHeight:    return getString(frameElement.marginHeight());
@@ -1874,9 +1895,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_IFRAME: {
     DOM::HTMLIFrameElement iFrame = element;
     switch (token) {
-    case IFrameAlign:                return getString(iFrame.align());
-      // ### security check ?
-    case IFrameContentDocument:      return getDOMNode(exec, iFrame.contentDocument());
+    case IFrameAlign:           return getString(iFrame.align());
+    case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ? 
+				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameFrameBorder:     return getString(iFrame.frameBorder());
     case IFrameHeight:          return getString(iFrame.height());
     case IFrameLongDesc:        return getString(iFrame.longDesc());
@@ -2181,6 +2202,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
       break;
     }
     case ID_APPLET:
+    case ID_OBJECT:
     case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
       if (elm && elm->put(0, propertyName.qstring(),
@@ -2212,7 +2234,10 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
 void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
-  DOM::Node n = (new DOMNode(exec, KJS::toNode(value)))->toNode();
+  DOMNode *kjsNode = new DOMNode(exec, KJS::toNode(value));
+  // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
+  Value nodeValue(kjsNode);
+  DOM::Node n = kjsNode->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLElement::putValueProperty "
@@ -2394,7 +2419,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case InputMaxLength:       { input.setMaxLength(value.toInteger(exec)); return; }
       case InputName:            { input.setName(str); return; }
       case InputReadOnly:        { input.setReadOnly(value.toBoolean(exec)); return; }
-      case InputSize:            { input.setSize(str); return; }
+      case InputSize:            { input.setSize(value.toInteger(exec)); return; }
       case InputSrc:             { input.setSrc(str); return; }
       case InputTabIndex:        { input.setTabIndex(value.toInteger(exec)); return; }
       case InputType:            { input.setType(str); return; }
@@ -2561,7 +2586,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       switch (token) {
       case BaseFontColor:           { baseFont.setColor(str); return; }
       case BaseFontFace:            { baseFont.setFace(str); return; }
-      case BaseFontSize:            { baseFont.setSize(str); return; }
+      case BaseFontSize:            { baseFont.setSize(value.toInteger(exec)); return; }
       }
     }
     break;
@@ -2617,7 +2642,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ImageName:            { image.setName(str); return; }
       case ImageAlign:           { image.setAlign(str); return; }
       case ImageAlt:             { image.setAlt(str); return; }
-      case ImageBorder:          { image.setBorder(value.toInteger(exec)); return; }
+      case ImageBorder:          { image.setBorder(str); return; }
       case ImageHeight:          { image.setHeight(value.toInteger(exec)); return; }
       case ImageHspace:          { image.setHspace(value.toInteger(exec)); return; }
       case ImageIsMap:           { image.setIsMap(value.toBoolean(exec)); return; }
@@ -2643,13 +2668,13 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case ObjectData:            { object.setData(str); return; }
       case ObjectDeclare:         { object.setDeclare(value.toBoolean(exec)); return; }
       case ObjectHeight:          { object.setHeight(str); return; }
-      case ObjectHspace:          { object.setHspace(str); return; }
+      case ObjectHspace:          { object.setHspace(value.toInteger(exec)); return; }
       case ObjectName:            { object.setName(str); return; }
       case ObjectStandby:         { object.setStandby(str); return; }
       case ObjectTabIndex:        { object.setTabIndex(value.toInteger(exec)); return; }
       case ObjectType:            { object.setType(str); return; }
       case ObjectUseMap:          { object.setUseMap(str); return; }
-      case ObjectVspace:          { object.setVspace(str); return; }
+      case ObjectVspace:          { object.setVspace(value.toInteger(exec)); return; }
       case ObjectWidth:           { object.setWidth(str); return; }
       }
     }
@@ -2673,10 +2698,10 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AppletCode:            { applet.setCode(str); return; }
       case AppletCodeBase:        { applet.setCodeBase(str); return; }
       case AppletHeight:          { applet.setHeight(str); return; }
-      case AppletHspace:          { applet.setHspace(str); return; }
+      case AppletHspace:          { applet.setHspace(value.toInteger(exec)); return; }
       case AppletName:            { applet.setName(str); return; }
       case AppletObject:          { applet.setObject(str); return; }
-      case AppletVspace:          { applet.setVspace(str); return; }
+      case AppletVspace:          { applet.setVspace(value.toInteger(exec)); return; }
       case AppletWidth:           { applet.setWidth(str); return; }
       }
     }
@@ -2893,7 +2918,7 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
+KJS::HTMLCollection::HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
   : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
 
 KJS::HTMLCollection::~HTMLCollection()
@@ -3331,12 +3356,12 @@ Image::~Image()
       m_onLoadListener->deref();
 }
 
-Value KJS::getHTMLCollection(ExecState *exec,DOM::HTMLCollection c)
+Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
 {
   return cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
 }
 
-Value KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
 {
   DOMObject *ret;
   if (c.isNull())

@@ -65,6 +65,7 @@
 #include "html/html_objectimpl.h"
 
 #include <kio/job.h>
+#include <kapplication.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -84,7 +85,7 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version == "1.0" || version == "" || version.isNull()))
+        (version == "1.0" || version == "null" || version == "" || version.isNull()))
         return true;
     else
         return false;
@@ -219,8 +220,8 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
-QPtrList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
+static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
+QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
@@ -281,14 +282,16 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSheets->ref();
     m_inDocument = true;
     m_styleSelectorDirty = false;
-
-    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+    m_styleSelector = 0;
     m_windowEventListeners.setAutoDelete(true);
+
+    m_inStyleRecalc = false;
 }
 
 DocumentImpl::~DocumentImpl()
 {
+    assert( !m_render );
+
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     delete m_tokenizer;
@@ -350,22 +353,17 @@ DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
     return new DocumentFragmentImpl( docPtr() );
 }
 
-TextImpl *DocumentImpl::createTextNode( const DOMString &data )
-{
-    return new TextImpl( docPtr(), data);
-}
-
-CommentImpl *DocumentImpl::createComment ( const DOMString &data )
+CommentImpl *DocumentImpl::createComment ( DOMStringImpl* data )
 {
     return new CommentImpl( docPtr(), data );
 }
 
-CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
+CDATASectionImpl *DocumentImpl::createCDATASection ( DOMStringImpl* data )
 {
     return new CDATASectionImpl( docPtr(), data );
 }
 
-ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
+ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, DOMStringImpl* data )
 {
     return new ProcessingInstructionImpl( docPtr(),target,data);
 }
@@ -416,24 +414,24 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	}
 	else if(importedNode->nodeType() == Node::TEXT_NODE)
 	{
-		result = createTextNode(importedNode->nodeValue());
+		result = createTextNode(static_cast<TextImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::CDATA_SECTION_NODE)
 	{
-		result = createCDATASection(importedNode->nodeValue());
+		result = createCDATASection(static_cast<CDATASectionImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::ENTITY_REFERENCE_NODE)
 		result = createEntityReference(importedNode->nodeName());
 	else if(importedNode->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
 	{
-		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue());
+		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue().implementation());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::COMMENT_NODE)
 	{
-		result = createComment(importedNode->nodeValue());
+		result = createComment(static_cast<CommentImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else
@@ -589,7 +587,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // form elements
 // ### FIXME: we need a way to set form dependency after we have made the form elements
     case ID_FORM:
-            n = new HTMLFormElementImpl(docPtr());
+            n = new HTMLFormElementImpl(docPtr(), false);
         break;
     case ID_BUTTON:
             n = new HTMLButtonElementImpl(docPtr());
@@ -649,25 +647,21 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 
 // formatting elements (block)
-    case ID_BLOCKQUOTE:
-        n = new HTMLBlockquoteElementImpl(docPtr());
-        break;
     case ID_DIV:
-        n = new HTMLDivElementImpl(docPtr());
+    case ID_P:
+        n = new HTMLDivElementImpl(docPtr(), id);
         break;
+    case ID_BLOCKQUOTE:
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLHeadingElementImpl(docPtr(), id);
+        n = new HTMLGenericElementImpl(docPtr(), id);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(docPtr());
-        break;
-    case ID_P:
-        n = new HTMLParagraphElementImpl(docPtr());
         break;
     case ID_PRE:
         n = new HTMLPreElementImpl(docPtr(), id);
@@ -864,6 +858,11 @@ void DocumentImpl::recalcStyle( StyleChange change )
 //     qDebug("recalcStyle(%p)", this);
 //     QTime qt;
 //     qt.start();
+    if (m_inStyleRecalc)
+        return; // Guard against re-entrancy. -dwh
+
+    m_inStyleRecalc = true;
+
     if( !m_render ) goto bail_out;
 
     if ( change == Force ) {
@@ -917,14 +916,14 @@ void DocumentImpl::recalcStyle( StyleChange change )
     if ( changed() ) {
 	renderer()->setLayouted( false );
 	renderer()->setMinMaxKnown( false );
-	renderer()->layout();
-	renderer()->repaint();
     }
 
 bail_out:
     setChanged( false );
     setHasChangedChild( false );
     setDocumentChanged( false );
+
+    m_inStyleRecalc = false;
 }
 
 void DocumentImpl::updateRendering()
@@ -968,6 +967,9 @@ void DocumentImpl::attach()
         setPaintDevice( m_view );
 
     // Create the rendering tree
+    assert(!m_styleSelector);
+    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
+                                            pMode == Strict );
     m_render = new RenderRoot(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
@@ -1630,7 +1632,7 @@ DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
-    if (!_name) return 0;
+    if (!_name || !_name->l) return 0;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
     NodeImpl::Id id = 0;
@@ -1935,6 +1937,37 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
     QPtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
         it.current()->notifyBeforeNodeRemoval(n);
+}
+
+bool DocumentImpl::isURLAllowed(const QString& url) const
+{
+    KHTMLView *w = view();
+
+    KURL newURL(completeURL(url));
+    newURL.setRef(QString::null);
+
+    // Prohibit non-file URLs if we are asked to.
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // do we allow this suburl ?
+    if ( !kapp || !kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
+        return false;
+
+    // We allow one level of self-reference because some sites depend on that.
+    // But we don't allow more than one.
+    bool foundSelfReference = false;
+    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+        KURL partURL = part->url();
+        partURL.setRef(QString::null);
+        if (partURL == newURL) {
+            if (foundSelfReference)
+                return false;
+            foundSelfReference = true;
+        }
+    }
+
+    return true;
 }
 
 AbstractViewImpl *DocumentImpl::defaultView() const

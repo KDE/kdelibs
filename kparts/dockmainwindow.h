@@ -21,9 +21,9 @@
 #ifndef __DOCKMAINWINDOW_H
 #define __DOCKMAINWINDOW_H
 
-#include <qlist.h>
-#include <kaction.h>
+#include <qptrlist.h>
 
+#include <kaction.h>
 #include <kdockwidget.h>
 
 #include <kparts/part.h>

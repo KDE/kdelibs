@@ -32,6 +32,7 @@
 #endif
 
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -110,7 +111,7 @@ Ftp::~Ftp()
 }
 
 /* memccpy appeared first in BSD4.4 */
-void *mymemccpy(void *dest, const void *src, int c, size_t n)
+static void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
     char *d = (char*)dest;
     const char *s = (const char*)src;
@@ -335,7 +336,9 @@ bool Ftp::connect( const QString &host, unsigned short int port )
       error( ERR_OUT_OF_MEMORY, QString::null );
       return false;
     }
-  if (ksControl->connect() < 0)
+
+    ksControl->setTimeout(connectTimeout());
+    if (ksControl->connect() < 0)
     {
       if (ksControl->status() == IO_LookupError)
 	error(ERR_UNKNOWN_HOST, host);
@@ -699,7 +702,8 @@ bool Ftp::ftpOpenPASVDataConnection()
 	int port = i[4] << 8 | i[5];
   ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
-
+  ks.setTimeout (connectTimeout());
+  
   if (ks.connect() < 0)
     {
       kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << port << endl;
@@ -1724,7 +1728,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     }
                     else
                       de.link = QString::null;
-
+                      
+                    if (strchr(p_name, '/'))
+                       return 0L; // Don't trick us!
+                    
                     de.access = 0;
                     de.type = S_IFREG;
                     switch ( p_access[0] ) {

@@ -39,7 +39,7 @@
 
 static bool isUtf8(const char *buf) {
   int i, n;
-  register char c;
+  register unsigned char c;
   bool gotone = false;
 
 #define F 0   /* character never appears in text */
@@ -149,7 +149,7 @@ QString KConfigBase::locale() const
 
 void KConfigBase::setGroup( const QString& group )
 {
-  if ( group.isNull() )
+  if ( group.isEmpty() )
     mGroup = "<default>";
   else
     mGroup = group.utf8();
@@ -405,6 +405,11 @@ QCString KConfigBase::readEntryUtf8( const char *pKey) const
   KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
   KEntry aEntryData = lookupData(entryKey);
+  if (aEntryData.bExpand)
+  {
+     // We need to do fancy, take the slow route.
+     return readEntry(pKey, QString::null).utf8();
+  }
   return aEntryData.mValue;
 }
 

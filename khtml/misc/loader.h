@@ -64,7 +64,7 @@ namespace DOM
 {
     class CSSStyleSheetImpl;
     class DocumentImpl;
-};
+}
 
 namespace khtml
 {
@@ -397,8 +397,6 @@ namespace khtml
     protected slots:
 	void slotFinished( KIO::Job * );
 	void slotData( KIO::Job *, const QByteArray & );
-
-    private:
 	void servePendingRequests();
 
 	QPtrList<Request> m_requestsPending;
@@ -520,6 +518,6 @@ namespace khtml
         static unsigned long s_ulRefCnt;
     };
 
-};
+} // namespace
 
 #endif

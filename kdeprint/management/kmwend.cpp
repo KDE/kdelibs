@@ -92,7 +92,9 @@ void KMWEnd::initPrinter(KMPrinter *p)
 				if (url.hasUser()) txt.append(s.arg(i18n("Account")).arg(url.user()));
 				break;
 			default:
-				txt.append(s.arg(i18n("URI")).arg(url.prettyURL()));
+				// double decoding in case the printer name contains chars like '#' that are
+				// not decoded by "prettyURL".
+				txt.append(s.arg(i18n("URI")).arg(KURL::decode_string(url.prettyURL())));
 				break;
 		}
 		txt.append("</ul><br>");

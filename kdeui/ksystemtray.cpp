@@ -25,6 +25,7 @@
 #include "kapplication.h"
 #include "klocale.h"
 #include <kwin.h>
+#include <kwinmodule.h>
 #include <kiconloader.h>
 
 #include <qapplication.h>
@@ -179,21 +180,35 @@ void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 
 void KSystemTray::toggleMinimizeRestore()
 {
-    if ( !parentWidget() )
+    QWidget *pw = parentWidget();
+
+    if ( !pw )
 	return;
-    if ( !parentWidget()->isVisible() ) {
-	parentWidget()->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
+
+    KWin::Info info = KWin::info( pw->winId() );
+    bool visible = (info.mappingState == NET::Visible);
+    // hack for KWin's non-compliant WM_STATE handling
+    visible = visible && ( info.desktop == KWin::currentDesktop());
+    // SELI using !pw->isActiveWindow() should be enough here,
+    // but it doesn't work - e.g. with kscd, the "active" window
+    // is the widget docked in Kicker
+    if ( visible && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
+    {
+        KWin::setActiveWindow( pw->winId() );
+        return;
+    }
+
+    if ( !visible )
+    {
 #ifndef Q_WS_QWS //FIXME
-	KWin::Info info = KWin::info( parentWidget()->winId() );
-	parentWidget()->move( info.geometry.topLeft() );
-#endif
-	parentWidget()->show();
-#ifndef Q_WS_QWS //FIXME
-        KWin::deIconifyWindow( parentWidget()->winId() );
-	KWin::setActiveWindow( parentWidget()->winId() );
+	// TODO what to do with OnAllDesktops windows? (#32783)
+	KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
+        pw->move( info.geometry.topLeft() ); // avoid placement policies
+        pw->show();
+	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
-	parentWidget()->hide();
+	pw->hide();
     }
 }
 

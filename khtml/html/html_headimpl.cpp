@@ -42,15 +42,6 @@
 
 using namespace khtml;
 
-HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLBaseElementImpl::~HTMLBaseElementImpl()
-{
-}
-
 NodeImpl::Id HTMLBaseElementImpl::id() const
 {
     return ID_BASE;
@@ -105,13 +96,6 @@ void HTMLBaseElementImpl::process()
 
 // -------------------------------------------------------------------------
 
-HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    m_sheet = 0;
-    m_loading = false;
-    m_cachedSheet = 0;
-}
 
 HTMLLinkElementImpl::~HTMLLinkElementImpl()
 {
@@ -238,14 +222,6 @@ void HTMLLinkElementImpl::sheetLoaded()
 
 // -------------------------------------------------------------------------
 
-HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
-{
-}
-
-HTMLMetaElementImpl::~HTMLMetaElementImpl()
-{
-}
-
 NodeImpl::Id HTMLMetaElementImpl::id() const
 {
     return ID_META;
@@ -286,14 +262,6 @@ void HTMLMetaElementImpl::process()
 
 // -------------------------------------------------------------------------
 
-HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
-{
-}
-
-HTMLScriptElementImpl::~HTMLScriptElementImpl()
-{
-}
-
 NodeImpl::Id HTMLScriptElementImpl::id() const
 {
     return ID_SCRIPT;
@@ -315,16 +283,11 @@ void HTMLScriptElementImpl::setText(const DOMString& str)
         return;
     }
     // No child text node found, creating one
-    DOM::TextImpl* t = getDocument()->createTextNode(str);
+    DOM::TextImpl* t = getDocument()->createTextNode(str.implementation());
     appendChild(t, exceptioncode);
 }
 
 // -------------------------------------------------------------------------
-
-HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
-{
-    m_sheet = 0;
-}
 
 HTMLStyleElementImpl::~HTMLStyleElementImpl()
 {
@@ -363,6 +326,8 @@ void HTMLStyleElementImpl::removedFromDocument()
 
 void HTMLStyleElementImpl::childrenChanged()
 {
+    HTMLElementImpl::childrenChanged();
+
     DOMString text = "";
 
     for (NodeImpl *c = firstChild(); c != 0; c = c->nextSibling()) {
@@ -393,15 +358,6 @@ void HTMLStyleElementImpl::sheetLoaded()
 
 // -------------------------------------------------------------------------
 
-HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLTitleElementImpl::~HTMLTitleElementImpl()
-{
-}
-
 NodeImpl::Id HTMLTitleElementImpl::id() const
 {
     return ID_TITLE;
@@ -424,6 +380,7 @@ void HTMLTitleElementImpl::removedFromDocument()
 void HTMLTitleElementImpl::childrenChanged()
 {
     HTMLElementImpl::childrenChanged();
+
     m_title = "";
     for (NodeImpl *c = firstChild(); c != 0; c = c->nextSibling()) {
 	if ((c->nodeType() == Node::TEXT_NODE) || (c->nodeType() == Node::CDATA_SECTION_NODE))
@@ -457,6 +414,6 @@ void HTMLTitleElementImpl::setText( const DOMString& str )
         delete nl;
     }
     // No child text node found, creating one
-    DOM::TextImpl* t = getDocument()->createTextNode(str);
+    DOM::TextImpl* t = getDocument()->createTextNode(str.implementation());
     appendChild(t, exceptioncode);
 }

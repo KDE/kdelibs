@@ -157,6 +157,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 	    if (!chrset.isEmpty())
 	      langs.insert(it, ln + '_' + ct + '.' + chrset);
 	  }
+	  langs.insert(it, ln);
 
 	}
 

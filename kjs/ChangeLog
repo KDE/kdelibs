@@ -1,3 +1,10 @@
+2003-02-01  Harri Porten  <porten@kde.org>
+
+	* internal.cpp (putValue): throw error if reference is invalid
+	* nodes.cpp (evaluateReference): added to allow (i) = 0;
+
+====================== KDE 3.1 released ================================
+	
 2002-06-15  Harri Porten  <porten@kde.org>
 
 	* regexp_object.cpp: made RegExp.prototype visible

@@ -29,7 +29,7 @@
 #include "kapplication.h"
 #include "kdebug.h"
 #include <qtl.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include "netwm.h"

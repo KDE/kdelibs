@@ -57,7 +57,8 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kio/kssl -I$(top_srcdir)/kdeprint \
+	-I$(top_srcdir)/kio/kssl -I$(top_builddir)/kio/kssl \
+	-I$(top_srcdir)/kdeprint \
 	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir)/interfaces/kregexpeditor \
 	-I$(top_srcdir) $(all_includes)

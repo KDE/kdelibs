@@ -20,17 +20,9 @@
 		<tr>
 			<td width="140"></td>
 			<td align="center"><h1><xsl:apply-templates select="." mode="title.markup"/></h1></td>
-			<td width="160" align="right" valign="middle">
-				<a style="background-color:transparent;" href="http://docs.kde.org/">docs.kde.org</a><br/><br/>
-				<form action="http://docs.kde.org/cgi-bin/search/search.pl" method="get">
-					<input type="hidden" name="p" value="1" />
-					<input type="hidden" name="lang" value="en" />
-					<input type="hidden" name="include" value="" />
-					<input type="hidden" name="exclude" value="" />
-					<input type="hidden" name="penalty" value="0" />
-					<input type="hidden" name="mode" value="any" />
-					<input type="text" name="q" size="10" /> <input type="submit" value="Search" />
-				</form>
+			<td width="160" align="right" valign="top">
+				<a style="background-color:transparent;font-weight:bold;" href="http://docs.kde.org/">docs.kde.org</a><br/>
+				<a style="background-color:transparent;font-weight:bold;" href="/search_form.html">Search</a>
 			</td>
 		</tr>
 		</table>

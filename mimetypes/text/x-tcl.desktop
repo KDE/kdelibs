@@ -49,3 +49,7 @@ Type=MimeType
 MimeType=text/x-tcl
 Patterns=*.tcl;*.tk;
 Icon=source
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

@@ -46,3 +46,7 @@ Comment[zu]=Ifayela Lesakhelo Sethuluzi lokusebenza Kwencazelo (RDF)
 Icon=news
 Type=MimeType
 Patterns=*.rdf;*.RDF;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

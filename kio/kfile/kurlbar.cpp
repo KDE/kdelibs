@@ -230,6 +230,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
+      m_isImmutable( false ),
       m_listBox( 0L ),
       m_iconSize( KIcon::SizeMedium )
 {
@@ -451,6 +452,7 @@ KURL KURLBar::currentURL() const
 
 void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
+    m_isImmutable = appConfig->groupIsImmutable( itemGroup );
     KConfigGroupSaver cs( appConfig, itemGroup );
     m_iconSize = appConfig->readNumEntry( "Speedbar IconSize", m_iconSize );
 
@@ -574,6 +576,8 @@ void KURLBar::slotDropped( QDropEvent *e )
 
 void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 {
+    if (m_isImmutable) return;
+
     static const int IconSize   = 10;
     static const int AddItem    = 20;
     static const int EditItem   = 30;

@@ -64,3 +64,7 @@ Comment[zh_CN]=PostScript 文档
 Comment[zh_TW]=PostScript 文件
 Comment[zu]=Uhlu lwamafayela lwe-PostScript
 X-KDE-AutoEmbed=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

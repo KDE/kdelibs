@@ -31,30 +31,14 @@
 
 namespace DOM {
 
-class DOMString;
-
 // -------------------------------------------------------------------------
 
-class HTMLBlockquoteElementImpl : public HTMLElementImpl
+class HTMLDivElementImpl : public HTMLGenericElementImpl
 {
 public:
-    HTMLBlockquoteElementImpl(DocumentPtr *doc);
-    ~HTMLBlockquoteElementImpl();
+    HTMLDivElementImpl(DocumentPtr *doc, ushort _tagid)
+        : HTMLGenericElementImpl(doc, _tagid) {}
 
-    virtual NodeImpl::Id id() const;
-};
-
-// -------------------------------------------------------------------------
-
-class DOMString;
-
-class HTMLDivElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLDivElementImpl(DocumentPtr *doc);
-    ~HTMLDivElementImpl();
-
-    virtual NodeImpl::Id id() const;
     virtual void parseAttribute(AttributeImpl *token);
 };
 
@@ -63,39 +47,12 @@ public:
 class HTMLHRElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHRElementImpl(DocumentPtr *doc);
-    ~HTMLHRElementImpl();
+    HTMLHRElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual NodeImpl::Id id() const;
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
-
-protected:
-    bool noShade : 1;
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLHeadingElementImpl : public HTMLGenericElementImpl
-{
-public:
-    HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid);
-};
-
-// -------------------------------------------------------------------------
-
-/*
- * were not using HTMLElementImpl as parent class, since a
- * paragraph should be able to flow around aligned objects. Thus
- * a <p> element has to be inline, and is rendered by
- * HTMLBlockImpl::calcParagraph
- */
-class HTMLParagraphElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLParagraphElementImpl(DocumentPtr *doc);
-
-    virtual NodeImpl::Id id() const;
 };
 
 // -------------------------------------------------------------------------
@@ -103,25 +60,11 @@ public:
 class HTMLPreElementImpl : public HTMLGenericElementImpl
 {
 public:
-    HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid);
+    HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid)
+        : HTMLGenericElementImpl(doc, _tagid) {}
 
     long width() const;
     void setWidth( long w );
-};
-
-// -------------------------------------------------------------------------
-
-class HTMLLayerElementImpl : public HTMLDivElementImpl
-{
-public:
-    HTMLLayerElementImpl( DocumentPtr *doc );
-    ~HTMLLayerElementImpl();
-
-    virtual NodeImpl::Id id() const;
-
-    virtual void parseAttribute(AttributeImpl *);
-
-    bool fixed;
 };
 
 }; //namespace

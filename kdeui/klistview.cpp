@@ -78,6 +78,7 @@ public:
     : pCurrentItem (0L),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
+      cursorInExecuteArea(false),
       itemsMovable (true),
       selectedBySimpleMove(false),
       selectedUsingMouse(false),
@@ -1059,6 +1060,11 @@ QListViewItem *KListView::lastItem() const
   return last;
 }
 
+KLineEdit *KListView::renameLineEdit() const
+{
+  return d->editor;
+}
+
 void KListView::startDrag()
 {
   QDragObject *drag = dragObject();
@@ -1255,8 +1261,11 @@ void KListView::cleanItemHighlighter ()
 
 void KListView::rename(QListViewItem *item, int c)
 {
+  if (d->renameable.contains(c))
+  {
   ensureItemVisible(item);
   d->editor->load(item,c);
+  }
 }
 
 bool KListView::isRenameable (int col) const
@@ -1673,9 +1682,10 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (realKey && selectCurrentItem)
           item->setSelected(false);
        //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+       QListView::SelectionMode oldSelectionMode = selectionMode();
        setSelectionMode (QListView::Multi);
        QListView::keyPressEvent (e);
-       setSelectionMode (QListView::Extended);
+       setSelectionMode (oldSelectionMode);
        if (realKey && selectCurrentItem)
        {
           currentItem()->setSelected(true);
@@ -2057,6 +2067,9 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
         p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
   }
   else if (isAlternate())
+       if (listView()->viewport()->backgroundMode()==Qt::TransparentMode)
+            _cg.setColor(QColorGroup::Background, static_cast< KListView* >(listView())->alternateBackground());
+       else
         _cg.setColor(QColorGroup::Base, static_cast< KListView* >(listView())->alternateBackground());
 
   QListViewItem::paintCell(p, _cg, column, width, alignment);
