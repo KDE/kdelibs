@@ -3997,14 +3997,15 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     KURL u(url);
     if ( u.isMalformed() ) {
       // some half-baked guesses for incomplete urls
-      if ( url.startsWith( "www." ) )
-      {
-        url.prepend( "http://" );
-        u = url;
-      }
-      else if ( url.startsWith( "ftp." ) )
+      // (the same code is in libkonq/konq_dirpart.cc)
+      if ( url.startsWith( "ftp." ) )
       {
         url.prepend( "ftp://" );
+        u = url;
+      }
+      else
+      {
+        url.prepend( "http://" );
         u = url;
       }
     }
