@@ -129,14 +129,10 @@ QPixmap* KPixmapCache::pixmap( const char *_pixmap, bool _mini )
 
 QString KPixmapCache::pixmapFile( const char *_pixmap, bool _mini )
 {
-  QString key;
-  if ( _mini )
-    key = "mini/";
-  key += _pixmap;
-
-  QString file = locate("icon", key);
+  QString key = _mini ? "mini" : "icon";
+  QString file = locate(key, _pixmap);
   if (file.isNull())
-    return locate("icon", _mini ? "mini/unknown.xpm" : "unknown.xpm");
+    return locate(key, "unknown.xpm");
   
   return file;
 }
