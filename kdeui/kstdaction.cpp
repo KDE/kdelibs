@@ -101,6 +101,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ ShowMenubar,   KStdAccel::ShowMenubar, "options_show_menubar", I18N_NOOP("Show &Menubar"), 0, "showmenu" },
 	{ ShowToolbar,   KStdAccel::AccelNone, "options_show_toolbar", I18N_NOOP("Show &Toolbar"), 0, 0 },
 	{ ShowStatusbar, KStdAccel::AccelNone, "options_show_statusbar", I18N_NOOP("Show St&atusbar"), 0, 0 },
+	{ FullScreen,    KStdAccel::FullScreen, "fullscreen", 0, 0, "window_fullscreen" },
 	{ SaveOptions,   KStdAccel::AccelNone, "options_save_options", I18N_NOOP("&Save Settings"), 0, 0 },
 	{ KeyBindings,   KStdAccel::AccelNone, "options_configure_keybinding", I18N_NOOP("Configure S&hortcuts..."), 0,"configure_shortcuts" },
 	{ Preferences,   KStdAccel::AccelNone, "options_configure", I18N_NOOP("&Configure %1..."), 0, "configure" },
@@ -183,6 +184,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 case ShowMenubar:
 		 case ShowToolbar:
 		 case ShowStatusbar:
+		 {
 			KToggleAction *ret;
 			ret = new KToggleAction( sLabel, pInfo->psIconName, cut,
 					recvr, slot,
@@ -190,6 +192,17 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			ret->setChecked( true );
 			pAction = ret;
 			break;
+		 }
+		 case FullScreen:
+		 {
+			KToggleFullScreenAction *ret;
+			ret = new KToggleFullScreenAction( pInfo->psIconName, cut,
+					recvr, slot,
+					parent, (name) ? name : pInfo->psName );
+			ret->setChecked( false );
+			pAction = ret;
+			break;
+		 }
 		 default:
 			pAction = new KAction( sLabel, iconName, cut,
 					recvr, slot,
@@ -332,6 +345,8 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
     return ret;
 }
 
+KToggleAction *fullScreen( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return static_cast<KToggleAction*>(KStdAction::create( FullScreen, name, recvr, slot, parent )); }
 KAction *saveOptions( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( SaveOptions, name, recvr, slot, parent ); }
 KAction *keyBindings( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )

@@ -37,6 +37,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kfontcombo.h>
+#include <klocale.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
 #include <kpopupmenu.h>
@@ -1806,6 +1807,28 @@ void KToggleToolBarAction::setChecked( bool c )
 
 ////////
 
+KToggleFullScreenAction::KToggleFullScreenAction( const QString& pix, const KShortcut &cut, 
+                             const QObject* receiver, const char* slot,
+                             QObject* parent, const char* name )
+  : KToggleAction( QString::null, pix, cut, receiver, slot, parent, name )
+{
+}
+
+KToggleFullScreenAction::~KToggleFullScreenAction()
+{
+}
+
+void KToggleFullScreenAction::setChecked( bool c )
+{
+  if (c) 
+     setText(i18n("Exit F&ull Screen Mode"));
+  else
+     setText(i18n("F&ull Screen Mode"));
+  KToggleAction::setChecked( c );
+}
+
+////////
+
 KWidgetAction::KWidgetAction( QWidget* widget,
     const QString& text, const KShortcut& cut,
     const QObject* receiver, const char* slot,
@@ -1975,6 +1998,9 @@ void KToolBarPopupAction::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
 void KToggleToolBarAction::virtual_hook( int id, void* data )
+{ KToggleAction::virtual_hook( id, data ); }
+
+void KToggleFullScreenAction::virtual_hook( int id, void* data )
 { KToggleAction::virtual_hook( id, data ); }
 
 void KWidgetAction::virtual_hook( int id, void* data )

@@ -1146,6 +1146,38 @@ private:
 };
 
 /**
+ * An action for switching between to/from full screen mode
+ * @since 3.2
+ */
+class KToggleFullScreenAction : public KToggleAction
+{
+    Q_OBJECT
+public:
+    /**
+     * Create a KToggleFullScreenAction
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KToggleFullScreenAction( const QString& pix, const KShortcut &cut, 
+                             const QObject* receiver, const char* slot,
+                             QObject* parent, const char* name );
+    virtual ~KToggleFullScreenAction();
+
+public slots:
+    virtual void setChecked( bool );
+
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KToggleFullScreenActionPrivate;
+    KToggleFullScreenActionPrivate *d;
+};
+
+
+/**
  * An action that automatically embeds a widget into a
  * toolbar.
  */

@@ -141,7 +141,9 @@ namespace KStdAction
 		Spelling,
 
 		// Settings Menu
-		ShowMenubar, ShowToolbar, ShowStatusbar, SaveOptions, KeyBindings,
+		ShowMenubar, ShowToolbar, ShowStatusbar,
+		FullScreen, ///< @since 3.2 
+		SaveOptions, KeyBindings,
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
@@ -484,7 +486,14 @@ namespace KStdAction
 	* Show/Hide the statusbar.
 	*/
 	KToggleAction *showStatusbar(const QObject *recvr, const char *slot,
-						KActionCollection* parent, const char *name = 0 );
+					KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Switch to/from full screen mode
+	* @since 3.2
+	*/
+	KToggleAction *fullScreen(const QObject *recvr, const char *slot,
+					KActionCollection* parent, const char *name = 0 );
 
 	/**
 	* Display the save options dialog.
