@@ -159,7 +159,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     return;
   }
 
-  if ( !_keep )
+  if ( m_url.isEmpty() || !_keep ) // Set toplevel URL if not set yet
     m_url = _url;
 
   m_bComplete = false;
