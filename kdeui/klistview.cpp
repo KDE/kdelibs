@@ -2092,6 +2092,8 @@ KListViewItem::KListViewItem(QListViewItem *parent, QListViewItem *after,
 
 KListViewItem::~KListViewItem()
 {
+  if(listView())
+    emit static_cast<KListView *>(listView())->itemRemoved(this);
 }
 
 void KListViewItem::init()
@@ -2099,6 +2101,21 @@ void KListViewItem::init()
   m_odd = m_known = false;
   KListView *lv = static_cast<KListView *>(listView());
   setDragEnabled( dragEnabled() || lv->dragEnabled() );
+  emit lv->itemAdded(this);
+}
+
+void KListViewItem::insertItem(QListViewItem *item)
+{
+  QListViewItem::insertItem(item);
+  if(listView())
+    emit static_cast<KListView *>(listView())->itemAdded(item);
+}
+
+void KListViewItem::takeItem(QListViewItem *item)
+{
+  QListViewItem::takeItem(item);
+  if(listView())
+    emit static_cast<KListView *>(listView())->itemRemoved(item);
 }
 
 const QColor &KListViewItem::backgroundColor()

@@ -543,6 +543,9 @@ signals:
    */
   void contextMenu (KListView* l, QListViewItem* i, const QPoint& p);
 
+  void itemAdded(QListViewItem *item);
+  void itemRemoved(QListViewItem *item);
+
 public slots:
   /**
    * Rename column @p c of @p item.
@@ -1022,6 +1025,9 @@ public:
     QString = QString::null, QString = QString::null);
 
   virtual ~KListViewItem();
+
+  virtual void insertItem(QListViewItem *item);
+  virtual void takeItem(QListViewItem *item);
 
   /**
    * returns true if this item is to be drawn with the alternate background
