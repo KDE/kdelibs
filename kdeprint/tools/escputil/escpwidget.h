@@ -24,6 +24,9 @@
 #include <kprocess.h>
 #include <kurl.h>
 
+class QLabel;
+class QCheckBox;
+
 class EscpWidget : public QWidget
 {
 	Q_OBJECT
@@ -31,6 +34,7 @@ class EscpWidget : public QWidget
 public:
 	EscpWidget(QWidget *parent = 0, const char *name = 0);
 	void setDevice(const QString&);
+	void setPrinterName(const QString&);
 
 protected slots:
 	void slotReceivedStdout(KProcess*, char*, int);
@@ -43,8 +47,10 @@ protected:
 
 private:
 	KProcess	m_proc;
-	KURL		m_device;
+	KURL		m_deviceURL;
 	QString		m_errorbuffer, m_outbuffer;
+	QLabel		*m_printer, *m_device;
+	QCheckBox	*m_useraw;
 };
 
 #endif

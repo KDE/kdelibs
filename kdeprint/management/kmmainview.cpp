@@ -695,7 +695,9 @@ void KMMainView::slotToolSelected(int ID)
 		KLibFactory	*factory = KLibLoader::self()->factory(libname.local8Bit());
 		if (factory)
 		{
-			KDialogBase	*dlg = static_cast<KDialogBase*>(factory->create(this, "Tool", 0, QStringList(m_current->device().url())));
+			QStringList	args;
+			args << m_current->device().url() << m_current->printerName();
+			KDialogBase	*dlg = static_cast<KDialogBase*>(factory->create(this, "Tool", 0, args));
 			if (dlg)
 				dlg->exec();
 			delete dlg;

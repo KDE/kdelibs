@@ -22,12 +22,15 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qcheckbox.h>
+#include <qaccel.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
 #include <kdialogbase.h>
 #include <klibloader.h>
+#include <kseparator.h>
 
 class EscpFactory : public KLibFactory
 {
@@ -40,6 +43,8 @@ protected:
 		EscpWidget	*w = new EscpWidget(dlg);
 		if (args.count() > 0)
 			w->setDevice(args[0]);
+		if (args.count() > 1)
+			w->setPrinterName(args[1]);
 		dlg->setMainWidget(w);
 		return dlg;
 	}
@@ -71,29 +76,65 @@ EscpWidget::EscpWidget(QWidget *parent, const char *name)
 	QPushButton	*identbtn = new QPushButton(this, "-d");
 	identbtn->setPixmap(DesktopIcon("exec"));
 
+	QFont	f(font());
+	f.setBold(true);
+	m_printer = new QLabel(this);
+	m_printer->setFont(f);
+	m_device = new QLabel(this);
+	m_device->setFont(f);
+	m_useraw = new QCheckBox(i18n("&Use direct connection (might need root permissions)"), this);
+
 	connect(cleanbtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 	connect(nozzlebtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 	connect(alignbtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 	connect(inkbtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 	connect(identbtn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
 
-	QLabel	*cleanlab = new QLabel(i18n("Clean print head"), this);
-	QLabel	*nozzlelab = new QLabel(i18n("Print a nozzle test pattern"), this);
-	QLabel	*alignlab = new QLabel(i18n("Align print head"), this);
-	QLabel	*inklab = new QLabel(i18n("Ink level"), this);
-	QLabel	*identlab = new QLabel(i18n("Printer identification"), this);
+	QLabel	*printerlab = new QLabel(i18n("Printer:"), this);
+	printerlab->setAlignment(AlignRight|AlignVCenter);
+	QLabel	*devicelab = new QLabel(i18n("Device:"), this);
+	devicelab->setAlignment(AlignRight|AlignVCenter);
+	QLabel	*cleanlab = new QLabel(i18n("Clea&n print head"), this);
+	QLabel	*nozzlelab = new QLabel(i18n("&Print a nozzle test pattern"), this);
+	QLabel	*alignlab = new QLabel(i18n("&Align print head"), this);
+	QLabel	*inklab = new QLabel(i18n("&Ink level"), this);
+	QLabel	*identlab = new QLabel(i18n("P&rinter identification"), this);
 
-	QGridLayout	*l0 = new QGridLayout(this, 5, 2, 10, 10);
-	l0->addWidget(cleanbtn, 0, 0);
-	l0->addWidget(nozzlebtn, 1, 0);
-	l0->addWidget(alignbtn, 2, 0);
-	l0->addWidget(inkbtn, 3, 0);
-	l0->addWidget(identbtn, 4, 0);
-	l0->addWidget(cleanlab, 0, 1);
-	l0->addWidget(nozzlelab, 1, 1);
-	l0->addWidget(alignlab, 2, 1);
-	l0->addWidget(inklab, 3, 1);
-	l0->addWidget(identlab, 4, 1);
+	cleanlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+	nozzlelab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+	alignlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+	inklab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+	identlab->setAlignment(AlignLeft|AlignVCenter|ShowPrefix);
+
+	cleanbtn->setAccel(QAccel::shortcutKey(cleanlab->text()));
+	nozzlebtn->setAccel(QAccel::shortcutKey(nozzlelab->text()));
+	alignbtn->setAccel(QAccel::shortcutKey(alignlab->text()));
+	inkbtn->setAccel(QAccel::shortcutKey(inklab->text()));
+	identbtn->setAccel(QAccel::shortcutKey(identlab->text()));
+
+	KSeparator	*sep = new KSeparator(this);
+	sep->setFixedHeight(10);
+
+	QGridLayout	*l0 = new QGridLayout(this, 8, 2, 10, 10);
+	QGridLayout	*l1 = new QGridLayout(0, 2, 2, 0, 5);
+	l0->addMultiCellLayout(l1, 0, 0, 0, 1);
+	l1->addWidget(printerlab, 0, 0);
+	l1->addWidget(devicelab, 1, 0);
+	l1->addWidget(m_printer, 0, 1);
+	l1->addWidget(m_device, 1, 1);
+	l1->setColStretch(1, 1);
+	l0->addMultiCellWidget(sep, 1, 1, 0, 1);
+	l0->addWidget(cleanbtn, 2, 0);
+	l0->addWidget(nozzlebtn, 3, 0);
+	l0->addWidget(alignbtn, 4, 0);
+	l0->addWidget(inkbtn, 5, 0);
+	l0->addWidget(identbtn, 6, 0);
+	l0->addWidget(cleanlab, 2, 1);
+	l0->addWidget(nozzlelab, 3, 1);
+	l0->addWidget(alignlab, 4, 1);
+	l0->addWidget(inklab, 5, 1);
+	l0->addWidget(identlab, 6, 1);
+	l0->addMultiCellWidget(m_useraw, 7, 7, 0, 1);
 	l0->setColStretch(1, 1);
 }
 
@@ -101,14 +142,14 @@ void EscpWidget::startCommand(const QString& arg)
 {
 	bool	useUSB(false);
 
-	if (m_device.isEmpty())
+	if (m_deviceURL.isEmpty())
 	{
 		KMessageBox::error(this, i18n("Internal error: no device set."));
 		return;
 	}
 	else
 	{
-		QString	protocol = m_device.protocol();
+		QString	protocol = m_deviceURL.protocol();
 		if (protocol == "usb")
 			useUSB = true;
 		else if (protocol != "file" && protocol != "parallel" && protocol != "serial" && !protocol.isEmpty())
@@ -136,7 +177,11 @@ void EscpWidget::startCommand(const QString& arg)
 	}
 
 	m_proc.clearArguments();
-	m_proc << exestr << "-r" << m_device.path();
+	m_proc << exestr;
+	if (m_useraw->isChecked() || arg == "-i")
+		m_proc << "-r" << m_deviceURL.path();
+	else
+		m_proc << "-P" << m_printer->text();
 	if (useUSB)
 		m_proc << "-u";
 
@@ -188,9 +233,15 @@ void EscpWidget::slotButtonClicked()
 	startCommand(arg);
 }
 
+void EscpWidget::setPrinterName(const QString& p)
+{
+	m_printer->setText(p);
+}
+
 void EscpWidget::setDevice(const QString& dev)
 {
-	m_device = dev;
+	m_deviceURL = dev;
+	m_device->setText(dev);
 }
 
 #include "escpwidget.moc"
