@@ -2496,7 +2496,6 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 
 QString StyleBaseImpl::preprocess(const QString &str)
 {
-  kdDebug(6080) << "QString StyleBaseImpl::preprocess(const QString &str)" << endl;
   QString processed;
 
   bool sq = false;	// Within single quote
@@ -2510,9 +2509,13 @@ QString StyleBaseImpl::preprocess(const QString &str)
 
   const QChar *ch = str.unicode();
   const QChar *last = ch + str.length();
+
+#ifdef CSS_DEBUG
   kdDebug(6080) << "---Before---" << endl;
   float orgLength = str.length();
   kdDebug(6080) << "Length: " << orgLength << endl;
+#endif
+  
   while(ch < last) {  
     if( !comment && !sq && *ch == '"' ) {
       dq = !dq;
@@ -2576,13 +2579,17 @@ QString StyleBaseImpl::preprocess(const QString &str)
     }
   end:
     ++ch;
-  }    
+  }
+  
+#ifdef CSS_DEBUG
   kdDebug(6080) << "---After ---" << endl; 
   kdDebug(6080) <<  processed  << endl; 
   kdDebug(6080) << "------------" << endl;
   kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: " 
 		<< 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;
   kdDebug(6080) << "------------" << endl;
+#endif
+
   return processed;
 
  addChar:
