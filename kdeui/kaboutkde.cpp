@@ -69,7 +69,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "Thus, the KDE Team formed the KDE Association, a non-profit organization"
     " legally founded in Tuebingen, Germany. The KDE Association represents"
     " the KDE Project in legal and financial matters."
-    " See <a href=\"http://www.kde.org/areas/kde-ev/\">http://www.kde.org/areas/kde-ev/<a>"
+    " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org/<a>"
     " for information on the KDE Association.<br><br>"
     "The KDE Team does need financial support. Most of the money is used to "
     "reimburse members and others on expenses they experienced when "
