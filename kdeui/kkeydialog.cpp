@@ -767,15 +767,15 @@ int KKeyChooserItem::compare( QListViewItem* item, int iCol, bool bAscending ) c
 {
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( item );
 	if( iCol == 0 && pItem ) {
-		const char* psName1 = m_pList->name(m_iAction).latin1();
-		const char* psName2 = pItem->m_pList->name(pItem->m_iAction).latin1();
+		QString psName1 = m_pList->name(m_iAction);
+		QString psName2 = pItem->m_pList->name(pItem->m_iAction);
 		QRegExp rxNumber1( " (\\d+)$" );
 		QRegExp rxNumber2( " (\\d+)$" );
 		int iNumber1 = rxNumber1.search( psName1 );
 		int iNumber2 = rxNumber2.search( psName2 );
 
 		// Check if the last word is one or more digits
-		if( iNumber1 >= 0 && iNumber1 == iNumber2 && !strncmp( psName1, psName2, iNumber1+1 ) ) {
+		if( iNumber1 >= 0 && iNumber1 == iNumber2 && psName1.startsWith( psName2.left( iNumber1+1 ) ) ) {
 			int n1 = rxNumber1.cap(1).toInt();
 			int n2 = rxNumber2.cap(1).toInt();
 			return (n1 < n2) ? -1 : (n1 > n2) ? 1 : 0;
