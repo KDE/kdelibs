@@ -272,6 +272,9 @@ class KDialogBase : public KDialog
     };
 
   private:
+    /**
+     * @internal
+     */
     struct SButton
     {
       SButton()
