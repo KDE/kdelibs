@@ -335,7 +335,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_VAR:
     case ID_CITE:
     case ID_ABBR:
-    case ID_ACRONYM: 
+    case ID_ACRONYM:
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
@@ -549,7 +549,8 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
 	forbiddenTags[ID_ADDRESS]++;
 	break;
     case ID_FORM:
-	forbiddenTags[ID_FORM]++;
+	// the parser deals with them in another way. helps supporting some broken html
+	//forbiddenTags[ID_FORM]++;
 	break;
     case ID_LABEL:
 	forbiddenTags[ID_LABEL]++;
@@ -616,7 +617,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
 	forbiddenTags[ID_ADDRESS]--;
 	break;
     case ID_FORM:
-	forbiddenTags[ID_FORM]--;
+	//forbiddenTags[ID_FORM]--;
 	break;
     case ID_LABEL:
 	forbiddenTags[ID_LABEL]--;

@@ -703,7 +703,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	popBlock(ID_DD);
 	break;
     case ID_DT:
-	n = new HTMLGenericBlockElementImpl(document, t->id); 
+	n = new HTMLGenericBlockElementImpl(document, t->id);
 	popBlock(ID_DD);
 	popBlock(ID_DT);
 	break;
@@ -911,13 +911,22 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 void KHTMLParser::processCloseTag(Token *t)
 {
     // support for really broken html. Can't believe I'm supporting such crap (lars)
-    if(t->id == ID_HTML+ID_CLOSE_TAG || t->id == ID_BODY+ID_CLOSE_TAG )
+    switch(t->id)
+    {
+    case ID_HTML+ID_CLOSE_TAG:
+    case ID_BODY+ID_CLOSE_TAG:	
     {
 	nested_html--;
 	if(nested_html <= 0)
 	    end = true;
 	return;
     }
+    case ID_FORM+ID_CLOSE_TAG:
+	form = 0;
+    default:
+	break;
+    }
+
 #ifdef PARSER_DEBUG
     printf("added the following childs to %s\n", current->nodeName().string().ascii());
     NodeImpl *child = current->firstChild();
