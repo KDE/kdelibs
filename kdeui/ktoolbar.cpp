@@ -23,6 +23,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.129  1999/08/04 13:02:48  radej
+// sven: Proposed change from Carsten Pfeiffer for buttons with delayed popups:
+// When popup is visible, click on button will hide the popup and emit click.
+//
 // Revision 1.128  1999/08/03 23:31:17  ettrich
 // make flat only with the handle, not the entire toolbar
 //
@@ -85,6 +89,10 @@
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
 
+
+#include "ktoolbarbutton.h"
+#include "ktoolbaritem.h"
+
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
     CONTEXT_LEFT = 0,
@@ -98,614 +106,12 @@ enum {
 // this should be adjustable (in faar future... )
 #define MIN_AUTOSIZE 150
 
-// delay im ms (microsoft seconds) before delayed popup pops up
-#define POPUP_DELAY 500
-
-
-KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
-                            bool _myItem)
-{
-  id = _id;
-  right=false;
-  autoSized=false;
-  type=_type;
-  item = _item;
-  myItem = _myItem;
-}
-
-KToolBarItem::~KToolBarItem ()
-{
-  // Delete this item if localy constructed
-  if (myItem)
-    delete item;
-}
-
-/*** A very important button which can be menuBarButton or toolBarButton ***/
-
-KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
-  : QButton( parentWidget , name)
-{
-  resize(6,6);
-  hide();
-  youreSeparator();
-  radio = false;
-}
-
-KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
-                                QWidget *_parent, const char *name,
-                                int item_size, const QString& txt,
-                                bool _mb) : QButton( _parent, name )
-{
-  sep=false;
-  delayPopup = false;
-  parentWidget = (KToolBar *) _parent;
-  raised = false;
-  myPopup = 0L;
-  radio = false;
-  toolBarButton = !_mb;
-
-  setFocusPolicy( NoFocus );
-  id = _id;
-  if (!txt.isNull())
-    btext = txt;
-  if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
-  else
-  {
-    // How about jumping to text mode if no pixmap? (sven)
-    warning("KToolBarButton: pixmap is empty, perhaps some missing file");
-    enabledPixmap.resize( item_size-4, item_size-4);
-  }
-  modeChange ();
-  makeDisabledPixmap();
-  setPixmap(enabledPixmap);
-
-  connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
-  connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
-  connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
-  connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
-  installEventFilter(this);
-}
-
-void KToolBarButton::beToggle(bool flag)
-{
-  setToggleButton(flag);
-  if (flag == true)
-    connect (this, SIGNAL(toggled(bool)), this, SLOT(ButtonToggled()));
-  else
-    disconnect (this, SIGNAL(toggled(bool)), this, SLOT(ButtonToggled()));
-}
-
-void KToolBarButton::on(bool flag)
-{
-  if(isToggleButton() == true)
-    setOn(flag);
-  else
-  {
-    setDown(flag);
-    leaveEvent((QEvent *) 0);
-  }
-  repaint();
-}
-
-void KToolBarButton::toggle()
-{
-  setOn(!isOn());
-  repaint();
-}
-void KToolBarButton::setText( const QString& text)
-{
-  btext = text;
-  modeChange();
-  repaint (false);
-}
-
-void KToolBarButton::setPixmap( const QPixmap &pixmap )
-{
-  if ( ! pixmap.isNull() )
-    enabledPixmap = pixmap;
-  else {
-    warning("KToolBarButton: pixmap is empty, perhaps some missing file");
-    enabledPixmap.resize(width()-4, height()-4);
-  }
-  QButton::setPixmap( enabledPixmap );
-}
-
-
-void KToolBarButton::setPopup (QPopupMenu *p)
-{
-  myPopup = p;
-  p->installEventFilter (this);
-}
-
-void KToolBarButton::setDelayedPopup (QPopupMenu *p)
-{
-  delayPopup = true;
-  delayTimer = new QTimer (this);
-  connect (delayTimer, SIGNAL(timeout ()), this, SLOT(slotDelayTimeout()));
-  setPopup(p);
-}
-
-void KToolBarButton::setEnabled( bool enabled )
-{
-  QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
-  QButton::setEnabled( enabled );
-
-}
-
-
-void KToolBarButton::leaveEvent(QEvent *)
-{
-  if (isToggleButton() == false)
-    if( raised != false )
-    {
-      raised = false;
-      repaint(false);
-    }
-  if (delayPopup)
-    delayTimer->stop();
-
-  emit highlighted (id, false);
-}
-
-void KToolBarButton::enterEvent(QEvent *)
-{
-  if (highlight == 1)
-  {
-    if (isToggleButton() == false)
-      if (isEnabled())
-        raised = true;
-
-    repaint(false);
-  }
-  emit highlighted (id, true);
-}
-
-void KToolBarButton::setRadio (bool f)
-{ /*
-  if (f && !radio)  // if was not and now is
-    installEventFilter(this);
-  else if (!f && radio) // if now isn't and was (man!)
-    removeEventFilter(this);
-  */
-  radio = f;
-
-}
-
-bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
-{
-  // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
-  if ((KToolBarButton *)o == this && ev->type () == QEvent::MouseButtonDblClick)
-  {
-    //debug ("Doubleclick");
-    emit doubleClicked (id);
-    return true;
-  }
-
-  if ((KToolBarButton *) o == this)
-    if ((ev->type() == QEvent::MouseButtonPress ||
-         ev->type() == QEvent::MouseButtonRelease ||
-         ev->type() == QEvent::MouseButtonDblClick) && radio && isOn())
-      return true;
-
-  if ((QPopupMenu *) o != myPopup)
-    return false; // just in case
-
-  switch (ev->type())
-  {
-    case QEvent::MouseButtonDblClick:
-    case QEvent::MouseButtonPress:
-      //debug ("Got press | doubleclick");
-      // If I get this, it means that popup is visible
-      {
-      QRect r(geometry());
-      r.moveTopLeft(parentWidget->mapToGlobal(pos()));
-      if (r.contains(QCursor::pos()))   // on button
-        return true; // ignore
-      }
-      break;
-
-    case QEvent::MouseButtonRelease:
-      //debug ("Got release");
-      if (!myPopup->geometry().contains(QCursor::pos())) // not in menu...
-      {
-        QRect r(geometry());
-        r.moveTopLeft(parentWidget->mapToGlobal(pos()));
-
-        if (r.contains(QCursor::pos()))   // but on button
-        {
-          myPopup->hide();        //Sven: proposed by Carsten Pfeiffer
-          emit clicked( id );
-          //myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
-          return true;  // ignore release
-        }
-      }
-      break;
-
-    case QEvent::Hide:
-      //debug ("Got hide");
-      on(false);
-      return false;
-      break;
-  default:
-      break;
-  }
-  return false;
-}
-
-
-
-void KToolBarButton::drawButton( QPainter *_painter )
-{
-  if(kapp->kstyle()){
-    KStyle::KToolButtonType iconType;
-    switch(icontext){
-    case 0:
-        iconType = KStyle::Icon;
-        break;
-    case 1:
-        iconType = KStyle::IconTextRight;
-        break;
-    case 2:
-        iconType = KStyle::Text;
-        break;
-    case 3:
-    default:
-        iconType = KStyle::IconTextBottom;
-        break;
-    }
-    kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
-      isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
-      raised, isEnabled(), myPopup != NULL, iconType, btext, pixmap(),
-      &buttonFont);
-    return;
-  }
-
-  if ( isDown() || isOn() )
-  {
-    if ( style() == WindowsStyle )
-      qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
-    else
-      qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
-  }
-
-  else if ( raised )
-  {
-    if ( style() == WindowsStyle )
-      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
-    else
-      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
-  }
-
-  int dx, dy;
-
-
-  if (icontext == 0) // icon only
-  {
-    if (pixmap())
-    {
-      dx = ( width() - pixmap()->width() ) / 2;
-      dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      _painter->drawPixmap( dx, dy, *pixmap() );
-    }
-  }
-  else if (icontext == 1) // icon and text (if any)
-  {
-    if (pixmap())
-    {
-      dx = 1;
-      dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      _painter->drawPixmap( dx, dy, *pixmap() );
-    }
-
-    if (!btext.isNull())
-    {
-      int tf = AlignVCenter|AlignLeft;
-      if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
-      if (pixmap())
-        dx= pixmap()->width();
-      else
-        dx= 1;
-      dy = 0;
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-
-      if (toolBarButton)
-        _painter->setFont(buttonFont);
-      if(raised)
-        _painter->setPen(blue);
-      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
-    }
-  }
-  else if (icontext == 2) // only text, even if there is a icon
-  {
-    if (!btext.isNull())
-    {
-      int tf = AlignVCenter|AlignLeft;
-      if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
-      dx= 1;
-      dy= 0;
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-
-      if (toolBarButton)
-        _painter->setFont(buttonFont);
-      if(raised)
-        _painter->setPen(blue);
-      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
-    }
-  }
-  else if (icontext == 3)
-  {
-    if (pixmap())
-    {
-      dx = (width() - pixmap()->width()) / 2;
-      dy = 1;
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-      _painter->drawPixmap( dx, dy, *pixmap() );
-    }
-
-    if (!btext.isNull())
-    {
-      int tf = AlignBottom|AlignHCenter;
-      if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
-      dy= pixmap()->height();
-      dx = 2;
-
-      if ( isDown() && style() == WindowsStyle )
-      {
-        ++dx;
-        ++dy;
-      }
-
-      if (toolBarButton)
-        _painter->setFont(buttonFont);
-      if(raised)
-        _painter->setPen(blue);
-      _painter->drawText(0, 0, width(), height()-4, tf, btext);
-    }
-  }
-//#warning What about Icontext=3
-
-  if (myPopup)
-  {
-    if (isEnabled())
-      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-                  width()-5, height()-5, 0, 0, colorGroup (), true);
-    else
-      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-                  width()-5, height()-5, 0, 0, colorGroup (), false);
-  }
-}
-
-void KToolBarButton::paletteChange(const QPalette &)
-{
-  if(!ImASeparator())
-  {
-    makeDisabledPixmap();
-    if ( !isEnabled() )
-      QButton::setPixmap( disabledPixmap );
-    else
-      QButton::setPixmap( enabledPixmap );
-    repaint(false); // no need to delete it first therefore only false
-  }
-}
-
-void KToolBarButton::modeChange()
-{
-  int myWidth;
-
-  myWidth = enabledPixmap.width();
-
-  QFont fnt;
-
-  //Jesus, I must have been drunk...
-  if (toolBarButton) // I might be a menuBarButton
-  {
-    buttonFont.setFamily("Helvetica");
-    buttonFont.setPointSize(10);
-    buttonFont.setBold(false);
-    buttonFont.setItalic(false);
-    buttonFont.setCharSet(font().charSet());
-
-    fnt=buttonFont;
-  }
-  else
-    fnt=KGlobal::generalFont();
-
-  QFontMetrics fm(fnt);
-
-  if (toolBarButton)
-    icontext=parentWidget->icon_text;
-  else
-    icontext = 1;
-
-  _size=parentWidget->item_size;
-  if (myWidth < _size)
-    myWidth = _size;
-
-// Nice but doesn't work
-/*
-  if (_size > 28)
-  {
-    double factor=_size/26;
-    QImage i;
-    i = enabledPixmap.convertToImage();
-    i = i.smoothScale(enabledPixmap.width()*factor,
-                      enabledPixmap.height()*factor);
-    enabledPixmap.resize (i.width(), i.height());
-    enabledPixmap.convertFromImage(i );
-  }
-*/
-
-  highlight=parentWidget->highlight;
-  switch (icontext)
-  {
-  case 0:
-    QToolTip::remove(this);
-    QToolTip::add(this, btext);
-    resize (myWidth, _size-2);
-    break;
-
-  case 1:
-    QToolTip::remove(this);
-    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
-    break;
-
-  case 2:
-    QToolTip::remove(this);
-    resize (fm.width(btext)+6, _size-2); // +2+_size-2
-    break;
-
-  case 3:
-    QToolTip::remove(this);
-    resize ((fm.width(btext)+6>myWidth)?fm.width(btext)+6:myWidth, _size-2);
-    break;
-  }
-
-  /*
-  if (icontext > 0) //Calculate my size
-  {
-    QToolTip::remove(this);
-    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
-  }
-  else
-  {
-    QToolTip::remove(this);
-    QToolTip::add(this, btext);
-    resize (myWidth, _size-2);
-  }
-  */
-
-}
-
-void KToolBarButton::makeDisabledPixmap()
-{
-  if (ImASeparator())
-    return;             // No pixmaps for separators
-
-  QPalette pal = palette();
-  QColorGroup g = pal.disabled();
-
-  // Prepare the disabledPixmap for drawing
-
-  disabledPixmap.detach(); // prevent flicker
-  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
-  disabledPixmap.fill( g.background() );
-  const QBitmap *mask = enabledPixmap.mask();
-  bool allocated = false;
-  if (!mask) {// This shouldn't occur anymore!
-      mask = new QBitmap(enabledPixmap.createHeuristicMask());
-      allocated = true;
-  }
-
-  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!
-  bitmap.setMask(*mask);
-
-  QPainter p;
-  p.begin( &disabledPixmap );
-  p.setPen( g.light() );
-  p.drawPixmap(1, 1, bitmap);
-  p.setPen( g.mid() );
-  p.drawPixmap(0, 0, bitmap);
-  p.end();
-
-  // For KStyle mask the pixmap, otherwise bg pixmaps get overwritten (mosfet)
-  if(kapp->kstyle())
-      disabledPixmap.setMask(*mask);
-  if (allocated) // This shouldn't occur anymore!
-    delete mask;
-}
-
-void KToolBarButton::showMenu()
-{
-  // calculate that position carefully!!
-  raised = true;
-  repaint (false);
-  QPoint p (parentWidget->mapToGlobal(pos()));
-  if (p.y() + height() + myPopup->height() > KApplication::desktop()->height())
-    p.setY(p.y() - myPopup->height());
-  else
-    p.setY(p.y()+height());
-  myPopup->popup(p);
-}
-
-void KToolBarButton::slotDelayTimeout()
-{
-  delayTimer->stop();
-  showMenu ();
-}
-
-void KToolBarButton::ButtonClicked()
-{
-  if (myPopup && !delayPopup)
-    showMenu();
-  else
-    emit clicked( id );
-}
-
-void KToolBarButton::ButtonPressed()
-{
-  if (myPopup)
-  {
-    if (delayPopup)
-    {
-      delayTimer->stop(); // just in case?
-      delayTimer->start(POPUP_DELAY, true);
-      return;
-    }
-    else
-      showMenu();
-  }
-  else
-    emit pressed( id );
-}
-
-void KToolBarButton::ButtonReleased()
-{
-  // if popup is visible we don't get this
-  // (gram of praxis weights more than ton of theory)
-  //if (myPopup && myPopup->isVisible())
-  //  return;
-
-  if (myPopup && delayPopup)
-    delayTimer->stop();
-
-  emit released( id );
-}
-
-void KToolBarButton::ButtonToggled()
-{
-  emit toggled(id);
-}
 /****************************** Tolbar **************************************/
 
 KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   : QFrame( parent, name )
 {
+  items = new KToolBarItemList();
   item_size = _item_size;
   fixed_size =  (item_size > 0);
   if (!fixed_size)
@@ -779,7 +185,7 @@ void KToolBar::init()
   min_width = min_height = -1;
   updateGeometry();
 
-  items.setAutoDelete(true);
+  items->setAutoDelete(true);
   enableFloating (true);
   // To make touch-sensitive handle - sven 040198
   setMouseTracking(true);
@@ -856,10 +262,10 @@ KToolBar::~KToolBar()
 
   // what is that?! toolbaritems are children of the toolbar, which
   // means, qt will delete them for us (Matthias)
-  //for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
+  //for ( KToolBarItem *b = items->first(); b!=0L; b=items->next() )
   // items.remove();
   //Uhh... I'm embaresd... (sven)
-
+  delete items;
 
   // I would never guess that (sven)
   if (!QApplication::closingDown())
@@ -901,7 +307,7 @@ KToolBar::layoutHorizontal(int w)
 	int totalRightItemWidth = 0;
 
 	/* First iteration */
-	QListIterator<KToolBarItem> qli(items);
+	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
 		if (!(*qli)->isRight())
 		{
@@ -1007,7 +413,7 @@ KToolBar::heightForWidth(int w) const
 	 * left aligned items need. This includes the 3 pixel space
 	 * between the items. */
 	int totalRightItemWidth = 0;
-	QListIterator<KToolBarItem> qli(items);
+	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
 	{
 		if (!(*qli)->isRight())
@@ -1072,7 +478,7 @@ KToolBar::layoutVertical(int h)
 
 	horizontal = false;
 
-	QListIterator<KToolBarItem> qli(items);
+	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
 	{
 		if (yOffset + (*qli)->height() + 3 > h)
@@ -1123,7 +529,7 @@ KToolBar::widthForHeight(int h) const
 	int widest = 0;
 	int tallest = 0;
 
-	QListIterator<KToolBarItem> qli(items);
+	QListIterator<KToolBarItem> qli(*items);
 	for (; *qli; ++qli)
 	{
 		if (yOffset + (*qli)->height() + 3 > h)
@@ -1258,7 +664,7 @@ KToolBar::maximumSizeHint() const
 	int prefWidth = -1;
 	int prefHeight = -1;
 
-	QListIterator<KToolBarItem> qli(items);
+	QListIterator<KToolBarItem> qli(*items);
 
 	switch (position)
 	{
@@ -1427,7 +833,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 		{
 			/*
 			  QList<KToolBarItem> ons;
-			  for (KToolBarItem *b = items.first(); b; b=items.next())
+			  for (KToolBarItem *b = items->first(); b; b=items->next())
 			  {
 			  if (b->isEnabled())
 			  ons.append(b);
@@ -1804,9 +1210,9 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
                                         true);
   if ( index == -1 )
-    items.append( item );
+    items->append( item );
   else
-    items.insert( index, item );
+    items->insert( index, item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1818,7 +1224,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   item->setEnabled( enabled );
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /// Inserts a button with popup.
@@ -1832,9 +1238,9 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   button->setPopup(_popup);
 
   if ( index == -1 )
-    items.append( item );
+    items->append( item );
   else
-    items.insert( index, item );
+    items->insert( index, item );
 
   item->setEnabled( enabled );
   item->show();
@@ -1847,7 +1253,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
           SLOT(ButtonHighlighted(int, bool)));
 
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 
@@ -1863,9 +1269,9 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
                                         true);
 
   if ( index == -1 )
-    items.append( item );
+    items->append( item );
   else
-    items.insert( index, item );
+    items->insert( index, item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1878,7 +1284,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
   item->setEnabled( enabled );
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /********* SEPARATOR *********/
@@ -1891,12 +1297,12 @@ int KToolBar::insertSeparator( int index )
                                         true);
 
   if ( index == -1 )
-    items.append( item );
+    items->append( item );
   else
-    items.insert( index, item );
+    items->insert( index, item );
 	
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 
@@ -1912,12 +1318,12 @@ int KToolBar::insertLineSeparator( int index )
   item->resize( 5, item_size - 2 );
 
   if ( index == -1 )
-    items.append( item );
+    items->append( item );
   else
-    items.insert( index, item );
+    items->insert( index, item );
 	
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 
@@ -1938,13 +1344,13 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
   KToolBarItem *item = new KToolBarItem(frame, ITEM_FRAME, _id, mine);
 
   if (_index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert(_index, item);
+    items->insert(_index, item);
   item-> resize (_size, item_size-2);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 /* A poem all in G-s! No, any widget */
 
@@ -1954,13 +1360,13 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
   KToolBarItem *item = new KToolBarItem(_widget, ITEM_FRAME, _id, false);
 
   if (_index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert(_index, item);
+    items->insert(_index, item);
   item-> resize (_size, item_size-2);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /************** LINE EDITOR **************/
@@ -1977,9 +1383,9 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
 
 
   if (index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert(index, item);
+    items->insert(index, item);
   if (!tooltiptext.isNull())
     QToolTip::add( lined, tooltiptext );
   connect( lined, signal, receiver, slot );
@@ -1988,7 +1394,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /************** COMBO BOX **************/
@@ -2006,9 +1412,9 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                                         true);
 
   if (index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert (index, item);
+    items->insert (index, item);
   combo->insertStrList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -2019,7 +1425,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /// Inserts comboBox with QStringList
@@ -2036,9 +1442,9 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                                         true);
 
   if (index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert (index, item);
+    items->insert (index, item);
   combo->insertStringList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -2049,7 +1455,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 
@@ -2066,9 +1472,9 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                                         true);
 
   if (index == -1)
-    items.append (item);
+    items->append (item);
   else
-    items.insert (index, item);
+    items->insert (index, item);
   combo->insertItem (text);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -2079,26 +1485,26 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   item->setEnabled(enabled);
   item->show();
   updateRects(true);
-  return items.at();
+  return items->at();
 }
 
 /// Removes item by ID
 
 void KToolBar::removeItem (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
         haveAutoSized=false;
-      items.remove();
+      items->remove();
     }
   updateRects(true);
 }
 
 void KToolBar::showItem (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
@@ -2110,7 +1516,7 @@ void KToolBar::showItem (int id)
 
 void KToolBar::hideItem (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
@@ -2125,7 +1531,7 @@ void KToolBar::hideItem (int id)
 void KToolBar::addConnection (int id, const char *signal,
                               const QObject *receiver, const char *slot)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
            connect (b->getItem(), signal, receiver, slot);
 }
@@ -2133,14 +1539,14 @@ void KToolBar::addConnection (int id, const char *signal,
 /// Common
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       b->setEnabled(enabled);
 }
 
 void KToolBar::setItemAutoSized ( int id, bool enabled )
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       b->autoSize(enabled);
@@ -2151,7 +1557,7 @@ void KToolBar::setItemAutoSized ( int id, bool enabled )
 
 void KToolBar::alignItemRight(int id, bool yes)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       b->alignRight (yes);
@@ -2162,7 +1568,7 @@ void KToolBar::alignItemRight(int id, bool yes)
 /// Butoons
 void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setPixmap( _pixmap );
 }
@@ -2170,7 +1576,7 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setDelayedPopup(_popup);
 }
@@ -2179,7 +1585,7 @@ void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup)
 /// Toggle buttons
 void KToolBar::setToggle ( int id, bool yes )
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       ((KToolBarButton *) b->getItem())->beToggle(yes);
@@ -2190,7 +1596,7 @@ void KToolBar::setToggle ( int id, bool yes )
 
 void KToolBar::toggleButton (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
@@ -2200,7 +1606,7 @@ void KToolBar::toggleButton (int id)
 
 void KToolBar::setButton (int id, bool on)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->on(on);
 }
@@ -2208,7 +1614,7 @@ void KToolBar::setButton (int id, bool on)
 //Autorepeat buttons
 void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setAutoRepeat(flag);
 }
@@ -2216,7 +1622,7 @@ void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
 
 bool KToolBar::isButtonOn (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
@@ -2228,7 +1634,7 @@ bool KToolBar::isButtonOn (int id)
 /// Lined
 void KToolBar::setLinedText (int id, const QString& text)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       ((KLineEdit *) b->getItem())->setText(text);
@@ -2237,7 +1643,7 @@ void KToolBar::setLinedText (int id, const QString& text)
 
 QString KToolBar::getLinedText (int id )
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       return ((KLineEdit *) b->getItem())->text();
   return QString::null;
@@ -2246,7 +1652,7 @@ QString KToolBar::getLinedText (int id )
 /// Combos
 void KToolBar::insertComboItem (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       ((QComboBox *) b->getItem())->insertItem(text, index);
@@ -2255,21 +1661,21 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
 
 void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
 	((QComboBox *) b->getItem())->insertStrList(list, index);
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
 	((QComboBox *) b->getItem())->insertStringList(list, index);
 }
 
 void KToolBar::setCurrentComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       ((QComboBox *) b->getItem())->setCurrentItem(index);
@@ -2278,14 +1684,14 @@ void KToolBar::setCurrentComboItem (int id, int index)
 
 void KToolBar::removeComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       ((QComboBox *) b->getItem())->removeItem(index);
 }
 
 void KToolBar::changeComboItem  (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if (index == -1)
@@ -2302,14 +1708,14 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
 
 void KToolBar::clearCombo (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
 	((QComboBox *) b->getItem())->clear();
 }
 
 QString KToolBar::getComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
     {
       if (index == -1)
@@ -2321,7 +1727,7 @@ QString KToolBar::getComboItem (int id, int index)
 
 QComboBox *KToolBar::getCombo (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       return ((QComboBox *) b->getItem());
   return 0;
@@ -2329,7 +1735,7 @@ QComboBox *KToolBar::getCombo (int id)
 
 KLineEdit *KToolBar::getLined (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items->first(); b!=NULL; b=items->next())
     if (b->ID() == id )
       return ((KLineEdit *) b->getItem());
   return 0;
@@ -2338,7 +1744,7 @@ KLineEdit *KToolBar::getLined (int id)
 
 KToolBarButton* KToolBar::getButton( int id )
 {
-  for( KToolBarItem* b = items.first(); b != NULL; b = items.next() )
+  for( KToolBarItem* b = items->first(); b != NULL; b = items->next() )
     if(b->ID() == id )
       return ((KToolBarButton *) b->getItem());
   return 0;
@@ -2346,7 +1752,7 @@ KToolBarButton* KToolBar::getButton( int id )
 
 QFrame *KToolBar::getFrame (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       return ((QFrame *) b->getItem());
   return 0;
@@ -2354,7 +1760,7 @@ QFrame *KToolBar::getFrame (int id)
 
 QWidget *KToolBar::getWidget (int id)
 {
-  for (KToolBarItem *b = items.first(); b; b=items.next())
+  for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
       return (b->getItem());
   return 0;
@@ -2514,7 +1920,7 @@ void KToolBar::setFlat (bool flag)
     //debug ("Flat");
     position = Flat;
     horizontal = false;
-    for (KToolBarItem *b = items.first(); b; b=items.next()) // Nasty hack:
+    for (KToolBarItem *b = items->first(); b; b=items->next()) // Nasty hack:
       b->move(100,100);       // move items out of sight
     enableFloating(false);
   }
@@ -2527,50 +1933,6 @@ void KToolBar::setFlat (bool flag)
   }
   emit moved(Flat); // KTM will block this->updateRects
   updateRects();
-}
-
-
-/*************************************************************************
- *                          KRadioGroup                                  *
- *************************************************************************/
-
-
-KRadioGroup::KRadioGroup (QWidget *_parent, const char *_name)
-: QObject(_parent, _name)
-{
-  buttons.setAutoDelete(false);
-  tb = (KToolBar *)_parent;
-  connect (tb, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
-}
-
-void KRadioGroup::addButton (int id)
-{
-  for (KToolBarItem *b = tb->items.first(); b; b=tb->items.next())
-    if (b->ID() == id )
-    {
-      buttons.insert(id, (KToolBarButton *) b->getItem());
-      ((KToolBarButton *) b->getItem())->setRadio(true);
-    }
-}
-
-void KRadioGroup::removeButton (int id)
-{
-  buttons[id]->setRadio(false);
-  buttons.remove(id);
-}
-
-void KRadioGroup::slotToggled(int id)
-{
-  if (buttons[id] && buttons[id]->isOn())
-  {
-    QIntDictIterator<KToolBarButton> it(buttons);
-    while (it.current())
-    {
-      if (it.currentKey() != id)
-        it.current()->on(false);
-      ++it;
-    }
-  }
 }
 
 #include "ktoolbar.moc"

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.63  1999/07/26 19:42:45  pbrown
+// fixed for qcombobox.
+//
 // Revision 1.62  1999/06/15 20:36:34  cschlaeg
 // some more cleanup in ktmlayout; fixed random toolbar handle highlighting
 //
@@ -142,138 +145,8 @@
 
 class KLineEdit;
 class KToolBar;
+class KToolBarItemList;
 class KToolBoxManager;
-
-typedef QWidget Item;
-
-enum itemType {
-    ITEM_LINED = 0,
-    ITEM_BUTTON = 1,
-    ITEM_COMBO = 2,
-    ITEM_FRAME = 3,
-    ITEM_TOGGLE = 4,
-    ITEM_ANYWIDGET=5
-};
-
-
-/**
- * A toolbar item. Used internally by KToolBar, use KToolBar methods
- * instead.
- * @internal
- * */
-class KToolBarItem
-{
-public:
-  KToolBarItem (Item *_item, itemType _type, int _id,
-                bool _myItem=true);
-  ~KToolBarItem ();
-
-  void resize (int w, int h) { item->resize(w, h); };
-  void move(int x, int y) { item->move(x, y); };
-  void show () { item->show(); };
-  void hide () { item->hide(); };
-  void setEnabled (bool enable) { item->setEnabled(enable); };
-  bool isEnabled () { return item->isEnabled(); };
-  int ID() { return id; };
-  bool isRight () const { return right; };
-  void alignRight  (bool flag) { right = flag; };
-  void autoSize (bool flag) { autoSized = flag; };
-  bool isAuto () const { return autoSized; };
-  int width() const { return item->width(); };
-  int height() const { return item->height(); };
-  int x() const { return item->x(); };
-  int y() const { return item->y(); };
-  int winId () { return item->winId(); };
-
-  Item *getItem() { return item; };
-
-private:
-  int id;
-  bool right;
-  bool autoSized;
-  Item *item;
-  itemType type;
-  bool myItem;
-};
-
-
-/**
- * A toolbar button. This is used internally by @ref KToolBar, use the 
- * KToolBar methods instead.
- * @internal
- */
-
-class KToolBarButton : public QButton
- {
-   Q_OBJECT
-
- public:
-   KToolBarButton(const QPixmap& pixmap, int id, QWidget *parent,
-                  const char *name=0L, int item_size = 26, const QString &txt=QString::null,
-                  bool _mb = false);
-   KToolBarButton(QWidget *parent=0L, const char *name=0L);
-   ~KToolBarButton() {};
-   void setEnabled(bool enable);
-
-   virtual void setPixmap( const QPixmap & );
-   virtual void setText ( const QString& text);
-   void on(bool flag);
-   void toggle();
-   void beToggle(bool);
-   bool ImASeparator () {return sep;};
-   void youreSeparator () {sep = true;};
-   QPopupMenu *popup () {return myPopup;};
-   void setPopup (QPopupMenu *p);
-   void setDelayedPopup (QPopupMenu *p);
-   void setRadio(bool f);
-
- public slots:
-   void modeChange();
-
- protected:
-   void paletteChange(const QPalette &);
-   void leaveEvent(QEvent *e);
-   void enterEvent(QEvent *e);
-   void drawButton(QPainter *p);
-   bool eventFilter (QObject *o, QEvent *e);
-   void showMenu();
-   //void setIconSet (const QPixmap &);
-   void makeDisabledPixmap();
-
- private:
-   bool toolBarButton;
-   bool sep;
-   QPixmap enabledPixmap;
-   QPixmap disabledPixmap;
-   int icontext;
-   int highlight;
-   bool raised;
-   int id;
-   int _size;
-   KToolBar *parentWidget;
-   QString btext;
-   QFont buttonFont;
-   QPopupMenu *myPopup;
-   bool delayPopup;
-   QTimer *delayTimer;
-   bool radio;
-
- protected slots:
-     void ButtonClicked();
-     void ButtonPressed();
-     void ButtonReleased();
-     void ButtonToggled();
-     void slotDelayTimeout();
-
- signals:
-     void clicked(int);
-     void doubleClicked(int);
-     void pressed(int);
-     void released(int);
-     void toggled(int);
-     void highlighted (int, bool);
- };
-
 
  /**
   * KToolBar can be "floated", dragged and docked from its parent window.
@@ -308,7 +181,7 @@ class KToolBarButton : public QButton
   Q_OBJECT
 
   friend class KToolBarButton;
-  friend class KRadioGroup;
+  friend class KToolBarRadioGroup;
 
 public:
   enum BarStatus{Toggle, Show, Hide};
@@ -925,7 +798,7 @@ signals:
 
 private:
 
-  QList<KToolBarItem> items;
+  KToolBarItemList *items;
 
   QString title;
   bool fullSizeMode;
@@ -995,59 +868,5 @@ private:
    bool fixed_size; // do not change the toolbar size
    bool transparent; // type of moving
   };
-
-
-/*************************************************************************
- *                          KRadioGroup                                  *
- *************************************************************************/
- /**
-  * KRadioGroup is class for group of radio butons in toolbar.
-  * Take toggle buttons which you already inserted into toolbar,
-  * create KRadioGroup instance and add them here.
-  * All buttons will emit signals toggled (bool) (or you can
-  * use sitgnal @ref #toggled (int id) from toolbar). When one button is set
-  * down, all others are unset. All buttons emit signals - those who
-  * "go down" and those who "go up".
-  *
-  * @author Sven Radej <radej@kde.org>
-  * @short Class for group of radio butons in toolbar.
-  */
-class KRadioGroup : public QObject
-{
-  Q_OBJECT
-
-public:
-  /**
-   * Constructor. Parent must be @ref KToolBar .
-   */
-  KRadioGroup (QWidget *_parent, const char *_name=0);
-  /**
-   * Destructor.
-   */
-  ~KRadioGroup () {};
-
-  /**
-   * Adds button to group. Button cannot be unset by mouse clicks (you
-   * must press some other button tounset this one)
-   */
-  void addButton (int id);
-
-  /**
-   * Removes button from group, making it again toggle button (i.e.
-   * You can unset it with mouse).
-   */
-  void removeButton (int id);
-
-public slots:
-  /**
-   * Internal - nothing for you here.
-   */
-  void slotToggled (int);
-
-private:
-  QIntDict<KToolBarButton> buttons;
-  KToolBar *tb;
-};
-
 
 #endif
