@@ -1127,8 +1127,8 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
        d->m_encoding = qData;
     }
     
-    // Support for HTTP based meta-refresh
-    qData = d->m_job->queryMetaData("meta-refresh");
+    // Support for http-refresh
+    qData = d->m_job->queryMetaData("http-refresh");
     if( !qData.isEmpty() && d->m_metaRefreshEnabled )
     {
       kdDebug(6050) << "HTTP Refresh Request: " << qData << endl;
@@ -2060,8 +2060,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   KParts::URLArgs args;
   args.frameName = target;
 
-  // For an HTTP meta-refresh, force the io-slave to re-get the
-  // page as needed instead of loading from cache. NOTE: I would
+  // For http-refresh, force the io-slave to re-get the page
+  // as needed instead of loading from cache. NOTE: I would
   // have done a "verify" instead, but I am not sure that servers
   // will include the correct response (specfically "Refresh:") on
   // a "HEAD" request which is what a "verify" setting results in.(DA)

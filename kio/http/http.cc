@@ -1350,7 +1350,7 @@ bool HTTPProtocol::readHeader()
 	else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
 	    kdDebug(7113) << buffer << endl;
 		mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-	    setMetaData( "meta-refresh", trimLead(buffer+8) );
+	    setMetaData( "http-refresh", trimLead(buffer+8) );
 	}
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
