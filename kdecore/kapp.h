@@ -31,6 +31,7 @@
 class KConfig;
 class KCharsets;
 class KStyle;
+class QTDispatcher;
 
 typedef unsigned long Atom; 
 
@@ -66,6 +67,8 @@ class QStrList;
 */
 class KApplication : public QApplication
 {
+  friend QTDispatcher;
+
   Q_OBJECT
 public:
   
@@ -448,6 +451,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.96  1999/07/22 10:01:25  kulow
+// if drag.h is obsolete, kde_datadir is for long :)
+//
 // Revision 1.95  1999/07/20 00:47:45  pbrown
 // removed kdnd stuff from kapp.
 //
