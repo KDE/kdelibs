@@ -566,9 +566,7 @@ void CSSStyleSelector::buildLists()
 
     selectorState = new SelectorState[selectors_size];
 
-    // ### this should make it more efficent, as the list will be mostly presorted, but
-    // somehow this doesn't work correctly everywhere. Strange.
-    //propertyList.sort();
+    propertyList.sort();
     properties_size = propertyList.count() + 1;
     properties = new CSSOrderedProperty *[ properties_size ];
     CSSOrderedProperty *p = propertyList.first();
