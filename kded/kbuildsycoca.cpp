@@ -688,8 +688,8 @@ int main(int argc, char **argv)
 
    if (bGlobalDatabase)
    {
-     putenv("KDEHOME=-");
-     putenv("KDEROOTHOME=-");
+     setenv("KDEHOME", "-", 1);
+     setenv("KDEROOTHOME", "-", 1);
    }
 
    KApplication::disableAutoDcopRegistration();
