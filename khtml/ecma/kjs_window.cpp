@@ -321,7 +321,6 @@ Window::Window(KHTMLPart *p)
 
 Window::~Window()
 {
-  kdDebug(6070) << "Window::~Window this=" << this << " part=" << m_part << endl;
   delete winq;
 }
 
@@ -1037,7 +1036,6 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
 
 void Window::clear( ExecState *exec )
 {
-  kdDebug(6070) << "Window::clear " << this << endl;
   delete winq;
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
