@@ -25,17 +25,8 @@
 #define KWIZARD_VERSION (KWIZARD_VERSION_MAJOR * 10) + KWIZARD_VERSION_MINOR
 
 #include <qdialog.h>
-#include <kapp.h>
-#include <klocale.h>
-#include <qpopupmenu.h>
-#include <qlabel.h>
-#include <qaccel.h>
-#include <qfont.h>
-#include <qpushbutton.h>
-#include <qpainter.h>
-#include <qpen.h>
+#include <qlist.h>
 #include <kdbtn.h>
-#include <kseparator.h>
 
 /**
  * Dialog with extended modeless support.
