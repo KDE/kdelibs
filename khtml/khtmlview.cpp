@@ -328,10 +328,7 @@ void KHTMLView::clear()
     emit cleared();
 
     QScrollView::setHScrollBarMode(d->hmode);
-    if (d->vmode==Auto)
-        QScrollView::setVScrollBarMode(d->prevScrollbarVisible?AlwaysOn:Auto);
-    else
-        QScrollView::setVScrollBarMode(d->vmode);
+    QScrollView::setVScrollBarMode(d->vmode);
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -372,7 +369,7 @@ void KHTMLView::drawContents( QPainter*)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-//     kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+//    kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;

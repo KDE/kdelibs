@@ -1284,6 +1284,9 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
         d->m_lastModified = d->m_job->queryMetaData("modified");
     } else
         d->m_lastModified = QString::null; // done on-demand by lastModified()
+
+    // Reset contents position
+    d->m_view->setContentsPos( 0, 0 );
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -1543,8 +1546,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
-  // clear widget
-  d->m_view->resizeContents( 0, 0 );
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   emit d->m_extension->enableAction( "print", true );
