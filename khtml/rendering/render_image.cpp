@@ -228,7 +228,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     if (hasKeyboardFocus!=DOM::ActivationOff)
     {
 	p->setRasterOp(Qt::CopyROP);
-	p->setBackgroundMode(Qt::TransparentMode);
+	p->setBrush(Qt::NoBrush);
         if (hasKeyboardFocus==DOM::ActivationPassive)
             p->setPen(Qt::green);
         else
