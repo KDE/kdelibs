@@ -21,7 +21,6 @@
 #define __KKEYDIALOG_H__
 
 #include <qdict.h>
-#include <kaccelbase.h> // for KAccelActions
 #include <kdialogbase.h>
 #include <klistview.h>
 
@@ -31,7 +30,9 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 class KAccel;
-class KAccelBase;
+class KAccelAction;
+class KAccelActions;
+class KAccelShortcut;
 class KActionCollection;
 class KGlobalAccel;
 
@@ -220,8 +221,7 @@ public:
    * when the dialog is closed.
    * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
-  static int configureKeys( KAccelBase *keys, bool save_settings = true,
-                            QWidget *parent = 0  );
+  static int configureKeys( KAccelActions keys, QWidget *parent = 0  );
   static int configureKeys( KAccel *keys, bool save_settings = true,
                             QWidget *parent = 0  );
   static int configureKeys( KGlobalAccel *keys, bool save_settings = true,

@@ -31,6 +31,7 @@
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
+#include <kaccelbase.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -59,7 +60,7 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
-KAccelActions g_actionsGlobal, g_actionsApplication;
+KAccelActions *g_pactionsGlobal, *g_pactionsApplication;
 
 class KKeyChooserPrivate {
 public:
@@ -122,14 +123,20 @@ void KKeyDialog::commitChanges()
 	m_pKeyChooser->commitChanges();
 }
 
-int KKeyDialog::configureKeys( KAccelBase *keys, bool bSaveSettings, QWidget *parent )
+int KKeyDialog::configureKeys( KAccelActions actions, QWidget *parent )
 {
-	KAccelActions& actions = keys->actions();
 	KKeyDialog kd( actions, parent );
 	int retcode = kd.exec();
 
-	if( retcode == Accepted ) {
+	if( retcode == Accepted )
 		kd.commitChanges();
+	return retcode;
+}
+
+int KKeyDialog::configureKeys( KAccel *keys, bool bSaveSettings, QWidget *parent )
+{
+	int retcode = configureKeys( keys->actions(), parent );
+	if( retcode == Accepted ) {
 		keys->updateConnections();
 		if( bSaveSettings )
 			keys->writeSettings();
@@ -137,35 +144,33 @@ int KKeyDialog::configureKeys( KAccelBase *keys, bool bSaveSettings, QWidget *pa
 	return retcode;
 }
 
-int KKeyDialog::configureKeys( KAccel *keys, bool bSaveSettings, QWidget *parent )
-{
-	return configureKeys( keys->basePtr(), bSaveSettings, parent );
-}
-
 int KKeyDialog::configureKeys( KGlobalAccel *keys, bool bSaveSettings, QWidget *parent )
 {
-	return configureKeys( keys->basePtr(), bSaveSettings, parent );
+	int retcode = configureKeys( keys->actions(), parent );
+	if( retcode == Accepted ) {
+		keys->updateConnections();
+		if( bSaveSettings )
+			keys->writeSettings();
+	}
+	return retcode;
 }
 
 int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
                                bool bSaveSettings, QWidget *parent )
 {
-    KAccelActions& map = coll->keyMap();
+    KAccelActions actions;
+    coll->createKeyMap( actions );
 
-    KKeyDialog kd( map, parent );
+    KKeyDialog kd( actions, parent );
     int retcode = kd.exec();
 
     if( retcode != Accepted )
         return retcode;
 
     kd.commitChanges();
-    coll->updateConnections();
-    if (!bSaveSettings) {
-	// FIXME: How do we get the new bindings to be connected?
-	//  We need an equivalent to KAccel::updateConnections() for
-	//  KActionCollection -- ellis
+    coll->setKeyMap( actions );
+    if (!bSaveSettings)
         return retcode;
-    }
 
     // let's start saving this info
     QString raw_xml(KXMLGUIFactory::readConfigFile(file));
@@ -204,7 +209,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
     //if (key.aCurrentKeyCode == key.aConfigKeyCode)
     //  continue;
 
-    KAccelAction *pAccelAction = map.actionPtr(action->name());
+    KAccelAction *pAccelAction = actions.actionPtr(action->name());
     if( !pAccelAction )
       continue;
     KAccelShortcuts &cuts = pAccelAction->m_rgShortcuts;
@@ -233,8 +238,6 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
 
   // finally, write out the result
   KXMLGUIFactory::saveConfigFile(doc, file);
-
-  //coll->setKeyMap( map );
 
   return retcode;
 }
@@ -332,6 +335,7 @@ void KKeyChooser::init( KAccelActions& actions,
 
   d->pList->addColumn(i18n("Action"));
   d->pList->addColumn(i18n("Shortcut"));
+  d->pList->addColumn(i18n("Alternate"));
 
   buildListView();
 
@@ -450,8 +454,8 @@ void KKeyChooser::buildListView()
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
-	for( KAccelActions::iterator it = d->actionsNew.begin(); it != d->actionsNew.end(); ++it ) {
-		KAccelAction& action = *it;
+	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
+		KAccelAction& action = *d->actionsNew.actionPtr( i );
 		kdDebug(125) << "Key: " << action.m_sName << endl;
 		if( action.m_sName.startsWith( "Program:" ) ) {
 			pItem = new KListViewItem( d->pList, pProgramItem, action.m_sDesc );
@@ -597,21 +601,27 @@ void KKeyChooser::readKeysInternal( QMap<KKeySequence, QString>& map, const QStr
 
 void KKeyChooser::readGlobalKeys()
 {
+	if( !g_pactionsGlobal )
+		g_pactionsGlobal = new KAccelActions;
+
 	// insert all global keys, even if they appear in dictionary to be configured
 	//debug("KKeyChooser::readGlobalKeys()");
 	//readKeysInternal( d->globalDict, QString::fromLatin1("Global Keys"));
 	KConfig config;
-	if( g_actionsGlobal.size() == 0 )
-		g_actionsGlobal.init( config, QString::fromLatin1("Global Shortcuts") );
+	if( g_pactionsGlobal->size() == 0 )
+		g_pactionsGlobal->init( config, QString::fromLatin1("Global Shortcuts") );
 }
 
 void KKeyChooser::readStdKeys()
 {
+	if( !g_pactionsApplication )
+		g_pactionsApplication = new KAccelActions;
+
 	// debug("KKeyChooser::readStdKeys()");
 	//readKeysInternal( d->stdDict, QString::fromLatin1("Keys"));
 	KConfig config;
-	if( g_actionsApplication.size() == 0 )
-		g_actionsApplication.init( config, QString::fromLatin1("Shortcuts") );
+	if( g_pactionsApplication->size() == 0 )
+		g_pactionsApplication->init( config, QString::fromLatin1("Shortcuts") );
 	// Only insert std keys which don't appear in the dictionary to be configured
 //	for( KAccelActions::ConstIterator it = d->pActionsOrig->begin(); it != d->pActionsOrig->end(); ++it )
 //		if ( d->stdDict->find( it.key() ) )
@@ -632,27 +642,12 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	// Change all configKeyCodes to default values
 	kdDebug(125) << QString( "KKeyChooser::allDefault( %1 )\n" ).arg( useFourModifierKeys );
 
-	for( KAccelActions::iterator it = d->actionsNew.begin(); it != d->actionsNew.end(); ++it ) {
-		KAccelAction& action = *it;
+	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
+		KAccelAction& action = *d->actionsNew.actionPtr( i );
 		action.m_rgShortcuts = action.shortcutDefaults();
 	}
 
-	/*
-	for( QMap<KListViewItem*, KAccelActions::Iterator>::Iterator itit = d->mapItemToInfo.begin();
-		itit != d->mapItemToInfo.end(); ++itit ) {
-		KAccelActions::Iterator it = *itit;
-		KListViewItem *at = itit.key();
-		//kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
-		if ( (*it).bConfigurable ) {
-			(*it).aCurrentKeyCode = (*it).aConfigKeyCode =
-			//(useFourModifierKeys) ? (*it).aDefaultKeyCode4 :
-			 (*it).aDefaultKeyCode;
-		}
-		at->setText(1, KKeySequence::keyToString((*it).aConfigKeyCode, true));
-	}
 	emit keyChange();
-	*/
-
 	update();
 	updateButtons();
 }
