@@ -480,7 +480,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
 QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
-    QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
+    QStringList lst = dir.entryList("*.svg;*.png;*.xpm", QDir::Files);
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); it++)

@@ -1,0 +1,2249 @@
+/*
+    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
+    This file is part of the KDE project
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    aint with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
+#include <qstringlist.h>
+#include <qwmatrix.h>
+#include <qregexp.h>
+#include <qimage.h>
+#include <qmap.h>
+#include <qdom.h>
+
+#include <math.h>
+
+#include <kdebug.h>
+
+#include "art_svp.h"
+#include "art_rgb.h"
+#include "art_rgba.h"
+#include "art_vpath.h"
+#include "art_bpath.h"
+#include "art_affine.h"
+#include "art_svp_ops.h"
+#include "art_svp_vpath.h"
+#include "art_render_svp.h"
+#include "art_vpath_bpath.h"
+#include "art_svp_intersect.h"
+#include "art_svp_vpath_stroke.h"
+
+#include "ksvgiconpainter.h"
+
+class KSVGIconPainterHelper
+{
+public:
+	KSVGIconPainterHelper(int width, int height, KSVGIconPainter *painter)
+	{
+		m_painter = painter;
+		
+		m_clipSVP = 0;
+
+		m_fillColor = Qt::black;
+		
+		m_useFill = true;
+		m_useStroke = false;
+
+		m_useFillGradient = false;
+		m_useStrokeGradient = false;
+		
+		m_worldMatrix = new QWMatrix();
+		
+		// Create new image with alpha support
+		m_image = new QImage(width, height, 32);
+		m_image->setAlphaBuffer(true);
+		
+		m_strokeWidth = 1.0;
+		m_strokeMiterLimit = 4;
+
+		m_fillOpacity = 255.0;
+		m_strokeOpacity = 255.0;
+		
+		m_fillRule = "nonzero";
+		
+		m_width = width;
+		m_height = height;
+		
+		m_rowstride = m_width * 4;
+	
+		// Make internal libart rendering buffer transparent
+		m_buffer = art_new(art_u8, m_rowstride * m_height);
+		memset(m_buffer, 0, m_rowstride * m_height);
+
+		m_tempBuffer = 0;
+	}
+
+	~KSVGIconPainterHelper()
+	{
+		if(m_clipSVP)
+			art_svp_free(m_clipSVP);
+
+		art_free(m_buffer);
+
+		delete m_image;
+		delete m_worldMatrix;
+	}
+
+	ArtVpath *allocVPath(int number)
+	{
+		return art_new(ArtVpath, number);
+	}
+	
+	ArtBpath *allocBPath(int number)
+	{
+		return art_new(ArtBpath, number);
+	}
+
+	void ensureSpace(QMemArray<ArtBpath> &vec, int index)
+	{
+		if(vec.size() == index)
+			vec.resize(index + 1);
+	}
+
+	void createBuffer()
+	{
+		m_tempBuffer = art_new(art_u8, m_rowstride * m_height);
+		memset(m_tempBuffer, 0, m_rowstride * m_height);
+	}
+
+	void mixBuffer()
+	{
+		art_u8 *srcPixel = m_tempBuffer;
+		art_u8 *dstPixel = m_buffer;
+
+		int opacity = 0xFF;
+
+		for(int y = 0; y < m_height; y++)
+		{
+			for(int x = 0; x < m_width; x++)
+			{
+				art_u8 r, g, b, a;
+				
+				a = srcPixel[4 * x + 3];
+				
+				if(a)
+				{
+					r = srcPixel[4 * x];
+					g = srcPixel[4 * x + 1];
+					b = srcPixel[4 * x + 2];
+					
+					int tmp = a * opacity + 0x80;
+					a = (tmp + (tmp >> 8)) >> 8;
+					art_rgba_run_alpha(dstPixel + 4 * x, r, g, b, a, 1);
+				}
+			}
+			
+			srcPixel += m_rowstride;
+			dstPixel += m_rowstride;
+		}
+		
+		art_free(m_tempBuffer);
+		m_tempBuffer = 0;
+	}
+
+	void drawSVP(ArtSVP *svp, art_u32 color)
+	{
+		if(!svp)
+			return;
+
+		ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+		art_render_svp(render, svp);
+		
+		int opacity = (color & 0xFF);
+		art_render_mask_solid(render, (opacity << 8) + opacity + (opacity >> 7));
+
+		ArtPixMaxDepth acolor[3];
+
+		acolor[0] = ART_PIX_MAX_FROM_8((color >> 24) & 0xff);
+		acolor[1] = ART_PIX_MAX_FROM_8((color >> 16) & 0xff);
+		acolor[2] = ART_PIX_MAX_FROM_8((color >> 8) & 0xff);
+		art_render_image_solid(render, acolor);
+
+		art_render_invoke(render);
+	}
+
+	void drawVPath(ArtVpath *vec)
+	{
+		ArtSVP *svp;
+
+		double affine[6];
+		affine[0] = m_worldMatrix->m11();
+		affine[1] = m_worldMatrix->m12();
+		affine[2] = m_worldMatrix->m21();
+		affine[3] = m_worldMatrix->m22();
+		affine[4] = m_worldMatrix->dx();
+		affine[5] = m_worldMatrix->dy();
+
+		ArtVpath *temp = art_vpath_affine_transform(vec, affine);
+		art_free(vec);
+		vec = temp;
+
+		ArtSVP *fillSVP = 0, *strokeSVP = 0;
+
+		art_u32 fillColor, strokeColor;
+
+		// Filling
+		{
+			fillColor = (qRed(m_fillColor.rgb()) << 24) | (qGreen(m_fillColor.rgb()) << 16) | (qBlue(m_fillColor.rgb()) << 8) | (qAlpha(m_fillColor.rgb()));
+
+			ArtSvpWriter *swr;
+			ArtSVP *temp;
+			temp = art_svp_from_vpath(vec);
+
+			if(m_fillRule == "evenodd")
+				swr = art_svp_writer_rewind_new(ART_WIND_RULE_ODDEVEN);
+			else
+				swr = art_svp_writer_rewind_new(ART_WIND_RULE_NONZERO);
+
+			art_svp_intersector(temp, swr);
+			svp = art_svp_writer_rewind_reap(swr);
+
+			fillSVP = svp;
+
+			art_svp_free(temp);
+		}
+
+		// Stroking
+		if(m_useStroke || m_useStrokeGradient)
+		{
+			strokeColor = (qRed(m_strokeColor.rgb()) << 24) | (qGreen(m_strokeColor.rgb()) << 16) | (qBlue(m_strokeColor.rgb()) << 8) | (qAlpha(m_strokeColor.rgb()));
+
+			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2);
+			double strokeWidth = m_strokeWidth * ratio;
+
+		    ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
+			ArtPathStrokeCapType capStyle = ART_PATH_STROKE_CAP_BUTT;
+			
+			if(m_joinStyle == "miter")
+				joinStyle = ART_PATH_STROKE_JOIN_MITER;
+			else if(m_joinStyle == "round")
+				joinStyle = ART_PATH_STROKE_JOIN_ROUND;
+			else if(m_joinStyle == "bevel")
+				joinStyle = ART_PATH_STROKE_JOIN_BEVEL;
+
+			if(m_capStyle == "butt")
+				capStyle = ART_PATH_STROKE_CAP_BUTT;
+			else if(m_capStyle == "round")
+				capStyle = ART_PATH_STROKE_CAP_ROUND;
+			else if(m_capStyle == "square")
+				capStyle = ART_PATH_STROKE_CAP_SQUARE;
+			
+			svp = art_svp_vpath_stroke(vec, joinStyle, capStyle, strokeWidth, m_strokeMiterLimit, 0.25);
+
+			strokeSVP = svp;
+		}
+
+		// Create temporary buffer if necessary
+		bool tempDone = false;
+		if(m_useFill || m_useStroke || m_useFillGradient || m_useStrokeGradient)
+		{
+			tempDone = true;
+			createBuffer();
+		}
+		
+		// Apply Gradients on fill/stroke
+		if(m_useFillGradient)
+			applyGradient(fillSVP, true);
+
+		if(m_useStrokeGradient)
+			applyGradient(strokeSVP, false);
+
+		if(m_useFill)
+			drawSVP(fillSVP, fillColor);
+		
+		if(m_useStroke)
+			drawSVP(strokeSVP, strokeColor);
+
+		// Mix in temporary buffer, if possible
+		if(tempDone)
+			mixBuffer();
+		
+		if(m_clipSVP)
+		{
+			art_svp_free(m_clipSVP);
+			m_clipSVP = 0;
+		}
+
+		if(fillSVP)
+			art_svp_free(fillSVP);
+
+		if(strokeSVP)
+			art_svp_free(strokeSVP);
+
+		// Reset opacity values
+		m_fillOpacity = 255;
+		m_strokeOpacity = 255;
+		
+		art_free(vec);
+	}
+
+	void applyGradient(ArtSVP *svp, bool fill)
+	{
+		QString ref;
+		
+		if(fill)
+		{
+			m_useFillGradient = false;
+			ref = m_fillGradientReference;
+		}
+		else
+		{
+			m_useStrokeGradient = false;
+			ref = m_strokeGradientReference;
+		}
+
+		ArtGradientLinear *linear = m_linearGradientMap[ref];
+		if(linear)
+		{
+			QDomElement element = m_linearGradientElementMap[linear];
+			
+			double x1, y1, x2, y2;
+			if(element.hasAttribute("x1"))
+				x1 = m_painter->toPixel(element.attribute("x1"), true);
+			else
+				x1 = 0;
+
+			if(element.hasAttribute("y1"))
+				y1 = m_painter->toPixel(element.attribute("y1"), false);
+			else
+				y1 = 0;
+
+			if(element.hasAttribute("x2"))
+				x2 = m_painter->toPixel(element.attribute("x2"), true);
+			else
+				x2 = 1;
+
+			if(element.hasAttribute("y2"))
+				y2 = m_painter->toPixel(element.attribute("y2"), false);
+			else
+				y2 = 0;
+
+			double x1n = x1 * m_worldMatrix->m11() + y1 * m_worldMatrix->m21() + m_worldMatrix->dx();
+			double y1n = x1 * m_worldMatrix->m12() + y1 * m_worldMatrix->m22() + m_worldMatrix->dy();
+			double x2n = x2 * m_worldMatrix->m11() + y2 * m_worldMatrix->m21() + m_worldMatrix->dx();
+			double y2n = x2 * m_worldMatrix->m12() + y2 * m_worldMatrix->m22() + m_worldMatrix->dy();
+
+			double dx = x2n - x1n;
+			double dy = y2n - y1n;
+			double scale = 1.0 / (dx * dx + dy * dy);
+
+			linear->a = dx * scale;
+			linear->b = dy * scale;
+			linear->c = -(x1n * linear->a + y1n * linear->b);
+
+			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+			art_render_svp(render, svp);
+
+			art_render_gradient_linear(render, linear, ART_FILTER_HYPER);
+			art_render_invoke(render);		
+		}
+		else
+		{
+			ArtGradientRadial *radial = m_radialGradientMap[ref];
+			if(radial)
+			{
+				QDomElement element = m_radialGradientElementMap[radial];
+
+				double cx, cy, r, fx, fy;				
+				if(element.hasAttribute("cx"))
+					cx = m_painter->toPixel(element.attribute("cx"), true);
+				else
+					cx = 0.5;
+
+				if(element.hasAttribute("cy"))
+					cy = m_painter->toPixel(element.attribute("cy"), false);
+				else
+					cy = 0.5;
+
+				if(element.hasAttribute("r"))
+					r = m_painter->toPixel(element.attribute("r"), true);
+				else
+					r = 0.5;
+
+				if(element.hasAttribute("fx"))
+					fx = m_painter->toPixel(element.attribute("fx"), false);
+				else
+					fx = cx;
+
+				if(element.hasAttribute("fy"))
+					fy = m_painter->toPixel(element.attribute("fy"), false);
+				else
+					fy = cy;
+
+				radial->affine[0] = m_worldMatrix->m11();
+				radial->affine[1] = m_worldMatrix->m12();
+				radial->affine[2] = m_worldMatrix->m21();
+				radial->affine[3] = m_worldMatrix->m22();
+				radial->affine[4] = m_worldMatrix->dx();
+				radial->affine[5] = m_worldMatrix->dy();
+
+				radial->fx = (fx - cx) / r;
+				radial->fy = (fy - cy) / r;
+
+				double aff1[6], aff2[6];
+				art_affine_scale(aff1, r, r);
+				art_affine_translate(aff2, cx, cy);
+
+				art_affine_multiply(aff1, aff1, aff2);
+				art_affine_multiply(aff1, aff1, radial->affine);
+				art_affine_invert(radial->affine, aff1);
+
+				ArtRender *render = art_render_new(0, 0, m_width, m_height, m_tempBuffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+				art_render_svp(render, svp);
+
+				art_render_gradient_radial(render, radial, ART_FILTER_HYPER);
+				art_render_invoke(render);		
+			}
+		}
+	}
+
+	void blit()
+	{
+		  unsigned char *line = m_buffer;
+		  
+		  for(int y = 0; y < m_height; y++)
+		  {
+			  QRgb *sl = reinterpret_cast<QRgb *>(m_image->scanLine(y));
+			  for(int x = 0; x < m_width; x++)
+				  sl[x] = qRgba(line[x * 4], line[x * 4 + 1], line[x * 4 + 2], line[x * 4 + 3]);
+
+			  line += m_rowstride;
+		  }
+	}
+
+	QColor applyOpacity(QColor original, bool fill)
+	{
+		double opacity = fill ? m_fillOpacity : m_strokeOpacity;
+		
+		if(opacity != 255.0)
+		{		
+			// Spec : clamping
+			if(opacity < 0)
+				return QColor(qRgba(original.red(), original.green(), original.blue(), 0));
+			else if(opacity > 255)
+				return QColor(qRgba(original.red(), original.green(), original.blue(), 255));
+			else
+				return QColor(qRgba(original.red(), original.green(), original.blue(), (int) opacity));
+		}
+		
+		return original;
+	}
+
+	void calculateArc(bool relative, QMemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
+	{
+		double sin_th, cos_th;
+		double a00, a01, a10, a11;
+		double x0, y0, x1, y1, xc, yc;
+		double d, sfactor, sfactor_sq;
+		double th0, th1, th_arc;
+		int i, n_segs;
+
+		sin_th = sin(angle * (M_PI / 180.0));
+		cos_th = cos(angle * (M_PI / 180.0));
+
+		double dx;
+
+		if(!relative)
+			dx = (curx - x) / 2.0;
+		else
+			dx = -x / 2.0;
+
+		double dy;
+		
+		if(!relative)
+			dy = (cury - y) / 2.0;
+		else
+			dy = -y / 2.0;
+		
+		double _x1 =  cos_th * dx + sin_th * dy;
+		double _y1 = -sin_th * dx + cos_th * dy;
+		double Pr1 = r1 * r1;
+		double Pr2 = r2 * r2;
+		double Px = _x1 * _x1;
+		double Py = _y1 * _y1;
+
+		// Spec : check if radii are large enough
+		double check = Px / Pr1 + Py / Pr2;
+		if(check > 1)
+		{
+			r1 = r1 * sqrt(check);
+			r2 = r2 * sqrt(check);
+		}
+
+		a00 = cos_th / r1;
+		a01 = sin_th / r1;
+		a10 = -sin_th / r2;
+		a11 = cos_th / r2;
+
+		x0 = a00 * curx + a01 * cury;
+		y0 = a10 * curx + a11 * cury;
+
+		if(!relative)
+			x1 = a00 * x + a01 * y;
+		else
+			x1 = a00 * (curx + x) + a01 * (cury + y);
+		
+		if(!relative)
+			y1 = a10 * x + a11 * y;
+		else
+			y1 = a10 * (curx + x) + a11 * (cury + y);
+
+		/* (x0, y0) is current point in transformed coordinate space.
+		   (x1, y1) is new point in transformed coordinate space.
+
+		   The arc fits a unit-radius circle in this space.
+	     */
+
+		d = (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
+
+		sfactor_sq = 1.0 / d - 0.25;
+
+		if(sfactor_sq < 0)
+			sfactor_sq = 0;
+
+		sfactor = sqrt(sfactor_sq);
+
+		if(sweepFlag == largeArcFlag)
+			sfactor = -sfactor;
+
+		xc = 0.5 * (x0 + x1) - sfactor * (y1 - y0);
+		yc = 0.5 * (y0 + y1) + sfactor * (x1 - x0);
+
+		/* (xc, yc) is center of the circle. */
+		th0 = atan2(y0 - yc, x0 - xc);
+		th1 = atan2(y1 - yc, x1 - xc);
+
+		th_arc = th1 - th0;
+		if(th_arc < 0 && sweepFlag)
+			th_arc += 2 * M_PI;
+		else if(th_arc > 0 && !sweepFlag)
+			th_arc -= 2 * M_PI;
+
+		n_segs = (int) ceil(fabs(th_arc / (M_PI * 0.5 + 0.001)));
+
+		for(i = 0; i < n_segs; i++)
+		{
+			index++;
+
+			ensureSpace(vec, index);
+
+			{
+				double sin_th, cos_th;
+				double a00, a01, a10, a11;
+				double x1, y1, x2, y2, x3, y3;
+				double t;
+				double th_half;
+
+				sin_th = sin(angle * (M_PI / 180.0));
+				cos_th = cos(angle * (M_PI / 180.0));
+
+				/* inverse transform compared with rsvg_path_arc */
+				a00 = cos_th * r1;
+				a01 = -sin_th * r2;
+				a10 = sin_th * r1;
+				a11 = cos_th * r2;
+
+				th_half = 0.5 * (th1 - th0);
+				t = (8.0 / 3.0) * sin(th_half * 0.5) * sin(th_half * 0.5) / sin(th_half);
+				x1 = xc + cos(th0) - t * sin(th0);
+				y1 = yc + sin(th0) + t * cos(th0);
+				x3 = xc + cos(th1);
+				y3 = yc + sin(th1);
+				x2 = x3 + t * sin(th1);
+				y2 = y3 - t * cos(th1);
+
+				ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = a00 * x1 + a01 * y1;
+				vec[index].y1 = a10 * x1 + a11 * y1;
+				vec[index].x2 = a00 * x2 + a01 * y2;
+				vec[index].y2 = a10 * x2 + a11 * y2;
+				vec[index].x3 = a00 * x3 + a01 * y3;
+				vec[index].y3 = a10 * x3 + a11 * y3;
+			}
+		}
+
+		if(!relative)
+			curx = x;
+		else
+			curx += x;
+
+		if(!relative)
+			cury = y;
+		else
+			cury += y;	
+	}
+	
+private:
+	friend class KSVGIconPainter;
+	ArtSVP *m_clipSVP;
+
+	QImage *m_image;
+	QWMatrix *m_worldMatrix;
+
+	QString m_fillRule;
+	QString m_joinStyle;
+	QString m_capStyle;
+	int m_strokeMiterLimit;
+
+	QColor m_fillColor;
+	QColor m_strokeColor;
+	
+	GC m_gc;
+	
+	art_u8 *m_buffer;
+	art_u8 *m_tempBuffer;
+	
+	int m_width;
+	int m_height;
+
+	int m_rowstride;
+
+	double m_fillOpacity;
+	double m_strokeOpacity;
+	
+	bool m_useFill;
+	bool m_useStroke;
+
+	bool m_useFillGradient;
+	bool m_useStrokeGradient;	
+	
+	QString m_fillGradientReference;
+	QString m_strokeGradientReference;	
+	
+	QMap<QString, ArtGradientLinear *> m_linearGradientMap;
+	QMap<ArtGradientLinear *, QDomElement> m_linearGradientElementMap;
+
+	QMap<QString, ArtGradientRadial *> m_radialGradientMap;
+	QMap<ArtGradientRadial *, QDomElement> m_radialGradientElementMap;
+
+	KSVGIconPainter *m_painter;
+
+	double m_strokeWidth;
+};
+
+struct KSVGIconPainter::Private
+{
+	KSVGIconPainterHelper *helper;
+	
+	int drawWidth;
+	int drawHeight;
+};
+
+KSVGIconPainter::KSVGIconPainter(int width, int height, int dwidth, int dheight) : d(new Private())
+{
+	d->helper = new KSVGIconPainterHelper(width, height, this);
+	
+	d->drawWidth = dwidth;
+	d->drawHeight = dheight;
+}
+
+KSVGIconPainter::~KSVGIconPainter()
+{
+	delete d->helper;
+	delete d;	
+}
+
+void KSVGIconPainter::finish()
+{
+	d->helper->blit();
+}
+
+QImage *KSVGIconPainter::image()
+{
+	return new QImage(*d->helper->m_image);
+}
+
+QWMatrix *KSVGIconPainter::worldMatrix()
+{
+	return d->helper->m_worldMatrix;
+}
+
+void KSVGIconPainter::setWorldMatrix(QWMatrix *matrix)
+{
+	if(d->helper->m_worldMatrix)
+		delete d->helper->m_worldMatrix;
+
+	d->helper->m_worldMatrix = matrix;
+}
+
+void KSVGIconPainter::setStrokeWidth(double width)
+{
+	d->helper->m_strokeWidth = width;
+}
+
+void KSVGIconPainter::setStrokeMiterLimit(const QString &miter)
+{
+	d->helper->m_strokeMiterLimit = miter.toInt();
+}
+
+void KSVGIconPainter::setCapStyle(const QString &cap)
+{
+	d->helper->m_capStyle = cap;
+}
+
+void KSVGIconPainter::setJoinStyle(const QString &join)
+{
+	d->helper->m_joinStyle = join;
+}
+
+void KSVGIconPainter::setStrokeColor(const QString &stroke)
+{
+	if(stroke.startsWith("url"))
+	{
+		d->helper->m_useStroke = false;
+		d->helper->m_useStrokeGradient = true;
+		
+		QString url = stroke;
+	
+		unsigned int start = url.find("#") + 1;
+		unsigned int end = url.findRev(")");
+
+		d->helper->m_strokeGradientReference = url.mid(start, end - start);
+	}
+	else
+	{
+		d->helper->m_strokeColor = d->helper->applyOpacity(parseColor(stroke), false);
+
+		d->helper->m_useStrokeGradient = false;
+		d->helper->m_strokeGradientReference = QString::null;
+		
+		if(stroke.stripWhiteSpace().lower() != "none")
+			setUseStroke(true);
+		else
+			setUseStroke(false);
+	}
+}
+
+void KSVGIconPainter::setFillColor(const QString &fill)
+{
+	if(fill.startsWith("url"))
+	{
+		d->helper->m_useFill = false;
+		d->helper->m_useFillGradient = true;
+
+		QString url = fill;
+	
+		unsigned int start = url.find("#") + 1;
+		unsigned int end = url.findRev(")");
+
+		d->helper->m_fillGradientReference = url.mid(start, end - start);
+	}
+	else
+	{
+		d->helper->m_fillColor = d->helper->applyOpacity(parseColor(fill), true);
+
+		d->helper->m_useFillGradient = false;
+		d->helper->m_fillGradientReference = QString::null;
+		
+		if(fill.stripWhiteSpace().lower() != "none")
+			setUseFill(true);
+		else
+			setUseFill(false);
+	}
+}
+
+void KSVGIconPainter::setFillRule(const QString &fillRule)
+{
+	d->helper->m_fillRule = fillRule;
+}
+
+void KSVGIconPainter::setFillOpacity(double fillOpacity, bool justset)
+{
+	if(!justset)
+		d->helper->m_fillOpacity = int(((double(d->helper->m_fillOpacity) / 255.0) * fillOpacity) * 255);
+	else
+		d->helper->m_fillOpacity = justset;
+	
+	d->helper->m_fillColor = d->helper->applyOpacity(d->helper->m_fillColor, true);
+}
+
+void KSVGIconPainter::setStrokeOpacity(double strokeOpacity, bool justset)
+{
+	if(!justset)
+		d->helper->m_strokeOpacity = int(((double(d->helper->m_strokeOpacity) / 255.0) * strokeOpacity) * 255);
+	else
+		d->helper->m_strokeOpacity = strokeOpacity;
+	
+	d->helper->m_strokeColor = d->helper->applyOpacity(d->helper->m_strokeColor, false);
+}
+
+void KSVGIconPainter::setUseFill(bool fill)
+{
+	d->helper->m_useFill = fill;
+}
+
+void KSVGIconPainter::setUseStroke(bool stroke)
+{
+	d->helper->m_useStroke = stroke;
+}
+
+void KSVGIconPainter::setClippingRect(int x, int y, int w, int h)
+{
+	ArtVpath *vec = d->helper->allocVPath(6);
+
+	vec[0].code = ART_MOVETO;
+	vec[0].x = x;
+	vec[0].y = y;
+
+	vec[1].code = ART_LINETO;
+	vec[1].x = x;
+	vec[1].y = y + h;
+
+	vec[2].code = ART_LINETO;
+	vec[2].x = x + w;
+	vec[2].y = y + h;
+
+	vec[3].code = ART_LINETO;
+	vec[3].x = x + w;
+	vec[3].y = y;
+
+	vec[4].code = ART_LINETO;
+	vec[4].x = x;
+	vec[4].y = y;
+
+	vec[5].code = ART_END;
+
+	if(d->helper->m_clipSVP)
+		art_svp_free(d->helper->m_clipSVP);
+
+	d->helper->m_clipSVP = art_svp_from_vpath(vec);
+
+	art_free(vec);
+}
+
+void KSVGIconPainter::drawRectangle(double x, double y, double w, double h, double rx, double ry)
+{
+	if((int) rx != 0 && (int) ry != 0)
+	{
+		ArtVpath *res;
+		ArtBpath *vec = d->helper->allocBPath(10);
+
+		int i = 0;
+
+		if(rx > w / 2)
+			rx = w / 2;
+
+		if(ry > h / 2)
+			ry = h / 2;
+
+		vec[i].code = ART_MOVETO_OPEN;
+		vec[i].x3 = x + rx;
+		vec[i].y3 = y;
+
+		i++;
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + rx * (1 - 0.552);
+		vec[i].y1 = y;
+		vec[i].x2 = x;
+		vec[i].y2 = y + ry * (1 - 0.552);
+		vec[i].x3 = x;
+		vec[i].y3 = y + ry;
+
+		i++;
+
+		if(ry < h / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x;
+			vec[i].y3 = y + h - ry;
+
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x;
+		vec[i].y1 = y + h - ry * (1 - 0.552);
+		vec[i].x2 = x + rx * (1 - 0.552);
+		vec[i].y2 = y + h;
+		vec[i].x3 = x + rx;
+		vec[i].y3 = y + h;
+
+		i++;
+
+		if(rx < w / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + w - rx;
+			vec[i].y3 = y + h;
+
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + w - rx * (1 - 0.552);
+		vec[i].y1 = y + h;
+		vec[i].x2 = x + w;
+		vec[i].y2 = y + h - ry * (1 - 0.552);
+		vec[i].x3 = x + w;
+
+		vec[i].y3 = y + h - ry;
+
+		i++;
+
+		if(ry < h / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + w;
+			vec[i].y3 = y + ry;
+
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + w;
+		vec[i].y1 = y + ry * (1 - 0.552);
+		vec[i].x2 = x + w - rx * (1 - 0.552);
+		vec[i].y2 = y;
+		vec[i].x3 = x + w - rx;
+		vec[i].y3 = y;
+
+		i++;
+
+		if(rx < w / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + rx;
+			vec[i].y3 = y;
+
+			i++;
+		}
+
+		vec[i].code = ART_END;
+
+		res = art_bez_path_to_vec(vec, 0.25);
+		d->helper->drawVPath(res);
+	}
+	else
+	{
+		ArtVpath *vec = d->helper->allocVPath(6);
+
+		vec[0].code = ART_MOVETO;
+		vec[0].x = x;
+		vec[0].y = y;
+
+		vec[1].code = ART_LINETO;
+		vec[1].x = x;
+		vec[1].y = y + h;
+
+		vec[2].code = ART_LINETO;
+		vec[2].x = x + w;
+		vec[2].y = y + h;
+
+		vec[3].code = ART_LINETO;
+		vec[3].x = x + w;
+		vec[3].y = y;
+
+		vec[4].code = ART_LINETO;
+		vec[4].x = x;
+		vec[4].y = y;
+
+		vec[5].code = ART_END;
+
+		d->helper->drawVPath(vec);
+	}
+}
+
+void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
+{
+	ArtVpath *vec, *vec2;
+	ArtBpath *temp, *abp;
+	
+	temp = d->helper->allocBPath(6);
+	
+	double x0, y0, x1, y1, x2, y2, x3, y3, len, s, e;
+	double affine[6];
+	int i = 0;
+
+	// Use a blowup factor of 10 to make ellipses with small radii look good
+	art_affine_scale(affine, rx * 10.0, ry * 10.0);
+
+	temp[i].code = ART_MOVETO;
+	temp[i].x3 = cos(0);
+	temp[i].y3 = sin(0);
+
+	i++;
+	
+	for(s = 0; s < 2 * M_PI; s += M_PI_2)
+	{
+		e = s + M_PI_2;
+		if(e > 2 * M_PI)
+			e = 2 * M_PI;
+
+		len = 0.552 * (e - s) / M_PI_2;
+		x0 = cos (s);
+		y0 = sin (s);
+		x1 = x0 + len * cos (s + M_PI_2);
+		y1 = y0 + len * sin (s + M_PI_2);
+		x3 = cos (e);
+		y3 = sin (e);
+		x2 = x3 + len * cos (e - M_PI_2);
+		y2 = y3 + len * sin (e - M_PI_2);
+
+		temp[i].code = ART_CURVETO;
+		temp[i].x1 = x1;
+		temp[i].y1 = y1;
+		temp[i].x2 = x2;
+		temp[i].y2 = y2;
+		temp[i].x3 = x3;
+		temp[i].y3 = y3;
+
+		i++;
+	}
+
+	temp[i].code = ART_END;
+
+	abp = art_bpath_affine_transform(temp, affine);
+	vec = art_bez_path_to_vec(abp, 0.25);
+	// undo blowup
+	art_affine_scale(affine, 0.1, 0.1);
+	affine[4] = cx;
+	affine[5] = cy;
+	vec2 = art_vpath_affine_transform(vec, affine);
+
+	art_free(vec);
+	
+	d->helper->drawVPath(vec2); 
+}
+
+void KSVGIconPainter::drawLine(double x1, double y1, double x2, double y2)
+{
+	ArtVpath *vec;
+	
+	vec = d->helper->allocVPath(3);
+
+	vec[0].code = ART_MOVETO_OPEN;
+	vec[0].x = x1;
+	vec[0].y = y1;
+
+	vec[1].code = ART_LINETO;
+	vec[1].x = x2;
+	vec[1].y = y2;
+
+	vec[2].code = ART_END;
+
+	d->helper->drawVPath(vec);
+}
+
+void KSVGIconPainter::drawPolyline(QPointArray polyArray, int points)
+{
+	if(polyArray.point(0).x() == -1 || polyArray.point(0).y() == -1)
+		return;
+	
+	ArtVpath *polyline;
+
+	if(points == -1)
+		points = polyArray.count();
+
+	polyline = d->helper->allocVPath(3 + points);
+	polyline[0].code = ART_MOVETO;
+    polyline[0].x = polyArray.point(0).x();
+    polyline[0].y = polyArray.point(0).y();
+
+	int index;
+	for(index = 1; index < points; index++)
+	{
+		QPoint point = polyArray.point(index);
+		polyline[index].code = ART_LINETO;
+		polyline[index].x = point.x();
+		polyline[index].y = point.y();
+	}
+	
+	if(d->helper->m_useFill) // if the polyline must be filled, inform libart that it should not be closed.
+	{
+		polyline[index].code = ART_END2;
+		polyline[index].x = polyArray.point(0).x();
+		polyline[index++].y = polyArray.point(0).y();
+	}
+	
+	polyline[index].code = ART_END;
+
+	d->helper->drawVPath(polyline);
+}
+
+void KSVGIconPainter::drawPolygon(QPointArray polyArray)
+{
+	ArtVpath *polygon;
+	
+	polygon = d->helper->allocVPath(3 + polyArray.count());
+	polygon[0].code = ART_MOVETO;
+    polygon[0].x = polyArray.point(0).x();
+    polygon[0].y = polyArray.point(0).y();
+
+	int index;
+	for(index = 1; index < polyArray.count(); index++)
+	{
+		QPoint point = polyArray.point(index);
+		polygon[index].code = ART_LINETO;
+		polygon[index].x = point.x();
+		polygon[index].y = point.y();
+	}
+
+	polygon[index].code = ART_LINETO;
+	polygon[index].x = polyArray.point(0).x();
+	polygon[index].y = polyArray.point(0).y();
+	
+	index++;
+	polygon[index].code = ART_END;
+
+	d->helper->drawVPath(polygon);
+}
+
+void KSVGIconPainter::drawPath(const QString &data, bool filled)
+{
+	QString value = data;
+
+	QMemArray<ArtBpath> vec;
+	int index = -1;
+	
+	enum
+	{
+		mAbs, mRel,
+		lAbs, lRel,
+		zAbs, zRel,
+		hAbs, hRel,
+		vAbs, vRel,
+		qAbs, qRel,
+		tAbs, tRel,
+		cAbs, cRel,
+		sAbs, sRel,
+		aAbs, aRel,
+		nrCommands
+	};
+
+	QChar commands[] =
+	{
+		'M', 'm', 'L', 'l', 'Z', 'z', 'H', 'h', 'V', 'v',
+		'Q', 'q', 'T', 't', 'C', 'c', 'S', 's', 'A', 'a'
+	};
+
+	QString seperator("|");
+	unsigned int i = 0;
+	for(i = 0; i < nrCommands; i++)
+	{
+		const QString temp = seperator + commands[i];
+		value.replace(QRegExp(commands[i]), temp);
+	}
+
+	QRegExp reg("[a-zA-Z,() ]");
+	QStringList coords;
+	
+	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
+	bool largeArc, sweep;
+	
+	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0;
+	unsigned int lastCommand = 0;
+
+	QStringList::Iterator it2;
+	QStringList path = QStringList::split(seperator, value);
+	for(QStringList::Iterator it = path.begin(); it != path.end(); it++)
+	{
+		(*it).simplifyWhiteSpace();
+		(*it).replace(QRegExp("-"), " -");
+		(*it).replace(QRegExp("+"), " +");
+
+		coords = QStringList::split(reg, (*it));
+		switch(((*it)[0]).latin1()) // TODO : check code for fault toleranty
+		{
+			case 'm':
+				it2 = coords.begin();
+				tox = (*(it2++)).toFloat();
+				if(it2 != coords.end())
+				{
+					toy = (*(it2++)).toFloat();
+
+					if(index != -1 && lastCommand != 'z')
+					{
+						// Find last subpath
+						int find = -1;
+						for(int i = index; i >= 0; i--)
+						{
+							if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+							{
+								find = i;
+								break;
+							}
+						}
+						
+						index++;
+
+						if(vec.size() == index)
+							vec.resize(index + 1);
+
+						vec[index].code = ART_END2;
+						vec[index].x3 = vec[find].x3;
+						vec[index].y3 = vec[find].y3;
+					}
+
+					curx += tox;
+					cury += toy;
+					
+					index++;
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+
+					lastCommand = 'm';
+				}
+				
+				for(; it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						curx += tox;
+						cury += toy;
+
+						lastCommand = 'm';
+					}
+				}
+				break;
+
+			case 'M':
+				it2 = coords.begin();
+				tox = (*(it2++)).toFloat();
+				if(it2 != coords.end())
+				{
+					toy = (*(it2++)).toFloat();
+
+					if(index != -1 && lastCommand != 'z')
+					{
+						// Find last subpath
+						int find = -1;
+						for(int i = index; i >= 0; i--)
+						{
+							if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+							{
+								find = i;
+								break;
+							}
+						}
+						
+						index++;
+
+						if(vec.size() == index)							
+							vec.resize(index + 1);
+						
+						vec[index].code = ART_END2;
+						vec[index].x3 = vec[find].x3;
+						vec[index].y3 = vec[find].y3;
+					}
+					
+					curx = tox;
+					cury = toy;
+					
+					index++;
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+
+					lastCommand = 'M';
+				}
+				
+				for(; it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+						
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = tox;
+						cury = toy;
+
+						lastCommand = 'M';
+					}
+				}
+				break;
+
+			case 'l':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						curx += tox;
+						cury += toy;
+
+						lastCommand = 'l';
+					}
+				}
+				break;
+
+			case 'L':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = tox;
+						cury = toy;
+
+						lastCommand = 'L';
+					}
+				}
+				break;
+				
+			case 'h':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					index++;
+
+					curx += (*(it2++)).toFloat();
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = ART_LINETO;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+				}
+				
+				lastCommand = 'h';
+				break;
+
+			case 'H':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					index++;
+
+					curx = (*(it2++)).toFloat();
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = ART_LINETO;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+				}
+
+				lastCommand = 'H';
+				break;
+
+			case 'v':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					index++;
+
+					cury += (*(it2++)).toFloat();
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = ART_LINETO;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+				}
+
+				lastCommand = 'v';
+				break;
+
+			case 'V':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					index++;
+
+					cury = (*(it2++)).toFloat();
+
+					d->helper->ensureSpace(vec, index);
+
+					vec[index].code = ART_LINETO;
+					vec[index].x3 = curx;
+					vec[index].y3 = cury;
+				}
+
+				lastCommand = 'V';
+				break;
+				
+			case 'c':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x1 = (*(it2++)).toFloat();
+					y1 = (*(it2++)).toFloat();
+					x2 = (*(it2++)).toFloat();
+					y2 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = curx + x1;
+						vec[index].y1 = cury + y1;
+						vec[index].x2 = curx + x2;
+						vec[index].y2 = cury + y2;
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						curx += tox;
+						cury += toy;
+
+						contrlx = vec[index].x2;
+						contrly = vec[index].y2;
+
+						lastCommand = 'c';
+					}
+				}
+				break;
+
+			case 'C':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x1 = (*(it2++)).toFloat();
+					y1 = (*(it2++)).toFloat();
+					x2 = (*(it2++)).toFloat();
+					y2 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = x1;
+						vec[index].y1 = y1;
+						vec[index].x2 = x2;
+						vec[index].y2 = y2;
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = vec[index].x3;
+						cury = vec[index].y3;
+						contrlx = vec[index].x2;
+						contrly = vec[index].y2;
+
+						lastCommand = 'C';
+					}
+				}
+				break;
+
+			case 's':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x2 = (*(it2++)).toFloat();
+					y2 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = 2 * curx - contrlx;
+						vec[index].y1 = 2 * cury - contrly;
+						vec[index].x2 = curx + x2;
+						vec[index].y2 = cury + y2;
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						curx += tox;
+						cury += toy;
+
+						contrlx = vec[index].x2;
+						contrly = vec[index].y2;
+
+						lastCommand = 's';
+					}
+				}
+				break;
+
+			case 'S':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x2 = (*(it2++)).toFloat();
+					y2 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+					    index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = 2 * curx - contrlx;
+						vec[index].y1 = 2 * cury - contrly;
+						vec[index].x2 = x2;
+						vec[index].y2 = y2;
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = vec[index].x3;
+						cury = vec[index].y3;
+						contrlx = vec[index].x2;
+						contrly = vec[index].y2;
+
+						lastCommand = 'S';
+					}
+				}
+				break;
+
+			case 'q':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x1 = (*(it2++)).toFloat();
+					y1 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = (curx + 2 * (x1 + curx)) * (1.0 / 3.0);
+						vec[index].y1 = (cury + 2 * (y1 + cury)) * (1.0 / 3.0);
+						vec[index].x2 = ((curx + tox) + 2 * (x1 + curx)) * (1.0 / 3.0);
+						vec[index].y2 = ((cury + toy) + 2 * (y1 + cury)) * (1.0 / 3.0);
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						contrlx = curx + x1;
+						contrly = cury + y1;
+						curx += tox;
+						cury += toy;
+					
+						lastCommand = 'q';
+					}
+				}
+				break;
+
+			case 'Q':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					x1 = (*(it2++)).toFloat();
+					y1 = (*(it2++)).toFloat();
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+						
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						// TODO : if this fails make it more like QuadraticRel
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = (curx + 2 * x1) * (1.0 / 3.0);
+						vec[index].y1 = (cury + 2 * y1) * (1.0 / 3.0);
+						vec[index].x2 = (tox + 2 * x1) * (1.0 / 3.0);
+						vec[index].y2 = (toy + 2 * y1) * (1.0 / 3.0);
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = vec[index].x3;
+						cury = vec[index].y3;
+						contrlx = vec[index].x2;
+						contrly = vec[index].y2;
+
+						lastCommand = 'Q';
+					}
+				}
+				break;
+				
+			case 't':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+
+						double xc = 2 * curx - contrlx;
+						double yc = 2 * cury - contrly;
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = (curx + 2 * xc) * (1.0 / 3.0);
+						vec[index].y1 = (cury + 2 * yc) * (1.0 / 3.0);
+						vec[index].x2 = ((curx + tox) + 2 * xc) * (1.0 / 3.0);
+						vec[index].y2 = ((cury + toy) + 2 * yc) * (1.0 / 3.0);
+
+						vec[index].x3 = curx + tox;
+						vec[index].y3 = cury + toy;
+
+						curx += tox;
+						cury += toy;
+						contrlx = xc;
+						contrly = yc;
+
+						lastCommand = 't';
+					}
+				}
+				break;
+
+			case 'T':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					tox = (*(it2++)).toFloat();
+					if(it2 != coords.end())
+					{
+						toy = (*(it2++)).toFloat();
+	
+						double xc = 2 * curx - contrlx;
+						double yc = 2 * cury - contrly;
+
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_CURVETO;
+						vec[index].x1 = (curx + 2 * xc) * (1.0 / 3.0);
+						vec[index].y1 = (cury + 2 * yc) * (1.0 / 3.0);
+						vec[index].x2 = (tox + 2 * xc) * (1.0 / 3.0);
+						vec[index].y2 = (toy + 2 * yc) * (1.0 / 3.0);
+						vec[index].x3 = tox;
+						vec[index].y3 = toy;
+
+						curx = tox;
+						cury = toy;
+						contrlx = xc;
+						contrly = yc;
+
+						lastCommand = 'T';					
+					}
+				}
+				break;
+
+			case 'z':
+			case 'Z':
+				int find;
+				find = -1;
+				for(int i = index; i >= 0; i--)
+				{
+					if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+					{
+						find = i;
+						break;
+					}
+				}
+
+				if(find != -1)
+				{
+					if(vec[find].x3 != curx || vec[find].y3 != cury)
+					{
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = vec[find].x3;
+						vec[index].y3 = vec[find].y3;
+					}
+				}
+
+				// reset for next (sub)path
+				curx = vec[find].x3;
+				cury = vec[find].y3;
+
+				lastCommand = 'z';
+				break;
+				
+			case 'a':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					rx = (*(it2++)).toFloat();
+					ry = (*(it2++)).toFloat();
+					angle = (*(it2++)).toFloat();
+					largeArc = (*(it2++)).toShort() == 1;
+					sweep = (*(it2++)).toShort() == 1;
+					tox = (*(it2++)).toFloat();
+					toy = (*(it2++)).toFloat();
+
+					d->helper->calculateArc(true, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+
+					lastCommand = 'a';
+				}
+				break;
+
+			case 'A':
+				for(it2 = coords.begin(); it2 != coords.end();)
+				{
+					rx = (*(it2++)).toFloat();
+					ry = (*(it2++)).toFloat();
+					angle = (*(it2++)).toFloat();
+					largeArc = (*(it2++)).toShort() == 1;
+					sweep = (*(it2++)).toShort() == 1;
+					tox = (*(it2++)).toFloat();
+					toy = (*(it2++)).toFloat();
+
+					d->helper->calculateArc(false, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+
+					lastCommand = 'A';
+				}
+				break;
+		}
+
+		
+		// Detect reflection points
+		if(lastCommand != 'C' && lastCommand != 'c'
+	      && lastCommand != 'S' && lastCommand != 's'
+		  && lastCommand != 'Q' && lastCommand != 'q'
+		  && lastCommand != 'T' && lastCommand != 't')
+		{
+			contrlx = curx;
+			contrly = cury;
+		}			
+	}
+
+	// Find last subpath
+	int find = -1;
+	for(int i = index; i >= 0; i--)
+	{
+		if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+		{
+			find = i;
+			break;
+		}
+	}
+
+	// Fix a problem where the .svg file used doubles as values... (sofico.svg)
+	if(curx != vec[find].x3 && cury != vec[find].y3)
+	{
+		if((int) curx == (int) vec[find].x3 && (int) cury == (int) vec[find].y3)
+		{
+			index++;
+
+			if(vec.size() == index)
+				vec.resize(index + 1);
+
+			vec[index].code = ART_LINETO;
+			vec[index].x3 = vec[find].x3;
+			vec[index].y3 = vec[find].y3;
+
+			curx = vec[find].x3;
+			cury = vec[find].y3;
+		}
+	}
+
+	// Handle filled paths that are not closed explicitly
+	if(filled)
+	{
+		if((int) curx != (int) vec[find].x3 || (int) cury != (int) vec[find].y3)
+		{
+			index++;
+
+			if(vec.size() == index)
+				vec.resize(index + 1);
+
+			vec[index].code = ART_END2;
+			vec[index].x3 = vec[find].x3;
+			vec[index].y3 = vec[find].y3;
+
+			curx = vec[find].x3;
+			cury = vec[find].y3;
+		}
+	}
+	
+	// Close
+	index++;
+
+	if(vec.size() == index)
+		vec.resize(index + 1);
+
+	vec[index].code = ART_END;
+
+	d->helper->drawVPath(art_bez_path_to_vec(vec.data(), 0.25));
+}
+
+QColor KSVGIconPainter::parseColor(const QString &param)
+{
+	if(param.stripWhiteSpace().startsWith("#"))
+	{
+		QColor color;
+		color.setNamedColor(param.stripWhiteSpace());
+		return color;
+	}
+	else if(param.stripWhiteSpace().startsWith("rgb("))
+	{
+		QString parse = param.stripWhiteSpace();
+		QStringList colors = QStringList::split(',', parse);
+		QString r = colors[0].right((colors[0].length() - 4));
+		QString g = colors[1];
+		QString b = colors[2].left((colors[2].length() - 1));
+
+		if(r.contains("%"))
+		{
+			r = r.left(r.length() - 1);
+			r = QString::number(int((double(255 * r.toDouble()) / 100.0)));
+		}
+
+		if(g.contains("%"))
+		{
+			g = g.left(g.length() - 1);
+			g = QString::number(int((double(255 * g.toDouble()) / 100.0)));
+		}
+
+		if(b.contains("%"))
+		{
+			b = b.left(b.length() - 1);
+			b = QString::number(int((double(255 * b.toDouble()) / 100.0)));
+		}
+
+		return QColor(r.toInt(), g.toInt(), b.toInt());
+	}
+	else
+	{
+		QString rgbColor = param.stripWhiteSpace();
+
+		if(rgbColor == "aliceblue")
+			return QColor(240, 248, 255);
+		else if(rgbColor == "antiquewhite")
+			return QColor(250, 235, 215);
+		else if(rgbColor == "aqua")
+			return QColor(0, 255, 255);
+		else if(rgbColor == "aquamarine")
+			return QColor(127, 255, 212);
+		else if(rgbColor == "azure")
+			return QColor(240, 255, 255);
+		else if(rgbColor == "beige")
+			return QColor(245, 245, 220);
+		else if(rgbColor == "bisque")
+			return QColor(255, 228, 196);
+		else if(rgbColor == "black")
+			return QColor(0, 0, 0);
+		else if(rgbColor == "blanchedalmond")
+			return QColor(255, 235, 205);
+		else if(rgbColor == "blue")
+			return QColor(0, 0, 255);
+		else if(rgbColor == "blueviolet")
+			return QColor(138, 43, 226);
+		else if(rgbColor == "brown")
+			return QColor(165, 42, 42);
+		else if(rgbColor == "burlywood")
+			return QColor(222, 184, 135);
+		else if(rgbColor == "cadetblue")
+			return QColor(95, 158, 160);
+		else if(rgbColor == "chartreuse")
+			return QColor(127, 255, 0);
+		else if(rgbColor == "chocolate")
+			return QColor(210, 105, 30);
+		else if(rgbColor == "coral")
+			return QColor(255, 127, 80);
+		else if(rgbColor == "cornflowerblue")
+			return QColor(100, 149, 237);
+		else if(rgbColor == "cornsilk")
+			return QColor(255, 248, 220);
+		else if(rgbColor == "crimson")
+			return QColor(220, 20, 60);
+		else if(rgbColor == "cyan")
+			return QColor(0, 255, 255);
+		else if(rgbColor == "darkblue")
+			return QColor(0, 0, 139);
+		else if(rgbColor == "darkcyan")
+			return QColor(0, 139, 139);
+		else if(rgbColor == "darkgoldenrod")
+			return QColor(184, 134, 11);
+		else if(rgbColor == "darkgray")
+			return QColor(169, 169, 169);
+		else if(rgbColor == "darkgrey")
+			return QColor(169, 169, 169);
+		else if(rgbColor == "darkgreen")
+			return QColor(0, 100, 0);
+		else if(rgbColor == "darkkhaki")
+			return QColor(189, 183, 107);
+		else if(rgbColor == "darkmagenta")
+			return QColor(139, 0, 139);
+		else if(rgbColor == "darkolivegreen")
+			return QColor(85, 107, 47);
+		else if(rgbColor == "darkorange")
+			return QColor(255, 140, 0);
+		else if(rgbColor == "darkorchid")
+			return QColor(153, 50, 204);
+		else if(rgbColor == "darkred")
+			return QColor(139, 0, 0);
+		else if(rgbColor == "darksalmon")
+			return QColor(233, 150, 122);
+		else if(rgbColor == "darkseagreen")
+			return QColor(143, 188, 143);
+		else if(rgbColor == "darkslateblue")
+			return QColor(72, 61, 139);
+		else if(rgbColor == "darkslategray")
+			return QColor(47, 79, 79);
+		else if(rgbColor == "darkslategrey")
+			return QColor(47, 79, 79);
+		else if(rgbColor == "darkturquoise")
+			return QColor(0, 206, 209);
+		else if(rgbColor == "darkviolet")
+			return QColor(148, 0, 211);
+		else if(rgbColor == "deeppink")
+			return QColor(255, 20, 147);
+		else if(rgbColor == "deepskyblue")
+			return QColor(0, 191, 255);
+		else if(rgbColor == "dimgray")
+			return QColor(105, 105, 105);
+		else if(rgbColor == "dimgrey")
+			return QColor(105, 105, 105);
+		else if(rgbColor == "dodgerblue")
+			return QColor(30, 144, 255);
+		else if(rgbColor == "firebrick")
+			return QColor(178, 34, 34);
+		else if(rgbColor == "floralwhite")
+			return QColor(255, 250, 240);
+		else if(rgbColor == "forestgreen")
+			return QColor(34, 139, 34);
+		else if(rgbColor == "fuchsia")
+			return QColor(255, 0, 255);
+		else if(rgbColor == "gainsboro")
+			return QColor(220, 220, 220);
+		else if(rgbColor == "ghostwhite")
+			return QColor(248, 248, 255);
+		else if(rgbColor == "gold")
+			return QColor(255, 215, 0);
+		else if(rgbColor == "goldenrod")
+			return QColor(218, 165, 32);
+		else if(rgbColor == "gray")
+			return QColor(128, 128, 128);
+		else if(rgbColor == "grey")
+			return QColor(128, 128, 128);
+		else if(rgbColor == "green")
+			return QColor(0, 128, 0);
+		else if(rgbColor == "greenyellow")
+			return QColor(173, 255, 47);
+		else if(rgbColor == "honeydew")
+			return QColor(240, 255, 240);
+		else if(rgbColor == "hotpink")
+			return QColor(255, 105, 180);
+		else if(rgbColor == "indianred")
+			return QColor(205, 92, 92);
+		else if(rgbColor == "indigo")
+			return QColor(75, 0, 130);
+		else if(rgbColor == "ivory")
+			return QColor(255, 255, 240);
+		else if(rgbColor == "khaki")
+			return QColor(240, 230, 140);
+		else if(rgbColor == "lavender")
+			return QColor(230, 230, 250);
+		else if(rgbColor == "lavenderblush")
+			return QColor(255, 240, 245);
+		else if(rgbColor == "lawngreen")
+			return QColor(124, 252, 0);
+		else if(rgbColor == "lemonchiffon")
+			return QColor(255, 250, 205);
+		else if(rgbColor == "lightblue")
+			return QColor(173, 216, 230);
+		else if(rgbColor == "lightcoral")
+			return QColor(240, 128, 128);
+		else if(rgbColor == "lightcyan")
+			return QColor(224, 255, 255);
+		else if(rgbColor == "lightgoldenrodyellow")
+			return QColor(250, 250, 210);
+		else if(rgbColor == "lightgray")
+			return QColor(211, 211, 211);
+		else if(rgbColor == "lightgrey")
+			return QColor(211, 211, 211);
+		else if(rgbColor == "lightgreen")
+			return QColor(144, 238, 144);
+		else if(rgbColor == "lightpink")
+			return QColor(255, 182, 193);
+		else if(rgbColor == "lightsalmon")
+			return QColor(255, 160, 122);
+		else if(rgbColor == "lightseagreen")
+			return QColor(32, 178, 170);
+		else if(rgbColor == "lightskyblue")
+			return QColor(135, 206, 250);
+		else if(rgbColor == "lightslategray")
+			return QColor(119, 136, 153);
+		else if(rgbColor == "lightslategrey")
+			return QColor(119, 136, 153);
+		else if(rgbColor == "lightsteelblue")
+			return QColor(176, 196, 222);
+		else if(rgbColor == "lightyellow")
+			return QColor(255, 255, 224);
+		else if(rgbColor == "lime")
+			return QColor(0, 255, 0);
+		else if(rgbColor == "limegreen")
+			return QColor(50, 205, 50);
+		else if(rgbColor == "linen")
+			return QColor(250, 240, 230);
+		else if(rgbColor == "magenta")
+			return QColor(255, 0, 255);
+		else if(rgbColor == "maroon")
+			return QColor(128, 0, 0);
+		else if(rgbColor == "mediumaquamarine")
+			return QColor(102, 205, 170);
+		else if(rgbColor == "mediumblue")
+			return QColor(0, 0, 205);
+		else if(rgbColor == "mediumorchid")
+			return QColor(186, 85, 211);
+		else if(rgbColor == "mediumpurple")
+			return QColor(147, 112, 219);
+		else if(rgbColor == "mediumseagreen")
+			return QColor(60, 179, 113);
+		else if(rgbColor == "mediumslateblue")
+			return QColor(123, 104, 238);
+		else if(rgbColor == "mediumspringgreen")
+			return QColor(0, 250, 154);
+		else if(rgbColor == "mediumturquoise")
+			return QColor(72, 209, 204);
+		else if(rgbColor == "mediumvioletred")
+			return QColor(199, 21, 133);
+		else if(rgbColor == "midnightblue")
+			return QColor(25, 25, 112);
+		else if(rgbColor == "mintcream")
+			return QColor(245, 255, 250);
+		else if(rgbColor == "mistyrose")
+			return QColor(255, 228, 225);
+		else if(rgbColor == "moccasin")
+			return QColor(255, 228, 181);
+		else if(rgbColor == "navajowhite")
+			return QColor(255, 222, 173);
+		else if(rgbColor == "navy")
+			return QColor(0, 0, 128);
+		else if(rgbColor == "oldlace")
+			return QColor(253, 245, 230);
+		else if(rgbColor == "olive")
+			return QColor(128, 128, 0);
+		else if(rgbColor == "olivedrab")
+			return QColor(107, 142, 35);
+		else if(rgbColor == "orange")
+			return QColor(255, 165, 0);
+		else if(rgbColor == "orangered")
+			return QColor(255, 69, 0);
+		else if(rgbColor == "orchid")
+			return QColor(218, 112, 214);
+		else if(rgbColor == "palegoldenrod")
+			return QColor(238, 232, 170);
+		else if(rgbColor == "palegreen")
+			return QColor(152, 251, 152);
+		else if(rgbColor == "paleturquoise")
+			return QColor(175, 238, 238);
+		else if(rgbColor == "palevioletred")
+			return QColor(219, 112, 147);
+		else if(rgbColor == "papayawhip")
+			return QColor(255, 239, 213);
+		else if(rgbColor == "peachpuff")
+			return QColor(255, 218, 185);
+		else if(rgbColor == "peru")
+			return QColor(205, 133, 63);
+		else if(rgbColor == "pink")
+			return QColor(255, 192, 203);
+		else if(rgbColor == "plum")
+			return QColor(221, 160, 221);
+		else if(rgbColor == "powderblue")
+			return QColor(176, 224, 230);
+		else if(rgbColor == "purple")
+			return QColor(128, 0, 128);
+		else if(rgbColor == "red")
+			return QColor(255, 0, 0);
+		else if(rgbColor == "rosybrown")
+			return QColor(188, 143, 143);
+		else if(rgbColor == "royalblue")
+			return QColor(65, 105, 225);
+		else if(rgbColor == "saddlebrown")
+			return QColor(139, 69, 19);
+		else if(rgbColor == "salmon")
+			return QColor(250, 128, 114);
+		else if(rgbColor == "sandybrown")
+			return QColor(244, 164, 96);
+		else if(rgbColor == "seagreen")
+			return QColor(46, 139, 87);
+		else if(rgbColor == "seashell")
+			return QColor(255, 245, 238);
+		else if(rgbColor == "sienna")
+			return QColor(160, 82, 45);
+		else if(rgbColor == "silver")
+			return QColor(192, 192, 192);
+		else if(rgbColor == "skyblue")
+			return QColor(135, 206, 235);
+		else if(rgbColor == "slateblue")
+			return QColor(106, 90, 205);
+		else if(rgbColor == "slategray")
+			return QColor(112, 128, 144);
+		else if(rgbColor == "slategrey")
+			return QColor(112, 128, 144);
+		else if(rgbColor == "snow")
+			return QColor(255, 250, 250);
+		else if(rgbColor == "springgreen")
+			return QColor(0, 255, 127);
+		else if(rgbColor == "steelblue")
+			return QColor(70, 130, 180);
+		else if(rgbColor == "tan")
+			return QColor(210, 180, 140);
+		else if(rgbColor == "teal")
+			return QColor(0, 128, 128);
+		else if(rgbColor == "thistle")
+			return QColor(216, 191, 216);
+		else if(rgbColor == "tomato")
+			return QColor(255, 99, 71);
+		else if(rgbColor == "turquoise")
+			return QColor(64, 224, 208);
+		else if(rgbColor == "violet")
+			return QColor(238, 130, 238);
+		else if(rgbColor == "wheat")
+			return QColor(245, 222, 179);
+		else if(rgbColor == "white")
+			return QColor(255, 255, 255);
+		else if(rgbColor == "whitesmoke")
+			return QColor(245, 245, 245);
+		else if(rgbColor == "yellow")
+			return QColor(255, 255, 0);
+		else if(rgbColor == "yellowgreen")
+			return QColor(154, 205, 50);
+	}
+
+	return QColor();
+}
+
+double KSVGIconPainter::dpi()
+{
+	return 90.0; // TODO: make modal?
+}
+
+double KSVGIconPainter::toPixel(const QString &s, bool hmode)
+{
+	if(s.isEmpty())
+		return 0.0;
+
+	QString check = s;
+
+	double ret = 0.0;
+
+	bool ok = false;
+
+	double value = check.toDouble(&ok);
+
+	if(!ok)
+	{
+		QRegExp reg("[0-9 .-]");
+		check.replace(reg, "");
+
+		if(check.compare("px") == 0)
+			ret = value;
+		else if(check.compare("cm") == 0)
+			ret = (value / 2.54) * dpi();
+		else if(check.compare("pc") == 0)
+			ret = (value / 6.0) * dpi();
+		else if(check.compare("mm") == 0)
+			ret = (value / 25.4) * dpi();
+		else if(check.compare("in") == 0)
+			ret = value * dpi();
+		else if(check.compare("pt") == 0)
+			ret = (value / 72.0) * dpi();
+		else if(check.compare("%") == 0)
+		{
+			ret = value / 100.0;
+
+			if(hmode)
+				ret *= d->drawWidth;
+			else
+				ret *= d->drawHeight;
+		}
+	}
+	else
+		ret = value;
+
+	return ret;
+}
+
+ArtGradientLinear *KSVGIconPainter::linearGradient(const QString &id)
+{
+	return d->helper->m_linearGradientMap[id];
+}
+ 
+void KSVGIconPainter::addLinearGradient(const QString &id, ArtGradientLinear *gradient)
+{
+	d->helper->m_linearGradientMap.insert(id, gradient);
+}
+
+QDomElement KSVGIconPainter::linearGradientElement(ArtGradientLinear *linear)
+{
+	return d->helper->m_linearGradientElementMap[linear];
+}
+ 
+void KSVGIconPainter::addLinearGradientElement(ArtGradientLinear *gradient, QDomElement element)
+{
+	d->helper->m_linearGradientElementMap.insert(gradient, element);
+}
+
+ArtGradientRadial *KSVGIconPainter::radialGradient(const QString &id)
+{
+	return d->helper->m_radialGradientMap[id];
+}
+ 
+void KSVGIconPainter::addRadialGradient(const QString &id, ArtGradientRadial *gradient)
+{
+	d->helper->m_radialGradientMap.insert(id, gradient);
+}
+
+QDomElement KSVGIconPainter::radialGradientElement(ArtGradientRadial *radial)
+{
+	return d->helper->m_radialGradientElementMap[radial];
+}
+ 
+void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element)
+{
+	d->helper->m_radialGradientElementMap.insert(gradient, element);
+}

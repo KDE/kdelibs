@@ -41,6 +41,8 @@
 #include <stdlib.h>	//for abs
 #include <dirent.h>
 
+#include "svgicons/ksvgiconengine.h"
+#include "svgicons/ksvgiconpainter.h"
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -308,6 +310,14 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
+    static const QString &svg_ext = KGlobal::staticQString(".svg");
+    icon = d->mpThemeRoot->findIcon(name + svg_ext, size, KIcon::MatchExact);
+    if (icon.isValid())
+      return icon;
+    icon = d->mpThemeRoot->findIcon(name + svg_ext, size, KIcon::MatchBest);
+    if (icon.isValid())
+      return icon;
+    
     static const QString &png_ext = KGlobal::staticQString(".png");
     icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
     if (icon.isValid())
@@ -323,7 +333,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchBest);
     if (icon.isValid())
       return icon;
-
+   
     return icon;
 }
 
@@ -342,9 +352,10 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString name = _name;
     QString ext = name.right(4);
 
+    static const QString &svg_ext = KGlobal::staticQString(".svg");
     static const QString &png_ext = KGlobal::staticQString(".png");
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-    if (ext == png_ext || ext == xpm_ext)
+    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
     {
 #ifndef NDEBUG
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
@@ -356,7 +367,9 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString path;
     if (group_or_size == KIcon::User)
     {
-	path = d->mpDirs->findResource("appicon", name + png_ext);
+	path = d->mpDirs->findResource("appicon", name + svg_ext);
+	if (path.isEmpty())
+	    path = d->mpDirs->findResource("appicon", name + png_ext);
 	if (path.isEmpty())
 	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
@@ -470,6 +483,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	group = KIcon::Desktop;
     }
 
+    static const QString &svg_ext = KGlobal::staticQString(".svg");
     static const QString &png_ext = KGlobal::staticQString(".png");
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     if (!absolutePath)
@@ -480,7 +494,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         else
         {
 	QString ext = name.right(4);
-	    if (ext == png_ext || ext == xpm_ext)
+	    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
 	{
 #ifndef NDEBUG
 	    kdDebug(264) << "Application "
@@ -565,12 +579,27 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         if (inCache)
             return pix;
 
-        // Use the extension as the format. Works for XPM and PNG, which is all we support.
-        QString ext = icon.path.right(3).upper();
-        img = new QImage(icon.path, ext.latin1());
-        if (img->isNull())
-            return pix;
-
+	// Use the extension as the format. Works for XPM and PNG, but not for SVG
+	QString ext = icon.path.right(3).upper();
+	if(ext != "SVG")
+	{
+	    img = new QImage(icon.path, ext.latin1());
+	    if (img->isNull())
+		return pix;
+	}
+	else
+	{
+	    // Special stuff for SVG icons
+	    KSVGIconEngine *svgEngine = new KSVGIconEngine();
+	    
+	    if(svgEngine->load(size, size, icon.path))
+		img = svgEngine->painter()->image();
+	    else
+		img = new QImage();
+	    
+	    delete svgEngine;
+	}
+	
         iconType = icon.type;
         iconThreshold = icon.threshold;
 
