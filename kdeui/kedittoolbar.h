@@ -80,7 +80,7 @@ class KEditToolbar : public KDialogBase
     Q_OBJECT
 public:
   /**
-   * Constructor for apps that do not use components. 
+   * Constructor for apps that do not use components.
    *
    * This is the
    * only entry point to this class.  You @em must pass along your
@@ -134,8 +134,6 @@ public:
    */
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
-  virtual QSize sizeHint() const;
-
 protected slots:
   /**
    * Overridden in order to save any changes made to the toolbars
@@ -150,7 +148,7 @@ private:
 /**
  * This is a widget used to customize or configure toolbars
  *
- * This is the widget that does all of the work for the 
+ * This is the widget that does all of the work for the
  * @ref KEditToolbar dialog.  In most cases, you will want to use the
  * dialog instead of this widget directly.
  *
@@ -162,7 +160,7 @@ private:
  * framework for creating menus and toolbars.  It depends on the XML
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
- * 
+ *
  * @short A widget used to customize or configure toolbars
  * @author Kurt Granroth <granroth@kde.org>
  * @id $Id$

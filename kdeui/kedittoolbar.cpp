@@ -182,7 +182,7 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
-    resize(sizeHint());
+    incInitialSize( QSize( 200, 150 ) );
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
@@ -194,13 +194,7 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char*
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
-    resize(sizeHint());
-}
-
-QSize KEditToolbar::sizeHint() const
-{
-  QSize size = KDialogBase::sizeHint();
-  return QSize(size.width()+70,size.height()+60);
+    incInitialSize( QSize( 200, 150 ) );
 }
 
 void KEditToolbar::slotOk()
