@@ -32,13 +32,14 @@ struct KEntry
 {
   KEntry()
     : mValue(0), bDirty(false), bNLS(false), 
-      bGlobal(false), bImmutable(false), bDeleted(false) {}
+      bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
   QCString mValue;
   bool    bDirty :1;  // must the entry be written back to disk?
   bool    bNLS   :1;  // entry should be written with locale tag
   bool    bGlobal:1;  // entry should be written to the global config file
   bool    bImmutable:1; // Entry can not be modified
   bool    bDeleted:1; // Entry has been deleted
+  bool    bExpand:1;  // Whether to apply dollar expansion
 };
 
 /**

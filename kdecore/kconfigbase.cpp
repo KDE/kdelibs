@@ -288,6 +288,7 @@ QString KConfigBase::readEntry( const char *pKey,
 
   QString aValue;
 
+  bool expand = false;
   // construct a localized version of the key
   // try the localized key first
   KEntry aEntryData;
@@ -303,6 +304,7 @@ QString KConfigBase::readEntry( const char *pKey,
       aValue = QString::fromUtf8( aEntryData.mValue.data() );
     else
       aValue = QString::fromLocal8Bit(aEntryData.mValue.data());
+    expand = aEntryData.bExpand;
 
     // Ok this sucks. QString::fromUtf8("").isNull() is true,
     // but QString::fromLatin1("").isNull() returns false.
@@ -321,13 +323,14 @@ QString KConfigBase::readEntry( const char *pKey,
         static const QString &emptyString = KGlobal::staticQString("");
         aValue = emptyString;
       }
+      expand = aEntryData.bExpand;
     } else {
       aValue = aDefault;
     }
   }
 
   // only do dollar expansion if so desired
-  if( bExpand )
+  if( expand || bExpand )
     {
       // check for environment variables and make necessary translations
       int nDollarPos = aValue.find( '$' );

@@ -396,6 +396,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       bool optionImmutable = groupOptionImmutable;
       bool optionDeleted = false;
+      bool optionExpand = false;
       const char *endOfKey = 0, *locale = 0, *elocale = 0;
       for (; (s < eof) && (*s != '\n'); s++)
       {
@@ -434,13 +435,20 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             else
             {
               // Option
-              option++;
-              if ((*option == 'i'))
-                 optionImmutable = true;
-              else if ((*option == 'd'))
+              while (option < eoption)
               {
-                 optionDeleted = true;
-                 goto haveeq;
+                 option++;
+                 if (*option == 'i')
+                    optionImmutable = true;
+                 else if (*option == 'e')
+                    optionExpand = true;
+                 else if (*option == 'd')
+                 {
+                    optionDeleted = true;
+                    goto haveeq;
+                 }
+		 else if (*option == ']')
+		    break;
               }
             }
          }
@@ -494,6 +502,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       aEntry.bGlobal = bGlobal;
       aEntry.bImmutable = optionImmutable;
       aEntry.bDeleted = optionDeleted;
+      aEntry.bExpand = optionExpand;
       aEntry.bNLS = (locale != 0);
 
       if (pWriteBackMap) {
@@ -618,37 +627,35 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 
      firstEntry = false;
      // it is data for a group
+     fputs(key.mKey.data(), pStream); // Key
+
+     if ( currentEntry.bNLS )
+     {
+        fputc('[', pStream);
+        fputs(localeString.data(), pStream);
+        fputc(']', pStream);
+     }
+
      if (currentEntry.bDeleted)
      {
-        // Deleted entry
-        if ( currentEntry.bNLS )
-        {
-           // localized
-           fprintf(pStream, "%s[%s][$d]\n",
-                   key.mKey.data(), localeString.data());
-        }
-        else
-        {
-           // not localized
-           fprintf(pStream, "%s[$d]\n",
-                   key.mKey.data());
-        }
+        fputs("[$d]\n", pStream); // Deleted
      }
      else
      {
-        if ( currentEntry.bNLS )
+        if (currentEntry.bImmutable || currentEntry.bExpand)
         {
-           fprintf(pStream, "%s[%s]=%s\n",
-                   key.mKey.data(), localeString.data(),
-                   stringToPrintable(currentEntry.mValue).data());
+           fputc('[', pStream);
+           fputc('$', pStream);
+           if (currentEntry.bImmutable)
+              fputc('i', pStream);
+           if (currentEntry.bExpand)
+              fputc('e', pStream);
+           
+           fputc(']', pStream);
         }
-        else
-        {
-           // not localized
-           fprintf(pStream, "%s=%s\n",
-                   key.mKey.data(),
-                   stringToPrintable(currentEntry.mValue).data());
-        }
+        fputc('=', pStream);
+        fputs(stringToPrintable(currentEntry.mValue).data(), pStream);
+        fputc('\n', pStream);
      }
   } // for loop
 }
