@@ -176,8 +176,8 @@ bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 // Return -2 = before, -1 = after (offset set to max), 0 = inside the text, at @p offset
 int TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset)
 {
-    kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-                  << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
+    //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+    //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
     if ( _y < _ty + m_y )
@@ -199,7 +199,7 @@ int TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetric
         return -2; // Abort if RTL (TODO)
 
     int delta = _x - (_tx + m_x);
-    kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
+    //kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
     int pos = 0;
     while(pos < m_len)
     {
@@ -368,12 +368,12 @@ int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offse
         if ( s->m_reversed )
             return -2; // abort if RTL (TODO)
         int result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset);
-        kdDebug(6040) << "RenderText::checkSelectionPoint line " << si << " result=" << result << endl;
+        //kdDebug(6040) << "RenderText::checkSelectionPoint line " << si << " result=" << result << endl;
         if ( result == 0 ) // x,y is inside the textslave
         {
             // ### only for visuallyOrdered !
             offset += s->m_text - str->s; // add the offset from the previous lines
-            kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
+            //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             return 0;
         } else if ( result == -2 )
         {
@@ -382,12 +382,12 @@ int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offse
             {
                 // ### only for visuallyOrdered !
                 offset = s->m_text - str->s - 1;
-                kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
+                //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
                 return 0;
             } else
             {
                 offset = 0;
-                kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning -2" << endl;
+                //kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning -2" << endl;
                 return -2;
             }
         }
