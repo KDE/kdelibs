@@ -212,3 +212,10 @@ return d->usingTLS;
 }
 
 
+bool TCPSlaveBase::canUseTLS()
+{
+        if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
+        return d->kssl->settings()->tlsv1();
+}
+
+
