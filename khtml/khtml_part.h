@@ -121,12 +121,17 @@ class KHTMLPart : public KParts::ReadOnlyPart
 public:
   /**
    * Constructs a new KHTMLPart.
-   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data (DOM document) , and the KHTMLView, derived
-   * from @ref QScrollview, in which the document content is rendered in.
-   * You can specify two different parent objects for a KHTMLPart, one parent for the KHTMLPart document and on parent for the KHTMLView.
-   * If the second @p parent argument is 0L, then @p parentWidget is used as parent for both objects, the part and the view.
+   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data 
+   * (DOM document), and the KHTMLView, derived from @ref QScrollview, in which the document content is
+   * rendered in. You can specify two different parent objects for a KHTMLPart, one parent for the 
+   * KHTMLPart document and on parent for the KHTMLView. If the second @p parent argument is 0L, then 
+   * @p parentWidget is used as parent for both objects, the part and the view.
    */
-  KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0, QObject *parent = 0, const char *name = 0 );
+  KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0, 
+             QObject *parent = 0, const char *name = 0 );
+
+  KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0 );
+
   /**
    * Destructor
    */
@@ -598,6 +603,8 @@ private slots:
 
   void checkCompleted();
 private:
+  void init( KHTMLView *view );
+
   void clear();
 
   void updateFontSize( int add );

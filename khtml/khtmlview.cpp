@@ -46,6 +46,7 @@
 #include <kmimetype.h>
 #include <kimgio.h>
 #include <kdebug.h>
+#include <kglobalsettings.h>
 
 #include <qlist.h>
 #include <qrect.h>
@@ -90,6 +91,8 @@ public:
 
     NodeImpl *currentNode;
     bool linkPressed;
+
+    QPoint m_dragStartPos;
 };
 
 
@@ -169,19 +172,6 @@ void KHTMLView::clear()
     d->currentNode = 0;
     d->linkPressed = false;
 }
-
-/*
-void KHTMLView::setFollowsLinks( bool follow )
-{
-    _followLinks = follow;
-}
-
-bool KHTMLView::followsLinks()
-{
-    return _followLinks;
-}
-*/
-
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
@@ -351,7 +341,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
-
+    d->m_dragStartPos = _mouse->pos();
+    
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
@@ -455,16 +446,23 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     // drag of URL
 
-    if(pressed && !m_strSelectedURL.isEmpty())
+    if(pressed && !m_strSelectedURL.isEmpty() &&
+       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() )
     {
-	QStrList uris;
+	QStringList uris;
 	KURL u( m_part->completeURL( m_strSelectedURL) );
-	uris.append(u.url().ascii());
-	QDragObject *d = new QUriDrag(uris, this);
+	uris.append( u.url() );
+	QUriDrag *drag = new QUriDrag( viewport() );
+	drag->setUnicodeUris( uris );
+	
 	QPixmap p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
-	if(p.isNull()) kdDebug( 6000 ) << "null pixmap" << endl;
-	d->setPixmap(p);
-	d->drag();
+	
+	if ( !p.isNull() )
+    	  drag->setPixmap(p);
+	else
+	  kdDebug( 6000 ) << "null pixmap" << endl;
+ 	
+	drag->drag();
 
 	// when we finish our drag, we need to undo our mouse press
 	pressed = false;
@@ -907,7 +905,7 @@ void KHTMLView::print()
 	    p->scale(scale, scale);
 	    pageHeight = (int) (pageHeight/scale);
 	    pageWidth = (int) (pageWidth/scale);
-	}	    
+	}	
 	int top = 0;
 	while(top < root->height()) {
 	    if(top > 0) printer->newPage();

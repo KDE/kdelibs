@@ -60,7 +60,6 @@ class KHTMLView : public QScrollView
     friend khtml::RenderRoot;
 
 public:
-
     /**
      * Constructs a KHTMLView
      */
@@ -69,15 +68,6 @@ public:
 
     KHTMLPart *part() const { return m_part; }
 
-protected:
-    void init();
-    void clear();
-
-signals:
-    void selectionChanged();
-
-public:
-
     int frameWidth() const { return _width; }
 
     // implements keyboard traversal. sets the view's position so that the actual link
@@ -85,46 +75,6 @@ public:
     bool gotoNextLink();
     bool gotoPrevLink();
     void activateActLink();
-
-    //history functions
-    void followLink();
-
-
-    /*
-     * @return the width of the parsed HTML code. Remember that
-     * the documents width depends on the width of the widget.
-     */
-    //    int docWidth() const;
-
-    /*
-     * @return the height of the parsed HTML code. Remember that
-     * the documents height depends on the width of the widget.
-     */
-    //    int docHeight() const;
-
-    /*
-     * Causes the widget contents to scroll automatically.  Call
-     * @ref #stopAutoScrollY to stop.  Stops automatically when the
-     * top or bottom of the document is reached.
-     *
-     * @param _delay Time in milliseconds to wait before scrolling the
-     * document again.
-     * @param _dy The amount to scroll the document when _delay elapses.
-     *
-     * (not implemented)
-     */
-    //    void autoScrollY( int _delay, int _dy );
-
-    /*
-     * Stops the document from @ref #autoScrollY ing.
-     */
-    //void stopAutoScrollY();
-
-    /*
-     * Returns if the widget is currently auto scrolling.
-     */
-    //    bool isAutoScrollingY()
-    //    { return autoScrollYTimer.isActive(); }
 
     /**
      * Sets the cursor to use when the cursor is on a link.
@@ -144,7 +94,7 @@ public:
     /**
      * @return the margin With. -1 means the default value will be used.
      */
-     int marginWidth() const { return _marginWidth; }
+    int marginWidth() const { return _marginWidth; }
 
     /*
      * set a margin in y direction
@@ -160,19 +110,22 @@ public:
     bool hasSelection() const;
 
     void print();
+
+    void layout(bool force = false);
+
+    static const QList<KHTMLView> *viewList() { return lstViews; }
+
+signals:
+    void selectionChanged();
     
 protected:
+    void clear();
+
     void paintElement( khtml::RenderObject *o, int x, int y );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
-
-    bool gotoLink();
-
-public:
-    void layout(bool force = false);
-protected:
 
     virtual void viewportMousePressEvent( QMouseEvent * );
 
@@ -194,7 +147,15 @@ protected:
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent( QKeyEvent *_ke );
-protected:
+
+private:
+    void init();
+
+    bool gotoLink();
+
+    //history functions
+    void followLink();
+
     // ------------------------------------- member variables ------------------------------------
 
     /**
@@ -209,9 +170,8 @@ protected:
      * @ref #mouseMoveHook
      * @ref #mousePressedHook
      */
-   QString m_strSelectedURL;
+    QString m_strSelectedURL;
 
-private:
     DOM::NodeImpl *nodeUnderMouse() const;
 
     QCursor linkCursor;

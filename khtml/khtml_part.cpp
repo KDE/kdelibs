@@ -204,6 +204,18 @@ namespace khtml {
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
+  init( new KHTMLView( this, parentWidget, widgetname ) ); 
+} 
+
+KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name )
+: KParts::ReadOnlyPart( parent, name )
+{
+  assert( view );
+  init( view );
+} 
+
+void KHTMLPart::init( KHTMLView *view )
+{
   khtml::Cache::ref();
 
   setInstance( KHTMLFactory::instance() );
@@ -211,7 +223,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d = new KHTMLPartPrivate;
 
-  d->m_view = new KHTMLView( this, parentWidget, widgetname );
+  d->m_view = view;
   setWidget( d->m_view );
 
   connect( d->m_view, SIGNAL( selectionChanged() ),
