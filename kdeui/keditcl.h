@@ -49,7 +49,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-#include <kintlineedit.h>
+#include <knumlineedit.h>
 
 class KApplication;
 
