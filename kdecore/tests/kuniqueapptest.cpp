@@ -17,6 +17,7 @@
 */
 
 #include "kuniqueapp.h"
+#include "kglobal.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -62,9 +63,16 @@ TestApp::newInstance( QValueList<QCString> params )
 int
 main(int argc, char *argv[])
 {
+   if (!TestApp::start(argc,argv, "TestApp"))
+   {
+//      printf("Already running!\n");
+      exit(0);
+   }
    TestApp a(argc, argv);
 
    printf("Running.\n");
+   printf("useDoubleClicks? %s\n", KGlobal::useDoubleClicks() ? "yes" : "no");
+   printf("completionMode: %d\n", (int) KGlobal::completionMode());
    kapp->exec();   
    printf("Terminating.\n");
 }
