@@ -1540,6 +1540,10 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
     // of the object. Do this adjustment to make it point to the start
     // of the next object instead to avoid confusing the rest of the
     // code.
+    if ( lBreak.obj && lBreak.pos >= lBreak.obj->length() ) {
+        lBreak.obj = Bidinext( start.par, lBreak.obj );
+        lBreak.pos = 0;
+    }
 
 #ifdef DEBUG_LINEBREAKS
     kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << "/" << width << endl;
