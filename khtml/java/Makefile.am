@@ -8,9 +8,11 @@ include_HEADERS = kjavaapplet.h kjavaappletcontext.h \
 	kjavaappletserver.h kjavaappletwidget.h kjavaprocess.h
 
 libkjava_la_LDFLAGS = -version-info 1:0 -no-undefined
-libkjava_la_LIBADD = ../../kdecore/libkdecore.la ../../kdeui/libkdeui.la
+libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_KIO)
 
-INCLUDES = $(all_includes)
+INCLUDES = $(all_includes) -I$(top_srcdir)/kio/
 
-data_DATA = kjava-classes.zip
+data_DATA = kjava-classes.zip KJAS_GRAMMAR.txt kjava.policy
 datadir = $(kde_datadir)/kjava/
+
+SUBDIRS = 
