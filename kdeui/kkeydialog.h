@@ -63,7 +63,6 @@ class KKeyChooser : public QWidget
 	/**
 	 * Constructor.
 	 *
-	 * @param aKeyDict A dictionary (@ref QMap) of key definitons.
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 **/
@@ -75,6 +74,10 @@ class KKeyChooser : public QWidget
 
 	virtual ~KKeyChooser();
 
+	/**
+	 * Insert an action collection, i.e. add all its actions to the ones
+	 * already associated with the KKeyChooser object.
+	 */
 	bool insert( KActionCollection* );
 
 	void syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset );
@@ -104,10 +107,12 @@ class KKeyChooser : public QWidget
 	 * Set all keys to their default values (bindings).
 	 **/
 	void allDefault();
-	// Whether to use the 3 or 4 modifier key scheme.
-	//virtual void allDefault( bool useFourModifierKeys );
-	// This determines which default is used when the 'Default' button is
-	//  clicked.
+
+	/**
+	 * Specifies whether to use the 3 or 4 modifier key scheme.
+	 * This determines which default is used when the 'Default' button is
+	 * clicked.
+	 */
 	void setPreferFourModifierKeys( bool preferFourModifierKeys );
 
  protected:
@@ -199,7 +204,7 @@ typedef KKeyChooser KKeyChooser;
  * }
  * </pre>
  *
- * This will also implicitly save the settings. If you don't want this,
+ * This will also implicitly commit and save the settings. If you don't want this,
  * you can call
  *
  * <pre>
@@ -219,22 +224,38 @@ typedef KKeyChooser KKeyChooser;
  */
 class KKeyDialog : public KDialogBase
 {
-  Q_OBJECT
+	Q_OBJECT
 
-public:
+ public:
+	/**
+	 * Constructs a KKeyDialog called @p name as a child of @p parent.
+	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
+	 * keys ('A', '1', etc.) are not permissible shortcuts.
+	 */
 	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
+
+	/**
+	 * Destructor. Deletes all resources used by a KKeyDialog object.
+	 */
 	virtual ~KKeyDialog();
 
 	/**
-         * Insert an action collection, i.e. add all its actions to the ones
-         * displayed by the dialog.
-         * This method can be useful in applications following the document/view
-         * design, with actions in both the document and the view.
-         * Simply call @ref insert with the action collections of each one in turn.
-         * @return true :)
-         */
+	 * Insert an action collection, i.e. add all its actions to the ones
+	 * displayed by the dialog.
+	 * This method can be useful in applications following the document/view
+	 * design, with actions in both the document and the view.
+	 * Simply call @ref insert with the action collections of each one in turn.
+	 * @return true :)
+	 */
 	bool insert( KActionCollection* );
+
 	bool configure( bool bSaveSettings = true );
+
+	/**
+	 * Commit key setting changes so that changed settings actually become active.
+	 * This method is implicitly called from @ref KKeyConfig::configure if
+	 * @p bSaveSettings is true.
+	 */
 	void commitChanges();
 
 	/**
@@ -244,37 +265,48 @@ public:
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 **/
 	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
-	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
+
 	/**
-	 * Pops up a modal dialog for configuring key settings. The dialog is initialized
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function.
+	 */
+	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
+
+	/**
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function.
+	 * The dialog is initialized
 	 * from an action collection (for XMLGUI based applications).
-	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 **/
 	static int configure( KActionCollection* coll,
 		QWidget* parent = 0, bool bSaveSettings = true );
 
-	/** @deprecated. Obsolete. */
+	/**
+	 * @deprecated Obsolete.
+	 * Please use @ref KKeyDialog::configure instead
+	 */
 	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
-	/** @deprecated. Obsolete. */
+	/**
+	 * @deprecated Obsolete.
+	 * Please use @ref KKeyDialog::configure instead
+	 */
 	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
-	/** @deprecated. Obsolete. */
+	/**
+	 * @deprecated Obsolete.
+	 * Please use @ref KKeyDialog::configure instead
+	 */
 	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( coll, parent, save_settings ); }
 
-private:
-	KKeyChooser* m_pKeyChooser;
-	QPushButton* bDefaults;
-	QPushButton* bOk;
-	QPushButton* bCancel;
-	QPushButton* bHelp;
-
-protected:
+ protected:
 	virtual void virtual_hook( int id, void* data );
-private:
+
+ private:
 	class KKeyDialogPrivate* d;
+	KKeyChooser* m_pKeyChooser;
 };
 
 #endif // __KKEYDIALOG_H__
