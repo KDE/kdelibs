@@ -107,9 +107,6 @@ KTMainWindow::~KTMainWindow()
 	kapp->setTopWidget( 0 );
   }
   //debug ("KTM destructor: end");
-  if (memberList->count() == 0)
-    if (queryExit())
-      qApp->quit();
 }
 
 
@@ -127,7 +124,16 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
   if (queryClose())
   {
     e->accept();
-    delete this;
+    if (memberList->count() == 1) // last window close accepted?
+    {
+      if (queryExit())            // Yes, Quit app?
+      {
+        delete this;              // Yes, delete this...
+        kapp->quit();             // ...and quit aplication.
+      }                           //--------------------------------
+    }
+    else                         // It was not last window...
+      delete this;               // ...so only delete this. (sven)
   }
 }
 
