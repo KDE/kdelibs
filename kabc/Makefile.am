@@ -13,7 +13,8 @@ libkabc_la_SOURCES = \
   field.cpp formatfactory.cpp geo.cpp phonenumber.cpp plugin.cpp \
   resource.cpp resourceconfigwidget.cpp resourcefactory.cpp resourcefile.cpp \
   resourcefileconfig.cpp resourceselectdialog.cpp stdaddressbook.cpp \
-  timezone.cpp vcard21parser.cpp vcardformat.cpp vcardformatimpl.cpp
+  timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
+  vcardformatimpl.cpp
 
 
 kabcincludedir = $(includedir)/kabc
@@ -22,7 +23,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   formatfactory.h geo.h phonenumber.h plugin.h resource.h \
   resourceconfigwidget.h resourcefactory.h resourcefile.h \
   resourceselectdialog.h stdaddressbook.h timezone.h vcard21parser.h \
-  vcardformat.h vcardformatimpl.h
+  vcardconverter.h vcardformat.h vcardformatimpl.h
 
 METASOURCES = AUTO
 

@@ -568,3 +568,34 @@ Geo VCardFormatImpl::readGeoValue( ContentLine *cl )
   } else
     return Geo();
 }
+
+bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee )
+{
+  VCardEntity e( vcard.utf8() );
+  VCardListIterator it( e.cardList() );
+
+  if ( it.current() ) {
+    VCard v(*it.current());
+    loadAddressee( addressee, v );
+    return true;
+  }
+
+  return false;
+}
+
+bool VCardFormatImpl::writeToString( const Addressee &addressee, QString &vcard )
+{
+  VCardEntity vcards;
+  VCardList vcardlist;
+  vcardlist.setAutoDelete( true );
+
+  VCard *v = new VCard;
+
+  saveAddressee( addressee, v );
+
+  vcardlist.append( v );
+  vcards.setCardList( vcardlist );
+  vcard = vcards.asString();
+
+  return true;
+}

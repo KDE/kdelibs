@@ -45,6 +45,9 @@ class VCardFormatImpl {
     void save( const Addressee &, QFile *file );
     void saveAll( AddressBook *, Resource *, QFile *file );
 
+    bool readFromString( const QString &vcard, Addressee &addr );
+    bool writeToString( const Addressee &addressee, QString &vcard );
+
   protected:
     bool loadAddressee( Addressee &, VCARD::VCard & );
     void saveAddressee( const Addressee &, VCARD::VCard * );
