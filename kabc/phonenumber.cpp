@@ -150,7 +150,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Fax");
       break;  
     case Cell:
-      return i18n("Mobile Phone");
+      return i18n("Mobile Phone", "Mobile" );
       break;  
     case Video:
       return i18n("Video");
@@ -162,7 +162,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Modem");
       break;
     case Car:
-      return i18n("Car Phone");
+      return i18n("Car Phone", "Car" );
       break;
     case Isdn:
       return i18n("ISDN");
@@ -172,6 +172,12 @@ QString PhoneNumber::typeLabel( int type )
       break;
     case Pager:
       return i18n("Pager");
+      break;
+    case Home | Fax:
+      return i18n("Home Fax");
+      break;
+    case Work | Fax:
+      return i18n("Work Fax");
       break;
     default:
       return i18n("Other");
