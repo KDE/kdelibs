@@ -1,7 +1,13 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 21 August 1997 - Martin Jones.
+Last Change: 30 August 1997 - Martin Jones.
+
+Version 0.8.10 - Martin
+-----------------------
+
+ Fix drawing of remotely loaded images.
+ emit documentDone() fixed.
 
 
 Version 0.8.9 - Martin

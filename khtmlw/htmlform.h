@@ -241,6 +241,19 @@ signals:
 
 //---------------------------------------------------------------------------
 
+class HTMLImageButton : public HTMLInput
+{
+    Q_OBJECT
+public:
+    HTMLImageButton( QWidget *parent, const char *v, const char * imgurl );
+    virtual ~HTMLImageButton() { }
+
+protected:
+    QImage *image;
+};
+
+//---------------------------------------------------------------------------
+
 class HTMLButton : public HTMLInput
 {
     Q_OBJECT

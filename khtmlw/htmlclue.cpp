@@ -976,9 +976,39 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 	return false;
 }
 
+void HTMLTable::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
+{
+    if ( _y + _height < y - getAscent() || _y > y )
+	return;
+    
+    if ( !isPrinting() )
+	return;
+    
+    _tx += x;
+    _ty += y - ascent;
+    
+	unsigned int r, c;
+	HTMLTableCell *cell;
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+			cell->print( _painter, _obj, _x - x, _y - (y - ascent),
+				_width, _height, _tx, _ty );
+		}
+	}
+}
+
 void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
 {
-    print( _painter, 0, 0, 0xFFFF, 0xFFFF, _tx, _ty );
+    print( _painter, 0, 0, 0xFFFF, 0xFFFF, _tx, _ty, false );
 }
 
 HTMLTable::~HTMLTable()
@@ -1356,10 +1386,10 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
 void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
 {
-    print( _painter, 0, 0, 0xFFFF, 0xFFFF, _tx, _ty );
+    print( _painter, 0, 0, 0xFFFF, 0xFFFF, _tx, _ty, false );
 }
 
-void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, HTMLObject *_obj )
+void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
     if ( _y + _height < y - getAscent() || _y > y )
 	return;
@@ -1371,15 +1401,18 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
     _tx += x;
     _ty += y - ascent;
-    
+
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
 	if ( obj == _obj )
 	{
 	    obj->print( _painter, _x - x, _y - (y - getHeight()), _width,	
-		    _height, _tx, _ty );
+		    _height, _tx, _ty, false );
 	    return;
 	}
+	else
+		obj->print( _painter, _obj, _x - x, _y - (y - getHeight()),
+			_width, _height, _tx, _ty );
     }
 }
 

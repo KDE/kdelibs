@@ -220,16 +220,8 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	}
     }
 
-    for ( p = del.first(); p != 0L; p = del.next() )
-	waitingFileList.removeRef( p );
-
-    if ( waitingFileList.count() == 0 && bParseAfterLastImage )
-    {
-	clue->reset();
-	parse();
-    }
     // Are we waiting for the background image ?
-    else if ( !bgPixmapURL.isNull() )
+    if ( !bgPixmapURL.isNull() )
     {
 	// Did the background image arrive ?
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
@@ -245,6 +237,20 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	    }
 	}
     }    
+
+    for ( p = del.first(); p != 0L; p = del.next() )
+	waitingFileList.removeRef( p );
+
+    if ( waitingFileList.count() == 0 )
+    {
+	if ( bParseAfterLastImage )
+    	{
+		clue->reset();
+		parse();
+	}
+	if ( !parsing )
+		emit documentDone();
+    }
 }
 
 void KHTMLWidget::parseAfterLastImage()
@@ -684,6 +690,8 @@ void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 	    clue->setPos( 0, clue->getAscent() );
 	}
 
+//	positionFormElements();
+
 	emit resized( _re->size() );
 }
 
@@ -766,11 +774,13 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
 {
     bool newPainter = FALSE;
 
-    if ( parsing )
-	return;
+//    if ( parsing )
+//	return;
     
     if ( clue == 0L )
 	return;
+
+    debugM( "paintSingleObject called\n" );
 
     if ( painter == 0 )
     {
@@ -782,8 +792,8 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     int tx = x_offset + leftBorder;
     int ty = -y_offset;
     
-    clue->print( painter, x_offset, y_offset,
-		 width(), height(), tx, ty, _obj );
+    clue->print( painter, _obj, x_offset, y_offset,
+		 width(), height(), tx, ty );
     
     if ( newPainter )
     {

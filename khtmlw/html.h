@@ -38,7 +38,7 @@ class KHTMLWidget;
 
 
 //#define TORBENSDEBUG
-//#define MARTINSDEBUG
+#define MARTINSDEBUG
 
 void debugT( const char *msg , ...);
 void debugM( const char *msg , ...);

@@ -70,7 +70,9 @@ public:
      * by _x,_y,_width,_ascender. (_x|_y) is the lower left corner relative
      * to the parent of this object ( usually HTMLClue ).
      */
-    virtual bool print( QPainter *, int, int, int, int, int, int, bool = false ) { return false; }
+    virtual bool print( QPainter *, int, int, int, int, int, int, bool ) { return false; }
+    virtual void print( QPainter *, HTMLObject *, int, int, int, int, int, int )
+	{}
     /************************************************************
      * Print the object.
      */
@@ -194,7 +196,7 @@ public:
 	    int _x2, int _y2, int _tx, int _ty );
 	virtual void getSelectedText( QString & );
 	virtual void recalcBaseSize( QPainter *_painter );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -219,7 +221,7 @@ public:
 	virtual int  calcMinWidth();
 	virtual int  calcPreferredWidth() { return calcMinWidth(); }
 	virtual void setMaxWidth( int );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 
@@ -235,7 +237,7 @@ public:
     HTMLBullet( int _height, int _level, const QColor &col );
 	virtual ~HTMLBullet() { }
 
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -300,7 +302,7 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
     static void cacheImage( const char * );

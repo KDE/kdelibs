@@ -56,14 +56,14 @@ public:
 
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-	    int _height, int _tx, int _ty, bool toPrinter = false );
+	    int _height, int _tx, int _ty, bool toPrinter );
     /// Prints a special object only
     /**
      * This function is for example used to redraw an image that had to be
      * loaded from the world wide wait.
      */
-    virtual void print( QPainter *_painter, int _x, int _y, int _width,
-	    int _height, int _tx, int _ty, HTMLObject *_obj );
+    virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
+	    int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );
     /************************************************************
      * Calls all children and tells them to calculate their size.
@@ -193,10 +193,10 @@ public:
     virtual HTMLObject* checkPoint( int, int );
     virtual void calcSize( HTMLClue *parent = NULL );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-		int _height, int _tx, int _ty, bool toPrinter = false );
-    virtual void print( QPainter *_painter, int _x, int _y, int _width,
-	    int _height, int _tx, int _ty, HTMLObject *_obj )
-	{	HTMLClue::print(_painter,_x,_y,_width,_height,_tx,_ty,_obj ); }
+		int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
+		int _width, int _height, int _tx, int _ty )
+	{ HTMLClue::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
     virtual void appendLeftAligned( HTMLClueAligned *_clue )
 		{	alignLeftList.append( _clue ); }
@@ -256,7 +256,10 @@ public:
 
     virtual void setMaxWidth( int );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-		int _height, int _tx, int _ty, bool toPrinter = false );
+		int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
+		int _width, int _height, int _tx, int _ty )
+	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
 protected:
     int rspan;
@@ -315,7 +318,9 @@ public:
 
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-    	    int _height, int _tx, int _ty, bool toPrinter = false );
+    	    int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
+	    int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:

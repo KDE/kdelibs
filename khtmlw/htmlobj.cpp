@@ -618,6 +618,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	}
 	else 
 	{
+	    debugM( "Requesting image" );
 	    imageURL = _filename;
 	    imageURL.detach();
 	    synchron = TRUE;
@@ -692,6 +693,9 @@ void HTMLImage::fileLoaded( const char *_filename )
 	return;
 
     init();
+
+    debugM( "Loaded Image: %s, %d, %d, %d\n",  imageURL.data(), predefinedWidth,
+		predefinedHeight, synchron );
 
     // We knew the size during the HTML parsing ?
     if ( predefinedWidth && predefinedHeight && !synchron )
