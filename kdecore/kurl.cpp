@@ -566,9 +566,15 @@ void KURL::parse( const QString& _url, int encoding_hint )
     goto NodeErr;
   start = pos++;
 
-  // Node 6: Read everything until @
-  while( buf[pos] != '@' && pos < len ) pos++;
-  if ( pos == len )
+  // Node 6: Read everything until @, /, ? or #
+  while( (pos < len) && 
+		(buf[pos] != '@') && 
+		(buf[pos] != '/') && 
+		(buf[pos] != '?') &&
+		(buf[pos] != '#')) pos++;
+  // If we now have a '@' the ':' seperates user and password.
+  // Otherwise it seperates host and port.
+  if ( (pos == len) || (buf[pos] != '@') )
     {
       // Ok the : was used to separate host and port
       m_strHost = m_strUser;
