@@ -23,3 +23,7 @@ dcopidl_output.kidl: dcopidl $(srcdir)/dcopidl_test.h
 	./dcopidl $(srcdir)/dcopidl_test.h > dcopidl_output.kidl
 
 check-local: dcopidl_output.kidl
+
+EXTRA_DIST = dcopidl_test.h scanner.ll yacc.yy
+
+MAINTAINERCLEANFILES = yacc.cc.output

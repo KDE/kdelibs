@@ -55,3 +55,4 @@ dcopserver_LDADD   = libDCOP.la
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
+EXTRA_DIST = HOWTO ICE

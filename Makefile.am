@@ -46,7 +46,7 @@ messages:
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 	rm -f rc.cpp
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot kde-config.in kde-config
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot kde-config.in kde-config COMPILING COMPILING.html COPYING.BSD DEBUG KDE2PORTING.html NAMING common_texts.cpp configure.in.bot configure.in.in configure.in.mid 
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin

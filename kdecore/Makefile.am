@@ -36,9 +36,9 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
-	kurldrag.h
+	kurldrag.h kmimesourcefactory.h
 
-noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h
+noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h 
 
 libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp netwm.cpp \
@@ -56,6 +56,8 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
 	kpixmapprovider.cpp kurldrag.cpp
+
+kcharset.cpp: kentities.c
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC)
@@ -85,7 +87,9 @@ uninstall-local:
 	-rm -f $(kde_confdir)/charsets
 	-rm -f $(includedir)/ltdl.h
 
-EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors Royal.colors 40.colors
+EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
+	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
+	kentities.c kentities.gperf makeentities kdelibs.lsm
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c

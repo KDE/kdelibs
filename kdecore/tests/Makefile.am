@@ -29,7 +29,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest
 
-noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h 
+noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h kipctest.h
 
 METASOURCES = AUTO
 
