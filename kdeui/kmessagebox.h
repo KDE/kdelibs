@@ -32,6 +32,10 @@ class QStringList;
   *
   * Provides convenience functions for some i18n'ed standard dialogs.
   *
+  * The text in message boxes is wrapped automatically. The text may either
+  * be plaintext or richtext. If the text is plaintext, a newline-character
+  * may be used to indicate the end of a paragraph.
+  *
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$
   */
@@ -48,7 +52,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
@@ -82,7 +86,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
@@ -119,7 +123,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the list is
   *                empty, it doesn't show any listbox, working as questionYesNo.
   * @param caption Message box title. The application name is added to
@@ -158,7 +162,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button.
@@ -193,7 +197,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button.
@@ -227,7 +231,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param strlist List of strings to be written in the listbox. If the 
   *                list is empty, it doesn't show any listbox, working 
   *                as warningContinueCancel.
@@ -267,7 +271,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button. 
@@ -308,7 +312,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
   * @param notify  Emit a @ref KNotifyClient event.
@@ -335,8 +339,8 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
-  * @param details Detailed message string. May contain newlines.
+  * @param text    Message string.
+  * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
   * @param notify  Emit a @ref KNotifyClient event.
@@ -367,7 +371,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
   * @param notify  Emit a @ref KNotifyClient event.
@@ -393,8 +397,8 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
-  * @param details Detailed message string. May contain newlines.
+  * @param text    Message string.
+  * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
   * @param notify  Emit a @ref KNotifyClient event.
@@ -426,7 +430,7 @@ public:
   * @param parent  If @p parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
-  * @param text    Message string. May contain newlines.
+  * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Information").
   * @param dontShowAgainName If provided, a checkbox is added with which
@@ -464,7 +468,7 @@ public:
    * @param parent  If @p parent is 0, then the message box becomes an
    *                application-global modal dialog box. If @p parent is a
    *                widget, the message box becomes modal relative to parent.
-   * @param text    Message string. May contain newlines.
+   * @param text    Message string.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About <appname>").
    * @param notify  Emit a @ref KNotifyClient event.
@@ -499,7 +503,7 @@ public:
      *                application-global modal dialog box. If @p parent is a
      *                widget, the message box becomes modal relative to parent.
      * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
-     * @param text Message string. May contain newlines.
+     * @param text Message string.
      * @param caption Message box title.
      * @param buttonYes The text for the first button.
      *                  The default is i18n("&Yes").

@@ -29,7 +29,6 @@
 #include <qvbox.h>
 #include <qvgroupbox.h>
 #include <qstylesheet.h>
-#include <qtooltip.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -41,7 +40,6 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <kstdguiitem.h>
-#include <kstringhandler.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -69,39 +67,56 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     QHBoxLayout * lay = new QHBoxLayout(contents);
     lay->setSpacing(KDialog::spacingHint()*2);
 
-    lay->addStretch(1);
     QLabel *label1 = new QLabel( contents);
 #if QT_VERSION < 300
     label1->setPixmap(QMessageBox::standardIcon(icon, kapp->style().guiStyle()));
 #else
     label1->setPixmap(QMessageBox::standardIcon(icon));
 #endif
-    lay->add( label1 );
-    
-    bool bTooSmall = false;
-    QStringList textList = QStringList::split('\n', text, true);
-    for(QStringList::Iterator it = textList.begin(); 
-        it != textList.end(); ++it)
+    lay->addSpacing(15);
+    lay->addWidget( label1, 0, Qt::AlignCenter );
+    lay->addSpacing(15);
+    // Enforce <p>text</p> otherwise the word-wrap doesn't work well 
+    QString qt_text;
+    if ( text.find('<') == -1 )
     {
-        if ((*it).length() > 80)
+        QStringList lines = QStringList::split('\n', text);
+        for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
         {
-           *it = KStringHandler::csqueeze(*it, 80);
-           bTooSmall = true;
+           *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
         }
-    }
-    
-    QLabel *label2 = new QLabel( textList.join("\n"), contents);
-    
-    if (bTooSmall)
-       QToolTip::add(label2, text);
-    
-    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs );
-    QSize sh = label2->sizeHint();
-    label2->setMinimumSize(sh);
-    lay->add( label2 );
-    lay->addStretch(1);
+        qt_text = lines.join(QString::null);
+    } 
+    else
+        qt_text = text;
 
-    QSize extraSize = QSize(50,30);
+    QLabel *label2 = new QLabel( qt_text, contents);
+    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs | Qt::WordBreak );
+
+    int min_width = label2->sizeHint().width();
+    int pref_width = QApplication::desktop()->width() / 3;
+    if (min_width > pref_width)
+    {
+       if (min_width > (pref_width *2))
+          pref_width = pref_width *2;
+       else
+          pref_width = min_width;
+    }
+    int pref_height = label2->heightForWidth(pref_width);
+    while (pref_width > min_width )
+    {
+       int new_width = (pref_width * 9) / 10;
+       if (new_width < min_width)
+          min_width = min_width;
+       int new_height = label2->heightForWidth(new_width);
+       if (new_height > pref_height)
+          break;
+       pref_width = new_width;
+    }
+
+    label2->setFixedSize(QSize(pref_width, pref_height));
+    lay->addWidget( label2 );
+
     if (!strlist.isEmpty())
     {
        KListBox *listbox=new KListBox( topcontents );
@@ -112,7 +127,6 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
-       extraSize = QSize(50,0);
     }
 
     if (!details.isEmpty())
@@ -125,7 +139,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 
     dialog->setMainWidget(topcontents);
     dialog->enableButtonSeparator(false);
-    dialog->incInitialSize( extraSize );
+    dialog->disableResize();
 
     if (KMessageBox_queue)
     {
