@@ -1,5 +1,15 @@
-/* This file is part of the KDE libraries
+/* Keramik Style for KDE3
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
+
+   based on the KDE3 HighColor Style
+
+   Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
+             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
+ 
+   Drawing routines adapted from the KDE2 HCStyle,
+   Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
+             (C) 2000 Dirk Mueller          <mueller@kde.org>
+             (C) 2001 Martijn Klingens      <mklingens@yahoo.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,9 +35,6 @@
 #include <kstyle.h>
 
 
-class QPopupMenu;
-namespace Keramik { class PixmapLoader; }
-
 class KeramikStyle : public KStyle
 {
 	Q_OBJECT
@@ -35,6 +42,9 @@ class KeramikStyle : public KStyle
 public:
 	KeramikStyle();
 	virtual ~KeramikStyle();
+
+	void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg, const QPopupMenu* ) const;
+	QPixmap stylePixmap(StylePixmap stylepixmap, const QWidget* widget, const QStyleOption& opt) const;
 
 	void polish( QWidget* widget );
 	void unPolish( QWidget* widget );
@@ -62,12 +72,6 @@ public:
 	                  SFlags flags = Style_Default,
 	                  const QStyleOption& opt = QStyleOption::Default ) const;
 
-	void drawControlMask( ControlElement element,
-	                      QPainter* p,
-	                      const QWidget* widget,
-	                      const QRect& r,
-	                      const QStyleOption& = QStyleOption::Default ) const;
-		
 	void drawComplexControl( ComplexControl control,
 	                         QPainter* p,
 	                         const QWidget* widget,
@@ -78,12 +82,6 @@ public:
 	                         SCFlags active = SC_None,
 	                         const QStyleOption& = QStyleOption::Default ) const;
 
-	void drawComplexControlMask( ComplexControl control,
-	                             QPainter* p,
-	                             const QWidget* widget,
-	                             const QRect& r,
-	                             const QStyleOption& = QStyleOption::Default ) const;
-		
 	int pixelMetric( PixelMetric m, const QWidget* widget = 0 ) const;
 		
 	QSize sizeFromContents( ContentsType contents,
@@ -107,10 +105,11 @@ public:
 
 protected:
 	bool eventFilter( QObject* object, QEvent* event );
-		
-	QWidget   * hoverWidget;
-
+	void renderGradient( QPainter* p, const QRect& r, QColor clr, bool horizontal, int px=0, int py=0, int pwidth=-1, int pheight=-1 ) const;
+	
 private:
+	QRect subRect(SubRect r, const QWidget *widget) const;
+	
 	// Disable copy constructor and = operator
 	KeramikStyle( const KeramikStyle&  );
 	KeramikStyle& operator=( const KeramikStyle&  );

@@ -1,101 +1,342 @@
-/* This file is part of the KDE libraries
+/* Keramik Style for KDE3
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   based on the KDE3 HighColor Style
+
+   Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
+             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
+ 
+   Drawing routines adapted from the KDE2 HCStyle,
+   Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
+             (C) 2000 Dirk Mueller          <mueller@kde.org>
+             (C) 2001 Martijn Klingens      <mklingens@yahoo.com>
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-
-   This library is distributed in the hope that it will be useful,
+ 
+   This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
+   General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
 
 // $Id$
 
+#include <qbitmap.h>
+#include <qcombobox.h>
 #include <qdrawutil.h>
+#include <qheader.h>
+#include <qintdict.h>
 #include <qlistbox.h>
+#include <qmenubar.h>
 #include <qpainter.h>
 #include <qpointarray.h>
-#include <qstyleplugin.h>
-
-#include <qcombobox.h>
-#include <qheader.h>
-#include <qmenubar.h>
 #include <qpushbutton.h>
-#include <qscrollbar.h>
 #include <qslider.h>
+#include <qstyleplugin.h>
 #include <qtabbar.h>
-#include <qtoolbutton.h>
 #include <qtoolbar.h>
-#include <qpopupmenu.h>
+#include <qtoolbutton.h>
 
-#include <kdrawutil.h>
+#include <kpixmap.h>
 #include <kpixmapeffect.h>
 
 #include "keramik.moc"
+#include "bitmaps.h"
 #include "pixmaploader.h"
 
 
+// -- Style Plugin Interface -------------------------
+class KeramikStylePlugin : public QStylePlugin
+{
+public:
+	KeramikStylePlugin() {}
+	~KeramikStylePlugin() {}
 
-/* constants from hicolor style */
+	QStringList keys() const
+	{
+		return QStringList() << "Keramik";
+	}
+
+	QStyle* create( const QString& key )
+	{
+		if ( key == "keramik" ) return new KeramikStyle;
+		return 0;
+	}
+};
+
+Q_EXPORT_PLUGIN( KeramikStylePlugin )
+// ---------------------------------------------------
+
+enum GradientType{ VSmall=0, VMed, VLarge, HMed, HLarge, GradientCount };
+ 
+class GradientSet
+{
+	public:
+		GradientSet(const QColor &baseColor);
+		~GradientSet();
+
+		KPixmap* gradient(GradientType type);
+		QColor* color() { return(&c); }
+	private:
+		KPixmap *gradients[5];
+		QColor c;
+};
+
+// ### Remove globals
+QBitmap lightBmp;
+QBitmap grayBmp;
+QBitmap dgrayBmp;
+QBitmap centerBmp;
+QBitmap maskBmp;
+QBitmap xBmp;
+QIntDict<GradientSet> gDict;
+
 static const int itemFrame       = 1;
 static const int itemHMargin     = 3;
 static const int itemVMargin     = 0;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
 
+// ---------------------------------------------------------------------------
+
+GradientSet::GradientSet(const QColor &baseColor)
+{
+	c = baseColor;
+	for(int i=0; i < GradientCount; i++)
+		gradients[i] = NULL;
+}
+
+
+GradientSet::~GradientSet()
+{
+	for(int i=0; i < GradientCount; i++)
+		if(gradients[i])
+			delete gradients[i];
+}
+
+
+KPixmap* GradientSet::gradient(GradientType type)
+{
+	if (gradients[type])
+		return gradients[type];
+
+	switch(type)
+	{
+		case VSmall: {
+			gradients[VSmall] = new KPixmap;
+			gradients[VSmall]->resize(18, 24);
+			KPixmapEffect::gradient(*gradients[VSmall], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
+			break;
+		}
+
+		case VMed: {
+			gradients[VMed] = new KPixmap;
+			gradients[VMed]->resize(18, 34);
+			KPixmapEffect::gradient(*gradients[VMed], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
+			break;
+		}
+
+		case VLarge: {
+			gradients[VLarge] = new KPixmap;
+			gradients[VLarge]->resize(18, 64);
+			KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
+			break;
+		}
+
+		case HMed: {
+			gradients[HMed] = new KPixmap;
+			gradients[HMed]->resize(34, 18);
+			KPixmapEffect::gradient(*gradients[HMed], c.light(110), c.dark(110),
+											KPixmapEffect::HorizontalGradient);
+			break;
+		}
+
+		case HLarge: {
+			gradients[HLarge] = new KPixmap;
+			gradients[HLarge]->resize(52, 18);
+			KPixmapEffect::gradient(*gradients[HLarge], c.light(110), c.dark(110),
+											KPixmapEffect::HorizontalGradient);
+			break;
+		}
+
+		default:
+			break;
+	}
+	return(gradients[type]);
+}
+
+
+
+// ---------------------------------------------------------------------------
+
+// XXX
+/* reimp. */
+void KeramikStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg,
+		const QPopupMenu* /* popup */ ) const
+{
+	QColor col = cg.button();
+
+#ifdef Q_WS_X11 // Only draw menu gradients on TrueColor, X11 visuals
+	if ( QPaintDevice::x11AppDepth() >= 24 )
+		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
+				KPixmapEffect::HorizontalGradient );
+	else
+#endif
+	pix.fill( col );
+}
+
+// XXX
+QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
+{
+	// We want the focus rect for buttons to be adjusted from
+	// the Qt3 defaults to be similar to Qt 2's defaults.
+	// -------------------------------------------------------------------
+	if (r == SR_PushButtonFocusRect ) {
+		const QPushButton* button = (const QPushButton*) widget;
+		QRect wrect(widget->rect());
+		int dbw1 = 0, dbw2 = 0;
+
+		if (button->isDefault() || button->autoDefault()) {
+			dbw1 = pixelMetric(PM_ButtonDefaultIndicator, widget);
+			dbw2 = dbw1 * 2;
+		}
+
+		int dfw1 = pixelMetric(PM_DefaultFrameWidth, widget) * 2,
+			dfw2 = dfw1 * 2;
+
+		return QRect(wrect.x()      + dfw1 + dbw1 + 1,
+					 wrect.y()      + dfw1 + dbw1 + 1,
+					 wrect.width()  - dfw2 - dbw2 - 1,
+					 wrect.height() - dfw2 - dbw2 - 1);
+	} else
+		return KStyle::subRect(r, widget);
+}
+
+
+// XXX what exactly does this do ?
+// Fix Qt's wacky image alignment
+QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
+									const QWidget* widget,
+									const QStyleOption& opt) const
+{
+    switch (stylepixmap) {
+		case SP_TitleBarMinButton:
+			return QPixmap((const char **)hc_minimize_xpm);
+		case SP_TitleBarCloseButton:
+			return QPixmap((const char **)hc_close_xpm);
+		default:
+			break;
+	}
+
+	return KStyle::stylePixmap(stylepixmap, widget, opt);
+}
+
+
+void KeramikStyle::renderGradient( QPainter* p, const QRect& r,
+	QColor clr, bool horizontal, int px, int py, int pwidth, int pheight) const
+{
+	// px, py specify the gradient pixmap offset relative to the top-left corner.
+	// pwidth, pheight specify the width and height of the parent's pixmap.
+	// We use these to draw parent-relative pixmaps for toolbar buttons
+	// and menubar items.
+
+	GradientSet* grSet = gDict.find( clr.rgb() );
+
+	if (!grSet) {
+		grSet = new GradientSet(clr);
+		gDict.insert( clr.rgb(), grSet );
+	}
+
+	if (horizontal) {
+		int width = (pwidth != -1) ? pwidth : r.width();
+
+		if (width <= 34)
+			p->drawTiledPixmap(r, *grSet->gradient(HMed), QPoint(px, 0));
+		else if (width <= 52)
+			p->drawTiledPixmap(r, *grSet->gradient(HLarge), QPoint(px, 0));
+		else {
+			KPixmap *hLarge = grSet->gradient(HLarge);
+
+			// Don't draw a gradient if we don't need to
+			if (hLarge->width() > px)
+			{
+				int pixmapWidth = hLarge->width() - px;
+
+				// Draw the gradient
+				p->drawTiledPixmap( r.x(), r.y(), pixmapWidth, r.height(),
+									*hLarge, px, 0 );
+				// Draw the remaining fill
+				p->fillRect(r.x()+pixmapWidth, r.y(), r.width()-pixmapWidth, 
+						r.height(),	clr.dark(110));
+
+			} else
+				p->fillRect(r, clr.dark(110));
+		}
+
+	} else {
+		// Vertical gradient
+		// -----------------
+		int height = (pheight != -1) ? pheight : r.height();
+
+		if (height <= 24)
+			p->drawTiledPixmap(r, *grSet->gradient(VSmall), QPoint(0, py));
+		else if (height <= 34)
+			p->drawTiledPixmap(r, *grSet->gradient(VMed), QPoint(0, py));
+		else if (height <= 64)
+			p->drawTiledPixmap(r, *grSet->gradient(VLarge), QPoint(0, py));
+		else {
+			KPixmap *vLarge = grSet->gradient(VLarge);
+
+			// Only draw the upper gradient if we need to.
+			if (vLarge->height() > py)
+			{
+				int pixmapHeight = vLarge->height() - py;
+
+				// Draw the gradient
+				p->drawTiledPixmap( r.x(), r.y(), r.width(), pixmapHeight,
+									*vLarge, 0, py );
+				// Draw the remaining fill
+				p->fillRect(r.x(), r.y()+pixmapHeight, r.width(), 
+						r.height()-pixmapHeight, clr.dark(110));
+
+			} else
+				p->fillRect(r, clr.dark(110));
+		}
+	}
+}
+
 #define loader Keramik::PixmapLoader::the()
 
-// -- Style Plugin Interface -------------------------
-class KeramikStylePlugin : public QStylePlugin
+KeramikStyle::KeramikStyle() 
+	: KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar )
 {
-	public:
-		KeramikStylePlugin() {}
-		~KeramikStylePlugin() {}
-
-		QStringList keys() const
-		{
-			return QStringList() << "Keramik";
-		}
-
-		QStyle* create( const QString& key )
-		{
-			if ( key == "keramik" )
-				return new KeramikStyle();
-			
-			return 0;
-		}
-};
-
-Q_EXPORT_PLUGIN( KeramikStylePlugin )
-// ---------------------------------------------------
-
-
-KeramikStyle::KeramikStyle()
-	: KStyle(AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar),
-	  hoverWidget(0)
-{
+	gDict.setAutoDelete( true );
 }
 
 KeramikStyle::~KeramikStyle()
 {
 }
 
-
 void KeramikStyle::polish(QWidget* widget)
 {
 	// Put in order of highest occurance to maximise hit rate
 	if ( widget->inherits( "QPushButton" ) || widget->inherits( "QComboBox" ) )
 		widget->setBackgroundMode( NoBackground );
-/*	else if ( widget->inherits( "QLineEdit" ) )
-		widget->installEventFilter( this ); */ 
+
+	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
+		widget->setBackgroundMode( NoBackground );
+
  	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
 	    QListBox* listbox = (QListBox*) widget;
 	    listbox->setLineWidth( 4 );
@@ -105,25 +346,20 @@ void KeramikStyle::polish(QWidget* widget)
 	KStyle::polish(widget);
 }
 
-
 void KeramikStyle::unPolish(QWidget* widget)
 {
 	if ( widget->inherits( "QPushButton" ) )
 		widget->setBackgroundMode( PaletteBase );
+
+	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
+		widget->setBackgroundMode( PaletteBackground );
+
  	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
 	    QListBox* listbox = (QListBox*) widget;
 	    listbox->setLineWidth( 1 );
 		listbox->setBackgroundMode( PaletteBackground );
 	    widget->removeEventFilter( this );
 	}
-
-/*	if (widget->inherits("QPushButton")) {
-		widget->removeEventFilter(this);
-	}
-	else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {
-		widget->setBackgroundMode(QWidget::PaletteBackground);
-	}
-*/
 
 	KStyle::unPolish(widget);
 }
@@ -156,12 +392,11 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
 			break;
 		}
-/*			
+
 		case PE_ButtonDropDown:
-		case PE_ButtonTool: {
+		case PE_ButtonTool:
+		{
 			bool sunken = on || down;
-			int  x,y,w,h;
-			r.rect(&x, &y, &w, &h);
 			int x2 = x+w-1;
 			int y2 = y+h-1;
 			QPen oldPen = p->pen();
@@ -186,7 +421,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			p->setPen( oldPen );
 			break;
 		}
-*/
+
 		// PUSH BUTTON
 		// -------------------------------------------------------------------
 		case PE_ButtonCommand:
@@ -199,34 +434,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
 
-/*			if ( widget->parent() )
-			{
-				QPainter sp( widget->parent() );
-				QPoint origin( widget->mapToParent( 
-				sp.translate( widget->mapToParent( 
-			}*/
-/*			if ( sunken )
-				kDrawBeButton( p, x, y, w, h, cg, true,
-						&cg.brush(QColorGroup::Mid) );
-			
-			else if ( flags & Style_MouseOver ) {
-				QBrush brush(cg.button().light(110));
-				kDrawBeButton( p, x, y, w, h, cg, false, &brush );
-			}
-
-			// "Flat" button
-			else if (!(flags & (Style_Raised | Style_Sunken)))
-				p->fillRect(r, cg.button());
-			
-			else*/
-				break;
+			break;
 
 		}
-/*
 
 		// BEVELS
 		// -------------------------------------------------------------------
-		case PE_ButtonBevel: {
+		case PE_ButtonBevel:
+		{
 			int x,y,w,h;
 			r.rect(&x, &y, &w, &h);
 			bool sunken = on || down;
@@ -245,31 +460,32 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x+2, y2-1, x2-1, y2-1);
 			p->drawLine(x2-1, y+2, x2-1, y2-1);
 
-			if (w > 4 && h > 4) {
+			if (w > 4 && h > 4)
+			{
 				if (sunken)
 					p->fillRect(x+2, y+2, w-4, h-4, cg.button());
 				else
 					renderGradient( p, QRect(x+2, y+2, w-4, h-4),
-								    cg.button(), flags & Style_Horizontal );
+							cg.button(), flags & Style_Horizontal );
 			}
 			break;
 		}
 
 
-		// FOCUS RECT
-		// -------------------------------------------------------------------
-		case PE_FocusRect: {
+			// FOCUS RECT
+			// -------------------------------------------------------------------
+		case PE_FocusRect:
 			p->drawWinFocusRect( r );
 			break;
-		}
 
-
-		// HEADER SECTION
-		// -------------------------------------------------------------------
-		case PE_HeaderSection: {
+			// HEADER SECTION
+			// -------------------------------------------------------------------
+		case PE_HeaderSection:
+		{
 			// Temporary solution for the proper orientation of gradients.
 			bool horizontal = true;
-			if (p && p->device()->devType() == QInternal::Widget) {
+			if (p && p->device()->devType() == QInternal::Widget)
+			{
 				QHeader* hdr = dynamic_cast<QHeader*>(p->device());
 				if (hdr)
 					horizontal = hdr->orientation() == Horizontal;
@@ -297,13 +513,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				p->fillRect(x+1, y+1, w-3, h-3, cg.button());
 			else
 				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
-							    cg.button(), !horizontal );
+						cg.button(), !horizontal );
 			p->setPen( oldPen );
 			break;
 		}
 
-*/
-		// SCROLLBAR
+
+		// 	// SCROLLBAR
 		// -------------------------------------------------------------------
 
 		case PE_ScrollBarSlider:
@@ -315,8 +531,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( horizontal )
 			{
 				if ( w < ( loader.pixmap( "scrollbar-hbar-slider1" ).width() +
-				           loader.pixmap( "scrollbar-hbar-slider3" ).width() +
-				           loader.pixmap( "scrollbar-hbar-slider5" ).width() + 2 ) )
+							loader.pixmap( "scrollbar-hbar-slider3" ).width() +
+							loader.pixmap( "scrollbar-hbar-slider5" ).width() + 2 ) )
 					if ( w > loader.pixmap( "scrollbar-hbar-small-slider1" ).width() )
 					{
 						name = "med-";
@@ -329,8 +545,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					}
 			}
 			else if ( h < ( loader.pixmap( "scrollbar-vbar-slider1" ).height() +
-			                loader.pixmap( "scrollbar-vbar-slider3" ).height() +
-			                loader.pixmap( "scrollbar-vbar-slider5" ).height() + 2 ) )
+						loader.pixmap( "scrollbar-vbar-slider3" ).height() +
+						loader.pixmap( "scrollbar-vbar-slider5" ).height() + 2 ) )
 				if ( h > loader.pixmap( "scrollbar-vbar-small-slider1" ).height() )
 				{
 					name = "med-";
@@ -362,8 +578,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
-		case PE_Indicator: {
-			
+		case PE_Indicator:
+		{
+
 			bool enabled  = flags & Style_Enabled;
 			bool nochange = flags & Style_NoChange;
 
@@ -373,34 +590,33 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		}
 
 
-		// RADIOBUTTON (exclusive indicator)
-		// -------------------------------------------------------------------
-		case PE_ExclusiveIndicator: {
-			
+			// RADIOBUTTON (exclusive indicator)
+			// -------------------------------------------------------------------
+		case PE_ExclusiveIndicator:
+		{
+
 			Keramik::ScaledPainter( on ? "radiobutton-on" : "radiobutton-off" ).draw( p, x, y, w, h );
 
 			break;
 		}
 
-/*
-		// RADIOBUTTON (exclusive indicator) mask
-		// -------------------------------------------------------------------
-		case PE_ExclusiveIndicatorMask: {
-			if (maskBmp.isNull()) {
-				maskBmp = QBitmap(13, 13, radiomask_bits, true);
-				maskBmp.setMask(maskBmp);
-			}
-				
-			p->setPen(Qt::color1);
-			p->drawPixmap(r.x(), r.y(), maskBmp);
+			// line edit frame
+		case PE_PanelLineEdit:
+		{
+			p->setPen( cg.dark() );
+			p->drawLine( x, y, x + w - 1, y );
+			p->drawLine( x, y, x, y + h - 1 );
+			p->setPen( cg.mid() );
+			p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
+			p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
 			break;
 		}
 
-
-		// SPLITTER/DOCKWINDOW HANDLES
-		// -------------------------------------------------------------------
+			// SPLITTER/DOCKWINDOW HANDLES
+			// -------------------------------------------------------------------
 		case PE_DockWindowResizeHandle:
-		case PE_Splitter: {
+		case PE_Splitter:
+		{
 			int x,y,w,h;
 			r.rect(&x, &y, &w, &h);
 			int x2 = x+w-1;
@@ -427,17 +643,15 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		}
 
 
-		// GENERAL PANELS
-		// -------------------------------------------------------------------
+			// GENERAL PANELS
+			// -------------------------------------------------------------------
 		case PE_Panel:
-*/
-
-/*
+		case PE_PanelPopup:
 		case PE_WindowFrame:
-		case PE_PanelLineEdit: {
+		{
 			bool sunken  = flags & Style_Sunken;
 			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
-										: opt.lineWidth();
+				: opt.lineWidth();
 			if (lw == 2)
 			{
 				QPen oldPen = p->pen();
@@ -465,13 +679,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		}
 
 
-		// MENU / TOOLBAR PANEL
-		// -------------------------------------------------------------------
+			// MENU / TOOLBAR PANEL
+			// -------------------------------------------------------------------
 		case PE_PanelMenuBar: 			// Menu
-		case PE_PanelDockWindow: {		// Toolbar
+		case PE_PanelDockWindow:		// Toolbar
+		{
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
-			
+
 			if (opt.lineWidth())
 			{
 				p->setPen(cg.light());
@@ -483,14 +698,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 				// ### Qt should specify Style_Horizontal where appropriate
 				renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
-					cg.button(), (r.width() < r.height()) &&
-								 (pe != PE_PanelMenuBar) );
+						cg.button(), (r.width() < r.height()) &&
+						(pe != PE_PanelMenuBar) );
 			}
 			else
 			{
 				renderGradient( p, QRect(r.x(), r.y(), x2, y2),
-					cg.button(), (r.width() < r.height()) &&
-								 (pe != PE_PanelMenuBar) );
+						cg.button(), (r.width() < r.height()) &&
+						(pe != PE_PanelMenuBar) );
 			}
 
 			break;
@@ -498,17 +713,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 
 
-		// TOOLBAR SEPARATOR
-		// -------------------------------------------------------------------
-		case PE_DockWindowSeparator: {
+			// TOOLBAR SEPARATOR
+			// -------------------------------------------------------------------
+		case PE_DockWindowSeparator:
+		{
 			renderGradient( p, r, cg.button(),
-							!(flags & Style_Horizontal));
-			if ( !(flags & Style_Horizontal) ) {
+					!(flags & Style_Horizontal));
+			if ( !(flags & Style_Horizontal) )
+			{
 				p->setPen(cg.mid());
 				p->drawLine(4, r.height()/2, r.width()-5, r.height()/2);
 				p->setPen(cg.light());
 				p->drawLine(4, r.height()/2+1, r.width()-5, r.height()/2+1);
-			} else {
+			}
+			else
+			{
 				p->setPen(cg.mid());
 				p->drawLine(r.width()/2, 4, r.width()/2, r.height()-5);
 				p->setPen(cg.light());
@@ -517,7 +736,6 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			break;
 		}
 
-
 		default:
 		{
 			// ARROWS
@@ -525,55 +743,38 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft)
 			{
 				QPointArray a;
-				
-				if ( type != B3 ) {
-					// HighColor & Default arrows
-					switch(pe) {
-						case PE_ArrowUp:
-							a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
-							break;
 
-						case PE_ArrowDown:
-							a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
-							break;
+				switch(pe)
+				{
+					case PE_ArrowUp:
+						a.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
+						break;
 
-						case PE_ArrowLeft:
-							a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
-							break;
+					case PE_ArrowDown:
+						a.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
+						break;
 
-						default:
-							a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
-					}
-				} else {
-					// B3 arrows
-					switch(pe) {
-						case PE_ArrowUp:
-							a.setPoints(QCOORDARRLEN(B3::u_arrow), B3::u_arrow);
-							break;
+					case PE_ArrowLeft:
+						a.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
+						break;
 
-						case PE_ArrowDown:
-							a.setPoints(QCOORDARRLEN(B3::d_arrow), B3::d_arrow);
-							break;
-
-						case PE_ArrowLeft:
-							a.setPoints(QCOORDARRLEN(B3::l_arrow), B3::l_arrow);
-							break;
-
-						default:
-							a.setPoints(QCOORDARRLEN(B3::r_arrow), B3::r_arrow);
-					}
+					default:
+						a.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
 				}
-					
+
 				p->save();
 				if ( flags & Style_Down )
 					p->translate( pixelMetric( PM_ButtonShiftHorizontal ),
-								  pixelMetric( PM_ButtonShiftVertical ) );
+							pixelMetric( PM_ButtonShiftVertical ) );
 
-				if ( flags & Style_Enabled ) {
+				if ( flags & Style_Enabled )
+				{
 					a.translate( r.x() + r.width() / 2, r.y() + r.height() / 2 );
 					p->setPen( cg.buttonText() );
 					p->drawLineSegments( a );
-				} else {
+				}
+				else
+				{
 					a.translate( r.x() + r.width() / 2 + 1, r.y() + r.height() / 2 + 1 );
 					p->setPen( cg.light() );
 					p->drawLineSegments( a );
@@ -582,28 +783,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					p->drawLineSegments( a );
 				}
 				p->restore();
-			
-			} else
+
+			}
+			else
 				KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 		}
-		*/
-
-		case PE_PanelLineEdit:
-		{
-			p->setPen( cg.dark() );
-			p->drawLine( x, y, x + w - 1, y );
-			p->drawLine( x, y, x, y + h - 1 );
-			p->setPen( cg.mid() );
-			p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
-			p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
-			break;
-		}
-
-		default:
-			KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 	}
 }
-
 
 void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 										  QPainter* p,
@@ -619,9 +805,38 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 
 	switch ( kpe )
 	{
+		// SLIDER GROOVE
+		// -------------------------------------------------------------------
+		case KPE_SliderGroove:
+		{
+			const QSlider* slider = static_cast< const QSlider* >( widget );
+			bool horizontal = slider->orientation() == Horizontal;
+
+//			int gcenter = (horizontal ? r.height() : r.width()) / 2;
+
+			if ( horizontal )
+				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, x, y + 4, w, h - 8 );
+			else
+				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, x + 4, y, w - 8, h );
+
+			break;
+		}
+
+		// SLIDER HANDLE
+		// -------------------------------------------------------------------
+		case KPE_SliderHandle:
+		{
+			const QSlider* slider = static_cast< const QSlider* >( widget );
+			bool horizontal = slider->orientation() == Horizontal;
+
+			Keramik::ScaledPainter( "slider" ).draw( p, x, y, w, h );
+
+			break;
+		}
+
 		// TOOLBAR HANDLE
 		// -------------------------------------------------------------------
-/*		case KPE_ToolBarHandle: {
+		case KPE_ToolBarHandle: {
 			int x = r.x(); int y = r.y();
 			int x2 = r.x() + r.width()-1;
 			int y2 = r.y() + r.height()-1;
@@ -692,35 +907,6 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			break;
 		}
 
-*/
-		// SLIDER GROOVE
-		// -------------------------------------------------------------------
-		case KPE_SliderGroove:
-		{
-			const QSlider* slider = static_cast< const QSlider* >( widget );
-			bool horizontal = slider->orientation() == Horizontal;
-
-//			int gcenter = (horizontal ? r.height() : r.width()) / 2;
-
-			if ( horizontal )
-				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, x, y + 4, w, h - 8 );
-			else
-				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, x + 4, y, w - 8, h );
-
-			break;
-		}
-
-		// SLIDER HANDLE
-		// -------------------------------------------------------------------
-		case KPE_SliderHandle:
-		{
-			const QSlider* slider = static_cast< const QSlider* >( widget );
-			bool horizontal = slider->orientation() == Horizontal;
-
-			Keramik::ScaledPainter( "slider" ).draw( p, x, y, w, h );
-
-			break;
-		}
 
 		default:
 			KStyle::drawKStylePrimitive( kpe, p, widget, r, cg, flags, opt);
@@ -744,9 +930,6 @@ void KeramikStyle::drawControl( ControlElement element,
 		// PUSHBUTTON
 		// -------------------------------------------------------------------
 		case CE_PushButton:
-/*			if ( widget == hoverWidget )
-				flags |= Style_MouseOver;*/
-		
 			if ( static_cast< const QPushButton* >( widget )->isDefault( ) )
 				drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
 			else
@@ -822,11 +1005,6 @@ void KeramikStyle::drawControl( ControlElement element,
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
 
-			// Draw a focus rect if the button has focus
-/*			if ( flags & Style_HasFocus )
-				drawPrimitive( PE_FocusRect, p,
-						QStyle::visualRect(subRect(SR_PushButtonFocusRect, widget), widget),
-						cg, flags );*/
 			break;
 		}
 
@@ -854,7 +1032,6 @@ void KeramikStyle::drawControl( ControlElement element,
 			break;
 		}
 
-/*
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
@@ -881,7 +1058,6 @@ void KeramikStyle::drawControl( ControlElement element,
 		}
 
 
-*/
 		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
@@ -1069,7 +1245,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
 				int dim = (h-2*itemFrame) / 2;
 				QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
- + h / 2 - dim / 2, dim, dim), r );
+							y + h / 2 - dim / 2, dim, dim), r );
 
 				// Draw an arrow at the far end of the menu item
 				if ( active ) {
@@ -1086,34 +1262,9 @@ void KeramikStyle::drawControl( ControlElement element,
 			}
 			break;
 		}
+
 		default:
 			KStyle::drawControl(element, p, widget, r, cg, flags, opt);
-	}
-}
-
-
-void KeramikStyle::drawControlMask( ControlElement element,
-								  	  QPainter *p,
-								  	  const QWidget *widget,
-								  	  const QRect &r,
-								  	  const QStyleOption& opt ) const
-{
-	switch (element)
-	{
-		// PUSHBUTTON MASK
-		// ----------------------------------------------------------------------
-/*		case CE_PushButton: {
-			int x1, y1, x2, y2;
-			r.coords( &x1, &y1, &x2, &y2 );
-			QCOORD corners[] = { x1,y1, x2,y1, x1,y2, x2,y2 };
-			p->fillRect( r, color1 );
-			p->setPen( color0 );
-			p->drawPoints( QPointArray(4, corners) );
-			break;
-		}
-*/
-		default:
-			KStyle::drawControlMask(element, p, widget, r, opt);
 	}
 }
 
@@ -1135,10 +1286,14 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		case CC_ComboBox:
 		{
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
-			if ( cb->editable() ) p->fillRect( r, cg.background() );
-			drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+			if ( controls & SC_ComboBoxFrame )
+			{
+				QRect frameRect = r;
+				frameRect.addCoords( -3, -3, 0, 0 );
+				if ( cb->editable() ) p->fillRect( frameRect, cg.background() );
+				drawPrimitive( PE_ButtonCommand, p, frameRect, cg, flags );
+			}
 
-			// Draw box and arrow
 			if ( controls & SC_ComboBoxArrow )
 			{
 				if ( active ) flags |= Style_On;
@@ -1151,13 +1306,13 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				Keramik::ScaledPainter( "ripple" ).draw( p, rr );
 				Keramik::CenteredPainter( "arrow" ).draw( p, ar );
 			}
+
 			if ( ( controls & SC_ComboBoxEditField ) && cb->editable() )
 			{
 				QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
 				er.addCoords( -3, -3, 3, 3 );
 				p->fillRect( er, cg.base() );
 				drawPrimitive( PE_PanelLineEdit, p, er, cg );
-//				er.addCoords( 1, 1, -1, -1 );
 				Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
 			}
 
@@ -1165,9 +1320,69 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		}
 
 		case CC_SpinWidget:
+		{
+			const QSpinWidget* sw = static_cast< const QSpinWidget* >( widget );
+			if ( controls & SC_SpinWidgetFrame )
+			{
+				QRect frameRect = r;
+				frameRect.addCoords( -3, -3, 0, 0 );
+				p->fillRect( frameRect, cg.background() );
+				drawPrimitive( PE_ButtonCommand, p, frameRect, cg, flags );
+			}
+
+			if ( controls & SC_SpinWidgetButtonField )
+			{
+				QRect br = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetButtonField ), widget );
+				Keramik::CenteredPainter( "spinbox" ).draw( p, br );
+			}
+
 			Keramik::CenteredPainter( "spinbox" ).draw( p, r );
+			if ( controls & SC_SpinWidgetEditField )
+			{
+				QRect er = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetEditField ), widget );
+				er.addCoords( -3, -3, 3, 3 );
+				p->fillRect( er, cg.base() );
+				drawPrimitive( PE_PanelLineEdit, p, er, cg );
+				Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
+			}
 			break;
-/*
+		}
+		case CC_ScrollBar:
+		{
+			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
+			bool horizontal = sb->orientation() == Horizontal;
+			QRect slider, subpage, addpage, subline, addline;
+
+			slider = querySubControlMetrics( control, widget, SC_ScrollBarSlider, opt );
+			subpage = querySubControlMetrics( control, widget, SC_ScrollBarSubPage, opt );
+			addpage = querySubControlMetrics( control, widget, SC_ScrollBarAddPage, opt );
+			subline = querySubControlMetrics( control, widget, SC_ScrollBarSubLine, opt );
+			addline = querySubControlMetrics( control, widget, SC_ScrollBarAddLine, opt );
+
+			if ( controls & SC_ScrollBarSubLine )
+				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg, flags );
+
+			QRegion clip;
+			if ( controls & SC_ScrollBarSubPage ) clip |= subpage;
+			if ( controls & SC_ScrollBarAddPage ) clip |= addpage;
+			p->setClipRegion( clip );
+			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
+
+			if ( horizontal )
+				p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1 , slider.height() );
+			else p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
+
+			if ( controls & SC_ScrollBarSlider )
+				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
+			p->setClipping( false );
+
+			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ))
+				drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags );
+
+			break;
+		}
+
+
 		// TOOLBUTTON
 		// -------------------------------------------------------------------
 		case CC_ToolButton: {
@@ -1227,73 +1442,9 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			break;
 		}
 
-*/
-		case CC_ScrollBar:
-		{
-			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
-			bool horizontal = sb->orientation() == Horizontal;
-			QRect slider, subpage, addpage, subline, addline;
-
-			slider = querySubControlMetrics( control, widget, SC_ScrollBarSlider, opt );
-			subpage = querySubControlMetrics( control, widget, SC_ScrollBarSubPage, opt );
-			addpage = querySubControlMetrics( control, widget, SC_ScrollBarAddPage, opt );
-			subline = querySubControlMetrics( control, widget, SC_ScrollBarSubLine, opt );
-			addline = querySubControlMetrics( control, widget, SC_ScrollBarAddLine, opt );
-
-			if ( controls & SC_ScrollBarSubLine )
-				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg, flags );
-
-			QRegion clip;
-			if ( controls & SC_ScrollBarSubPage ) clip |= subpage;
-			if ( controls & SC_ScrollBarAddPage ) clip |= addpage;
-			p->setClipRegion( clip );
-			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
-
-			if ( horizontal )
-				p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1 , slider.height() );
-			else p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
-
-			if ( controls & SC_ScrollBarSlider )
-				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
-			p->setClipping( false );
-
-			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ))
-				drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags );
-
-			break;
-		}
-
 		default:
 			KStyle::drawComplexControl( control, p, widget,
 						r, cg, flags, controls, active, opt );
-			break;
-	}
-}
-
-
-void KeramikStyle::drawComplexControlMask( ComplexControl control,
-											 QPainter *p,
-											 const QWidget *widget,
-											 const QRect &r,
-											 const QStyleOption& opt ) const
-{
-	switch (control)
-	{
-		// COMBOBOX & TOOLBUTTON MASKS
-		// -------------------------------------------------------------------
-/*		case CC_ComboBox:
-		case CC_ToolButton: {
-			int x1, y1, x2, y2;
-			r.coords( &x1, &y1, &x2, &y2 );
-			QCOORD corners[] = { x1,y1, x2,y1, x1,y2, x2,y2 };
-			p->fillRect( r, color1 );
-			p->setPen( color0 );
-			p->drawPoints( QPointArray(4, corners) );
-			break;
-		}
-*/
-		default:
-			KStyle::drawComplexControlMask(control, p, widget, r, opt);
 	}
 }
 
@@ -1311,14 +1462,6 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 4;
 		case PM_SliderLength:
 			return 8;
-/*
-		case PM_MenuButtonIndicator: {		// Arrow width
-			if ( type != B3 )
-				return 8;
-			else
-				return 7;
-		}
-*/										
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ExclusiveIndicatorWidth:	// Radiobutton size
@@ -1337,6 +1480,9 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 
 		case PM_DefaultFrameWidth:
 			return 1;
+
+		case PM_MenuButtonIndicator:
+			return 8;
 
 		default:
 			return KStyle::pixelMetric(m, widget);
@@ -1358,9 +1504,9 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			              contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget ) + 3 );
 
 		case CT_ComboBox:
-			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 40,
-			              contentSize.height() + 12 );
-/*
+			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 36,
+			              contentSize.height() + 10 );
+
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
 		case CT_PopupMenuItem: {
@@ -1418,7 +1564,6 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			return QSize( w, h );
 		}
 
-*/
 		default:
 			return KStyle::sizeFromContents( contents, widget, contentSize, opt );
 	}
@@ -1456,10 +1601,10 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 			switch ( subcontrol )
 			{
 				case SC_ComboBoxArrow:
-					return QRect( widget->width() - arrow - 10, 0, arrow, widget->height() );
+					return QRect( widget->width() - arrow - 14, 0, arrow, widget->height() );
 
 				case SC_ComboBoxEditField:
-					return QRect( 10, 8, widget->width() - arrow - 20, widget->height() - 16 );
+					return QRect( 8, 6, widget->width() - arrow - 28, widget->height() - 14 );
 
 				default: break;
 			}
@@ -1527,24 +1672,6 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 	return KStyle::querySubControlMetrics( control, widget, subcontrol, opt );
 }
 
-// Fix Qt's wacky image alignment
-/*QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
-									const QWidget* widget,
-									const QStyleOption& opt) const
-{
-    switch (stylepixmap) {
-		case SP_TitleBarMinButton:
-			return QPixmap((const char **)hc_minimize_xpm);
-		case SP_TitleBarCloseButton:
-			return QPixmap((const char **)hc_close_xpm);
-		default:
-			break;
-	}
-
-	return KStyle::stylePixmap(stylepixmap, widget, opt);
-}*/
-
-
 bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 {
 	if (KStyle::eventFilter( object, event ))
@@ -1588,25 +1715,9 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 	else if ( event->type() == QEvent::Show && object->inherits( "QListBox" ) )
 	{
 		QListBox* listbox = (QListBox*) object;
-		listbox->setGeometry( listbox->x() + 4, listbox->y() - 4, listbox->width() - 8, listbox->height() + 8 );
+		listbox->setGeometry( listbox->x() + 4, listbox->y() - 4, listbox->width() - 6, listbox->height() + 8 );
 	}
 
-	// Handle push button hover effects.
-	/*	QPushButton* button = dynamic_cast<QPushButton*>(object);
-		if ( button )
-		{
-		if ( (event->type() == QEvent::Enter) &&
-		(button->isEnabled()) ) {
-		hoverWidget = button;
-		button->repaint( false );
-		} 
-		else if ( (event->type() == QEvent::Leave) &&
-				  (object == hoverWidget) ) {
-			hoverWidget = 0L;
-			button->repaint( false );
-		}
-	}
-*/	
 	return false;
 }
 
