@@ -167,53 +167,41 @@ public:
 			}
 			
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
-
 			art_u32 stopColor = (qRed(qStopColor.rgb()) << 24) | (qGreen(qStopColor.rgb()) << 16) | (qBlue(qStopColor.rgb()) << 8) | 0xff;
+
+			Q_UINT16 opacity = 0xff;
 
 			if(!parseOpacity.isEmpty())
 			{
-				double opacity;
-
+				double temp;
+		
 				if(parseOpacity.contains("%"))
 				{
-					QString temp = parseOpacity.left(parseOpacity.length() - 1);
-					opacity = double(255 * temp.toDouble()) / 100.0;
+					QString tempString = parseOpacity.left(parseOpacity.length() - 1);
+					temp = double(255 * tempString.toDouble()) / 100.0;
 				}
 				else
-					opacity = parseOpacity.toDouble();
+					temp = parseOpacity.toDouble();
 
-				opacity *= 255;
-
-				Q_UINT32 rgba = (stopColor << 8) | (short unsigned int) opacity;
-				Q_UINT32 r, g, b, a;				
-				
-				// Convert from separated to premultiplied alpha
-				a = rgba & 0xff;
-				r = (rgba >> 24) * a + 0x80;
-				r = (r + (r >> 8)) >> 8;
-				g = ((rgba >> 16) & 0xff) * a + 0x80;
-				g = (g + (g >> 8)) >> 8;
-				b = ((rgba >> 8) & 0xff) * a + 0x80;
-				b = (b + (b >> 8)) >> 8;
-				
-				(*stopArray)[offsets].color[0] = ART_PIX_MAX_FROM_8(r);
-				(*stopArray)[offsets].color[1] = ART_PIX_MAX_FROM_8(g);
-				(*stopArray)[offsets].color[2] = ART_PIX_MAX_FROM_8(b);
-				(*stopArray)[offsets].color[3] = ART_PIX_MAX_FROM_8(a);
+				opacity = (Q_UINT16) floor(temp * 255 + 0.5);
 			}
-			else
-			{
 
-				ArtPixMaxDepth color[3];
-				color[0] = ART_PIX_MAX_FROM_8((stopColor >> 24) & 0xff);
-				color[1] = ART_PIX_MAX_FROM_8((stopColor >> 16) & 0xff);
-				color[2] = ART_PIX_MAX_FROM_8((stopColor >> 8) & 0xff);
-
-				(*stopArray)[offsets].color[0] = color[0];
-				(*stopArray)[offsets].color[1] = color[1];
-				(*stopArray)[offsets].color[2] = color[2];
-				(*stopArray)[offsets].color[3] = 0xffff;
-			}
+			Q_UINT32 rgba = (stopColor << 8) | opacity;
+			Q_UINT32 r, g, b, a;				
+				
+			// Convert from separated to premultiplied alpha
+			a = rgba & 0xff;
+			r = (rgba >> 24) * a + 0x80;
+			r = (r + (r >> 8)) >> 8;
+			g = ((rgba >> 16) & 0xff) * a + 0x80;
+			g = (g + (g >> 8)) >> 8;
+			b = ((rgba >> 8) & 0xff) * a + 0x80;
+			b = (b + (b >> 8)) >> 8;
+				
+			(*stopArray)[offsets].color[0] = ART_PIX_MAX_FROM_8(r);
+			(*stopArray)[offsets].color[1] = ART_PIX_MAX_FROM_8(g);
+			(*stopArray)[offsets].color[2] = ART_PIX_MAX_FROM_8(b);
+			(*stopArray)[offsets].color[3] = ART_PIX_MAX_FROM_8(a);
 		}
 
 		return stopArray->data();
