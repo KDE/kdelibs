@@ -1,8 +1,16 @@
-kdelibs-cvs (4:2.0-20000224-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-20000302-1.0) experimental; urgency=low
+ 
+  * More upstream CVS updates
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 02 Mar 2000 22:00:00 -0700
+                                                                
+kdelibs-cvs (4:2.0-20000229-1.0) experimental; urgency=low
 
   * More upstream CVS updates
+  * Adding in build-depends
+  * Making changes to ust libqt2.1
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 24 Feb 2000 18:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 29 Feb 2000 22:00:00 -0700
 
 kdelibs-cvs (4:2.0-20000221-1.1) experimental; urgency=low
 

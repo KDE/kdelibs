@@ -1,4 +1,5 @@
 Source: kdelibs-cvs
+Build-Depends: automake, debhelper, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev, libqt2.1-dev, libpng2-dev, kdoc, qt2.1-doc
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
@@ -15,7 +16,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-doc-cvs
 Architecture: all
 Section: doc
-Suggests: kdelibs3-cvs (= ${Source-Version}), kdelibs3-dev-cvs (= ${Source-Version}), libqt2-dev
+Suggests: kdelibs3-cvs (= ${Source-Version}), kdelibs3-dev-cvs (= ${Source-Version}), libqt2.1-dev
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
@@ -25,7 +26,7 @@ Package: kdelibs3-dev-cvs
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev
-Depends: kdelibs3-cvs (= ${Source-Version}), libqt2-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev (>= 2.3.0)
+Depends: kdelibs3-cvs (= ${Source-Version}), libqt2.1-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev (>= 2.3.0)
 Suggests: kdelibs-doc
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-dev
 Provides: kdelibs-dev
