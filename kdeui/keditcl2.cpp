@@ -958,7 +958,7 @@ void KEdit::spellcheck_start()
    setReadOnly(true);
 }
 
-void KEdit::misspelling (QString word, QStringList *, unsigned pos)
+void KEdit::misspelling (const QString &word, const QStringList &, unsigned int pos)
 {
 
   unsigned int l = 0;
@@ -976,7 +976,7 @@ void KEdit::misspelling (QString word, QStringList *, unsigned pos)
 }
 
 //need to use pos for insert, not cur, so forget cur altogether
-void KEdit::corrected (QString originalword, QString newword, unsigned pos)
+void KEdit::corrected (const QString &originalword, const QString &newword, unsigned int pos)
 {
   //we'll reselect the original word in case the user has played with
   //the selection in eframe or the word was auto-replaced

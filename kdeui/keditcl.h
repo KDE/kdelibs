@@ -300,11 +300,11 @@ private slots:
       /**
        * @internal
        **/
-    void corrected (QString originalword, QString newword, unsigned pos);
+    void corrected (const QString &originalword, const QString &newword, unsigned int pos);
       /**
        * @internal
        **/
-    void misspelling (QString word, QStringList *, unsigned pos);
+    void misspelling (const QString &word, const QStringList &, unsigned int pos);
 
       /**
        * @internal

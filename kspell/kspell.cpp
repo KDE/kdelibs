@@ -40,7 +40,9 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include "kspell.h"
+#include "kspelldlg.h"
 #include <kwin.h>
+#include <kprocio.h>
 
 #define MAXLINELENGTH 10000
 
@@ -83,7 +85,7 @@ public:
 
 
 
-KSpell::KSpell (QWidget *_parent, QString _caption,
+KSpell::KSpell (QWidget *_parent, const QString &_caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc,
 		bool _progressbar, bool _modal)
 {
@@ -192,6 +194,11 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   startIspell();
 }
 
+void KSpell::hide() { ksdlg->hide(); }
+
+int KSpell::heightDlg() const { return ksdlg->height(); }
+int KSpell::widthDlg() const { return ksdlg->width(); }
+
 
 void
 KSpell::startIspell()
@@ -204,11 +211,11 @@ KSpell::startIspell()
   switch (ksconfig->client())
     {
     case KS_CLIENT_ISPELL:
-      proc->setExecutable("ispell");
+      *proc << "ispell";
       kdDebug(750) << "Using ispell" << endl;
       break;
     case KS_CLIENT_ASPELL:
-      proc->setExecutable("aspell");
+      *proc << "aspell";
       kdDebug(750) << "Using aspell" << endl;
       break;
     }
@@ -383,12 +390,11 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   dialogsetup = TRUE;
 }
 
-bool KSpell::addPersonal (QString word)
+bool KSpell::addPersonal (const QString & word)
 {
-  QString qs (word);
+  QString qs = word.simplifyWhiteSpace();
 
   //we'll let ispell do the work here b/c we can
-  qs=qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
@@ -403,12 +409,11 @@ bool KSpell::writePersonalDictionary ()
   return proc->fputs ("#");
 }
 
-bool KSpell::ignore (QString word)
+bool KSpell::ignore (const QString & word)
 {
-  QString qs (word);
+  QString qs = word.simplifyWhiteSpace();
 
   //we'll let ispell do the work here b/c we can
-  qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
@@ -418,7 +423,7 @@ bool KSpell::ignore (QString word)
 }
 
 bool
-KSpell::cleanFputsWord (QString s, bool appendCR)
+KSpell::cleanFputsWord (const QString & s, bool appendCR)
 {
   QString qs(s);
   //bool firstchar = TRUE;
@@ -444,7 +449,7 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
 }
 
 bool
-KSpell::cleanFputs (QString s, bool appendCR)
+KSpell::cleanFputs (const QString & s, bool appendCR)
 {
   QString qs(s);
   unsigned l = qs.length();
@@ -460,11 +465,10 @@ KSpell::cleanFputs (QString s, bool appendCR)
     return proc->fputs ("^\n",appendCR);
 }
 
-bool KSpell::checkWord (QString buffer, bool _usedialog)
+bool KSpell::checkWord (const QString & buffer, bool _usedialog)
 {
-  QString qs (buffer);
+  QString qs = buffer.simplifyWhiteSpace();
 
-  qs.simplifyWhiteSpace();
   if (qs.find (' ')!=-1 || qs.isEmpty())    // make sure it's a _word_
     return FALSE;
 
@@ -505,16 +509,16 @@ void KSpell::checkWord2 (KProcIO *)
 
   NOOUTPUT(checkWord2);
 
-  bool mistake = (parseOneResponse(line, word, &sugg) == MISTAKE);
+  bool mistake = (parseOneResponse(line, word, sugg) == MISTAKE);
   if ( mistake && usedialog )
     {
       cwword=word;
-      dialog (word, &sugg, SLOT (checkWord3()));
+      dialog (word, sugg, SLOT (checkWord3()));
       return;
     }
   else if( mistake )
     {
-      emit misspelling (word, &sugg, lastpos);
+      emit misspelling (word, sugg, lastpos);
     }
 
   //emits a "corrected" signal _even_ if no change was made
@@ -529,7 +533,7 @@ void KSpell::checkWord3 ()
   emit corrected (cwword, replacement(), 0L);
 }
 
-QString KSpell::funnyWord (QString word)
+QString KSpell::funnyWord (const QString & word)
   // composes a guess from ispell to a readable word
   // e.g. "re+fry-y+ies" -> "refries"
 {
@@ -566,7 +570,7 @@ QString KSpell::funnyWord (QString word)
 }
 
 
-int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList *sugg)
+int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList & sugg)
   // buffer is checked, word and sugg are filled in
   // returns
   //   GOOD    if word is fine
@@ -577,7 +581,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
   word = "";
   posinline=0;
 
-  sugg->clear();
+  sugg.clear();
 
   if (buffer [0]=='*' || buffer[0] == '+' || buffer[0] == '-')
     {
@@ -589,8 +593,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       int i,j;
 
 
-      QString qs (buffer);
-      word = qs.mid (2,qs.find (' ',3)-2);
+      word = buffer.mid (2,buffer.find (' ',3)-2);
       //check() needs this
       orig=word;
 
@@ -608,28 +611,26 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       //We don't take advantage of ispell's ignore function because
       //we can't interrupt ispell's output (when checking a large
       //buffer) to add a word to _it's_ ignore-list.
-      QString qword (word);
-      if (ignorelist.findIndex(qword.lower())!=-1)
+      if (ignorelist.findIndex(word.lower())!=-1)
 	return IGNORE;
 
       //// Position in line ///
       QString qs2;
 
-      qs=buffer;
-      if (qs.find(':')!=-1)
-	qs2=qs.left (qs.find (':'));
+      if (buffer.find(':')!=-1)
+	qs2=buffer.left (buffer.find (':'));
       else
-	qs2=qs;
+	qs2=buffer;
 
       posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt()-1;
 
       ///// Replace-list stuff ////
       QStringList::Iterator it = replacelist.begin();
-      for(;it != replacelist.end(); it++, it++) // Skip two entries at a time.
+      for(;it != replacelist.end(); ++it, ++it) // Skip two entries at a time.
       {
          if (word == *it) // Word matches
          {
-            it++;
+            ++it;
             word = *it;   // Replace it with the next entry
             return REPLACE;
 	 }
@@ -638,20 +639,20 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       /////// Suggestions //////
       if (buffer [0] != '#')
 	{
-	  qs = buffer.mid(buffer.find(':')+2, buffer.length());
+	  QString qs = buffer.mid(buffer.find(':')+2, buffer.length());
 	  qs+=',';
-	  sugg->clear();
+	  sugg.clear();
 	  i=j=0;
 	  while ((unsigned int)i<qs.length())
 	    {
 	      QString temp = qs.mid (i,(j=qs.find (',',i))-i);
-	      sugg->append (funnyWord (temp));
+	      sugg.append (funnyWord (temp));
 
 	      i=j+2;
 	    }
 	}
 
-      if ((sugg->count()==1) && ((*sugg)[0] == word))
+      if ((sugg.count()==1) && (sugg.first() == word))
 	return GOOD;
 
       return MISTAKE;
@@ -681,7 +682,7 @@ bool KSpell::checkList (QStringList *_wordlist)
   dialog3slot = SLOT (checkList4 ());
 
   proc->fputs ("%"); // turn off terse mode & check one word at a time
-  lastpos=0; //now counts which *word number* we are at in checkList3()
+  lastpos=0; //now counts which *word number* we are at in checkListReplaceCurrent()
 
   //  connect (this, SIGNAL (eza()), this, SLOT (checkList2()));
   //emit eza();
@@ -697,7 +698,7 @@ bool KSpell::checkList (QStringList *_wordlist)
 
 void KSpell::checkList2 ()
   // send one word from the list to KProcIO
-  // invoked first time by checkList, later by checkList3 and checkList4
+  // invoked first time by checkList, later by checkListReplaceCurrent and checkList4
 {
   // send next word
   if (wlIt != wordlist->end())
@@ -708,7 +709,7 @@ void KSpell::checkList2 ()
       bool put;
       lastpos++; offset=0;
       put = cleanFputsWord (*wlIt);
-      wlIt++;
+      ++wlIt;
 
       // when cleanFPutsWord failed (e.g. on empty word)
       // try next word; may be this is not good for other
@@ -754,25 +755,25 @@ void KSpell::checkList3a (KProcIO *)
 	  d->endOfResponse = TRUE;
 	  //kdDebug(750) << "checkList3a: end of resp" << endl;
 	} else if (tempe>0) {
-	  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
+	  if ((e=parseOneResponse (line, word, sugg))==MISTAKE ||
 	      e==REPLACE)
 	    {
 	      dlgresult=-1;
 
 	      if (e==REPLACE)
 		{
-		  QString old = *(--wlIt); wlIt++;
+		  QString old = *(--wlIt); ++wlIt;
 		  dlgreplacement=word;
-		  checkList3();
+		  checkListReplaceCurrent();
 		  // inform application
-		  emit corrected (old, *(--wlIt), lastpos); wlIt++;
+		  emit corrected (old, *(--wlIt), lastpos); ++wlIt;
 		}
 	      else
 		{
 		  cwword=word;
 		  dlgon=TRUE;
 		  // show the dialog
-		  dialog (word, &sugg, SLOT (checkList4()));
+		  dialog (word, sugg, SLOT (checkList4()));
 		  return;
 		}
 	    }
@@ -793,8 +794,7 @@ void KSpell::checkList3a (KProcIO *)
     }
 }
 
-// rename to "checkListReplaceCurrent", when binary compatibility isn't needed
-void KSpell::checkList3 () {
+void KSpell::checkListReplaceCurrent () {
 
   // go back to misspelled word
   wlIt--;
@@ -822,10 +822,10 @@ void KSpell::checkList4 ()
     case KS_REPLACE:
     case KS_REPLACEALL:
       kdDebug(750) << "KS: cklist4: lastpos: " << lastpos << endl;
-      old = *(--wlIt); wlIt++;
+      old = *(--wlIt); ++wlIt;
       // replace word
-      checkList3();
-      emit corrected (old, *(--wlIt), lastpos); wlIt++;
+      checkListReplaceCurrent();
+      emit corrected (old, *(--wlIt), lastpos); ++wlIt;
       break;
     case KS_CANCEL:
       ksdlg->hide();
@@ -912,7 +912,7 @@ void KSpell::check2 (KProcIO *)
 
       if (tempe>0)
 	{
-	  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
+	  if ((e=parseOneResponse (line, word, sugg))==MISTAKE ||
 	      e==REPLACE)
 	    {
 	      dlgresult=-1;
@@ -948,7 +948,7 @@ void KSpell::check2 (KProcIO *)
 		  //kdDebug(750) << "(Before dialog) word=[" << word << "] cwword =[" << cwword << "]\n" << endl;
 
 		  // show the word in the dialog
-		  dialog (word, &sugg, SLOT (check3()));
+		  dialog (word, sugg, SLOT (check3()));
 		  return;
 		}
 	    }
@@ -1042,14 +1042,14 @@ KSpell::slotStopCancel (int result)
 }
 
 
-void KSpell::dialog(QString word, QStringList *sugg, const char *_slot)
+void KSpell::dialog(const QString & word, QStringList & sugg, const char *_slot)
 {
   dlgorigword=word;
 
   dialog3slot=_slot;
   dialogwillprocess=TRUE;
   connect (ksdlg, SIGNAL (command (int)), this, SLOT (dialog2(int)));
-  ksdlg->init (word, sugg);
+  ksdlg->init (word, &sugg);
   emit misspelling (word, sugg, lastpos);
 
   emitProgress();
@@ -1103,9 +1103,7 @@ KSpell:: ~KSpell ()
       delete d;
 
   if (proc)
-    {
       delete proc;
-    }
   if (ksconfig)
     delete ksconfig;
 
@@ -1161,8 +1159,9 @@ void KSpell::ispellExit (KProcess *)
 // KSpell object.
 void KSpell::emitDeath()
 {
+  bool deleteMe = autoDelete; // Can't access object after next call!
   emit death();
-  if (autoDelete)
+  if (deleteMe)
      delete this;
 }
 
@@ -1239,7 +1238,7 @@ KSpell::modalCheck( QString& text, KSpellConfig* _kcs )
     return modalreturn;
 }
 
-void KSpell::slotSpellCheckerCorrected( QString oldText, QString newText, unsigned pos )
+void KSpell::slotSpellCheckerCorrected( const QString & oldText, const QString & newText, unsigned int pos )
 {
     modaltext=modaltext.replace(pos,oldText.length(),newText);
 }
@@ -1253,8 +1252,8 @@ void KSpell::slotModalReady()
     Q_ASSERT( m_status == Running );
     connect( this, SIGNAL( done( const QString & ) ),
              this, SLOT( slotModalDone( const QString & ) ) );
-    QObject::connect( this, SIGNAL( corrected( QString, QString, unsigned ) ),
-                      this, SLOT( slotSpellCheckerCorrected( QString, QString, unsigned ) ) );
+    QObject::connect( this, SIGNAL( corrected( const QString&, const QString&, unsigned int ) ),
+                      this, SLOT( slotSpellCheckerCorrected( const QString&, const QString &, unsigned int ) ) );
      QObject::connect( this, SIGNAL( death() ),
                       this, SLOT( slotModalSpellCheckerFinished( ) ) );
     check( modaltext );

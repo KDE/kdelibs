@@ -58,7 +58,7 @@ public:
   KSpellDlg (QWidget *parent, const char *name,
 	     bool _progressbar = FALSE, bool _modal = FALSE );
 
-  inline QString replacement ()
+  QString replacement () const
     { return newword; }
 
   /**
@@ -77,7 +77,7 @@ public:
   void slotProgress (unsigned int p);
 
 protected:
-	virtual void closeEvent ( QCloseEvent * e );
+  virtual void closeEvent ( QCloseEvent * e );
   void done (int i);
 
  signals:

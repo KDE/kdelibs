@@ -18,15 +18,16 @@
 #ifndef __KSPELL_H__
 #define __KSPELL_H__
 
-#include <qobject.h>
-#include <qstrlist.h>
-
-#include "kprocio.h"
-#include "kspelldlg.h"
 #include "ksconfig.h"
 
-class QTextCodec;
+#include <qobject.h>
+#include <qstringlist.h>
+#include <qstring.h>
 
+class QTextCodec;
+class KProcIO;
+class KProcess;
+class KSpellDlg;
 
 /**
  * KDE Spellchecker
@@ -79,7 +80,7 @@ public:
    * @param _progressbar Indicates if progress bar should be shown.
    * @param _modal       Indicates modal or non-modal dialog.
    */
-  KSpell(QWidget *_parent, QString _caption,
+  KSpell(QWidget *_parent, const QString &_caption,
 	 QObject *obj, const char *slot, KSpellConfig *_kcs=0,
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
@@ -88,7 +89,7 @@ public:
    *
    * @see spellStatus()
    */
-  spellStatus status() { return m_status; }
+  spellStatus status() const { return m_status; }
 
   /**
    * Cleans up ISpell.
@@ -125,7 +126,7 @@ public:
    * number (when using @ref checkList()) of
    * the last word checked.
    **/
-  inline int lastPosition()
+  int lastPosition() const
     { return lastpos;}
 
   /**
@@ -162,14 +163,14 @@ public:
    *  complete.  You can look at @ref suggestions() to see what the
    *  suggested replacements were. 
    */
-  virtual bool checkWord (QString _buffer,  bool usedialog=FALSE);
+  virtual bool checkWord (const QString &_buffer,  bool usedialog=FALSE);
 
   /**
    * Hides the dialog box.
    *
    * You'll need to do this when you are done with @ref checkWord();
    */
-  void hide ()   { ksdlg->hide(); }
+  void hide ();
 
   /**
    * Returns list of suggested word replacements.
@@ -179,7 +180,7 @@ public:
    *  use this to get the list of
    *  suggestions (if any were available).
    */
-  inline QStringList *suggestions ()	{ return &sugg; }
+  QStringList suggestions () const { return sugg; }
 
   /**
    * Gets the result code of the dialog box.
@@ -197,7 +198,7 @@ public:
    *    @li KS_STOP
    *
    */
-  inline int dlgResult ()
+  int dlgResult () const
     { return dlgresult; }
 
   /**
@@ -213,18 +214,18 @@ public:
   /**
    * Returns the height of the dialog box.
    **/
-  inline int heightDlg () {return ksdlg->height();}
+  int heightDlg () const;
   /**
    * Returns the width of the dialog box.
    **/
-  inline int widthDlg () {return ksdlg->width();}
+  int widthDlg () const;
 
   /**
    * Returns the partially spellchecked buffer.
    *
    * You might want the full buffer in its partially-checked state.
    */
-  const QString *intermediateBuffer () {return &newbuffer;}
+  QString intermediateBuffer () const {return newbuffer;}
 
   /**
    * Tells ISpell/ASpell to ignore this word for the life of this KSpell instance.
@@ -232,7 +233,7 @@ public:
    *  @ref ignore() returns @p false if word is not a word or there was an error
    *  communicating with ISpell/ASpell.
    */
-  virtual bool ignore (QString word);
+  virtual bool ignore (const QString & word);
 
   /**
    * Adds a word to the user's personal dictionary. 
@@ -240,7 +241,7 @@ public:
    * Returns @p false if @p word
    *  is not a word or there was an error communicating with ISpell/ASpell.
    */
-  virtual bool addPersonal (QString word);
+  virtual bool addPersonal (const QString & word);
 
   /**
    * Retrurns the @ref KSpellConfig object being used by this KSpell instance.
@@ -299,8 +300,8 @@ signals:
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-  void misspelling (QString originalword, QStringList *suggestions, 
-		    unsigned pos);
+  void misspelling (const QString & originalword, const QStringList & suggestions, 
+		    unsigned int pos);
 
   /**
    * Emitted after the "Replace" or "Replace All" buttons of the dialog
@@ -317,7 +318,7 @@ signals:
    *
    * @see check()
    */
-  void corrected (QString originalword, QString newword, unsigned pos);
+  void corrected (const QString & originalword, const QString & newword, unsigned int pos);
 
   /**
    * Emitted when the user pressed "Ignore All" in the dialog.
@@ -325,14 +326,14 @@ signals:
    * user dictionary.
    *
    */
-  void ignoreall (QString originalword);
+  void ignoreall (const QString & originalword);
 
   /**
    * Emmited when the user pressed "Ignore" in the dialog.
    * Don't know if this could be usefull.
    *
    */
-  void ignoreword (QString originalword);
+  void ignoreword (const QString & originalword);
 
   /**
    * Emitted when the user pressed "Add" in the dialog.
@@ -340,7 +341,7 @@ signals:
    * independent of the ISpell personal dictionary.
    *
    */
-  void addword (QString originalword);
+  void addword (const QString & originalword);
 
   /**
    * Emitted after KSpell has verified that ISpell/ASpell is running
@@ -394,7 +395,7 @@ protected slots:
   void check2 (KProcIO *);
   void checkList2 ();
   void checkList3a (KProcIO *);
-  void checkList3 ();
+  void checkListReplaceCurrent ();
   void checkList4 ();
   void dialog2 (int dlgresult);
   void check3 ();
@@ -418,7 +419,7 @@ private slots:
   /**
    * Used for @ref modalCheck().
    */
-  void slotSpellCheckerCorrected( QString oldText, QString newText, unsigned );
+  void slotSpellCheckerCorrected( const QString & oldText, const QString & newText, unsigned int );
 
   /**
    * Used for @ref modalCheck().
@@ -484,17 +485,17 @@ protected:
   static QWidget* modalWidgetHack;
   static QStringList modalListText;
     
-  int parseOneResponse (const QString &_buffer, QString &word, QStringList *sugg);
-  QString funnyWord (QString word);
-  void dialog (QString word, QStringList *sugg, const char* _slot);
-  inline QString replacement ()
+  int parseOneResponse (const QString &_buffer, QString &word, QStringList &sugg);
+  QString funnyWord (const QString & word);
+  void dialog (const QString & word, QStringList & sugg, const char* _slot);
+  QString replacement () const
     { return dlgreplacement; }
 
   void setUpDialog ( bool reallyusedialogbox = TRUE);
 
   void emitProgress ();
-  bool cleanFputs (QString s, bool appendCR=TRUE);
-  bool cleanFputsWord (QString s, bool appendCR=TRUE);
+  bool cleanFputs (const QString & s, bool appendCR=TRUE);
+  bool cleanFputsWord (const QString & s, bool appendCR=TRUE);
   void startIspell();
   bool writePersonalDictionary ();
 

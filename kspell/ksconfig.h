@@ -19,6 +19,8 @@
 #define __KSCONFIG_H__
 
 #include <qwidget.h>
+#include <qstring.h>
+#include <qstringlist.h>
 
 class QCheckBox;
 class QComboBox;
