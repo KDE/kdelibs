@@ -44,7 +44,7 @@ extern "C" {
     KJScript *script = new KJScript();
     script->setCurrent(script);
 
-    KJS::KJSGlobal *global = KJScript::global();
+    KJS::Global *global = KJScript::global();
     DOM::HTMLDocument doc;
     doc = khtml->htmlDocument();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
@@ -60,7 +60,7 @@ extern "C" {
   // evaluate code
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
   {
-    return script->evaluate((const KJS::UChar*)c, len);
+    return script->evaluate(c, len);
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
@@ -91,7 +91,7 @@ QString UString::qstring() const
   return QString((QChar*) data(), size());
 }
 
-KJSO *KJS::HTMLDocFunction::get(const UString &p) const
+KJSO *KJS::HTMLDocFunction::get(const UString &p)
 {
   Ptr tmp;
   DOM::HTMLCollection coll;
@@ -113,7 +113,7 @@ KJSO *KJS::HTMLDocFunction::get(const UString &p) const
     coll = doc.anchors();
     break;
   default:
-    return new KJSUndefined();
+    return newUndefined();
   }
 
   tmp = new KJS::HTMLCollection(coll);
@@ -121,14 +121,14 @@ KJSO *KJS::HTMLDocFunction::get(const UString &p) const
   return tmp->get(p);
 }
 
-KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
+KJSO *KJS::HTMLDocFunction::execute(Context *context)
 {
   KJSO *result;
   Ptr v, n;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
 
-  v = context->activation->get("0");
+  v = context->arg(0);
 
   switch (id) {
   case Images:
@@ -148,8 +148,8 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
     break;
   case Write:
     n = toString(v);
-    doc.write(n->sVal().string());
-    result = new KJSUndefined();
+    doc.write(n->stringVal().string());
+    result = newUndefined();
     break;
   default:
     assert((result = 0L));
@@ -159,25 +159,25 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
   if (id == Images || id == Applets || id == Links ||
       id == Forms || id == Anchors) {
     n = toNumber(v);
-    element = coll.item((unsigned long)n->dVal());
+    element = coll.item((unsigned long)n->doubleVal());
     result = new HTMLElement(element);
   }
 
-  return new KJSCompletion(Normal, result);
+  return newCompletion(Normal, result);
 }
 
-KJSO *KJS::HTMLDocument::get(const UString &p) const
+KJSO *KJS::HTMLDocument::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "title")
-    result = new KJSString(doc.title());
+    result = newString(doc.title());
   else if (p == "referrer")
-    result = new KJSString(doc.referrer());
+    result = newString(doc.referrer());
   else if (p == "domain")
-    result = new KJSString(doc.domain());
+    result = newString(doc.domain());
   else if (p == "URL")
-    result = new KJSString(doc.URL());
+    result = newString(doc.URL());
   else if (p == "body")
     result = new HTMLElement(doc.body());
   else if (p == "images")
@@ -193,13 +193,13 @@ KJSO *KJS::HTMLDocument::get(const UString &p) const
   else if (p == "write")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Write);
   else if (p == "cookie")
-    result = new KJSString(doc.cookie());
+    result = newString(doc.cookie());
   else {
     // look in base class (Document)
     Ptr tmp = new DOMDocument(doc);
     result = tmp->get(p);
 
-    if (result->isA(Undefined)) {
+    if (result->isA(UndefinedType)) {
       DOM::HTMLElement element;
       DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
       DOM::Node node = coll.namedItem(p.string());
@@ -211,19 +211,19 @@ KJSO *KJS::HTMLDocument::get(const UString &p) const
   return result;
 }
 
-void KJS::HTMLDocument::put(const UString &p, KJSO *v, int)
+void KJS::HTMLDocument::put(const UString &p, KJSO *v)
 {
   Ptr s;
   if (p == "title") {
     s = toString(v);
-    doc.setTitle(s->sVal().string());
+    doc.setTitle(s->stringVal().string());
   } else if (p == "cookie") {
     s = toString(v);
-    doc.setCookie(s->sVal().string());
+    doc.setCookie(s->stringVal().string());
   }
 }
 
-KJSO *KJS::HTMLElement::get(const UString &p) const
+KJSO *KJS::HTMLElement::get(const UString &p)
 {
   DOM::DOMString str;
   DOM::HTMLHtmlElement html;
@@ -236,12 +236,12 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
   case ID_HTML:
     html = element;
     if (p == "version")
-      return new KJSString(html.version());
+      return newString(html.version());
     break;
   case ID_LINK:
     link = element;
     if (p == "disabled")
-      return new KJSBoolean(link.disabled());
+      return newBoolean(link.disabled());
     else if (p == "charset")
       str = link.charset();
     else if (p == "href")
@@ -260,7 +260,7 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
       str = link.type();
     else
       break;
-    return new KJSString(str);
+    return newString(str);
     break;
   case ID_BODY:
     body = element;
@@ -278,7 +278,7 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
       str = body.vLink();
     else
       break;
-    return new KJSString(str);
+    return newString(str);
   case ID_A:
     anchor = element;
     if (p == "accessKey")
@@ -300,14 +300,14 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
     else if (p == "shape")
       str = anchor.shape();
     else if (p == "tabIndex")
-      return new KJSNumber((unsigned long)anchor.tabIndex()); /* ??? */
+      return newNumber((unsigned long)anchor.tabIndex()); /* ??? */
     else if (p == "target")
       str = anchor.target();
     else if (p == "type")
       str = anchor.type();
     else
       break;
-    return new KJSString(str);
+    return newString(str);
   case ID_IMG:
     image = element;
     if (p == "lowSrc")
@@ -325,7 +325,7 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
     else if (p == "hspace")
       str = image.hspace();
     else if (p == "isMap")
-      return new KJSBoolean(image.isMap());
+      return newBoolean(image.isMap());
     else if (p == "longDesc")
       str = image.longDesc();
     else if (p == "src")
@@ -338,7 +338,7 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
       str = image.width();
     else
       break;
-    return new KJSString(str);
+    return newString(str);
   }
 
   // generic properties
@@ -357,10 +357,10 @@ KJSO *KJS::HTMLElement::get(const UString &p) const
     return tmp->get(p);
   }
 
-  return new KJSString(str);
+  return newString(str);
 }
 
-void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
+void KJS::HTMLElement::put(const UString &p, KJSO *v)
 {
   DOM::HTMLHtmlElement html;
   DOM::HTMLLinkElement link;
@@ -369,7 +369,7 @@ void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
   DOM::HTMLImageElement image;
 
   Ptr s = toString(v);
-  DOM::DOMString str = s->sVal().string();
+  DOM::DOMString str = s->stringVal().string();
   Ptr b = toBoolean(v);
   Ptr n = toNumber(v);
 
@@ -381,7 +381,7 @@ void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
   case ID_LINK:
     link = element;
     if (p == "disabled")
-      link.setDisabled(b->bVal());
+      link.setDisabled(b->boolVal());
     else if (p == "charset")
       link.setCharset(str);
     else if (p == "href")
@@ -439,7 +439,7 @@ void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
     else if (p == "shape")
       anchor.setShape(str);
     else if (p == "tabIndex")
-      anchor.setTabIndex((long)n->dVal());
+      anchor.setTabIndex((long)n->doubleVal());
     else if (p == "target")
       anchor.setTarget(str);
     else if (p == "type")
@@ -464,7 +464,7 @@ void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
     else if (p == "hspace")
       image.setHspace(str);
     else if (p == "isMap")
-      image.setIsMap(b->bVal());
+      image.setIsMap(b->boolVal());
     else if (p == "longDesc")
       image.setLongDesc(str);
     else if (p == "src")
@@ -493,12 +493,12 @@ void KJS::HTMLElement::put(const UString &p, KJSO *v, int)
     element.setClassName(str);
 }
 
-KJSO *KJS::HTMLCollection::get(const UString &p) const
+KJSO *KJS::HTMLCollection::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "length")
-    result = new KJSNumber(collection.length());
+    result = newNumber(collection.length());
   else if (p == "item")
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::Item);
   else if (p == "namedItem")
@@ -522,74 +522,74 @@ KJSO *KJS::HTMLCollection::get(const UString &p) const
   return result;
 }
 
-KJSO *KJS::HTMLCollectionFunc::execute(KJSContext *context)
+KJSO *KJS::HTMLCollectionFunc::execute(Context *context)
 {
   KJSO *result;
   Ptr v, n;
 
   assert(id == Item || id == NamedItem);
 
-  v = context->activation->get("0");
+  v = context->arg(0);
   if (id == Item) {
     n = toNumber(v);
-    result = new DOMNode(coll.item((unsigned long)n->dVal()));
+    result = new DOMNode(coll.item((unsigned long)n->doubleVal()));
   } else {
     n = toString(v);
-    result = new DOMNode(coll.namedItem(n->sVal().string()));
+    result = new DOMNode(coll.namedItem(n->stringVal().string()));
   }
 
-  return new KJSCompletion(Normal, result);
+  return newCompletion(Normal, result);
 }
 
 ////////////////////// Image Object ////////////////////////
 
-ImageObject::ImageObject(KJSGlobal *global)
+ImageObject::ImageObject(Global *global)
 {
-  KJSConstructor *ctor = new ImageConstructor(global);
+  Constructor *ctor = new ImageConstructor(global);
   setConstructor(ctor);
   setPrototype(global->objProto);
   ctor->deref();
 
-  put("length", zeroRef(new KJSNumber(2)), DontEnum);
+  put("length", zeroRef(newNumber(2)), DontEnum);
 }
 
-KJSO* ImageObject::execute(KJSContext *)
+KJSO* ImageObject::execute(Context *)
 {
-  return new KJSCompletion(Normal, zeroRef(new KJSUndefined()));
+  return newCompletion(Normal, zeroRef(newUndefined()));
 }
 
-ImageConstructor::ImageConstructor(KJSGlobal *glob)
+ImageConstructor::ImageConstructor(Global *glob)
   : global(glob)
 {
   setPrototype(glob->funcProto);
 }
 
-KJSObject* ImageConstructor::construct(KJSList *)
+Object* ImageConstructor::construct(List *)
 {
   /* TODO: fetch optional height & width from arguments */
 
-  KJSObject *result = (KJSObject*) new Image();
+  Object *result = (Object*) new Image();
   /* TODO: do we need a prototype ? */
 
   return result;
 }
 
-KJSO *Image::get(const UString &p) const
+KJSO *Image::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "src")
-    result = new KJSString(src);
+    result = newString(src);
   else
-    result = new KJSUndefined();
+    result = newUndefined();
 
   return result;
 }
 
-void Image::put(const UString &p, KJSO *v, int)
+void Image::put(const UString &p, KJSO *v)
 {
   if (p == "src") {
     KJSO *str = toString(v);
-    src = str->sVal();
+    src = str->stringVal();
   }
 }

@@ -25,16 +25,16 @@
 
 using namespace KJS;
 
-KJSO *DOMNode::get(const UString &p) const
+KJSO *DOMNode::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "nodeName")
-    result = new KJSString(node.nodeName());
+    result = newString(node.nodeName());
   else if (p == "nodeValue")
-    result = new KJSString(node.nodeValue());
+    result = newString(node.nodeValue());
   else if (p == "nodeType")
-    result = new KJSNumber(node.nodeType());
+    result = newNumber(node.nodeType());
   else if (p == "parentNode")
     result = new DOMNode(node.parentNode());
   else if (p == "childNodes")
@@ -52,24 +52,24 @@ KJSO *DOMNode::get(const UString &p) const
   else if (p == "ownerDocument")
     result = new DOMDocument(node.ownerDocument());
   else
-    result = new KJSUndefined();
+    result = newUndefined();
 
   return result;
 }
 
-KJSO *DOMNodeList::get(const UString &p) const
+KJSO *DOMNodeList::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "length")
-    result = new KJSNumber(list.length());
+    result = newNumber(list.length());
   else
-    result = new KJSUndefined();
+    result = newUndefined();
 
   return result;
 }
 
-KJSO *DOMDocument::get(const UString &p) const
+KJSO *DOMDocument::get(const UString &p)
 {
   KJSO *result;
 
@@ -80,12 +80,12 @@ KJSO *DOMDocument::get(const UString &p) const
   return result;
 }
 
-KJSO *DOMElement::get(const UString &p) const
+KJSO *DOMElement::get(const UString &p)
 {
   KJSO *result;
 
   if (p == "tagName")
-    result = new KJSString(element.tagName());
+    result = newString(element.tagName());
   else {
     Ptr tmp = new DOMNode(element);
     return tmp->get(p);

@@ -20,7 +20,6 @@
 #ifndef _KJS_NAVIGATOR_H_
 #define _KJS_NAVIGATOR_H_
 
-#include <kjs/global.h>
 #include <kjs/object.h>
 
 class KHTMLView;
@@ -30,7 +29,7 @@ namespace KJS {
   class Navigator : public HostObject {
   public:
     Navigator() { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
   };
 }; // namespace
 

@@ -24,7 +24,6 @@
 #include <dom_doc.h>
 #include <dom_element.h>
 
-#include <kjs/global.h>
 #include <kjs/object.h>
 
 namespace KJS {
@@ -32,7 +31,7 @@ namespace KJS {
   class DOMNode : public HostObject {
   public:
     DOMNode(DOM::Node n) : node(n) { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
   private:
     DOM::Node node;
   };
@@ -40,7 +39,7 @@ namespace KJS {
   class DOMNodeList : public HostObject {
   public:
     DOMNodeList(DOM::NodeList l) : list(l) { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
   private:
     DOM::NodeList list;
   };
@@ -48,7 +47,7 @@ namespace KJS {
   class DOMDocument : public HostObject {
   public:
     DOMDocument(DOM::Document d) : doc(d) { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
   private:
     DOM::Document doc;
   };
@@ -63,7 +62,7 @@ namespace KJS {
   class DOMElement : public HostObject {
   public:
     DOMElement(DOM::Element e) : element(e) { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
   private:
     DOM::Element element;
   };

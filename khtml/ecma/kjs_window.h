@@ -20,8 +20,8 @@
 #ifndef _KJS_WINDOW_H_
 #define _KJS_WINDOW_H_
 
-#include <kjs/global.h>
 #include <kjs/object.h>
+#include <kjs/function.h>
 
 class KHTMLView;
 
@@ -30,16 +30,16 @@ namespace KJS {
   class Window : public HostObject {
   public:
     Window(KHTMLView *w) : widget(w) { }
-    virtual KJSO *get(const UString &p) const;
+    virtual KJSO *get(const UString &p);
     virtual void put(const UString &p, KJSO *v, int);
   private:
     KHTMLView *widget;
   };
 
-  class WindowFunc : public KJSInternalFunction {
+  class WindowFunc : public InternalFunction {
   public:
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
-    KJSO *execute(KJSContext *);
+    KJSO *execute(Context *);
     enum { Alert, Confirm };
   private:
     KHTMLView *widget;

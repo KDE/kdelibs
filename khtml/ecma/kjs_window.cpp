@@ -28,42 +28,42 @@
 
 using namespace KJS;
 
-KJSO *Window::get(const UString &p) const
+KJSO *Window::get(const UString &p)
 {
   if (p == "alert")
     return new WindowFunc(widget, WindowFunc::Alert);
   else if (p == "confirm")
     return new WindowFunc(widget, WindowFunc::Confirm);
 
-  return new KJSUndefined();
+  return newUndefined();
 }
 
 void Window::put(const UString &, KJSO *, int)
 {
 }
 
-KJSO *WindowFunc::execute(KJSContext *context)
+KJSO *WindowFunc::execute(Context *context)
 {
   Ptr result;
   Ptr v, s;
   QString str;
   int i;
 
-  v = context->activation->get("0");
+  v = context->arg(0);
   s = toString(v);
-  str = s->sVal().qstring();
+  str = s->stringVal().qstring();
 
   switch (id) {
   case Alert:
     KMessageBox::error((QWidget*)widget, str, "JavaScript");
-    result = new KJSUndefined();
+    result = newUndefined();
     break;
   case Confirm:
     i = KMessageBox::warningYesNo((QWidget*)widget, str, "JavaScript",
 				  i18n("OK"), i18n("Cancel"));
-    result = new KJSBoolean((i == KMessageBox::Yes));
+    result = newBoolean((i == KMessageBox::Yes));
     break;
   }
 
-  return new KJSCompletion(Normal, result);
+  return newCompletion(Normal, result);
 }

@@ -28,7 +28,7 @@
 
 using namespace KJS;
 
-KJSO *Navigator::get(const UString &p) const
+KJSO *Navigator::get(const UString &p)
 {
   UString str;
 
@@ -41,7 +41,7 @@ KJSO *Navigator::get(const UString &p) const
   else if (p == "userAgent")
     str = "Mozilla/4.0 (X11; Konqueror; Unix)";
   else
-    return new KJSUndefined();
+    return newUndefined();
 
-  return new KJSString(str);
+  return newString(str);
 }
