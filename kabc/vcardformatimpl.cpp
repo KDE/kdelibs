@@ -18,15 +18,17 @@
     Boston, MA 02111-1307, USA.
 */
 #include <qfile.h>
+#include <qregexp.h>
 #include <qtextstream.h>
 
 #include <kdebug.h>
-#include <ksavefile.h>
+#include <kmdcodec.h>
+#include <kstandarddirs.h>
+#include <ktempfile.h>
 
 #include <VCard.h>
 
 #include "addressbook.h"
-
 #include "vcardformatimpl.h"
 
 using namespace KABC;
@@ -86,7 +88,7 @@ void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
 
   VCard *v = new VCard;
 
-  saveAddressee( addressee, v );
+  saveAddressee( addressee, v, false );
 
   vcardlist.append( v );
   vcards.setCardList( vcardlist );
@@ -106,7 +108,7 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
   for ( it = ab->begin(); it != ab->end(); ++it ) {
     if ( (*it).resource() == resource ) {
       VCard *v = new VCard;
-      saveAddressee( (*it), v );
+      saveAddressee( (*it), v, false );
       (*it).setChanged( false );
       vcardlist.append( v );
     }
@@ -236,7 +238,19 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
       case EntityKey:
         addressee.insertKey( readKeyValue( cl ) );
         break;
-          
+
+      case EntityPhoto:
+        addressee.setPhoto( readPictureValue( cl, EntityPhoto, addressee ) );
+        break;
+
+      case EntityLogo:
+        addressee.setLogo( readPictureValue( cl, EntityLogo, addressee ) );
+        break;
+
+      case EntityAgent:
+        addressee.setAgent( readAgentValue( cl ) );
+        break;
+
       default:
         kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
                     << int( type ) << ": " << cl->asString() << endl;
@@ -260,7 +274,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
   return true;
 }
 
-void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v )
+void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool intern )
 {
   ContentLine cl;
   QString value;
@@ -317,10 +331,15 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v )
 
   addDateValue( v, EntityBirthday, addressee.birthday().date() );
   addDateTimeValue( v, EntityRevision, addressee.revision() );
-  addGeoValue( v, EntityGeo, addressee.geo() );
-  addUTCValue( v, EntityTimeZone, addressee.timeZone() );
+  addGeoValue( v, addressee.geo() );
+  addUTCValue( v, addressee.timeZone() );
 
-  addClassValue( v, EntityClass, addressee.secrecy() );
+  addClassValue( v, addressee.secrecy() );
+
+  addPictureValue( v, EntityPhoto, addressee.photo(), addressee, intern );
+  addPictureValue( v, EntityLogo, addressee.logo(), addressee, intern );
+
+  addAgentValue( v, addressee.agent() );
 }
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
@@ -374,6 +393,9 @@ void VCardFormatImpl::addDateTimeValue( VCard *vcard, EntityType type,
 
 void VCardFormatImpl::addAddressValue( VCard *vcard, const Address &a )
 {
+  if ( a.isEmpty() )
+    return;
+
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityAddress ) );
 
@@ -418,13 +440,12 @@ void VCardFormatImpl::addAddressParam( ContentLine *cl, int type )
   cl->setParamList( params );
 }
 
-void VCardFormatImpl::addGeoValue( VCard *vcard, EntityType type,
-                                    const Geo &geo )
+void VCardFormatImpl::addGeoValue( VCard *vcard, const Geo &geo )
 {
   if ( !geo.isValid() ) return;
 
   ContentLine cl;
-  cl.setName( EntityTypeToParamName( type ) );
+  cl.setName( EntityTypeToParamName( EntityGeo ) );
 
   GeoValue *v = new GeoValue;
   v->setLatitude( geo.latitude() );
@@ -434,13 +455,12 @@ void VCardFormatImpl::addGeoValue( VCard *vcard, EntityType type,
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addUTCValue( VCard *vcard, EntityType type,
-                                    const TimeZone &tz )
+void VCardFormatImpl::addUTCValue( VCard *vcard, const TimeZone &tz )
 {
   if ( !tz.isValid() ) return;
 
   ContentLine cl;
-  cl.setName( EntityTypeToParamName( type ) );
+  cl.setName( EntityTypeToParamName( EntityTimeZone ) );
 
   UTCValue *v = new UTCValue;
 
@@ -452,24 +472,20 @@ void VCardFormatImpl::addUTCValue( VCard *vcard, EntityType type,
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addClassValue( VCard *vcard, EntityType type,
-                                    const Secrecy &secrecy )
+void VCardFormatImpl::addClassValue( VCard *vcard, const Secrecy &secrecy )
 {
   ContentLine cl;
-  cl.setName( EntityTypeToParamName( type ) );
+  cl.setName( EntityTypeToParamName( EntityClass ) );
 
   ClassValue *v = new ClassValue;
   switch ( secrecy.type() ) {
     case Secrecy::Public:
-      kdDebug() << "is Pub" << endl;
       v->setType( (int)ClassValue::Public );
       break;
     case Secrecy::Private:
-      kdDebug() << "is Prv" << endl;
       v->setType( (int)ClassValue::Private );
       break;
     case Secrecy::Confidential:
-      kdDebug() << "is Conf" << endl;
       v->setType( (int)ClassValue::Confidential );
       break;
   }
@@ -678,14 +694,12 @@ void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityKey ) );
 
-  TextBinValue *v = new TextBinValue;
   ParamList params;
-
   if ( key.isBinary() ) {
-    v->setData( key.binaryData() );
+    cl.setValue( new TextValue( KCodecs::base64Encode( key.binaryData() ) ) );
     params.append( new Param( "ENCODING", "b" ) );
   } else {
-    v->setUrl( key.textData() );
+    cl.setValue( new TextValue( key.textData().utf8() ) );
   }
 
   switch ( key.type() ) {
@@ -700,7 +714,6 @@ void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
       break;
   }
 
-  cl.setValue( v );
   cl.setParamList( params );
   vcard->add( cl );
 }
@@ -708,18 +721,17 @@ void VCardFormatImpl::addKeyValue( VCARD::VCard *vcard, const Key &key )
 Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
 {
   Key key;
-  TextBinValue *v = (TextBinValue *)cl->value();
-
-  if ( v->isBinary() ) {
-    key.setBinaryData( v->data() );
-  } else {
-    key.setTextData( v->url() );
-  }
+  bool isBinary = false;
+  TextValue *v = (TextValue *)cl->value();
 
   ParamList params = cl->paramList();
   ParamListIterator it( params );
   for( ; it.current(); ++it ) {
+    if ( (*it)->name() == "ENCODING" && (*it)->value() == "b" )
+      isBinary = true;
     if ( (*it)->name() == "TYPE" ) {
+      if ( (*it)->value().isEmpty() )
+        continue;
       if ( (*it)->value() == "X509" )
         key.setType( Key::X509 );
       else if ( (*it)->value() == "PGP" )
@@ -731,7 +743,172 @@ Key VCardFormatImpl::readKeyValue( VCARD::ContentLine *cl )
     }
   }
 
+
+  if ( isBinary ) {
+    QByteArray data;
+    KCodecs::base64Decode( v->asString().stripWhiteSpace(), data );
+    key.setBinaryData( data );
+  } else {
+    key.setTextData( QString::fromUtf8( v->asString() ) );
+  }
+
   return key;
+}
+
+
+void VCardFormatImpl::addAgentValue( VCARD::VCard *vcard, const Agent &agent )
+{
+  if ( agent.isIntern() && !agent.addressee() )
+    return;
+
+  if ( !agent.isIntern() && agent.url().isEmpty() )
+    return;
+
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( EntityAgent ) );
+
+  ParamList params;
+  if ( agent.isIntern() ) {
+    QString vstr;
+    Addressee *addr = agent.addressee();
+    if ( addr ) {
+      writeToString( (*addr), vstr );
+      vstr.replace( QRegExp(":"), "\\:" );
+      vstr.replace( QRegExp(","), "\\," );
+      vstr.replace( QRegExp(";"), "\\;" );
+      vstr.replace( QRegExp("\r\n"), "\\n" );
+      cl.setValue( new TextValue( vstr.utf8() ) );
+    } else
+      return;
+  } else {
+    cl.setValue( new TextValue( agent.url().utf8() ) );
+    params.append( new Param( "VALUE", "uri" ) );
+  }
+
+  cl.setParamList( params );
+  vcard->add( cl );
+}
+
+Agent VCardFormatImpl::readAgentValue( VCARD::ContentLine *cl )
+{
+  Agent agent;
+  bool isIntern = true;
+  TextValue *v = (TextValue *)cl->value();
+
+  ParamList params = cl->paramList();
+  ParamListIterator it( params );
+  for( ; it.current(); ++it ) {
+    if ( (*it)->name() == "VALUE" && (*it)->value() == "uri" )
+      isIntern = false;
+  }
+
+  if ( isIntern ) {
+    QString vstr = QString::fromUtf8( v->asString() );
+    vstr.replace( QRegExp("\\\\n"), "\r\n" );
+    vstr.replace( QRegExp("\\\\:"), ":" );
+    vstr.replace( QRegExp("\\\\,"), "," );
+    vstr.replace( QRegExp("\\\\;"), ";" );
+    kdDebug() << "oldAgent=" << vstr << endl;
+    Addressee *addr = new Addressee;
+    readFromString( vstr, *addr );
+    agent.setAddressee( addr );
+  } else {
+    agent.setUrl( QString::fromUtf8( v->asString() ) );
+  }
+
+  return agent;
+}
+
+void VCardFormatImpl::addPictureValue( VCARD::VCard *vcard, VCARD::EntityType type, const Picture &pic, const Addressee &addr, bool intern )
+{
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  if ( pic.isIntern() && pic.data().isNull() )
+    return;
+
+  if ( !pic.isIntern() && pic.url().isEmpty() )
+    return;
+
+  ParamList params;
+  if ( pic.isIntern() ) {
+    QImage img = pic.data();
+    if ( intern ) { // only for vCard export we really write the data inline
+      /*
+       * Since QImage can't export it's data as QByteArray we have to save it
+       * to file first and reread it again.
+       */
+      KTempFile tmpFile;
+      img.save( tmpFile.name(), pic.type().utf8() );
+      QFile file( tmpFile.name() );
+      if ( file.open( IO_ReadOnly ) ) {
+        QByteArray data = file.readAll();
+        cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
+        file.close();
+      }
+
+      tmpFile.unlink();
+    } else { // save picture in cache
+      QString dir;
+      if ( type == EntityPhoto )
+        dir = "photos";
+      if ( type == EntityLogo )
+        dir = "logos";
+
+      img.save( locateLocal( "data", "kabc/" + dir + "/" + addr.uid() ), pic.type().utf8() );
+      cl.setValue( new TextValue( "<dummy>" ) );
+    }
+    params.append( new Param( "ENCODING", "b" ) );
+    if ( !pic.type().isEmpty() )
+      params.append( new Param( "TYPE", pic.type().utf8() ) );
+  } else {
+    cl.setValue( new TextValue( pic.url().utf8() ) );
+    if ( !pic.type().isEmpty() )
+      params.append( new Param( "TYPE", pic.type().utf8() ) );
+  }
+
+  cl.setParamList( params );
+  vcard->add( cl );
+}
+
+Picture VCardFormatImpl::readPictureValue( VCARD::ContentLine *cl, VCARD::EntityType type, const Addressee &addr )
+{
+  Picture pic;
+  bool isInline = false;
+  QString picType;
+  TextValue *v = (TextValue *)cl->value();
+
+  ParamList params = cl->paramList();
+  ParamListIterator it( params );
+  for( ; it.current(); ++it ) {
+    if ( (*it)->name() == "ENCODING" && (*it)->value() == "b" )
+      isInline = true;
+    if ( (*it)->name() == "TYPE" && !(*it)->value().isEmpty() )
+      picType = QString::fromUtf8( (*it)->value() );
+  }
+
+  if ( isInline ) {
+    QImage img;
+    if ( v->asString() == "<dummy>" ) { // no picture inline stored => picture is in cache
+      QString dir;
+      if ( type == EntityPhoto )
+        dir = "photos";
+      if ( type == EntityLogo )
+        dir = "logos";
+
+      img.load( locateLocal( "data", "kabc/" + dir + "/" + addr.uid() ) );
+    } else {
+      QByteArray data;
+      KCodecs::base64Decode( v->asString(), data );
+      img.loadFromData( data );
+    }
+    pic.setData( img );
+  } else {
+    pic.setUrl( QString::fromUtf8( v->asString() ) );
+  }
+  pic.setType( picType );
+
+  return pic;
 }
 
 bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee )
@@ -756,7 +933,7 @@ bool VCardFormatImpl::writeToString( const Addressee &addressee, QString &vcard 
 
   VCard *v = new VCard;
 
-  saveAddressee( addressee, v );
+  saveAddressee( addressee, v, true );
 
   vcardlist.append( v );
   vcards.setCardList( vcardlist );

@@ -65,13 +65,16 @@ class Field::FieldImpl
       MobilePhone,
       HomeFax,
       BusinessFax,
+      CarPhone,
+      Isdn,
+      Pager,
       Email,
       Mailer,
       Title,
       Role,
       Organization,
-      Url,
-      Key
+      Note,
+      Url
     };
 
     int fieldId() { return mFieldId; }
@@ -159,6 +162,12 @@ QString Field::label()
       return Addressee::homeFaxLabel();
     case FieldImpl::BusinessFax:
       return Addressee::businessFaxLabel();
+    case FieldImpl::CarPhone:
+      return Addressee::carPhoneLabel();
+    case FieldImpl::Isdn:
+      return Addressee::isdnLabel();
+    case FieldImpl::Pager:
+      return Addressee::pagerLabel();
     case FieldImpl::Email:
       return Addressee::emailLabel();
     case FieldImpl::Mailer:
@@ -169,10 +178,10 @@ QString Field::label()
       return Addressee::roleLabel();
     case FieldImpl::Organization:
       return Addressee::organizationLabel();
+    case FieldImpl::Note:
+      return Addressee::noteLabel();
     case FieldImpl::Url:
       return Addressee::urlLabel();
-    case FieldImpl::Key:
-      return Addressee::keyLabel();
     case FieldImpl::CustomField:
       return mImpl->label();
     default:
@@ -232,6 +241,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.role();
     case FieldImpl::Organization:
       return a.organization();
+    case FieldImpl::Note:
+      return a.note();
     case FieldImpl::Email:
       return a.preferredEmail();
     case FieldImpl::Birthday:
@@ -251,6 +262,12 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
     case FieldImpl::BusinessFax:
       return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
+    case FieldImpl::CarPhone:
+      return a.phoneNumber( PhoneNumber::Car ).number();
+    case FieldImpl::Isdn:
+      return a.phoneNumber( PhoneNumber::Isdn ).number();
+    case FieldImpl::Pager:
+      return a.phoneNumber( PhoneNumber::Pager ).number();
     case FieldImpl::HomeAddressStreet:
       return a.address( Address::Home ).street();
     case FieldImpl::HomeAddressLocality:
@@ -314,6 +331,9 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
     case FieldImpl::Organization:
       a.setOrganization( value );
       return true;
+    case FieldImpl::Note:
+      a.setNote( value );
+      return true;
     case FieldImpl::Birthday:
       a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
     case FieldImpl::CustomField:
@@ -356,13 +376,16 @@ Field::List Field::allFields()
     createField( FieldImpl::MobilePhone, Frequent );
     createField( FieldImpl::HomeFax );
     createField( FieldImpl::BusinessFax );
+    createField( FieldImpl::CarPhone );
+    createField( FieldImpl::Isdn );
+    createField( FieldImpl::Pager );
     createField( FieldImpl::Email, Email|Frequent );
     createField( FieldImpl::Mailer, Email );
     createField( FieldImpl::Title, Organization );
     createField( FieldImpl::Role, Organization );
     createField( FieldImpl::Organization, Organization );
+    createField( FieldImpl::Note );
     createField( FieldImpl::Url );
-    createField( FieldImpl::Key, CustomCategory );
   }
 
   return mAllFields;

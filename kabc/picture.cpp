@@ -23,11 +23,11 @@
 using namespace KABC;
 
 Picture::Picture()
-  : mIntern( true )
+  : mIntern( false )
 {
 }
 
-Picture::Picture( const KURL &url )
+Picture::Picture( const QString &url )
   : mUrl( url ), mIntern( false )
 {
 }
@@ -41,23 +41,27 @@ Picture::~Picture()
 {
 }
 
-bool Picture::operator==( const Picture &s ) const
+bool Picture::operator==( const Picture &p ) const
 {
-  if ( mIntern != s.mIntern ) return false;
-  if ( mIntern )
-    if ( mData != s.mData ) return false;
-  else
-    if ( mUrl != s.mUrl ) return false;
-  
+  if ( mIntern != p.mIntern ) return false;
+
+  if ( mIntern ) {
+    if ( mData != p.mData )
+      return false;
+  } else {
+    if ( mUrl != p.mUrl )
+      return false;
+  }
+
   return true;
 }
 
-bool Picture::operator!=( const Picture &s ) const
+bool Picture::operator!=( const Picture &p ) const
 {
-  return !( s == *this );
+  return !( p == *this );
 }
 
-void Picture::setUrl( const KURL &url )
+void Picture::setUrl( const QString &url )
 {
   mUrl = url;
   mIntern = false;
@@ -69,19 +73,29 @@ void Picture::setData( const QImage &data )
   mIntern = true;
 }
 
-bool Picture::isIntern()
+void Picture::setType( const QString &type )
+{
+  mType = type;
+}
+
+bool Picture::isIntern() const
 {
   return mIntern;
 }
 
-KURL Picture::url()
+QString Picture::url() const
 {
   return mUrl;
 }
 
-QImage Picture::data()
+QImage Picture::data() const
 {
   return mData;
+}
+
+QString Picture::type() const
+{
+  return mType;
 }
 
 QString Picture::asString() const
@@ -89,16 +103,16 @@ QString Picture::asString() const
   if ( mIntern )
     return "intern picture";
   else
-    return mUrl.url();
+    return mUrl;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Picture &picture )
 {
-  return s << picture.mIntern << picture.mUrl;
+  return s << picture.mIntern << picture.mUrl << picture.mType;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, Picture &picture )
 {
-  s >> picture.mIntern >> picture.mUrl;
+  s >> picture.mIntern >> picture.mUrl >> picture.mType;
   return s;
 }

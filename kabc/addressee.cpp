@@ -448,6 +448,24 @@ QString Addressee::businessFaxLabel()
 }
 
 
+QString Addressee::carPhoneLabel()
+{
+  return i18n("Car Phone");
+}
+
+
+QString Addressee::isdnLabel()
+{
+  return i18n("Isdn");
+}
+
+
+QString Addressee::pagerLabel()
+{
+  return i18n("Pager");
+}
+
+
 QString Addressee::emailLabel()
 {
   return i18n("Email Address");
@@ -679,12 +697,6 @@ Secrecy Addressee::secrecy() const
 QString Addressee::secrecyLabel()
 {
   return i18n("Security Class");
-}
-
-
-QString Addressee::keyLabel()
-{
-  return i18n("Encryption Key");
 }
 
 
@@ -1358,7 +1370,7 @@ void Addressee::setChanged( bool value )
     mData->changed = value;
 }
 
-bool Addressee::changed()
+bool Addressee::changed() const
 {
     return mData->changed;
 }

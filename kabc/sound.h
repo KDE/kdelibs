@@ -21,7 +21,7 @@
 #ifndef KABC_SOUND_H
 #define KABC_SOUND_H
 
-#include <kurl.h>
+#include <qimage.h>
 
 /**
  * Because QSound is not flexible enough ( operator= and
@@ -57,14 +57,14 @@ public:
    *
    * @param url  A URL that describes the position of the sound file.
    */
-  Sound( const KURL &url );
+  Sound( const QString &url );
 
   /**
    * Consturctor.
    *
    * @param data  The raw data of the sound.
    */
-  Sound( const QString &data );
+  Sound( const QImage &data );
 
   /**
    * Destructor.
@@ -82,7 +82,7 @@ public:
    *
    * @param url  The location URL of the sound file.
    */
-  void setUrl( const KURL &url );
+  void setUrl( const QString &url );
 
   /**
    * Sets the raw data of the sound. When using this function,
@@ -90,7 +90,7 @@ public:
    *
    * @param data  The raw data of the sound.
    */
-  void setData( const QString &data );
+  void setData( const QImage &data );
 
   /**
    * Returns whether the sound is described by a URL (extern) or
@@ -99,17 +99,17 @@ public:
    * get the raw data. Otherwise you can request the URL of this
    * sound by @ref url() and load the raw data from that location.
    */
-  bool isIntern();
+  bool isIntern() const;
 
   /**
    * Returns the location URL of this sound.
    */
-  KURL url();
+  QString url() const;
 
   /**
    * Returns the raw data of this sound.
    */
-  QString data();
+  QImage data() const;
 
   /**
    * Returns string representation of the sound.
@@ -117,8 +117,8 @@ public:
   QString asString() const;
 
 private:
-  KURL mUrl;
-  QString mData;
+  QString mUrl;
+  QImage mData;
 
   int mIntern;
 };

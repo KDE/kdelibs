@@ -676,7 +676,7 @@ void Addressee::setChanged( bool value )
     mData->changed = value;
 }
 
-bool Addressee::changed()
+bool Addressee::changed() const
 {
     return mData->changed;
 }

@@ -331,7 +331,7 @@ class Addressee
   	/**
 	    Return whether the addressee is changed.
 	   */
-	  bool changed();
+	  bool changed() const;
 
   private:
     Addressee copy();

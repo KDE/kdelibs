@@ -21,18 +21,10 @@
 #ifndef KABC_PICTURE_H
 #define KABC_PICTURE_H
 
-#include <kurl.h>
-
 #include <qimage.h>
 
 namespace KABC {
 
-/**
- * Important!!!
- *
- * At the moment the vcard format does not support saving and loading
- * this entity.
- */
 class Picture
 {
   friend QDataStream &operator<<( QDataStream &, const Picture & );
@@ -50,7 +42,7 @@ public:
    *
    * @param url  A URL that describes the position of the picture file.
    */
-  Picture( const KURL &url );
+  Picture( const QString &url );
 
   /**
    * Consturctor.
@@ -75,7 +67,7 @@ public:
    *
    * @param url  The location URL of the picture file.
    */
-  void setUrl( const KURL &url );
+  void setUrl( const QString &url );
 
   /**
    * Sets the raw data of the picture. When using this function,
@@ -86,23 +78,33 @@ public:
   void setData( const QImage &data );
 
   /**
+   * Sets the type of the picture.
+   */
+  void setType( const QString &type );
+
+  /**
    * Returns whether the picture is described by a URL (extern) or
    * by the raw data (intern).
    * When this method returns 'true' you can use @ref data() to
    * get the raw data. Otherwise you can request the URL of this
    * picture by @ref url() and load the raw data from that location.
    */
-  bool isIntern();
+  bool isIntern() const;
 
   /**
    * Returns the location URL of this picture.
    */
-  KURL url();
+  QString url() const;
 
   /**
    * Returns the raw data of this picture.
    */
-  QImage data();
+  QImage data() const;
+
+  /**
+   * Returns the type of this picture.
+   */
+  QString type() const;
 
   /**
    * Returns string representation of the picture.
@@ -110,7 +112,8 @@ public:
   QString asString() const;
 
 private:
-  KURL mUrl;
+  QString mUrl;
+  QString mType;
   QImage mData;
 
   int mIntern;

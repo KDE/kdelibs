@@ -32,6 +32,8 @@ namespace VCARD
 class TextValue : public Value
 {
 #include "TextValue-generated.h"
+
+  TextValue *clone();
 };
 
 }

@@ -29,7 +29,7 @@ Agent::Agent()
 {
 }
 
-Agent::Agent( const KURL &url )
+Agent::Agent( const QString &url )
   : mAddressee( 0 ),mUrl( url ), mIntern( false )
 {
 }
@@ -41,18 +41,23 @@ Agent::Agent( Addressee *addressee )
 
 Agent::~Agent()
 {
-  delete mAddressee;
-  mAddressee = 0;
 }
 
 bool Agent::operator==( const Agent &a ) const
 {
-  if ( mIntern != a.mIntern ) return false;
-  if ( mIntern )
+  if ( mIntern != a.mIntern )
+    return false;
+
+  if ( !mIntern ) {
+    if ( mUrl != a.mUrl )
+      return false;
+  } else {
+    if ( mAddressee && !a.mAddressee ) return false;
+    if ( !mAddressee && a.mAddressee ) return false;
+    if ( !mAddressee && !a.mAddressee ) return false;
     if ( (*mAddressee) != (*a.mAddressee) ) return false;
-  else
-    if ( mUrl != a.mUrl ) return false;
-  
+  }
+
   return true;
 }
 
@@ -61,7 +66,7 @@ bool Agent::operator!=( const Agent &a ) const
   return !( a == *this );
 }
 
-void Agent::setUrl( const KURL &url )
+void Agent::setUrl( const QString &url )
 {
   mUrl = url;
   mIntern = false;
@@ -73,17 +78,17 @@ void Agent::setAddressee( Addressee *addressee )
   mIntern = true;
 }
 
-bool Agent::isIntern()
+bool Agent::isIntern() const
 {
   return mIntern;
 }
 
-KURL Agent::url()
+QString Agent::url() const
 {
   return mUrl;
 }
 
-Addressee *Agent::addressee()
+Addressee *Agent::addressee() const
 {
   return mAddressee;
 }
@@ -93,7 +98,7 @@ QString Agent::asString() const
   if ( mIntern )
     return "intern agent";
   else
-    return mUrl.url();
+    return mUrl;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Agent &agent )

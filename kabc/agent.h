@@ -21,8 +21,6 @@
 #ifndef KABC_AGENT_H
 #define KABC_AGENT_H
 
-#include <kurl.h>
-
 namespace KABC {
 
 class Addressee;
@@ -50,7 +48,7 @@ public:
    *
    * @param url  A URL that describes the position of the agent file.
    */
-  Agent( const KURL &url );
+  Agent( const QString &url );
 
   /**
    * Consturctor.
@@ -75,7 +73,7 @@ public:
    *
    * @param url  The location URL of the agent file.
    */
-  void setUrl( const KURL &url );
+  void setUrl( const QString &url );
 
   /**
    * Sets the raw data of the agent. When using this function,
@@ -92,17 +90,17 @@ public:
    * get the raw data. Otherwise you can request the URL of this
    * agent by @ref url() and load the raw data from that location.
    */
-  bool isIntern();
+  bool isIntern() const;
 
   /**
    * Returns the location URL of this agent.
    */
-  KURL url();
+  QString url() const;
 
   /**
    * Returns the raw data of this agent.
    */
-  Addressee* addressee();
+  Addressee* addressee() const;
 
   /**
    * Returns string representation of the agent.
@@ -111,7 +109,7 @@ public:
 
 private:
   Addressee *mAddressee;
-  KURL mUrl;
+  QString mUrl;
 
   int mIntern;
 };

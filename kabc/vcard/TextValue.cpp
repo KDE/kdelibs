@@ -68,6 +68,12 @@ TextValue::~TextValue()
 {
 }
 
+  TextValue *
+TextValue::clone()
+{
+  return new TextValue( *this );
+}
+
 	void
 TextValue::_parse()
 {

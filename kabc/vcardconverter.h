@@ -63,7 +63,7 @@ public:
    * @param addr    The addressee.
    * @param version The version of the vcard string.
    */
-  bool VCardToAddressee( const QString &str, Addressee &addr, Version version = v3_0 );
+  bool vCardToAddressee( const QString &str, Addressee &addr, Version version = v3_0 );
 
   /**
    * Converts an addressee to a vcard string.
@@ -72,7 +72,7 @@ public:
    * @param str     The vcard string.
    * @param version The version of the vcard string.
    */
-  bool AddresseeToVCard( const Addressee &addr, QString &str, Version version = v3_0 );
+  bool addresseeToVCard( const Addressee &addr, QString &str, Version version = v3_0 );
 
 private:
   struct VCardConverterData;

@@ -311,6 +311,21 @@ class Addressee
     static QString businessFaxLabel();
 
     /**
+      Return translated label for carPhone field.
+     */
+    static QString carPhoneLabel();
+
+    /**
+      Return translated label for isdn field.
+     */
+    static QString isdnLabel();
+
+    /**
+      Return translated label for pager field.
+     */
+    static QString pagerLabel();
+
+    /**
       Return translated label for email field.
      */
     static QString emailLabel();
@@ -470,11 +485,6 @@ class Addressee
       Return translated label for secrecy field.
      */
     static QString secrecyLabel();
-
-    /**
-      Return translated label for key field.
-     */
-    static QString keyLabel();
 
     /**
       Set logo.
@@ -764,7 +774,7 @@ class Addressee
   	/**
 	    Return whether the addressee is changed.
 	   */
-	  bool changed();
+	  bool changed() const;
 
   private:
     Addressee copy();

@@ -42,7 +42,7 @@ VCardConverter::~VCardConverter()
   d = 0;
 }
 
-bool VCardConverter::VCardToAddressee( const QString &str, Addressee &addr, Version version )
+bool VCardConverter::vCardToAddressee( const QString &str, Addressee &addr, Version version )
 {
   if ( version == v2_1 ) {
     addr = d->vcard21parser.readFromString( str );
@@ -55,7 +55,7 @@ bool VCardConverter::VCardToAddressee( const QString &str, Addressee &addr, Vers
   return false;
 }
 
-bool VCardConverter::AddresseeToVCard( const Addressee &addr, QString &str, Version version )
+bool VCardConverter::addresseeToVCard( const Addressee &addr, QString &str, Version version )
 {
   if ( version == v2_1 )
     return false;

@@ -48,6 +48,9 @@ LF,business phone,QString,businessPhone,Organization|Frequent
 LF,mobile phone,QString,mobilePhone,Frequent
 LF,home fax,QString,homeFax
 LF,business fax,QString,businessFax
+LF,car phone,QString,carPhone
+LF,isdn,QString,isdn
+LF,pager,QString,pager
 
 #emails
 LF,email address,QString,email,Email|Frequent
@@ -61,7 +64,7 @@ ALFE,title,QString,title,Organization
 ALFE,role,QString,role,Organization
 ALFE,organization,QString,organization,Organization
 
-ALE,note,QString,note
+ALFE,note,QString,note
 
 ALE,product identifier,QString,productId
 ALE,revision date,QDateTime,revision,,.toString()
@@ -71,7 +74,6 @@ ALE,sort string,QString,sortString
 ALF,URL,KURL,url,,.url()
 
 ALE,security class,Secrecy,secrecy,,.asString()
-LF,encryption key,QString,key,CustomCategory
 
 ALE,logo,Picture,logo,,.asString()
 ALE,photo,Picture,photo,,.asString()

@@ -130,7 +130,9 @@ void StdAddressBook::init( bool onlyFastResources )
 
   load();
 }
-void StdAddressBook::close() {
+
+void StdAddressBook::close()
+{
   delete mSelf;
   mSelf = 0;
 }

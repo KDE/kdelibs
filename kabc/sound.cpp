@@ -27,12 +27,12 @@ Sound::Sound()
 {
 }
 
-Sound::Sound( const KURL &url )
+Sound::Sound( const QString &url )
   : mUrl( url ), mIntern( false )
 {
 }
 
-Sound::Sound( const QString &data )
+Sound::Sound( const QImage &data )
   : mData( data ), mIntern( true )
 {
 }
@@ -57,29 +57,29 @@ bool Sound::operator!=( const Sound &s ) const
   return !( s == *this );
 }
 
-void Sound::setUrl( const KURL &url )
+void Sound::setUrl( const QString &url )
 {
   mUrl = url;
   mIntern = false;
 }
 
-void Sound::setData( const QString &data )
+void Sound::setData( const QImage &data )
 {
   mData = data;
   mIntern = true;
 }
 
-bool Sound::isIntern()
+bool Sound::isIntern() const
 {
   return mIntern;
 }
 
-KURL Sound::url()
+QString Sound::url() const
 {
   return mUrl;
 }
 
-QString Sound::data()
+QImage Sound::data() const
 {
   return mData;
 }
@@ -89,7 +89,7 @@ QString Sound::asString() const
   if ( mIntern )
     return "intern sound";
   else
-    return mUrl.url();
+    return mUrl;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Sound &sound )

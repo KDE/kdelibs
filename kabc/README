@@ -10,7 +10,7 @@ FEATURES:
 
 - Value based interface, addressbook entry data is implicitly shared.
 - Address book entries are identified by a unique id.
-- vCard backend (RFC 2425).
+- vCard backend (RFC 2425 / RFC 2426).
 - Locking mechanism to support concurrent access to the address book by
   multiple processes.
 - Notification on change of addressbook by other process.
@@ -19,6 +19,7 @@ FEATURES:
 - GUI client for viewing, modifying address book data. This is aimed at
   developers not end users.
 - Tool for converting data, written with libkab, to libkabc format.
+- Multiple backends (resources) for storing entries e.g. LDAP
 
 AUTHOR: Cornelius Schumacher <schumacher@kde.org>
 

@@ -9,13 +9,13 @@ libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la
 
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
-  distributionlist.cpp distributionlisteditor.cpp errorhandler.cpp \
-  field.cpp formatfactory.cpp geo.cpp key.cpp phonenumber.cpp picture.cpp \
-  plugin.cpp resource.cpp resourceconfigwidget.cpp resourcefactory.cpp \
-  resourcefile.cpp resourcefileconfig.cpp resourceselectdialog.cpp secrecy.cpp \
-  sound.cpp stdaddressbook.cpp timezone.cpp vcard21parser.cpp \
-  vcardconverter.cpp vcardformat.cpp vcardformatimpl.cpp \
-  vcardformatplugin.cpp distributionlistdialog.cpp
+  distributionlist.cpp distributionlistdialog.cpp distributionlisteditor.cpp \
+  errorhandler.cpp field.cpp formatfactory.cpp geo.cpp key.cpp phonenumber.cpp \
+  picture.cpp plugin.cpp resource.cpp resourceconfigwidget.cpp \
+  resourcefactory.cpp resourcefile.cpp resourcefileconfig.cpp \
+  resourceselectdialog.cpp secrecy.cpp sound.cpp stdaddressbook.cpp \
+  timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
+  vcardformatimpl.cpp vcardformatplugin.cpp
 
 
 kabcincludedir = $(includedir)/kabc
