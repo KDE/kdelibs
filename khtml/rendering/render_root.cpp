@@ -277,9 +277,25 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
     RenderObject* o = s;
+    int xs = o->xPos();
+    int ys = o->yPos();
+    int xe = xs + o->width();
+    int ye = ys + o->height();
     while (o && o!=e)
     {
         o->setSelectionState(SelectionInside);
+        if (o != s) {
+            int tmpxs = o->xPos();
+            int tmpys = o->yPos();
+            if (tmpxs < xs)
+                xs = tmpxs;
+            if (tmpys < ys)
+                ys = tmpys;
+            if (xe < tmpxs + o->width())
+                xe = tmpxs + o->width();
+            if (ye < tmpys + o->height())
+                ye = tmpys + o->height();
+        }
 //      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
         RenderObject* no;
         if ( !(no = o->firstChild()) )
@@ -296,7 +312,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     s->setSelectionState(SelectionStart);
     e->setSelectionState(SelectionEnd);
     if(s == e) s->setSelectionState(SelectionBoth);
-    repaint();
+    repaintRectangle(xs, ys, xe - xs, ye - ys, false);
 }
 
 
