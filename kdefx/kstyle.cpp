@@ -57,6 +57,8 @@
 extern bool qt_use_xrender;
 #endif
 
+#include <limits.h>
+
 namespace
 {
 	// INTERNAL
