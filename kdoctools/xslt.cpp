@@ -54,20 +54,19 @@ void warningsFunc(void *ctx, const char *msg, ...)
     va_list args;
 
     char buffer[50000];
-    buffer[0] = 0;
+    int l;
 
     if (input->filename) {
-        sprintf(&buffer[strlen(buffer)], "%s:%d: ", input->filename,
-                input->line);
+        l = sprintf(buffer, "%s:%d: ", input->filename, input->line);
     } else {
-        sprintf(&buffer[strlen(buffer)], "Entity: line %d: ", input->line);
+        l = sprintf(buffer, "Entity: line %d: ", input->line);
     }
 
     va_start(args, msg);
-    vsnprintf(&buffer[strlen(buffer)], sizeof(buffer)-strlen(buffer)-1, msg, args);
+    vsnprintf(buffer + l, sizeof(buffer) - l, msg, args);
     va_end(args);
 
-    fprintf( stderr, "%s", buffer );
+    fputs( buffer, stderr );
     xmlParserPrintFileContext(input);
 
     warnings_exist = true;
@@ -82,7 +81,7 @@ int writeToQString(void * context, const char * buffer, int len)
 
 int closeQString(void * context) {
     QString *t = (QString*)context;
-    *t += QString::fromLatin1("\n");
+    *t += '\n';
     return 0;
 }
 
@@ -268,15 +267,11 @@ void fillInstance(KInstance &ins) {
 
     if ( !getenv( "KDELIBS_UNINSTALLED" ) ) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
-        catalogs += ":";
+        catalogs += ':';
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
     } else {
-        catalogs += SRCDIR;
-        catalogs += "/customization/catalog";
-        catalogs += ":";
-        catalogs += SRCDIR;
-        catalogs += "/docbook/xml-dtd-4.2/docbook.cat";
+        catalogs += SRCDIR "/customization/catalog:" SRCDIR "/docbook/xml-dtd-4.2/docbook.cat";
         ins.dirs()->addResourceDir("dtd", SRCDIR);
     }
 
@@ -362,7 +357,7 @@ static bool readCache( const QString &filename,
 QString lookForCache( const QString &filename )
 {
     kdDebug() << "lookForCache " << filename << endl;
-    assert( filename.right( 8 ) == ".docbook" );
+    assert( filename.endsWith( ".docbook" ) );
     assert( filename.at( 0 ) == '/' );
 
     QString cache = filename.left( filename.length() - 7 );
@@ -437,7 +432,7 @@ QCString fromUnicode( const QString &data )
 void replaceCharsetHeader( QString &output )
 {
     QString name = QTextCodec::codecForLocale()->name();
-    name.replace( QRegExp( "ISO " ), "iso-" );
-    output.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
-                    QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name  ) );
+    name.replace( QString( "ISO " ), "iso-" );
+    output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
+                    QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
 }
