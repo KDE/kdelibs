@@ -165,7 +165,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       }
       else if ( part != d->m_activePart )
       {
-        kdDebug(1000) << QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) << endl;
+        //kdDebug(1000) << QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) << endl;
 
         setActivePart( part, w );
       }
@@ -183,13 +183,13 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( w && ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
     {
-      kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
+      //kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
       return false;
     }
 
   }
 
-  kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
+  //kdDebug(1000) << QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) << endl;
   return false;
 }
 
