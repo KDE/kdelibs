@@ -1133,7 +1133,7 @@ public:
                 return Undefined();
         }
     }
-    virtual Value get(ExecState *, const UString & prop) const {
+    virtual Value get(ExecState *, const Identifier & prop) const {
         DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         KParts::LiveConnectExtension::Type rettype;
         QString retvalue;
@@ -1142,7 +1142,7 @@ public:
             return getValue(element, prop.qstring(), rettype, retvalue, retobjid);
         return Undefined();
     }
-    virtual void put(ExecState * exec, const UString &prop, const Value & value, int=None) {
+    virtual void put(ExecState * exec, const Identifier &prop, const Value & value, int=None) {
         DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         if (elm)
             elm->put(objid, prop.qstring(), value.toString(exec).qstring());
