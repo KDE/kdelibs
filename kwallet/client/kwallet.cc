@@ -28,8 +28,6 @@
 #include <assert.h>
 
 
-inline const char* dcopTypeName(const QByteArray&) { return "QByteArray"; }
-
 using namespace KWallet;
 
 
