@@ -354,6 +354,9 @@ AC_DEFUN([AC_CHECK_LIBASOUND],
         LIBASOUND="-lasound"
         AC_DEFINE(HAVE_LIBASOUND2, 1,
           [Define if you have libasound.so.2 (required for ALSA 0.9.x support)])
+        AC_CHECK_LIB(asound,snd_pcm_resume,[
+          AC_DEFINE(HAVE_SND_PCM_RESUME, 1,
+            [Define if libasound has snd_pcm_resume()])])
       fi
     ])
   fi

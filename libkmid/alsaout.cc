@@ -41,9 +41,7 @@
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
 #include <alsa/asoundlib.h>
-#endif
-
-#ifdef HAVE_SYS_ASOUNDLIB_H
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
 #include <sys/asoundlib.h>
 #endif
 

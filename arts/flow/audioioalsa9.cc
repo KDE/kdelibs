@@ -36,8 +36,7 @@
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
 #include <alsa/asoundlib.h>
-#endif
-#ifdef HAVE_SYS_ASOUNDLIB_H
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
 #include <sys/asoundlib.h>
 #endif
 
@@ -73,7 +72,9 @@ protected:
 	int setPcmParams(snd_pcm_t *pcm);
 	int getDescriptor(snd_pcm_t *pcm);
 	int xrun(snd_pcm_t *pcm);
-	int suspend(snd_pcm_t *pcm);
+#ifdef HAVE_SND_PCM_RESUME
+	int resume(snd_pcm_t *pcm);
+#endif
 
 public:
 	AudioIOALSA();
@@ -96,7 +97,7 @@ using namespace Arts;
 AudioIOALSA::AudioIOALSA()
 {
  	param(samplingRate) = 44100;
-	paramStr(deviceName) = "default"; // ALSA pcm device name
+	paramStr(deviceName) = "default"; // ALSA pcm device name - not file name
 	requestedFragmentSize = param(fragmentSize) = 1024;
 	requestedFragmentCount = param(fragmentCount) = 7;
 	param(channels) = 2;
@@ -122,10 +123,7 @@ bool AudioIOALSA::open()
 	m_pcm_playback = NULL;
 	m_pcm_capture = NULL;
 
-	/*
-	 * initialize format - TODO: implement fallback (i.e. if no format given,
-	 * it should try 16bit first, then fall back to 8bit)
-	 */
+	/* initialize format */
 	switch(_format) {
 	case 16:	// 16bit, signed little endian
 		m_format = SND_PCM_FORMAT_S16_LE;
@@ -136,8 +134,8 @@ bool AudioIOALSA::open()
 	case 8:		// 8bit, unsigned
 		m_format = SND_PCM_FORMAT_U8;
 		break;
-	default:
-		m_format = SND_PCM_FORMAT_UNKNOWN;  // test later
+	default:	// test later
+		m_format = SND_PCM_FORMAT_UNKNOWN;
 		break;
 	}
 
@@ -302,23 +300,30 @@ int AudioIOALSA::getDescriptor(snd_pcm_t *pcm)
 
 int AudioIOALSA::xrun(snd_pcm_t *pcm)
 {
+	int err;
 	artsdebug("xrun!!\n");
-	return snd_pcm_prepare(pcm);
+	if ((err = snd_pcm_prepare(pcm)) < 0)
+		return err;
+	if (pcm == m_pcm_capture)
+		snd_pcm_start(pcm); // ignore error here..
+	return 0;
 }
 
-int AudioIOALSA::suspend(snd_pcm_t *pcm)
+#ifdef HAVE_SND_PCM_RESUME
+int AudioIOALSA::resume(snd_pcm_t *pcm)
 {
 	int err;
-#if 0
 	while ((err = snd_pcm_resume(pcm)) == -EAGAIN)
 		sleep(1); /* wait until suspend flag is not released */
-#endif
 	if (err < 0) {
 		if ((err = snd_pcm_prepare(pcm)) < 0)
 			return err;
+		if (pcm == m_pcm_capture)
+			snd_pcm_start(pcm); // ignore error here..
 	}
 	return 0;
 }
+#endif
 
 int AudioIOALSA::read(void *buffer, int size)
 {
@@ -327,8 +332,10 @@ int AudioIOALSA::read(void *buffer, int size)
 	while ((length = snd_pcm_readi(m_pcm_capture, buffer, frames)) < 0) {
 		if (length == -EPIPE)
 			length = xrun(m_pcm_capture);
+#ifdef HAVE_SND_PCM_RESUME
 		else if (length == -ESTRPIPE)
-			length = suspend(m_pcm_capture);
+			length = resume(m_pcm_capture);
+#endif
 		if (length < 0) {
 			arts_info("Capture error: %s", snd_strerror(length));
 			return -1;
@@ -344,8 +351,10 @@ int AudioIOALSA::write(void *buffer, int size)
 	while ((length = snd_pcm_writei(m_pcm_playback, buffer, frames)) < 0) {
 		if (length == -EPIPE)
 			length = xrun(m_pcm_playback);
+#ifdef HAVE_SND_PCM_RESUME
 		else if (length == -ESTRPIPE)
-			length = suspend(m_pcm_playback);
+			length = resume(m_pcm_playback);
+#endif
 		if (length < 0) {
 			arts_info("Playback error: %s", snd_strerror(length));
 			return -1;
@@ -371,6 +380,8 @@ int AudioIOALSA::setPcmParams(snd_pcm_t *pcm)
 		return 1;
 	}
 	if (m_format == SND_PCM_FORMAT_UNKNOWN) {
+		// test the available format
+		// try 16bit first, then fall back to 8bit 
 		if (! snd_pcm_hw_params_test_format(pcm, hw, SND_PCM_FORMAT_S16_LE))
 			m_format = SND_PCM_FORMAT_S16_LE;
 		else if (! snd_pcm_hw_params_test_format(pcm, hw, SND_PCM_FORMAT_S16_BE))
@@ -385,7 +396,7 @@ int AudioIOALSA::setPcmParams(snd_pcm_t *pcm)
 
 	unsigned int rate = snd_pcm_hw_params_set_rate_near(pcm, hw, _samplingRate, 0);
 	const unsigned int tolerance = _samplingRate/10+1000;
-	if (abs(rate - _samplingRate) > tolerance) {
+	if (abs((int)rate - (int)_samplingRate) > tolerance) {
 		_error = "Can't set requested sampling rate!";
 		char details[80];
 		sprintf(details," (requested rate %d, got rate %d)",
