@@ -16,8 +16,8 @@ libkjava_la_LIBADD = $(LIB_KPARTS)
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml $(all_includes) 
 
-data_DATA = kjava.jar kjava.policy
-datadir = $(kde_datadir)/kjava/
+kjavadata_DATA = kjava.jar kjava.policy
+kjavadatadir = $(kde_datadir)/kjava/
 
 SUBDIRS = . tests dummy
 

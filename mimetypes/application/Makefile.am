@@ -1,5 +1,5 @@
 
-data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
+mimetypeapplicationdata_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
 	x-core.desktop x-java.desktop x-java-applet.desktop \
@@ -40,10 +40,10 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	vnd.sun.xml.calc.desktop mathml+xml.desktop x-bittorrent.desktop \
 	x-msaccess.desktop
 
-datadir = $(kde_mimedir)/application
+mimetypeapplicationdatadir = $(kde_mimedir)/application
 
 install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(DESTDIR)$(datadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(datadir)/x-applix.desktop
+	$(mkinstalldirs) $(DESTDIR)$(mimetypeapplicationdatadir)
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-applix.desktop
 
-EXTRA_DIST = $(data_DATA)
+EXTRA_DIST = $(mimetypeapplicationdata_DATA)

@@ -1,4 +1,4 @@
 
-datadir = $(kde_datadir)/kssl
-data_DATA = ca-bundle.crt
+kssldatadir = $(kde_datadir)/kssl
+kssldata_DATA = ca-bundle.crt
 

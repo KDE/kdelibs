@@ -1,5 +1,5 @@
 
-data_DATA = aquaice.png           grayice.png           red_checkmark.png \
+kstylepicsdata_DATA = aquaice.png           grayice.png           red_checkmark.png \
 	black_combo.png       graymarble.png        sbdeco_brown.png \
 	blkmarble.png         graytexture.png       sbdeco_elec.png \
 	darkslider.png        ice.png               sbdeco_gray.png \
@@ -21,7 +21,7 @@ data_DATA = aquaice.png           grayice.png           red_checkmark.png \
 	sbdeco_elec_small.png sbdeco_elec_smalldown.png darkgraytexture.png
 
 
-datadir = $(kde_datadir)/kstyle/pixmaps
+kstylepicsdatadir = $(kde_datadir)/kstyle/pixmaps
 EXTRA_DIST = aquaice.png           grayice.png           red_checkmark.png \
 	black_combo.png       graymarble.png        sbdeco_brown.png \
 	blkmarble.png         graytexture.png       sbdeco_elec.png \

@@ -1,5 +1,5 @@
 
 SUBDIRS = application text audio video image inode message multipart
 
-data_DATA = all.desktop allfiles.desktop
-datadir = $(kde_mimedir)/all
+mimetypesdata_DATA = all.desktop allfiles.desktop
+mimetypesdatadir = $(kde_mimedir)/all

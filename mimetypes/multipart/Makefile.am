@@ -1,6 +1,6 @@
-data_DATA = 	mixed.desktop x-mixed-replace.desktop
+mimetypemultipartdata_DATA = 	mixed.desktop x-mixed-replace.desktop
 
-datadir = $(kde_mimedir)/multipart
+mimetypemultipartdatadir = $(kde_mimedir)/multipart
 
-EXTRA_DIST = $(data_DATA)
+EXTRA_DIST = $(mimetypemultipartdata_DATA)
 

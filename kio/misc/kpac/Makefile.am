@@ -20,8 +20,8 @@ noinst_HEADERS = proxyscout.h script.h downloader.h discovery.h
 servicesdir = $(kde_servicesdir)/kded
 services_DATA = proxyscout.desktop
 
-datadir = $(kde_datadir)/proxyscout
-data_DATA = eventsrc
+proxyscoutdatadir = $(kde_datadir)/proxyscout
+proxyscoutdata_DATA = eventsrc
 
 install-exec-local:
 	@(chown root $(bindir)/kpac_dhcp_helper && chmod 4755 $(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"

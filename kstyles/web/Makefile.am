@@ -5,6 +5,6 @@ webstyle_la_LIBADD    = $(LIB_KDEUI)
 webstyle_la_SOURCES   = webstyle.cpp plugin.cpp
 noinst_HEADERS        = webstyle.h 
 
-data_DATA = web.themerc
-datadir = $(kde_datadir)/kstyle/themes
-EXTRA_DIST = $(data_DATA)
+kstylewebdata_DATA = web.themerc
+kstylewebdatadir = $(kde_datadir)/kstyle/themes
+EXTRA_DIST = $(kstylewebdata_DATA)
