@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+MimeType=audio/x-mp3
+Comment=MPEG Sound file
+DefaultApp=kmpg
+Icon=sound.xpm
+Type=MimeType
+Patterns=*.mp3;*.MP3;
+Comment[de]=MPEG komprimierte Musik Datei
