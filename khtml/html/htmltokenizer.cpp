@@ -307,8 +307,8 @@ void HTMLTokenizer::parseStyle(DOMStringIt &src)
 
 void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
-    parseListing(src);
-/*    while ( src.length() )
+//    parseListing(src); // ### disabled temporarily - skips body attrs. if placed before <HTML>
+    while ( src.length() )
     {
 	// Look for '-->'
 	if ( src[0] == '-' )
@@ -329,7 +329,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
 	    searchCount = 0;
 	}
         ++src;
-    }*/
+    }
 }
 
 void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
