@@ -117,7 +117,7 @@ void KPasswordEdit::insert(const QString &txt)
     for(unsigned int i=0; i < localTxt.length(); i++)
     {
         unsigned char ke = localTxt[i];
-        if (m_Length < (PassLen - 1)) 
+        if (m_Length < (PassLen - 1))
         {
             m_Password[m_Length] = ke;
             m_Password[++m_Length] = '\000';
@@ -240,6 +240,7 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
     : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    d->iconName = "password";
     init();
 }
 
@@ -260,6 +261,7 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
     : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    d->iconName = "password";
     init();
     setPrompt(prompt);
 }
