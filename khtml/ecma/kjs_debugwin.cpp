@@ -337,26 +337,34 @@ void KJSDebugWin::eval()
     return;
   int para, index;
   m_evalEdit->getCursorPosition(&para, &index);
-  Interpreter *interp = m_curExecState->interpreter();
   UString code(m_evalEdit->text(para-1));
-
-  Object obj = Object::dynamicCast(interp->globalObject().get(m_curExecState, "eval"));
-  List args;
-  args.append(String(code));
 
   KJSCPUGuard guard;
   guard.start();
-  //Completion comp = interp->evaluate(code);
-  Object thisobj = m_curExecState->context().thisValue();
-  Value comp = obj.call(m_curExecState, thisobj, args);
-  guard.stop();
 
-  if (comp.isValid()) {
+  Interpreter *interp = m_curExecState->interpreter();
+  Value retval;
+  if (m_curExecState->context().isNull()) {
+    Completion comp = interp->evaluate(code);
+    if (comp.isValid())
+      retval = comp.value();
+  } else {
+    Object obj = Object::dynamicCast(interp->globalObject().get(m_curExecState, "eval"));
+    List args;
+    args.append(String(code));
+
+    Object thisobj = m_curExecState->context().thisValue();
+    Value comp = obj.call(m_curExecState, thisobj, args);
     if (comp.type() == KJS::CompletionType) {
       CompletionImp *cimp = static_cast<CompletionImp*>(comp.imp());
-      comp = cimp->value();
-    }
-    m_evalEdit->insertParagraph(comp.toString(interp->globalExec()).qstring(), para);
+      retval = cimp->value();
+    } else if (comp.isValid())
+      retval = comp;
+  }
+  guard.stop();
+
+  if (retval.isValid()) {
+    m_evalEdit->insertParagraph(retval.toString(interp->globalExec()).qstring(), para);
     m_evalEdit->moveCursor(QMultiLineEdit::MoveDown, false);
   }
   if (m_curExecState->hadException())
