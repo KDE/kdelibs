@@ -1676,7 +1676,7 @@ AddressBook::loadConfigFile()
 	} else {
 	  KMessageBox::information(this,
 	     i18n("Cannot load kab's local configuration file,\n"
-		  "possibly there is a formation error.\n"
+		  "there is possibly a formatting error.\n"
 		  "kab cannot be configured."),
 	     i18n("File error"));
 	  return InternError;
