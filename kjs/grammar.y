@@ -552,8 +552,7 @@ LabelledStatement:
 ;
 
 ThrowStatement:
-    THROW ';'                      { $$ = new ThrowNode(0L); }
-  | THROW Expr ';'                 { $$ = new ThrowNode($2); }
+    THROW Expr ';'                 { $$ = new ThrowNode($2); }
 ;
 
 TryStatement:
