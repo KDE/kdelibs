@@ -107,9 +107,14 @@ QPixmap PixmapLoader::pixmap( const QCString& name, const QColor& color, bool di
 
 	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
-		img = new QImage( qembed_findImage( name ) );
-		if (img->isNull())
+		const QImage& image = qembed_findImage( name );
+		if ( image.isNull() )
+		{
+			QPixmapCache::insert( cacheName, result );
 			return result;
+		}
+
+		img = new QImage( image );
 
 		if ( disabled )
 			makeDisabled( *img, color );
