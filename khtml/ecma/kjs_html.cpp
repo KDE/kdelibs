@@ -1130,7 +1130,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << endl;
+  kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << " str=" << str.string() << endl;
 #endif
 
   switch (element.elementId()) {
@@ -1668,9 +1668,9 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
   else if (p == "className")
     element.setClassName(str);
   else if ( p == "innerHTML")
-      element.setInnerHTML(str);
+    element.setInnerHTML(str);
   else if ( p == "innerText")
-      element.setInnerText(str);
+    element.setInnerText(str);
   else
     DOMElement::tryPut(p,v);
 }
