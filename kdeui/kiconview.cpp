@@ -361,7 +361,9 @@ void KIconViewItem::init()
 {
     m_wordWrap = 0L;
     d = 0L;
-    calcRect();
+    //Only re-calculate rectangle when wrapping, otherwise Qt did what we want
+    if ( iconView() && iconView()->wordWrapIconText() )
+        calcRect();
 }
 
 KIconViewItem::~KIconViewItem()
