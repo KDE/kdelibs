@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/mspowerpoint
+Icon=mimetypes/document
+Patterns=*.ppz;*.PPZ;
+Comment=Microsoft PowerPoint document

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=image/x-eps
+Icon=mimetypes/image
+Patterns=*.eps;*.EPS;*.epsi;*.EPSI;*.epsf;*.EPSF;
+Comment=Encapsulated PostScript image

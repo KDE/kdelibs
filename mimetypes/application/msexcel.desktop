@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/msexcel
+Icon=mimetypes/document
+Patterns=*.xls;*.XLS;*.xlc;*.XLC;*.xll;*.XLL;*.xlm;*.XLM;*.xlw;*.XLW;
+Comment=Microsoft Excel spreadsheet
