@@ -75,14 +75,14 @@ KXMLGUIClient::~KXMLGUIClient()
 {
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
-
+  /*
   QListIterator<KXMLGUIClient> childIt( d->m_children );
   for (; childIt.current(); ++childIt )
     childIt.current()->d->m_parent = 0L;
 
   d->m_children.setAutoDelete( true );
   d->m_children.clear();
-
+  */
   delete d;
 }
 
