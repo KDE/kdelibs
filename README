@@ -1,10 +1,11 @@
 In this file:
 
 * About kdelibs
-* Licensing information
+* Licensing
 * Common Mistakes
 * Debugging
 * Upgrading
+* Compile Problems
 * More Info
 
 About kdelibs
@@ -118,9 +119,6 @@ compiler or the distribution used. For that reason, please have a look at
 http://www.kde.org/compilationfaq.html for know issues in certain OS
 environments before reporting bugs or going mad :). 
 
-More Info
----------
-
 If you are running a FreeBSD system, you will need to make sure that LIBS
 is set to "-Wl,-export-dynamic".  The easiest way to do this is to prefix
 configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure.  Thanks to
@@ -149,6 +147,9 @@ and you're using egcs, try re-compiling all your C++ libs with -fsquangle,
 and then recompiling whatever you were working on with -fsquangle.  It
 should help, and more information about this is available on the egcs FAQ
 available at http://egcs.cygnus.com
+
+More Info
+---------
 
 Please direct any bug reports to me (kalle@kde.org). General KDE
 discussions should go to the KDE mailing list (kde@kde.org).
