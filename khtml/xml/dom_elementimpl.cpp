@@ -304,8 +304,8 @@ void AttributeImpl::free()
 	m_data.value->deref();
     }
     else {
-	m_data.attr->deref();
 	m_data.attr->setElement(0);
+	m_data.attr->deref();
     }
 }
 
