@@ -223,7 +223,7 @@ KCC*)
  ;;
 *)
   for flag in '-v' '-V' '--version' '-version'; do
-    compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using builtin specs|Configured with|Thread model" | head -1`
+    compiler_version=`$CXX $flag 2>&1 | egrep -v "Reading specs|Using built-?in specs|Configured with|Thread model" | head -1`
     clean_compiler_version=`echo $compiler_version | egrep -vi 'Usage|ERROR|unknown option|WARNING|missing|###'`
     test -n "$clean_compiler_version" && break
   done
