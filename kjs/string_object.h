@@ -50,7 +50,12 @@ namespace KJS {
     Completion execute(const List &);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
-	   Substr, Substring, FromCharCode };
+	   Substr, Substring, FromCharCode, ToLowerCase, ToUpperCase
+#ifndef KJS_PURE_ECMA
+	   , Big, Small, Blink, Bold, Fixed, Italics, Strike, Sub, Sup,
+	   Fontcolor, Fontsize, Anchor, Link
+#endif
+    };
   private:
     int id;
   };

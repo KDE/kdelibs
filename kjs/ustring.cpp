@@ -114,6 +114,22 @@ UString::Rep UString::Rep::null = { 0, 0, 1 };
 UString UString::null;
 static char *statBuffer = 0L;
 
+UChar UChar::toLower() const
+{
+  if (islower(lo) && hi == 0)
+    return *this;
+
+  return UChar(0, tolower(lo));
+}
+
+UChar UChar::toUpper() const
+{
+  if (isupper(lo) && hi == 0)
+    return *this;
+
+  return UChar(0, toupper(lo));
+}
+
 UString::Rep *UString::Rep::create(UChar *d, int l)
 {
   Rep *r = new Rep;

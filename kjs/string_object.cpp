@@ -107,6 +107,38 @@ KJSO StringPrototype::get(const UString &p) const
     id = StringProtoFunc::Substr;
   else if (p == "substring")
     id = StringProtoFunc::Substring;
+  else if (p == "toLowerCase")
+    id = StringProtoFunc::ToLowerCase;
+  else if (p == "toUpperCase")
+    id = StringProtoFunc::ToUpperCase;
+#ifndef KJS_PURE_ECMA
+  else if (p == "big")
+    id = StringProtoFunc::Big;
+  else if (p == "small")
+    id = StringProtoFunc::Small;
+  else if (p == "blink")
+    id = StringProtoFunc::Blink;
+  else if (p == "bold")
+    id = StringProtoFunc::Bold;
+  else if (p == "fixed")
+    id = StringProtoFunc::Fixed;
+  else if (p == "italics")
+    id = StringProtoFunc::Italics;
+  else if (p == "strike")
+    id = StringProtoFunc::Strike;
+  else if (p == "sub")
+    id = StringProtoFunc::Sub;
+  else if (p == "sup")
+    id = StringProtoFunc::Sup;
+  else if (p == "fontcolor")
+    id = StringProtoFunc::Fontcolor;
+  else if (p == "fontsize")
+    id = StringProtoFunc::Fontsize;
+  else if (p == "anchor")
+    id = StringProtoFunc::Anchor;
+  else if (p == "link")
+    id = StringProtoFunc::Link;
+#endif
   else
     return Imp::get(p);
 
@@ -137,11 +169,11 @@ Completion StringProtoFunc::execute(const List &args)
   String s2;
   Number n, m;
   UString u;
-  int pos;
+  int pos, i;
   double d, d2;
   KJSO v = thisObj.internalValue();
   String s = v.toString();
-  int len = (int) s.value().size();
+  int len = s.value().size();
   KJSO a0 = args[0];
   KJSO a1 = args[1];
 
@@ -172,21 +204,19 @@ Completion StringProtoFunc::execute(const List &args)
     break;
   case IndexOf:
     s2 = a0.toString();
-    n = a1.toInteger();
-    if (n.isA(UndefinedType))
+    if (a1.isA(UndefinedType))
       pos = 0;
     else
-      pos = n.intValue();
+      pos = a1.toInteger().intValue();
     d = s.value().find(s2.value(), pos);
     result = Number(d);
     break;
   case LastIndexOf:
     s2 = a0.toString();
-    n = a1.toInteger();
-    if (n.isA(UndefinedType))
+    if (a1.isA(UndefinedType))
       pos = len;
     else
-      pos = n.intValue();
+      pos = a1.toInteger().intValue();
     d = s.value().rfind(s2.value(), pos);
     result = Number(d);
     break;
@@ -215,6 +245,63 @@ Completion StringProtoFunc::execute(const List &args)
     }
     result = String(s.value().substr((int)d, (int)d2));
     break;
+  case ToLowerCase:
+    u = UString(s.value());
+    for (i = 0; i < len; i++)
+      u[i] = u[i].toLower();
+    result = String(u);
+    break;
+  case ToUpperCase:
+    u = UString(s.value());
+    for (i = 0; i < len; i++)
+      u[i] = u[i].toUpper();
+    result = String(u);
+    break;
+#ifndef KJS_PURE_ECMA
+  case Big:
+    result = String("<BIG>" + s.value() + "</BIG>");
+    break;
+  case Small:
+    result = String("<SMALL>" + s.value() + "</SMALL>");
+    break;
+  case Blink:
+    result = String("<BLINK>" + s.value() + "</BLINK>");
+    break;
+  case Bold:
+    result = String("<B>" + s.value() + "</B>");
+    break;
+  case Fixed:
+    result = String("<TT>" + s.value() + "</TT>");
+    break;
+  case Italics:
+    result = String("<I>" + s.value() + "</I>");
+    break;
+  case Strike:
+    result = String("<STRIKE>" + s.value() + "</STRIKE>");
+    break;
+  case Sub:
+    result = String("<SUB>" + s.value() + "</SUB>");
+    break;
+  case Sup:
+    result = String("<SUP>" + s.value() + "</SUP>");
+    break;
+  case Fontcolor:
+    result = String("<FONT COLOR=" + a0.toString().value() + ">"
+		    + s.value() + "</FONT>");
+    break;
+  case Fontsize:
+    result = String("<FONT SIZE=" + a0.toString().value() + ">"
+		    + s.value() + "</FONT>");
+    break;
+  case Anchor:
+    result = String("<a name=" + a0.toString().value() + ">"
+		    + s.value() + "</a>");
+    break;
+  case Link:
+    result = String("<a href=" + a0.toString().value() + ">"
+		    + s.value() + "</a>");
+    break;
+#endif
   }
 
   return Completion(Normal, result);

@@ -69,6 +69,14 @@ namespace KJS {
      */
     unsigned char lo;
     /**
+     * @return The character converted to lower case.
+     */
+    UChar toLower() const;
+    /**
+     * @return The character converted to upper case.
+     */
+    UChar toUpper() const;
+    /**
      * A static instance of UChar(0).
      */
     static UChar null;
