@@ -267,7 +267,7 @@ Context::Context(CodeType type, Context *callingContext,
       scopeChain->append(activation);
       scopeChain->append(glob);
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
-      if (thisV->type() == ObjectType) {
+      if (thisV->type() >= ObjectType) {
 	thisVal = thisV;
       }
       else

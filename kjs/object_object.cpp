@@ -97,8 +97,12 @@ Completion ObjectProtoFunc::execute(const List &)
   Object thisObj = Object::dynamicCast(thisValue());
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
-  if (thisObj.isNull())
-    return Completion(ReturnValue, String("[No Object]"));
+  if (thisObj.isNull()) {
+    UString str = "[object ";
+    str += thisValue().isNull() ? "null" : thisValue().imp()->typeInfo()->name;
+    str += "]";
+    return Completion(ReturnValue, String(str));
+  }
 
   // valueOf()
   if (id == ObjectPrototype::ValueOf)
@@ -119,16 +123,8 @@ Completion ObjectProtoFunc::execute(const List &)
     break;
   case ObjectClass:
   {
-      const TypeInfo * info;
-      if ( thisObj.imp() && ( (info = thisObj.imp()->typeInfo() ) ) )
-      { // #### doesn't seem to work
-          str = "[object ";
-          str += info->name;
-          str += "]";
-      }
-      else
-          str = "[object Object]";
-      break;
+    str = "[object Object]";
+    break;
   }
   default:
     str = "[undefined object]";
