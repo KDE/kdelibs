@@ -32,14 +32,13 @@ class KCModule;
 
 /**
 * This is a basic message object used for exchanging filtering
-* info between the filter plugins and the application whenever
-* the application requires more information about the URI than
-* just a filtered version of it.  Any application can create an
-* instance of this class and send it to @ref KURIFilter to have
-* the filter plugins fill the necessary information.
+* information between the filter plugins and the application
+* whenever the application requires more information about the
+* URI than just a filtered version of it.  Any application can
+* create an instance of this class and send it to @ref KURIFilter
+* to have the filter plugins fill the necessary information.
 *
 * @sect Example
-*
 * <pre>
 *   QString text = "kde.org";
 *   KURIFilterData d = text;
@@ -49,13 +48,12 @@ class KCModule;
 *             text.latin1(), d.uri().url().latin1(), d.uriType(), d.hasBeenFiltered() );
 * </pre>
 *
-* The above code would yield the following output:
-*
+* The above code should yield the following output:
 * <pre>
 *   URI : kde.org
 *   Filtered URI : http://kde.org
 *   URI Type : 0            <== means NET_PROTOCOL
-*   Was Filtered : 1        <== means the url has been filtered
+*   Was Filtered : 1        <== means the URL was successfully filtered
 * </pre>
 *
 * @short A message object for exchanging filtering URI info.
@@ -308,12 +306,9 @@ public:
     /**
      * Returns the name of the configuration module for the filter.
      *
-     * It is the responsability of the caller to delete the module
-     * once it is not needed anymore.
-     *
      * @return the name of a configuration module or @p null if none.
      */
-    virtual QString configName() const { return name(); }
+    virtual QString configName() const { return QString::null; }
 
 protected:
 
@@ -362,57 +357,49 @@ private:
 /**
  * Manages the filtering of a URI.
  *
- * The intention of this plugin class is to allow people extend
- * the functionality of KURL w/o modifying it directly.  This
+ * The intention of this plugin class is to allow people to extend
+ * the functionality of KURL without modifying it directly.  This
  * way KURL will remain a generic parser capable of parsing any
  * generic URL that adheres to specifications.
  *
  * The KURIFilter class applies a number of filters to a URI,
- * and returns the filtered version if successful. The filters
+ * and returns the filtered version whenever possible. The filters
  * are implemented using plugins to provide easy extensibility
- * of the filtering mechanism.  Any new filters can be added in
- * the future without modifying this manager.  New plugins can
- * be simply added at anytime by inheriting from @ref KURIFilterPlugin.
+ * of the filtering mechanism.  That is, new filters can be added in
+ * the future by simply inheriting from @ref KURIFilterPlugin and
+ * implementing the @ref KURIFilterPlugin::filterURI method.
  *
- * Use of this plugin is simple and straight forward.  Since
- * KURIFilter is a Singleton object, you obtain an instance of
- * it by doing @p KURIFilter::self().  Then you can use any of
- * the public member functions to preform the filtering.  
+ * Use of this plugin-manager class is straight forward.  Since
+ * it is a singleton object, all you have to do is obtain an instance
+ * by doing @p KURIFilter::self() and use any of the public member
+ * functions to preform the filtering.
  * 
  * @sect Example
  *
- * To simply filter a given string
- *
+ * To simply filter a given string:
  * <pre>
- * // Should return "http://kde.org"
  * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
  * </pre>
  * 
- * You can alternatively use a KURL
- * 
+ * You can alternatively use a KURL:
  * <pre>
  * KURL url = "kde.org";
- * // Should also return "http://kde.org"
  * bool filtered = KURIFilter::self()->filterURI( url );
  * </pre>
  *
- * If you have a constant string or url simply invoking
- * the corresponding function that return the filtered
- * string or URL instead of a boolean flag:
- *
+ * If you have a constant string or a constant URL,
+ * simply invoke the corresponding function to obtain
+ * the filtered string or URL instead of a boolean flag:
  * <pre>
  * QString u = KURIFilter::self()->filteredURI( "kde.org" );
  * </pre>
  *
- * With any of the filter functions you can specify which
- * specific filter(s) are supposed to be applied by supplying
- * the a single or a list of filter name(s) as a second
- * argument.  By defualt all filters that are found are loaded
- * when the KURIFilter object is created.  These names are taken
- * from the enteries in the desktop files.  This information can
- * also be easily obtained from the control panel. Here are a
- * couple of examples:
- *
+ * You can also specify only specific filter(s) to be applied
+ * by supplying the name(s) of the filter(s).  By defualt all
+ * filters that are found are loaded when the KURIFilter object
+ * is created will be used.  These names are taken from the
+ * enteries in the \".desktop\" files.  Here are a couple of
+ * examples:
  * <pre>
  * QString text = "kde.org";
  * bool filtered = KURIFilter::self()->filterURI( text, "KShortURIFilter" );
@@ -427,7 +414,7 @@ private:
  * you can find out more information about the URL you want to
  * filter.  See @ref KURIFilterData for examples and details.
  *
- * @short Filters, whenever possible, a given URL into its proper format.
+ * @short Filters a given URL into its proper format whenever possible.
  */
 
 class KURIFilter

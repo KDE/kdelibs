@@ -21,6 +21,7 @@
 #include <kmimetype.h>
 #include <klibloader.h>
 #include <ktrader.h>
+#include <kdebug.h>
 
 #include "kurifilter.h"
 
@@ -149,8 +150,10 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         }
     }
     QListIterator<KURIFilterPlugin> it( plugins );
+
     for (; it.current() && !filtered; ++it)
     {
+        kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
         filtered |= it.current()->filterURI( data );
     }
     return filtered;
@@ -201,9 +204,9 @@ void KURIFilter::loadPlugins()
     for (; it != end; ++it )
     {
 	    if ((*it)->library().isEmpty()) { continue; }
-        KLibFactory *factory = KLibLoader::self()->factory((*it)->library().ascii());						
+        KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());						
     	if (!factory) { continue; }
-    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name().ascii(), "KURIFilterPlugin");
+    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name().latin1(), "KURIFilterPlugin");
 	    if ( plugin ) { m_lstPlugins.append( plugin ); }
     }
     m_lstPlugins.sort(); // TODO: Prioritize based on the user preference from control module.
