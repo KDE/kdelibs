@@ -296,6 +296,8 @@ void KHTMLParser::reset()
     end = false;
     isindex = 0;
     flat = false;
+    haveKonqBlock = false;
+
 
     discard_until = 0;
 }
@@ -331,13 +333,14 @@ void KHTMLParser::parseToken(Token *t)
         return;
     }
 
-#if 1
     // ignore spaces, if we're not inside a paragraph or other inline code
     if( t->id == ID_TEXT ) {
 #ifdef PARSER_DEBUG
         if(t->text)
             kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
+
+#if 1
         if (!_inline  || !inBody || current->id() == ID_OPTION)  {
             if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ') {
                 return;
@@ -346,8 +349,10 @@ void KHTMLParser::parseToken(Token *t)
         } else if ( inBody ) {
             noRealBody = false;
         }
-    }
+#else
+        if ( inBody ) noRealBody = false;
 #endif
+    }
 
     NodeImpl *n = getElement(t);
     // just to be sure, and to catch currently unimplemented stuff
@@ -577,8 +582,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             // lets try to close the konqblock
             // ### do we need a flag here so we don't fall
             // into recursion if there is no konqblock ?
-            popBlock( ID__KONQBLOCK );
-            return insertNode( n );
+            if ( haveKonqBlock ) {
+                popBlock( ID__KONQBLOCK );
+                haveKonqBlock = false;
+                return insertNode( n );
+            }
         default:
             break;
         }
@@ -651,6 +659,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // lets close our anonymous block before the table
                 // and go ahead!
                 popBlock( ID__KONQBLOCK );
+                haveKonqBlock = false;
                 handled = true;
                 break;
             default:
@@ -702,6 +711,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     }
                     if ( HTMLWidget ) container->attach( HTMLWidget );
                     pushBlock( ID__KONQBLOCK, tagPriority[ID__KONQBLOCK] );
+                    haveKonqBlock = true;
                     current = container;
                     handled = true;
                     break;
