@@ -15,9 +15,9 @@
 <!ENTITY ie     "cio&egrave;">
 <!ENTITY kcontrol       '<application>Centro di controllo di &kde;</application>'>
 <!ENTITY khelpcenter    '<application>Centro di informazioni di &kde;</application>'>
-<!ENTITY LMB    "pulsante <mousebutton>sinistro</mousebutton> del mouse">
-<!ENTITY MMB    "pulsante <mousebutton>centrale</mousebutton> del mouse">
-<!ENTITY RMB    "pulsante <mousebutton>destro</mousebutton> del mouse">
+<!ENTITY LMB    "tasto <mousebutton>sinistro</mousebutton> del mouse">
+<!ENTITY MMB    "tasto <mousebutton>centrale</mousebutton> del mouse">
+<!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
 
 <!-- Entit&agrave; aggiunte dai traduttori -->
