@@ -1492,7 +1492,6 @@ int KApplication::random()
       if (fd <= 0 || ::read(fd, &seed, sizeof(seed)) != sizeof(seed))
       {
             // No /dev/urandom... try something else.
-            printf("Reading from /dev/urandom failed\n");
             srand(getpid());
             seed = rand()+time(0);
       }
