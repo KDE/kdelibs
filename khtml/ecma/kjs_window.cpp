@@ -70,6 +70,9 @@ void Window::tryPut(const UString &p, const KJSO &v)
   if (p == "status") {
     String s = v.toString();
     WindowFunc::setStatusBarText(widget->part(), s.value().qstring());
+  } else if (p == "location") {
+    QString str = v.toString().value().qstring();
+    widget->part()->scheduleRedirection(0, str);
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
