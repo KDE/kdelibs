@@ -1925,7 +1925,7 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 	else if (et == QEvent::Hide)
 	{
 		// Handle drop shadow
-		if (dropShadow && p->width() > 16 && p->height() > 16)
+		if (dropShadow)
 			removeShadowWindows(p);
 
 		// Handle translucency
