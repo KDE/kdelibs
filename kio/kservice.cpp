@@ -318,30 +318,10 @@ QStringList KService::propertyNames() const
   return res;
 }
 
-int
-KService::startService( const QString &URL, QCString &dcopService, QString &error)
-{
-   return KApplication::startServiceByDesktopPath( desktopEntryPath(), URL, dcopService, error);
-}
-
 KService::List KService::allServices()
 {
   return KServiceFactory::self()->allServices();
 }
-
-/*
-KService::Ptr KService::service( const QString& _name )
-{
-  KService * s = KServiceFactory::self()->findServiceByName( _name );
-
-  if (!s)
-      s = KServiceFactory::self()->findServiceByDesktopName( _name );
-  if (!s)
-      s = KServiceFactory::self()->findServiceByDesktopPath( _name );
-    
-  return KService::Ptr( s );
-}
-*/
 
 KService::Ptr KService::serviceByName( const QString& _name )
 {

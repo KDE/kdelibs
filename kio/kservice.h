@@ -233,20 +233,6 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   virtual void save( QDataStream& );
 
   /**
-   * Starts a service.
-   *
-   * @param URL - if not empty this URL is passed to the service
-   *
-   * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.   
-   */
-  int startService( const QString &URL, QCString &dcopService, QString &error );
-
-  /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !
