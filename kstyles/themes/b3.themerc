@@ -1,6 +1,7 @@
 [Misc]
 Name=B3/KDE
 Name[af]=B3/Kde
+Name[fr]=B3 / KDE
 Name[mk]=Б3/KDE
 Comment=B3/Modification of B2
 Comment[af]=B3/Verandering van B2
@@ -20,7 +21,7 @@ Comment[et]=B3 - muudatustega B2
 Comment[eu]=B3/ B2 Eraldatuta
 Comment[fa]=B3/تغییرات B2
 Comment[fi]=B3/Muokattu B2
-Comment[fr]=B3/Modification de B2
+Comment[fr]=B3 / Modification de B2
 Comment[ga]=B3/B2 athraithe
 Comment[gl]=B3/Modificación de B2
 Comment[hr]=B3/Preinaka B2
