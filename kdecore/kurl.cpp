@@ -34,7 +34,10 @@ void KURL::encodeURL( QString& _url ) {
     int new_length = 0;
      
     for (int i = 0; i < old_length; i++) {
-	if ( strchr("#@\"&%$:,;?={}|^~[]\'", _url[i]) ) {
+       // 'unsave' and 'reserved' characters
+       // according to RFC 1738,
+       // 2.2. URL Character Encoding Issues (pp. 3-4)
+	if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", _url[i]) ) {
 	    new_url[ new_length++ ] = '%';
 
 	    char c = _url[ i ] / 16;
