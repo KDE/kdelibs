@@ -25,6 +25,7 @@
 #include <qlineedit.h>
 #include <qmultilineedit.h>
 #include <qradiobutton.h>
+#include <qwhatsthis.h>
 
 #include <kapp.h>
 #include <kaboutdata.h>
@@ -73,29 +74,39 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                   i18n("Send this bugreport to the KDE buglist."));
 
   // From
+  QString qwtstr = i18n( "Your e-mail address. If incorrect, use the Configure E-Mail button to change it" );
   tmpLabel = new QLabel( i18n("From :"), parent );
   glay->addWidget( tmpLabel, 0,0 );
+  QWhatsThis::add( tmpLabel, qwtstr );
   m_from = new QLabel( parent );
   glay->addWidget( m_from, 0, 1 );
+  QWhatsThis::add( m_from, qwtstr );
 
   // Program name
+  qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
   tmpLabel = new QLabel( i18n("Application : "), parent );
   glay->addWidget( tmpLabel, 1, 0 );
+  QWhatsThis::add( tmpLabel, qwtstr );
   tmpLabel = new QLabel( QString::fromLatin1( m_aboutData
 					      ? m_aboutData->appName()
 					      : kapp->name() ),
 			 parent );
   glay->addWidget( tmpLabel, 1, 1 );
 
+  QWhatsThis::add( tmpLabel, qwtstr );
+
   // Version
+  qwtstr = i18n( "The version of this application - please make sure that no newer version is available before sending a bug report" );
   tmpLabel = new QLabel( i18n("Version : "), parent );
   glay->addWidget( tmpLabel, 2, 0 );
+  QWhatsThis::add( tmpLabel, qwtstr );
   if (m_aboutData) m_strVersion = m_aboutData->version();
    else m_strVersion = i18n("no version set (programmer error!)");
   m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, 2, 1 );
   glay->addMultiCellWidget( m_version, 2, 2, 1, 2 );
+  QWhatsThis::add( m_version, qwtstr );
 
   // Configure email button
   m_configureEmail = new QPushButton( i18n("Configure E-Mail"),
@@ -159,7 +170,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   hlay = new QHBoxLayout( lay, 0 );
 
-  text = i18n("You can access previously reported bugs and wishes at ");
+  text = i18n("Please check that the bug you are about to report is not already listed at ");
   label = new QLabel( text, parent, "label");
   hlay->addWidget( label, 0, AlignBottom );
   hlay->addSpacing(1); // Looks better :)
