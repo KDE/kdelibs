@@ -372,6 +372,10 @@ KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
 {
     d = new KListViewSearchLineWidgetPrivate;
     d->listView = listView;
+
+    setSpacing(5);
+
+    QTimer::singleShot(0, this, SLOT(createWidgets()));
 }
 
 KListViewSearchLineWidget::~KListViewSearchLineWidget()
@@ -386,17 +390,22 @@ KListViewSearchLine *KListViewSearchLineWidget::createSearchLine(KListView *list
     return d->searchLine;
 }
 
-void KListViewSearchLineWidget::polish()
+void KListViewSearchLineWidget::createWidgets()
 {
     QIconSet icon = SmallIconSet(KApplication::reverseLayout() ? "clear_left"
                                                                : "locationbar_erase");
 
     QToolButton *clearSearchButton = new QToolButton(this);
     clearSearchButton->setIconSet(icon);
+    clearSearchButton->show();
 
-    new QLabel(i18n("S&earch:"), this, "kde toolbar widget");
+    QLabel *label = new QLabel(i18n("S&earch:"), this, "kde toolbar widget");
 
     d->searchLine = createSearchLine(d->listView);
+    d->searchLine->show();
+
+    label->setBuddy(d->searchLine);
+    label->show();
 
     connect(clearSearchButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 }

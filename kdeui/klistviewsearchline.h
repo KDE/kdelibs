@@ -209,6 +209,8 @@ private:
  */
 class KDEUI_EXPORT KListViewSearchLineWidget : public QHBox
 {
+    Q_OBJECT
+
 public:
     /**
      * Creates a KListViewSearchLineWidget for \a listView with \a parent as the
@@ -229,15 +231,18 @@ public:
     virtual KListViewSearchLine *createSearchLine(KListView *listView);
 
     /**
-     * Reimplemented from QWidget to instantiate the widgets after object
-     * creation.
-     */
-    virtual void polish();
-
-    /**
      * Returns a pointer to the search line.
      */
     KListViewSearchLine *searchLine() const;
+
+protected slots:
+    /**
+     * Creates the widgets inside of the widget.  This is called from the
+     * constructor via a single shot timer so that it it guaranteed to run
+     * after construction is complete.  This makes it suitable for overriding in
+     * subclasses.
+     */
+    virtual void createWidgets();
 
 private:
     class KListViewSearchLineWidgetPrivate;
