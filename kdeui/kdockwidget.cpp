@@ -398,6 +398,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
+
   if( strCaption == 0L)
     setCaption( name );
   else
@@ -438,6 +439,16 @@ KDockWidget::~KDockWidget()
   delete d; // destroy private data
   d=0;
 }
+
+void KDockWidget::paintEvent(QPaintEvent* pe)
+{
+	QWidget::paintEvent(pe);
+        QPainter paint;
+        paint.begin( this );
+        style().drawPrimitive (QStyle::PE_Panel, &paint, QRect(0,0,width(), height()), colorGroup());
+        paint.end();
+}
+
 
 void KDockWidget::setLatestKDockContainer(QWidget* container)
 {
@@ -488,6 +499,10 @@ void KDockWidget::setEnableDocking( int pos )
 void KDockWidget::updateHeader()
 {
   if ( parent() ){
+#ifdef BORDERLESS_WINDOWS
+      layout->setMargin(0);
+#endif
+
     if ( (parent() == manager->main) || isGroup || (eDocking == KDockWidget::DockNone) ){
       header->hide();
     } else {
@@ -498,6 +513,9 @@ void KDockWidget::updateHeader()
   } else {
     header->setTopLevel( true );
     header->show();
+#ifdef BORDERLESS_WINDOWS
+      layout->setMargin(style().pixelMetric(QStyle::PM_DefaultFrameWidth,this));
+#endif
   }
 }
 
@@ -1105,13 +1123,6 @@ void KDockWidget::setWidget( QWidget* mw )
   	d->isContainer=false;
   }
   
-//  if (widget->qt_cast("KDockContainer"))
-
-//  {
-//    header->hide();
-//    layout->addWidget( widget);
-//  }
-//  else
   {
      header->show();
      layout->addWidget( header );

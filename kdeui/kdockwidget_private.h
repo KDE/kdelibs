@@ -152,6 +152,7 @@ public:
   bool transient;
 
   QGuardedPtr<QWidget> container;
+
 };
 
 class KDockWidgetHeaderPrivate

@@ -712,6 +712,8 @@ protected slots:
    * "To get back to where you once belonged" ;-)
    */
   void loseFormerBrotherDockWidget();
+  
+  virtual void paintEvent(QPaintEvent*);
 
 protected:
   /**
