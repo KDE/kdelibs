@@ -222,7 +222,7 @@ namespace KJS {
   template <class ThisImp, class ParentImp>
   inline void lookupPut(ExecState *exec, const UString &propertyName,
                         const Value& value, int attr,
-                        const HashTable* table, const ThisImp* thisObj)
+                        const HashTable* table, ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
