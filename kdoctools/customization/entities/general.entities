@@ -307,8 +307,9 @@
 <!ENTITY Visor  "<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
+<!ENTITY X-Server "<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
-<!ENTITY X-Windows	'<trademark class="registered">X Windows</trademark>'>
+<!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
