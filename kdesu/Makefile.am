@@ -3,7 +3,7 @@
 INCLUDES = -I$(top_srcdir)/kio/ $(all_includes)
 
 lib_LTLIBRARIES = libkdesu.la
-libkdesu_la_SOURCES = kdesu_pty.cpp client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp
+libkdesu_la_SOURCES = client.cpp process.cpp kcookie.cpp su.cpp ssh.cpp stub.cpp kdesu_pty.cpp
 libkdesu_la_LDFLAGS = -version-info 1:0 -no-undefined $(all_libraries) 
 libkdesu_la_LIBADD = $(LIB_KDECORE) $(LIBUTIL)
 libkdesu_la_DEPENDENCIES = $(LIB_KDECORE)
