@@ -23,6 +23,8 @@
 #include "khtmlview.moc"
 #include "khtml_part.h"
 #include "khtml_events.h"
+#include "khtml_settings.h"
+#include "khtml_factory.h"
 
 #include "misc/loader.h"
 #include "html/html_documentimpl.h"
@@ -212,11 +214,14 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     if (eh<0)
     	eh = pe->rect().height();
 
+    QColor bgCol = KHTMLFactory::defaultHTMLSettings()->bgColor();
+    
     if(!body)
     {
 	QPainter p(viewport());
 
-	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	//	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
 	return;
     }
 //    kdDebug( 6000 ) << "viewportPaintEvent x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
@@ -225,7 +230,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     {
         paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
 	QPainter p(paintBuffer);
-	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	//	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
     }
 
     QTime qt;
@@ -242,7 +248,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 
 	// ### fix this for frames...
 
-	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+	//	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+	tp->fillRect(ex, ey+py, ew, ph, bgCol );
 
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 
