@@ -120,7 +120,7 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  bool _httpOnly) :
        mHost(_host),
        mDomain(_domain),
-       mPath(_path),
+       mPath(_path.isEmpty() ? QString::null : _path),
        mName(_name),
        mValue(_value),
        mExpireDate(_expireDate),
@@ -679,7 +679,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             }
             else if (Name == "path")
             {
-                lastCookie->mPath = Value;
+                if (Value.isEmpty())
+                   lastCookie->mPath = QString::null; // Catch "" <> QString::null
+                else
+                   lastCookie->mPath = Value;
             }
             else if (Name == "version")
             {
