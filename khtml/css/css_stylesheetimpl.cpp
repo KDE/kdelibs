@@ -30,6 +30,7 @@
 
 #include "dom_string.h"
 #include "dom_exception.h"
+#include "dom_nodeimpl.h"
 
 #include <stdio.h>
 
@@ -245,10 +246,22 @@ bool CSSStyleSheetImpl::isLoading()
 	if(rule->isImportRule())
 	{
 	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
-	    if(import->isLoading()) return true;
+	    printf("found import\n");
+	    if(import->isLoading())
+	    {
+		printf("--> not loaded\n");
+		return true;
+	    }
 	}
     }
     return false;
+}
+
+void CSSStyleSheetImpl::checkLoaded()
+{
+    if(isLoading()) return;
+    if(m_parent) m_parent->checkLoaded();
+    if(m_parentNode) m_parentNode->sheetLoaded();
 }
 
 // ---------------------------------------------------------------------------------------------

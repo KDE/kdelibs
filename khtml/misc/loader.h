@@ -69,7 +69,7 @@ namespace khtml
     {
     public:
 	virtual void setPixmap(const QPixmap &) {}
-	virtual void setStyleSheet(DOM::CSSStyleSheetImpl *) {}
+	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
     };
 
     /**
@@ -144,10 +144,10 @@ namespace khtml
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(const DOM::DOMString &url, CachedCSSStyleSheet *parent);
+	CachedCSSStyleSheet(const DOM::DOMString &url);
 	virtual ~CachedCSSStyleSheet();
 	
-	DOM::CSSStyleSheetImpl *sheet() const { return m_sheet; }
+	const DOM::DOMString &sheet() const { return m_sheet; }
 
 	virtual void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
@@ -158,8 +158,8 @@ namespace khtml
 	void checkNotify();
 	
     protected:
-	DOM::CSSStyleSheetImpl *m_sheet;
-	CachedCSSStyleSheet *m_parent;
+	DOM::DOMString m_sheet;
+	bool loading;
     };
 	
     class ImageSource;

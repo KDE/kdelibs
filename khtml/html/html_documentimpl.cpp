@@ -319,7 +319,7 @@ void HTMLDocumentImpl::createSelector()
 
 bool HTMLDocumentImpl::headLoaded()
 {
-    //printf("checking for headLoaded()\n");
+    printf("checking for headLoaded()\n");
 
     NodeImpl *test = _first;
     if(!test) return true;
@@ -337,15 +337,26 @@ bool HTMLDocumentImpl::headLoaded()
 
 	if(test->id() == ID_LINK)
 	{
-	    //printf("found\n");
+	    printf("found link\n");
 	    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
 	    if(link->isLoading())
 	    {
-		//printf("--> not loaded\n");
+		printf("--> not loaded\n");
+		return false;
+	    }
+	}
+	else if(test->id() == ID_STYLE)
+	{
+	    printf("found style\n");
+	    HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
+	    if(style->isLoading()) // can still load because of @import rules
+	    {
+		printf("--> not loaded\n");
 		return false;
 	    }
 	}
 	test = test->nextSibling();
     }
+    printf("head loaded\n");
     return true;
 }

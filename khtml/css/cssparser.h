@@ -117,6 +117,8 @@ namespace DOM {
 
 	virtual bool parseString(const DOMString &/*cssString*/) { return false; }
 
+	virtual void checkLoaded();
+	
     protected:
 	StyleBaseImpl *m_parent;
     };

@@ -101,6 +101,7 @@ public:
     virtual bool parseString( const DOMString &string );
 
     bool isLoading();
+    virtual void checkLoaded();
 };
 
 // ----------------------------------------------------------------------------

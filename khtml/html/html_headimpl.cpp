@@ -193,12 +193,27 @@ void HTMLLinkElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLLinkElementImpl::setStyleSheet(CSSStyleSheetImpl *sheet)
+void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
     printf("HTMLLinkElement::setStyleSheet()\n");
-    m_sheet = new CSSStyleSheetImpl(this, sheet);
+    m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
+    m_sheet->parseString(sheet);
     m_loading = false;
+
+    if(!isLoading()) sheetLoaded();
+}
+
+bool HTMLLinkElementImpl::isLoading()
+{
+    if(m_loading) return true;
+    if(!m_sheet) return false;
+    //if(!m_sheet->isCSSStyleSheet()) return false;
+    return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
+}
+
+void HTMLLinkElementImpl::sheetLoaded()
+{
     document->createSelector();
 }
 
@@ -350,6 +365,18 @@ NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
     m_sheet->parseString(text);
 
     return NodeBaseImpl::addChild(child);
+}
+
+bool HTMLStyleElementImpl::isLoading()
+{
+    if(!m_sheet) return true;
+    //if(!m_sheet->isCSSStyleSheet()) return false;
+    return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
+}
+
+void HTMLStyleElementImpl::sheetLoaded()
+{
+    document->createSelector();
 }
 
 // -------------------------------------------------------------------------

@@ -142,15 +142,24 @@ CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
     return m_styleSheet;
 }
 
-void CSSImportRuleImpl::setStyleSheet(CSSStyleSheetImpl *sheet)
+void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    printf("CSSImportRule::setStleSheet()\n");
+    printf("CSSImportRule::setStyleSheet()\n");
 
-    m_styleSheet = new CSSStyleSheetImpl(this, sheet);
+    m_styleSheet = new CSSStyleSheetImpl(this, url);
     m_styleSheet->ref();
+    m_styleSheet->parseString(sheet);
     m_loading = false;
+
+    checkLoaded();
 }
 
+bool CSSImportRuleImpl::isLoading()
+{
+    if(m_loading) return true;
+    if(m_styleSheet->isLoading()) return true;
+    return false;
+}
 // --------------------------------------------------------------------------
 
 

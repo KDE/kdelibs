@@ -75,6 +75,11 @@ void StyleBaseImpl::setParent(StyleBaseImpl *parent)
     m_parent = parent;
 }
 
+void StyleBaseImpl::checkLoaded()
+{
+    if(m_parent) m_parent->checkLoaded();
+}
+
 DOMString StyleBaseImpl::baseUrl()
 {
     // try to find the style sheet. If found look for it's url.

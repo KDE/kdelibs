@@ -100,8 +100,9 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     // from CachedObjectClient
-    virtual void setStyleSheet(CSSStyleSheetImpl *sheet);
-    bool isLoading() { return m_loading; }
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    bool isLoading();
+    virtual void sheetLoaded();
 
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
@@ -179,6 +180,9 @@ public:
     // overload from HTMLElementImpl
     virtual void parseAttribute(Attribute *attr);
     virtual NodeImpl *addChild(NodeImpl *child);
+
+    bool isLoading();
+    virtual void sheetLoaded();
 
 protected:
     StyleSheetImpl *m_sheet;

@@ -101,9 +101,9 @@ public:
     virtual bool isImportRule() { return true; }
 
     // from CachedObjectClient
-    virtual void setStyleSheet(DOM::CSSStyleSheetImpl *);
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 
-    bool isLoading() { return m_loading; }
+    bool isLoading();
 protected:
     DOMString m_strHref;
     MediaListImpl *m_lstMedia;

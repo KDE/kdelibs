@@ -143,6 +143,9 @@ public:
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return 0; }
 
+    // for LINK and STYLE
+    virtual void sheetLoaded() {}
+
     enum SpecialFlags {
 	Layouted    = 0x0001,
 	Blocking    = 0x0002,

@@ -52,18 +52,16 @@ void CachedObject::computeStatus()
 
 // -------------------------------------------------------------------------------------------
 
-CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, CachedCSSStyleSheet *parent)
+CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url)
     : CachedObject(url, CSSStyleSheet)
 {
     // load the file
     Cache::loader()->load(this, false);
-    m_sheet = 0;
-    m_parent = parent;
+    loading = true;
 }
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
-    if(m_sheet) m_sheet->deref();
 }
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
@@ -72,7 +70,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
     m_clients.remove(c);
     m_clients.append(c);
 
-    if(m_sheet) c->setStyleSheet( m_sheet );
+    if(!loading) c->setStyleSheet( m_url, m_sheet );
 }
 
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
@@ -88,37 +86,27 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     QTextStream t( &buffer );
     QString data = t.read();
 
-    DOMString str(data);
-    // ###
-    m_sheet = new DOM::CSSStyleSheetImpl(m_parent, m_url);
-    m_sheet->ref();
-    m_sheet->parseString( str );
+    m_sheet = DOMString(data);
+    loading = false;
 
     checkNotify();
 }	
 
 void CachedCSSStyleSheet::checkNotify()
 {
-    if(m_sheet->isLoading()) return;
+    if(loading) return;
 
     printf("CachedCSSStyleSheet:: finishedLoading %s\n", m_url.string().ascii());
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-	c->setStyleSheet( m_sheet );
-
-    if(m_parent) m_parent->checkNotify();
+	c->setStyleSheet( m_url, m_sheet );
 }
 
 
 void CachedCSSStyleSheet::error( int /*err*/, const char */*text*/ )
 {
-    // provide a dummy sheet
-    // ### modify CSSStyleSheetImpl, to just point to a certain sheet, to get
-    // parent/child relation right
-    m_sheet = new DOM::CSSStyleSheetImpl(m_parent, m_url);
-    m_sheet->ref();
-
+    loading = false;
     checkNotify();
 }
 
@@ -590,10 +578,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 #ifdef CACHE_DEBUG
 	printf("Cache: new: %s\n", kurl.url().latin1());
 #endif
-	CachedCSSStyleSheet *parent = 0;
-	o = cache->find(baseUrl.string());
-	if(o) parent = static_cast<CachedCSSStyleSheet *>(o);
-	CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), parent);
+	CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url());
 	cache->insert( kurl.url(), sheet );
 	lru->append( kurl.url() );
 	return sheet;
@@ -601,7 +586,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
-	printf("Cache::Internal Error in requestImage url=%s!\n", kurl.url().ascii());
+	printf("Cache::Internal Error in requestStyleSheet url=%s!\n", kurl.url().ascii());
 	return 0;
     }
 
