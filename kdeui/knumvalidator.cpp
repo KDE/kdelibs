@@ -23,7 +23,8 @@
 #include <qvalidator.h>
 
 #include "knumvalidator.h"
-
+#include <klocale.h>
+#include <kglobal.h>
 ///////////////////////////////////////////////////////////////
 //  Implementation of KIntValidator
 //
@@ -139,32 +140,54 @@ int KIntValidator::base () const
 
 
 ///////////////////////////////////////////////////////////////
-//  Implementation of KIntValidator
+//  Implementation of KFloatValidator
 //
+
+class KFloatValidatorPrivate
+{
+public:
+    KFloatValidatorPrivate()
+    {
+    }
+    ~KFloatValidatorPrivate()
+    {
+    }
+    bool acceptLocalizedNumbers;
+};
+
 
 KFloatValidator::KFloatValidator ( QWidget * parent, const char * name )
   : QValidator(parent, name)
 {
-  _min = _max = 0;
+    d = new KFloatValidatorPrivate;
+    d->acceptLocalizedNumbers=false;
+    _min = _max = 0;
 }
 
 KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent, const char * name )
   : QValidator(parent, name)
 {
-  _min = bottom;
-  _max = top;
+    d = new KFloatValidatorPrivate;
+    d->acceptLocalizedNumbers=false;
+    _min = bottom;
+    _max = top;
 }
 
 KFloatValidator::~KFloatValidator ()
-{}
+{
+     delete d;
+}
+
+void KFloatValidator::setAcceptLocalizedNumbers(bool _b)
+{
+    d->acceptLocalizedNumbers=_b;
+}
 
 QValidator::State KFloatValidator::validate ( QString &str, int & ) const
 {
   bool    ok;
   double  val = 0;
-
   QString newStr;
-
   newStr = str.stripWhiteSpace();
 
   if (newStr == QString::fromLatin1("-")) // a special case
@@ -172,10 +195,14 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
       ok = false;
     else
       return QValidator::Acceptable;
-  else if (newStr == QString::fromLatin1(".")) // another special case
+  else if (newStr == QString::fromLatin1(".") || (d->acceptLocalizedNumbers && newStr==KGlobal::locale()->decimalSymbol())) // another special case
     return QValidator::Acceptable;
   else if (newStr.length())
+  {
     val = newStr.toDouble(&ok);
+    if(!ok && d->acceptLocalizedNumbers)
+       val= KGlobal::locale()->readNumber(newStr,&ok);
+  }
   else {
     val = 0;
     ok = true;

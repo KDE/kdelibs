@@ -95,6 +95,11 @@ class KIntValidator : public QValidator {
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
 */
+
+// Just a marker for a feature that was added after 2.2-beta2.
+// When KOffice depends on kdelibs-2.2, this can be removed.
+#define KFLOATVALIDATOR_HAS_USEDLOCALPARAMETER
+class KFloatValidatorPrivate;
 class KFloatValidator : public QValidator {
 
   public:
@@ -130,11 +135,15 @@ class KFloatValidator : public QValidator {
       Return the current maximum value allowed.
     */
     virtual double top () const;
+    
+    void setAcceptLocalizedNumbers(bool _b);
+
 
   protected:
     double _min;
     double _max;
-
+ private:
+    KFloatValidatorPrivate *d;
 };
 
 
