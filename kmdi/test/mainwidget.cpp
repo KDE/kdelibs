@@ -47,18 +47,22 @@ MainWidget::MainWidget()
    QListView* lv = new QListView(0L,"theListViewWidget");
    QListView* lv2 = new QListView(0L,"theListViewWidget2");
    QListView* lv3 = new QListView(0L,"theListViewWidget3");
+#include "../res/filenew.xpm"
+   lv->setIcon(filenew);
+   lv2->setIcon(filenew);
+   lv3->setIcon(filenew);
    lv->addColumn("Test", 50);
    lv->addColumn("KMDI", 70);
    new QListViewItem(lv,QString("test"),QString("test"));
-   addToolWindow( lv, KDockWidget::DockLeft, m_pMdi, 35);
+   addToolWindow( lv, KDockWidget::DockLeft, m_pMdi, 35, "1");
    lv2->addColumn("Test2", 50);
    lv2->addColumn("KMDI2", 70);
    new QListViewItem(lv,QString("test2"),QString("test2"));
-   addToolWindow( lv2, KDockWidget::DockCenter, lv, 35);
+   addToolWindow( lv2, KDockWidget::DockCenter, lv, 35, "2");
    lv3->addColumn("Test3", 50);
    lv3->addColumn("KMDI3", 70);
    new QListViewItem(lv,QString("test3"),QString("test3"));
-   addToolWindow( lv3, KDockWidget::DockCenter, lv, 35);
+   addToolWindow( lv3, KDockWidget::DockCenter, lv, 35, "3");
 
    setMenuForSDIModeSysButtons( menuBar());
 }
@@ -76,4 +80,6 @@ void MainWidget::resizeEvent( QResizeEvent *pRSE)
    setSysButtonsAtMenuPosition();
 }
 
-//void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
+#ifdef _WINDOWS
+void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
+#endif
