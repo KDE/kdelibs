@@ -250,10 +250,22 @@ bool XMLHandler::characters( const QString& ch )
     if (currentNode()->nodeType() == Node::TEXT_NODE ||
         currentNode()->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
-        int exceptioncode = 0;
-        static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
-        if (exceptioncode)
-            return false;
+        NodeImpl::Id parentId = currentNode()->parentNode() ? currentNode()->parentNode()->id() : 0;
+        if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
+            // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
+            // way of doing this?
+            int exceptioncode = 0;
+            static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
+            if (exceptioncode)
+                return false;
+        }
+        else {
+            // for all others, simplify the whitespace
+            int exceptioncode = 0;
+            static_cast<TextImpl*>(currentNode())->appendData(ch.simplifyWhiteSpace(),exceptioncode);
+            if (exceptioncode)
+                return false;
+        }
         return true;
     }
     else
