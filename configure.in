@@ -27,9 +27,6 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AM_PROG_LIBTOOL dnl for libraries
-AC_PROG_LEX
-AC_PROG_YACC
-AC_DECL_YYTEXT
 
 dnl find out some variables (not supported yet)
 AC_AIX
