@@ -730,30 +730,12 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       // find sixth part (font bits)
       uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
-      if( nFontBits & 0x01 )
-        aRetFont.setItalic( true );
-      else
-        aRetFont.setItalic( false );
-
-      if( nFontBits & 0x02 )
-        aRetFont.setUnderline( true );
-      else
-        aRetFont.setUnderline( false );
-
-      if( nFontBits & 0x04 )
-        aRetFont.setStrikeOut( true );
-      else
-        aRetFont.setStrikeOut( false );
-
-      if( nFontBits & 0x08 )
-        aRetFont.setFixedPitch( true );
-      else
-        aRetFont.setFixedPitch( false );
-
-      if( nFontBits & 0x20 )
-        aRetFont.setRawMode( true );
-      else
-        aRetFont.setRawMode( false );
+      
+      aRetFont.setItalic( nFontBits & 0x01 );
+      aRetFont.setUnderline( nFontBits & 0x02 );
+      aRetFont.setStrikeOut( nFontBits & 0x04 );
+      aRetFont.setFixedPitch( nFontBits & 0x08 );
+      aRetFont.setRawMode( nFontBits & 0x20 );
     }
   }
   else
