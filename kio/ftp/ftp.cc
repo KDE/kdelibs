@@ -182,8 +182,9 @@ bool Ftp::readresp(char expresp)
   char match[5];
   if ( ftpReadline( rspbuf, 256, nControl ) == -1 )
   {
-    kdError(7102) << "Could not read" << endl;
-    error( ERR_COULD_NOT_READ, "" );
+    // This can happen after the server closed the connection (after a timeout)
+    kdWarning(7102) << "Could not read" << endl;
+    //error( ERR_COULD_NOT_READ, "" );
     return false;
   }
   kdDebug(7102) << "resp> " << rspbuf << endl;
@@ -209,6 +210,7 @@ bool Ftp::readresp(char expresp)
 
 void Ftp::closeConnection()
 {
+  kdDebug(7102) << "Ftp::closeConnection() " << endl;
   if ( m_bLoggedOn || m_bFtpStarted )
   {
     if( sControl != 0 )
@@ -237,23 +239,26 @@ void Ftp::disconnect( bool really )
 
 void Ftp::setHost( const QString& _host, int _port, const QString& _user, const QString& _pass )
 {
-   closeConnection( );
-   m_host = _host;
-   m_port = _port;
-
-   if( !_user.isEmpty() )
-   {
-      m_user = _user;
+  QString user = _user;
+  QString pass = _pass;
+  if( !_user.isEmpty() )
+  {
+      user = _user;
       if ( !_pass.isEmpty() )
-      {
-         m_pass = _pass;
-      } else {
-         m_pass = "";
-      }
-   } else {
-      m_user = FTP_LOGIN;
-      m_pass = FTP_PASSWD;
-   }
+          pass = _pass;
+      else
+          pass = "";
+  } else {
+      user = FTP_LOGIN;
+      pass = FTP_PASSWD;
+  }
+
+  if ( m_host != _host || m_port != _port || m_user != user || m_pass != pass )
+      closeConnection( );
+  m_host = _host;
+  m_port = _port;
+  m_user = user;
+  m_pass = pass;
 }
 
 void Ftp::openConnection()
@@ -456,7 +461,7 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
  * return true if proper response received, false on error
  * or if @p expresp doesn't match
  */
-bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
+bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
 {
   assert( sControl > 0 );
 
@@ -470,7 +475,29 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
     return false;
   }
 
-  return readresp( expresp );
+  if (!readresp( expresp ))
+  {
+    if ( maxretries > 0 )
+    {
+      // It might mean a timeout occured, let's try logging in again
+      m_bLoggedOn = false;
+      kdDebug(7102) << "Couldn't read answer - perhaps timeout - trying logging in again" << endl;
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return false;
+      }
+      kdDebug(7102) << "Logged back in, reissuing command" << endl;
+      // On success, try the command again
+      return ftpSendCmd( cmd, expresp, maxretries - 1 );
+    } else
+    {
+      error( ERR_COULD_NOT_READ, "" );
+      return false;
+    }
+  }
+  return true;
 }
 
 /*
@@ -1032,8 +1059,10 @@ bool Ftp::ftpOpenDir( const QString & path )
   tmp += ( !path.isEmpty() ) ? path.latin1() : "/";
 
   if ( !ftpSendCmd( tmp, '2' ) )
+  {
     // We get '550', whether it's a file or doesn't exist...
-    return false;
+      return false;
+  }
 
   // don't use the path in the list command
   // we changed into this directory anyway ("cwd"), so it's enough just to send "list"

@@ -133,11 +133,14 @@ protected:
    * ftpSendCmd - send a command (@p cmd) and wait for expected response
    *
    * @param expresp the expected first char. '\0' for no check
+   * @param maxretries number of time it should retry. Since it recursively
+   * calls itself if it can't read the answer (this happens especially after
+   * timeouts), we need to limit the recursiveness ;-)
    *
    * return true if proper response received, false on error
    * or if @p expresp doesn't match
    */
-  bool ftpSendCmd( const QCString& cmd, char expresp = '\0' );
+  bool ftpSendCmd( const QCString& cmd, char expresp = '\0', int maxretries = 1 );
 
   /**
    * Get information about a file or directory, from its URL
