@@ -123,7 +123,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 		if (present==-1)
 			present=eventsfile->readNumEntry("default_presentation", 0);
 		
-		sound=eventsfile->readEntry("sound", 0);
+		sound=eventsfile->readEntry("soundfile", 0);
 		if (sound.isNull())
 			sound=eventsfile->readEntry("default_sound", "");
 			
