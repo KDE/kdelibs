@@ -1,8 +1,8 @@
-kdelibs (4:3.0.7-1) unstable; urgency=low
+kdelibs (4:3.0.8-1) unstable; urgency=low
 
   * New Upstream.
 
- -- Christopher L Cheney <ccheney@debian.org>  Wed, 26 Jun 2002 21:00:00 -0500
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 16 Sep 2002 22:00:00 -0500
 
 kdelibs (4:3.0.2-1) unstable; urgency=low
 
