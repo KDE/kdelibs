@@ -1144,7 +1144,7 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
                     o->layout();
             }
             else if(o->isText())
-                static_cast<RenderText *>(o)->deleteTextBoxes( renderArena() );
+                static_cast<RenderText *>(o)->deleteTextBoxes();
             else if (o->isFlow()/* && !endOfInline*/)
                 static_cast<RenderFlow*>(o)->deleteLineBoxes();
             o = Bidinext( this, o );

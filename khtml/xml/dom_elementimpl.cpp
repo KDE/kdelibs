@@ -653,8 +653,8 @@ void ElementImpl::setContentEditable(bool enabled) {
         // FIXME: reset caret if it is in this node or a child
     }/*end if*/
     // FIXME: use addCSSProperty when I get permission to move it here
-//    kdDebug(6000) << "CSS_PROP__KONQ_USER_INPUT: "<< value << endl;
-    styleRules()->setProperty(CSS_PROP__KONQ_USER_INPUT, value, false, true);
+//    kdDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value << endl;
+    styleRules()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
     setChanged();
 
 }

@@ -2076,8 +2076,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         EWhiteSpace s;
         switch(primitiveValue->getIdent()) {
-        case CSS_VAL__KONQ_NOWRAP:
-            s = KONQ_NOWRAP;
+        case CSS_VAL__KHTML_NOWRAP:
+            s = KHTML_NOWRAP;
             break;
         case CSS_VAL_NOWRAP:
             s = NOWRAP;
@@ -2196,7 +2196,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		return;
 	    int ident = primitiveValue->getIdent();
 	    if ( ident ) {
-		if ( ident == CSS_VAL__KONQ_TEXT )
+		if ( ident == CSS_VAL__KHTML_TEXT )
 		    col = element->getDocument()->textColor();
 		else if ( ident == CSS_VAL_TRANSPARENT )
 		    col = QColor();
@@ -2622,7 +2622,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		    align = SUB; break;
 		case CSS_VAL_SUPER:
 		    align = SUPER; break;
-		case CSS_VAL__KONQ_BASELINE_MIDDLE:
+		case CSS_VAL__KHTML_BASELINE_MIDDLE:
 		    align = BASELINE_MIDDLE; break;
 		default:
 		    return;
@@ -2678,7 +2678,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             case CSS_VAL_LARGE:    size = int( fontSizes[4] ); break;
             case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
             case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
-            case CSS_VAL__KONQ_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
+            case CSS_VAL__KHTML_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = ( oldSize * 5 ) / 4;
@@ -2798,7 +2798,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
-            style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL__KONQ_AUTO) );
+            style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL__KHTML_AUTO) );
 	return;
     }
 
@@ -2987,7 +2987,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	style->setTextDecorationColor(style->color());
         break;
     }
-    case CSS_PROP__KONQ_FLOW_MODE:
+    case CSS_PROP__KHTML_FLOW_MODE:
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;
@@ -2997,11 +2997,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
         {
-            style->setFlowAroundFloats( primitiveValue->getIdent() == CSS_VAL__KONQ_AROUND_FLOATS );
+            style->setFlowAroundFloats( primitiveValue->getIdent() == CSS_VAL__KHTML_AROUND_FLOATS );
             return;
         }
         break;
-    case CSS_PROP__KONQ_USER_INPUT: {
+    case CSS_PROP__KHTML_USER_INPUT: {
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;

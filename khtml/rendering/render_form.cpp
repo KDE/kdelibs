@@ -1176,9 +1176,9 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
             // shouldn't emit onChange. Hence this bool, the if above doesn't do it.
             if ( changed )
             {
-		RenderArena *arena = ref();
+		ref();
                 element()->onChange();
-                deref(arena);
+                deref();
             }
         }
     }
@@ -1199,9 +1199,9 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
                 ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
 
-    RenderArena *arena = ref();
+    ref();
     element()->onChange();
-    deref(arena);
+    deref();
 }
 
 void RenderSelect::setOptionsChanged(bool _optionsChanged)

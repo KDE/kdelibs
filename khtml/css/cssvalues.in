@@ -71,7 +71,7 @@ medium
 large
 x-large
 xx-large
--konq-xxx-large
+-khtml-xxx-large
 smaller
 larger
 #
@@ -152,7 +152,7 @@ windowtext
 #
 # colors in non strict mode
 grey
--konq-text
+-khtml-text
 #
 # CSS_PROP_BACKGROUND_REPEAT:
 #
@@ -172,16 +172,16 @@ text-bottom
 top
 bottom
 # HTML alignment MIDDLE has no corresponding CSS alignment
--konq-baseline-middle
+-khtml-baseline-middle
 #
 # CSS_PROP_TEXT_ALIGN:
 #
--konq-auto
+-khtml-auto
 left
 right
 center
 justify
--konq-center
+-khtml-center
 #
 # CSS_PROP_LIST_STYLE_POSITION:
 #
@@ -310,10 +310,10 @@ static
 thick
 thin
 underline
--konq-nowrap
+-khtml-nowrap
 # CSS_PROP__KONQ_FLOW_MODE
--konq-normal
--konq-around-floats
+-khtml-normal
+-khtml-around-floats
 # CSS_PROP__KONQ_USER_INPUT
 enabled
 disabled

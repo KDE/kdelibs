@@ -107,11 +107,7 @@ namespace khtml {
 
 	void detach(khtml::RenderArena* renderArena);
 
-	// Overloaded new operator.  Derived classes must override operator new
-	// in order to allocate out of the RenderArena.
 	void* operator new(size_t sz, khtml::RenderArena* renderArena) throw();
-
-	// Overridden to prevent the normal delete from being called.
 	void operator delete(void* ptr, size_t sz);
 
     private:

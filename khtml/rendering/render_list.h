@@ -28,6 +28,11 @@
 
 // ### list-style-position, list-style-image is still missing
 
+namespace DOM
+{
+    class DocumentImpl;
+}
+
 namespace khtml
 {
 
@@ -39,7 +44,7 @@ class RenderListItem;
 class RenderListMarker : public RenderBox
 {
 public:
-    RenderListMarker();
+    RenderListMarker(DOM::DocumentImpl* document);
     ~RenderListMarker();
 
     virtual void setStyle(RenderStyle *style);

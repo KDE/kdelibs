@@ -34,6 +34,7 @@
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "rendering/render_line.h"
+#include "xml/dom_docimpl.h"
 
 #include <kglobal.h>
 
@@ -170,14 +171,14 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         break;
     default:
         if ( !beforeChild && lastChild() &&
-	     lastChild()->isTableSection() && lastChild()->isAnonymousBox() ) {
+	     lastChild()->isTableSection() && lastChild()->isAnonymous() ) {
             o = lastChild();
         } else {
 	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymousBox() &&
+	    while ( lastBox && lastBox->parent()->isAnonymous() &&
 		    !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION )
 		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymousBox() ) {
+	    if ( lastBox && lastBox->isAnonymous() ) {
 		lastBox->addChild( child, beforeChild );
 		return;
 	    } else {
@@ -189,7 +190,6 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 		newStyle->inheritFrom(style());
                 newStyle->setDisplay(TABLE_ROW_GROUP);
 		o->setStyle(newStyle);
-		o->setIsAnonymousBox(true);
 		addChild(o, beforeChild);
 	    }
         }
@@ -720,14 +720,14 @@ RenderTableSection::~RenderTableSection()
     clearGrid();
 }
 
-void RenderTableSection::detach( RenderArena *arena )
+void RenderTableSection::detach()
 {
     // recalc cell info because RenderTable has unguarded pointers
     // stored that point to this RenderTableSection.
     if (table())
         table()->setNeedSectionRecalc();
 
-    RenderBox::detach( arena );
+    RenderBox::detach();
 }
 
 void RenderTableSection::setStyle(RenderStyle* _style)
@@ -759,13 +759,13 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         if( !beforeChild )
             beforeChild = lastChild();
 
-        if( beforeChild && beforeChild->isAnonymousBox() )
+        if( beforeChild && beforeChild->isAnonymous() )
             row = beforeChild;
         else {
 	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableRow() )
+	    while ( lastBox && lastBox->parent()->isAnonymous() && !lastBox->isTableRow() )
 		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymousBox() ) {
+	    if ( lastBox && lastBox->isAnonymous() ) {
 		lastBox->addChild( child, beforeChild );
 		return;
 	    } else {
@@ -775,7 +775,6 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		newStyle->inheritFrom(style());
 		newStyle->setDisplay( TABLE_ROW );
 		row->setStyle(newStyle);
-		row->setIsAnonymousBox(true);
 		addChild(row, beforeChild);
 	    }
         }
@@ -1358,7 +1357,7 @@ static NodeImpl *findLastSelectableNode(NodeImpl *base)
     }
     last = next;
   }
-  
+
   return last ? last : base;
 }
 
@@ -1451,13 +1450,13 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
     setInline(false);   // our object is not Inline
 }
 
-void RenderTableRow::detach( RenderArena *arena )
+void RenderTableRow::detach()
 {
     RenderTableSection *s = section();
     if (s)
         s->setNeedCellRecalc();
 
-    RenderContainer::detach( arena );
+    RenderContainer::detach();
 }
 
 void RenderTableRow::setStyle(RenderStyle* style)
@@ -1484,15 +1483,14 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if ( !last )
             last = lastChild();
         RenderTableCell *cell = 0;
-        if( last && last->isAnonymousBox() && last->isTableCell() )
+        if( last && last->isAnonymous() && last->isTableCell() )
             cell = static_cast<RenderTableCell *>(last);
         else {
-	    cell = new (renderArena()) RenderTableCell(0 /* anonymous object */);
+	    cell = new (renderArena()) RenderTableCell(element()->getDocument() /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE_CELL );
 	    cell->setStyle(newStyle);
-	    cell->setIsAnonymousBox(true);
 	    addChild(cell, beforeChild);
         }
         cell->addChild(child);
@@ -1532,12 +1530,19 @@ void RenderTableRow::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
-	if ( child->isTableCell() && !child->layouted() ) {
-	    RenderTableCell *cell = static_cast<RenderTableCell *>(child);
-	    cell->calcVerticalMargins();
-	    cell->layout();
-	    cell->setCellTopExtra(0);
-	    cell->setCellBottomExtra(0);
+	if ( child->isTableCell() ) {
+            RenderTableCell *cell = static_cast<RenderTableCell *>(child);
+            if ( cell->cellPercentageHeight() ) {
+                cell->setCellPercentageHeight( 0 );
+                if ( cell->layouted() )
+                    cell->setLayouted( false );
+            }
+            if ( !child->layouted() ) {
+                cell->calcVerticalMargins();
+                cell->layout();
+                cell->setCellTopExtra(0);
+                cell->setCellBottomExtra(0);
+            }
 	}
 	child = child->nextSibling();
     }
@@ -1558,12 +1563,12 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   m_percentageHeight = 0;
 }
 
-void RenderTableCell::detach( RenderArena *arena )
+void RenderTableCell::detach()
 {
     if (parent() && section())
         section()->setNeedCellRecalc();
 
-    RenderFlow::detach( arena );
+    RenderFlow::detach();
 }
 
 void RenderTableCell::updateFromElement()
@@ -1658,7 +1663,7 @@ void RenderTableCell::setStyle( RenderStyle *style )
     RenderFlow::setStyle( style );
     setShouldPaintBackgroundOrBorder(true);
 
-    if (style->whiteSpace() == KONQ_NOWRAP) {
+    if (style->whiteSpace() == KHTML_NOWRAP) {
       // Figure out if we are really nowrapping or if we should just
       // use normal instead.  If the width of the cell is fixed, then
       // we don't actually use NOWRAP.

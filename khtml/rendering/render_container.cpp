@@ -26,11 +26,12 @@
 
 //#define DEBUG_LAYOUT
 
-#include "render_container.h"
-#include "render_table.h"
-#include "render_text.h"
-#include "render_image.h"
-#include "render_canvas.h"
+#include "rendering/render_container.h"
+#include "rendering/render_table.h"
+#include "rendering/render_text.h"
+#include "rendering/render_image.h"
+#include "rendering/render_canvas.h"
+#include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
 #include <assert.h>
@@ -44,22 +45,22 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
     m_last = 0;
 }
 
-void RenderContainer::detach(RenderArena* renderArena)
+void RenderContainer::detach()
 {
     if (continuation())
-        continuation()->detach(renderArena);
+        continuation()->detach();
 
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
 	n->removeFromFloatingObjects();
         n->setParent(0);
         next = n->nextSibling();
-        n->detach(renderArena);
+        n->detach();
     }
     m_first = 0;
     m_last = 0;
 
-    RenderObject::detach(renderArena);
+    RenderObject::detach();
 }
 
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
@@ -113,11 +114,11 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
     if ( needsTable ) {
         RenderTable *table;
 	RenderObject *last = beforeChild ? beforeChild->previousSibling() : lastChild();
-        if ( last && last->isTable() && last->isAnonymousBox() ) {
+        if ( last && last->isTable() && last->isAnonymous() ) {
             table = static_cast<RenderTable *>(last);
         } else {
 	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
-            table = new (renderArena()) RenderTable(0 /* is anonymous */);
+            table = new (renderArena()) RenderTable(element()->getDocument() /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE );
@@ -125,7 +126,6 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 	    table->setParent( this ); // so it finds the arena
             table->setStyle(newStyle);
 	    table->setParent( 0 );
-            table->setIsAnonymousBox(true);
             addChild(table, beforeChild);
         }
         table->addChild(newChild);
@@ -184,7 +184,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 #if 0
     // this gives crashes when used with the continuation code. Never
     // really was the right place to do the cleanup anyways.
-    if ( isAnonymousBox() && !firstChild() ) {
+    if ( isAnonymous() && !firstChild() ) {
 	// we are an empty anonymous box. There is no reason for us to continue living.
 	detach( renderArena() );
     }
@@ -276,7 +276,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     }
 
     KHTMLAssert(!child->parent());
-    while ( beforeChild->parent() != this && beforeChild->parent()->isAnonymousBox() )
+    while ( beforeChild->parent() != this && beforeChild->parent()->isAnonymous() )
 	beforeChild = beforeChild->parent();
     KHTMLAssert(beforeChild->parent() == this);
 
@@ -321,7 +321,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     while( child ) {
 	RenderObject *next = child->nextSibling();
 
-	if ( child->isFlow() && child->isAnonymousBox() && !child->continuation() &&
+	if ( child->isFlow() && child->isAnonymous() && !child->continuation() &&
              !child->childrenInline() && !child->isTableCell() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();
@@ -356,7 +356,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 		c->m_first = 0;
 		c->m_next = 0;
 	    }
-	    child->detach( renderArena() );
+	    child->detach();
 	}
 	child = next;
     }

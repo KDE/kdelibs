@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2000 Peter Kelly (pmk@post.com)
- * Copyright (C) 2003 Apple Computer, Inc. 
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -150,10 +150,10 @@ bool XMLHandler::endCDATA()
 
 bool XMLHandler::characters( const QString& ch )
 {
-#if 1 // SAFARI_MERGE remove    
+#if 1 // SAFARI_MERGE remove
     if (ch.stripWhiteSpace().isEmpty())
         return true;
-#endif    
+#endif
 
     if (m_currentNode->nodeType() == Node::TEXT_NODE ||
         m_currentNode->nodeType() == Node::CDATA_SECTION_NODE ||
@@ -164,7 +164,7 @@ bool XMLHandler::characters( const QString& ch )
         if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
-#endif            
+#endif
             int exceptioncode = 0;
             static_cast<TextImpl*>(m_currentNode)->appendData(ch,exceptioncode);
             if (exceptioncode)
@@ -178,7 +178,7 @@ bool XMLHandler::characters( const QString& ch )
             if (exceptioncode)
                 return false;
         }
-#endif        
+#endif
         return true;
     }
     else
@@ -465,7 +465,7 @@ void XMLTokenizer::executeScripts()
             // another page, etc. (also in notifyFinished())
             // ### the script may add another script node after this one which should be executed
             if (m_view) {
-                m_view->part()->executeScript(scriptCode);
+                m_view->part()->executeScript(DOM::Node(), scriptCode);
             }
             ++(*m_scriptsIt);
         }
@@ -488,7 +488,7 @@ void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
         DOMString scriptSource = m_cachedScript->script();
         m_cachedScript->deref(this);
         m_cachedScript = 0;
-        m_view->part()->executeScript(scriptSource.string());
+        m_view->part()->executeScript(DOM::Node(), scriptSource.string());
         executeScripts();
     }
 }

@@ -68,7 +68,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
     if ( getDocument()->parseMode() < DocumentImpl::Transitional ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
-        addCSSProperty( CSS_PROP_COLOR, CSS_VAL__KONQ_TEXT );
+        addCSSProperty( CSS_PROP_COLOR, CSS_VAL__KHTML_TEXT );
     }
 }
 
@@ -762,7 +762,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         if (attr->val()) {
             if ( strcasecmp(attr->value(), "middle" ) == 0 ||
                 strcasecmp(attr->value(), "center" ) == 0 )
-                addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KONQ_CENTER );
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER );
             else
                 addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
         }
@@ -787,7 +787,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_NOWRAP:
         if (attr->val() != 0)
-	    addCSSProperty(CSS_PROP_WHITE_SPACE, CSS_VAL__KONQ_NOWRAP);
+	    addCSSProperty(CSS_PROP_WHITE_SPACE, CSS_VAL__KHTML_NOWRAP);
         else
 	    removeCSSProperty(CSS_PROP_WHITE_SPACE);
         break;

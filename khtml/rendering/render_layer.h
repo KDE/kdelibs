@@ -140,11 +140,17 @@ public:
     void layout();
     void updateLayerPosition();
 
+    // Get the enclosing stacking context for this layer. A stacking
+    // context has a non-auto z-index.
+    RenderLayer* stackingContext() const;
+
+    void setLayerDirty();
+
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).
-    RenderLayer* enclosingPositionedAncestor();
+    RenderLayer* enclosingPositionedAncestor() const;
 
-    void convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y);
+    void convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const;
 
     bool hasAutoZIndex() { return renderer()->style()->hasAutoZIndex(); }
     int zIndex() { return renderer()->style()->zIndex(); }
@@ -181,36 +187,8 @@ private:
     void setFirstChild(RenderLayer* first) { m_first = first; }
     void setLastChild(RenderLayer* last) { m_last = last; }
 
-protected:
-    RenderObject* m_object;
-
-    RenderLayer *m_parent;
-    RenderLayer *m_previous;
-    RenderLayer *m_next;
-
-    RenderLayer *m_first;
-    RenderLayer *m_last;
-
-    // Our (x,y) coordinates are in our parent layer's coordinate space.
-    int m_y;
-    short m_x;
-
-    // Our scroll offsets if the view is scrolled.
-    short m_scrollX;
-    int m_scrollY;
-
-    // The width/height of our scrolled area.
-    short m_scrollWidth;
-    short m_scrollHeight;
-
-    // For layers with overflow, we have a pair of scrollbars.
-    QScrollBar* m_hBar;
-    QScrollBar* m_vBar;
-    QRect hBarRect;
-    QRect vBarRect;
-    RenderScrollMediator* m_scrollMediator;
     struct PositionedLayer {
-	RenderLayer *layer;
+        RenderLayer *layer;
 	// these are relative to the layer holding the stacking context
 	int idx; // used by sorting to preserve doc order
 	bool operator == (const PositionedLayer &o) const { return layer == o.layer; }
@@ -222,8 +200,42 @@ protected:
 	    return idx < o.idx;
 	}
     };
-    QValueVector<PositionedLayer> *zOrderList;
+
     void collectLayers(QValueVector<PositionedLayer> *, int tx, int ty, int &idx);
+
+protected:
+    QRect hBarRect;
+    QRect vBarRect;
+
+    RenderObject* m_object;
+
+    RenderLayer *m_parent;
+    RenderLayer *m_previous;
+    RenderLayer *m_next;
+
+    RenderLayer *m_first;
+    RenderLayer *m_last;
+
+    // For layers with overflow, we have a pair of scrollbars.
+    QScrollBar* m_hBar;
+    QScrollBar* m_vBar;
+    RenderScrollMediator* m_scrollMediator;
+
+    QValueVector<PositionedLayer>* m_zOrderList;
+
+    // Our (x,y) coordinates are in our parent layer's coordinate space.
+    int m_y;
+    short m_x;
+
+    // Our scroll offsets if the view is scrolled.
+    int m_scrollY;
+    short m_scrollX;
+
+    // The width/height of our scrolled area.
+    short m_scrollWidth;
+    short m_scrollHeight;
+
+    bool m_zOrderListDirty;
 };
 
 } // namespace

@@ -527,18 +527,18 @@ void RenderText::setStyle(RenderStyle *_style)
 
 RenderText::~RenderText()
 {
-    deleteTextBoxes( renderArena() );
+    deleteTextBoxes();
     if(str) str->deref();
 }
 
 
-void RenderText::detach(RenderArena* renderArena)
+void RenderText::detach()
 {
-    deleteTextBoxes(renderArena);
-    RenderObject::detach(renderArena);
+    deleteTextBoxes();
+    RenderObject::detach();
 }
 
-void RenderText::deleteTextBoxes(RenderArena *arena)
+void RenderText::deleteTextBoxes()
 {
     // this is a slight variant of QArray::clear().
     // We don't delete the array itself here because its
@@ -546,12 +546,10 @@ void RenderText::deleteTextBoxes(RenderArena *arena)
     // us resize() calls
     unsigned int len = m_lines.size();
     if (len) {
-        if (!arena)
-            arena = renderArena();
         for(unsigned int i=0; i < len; i++) {
             InlineTextBox* s = m_lines.at(i);
             if (s)
-                s->detach(arena);
+                s->detach(renderArena());
         m_lines.remove(i);
         }
     }

@@ -1105,7 +1105,7 @@ void DocumentImpl::detach()
     NodeBaseImpl::detach();
 
     if ( render )
-        render->detach(m_renderArena);
+        render->detach();
 
     m_view = 0;
 

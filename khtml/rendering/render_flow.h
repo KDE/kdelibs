@@ -71,8 +71,8 @@ public:
 
     void makeChildrenNonInline(RenderObject *box2Start = 0);
 
-    void deleteLineBoxes(RenderArena* arena=0);
-    virtual void detach(RenderArena* arena);
+    void deleteLineBoxes();
+    virtual void detach();
 
     InlineFlowBox* firstLineBox() const { return m_firstLineBox; }
     InlineFlowBox* lastLineBox() const { return m_lastLineBox; }

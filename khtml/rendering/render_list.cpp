@@ -29,6 +29,7 @@
 #include "misc/helper.h"
 #include "misc/htmltags.h"
 #include "misc/loader.h"
+#include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -141,11 +142,11 @@ void RenderListItem::setStyle(RenderStyle *_style)
 
     if(!m_marker && style()->listStyleType() != LNONE) {
 
-        m_marker = new (renderArena()) RenderListMarker();
+        m_marker = new (renderArena()) RenderListMarker(element()->getDocument());
         m_marker->setStyle(newStyle);
         insertChildNode( m_marker, firstChild() );
     } else if ( m_marker && style()->listStyleType() == LNONE) {
-        m_marker->detach( renderArena() );
+        m_marker->detach();
         m_marker = 0;
     }
     else if ( m_marker ) {
@@ -197,8 +198,8 @@ void RenderListItem::layout( )
 
 // -----------------------------------------------------------
 
-RenderListMarker::RenderListMarker()
-    : RenderBox(0), m_listImage(0), m_value(-1)
+RenderListMarker::RenderListMarker(DOM::DocumentImpl* node)
+    : RenderBox(node), m_listImage(0), m_value(-1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -376,7 +377,7 @@ void RenderListMarker::calcMinMaxWidth()
 
     if (m_value < 0) { // not yet calculated
         RenderObject* p = parent();
-        while (p->isAnonymousBox())
+        while (p->isAnonymous())
             p = p->parent();
         static_cast<RenderListItem*>(p)->calcListValue();
     }

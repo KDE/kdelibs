@@ -37,7 +37,7 @@ class RenderContainer : public RenderObject
 public:
     RenderContainer(DOM::NodeImpl* node);
 
-    void detach(RenderArena* renderArena);
+    void detach();
 
     RenderObject *firstChild() const { return m_first; }
     RenderObject *lastChild() const { return m_last; }

@@ -44,7 +44,7 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
     {
         DOMString v = attr->value();
         if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "\\2d konq-center";
+            v = "\\2d khtml-center";
         addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }

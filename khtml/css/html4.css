@@ -9,7 +9,7 @@
 
 html {
 	display: block;
-	color: \2d konq-text;
+	color: -khtml-text;
 } 
 
 /*
@@ -69,10 +69,6 @@ div {
 
 /* to force a block level context for some cases (broken HTML) */
 
-\2d konqblock {
-	display: block;
-}
-
 layer {
 	display: block;
 }
@@ -85,7 +81,7 @@ blockquote {
 	display: block;
 	margin-left: 40px; 
 	margin-right: 40px;
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 Q        {
@@ -118,7 +114,7 @@ APPLET {
 CENTER { 
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behavior */
-	text-align: \2d konq-center;
+	text-align: -khtml-center;
 }  
       
 HR  { 
@@ -129,7 +125,7 @@ HR  {
         border-width: 1px;
         margin-left: 1px; /* will be overwritten by ALIGN */ 
         margin-right: 1px; /* will be overwritten by ALIGN */
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 } 
  
 MAP { 
@@ -200,9 +196,9 @@ TABLE {
 	display: table;
 	border-collapse: separate;
 	vertical-align: middle;
-	text-align: \2d konq-auto;
+	text-align: -khtml-auto;
 	border-spacing: 2px;
-        \2d konq-flow-mode: \2d konq-around-floats;
+        -khtml-flow-mode: -khtml-around-floats;
 }
       
 TABLE[align="center"] { 
@@ -253,7 +249,7 @@ TH {
 
 CAPTION { 
 	display: table-caption;  
-	text-align: \2d konq-center; 
+	text-align: -khtml-center; 
 }
 
 /* don't use "TD[align=...] > *". This sould give problems with
@@ -286,7 +282,7 @@ UL, MENU, DIR {
         list-style-type: disc;
         margin: 1em 0;
         padding-left: 40px;
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 OL {
@@ -294,12 +290,12 @@ OL {
         list-style-type: decimal;
         margin: 1em 0;
         padding-left: 40px;
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 LI {
         display: list-item;
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 
@@ -324,7 +320,7 @@ DD {
 DL {
 	display: block;
         margin: .83em auto;
-        \2d konq-flow-mode: \2d konq-around-floats
+        -khtml-flow-mode: -khtml-around-floats
 } 
 
 DT {
@@ -451,7 +447,7 @@ PLAINTEXT {
 	display: block;
 	font-family: monospace; 
 	white-space: pre; 
-	text-align: \2d konq-auto;
+	text-align: -khtml-auto;
 	margin: 1.0em 0px;
 }
       

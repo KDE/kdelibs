@@ -100,14 +100,14 @@ RenderBox::~RenderBox()
     //kdDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
-void RenderBox::detach(RenderArena* renderArena)
+void RenderBox::detach()
 {
     RenderLayer* layer = m_layer;
 
-    RenderContainer::detach(renderArena);
+    RenderContainer::detach();
 
     if (layer)
-        layer->detach(renderArena);
+        layer->detach(renderArena());
 }
 
 short RenderBox::contentWidth() const

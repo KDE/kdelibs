@@ -101,7 +101,7 @@ public:
 
     virtual bool isWidget() const { return true; };
 
-    virtual void detach( RenderArena * );
+    virtual void detach( );
     virtual void layout( );
 
     virtual void updateFromElement();
@@ -109,8 +109,8 @@ public:
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
-    RenderArena *ref() { _ref++; /*qDebug( "ref(%p): width get count is %d", this, _ref);*/ return renderArena(); }
-    void deref(RenderArena *arena);
+    void ref() { _ref++; /*qDebug( "ref(%p): width get count is %d", this, _ref);*/ }
+    void deref();
 
     static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);

@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-#include "render_body.h"
-#include "render_canvas.h"
+#include "rendering/render_body.h"
+#include "rendering/render_canvas.h"
 #include "html/html_baseimpl.h"
 #include "xml/dom_docimpl.h"
 #include "khtmlview.h"

@@ -28,7 +28,7 @@
 #include <kdebug.h>
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
-#include "rendering/render_root.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_formimpl.h"

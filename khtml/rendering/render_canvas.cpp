@@ -38,6 +38,7 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
 {
     // init RenderObject attributes
     setInline(false);
+    setIsAnonymous(false);
 
     m_view = view;
     // try to contrain the width to the views width

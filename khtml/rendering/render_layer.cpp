@@ -75,16 +75,17 @@ RenderLayer::RenderLayer(RenderObject* object)
       m_next( 0 ),
       m_first( 0 ),
       m_last( 0 ),
-      m_y( 0 ),
-      m_x( 0 ),
-      m_scrollX( 0 ),
-      m_scrollY( 0 ),
-      m_scrollWidth( 0 ),
-      m_scrollHeight( 0 ),
       m_hBar( 0 ),
       m_vBar( 0 ),
       m_scrollMediator( 0 ),
-      zOrderList(0)
+      m_zOrderList( 0 ),
+      m_y( 0 ),
+      m_x( 0 ),
+      m_scrollY( 0 ),
+      m_scrollX( 0 ),
+      m_scrollWidth( 0 ),
+      m_scrollHeight( 0 ),
+      m_zOrderListDirty( true )
 {
 }
 
@@ -96,7 +97,7 @@ RenderLayer::~RenderLayer()
     delete m_hBar;
     delete m_vBar;
     delete m_scrollMediator;
-    delete zOrderList;
+    delete m_zOrderList;
 }
 
 void RenderLayer::updateLayerPosition()
@@ -129,7 +130,6 @@ void RenderLayer::updateLayerPosition()
         parent()->subtractScrollOffset(x, y);
 
     setPos(x,y);
-
 }
 
 short RenderLayer::width() const
@@ -148,22 +148,24 @@ int RenderLayer::height() const
     return h;
 }
 
-// RenderLayer *RenderLayer::stackingContext() const
-// {
-//     RenderLayer* curr = parent();
-//     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
-//          curr->m_object->style()->hasAutoZIndex())
-//          curr = curr->parent());
+RenderLayer *RenderLayer::stackingContext() const
+{
+    RenderLayer* curr = parent();
+    for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
+         curr->m_object->style()->hasAutoZIndex();
+         curr = curr->parent())
+        ;
 
-//     return curr;
-// }
+    return curr;
+}
 
-RenderLayer* RenderLayer::enclosingPositionedAncestor()
+RenderLayer* RenderLayer::enclosingPositionedAncestor() const
 {
     RenderLayer* curr = parent();
     for ( ; curr && !curr->m_object->isCanvas() && !curr->m_object->isRoot() &&
          !curr->m_object->isPositioned() && !curr->m_object->isRelPositioned();
-         curr = curr->parent());
+         curr = curr->parent())
+        ;
 
     return curr;
 }
@@ -213,6 +215,8 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
         setLastChild(child);
 
     child->setParent(this);
+
+    child->stackingContext()->setLayerDirty();
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
@@ -227,6 +231,10 @@ RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
         m_first = oldChild->nextSibling();
     if (m_last == oldChild)
         m_last = oldChild->previousSibling();
+
+    RenderLayer* stackingContext = oldChild->stackingContext();
+    if ( stackingContext )
+        stackingContext->setLayerDirty();
 
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
@@ -273,8 +281,7 @@ void RenderLayer::insertOnlyThisLayer()
         curr->moveLayers(m_parent, this);
 }
 
-void
-RenderLayer::convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y)
+void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x, int& y) const
 {
     if (ancestorLayer == this)
         return;
@@ -486,8 +493,9 @@ void RenderLayer::checkScrollbarsAfterLayout()
 	if (m_object->isRenderBlock())
             static_cast<RenderBlock*>(m_object)->layoutBlock(true);
         else
-#endif
             m_object->layout();
+
+#endif
     }
 
     // Set up the range (and page step/line step).
@@ -550,11 +558,16 @@ void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 {
     tx += xPos();
     ty += yPos();
-     if(!zOrderList
+
+    if ( m_zOrderListDirty )
+        updateLayerInformation();
+
+    if(!m_zOrderList
 //        || (ty > y + h) || (ty + height() < y)
 //        || (tx > x + h) || (tx + width() < x)
-	 )
+        )
  	return;
+
 
     // do this before we paint the background
     positionScrollbars(tx, ty);
@@ -603,9 +616,9 @@ void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 	setClip(p, QRect(tx + bl, ty + bt,
 			 w - bl - br - (m_vBar ? sw : 0) , h - bt - bb - (m_hBar ? sw : 0)));
 
-    uint count = zOrderList->count();
+    uint count = m_zOrderList->count();
     for (uint i = 0; i < count; i++) {
-        const PositionedLayer &pLayer = zOrderList->at(i);
+        const PositionedLayer &pLayer = m_zOrderList->at(i);
 	RenderLayer *l = pLayer.layer;
 	RenderObject *r = l->renderer();
 	int xOff = 0, yOff = 0;
@@ -701,16 +714,16 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
     tx += xPos();
     ty += yPos();
 
-    if (!zOrderList)
+    if (!m_zOrderList)
 	return renderer()->nodeAtPoint(info, x, y, tx - renderer()->xPos(), ty - renderer()->yPos());
 
     bool inside = false;
     RenderLayer *insideLayer = 0;
 
 
-//     qDebug("%p nodeAtPoint: numlayers=%d x=%d y=%d, tx=%d, ty=%d, xPos=%d, yPos=%d", this->renderer(), zOrderList->count(), x, y, tx, ty, xPos(), yPos());
-    for (int i = zOrderList->count()-1; i >= 0; i--) {
-        const PositionedLayer &pLayer = zOrderList->at(i);
+//     qDebug("%p nodeAtPoint: numlayers=%d x=%d y=%d, tx=%d, ty=%d, xPos=%d, yPos=%d", this->renderer(), m_zOrderList->count(), x, y, tx, ty, xPos(), yPos());
+    for (int i = m_zOrderList->count()-1; i >= 0; i--) {
+        const PositionedLayer &pLayer = m_zOrderList->at(i);
 	RenderLayer *l = pLayer.layer;
 	RenderObject *r = l->renderer();
 	int xOff = 0, yOff = 0;
@@ -747,28 +760,44 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
     return inside;
 }
 
+void RenderLayer::setLayerDirty()
+{
+    if ( m_zOrderList )
+        m_zOrderList->clear();
+
+    m_zOrderListDirty = true;
+}
+
 void RenderLayer::updateLayerInformation()
 {
     assert(!renderer()->style()->hasAutoZIndex() || renderer()->isCanvas());
-    if (!zOrderList)
-	zOrderList = new QValueVector<PositionedLayer>();
+
+//    if ( renderer()->isCanvas() || !m_zOrderListDirty )
+//         return;
+
+    if (!m_zOrderList)
+	m_zOrderList = new QValueVector<PositionedLayer>();
     else
-	zOrderList->clear();
+	m_zOrderList->clear();
 
     int idx = 0;
-    collectLayers(zOrderList, 0, 0, idx);
-    qHeapSort(*zOrderList);
+    collectLayers(m_zOrderList, 0, 0, idx);
+    qHeapSort(*m_zOrderList);
+
+    m_zOrderListDirty = false;
 }
+
 
 void RenderLayer::collectLayers(QValueVector<PositionedLayer> *l, int tx, int ty, int &idx)
 {
     tx += xPos();
     ty += yPos();
 
+
     PositionedLayer p = { this, idx++ };
     l->append(p);
 
-    if (l == zOrderList || renderer()->style()->hasAutoZIndex()) {
+    if (l == m_zOrderList || renderer()->style()->hasAutoZIndex()) {
 	// collect from all children
         for (RenderLayer* child = firstChild();
              child; child = child->nextSibling())

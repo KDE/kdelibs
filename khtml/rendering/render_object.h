@@ -201,8 +201,8 @@ public:
     virtual bool isFrameSet() const { return false; }
     virtual bool isApplet() const { return false; }
 
-    bool isAnonymousBox() const { return m_isAnonymous; }
-    void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
+    bool isAnonymous() const { return m_isAnonymous; }
+    void setIsAnonymous(bool b) { m_isAnonymous = b; }
 
     bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
@@ -221,7 +221,7 @@ public:
 
     RenderCanvas* canvas() const;
     // don't even think about making this method virtual!
-    DOM::NodeImpl* element() const { return m_node; }
+    DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
 
     void relativePositionOffset(int &tx, int &ty) const;
 
@@ -534,7 +534,7 @@ public:
     virtual void calcVerticalMargins() {}
     void removeFromFloatingObjects();
 
-    virtual void detach( RenderArena * );
+    virtual void detach( );
 
     const QFont &font(bool firstLine) const {
 	return style( firstLine )->font();

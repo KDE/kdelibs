@@ -166,8 +166,8 @@ public:
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty, PaintAction paintPhase);
 
-    void deleteTextBoxes( RenderArena * );
-    void detach( RenderArena * );
+    void deleteTextBoxes();
+    void detach();
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }
