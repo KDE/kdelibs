@@ -894,6 +894,11 @@ bool KURL::operator==( const QString& _u ) const
   return ( *this == u );
 }
 
+bool KURL::cmp( const KURL &u, bool ignore_trailing ) const 
+{
+  return equals( u, ignore_trailing );
+}
+
 bool KURL::equals( const KURL &_u, bool ignore_trailing ) const
 {
   if ( isMalformed() || _u.isMalformed() )

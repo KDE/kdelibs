@@ -525,9 +525,7 @@ public:
    * ignore trailing '/' characters.
    * @deprecated
    */
-  bool cmp( const KURL &u, bool ignore_trailing = false ) const {
-    return equals( u, ignore_trailing );
-  }
+  bool cmp( const KURL &u, bool ignore_trailing = false ) const;
 
   /**
    * Compares this url with @p u.
