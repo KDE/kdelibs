@@ -154,7 +154,9 @@ static void exitWithErrorMsg(const QString &errorMsg)
    exit(255);
 }
 
-static pid_t launch(int argc, const char *_name, const char *args)
+static pid_t launch(int argc, const char *_name, const char *args, 
+                    const char *cwd=0, int envc=0, const char *envs=0,
+                    const char *tty=0)
 {
   int launcher = 0;
   QCString lib;
@@ -219,6 +221,16 @@ static pid_t launch(int argc, const char *_name, const char *args)
      /** Child **/
      close(d.fd[0]);
      close_fds();
+
+     if (cwd && *cwd)
+        chdir(cwd);
+
+     for (int i = 0;  i < envc; i++)
+     {
+        putenv((char *)envs);
+        while(*envs != 0) envs++;
+        envs++;
+     }
 
      {
        QCString procTitle( name );
@@ -661,17 +673,19 @@ static void handle_launcher_request(int sock = -1)
        }
    }
 
-   if (request_header.cmd == LAUNCHER_EXEC)
+   if ((request_header.cmd == LAUNCHER_EXEC) ||
+       (request_header.cmd == LAUNCHER_EXT_EXEC))
    {
-      char *name;
-      char *args;
       pid_t pid;
       klauncher_header response_header;
       long response_data;
-      int argc;
-      argc = *((long *) request_data);
-      name = request_data + sizeof(long);
-      args = name + strlen(name) + 1;
+      int argc = *((long *) request_data);
+      char *name = request_data + sizeof(long);
+      char *args = name + strlen(name) + 1;
+      char *cwd = 0;
+      int envc = 0;
+      char *envs = 0;
+      char *tty = 0;
 
 #ifndef NDEBUG
       if (launcher)
@@ -680,15 +694,13 @@ static void handle_launcher_request(int sock = -1)
          fprintf(stderr, "kdeinit: Got EXEC '%s' from socket.\n", name);
 #endif
 
+      char *arg_n = args;
+      for(int i = 1; i < argc; i++)
       {
-         int i = 1;
-         char *arg_n;
-         arg_n = args;
-         while (i < argc)
-         {
-           arg_n = arg_n + strlen(arg_n) + 1;
-           i++;
-         }
+        arg_n = arg_n + strlen(arg_n) + 1;
+      }
+      if (request_header.cmd == LAUNCHER_EXEC)
+      {
          if ((arg_n - request_data) != request_header.arg_length)
          {
 #ifndef NDEBUG
@@ -698,6 +710,17 @@ static void handle_launcher_request(int sock = -1)
            d.debug_wait = false;	
            return;
          }
+      }
+      else 
+      {  // Extended exec
+         cwd = arg_n; arg_n += strlen(cwd) + 1;
+         envc = *((long *) arg_n); arg_n += sizeof(long);
+         envs = arg_n;
+         for(int i = 1; i < envc; i++)
+         {
+           arg_n = arg_n + strlen(arg_n) + 1;
+         }
+         tty = arg_n;
       }
 
       QCString olddisplay = getenv("DISPLAY");
@@ -709,7 +732,7 @@ static void handle_launcher_request(int sock = -1)
       if (reset_display)
           setenv("DISPLAY", kdedisplay, true);
 
-      pid = launch(argc, name, args);
+      pid = launch(argc, name, args, cwd, envc, envs, tty);
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");

@@ -37,6 +37,8 @@
 #include <unistd.h>
 #include <pwd.h>
 
+extern char **environ;
+
 static char *getDisplay()
 {
    const char *display;
@@ -120,7 +122,7 @@ static int openSocket()
 
   if (!kde_home || !kde_home[0])
   {
-     kde_home = "~/.kde/";
+     kde_home = (char *) "~/.kde/";
   }
 
   if (kde_home[0] == '~')
@@ -193,9 +195,15 @@ static int openSocket()
 int main(int argc, char **argv)
 {
    int i;
+   int wrapper = 0;
+   int ext_wrapper = 0;
    long arg_count;
+   long env_count;
    klauncher_header header;
    char *start, *p, *buffer;
+   char cwd[8192];
+   char *tty;
+
    long size = 0;
    int sock = openSocket();
 
@@ -210,6 +218,11 @@ int main(int argc, char **argv)
    start = p;
 
    if (strcmp(start, "kdeinit_wrapper") == 0)
+      wrapper = 1;
+   else if (strcmp(start, "kdeinit_shell") == 0)
+      ext_wrapper = 1;
+
+   if (wrapper || ext_wrapper)
    {
       argv++;
       argc--;
@@ -230,8 +243,31 @@ int main(int argc, char **argv)
    {
       size += strlen(argv[i])+1;
    }
+   if (!wrapper)
+   {
+      if (!getcwd(cwd, 8192))
+         cwd[0] = '\0';
+      size += strlen(cwd)+1;
 
-   header.cmd = LAUNCHER_EXEC;
+      env_count = 0;
+      size += sizeof(long); /* Number of env.vars. */
+
+      for(; environ[env_count] ; env_count++)
+      {
+         int l = strlen(environ[env_count])+1;
+         size += l;
+      }
+
+      tty = ttyname(1);
+      if (!tty)
+         tty = (char *) "";
+      size += strlen(tty)+1;
+   }
+
+   if (!wrapper)
+      header.cmd = LAUNCHER_EXT_EXEC;
+   else
+      header.cmd = LAUNCHER_EXEC;
    header.arg_length = size;
    write_socket(sock, (char *) &header, sizeof(header));
 
@@ -249,6 +285,28 @@ int main(int argc, char **argv)
       memcpy(p, argv[i], strlen(argv[i])+1);
       p += strlen(argv[i])+1;
    }
+
+   if (!wrapper)
+   {
+      memcpy(p, cwd, strlen(cwd)+1);
+      p+= strlen(cwd)+1;
+
+      memcpy(p, &env_count, sizeof(env_count));
+      p+= sizeof(env_count);
+
+      for(i = 0; i < env_count; i++)
+      {
+         int l = strlen(environ[i])+1;
+         memcpy(p, environ[i], l);
+         p += l;
+      }
+
+      memcpy(p, tty, strlen(tty)+1);
+      p+=strlen(tty)+1;
+   }
+
+   printf("size = %d p-buffer = %d\n", size, p-buffer);
+
    write_socket(sock, buffer, size);
    free( buffer );
 
