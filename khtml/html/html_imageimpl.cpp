@@ -216,6 +216,16 @@ QImage HTMLImageElementImpl::currentImage() const
     return QImage();
 }
 
+
+bool HTMLImageElementImpl::complete() const
+{
+    RenderImage *r = static_cast<RenderImage*>(renderer());
+    if(r)
+        return r->complete();
+    return false;
+}
+
+
 // -------------------------------------------------------------------------
 
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentPtr *doc)
@@ -423,4 +433,3 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
 
     return region;
 }
-

@@ -58,6 +58,7 @@ public:
 
     DOMString imageMap() const { return usemap; }
 
+    bool complete() const;
 protected:
     DOMString usemap;
     bool ismap;
