@@ -449,7 +449,7 @@ AddressBook::getListOfNames(QStringList* strings, bool reverse, bool initials)
 	  desc=i18n("(empty entry)");
 	}
       kDebugInfo(GUARD, KAB_KDEBUG_AREA,
-		 "AddressBook::getListOfNames: adding %s.", desc.data());
+		 "AddressBook::getListOfNames: adding %s.", desc.ascii());
       strings->append(desc);
     }
   // ----- any problems?
@@ -571,7 +571,7 @@ AddressBook::literalName(const Entry& entry, QString& text, bool rev, bool init)
     }
   // -----
   kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::literalName: done: %s.",
-	     text.data());
+	     text.ascii());
   return NoError;
   // ###########################################################################
 }

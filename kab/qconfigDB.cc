@@ -2122,7 +2122,7 @@ QConfigDB::IsLocked(const QString& file)
       QFile f(lockfile);
       // -----
       kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: the file\n       "
-		 " %s\n                    has a lockfile.", file.data());
+		 " %s\n                    has a lockfile.", file.ascii());
       if(f.open(IO_ReadOnly))
 	{
 	  QTextStream stream(&f);
@@ -2144,7 +2144,7 @@ QConfigDB::IsLocked(const QString& file)
       return pid;      
     } else {
       kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: the file\n        "
-		 "%s has no lockfile.\n", file.data());
+		 "%s has no lockfile.\n", file.ascii());
       return 0;
     }
   // ############################################################################
@@ -2178,7 +2178,7 @@ QConfigDB::lock(const QString& file)
   register bool GUARD; GUARD=false;
   // ############################################################################
   kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::lock: locking the file %s.",
-	     file.data());
+	     file.ascii());
   QString lockfile=file+".lock";
   QFile f(lockfile);
   // -----
@@ -2213,7 +2213,7 @@ QConfigDB::unlock()
   REQUIRE(!filename.isEmpty());
   // ############################################################################
   kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: unlocking the file %s.",
-	     filename.data());
+	     filename.ascii());
   QString lockfile=filename+".lock";
   list<QString>::iterator pos;
   // -----
@@ -2269,10 +2269,10 @@ QConfigDB::CleanLockFiles(int)
       if(::remove(*pos)==0)
 	{
 	  kDebugInfo(GUARD, KAB_KDEBUG_AREA,
-		     "                          %s removed.", (*pos).data());
+		     "                          %s removed.", (*pos).ascii());
 	  LockFiles.erase(pos); --pos;
 	} else {
-	  kDebugInfo("                          could not remove  %s.", (*pos).data());
+	  kDebugInfo("                          could not remove  %s.", (*pos).ascii());
 	}
     }
   // -----
@@ -2402,7 +2402,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
   register bool GUARD; GUARD=false;
   // ############################################################################
   kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: setting filename "
-	     "to \"%s\"%s.", filename_.data(), readonly_ ? " (read only)" : "");
+	     "to \"%s\"%s.", filename_.ascii(), readonly_ ? " (read only)" : "");
   // ----- remove previous lock:
   if(locked)
     {
@@ -2518,7 +2518,7 @@ QConfigDB::save(const char* header, bool force)
   REQUIRE(!filename.isEmpty());
   // ############################################################################
   kDebugInfo(GUARD, KAB_KDEBUG_AREA,
-	     "QConfigDB::save: saving database -->%s<--.", filename.data());
+	     "QConfigDB::save: saving database -->%s<--.", filename.ascii());
   bool wasRO=false;
   bool rc;
   // -----
@@ -2566,7 +2566,7 @@ QConfigDB::save(const char* header, bool force)
 	  rc=true;
 	} else {
 	  kDebugInfo("QConfigDB::save: error opening file \"%s\" for writing.",
-		     filename.data());
+		     filename.ascii());
 	  rc=false;
 	}
     } else {
@@ -2614,7 +2614,7 @@ QConfigDB::load()
       return rc;
     } else {
       kDebugInfo("QConfigDB::load: error opening file \"%s\" for reading.",
-		 filename.data());
+		 filename.ascii());
       return false;
     }
   // ############################################################################
