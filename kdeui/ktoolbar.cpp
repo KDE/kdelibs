@@ -745,6 +745,9 @@ KToolBar::sizePolicy() const
 
 void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
+    if (!moving)
+	return;
+    
 	/* The toolbar handles are hightlighted when the mouse moves over
      * the handle. */
 	if ((horizontal && (mev->x() < 0 || mev->x() > 9)) ||
@@ -859,6 +862,9 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
 {
     buttonDownOnHandle = FALSE;
+    if (!moving)
+	return;
+    
     if (mgr)
 	mgr->stop();
     if ( position != Floating &&
