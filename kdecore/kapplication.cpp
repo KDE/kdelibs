@@ -1937,6 +1937,9 @@ startServiceInternal( const QCString &function,
    if (!kapp)
       delete dcopClient;
 
+   if (noWait)
+      return 0;
+
    QDataStream stream2(replyData, IO_ReadOnly);
    serviceResult result;
    stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
