@@ -1087,8 +1087,11 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   // OR
   // The user-supplied caption is empty.
 
-  if ((withAppName && !(caption().isNull())) || userCaption.isEmpty())
+  if ((withAppName && !(caption().isNull())));
     s += QString::fromUtf8(" - ") + caption();
+
+  if (userCaption.isEmpty())
+    s = caption();
 
   return s;
 }
