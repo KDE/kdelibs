@@ -209,7 +209,7 @@ void HTMLHRElementImpl::parseAttribute(Attribute *attr)
 void HTMLHRElementImpl::layout(bool)
 {
 #ifdef DEBUG_LAYOUT
-     printf("%s(HR)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
+     printf("%s(HR)::layout(!!!) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
    // almost nothing to do here...
     ascent=size+4;
