@@ -99,6 +99,7 @@ void KIconCanvas::loadFiles(const QStringList& files)
 {
     clear();
     mFiles = files;
+    emit startLoading(mFiles.count());
     mpTimer->start(0, true);
     d->m_bLoading = false;
 }
@@ -106,9 +107,6 @@ void KIconCanvas::loadFiles(const QStringList& files)
 void KIconCanvas::slotLoadFiles()
 {
     setResizeMode(Fixed);
-    emit startLoading(mFiles.count());
-    // evaluate layout events so the scrollbar can show up
-    kapp->processEvents();
     QApplication::setOverrideCursor(waitCursor);
 
     // disable updates to not trigger paint events when adding child items
