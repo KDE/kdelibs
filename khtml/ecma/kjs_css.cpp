@@ -151,10 +151,13 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const Value& value, int )
 {
   UString propertyName = pName;
-  if ( propertyName == "clip" ) {
-    propertyName = "-konq-js-clip";
-  }
-  
+//    if ( propertyName == "clip" ) {
+//      QString propvalue = value.toString(exec).qstring();
+
+//      qDebug("clip: %s", propvalue.latin1());
+// //     propertyName = "-konq-js-clip";
+//    }
+
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << propertyName.qstring() << endl;
 #endif
