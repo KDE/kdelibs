@@ -257,7 +257,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // Create the containing dir if needed
     if ((resType!="config") && aLocalFileName[0]=='/')
     {
-       KURL path(aLocalFileName);
+       KURL path;
+       path.setPath(aLocalFileName);
        QString dir=path.directory();
        KStandardDirs::makeDir(dir);
     }
