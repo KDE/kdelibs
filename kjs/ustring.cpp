@@ -429,7 +429,7 @@ int UString::rfind(const UString &f, int pos) const
 UString UString::substr(int pos, int len) const
 {
   if (isNull())
-    return -1;
+    return UString();
   if (pos < 0)
     pos = 0;
   else if (pos >= (int) size())
