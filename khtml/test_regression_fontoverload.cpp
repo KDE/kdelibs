@@ -172,6 +172,8 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     }
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
+    else if ( family == "ahem" )
+        xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
     else
         xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
@@ -216,7 +218,7 @@ const QString &KHTMLSettings::availableFamilies()
 {
     if ( !avFamilies ) {
         avFamilies = new QString;
-        *avFamilies = ",Adobe Courier,Arial,Comic Sans MS,Courier,Helvetica,Times,Times New Roman,Utopia,Fixed,";
+        *avFamilies = ",Adobe Courier,Arial,Comic Sans MS,Courier,Helvetica,Times,Times New Roman,Utopia,Fixed,Ahem,";
     }
 
   return *avFamilies;
@@ -291,6 +293,11 @@ void QApplication::setPalette( const QPalette &, bool ,
 {
     static bool done = false;
     if (done) return;
+    QString xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+    XFontStruct *xfs;
+    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+    if (!xfs) // as long as you don't do screenshots, it's maybe fine
+	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
     done = true;
 }
 
