@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+#include <kcursor.h>
 
 //*********************************************************************************************
 
@@ -84,7 +85,7 @@ void SmbView::startProcess(int state)
 {
 	m_buffer = QString::null;
 	m_state = state;
-	QApplication::setOverrideCursor(waitCursor);
+	QApplication::setOverrideCursor(KCursor::waitCursor());
 	m_proc->start(KProcess::NotifyOnExit,KProcess::Stdout);
 	emit running(true);
 }
