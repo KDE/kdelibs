@@ -23,6 +23,7 @@
 #include <qpainter.h>
 #include <qobjectlist.h>
 #include <qstrlist.h>
+#include <qcursor.h>
 
 #ifndef NO_KDE2
 #include <kapp.h>
@@ -1113,7 +1114,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 
   QWidget* p = QApplication::widgetAt( pos );
   if ( !p ) return 0L;
-#ifdef _OS_WIN32_
+#if defined(_OS_WIN32_) || defined(Q_OS_WIN32)
   p = p->topLevelWidget();
 #endif
   QWidget* w = 0L;

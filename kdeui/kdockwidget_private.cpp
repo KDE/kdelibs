@@ -19,6 +19,7 @@
 #include "kdockwidget_private.h"
 
 #include <qpainter.h>
+#include <qcursor.h>
 
 KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos)
 : QWidget(parent, name)
