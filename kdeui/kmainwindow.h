@@ -543,9 +543,15 @@ public:
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
          * window size using the default name.  @see setAutoSaveSettings
+         * 
          * If you must call resize() with an initial size make sure to do it
          * <b>before</b> setupGUI() or else the size wont be saved properly
          * and whatever is saved will be ignored.
+         *
+         * Typically you want to let the default size be determined by
+         * the widgets size hints. Make sure that setupGUI() is called after
+         * all the widgets are created ( including setCentralWidget ) so the
+         * default size's will be correct. 
          */
         Save = 8,
 
