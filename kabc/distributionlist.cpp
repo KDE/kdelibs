@@ -100,12 +100,10 @@ DistributionList::Entry::List DistributionList::entries() const
 DistributionListManager::DistributionListManager( AddressBook *ab ) :
   mAddressBook( ab )
 {
-  mLists.setAutoDelete( true );
 }
 
 DistributionListManager::~DistributionListManager()
 {
-  mLists.clear();
 }
 
 DistributionList *DistributionListManager::list( const QString &name )

@@ -58,6 +58,7 @@ class DistributionListEditor : public QWidget
 
   private slots:
     void newList();
+    void editList();
     void removeList();
     void addEntry();
     void removeEntry();
@@ -70,12 +71,13 @@ class DistributionListEditor : public QWidget
 
   private:
     QComboBox *mNameCombo;  
+    QLabel *mListLabel;
     QListView *mEntryView;
     QListView *mAddresseeView;
 
     AddressBook *mAddressBook;
     DistributionListManager *mManager;
-    QPushButton *newButton, *removeButton;
+    QPushButton *newButton, *editButton, *removeButton;
     QPushButton *changeEmailButton,*removeEntryButton,*addEntryButton;
 };
 

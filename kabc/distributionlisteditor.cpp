@@ -20,6 +20,7 @@
 
 #include <qlistview.h>
 #include <qlayout.h>
+#include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qinputdialog.h>
@@ -133,22 +134,32 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   nameLayout->addWidget( newButton );
   connect( newButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
+  editButton = new QPushButton( i18n("Edit List"), this );
+  nameLayout->addWidget( editButton );
+  connect( editButton, SIGNAL( clicked() ), SLOT( editList() ) );
+
   removeButton = new QPushButton( i18n("Remove List"), this );
   nameLayout->addWidget( removeButton );
   connect( removeButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
-  QGridLayout *gridLayout = new QGridLayout( topLayout, 3, 2 );
+  QGridLayout *gridLayout = new QGridLayout( topLayout, 3, 3 );
   gridLayout->setColStretch(1, 1);
+
+  mListLabel = new QLabel( i18n("Available addresses:"), this );
+  gridLayout->addWidget( mListLabel, 0, 0 );
+
+  mListLabel = new QLabel( this );
+  gridLayout->addMultiCellWidget( mListLabel, 0, 0, 1, 2 );
 
   mAddresseeView = new QListView( this );
   mAddresseeView->addColumn( i18n("Name") );
   mAddresseeView->addColumn( i18n("Preferred Email") );
-  gridLayout->addWidget( mAddresseeView, 0, 0 );
+  gridLayout->addWidget( mAddresseeView, 1, 0 );
   connect(mAddresseeView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionAddresseeViewChanged()));
 
   addEntryButton = new QPushButton( i18n("Add Entry"), this );
   addEntryButton->setEnabled(false);
-  gridLayout->addWidget( addEntryButton, 1, 0 );
+  gridLayout->addWidget( addEntryButton, 2, 0 );
   connect( addEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
 
   mEntryView = new QListView( this );
@@ -156,15 +167,15 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   mEntryView->addColumn( i18n("Email") );
   mEntryView->addColumn( i18n("Use preferred") );
   mEntryView->setEnabled(false);
-  gridLayout->addMultiCellWidget( mEntryView, 0, 0, 1, 2 );
+  gridLayout->addMultiCellWidget( mEntryView, 1, 1, 1, 2 );
   connect(mEntryView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionEntryViewChanged()));
 
   changeEmailButton = new QPushButton( i18n("Change Email"), this );
-  gridLayout->addWidget( changeEmailButton, 1, 1 );
+  gridLayout->addWidget( changeEmailButton, 2, 1 );
   connect( changeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
 
   removeEntryButton = new QPushButton( i18n("Remove Entry"), this );
-  gridLayout->addWidget( removeEntryButton, 1, 2 );
+  gridLayout->addWidget( removeEntryButton, 2, 2 );
   connect( removeEntryButton, SIGNAL( clicked() ), SLOT( removeEntry() ) );
 
   mManager = new DistributionListManager( mAddressBook );
@@ -204,7 +215,29 @@ void DistributionListEditor::newList()
 
   mNameCombo->clear();
   mNameCombo->insertStringList( mManager->listNames() );
-  mNameCombo->setCurrentItem( mNameCombo->count() );
+  mNameCombo->setCurrentItem( mNameCombo->count() - 1 );
+
+  updateEntryView();
+  slotSelectionAddresseeViewChanged();
+}
+
+void DistributionListEditor::editList()
+{
+  bool ok = false;
+  QString oldName = mNameCombo->currentText();
+
+  QString newName = QInputDialog::getText( i18n("Distribution List"),
+                                        i18n("Please change name."),
+                                        QLineEdit::Normal, oldName, &ok,
+                                        this );
+  if ( !ok || newName.isEmpty() ) return;
+
+  DistributionList *list = mManager->list( oldName );
+  list->setName( newName );
+
+  mNameCombo->clear();
+  mNameCombo->insertStringList( mManager->listNames() );
+  mNameCombo->setCurrentItem( mNameCombo->count() - 1 );
 
   updateEntryView();
   slotSelectionAddresseeViewChanged();
@@ -272,16 +305,20 @@ void DistributionListEditor::changeEmail()
 
 void DistributionListEditor::updateEntryView()
 {
+  mListLabel->setText( QString( i18n("Selected addresses in '%1':") ).arg( mNameCombo->currentText() ) );
+
   mEntryView->clear();
 
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) {
+    editButton->setEnabled(false);
     removeButton->setEnabled(false);
     changeEmailButton->setEnabled(false);
     removeEntryButton->setEnabled(false);
     mEntryView->setEnabled(false);
     return;
   } else {
+    editButton->setEnabled(true);
     removeButton->setEnabled(true);
     mEntryView->setEnabled(true);
   }
