@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.70  1999/08/20 08:27:37  kulow
+   the endless story about unknown.png continues :)
+   time to go with the #include "unknown.xpm"
+
    Revision 1.69  1999/08/15 22:02:40  porten
    unknown.png
 
@@ -218,12 +222,13 @@ Load large icons in icons/large or pics/large if setting is 'large'.
 
 #include "kiconloader.h"
 
-#include <kpixmap.h>
-#include <klocale.h>
-#include <kapp.h>
-#include <kconfig.h>
-#include <kglobal.h>
-#include <kstddirs.h>
+#include "kpixmap.h"
+#include "klocale.h"
+#include "kapp.h"
+#include "kconfig.h"
+#include "kglobal.h"
+#include "klibglobal.h"
+#include "kstddirs.h"
 
 void KIconLoader::initPath()
 {
@@ -233,7 +238,7 @@ void KIconLoader::initPath()
     // able to specify its own key. (Taj)
 
     KConfig* init_config = 0;
-    
+
     if (config) {
 	config->setGroup(appname);
 	QStringList list = config->readListEntry( varname, ':' );
@@ -247,53 +252,66 @@ void KIconLoader::initPath()
 	init_config = config;
     } else
 	init_config = new KConfig();
-    
+
   QString key = "KDE";
   if (appname == "kpanel")
     key = "kpanel";
   if (appname == "kfm")
     key = "kfm";
-  
+
   KConfigGroupSaver(init_config, "KDE");
   QString setting = init_config->readEntry( key + "IconStyle", "Normal" );
 
   // order is important! -- Bernd
   // higher priority at the end
-  
+
   bool large = (setting == "Large" );
+
+  KStandardDirs* dirs;
+  if ( library )
+      dirs = library->dirs();
+  else
+      dirs = KGlobal::dirs();
   
   if ( large )
-    KGlobal::dirs()->addResourceType("icon", 
-                                   KStandardDirs::kde_default("data") +
-                                   "icons/large");
-  
-  KGlobal::dirs()->addResourceType("toolbar", 
-                                   KStandardDirs::kde_default("data") +
-                                   appname + "/pics/");
+      dirs->addResourceType("icon",
+			    KStandardDirs::kde_default("data") +
+			    "icons/large");
+
+  dirs->addResourceType("toolbar",
+			KStandardDirs::kde_default("data") +
+			appname + "/pics/");
 
   if ( large )
-    KGlobal::dirs()->addResourceType("toolbar", 
-                                     KStandardDirs::kde_default("data") +
-                                     appname + "/pics/large");
+      dirs->addResourceType("toolbar",
+			    KStandardDirs::kde_default("data") +
+			    appname + "/pics/large");
 
-  KGlobal::dirs()->addResourceType("toolbar", 
-                                   KStandardDirs::kde_default("data") + 
-                                   appname + "/toolbar/");
+  dirs->addResourceType("toolbar",
+			KStandardDirs::kde_default("data") +
+			appname + "/toolbar/");
 
-  KGlobal::dirs()->addResourceType("mini",
-                                    KStandardDirs::kde_default("data") +
-				    appname + "/icons/mini/");  
+  dirs->addResourceType("mini",
+			KStandardDirs::kde_default("data") +
+			appname + "/icons/mini/");
 }
 
-KIconLoader::KIconLoader( KConfig *conf,
-			  const QString &app_name, const QString &var_name ) : 
-  config(conf), appname(app_name), varname(var_name)
+KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name ) :
+  config(conf), library( 0 ), appname(app_name), varname(var_name)
 {
-  iconType = "toolbar";
-  initPath();
+    iconType = "toolbar";
+    initPath();
 }
 
-KIconLoader::KIconLoader() : config(0), varname("IconPath")
+KIconLoader::KIconLoader( KLibGlobal* _library, const QString& var_name )
+    : config( _library->config() ), appname( _library->name() ), varname(var_name)
+{
+    library = _library;
+    iconType = "toolbar";
+    initPath();
+}
+
+KIconLoader::KIconLoader() : config(0), library( 0 ), varname("IconPath")
 {
   KApplication *app = KApplication::getKApplication();
   if (app) {
@@ -307,7 +325,7 @@ KIconLoader::KIconLoader() : config(0), varname("IconPath")
 }
 
 QPixmap KIconLoader::loadIcon ( const QString& name, int w,
-		int h, bool canReturnNull ) 
+		int h, bool canReturnNull )
 {
 	QPixmap result = loadInternal(name, w, h);
 
@@ -351,25 +369,25 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
   if (name.at(0) == '/') // we can't do anything with an absolute path than returning
     return name;
-  
+
   QString full_path;
   if (!name.isEmpty()) {
     QString path = name;
 
     if (path.right(4) == ".xpm") {
-      path.truncate(path.length() - 4); 
+      path.truncate(path.length() - 4);
       warning("stripping .xpm from icon %s", name.ascii());
     }
     full_path = locate(iconType, path + ".png");
     if (full_path.isNull())
       full_path = locate(iconType, path + ".xpm" );
-    
-    if (full_path.isNull()) 
+
+    if (full_path.isNull())
       full_path = locate(iconType, path);
   }
   if (full_path.isNull() && always_valid)
     full_path = locate(iconType, "unknown.png");
-    
+
   return full_path;
 }
 
@@ -405,7 +423,10 @@ QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
 
 void KIconLoader::addPath( QString path )
 {
-    KGlobal::dirs()->addResourceDir("toolbar", path);
+    if ( library )
+	library->dirs()->addResourceDir("toolbar", path);
+    else
+	KGlobal::dirs()->addResourceDir("toolbar", path);
 }
 
 void KIconLoader::flush( const QString& )
@@ -414,8 +435,12 @@ void KIconLoader::flush( const QString& )
 	warning( "KIconLoader::flush is deprecated." );
 }
 
-QPixmap BarIcon(const QString& pixmap) {
-  return KGlobal::iconLoader()->loadIcon(pixmap, 0, 0, false);
+QPixmap BarIcon(const QString& pixmap , KLibGlobal* library )
+{
+    if ( library )
+	return library->iconLoader()->loadIcon(pixmap, 0, 0, false);
+    else
+	return KGlobal::iconLoader()->loadIcon(pixmap, 0, 0, false);
 }
 
 #include "kiconloader.moc"

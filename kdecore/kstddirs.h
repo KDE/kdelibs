@@ -3,21 +3,21 @@
   Copyright (C) 1999 Sirtaj Singh Kang <taj@kde.org>
                      Stephan Kulow <coolo@kde.org>
 		     Waldo Bastian <bastian@kde.org>
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
-  
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Library General Public License for more details.
-  
+
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.     
+  Boston, MA 02111-1307, USA.
 */
 
 #ifndef SSK_KSTDDIRS_H
@@ -29,6 +29,7 @@
 #include <qstringlist.h>
 
 class KConfig;
+class KLibGlobal;
 
 /**
 * @short Site-independent access to standard KDE directories.
@@ -38,9 +39,9 @@ class KConfig;
 * This is one of the most central classes in kdelibs as
 * it provides a basic service: it knows where the files
 * reside on the user's harddisc. And it's meant to be the
-* only one that knows - to make the real location as 
+* only one that knows - to make the real location as
 * transparent as possible to both the user and the applications.
-* 
+*
 * For this it encapsulates all informations from the application
 * and applications always refer to a file with a resource type
 * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
@@ -50,7 +51,7 @@ class KConfig;
 *
 * The main idea behind KStandardDirs is that there are several
 * toplevel prefixes where files are below. One of this prefixes is
-* the one where the user installed kdelibs into, one where the 
+* the one where the user installed kdelibs into, one where the
 * application has installed to and one is $HOME/.kde, but there
 * may be even more. Under these prefixes there are several well
 * defined suffixes where specific resource types are to be found.
@@ -61,7 +62,7 @@ class KConfig;
 * To make the thing even more complex, it's also possible to register
 * absolute paths that KStandardDirs looks up after not finding anything
 * in the former steps. They can be useful if the user wants to provide
-* specific directories that aren't in his $HOME/.kde directory for 
+* specific directories that aren't in his $HOME/.kde directory for
 * example for icons.
 *
 * standard resources that kdelibs allocates are:
@@ -71,8 +72,8 @@ class KConfig;
 * @li cgi - CGIs to run from kdehelp
 * @li config - configuration files
 * @li data - where applications store data
-* @li exe - executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account 
-* @li html - HTML documentation 
+* @li exe - executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account
+* @li html - HTML documentation
 * @li icon - icons
 * @li lib - libraries
 * @li locale - translation files for KLocale
@@ -83,7 +84,7 @@ class KConfig;
 * @li sound - application sounds
 * @li toolbar - toolbar pictures
 * @li wallpaper - wallpapers
-* 
+*
 */
 class KStandardDirs
 {
@@ -133,14 +134,14 @@ public:
 	 * the user specifies extra paths. You shouldn't need this
 	 * function in 99% of all cases besides adding user given
 	 * paths.
-	 * 
-	 * @param type specifies a short descriptive string to access files 
+	 *
+	 * @param type specifies a short descriptive string to access files
 	 * of this type.
 	 * @param absdir points to directory where to look for this specific
 	 * type. Non-existant directories may be saved but pruned.
-	 * 
+	 *
 	 */
-	bool addResourceDir( const QString& type, 
+	bool addResourceDir( const QString& type,
 			     const QString& absdir);
 
 	/**
@@ -151,7 +152,7 @@ public:
 	 * @return a full path to the filename specified in the second
 	 *         argument, or QString::null if not found.
 	 */
-	QString findResource( const QString& type, 
+	QString findResource( const QString& type,
 			      const QString& filename ) const;
 
 	/**
@@ -164,7 +165,7 @@ public:
 	 * @return a list of matching directories, or an empty
 	 *         list if the resource specified is not found.
 	 */
-	QStringList findDirs( const QString& type, 
+	QStringList findDirs( const QString& type,
                               const QString& reldir ) const;
 
 	/**
@@ -191,17 +192,17 @@ public:
 	 *
 	 * @param type the type of resource to locate directories for.
 	 * @param filter only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a QRexExp 
-	 *        wildcard expression. E.g. "images\*.jpg" 
+	 *        may consist of an optional directory and a QRexExp
+	 *        wildcard expression. E.g. "images\*.jpg"
 	 * @param recursive specifies if the function should decend
 	 *        into subdirectories.
-	 * @param uniq if specified,  only return items which have 
+	 * @param uniq if specified,  only return items which have
 	 *        unique suffixes.
-	 *        
+	 *
 	 * @return a list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
 	 */
-	QStringList findAllResources( const QString& type, 
+	QStringList findAllResources( const QString& type,
 				       const QString& filter = QString::null,
 				       bool recursive = false,
 				       bool uniq = false) const;
@@ -214,31 +215,31 @@ public:
 	 *
 	 * @param type the type of resource to locate directories for.
 	 * @param filter only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a QRexExp 
-	 *        wildcard expression. E.g. "images\*.jpg" 
+	 *        may consist of an optional directory and a QRexExp
+	 *        wildcard expression. E.g. "images\*.jpg"
 	 * @param recursive specifies if the function should decend
 	 *        into subdirectories.
-	 * @param uniq if specified,  only return items which have 
+	 * @param uniq if specified,  only return items which have
 	 *        unique suffixes.
 	 * @param list of relative paths for the given type.
-	 *        
+	 *
 	 * @return a list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
 	 */
-	QStringList findAllResources( const QString& type, 
+	QStringList findAllResources( const QString& type,
 				       const QString& filter,
 				       bool recursive,
 				       bool uniq,
 				       QStringList &relPaths) const;
 
-	/** 
+	/**
 	 * Finds the executable in the system path. A valid executable must
 	 * be a file and have its executable bit set.
 	 *
 	 * @see #findAllExe
 	 * @param appname the name of the executable file for which to search.
-	 * @param pathstr The path which will be searched. If this is 
-	 * 		0 (default), the $PATH environment variable will 
+	 * @param pathstr The path which will be searched. If this is
+	 * 		0 (default), the $PATH environment variable will
 	 *		be searched.
 	 * @param ignoreExecBit	If true, an existing file will be returned
 	 *			even if its executable bit is not set.
@@ -246,11 +247,11 @@ public:
 	 * @return The path of the executable. If it was not found,
 	 *         it will return QString::null.
 	 */
-	static QString findExe( const QString& appname, 
+	static QString findExe( const QString& appname,
 				const QString& pathstr=QString::null,
 				bool ignoreExecBit=false );
 
-	/** 
+	/**
 	 * Finds all occurences of an executable in the system path.
 	 *
 	 * @see	#findExe
@@ -269,7 +270,7 @@ public:
 	 * @return The number of executables found, 0 if none were found.
 	 */
 	static int findAllExe( QStringList& list, const QString& appname,
-			       const QString& pathstr=QString::null, 
+			       const QString& pathstr=QString::null,
 			       bool ignoreExecBit=false );
 
 	/**
@@ -283,7 +284,7 @@ public:
 	/**
 	 * Reads customized entries out of the given config object and adds
 	 * them via addResourceDirs
-	 * 
+	 *
 	 * @param config the object the entries are read from. This should
 	 *        contain global config files
 	 * @return if new config paths have been added that would reflect
@@ -292,7 +293,7 @@ public:
 	bool addCustomized(KConfig *config);
 
 	/**
-	 * @return the list of possible directories for the type 
+	 * @return the list of possible directories for the type
 	 * The functions updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
 	 */
@@ -301,7 +302,7 @@ public:
 	/**
 	 * Finds a location to save files into for the given type
 	 * in the user's home directory.
-	 * 
+	 *
 	 * @param suffix makes it easier for you to create subdirectories.
 		       You can't pass filenames here, you _have_ to pass
 		       directory names only and add possible filename in
@@ -313,7 +314,7 @@ public:
 	 *         saved, or QString::null if the resource type is unknown.
 	 */
 	 QString getSaveLocation(const QString& type,
-				 const QString& suffix = QString::null, 
+				 const QString& suffix = QString::null,
 				 bool create = true) const;
 
 	/**
@@ -362,7 +363,7 @@ public:
  * 1) A resource file is read but is never written. A system
  *    default is supplied but the user can override this
  *    default in his local .kde directory:
- *   
+ *
  *    // Code example
  *    myFile = locate("appdata", "groups.lst")
  *    myData =  myReadGroups(myFile);
@@ -395,21 +396,21 @@ public:
  *    myFile = locateLocal("appdata", "groups.lst")
  *    myWriteGroups(myFile, myData);
  **/
- 
+
 /**
- * This function is just for convience. It simply calls 
+ * This function is just for convience. It simply calls
  * KGlobal::dirs()->findResource(type, filename)
  **/
-QString locate( const QString& type, const QString& filename );
+QString locate( const QString& type, const QString& filename, KLibGlobal* library = 0 );
 
 /**
  * This function is much like locate. However it returns a
  * filename suitable for writing to. No check is made if the
  * specified filename actually exists. Missing directories
  * are created. If filename is only a directory, without a
- * specific file, filename must have a trailing slash. 
+ * specific file, filename must have a trailing slash.
  *
  **/
-QString locateLocal( const QString& type, const QString& filename );
+QString locateLocal( const QString& type, const QString& filename, KLibGlobal* library = 0 );
 
 #endif // SSK_KSTDDIRS_H
