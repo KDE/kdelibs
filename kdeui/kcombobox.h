@@ -65,6 +65,10 @@ class KURL;
  * KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
  * parameter in the @p setCompletionObject call to false.
  *
+ * Beware: The completion object can be deleted on you, especially if a call
+ * such as setEditable(false) is made.  Store the pointer at your own risk,
+ * and consider using QGuardedPtr<KCompletion>.
+ *
  * The default key-bindings for completion and rotation is determined from the
  * global settings in KStdAccel. These values, however, can be overridden
  * locally by invoking KCompletionBase::setKeyBinding(). The values can
