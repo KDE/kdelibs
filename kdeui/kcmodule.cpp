@@ -29,23 +29,23 @@
 class KCModulePrivate
 {
 public:
-        KInstance *_instance;
-	QString _rootOnlyMsg;
-	bool _useRootOnlyMsg;
-        bool _hasOwnInstance;
+    KInstance *_instance;
+    QString _rootOnlyMsg;
+    bool _useRootOnlyMsg;
+    bool _hasOwnInstance;
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
-	: QWidget(parent, name), _btn(Help|Default|Apply)
+    : QWidget(parent, name), _btn(Help|Default|Apply)
 {
     kdDebug( 281 ) << "KCModule " << name << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
-	if (name && strlen(name)) {
-		d->_instance = new KInstance(name);
-		KGlobal::locale()->insertCatalogue(name);
-	} else
-		d->_instance = new KInstance("kcmunnamed");
+    if (name && strlen(name)) {
+        d->_instance = new KInstance(name);
+        KGlobal::locale()->insertCatalogue(name);
+    } else
+        d->_instance = new KInstance("kcmunnamed");
     d->_hasOwnInstance = true;
     KGlobal::setActiveInstance(this->instance());
 }
@@ -71,27 +71,27 @@ KCModule::~KCModule()
 
 void KCModule::setRootOnlyMsg(const QString& msg)
 {
-	d->_rootOnlyMsg = msg;
+    d->_rootOnlyMsg = msg;
 }
 
 QString KCModule::rootOnlyMsg() const
 {
-	return d->_rootOnlyMsg;
+    return d->_rootOnlyMsg;
 }
 
 void KCModule::setUseRootOnlyMsg(bool on)
 {
-	d->_useRootOnlyMsg = on;
+    d->_useRootOnlyMsg = on;
 }
 
 bool KCModule::useRootOnlyMsg() const
 {
-	return d->_useRootOnlyMsg;
+    return d->_useRootOnlyMsg;
 }
 
 void KCModule::changed()
 {
-        emit changed(true);
+    emit changed(true);
 }
 
 KInstance *KCModule::instance() const
