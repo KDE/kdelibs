@@ -272,7 +272,8 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		int response = KMessageBox::Yes;
 
 		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
-			response = KMessageBox::questionYesNoCancel(0L, i18n("The application '%1' has requested access to the open wallet '%2'.").arg(appid).arg(wallet), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+// ### FIXME 3.3: add a new string and get rid of the 'KDE' one here
+			response = KMessageBox::questionYesNoCancel(0L, i18n("The application '%1' has requested access to the open wallet '%2'.").arg(appid.isEmpty() ? i18n("KDE") : QString(appid)).arg(wallet), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 		}
 
 		if (response == KMessageBox::Yes || response == KMessageBox::No) {
