@@ -1,15 +1,22 @@
+
+AC_ARG_ENABLE(kde-db, [  --disable-kde-db        do not build kde-db database access library [default=compiled]],
+              kdedb_enable=$enableval, kdedb_enable=yes)
+
 dnl define some useful vars
 
-LIB_KDBUI="-lkdbui"
+LIB_KDBUI='$(top_builddir)/kdedb/kdbui/libkdbui.la'
 AC_SUBST(LIB_KDBUI)
 
-LIB_KDBCORE="-lkdbcore"
+LIB_KDBCORE='$(top_builddir)/kdedb/kdbcore/libkdbcore.la'
 AC_SUBST(LIB_KDBCORE)
 
-LIB_KDB="$LIB_KDBUI $LIB_KDBCORE"
+LIB_KDB='$LIB_KDBUI $LIB_KDBCORE'
 AC_SUBST(LIB_KDB)
 
 
 dnl avoid compilation of kdedb for now.
 
-DO_NOT_COMPILE="$DO_NOT_COMPILE kdedb"
+if test "x$kdedb_enable" != "xyes"; then
+    DO_NOT_COMPILE="$DO_NOT_COMPILE kdedb"
+fi
+
