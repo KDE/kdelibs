@@ -95,6 +95,9 @@ namespace KJS {
     bool deleteDOMObject( void* objectHandle ) {
       return m_domObjects.remove( objectHandle );
     }
+    void clear() {
+      m_domObjects.clear();
+    }
     /**
      * Static method. Makes all interpreters forget about the object
      */

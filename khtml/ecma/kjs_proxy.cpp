@@ -194,15 +194,17 @@ void KJSProxyImpl::clear() {
 //        debugWin->leaveSession();
     //}
 #endif
+    m_script->clear();
+
     Window *win = static_cast<Window *>(m_script->globalObject().imp());
     if (win) {
-        win->clear( m_script->globalExec() );
-        // re-add "debug", clear() removed it
-        m_script->globalObject().put(m_script->globalExec(),
-                                     "debug", Value(new TestFunctionImp()), Internal);
+      win->clear( m_script->globalExec() );
+      // re-add "debug", clear() removed it
+      m_script->globalObject().put(m_script->globalExec(),
+                                   "debug", Value(new TestFunctionImp()), Internal);
+      if ( !win->part().isNull() )
+        applyUserAgent();
     }
-
-    applyUserAgent();
   }
 }
 
