@@ -1997,20 +1997,48 @@ KPopupMenu *KToolBar::contextMenu()
   }
 
   d->iconSizes = avSizes;
+  qHeapSort(avSizes);
 
   QValueList<int>::Iterator it;
-  for (it=avSizes.begin(); it!=avSizes.end(); it++) {
-      QString text;
-      if ( *it < 19 )
-          text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-      else if (*it < 25)
-          text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-      else if (*it < 35)
-          text = i18n("Large (%1x%2)").arg(*it).arg(*it);
-      else
-          text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
-      //we use the size as an id, with an offset
-      size->insertItem( text, CONTEXT_ICONSIZES + *it );
+  if (avSizes.count() < 10) {
+      // Fixed or threshold type icons
+      for (it=avSizes.begin(); it!=avSizes.end(); it++) {
+          QString text;
+          if ( *it < 19 )
+              text = i18n("Small (%1x%2)").arg(*it).arg(*it);
+          else if (*it < 25)
+              text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
+          else if (*it < 35)
+              text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+          else
+              text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+          //we use the size as an id, with an offset
+          size->insertItem( text, CONTEXT_ICONSIZES + *it );
+      }
+  }
+  else {
+      // Scalable icons.
+      const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
+
+      it = avSizes.begin();
+      for (uint i = 0; i < 9; i++) {
+          while (it++ != avSizes.end()) {
+              if (*it >= progression[i]) {
+                  QString text;
+                  if ( *it < 19 )
+                      text = i18n("Small (%1x%2)").arg(*it).arg(*it);
+                  else if (*it < 25)
+                      text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
+                  else if (*it < 35)
+                      text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+                  else
+                      text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+                  //we use the size as an id, with an offset
+                  size->insertItem( text, CONTEXT_ICONSIZES + *it );
+                  break;
+              }
+          }
+      }  
   }
 
   context->insertItem( i18n("Orientation"), orient );
