@@ -86,27 +86,24 @@ void KTopLevelWidget::updateRects()
   int to=-1, bo=-1, lo=-1, ro=-1;
   int h = height();
 
-  switch (kmenubar->menuBarPos())
-   {
-    case KMenuBar::Top:
-      if (kmenubar->isVisible())
-       {
-         kmenubar->resize(width(), kmenubar->height());
-         t+=kmenubar->height();
-         kmenubar->move(0, 0);
-       }
-      break;
-    case KMenuBar::Bottom:
-      if (kmenubar->isVisible())
-       {
-         kmenubar->resize(width(), kmenubar->height());
-         b+=kmenubar->height();
-         kmenubar->move(0, height()-b);
-       }
-      break;
-    case KMenuBar::Floating:
-      break;
-   }
+  if( kmenubar && kmenubar->isVisible() )
+	switch (kmenubar->menuBarPos())
+	  {
+	  case KMenuBar::Top:
+		kmenubar->resize(width(), kmenubar->height());
+		t+=kmenubar->height();
+		kmenubar->move(0, 0);
+		
+		break;
+	  case KMenuBar::Bottom:
+		kmenubar->resize(width(), kmenubar->height());
+		b+=kmenubar->height();
+		kmenubar->move(0, height()-b);
+		break;
+	  case KMenuBar::Floating:
+		break;
+	  }
+
   /*
   if ( kmenubar && kmenubar->isVisible() )
     t += kmenubar->height(); // the menu is always on top. Oh, yeah?
