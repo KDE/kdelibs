@@ -397,7 +397,8 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     KCompTreeChildren::ConstIterator it;
     const KCompTreeChildren *list = node->children();
     QString string;
-
+    QString w;
+    
     // loop thru all children
     for ( it = list->begin(); it != list->end(); ++it ) {
         string = beginning;
@@ -414,7 +415,8 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 		if ( addWeight ) {
 		    // add ":num" to the string to store the weighting
 		    string += ':';
-		    string += QChar( node->weight() );
+		    w.setNum( node->weight() );
+		    string.append( w );
 		}
 	        matches->append( string );
 		// debug( " -> found match: %s", debugString( string ));
