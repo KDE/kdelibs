@@ -92,7 +92,12 @@ Object_skel *ObjectManager::create(string name)
 		}
 		if(language->size() != 1)
 		{
-			arts_warning("ObjectManager: %s - Language missing");
+			arts_warning("ObjectManager: %s - Language missing", name.c_str());
+			requirementsOk = false;
+		}
+		if(requirementsOk && language->front() == "C++" && libs->empty())
+		{
+			arts_warning("ObjectManager: %s - Library missing", name.c_str());
 			requirementsOk = false;
 		}
 
