@@ -28,7 +28,6 @@
 
 #include <qobject.h>
 #include <qmap.h>
-#include "java/kjavaappletcontext.h"
 
 /**
  * @short A Java applet
