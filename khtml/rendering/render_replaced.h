@@ -83,7 +83,7 @@ public:
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
-    RenderArena *ref() { _ref++; qDebug( "ref(%p): width get count is %d", this, _ref); return renderArena(); }
+    RenderArena *ref() { _ref++; /*qDebug( "ref(%p): width get count is %d", this, _ref);*/ return renderArena(); }
     void deref(RenderArena *arena);
 
 public slots:

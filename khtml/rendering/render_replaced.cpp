@@ -460,7 +460,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 void RenderWidget::deref(RenderArena *arena)
 {
     if (_ref) _ref--;
-    qDebug( "deref(%p): width get count is %d", this, _ref);
+//     qDebug( "deref(%p): width get count is %d", this, _ref);
     if (!_ref)
         arenaDelete(arena);
 }
