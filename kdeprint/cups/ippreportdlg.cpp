@@ -38,7 +38,7 @@ IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
 	setMainWidget(m_edit);
 	resize(540, 500);
 	setFocusProxy(m_edit);
-	setButtonText(User1, i18n("&Print"));
+	setButtonGuiItem(User1, KGuiItem(i18n("&Print"),"fileprint"));
 }
 
 void IppReportDlg::slotUser1()

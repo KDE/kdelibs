@@ -815,10 +815,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 {
   setButtonOK( (editType == InsertionMode) ? KGuiItem( i18n( "&Add" ), "bookmark_add") : i18n( "&Update" ) );
   if (editType == InsertionMode) {
-    setButtonText( User1, i18n( "&New Folder..." ) );
-    if (KGlobalSettings::showIconsOnPushButtons()) {
-      actionButton( User1 )->setIconSet( SmallIcon( "folder_new" ) );
-    }
+    setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder_new") );
   }
 
   bool folder = url.isNull();
@@ -950,7 +947,7 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
 void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, const QString& address )
 {
   listview->clear();
-  
+
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   listview->setCurrentItem( rootItem );
