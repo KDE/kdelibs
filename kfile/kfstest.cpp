@@ -38,6 +38,7 @@
 #include <kfile.h>
 #include <kdebug.h>
 #include <kicondialog.h>
+#include <config-kfile.h>
 
 int main(int argc, char **argv)
 {
