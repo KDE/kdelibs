@@ -52,6 +52,7 @@
 #define sk_value d->kossl->sk_value
 #define sk_num d->kossl->sk_num
 #define sk_dup d->kossl->sk_dup
+#define sk_pop d->kossl->sk_pop
 #endif
 
 class KSSLCertChainPrivate {
@@ -73,10 +74,19 @@ KSSLCertChain::KSSLCertChain() {
 
 
 KSSLCertChain::~KSSLCertChain() {
-  delete d;
 #ifdef HAVE_SSL
-  if (_chain) sk_X509_free((STACK_OF(X509)*)_chain);
+  if (_chain) {
+    STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
+
+    for (;;) {
+      X509* x5 = sk_X509_pop(x);
+      if (!x5) break;
+      d->kossl->X509_free(x5);
+    }
+    sk_X509_free(x);
+  }
 #endif
+  delete d;
 }
 
 
@@ -124,8 +134,17 @@ return cl;
 
 void KSSLCertChain::setChain(QPtrList<KSSLCertificate>& chain) {
 #ifdef HAVE_SSL
-  if (_chain) sk_X509_free((STACK_OF(X509) *) _chain);
-  _chain = NULL;
+if (_chain) {
+    STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
+
+    for (;;) {
+      X509* x5 = sk_X509_pop(x);
+      if (!x5) break;
+      d->kossl->X509_free(x5);
+    }
+    sk_X509_free(x);
+    _chain = NULL;
+}
 
   if (chain.count() == 0) return;
   _chain = (void *)sk_new(NULL);
@@ -140,11 +159,28 @@ void KSSLCertChain::setChain(QPtrList<KSSLCertificate>& chain) {
 void KSSLCertChain::setChain(void *stack_of_x509) {
 #ifdef HAVE_SSL
 if (_chain) {
-      sk_X509_free((STACK_OF(X509)*)_chain);
-      _chain = NULL;
+    STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
+
+    for (;;) {
+      X509* x5 = sk_X509_pop(x);
+      if (!x5) break;
+      d->kossl->X509_free(x5);
+    }
+    sk_X509_free(x);
+    _chain = NULL;
 }
+
 if (!stack_of_x509) return;
-_chain = sk_X509_dup((STACK_OF(X509)*)stack_of_x509);
+
+_chain = (void *)sk_new(NULL);
+STACK_OF(X509) *x = (STACK_OF(X509) *)stack_of_x509;
+
+   for (int i = 0; i < sk_X509_num(x); i++) {
+     X509* x5 = sk_X509_value(x, i);
+     if (!x5) continue;
+     sk_X509_push((STACK_OF(X509)*)_chain,d->kossl->X509_dup(x5));
+   }
+
 #else
 _chain = NULL;
 #endif
@@ -171,5 +207,6 @@ void KSSLCertChain::setChain(QStringList chain) {
 #undef sk_value
 #undef sk_num
 #undef sk_dup
+#undef sk_pop
 #endif
 

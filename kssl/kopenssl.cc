@@ -100,6 +100,7 @@ static STACK_OF(X509)* (*K_SSL_get_peer_cert_chain) (SSL*) = NULL;
 static void (*K_X509_STORE_CTX_set_chain) (X509_STORE_CTX *, STACK_OF(X509)*) = NULL;
 static void (*K_sk_free) (STACK*) = NULL;
 static int (*K_sk_num) (STACK*) = NULL;
+static char* (*K_sk_pop) (STACK*) = NULL;
 static char* (*K_sk_value) (STACK*, int) = NULL;
 static STACK* (*K_sk_new) (int (*)()) = NULL;
 static int (*K_sk_push) (STACK*, char*) = NULL;
@@ -316,6 +317,7 @@ KConfig *cfg;
       K_X509_STORE_CTX_set_chain = (void (*)(X509_STORE_CTX *, STACK_OF(X509)*)) _cryptoLib->symbol("X509_STORE_CTX_set_chain");
       K_sk_free = (void (*) (STACK *)) _cryptoLib->symbol("sk_free");
       K_sk_num = (int (*) (STACK *)) _cryptoLib->symbol("sk_num");
+      K_sk_pop = (char* (*) (STACK *)) _cryptoLib->symbol("sk_pop");
       K_sk_value = (char* (*) (STACK *, int)) _cryptoLib->symbol("sk_value");
       K_sk_new = (STACK* (*) (int (*)())) _cryptoLib->symbol("sk_new");
       K_sk_push = (int (*) (STACK*, char*)) _cryptoLib->symbol("sk_push");
@@ -842,6 +844,12 @@ int KOpenSSLProxy::sk_num(STACK *s) {
 }
 
  
+char *KOpenSSLProxy::sk_pop(STACK *s) {
+   if (K_sk_pop) return (K_sk_pop)(s);
+   else return NULL;
+}
+
+
 char *KOpenSSLProxy::sk_value(STACK *s, int n) {
    if (K_sk_value) return (K_sk_value)(s, n);
    else return NULL;

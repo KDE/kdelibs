@@ -472,6 +472,12 @@ public:
 
 
    /* 
+    *   Pop off the stack
+    */
+   char *sk_pop(STACK *s);
+
+
+   /* 
     *   Free the stack
     */
    void sk_free(STACK *s);
