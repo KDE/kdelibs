@@ -635,6 +635,7 @@ int RenderBox::calcReplacedHeight() const
 {
     Length h = style()->height();
     short height;
+
     switch( h.type ) {
     case Variable:
     {
@@ -653,13 +654,13 @@ int RenderBox::calcReplacedHeight() const
         bool doIEHack = !p;
         RenderObject* cb = containingBlock();
         if ( !cb->isTableCell() && doIEHack)
-            height = h.minWidth( cb->root()->view()->visibleHeight() );
+            height = h.minWidth(availableHeight());
         else {
             if (!doIEHack)
                 cb = cb->containingBlock();
 
 	    Length h = cb->style()->height();
-//	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
+	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
             height = h.minWidth(availableHeight());
 
 //             if ( h.isFixed() )
@@ -689,7 +690,7 @@ int RenderBox::availableHeight() const
         return h.value;
 
     if (isRoot())
-        return kMax(0, root()->height() - 1);
+        return static_cast<const RenderRoot*>(this)->viewportHeight();
 
     if (h.isPercent())
         return h.width(containingBlock()->availableHeight());

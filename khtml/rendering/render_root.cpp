@@ -44,8 +44,8 @@ RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
 
-    m_rootWidth=0;
-    m_rootHeight=0;
+    m_rootWidth = m_rootHeight = 0;
+    m_viewportWidth = m_viewportHeight = 0;
 
     setPositioned(true); // to 0,0 :)
 
@@ -116,35 +116,27 @@ void RenderRoot::layout()
     kdDebug() << "RenderRoot::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
-    int mw;
-    int mh;
-    if (m_view && !m_printingMode) {
-        QSize s = m_view->viewportSize(m_view->visibleWidth(), m_view->visibleHeight());
-        mw = s.width();
-        mh = s.height();
-        //qDebug("s.height: %d, visibleHeight: %d, viewport->height(): %d",
-        //       s.height(), m_view->visibleHeight(), m_view->viewport()->height());
-
+    if (!m_printingMode) {
+        QSize s = m_view->viewportSize(m_view->contentsWidth(),
+                                       m_view->contentsHeight());
+        m_width = s.width();
+        m_height = s.height();
     }
-    else if (!m_view) {
-        mh = m_rootHeight;
-        mw = m_rootWidth;
+    else {
+        m_width = m_rootWidth;
+        m_height = m_rootHeight;
     }
-
-    m_width = m_view->visibleWidth();
-    m_height = m_view->visibleHeight();
-
-    //qDebug("height: %d",  m_height);
-
 
     RenderFlow::layout();
 
-    if (m_view && !m_printingMode)
+    if (!m_printingMode) {
         m_view->resizeContents(docWidth(), docHeight());
+        QSize s = m_view->viewportSize(m_view->contentsWidth(),
+                                       m_view->contentsHeight());
+        setWidth( m_viewportWidth = s.width() );
+        setHeight(  m_viewportHeight = s.height() );
+    }
 
-    QSize s = m_view->viewportSize(m_view->contentsWidth(), m_view->contentsHeight());
-    m_width = s.width();
-    m_height = s.height();
 
     // ### we could maybe do the call below better and only pass true if the docsize changed.
     layoutSpecialObjects( true );
@@ -153,9 +145,7 @@ void RenderRoot::layout()
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
 
-
     setLayouted();
-    //kdDebug(0) << "root: height = " << m_height << endl;
 }
 
 bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
