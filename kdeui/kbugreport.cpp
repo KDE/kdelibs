@@ -42,6 +42,14 @@
 #include <stdio.h>
 #include <pwd.h>
 #include <unistd.h>
+#include "kdepackages.h"
+#include <kcombobox.h>
+#include <config.h>
+
+class KBugReportPrivate {
+public:
+    KComboBox *appcombo;
+};
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
   : KDialogBase( Plain,
@@ -54,6 +62,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                  true // separator
                  )
 {
+    d = new KBugReportPrivate;
+
   // Use supplied aboutdata, otherwise the one from the active instance
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
   m_aboutData = aboutData
@@ -69,7 +79,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->setColStretch( 1, 10 );
   glay->setColStretch( 2, 10 );
 
-  setButtonOKText(i18n("&Send"), 
+  setButtonOKText(i18n("&Send"),
                   i18n("Send bugreport."),
                   i18n("Send this bugreport to the KDE buglist."));
 
@@ -87,11 +97,22 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel( i18n("Application : "), parent );
   glay->addWidget( tmpLabel, 1, 0 );
   QWhatsThis::add( tmpLabel, qwtstr );
-  tmpLabel = new QLabel( QString::fromLatin1( m_aboutData
-					      ? m_aboutData->appName()
-					      : kapp->name() ),
-			 parent );
-  glay->addWidget( tmpLabel, 1, 1 );
+  d->appcombo = new KComboBox( false, parent, "app");
+  d->appcombo->insertStrList(packages);
+  QString appname = QString::fromLatin1( m_aboutData
+                                         ? m_aboutData->appName()
+                                         : kapp->name() );
+  glay->addWidget( d->appcombo, 1, 1 );
+  int index = 0;
+  for (; index < d->appcombo->count(); index++) {
+      if (d->appcombo->text(index) == appname) {
+          break;
+      }
+  }
+  if (index == d->appcombo->count()) { // not present
+      d->appcombo->insertItem(appname);
+  }
+  d->appcombo->setCurrentItem(index);
 
   QWhatsThis::add( tmpLabel, qwtstr );
 
@@ -194,6 +215,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
 KBugReport::~KBugReport()
 {
+    delete d;
 }
 
 void KBugReport::slotConfigureEmail()
@@ -222,7 +244,7 @@ void KBugReport::slotSetFrom()
   QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
-     p = getpwuid(getuid());  
+     p = getpwuid(getuid());
      fromaddr = QString::fromLatin1(p->pw_name);
   } else {
      QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
@@ -270,27 +292,31 @@ void KBugReport::slotOk( void )
 QString KBugReport::text()
 {
     kdDebug() << m_bgSeverity->selected()->name() << endl;
-  // Prepend the pseudo-headers to the contents of the mail
+    // Prepend the pseudo-headers to the contents of the mail
   QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
-  QString appname = QString::fromLatin1( m_aboutData
-                                         ? m_aboutData->appName()
-                                         : kapp->name());
+  QString appname = d->appcombo->currentText();
+  QString os = QString::fromLatin1("OS: %1 (%2)\n").
+               arg(KDE_COMPILING_OS).
+               arg(KDE_DISTRIBUTION_TEXT);
   if (severity == QString::fromLatin1("i18n"))
-    // Case 1 : i18n bug
+      // Case 1 : i18n bug
       return QString::fromLatin1("Package: i18n_") + KGlobal::locale()->language() +
-	QString::fromLatin1("\n"
-			    "Application: %1\n"
-			    // not really i18n's version, so better here IMHO
-			    "Version: %2\n"
-	  "\n").arg(appname).arg(m_strVersion)+
+          QString::fromLatin1("\n"
+                              "Application: %1\n"
+                              // not really i18n's version, so better here IMHO
+                              "Version: %2\n")+
+          os+
+	  QString::fromLatin1("\n").arg(appname).arg(m_strVersion)+
 	  m_lineedit->text();
   else
-    // Case 2 : normal bug
-    return QString::fromLatin1("Package: %1\n"
-      "Version: %2\n"
-      "Severity: %3\n"
-      "\n").arg(appname).arg(m_strVersion).arg(severity)+
-      m_lineedit->text();
+      // Case 2 : normal bug
+      return QString::fromLatin1("Package: %1\n"
+                                 "Version: %2\n"
+                                 "Severity: %3\n")
+          .arg(appname).arg(m_strVersion).arg(severity)+
+          QString::fromLatin1("Compiler: %1\n").arg(KDE_COMPILER_VERSION)+
+          os+QString::fromLatin1("\n")+
+          m_lineedit->text();
 }
 
 bool KBugReport::sendBugReport()
@@ -309,7 +335,7 @@ bool KBugReport::sendBugReport()
   {
     command = KStandardDirs::findExe( QString::fromLatin1("mail") );
     if ( command.isNull() ) return false; // give up
-    
+
     command.append(QString::fromLatin1(" -s \x22"));
     command.append(m_subject->text());
     command.append(QString::fromLatin1("\x22 "));
