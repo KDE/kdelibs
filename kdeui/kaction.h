@@ -215,7 +215,7 @@ public:
      * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param receiver The SLOT's parent.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
