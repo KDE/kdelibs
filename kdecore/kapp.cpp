@@ -317,12 +317,6 @@ void KApplication::init(bool GUIenabled)
 //    kdisplaySetPalette(); done by kdisplaySetStyle
     propagateSettings(SETTINGS_QT);
 
-    // "patch" standard QStyleSheet to follow our fonts
-    QStyleSheet* sheet = QStyleSheet::defaultSheet();
-    sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
-
     // Set default mime-source factory
     QMimeSourceFactory::setDefaultFactory (mimeSourceFactory());
   }
