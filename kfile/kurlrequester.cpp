@@ -105,7 +105,6 @@ void KURLRequester::setURL( const QString& url )
 	myEdit->setText( url.mid( 5, url.length()-5 ));
     else
 	myEdit->setText( url );
-    myEdit->setSelection( 0, myEdit->text().length() );
 }
 
 

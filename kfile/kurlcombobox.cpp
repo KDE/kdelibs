@@ -207,12 +207,13 @@ void KURLComboBox::setURL( const KURL& url )
 		
 		// QComboBox::changeItem() doesn't honour the pixmap when
 		// using an editable combobox, so we just remove and insert
-		if ( isEditable() ) {
-		    removeItem( mit.key() );
-		    insertItem( opendirPix, mit.data()->url.url( myMode ),
-				mit.key() );
-		}
-		else
+// hmm, this seems to be fixed?
+//		if ( isEditable() ) {
+//		    removeItem( mit.key() );
+//		    insertItem( opendirPix, mit.data()->url.url( myMode ),
+//				mit.key() );
+//		}
+//		else
 		    changeItem( opendirPix, mit.data()->text, mit.key() );
 	    }
             blockSignals( false );
