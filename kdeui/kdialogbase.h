@@ -1383,7 +1383,7 @@ class KDialogBase : public KDialog
      * Do not use this signal. Is is kept for compatibility reasons.
      * @deprecated Use applyClicked() instead.
      */
-    void apply() KDE_DEPRECATED;
+    void apply();
 
     /**
      * The background tile has changed.
@@ -1527,7 +1527,7 @@ class KDialogBase : public KDialog
      * Do not use this slot. Is is kept for compatibility reasons.
      * Activated when the Apply button has been clicked
      */
-    virtual void applyPressed() KDE_DEPRECATED;
+    virtual void applyPressed();
 
     /**
      * Updates the margins and spacings.
