@@ -26,11 +26,11 @@ lib_LTLIBRARIES = libklauncher.la
 libklauncher_la_LDFLAGS = $(all_libraries) -no-version -module
 libklauncher_la_LIBADD = $(LIB_KIO)
 libklauncher_la_SOURCES = klauncher.cpp main.cpp
-libklauncher_la_METASOURCES = AUTO
 
 klauncher_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 klauncher_LDADD = $(LIB_KIO)
 klauncher_SOURCES = klauncher.cpp main.cpp
-klauncher_METASOURCES = AUTO
+
+METASOURCES = AUTO
 
 noinst_HEADERS = klauncher.h
