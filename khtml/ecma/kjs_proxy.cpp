@@ -33,12 +33,17 @@
 #include "kjs_html.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
+#include "kjs_debugwin.h"
 
 using namespace KJS;
 
 extern "C" {
   KJSProxy *kjs_html_init(KHTMLPart *khtml);
 }
+
+#ifdef KJS_DEBUGGER
+static KJSDebugWin *kjs_html_debugger = 0;
+#endif
 
 // initialize HTML module
 KJSProxy *kjs_html_init(KHTMLPart *khtml)
@@ -49,6 +54,12 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
   KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
 	  			 &kjs_special, &kjs_destroy);
   proxy->khtml = khtml;
+
+#ifdef KJS_DEBUGGER
+  // ### share and destroy
+  if (!kjs_html_debugger)
+      kjs_html_debugger = new KJSDebugWin();
+#endif
 
   return proxy;
 }
@@ -76,10 +87,21 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
 		    const DOM::Node &n)
   {
     script->init(); // set a valid current interpreter
+
+#ifdef KJS_DEBUGGER
+    kjs_html_debugger->attach(script);
+    kjs_html_debugger->setCode(QString(c, len));
+    kjs_html_debugger->setMode(KJS::Debugger::Step);
+#endif
+
     KJS::KJSO thisNode = n.isNull() ?
 			 KJS::Global::current().prototype() : getDOMNode(n);
 
     bool ret = script->evaluate(thisNode, c, len);
+
+#ifdef KJS_DEBUGGER
+    kjs_html_debugger->setCode(QString::null);
+#endif
 
     // let's try to convert the return value
     QVariant res;
@@ -96,6 +118,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
 	  res = QVariant(retVal.toString().value().qstring());
 	  break;
       default:
+	// everything else will be 'invalid'
 	  break;
       }
     }

@@ -26,17 +26,17 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 lib_LTLIBRARIES = kjs_html.la
 
 noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
-	kjs_text.h kjs_binding.h kjs_proxy.h kjs_css.h
+	kjs_text.h kjs_binding.h kjs_proxy.h kjs_css.h kjs_debugwin.h
 
 # HTML module
 kjs_html_la_SOURCES = kjs_html.cpp kjs_dom.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_text.cpp kjs_binding.cpp kjs_proxy.cpp \
-	kjs_css.cpp
+	kjs_css.cpp kjs_debugwin.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version -no-undefined $(all_libraries)
 kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
 kjs_html_la_METASOURCES = AUTO
 
 # interactive test program
-check_PROGRAMS = testecma
-testecma_SOURCES = testecma.cpp $(kjs_html_la_SOURCES)
-testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
+#check_PROGRAMS = testecma
+#testecma_SOURCES = testecma.cpp $(kjs_html_la_SOURCES)
+#testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
