@@ -134,9 +134,10 @@ void DefaultProgress::showTotals()
   if ( m_iProcessedFiles == 0 && m_iProcessedDirs == 0 )
   {
     QString tmps;
-    if ( m_iTotalDirs > 1 )
-      tmps = i18n("%1 directories").arg( m_iTotalDirs );
-    tmps += i18n("%1 files").arg( m_iTotalFiles );
+    if ( m_iTotalDirs > 1 ) 
+      // that we have a singular to translate looks weired but is only logical
+      tmps = i18n("%n directory", "%n directories", m_iTotalDirs) + "   ";
+    tmps += i18n("%n file", "%n files", m_iTotalFiles);
     progressLabel->setText( tmps );
   }
 }
@@ -185,8 +186,9 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
   m_iProcessedDirs = dirs;
 
   QString tmps;
-  tmps = i18n("%1 / %2 directories  ").arg( m_iProcessedDirs ).arg( m_iTotalDirs );
-  tmps += i18n("%1 / %2 files").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
+  tmps = i18n("%1 / %n directory", "%1 / %n directories", m_iTotalDirs).arg( m_iProcessedDirs );
+  tmps += "   ";
+  tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 
@@ -197,9 +199,10 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 
   QString tmps;
   if ( m_iTotalDirs > 1 ) {
-    tmps = i18n("%1 / %2 directories  ").arg( m_iProcessedDirs ).arg( m_iTotalDirs );
+    tmps = i18n("%1 / %n directory", "%1 / %n directories", m_iTotalDirs).arg( m_iProcessedDirs );
+    tmps += "   ";
   }
-  tmps += i18n("%1 / %2 files").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
+  tmps += i18n("%1 / %n file", "%1 / %n files", m_iTotalFiles).arg( m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 
