@@ -399,6 +399,51 @@ class KGlobalSettings
      */
     static bool wheelMouseZooms();
 
+    /**
+     * This function returns the desktop geometry for an application's splash
+     * screen.  It takes into account the user's display settings (number of
+     * screens, Xinerama, etc), and the user's preferences (if KDE should be
+     * Xinerama aware).
+     *
+     * @return the geometry to use for the desktop.  Note that it might not
+     *         start at (0,0).
+     * @since 3.2
+     */
+    static QRect splashScreenDesktopGeometry();
+
+    /**
+     * This function returns the desktop geometry for an application that needs
+     * to set the geometry of a widget on the screen manually.  It takes into
+     * account the user's display settings (number of screens, Xinerama, etc),
+     * and the user's preferences (if KDE should be Xinerama aware).
+     *
+     * Note that this can break in multi-head (not Xinerama) mode because this
+     * point could be on multiple screens.  Use with care.
+     *
+     * @param point a reference point for the widget, for instance one that the
+     *              widget should be adjacent or on top of.
+     *
+     * @return the geometry to use for the desktop.  Note that it might not
+     *         start at (0,0).
+     * @since 3.2
+     */
+    static QRect desktopGeometry(const QPoint& point);
+
+    /**
+     * This function returns the desktop geometry for an application that needs
+     * to set the geometry of a widget on the screen manually.  It takes into
+     * account the user's display settings (number of screens, Xinerama, etc),
+     * and the user's preferences (if KDE should be Xinerama aware).
+     *
+     * @param w the widget in question.  This is used to determine which screen
+     *          to use in Xinerama or multi-head mode.
+     *
+     * @return the geometry to use for the desktop.  Note that it might not
+     *         start at (0,0).
+     * @since 3.2
+     */
+    static QRect desktopGeometry(QWidget* w);
+
 private:
     /**
      * reads in all paths from kdeglobals

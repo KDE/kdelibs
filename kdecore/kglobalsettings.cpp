@@ -21,6 +21,7 @@
 #include <qdir.h>
 #include <qpixmap.h>
 #include <qfontdatabase.h>
+#include <qcursor.h>
 
 #include <kconfig.h>
 #include <ksimpleconfig.h>
@@ -602,3 +603,57 @@ bool KGlobalSettings::wheelMouseZooms()
     KConfigGroup group( KGlobal::config(), "KDE" );
     return group.readBoolEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
 }
+
+QRect KGlobalSettings::splashScreenDesktopGeometry()
+{
+    QDesktopWidget *dw = QApplication::desktop();
+
+    if (dw->isVirtualDesktop()) {
+        KConfigGroup group(KGlobal::config(), "Windows");
+        int scr = group.readNumEntry("Unmanaged", -3);
+        if (group.readBoolEntry("XineramaEnabled", true) && scr != -2) {
+            if (scr == -3)
+                scr = dw->screenNumber(QCursor::pos());
+            return dw->screenGeometry(scr);
+        } else {
+            return dw->geometry();
+        }
+    } else {
+        return dw->geometry();
+    }
+}
+
+QRect KGlobalSettings::desktopGeometry(const QPoint& point)
+{
+    QDesktopWidget *dw = QApplication::desktop();
+
+    if (dw->isVirtualDesktop()) {
+        KConfigGroup group(KGlobal::config(), "Windows");
+        if (group.readBoolEntry("XineramaEnabled", true) &&
+            group.readBoolEntry("XineramaPlacementEnabled", true)) {
+            return dw->screenGeometry(dw->screenNumber(point));
+        } else {
+            return dw->geometry();
+        }
+    } else {
+        return dw->geometry();
+    }
+}
+
+QRect KGlobalSettings::desktopGeometry(QWidget* w)
+{
+    QDesktopWidget *dw = QApplication::desktop();
+
+    if (dw->isVirtualDesktop()) {
+        KConfigGroup group(KGlobal::config(), "Windows");
+        if (group.readBoolEntry("XineramaEnabled", true) &&
+            group.readBoolEntry("XineramaPlacementEnabled", true)) {
+            return dw->screenGeometry(dw->screenNumber(w));
+        } else {
+            return dw->geometry();
+        }
+    } else {
+        return dw->geometry();
+    }
+}
+
