@@ -68,7 +68,7 @@ public:
      */
     bool checkVerticalPoint(int _y, int _ty, int _h)
     { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
-    void printSelection(QPainter *p, int tx, int ty, int startPos, int endPos);
+    void printSelection(QPainter *p, RenderText* rt, int tx, int ty, int startPos, int endPos);
 
     void setNext(TextSlave *_n) { n = _n; }
     TextSlave *next() { return n; }

@@ -72,7 +72,7 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     p->drawText(x + _tx, y + _ty + m_baseline, s.string());
 }
 
-void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int endPos)
+void TextSlave::printSelection(QPainter *p, RenderText* rt, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > len) return;
     if(startPos < 0) startPos = 0;
@@ -94,8 +94,8 @@ void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int en
         QConstString aStr(m_text, startPos);
         _offset = p->fontMetrics().width(aStr.string());
     }
-    QColor c("#001000");
-    p->setPen( "#ffffff" );
+    QColor c = rt->style()->color();
+    p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
     p->fillRect(x + tx + _offset, y + ty, _width, m_height, c);
 
     ty += m_baseline;
@@ -473,7 +473,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(s->checkVerticalPoint(y, ty, h))
             {
                 breakallowed = true;
-                s->printSelection(p, tx, ty, startPos, endPos);
+                s->printSelection(p, this, tx, ty, startPos, endPos);
             }
             else if(breakallowed)
                 break;
