@@ -216,8 +216,9 @@ void SlaveInterface::calcSpeed()
     d->sizes[d->nums++] = d->filesize;
     
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
-    kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << " " <<  endl ;
-    kdDebug() << "offset " << long(d->offset) << " " << long(d->sizes[0]) << endl;
+    
+    // kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << " " <<  endl ;
+
     if (!lspeed) {
       d->nums = 1;
       d->times[0] = diff;

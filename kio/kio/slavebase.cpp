@@ -380,7 +380,6 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
     msecdiff += usecdiff / 1000;
     
      if ( msecdiff >= 200 ) { // emit size 5 times a second
-      kdDebug() << "emited " << long(_bytes) << endl;
        KIO_DATA << KIO_FILESIZE_T(_bytes);
        m_pConnection->send( INF_PROCESSED_SIZE, data );
        d->last_tv = tv;
