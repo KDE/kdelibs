@@ -262,8 +262,6 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
   */
 
   // We have to do it manually, to set useEventLoop to true.
-
-  QByteArray result;
   QByteArray data, replyData;
   QCString replyType;
   QDataStream arg( data, IO_WriteOnly );
