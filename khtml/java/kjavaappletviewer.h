@@ -63,6 +63,26 @@ public slots:
     void showDocument (const QString & doc, const QString & frame);
 };
 
+class KJavaAppletViewerLiveConnectExtension : public KParts::LiveConnectExtension {
+    Q_OBJECT
+public:
+    KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent);
+
+    bool get (const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value);
+    bool put(const unsigned long, const QString & field, const QString & value);
+    bool call (const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value);
+    void unregister (const unsigned long objid);
+public slots:
+    void jsEvent (const QStringList & args);
+signals:
+
+  virtual void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
+
+private:
+
+  KJavaAppletViewer * m_viewer;
+};
+
 class KJavaAppletViewer : public KParts::ReadOnlyPart {
     Q_OBJECT
 public: 
@@ -74,8 +94,11 @@ public:
 
     KJavaAppletViewerBrowserExtension * browserextension() const
         { return m_browserextension; }
+    KParts::LiveConnectExtension * liveConnectExtension () const
+        { return m_liveconnect; }
 public slots:
     virtual bool openURL (const KURL & url);
+    virtual bool closeURL ();
     void appletLoaded ();
     void infoMessage (const QString &);
 protected:
@@ -85,6 +108,7 @@ private:
     KConfig * m_config;
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
+    KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     QString baseurl;
 };
 

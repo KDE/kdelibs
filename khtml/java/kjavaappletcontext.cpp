@@ -185,24 +185,15 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     {
         bool ok;
         int appletID = arg[0].toInt(&ok);
-        unsigned long objid = arg[1].toInt(&ok);
-        if (ok)
+        KJavaApplet * applet;
+        if (ok && (applet = d->applets[appletID]))
         {
-            KJavaApplet * applet = d->applets[appletID];
-            if (applet)
-            {
-                KParts::LiveConnectExtension::ArgList arglist;
-                for (unsigned i = 3; i < arg.count(); i += 2)
-                    // take a deep breath here
-                    arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) arg[i].toInt(), arg[i+1]));
-
-                emit static_cast<KJavaLiveConnect*>(applet->getLiveConnectExtension())->sendEvent(objid, arg[2], arglist);
-            }
-            else
-                kdError(DEBUGAREA) << "could find applet for JS event" << endl;
+            QStringList js_args(arg);
+            js_args.pop_front();
+            applet->jsData(js_args);
         }
         else
-            kdError(DEBUGAREA) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
+            kdError(DEBUGAREA) << "parse JS event " << arg[0] << " " << arg[1] << endl;
     }
     else if ( cmd == QString::fromLatin1( "AppletStateNotification" ) )
     {

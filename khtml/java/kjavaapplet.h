@@ -25,9 +25,9 @@
 #define KJAVAAPPLET_H
 
 #include <kurl.h>
-#include <kparts/browserextension.h>
 
 #include <qobject.h>
+#include <qstringlist.h>
 #include <qmap.h>
 
 /**
@@ -47,30 +47,6 @@ class KJavaAppletWidget;
 class KJavaAppletContext;
 class KJavaAppletPrivate;
 
-class KJavaLiveConnect : public KParts::LiveConnectExtension
-{
-Q_OBJECT
-
-public:
-    KJavaLiveConnect(KJavaAppletContext*, KJavaApplet*);
-
-    bool get( const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
-    bool put( const unsigned long, const QString & field, const QString & value );
-    bool call( const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value );
-    void unregister( const unsigned long objid );
-
-    void sendEvent(const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args ) {
-        emit partEvent(objid, event, args);
-    }
-signals:
-
-  virtual void partEvent( const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args );
-
-private:
-
-  KJavaAppletContext *context;
-  KJavaApplet *applet;
-};
 
 class KJavaApplet : public QObject
 {
@@ -175,13 +151,6 @@ public:
     QMap<QString,QString>& getParams();
 
     /**
-     * Get the LiveConnectExtension of this applet
-     */
-    KParts::LiveConnectExtension * getLiveConnectExtension() { 
-        return liveconnect;
-    }
-
-    /**
      * Set the window title for swallowing
      */
     void setWindowName( const QString& title );
@@ -263,13 +232,17 @@ public:
     AppletState state() const;
     bool failed() const;
     bool isAlive() const;
-
+    /**
+     * JavaScript comming from Java
+     **/
+    void jsData (const QStringList & args) { emit jsEvent (args); }
+signals:
+    void jsEvent (const QStringList & args);
 private:
     void showStatus( const QString &msg);
     KJavaAppletPrivate*    d;
     QMap<QString, QString> params;
     KJavaAppletContext*    context;
-    KJavaLiveConnect*      liveconnect;
     int                    id;
     QString                username;
     QString                userpassword;
