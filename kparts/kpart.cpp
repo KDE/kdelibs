@@ -85,6 +85,7 @@ void Part::setXMLFile( QString file )
     if ( file.isEmpty() )
     {
       kDebugError( 1000, "File not found : %s", file.ascii() );
+      return;
     }
   }
 
