@@ -59,6 +59,7 @@ using namespace KJS;
   addEventListener	DOMNode::AddEventListener	DontDelete|Function 3
   removeEventListener	DOMNode::RemoveEventListener	DontDelete|Function 3
   dispatchEvent		DOMNode::DispatchEvent	DontDelete|Function 1
+# IE extensions
   contains	DOMNode::Contains		DontDelete|Function 1
 @end
 */
@@ -144,6 +145,7 @@ bool DOMNode::toBoolean(ExecState *) const
   clientHeight	DOMNode::ClientHeight		DontDelete|ReadOnly
   scrollLeft	DOMNode::ScrollLeft		DontDelete|ReadOnly
   scrollTop	DOMNode::ScrollTop		DontDelete|ReadOnly
+  sourceIndex	DOMNode::SourceIndex		DontDelete|ReadOnly
 @end
 */
 Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
@@ -235,7 +237,16 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     return getListener(DOM::EventImpl::SUBMIT_EVENT);
   case OnUnload:
     return getListener(DOM::EventImpl::UNLOAD_EVENT);
-  default:
+  case OffsetLeft:
+  case OffsetTop:
+  case OffsetWidth:
+  case OffsetHeight:
+  case OffsetParent:
+  case ClientWidth:
+  case ClientHeight:
+  case ScrollLeft:
+  case ScrollTop:
+  {
     // no DOM standard, found in IE only
 
     // make sure our rendering is up to date before
@@ -286,21 +297,43 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       else
         // "Height of the object including padding, but not including margin, border, or scroll bar."
         return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
-    case ScrollLeft:
-      if (!rend || !v)
+    case ScrollLeft: {
+      int x, y;
+      if ( rend && v && rend->absolutePosition( x, y ) )
+        return Number(-x + v->contentsX());
+      else
         return Undefined();
-      return Number(-rend->xPos() + v->contentsX());
-    case ScrollTop:
-      if (!rend || !v)
+    }
+    case ScrollTop: {
+      int x, y;
+      if ( rend && v && rend->absolutePosition( x, y ) )
+        return Number(-y + v->contentsY());
+      else
         return Undefined();
-      return Number(-rend->yPos() + v->contentsY());
-    default:
-      kdWarning() << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
-      break;
+    }
     }
   }
+  case SourceIndex: {
+    // Retrieves the ordinal position of the object, in source order, as the object
+    // appears in the document's all collection
+    // i.e. document.all[n.sourceIndex] == n
+    DOM::Document doc = node.ownerDocument();
+    if (doc.isHTMLDocument()) {
+      DOM::HTMLCollection all = static_cast<DOM::HTMLDocument>(doc).all();
+      unsigned long i = 0;
+      DOM::Node n = all.firstItem();
+      for ( ; !n.isNull() && n != node; n = all.nextItem() )
+        ++i;
+      Q_ASSERT( !n.isNull() ); // node not in document.all !?
+      return Number(i);
+    }
+  }
+  default:
+    kdWarning() << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
+    break;
+  }
 
-  return Value();
+  return Undefined();
 }
 
 void DOMNode::tryPut(ExecState *exec, const UString& propertyName, const Value& value, int attr)
