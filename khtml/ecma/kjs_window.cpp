@@ -1435,8 +1435,8 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
   // i.e. we may be accessing objects from another interpreter instance.
   // Therefore we have to be a bit careful with memory managment.
   if (frame && frame->inherits("KHTMLPart")) {
-    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-    return Window::retrieve(const_cast<KHTMLPart*>(khtml));
+    KHTMLPart *khtml = static_cast<KHTMLPart*>(frame);
+    return Window::retrieve(khtml);
   }
 
   return ObjectImp::get(exec, p);
