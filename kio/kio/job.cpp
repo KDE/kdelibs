@@ -76,10 +76,13 @@ template class QPtrList<KIO::Job>;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ) {}
+    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ) {}
 
     bool m_autoErrorHandling;
     QGuardedPtr<QWidget> m_errorParentWidget;
+    // Maybe we could use the QObject parent/child mechanism instead
+    // (requires a new ctor, and moving the ctor code to some init()).
+    Job* m_parentJob;
 };
 
 Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
@@ -90,8 +93,8 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
     // Notify the UI Server and get a progress id
     if ( showProgressInfo )
     {
-        //kdDebug(7007) << " -- with progress info -- " << endl;
         m_progressId = Observer::self()->newJob( this, true );
+        //kdDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
@@ -172,6 +175,7 @@ void Job::emitSpeed( unsigned long bytes_per_second )
 
 void Job::emitResult()
 {
+  // If we are displaying a progress dialog, remove it first.
   if ( m_progressId ) // Did we get an ID from the observer ?
     Observer::self()->jobFinished( m_progressId );
   if ( m_error && d->m_autoErrorHandling )
@@ -238,9 +242,6 @@ void Job::slotSpeedTimeout()
 void Job::showErrorDialog( QWidget * parent )
 {
   //kdDebug(7007) << "Job::showErrorDialog parent=" << parent << endl;
-  // If we are displaying a progress dialog, remove it first.
-  if ( m_progressId )
-    Observer::self()->jobFinished( m_progressId );
   kapp->enableStyles();
   // Show a message box, except for "user canceled" or "no content"
   if ( (m_error != ERR_USER_CANCELED) && (m_error != ERR_NO_CONTENT) ) {
@@ -285,6 +286,18 @@ void Job::setWindow(QWidget *window)
 QWidget *Job::window() const
 {
   return m_window;
+}
+
+void Job::setParentJob(Job* job)
+{
+  Q_ASSERT(d->m_parentJob == 0L);
+  Q_ASSERT(job);
+  d->m_parentJob = job;
+}
+
+Job* Job::parentJob() const
+{
+  return d->m_parentJob;
 }
 
 MetaData Job::metaData() const
@@ -1318,9 +1331,10 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             if (!KProtocolManager::autoResume())
             {
                 QString newPath;
+                KIO::Job* job = ( !m_progressId && parentJob() ) ? parentJob() : this;
                 // Ask confirmation about resuming previous transfer
                 res = Observer::self()->open_RenameDlg(
-                      this, i18n("File Already Exists"),
+                      job, i18n("File Already Exists"),
                       m_src.prettyURL(0, KURL::StripFileProtocol),
                       m_dest.prettyURL(0, KURL::StripFileProtocol),
                       (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
@@ -1353,7 +1367,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
                      SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
         }
-  m_putJob->slave()->setOffset( offset );
+        m_putJob->slave()->setOffset( offset );
 
         m_putJob->suspend();
         addSubjob( m_getJob );
@@ -1369,7 +1383,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         m_canResume = true;
         kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
 
-  m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
+        m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
     }
     else
         kdWarning(7007) << "FileCopyJob::slotCanResume from unknown job=" << job
@@ -2664,6 +2678,7 @@ void CopyJob::copyNextFile()
             bool remoteSource = !(*it).uSource.isLocalFile() && ((*it).uSource.protocol() != "tar"); // HACK
             int permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
+            copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize( (*it).size );
             newjob = copyJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;

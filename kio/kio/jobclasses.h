@@ -170,6 +170,21 @@ namespace KIO {
         QWidget *window() const;
 
         /**
+         * Set the parent Job.
+         * One example use of this is when FileCopyJob calls open_RenameDlg,
+         * it must pass the correct progress ID of the parent CopyJob
+         * (to hide the progress dialog).
+         * @since 3.1
+         */
+        void setParentJob( Job* parentJob );
+
+        /**
+         * @see setParentJob
+         * @since 3.1
+         */
+        Job* parentJob() const;
+
+        /**
          * Set meta data to be sent to the slave.
          */
         void setMetaData( const KIO::MetaData &);
