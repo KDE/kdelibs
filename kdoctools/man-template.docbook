@@ -5,9 +5,14 @@
 
 <refentry lang="&language;">
 <refentryinfo>
-<author><personname><firstname></firstname><surname></surname></personname>
-<email></email></author>
-<date>Month Daynumber, 4-Digit-Year</date>
+<title>KDE User's Manual</title>
+<author><personname>
+<firstname><!-- Your -- first name --></firstname>
+<surname><!-- Your -- last name --></surname>
+</personname>
+<email><!-- Your -- email address --></email></author>
+<date><!-- Date when this manpage -- was written, in the format
+'Month Daynumber, 4-Digit-Year'--></date>
 </refentryinfo>
 
 <refmeta>
