@@ -3,7 +3,7 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES= -I$(top_srcdir)/interfaces -I$(top_srcdir)/kio/httpfilter $(all_includes) $(GSSAPI_INCS) $(NTLM_INCS)
+INCLUDES= -I$(top_srcdir)/interfaces -I$(top_srcdir)/kio/httpfilter $(all_includes) $(GSSAPI_INCS)
 AM_LDFLAGS = $(all_libraries) $(GSSAPI_RPATH)
 
 ####### Files
