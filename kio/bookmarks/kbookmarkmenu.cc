@@ -590,72 +590,15 @@ void BookmarkEditDialog::slotCancel()
   reject();
 } 
 
-#if 0
-
 void BookmarkEditDialog::drawRoot()
 {
+#if 0
   m_pListView->clear();
   KBookmarkGroup root = s_pManager->root();
   KEBListViewItem * rootItem = new KEBListViewItem( m_pListView, root );
   fillGroup( rootItem, root );
   rootItem->QListViewItem::setOpen(true);
-}
-
-void BookmarkEditDialog::fillGroup( KEBListViewItem * parentItem, KBookmarkGroup group )
-{
-  KEBListViewItem * lastItem = 0L;
-  for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
-  {
-    //kdDebug() << "KEBTopLevel::fillGroup group=" << group.text() << " bk=" << bk.text() << endl;
-    if ( bk.isGroup() )
-    {
-      KBookmarkGroup grp = bk.toGroup();
-      KEBListViewItem * item = new KEBListViewItem( parentItem, lastItem, grp );
-      fillGroup( item, grp );
-      if (grp.isOpen())
-        item->QListViewItem::setOpen(true); // no need to save it again :)
-      if (grp.first().isNull()) {
-        // kdWarning() << "found an empty group!!!" << endl;
-        new KEBListViewItem( item, item );
-      }
-      lastItem = item;
-    }
-    else
-    {
-      lastItem = new KEBListViewItem( parentItem, lastItem, bk );
-    }
-  }
-}
-
-class KEBListViewItem : public QListViewItem
-{
-  public:
-    KEBListViewItem(QListView *parent, const KBookmark & group );
-    KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp );
-
-    virtual void setOpen( bool );
-    const KBookmark & bookmark() { return m_bookmark; }
-
-  private:
-    KBookmark m_bookmark;
-};
-
-// toplevel item (there should be only one!)
-KEBListViewItem::KEBListViewItem(QListView *parent, const KBookmark & group )
-   : QListViewItem(parent, i18n("Bookmarks")), m_bookmark(group)
-{
-  setPixmap(0, SmallIcon("bookmark"));
-  setExpandable(true); // Didn't know this was necessary :)
-}
-
-// group
-KEBListViewItem::KEBListViewItem(KEBListViewItem *parent, QListViewItem *after, const KBookmarkGroup & gp )
-   : QListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
-{
-  setPixmap(0, SmallIcon( gp.icon() ) );
-  setExpandable(true);
-}
-
 #endif
+}
 
 #include "kbookmarkmenu.moc"

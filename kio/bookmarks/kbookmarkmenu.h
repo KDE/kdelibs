@@ -25,6 +25,7 @@
 #include <qptrlist.h>
 #include <qptrstack.h>
 #include <qobject.h>
+#include <qlistview.h>
 
 #include <kdialogbase.h>
 
@@ -43,7 +44,6 @@ class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
 class QPopupMenu;
-// class KEBListViewItem;
 
 namespace KIO { class Job; }
 
@@ -190,6 +190,8 @@ protected:
     KBookmarkManager* m_pManager;
 };
 
+class KBookmarkFolderTree;
+
 class BookmarkEditDialog
     : public KDialogBase
 {
@@ -207,12 +209,11 @@ protected slots:
     void slotCancel();
 
 private:
-    // void drawRoot();
-    // void fillGroup( KEBListViewItem * parentItem, KBookmarkGroup group );
+    void drawRoot();
 
     QGridLayout *m_pGrid;
     QWidget *m_pMain;
+    KBookmarkFolderTree *m_folderTree;
 };
-
 
 #endif
