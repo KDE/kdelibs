@@ -178,7 +178,8 @@ void KURLCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
 class KURLCompletion::DirLister
 {
 public:
-	DirLister() : m_dp(0L), m_timeout(50) { };
+	DirLister() : m_current(0), m_only_exe(false), m_only_dir(false), m_no_hidden(false), 
+		      m_append_slash_to_dir(false), m_dp(0L), m_clk(0), m_timeout(50) { };
 	~DirLister();
 
 	bool listDirectories( const QStringList &dirs,
@@ -479,6 +480,8 @@ void KURLCompletion::init( Mode mode )
 
 	d->replace_home = true;
 	d->replace_env = true;
+	d->last_no_hidden = false;
+	d->last_compl_type = 0;
 
 	d->list_job = 0L;
 
