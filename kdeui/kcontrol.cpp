@@ -23,39 +23,37 @@
 #include <klocale.h>
 #include "kcontrol.h"
 
-static int minimum_width_;
-
 KControlDialog::KControlDialog()
   : QTabDialog(0, 0, FALSE)
 {
   // Create help button
-  helpBtn = new QPushButton(i18n("Help"), this);
+  helpBtn = new QPushButton(i18n("&Help"), this);
   helpBtn->resize(helpBtn->sizeHint());
-  helpBtn->move(7, height() - helpBtn->height() - 6);
+  helpBtn->move(7, height() - helpBtn->height() - 7);
 
 
   // Create default button
-  defaultBtn = new QPushButton(i18n("Default"), this);
+  defaultBtn = new QPushButton(i18n("&Default"), this);
   defaultBtn->resize(defaultBtn->sizeHint());
-  defaultBtn->move(helpBtn->width()+16, height() - defaultBtn->height() - 6);
+  defaultBtn->move(helpBtn->width()+16, height() - defaultBtn->height() - 7);
 
   // set the default buttons
-  setOKButton(i18n("OK"));
-  setApplyButton(i18n("Apply"));
-  setCancelButton(i18n("Cancel"));
+  setOKButton(i18n("&OK"));
+  setApplyButton(i18n("&Apply"));
+  setCancelButton(i18n("&Cancel"));
 
   //geometry hack.
-  defaultBtn->setText(i18n("OK"));
+  defaultBtn->setText(i18n("&OK"));
   int w = defaultBtn->sizeHint().width();
-  defaultBtn->setText(i18n("Apply"));
+  defaultBtn->setText(i18n("&Apply"));
   w  = QMAX(w, defaultBtn->sizeHint().width());
-  defaultBtn->setText(i18n("Cancel"));
+  defaultBtn->setText(i18n("&Cancel"));
   w  = QMAX(w, defaultBtn->sizeHint().width());
 
-  defaultBtn->setText(i18n("Default"));
+  defaultBtn->setText(i18n("&Default"));
 
-
-  minimum_width_ = w*3+20+ defaultBtn->width() + 30 + helpBtn->width();
+  setMinimumWidth(500);
+  //  setMinimumWidth(w*5 + 60);
 }
 
 void KControlDialog::done(int result)
@@ -71,9 +69,9 @@ void KControlDialog::resizeEvent(QResizeEvent *event)
   QTabDialog::resizeEvent(event);
 
   if (helpBtn)
-    helpBtn->move(7, height() - helpBtn->height() - 6);
+    helpBtn->move(7, height() - helpBtn->height() - 7);
   if (defaultBtn)
-    defaultBtn->move(16+helpBtn->width(), height() - helpBtn->height() - 6);
+    defaultBtn->move(16+helpBtn->width(), height() - helpBtn->height() - 7);
 }
 
 
@@ -132,7 +130,6 @@ KControlApplication::KControlApplication(int &argc, char **argv, const QString &
 
 }
 
-
 void KControlApplication::setTitle(const QString& title)
 {
   if (dialog && swallowCaption.isEmpty())
@@ -155,7 +152,7 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
       dialog->addTab(page, name);
       helpNames.append(help_name.ascii());
       // set the default size
-      dialog->resize(QMAX(dialog->sizeHint().width(), minimum_width_), dialog->height());
+      dialog->resize(dialog->sizeHint());
     }
 }
 
