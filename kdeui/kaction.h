@@ -164,6 +164,16 @@ class KMainWindow;
  * and both the menuitem in File and the toolbar button will instantly
  * be disabled.
  *
+ * Do not delete a KAction object without unplugging it from all its
+ * containers. The simplest way to do that is to use the unplugAll()
+ * as in the following example:
+ * <PRE>
+ * newAct->unplugAll();
+ * delete newAct;
+ * </PRE>
+ * Normally you will not need to do this as KActionCollection manages
+ * everything for you.
+ *
  * Note: if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
  * please use the methods in the @ref KStdAction class rather than
