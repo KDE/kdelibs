@@ -5,7 +5,7 @@ using namespace khtml;
 
 #include "kdebug.h"
 
-//#define BIDI_DEBUG 1
+#define BIDI_DEBUG 1
 
 // ---------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const 
 			   BidiContext *context, QChar::Direction dir)
 {
     kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
-    
+
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj != eor.obj ) {
@@ -182,7 +182,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const 
 // collects one line of the paragraph and transforms it to visual order
 BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed)
 {
- 
+
     kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 
     QList<BidiRun> runs;
@@ -699,13 +699,13 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	r = runs.next();
     }
     kdDebug(6041) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
-    
+
     // now construct the reordered string out of the runs...
 
     r = runs.first();
     int x = leftMargin(m_height);
     while ( r ) {
-	if(r->obj->isText()) 
+	if(r->obj->isText())
 	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
 	else
 	    r->width = r->obj->width();
@@ -775,9 +775,9 @@ void RenderFlow::layoutInlineChildren()
 		while(!start.atEnd() && start.direction() == QChar::DirWS )
 		    ++start;
 	    }
-	    newLine();
 	    end = findNextLineBreak(start);
 	    startEmbed = bidiReorderLine(status, start, end, startEmbed);
+	    newLine();
 	}
     }
     m_height += toAdd;
@@ -795,7 +795,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     int tmpW = 0;
     while( w + tmpW < width ) {
 	RenderObject *o = current.obj;
-	if(!o) { 
+	if(!o) {
 	    lBreak = current;
 	    kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 	    return current;
@@ -814,15 +814,18 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	}
 	if( o->isText() )
 	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
-	else
+	else {
 	    tmpW += o->width();
+	    if( w + tmpW > width )
+		return current;
+	}
 	++current;
     }
     if(w == 0)
 	lBreak = current;
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 
-    
+
     return lBreak;
 }
 
