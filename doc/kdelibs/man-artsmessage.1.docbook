@@ -43,7 +43,7 @@
     <title>Options</title>
 
     <para><command>artsmessage</command> accepts the standard &Qt; and &kde;
-    commandline options.</para>
+    command-line options.</para>
 
 
   </refsect1>

@@ -114,7 +114,7 @@ options.</para>
 <varlistentry>
 <term><option>--no-user-time</option></term>
 <listitem>
-<para>Don't update the user activity timestamp in the called application (for usage in scripts running in the background).</para>
+<para>Don't update the user activity timestamp in the called application (for use in scripts running in the background).</para>
 </listitem></varlistentry>
 </variablelist>
 </refsect1>
