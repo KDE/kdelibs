@@ -423,6 +423,17 @@ int main(int argc, char *argv[])
      // WABA: Make sure not to enable session management.
      putenv(strdup("SESSION_MANAGER="));
 
+     // Check DCOP communication.
+     {
+        DCOPClient testDCOP;
+        QCString dcopName = testDCOP.registerAs("kded", false);
+        if (dcopName.isEmpty())
+        {
+           kdFatal() << "DCOP communication problem!" << endl;
+           return 1;
+        }
+     }
+
      KInstance *instance = new KInstance(&aboutData);
      KConfig *config = instance->config(); // Enable translations.
 
