@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.23  1998/03/28 10:48:45  kulow
+// reverted to the return aValue. It's not possible to return a copy, since
+// the temporary object is destroyed in any case. What you need, is a kind of
+// anchor for the QString object or a return value of const char*
+//
 // Revision 1.22  1998/03/27 23:41:34  torben
 // Torben: Changed return aValue.copy() to
 //          return QString( aValue.data() );
@@ -306,7 +311,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
-				char sep  ) const
+								char sep  ) const
 {
   if( !hasKey( pKey ) )
     return 0;
@@ -352,6 +357,90 @@ int KConfigBase::readNumEntry( const char* pKey, int nDefault) const
 	  return( ok ? rc : 0 );
 	}
 }
+
+
+unsigned int KConfigBase::readUnsignedNumEntry( const char* pKey, 
+												unsigned int nDefault) const
+{
+  bool ok;
+  unsigned int rc;
+
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+	return nDefault;
+  else
+	{
+	  rc = aValue.toUInt( &ok );
+	  return( ok ? rc : 0 );
+	}
+}
+
+
+long KConfigBase::readLongNumEntry( const char* pKey, long nDefault) const
+{
+  bool ok;
+  long rc;
+
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+	return nDefault;
+  else
+	{
+	  rc = aValue.toLong( &ok );
+	  return( ok ? rc : 0 );
+	}
+}
+
+
+unsigned long KConfigBase::readUnsignedLongNumEntry( const char* pKey, 
+													 unsigned long nDefault) const
+{
+  bool ok;
+  unsigned long rc;
+
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+	return nDefault;
+  else
+	{
+	  rc = aValue.toULong( &ok );
+	  return( ok ? rc : 0 );
+	}
+}
+
+
+double KConfigBase::readDoubleNumEntry( const char* pKey, 
+										double nDefault) const
+{
+  bool ok;
+  double rc;
+
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+	return nDefault;
+  else
+	{
+	  rc = aValue.toDouble( &ok );
+	  return( ok ? rc : 0 );
+	}
+}
+
+
+bool KConfigBase::readBoolEntry( const char* pKey, const bool bDefault = false ) const
+{
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+	return bDefault;
+  else
+	{
+	  if( aValue == "true" || aValue == "on" )
+		return true;
+	  else
+		return false;
+	}
+}
+
+  
 
 
 QFont KConfigBase::readFontEntry( const char* pKey,
@@ -444,6 +533,74 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 }
 
 
+QRect KConfigBase::readRectEntry( const char* pKey,
+								  const QRect* pDefault ) const
+{
+  QStrList list;
+  
+  if( !hasKey( pKey ) )
+	{
+	  if( pDefault )
+		return *pDefault;
+	  else
+		return QRect();
+	}
+
+  int count = readListEntry( pKey, list, ',' );
+  if( count != 4 )
+	return QRect();
+  else
+	return QRect( QString( list.at( 0 ) ).toInt(), 
+				  QString( list.at( 1 ) ).toInt(), 
+				  QString( list.at( 2 ) ).toInt(), 
+				  QString( list.at( 3 ) ).toInt() );
+}
+
+
+QPoint KConfigBase::readPointEntry( const char* pKey,
+									const QPoint* pDefault ) const
+{
+  QStrList list;
+  
+  if( !hasKey( pKey ) )
+	{
+	  if( pDefault )
+		return *pDefault;
+	  else
+		return QPoint();
+	}
+
+  int count = readListEntry( pKey, list, ',' );
+  if( count != 2 )
+	return QPoint();
+  else
+	return QPoint( QString( list.at( 0 ) ).toInt(), 
+				   QString( list.at( 1 ) ).toInt() );
+}
+
+
+QSize KConfigBase::readSizeEntry( const char* pKey,
+								  const QSize* pDefault ) const
+{
+  QStrList list;
+  
+  if( !hasKey( pKey ) )
+	{
+	  if( pDefault )
+		return *pDefault;
+	  else
+		return QSize();
+	}
+
+  int count = readListEntry( pKey, list, ',' );
+  if( count != 2 )
+	return QSize();
+  else
+	return QSize( QString( list.at( 0 ) ).toInt(), 
+				  QString( list.at( 1 ) ).toInt() );
+}
+
+
 QColor KConfigBase::readColorEntry( const char* pKey, 
 				    const QColor* pDefault ) const
 {
@@ -504,9 +661,9 @@ QColor KConfigBase::readColorEntry( const char* pKey,
 
 
 const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
-				     bool bPersistent, 
-				     bool bGlobal,
-				     bool bNLS )
+									 bool bPersistent, 
+									 bool bGlobal,
+									 bool bNLS )
 {
   if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() )
       {
@@ -571,8 +728,8 @@ const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
 
 
 void KConfigBase::writeEntry ( const char* pKey, QStrList &list, 
-			       char sep , bool bPersistent, 
-			       bool bGlobal, bool bNLS )
+							   char sep , bool bPersistent, 
+							   bool bGlobal, bool bNLS )
 {
   if( list.isEmpty() )
     {
@@ -598,9 +755,8 @@ void KConfigBase::writeEntry ( const char* pKey, QStrList &list,
 
 
 const char* KConfigBase::writeEntry( const char* pKey, int nValue,
-				     bool bPersistent, 
-				     bool bGlobal,
-				     bool bNLS )
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
 {
   QString aValue;
 
@@ -610,10 +766,73 @@ const char* KConfigBase::writeEntry( const char* pKey, int nValue,
 }
 
 
+const char* KConfigBase::writeEntry( const char* pKey, unsigned int nValue,
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
+{
+  QString aValue;
+
+  aValue.setNum( nValue );
+
+  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+
+const char* KConfigBase::writeEntry( const char* pKey, long nValue,
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
+{
+  QString aValue;
+
+  aValue.setNum( nValue );
+
+  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+
+const char* KConfigBase::writeEntry( const char* pKey, unsigned long nValue,
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
+{
+  QString aValue;
+
+  aValue.setNum( nValue );
+
+  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+
+const char* KConfigBase::writeEntry( const char* pKey, double nValue,
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
+{
+  QString aValue;
+
+  aValue.setNum( nValue );
+
+  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+
+const char* KConfigBase::writeEntry( const char* pKey, bool bValue,
+									 bool bPersistent, 
+									 bool bGlobal,
+									 bool bNLS )
+{
+  QString aValue;
+
+  if( bValue )
+	aValue = "true";
+  else 
+	aValue = "false";
+
+  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+
 const char* KConfigBase::writeEntry( const char* pKey, const QFont& rFont, 
-				     bool bPersistent, 
-				     bool bGlobal,
-				     bool bNLS )
+									 bool bPersistent, bool bGlobal,
+									 bool bNLS )
 {
   QString aValue;
   UINT8 nFontBits = 0;
@@ -637,15 +856,56 @@ const char* KConfigBase::writeEntry( const char* pKey, const QFont& rFont,
 }
 
 
-const char* KConfigBase::writeEntry( const char* pKey, const QColor& rColor, 
-				     bool bPersistent, 
-				     bool bGlobal,
-				     bool bNLS  )
+void KConfigBase::writeEntry( const char* pKey, const QRect& rRect, 
+							  bool bPersistent, bool bGlobal,
+							  bool bNLS )
+{
+  QStrList list;
+  QString tempstr;
+  list.insert( 0, tempstr.setNum( rRect.left() ) );
+  list.insert( 1, tempstr.setNum( rRect.top() ) );
+  list.insert( 2, tempstr.setNum( rRect.width() ) );
+  list.insert( 3, tempstr.setNum( rRect.height() ) );
+
+  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const char* pKey, const QPoint& rPoint, 
+							  bool bPersistent, bool bGlobal,
+							  bool bNLS )
+{
+  QStrList list;
+  QString tempstr;
+  list.insert( 0, tempstr.setNum( rPoint.x() ) );
+  list.insert( 1, tempstr.setNum( rPoint.y() ) );
+
+  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const char* pKey, const QSize& rSize, 
+							  bool bPersistent, bool bGlobal,
+							  bool bNLS )
+{
+  QStrList list;
+  QString tempstr;
+  list.insert( 0, tempstr.setNum( rSize.width() ) );
+  list.insert( 1, tempstr.setNum( rSize.height() ) );
+
+  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const char* pKey, const QColor& rColor, 
+							  bool bPersistent, 
+							  bool bGlobal,
+							  bool bNLS  )
 {
   QString aValue;
   aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
 
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 

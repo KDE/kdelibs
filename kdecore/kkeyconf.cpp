@@ -31,7 +31,7 @@ void initKKeyConfig( KConfig *pconf )
 {
 	if ( kKeys )
 		return;
-	new KKeyConfig(pconf);
+	(void)new KKeyConfig(pconf);
 }
 
 KKeyConfig* KKeyConfig::pKKeyConfig = 0L;

@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.45  1998/03/21 23:05:14  mark
+// MD: Addition of a new font, a fixed font, for general use in applications.
+// Unfortunately, I think this is a BINARY INCOMPATIBLE change. (Cleared with Kalle.)
+//
 // Revision 1.44  1998/02/24 21:16:24  kulow
 // remove kde_minidir, since this is somehow stupid (I hard coded it in the
 // Makefiles as icondir/mini now) and added kde_sounddir
@@ -139,6 +143,8 @@
 #ifndef i18n
 #define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
 #endif
+
+#define Icon(x) kapp->getIconLoader()->loadIcon(x)         
 
 class KIconLoader;
 class KCharsets;

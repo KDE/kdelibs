@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1998/01/18 14:38:51  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.7  1998/01/09 08:06:47  kalle
 // KConfigGroupSaver
 //
@@ -228,6 +234,56 @@ public:
 	*/
   int readNumEntry( const char* pKey, int nDefault = 0 ) const;
 
+  /**
+	* Read a numerical value. 
+	*
+	* Read the value of an entry specified by rKey in the current group 
+	* and interpret it numerically.
+	*
+	* @param pKey The key to search for.
+	* @param nDefault A default value returned if the key was not found.
+	* @return The value for this key or 0 if no value was found.
+	*/
+  unsigned int readUnsignedNumEntry( const char* pKey, 
+									 unsigned int nDefault = 0 ) const;
+  /**
+	* Read a numerical value. 
+	*
+	* Read the value of an entry specified by rKey in the current group 
+	* and interpret it numerically.
+	*
+	* @param pKey The key to search for.
+	* @param nDefault A default value returned if the key was not found.
+	* @return The value for this key or 0 if no value was found.
+	*/
+  long readLongNumEntry( const char* pKey, long nDefault = 0 ) const;
+
+  /**
+	* Read a numerical value. 
+	*
+	* Read the value of an entry specified by rKey in the current group 
+	* and interpret it numerically.
+	*
+	* @param pKey The key to search for.
+	* @param nDefault A default value returned if the key was not found.
+	* @return The value for this key or 0 if no value was found.
+	*/
+  unsigned long readUnsignedLongNumEntry( const char* pKey, 
+										  unsigned long nDefault = 0 ) const;
+
+
+  /**
+	* Read a numerical value. 
+	*
+	* Read the value of an entry specified by rKey in the current group 
+	* and interpret it numerically.
+	*
+	* @param pKey The key to search for.
+	* @param nDefault A default value returned if the key was not found.
+	* @return The value for this key or 0 if no value was found.
+	*/
+  double readDoubleNumEntry( const char* pKey, double nDefault = 0.0 ) const;
+
   /** 
 	* Read a QFont.
 	*
@@ -240,6 +296,67 @@ public:
 	*/
   QFont readFontEntry( const char* pKey,
 					   const QFont* pDefault = 0L ) const;
+
+  /**
+   * Read a boolean entry.
+   *
+   * Read the value of an entry specified by pKey in the current group
+   * and interpret it as a boolean value. Currently "on" and "true" are
+   * accepted as true, everything else if false.
+   *
+   * @param pKey		The key to search for
+   * @param bDefault    A default value returned if the key was not
+   * 					found.
+   * @return The value for this key or a default value if no value was 
+   * found.
+   */
+  bool readBoolEntry( const char* pKey, const bool bDefault = false ) const;
+
+
+  /**
+   * Read a rect entry.
+   * 
+   * Read the value of an entry specified by pKey in the current group 
+   * and interpret it as a QRect object.
+   *
+   * @param pKey		The key to search for
+   * @param pDefault	A default value returned if the key was not
+   *	 				found.
+   * @return The value for this key or a default rectangle if no value 
+   * was found.
+   */
+  QRect readRectEntry( const char* pKey, const QRect* pDefault = 0L ) const;
+   
+
+  /**
+   * Read a point entry.
+   * 
+   * Read the value of an entry specified by pKey in the current group 
+   * and interpret it as a QPoint object.
+   *
+   * @param pKey		The key to search for
+   * @param pDefault	A default value returned if the key was not
+   *	 				found.
+   * @return The value for this key or a default point if no value 
+   * was found.
+   */
+  QPoint readPointEntry( const char* pKey, const QPoint* pDefault = 0L ) const;
+   
+
+  /**
+   * Read a size entry.
+   * 
+   * Read the value of an entry specified by pKey in the current group 
+   * and interpret it as a QSize object.
+   *
+   * @param pKey		The key to search for
+   * @param pDefault	A default value returned if the key was not
+   *	 				found.
+   * @return The value for this key or a default point if no value 
+   * was found.
+   */
+  QSize readSizeEntry( const char* pKey, const QSize* pDefault = 0L ) const;
+   
 
   /** 
 	* Read a QColor.
@@ -318,6 +435,96 @@ public:
 						  bool bNLS = false ); 
   
   /** Write the key value pair.
+	* Same as above, but write an unsigned numerical value.
+	* @param pKey The key to write.
+	* @param nValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a null string is returned.	  
+	*/
+  const char* writeEntry( const char* pKey, unsigned int nValue,
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false ); 
+  
+  /** Write the key value pair.
+	* Same as above, but write a long numerical value.
+	* @param pKey The key to write.
+	* @param nValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a null string is returned.	  
+	*/
+  const char* writeEntry( const char* pKey, long nValue,
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false ); 
+  
+  /** Write the key value pair.
+	* Same as above, but write an unsigned long numerical value.
+	* @param pKey The key to write.
+	* @param nValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a null string is returned.	  
+	*/
+  const char* writeEntry( const char* pKey, unsigned long nValue,
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false ); 
+  
+  /** Write the key value pair.
+	* Same as above, but write a floating-point value.
+	* @param pKey The key to write.
+	* @param nValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a null string is returned.	  
+	*/
+  const char* writeEntry( const char* pKey, double nValue,
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false ); 
+  
+  /** Write the key value pair.
+	* Same as above, but write a boolean value.
+	* @param pKey The key to write.
+	* @param bValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a null string is returned.	  
+	*/
+  const char* writeEntry( const char* pKey, bool bValue,
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false ); 
+  
+  /** Write the key value pair.
 	* Same as above, but write a font
 	* @param pKey The key to write.
 	* @param rFont The font value to write.
@@ -349,7 +556,61 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	  
 	*/
-  const char* writeEntry( const char* pKey, const QColor& rColor, 
+  void writeEntry( const char* pKey, const QColor& rColor, 
+				   bool bPersistent = true, bool bGlobal = false,
+				   bool bNLS = false );
+
+  /** Write the key value pair.
+	* Same as above, but write a rectangle
+	* @param pKey The key to write.
+	* @param rValue The rectangle value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	*  exist, a null string is returned.	  
+	*/
+  void writeEntry( const char* pKey, const QRect& rColor, 
+				   bool bPersistent = true, bool bGlobal = false,
+				   bool bNLS = false );
+
+  /** Write the key value pair.
+	* Same as above, but write a point
+	* @param pKey The key to write.
+	* @param rValue The point value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	*  exist, a null string is returned.	  
+	*/
+  void writeEntry( const char* pKey, const QPoint& rColor, 
+						  bool bPersistent = true, bool bGlobal = false,
+						  bool bNLS = false );
+
+  /** Write the key value pair.
+	* Same as above, but write a size
+	* @param pKey The key to write.
+	* @param rValue The size value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	*  exist, a null string is returned.	  
+	*/
+  void writeEntry( const char* pKey, const QSize& rColor, 
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
   //}
