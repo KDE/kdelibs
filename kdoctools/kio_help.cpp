@@ -53,12 +53,15 @@ QString HelpProtocol::langLookup(QString fname)
     // assemble the local search paths
     const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
 
-    // look up the different languages
-    for (int id=localDoc.count()-1; id >= 0; --id)
+    QStringList langs = KGlobal::locale()->languageList();
+    langs.append( "en" );
+    langs.remove( "C" );
+
+		// look up the different languages
+		int ldCount = localDoc.count();
+    for (int id=0; id < ldCount; id++)
     {
-        QStringList langs = KGlobal::locale()->languageList();
-        langs.append( "en" );
-        langs.remove( "C" );
+
         QStringList::ConstIterator lang;
         for (lang = langs.begin(); lang != langs.end(); ++lang)
             search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
@@ -154,6 +157,9 @@ void HelpProtocol::get( const KURL& url )
     bool redirect;
     QString doc;
     doc = url.path();
+    if (doc.at(0) != '/')
+        doc = doc.prepend('/');
+
     if (doc.at(doc.length() - 1) == '/')
         doc += "index.html";
 

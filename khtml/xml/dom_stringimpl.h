@@ -23,24 +23,46 @@
 #ifndef _DOM_DOMStringImpl_h_
 #define _DOM_DOMStringImpl_h_
 
+#include <stdlib.h>
+
 #include <qstring.h>
 
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"
+#include "misc/shared.h"
 
-class QChar;
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
 namespace DOM {
 
-class DOMStringImpl : public DomShared
+class DOMStringImpl : public khtml::Shared<DOMStringImpl>
 {
 protected:
     DOMStringImpl() { s = 0, l = 0; }
 public:
-    DOMStringImpl(const QChar *str, unsigned int len);
+    DOMStringImpl(const QChar *str, unsigned int len) {
+	bool havestr = str && len;
+	s = QT_ALLOC_QCHAR_VEC( havestr ? len : 1 );
+	if(str && len) {
+	    memcpy( s, str, len * sizeof(QChar) );
+	    l = len;
+	} else {
+	    // crash protection
+	    s[0] = 0x0;
+	    l = 0;
+	}
+    }
+
     DOMStringImpl(const char *str);
-    DOMStringImpl(const QChar &ch);
-    virtual ~DOMStringImpl();
+    DOMStringImpl(const QChar &ch) {
+	s = QT_ALLOC_QCHAR_VEC( 1 );
+	s[0] = ch;
+	l = 1;
+    }
+    ~DOMStringImpl() {
+	if(s) QT_DELETE_QCHAR_VEC(s);
+    }
 
     void append(DOMStringImpl *str);
     void insert(DOMStringImpl *str, unsigned int pos);
@@ -59,7 +81,11 @@ public:
     khtml::Length toLength() const;
 
     // ignores trailing garbage, unlike QString
-    int toInt(bool* ok=0) const {
+    int toInt() const {
+        return strtol(QConstString(s, l).string().latin1(), 0, 10);
+    }
+
+    int toInt(bool* ok) const {
         int len = l;
         while(len > 0 && !s[len-1].isDigit())
             len--;

@@ -38,6 +38,7 @@
 #include <kpopupmenu.h>
 #include <krun.h>
 #include <kstddirs.h>
+#include <kprocess.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qgroupbox.h>
@@ -1099,7 +1100,7 @@ void KMimeTypeChooser::editMimeType()
   QString mt = (lvMimeTypes->currentItem()->parent())->text( 0 ) + "/" + (lvMimeTypes->currentItem())->text( 0 );
   // thanks to libkonq/konq_operations.cc
   QString keditfiletype = QString::fromLatin1("keditfiletype");
-  KRun::runCommand( keditfiletype + " " + mt,
+  KRun::runCommand( keditfiletype + " " + KShellProcess::quote(mt),
                     keditfiletype, keditfiletype /*unused*/);
 }
 

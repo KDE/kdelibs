@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifndef _REGEXP_OBJECT_H_
@@ -65,8 +64,8 @@ namespace KJS {
   class RegExpObjectImp : public InternalFunctionImp {
   public:
     RegExpObjectImp(ExecState *exec,
-                    RegExpPrototypeImp *regProto,
-                    FunctionPrototypeImp *funcProto);
+                    FunctionPrototypeImp *funcProto,
+                    RegExpPrototypeImp *regProto);
     virtual ~RegExpObjectImp();
     virtual bool implementsConstruct() const;
     virtual Object construct(ExecState *exec, const List &args);
@@ -75,7 +74,8 @@ namespace KJS {
 
     Value get(ExecState *exec, const UString &p) const;
     int ** registerRegexp( const RegExp* re, const UString& s );
-    Value arrayOfMatches(ExecState *exec, const UString &result) const;
+    void setSubPatterns(int num) { lastNrSubPatterns = num; }
+    Object arrayOfMatches(ExecState *exec, const UString &result) const;
   private:
     UString lastString;
     int *lastOvector;

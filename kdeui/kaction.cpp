@@ -206,9 +206,8 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIconSet() )
 		setIcon( item.iconName() );
-
-	if( receiver )
-		connect( this, SIGNAL(activated()), receiver, slot );
+	setToolTip( item.toolTip() );
+	setWhatsThis( item.whatsThis() );
 }
 
 #ifndef KDE_NO_COMPAT
@@ -347,6 +346,7 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
 
 bool KAction::setShortcut( const KShortcut& cut )
 {
+  KShortcut oldShortcut = d->m_cut;
   d->m_cut = cut;
 
   if( !d->m_kaccel ) {
@@ -358,7 +358,7 @@ bool KAction::setShortcut( const KShortcut& cut )
   else
     d->m_kaccel->setShortcut( name(), cut );
 
-  if( !d->m_cut.isNull() ) {
+  if( oldShortcut != cut ) {
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
@@ -636,6 +636,10 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
+  // Check if action is permitted
+  if (kapp && !kapp->authorizeKAction(name()))
+    return;
+
   //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();

@@ -56,10 +56,8 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
     bool forced = true;
     if ( mimetype.isEmpty() )
     {
-        KURL url;
-        url.setPath( filename );
-        mimetype = KMimeType::findByURL( url )->name();
-        //kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
+        mimetype = KMimeType::findByFileContent( filename )->name();
+        kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
         if ( mimetype == "application/x-tgz" || mimetype == "application/x-targz" || // the latter is deprecated but might still be around
@@ -68,6 +66,27 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             mimetype = "application/x-gzip";
         else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
             mimetype = "application/x-bzip2";
+        else
+        {
+            // Something else. Check if it's not really gzip though (e.g. for KOffice docs)
+            QFile file( filename );
+            if ( file.open( IO_ReadOnly ) )
+            {
+                unsigned char firstByte = file.getch();
+                unsigned char secondByte = file.getch();
+                unsigned char thirdByte = file.getch();
+                if ( firstByte == 0037 && secondByte == 0213 )
+                    mimetype = "application/x-gzip";
+                else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
+                    mimetype = "application/x-bzip2";
+                else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
+                {
+                    unsigned char fourthByte = file.getch();
+                    if ( fourthByte == 4 )
+                        mimetype = "application/x-zip";
+                }
+            }
+        }
         forced = false;
     }
 
@@ -308,15 +327,18 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
         strcpy( buffer, "././@LongLink" );
         fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
         device()->writeBlock( buffer, 0x200 );
-        memset( buffer, 0, 0x200 );
-        strcpy( buffer, QFile::encodeName(dirName) );
+        strncpy( buffer, QFile::encodeName(dirName), 0x200 );
+        buffer[0x200] = 0;
         // write long name
         device()->writeBlock( buffer, 0x200 );
         // not even needed to reclear the buffer, tar doesn't do it
     }
     else
+    {
         // Write name
-        strcpy( buffer, QFile::encodeName(dirName) );
+        strncpy( buffer, QFile::encodeName(dirName), 0x200 );
+        buffer[0x200] = 0;
+    }
 
     fillBuffer( buffer, " 40755", 0, 0x35, user.local8Bit(), group.local8Bit());
 
@@ -373,15 +395,18 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
         fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
         device()->writeBlock( buffer, 0x200 );
 
-        memset( buffer, 0, 0x200 );
-        strcpy( buffer, QFile::encodeName(fileName) );
+        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
+        buffer[0x200] = 0;
         // write long name
         device()->writeBlock( buffer, 0x200 );
         // not even needed to reclear the buffer, tar doesn't do it
     }
     else
+    {
         // Write name
-        strcpy( buffer, QFile::encodeName(fileName) );
+        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
+        buffer[0x200] = 0;
+    }
 
     fillBuffer( buffer, "100644", size, 0x30, user.local8Bit(), group.local8Bit() );
 

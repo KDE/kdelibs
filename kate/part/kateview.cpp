@@ -94,6 +94,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
  : QWidget(view, "", Qt::WRepaintNoErase | Qt::WResizeNoErase)
 {
   setBackgroundMode(NoBackground);
+  numLines = 0;
 
   myView = view;
   myDoc = doc;
@@ -101,8 +102,8 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
 //  iconBorderWidth  = 16;
 //  iconBorderHeight = 800;
 
+  lineRanges = new KateLineRange[64];
   numLines = 64;
-  lineRanges = new KateLineRange[numLines];
 
   for (uint z = 0; z < numLines; z++)
   {
@@ -158,6 +159,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
 
 KateViewInternal::~KateViewInternal()
 {
+  numLines = 0;
   delete [] lineRanges;
   delete drawBuffer;
 }
@@ -651,7 +653,7 @@ void KateViewInternal::updateCursor(KateTextCursor &newCursor, bool keepSel)
 
 // init the line dirty cache
 void KateViewInternal::clearDirtyCache(int height) {
-  int lines, z;
+  int lines;
 
   // calc start and end line of visible part
   startLine = yPos/myDoc->viewFont.fontHeight;
@@ -661,12 +663,14 @@ void KateViewInternal::clearDirtyCache(int height) {
 
   lines = endLine - startLine +1;
   if (lines > numLines) { // resize the dirty cache
-    numLines = lines*2;
+    uint _numLines = lines*2;
+    numLines = 0;
     delete [] lineRanges;
-    lineRanges = new KateLineRange[numLines];
+    lineRanges = new KateLineRange[_numLines];
+    numLines = _numLines;
   }
 
-  for (z = 0; z < lines; z++) { // clear all lines
+  for (uint z = 0; z < numLines; z++) { // clear all lines
     lineRanges[z].start = 0xffffff;
     lineRanges[z].end = 0;
   }
@@ -687,12 +691,22 @@ void KateViewInternal::tagLines(int start, int end, int x1, int x2) {
   if (x2 > width() + xPos) x2 = width() + xPos;
   if (x1 >= x2) return;
 
-  r = &lineRanges[start];
-  for (z = start; z <= end; z++) {
-    if (x1 < r->start) r->start = x1;
-    if (x2 > r->end) r->end = x2;
-    r++;
-    updateState |= 1;
+  if (start < numLines)
+  {
+    r = &lineRanges[start];
+    uint rpos = start;
+    for (z = start; z <= end; z++)
+    {
+      if (rpos >= numLines) break;
+
+      if (x1 < r->start) r->start = x1;
+      if (x2 > r->end) r->end = x2;
+      
+      r++;
+      rpos++;
+      
+      updateState |= 1;
+    }
   }
 }
 
@@ -894,7 +908,8 @@ void KateViewInternal::paintTextLines(int xPos, int yPos)
   uint h = myDoc->viewFont.fontHeight;
   KateLineRange *r = lineRanges;
 
-  for (uint line = startLine; line <= endLine; line++)
+  uint rpos = 0;
+  for (uint line = startLine; (line <= endLine) && (rpos < numLines); line++)
   {
     if (r->start < r->end)
     {
@@ -904,6 +919,7 @@ void KateViewInternal::paintTextLines(int xPos, int yPos)
     }
 
     r++;
+    rpos++;
   }
 
   paint.end();
@@ -930,7 +946,7 @@ void KateViewInternal::paintCursor() {
 
   xCoord = x;
   yCoord = y+h;
-  
+
   tagLines( cursor.line, cursor.line, 0, 0xffff);
   paintTextLines (xPos, yPos);
 

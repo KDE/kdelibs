@@ -234,6 +234,7 @@ int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance );
+    
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     doConnections( button );
@@ -330,11 +331,6 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
     insertWidgetInternal( combo, index, id );
     combo->insertStringList (list);
     combo->setInsertionPolicy(policy);
@@ -360,11 +356,6 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
     insertWidgetInternal( combo, index, id );
     combo->insertItem (text);
     combo->setInsertionPolicy(policy);
@@ -761,9 +752,7 @@ bool KToolBar::fullSize() const
 
 void KToolBar::enableMoving(bool flag )
 {
-    if ( !mainWindow() )
-        return;
-    mainWindow()->setToolBarsMovable( flag );
+    setMovingEnabled(flag);
 }
 
 
@@ -1181,12 +1170,10 @@ void KToolBar::rebuildLayout()
     if ( rightAligned ) {
         l->addStretch();
         l->addWidget( rightAligned );
+        rightAligned->show();
     }
 
     if ( fullSize() ) {
-        if ( !stretchableWidget && widgets.last() &&
-             !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
-            setStretchableWidget( widgets.last() );
         if ( !rightAligned )
             l->addStretch();
         if ( stretchableWidget )

@@ -37,6 +37,9 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
+#if defined(__osf__)
+#include <pty.h>
+#endif
 
 #include <qglobal.h>
 #include <qcstring.h>
@@ -62,7 +65,11 @@ extern "C" char * ptsname(int fd) __THROW;
 extern "C" int unlockpt(int fd) __THROW;
 #endif
 
-#ifdef HAVE_PTY_H
+#ifdef HAVE__GETPTY
+extern "C" char *_getpty(int *, int, mode_t, int);
+#endif
+
+#ifdef HAVE__PTY_H
 	#include <pty.h>
 #endif
 
@@ -115,10 +122,22 @@ int PTY::getpt()
     kdDebug(900) << k_lineinfo << "Opening pty failed.\n";
     return -1;
 
+#elif defined(HAVE__GETPTY)
+    // 3: Irix interface
+    int master_fd;
+    ttyname = _getpty(&master_fd,O_RDWR,0600,0);
+    if (ttyname)
+	ptyfd = master_fd;
+    else{
+	ptyfd = -1;
+	kdDebug(900) << k_lineinfo << "Opening pty failed.error" << errno << '\n';
+    }
+    return ptyfd;
+
 #else
 
-    // 3: Open terminal device directly
-    // 3.1: Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
+    // 4: Open terminal device directly
+    // 4.1: Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
 
     ptyfd = open("/dev/ptmx", O_RDWR);
     if (ptyfd >= 0) {
@@ -136,7 +155,7 @@ int PTY::getpt()
 	close(ptyfd);
     }
 
-    // 3.2: Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
+    // 4.2: Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
 
     for (const char *c1 = "pqrstuvwxyzabcde"; *c1 != '\0'; c1++)
     {
@@ -152,8 +171,8 @@ int PTY::getpt()
 	}
     }
 linux_out:
-	
-    // 3.3: Try /dev/pty%d (SCO, Unixware)
+
+    // 4.3: Try /dev/pty%d (SCO, Unixware)
 
     for (int i=0; i<256; i++)
     {

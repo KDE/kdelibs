@@ -29,6 +29,7 @@
 
 class QValidator;
 class KFilePlugin;
+class KFileMetaInfoGroup;
 
 class KFileMimeTypeInfo
 {
@@ -38,12 +39,12 @@ class KFileMimeTypeInfo
 public:
     KFileMimeTypeInfo() {}
     /**
-     * This enum is used to specify some other attributes that an item can
-     * have.
+     * This enum is used to specify some attributes that an item can have,
+     * which fit neither in the @ref Hint nor in the @ref Unit enum.
      *
-     * @li @p Addable     The item can be added by a user
+     * @li @p Addable     The item or group can be added by a user
      * @li @p Removable   It can be removed
-     * @li @p Modifiable  Its value can be edited
+     * @li @p Modifiable  Its value can be edited (no meaning for a group)
      * @li @p Cummulative If an application wants to display information for
      *                    more than one file, it may add up the values for this
      *                    item (e.g. play time of an mp3 file)
@@ -65,7 +66,7 @@ public:
      *
      * @li @p NoHint      No hint
      * @li @p Name        The name or title of the document
-     * @li @p Author      The one who created the document
+     * @li @p Author      The one who created the contents of it
      * @li @p Description Some information about the document
      * @li @p Width       A width in pixels
      * @li @p Height      A height in pixels
@@ -131,7 +132,10 @@ public:
          * the plugin knows about. No variable keys.
          * For a group that doesn't support variable keys, all keys that this
          * group may have are returned. For a group that does support them, the
-         * non-variable ones are returned.
+         * non-variable ones are returned. See @ref KFileMetaInfo about variable
+         * keys
+         *
+         * @return the list of keys supported for this mimetype
          **/
         QStringList supportedKeys() const
         {
@@ -139,27 +143,42 @@ public:
         }
 
         /**
-         * @return all keys that the file has, in preference order. The
-         * preference order is usually determined by the plugin's .desktop
-         * file. Any key in the file that isn't specified as a preferred
-         * one in the .desktop will be appended to the end of the list.
-         **/
-
+         * Use this method to get the name of the group. This string  doesn't
+         * depend on the user's locale settings
+         *
+         * @return the group name
+         */
         const QString& name() const
         {
             return m_name;
         }
 
         /**
-         * @return the string to display to the user as group name.
+         *  Use this method to get the string to display to the user as group
+         *  name. This may be different to @ref name() and it returns the
+         *  name in the user's language
+         *
+         *  @return the translated group name
          */
         const QString& translatedName() const
         {
             return m_translatedName;
         }
 
+       /**
+        *  A group object can contains sevaral item objects (of which you can
+        *  get the names with @ref supportedKeys() . With this method, you can
+        *  get one of those item objects. See @ref ItemInfo
+        *
+        *  @return a pointer to the item info. Don't delete this object!
+        */
         const ItemInfo * itemInfo( const QString& key ) const;
 
+       /**
+        *  Get the attributes of this group (see @ref Attributes)
+        *
+        *  @return the attributes
+        */
         uint attributes() const
         {
             return m_attr;
@@ -174,17 +193,27 @@ public:
             return m_variableItemInfo;
         }
 
+        /**
+         * If the group supports variable keys, you can query their item
+         * info with this method. The main reason for this is that you can
+         * get the type and attributes of variable keys.
+         *
+         *  @return a pointer to the item info. Don't delete this object!
+         **/
         const ItemInfo* variableItemInfo( ) const
         {
             return m_variableItemInfo;
         }
 
     private:
+        /** @Internal */
         GroupInfo( const QString& name, const QString& translatedName);
 
+        /** @Internal */
         KFileMimeTypeInfo::ItemInfo* addItemInfo( const QString& key, const QString& translatedKey,
                           QVariant::Type type);
 
+        /** @Internal */
         void addVariableInfo( QVariant::Type type, uint attr );
 
         QString         m_name;
@@ -201,11 +230,15 @@ public:
     friend class KFilePlugin;
     friend class GroupInfo;
     public:
+        /** @Internal */
         ItemInfo() {}
 
         /**
-         * @return a translated prefix to be displayed before the value.
-         * Think e.g. of the $ in $30
+         * 
+         * This method returns a translated prefix to be displayed before the
+         * value. Think e.g. of the $ in $30
+         *
+         * @return the prefix
          */
         const QString& prefix() const
         {
@@ -213,24 +246,42 @@ public:
         }
 
         /**
-         * @return a translated suffix to be displayed after the value.
-         * Think of the kbps in 128kbps
+         * This method returns a translated suffix to be displayed after the
+         * value. Think of the kbps in 128kbps
+         *
+         * @return the prefix
          */
         const QString& suffix() const
         {
             return m_suffix;
         }
 
+        /**
+         * The items for a file are stored as a @ref QVariant and this method
+         * can be used to get the data type of this item. 
+         *
+         * @return the @ref QVariant type
+         */
         QVariant::Type type() const
         {
             return m_type;
         }
 
+        /**
+         * The name of the item
+         *
+         * @return the @ref name
+         */
         const QString& key() const
         {
             return m_key;
         }
 
+        /**
+         * Is this item the variable item?
+         *
+         * @return true if it is, false if not
+         */
         bool isVariableItem() const
         {
             return key().isNull();
@@ -262,7 +313,7 @@ public:
         }
 
     private:
-
+        /** @Internal */
         ItemInfo(const QString& key, const QString& translatedKey,
                  QVariant::Type type)
             : m_key(key), m_translatedKey(translatedKey),
@@ -466,11 +517,13 @@ public:
     bool isValid() const;
 
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
+    friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
     friend class KFileMetaInfoGroup;
     
 protected:
     void setAdded();
+    void setRemoved();
     
     void ref();
     void deref();
@@ -501,6 +554,14 @@ public:
     bool isValid() const;
     bool isEmpty() const;
 
+    /**
+     * Returns true if an item as added or removed from the group.
+     * @return true if an item was added or removed from the group, otherwise
+     * false.
+     * @since 3.1
+     */
+    bool isModified() const;
+    
     /**
      * operator for convenience. It does the same as @ref item(),
      * but you cannot specify a group to search in
@@ -815,7 +876,7 @@ protected:
 
 private:
     KFileMetaInfoItem findEditableItem( KFileMetaInfoGroup& group,
-                                        const QString& key, bool& valid );
+                                        const QString& key );
 };
 
 ///////////////////////////////////////////////////////////////////

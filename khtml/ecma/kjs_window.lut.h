@@ -47,7 +47,7 @@ const struct HashEntry WindowTableEntries[] = {
    { "frames", Window::Frames, DontDelete|ReadOnly, 0, &WindowTableEntries[81] },
    { 0, 0, 0, 0, 0 },
    { "screen", Window::_Screen, DontDelete|ReadOnly, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "CSSRule", Window::CSSRule, DontDelete, 0, 0 },
    { "length", Window::Length, DontDelete|ReadOnly, 0, &WindowTableEntries[79] },
    { "offscreenBuffering", Window::OffscreenBuffering, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },

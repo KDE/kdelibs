@@ -127,6 +127,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
   freq = 3600000; // 1 hour as upper bound
   statEntries = 0;
+  delayRemove = false;
 
   KConfigGroup config(KGlobal::config(), QCString("DirWatch"));
   m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
@@ -349,6 +350,11 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 		    << ") for " << e->path << endl;
     }
   }
+
+  // handle FAM events to avoid deadlock
+  // (FAM sends back all files in a directory when monitoring)
+  famEventReceived();
+
   return true;
 }
 #endif
@@ -533,8 +539,14 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   else
     e->removeClient(instance);
 
-  if ( e->m_clients.count() || e->m_entries.count())
+  if (e->m_clients.count() || e->m_entries.count())
     return;
+
+  if (delayRemove) {
+    removeList.append(e);
+    // now e->isValid() is false
+    return;
+  }
 
 #ifdef HAVE_FAM
   if (e->m_mode == FAMMode) {
@@ -796,7 +808,12 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 {
   QString path = e->path;
-  if (!fileName.isEmpty()) path += "/" + fileName;
+  if (!fileName.isEmpty()) {
+    if (fileName[0] == '/')
+      path = fileName;
+    else
+      path += "/" + fileName;
+  }
 
   Client* c = e->m_clients.first();
   for(;c;c=e->m_clients.next()) {
@@ -832,11 +849,6 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
   }
 }
 
-struct EmitEntry {
-  EmitEntry(KDirWatchPrivate::Entry _entry, int _event)
-    : entry(_entry), event(_event) {};
-  KDirWatchPrivate::Entry entry; int event;
-};
 
 /* Scan all entries to be watched for changes. This is done regularly
  * when polling and once after a DNOTIFY signal. This is NOT used by FAM.
@@ -845,10 +857,9 @@ void KDirWatchPrivate::slotRescan()
 {
   EntryMap::Iterator it;
 
-  // Buffer events to be emitted, so that it won't crash if an app
-  // calls removeDir() in slotDirty().
-  QPtrList<EmitEntry> emitList;
-  emitList.setAutoDelete(true);
+  // We delay deletions of entries this way.
+  // removeDir(), when called in slotDirty(), can cause a crash otherwise
+  delayRemove = true;
 
 #ifdef HAVE_DNOTIFY
   QPtrList<Entry> dList, cList;
@@ -864,6 +875,9 @@ void KDirWatchPrivate::slotRescan()
 
   it = m_mapEntries.begin();
   for( ; it != m_mapEntries.end(); ++it ) {
+    // we don't check invalid entries (i.e. remove delayed)
+    if (!(*it).isValid()) continue;
+
     int ev = scanEntry( &(*it) );
 
 #ifdef HAVE_DNOTIFY
@@ -893,16 +907,13 @@ void KDirWatchPrivate::slotRescan()
 #endif
 
     if ( ev != NoChange )
-      emitList.append(new EmitEntry(*it, ev));
+      emitEvent( &(*it), ev);
   }
 
-  for(EmitEntry* e = emitList.first(); e; e = emitList.next() ) {
-    emitEvent( &e->entry, e->event);
-  }
+  Entry* e;
 
 #ifdef HAVE_DNOTIFY
   // Scan parent of deleted directories for new creation
-  Entry* e;
   for(e=dList.first();e;e=dList.next())
     addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
 
@@ -910,6 +921,12 @@ void KDirWatchPrivate::slotRescan()
   for(e=cList.first();e;e=cList.next())
     removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
 #endif
+
+  // Really remove entries which were marked to be removed
+  delayRemove = false;
+  for(e=removeList.first();e;e=removeList.next())
+    removeEntry(0, e->path, 0);
+  removeList.clear();
 }
 
 #ifdef HAVE_FAM
@@ -953,7 +970,16 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
   }
 
-  Entry* e = static_cast<Entry*>(fe->userdata);
+  Entry* e = 0;
+  EntryMap::Iterator it = m_mapEntries.begin();
+  for( ; it != m_mapEntries.end(); ++it )
+    if (FAMREQUEST_GETREQNUM(&( (*it).fr )) ==
+       FAMREQUEST_GETREQNUM(&(fe->fr)) ) {
+      e = &(*it);
+      break;
+    }
+
+  // Entry* e = static_cast<Entry*>(fe->userdata);
 
   kdDebug(7001) << "Processing FAM event ("
 		<< ((fe->code == FAMChanged) ? "FAMChanged" :
@@ -966,7 +992,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 		    (fe->code == FAMExists) ? "FAMExists" :
 		    (fe->code == FAMEndExist) ? "FAMEndExist" : "Unknown Code")
 		<< ", " << fe->filename
-		<< ", Req " << FAMREQUEST_GETREQNUM(&(e->fr))
+		<< ", Req " << FAMREQUEST_GETREQNUM(&(fe->fr))
 		<< ")" << endl;
 
   if (!e) {
@@ -983,8 +1009,9 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   if (e->isDir)
     switch (fe->code)
     {
-      case FAMDeleted: 
-        if (strlen(fe->filename) == 0)
+      case FAMDeleted:
+       // file absolute: watched dir
+        if (fe->filename[0] == '/')
         {
           // a watched directory was deleted
 

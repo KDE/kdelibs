@@ -560,7 +560,8 @@ void KListView::focusOutEvent( QFocusEvent *fe )
       && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0))
+      && (currentItem()!=0)
+      && (!d->editor->isVisible()))
   {
       currentItem()->setSelected(false);
       currentItem()->repaint();
@@ -1712,6 +1713,32 @@ void KListView::setFullWidth(bool fullWidth)
 bool KListView::fullWidth() const
 {
   return d->fullWidth;
+}
+
+int KListView::addColumn(const QString& label, int width)
+{
+  int result = QListView::addColumn(label, width);
+  if (d->fullWidth) {
+    header()->setStretchEnabled(false, columns()-2);
+    header()->setStretchEnabled(true, columns()-1);
+  }
+  return result;
+}
+
+int KListView::addColumn(const QIconSet& iconset, const QString& label, int width)
+{
+  int result = QListView::addColumn(iconset, label, width);
+  if (d->fullWidth) {
+    header()->setStretchEnabled(false, columns()-2);
+    header()->setStretchEnabled(true, columns()-1);
+  }
+  return result;
+}
+
+void KListView::removeColumn(int index)
+{
+  QListView::removeColumn(index);
+  if (d->fullWidth && index == columns()) header()->setStretchEnabled(true, columns()-1);
 }
 
 void KListView::viewportResizeEvent(QResizeEvent* e)

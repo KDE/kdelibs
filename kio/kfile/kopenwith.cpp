@@ -135,7 +135,7 @@ bool KAppTreeListItem::isDirectory()
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
-    : KListView( parent )
+    : KListView( parent ), currentitem(0)
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
@@ -245,7 +245,8 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
-    setColumnWidth(0, width()-QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent));
+    setColumnWidth(0, width()-QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent)
+                         -2*QApplication::style().pixelMetric(QStyle::PM_DefaultFrameWidth));
     KListView::resizeEvent(e);
 }
 

@@ -112,13 +112,13 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     d->smallColumns->setChecked( true );
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
-	     SLOT( selected( QIconViewItem *) ) );
+	     SLOT( slotActivate( QIconViewItem *) ) );
 
     // we want single click _and_ double click (as convenience)
     connect( this, SIGNAL( clicked(QIconViewItem *, const QPoint&) ),
 	     SLOT( selected( QIconViewItem *) ) );
     connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
-	     SLOT( slotDoubleClicked( QIconViewItem *) ) );
+	     SLOT( slotActivate( QIconViewItem *) ) );
 
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
 	     SLOT( showToolTip( QIconViewItem * ) ) );
@@ -151,6 +151,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
 		 SLOT( highlighted( QIconViewItem * )));
 
+    viewport()->installEventFilter( this );
 
     // for mimetype resolving
     m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
@@ -168,7 +169,7 @@ KFileIconView::~KFileIconView()
 
 void KFileIconView::readConfig( KConfig *kc, const QString& group )
 {
-    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
@@ -185,7 +186,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 
 void KFileIconView::writeConfig( KConfig *kc, const QString& group )
 {
-    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
     kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
 		    QString::fromLatin1("SmallColumns") :
@@ -288,38 +289,16 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    int size = myIconSize;
-    if ( d->previews->isChecked() && canPreview( i ) )
-        size = myIconSize;
-
-    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this,
-                                                     i->text(),
-                                                     i->pixmap( size ), i);
+    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this, i );
+    initItem( item, i );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
 
-    // see also setSorting()
-    QDir::SortSpec spec = KFileView::sorting();
-
-    if ( spec & QDir::Time )
-        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
-                                  i->isDir(), spec ));
-    else if ( spec & QDir::Size )
-        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
-
-    else // Name or Unsorted
-        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
-
-    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
-
     i->setExtraData( this, item );
-
-    if ( d->previews->isChecked() )
-        d->previewTimer->start( 10, true );
 }
 
-void KFileIconView::slotDoubleClicked( QIconViewItem *item )
+void KFileIconView::slotActivate( QIconViewItem *item )
 {
     if ( !item )
 	return;
@@ -428,13 +407,8 @@ void KFileIconView::updateView( bool b )
 void KFileIconView::updateView( const KFileItem *i )
 {
     KFileIconViewItem *item = viewItem( i );
-    if ( item ) {
-        int size = myIconSize;
-        if ( d->previews->isChecked() && canPreview( i ) )
-            size = d->previewIconSize;
-
-        item->setPixmap( i->pixmap( size ) );
-    }
+    if ( item )
+        initItem( item, i );
 }
 
 void KFileIconView::removeItem( const KFileItem *i )
@@ -671,6 +645,20 @@ void KFileIconView::listingCompleted()
     arrangeItemsInGrid();
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }
+
+// need to remove our tooltip, eventually
+bool KFileIconView::eventFilter( QObject *o, QEvent *e )
+{
+    if ( o == viewport() || o == this ) {
+        int type = e->type();
+        if ( type == QEvent::Leave || 
+             type == QEvent::FocusOut )
+            removeToolTip();
+    }
+    
+    return KIconView::eventFilter( o, e );
+}
+
 /////////////////////////////////////////////////////////////////
 
 // ### workaround for Qt3 Bug
@@ -680,6 +668,34 @@ void KFileIconView::showEvent( QShowEvent *e )
 #if QT_VERSION <= 302
     sort( !isReversed() );
 #endif
+}
+
+
+void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i )
+{
+    int size = myIconSize;
+    if ( d->previews->isChecked() && canPreview( i ) )
+        size = d->previewIconSize;
+
+    item->setText( i->text() );
+    item->setPixmap( i->pixmap( size ) );
+
+    // see also setSorting()
+    QDir::SortSpec spec = KFileView::sorting();
+
+    if ( spec & QDir::Time )
+        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+                                  i->isDir(), spec ));
+    else if ( spec & QDir::Size )
+        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
+
+    else // Name or Unsorted
+        item->setKey( sortingKey( i->text(), i->isDir(), spec ));
+
+    //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
+
+    if ( d->previews->isChecked() )
+        d->previewTimer->start( 10, true );
 }
 
 void KFileIconView::virtual_hook( int id, void* data )

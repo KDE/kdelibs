@@ -24,7 +24,9 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
+#include "rendering/render_root.h"
 #include "rendering/render_text.h"
+#include "rendering/render_root.h"
 #include "rendering/break_lines.h"
 #include "xml/dom_nodeimpl.h"
 
@@ -49,7 +51,7 @@ void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, Ren
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len, 
+    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
     p->restore();
 }
@@ -250,21 +252,16 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     if ( style() != _style ) {
-	RenderObject::setStyle( _style );
-	m_lineHeight = RenderObject::lineHeight(false);
+        // ### fontvariant being implemented as text-transform: upper. sucks!
+        bool changedText = (!style() && (_style->fontVariant() != FVNORMAL || _style->textTransform() != TTNONE)) ||
+            ((style() && style()->textTransform() != _style->textTransform()) ||
+             (style() && style()->fontVariant() != _style->fontVariant()));
 
-	if ( style()->fontVariant() == SMALL_CAPS ) {
-	    setText( str->upper() );
-	} else {
-	    // ### does not work if texttransform is set to None again!
-	    switch(style()->textTransform()) {
-		case CAPITALIZE:  setText(str->capitalize());  break;
-		case UPPERCASE:   setText(str->upper());       break;
-		case LOWERCASE:   setText(str->lower());       break;
-		case NONE:
-		default:;
-	    }
-	}
+        RenderObject::setStyle( _style );
+        m_lineHeight = RenderObject::lineHeight(false);
+
+        if (changedText && element() && element()->string())
+            setText(element()->string(), changedText);
     }
 }
 
@@ -321,6 +318,7 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
                  borderBottom() + paddingBottom();
 
     bool inside = false;
+    if (style()->visibility() != HIDDEN) {
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
     while(s) {
@@ -330,13 +328,11 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
             break;
         }
 
-        s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
+        s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
+        }
     }
 
-    bool oldinside = mouseInside();
     setMouseInside(inside);
-    if (mouseInside() != oldinside && element())
-        element()->setChanged();
 
     return inside;
 }
@@ -346,7 +342,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 //     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                   << " _tx=" << _tx << " _ty=" << _ty << endl;
     TextSlave *lastPointAfterInline=0;
-    
+
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
@@ -377,7 +373,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         } else if ( result == SelectionPointAfterInLine ) {
 	    lastPointAfterInline = s;
 	}
-	
+
     }
 
     // set offset to max
@@ -474,20 +470,17 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     TextSlave f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to print
+    bool isPrinting = (p->device()->devType() == QInternal::Printer);
     if(si >= 0)
     {
         // Move up until out of area to be printed
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h, m_lineHeight))
             si--;
 
-        //QConstString cstr(str->s, str->l);
-        //kdDebug(6040) << this << " RenderText text '" << (const char *)cstr.string().utf8() << "'" << endl;
-        //kdDebug(6040) << this << " RenderText::printObject y=" << y << " ty=" << ty << " h=" << h << " first line is " << si << endl;
-
         // Now calculate startPos and endPos, for printing selection.
         // We print selection while endPos > 0
         int endPos, startPos;
-        if (selectionState() != SelectionNone) {
+        if (!isPrinting && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
                 startPos = 0;
@@ -511,19 +504,40 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         linerects.append(new QRect());
 
 	bool renderOutline = style()->outlineWidth()!=0;
-	
+
 	const Font *font = &style()->htmlFont();
 
         // run until we find one that is outside the range, then we
         // know we can stop
         do {
             s = m_lines[si];
+
+	    if (isPrinting)
+	    {
+                int lh = lineHeight( false ) + paddingBottom() + borderBottom();
+                if (ty+s->m_y < y)
+                {
+                   // This has been printed already we suppose.
+                   continue;
+                }
+
+                if (ty+lh+s->m_y > y+h)
+                {
+                   RenderRoot *rootObj = root();
+                   if (ty+s->m_y < rootObj->truncatedAt())
+                      rootObj->setTruncatedAt(ty+s->m_y);
+                   // Let's stop here.
+                   break;
+                }
+            }
+
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
 
             if(_style->font() != p->font()) {
                 p->setFont(_style->font());
 		font = &_style->htmlFont();
 	    }
+
             if((hasSpecialObjects()  &&
                 (parent()->isInline() || pseudoStyle)) &&
                (!pseudoStyle || s->m_firstLine))
@@ -534,7 +548,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 p->setPen(_style->color());
 
 	    if (s->m_len > 0)
-		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len, 
+		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
             if(d != TDNONE)
@@ -543,7 +557,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 s->printDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
-            if (selectionState() != SelectionNone ) {
+            if (!isPrinting && (selectionState() != SelectionNone)) {
 		int offset = s->m_start;
 		int sPos = QMAX( startPos - offset, 0 );
 		int ePos = QMIN( endPos - offset, s->m_len );
@@ -625,21 +639,25 @@ void RenderText::calcMinMaxWidth()
     // ### not 100% correct for first-line
     const Font *f = htmlFont( false );
     int len = str->l;
+    bool isPre = style()->whiteSpace() == PRE;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
+        if (isPre)
+            while( i+wordlen < len && str->s[i+wordlen] != '\n' )
+                wordlen++;
+        else
         while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
             wordlen++;
-        if (wordlen)
-        {
+
+        if (wordlen) {
             int w = f->width(str->s, str->l, i, wordlen);
             currMinWidth += w;
             currMaxWidth += w;
         }
-        if(i+wordlen < len)
-        {
+        if(i+wordlen < len) {
 	    m_hasBreakableChar = true;
             if ( (*(str->s+i+wordlen)).latin1() == '\n' )
             {
@@ -708,12 +726,25 @@ const QFont &RenderText::font()
     return style()->font();
 }
 
-void RenderText::setText(DOMStringImpl *text)
+void RenderText::setText(DOMStringImpl *text, bool force)
 {
-    if( str == text ) return;
+    if( !force && str == text ) return;
     if(str) str->deref();
     str = text;
-    if(str) str->ref();
+
+    if ( str && style() ) {
+        if ( style()->fontVariant() == SMALL_CAPS )
+            str = str->upper();
+        else
+            switch(style()->textTransform()) {
+            case CAPITALIZE:   str = str->capitalize();  break;
+            case UPPERCASE:   str = str->upper();       break;
+            case LOWERCASE:  str = str->lower();       break;
+            case NONE:
+            default:;
+            }
+        str->ref();
+    }
 
     // ### what should happen if we change the text of a
     // RenderBR object ?
@@ -758,7 +789,7 @@ short RenderText::baselinePosition( bool firstLine ) const
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd)
 {
     // ### should not be needed!!!
-    if(len == 0 || (len == 1 && *(str->s+from) == '\n') ) return;
+    assert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
 
     reverse = reverse && !style()->visuallyOrdered();
 
@@ -769,7 +800,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         width -= marginLeft();
     }
 
-    if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
+    if(from + len >= int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
 
 #ifdef DEBUG_LAYOUT

@@ -80,7 +80,8 @@ QStringList DistributionList::emails() const
   Entry::List::ConstIterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     Addressee a = (*it).addressee;
-    QString email = a.fullEmail();
+    QString email = (*it).email.isEmpty() ? a.fullEmail() :
+                                            a.fullEmail( (*it).email );
 
     if ( !email.isEmpty() ) {
       emails.append( email );
@@ -193,6 +194,7 @@ bool DistributionListManager::save()
 
   KSimpleConfig cfg( locateLocal( "data", "kabc/distlists" ) );
 
+  cfg.deleteGroup( mAddressBook->identifier() );
   cfg.setGroup( mAddressBook->identifier() );
   
   DistributionList *list;

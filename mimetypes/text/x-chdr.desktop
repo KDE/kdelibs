@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=C headers
-Comment[af]=c opskrifte
+Comment[af]=C opskrifte
 Comment[az]=C başlıq faylları
 Comment[bg]=Файл-заглавия на C
 Comment[br]=Reollin C
@@ -38,7 +38,7 @@ Comment[pl]=Nagłówek C
 Comment[pt]=Header C
 Comment[pt_BR]=Cabeçalhos C
 Comment[ro]=Antete C
-Comment[ru]=Файл-заголовок C
+Comment[ru]=Заголовки C
 Comment[sk]=C hlavička
 Comment[sl]=Glave C
 Comment[sr]=C hederi
@@ -48,7 +48,7 @@ Comment[th]=แฟ้มส่วนหัวภาษา C
 Comment[tr]=C başlık dosyaları
 Comment[uk]=Файли заголовків C
 Comment[ven]=C Thoho
-Comment[vi]=Header của file C 
+Comment[vi]=Header của C
 Comment[wa]=Tiesstîres C
 Comment[xx]=xx
 Comment[zh_CN]=C 头文件

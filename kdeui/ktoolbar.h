@@ -694,6 +694,7 @@ public:
     bool fullSize() const;
 
     /**
+   * @deprecated use setMovingEnabled(bool) instead.
    * Enable or disable moving of toolbar.
    */
     void enableMoving(bool flag = true);

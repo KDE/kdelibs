@@ -798,6 +798,11 @@ protected:
                                             const QString &mimetype, QString &serviceName,
                                             QStringList &serviceTypes, const QStringList &params);
 
+  // This is for RenderPartObject. We want to ask the 'download plugin?'
+  // question only once per mimetype
+  bool pluginPageQuestionAsked(const QString& mimetype) const;
+  void setPluginPageQuestionAsked(const QString& mimetype);
+
 public slots:
 
   /**
@@ -965,6 +970,11 @@ private slots:
    * @internal
    */
   void slotJobPercent(KIO::Job*, unsigned long);
+
+  /*
+   * @internal
+   */
+  void slotJobDone(KIO::Job*);
 
   /*
    * @internal

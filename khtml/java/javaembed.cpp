@@ -19,6 +19,12 @@
     Boston, MA 02111-1307, USA.
 *****************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#if HAVE_USLEEP
+#include <unistd.h>
+#endif // HAVE_USLEEP
+#endif // HAVE_CONFIG_H
 #include "javaembed.h"
 
 #include <kdebug.h>
@@ -30,6 +36,8 @@
 class KJavaEmbedPrivate
 {
 friend class KJavaEmbed;
+public:
+  QPoint lastPos;
 };
 
 QString getQtEventName( QEvent* e )
@@ -243,6 +251,15 @@ bool KJavaEmbed::eventFilter( QObject* o, QEvent* e)
             case QEvent::WindowDeactivate:
     	        break;
 
+            case QEvent::Move:
+               {
+                    QPoint globalPos = mapToGlobal(QPoint(0,0));
+                    if (globalPos != d->lastPos) {
+                        d->lastPos = globalPos;
+                        sendSyntheticConfigureNotifyEvent();
+                    }
+                }                    
+                break;
             default:
                 break;
         }
@@ -390,6 +407,23 @@ KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
     setAcceptDrops( TRUE );
 
     window = 0;
+    // we are interested in SubstructureNotify
+    XSelectInput(qt_xdisplay(), winId(),
+                 KeyPressMask | KeyReleaseMask |
+                 ButtonPressMask | ButtonReleaseMask |
+                 KeymapStateMask |
+                 ButtonMotionMask |
+                 PointerMotionMask | // may need this, too
+                 EnterWindowMask | LeaveWindowMask |
+                 FocusChangeMask |
+                 ExposureMask |
+                 StructureNotifyMask |
+                 SubstructureRedirectMask |
+                 SubstructureNotifyMask
+                 );
+
+    topLevelWidget()->installEventFilter( this );
+    qApp->installEventFilter( this );
 }
 
 /*!
@@ -423,7 +457,10 @@ bool  KJavaEmbed::event( QEvent* e)
     switch( e->type() )
     {
         case QEvent::ShowWindowRequest:
-            XMapRaised( qt_xdisplay(), window );
+            if (window != 0) {
+                XMapRaised( qt_xdisplay(), window );
+                QApplication::syncX();
+            }
             break;
 
         default:
@@ -466,6 +503,25 @@ void KJavaEmbed::focusOutEvent( QFocusEvent* )
     XSendEvent( qt_xdisplay(), window, true, NoEventMask, &ev );
 }
 
+static bool wstate_withdrawn( WId winid )
+{
+   // defined in qapplication_x11.cpp
+   extern Atom qt_wm_state;
+   Atom type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data;
+    int r = XGetWindowProperty( qt_xdisplay(), winid, qt_wm_state, 0, 2,
+                                FALSE, AnyPropertyType, &type, &format,
+                                &length, &after, &data );
+    bool withdrawn = TRUE;
+    if ( r == Success && data && format == 32 ) {
+        Q_UINT32 *wstate = (Q_UINT32*)data;
+        withdrawn  = (*wstate == WithdrawnState );
+        XFree( (char *)data );
+    }
+    return withdrawn;
+}
 
 /*!
   Embeds the window with the identifier \a w into this xembed widget.
@@ -480,7 +536,7 @@ void KJavaEmbed::focusOutEvent( QFocusEvent* )
  */
 void KJavaEmbed::embed( WId w )
 {
-//    kdDebug(6100) << "KJavaEmbed::embed" << endl;
+    // kdDebug(6100) << "KJavaEmbed::embed " << w << endl;
 
     if ( w == 0 )
         return;
@@ -488,8 +544,30 @@ void KJavaEmbed::embed( WId w )
     window = w;
 
     //first withdraw the window
-    XWithdrawWindow( qt_xdisplay(), window, qt_xscreen() );
-    QApplication::flushX();
+    if (!wstate_withdrawn(window)) {
+        int status = XWithdrawWindow( qt_xdisplay(), window, qt_xscreen() );
+        QApplication::flushX();
+        if (status > 0) {
+            unsigned long cnt = 0;
+            unsigned long max = 1000;
+            for (cnt = 0; !wstate_withdrawn(window) && cnt < max; cnt++) {
+#if HAVE_USLEEP
+                usleep(1000); // 1 ms 
+#endif
+            }
+            if (cnt < max) { 
+                kdDebug(6100) 
+                    << "KJavaEmbed::embed: window withdrawn after " 
+                    << cnt << " loops" << endl;
+            } else {
+                kdDebug(6100) 
+                    << "KJavaEmbed::embed: window still not withdrawn after " 
+                    << cnt << " loops " << endl;
+            }
+        } else {
+            kdDebug(6100) << "KJavaEmbed::embed: XWithdrawWindow returned status=" << status << endl;
+        }
+    }
 
     //now reparent the window to be swallowed by the KJavaEmbed widget
     XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
@@ -528,11 +606,42 @@ bool KJavaEmbed::x11Event( XEvent* e)
             }
             break;
 
+        case ConfigureRequest:
+            if (e->xconfigurerequest.window == window 
+                && e->xconfigurerequest.value_mask == (CWX|CWY)) 
+            {
+                    sendSyntheticConfigureNotifyEvent();
+            }
+            break;
         default:
 	        break;
     }
 
     return false;
+}
+/*!
+    Internal: Sends an X configure notify event with the coordinates of the
+    current embedder widget.
+*/
+void KJavaEmbed::sendSyntheticConfigureNotifyEvent() {
+    QPoint globalPos = mapToGlobal(QPoint(0,0));
+    if (window) {
+        XConfigureEvent c;
+        memset(&c, 0, sizeof(c));
+        c.type = ConfigureNotify;
+        c.display = qt_xdisplay();
+        c.send_event = True;
+        c.event = window;
+        c.window = winId();
+        c.x = globalPos.x();
+        c.y = globalPos.y();
+        c.width = width();
+        c.height = height();
+        c.border_width = 0;
+        c.above = None;
+        c.override_redirect = 0;
+        XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+    }
 }
 
 /*!

@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-                  1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+                  1999,2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -170,7 +170,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     setMainWidget( d->mainWidget );
     d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
     d->okButton->setDefault( true );
-    d->cancelButton = new KPushButton( KStdGuiItem::cancel(), d->mainWidget );
+    d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
     d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
@@ -191,15 +191,21 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         u.setPath( KGlobalSettings::documentPath() );
         d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
         u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false, "folder_home" );
-        u.setPath( "/" );
-        d->urlBar->insertItem( u, i18n("Root Directory"), false, "folder_grey" );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false, 
+                               "folder_home" );
+        u = "floppy:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Floppy"), false,
+                                   KProtocolInfo::icon( "floppy" ) );
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false, "file_temporary" );
+        u.setProtocol( "file" );
+        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false, 
+                               "file_temporary" );
         u = "lan:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false, "network_local" );
+            d->urlBar->insertItem( u, i18n("Network"), false, 
+                                   "network_local" );
     }
 
 //     d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
@@ -216,23 +222,28 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     KURL u;
     u.setPath( QDir::rootDirPath() );
     QString text = i18n("Root Directory: %1").arg( u.path() );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                          text );
 
     u.setPath( QDir::homeDirPath() );
     text = i18n("Home Directory: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                          text );
 
     KURL docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
     if ( u.path(+1) != docPath.path(+1) ) {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+        combo->addDefaultURL( u, 
+                              KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                               text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, 
+                          KMimeType::pixmapForURL( u, 0, KIcon::Small ), 
+                          text );
 
     u.setPath( "/tmp" );
 
@@ -1169,6 +1180,8 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
         QString complete = ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
+	    if(!base.endsWith("/"))
+		base.append('/');
 	    QString newText = base + complete;
 	    QString fileProt = QString::fromLatin1( "file:" );
 	    if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))

@@ -440,12 +440,15 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *tmp;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
     tmp = (char *) mktemp (tempFile);
     if (tmp)
 	{
 	    char *ptr = (char *) malloc (strlen (tmp) + 1);
-	    strcpy (ptr, tmp);
+        if (ptr != NULL)
+        {
+	        strcpy (ptr, tmp);
+        }
 	    return (ptr);
 	}
     else
@@ -455,7 +458,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
     ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
 	{
@@ -505,7 +508,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     FILE        *addfp = NULL;
     const char  *path;
     int         original_umask;
-    char        command[256];
+    char        command[PATH_MAX + 32];
     int         i;
 #ifdef HAVE_MKSTEMP
     int         fd;
@@ -564,7 +567,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     umask (original_umask);
 
-    sprintf (command, "iceauth source %s", addAuthFile);
+    snprintf (command, PATH_MAX + 32, "iceauth source %s", addAuthFile);
     system (command);
 
     unlink(addAuthFile);

@@ -56,10 +56,11 @@ DOMImplementation::DOMImplementation(DOMImplementationImpl *i)
 
 DOMImplementation &DOMImplementation::operator = (const DOMImplementation &other)
 {
+    if ( impl != other.impl ) {
     if (impl) impl->deref();
     impl = other.impl;
     if (impl) impl->ref();
-
+    }
     return *this;
 }
 
@@ -185,11 +186,14 @@ Document::Document(DocumentImpl *i) : Node(i)
 Document &Document::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
+    if ( impl != ohandle ) {
     if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
+	    if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
+	} else {
     Node::operator =(other);
+	}
+    }
     return *this;
 }
 
@@ -398,7 +402,9 @@ StyleSheetList Document::styleSheets() const
 
 KHTMLView *Document::view() const
 {
-    return ((DocumentImpl*)impl)->view();
+    if (!impl) return 0;
+
+    return static_cast<DocumentImpl*>(impl)->view();
 }
 
 DOMString Document::completeURL(const DOMString& url)
@@ -432,11 +438,14 @@ DocumentFragment::DocumentFragment(const DocumentFragment &other) : Node(other)
 DocumentFragment &DocumentFragment::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
+    if ( impl != ohandle ) {
     if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
+	    if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
+	} else {
     Node::operator =(other);
+	}
+    }
     return *this;
 }
 
@@ -473,12 +482,14 @@ DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)
 DocumentType &DocumentType::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
+    if ( impl != ohandle ) {
     if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
+	    if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
-
+	} else {
     Node::operator =(other);
+	}
+    }
     return *this;
 }
 

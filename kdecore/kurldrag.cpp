@@ -115,6 +115,11 @@ const char * KURLDrag::format( int i ) const
         return "text/plain";
     else if ( i == 2 )
         return "application/x-kio-metadata";
+    else if ( i == 3 ) //Support this for apps that use plain XA_STRING clipboard
+        return "text/plain;charset=ISO-8859-1";
+    else if ( i == 4 ) //Support this for apps that use the UTF_STRING clipboard
+        return "text/plain;charset=UTF-8"; 
+
     else return 0;
 }
 
@@ -133,6 +138,25 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         a.resize( s.length() + 1 ); // trailing zero
         memcpy( a.data(), s.data(), s.length() + 1 );
     }
+    else if ( mimetype.lower() == "text/plain;charset=iso-8859-1")
+    {
+        QStringList uris;
+        for (QStrListIterator it(m_urls); *it; ++it)
+         uris.append(KURL(*it, 106).url(0, 4)); // 106 is mib enum for utf8 codec; 4 for latin1
+
+        QCString s = uris.join( "\n" ).latin1();
+        a.resize( s.length() + 1 ); // trailing zero
+        memcpy( a.data(), s.data(), s.length() + 1 );    
+    }
+    else if ( mimetype.lower() == "text/plain;charset=utf-8")
+    {
+        QStringList uris;
+        for (QStrListIterator it(m_urls); *it; ++it)
+         uris.append(KURL(*it, 106).prettyURL()); // 106 is mib enum for utf8 codec
+        QCString s = uris.join( "\n" ).utf8();
+        a.resize( s.length() + 1 ); // trailing zero
+        memcpy( a.data(), s.data(), s.length() + 1 );    
+    }    
     else if ( mimetype == "application/x-kio-metadata" )
     {
         if ( !m_metaData.isEmpty() )

@@ -103,7 +103,7 @@ typedef union VALUETYPE {
 
 struct magic {
 	struct magic *next;     /* link to next entry */
-	int lineno;             /* line number from magic file */
+	//int lineno;             /* line number from magic file */
 
 	short flag;
 #define INDIR    1              /* if '>(...)' appears,  */
@@ -726,7 +726,7 @@ int KMimeMagic::parse(char *l, int lineno)
 	/* set values in magic structure */
 	m->flag = 0;
 	m->cont_level = 0;
-	m->lineno = lineno;
+	//m->lineno = lineno;
 
 	while (*l == '>') {
 		++l;            /* step over */
@@ -1502,7 +1502,9 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 					char *tmp;
 					char buf2[BUFSIZ + BUFSIZ + 4];
 
-					strcpy(buf2, fn);
+					strncpy(buf2, fn, BUFSIZ);
+                    buf2[BUFSIZ] = 0;
+
 					if ((tmp = strrchr(buf2, '/')) == NULL) {
 						tmp = buf; /* in current dir */
 					} else {

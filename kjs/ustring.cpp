@@ -290,13 +290,21 @@ char *UString::ascii() const
   return statBuffer;
 }
 
+#ifdef KJS_DEBUG_MEM
+void UString::globalClear()
+{
+  delete [] statBuffer;
+  statBuffer = 0L;
+}
+#endif
+
 UString &UString::operator=(const char *c)
 {
   release();
   int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
-    d[i].uc = c[i];
+    d[i].uc = (unsigned char) c[i];
   rep = Rep::create(d, l);
 
   return *this;
@@ -356,7 +364,7 @@ double UString::toDouble( bool tolerant ) const
 
   // empty string ?
   if (*c == '\0')
-    return 0.0;
+    return tolerant ? NaN : 0.0;
 
   // hex number ?
   if (*c == '0' && (*(c+1) == 'x' || *(c+1) == 'X')) {

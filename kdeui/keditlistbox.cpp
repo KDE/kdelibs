@@ -134,7 +134,11 @@ void KEditListBox::init( bool checkAtEntering, int buttons )
 void KEditListBox::typedSomething(const QString& text)
 {
     if(currentItem() >= 0) {
-        if(currentText() != m_lineEdit->text()) m_listBox->changeItem(text, currentItem());
+        if(currentText() != m_lineEdit->text()) 
+        {
+            m_listBox->changeItem(text, currentItem());
+            emit changed();
+        }
     }
 
     if ( !servNewButton )

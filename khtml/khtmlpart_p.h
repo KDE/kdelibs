@@ -30,6 +30,7 @@
 #include <kxmlguifactory.h>
 #include <kaction.h>
 #include <kparts/partmanager.h>
+#include <qtimer.h>
 
 #include "khtml_run.h"
 #include "khtml_find.h"
@@ -101,7 +102,7 @@ public:
     m_job = 0L;
     m_bComplete = true;
     m_bLoadEventEmitted = true;
-    m_bReloading = false;
+    m_cachePolicy = KIO::CC_Verify;
     m_manager = 0L;
     m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
     m_bClearing = false;
@@ -242,17 +243,20 @@ public:
           m_ssl_cipher_version,
           m_ssl_cipher_used_bits,
           m_ssl_cipher_bits,
-          m_ssl_cert_state;
+          m_ssl_cert_state,
+          m_ssl_parent_ip,
+          m_ssl_parent_cert;
 
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
-  bool m_bReloading:1;
   bool m_haveEncoding:1;
   bool m_bHTTPRefresh:1;
   bool m_onlyLocalReferences :1;
+  bool m_redirectLockHistory:1;
 
   KURL m_workingURL;
 
+  KIO::CacheControl m_cachePolicy;
   QTimer m_redirectionTimer;
   QTime m_parsetime;
   int m_delayRedirect;
@@ -278,8 +282,11 @@ public:
   KParts::PartManager *m_manager;
 
   QString m_popupMenuXML;
+  KHTMLPart::GUIProfile m_guiProfile;
 
   int m_zoomFactor;
+
+  QStringList m_pluginPageQuestionAsked;
 
   int m_findPos;
   DOM::NodeImpl *m_findNode;
@@ -331,6 +338,8 @@ public:
   unsigned long m_loadedObjects;
   unsigned long m_totalObjectCount;
   unsigned int m_jobPercent;
+  
+  QTimer m_progressUpdateTimer;
 
   KHTMLFind *m_findDialog;
 

@@ -131,7 +131,7 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_strName( url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode( mode ),
-  m_permissions( 0 ),
+  m_permissions( KFileItem::Unknown ),
   m_bMarked( false ),
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
@@ -215,7 +215,7 @@ void KFileItem::refresh()
   m_group = QString::null;
   m_access = QString::null;
   m_size = (KIO::filesize_t) -1;
-//  metaInfo = KFileMetaInfo();
+  m_metaInfo = KFileMetaInfo();
   for ( int i = 0; i < NumFlags; i++ )
       m_time[i] = (time_t) -1;
 
@@ -590,7 +590,7 @@ QString KFileItem::getToolTipText(int maxcount)
   }
   else
   {
-    QStringList keys = KFileMetaInfoProvider::self()->preferredKeys(info.mimeType());
+    QStringList keys = info.preferredKeys();
 
     // now the rest
     QStringList::Iterator it = keys.begin();

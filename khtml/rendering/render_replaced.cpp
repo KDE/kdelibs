@@ -138,8 +138,11 @@ void RenderWidget::detach()
     remove();
 
     if ( m_widget ) {
-        if ( m_view )
+        if ( m_view ) {
+            m_view->setWidgetVisible(this, false);
             m_view->removeChild( m_widget );
+            m_view = 0;
+        }
 
         m_widget->removeEventFilter( this );
         m_widget->setMouseTracking( false );
@@ -150,16 +153,27 @@ void RenderWidget::detach()
 RenderWidget::~RenderWidget()
 {
     KHTMLAssert( refCount() <= 0 );
+    assert(!m_view);
 
-    delete m_widget;
+    if(m_widget) {
+        m_widget->hide();
+        m_widget->deleteLater();
+    }
 }
 
-static void resizeWidget( QWidget *widget, int w, int h )
+void  RenderWidget::resizeWidget( QWidget *widget, int w, int h )
 {
-    // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+    // ugly hack to limit the maximum size of the widget (as X11 has problems i
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
-    widget->resize( w, h );
+
+    if (widget->width() != w || widget->height() != h) {
+        ref();
+        element()->ref();
+        widget->resize( w, h );
+        element()->deref();
+        deref();
+    }
 }
 
 void RenderWidget::setQWidget(QWidget *widget)
@@ -182,12 +196,13 @@ void RenderWidget::setQWidget(QWidget *widget)
 		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
 		resizeWidget( m_widget,
 			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-			      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
+			      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
             }
             else
                 setPos(xPos(), -500000);
         }
-	m_view->addChild( m_widget, -500000, 0 );
+        m_view->setWidgetVisible(this, false);
+	m_view->addChild( m_widget, 0, -500000);
     }
 }
 
@@ -198,7 +213,7 @@ void RenderWidget::layout( )
     if ( m_widget ) {
 	resizeWidget( m_widget,
 		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-		      m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight() );
+		      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
     }
 
     setLayouted();
@@ -274,6 +289,7 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
 	xPos = xNew;
 	yPos = yNew;
     }
+    m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
 }
@@ -302,7 +318,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //                 KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
 //                 if ( ext )  ext->editableWidgetBlurred( m_widget );
 //             }
-//             handleFocusOut();
+            handleFocusOut();
         }
         break;
     case QEvent::FocusIn:

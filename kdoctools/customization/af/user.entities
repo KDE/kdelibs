@@ -5,3 +5,14 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
+
+<!-- Temporary hack: Please translate to Afrikaans
+     You can translate both entity name and contents -->
+
+<!ENTITY bv     "<abbrev>bv.</abbrev>">
+<!ENTITY ens    "<abbrev>ens.</abbrev>">
+<!ENTITY LMK    "<mousebutton>linker</mousebutton> muis knoppie">
+<!ENTITY RMK    "<mousebutton>regter</mousebutton> muis knoppie">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">

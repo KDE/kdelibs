@@ -75,23 +75,27 @@ typedef QValueList<XmlData> XmlDataList;
 class ToolbarItem : public QListViewItem
 {
 public:
-  ToolbarItem(KListView *parent, const QString& name, const QString& statusText)
+  ToolbarItem(KListView *parent, const QString& tag, const QString& name, const QString& statusText)
     : QListViewItem(parent),
+      m_tag(tag),
       m_name(name),
       m_statusText(statusText)
   {
   }
 
-  ToolbarItem(KListView *parent, QListViewItem *item, const QString& name, const QString& statusText)
+  ToolbarItem(KListView *parent, QListViewItem *item, const QString &tag, const QString& name, const QString& statusText)
     : QListViewItem(parent, item),
+      m_tag(tag),
       m_name(name),
       m_statusText(statusText)
   {
   }
 
+  QString internalTag() const { return m_tag; }
   QString internalName() const { return m_name; }
   QString statusText() const { return m_statusText; }
 private:
+  QString m_tag;
   QString m_name;
   QString m_statusText;
 };
@@ -582,7 +586,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   {
     if (it.tagName() == tagSeparator)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, sep_name.arg(sep_num++), QString::null);
+      ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
       act->setText(1, "-----");
       it.setAttribute( attrName, act->internalName() );
       continue;
@@ -592,7 +596,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     {
       // Merge can be named or not - use the name if there is one
       QString name = it.attribute( attrName );
-      ToolbarItem *act = new ToolbarItem(m_activeList, name, i18n("This element will be replaced with all the elements of an embedded component."));
+      ToolbarItem *act = new ToolbarItem(m_activeList, tagMerge, name, i18n("This element will be replaced with all the elements of an embedded component."));
       if ( name.isEmpty() )
           act->setText(1, i18n("<Merge>"));
       else
@@ -602,7 +606,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     if (it.tagName() == tagActionList)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you won't be able to re-add it.") );
+      ToolbarItem *act = new ToolbarItem(m_activeList, tagActionList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you won't be able to re-add it.") );
       act->setText(1, i18n("ActionList: %1").arg(it.attribute(attrName)));
       continue;
     }
@@ -616,7 +620,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       if (it.attribute( attrName ) == action->name())
       {
         // we have a match!
-        ToolbarItem *act = new ToolbarItem(m_activeList, action->name(), action->statusText());
+        ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->name(), action->statusText());
         act->setText(1, action->plainText());
         if (action->hasIcon())
           act->setPixmap(0, BarIcon(action->icon(), 16));
@@ -644,14 +648,14 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if ( action->icon().isEmpty() && action->isA("KAction") )
       continue;
 
-    ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name(), action->statusText());
+    ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->name(), action->statusText());
     act->setText(1, action->plainText());
     if (!action->icon().isEmpty())
         act->setPixmap(0, BarIcon(action->icon(), 16));
   }
 
   // finally, add a default separator to the inactive list
-  ToolbarItem *act = new ToolbarItem(m_inactiveList, sep_name.arg(sep_num++), QString::null);
+  ToolbarItem *act = new ToolbarItem(m_inactiveList, tagSeparator, sep_name.arg(sep_num++), QString::null);
   act->setText(1, "-----");
 }
 
@@ -779,7 +783,8 @@ void KEditToolbarWidget::slotInsertButton()
     QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
     for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
     {
-      if (elem.attribute(attrName) == act_item->internalName())
+      if ((elem.attribute(attrName) == act_item->internalName()) &&
+          (elem.tagName() == act_item->internalTag()))
       {
         d->m_currentToolbarElem.insertAfter(new_item, elem);
         break;
@@ -815,7 +820,8 @@ void KEditToolbarWidget::slotRemoveButton()
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
   for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    if (item->internalName() == elem.attribute(attrName))
+    if ((elem.attribute(attrName) == item->internalName()) &&
+        (elem.tagName() == item->internalTag()))
     {
       // nuke myself!
       d->m_currentToolbarElem.removeChild(elem);
@@ -851,11 +857,13 @@ void KEditToolbarWidget::slotUpButton()
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
   for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    if (item->internalName() == elem.attribute(attrName))
+    if ((elem.attribute(attrName) == item->internalName()) &&
+        (elem.tagName() == item->internalTag()))
     {
       // cool, i found me.  now clone myself
       ToolbarItem *clone = new ToolbarItem(m_activeList,
                                            item->itemAbove()->itemAbove(),
+                                           item->internalTag(),
                                            item->internalName(),
                                            item->statusText());
       clone->setText(1, item->text(1));
@@ -866,6 +874,7 @@ void KEditToolbarWidget::slotUpButton()
 
       // remove the old me
       m_activeList->takeItem(item);
+      delete item;
 
       // select my clone
       m_activeList->setSelected(clone, true);
@@ -905,11 +914,13 @@ void KEditToolbarWidget::slotDownButton()
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
   for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
   {
-    if (item->internalName() == elem.attribute(attrName))
+    if ((elem.attribute(attrName) == item->internalName()) &&
+        (elem.tagName() == item->internalTag()))
     {
       // cool, i found me.  now clone myself
       ToolbarItem *clone = new ToolbarItem(m_activeList,
                                            item->itemBelow(),
+                                           item->internalTag(),
                                            item->internalName(),
                                            item->statusText());
       clone->setText(1, item->text(1));
@@ -920,6 +931,7 @@ void KEditToolbarWidget::slotDownButton()
 
       // remove the old me
       m_activeList->takeItem(item);
+      delete item;
 
       // select my clone
       m_activeList->setSelected(clone, true);

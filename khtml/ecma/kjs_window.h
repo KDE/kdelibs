@@ -90,6 +90,10 @@ namespace KJS {
     int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
     void scheduleClose();
+    void closeNow();
+    void delayedGoHistory(int steps);
+    void goHistory(int steps);
+    void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
@@ -103,7 +107,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
-           NodeFilter, DOMException, Frames, _History, Event, InnerHeight,
+           NodeFilter, DOMException, CSSRule, Frames, _History, Event, InnerHeight,
            InnerWidth, Length, _Location, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
@@ -125,6 +129,15 @@ namespace KJS {
     Location *loc;
     WindowQObject *winq;
     DOM::Event *m_evt;
+
+    enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
+    struct DelayedAction {
+      DelayedAction() : actionId(NullAction) {} // for QValueList
+      DelayedAction( DelayedActionId id, QVariant p = QVariant() ) : actionId(id), param(p) {}
+      DelayedActionId actionId;
+      QVariant param; // just in case
+    };
+    QValueList<DelayedAction> m_delayed;
   };
 
   /**

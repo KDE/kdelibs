@@ -646,9 +646,9 @@ void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 
     if (role == WindowManager) {
 	p->number_of_desktops = numberOfDesktops;
-
+ 	long d = numberOfDesktops;
 	XChangeProperty(p->display, p->root, net_number_of_desktops, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &p->number_of_desktops, 1);
+			PropModeReplace, (unsigned char *) &d, 1);
     } else {
 	XEvent e;
 
@@ -2183,7 +2183,7 @@ void NETWinInfo::setDesktop(int desktop) {
     } else {
 	// otherwise we just set or remove the property directly
 	p->desktop = desktop;
-	int d = desktop;
+	long d = desktop;
 
 	if ( d != OnAllDesktops ) {
 	    if ( d == 0 ) {
@@ -2204,8 +2204,9 @@ void NETWinInfo::setPid(int pid) {
     if (role != Client) return;
 
     p->pid = pid;
+    long d = pid;
     XChangeProperty(p->display, p->window, net_wm_pid, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &(p->pid), 1);
+		    PropModeReplace, (unsigned char *) &d, 1);
 }
 
 

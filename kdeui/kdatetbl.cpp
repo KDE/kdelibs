@@ -182,6 +182,15 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setBrush(lightGray);
           painter->setPen(lightGray);
         }
+
+      QDate cur_date = QDate::currentDate();
+      if ( (date.year()  == cur_date.year()) &&
+           (date.month() == cur_date.month()) && 
+           (firstday+cur_date.day()-1 == pos) )
+      {
+         painter->setPen(black);
+      }
+
       painter->drawRect(0, 0, w, h);
       painter->setPen(pen);
       painter->drawText(0, 0, w, h, AlignCenter, text, -1, &rect);
@@ -194,66 +203,53 @@ void
 KDateTable::keyPressEvent( QKeyEvent *e )
 {
     if ( e->key() == Qt::Key_Prior ) {
-        if ( date.month() == 1 ) {
-            KNotifyClient::beep();
-            return;
-        }
-        int day = date.day();
-        if ( day > 27 )
-            while ( !QDate::isValid( date.year(), date.month()-1, day ) )
-                day--;
-        setDate(QDate(date.year(), date.month()-1, day));
+        setDate(date.addMonths(-1));
         return;
     }
     if ( e->key() == Qt::Key_Next ) {
-        if ( date.month() == 12 ) {
-            KNotifyClient::beep();
-            return;
-        }
-        int day = date.day();
-        if ( day > 27 )
-            while ( !QDate::isValid( date.year(), date.month()+1, day ) )
-                day--;
-        setDate(QDate(date.year(), date.month()+1, day));
+        setDate(date.addMonths(1));
         return;
     }
-
-    int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
-
-    int temp=firstday+date.day()-dayoff;
-    int pos = temp;
 
     if ( e->key() == Qt::Key_Up ) {
-        pos -= 7;
+        if ( date.day() > 7 ) {
+            setDate(date.addDays(-7));
+            return;
+        }
     }
     if ( e->key() == Qt::Key_Down ) {
-        pos += 7;
+        if ( date.day() <= date.daysInMonth()-7 ) {
+            setDate(date.addDays(7));
+            return;
+        }
     }
     if ( e->key() == Qt::Key_Left ) {
-        pos--;
+        if ( date.day() > 1 ) {
+            setDate(date.addDays(-1));
+            return;
+    }
     }
     if ( e->key() == Qt::Key_Right ) {
-        pos++;
+        if ( date.day() < date.daysInMonth() ) {
+            setDate(date.addDays(1));
+            return;
+    }
     }
 
-    if(pos+dayoff<=firstday)
-    { // this day is in the previous month
-        KNotifyClient::beep();
+    if ( e->key() == Qt::Key_Minus ) {
+        setDate(date.addDays(-1));
         return;
     }
-    if(firstday+numdays<pos+dayoff)
-    { // this date is in the next month
-        KNotifyClient::beep(i18n( "Month not long enough" ));
+    if ( e->key() == Qt::Key_Plus ) {
+        setDate(date.addDays(1));
+        return;
+    }
+    if ( e->key() == Qt::Key_N ) {
+        setDate(QDate::currentDate());
         return;
     }
 
-    if ( pos == temp )
-        return;
-
-    setDate(QDate(date.year(), date.month(), pos-firstday+dayoff));
-    updateCell(temp/7+1, temp%7); // Update the previously selected cell
-    updateCell(pos/7+1, pos%7); // Update the selected cell
-    assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
+    KNotifyClient::beep();
 }
 
 void

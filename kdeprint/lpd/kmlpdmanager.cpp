@@ -37,6 +37,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
+#include <kprocess.h>
 
 #include <pwd.h>
 #include <unistd.h>
@@ -185,8 +186,11 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	QString	cmd = QString::fromLatin1("chmod -R o-rwx,g+rwX %1 && chown -R lp.lp %2").arg(ent->arg("sd")).arg(ent->arg("sd"));
-	if (system(cmd.latin1()) != 0)
+	QCString cmd = "chmod -R o-rwx,g+rwX ";
+	cmd += QFile::encodeName(KShellProcess::quote(ent->arg("sd")));
+	cmd += "&& chown -R lp.lp ";
+	cmd += QFile::encodeName(KShellProcess::quote(ent->arg("sd")));
+	if (system(cmd.data()) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.").arg(ent->arg("sd")).arg(ent->m_name));
 		return false;
@@ -206,7 +210,9 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 			m_entries.insert(ent->m_name,ent);
 			return false;
 		}
-		system(QString::fromLatin1("rm -rf %1").arg(ent->arg("sd")).latin1());
+		QCString cmd = "rm -rf ";
+		cmd += QFile::encodeName(KShellProcess::quote(ent->arg("sd")));
+		system(cmd.data());
 		delete ent;
 		return true;
 	}
@@ -540,8 +546,11 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 		if (!writePrinters())
 			return false;
 		// write various driver files using templates
-		QString	cmd = QString::fromLatin1("cp %1/master-filter %2/filter").arg(driverDirectory()).arg(spooldir);
-		if (system(cmd.latin1()) == 0 &&
+		QCString cmd = "cp ";
+		cmd += QFile::encodeName(KShellProcess::quote(driverDirectory()+"/master-filter"));
+		cmd += " ";
+		cmd += QFile::encodeName(KShellProcess::quote(spooldir + "/filter"));
+		if (system(cmd.data()) == 0 &&
 		    savePrinttoolCfgFile(driverDirectory()+"/general.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/postscript.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/textonly.cfg.in",spooldir,options))

@@ -29,6 +29,7 @@
 #include <qurl.h>
 #include <qdir.h>
 #include <qstringlist.h>
+#include <qregexp.h>
 
 #include <qtextcodec.h>
 #include <kcharsets.h>
@@ -97,7 +98,7 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
   return result;
 }
 
-static char hex2int( unsigned int _char )
+static int hex2int( unsigned int _char )
 {
   if ( _char >= 'A' && _char <='F')
     return _char - 'A' + 10;
@@ -186,8 +187,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
        bKeepEncoded = false;
     if (character == '%' )
     {
-      signed char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
-      signed char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      int a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
+      int b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
       if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
          // Contains stray %, make sure to re-encode!
@@ -231,7 +232,15 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
           array.setRawData(new_segment, new_length);
           result = textCodec->toUnicode( array, new_length );
           array.resetRawData(new_segment, new_length);
-          bKeepEncoded = false;
+          QCString validate = textCodec->fromUnicode(result);
+          if (strcmp(validate.data(), new_segment) == 0)
+          {
+             bKeepEncoded = false;
+          }
+          else
+          {
+             result = QString::fromLocal8Bit(new_segment, new_length);
+          }
       }
       else
           result = QString::fromLocal8Bit(new_segment, new_length);
@@ -256,11 +265,9 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
 static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 {
   if (path.isEmpty()) return QString::null;
-  // Did we have a trailing '/'
   int len = path.length();
-  bool slash = false;
-  if ( len > 0 && path.right(1)[0] == '/' )
-    slash = true;
+  bool slash = (len && path[len-1] == '/') ||
+               (len > 1 && path[len-2] == '/' && path[len-1] == '.');
 
   // The following code cleans up directory path much like
   // QDir::cleanDirPath() except it can be made to ignore multiple
@@ -280,12 +287,13 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
       cdUp++;
     else
     {
-      // Ignore any occurances of '.' This includes entries
-      // that simply do not make sense like /..../
-      if ( (len!=0 || !cleanDirSeparator) && (len != 1 || path[pos+1] != '.') )
+      // Ignore any occurances of '.'
+      // This includes entries that simply do not make sense like /..../
+      if ( (len || !cleanDirSeparator) &&
+           (len != 1 || path[pos+1] != '.' ) )
       {
         if ( !cdUp )
-          result = path.mid(pos, len+1) + result;
+              result.prepend(path.mid(pos, len+1));
         else
           cdUp--;
       }
@@ -295,11 +303,9 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
 
   if ( result.isEmpty() )
     result = "/";
+  else if ( slash && result[result.length()-1] != '/' )
+       result.append('/');
 
-  // Restore the trailing '/'
-  len = result.length();
-  if ( len > 0 && result.right(1)[0] != '/' && slash )
-    result += "/";
   return result;
 }
 
@@ -526,6 +532,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   }
 
   QString port;
+  bool badHostName = false;
   int start = 0;
   uint len = _url.length();
   QChar* buf = new QChar[ len + 1 ];
@@ -584,12 +591,19 @@ void KURL::parse( const QString& _url, int encoding_hint )
   // Node 4: Accept any amount of characters.
   if (buf[pos] == '[')     // An IPv6 host follows.
       goto Node8;
-  // Terminate on / or @ or ? or #
+  // Terminate on / or @ or ? or # or " or ; or <
   x = buf[pos];
-  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len) )
-     x = buf[++pos];
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len))
+  {
+     if ((x == '\"') || (x == ';') || (x == '<'))
+        badHostName = true;
+      x = buf[++pos];
+  }
   if ( pos == len )
     {
+      if (badHostName)
+         goto NodeErr;
+
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       goto NodeOk;
     }
@@ -607,6 +621,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
      } */
   else if ( (x == '/') || (x == '?') || (x == '#'))
     {
+      if (badHostName)
+         goto NodeErr;
+
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       start = pos;
       goto Node9;
@@ -632,6 +649,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if ( (pos == len) || (buf[pos] != '@') )
     {
       // Ok the : was used to separate host and port
+      if (badHostName)
+         goto NodeErr;
       m_strHost = m_strUser;
       m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
@@ -659,7 +678,17 @@ void KURL::parse( const QString& _url, int encoding_hint )
     start = ++pos; // Skip '['
 
     // Node 8b: Read everything until ] or terminate
-    while( buf[pos] != ']' && pos < len ) pos++;
+    badHostName = false;
+    x = buf[pos];
+    while( (x != ']') &&  (pos < len) )
+    {
+       if ((x == '\"') || (x == ';') || (x == '<'))
+          badHostName = true;
+       x = buf[++pos];
+    }
+    if (badHostName)
+       goto NodeErr;
+
     m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
@@ -671,7 +700,16 @@ void KURL::parse( const QString& _url, int encoding_hint )
     start = pos++;
 
     // Node 8b: Read everything until / : or terminate
-    while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
+    badHostName = false;
+    x = buf[pos];
+    while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
+    {  
+       if ((x == '\"') || (x == ';') || (x == '<'))
+          badHostName = true;
+       x = buf[++pos];
+    }
+    if (badHostName)
+       goto NodeErr;
     if ( pos == len )
     {
        m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
@@ -1236,6 +1274,15 @@ QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 	if (_flags & StripFileProtocol && u.startsWith("file:"))
 		u.remove(0, 5);
 	return u;
+}
+
+QString KURL::htmlURL() const
+{
+  QString s = prettyURL();
+  s.replace(QRegExp("&"), QString("&amp;"));
+  s.replace(QRegExp("<"), QString("&lt;"));
+  s.replace(QRegExp(">"), QString("&gt;"));
+  return s;
 }
 
 KURL::List KURL::split( const KURL& _url )

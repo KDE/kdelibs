@@ -34,6 +34,9 @@
 #include "sys/stat.h"
 #include <config.h>
 
+#include <kprocess.h>
+#include <qfile.h>
+
 int fsearch(FILE *fh,const char *text,long *ptr);
 
 /* This function gives the metronome tempo, from a tempo data as found in
@@ -51,26 +54,23 @@ double metronomeTempoToTempo(ulong x)
 int uncompressFile(const char *gzname, char *tmpname)
   // Returns 0 if OK, 1 if error (tmpname not set)
 {
-  char *cmd=new char[20+strlen(gzname)];
-  sprintf(cmd, "gzip -dc \"%s\"",gzname);
-  FILE *infile = popen( cmd, "r");
-  if (infile==NULL)
-  {
-    fprintf(stderr,"ERROR : popen failed : %s\n",cmd);
+  QString cmd("gzip -dc " + KShellProcess::quote(gzname));
+  FILE *infile = popen( QFile::encodeName(cmd).data(), "r");
+  if (infile==NULL) {
+    fprintf(stderr,"ERROR : popen failed : %s\n",QFile::encodeName(cmd).data());
+    return 1;
   }
   strcpy(tmpname, "/tmp/KMid.XXXXXXXXXX");
   int fd = mkstemp(tmpname);
   if (fd == -1)
   {
     pclose(infile);
-    delete cmd;
     return 1;
   }
   FILE *outfile= fdopen(fd,"wb");
   if (outfile==NULL)
   {
     pclose(infile);
-    delete cmd;
     return 1;
   }
   int n=getc(infile);
@@ -79,7 +79,6 @@ int uncompressFile(const char *gzname, char *tmpname)
     pclose(infile);
     fclose(outfile);
     unlink(tmpname);
-    delete cmd;
     return 1;
   }
   fputc(n,outfile);
@@ -97,7 +96,6 @@ int uncompressFile(const char *gzname, char *tmpname)
   // Is it right for pclose to always fail ?
 
   fclose(outfile);
-  delete cmd;
   return 0;
 }
 
@@ -107,8 +105,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   MidiTrack **tracks;
 
   struct stat buf;
-  stat(name,&buf);
-  if (!S_ISREG(buf.st_mode))
+  if (stat(name,&buf) || !S_ISREG(buf.st_mode))
   {
     fprintf(stderr,"ERROR: %s is not a regular file\n",name);
     ok=-6;
@@ -123,6 +120,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
     return NULL;
   }
   char text[4];
+  text[0] = 0;
   fread(text,1,4,fh);
   if ((strncmp(text,"MThd",4)!=0)&&(strcmp(&name[strlen(name)-3],".gz")==0))
   {	

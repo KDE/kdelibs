@@ -79,9 +79,10 @@ int writeToQString(void * context, const char * buffer, int len)
     return len;
 }
 
-void closeQString(void * context) {
+int closeQString(void * context) {
     QString *t = (QString*)context;
     *t += QString::fromLatin1("\n");
+    return 0;
 }
 
 QString transform( const QString &pat, const QString& tss)
@@ -96,7 +97,9 @@ QString transform( const QString &pat, const QString& tss)
     /* if (contents.left(5) != "<?xml") {
         fprintf(stderr, "xmlizer\n");
         INFO(i18n("XMLize document"));
-        FILE *p = popen(QString::fromLatin1("xmlizer %1").arg(pat).latin1(), "r");
+        QString cmd = "xmlizer ";
+        cmd += KProcess::quote(pat);
+        FILE *p = popen(QFile::encodeName(cmd), "r");
         xmlFile.open(IO_ReadOnly, p);
         char buffer[5001];
         contents.truncate(0);
@@ -286,15 +289,7 @@ static KFilterBase *findFilterByFileName( const QString &filename )
     if ( filter )
         return filter;
 
-    if ( filename.right( 4 ) == ".bz2" ) {
-#if defined( HAVE_BZIP2_SUPPORT )
-        filter = new KBzip2Filter;
-#endif
-    }
-
-    if ( !filter )
-        filter = new KGzipFilter;
-
+    filter = new KBzip2Filter;
     return filter;
 }
 
@@ -345,7 +340,8 @@ static bool readCache( const QString &filename,
     char buffer[32000];
     int n;
     QCString text;
-    while ( ( n = fd->readBlock(buffer, 31900) ) )
+    // Also end loop in case of error, when -1 is returned
+    while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
     {
         buffer[n] = 0;
         text += buffer;
@@ -355,6 +351,10 @@ static bool readCache( const QString &filename,
 
     output = QString::fromUtf8( text );
     delete fd;
+
+    if (n == -1)
+        return false;
+
     kdDebug( 7119 ) << "finished " << endl;
 
     return true;
@@ -415,12 +415,16 @@ QCString fromUnicode( const QString &data )
         for ( uint i = 0; i < len; i++ ) {
             QCString test = locale->fromUnicode( part.mid( i, 1 ) );
             if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
+                if (buffer_len + test.length() + 1 > sizeof(buffer))
+                   break;
                 strcpy( buffer + buffer_len, test.data() );
                 buffer_len += test.length();
             } else {
                 QString res;
                 res.sprintf( "&#%d;", part.at( i ).unicode() );
                 test = locale->fromUnicode( res );
+                if (buffer_len + test.length() + 1 > sizeof(buffer))
+                   break;
                 strcpy( buffer + buffer_len, test.data() );
                 buffer_len += test.length();
             }

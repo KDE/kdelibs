@@ -54,9 +54,11 @@ StyleSheet::StyleSheet(StyleSheetImpl *i)
 
 StyleSheet &StyleSheet::operator = (const StyleSheet &other)
 {
+    if ( impl != other.impl ) {
     if(impl) impl->deref();
     impl = other.impl;
     if(impl) impl->ref();
+    }
     return *this;
 }
 
@@ -158,9 +160,9 @@ CSSStyleSheet &CSSStyleSheet::operator = (const StyleSheet &other)
     {
         if(impl) impl->deref();
         impl = 0;
-        return *this;
-    }
+    } else {
     StyleSheet::operator = (other);
+    }
     return *this;
 }
 
@@ -224,9 +226,11 @@ StyleSheetList::StyleSheetList(StyleSheetListImpl *i)
 
 StyleSheetList &StyleSheetList::operator = (const StyleSheetList &other)
 {
+    if ( impl != other.impl ) {
     if(impl) impl->deref();
     impl = other.impl;
     if(impl) impl->ref();
+    }
     return *this;
 }
 
@@ -278,9 +282,11 @@ MediaList::MediaList(MediaListImpl *i)
 
 MediaList &MediaList::operator = (const MediaList &other)
 {
+    if ( impl != other.impl ) {
     if(impl) impl->deref();
     impl = other.impl;
     if(impl) impl->ref();
+    }
     return *this;
 }
 
@@ -350,9 +356,11 @@ LinkStyle::LinkStyle(const LinkStyle &other)
 
 LinkStyle & LinkStyle::operator = (const LinkStyle &other)
 {
+    if ( node != other.node ) {
     if(node) node->deref();
     node = other.node;
     if(node) node->ref();
+    }
     return *this;
 }
 
@@ -362,15 +370,13 @@ LinkStyle & LinkStyle::operator = (const Node &other)
     node = 0;
     // ### add processing instructions
     NodeImpl *n = other.handle();
-    if(!n || !n->isElementNode()) return *this;
 
     // ### check link is really linking a style sheet
-    if(n->id() != ID_STYLE || n->id() != ID_LINK)
-        return *this;
-
+    if( n && n->isElementNode() &&
+	(n->id() == ID_STYLE || n->id() == ID_LINK) ) {
     node = n;
     if(node) node->ref();
-
+    }
     return *this;
 }
 
@@ -381,14 +387,14 @@ LinkStyle::~LinkStyle()
 
 StyleSheet LinkStyle::sheet()
 {
-    if(!node) return StyleSheet();
-
-    if(node->id() == ID_STYLE)
-        return static_cast<HTMLStyleElementImpl *>(node)->sheet();
-    else if(node->id() == ID_LINK)
-        return static_cast<HTMLLinkElementImpl *>(node)->sheet();
+    int id = node ? node->id() : 0;
     // ### add PI
-    return StyleSheet();
+    return 
+	( id == ID_STYLE) ?
+	static_cast<HTMLStyleElementImpl *>(node)->sheet()
+	: ( (id == ID_LINK) ?
+	    static_cast<HTMLLinkElementImpl *>(node)->sheet()
+	    : StyleSheet() );
 }
 
 bool LinkStyle::isNull() const
@@ -412,17 +418,22 @@ DocumentStyle::DocumentStyle(const DocumentStyle &other)
 
 DocumentStyle & DocumentStyle::operator = (const DocumentStyle &other)
 {
+    if ( doc != other.doc ) {
     if(doc) doc->deref();
     doc = other.doc;
     if(doc) doc->ref();
+    }
     return *this;
 }
 
 DocumentStyle & DocumentStyle::operator = (const Document &other)
 {
+    DocumentImpl *odoc = static_cast<DocumentImpl *>(other.handle());
+    if ( doc != odoc ) {
     if(doc) doc->deref();
-    doc = static_cast<DocumentImpl *>(other.handle());
+	doc = odoc;
     if(doc) doc->ref();
+    }
     return *this;
 }
 

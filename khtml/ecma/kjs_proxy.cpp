@@ -26,6 +26,7 @@
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
+#include <kjs/collector.h>
 
 using namespace KJS;
 
@@ -74,8 +75,23 @@ KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
 
 KJSProxyImpl::~KJSProxyImpl()
 {
-  //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
-  delete m_script;
+  if ( m_script ) {
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
+    // This allows to delete the global-object properties, like all the protos
+    static_cast<ObjectImp*>(m_script->globalObject().imp())->deleteAllProperties( m_script->globalExec() );
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
+    while (KJS::Collector::collect())
+        ;
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
+    delete m_script;
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
+    // Garbage collect - as many times as necessary
+    // (we could delete an object which was holding another object, so
+    // the deref() will happen too late for deleting the impl of the 2nd object).
+    while (KJS::Collector::collect())
+        ;
+  }
+
 #ifndef NDEBUG
   s_count--;
   // If it was the last interpreter, we should have nothing left
@@ -111,6 +127,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #endif
 
   m_script->setInlineCode(inlineCode);
+  Window* window = Window::retrieveWindow( m_part );
   KJS::Value thisNode = n.isNull() ? Window::retrieve( m_part ) : getDOMNode(m_script->globalExec(),n);
 
   UString code( str );
@@ -121,6 +138,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     //    KJSDebugWin::instance()->setCode(QString::null);
 #endif
 
+  window->afterScriptExecution();
+
   // let's try to convert the return value
   if (success && !comp.value().isNull())
     return ValueToVariant( m_script->globalExec(), comp.value());
@@ -129,7 +148,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     if ( comp.complType() == Throw )
     {
         UString msg = comp.value().toString(m_script->globalExec());
-        kdWarning(6070) << "Script throwed exception: " << msg.qstring() << endl;
+        kdWarning(6070) << "Script threw exception: " << msg.qstring() << endl;
     }
     return QVariant();
   }
@@ -147,6 +166,7 @@ void KJSProxyImpl::clear() {
 //        debugWin->leaveSession();
     }
 #endif
+    m_script->clear();
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear( m_script->globalExec() );
@@ -266,6 +286,7 @@ void KJSProxyImpl::initScript()
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_part);
+  static_cast<ObjectImp*>(globalObject.imp())->setPrototype(m_script->builtinObjectPrototype());
 
 #ifdef KJS_DEBUGGER
   m_script->setDebuggingEnabled(m_debugEnabled);

@@ -47,6 +47,7 @@
 #include <qiodevice.h>
 #include <qsocketnotifier.h>
 #include <qdns.h>
+#include <qguardedptr.h>
 
 #include "kdebug.h"
 #include "kextsock.h"
@@ -285,6 +286,7 @@ kde_addrinfo* KExtendedSocketLookup::results()
     v6 = dnsIpv6.addresses();
   addrinfo *p = NULL;
   kde_addrinfo *res = new kde_addrinfo;
+  res->origin = KAI_QDNS;
   QValueList<QHostAddress>::Iterator it;
   unsigned short port;
 
@@ -804,7 +806,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 	}
     }
 
-  if (wsize == 0 & d->flags & outputBufferedSocket)
+  if (wsize == 0 && d->flags & outputBufferedSocket)
     {
       // disabling output buffering
       d->flags &= ~outputBufferedSocket;
@@ -1036,6 +1038,7 @@ int KExtendedSocket::listen(int N)
   if (d->status < lookupDone)
     if (lookup() < 0)
       return -2;		// error!
+  if (!d->resolution) return -2;
 
   addrinfo *p;
 
@@ -1172,7 +1175,8 @@ int KExtendedSocket::connect()
   if (d->status < lookupDone)
     if (lookup() < 0)
       return -2;
-
+  if (!d->resolution) return -2;
+  
   addrinfo *p, *q;
   timeval end, now;
   // Ok, things are a little tricky here
@@ -1339,6 +1343,7 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
+	  emit connectionSuccess();
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;
 	}
@@ -1358,12 +1363,14 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
+	  emit connectionSuccess();
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;		// it connected
 	}
     }
 
   // getting here means no socket connected or stuff like that
+  emit connectionFailed(d->syserror);
   kdDebug(170) << "Failed to connect\n";
   return -1;
 }
@@ -1394,7 +1401,10 @@ int KExtendedSocket::startAsyncConnect()
   // here we have d->status >= lookupDone and <= connecting
   // we can do our connection
   d->status = connecting;
+  QGuardedPtr<QObject> p = this;
   connectionEvent();
+  if (!p) 
+    return -1; // We have been deleted.
   if (d->status < connecting)
     return -1;
   return 0;
@@ -1708,7 +1718,7 @@ int KExtendedSocket::bytesAvailable() const
 
   // as of now, we don't do any extra processing
   // we only work in input-buffered sockets
-  if (d->flags * inputBufferedSocket)
+  if (d->flags & inputBufferedSocket)
     return KBufferedIO::bytesAvailable();
 
   return 0;			// TODO: FIONREAD ioctl
@@ -2075,8 +2085,10 @@ void KExtendedSocket::connectionEvent()
     }
 
   // if we got here, it means that there are no more options to connect
+  QGuardedPtr<QObject> ptr = this;
   emit connectionFailed(errcode);
-  d->status = lookupDone;	// go back
+  if (ptr) // As long as we aren't deleted.
+    d->status = lookupDone;	// go back
 }
 
 void KExtendedSocket::dnsResultsReady()

@@ -1,3 +1,4 @@
+#include <config.h>
 #include "kjavaappletserver.h"
 #include "kjavaappletcontext.h"
 #include "kjavaprocess.h"
@@ -9,6 +10,7 @@
 #include <klocale.h>
 #include <kio/kprotocolmanager.h>
 #include <kio/job.h>
+#include <dcopobject.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
@@ -30,6 +32,9 @@
 #define KJAS_GET_URLDATA       (char)12
 #define KJAS_URLDATA           (char)13
 #define KJAS_SHUTDOWN_SERVER   (char)14
+#define KJAS_EVALUATE_JAVASCRIPT   (char)15
+#define KJAS_GET_MEMBER        (char)16
+#define KJAS_CALL_MEMBER       (char)17
 
 // For future expansion
 class KJavaAppletServerPrivate
@@ -39,6 +44,8 @@ private:
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
+   char wait_command;
+   QStringList wait_args;
 };
 
 static KJavaAppletServer* self = 0;
@@ -46,6 +53,7 @@ static KJavaAppletServer* self = 0;
 KJavaAppletServer::KJavaAppletServer()
 {
     d = new KJavaAppletServerPrivate;
+    d->wait_command = '\0';
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),
@@ -357,7 +365,11 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
         ++index; //skip the sep
     }
-
+    if (cmd_code == d->wait_command) {
+        d->wait_args = args;
+        d->wait_command = 0;
+        return;
+    } 
     //here I should find the context and call the method directly
     //instead of emitting signals
     switch( cmd_code )
@@ -383,6 +395,15 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdDebug(6100) << "GetURLData from classloader: "<< contextID
                           << " for url: " << args[0] << endl;
             break;
+        case KJAS_EVALUATE_JAVASCRIPT:
+            //here we need to get some data for a class loader and send it back...
+            kdDebug(6100) << "Javascript request: "<< contextID
+                          << " code: " << args[0] << endl;
+            break;
+        case KJAS_GET_MEMBER:
+        case KJAS_CALL_MEMBER:
+            kdDebug(6100) << "Error: Missed return member data" << endl;
+            break;
 
         default:
             return;
@@ -392,6 +413,28 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     if( cmd_code == KJAS_GET_URLDATA )
     {
         new KJavaDownloader( contextID, args[0] );
+    }
+    else if (cmd_code == KJAS_EVALUATE_JAVASCRIPT)
+    {
+        bool ok;
+        int contextID_num = contextID.toInt( &ok );
+        KJavaAppletContext * tmp = d->contexts[contextID_num];
+	kdDebug(6100) << "KJavaAppletContext: "<< (void*) tmp << endl;
+        DCOPObject * browser = NULL;
+        if (tmp && (browser = tmp->getBrowserObject())) {
+	    kdDebug(6100) << "BrowserObject: "<< (void*) browser << endl;
+            QByteArray data, retval;
+            QDataStream arg(data, IO_WriteOnly);
+            arg << args[0];
+            QCString rettype;
+            browser->process(QCString("evalJS(QString)"), data, rettype, retval);
+            QDataStream reply_stream(retval, IO_ReadOnly);
+            QString result;
+            reply_stream >> result;
+            QStringList sendargs;
+            sendargs.append(result);
+            process->send(KJAS_EVALUATE_JAVASCRIPT, sendargs);
+        }
     }
     else
     {
@@ -410,6 +453,86 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         else
             kdError(6100) << "no context object for this id" << endl;
     }
+}
+bool KJavaAppletServer::getMember(int contextId, int appletId, const QString & name, JType & type, QString & value) {
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+    args.append( name );
+
+    //dirty sync
+    extern QApplication *qApp;
+    int count = 0;
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(50);
+    }
+    if (d->wait_command)
+        kdError(6100) << "Error: something still waiting for member return data" << endl;
+    count = 0;
+
+    d->wait_command = KJAS_GET_MEMBER;
+    process->send( KJAS_GET_MEMBER, args );
+
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(100);
+    }
+    if (d->wait_command) {
+        kdError(6100) << "Error: timeout on Java  member return data" << endl;
+        d->wait_command = 0;
+        return false;
+    }
+
+    value = d->wait_args[0];
+    bool ok;
+    int t = d->wait_args[1].toInt(&ok);
+    if (!ok)
+        return false;
+    type = (JType) t;
+    return !!t;
+}
+
+
+bool KJavaAppletServer::callMember(int contextId, int appletId, const QString & name, const QStringList & fargs, JType & type, QString & value) {
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+    args.append( name );
+    for (QStringList::const_iterator it = fargs.begin(); it != fargs.end(); it++)
+        args.append(*it);
+
+    //dirty sync
+    extern QApplication *qApp;
+    int count = 0;
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(50);
+    }
+    if (d->wait_command)
+        kdError(6100) << "Error: something still waiting for member return data" << endl;
+    count = 0;
+
+    d->wait_command = KJAS_CALL_MEMBER;
+    process->send( KJAS_CALL_MEMBER, args );
+
+    while (d->wait_command && ++count < 100) {
+        usleep(50000); 
+        qApp->processEvents(100);
+    }
+    if (d->wait_command) {
+        kdError(6100) << "Error: timeout on Java  member return data" << endl;
+        d->wait_command = 0;
+        return false;
+    }
+    value = d->wait_args[0];
+    bool ok;
+    kdDebug(6100) << "KJavaAppletServer::getMember: " << d->wait_args.size() << value << endl;
+    int t = d->wait_args[1].toInt(&ok);
+    if (!ok)
+        return false;
+    type = (JType) t;
+    return !!t;
 }
 
 #include "kjavaappletserver.moc"
