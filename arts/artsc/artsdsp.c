@@ -84,11 +84,16 @@ typedef int (*orig_open_ptr)(const char *pathname, int flags, ...);
 typedef int (*orig_close_ptr)(int fd);
 typedef int (*orig_ioctl_ptr)(int fd, ioctl_request_t request, ...);
 typedef ssize_t (*orig_write_ptr)(int fd, const void *buf, size_t count);
+typedef caddr_t (*orig_mmap_ptr)(void *start, size_t length, int prot,
+                                 int flags, int fd, off_t offset);
+typedef int (*orig_munmap_ptr)(void *start, size_t length);
 
 static orig_open_ptr orig_open;
 static orig_close_ptr orig_close;
 static orig_ioctl_ptr orig_ioctl;
 static orig_write_ptr orig_write;
+static orig_mmap_ptr orig_mmap;
+static orig_munmap_ptr orig_munmap;
 
 static int artsdsp_debug = 0;
 static int artsdsp_init = 0;
@@ -117,6 +122,8 @@ static void artsdsp_doinit()
 	orig_close = (orig_close_ptr)dlsym(RTLD_NEXT,"close");
 	orig_write = (orig_write_ptr)dlsym(RTLD_NEXT,"write");
 	orig_ioctl = (orig_ioctl_ptr)dlsym(RTLD_NEXT,"ioctl");
+	orig_mmap = (orig_mmap_ptr)dlsym(RTLD_NEXT,"mmap");
+	orig_munmap = (orig_munmap_ptr)dlsym(RTLD_NEXT,"munmap");
 }
 
 static void artsdspdebug(const char *fmt,...)
@@ -125,10 +132,10 @@ static void artsdspdebug(const char *fmt,...)
 
 	if(artsdsp_debug)
 	{
-    	va_list ap;
-    	va_start(ap, fmt);
-    	(void) vfprintf(stderr, fmt, ap);
-    	va_end(ap);
+		va_list ap;
+		va_start(ap, fmt);
+		(void) vfprintf(stderr, fmt, ap);
+		va_end(ap);
 	}
 }
 
@@ -165,6 +172,7 @@ int open (const char *pathname, int flags, ...)
     {
       artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
       orig_close(sndfd);
+	  sndfd = -1;
       return -1;
     }
   }
@@ -199,54 +207,167 @@ int ioctl (int fd, ioctl_request_t request, ...)
     {
       int *arg = (int *) argp;
       artsdspdebug("aRts: hijacking /dev/dsp ioctl (%d : %x - %p)\n",
-			  fd, request, argp);
+              fd, request, argp);
 
       switch (request)
         {
-		struct audio_buf_info *audiop;
-        case SNDCTL_DSP_SETFMT:
-          bits = (*arg & 0x30) ? 16 : 8;
-          settings |= 1;
-          break;
+        struct audio_buf_info *audiop;
+        struct count_info *ci;
+#ifdef SNDCTL_DSP_RESET
+		case SNDCTL_DSP_RESET:              /* _SIO  ('P', 0) */
+		  artsdspdebug("aRts: SNDCTL_DSP_RESET unsupported\n");
+		  break;
+#endif
 
-        case SNDCTL_DSP_SPEED:
+#ifdef SNDCTL_DSP_SYNC
+		case SNDCTL_DSP_SYNC:               /* _SIO  ('P', 1) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SYNC unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SPEED
+        case SNDCTL_DSP_SPEED:				/* _SIOWR('P', 2, int) */
           speed = *arg;
           settings |= 2;
           break;
+#endif
 
-        case SNDCTL_DSP_STEREO:
+#ifdef SNDCTL_DSP_STEREO
+        case SNDCTL_DSP_STEREO:				/* _SIOWR('P', 3, int) */
           channels = (*arg)?2:1;
           settings |= 4;
           break;
+#endif
 
-        case SNDCTL_DSP_CHANNELS:
+#ifdef SNDCTL_DSP_GETBLKSIZE
+        case SNDCTL_DSP_GETBLKSIZE:			/* _SIOWR('P', 4, int) */
+          *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
+          break;
+#endif
+
+#ifdef SNDCTL_DSP_SETFMT
+        case SNDCTL_DSP_SETFMT:				/* _SIOWR('P',5, int) */
+          bits = (*arg & 0x30) ? 16 : 8;
+          settings |= 1;
+          break;
+#endif
+
+#ifdef SNDCTL_DSP_CHANNELS
+        case SNDCTL_DSP_CHANNELS:			/*  _SIOWR('P', 6, int) */
           channels = (*arg);
           settings |= 4;
           break;
+#endif
 
-        case SNDCTL_DSP_GETBLKSIZE:
-          *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
-          break;
-
-        case SNDCTL_DSP_GETISPACE:
-        case SNDCTL_DSP_GETOSPACE:
-		  audiop = argp;
-		  audiop->fragstotal =
-			stream?arts_stream_get(stream, ARTS_P_PACKET_COUNT):10;
-          audiop->fragsize =
-			stream?arts_stream_get(stream, ARTS_P_PACKET_SIZE):16384;
-		  audiop->bytes =
-			stream?arts_stream_get(stream, ARTS_P_BUFFER_SPACE):16384;
-		  audiop->fragments = audiop->bytes / audiop->fragsize;
+#ifdef SOUND_PCM_WRITE_FILTER
+		case SOUND_PCM_WRITE_FILTER:        /* _SIOWR('P', 7, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_WRITE_FILTER(%d) unsupported\n",*arg);
 		  break;
+#endif
 
-        case SNDCTL_DSP_GETFMTS:
-          *arg = 0x38;
+#ifdef SNDCTL_DSP_POST
+		case SNDCTL_DSP_POST:               /* _SIO  ('P', 8) */
+		  artsdspdebug("aRts: SNDCTL_DSP_POST unsupported\n",*arg);
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SUBDIVIDE
+		case SNDCTL_DSP_SUBDIVIDE:          /* _SIOWR('P', 9, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SUBDIVIDE(%d) unsupported\n",*arg);
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SETFRAGMENT
+        case SNDCTL_DSP_SETFRAGMENT:        /* _SIOWR('P',10, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SETFRAGMENT(%d) unsupported\n",*arg);
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_GETFMTS
+        case SNDCTL_DSP_GETFMTS:            /* _SIOR ('P',11, int) */
+          *arg = 8 | 16;
           break;
+#endif
 
-        case SNDCTL_DSP_GETCAPS:
+#if defined(SNDCTL_DSP_GETOSPACE) && defined(SNDCTL_DSP_GETISPACE)
+        case SNDCTL_DSP_GETOSPACE:          /* _SIOR ('P',12, audio_buf_info) */
+        case SNDCTL_DSP_GETISPACE:          /* _SIOR ('P',13, audio_buf_info) */
+          audiop = argp;
+          audiop->fragstotal =
+            stream?arts_stream_get(stream, ARTS_P_PACKET_COUNT):10;
+          audiop->fragsize =
+            stream?arts_stream_get(stream, ARTS_P_PACKET_SIZE):16384;
+          audiop->bytes =
+            stream?arts_stream_get(stream, ARTS_P_BUFFER_SPACE):16384;
+          audiop->fragments = audiop->bytes / audiop->fragsize;
+          break;
+#endif
+
+#ifdef SNDCTL_DSP_NONBLOCK
+		case SNDCTL_DSP_NONBLOCK:           /* _SIO  ('P',14) */
+		  artsdspdebug("aRts: SNDCTL_DSP_NONBLOCK unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_GETCAPS
+        case SNDCTL_DSP_GETCAPS:			/* _SIOR ('P',15, int) */
           *arg = 0;
           break;
+#endif
+
+#ifdef SNDCTL_DSP_GETTRIGGER
+		case SNDCTL_DSP_GETTRIGGER:         /* _SIOR ('P',16, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_GETTRIGGER unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SETTRIGGER
+		case SNDCTL_DSP_SETTRIGGER:         /* _SIOW ('P',16, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SETTRIGGER(%d) unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_GETIPTR
+        case SNDCTL_DSP_GETIPTR:			/* _SIOR ('P',17, count_info) */
+		  artsdspdebug("aRts: SNDCTL_DSP_GETIPTR unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_GETOPTR
+        case SNDCTL_DSP_GETOPTR:			/* _SIOR ('P',18, count_info) */
+		  artsdspdebug("aRts: SNDCTL_DSP_GETOPTR unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_MAPINBUF
+		case SNDCTL_DSP_MAPINBUF:           /* _SIOR ('P', 19, buffmem_desc) */
+		  artsdspdebug("aRts: SNDCTL_DSP_MAPINBUF unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_MAPOUTBUF
+		case SNDCTL_DSP_MAPOUTBUF:          /* _SIOR ('P', 20, buffmem_desc) */
+		  artsdspdebug("aRts: SNDCTL_DSP_MAPOUTBUF unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SETSYNCRO
+		case SNDCTL_DSP_SETSYNCRO:          /* _SIO  ('P', 21) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SETSYNCHRO unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_SETDUPLEX
+		case SNDCTL_DSP_SETDUPLEX:          /* _SIO  ('P', 22) */
+		  artsdspdebug("aRts: SNDCTL_DSP_SETDUPLEX unsupported\n");
+		  break;
+#endif
+
+#ifdef SNDCTL_DSP_GETODELAY
+		case SNDCTL_DSP_GETODELAY:          /* _SIOR ('P', 23, int) */
+		  artsdspdebug("aRts: SNDCTL_DSP_GETODELAY unsupported\n");
+		  break;
+#endif
 
         default:
           artsdspdebug("aRts: unhandled /dev/dsp ioctl (%x - %p)\n",request, argp);
@@ -255,10 +376,10 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
       if (settings == 7 && !stream)
         {
-		  const char *name = getenv("ARTSDSP_NAME");
+          const char *name = getenv("ARTSDSP_NAME");
 
           artsdspdebug ("aRts: creating stream...\n");
-	      stream = arts_play_stream(speed,bits,channels,name?name:"artsdsp");
+          stream = arts_play_stream(speed,bits,channels,name?name:"artsdsp");
         }
 
       return 0;
@@ -299,11 +420,36 @@ ssize_t write (int fd, const void *buf, size_t count)
   else if(sndfd != -1)
   {
     artsdspdebug ("aRts: /dev/dsp write...\n");
-	if(stream != 0)
-	{
+    if(stream != 0)
+    {
       return arts_write(stream,buf,count);
-	}
+    }
   }
   return 0;
 }
+
+caddr_t mmap(void  *start,  size_t length, int prot, int flags,
+             int fd, off_t offset)
+{
+  CHECK_INIT();
+
+  if(fd != sndfd || sndfd == -1)
+    return orig_mmap(start,length,prot,flags,fd,offset);
+  else
+  {
+    artsdspdebug ("aRts: /dev/dsp mmap (unsupported)...\n");
+    artsdspdebug ("start = %x, length = %d, prot = %d, flags = %d\n",
+                   start, length, prot, flags);
+    artsdspdebug ("fd = %d, offset = %d\n",fd,offset);
+  }
+  return (caddr_t)-1;
+}
+        
+int munmap(void *start, size_t length)
+{
+  CHECK_INIT();
+
+  return orig_munmap(start,length);
+}
+
 #endif
