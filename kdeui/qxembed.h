@@ -26,31 +26,27 @@
 
 #ifndef Q_WS_QWS
 
-/*
-  Documentation for this class is in the cpp-file!
- */
-
-
 class QXEmbedData;
 
 /**
- * A QXEmbed widget serves as an embedder that can manage one single
- * embedded X-window. These so-called client windows can be arbitrary
- * QWidgets.
+ * A QXEmbed widget serves as an embedder that can manage one single embedded
+ * X-window. These so-called client windows can be arbitrary Qt or non Qt
+ * applications.
  *
- * There are two different ways of using QXEmbed, from the embedder's
- * or from the client's side.  When using it from the embedder's side,
- * you already know the window identifier of the window that should be
- * embedded. Simply call embed() with this identifier as parameter.
- *
+ * There are two different ways of using QXEmbed,
+ * from the client side or from the embedder's side.
+ * 
  * Embedding from the client's side requires that the client knows the
  * window identifier of the respective embedder widget. Use either
- * embedClientIntoWindow() or the high-level wrapper
- * processClientCmdline().
+ * embedClientIntoWindow() or the high-level wrapper processClientCmdline().
+ * This is only possible when the client is a Qt application.
  *
- * If a window has been embedded successfully, embeddedWinId() returns
- * its id.
- *
+ * When using it from the embedder's side, you must know the window 
+ * identifier of the window that should be embedded. Simply call embed() 
+ * with this identifier as parameter.  If the client is a Qt application,
+ * make sure it has called QXEmbed::initialize(). Otherwise you should
+ * probably call setProtocol(XPLAIN) before embed().
+ * 
  * Reimplement the change handler windowChanged() to catch embedding or
  * the destruction of embedded windows. In the latter case, the
  * embedder also emits a signal embeddedWindowDestroyed() for
@@ -116,7 +112,7 @@ public:
     /**
      * Embeds the window with the identifier w into this xembed widget.
      *
-     * This function is useful if the server knows about the client window
+     * This function is useful if the embedder knows about the client window
      * that should be embedded.  Often it is vice versa: the client knows
      * about its target embedder. In that case, it is not necessary to call
      * embed(). Instead, the client will call the static function
@@ -157,23 +153,6 @@ public:
      */
     static bool processClientCmdline( QWidget* client, int& argc, char ** argv );
 
-
-    /**
-     * Returns a size sufficient for the embedded window
-     */
-    QSize sizeHint() const;
-
-    /**
-     * Returns the minimum size specified by the embedded window.
-     */
-    QSize minimumSizeHint() const;
-
-    /**
-     * Specifies that this widget can use additional space, and that it can
-     * survive on less than sizeHint().
-    */
-    QSizePolicy sizePolicy() const;
-
     /** 
      * Sends a WM_DELETE_WINDOW message to the embedded window.  This is what
      * typically happens when you click on the close button of a window
@@ -189,17 +168,24 @@ public:
      * kept alive, is hidden, and receives a WM_DELETE_WINDOW message using
      * sendDelete().  This is the default.  Otherwise, the destruction of the
      * QXEmbed object simply destroys the embedded window.
+     *
+     * @see sendDelete()
      */
     void setAutoDelete( bool );
 
     /**
      * Returns the value of flag indicating what shoud be done with the
      * embedded window when the embedding window is destroyed.
-     * \sa setAutoDelete()
+     * 
+     * @see setAutoDelete()
      */
     bool autoDelete() const;
 
-
+    
+    /* Reimp */
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+    QSizePolicy sizePolicy() const;
     bool eventFilter( QObject *, QEvent * );
     bool customWhatsThis() const;
     void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
