@@ -20,6 +20,7 @@
 #include <qtimer.h>
 #include <qinputdialog.h>
 #include <dom_string.h>
+#include <kurl.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 
@@ -46,7 +47,9 @@ Window::~Window()
 
 KJSO Window::tryGet(const UString &p) const
 {
-  if (p == "alert")
+  if (p == "location")
+    return KJSO(new Location(widget->part()));
+  else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
     return Function(new WindowFunc(this, WindowFunc::Confirm));
@@ -189,4 +192,42 @@ void WindowQObject::timeout()
   parent->widget->part()->executeScript(timeoutHandler.qstring());
 }
 
+KJSO Location::get(const UString &p) const
+{
+  KURL url = part->url();
+  QString str;
+
+  if (p == "hash")
+    str = url.ref();
+  else if (p == "host") {
+    str = url.host();
+    if (url.port())
+      str += ":" + QString::number(url.port());
+  } else if (p == "hostname")
+    str = url.host();
+  else if (p == "href")
+    str = url.prettyURL();
+  else if (p == "pathname")
+    str = url.path();
+  else if (p == "port")
+    str = url.port() ? QString::number(url.port()) : QString::fromLatin1("");
+  else if (p == "protocol")
+    str = url.protocol();
+  else if (p == "search")
+    str = url.query();
+  else
+    return Undefined();
+
+  return String(str);
+}
+
+void Location::put(const UString &p, const KJSO &v)
+{
+  QString str = v.toString().value().qstring();
+
+//   if (p == "href")
+//     part->openURL(str);
+}
+
 #include "kjs_window.moc"
+

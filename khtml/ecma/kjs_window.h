@@ -76,6 +76,15 @@ namespace KJS {
     UString timeoutHandler;
   };
 
+  class Location : public HostImp {
+  public:
+    Location(KHTMLPart *p) : part(p) { }
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO &v);
+  private:
+    KHTMLPart *part;
+  };
+
 }; // namespace
 
 #endif
