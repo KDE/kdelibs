@@ -408,7 +408,6 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     return KSSLCertificate::NoCARoot;
   }
 
-  qsl.prepend(KGlobal::dirs()->saveLocation("kssl"));
   KSSLCertificate::KSSLValidation ksslv = Unknown;
 
   for (QStringList::Iterator j = qsl.begin();
@@ -417,7 +416,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     struct stat sb;
     QString _j = (*j)+"ca-bundle.crt";
     if (-1 == stat(_j.ascii(), &sb)) continue;
-    kdDebug(7029) << "KSSL Certificate Root directory found: " << _j << endl;
+    //kdDebug(7029) << "KSSL Certificate Root directory found: " << _j << endl;
 
     certStore = d->kossl->X509_STORE_new();
     if (!certStore)
