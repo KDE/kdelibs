@@ -885,8 +885,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
 
   kdebug( KDEBUG_INFO, 7102, "ftpStat : %s", _url.url().ascii());
 
-  QString path = _url.directory();
-
+  QString path = _url.path();
   if ( path.isEmpty() || path == "/" ) {
     fe.access = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     fe.type = S_IFDIR;
@@ -899,7 +898,8 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
     return &fe;
   }
 
-  if( !ftpOpenCommand( "list", path, 'A' ) ) {
+  QString directory = _url.directory();
+  if( !ftpOpenCommand( "list", directory, 'A' ) ) {
     kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST");
     return 0L;
   }
