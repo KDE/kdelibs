@@ -344,18 +344,15 @@ fi
 if test -z "$x_libraries" || test "x$x_libraries" = xNONE; then
   X_LDFLAGS=""
   x_libraries="/usr/lib"; dnl better than nothing :-
-  all_libraries=""
  else
   X_LDFLAGS="-L$x_libraries"
-  all_libraries=$X_LDFLAGS
-  
 fi
+all_libraries="$all_libraries $X_LDFLAGS"  
 
 AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LDFLAGS)
 AC_SUBST(x_libraries)
 AC_SUBST(x_includes)
-all_includes=$X_INCLUDES
 ])
 
 AC_DEFUN(KDE_PRINT_QT_PROGRAM,
@@ -689,6 +686,15 @@ fi
 AC_SUBST(KDE_LDFLAGS)
 AC_SUBST(KDE_INCLUDES)
 
+KDE_CHECK_EXTRA_LIBS
+
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+
+])
+
+AC_DEFUN(KDE_CHECK_EXTRA_LIBS,
+[
 AC_MSG_CHECKING(for extra includes)
 AC_ARG_WITH(extra-includes, [  --with-extra-includes   adds non standard include paths], 
   kde_use_extra_includes="$withval",
@@ -701,6 +707,7 @@ if test -n "$kde_use_extra_includes" && \
    IFS=':'
    for dir in $kde_use_extra_includes; do
      all_includes="$all_includes -I$dir"
+     USER_INCLUDES="$USER_INCLUDES -I$dir"
    done
    IFS=$ac_save_ifs
    kde_use_extra_includes="added"
@@ -723,6 +730,7 @@ if test -n "$kde_use_extra_libs" && \
    for dir in $kde_use_extra_libs; do
      all_libraries="$all_libraries -L$dir"
      KDE_EXTRA_RPATH="$KDE_EXTRA_RPATH -rpath $dir"
+     USER_LDFLAGS="$USER_LDFLAGS -L$dir"
    done
    IFS=$ac_save_ifs
    kde_use_extra_libs="added"
@@ -731,9 +739,6 @@ else
 fi
 
 AC_MSG_RESULT($kde_use_extra_libs)
-
-AC_SUBST(all_includes)
-AC_SUBST(all_libraries)
 
 ])
 
