@@ -1309,14 +1309,9 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				else
 					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
 				if ( active & SC_SpinWidgetDown )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 4 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 6 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 4 );
-				p->setPen( cg.light() );
-				if ( QApplication::reverseLayout() )
-					p->drawLine( br.right(), br.y(), br.right(), br.bottom() );
-				else
-					p->drawLine( br.x(), br.y(), br.x(), br.bottom() );
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 6 );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
