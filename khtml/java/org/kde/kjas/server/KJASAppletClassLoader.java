@@ -249,6 +249,7 @@ public final class KJASAppletClassLoader
         Main.debug( dbgID + "loadClass, class name = " + name );
         //We need to be able to handle foo.class, so strip off the suffix
         String fixed_name = name;
+        /*
         // need to convert to lowercase to match the suffix
         // people from the windoze world don't know the difference
         // see http://www.zdftext.de/
@@ -264,6 +265,7 @@ public final class KJASAppletClassLoader
             int max = lowerName.lastIndexOf( ".java" );
             fixed_name = name.substring( 0, max);
         }
+        */
         Object o = loadedClasses.get(fixed_name);
         if (o != null) {
             Main.debug("already loaded: " + o);
