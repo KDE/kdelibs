@@ -10,21 +10,21 @@ libknewstuff_la_SOURCES = engine.cpp entry.cpp downloaddialog.cpp \
   uploaddialog.cpp providerdialog.cpp provider.cpp knewstuff.cpp \
   knewstuffgeneric.cpp
 
-bin_PROGRAMS = ghns khotnewstuff
-
-ghns_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-ghns_LDADD   = libknewstuff.la
-ghns_SOURCES = ghns.cpp
+bin_PROGRAMS = khotnewstuff
 
 khotnewstuff_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 khotnewstuff_LDADD = libknewstuff.la
 khotnewstuff_SOURCES = khotnewstuff.cpp
 
-EXTRA_PROGRAMS = testnewstuff
+EXTRA_PROGRAMS = testnewstuff ghns
 
 testnewstuff_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testnewstuff_LDADD   = libknewstuff.la
 testnewstuff_SOURCES = testnewstuff.cpp
+
+ghns_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+ghns_LDADD   = libknewstuff.la
+ghns_SOURCES = ghns.cpp
 
 knewstuffdir = $(kde_datadir)/knewstuff
 knewstuff_DATA = types
