@@ -1,3 +1,5 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common Unix Print System)
+Comment[da]=CUPS (Fælles Unix Udskrifts System)
+Comment[lv]=CUPS (Kopējā Unix Drukas Sistēma)
