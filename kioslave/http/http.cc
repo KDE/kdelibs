@@ -823,8 +823,6 @@ bool HTTPProtocol::davHostOk()
   if ( m_davVersions != QString::null )
   {
     QStringList vers = QStringList::split( ',', m_davVersions );
-    QString version;
-
     for (QStringList::iterator it = vers.begin(); it != vers.end(); it++)
     {
       uint verNo = (*it).toUInt();
