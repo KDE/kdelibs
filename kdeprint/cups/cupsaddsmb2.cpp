@@ -248,7 +248,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 		if (QMessageBox::critical(0, i18n("Error"),
 				i18n("Operation failed. Possible reasons are: permission denied "
 				     "or invalid samba configuration (see <b>cupsaddsmb</b> manual "
-					 "page for detailed informations, needs at least cups-1.1.11). "
+					 "page for detailed information, needs at least cups-1.1.11). "
 					 "Do you want to try with another login/password?"),
 				QMessageBox::Yes, QMessageBox::Cancel) == QMessageBox::Yes)
 		{
