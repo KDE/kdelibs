@@ -1028,13 +1028,6 @@ void KDirOperator::setupMenu()
 
 void KDirOperator::updateSortActions()
 {
-    // set the actions (without calling the slots)
-    byNameAction->blockSignals( true );
-    byDateAction->blockSignals( true );
-    bySizeAction->blockSignals( true );
-    dirsFirstAction->blockSignals( true );
-    caseInsensitiveAction->blockSignals( true );
-
     if ( KFile::isSortByName( mySorting ) )
 	byNameAction->setChecked( true );
     else if ( KFile::isSortByDate( mySorting ) )
@@ -1044,31 +1037,16 @@ void KDirOperator::updateSortActions()
 
     dirsFirstAction->setChecked( KFile::isSortDirsFirst( mySorting ));
     caseInsensitiveAction->setChecked(KFile::isSortCaseInsensitive(mySorting));
-
-    byNameAction->blockSignals( false );
-    byDateAction->blockSignals( false );
-    bySizeAction->blockSignals( false );
-    dirsFirstAction->blockSignals( false );
-    caseInsensitiveAction->blockSignals( false );
 }
 
 void KDirOperator::updateViewActions()
 {
-    // set the actions (without calling the slots)
-    separateDirsAction->blockSignals( true );
-    shortAction->blockSignals( true );
-    detailedAction->blockSignals( true );
-
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
 
     separateDirsAction->setChecked( KFile::isSeparateDirs( fv ));
 
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
-
-    separateDirsAction->blockSignals( false );
-    shortAction->blockSignals( false );
-    detailedAction->blockSignals( false );
 }
 
 
@@ -1114,8 +1092,10 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
 
 
     if ( kc->readBoolEntry( QString::fromLatin1("Show hidden files"),
-			    DefaultShowHidden ) )
+			    DefaultShowHidden ) ) {
 	 showHiddenAction->setChecked( true );
+	 dir->setShowHiddenFiles( true );
+    }
     if ( kc->readBoolEntry( QString::fromLatin1("Sort reversed"),
 			    DefaultSortReversed ) )
 	reverseAction->setChecked( true );

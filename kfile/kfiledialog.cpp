@@ -145,15 +145,16 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
 					    toolbar, "path combo" );
-    KURL u = QDir::rootDirPath();
+    KURL u;
+    u.setPath( QDir::rootDirPath() );
     QString text = i18n("Root Directory: %1").arg( u.path() );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
-    u = QDir::homeDirPath();
+    u.setPath( QDir::homeDirPath() );
     text = i18n("Home Directory: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
-    u = KGlobalSettings::desktopPath();
+    u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
@@ -1090,7 +1091,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     KURL::List urls;
     KURL u( ops->url() );
     QString name;
-    
+
     int count = line.contains( '"' );
     if ( count == 0 ) { // no " " -> assume one single file
 	u.setFileName( line );
@@ -1105,7 +1106,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 	KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
 	return urls;
     }
-    
+
     int start = 0;
     int index1 = -1, index2 = -1;
     while ( true ) {

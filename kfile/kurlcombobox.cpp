@@ -58,7 +58,7 @@ void KURLComboBox::init( Mode mode )
     setInsertionPolicy( NoInsertion );
     setTrapReturnKey( true );
 
-    opendirPix = BarIcon(QString::fromLatin1("folder_open"));
+    opendirPix = SmallIcon(QString::fromLatin1("folder_open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }
@@ -309,7 +309,7 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 
 QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 {
-    static QPixmap dirpix = BarIcon(QString::fromLatin1("folder"));
+    static QPixmap dirpix = SmallIcon(QString::fromLatin1("folder"));
 
     if ( myMode == Directories )
 	return dirpix;
