@@ -236,11 +236,12 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
             int lattrs = 0;
             ElementImpl *el = static_cast<ElementImpl *>(this);
             AttrImpl *attr;
+            int exceptioncode;
             NamedNodeMapImpl *attrs = el->attributes();
-            unsigned long lmap = attrs->length();
+            unsigned long lmap = attrs->length(exceptioncode);
             for( uint j=0; j<lmap; j++ )
             {
-                attr = static_cast<AttrImpl*>(attrs->item(i));
+                attr = static_cast<AttrImpl*>(attrs->item(i,exceptioncode));
                 unsigned long lname = attr->name().length();
                 unsigned long lvalue = attr->value().length();
                 while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
@@ -811,7 +812,7 @@ bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
     return false;
 }
 
-bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
+bool NodeBaseImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }
@@ -1034,35 +1035,68 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 {
 }
 
-unsigned long NamedNodeMapImpl::length() const
+// ----------------------------------------------------------------------------
+
+GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl() : NamedNodeMapImpl()
 {
-  // ###
-  return 0;
+    // not sure why this doesn't work as a normal object
+    m_contents = new QList<NodeImpl>;
 }
 
-NodeImpl *NamedNodeMapImpl::getNamedItem ( const DOMString &/*name*/ ) const
+GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 {
-  // ###
-  return 0;
+    while (m_contents->count() > 0)
+	m_contents->take(0)->deref();
+
+    delete m_contents;
 }
 
-NodeImpl *NamedNodeMapImpl::setNamedItem ( const Node &/*arg*/ )
+unsigned long GenericRONamedNodeMapImpl::length(int &/*exceptioncode*/) const
 {
-  // ###
-  return 0;
+    return m_contents->count();
 }
 
-NodeImpl *NamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/ )
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
 {
-  // ###
-  return 0;
+    QListIterator<NodeImpl> it(*m_contents);
+    for (; it.current(); ++it)
+	if (it.current()->nodeName() == name)
+	    return it.current();
+    return 0;
 }
 
-
-NodeImpl *NamedNodeMapImpl::item ( unsigned long /*index*/ ) const
+NodeImpl *GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &/*exceptioncode*/ )
 {
-  // ###
-  return 0;
+    // can't modify this list through standard DOM functions
+    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    return 0;
 }
 
+NodeImpl *GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &/*exceptioncode*/ )
+{
+    // can't modify this list through standard DOM functions
+    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    return 0;
+}
+
+NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index, int &/*exceptioncode*/ ) const
+{
+    // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
+    // (also for other similar methods)
+    if (index >= m_contents->count())
+	return 0;
+
+    return m_contents->at(index);
+}
+
+void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
+{
+    // The spec says that in the case of duplicates we only keep the first one
+    int exceptioncode;
+    if (getNamedItem(n->nodeName(),exceptioncode))
+	return;
+	
+    n->ref();
+    m_contents->append(n);
+}
 

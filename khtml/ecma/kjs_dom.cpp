@@ -39,6 +39,7 @@ QPtrDict<DOMNode> nodes(1021);
 QPtrDict<DOMNamedNodeMap> namedNodeMaps;
 QPtrDict<DOMNodeList> nodeLists;
 QPtrDict<DOMDOMImplementation> domImplementations;
+NodePrototype nodePrototype;
 
 // -------------------------------------------------------------------------
 
@@ -71,7 +72,7 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "nodeValue")
     result = getString(node.nodeValue());
   else if (p == "nodeType")
-    result = Number(node.nodeType());
+    result = Number((unsigned int)node.nodeType());
   else if (p == "parentNode")
     result = getDOMNode(node.parentNode());
   else if (p == "childNodes")
@@ -654,14 +655,6 @@ KJSO DOMEntity::tryGet(const UString &p) const
     return DOMNode::tryGet(p);
 }
 
-
-
-
-
-
-
-
-
 // -------------------------------------------------------------------------
 
 KJSO KJS::getDOMNode(DOM::Node n)
@@ -763,4 +756,42 @@ KJSO KJS::getDOMDOMImplementation(DOM::DOMImplementation i)
   }
 }
 
+// -------------------------------------------------------------------------
+
+const TypeInfo NodePrototype::info = { "NodePrototype", HostType, 0, 0, 0 };
+
+KJSO NodePrototype::tryGet(const UString &p) const
+{
+  if (p == "ELEMENT_NODE")
+    return Number((unsigned int)DOM::Node::ELEMENT_NODE);
+  if (p == "ATTRIBUTE_NODE")
+    return Number((unsigned int)DOM::Node::ATTRIBUTE_NODE);
+  if (p == "TEXT_NODE")
+    return Number((unsigned int)DOM::Node::TEXT_NODE);
+  if (p == "CDATA_SECTION_NODE")
+    return Number((unsigned int)DOM::Node::CDATA_SECTION_NODE);
+  if (p == "ENTITY_REFERENCE_NODE")
+    return Number((unsigned int)DOM::Node::ENTITY_REFERENCE_NODE);
+  if (p == "ENTITY_NODE")
+    return Number((unsigned int)DOM::Node::ENTITY_NODE);
+  if (p == "PROCESSING_INSTRUCTION_NODE")
+    return Number((unsigned int)DOM::Node::PROCESSING_INSTRUCTION_NODE);
+  if (p == "COMMENT_NODE")
+    return Number((unsigned int)DOM::Node::COMMENT_NODE);
+  if (p == "DOCUMENT_NODE")
+    return Number((unsigned int)DOM::Node::DOCUMENT_NODE);
+  if (p == "DOCUMENT_TYPE_NODE")
+    return Number((unsigned int)DOM::Node::DOCUMENT_TYPE_NODE);
+  if (p == "DOCUMENT_FRAGMENT_NODE")
+    return Number((unsigned int)DOM::Node::DOCUMENT_FRAGMENT_NODE);
+  if (p == "NOTATION_NODE")
+    return Number((unsigned int)DOM::Node::NOTATION_NODE);
+
+  return KJSO();
+}
+
+KJSO KJS::getNodePrototype()
+{
+  return &nodePrototype;
+}
 

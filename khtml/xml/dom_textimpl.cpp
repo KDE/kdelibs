@@ -207,7 +207,7 @@ NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
 }
 
 // DOM Section 1.1.1
-bool CommentImpl::childAllowed( NodeImpl *newChild )
+bool CommentImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }
@@ -375,7 +375,7 @@ void TextImpl::recalcStyle()
 }
 
 // DOM Section 1.1.1
-bool TextImpl::childAllowed( NodeImpl *newChild )
+bool TextImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }
@@ -416,7 +416,7 @@ NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
 }
 
 // DOM Section 1.1.1
-bool CDATASectionImpl::childAllowed( NodeImpl *newChild )
+bool CDATASectionImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }

@@ -94,19 +94,19 @@ Entity::~Entity()
 
 DOMString Entity::publicId() const
 {
-    // ###
+    if (impl) return ((EntityImpl*)impl)->publicId();
     return 0;
 }
 
 DOMString Entity::systemId() const
 {
-    // ###
+    if (impl) return ((EntityImpl*)impl)->systemId();
     return 0;
 }
 
 DOMString Entity::notationName() const
 {
-    // ###
+    if (impl) return ((EntityImpl*)impl)->notationName();
     return 0;
 }
 
@@ -182,13 +182,13 @@ Notation::~Notation()
 
 DOMString Notation::publicId() const
 {
-    // ###
+    if (impl) return ((EntityImpl*)impl)->publicId();
     return 0;
 }
 
 DOMString Notation::systemId() const
 {
-    // ###
+    if (impl) return ((EntityImpl*)impl)->systemId();
     return 0;
 }
 

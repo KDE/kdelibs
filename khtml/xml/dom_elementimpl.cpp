@@ -303,7 +303,8 @@ DOMString ElementImpl::tagName() const
 DOMString ElementImpl::getAttribute( const DOMString &name ) const
 {
   // search in already set attributes first
-    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name));
+    int exceptioncode; // ### propogate
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
     if (attr) return attr->value();
 
     if(!defaultMap()) return 0;
@@ -335,17 +336,18 @@ AttrImpl *ElementImpl::getAttributeNode ( int index ) const
 
 int ElementImpl::getAttributeCount() const
 {
-    return namedAttrMap->length();
+    int exceptioncode; // ### propogate
+    return namedAttrMap->length(exceptioncode);
 }
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
 {
-    // TODO: check for invalid characters in value -> throw exception
+    // ### check for invalid characters in value -> throw exception
+    int exceptioncode; // ### propogate
     AttrImpl *oldAttr;
     if (value.isNull())
-	oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name));
+	oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name,exceptioncode));
     else {
-	int exceptioncode;
 	oldAttr = static_cast<AttrImpl*>(namedAttrMap->setNamedItem(new AttrImpl(name,value,document), exceptioncode));
     }
     if (oldAttr && oldAttr->deleteMe())
@@ -372,7 +374,8 @@ void ElementImpl::setAttribute( const AttributeList &list )
 
 void ElementImpl::removeAttribute( const DOMString &name )
 {
-    AttrImpl *oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name));
+    int exceptioncode; // ### propogate
+    AttrImpl *oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name,exceptioncode));
     if (oldAttr && oldAttr->deleteMe())
 	delete oldAttr;
 }
@@ -408,8 +411,9 @@ NamedNodeMapImpl *ElementImpl::attributes() const
 
 AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
 {
+    int exceptioncode; // ### propogate
     // ### do we return attribute node if it is in the default map but not specified?
-    return static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name));
+    return static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
 
 }
 
@@ -555,10 +559,11 @@ void ElementImpl::recalcStyle()
 
 void ElementImpl::setOwnerDocument(DocumentImpl *_document)
 {
+    int exceptioncode; // ### propogate
     // also set for all our attributes
     uint i;
-    for (i = 0; i < namedAttrMap->length(); i++)
-	namedAttrMap->item(i)->setOwnerDocument(_document);
+    for (i = 0; i < namedAttrMap->length(exceptioncode); i++)
+	namedAttrMap->item(i,exceptioncode)->setOwnerDocument(_document);
     NodeBaseImpl::setOwnerDocument(_document);
 }
 
@@ -812,9 +817,19 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     return *this;
 }
 
+unsigned long NamedAttrMapImpl::length(int &/*exceptioncode*/) const
+{
+    return length();
+}
+
 unsigned long NamedAttrMapImpl::length() const
 {
     return len;
+}
+
+NodeImpl *NamedAttrMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
+{
+    return getNamedItem(name);
 }
 
 NodeImpl *NamedAttrMapImpl::getNamedItem ( const DOMString &name ) const
@@ -937,7 +952,7 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr, int &exceptioncode )
     return 0;
 }
 
-NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
+NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &/*exceptioncode*/ )
 {
     if (element)
 	element->checkReadOnly();
@@ -1014,6 +1029,11 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
     element->setChanged(true);
 
     return ret;
+}
+
+NodeImpl *NamedAttrMapImpl::item ( unsigned long index, int &/*exceptioncode*/ ) const
+{
+    return item(index);
 }
 
 NodeImpl *NamedAttrMapImpl::item ( unsigned long index ) const

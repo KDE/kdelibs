@@ -56,7 +56,7 @@ namespace DOM {
     class TreeWalkerImpl;
     class NodeFilterImpl;
     class DocumentTypeImpl;
-    class NamedEntityMapImpl;
+    class GenericRONamedNodeMapImpl;
     class ProcessingInstructionImpl;
     class HTMLElementImpl;
 
@@ -274,13 +274,11 @@ public:
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
 
-    NamedEntityMapImpl *m_entities;
-/*    QDict<EntityImpl> m_dict;
-    QDict<NotationImpl> m_dict;*/
+    GenericRONamedNodeMapImpl *m_entities;
+    GenericRONamedNodeMapImpl *m_notations;
     virtual bool childAllowed( NodeImpl *newChild );
 
 };
-
 
 }; //namespace
 #endif

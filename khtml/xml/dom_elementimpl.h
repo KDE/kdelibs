@@ -205,18 +205,21 @@ public:
     NamedAttrMapImpl &operator =(const khtml::AttributeList &list);
     NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
 
-    unsigned long length() const;
+    unsigned long length(int &exceptioncode) const;
+    unsigned long length() const; // ### remove?
 
-    NodeImpl *getNamedItem ( const DOMString &name ) const;
+    NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
+    NodeImpl *getNamedItem ( const DOMString &name ) const; // ### remove?
     AttrImpl *getIdItem ( int id ) const;
 
     NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode );
     AttrImpl *setIdItem ( AttrImpl *attr, int& exceptioncode );
 
-    NodeImpl *removeNamedItem ( const DOMString &name );
+    NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode );
     AttrImpl *removeIdItem ( int id );
 
-    NodeImpl *item ( unsigned long index ) const;
+    NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
+    NodeImpl *item ( unsigned long index ) const; // ### remove?
     AttrImpl *removeAttr( AttrImpl *oldAttr, int &exceptioncode );
     void detachFromElement();
 

@@ -231,7 +231,21 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
     e->addChild(m_doc->createTextNode(value));
-    static_cast<NamedEntityMapImpl*>(m_doc->doctype()->entities())->addEntity(e);
+    static_cast<GenericRONamedNodeMapImpl*>(m_doc->doctype()->entities())->addNode(e);
+    return true;
+}
+
+bool XMLHandler::notationDecl(const QString &name, const QString &publicId, const QString &systemId)
+{
+    NotationImpl *n = new NotationImpl(m_doc,name,publicId,systemId);
+    static_cast<GenericRONamedNodeMapImpl*>(m_doc->doctype()->notations())->addNode(n);
+    return true;
+}
+
+bool XMLHandler::unparsedEntityDecl(const QString &/*name*/, const QString &/*publicId*/,
+				    const QString &/*systemId*/, const QString &/*notationName*/)
+{
+    // ###
     return true;
 }
 
@@ -283,6 +297,7 @@ void XMLTokenizer::finish()
     reader.setLexicalHandler( &handler );
     reader.setErrorHandler( &handler );
     reader.setDeclHandler( &handler );
+    reader.setDTDHandler( &handler );
     bool ok = reader.parse( source );
     // ### handle exceptions inserting nodes
     if (!ok) {

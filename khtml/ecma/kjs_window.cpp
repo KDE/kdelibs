@@ -133,6 +133,8 @@ KJSO Window::get(const UString &p) const
     return String("");  // ###
   else if (p == "document")
     return getDOMNode(part->document());
+  else if (p == "Node")
+    return getNodePrototype();
   else if (p == "frames")
     return new FrameArray(part);
   else if (p == "history")

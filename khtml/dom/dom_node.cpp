@@ -65,32 +65,67 @@ NamedNodeMap::~NamedNodeMap()
 
 Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 {
-    if (impl) return impl->getNamedItem(name);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    NodeImpl *r = 0;
+    r = impl->getNamedItem(name,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
-    if (impl) return impl->setNamedItem(arg);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    NodeImpl *r = 0;
+    r = impl->setNamedItem(arg,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
-    if (impl) return impl->removeNamedItem(name);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    NodeImpl *r = 0;
+    r = impl->removeNamedItem(name,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 Node NamedNodeMap::item( unsigned long index ) const
 {
-    if (impl) return impl->item(index);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    NodeImpl *r = 0;
+    r = impl->item(index,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 unsigned long NamedNodeMap::length() const
 {
-    if (impl) return impl->length();
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    unsigned long r = 0;
+    r = impl->length(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 NamedNodeMapImpl *NamedNodeMap::handle() const

@@ -169,10 +169,14 @@ NotationImpl::NotationImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
+    m_name = 0;
 }
 
-NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId) : NodeBaseImpl(doc)
+NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _name, DOMString _publicId, DOMString _systemId) : NodeBaseImpl(doc)
 {
+    m_name = _name.implementation();
+    if (m_name)
+	m_name->ref();
     m_publicId = _publicId.implementation();
     if (m_publicId)
 	m_publicId->ref();
@@ -183,6 +187,8 @@ NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _sy
 
 NotationImpl::~NotationImpl()
 {
+    if (m_name)
+	m_name->deref();
     if (m_publicId)
 	m_publicId->deref();
     if (m_systemId)
@@ -191,8 +197,7 @@ NotationImpl::~NotationImpl()
 
 const DOMString NotationImpl::nodeName() const
 {
-    // ### return notation name
-    return 0;
+    return m_name;
 }
 
 unsigned short NotationImpl::nodeType() const
@@ -282,69 +287,4 @@ bool ProcessingInstructionImpl::childAllowed( NodeImpl */*newChild*/ )
     return false;
 }
 
-
-
-// ----------------------------------------------------------------------------
-
-NamedEntityMapImpl::NamedEntityMapImpl() : NamedNodeMapImpl()
-{
-    // not sure why this doesn't work as a normal object
-    m_contents = new QList<EntityImpl>;
-}
-
-NamedEntityMapImpl::~NamedEntityMapImpl()
-{
-    while (m_contents->count() > 0)
-	m_contents->take(0)->deref();
-
-    delete m_contents;
-}
-
-unsigned long NamedEntityMapImpl::length() const
-{
-    return m_contents->count();
-}
-
-NodeImpl *NamedEntityMapImpl::getNamedItem ( const DOMString &name ) const
-{
-    QListIterator<EntityImpl> it(*m_contents);
-    for (; it.current(); ++it)
-	if (it.current()->nodeName() == name)
-	    return it.current();
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::setNamedItem ( const Node &/*arg*/ )
-{
-    // can't modify this list through standard DOM functions
-    // ### raise NO_MODIFICATION_ALLOWED_ERR
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::removeNamedItem ( const DOMString &/*name*/ )
-{
-    // can't modify this list through standard DOM functions
-    // ### raise NO_MODIFICATION_ALLOWED_ERR
-    return 0;
-}
-
-NodeImpl *NamedEntityMapImpl::item ( unsigned long index ) const
-{
-    // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
-    // (also for other similar methods)
-    if (index >= m_contents->count())
-	return 0;
-
-    return m_contents->at(index);
-}
-
-void NamedEntityMapImpl::addEntity(EntityImpl *e)
-{
-    // The spec says that in the case of duplicates we only keep the first one
-    if (getNamedItem(e->nodeName()))
-	return;
-	
-    e->ref();
-    m_contents->append(e);
-}
 

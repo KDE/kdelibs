@@ -26,8 +26,6 @@
 
 #include "dom_nodeimpl.h"
 
-#include <qlist.h>
-
 namespace DOM {
 
     class DocumentImpl;
@@ -75,7 +73,7 @@ class NotationImpl : public NodeBaseImpl
 {
 public:
     NotationImpl(DocumentImpl *doc);
-    NotationImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId);
+    NotationImpl(DocumentImpl *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
     virtual ~NotationImpl();
 
     virtual const DOMString nodeName() const;
@@ -85,6 +83,7 @@ public:
     virtual DOMString systemId() const;
     virtual bool childAllowed( NodeImpl *newChild );
 protected:
+    DOMStringImpl *m_name;
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
 };
@@ -109,23 +108,6 @@ public:
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;
-};
-
-
-
-class NamedEntityMapImpl : public NamedNodeMapImpl
-{
-public:
-    NamedEntityMapImpl();
-    virtual ~NamedEntityMapImpl();
-    virtual unsigned long length() const;
-    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
-    virtual NodeImpl *setNamedItem ( const Node &arg );
-    virtual NodeImpl *removeNamedItem ( const DOMString &name );
-    virtual NodeImpl *item ( unsigned long index ) const;
-    void addEntity(EntityImpl *e);
-protected:
-    QList<EntityImpl> *m_contents;
 };
 
 

@@ -1164,15 +1164,16 @@ bool DocumentFragmentImpl::childAllowed( NodeImpl *newChild )
 
 DocumentTypeImpl::DocumentTypeImpl(DocumentImpl *doc) : NodeImpl(doc)
 {
-    // ###
-    m_entities = new NamedEntityMapImpl();
+    m_entities = new GenericRONamedNodeMapImpl();
     m_entities->ref();
+    m_notations = new GenericRONamedNodeMapImpl();
+    m_notations->ref();
 }
 
 DocumentTypeImpl::~DocumentTypeImpl()
 {
-    // ###
     m_entities->deref();
+    m_notations->deref();
 }
 
 const DOMString DocumentTypeImpl::name() const
@@ -1188,8 +1189,7 @@ NamedNodeMapImpl *DocumentTypeImpl::entities() const
 
 NamedNodeMapImpl *DocumentTypeImpl::notations() const
 {
-    // ###
-    return 0;
+    return m_notations;
 }
 
 const DOMString DocumentTypeImpl::nodeName() const

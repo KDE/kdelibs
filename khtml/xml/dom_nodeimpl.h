@@ -28,6 +28,8 @@
 #include "dom/dom_string.h"
 #include "dom/dom_node.h"
 
+#include <qlist.h>
+
 class QPainter;
 class KHTMLView;
 class QRect;
@@ -406,23 +408,51 @@ protected:
     DOMString nodeName;
 };
 
+
+// Generic NamedNodeMap interface
+// Other classes implement this for more specific situations e.g. attributes
+// of an elemenet
 class NamedNodeMapImpl : public DomShared
 {
 public:
     NamedNodeMapImpl();
     virtual ~NamedNodeMapImpl();
 
-    virtual unsigned long length() const;
+    virtual unsigned long length(int &exceptioncode) const = 0;
 
-    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
+    virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const = 0;
 
-    virtual NodeImpl *setNamedItem ( const Node &arg );
+    virtual NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
 
-    virtual NodeImpl *removeNamedItem ( const DOMString &name );
+    virtual NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
 
-    virtual NodeImpl *item ( unsigned long index ) const;
+    virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const = 0;
 };
 
+
+// Generic read-only NamedNodeMap implementation
+// You can add items using the internal function addItem()
+class GenericRONamedNodeMapImpl : public NamedNodeMapImpl
+{
+public:
+    GenericRONamedNodeMapImpl();
+    virtual ~GenericRONamedNodeMapImpl();
+
+    virtual unsigned long length(int &exceptioncode) const;
+
+    virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
+
+    virtual NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode );
+
+    virtual NodeImpl *removeNamedItem ( const DOMString &name, int &exceptioncode );
+
+    virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
+
+    void addNode(NodeImpl *n);
+
+protected:
+    QList<NodeImpl> *m_contents;
+};
 
 }; //namespace
 #endif
