@@ -230,7 +230,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
                 continue;
             }
         }
-        int tprop = it->m_widget->metaObject()->findProperty("text");
+        int tprop = it->m_widget->metaObject()->findProperty("text", true);
         if (tprop != -1)  {
             if (checkChange(contents[cnt]))
                 it->m_widget->setProperty("text", contents[cnt].accelerated());
@@ -281,7 +281,9 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
         continue;
     }
 
-    if (w->inherits("QComboBox") || w->inherits("QLineEdit") || w->inherits("QTextEdit") || w->inherits("QTextView"))
+    if (w->inherits("QComboBox") || w->inherits("QLineEdit") ||
+        w->inherits("QTextEdit") || w->inherits("QTextView") ||
+        w->inherits("QSpinBox"))
         continue;
 
     // now treat 'ordinary' widgets
@@ -289,19 +291,19 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
     {
       QString content;
       QVariant variant;
-      int tprop = w->metaObject()->findProperty("text");
+      int tprop = w->metaObject()->findProperty("text", true);
       if (tprop != -1)  {
-          const QMetaProperty* p = w->metaObject()->property( tprop, TRUE );
+          const QMetaProperty* p = w->metaObject()->property( tprop, true );
           if ( p && p->isValid() )
               w->qt_property( tprop, 1, &variant );
           else
               tprop = -1;
       }
 
-      if (tprop != -1)  {
-          tprop = w->metaObject()->findProperty("title");
+      if (tprop == -1)  {
+          tprop = w->metaObject()->findProperty("title", true);
           if (tprop != -1)  {
-              const QMetaProperty* p = w->metaObject()->property( tprop, TRUE );
+              const QMetaProperty* p = w->metaObject()->property( tprop, true );
               if ( p && p->isValid() )
                   w->qt_property( tprop, 1, &variant );
           }
