@@ -99,7 +99,15 @@ return 0;
 }
 EOF
 
-ac_link='/bin/sh ./libtool --mode=link ${CXX-g++} -o conftest $CXXFLAGS $all_includes $CPPFLAGS $LDFLAGS $all_libraries conftest.$ac_ext $LIBS -lkdecore -lqt -lXext -lX11 $LIBSOCKET -rpath $kde_libraries -rpath $qt_libraries 1>&5'
+if test -n "$kde_libraries"; then
+  KDE_TEST_RPATH="-rpath $kde_libraries"
+fi
+
+if test -n "$qt_libraries"; then
+  KDE_TEST_RPATH="$KDE_TEST_RPATH -rpath $qt_libraries $KDE_EXTRA_RPATH"
+fi
+
+ac_link='/bin/sh ./libtool --mode=link ${CXX-g++} -o conftest $CXXFLAGS $all_includes $CPPFLAGS $LDFLAGS $all_libraries conftest.$ac_ext $LIBS -lkdecore -lqt -lXext -lX11 $LIBSOCKET $KDE_TEST_RPATH 1>&5'
 
 if AC_TRY_EVAL(ac_link) && test -s conftest 
 then
@@ -108,7 +116,6 @@ then
   kde_have_all_paths=yes
 fi
 
-rm -fr conftest*
 AC_LANG_CPLUSPLUS
 
 if test "$kde_have_all_paths" = "yes"; then
@@ -127,6 +134,7 @@ kde_cv_all_paths="kde_have_all_paths=\"yes\" \
 	kde_bindir=\"$kde_bindir\" \
 	kde_partsdir=\"$kde_partsdir\""
 fi
+rm -fr conftest*
 
 ])
 
