@@ -121,6 +121,24 @@ void KShellCompletion::postProcessMatches( QStringList *matches ) const
 	}
 }
 
+void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
+{
+	KURLCompletion::postProcessMatches( matches );
+
+	for ( KCompletionMatches::Iterator it = matches->begin();
+		  it != matches->end(); it++ )
+	{
+		if ( (*it).value() != QString::null ) {
+			if ( (*it).value().right(1) == QChar('/') )
+				quoteText( &(*it).value(), false, true ); // don't quote trailing '/'
+			else
+				quoteText( &(*it).value(), false, false ); // quote the whole text
+
+			(*it).value().prepend( m_text_start );
+		}
+	}
+}
+
 /*
  * splitText
  *

@@ -58,6 +58,7 @@ protected:
 	// Called by KCompletion
 	void postProcessMatch( QString *match ) const;
 	void postProcessMatches( QStringList *matches ) const;
+        void postProcessMatches( KCompletionMatches *matches ) const;
 
 private:
 	// Find the part of text that should be completed

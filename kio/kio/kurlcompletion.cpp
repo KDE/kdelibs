@@ -1306,6 +1306,13 @@ void KURLCompletion::postProcessMatches( QStringList * /*matches*/ ) const
 	// when there are a lot of matches...
 }
 
+void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) const
+{
+	// Maybe '/' should be added to directories here as in
+	// postProcessMatch() but it would slow things down
+	// when there are a lot of matches...
+}
+
 QString KURLCompletion::replacedPath( const QString& text )
 {
 	MyURL url( text, d->cwd );
