@@ -524,10 +524,10 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
                        i18n("&Large Icons") : i18n("&Small Icons"),
                        IconSize );
     popup->insertSeparator();
-    popup->insertItem( i18n("&Add entry..."), AddItem );
-    popup->insertItem( i18n("&Edit entry..."), EditItem );
+    popup->insertItem( i18n("&Add Entry..."), AddItem );
+    popup->insertItem( i18n("&Edit Entry..."), EditItem );
     popup->insertSeparator();
-    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove entry"),
+    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove Entry"),
                        RemoveItem );
 
     popup->setItemEnabled( EditItem, item != 0L );
