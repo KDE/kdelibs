@@ -32,7 +32,7 @@ void kimgioRegister(void)
 
 #ifdef HAVE_LIBJPEG
 	// JPEG
-	QImageIO::defineIOHandler( "JPEG", "^\377\330\377\340..JFIF", 0,
+	QImageIO::defineIOHandler( "JPEG", "^\377\330", 0,
 			kimgio_jpeg_read, kimgio_jpeg_write );
 #endif
 
