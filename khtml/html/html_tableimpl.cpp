@@ -300,7 +300,10 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
         }
         break;
     case ATTR_BACKGROUND:
@@ -679,10 +682,7 @@ void HTMLTableCellElementImpl::attach()
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
 	//
         if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull()) {
-            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "0");
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, "0");
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, "0");
-            addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, "0");
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0");
 	}
         if(!table->getAttribute(ATTR_BORDERCOLOR).isNull()) {
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);

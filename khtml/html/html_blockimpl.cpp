@@ -167,7 +167,10 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_NOSHADE:
-        addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
         break;
     case ATTR_COLOR:
         addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
