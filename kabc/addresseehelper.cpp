@@ -1,4 +1,5 @@
-/* This file is part of the KDE libraries
+/*
+    This file is part of the KDE libraries
     Copyright (C) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -16,12 +17,12 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "addresseehelper.h"
-
 #include <qapplication.h>
 
 #include <kconfig.h>
 #include <klocale.h>
+
+#include "addresseehelper.h"
 
 using namespace KABC;
 
@@ -30,78 +31,75 @@ AddresseeHelper * AddresseeHelper::s_self;
 // static
 AddresseeHelper *AddresseeHelper::self()
 {
-    if ( !s_self )
-        s_self = new AddresseeHelper();
-    return s_self;
+  if ( !s_self )
+    s_self = new AddresseeHelper();
+
+  return s_self;
 }
 
 AddresseeHelper::AddresseeHelper()
-    : QObject( qApp ),
-      DCOPObject( "KABC::AddresseeHelper" )
+  : QObject( qApp ),
+    DCOPObject( "KABC::AddresseeHelper" )
 {
-    initSettings();
+  initSettings();
 
-    connectDCOPSignal( "kaddressbook",
-                       "KABC::AddressBookConfig",
-                       "changed()",
-                       "initSettings()",
-                       false
-        );
+  connectDCOPSignal( "kaddressbook", "KABC::AddressBookConfig",
+                     "changed()", "initSettings()", false );
 }
 
 // static
-void AddresseeHelper::addToSet( const QStringList& list, std::set<QString>& container )
+void AddresseeHelper::addToSet( const QStringList& list,
+                                QStringList& container )
 {
-    QStringList::ConstIterator it;
-    for ( it = list.begin(); it != list.end(); ++it )
-    {
-        if ( !(*it).isEmpty() )
-            container.insert( *it );
-    }
+  QStringList::ConstIterator it;
+  for ( it = list.begin(); it != list.end(); ++it ) {
+    if ( !(*it).isEmpty() )
+      container.append( *it );
+  }
 }
 
 void AddresseeHelper::initSettings()
 {
-    titles.clear();
-    suffixes.clear();
-    prefixes.clear();
+  mTitles.clear();
+  mSuffixes.clear();
+  mPrefixes.clear();
 
-    titles.insert( i18n( "Dr." ) );
-    titles.insert( i18n( "Miss" ) );
-    titles.insert( i18n( "Mr." ) );
-    titles.insert( i18n( "Mrs." ) );
-    titles.insert( i18n( "Ms." ) );
-    titles.insert( i18n( "Prof." ) );
+  mTitles.append( i18n( "Dr." ) );
+  mTitles.append( i18n( "Miss" ) );
+  mTitles.append( i18n( "Mr." ) );
+  mTitles.append( i18n( "Mrs." ) );
+  mTitles.append( i18n( "Ms." ) );
+  mTitles.append( i18n( "Prof." ) );
 
-    suffixes.insert( i18n( "I" ) );
-    suffixes.insert( i18n( "II" ) );
-    suffixes.insert( i18n( "III" ) );
-    suffixes.insert( i18n( "Jr." ) );
-    suffixes.insert( i18n( "Sr." ) );
+  mSuffixes.append( i18n( "I" ) );
+  mSuffixes.append( i18n( "II" ) );
+  mSuffixes.append( i18n( "III" ) );
+  mSuffixes.append( i18n( "Jr." ) );
+  mSuffixes.append( i18n( "Sr." ) );
 
-    prefixes.insert( "van" );
-    prefixes.insert( "von" );
-    prefixes.insert( "de" );
+  mPrefixes.append( "van" );
+  mPrefixes.append( "von" );
+  mPrefixes.append( "de" );
 
-    KConfig config( "kabcrc", true, false ); // readonly, no kdeglobals
-    config.setGroup( "General" );
+  KConfig config( "kabcrc", true, false ); // readonly, no kdeglobals
+  config.setGroup( "General" );
 
-    addToSet( config.readListEntry( "Prefixes" ),   titles );
-    addToSet( config.readListEntry( "Inclusions" ), prefixes );
-    addToSet( config.readListEntry( "Suffixes" ),   suffixes );
+  addToSet( config.readListEntry( "Prefixes" ),   mTitles );
+  addToSet( config.readListEntry( "Inclusions" ), mPrefixes );
+  addToSet( config.readListEntry( "Suffixes" ),   mSuffixes );
 }
 
 bool AddresseeHelper::containsTitle( const QString& title ) const
 {
-    return titles.find( title ) != titles.end();
+  return mTitles.find( title ) != mTitles.end();
 }
 
 bool AddresseeHelper::containsPrefix( const QString& prefix ) const
 {
-    return prefixes.find( prefix ) != prefixes.end();
+  return mPrefixes.find( prefix ) != mPrefixes.end();
 }
 
 bool AddresseeHelper::containsSuffix( const QString& suffix ) const
 {
-    return suffixes.find( suffix ) != suffixes.end();
+  return mSuffixes.find( suffix ) != mSuffixes.end();
 }

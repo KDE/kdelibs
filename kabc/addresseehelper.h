@@ -1,4 +1,5 @@
-/* This file is part of the KDE libraries
+/*
+    This file is part of the KDE libraries
     Copyright (C) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -16,40 +17,46 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef ADDRESSEEHELPER_H
-#define ADDRESSEEHELPER_H
+#ifndef KABC_ADDRESSEEHELPER_H
+#define KABC_ADDRESSEEHELPER_H
 
 #include <qobject.h>
+#include <qvaluelist.h>
 #include <qstringlist.h>
 
 #include <dcopobject.h>
 
-#include <set>
+/**
+  static data, shared by ALL addressee objects
+*/
 
-// static data, shared by ALL addressee objects
-namespace KABC
+namespace KABC {
+
+class AddresseeHelper : public QObject, public DCOPObject
 {
-    class AddresseeHelper : public QObject, public DCOPObject
-    {
-        K_DCOP
+  K_DCOP
         
-    public:
-        static AddresseeHelper *self();
-        bool containsTitle( const QString& title ) const;
-        bool containsPrefix( const QString& prefix ) const;
-        bool containsSuffix( const QString& suffix ) const;
+  public:
+    static AddresseeHelper *self();
 
-    k_dcop:
-        ASYNC initSettings();
+    bool containsTitle( const QString& title ) const;
+    bool containsPrefix( const QString& prefix ) const;
+    bool containsSuffix( const QString& suffix ) const;
 
-    private:
-        AddresseeHelper();
+  k_dcop:
+    ASYNC initSettings();
 
-        static void addToSet( const QStringList& list, std::set<QString>& container );
-        std::set<QString> titles, prefixes, suffixes;
+  private:
+    AddresseeHelper();
 
-        static AddresseeHelper *s_self;
-    };
+    static void addToSet( const QStringList& list, QStringList& container );
+    QStringList mTitles;
+    QStringList mPrefixes;
+    QStringList mSuffixes;
+
+    static AddresseeHelper *s_self;
+};
+
 }
 
-#endif // ADDRESSEEHELPER_H
+#endif
