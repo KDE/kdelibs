@@ -35,6 +35,7 @@
 
 #include <dom/html_element.h>
 #include <dom/html_form.h>
+#include <kdemacros.h>
 
 namespace DOM {
 
@@ -167,12 +168,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString hspace() const;
+    DOMString hspace() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setHspace( const DOMString & );
+    void setHspace( const DOMString & ) KDE_DEPRECATED;
 
     /**
      * The name of the applet. See the <a
@@ -220,12 +221,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString vspace() const;
+    DOMString vspace() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setVspace( const DOMString & );
+    void setVspace( const DOMString & ) KDE_DEPRECATED;
 
     /**
      * Override width. See the <a
@@ -419,12 +420,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString hspace() const;
+    DOMString hspace() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setHspace( const DOMString & );
+    void setHspace( const DOMString & ) KDE_DEPRECATED;
 
     /**
      * Form control or object name when submitted with a form. See the
@@ -512,12 +513,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString vspace() const;
+    DOMString vspace() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setVspace( const DOMString & );
+    void setVspace( const DOMString & ) KDE_DEPRECATED;
 
     /**
      * Override width. See the <a

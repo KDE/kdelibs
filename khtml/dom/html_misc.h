@@ -30,6 +30,7 @@
 #define HTML_MISC_H
 
 #include <dom/html_element.h>
+#include <kdemacros.h>
 
 namespace DOM {
 
@@ -104,12 +105,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString size() const;
+    DOMString size() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setSize( const DOMString & );
+    void setSize( const DOMString & ) KDE_DEPRECATED;
 };
 
 // --------------------------------------------------------------------------

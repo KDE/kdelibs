@@ -30,6 +30,7 @@
 #include "ustring.h"
 #include "simple_number.h"
 #include <kjs/global.h>
+#include <kdemacros.h>
 
 // Primitive data types
 
@@ -185,7 +186,7 @@ namespace KJS {
      * @deprecated
      * Use !isValid() instead.
      */
-    bool isNull() const { return rep == 0; }
+    KDE_DEPRECATED bool isNull() const { return rep == 0; }
     ValueImp *imp() const { return rep; }
 
     /**

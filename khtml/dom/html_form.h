@@ -34,6 +34,8 @@
 #include <dom/html_element.h>
 #include <dom/html_misc.h>
 
+#include <kdemacros.h>
+
 namespace DOM {
 
 class HTMLButtonElementImpl;
@@ -175,7 +177,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 };
 
 // --------------------------------------------------------------------------
@@ -377,7 +379,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * A comma-separated list of content types that a server
@@ -511,12 +513,12 @@ public:
     /**
      * @deprecated
      */
-    DOMString size() const;
+    DOMString size() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setSize( const DOMString & );
+    void setSize( const DOMString & ) KDE_DEPRECATED;
 
     /**
      * Size information. The precise meaning is specific to each type
@@ -712,7 +714,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * A single character access key to give access to the form
@@ -861,7 +863,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * The collection of \c OPTION elements contained by
@@ -1013,7 +1015,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * A single character access key to give access to the form
@@ -1172,7 +1174,7 @@ public:
     /**
      * @deprecated. ### KDE 4.0: remove
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * Stores the initial value of the \c selected
@@ -1292,7 +1294,7 @@ public:
     /**
      * @deprecated: ### KDE 4.0: remove
      */
-    HTMLFormElement form() const;
+    HTMLFormElement form() const KDE_DEPRECATED;
 
     /**
      * The prompt message. See the <a

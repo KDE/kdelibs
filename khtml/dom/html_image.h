@@ -31,6 +31,8 @@
 
 #include <dom/html_element.h>
 
+#include <kdemacros.h>
+
 namespace DOM {
 
 class HTMLAreaElementImpl;
@@ -254,12 +256,12 @@ public:
     /**
      * @deprecated
      */
-    long border() const;
+    long border() const KDE_DEPRECATED;
 
     /**
      * @deprecated
      */
-    void setBorder( long );
+    void setBorder( long ) KDE_DEPRECATED;
 
     /**
      * Override height. See the <a

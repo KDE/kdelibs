@@ -31,6 +31,7 @@
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
+#include <kdemacros.h>
 
 #include <qregexp.h>
 
@@ -927,7 +928,7 @@ public slots:
    * and the code returned true itself or @p false otherwise.
    * @deprecated, use the one below.
    */
-  QVariant executeScript( const QString &script );
+  QVariant executeScript( const QString &script ) KDE_DEPRECATED;
 
   /**
    * Enables/disables caret mode.

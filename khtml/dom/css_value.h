@@ -31,6 +31,8 @@
 
 #include <qcolor.h>
 
+#include <kdemacros.h>
+
 namespace DOM {
 
 class CSSStyleDeclarationImpl;

@@ -31,6 +31,7 @@
 #define _DOM_Node_h_
 
 #include <qstring.h>
+#include <kdemacros.h>
 
 class QRect;
 
@@ -872,7 +873,7 @@ public:
     /**
      * @deprecated without substitution since 3.2
      */
-    void getCursor(int offset, int &_x, int &_y, int &height);
+    void getCursor(int offset, int &_x, int &_y, int &height) KDE_DEPRECATED;
     /**
      * not part of the DOM.
      * @returns the exact coordinates and size of this element.

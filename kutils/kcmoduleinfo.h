@@ -25,6 +25,7 @@
 #define KCMODULEINFO_H
 
 #include <kservice.h>
+#include <kdemacros.h>
 
 class QPixmap;
 class QString;
@@ -133,7 +134,7 @@ public:
    * @deprecated
    * @return the isHiddenByDefault attribute.
    */
-  bool isHiddenByDefault() const;
+  bool isHiddenByDefault() const KDE_DEPRECATED;
 
   QCString moduleId() const;
 
