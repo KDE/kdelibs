@@ -176,7 +176,7 @@ void KHelpMenu::aboutKDE( void )
       "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
       "will provide with what you need.");
 
-    mAboutKDE->setHelp( QString("kdehelp/main.html"), QString::null );
+    mAboutKDE->setHelp( QString("khelpcenter/main.html"), QString::null );
     mAboutKDE->setTitle(i18n("K Desktop Environment. Release %1").
 			arg(KDE_VERSION_STRING) );
     mAboutKDE->addTextPage( i18n("&About"), text1, true );
