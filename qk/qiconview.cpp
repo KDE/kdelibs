@@ -1434,23 +1434,26 @@ void QIconViewItem::calcRect( const QString &text_ )
 
     int tw = 0;
     int th = 0;
-    int bearing = - view->d->minLeftBearing - view->d->minRightBearing;
+    // ##### TODO: fix font bearings!
     QRect r;
     if ( view->d->wordWrapIconText ) {
 	r = QRect( view->d->fm->boundingRect( 0, 0, iconView()->maxItemWidth() -
 					      ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-						pixmapRect().width() ) - bearing,
-					      0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
+						pixmapRect().width() ) - 4,
+					      0xFFFFFFFF, Qt::AlignHCenter | Qt::WordBreak, t ) );
+	r.setWidth( r.width() + 4 );
     } else {
 	r = QRect( 0, 0, view->d->fm->width( t ), view->d->fm->height() );
-	if ( r.width() > iconView()->maxItemWidth() -
-	     ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-	       pixmapRect().width() ) - bearing )
-	    r.setWidth( iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-						       pixmapRect().width() ) - bearing );
+	r.setWidth( r.width() + 4 );
     }
 
-    tw = r.width() + bearing;
+    if ( r.width() > iconView()->maxItemWidth() -
+	 ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
+	   pixmapRect().width() ) )
+	r.setWidth( iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
+						   pixmapRect().width() ) );
+
+    tw = r.width();
     th = r.height();
     if ( tw < view->d->fm->width( "X" ) )
 	tw = view->d->fm->width( "X" );
@@ -1550,7 +1553,7 @@ void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 	if ( view->d->wordWrapIconText )
 	    align |= Qt::WordBreak;
 	p->drawText( textRect( FALSE ), align, view->d->wordWrapIconText ? itemText : tmpText );
-
+	
 	p->restore();
     } else {
 	int h = ( pixmap() ? pixmap() : unknown_icon )->height();
