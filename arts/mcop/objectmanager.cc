@@ -142,7 +142,6 @@ Object_skel *ObjectManager::create(string name)
 				// TODO: error checking for SubClass
 				if(loffers->size() > 0)
 				{
-					arts_warning("match: %s",loffers->front().interfaceName().c_str());
 					ld.loader = SubClass(loffers->front().interfaceName());
 				}
 				else
