@@ -30,7 +30,8 @@
 #include <config.h>
 #endif
 
-struct snd_seq_event_t;
+struct snd_seq_event;
+typedef struct snd_seq_event snd_seq_event_t;
 
 /**
  * @short Sends MIDI events to a MIDI devices using ALSA
