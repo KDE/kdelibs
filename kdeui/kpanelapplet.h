@@ -54,7 +54,7 @@ class KConfig;
  * @sect X-KDE-UniqueApplet
  *
  * Similar to @ref KApplication and @ref KUniqueApplication there are
- * two types of panel appelts. Use unique applets when it makes no
+ * two types of panel applets. Use unique applets when it makes no
  * sence to run more than one instance of a applet in the panel. A
  * good example for unique applets is the taskbar applet.  Use normal
  * applets when you need instance specific configuration. An example
@@ -169,7 +169,7 @@ public:
      * <appletname>rc in the users local KDE directory.
      *
      * For normal applets this config object will write to a instance specific config file
-     * called <appletmame><instanceid>rc in the users local KDE directory.
+     * called <appletname><instanceid>rc in the users local KDE directory.
      **/
     KConfig* config() const { return _config; }
 
