@@ -1465,7 +1465,7 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
 
 void KHTMLWidget::saveState( QDataStream &stream )
 {
-    if(m_strURL.isEmpty() && !m_strWorkingURL.isEmpty())
+    if( (m_strURL.isEmpty() || m_strURL.isNull()) && !m_strWorkingURL.isEmpty())
 	stream << m_strWorkingURL;
     else
 	stream << m_strURL;
