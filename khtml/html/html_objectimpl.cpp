@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Stefan Schimanski (1Stein@gmx.de)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -75,53 +76,53 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
     switch( attr->attrId )
     {
     case ATTR_CODEBASE:
-    	codeBase = attr->val();
-	codeBase->ref();
-	break;	
+        codeBase = attr->val();
+        codeBase->ref();
+        break;
     case ATTR_ARCHIVE:
         archive = attr->val();
         archive->ref();
         break;
     case ATTR_CODE:
-	code = attr->val();
-	code->ref();
-	break;	
+        code = attr->val();
+        code->ref();
+        break;
     case ATTR_OBJECT:
-	break;
+        break;
     case ATTR_ALT:
-	break;
+        break;
     case ATTR_NAME:
-	name = attr->val();
-	name->ref();
-	break;
+        name = attr->val();
+        name->ref();
+        break;
     case ATTR_WIDTH:
         width = attr->val()->toInt();
-	break;
+        break;
     case ATTR_HEIGHT:
-	height = attr->val()->toInt();
-	break;
+        height = attr->val()->toInt();
+        break;
     case ATTR_ALIGN:
-	// vertical alignment with respect to the current baseline of the text
-	// right or left means floating images
-	if ( strcasecmp( attr->value(), "left" ) == 0 )
-	{
-	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	    valign = khtml::Top;
-	}
-	else if ( strcasecmp( attr->value(), "right" ) == 0 )
-	{
-	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	    valign = khtml::Top;
-	}
-	else if ( strcasecmp( attr->value(), "top" ) == 0 )
-	    valign = khtml::Top;
-	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
-	    valign = khtml::VCenter;
-	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
-	    valign = khtml::Bottom;
-	break;
+        // vertical alignment with respect to the current baseline of the text
+        // right or left means floating images
+        if ( strcasecmp( attr->value(), "left" ) == 0 )
+        {
+            addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+            valign = khtml::Top;
+        }
+        else if ( strcasecmp( attr->value(), "right" ) == 0 )
+        {
+            addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+            valign = khtml::Top;
+        }
+        else if ( strcasecmp( attr->value(), "top" ) == 0 )
+            valign = khtml::Top;
+        else if ( strcasecmp( attr->value(), "middle" ) == 0 )
+            valign = khtml::VCenter;
+        else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
+            valign = khtml::Bottom;
+        break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -197,7 +198,7 @@ ushort HTMLEmbedElementImpl::id() const
 void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();  
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
 
   // export parameter
   QString attrStr = attr->name().string() + "=\"" + val + "\"";
@@ -210,69 +211,74 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
         pos = serviceType.find( ";" );
         if ( pos!=-1 )
             serviceType = serviceType.left( pos );
-	break;
+        break;
+     case ATTR_CODE:
      case ATTR_SRC:
-	url = val;
-	break;
+        url = val;
+        break;
      case ATTR_WIDTH:
-	addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
-	break;
+        addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+        break;
      case ATTR_HEIGHT:
-	addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
-	break;
+        addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
+        break;
      case ATTR_BORDER:
-	addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
-	break;
+        addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
+        break;
      case ATTR_VSPACE:
-	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
-	addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
-	break;
+        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
+        break;
      case ATTR_HSPACE:
-	addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value(), false);
-	addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
-	break;
+        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value(), false);
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
+        break;
      case ATTR_ALIGN:
-	// vertical alignment with respect to the current baseline of the text
-	// right or left means floating images
-	if ( strcasecmp( attr->value(), "left" ) == 0 )
-	{
-	   addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
-	}
-	else if ( strcasecmp( attr->value(), "right" ) == 0 )
-	{
-	   addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
-	}
-	else
-	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
-	break;
+        // vertical alignment with respect to the current baseline of the text
+        // right or left means floating images
+        if ( strcasecmp( attr->value(), "left" ) == 0 )
+        {
+           addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+        }
+        else if ( strcasecmp( attr->value(), "right" ) == 0 )
+        {
+           addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+        }
+        else
+           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+        break;
      case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
-	break;
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+        break;
      case ATTR_PLUGINPAGE:
-	pluginPage = val;
-	break;
+     case ATTR_PLUGINSPAGE:
+        pluginPage = val;
+        break;
      case ATTR_HIDDEN:
-	if (val.lower()=="yes" || val.lower()=="true")
-	   hidden = true;
-	else
-	   hidden = false;
-	break;
+        if (val.lower()=="yes" || val.lower()=="true")
+           hidden = true;
+        else
+           hidden = false;
+        break;
      default:
-	HTMLElementImpl::parseAttribute( attr );
+        HTMLElementImpl::parseAttribute( attr );
   }
 }
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
+    kdDebug() << "HTMLEmbedElementImpl::attach 1" << endl;
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
       return;
 
+   kdDebug() << "HTMLEmbedElementImpl::attach 2" << endl;
    m_style = document->styleSelector()->styleForElement( this );
    if ( _parent->id()!=ID_OBJECT )
    {
+       kdDebug() << "HTMLEmbedElementImpl::attach 2.5" << endl;
       RenderPartObject *p = new RenderPartObject( w, this );
       m_render = p;
       m_render->setStyle(m_style);
@@ -280,6 +286,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
    } else
       r->setStyle(m_style);
 
+   kdDebug() << "HTMLEmbedElementImpl::attach 3" << endl;
   NodeBaseImpl::attach( w );
 }
 
@@ -338,7 +345,7 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_CLASSID:
       classId = val;
 //    case ATTR_TABINDEX:
-	// ###
+        // ###
     default:
       HTMLElementImpl::parseAttribute( attr );
   }
@@ -390,11 +397,11 @@ void HTMLParamElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_NAME:
         m_name = attr->val();
-	m_name->ref();
-	break;
+        m_name->ref();
+        break;
     case ATTR_VALUE:
-	m_value = attr->val();
-	m_value->ref();
-	break;
+        m_value = attr->val();
+        m_value->ref();
+        break;
     }
 }

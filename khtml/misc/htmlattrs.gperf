@@ -101,6 +101,7 @@ onunload, ATTR_ONUNLOAD
 oversrc, ATTR_OVERSRC
 plain, ATTR_PLAIN
 pluginpage, ATTR_PLUGINPAGE
+pluginspage, ATTR_PLUGINSPAGE
 pluginurl, ATTR_PLUGINURL
 profile, ATTR_PROFILE
 prompt, ATTR_PROMPT

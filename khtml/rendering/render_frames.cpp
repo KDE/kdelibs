@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 2000 Stefan Schimanski (1Stein@gmx.de)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -509,6 +510,7 @@ void RenderFrame::slotWidgetDestructed()
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
+    kdDebug() << "RenderPartObject::RenderPartObject" << endl;
   // init RenderObject attributes
   m_inline = true;   // our object is Inline
 
@@ -524,7 +526,11 @@ void RenderPartObject::close()
   QString url;
   QString serviceType;
 
+  kdDebug() << "RenderPartObject::close() 0" << endl;
+
   if(m_obj->id() == ID_OBJECT) {
+      kdDebug() << "RenderPartObject::close() 1" << endl;
+
      // check for embed child object
      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
      HTMLEmbedElementImpl *embed = 0;
@@ -538,15 +544,15 @@ void RenderPartObject::close()
 
      if ( !embed )
      {
+         kdDebug() << "RenderPartObject::close() 2" << endl;
         url = o->url;
         serviceType = o->serviceType;
         if(serviceType.isEmpty() || serviceType.isNull()) {
-           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-              // Flash. set the mimetype
-              serviceType = "application/x-shockwave-flash";
-           }
+           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) serviceType = "application/x-shockwave-flash";
+
            // add more plugins here
         }
+
         if((url.isEmpty() || url.isNull())) {
            // look for a SRC attribute in the params
            NodeImpl *child = o->firstChild();
@@ -555,7 +561,8 @@ void RenderPartObject::close()
                  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
                  if ( p->name().lower()==QString::fromLatin1("src") ||
-                      p->name().lower()==QString::fromLatin1("movie") )
+                      p->name().lower()==QString::fromLatin1("movie") ||
+                      p->name().lower()==QString::fromLatin1("code") )
                  {
                     url = p->value();
                     break;
@@ -582,34 +589,52 @@ void RenderPartObject::close()
            child = child->nextSibling();
         }
 
-        if ( url.isEmpty() && serviceType.isEmpty() )
-            return; //ooops (-:
+        if ( url.isEmpty() && serviceType.isEmpty() ) {
+            kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+            return;
+        }
 
         params.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
         static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
      } else
      {
+         kdDebug() << "RenderPartObject::close() 2" << endl;
         // render embed object
         url = embed->url;
         serviceType = embed->serviceType;
 
-        if ( url.isEmpty() && serviceType.isEmpty() )
-           return; //ooops (-:
+        if ( url.isEmpty() && serviceType.isEmpty() ) {
+            kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+            return;
+        }
 
         embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-        static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType,
-                                                                 embed->param );
+        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+        bool ok = part->requestObject( this, url, serviceType, embed->param );
+        kdDebug() << "RenderPartObject::close - ok=" << ok << " url=" << url << " serviceType=" << serviceType << endl;
+        if ( !ok && !embed->pluginPage.isEmpty() ) {
+            KParts::BrowserExtension *ext = part->browserExtension();
+            if ( ext ) ext->createNewWindow( KURL(embed->pluginPage) );
+        }
      }
   } else if ( m_obj->id() == ID_EMBED ) {
+      kdDebug() << "RenderPartObject::close() 3" << endl;
      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
      url = o->url;
      serviceType = o->serviceType;
 
-     if ( url.isEmpty() && serviceType.isEmpty() )
-        return; //ooops (-:
+     if ( url.isEmpty() && serviceType.isEmpty() ) {
+         kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+         return;
+     }
 
      o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-     static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, o->param );
+     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+     bool ok = part->requestObject( this, url, serviceType, o->param );
+     if ( !ok && !o->pluginPage.isEmpty() ) {
+         KParts::BrowserExtension *ext = part->browserExtension();
+         if ( ext ) ext->createNewWindow( KURL(o->pluginPage) );
+     }
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);

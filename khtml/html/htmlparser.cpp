@@ -110,7 +110,7 @@ const unsigned short tagPriority[] = {
     4, // ID_DL
     3, // ID_DT
     1, // ID_EM
-    0, // ID_EMBED
+    1, // ID_EMBED
     3, // ID_FIELDSET
     1, // ID_FONT
     3, // ID_FORM
@@ -372,7 +372,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             current = newNode;
             n->attach(HTMLWidget);
             // ### HACK!!!
-            if(n->id() == ID_BODY) 
+            if(n->id() == ID_BODY)
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
@@ -406,38 +406,38 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_META:
         case ID_LINK:
         case ID_BASE:
-	    if( !head )
-		createHead();
-	    if( head ) {
-		head->addChild(n);
-		n->attach(HTMLWidget);
-		return;
-	    }
+            if( !head )
+                createHead();
+            if( head ) {
+                head->addChild(n);
+                n->attach(HTMLWidget);
+                return;
+            }
         case ID_HTML:
             if (!current->isDocumentNode())
                 throw exception;
             break;
         case ID_TITLE:
         case ID_STYLE:
-	    if ( !head )
-		createHead();
-	    if ( head ) {
-                
-		try {
-		    head->addChild(n);
-		    pushBlock(id, tagPriority[id]);
-		    current = n;
-		    n->attach(HTMLWidget);
-		} catch(DOMException e) {
-		    kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
-		    discard_until = ID_STYLE + ID_CLOSE_TAG;
-		    throw e;
-		}
-		return;
-	    } else if(inBody) {
-		discard_until = ID_STYLE + ID_CLOSE_TAG;
-		throw exception;
-	    }
+            if ( !head )
+                createHead();
+            if ( head ) {
+
+                try {
+                    head->addChild(n);
+                    pushBlock(id, tagPriority[id]);
+                    current = n;
+                    n->attach(HTMLWidget);
+                } catch(DOMException e) {
+                    kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
+                    discard_until = ID_STYLE + ID_CLOSE_TAG;
+                    throw e;
+                }
+                return;
+            } else if(inBody) {
+                discard_until = ID_STYLE + ID_CLOSE_TAG;
+                throw exception;
+            }
             break;
             // SCRIPT and OBJECT are allowd in the body.
         case ID_BODY:
@@ -449,7 +449,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
                 document->body()->applyChanges(true,false);
             } else if ( current->isDocumentNode() )
-		break;
+                break;
             throw exception;
             break;
         case ID_LI:
@@ -636,7 +636,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             switch(id)
             {
             case ID_COMMENT:
-		case ID_FONT:
+                case ID_FONT:
             case ID_COL:
             case ID_COLGROUP:
             case ID_P:
@@ -652,7 +652,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             switch(id)
             {
             case ID_COMMENT:
-		case ID_FONT:
+                case ID_FONT:
             case ID_COL:
             case ID_COLGROUP:
             case ID_P:
@@ -1044,8 +1044,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // text
     case ID_TEXT:
         n = new TextImpl(document, t->text);
-	if (t->complexText )
-	    n->setComplexText(true);
+        if (t->complexText )
+            n->setComplexText(true);
         break;
     case ID_COMMENT:
 #ifdef COMMENTS_IN_DOM
@@ -1077,9 +1077,9 @@ void KHTMLParser::processCloseTag(Token *t)
         break;
     case ID_HEAD+ID_CLOSE_TAG:
         //inBody = true;
-	// don't close head neither. the creation of body will do it for us.
-	// fixes some sites, that define stylesheets after </head>
-	return;
+        // don't close head neither. the creation of body will do it for us.
+        // fixes some sites, that define stylesheets after </head>
+        return;
     case ID_TITLE+ID_CLOSE_TAG:
         if ( current->id() == ID_TITLE )
           static_cast<HTMLTitleElementImpl *>(current)->setTitle();
@@ -1187,18 +1187,18 @@ void KHTMLParser::freeBlock()
 void KHTMLParser::createHead()
 {
     if(head || !document->firstChild())
-	return;
-    
+        return;
+
     head = new HTMLHeadElementImpl(document);
     try
     {
-	HTMLElementImpl *body = document->body();
-	document->firstChild()->insertBefore(head, body);
+        HTMLElementImpl *body = document->body();
+        document->firstChild()->insertBefore(head, body);
     }
     catch(DOMException e)
     {
-	kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
-	delete head;
-	head = 0;
+        kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+        delete head;
+        head = 0;
     }
 }

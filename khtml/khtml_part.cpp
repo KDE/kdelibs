@@ -1303,7 +1303,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
-	khtml::RenderText *text = static_cast<khtml::RenderText *>(d->m_findNode->renderer());
+        khtml::RenderText *text = static_cast<khtml::RenderText *>(d->m_findNode->renderer());
                 text->posOfChar(d->m_findPos, x, y);
                 d->m_view->setContentsPos(x-50, y-50);
                 return true;
@@ -1363,8 +1363,8 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
-	static_cast<khtml::RenderText *>(d->m_findNode->renderer())
-	    ->posOfChar(d->m_findPos, x, y);
+        static_cast<khtml::RenderText *>(d->m_findNode->renderer())
+            ->posOfChar(d->m_findPos, x, y);
                 d->m_view->setContentsPos(x-50, y-50);
 
                 d->m_selectionStart = d->m_findNode;
@@ -1769,12 +1769,12 @@ void KHTMLPart::updateActions()
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 }
 
-void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
+bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                               const QStringList &params )
 {
   kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
   if (url.isEmpty())
-    return;
+    return false;
   FrameIt it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
@@ -1788,14 +1788,14 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   it.data().m_frame = frame;
   it.data().m_params = params;
 
-  requestObject( &it.data(), completeURL( url ) );
+  return requestObject( &it.data(), completeURL( url ) );
 }
 
-void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
+bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                                const QStringList &params )
 {
   if (url.isEmpty())
-    return;
+    return false;
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
@@ -1804,10 +1804,10 @@ void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
-  requestObject( &(*it), completeURL( url ), args );
+  return requestObject( &(*it), completeURL( url ), args );
 }
 
-void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
+bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
   if ( child->m_bPreloaded )
   {
@@ -1816,7 +1816,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
       child->m_frame->setWidget( child->m_part->widget() );
 
     child->m_bPreloaded = false;
-    return;
+    return true;
   }
 
    KParts::URLArgs args( _args );
@@ -1832,17 +1832,17 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   // Use a KHTMLRun if the service type is unknown, but only if this is not a POST
   // We can't put POSTs on hold, nor rely on HTTP HEAD, so we have to assume html for POSTs (DF).
-  if ( args.serviceType.isEmpty() && args.postData.size() == 0 )
+  if ( args.serviceType.isEmpty() && args.postData.size() == 0 ) {
     child->m_run = new KHTMLRun( this, child, url );
-  else
-  {
+    return false;
+  } else {
     if (args.serviceType.isEmpty())
       args.serviceType = "text/html";
-    processObjectRequest( child, url, args.serviceType );
+    return processObjectRequest( child, url, args.serviceType );
   }
 }
 
-void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
+bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
   kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
 
@@ -1856,7 +1856,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
 
     if ( !part )
-      return;
+      return false;
 
     //CRITICAL STUFF
     if ( child->m_part )
@@ -1920,7 +1920,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       child->m_frame->setWidget( child->m_part->widget() );
 
     child->m_bPreloaded = false;
-    return;
+    return true;
   }
 
   child->m_args.reload = d->m_bReloading;
@@ -1930,7 +1930,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     child->m_extension->setURLArgs( child->m_args );
 
   kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
-  child->m_part->openURL( url );
+  return child->m_part->openURL( url );
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,

@@ -585,7 +585,7 @@ protected:
   /**
    * @internal
    */
-  void processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
+  bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   /**
    * @internal
@@ -738,19 +738,19 @@ private:
   /**
    * @internal
    */
-  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
+  bool requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                      const QStringList &args = QStringList() );
 
   /**
    * @internal
    */
-  void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
+  bool requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                       const QStringList &args = QStringList() );
 
   /**
    * @internal
    */
-  void requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
 
   DOM::HTMLDocumentImpl *docImpl() const;

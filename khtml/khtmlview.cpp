@@ -255,7 +255,7 @@ void KHTMLView::layout(bool)
             setVScrollBarMode(AlwaysOff);
             setHScrollBarMode(AlwaysOff);
             _width = visibleWidth();
-	    body->renderer()->setLayouted(false);
+            body->renderer()->setLayouted(false);
             root->layout();
             return;
         }
