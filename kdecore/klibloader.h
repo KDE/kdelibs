@@ -54,14 +54,12 @@ class KLibFactory : public QObject
 {
     Q_OBJECT
 public:
-    enum ClassType { Object, Widget, KPart, KofficeDocument };
     /**
      * Create a new factory.
      */
     KLibFactory( QObject* parent = 0, const char* name = 0 );
     virtual ~KLibFactory();
 
-    QObject* create( ClassType type, QObject* parent = 0, const char* name = 0, const QStringList &args = QStringList() );
     /**
      * Create a new object. The returned object has to be derived from
      * the requested classname.
