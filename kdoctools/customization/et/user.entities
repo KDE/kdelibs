@@ -14,6 +14,9 @@
 <!ENTITY Enter       "<keycap>Enter</keycap>">
 <!ENTITY Tab         "<keycap>Tab</keycap>">
 
+<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
+<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
+<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
 <!ENTITY HVN         "hiire <mousebutton>vasak</mousebutton> nupp">
 <!ENTITY HKN         "hiire <mousebutton>keskmine</mousebutton> nupp">
 <!ENTITY HPN         "hiire <mousebutton>parem</mousebutton> nupp">
@@ -21,9 +24,15 @@
 <!ENTITY HKNga       "hiire <mousebutton>keskmise</mousebutton> nupuga">
 <!ENTITY HPNga       "hiire <mousebutton>parema</mousebutton> nupuga">
 
-<!ENTITY cdrom  '<hardware>CD-ROM</hardware>'>
+<!ENTITY cdrom       '<hardware>CD-ROM</hardware>'>
 
-<!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
+<!ENTITY eg          "<abbrev>nt.</abbrev>">
+<!ENTITY ie          "<abbrev>st.</abbrev>">
+<!ENTITY etc         "<abbrev>jne.</abbrev>">
+
+<!-- These should be removed later.
+ -->
+<!ENTITY nt     "<abbrev>nt.</abbrev>">         <!-- English: &eg; -->
 <!ENTITY st     "<abbrev>st.</abbrev>">         <!-- English: &ie; -->
 <!ENTITY jne    "<abbrev>jne.</abbrev>">        <!-- English: &etc; -->
 
@@ -43,13 +52,6 @@
  -->
 
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
-<!ENTITY eg     "<abbrev>e.g.</abbrev>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
-<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
-<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
-
 <!ENTITY FAQ    '<acronym>KKK</acronym>'>
 <!ENTITY OS     "operatsioonisüsteem"><!-- <acronym>OS</acronym>-->
 
