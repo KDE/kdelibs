@@ -50,6 +50,8 @@ public:
     DOMString areaHref() const { return href; }
     DOMString targetRef() const { return target; }
 
+    virtual bool isSelectable() const { return href!=0; }
+
     virtual void parseAttribute(AttrImpl *attr);
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,

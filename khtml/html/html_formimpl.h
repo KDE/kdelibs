@@ -142,6 +142,8 @@ public:
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled) { m_disabled = _disabled; }
 
+    virtual bool isSelectable() const;
+
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
 
@@ -155,9 +157,10 @@ public:
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
-
     virtual void blur();
     virtual void focus();
+
+    virtual void setFocus(bool);
 
 protected:
     HTMLFormElementImpl *getForm() const;

@@ -57,24 +57,6 @@ public:
     void removeCSSProperty(int id);
     void removeCSSProperty(const DOMString &id);
 
-    virtual void setFocus(bool);
-
-    virtual bool isSelectable() const;
-
-    /**
-     * triggered by setFocus(false)
-     * triggers javaScript code and
-     * propagates the event the the widget.
-     */
-    virtual void blur(){};
-
-    /**
-     * triggered by setFocus(true)
-     * triggers javaScript code and
-     * propagates the event the the widget.
-     */
-    virtual void focus(){};
-
     DOMString innerHTML() const;
     DOMString innerText() const;
     bool setInnerHTML( const DOMString &html );

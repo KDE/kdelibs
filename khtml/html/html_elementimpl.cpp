@@ -138,15 +138,6 @@ void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
     }
 }
 
-void HTMLElementImpl::setFocus(bool received)
-{
-    if (received)
-	focus();
-    else
-	blur();
-    ElementImpl::setFocus(received);
-}
-
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
     DOMString indexstring;
@@ -261,33 +252,6 @@ DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )
     if(!m_styleDecls)
 	return 0;
     return m_styleDecls->getPropertyValue( prop );
-}
-
-bool HTMLElementImpl::isSelectable() const
-{
-  switch(id())
-    {
-    case ID_A:
-	if (!getAttribute(ATTR_HREF).isNull())
-	    return true;
-	return false;
-    case ID_INPUT:
-    case ID_TEXTAREA:
-    case ID_BUTTON:
-    case ID_SELECT:
-      if (!renderer())
-      {
-	kdDebug(6000)<<"isSelectable: no renderer for "<<getTagName(id()).string()<<"\n";
-	  return false;
-      }
-      if (!renderer()->isReplaced())
-	  return true;
-      if (!static_cast<RenderWidget*>(renderer())->isWidget())
-	  return true;
-      return static_cast<RenderWidget*>(renderer())->m_widget->isEnabled();
-    default:
-      return false;
-    };
 }
 
 DOMString HTMLElementImpl::innerHTML() const
