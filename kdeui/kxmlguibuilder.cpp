@@ -27,6 +27,7 @@
 #include <kiconloader.h>
 #include <kglobalsettings.h>
 #include <kdebug.h>
+#include <qobjectlist.h>
 
 class KXMLGUIBuilderPrivate
 {
@@ -129,7 +130,14 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     KMenuBar *bar;
 
     if ( d->m_widget->inherits( "KMainWindow" ) )
+    {
+      QObjectList *l = d->m_widget->queryList( "QMenuBar" );
+      bool hasMenuBar = l && l->first();
+      delete l;
       bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
+      if (!hasMenuBar) // We just created it.
+        bar->show();
+    }
     else
     {
       bar = new KMenuBar( d->m_widget );
@@ -241,6 +249,11 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
     tb->saveState( element );
     delete tb;
   }
+  else if ( container->inherits( "KMenuBar" ) )
+  {
+    KMenuBar *mb = static_cast<KMenuBar *>( container );
+    delete mb;
+  }
   else if ( container->inherits( "KStatusBar" ) )
   {
     if ( d->m_widget->inherits( "KMainWindow" ) )
@@ -248,6 +261,8 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
     else
       delete static_cast<KStatusBar *>(container);
   }
+  else
+     kdWarning() << "Unhandled container to remove : " << container->className() << endl;
 }
 
 QStringList KXMLGUIBuilder::customTags() const
