@@ -624,8 +624,9 @@ namespace KIO {
            KURL url;
            MetaData metaData;
         };
-        GetRequest *findEntryById(long id);
-    
+        bool findCurrentEntry();
+        void flushQueue(QPtrList<GetRequest> &queue);
+   
         QPtrList<GetRequest> m_waitQueue;
         QPtrList<GetRequest> m_activeQueue;
         bool b_multiGetActive;

@@ -401,7 +401,8 @@ static bool isSubCommand(int cmd)
             (cmd == CMD_META_DATA) ||
             (cmd == CMD_CONFIG) ||
             (cmd == CMD_SUBURL) ||
-            (cmd == CMD_SLAVE_STATUS) );
+            (cmd == CMD_SLAVE_STATUS) ||
+            (cmd == CMD_MULTI_GET));
 }
 
 void SlaveBase::mimeType( const QString &_type)
@@ -605,6 +606,8 @@ void SlaveBase::chmod(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, changing the attributes of files is not supported with protocol %1").arg(mProtocol) ); }
 void SlaveBase::setSubURL(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, using suburls with %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::multiGet(QMemArray<char> const &)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, multiple get is not supported with protocol %1").arg(mProtocol) ); }
 
 
 void SlaveBase::slave_status()
@@ -852,6 +855,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_NONE:
         fprintf(stderr, "Got unexpected CMD_NONE!\n");
+        break;
+    case CMD_MULTI_GET:
+        multiGet( data );
         break;
     default:
         // Some command we don't understand.

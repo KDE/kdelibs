@@ -3140,13 +3140,45 @@ void MultiGetJob::get(long id, const KURL &url, const MetaData &metaData)
    m_waitQueue.append(entry);
 }
 
+void MultiGetJob::flushQueue(QPtrList<GetRequest> &queue)
+{
+   GetRequest *entry;
+   // Use multi-get
+   // Scan all jobs in m_waitQueue
+   for(entry = m_waitQueue.first(); entry; )
+   {
+      if ((m_url.protocol() == entry->url.protocol()) &&
+          (m_url.host() == entry->url.host()) &&
+          (m_url.port() == entry->url.port()) &&
+          (m_url.user() == entry->url.user()))
+      {
+         m_waitQueue.take();
+         queue.append(entry);
+         entry = m_waitQueue.current();
+      }
+      else
+      {
+         entry = m_waitQueue.next();
+      }
+   }
+   // Send number of URLs, (URL, metadata)*
+   KIO_ARGS << (Q_INT32) m_activeQueue.count();
+   for(entry = queue.first(); entry; entry = queue.next())
+   {
+      stream << entry->url << entry->metaData;
+   }
+   m_packedArgs = packedArgs;
+   m_command = CMD_MULTI_GET;
+   m_outgoingMetaData.clear();
+}
+
 void MultiGetJob::start(Slave *slave)
 {
    // Add first job from m_waitQueue and add it to m_activeQueue
    GetRequest *entry = m_waitQueue.take(0);
    m_activeQueue.append(entry);
 
-   KURL &url = entry->url;
+   m_url = entry->url;
 
    if (!entry->url.protocol().startsWith("http"))
    {
@@ -3159,66 +3191,51 @@ void MultiGetJob::start(Slave *slave)
    }
    else
    {  
-      // Use multi-get
-      // Scan all jobs in m_waitQueue
-      for(entry = m_waitQueue.first(); entry; )
-      {
-         if ((url.protocol() == entry->url.protocol()) &&
-             (url.host() == entry->url.host()) &&
-             (url.port() == entry->url.port()) &&
-             (url.user() == entry->url.user()))
-         {
-            m_waitQueue.take();
-            m_activeQueue.append(entry);
-            entry = m_waitQueue.current();
-         }
-         else
-         {
-            entry = m_waitQueue.next();
-         }
-      }
-      // Send http multi_get command (4), number of URLs, (URL, metadata)*
-      KIO_ARGS << (int)4 << (Q_INT32) m_activeQueue.count();
-      for(entry = m_activeQueue.first(); entry; entry = m_activeQueue.next())
-      {
-         stream << entry->url << entry->metaData;
-      }
-      m_packedArgs = packedArgs;
-      m_command = CMD_SPECIAL;
-      m_outgoingMetaData.clear();
+      flushQueue(m_activeQueue);
       b_multiGetActive = true;
    }
 
    TransferJob::start(slave); // Anything else to do??
 }
 
-KIO::MultiGetJob::GetRequest *MultiGetJob::findEntryById(long id)
+bool MultiGetJob::findCurrentEntry()
 {
-   for(GetRequest *entry = m_activeQueue.first(); entry; entry = m_activeQueue.next())
+   if (b_multiGetActive)
    {
-      if (entry->id == id)
-         return entry;
-   }  
-   return 0;
+      long id = m_incomingMetaData["request-id"].toLong();
+      for(GetRequest *entry = m_activeQueue.first(); entry; entry = m_activeQueue.next())
+      {
+         if (entry->id == id)
+         {
+            m_currentEntry = entry;
+            return true;
+         }
+      }
+      m_currentEntry = 0;
+      return false;
+   }
+   else
+   {
+      m_currentEntry = m_activeQueue.first();
+      return (m_currentEntry != 0);
+   }
 }
 
 void MultiGetJob::slotRedirection( const KURL &url)
 {
-  long id = m_incomingMetaData["request-id"].toLong();
-  m_currentEntry = findEntryById(id);
+  if (!findCurrentEntry()) return; // Error
   m_redirectionURL = url;
-  get(id, m_redirectionURL, m_currentEntry->metaData); // Try again
+  get(m_currentEntry->id, m_redirectionURL, m_currentEntry->metaData); // Try again
 }
 
 
 void MultiGetJob::slotFinished()
 {
-  long id = m_incomingMetaData["request-id"].toLong();
-  m_currentEntry = findEntryById(id);
+  if (!findCurrentEntry()) return;
   if (m_redirectionURL.isEmpty())
   {
      // No redirection, tell the world that we are finished.
-     emit result(id);
+     emit result(m_currentEntry->id);
   }
   m_redirectionURL = KURL();
   m_error = 0;
@@ -3236,7 +3253,10 @@ void MultiGetJob::slotFinished()
         // return slave to pool
         // fetch new slave for first entry in m_waitQueue and call start
         // again.
-        TransferJob::slotFinished(); // TEMP place holder
+        GetRequest *entry = m_waitQueue.at(0);
+        m_url = entry->url;
+        slaveDone();
+        Scheduler::doJob(this);
      }
   }
 }
@@ -3250,9 +3270,18 @@ void MultiGetJob::slotData( const QByteArray &_data)
 
 void MultiGetJob::slotMimetype( const QString &_mimetype )
 {
-  long id = m_incomingMetaData["request-id"].toLong();
-  m_currentEntry = findEntryById(id);
-  if(!m_currentEntry) return; // Error, unknown request!
+  if (b_multiGetActive) 
+  {
+     QPtrList<GetRequest> newQueue;
+     flushQueue(newQueue);
+     if (!newQueue.isEmpty())
+     {
+        while(!newQueue.isEmpty())
+           m_activeQueue.append(newQueue.take(0));   
+        m_slave->connection()->send( m_command, m_packedArgs );
+     }
+  } 
+  if (!findCurrentEntry()) return; // Error, unknown request!
   emit mimetype(m_currentEntry->id, _mimetype);
 }
 
