@@ -321,22 +321,52 @@ protected:
 };
 
 
-// This is currently not documented, but may be used
-/* --------------------------------------------------------------------------- */
-
+/**
+ *  An integer inputline with scrollbar and slider.
+ *
+ *  The class provides an easy interface to use other
+ *  numeric systems then the decimal.
+ *
+ *  @short An integer inputline with scrollbar and slider.
+ */
 class KIntSpinBox : public QSpinBox
 {
     Q_OBJECT
 
 public:
 
+    /**
+     *  Constructor.
+     *
+     *  Constructs a widget with an integer inputline with a little scrollbar
+     *  and a slider.
+     *
+     *  @param lower  The lowest valid value.
+     *  @param upper  The greatest valid value.
+     *  @param step   The step size of the scrollbar.
+     *  @param value  The actual value.
+     *  @param base   The base of the used number system.
+     *  @param parent The parent of the widget.
+     *  @param name   The Name of the widget.
+     */
     KIntSpinBox(int lower, int upper, int step, int value, int base = 10,
                 QWidget* parent = 0, const char* name = 0);
-    
+   
+    /**
+     *  Destructor.
+     */
     virtual ~KIntSpinBox() {};
 
 protected:
+
+    /**
+     *  Overloaded to make use of the base given in the constructor.
+     */
     virtual QString mapValueToText(int);
+
+    /**
+     *  Overloaded to make use of the base given in the constructor.
+     */
     virtual int mapTextToValue(bool*);
 
     int val_base;
