@@ -335,10 +335,10 @@ void KIconLoader::addExtraDesktopThemes()
 	      buf[r]=0;
 	      QDir dir2( buf );
 	      QString themeName=dir2.dirName();
-	
+
 	      if (!list.contains(themeName))
 		list.append(themeName);
-	    }	
+	    }
 	}
     }
 
@@ -347,7 +347,7 @@ void KIconLoader::addExtraDesktopThemes()
 	if ( d->mThemesInTree.contains(*it) )
 		continue;
 	if ( *it == QString("default.kde") ) continue;
-			
+
 	KIconTheme *def = new KIconTheme( *it, "" );
 	KIconThemeNode* node = new KIconThemeNode(def);
 	d->mThemesInTree.append(*it);
@@ -356,7 +356,7 @@ void KIconLoader::addExtraDesktopThemes()
     }
 
     d->extraDesktopIconsLoaded=true;
-   
+
 }
 
 bool KIconLoader::extraDesktopThemesAdded() const
@@ -504,7 +504,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
     }
-    
+
     if (group_or_size >= KIcon::LastGroup)
     {
 	kdDebug(264) << "Illegal icon group: " << group_or_size << endl;
@@ -532,7 +532,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	path = iconPath(name, KIcon::User, true);
 	if (!path.isEmpty() || canReturnNull)
 	    return path;
-	
+
 	if (canReturnNull)
 	    return QString::null;
         else
@@ -572,14 +572,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	if (inCache && (path_store == 0L))
 	    return pix;
 
+        int desiredSizeOrGroup = ( size != 0 ) ? -size : KIcon::User;
 	QString path = (absolutePath) ? name :
-			iconPath(name, KIcon::User, canReturnNull);
+			iconPath(name, desiredSizeOrGroup, canReturnNull);
 	if (path.isEmpty())
 	{
 	    if (canReturnNull)
 		return pix;
-	    // We don't know the desired size: use small
-	    path = iconPath(str_unknown, KIcon::Small, true);
+	    // Use small if we don't know the desired size.
+            desiredSizeOrGroup = ( size != 0 ) ? -size : KIcon::Small;
+	    path = iconPath(str_unknown, desiredSizeOrGroup, true);
 	    if (path.isEmpty())
 	    {
 		kdDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
@@ -810,7 +812,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 		// expensive, but works
 		fmask = favIcon.createHeuristicMask();
 	    }
-		
+
             bitBlt(&mask, x, y, &fmask,
                    0, 0, favIcon.width(), favIcon.height(),
                    favIcon.mask() ? Qt::OrROP : Qt::SetROP);
@@ -1112,13 +1114,13 @@ QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group g, int s,
         ret.installIconFactory( new KIconFactory( name, g, s, this ));
         return ret;
     }
-    
+
     QIconSet ret;
     ret.installIconFactory( new KIconFactory( name, g, s, this ));
     return ret;
 }
 
-QIconSet KIconLoader::loadIconSetNonDelayed( const QString& name, 
+QIconSet KIconLoader::loadIconSetNonDelayed( const QString& name,
                                              KIcon::Group g,
                                              int s, bool canReturnNull )
 {
