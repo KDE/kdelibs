@@ -137,10 +137,10 @@ public:
    * in the system catalog. This makes it possible to override
    * some phrases for your needs.
    *
-   *  The argument must be an UTF-8 encoded string (If you only use
-   *  characters that are in US-ASCII you're on the safe side. But
-   *  for e.g. german umlauts or french accents should be recoded to
-   *  UTF-8)
+   * The argument must be an UTF-8 encoded string (If you only use
+   * characters that are in US-ASCII you're on the safe side. But
+   * for e.g. german umlauts or french accents should be recoded to
+   * UTF-8)
    *
    * @param index The lookup text and default text, if not found.
    */
@@ -359,7 +359,7 @@ public:
    * Given a double, converts that to a numeric string containing
    * the localized numeric equivalent.
    *
-   * e.g. given 123456.78, return "123,456.78" (for some European country).
+   * e.g. given 123456.78F, return "123,456.78" (for some European country).
    * If precision isn't specified, 2 is used.
    *
    * @param num The number to convert
@@ -368,6 +368,19 @@ public:
    * @return The number as a localized string
    */
   QString formatNumber(double num, int precision = -1) const;
+
+  /**
+   * Given an integer, converts that to a numeric string containing
+   * the localized numeric equivalent.
+   *
+   * e.g. given 123456L, return "123,456" (for some European country).
+   *
+   * @param num The number to convert
+   *
+   * @return The number as a localized string
+   * @since 3.2
+   */
+  QString formatNumber(long num) const;
 
   /**
    * Use this to determine whether nouns are declined in
@@ -417,17 +430,6 @@ public:
    * @return If the user wants 12h clock
    */
   bool use12Clock() const;
-
-  /**
-   * @deprecated
-   *
-   * Please use the @ref weekStartDay method instead.
-   *
-   * Use this to determine if the user wants the week to start on Monday.
-   *
-   * @return true if the week starts on Monday
-   */
-  bool weekStartsMonday() const; //### remove for KDE 4.0
 
   /**
    * Use this to determine which day is the first day of the week.
@@ -539,7 +541,7 @@ public:
   /**
    * Returns the language used by this object. The domain AND the
    * library translation must be available in this language.
-   * "en_US" is default, if no other available.
+   * @ref defaultLanguage() is returned by default, if no other available.
    *
    * @return The currently used language.
    */
@@ -547,7 +549,7 @@ public:
 
   /**
    * Returns the country code of the country where the user lives.
-   * "C" is default, if no other available
+   * @ref defaultCountry() is returned by default, if no other available.
    *
    * @return The country code for the user.
    */
@@ -676,16 +678,6 @@ public:
    */
   void setTimeFormat(const QString & format);
 
-  /**
-   * @deprecated
-   *
-   * Please use @ref setWeekStartDay instead.
-   *
-   * Changes how KLocale defines the first day in week.
-   *
-   * @param start True if Monday is the first day in the week
-   */
-  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
   /**
    * Changes how KLocale defines the first day in week.
    *
@@ -949,6 +941,27 @@ public:
 #ifdef KDE_NO_COMPAT
 private:
 #endif
+  /**
+   * @deprecated
+   *
+   * Please use the @ref weekStartDay method instead.
+   *
+   * Use this to determine if the user wants the week to start on Monday.
+   *
+   * @return true if the week starts on Monday
+   */
+  bool weekStartsMonday() const; //### remove for KDE 4.0
+
+  /**
+   * @deprecated
+   *
+   * Please use @ref setWeekStartDay instead.
+   *
+   * Changes how KLocale defines the first day in week.
+   *
+   * @param start True if Monday is the first day in the week
+   */
+  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
 
   /**
    * @deprecated

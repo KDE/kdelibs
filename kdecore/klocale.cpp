@@ -87,7 +87,6 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
      initLanguage(cfg, config == 0);
 }
 
-
 QString KLocale::_initLanguage(KConfigBase *config)
 {
   if (this_klocale)
@@ -97,7 +96,6 @@ QString KLocale::_initLanguage(KConfigBase *config)
   }
   return QString::null;
 }
-
 
 void KLocale::initCatalogue(const QString & catalogue)
 {
@@ -592,7 +590,6 @@ void KLocale::setActiveCatalogue(const QString &catalogue)
     }
 }
 
-
 KLocale::~KLocale()
 {
   delete d->languages;
@@ -1049,6 +1046,11 @@ QString KLocale::formatNumber(double num, int precision) const
   return res;
 }
 
+QString KLocale::formatNumber(long num) const
+{
+  return formatNumber((double)num, 0);
+}
+
 QString KLocale::formatNumber(const QString &numStr) const
 {
   return formatNumber(numStr.toDouble());
@@ -1265,7 +1267,6 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
       major = str.left(pos);
       minior = str.mid(pos + monetaryDecimalSymbol().length());
     }
-
 
   // Remove thousand separators
   int thlen = monetaryThousandsSeparator().length();
@@ -2037,7 +2038,7 @@ QStringList KLocale::allLanguagesTwoAlpha() const
 {
   if (!d->languages)
     d->languages = new KConfig("all_languages", true, false, "locale");
-  
+
   return d->languages->groupList();
 }
 
