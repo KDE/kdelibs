@@ -344,7 +344,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     QString question = makeQuestion( url, mimeType, suggestedFilename );
 
     int choice = KMessageBox::questionYesNoCancel(
-        0L, question, QString::null,
+        0L, question, url.host(),
         KStdGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "fileopen"),
         QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
