@@ -420,7 +420,8 @@ bool KZip::openArchive( int mode )
 
 	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
-            // the file and we look for the signature 'PK\7\8'.
+            // the file and we look for the signature 'PK\7\8' or another
+	    // PKxx signature.
             if ( gpf & 8 )
             {
                 bool foundSignature = false;
@@ -444,14 +445,26 @@ bool KZip::openArchive( int mode )
                         return false;
                     }
 
+                    // we have to detect three magic tokens here:
+                    // PK34 for the next local header in case there is no data descriptor
+                    // PK12 for the central header in case there is no data descriptor
+                    // PK78 for the data descriptor in case it is following the compressed data
+
                     if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
                     {
                         foundSignature = true;
                         dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
                     }
+                    else if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+                         || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+                    {
+                        foundSignature = true;
+                        dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found
+						  // in the next cycle
+                    }
                 }
             }
-            else
+            else // local header contains the compressed and uncompressed size
             {
 		// check if this could be a symbolic link
 		if (compression_mode == NoCompression
@@ -464,9 +477,58 @@ bool KZip::openArchive( int mode )
 			kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#5)" << endl;
 			return false;
 		    }
-		} else {
+		}
+		else // normal file
+		{
+                   if ( dev->size() > 0 && compr_size > (Q_LONG)dev->size() )
+                   {
+                        // here we cannot trust the compressed size, so scan through the compressed
+                        // data to find the next header
+                        bool foundSignature = false;
 
-                    dev->at( dev->at() + compr_size );
+                        while (!foundSignature)
+                        {
+                                n = dev->readBlock( buffer, 1 );
+                                if (n < 1)
+                                {
+                                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#6)" << endl;
+                                        return false;
+                                }
+
+                                if ( buffer[0] != 'P' )
+                                        continue;
+
+                                n = dev->readBlock( buffer, 3 );
+                                if (n < 3)
+                                {
+                                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#7)" << endl;
+                                        return false;
+                                }
+
+                                // we have to detect three magic tokens here:
+                                // PK34 for the next local header in case there is no data descriptor
+                                // PK12 for the central header in case there is no data descriptor
+                                // PK78 for the data descriptor in case it is following the compressed data
+
+                                if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+                                {
+                                        foundSignature = true;
+                                        dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
+                                }
+                                else if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+                                        || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+                                {
+                                        foundSignature = true;
+                                        dev->at( dev->at() - 4 );
+                                        // go back 4 bytes, so that the magic bytes can be found
+                                        // in the next cycle...
+                                }
+                        }
+                    }
+		    else
+		    {
+                        dev->at( dev->at() + compr_size );
+		    }
 		}
                 // here we calculate the length of the file in the zip
                 // with headers and jump to the next header.
