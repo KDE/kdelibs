@@ -264,7 +264,7 @@ protected:
    *
    * Checks what to do with a single option
    */
-  static void findOption(const char *opt, int &i, bool enabled);
+  static void findOption(const char *_opt, QCString opt, int &i, bool enabled);
 
   /**
    * @internal
@@ -318,14 +318,14 @@ protected:
    *
    *  Set a boolean option
    */
-  void setOption(const char *option, bool enabled);
+  void setOption(const QCString &option, bool enabled);
 
   /**
    * @internal
    *
    *  Set a string option
    */
-  void setOption(const char *option, const char *value);
+  void setOption(const QCString &option, const char *value);
 
   /**
    * @internal 

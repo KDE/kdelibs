@@ -1,4 +1,4 @@
-/* This file is part of the KDE project
+/*
    Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/param.h>
 #include <qlist.h>
@@ -282,11 +283,11 @@ void KCmdLineArgs::removeArgs(const char *id)
  *
  */
 static int  
-findOption(const KCmdLineOptions *options, const char *opt, 
-           const char *&opt_name, const char *&def)
+findOption(const KCmdLineOptions *options, QCString &opt, 
+           const char *&opt_name, const char *&def, bool &enabled)
 {
    bool inverse;
-   int len = strlen(opt);
+   int len = opt.length();
    while(options && options->name)
    {
       inverse = false;
@@ -296,7 +297,7 @@ findOption(const KCmdLineOptions *options, const char *opt,
          opt_name += 2;
          inverse = true;
       }
-      if (strncmp(opt, opt_name, len) == 0)
+      if (strncmp(opt.data(), opt_name, len) == 0)
       {
          opt_name += len;
          if (!opt_name[0])
@@ -313,7 +314,15 @@ findOption(const KCmdLineOptions *options, const char *opt,
                int p = nextOption.find(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
-               return findOption(options, nextOption.data(), opt_name, def);
+               if (strncmp(nextOption.data(), "no", 2) == 0)
+               {
+                  nextOption = nextOption.mid(2);
+                  enabled = !enabled;
+               }
+               int result = findOption(options, nextOption, opt_name, def, enabled);
+               assert(result);
+               opt = nextOption;
+               return result;
             }
 
             return 1;
@@ -333,16 +342,18 @@ findOption(const KCmdLineOptions *options, const char *opt,
 
 
 void 
-KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
+KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
 {
    KCmdLineArgs *args = argsList->first();
    const char *opt_name;
    const char *def;
 
+   bool enabled = true;
    int result = 0;
    while (args)
    {
-      result = ::findOption(args->options, opt, opt_name, def);
+      enabled = _enabled;
+      result = ::findOption(args->options, opt, opt_name, def, enabled);
       if (result) break;
       args = argsList->next();
    }
@@ -350,8 +361,7 @@ KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
    if (!args || !result) 
    {
       enable_i18n();
-      usage( i18n("Unknown option '--%1%2'.\n")
-                    .arg( enabled? "" : "no").arg(opt));
+      usage( i18n("Unknown option '%1'.\n").arg(_opt));
    }
 
    if (result == 3) // This option takes an argument
@@ -359,8 +369,7 @@ KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
       if (!enabled) 
       {
          enable_i18n();
-         usage( i18n("Unknown option '--%1%2'.\n")
-                    .arg( "no").arg(opt));
+         usage( i18n("Unknown option '%1'.\n").arg(_opt));
       }
       i++;
       if (i >= argc) 
@@ -372,6 +381,7 @@ KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
    }   
    else
    {
+fprintf(stderr, "SetOption( %s, %s )\n", opt.data(), enabled ? "true" : "false");
       args->setOption(opt, enabled);
    }
 }
@@ -438,7 +448,7 @@ KCmdLineArgs::parseAllArgs()
               option += 2;
               enabled = false;
            }
-           findOption(option, i, enabled);
+           findOption(argv[i], option, i, enabled);
          }
       }
       else
@@ -765,7 +775,7 @@ KCmdLineArgs::load( QDataStream &ds)
 }
 
 void
-KCmdLineArgs::setOption(const char *opt, bool enabled)
+KCmdLineArgs::setOption(const QCString &opt, bool enabled)
 {
    if (isQt)
    {
@@ -784,7 +794,7 @@ KCmdLineArgs::setOption(const char *opt, bool enabled)
 }
 
 void
-KCmdLineArgs::setOption(const char *opt, const char *value)
+KCmdLineArgs::setOption(const QCString &opt, const char *value)
 {
    if (isQt)
    {
@@ -801,12 +811,12 @@ KCmdLineArgs::setOption(const char *opt, const char *value)
 }
 
 QCString
-KCmdLineArgs::getOption(const char *opt)
+KCmdLineArgs::getOption(const char *_opt)
 {
    QCString *value = 0;
    if (parsedOptionList)
    {
-      value = parsedOptionList->find(opt);
+      value = parsedOptionList->find(_opt);
    }
 
    if (value)
@@ -815,7 +825,9 @@ KCmdLineArgs::getOption(const char *opt)
    // Look up the default.
    const char *opt_name;
    const char *def;
-   int result = ::findOption( options, opt, opt_name, def);
+   bool dummy = true;
+   QCString opt = _opt;
+   int result = ::findOption( options, opt, opt_name, def, dummy);
 
    assert(result == 3); // Make sure to add an option to 
                         // the list of options before querying it!
@@ -823,7 +835,7 @@ KCmdLineArgs::getOption(const char *opt)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Application requests for getOption(\"%s\") but the \"%s\" option\n", 
-                      opt, opt);
+                      _opt, _opt);
       fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
  
       assert( 0 ); 
@@ -833,18 +845,20 @@ KCmdLineArgs::getOption(const char *opt)
 }
 
 bool
-KCmdLineArgs::isSet(const char *opt)
+KCmdLineArgs::isSet(const char *_opt)
 {
    // Look up the default.
    const char *opt_name;
    const char *def;
-   int result = ::findOption( options, opt, opt_name, def);
+   bool dummy = true;
+   QCString opt = _opt;
+   int result = ::findOption( options, opt, opt_name, def, dummy);
 
    if (result == 0)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
       fprintf(stderr, "Application requests for isSet(\"%s\") but the \"%s\" option\n", 
-                      opt, opt);
+                      _opt, _opt);
       fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
  
       assert( 0 ); 
