@@ -189,6 +189,10 @@ int main(int argc, char *argv[])
      check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");
   }
   {
+     KURL waba2( waba1, "//www.kde.org/relative.html");
+     check("http: Relative URL, with host", waba2.url(), "http://www.kde.org/relative.html");
+  }
+  {
      KURL waba2( waba1, "relative.html?query=test&name=harry");
      check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
   }
