@@ -22,6 +22,7 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir) -I$(srcdir)/../kssl -I../kssl $(all_in
 
 SUBDIRS = . ksendbugmail kpac kdesasl kssld kfile
 
+lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kio_uiserver.la
 bin_PROGRAMS = kmailservice ktelnetservice
 

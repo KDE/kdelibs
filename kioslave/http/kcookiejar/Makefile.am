@@ -5,6 +5,8 @@ INCLUDES=	$(all_includes)
 
 ####### Files
 
+bin_PROGRAMS =
+lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kcookiejar.la
 kde_module_LTLIBRARIES = kded_kcookiejar.la
 

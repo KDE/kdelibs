@@ -19,6 +19,7 @@
 
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 
+lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kded.la kbuildsycoca.la
 
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version

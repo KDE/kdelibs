@@ -18,6 +18,8 @@
 
 INCLUDES= $(all_includes)
 
+bin_PROGRAMS = 
+lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kconf_update.la
 
 kconf_update_la_SOURCES = kconf_update.cpp

@@ -1,6 +1,8 @@
 
 INCLUDES= -I$(includedir)/arts -I$(top_srcdir)/arts/kde $(all_includes)
 
+bin_PROGRAMS=
+lib_LTLIBRARIES =
 kdeinit_LTLIBRARIES = kmcop.la
 
 kmcop_la_SOURCES = mcopdcopobject.cpp kmcop.cpp kmcop.skel

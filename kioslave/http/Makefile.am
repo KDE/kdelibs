@@ -8,6 +8,8 @@ AM_LDFLAGS = $(all_libraries)
 
 ####### Files
 
+bin_PROGRAMS=
+lib_LTLIBRARIES=
 kdeinit_LTLIBRARIES = kio_http_cache_cleaner.la
 kde_module_LTLIBRARIES = kio_http.la
 

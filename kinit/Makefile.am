@@ -19,7 +19,9 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes)
 
 SUBDIRS = . tests
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave brockenboring
+bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave
+
+lib_LTLIBRARIES = 
 kdeinit_LTLIBRARIES = klauncher.la
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
@@ -35,9 +37,6 @@ kioslave_LDADD = $(LIB_KIO)
 
 kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
-
-brockenboring_SOURCES = brockenboring.c
-brockenboring_LDADD = $(top_builddir)/libltdl/libltdlc.la 
 
 kshell_SOURCES = shell.c
 kshell_LDADD = $(LIBSOCKET)
