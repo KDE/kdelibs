@@ -116,7 +116,7 @@ AC_SUBST(topdir)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
 
-CXXFLAGS="$CXXFLAGS -ansi -pedantic"
+dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
 
 AC_OUTPUT(Makefile \
