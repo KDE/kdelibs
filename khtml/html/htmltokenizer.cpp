@@ -264,7 +264,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-        if ( (tquote == NoQuote || comment) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( ((script && tquote == NoQuote) || !script) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -399,11 +399,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
-                if( !comment && ch == '\"')
+                if(script && ch == '\"')
                     tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-                else if( !comment && ch == '\'')
+                else if(script && ch == '\'')
                     tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-                else if (!comment &&  tquote != NoQuote && (ch == '\r' || ch == '\n'))
+                else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
                     tquote = NoQuote; // HACK!!!
 
 		scriptCode[ scriptCodeSize++ ] = src[0];
