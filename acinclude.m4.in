@@ -393,7 +393,7 @@ fi
 AC_MSG_RESULT($kde_use_extra_includes)
 
 AC_MSG_CHECKING(for extra libs)
-AC_ARG_WITH(extra-includes, [  --with-extra-libs       adds non standard librarypaths], 
+AC_ARG_WITH(extra-libs, [  --with-extra-libs       adds non standard library paths], 
   kde_use_extra_libs=$withval,
   kde_use_extra_libs=NONE
 )
