@@ -61,6 +61,7 @@ public:
     m_isRadio     = false;
     m_highlight   = false;
     m_isRaised    = false;
+    m_isActive    = false;
 
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
@@ -78,14 +79,15 @@ public:
     delete m_delayTimer; m_delayTimer = 0;
   }
 
-  bool    m_noStyle;
   int     m_id;
-  bool    m_isSeparator;
-  bool    m_isPopup;
-  bool    m_isToggle;
-  bool    m_isRadio;
-  bool    m_highlight;
-  bool    m_isRaised;
+  bool    m_noStyle: 1;
+  bool    m_isSeparator: 1;
+  bool    m_isPopup: 1;
+  bool    m_isToggle: 1;
+  bool    m_isRadio: 1;
+  bool    m_highlight: 1;
+  bool    m_isRaised: 1;
+  bool    m_isActive: 1;
 
   QString m_iconName;
   QString m_disabledIconName;
@@ -386,13 +388,13 @@ void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool toggle )
 
 void KToolBarButton::leaveEvent(QEvent *)
 {
-  if (isToggleButton() == false)
-    if( d->m_isRaised != false )
-    {
-      QButton::setPixmap(isEnabled() ? defaultPixmap : disabledPixmap);
-      d->m_isRaised = false;
-      repaint(false);
-    }
+  if( d->m_isRaised || d->m_isActive )
+  {
+    QButton::setPixmap(isEnabled() ? defaultPixmap : disabledPixmap);
+    d->m_isRaised = false;
+    d->m_isActive = false;
+    repaint(false);
+  }
 
   if (d->m_isPopup)
     d->m_delayTimer->stop();
@@ -404,17 +406,20 @@ void KToolBarButton::enterEvent(QEvent *)
 {
   if (d->m_highlight)
   {
-    if (isToggleButton() == false)
-      if (isEnabled())
-      {
-        QButton::setPixmap(activePixmap);
+    if (isEnabled())
+    {
+      QButton::setPixmap(activePixmap);
+
+      d->m_isActive = true;
+      if (!isToggleButton())
         d->m_isRaised = true;
-      }
-      else
-      {
-        QButton::setPixmap(disabledPixmap);
-        d->m_isRaised = false;
-      }
+    }
+    else
+    {
+      QButton::setPixmap(disabledPixmap);
+      d->m_isRaised = false;
+      d->m_isActive = false;
+    }
 
     repaint(false);
   }
