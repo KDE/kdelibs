@@ -411,11 +411,11 @@ void KAccel::writeSettings(KConfig* config) const
             if ( (*it).bConfigurable ) {
                 if ( bGlobal )
                     pConfig->writeEntry( it.key(),
-                                         keyToString( (*it).aCurrentKeyCode),
+                                         keyToString( (*it).aCurrentKeyCode, false),
                                          true, true );
                 else
                     pConfig->writeEntry( it.key(),
-                                         keyToString( (*it).aCurrentKeyCode ));
+                                         keyToString( (*it).aCurrentKeyCode, false));
 
             }
 	}

@@ -289,7 +289,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
       act_elem.setAttribute( attrName, action->name() );
     }
     act_elem.setAttribute( attrAccel,
-                           KAccel::keyToString( key.aConfigKeyCode ) );
+                           KAccel::keyToString( key.aConfigKeyCode, false) );
 
     elem.appendChild( act_elem );
   }
@@ -360,7 +360,7 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
 
     QListViewItem * s = new QListViewItem(d->wList,
                                           (*it).descr,
-                                          KAccel::keyToString((*it).aConfigKeyCode));
+                                          KAccel::keyToString((*it).aConfigKeyCode, true));
     d->actionMap[s] = it;
   }
 
@@ -610,10 +610,10 @@ void KKeyChooser::toChange( QListViewItem *item )
                 if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
                 else d->cAlt->setChecked( kCode & ALT );
 
-                QString str = KAccel::keyToString( kSCode );
+                QString str = KAccel::keyToString( kSCode, true );
                 d->bChange->setText(str);
 
-                item->setText(1, KAccel::keyToString( kCode ));
+                item->setText(1, KAccel::keyToString( kCode, true ));
 
         } else {
                 d->lNotConfig->setEnabled( false );
@@ -630,10 +630,10 @@ void KKeyChooser::toChange( QListViewItem *item )
                 if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
                 else d->cAlt->setChecked( kCode & ALT );
 
-                QString str = KAccel::keyToString( kSCode );
+                QString str = KAccel::keyToString( kSCode, true );
                 d->bChange->setText(str); //eKey->setText(str);
                 //d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
-                item->setText(1, KAccel::keyToString( kCode ));
+                item->setText(1, KAccel::keyToString( kCode, true ));
 
                 if ( isKeyPresent(kCode, false) ) {
                         d->lInfo->setText(i18n("Attention : key already used") );
@@ -737,7 +737,7 @@ void KKeyChooser::defaultKey()
         (*d->actionMap[item]).aDefaultKeyCode;
 
     item->setText(1, KAccel::keyToString((*d->actionMap[item]).
-                                         aConfigKeyCode));
+                                         aConfigKeyCode, true));
 
     if ( d->bChange->isEditing() )
         d->bChange->setEditing(false);
@@ -758,7 +758,7 @@ void KKeyChooser::allDefault()
 
         if ( (*it).bConfigurable ) {
             (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
-            at->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+            at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
         }
 
         at = at->nextSibling();
@@ -782,7 +782,7 @@ void KKeyChooser::shiftClicked()
             (*it).aConfigKeyCode &= ~SHIFT;
 
         item->setText(1,
-                      KAccel::keyToString((*it).aConfigKeyCode));
+                      KAccel::keyToString((*it).aConfigKeyCode, true));
 
     }
     toChange(item);
@@ -798,7 +798,7 @@ void KKeyChooser::listSync()
         KKeyEntryMap::Iterator it = d->actionMap[item];
 
         if ( (*it).bConfigurable )
-            item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+            item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
 
         item = item->nextSibling();
     }
@@ -821,7 +821,7 @@ void KKeyChooser::ctrlClicked()
         else
             (*it).aConfigKeyCode &= ~CTRL;
 
-        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
     }
     toChange(item);
     emit keyChange();
@@ -842,7 +842,7 @@ void KKeyChooser::altClicked()
         else
             (*it).aConfigKeyCode &= ~ALT;
 
-        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+        item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
     }
     toChange(d->wList->currentItem());
     emit keyChange();
@@ -873,7 +873,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
      if it is a non existent key (=0) : keep the old value and say
      what happened.
   */
-  if ( KAccel::keyToString(kCode).isNull() )
+  if ( KAccel::keyToString(kCode, true).isNull() )
   {
     d->lInfo->setText( i18n("Undefined key") );
     return;
@@ -907,7 +907,7 @@ void KKeyChooser::setKey( int kCode)
 
     /* set the list and the change button */
     (*it).aConfigKeyCode = kCode;
-    item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+    item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
 
     toChange(item);
     emit keyChange();
@@ -937,7 +937,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
     if (!kcode)
         return false;
 
-    kdDebug(125) << "isKeyPresent " << KAccel::keyToString(kcode) << endl;
+    kdDebug(125) << "isKeyPresent " << KAccel::keyToString(kcode, false) << endl;
 
     // Search the global key codes to find if this keyCode is already used
     //  elsewhere
@@ -955,7 +955,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName( (*d->map)[gIt.currentKey()].descr );
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( *gIt.current() );
+            QString keyName = KAccel::keyToString( *gIt.current(), true );
 
             QString str =
                 i18n("The %1 key combination has already been "
@@ -983,7 +983,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName( (*d->map)[sIt.currentKey()].descr );
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( *sIt.current() );
+            QString keyName = KAccel::keyToString( *sIt.current(), true );
 
             QString str =
                 i18n("The %1 key combination has already "
@@ -1009,7 +1009,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
             QString actionName( (*it).descr );
             actionName.stripWhiteSpace();
 
-            QString keyName = KAccel::keyToString( kcode );
+            QString keyName = KAccel::keyToString( kcode, true );
 
             QString str =
                 i18n("The %1 key combination has already "
