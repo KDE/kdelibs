@@ -382,7 +382,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   if ( mime->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
   {
       QString subFileName = m_url.path().left( m_url.path().length() - 3 );
-      kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
+      //kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
       mime = KMimeType::findByURL( subFileName, 0, m_bIsLocalURL );
       _state |= KIcon::ZipOverlay;
   }
