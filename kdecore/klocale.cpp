@@ -198,9 +198,8 @@ void KLocale::setEncodingLang(const QString &_lang)
     if (f.open(IO_ReadOnly))
     {
       char buf[256];
-      int l = f.readLine(buf, 256);
-      if (l > 0)
-        _codec = QTextCodec::codecForName( buf );
+      f.readLine(buf, 256);
+      _codec = QTextCodec::codecForName( buf );
       f.close();
     }
   }
@@ -218,11 +217,11 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   QStringList langlist = config->readListEntry("Language", ':');
 
-  langlist.prepend( getenv("KDE_LANG") );
+  langlist.prepend( QFile::decodeName(getenv("KDE_LANG")) );
   // same order as setlocale use
-  langlist << getenv("LC_MESSAGES");
-  langlist << getenv("LC_ALL");
-  langlist << getenv("LANG");
+  langlist << QFile::decodeName(getenv("LC_MESSAGES"));
+  langlist << QFile::decodeName(getenv("LC_ALL"));
+  langlist << QFile::decodeName(getenv("LANG"));
   langlist << QString::fromLatin1("C");
 
   for ( QStringList::Iterator it = langlist.begin();
