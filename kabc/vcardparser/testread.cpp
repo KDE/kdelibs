@@ -23,6 +23,7 @@
 #include <qtextstream.h>
 
 #include <kprocess.h>
+#include <kdebug.h>
 
 #include "vcardtool.h"
 
@@ -68,6 +69,8 @@ int main( int argc, char **argv )
   file.close();
 
   QString command = "diff " + referenceFile + " " + outputFile;
+
+  kdDebug() << "CHECKING " << inputFile << endl;
 
   system( command.local8Bit() );
 
