@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1998/11/22 20:23:15  mirko
+ * I added the possibility to use KURLLabel on top of a (parent) widget that
+ * uses a background pattern, like kab's main view.
+ *
  * Revision 1.2  1998/09/15 00:58:24  granroth
  * Changed method so that it compiles under egcs.  'moc' doesn't like default
  * args in declarations and generates invalid code if it encounters more than
@@ -420,7 +424,7 @@ private:
 	bool m_underline;
 	bool m_inRegion;
 	bool m_haveCursor;
-        bool transparent; // true when transparent mode is enabled
+	bool m_transparent; // true when transparent mode is enabled
 };
 
 #endif // _KURLLABEL_H

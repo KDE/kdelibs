@@ -8,44 +8,27 @@
 #include "kurllabel.moc"
 
 #include <qtooltip.h>
-
-/* "hand" bitmap */
-#define HAND_WIDTH  22
-#define HAND_HEIGHT 22
-#define HAND_HOT_Y   0
-#define HAND_HOT_X   7
-static unsigned char HAND_BITS[] = {
-	0x80, 0x01, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00,
-	0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x1e, 0x00, 0x40, 0xf2, 0x00,
-	0x40, 0x92, 0x01, 0x70, 0x92, 0x02, 0x50, 0x92, 0x04, 0x48, 0x80, 0x04,
-	0x48, 0x00, 0x04, 0x48, 0x00, 0x04, 0x08, 0x00, 0x04, 0x08, 0x00, 0x04,
-	0x10, 0x00, 0x04, 0x10, 0x00, 0x04, 0x20, 0x00, 0x02, 0x40, 0x00, 0x02,
-	0x40, 0x00, 0x01, 0xc0, 0xff, 0x01};
-
-/* "hand" bitmap mask */
-static unsigned char HAND_MASK_BITS[] = {
-	0x80, 0x01, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x03, 0x00,
-	0xc0, 0x03, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x1f, 0x00, 0xc0, 0xff, 0x00,
-	0xc0, 0xff, 0x01, 0xf0, 0xff, 0x03, 0xf0, 0xff, 0x07, 0xf8, 0xff, 0x07,
-	0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07,
-	0xf0, 0xff, 0x07, 0xf0, 0xff, 0x07, 0xe0, 0xff, 0x03, 0xc0, 0xff, 0x03,
-	0xc0, 0xff, 0x01, 0xc0, 0xff, 0x01};
+#include <kcursor.h>
 
 KURLLabel::KURLLabel(QWidget *parent, const char* name, WFlags f)
-	: QLabel(parent, name, f)
+	: QLabel(parent, name, f),
+	  m_textAlign(Bottom),
+	  m_url(0),
+	  m_tipText(0),
+	  m_float(false),
+	  m_tips(false),
+	  m_glow(true),
+	  m_underline(true),
+	  m_inRegion(false),
+	  m_haveCursor(true),
+	  m_transparent(false)
 {
 	/* set the defaults */
 	m_hc.setNamedColor("blue");
 	m_sc.setNamedColor("red");
 	m_bc        = backgroundColor();
-	m_glow      = true;
-	m_underline = true;
-	m_tips      = false;
-	m_float     = false;
-	m_url       = 0;
-	m_inRegion  = false;
-	m_textAlign = Bottom;
-	transparent = false;
+
+
 	setUseCursor(true);
 	setMouseTracking(true);
 
@@ -116,9 +99,7 @@ void KURLLabel::setUseCursor(bool use_cursor, const QCursor* cursor)
 	else
 	{
 		/* otherwise, use the "hand" cursor */
-		QBitmap bitmap(HAND_WIDTH, HAND_HEIGHT, HAND_BITS, true); 
-		QBitmap mask(HAND_WIDTH, HAND_HEIGHT, HAND_MASK_BITS, true); 
-		m_customCursor = QCursor(bitmap, mask, HAND_HOT_X, HAND_HOT_Y);
+		m_customCursor = KCursor::handCursor();
 	}
 }
 
@@ -822,23 +803,23 @@ void KURLLabel::drawContents(QPainter* p)
 
 void KURLLabel::setTransparentMode(bool state)
 {
-  transparent=state;
-  setBackgroundMode(state ? NoBackground : PaletteBackground); 
+	m_transparent = state;
+	setBackgroundMode(state ? NoBackground : PaletteBackground); 
 }
 
 void KURLLabel::paintEvent(QPaintEvent*)
 { // Mirko Sucker, 1998/11/16:
-  QPen pen;
-  QPainter paint(this);
-  // -----
-  if(transparent && parentWidget()!=0)
-    {
-      QPixmap bg(width(), height());
-      // -----
-      bg.fill(parentWidget(), mapToParent(QPoint(0, 0)));
-      paint.drawPixmap(0, 0, bg);
-    }
-  drawFrame(&paint);
-  drawContents(&paint);
-  paint.end();
+	QPen pen;
+	QPainter paint(this);
+	// -----
+	if(m_transparent && parentWidget()!=0)
+	{
+		QPixmap bg(width(), height());
+		// -----
+		bg.fill(parentWidget(), mapToParent(QPoint(0, 0)));
+		paint.drawPixmap(0, 0, bg);
+	}
+	drawFrame(&paint);
+	drawContents(&paint);
+	paint.end();
 }
