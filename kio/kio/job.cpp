@@ -3015,7 +3015,7 @@ void CopyJob::slotResult( Job *job )
                     tmpFile.unlink();
                     if ( ::rename( _src, _tmp ) == 0 )
                     {
-                        if ( ::rename( _tmp, _dest ) == 0 )
+                        if ( !QFile::exists( _dest ) && ::rename( _tmp, _dest ) == 0 )
                         {
                             kdDebug(7007) << "Success." << endl;
                             err = 0;
@@ -3023,8 +3023,7 @@ void CopyJob::slotResult( Job *job )
                         else
                         {
                             // Revert back to original name!
-                            bool b = ::rename( QFile::encodeName(tmpFile.name()), _src );
-                            if (!b) {
+                            if ( ::rename( _tmp, _src ) != 0 ) {
                                 kdError(7007) << "Couldn't rename " << tmpFile.name() << " back to " << _src << " !" << endl;
                                 // Severe error, abort
                                 Job::slotResult( job ); // will set the error and emit result(this)
