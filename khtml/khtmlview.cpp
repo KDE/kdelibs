@@ -1211,35 +1211,37 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
-    if ( !m_part->xmlDocImpl() ) return;
-
+    bool swallowEvent = false;
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
-    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
-                                           d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
+    if ( m_part->xmlDocImpl() )
+    {
+        m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    if (d->clickCount > 0 &&
-        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
-	QMouseEvent me(d->isDoubleClick ? QEvent::MouseButtonDblClick : QEvent::MouseButtonRelease,
-		       _mouse->pos(), _mouse->button(), _mouse->state());
-	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
-                           d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
+        swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
+                                          d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
+
+        if (d->clickCount > 0 &&
+            QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
+            QMouseEvent me(d->isDoubleClick ? QEvent::MouseButtonDblClick : QEvent::MouseButtonRelease,
+                           _mouse->pos(), _mouse->button(), _mouse->state());
+            dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
+                               d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
+        }
+
+        DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
+        if (fn && fn != mev.innerNode.handle() &&
+            fn->renderer() && fn->renderer()->isWidget() &&
+            _mouse->button() != MidButton) {
+            forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
+        }
+
+        khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+        if (r && r->isWidget())
+            _mouse->ignore();
     }
-
-    DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
-    if (fn && fn != mev.innerNode.handle() &&
-        fn->renderer() && fn->renderer()->isWidget() &&
-        _mouse->button() != MidButton) {
-        forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
-    }
-
-    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-    if (r && r->isWidget())
-	_mouse->ignore();
 
     if (!swallowEvent) {
 	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
