@@ -159,12 +159,15 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_VALUE:
+        isValued = true;
+        requestedValue = attr->val() ? attr->val()->toInt() : 0;
+        
         if(m_render && m_render->isListItem())
         {
             RenderListItem *list = static_cast<RenderListItem *>(m_render);
             // ### work out what to do when attribute removed - use default of some sort?
-            long v = attr->val() ? attr->val()->toInt() : 0;
-            list->setValue(v);
+            
+            list->setValue(requestedValue);
         }
         break;
     case ATTR_TYPE:
@@ -185,6 +188,26 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
         HTMLElementImpl::parseAttribute(attr);
     }
 }
+
+void HTMLLIElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+
+    // If we are first, and the OL has a start attr.
+    if (parentNode() && parentNode()->id() == ID_OL)
+    {
+        HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(parentNode());
+        
+        if(ol->firstChild() && ol->firstChild() == this &&  m_render)
+           static_cast<RenderListItem*>(m_render)->setValue(ol->start());
+    }
+    
+    // If we had a value attr.
+    if (isValued && m_render)
+        static_cast<RenderListItem*>(m_render)->setValue(requestedValue);
+    
+}
+
 
 // -------------------------------------------------------------------------
 
