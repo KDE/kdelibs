@@ -24,6 +24,7 @@
 #include <qintdict.h>
 
 #include <kio/global.h>
+#include <kio/authinfo.h>
 
 #include "kio/job.h"
 #include "kio/skipdlg.h"

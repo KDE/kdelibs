@@ -21,7 +21,8 @@
 #define __slavebase_h
 
 #include <kurl.h>
-#include "kio/global.h"
+#include <kio/global.h>
+#include <kio/authinfo.h>
 
 namespace KIO {
 

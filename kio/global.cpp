@@ -496,7 +496,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     char *mountedto;
     int fsname_len, num;
     int buf_sz = 4096;
-    
+
     /* mntctl can be used to query mounted file systems.
      * mntctl takes only the command MCTL_QUERY so far.
      * The buffer is filled with an array of vmount structures, but these
@@ -516,7 +516,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	mntctl_buffer = (struct vmount*)malloc(buf_sz);
 	num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
     }
-    
+
     if (num > 0)
     {
         /* iterate through items in the vmount structure: */
@@ -708,7 +708,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
     int fsname_len, num;
     char    realpath_buffer[MAXPATHLEN];
     int buf_sz = 4096;
-    
+
     mntctl_buffer = (struct vmount*)malloc(buf_sz);
     num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
     if (num == 0)
@@ -718,7 +718,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
 	mntctl_buffer = (struct vmount*)malloc(buf_sz);
 	num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
     }
-    
+
     if (num > 0)
     {
         /* iterate through items in the vmount structure: */
@@ -738,11 +738,11 @@ bool KIO::probably_slow_mounted(const QString& filename)
 
             /* get the mount-from information: */
             QCString device_name = mountedfrom;
-	    
+
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
                 device_name = realpath_buffer;
-                
+
 	    /* Look up the string for the file system type,
              * as listed in /etc/vfs.
              * ex.: nfs,jfs,afs,cdrfs,sfs,cachefs,nfs3,autofs
@@ -794,71 +794,3 @@ bool KIO::probably_slow_mounted(const QString& filename)
     return (isslow == Right);
 }
 
-AuthInfo::AuthInfo()
-{
-    verifyPath = false;
-    readOnly = false;
-    keepPassword = false;
-    modified = false;
-
-}
-
-AuthInfo::AuthInfo( const AuthInfo& info )
-{
-    url = info.url;
-    username = info.username;
-    password = info.password;
-    prompt = info.prompt;
-    caption = info.caption;
-    comment = info.comment;
-    commentLabel = info.commentLabel;
-    realmValue = info.realmValue;
-    digestInfo = info.digestInfo;
-    verifyPath = info.verifyPath;
-    readOnly = info.readOnly;
-    keepPassword = info.keepPassword;
-    modified = info.modified;
-}
-
-AuthInfo& AuthInfo::operator= ( const AuthInfo& info )
-{
-    url = info.url;
-    username = info.username;
-    password = info.password;
-    prompt = info.prompt;
-    caption = info.caption;
-    comment = info.comment;
-    commentLabel = info.commentLabel;
-    realmValue = info.realmValue;
-    digestInfo = info.digestInfo;
-    verifyPath = info.verifyPath;
-    readOnly = info.readOnly;
-    keepPassword = info.keepPassword;
-    modified = info.modified;
-    return *this;
-}
-
-QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
-{
-    s << a.url << a.username << a.password << a.prompt << a.caption
-      << a.comment << a.commentLabel << a.realmValue << a.digestInfo
-      << Q_UINT8(a.verifyPath ? 1:0) << Q_UINT8(a.readOnly ? 1:0)
-      << Q_UINT8(a.keepPassword ? 1:0) << Q_UINT8(a.modified ? 1:0);
-    return s;
-}
-
-QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
-{
-    Q_UINT8 vp = 0;
-    Q_UINT8 ro = 0;
-    Q_UINT8 kp = 0;
-    Q_UINT8 m  = 0;
-    s >> a.url >> a.username >> a.password >> a.prompt >> a.caption
-      >> a.comment >> a.commentLabel >> a.realmValue >> a.digestInfo
-      >> vp >> ro >> kp >> m;
-    a.verifyPath = (vp != 0);
-    a.readOnly = (ro != 0);
-    a.keepPassword = (kp != 0);
-    a.modified = (m != 0);
-    return s;
-}

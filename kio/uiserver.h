@@ -23,6 +23,7 @@
 #include <qdatetime.h>
 #include <dcopobject.h>
 #include <kio/global.h>
+#include <kio/authinfo.h>
 #include <kurl.h>
 #include <kmainwindow.h>
 #include <kdatastream.h>
