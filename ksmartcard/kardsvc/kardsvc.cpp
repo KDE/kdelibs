@@ -61,6 +61,7 @@ KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
   _pcsc->connect();
   _timer = NULL;
   //_readers = _pcsc->listReaders(NULL);
+  emitreaderListChanged();
   reconfigure();
 }
 
@@ -149,46 +150,60 @@ void KardSvc::poll() {
   }
 
  // Check each slot for a card insertion/removal
- for (QStringList::Iterator s = _readers.begin();
-      s != _readers.end();
+  for (QStringList::Iterator s = _readers.begin();
+       s != _readers.end();
       ++s) {
-   bool wasPresent;
+      bool wasPresent;
 
-   if (!_states.contains(*s)) {
+
+      if (!_states.contains(*s)) {
      wasPresent = false;
      _states[*s] = KCardStatus(_pcsc->context(), *s);
 
 
-   } else {
-     wasPresent = _states[*s].isPresent();
+      } else {
+          wasPresent = _states[*s].isPresent();
 
-   }
-   bool changed = _states[*s].update();
+      }
+      bool changed = _states[*s].update();
 
-   if (changed) {
-     if (!wasPresent && _states[*s].isPresent()) {
-       KCardDB cdb;
-       kdDebug() << "kardsvc: card inserted in slot "
-		 << *s << endl;
-       if (_beepOnEvent)
-	 QApplication::beep();
 
-       QString handler = cdb.getModuleName(getCardATR(*s));
+      if (changed) {
+          bool ispresent = _states[*s].isPresent();
+          QString atr= getCardATR(*s);
+          if (!wasPresent && ispresent) {
+              KCardDB cdb;
+              kdDebug() << "kardsvc: card inserted in slot "
+                        << *s << endl;
+              if (_beepOnEvent)
+                  QApplication::beep();
 
-       if (handler.length() <= 0) {
-	 KCardDB::launchSelector(*s, getCardATR(*s));
-       } else {
-       }
-     } else if (wasPresent && !_states[*s].isPresent()){
-       kdDebug() << "kardsvc: card removed from slot "
-		 << *s << endl;
-       if (_beepOnEvent) {
-	 QApplication::beep();
-	 QApplication::beep();
-       }
-     }
-   }
- }
+
+              QString handler = cdb.getModuleName(atr);
+
+              if (handler.length() <= 0 && _launchManager ) {
+                  KCardDB::launchSelector(*s, atr);
+              } else {
+              }
+
+
+          } else if (wasPresent && !ispresent){
+              kdDebug() << "kardsvc: card removed from slot "
+                        << *s << endl;
+              if (_beepOnEvent) {
+                  QApplication::beep();
+                  QApplication::beep();
+              }
+          }
+
+          QByteArray data;
+          QDataStream arg( data, IO_WriteOnly );
+          arg<<*s;
+          arg<<ispresent;
+          arg<<atr;
+          emitDCOPSignal("signalCardStateChanged(QString,bool,QString)", data);
+      }
+  }
 }
 
 
@@ -201,6 +216,7 @@ QString KardSvc::getCardATR(QString slot) {
     return QString::null;
   }
 
+  _states[slot].update();
   KCardATR kres = _states[slot].getATR();
   if (kres.size() <= 0) {
     kdDebug() << "kardsvc: error getting ATR for " << slot << endl;

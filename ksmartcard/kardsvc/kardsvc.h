@@ -55,12 +55,16 @@ k_dcop:
   QString getCardATR(QString slot);
   void reconfigure();
 
+
  k_dcop_signals:
 
-  void signalReaderListChanged(QStringList);
+  void signalReaderListChanged(QStringList newReadersList);
+  void signalCardStateChanged(QString reader,
+                              bool cardInserted,
+                              QString cardATR);
 
-  private slots:
-    void poll();
+ private slots:
+  void poll();
 
 
 
