@@ -1234,6 +1234,7 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
                                           myActionCollection, "show hidden" );
+    showHiddenAction->setCheckedState( i18n("Hide Hidden Files") );
     separateDirsAction = new KToggleAction( i18n("Separate Folders"), KShortcut(),
                                             this,
                                             SLOT(slotSeparateDirs()),
@@ -1242,6 +1243,7 @@ void KDirOperator::setupActions()
                                                      "thumbnail", KShortcut(),
                                                      myActionCollection,
                                                      "preview" );
+    previewAction->setCheckedState(i18n("Hide Preview"));
     connect( previewAction, SIGNAL( toggled( bool )),
              SLOT( togglePreview( bool )));
 

@@ -930,6 +930,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), Key_F9, coll,"toggleSpeedbar");
+    showSidebarAction->setCheckedState(i18n("Hide Quick Access Navigation Panel"));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 

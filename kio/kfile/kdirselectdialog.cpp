@@ -100,6 +100,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_contextMenu = new QPopupMenu( this );
     m_showHiddenFolders = new KToggleAction ( i18n( "Show Hidden Folders" ), 0, this,
                                         SLOT( slotShowHiddenFoldersToggled() ), this);
+    m_showHiddenFolders->setCheckedState( i18n("Hide Hidden Folders") );
     m_showHiddenFolders->plug(m_contextMenu);
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
