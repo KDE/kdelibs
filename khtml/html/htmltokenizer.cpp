@@ -1154,7 +1154,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if ( !buffer )
         return;
 
-    if ( loadingExtScript || ( m_executingScript && appendData ) ) {
+    if ( appendData && (loadingExtScript || m_executingScript ) ) {
         // don't parse; we will do this later
         pendingSrc += str;
         return;
