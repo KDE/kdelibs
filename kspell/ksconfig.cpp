@@ -268,6 +268,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="ukrainian") {
     lname="uk"; hname=i18n("Ukrainian");
   }
+  else if (fname=="francais" || fname=="french") {
+    lname="fr"; hname=i18n("French");
+  }
   else {
     lname=""; hname=i18n("Unknown");
   }
