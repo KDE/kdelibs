@@ -71,12 +71,12 @@
 
 (define (lang-fix language)
   ;; Lowercase the language
-  ;; Translate 'xx_yy' to 'xx-yy'
-  (let ((fixed-lang (if (> (string-index language "_") 0)
-			(let ((pos (string-index language "_")))
+  ;; Translate 'xx-yy' to 'xx_yy'
+  (let ((fixed-lang (if (> (string-index language "-") 0)
+			(let ((pos (string-index language "-")))
 			  (string-append
 			   (substring language 0 pos)
-			   "-"
+			   "_"
 			   (substring language (+ pos 1)
 				      (string-length language))))
 			language)))
@@ -111,13 +111,13 @@
       <![%l10n-no[ (("no") (gentext-no-xref-strings giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-xref-strings giname)) ]]>
       <![%l10n-pt[ (("pt") (gentext-pt-xref-strings giname)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-xref-strings giname)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-xref-strings giname)) ]]>
       <![%l10n-ro[ (("ro") (gentext-ro-xref-strings giname)) ]]>
       <![%l10n-ru[ (("ru") (gentext-ru-xref-strings giname)) ]]>
       <![%l10n-sk[ (("sk") (gentext-sk-xref-strings giname)) ]]>
       <![%l10n-sl[ (("sl") (gentext-sl-xref-strings giname)) ]]>
       <![%l10n-sv[ (("sv") (gentext-sv-xref-strings giname)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-xref-strings giname)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-xref-strings giname)) ]]>
 
       ;; Historical
       <![%l10n-da[ (("dk")   (gentext-da-xref-strings giname)) ]]>
@@ -148,13 +148,13 @@
     <![%l10n-no[ (("no") (no-auto-xref-indirect-connector before)) ]]>
     <![%l10n-pl[ (("pl") (pl-auto-xref-indirect-connector before)) ]]>
     <![%l10n-pt[ (("pt") (pt-auto-xref-indirect-connector before)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (pt-BR-auto-xref-indirect-connector before)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (ptbr-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ro[ (("ro") (ro-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ru[ (("ru") (ru-auto-xref-indirect-connector before)) ]]>
     <![%l10n-sk[ (("sk") (sk-auto-xref-indirect-connector before)) ]]>
     <![%l10n-sl[ (("sl") (sl-auto-xref-indirect-connector before)) ]]>
     <![%l10n-sv[ (("sv") (sv-auto-xref-indirect-connector before)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (zh-CN-auto-xref-indirect-connector before)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (zhcn-auto-xref-indirect-connector before)) ]]>
 
     <![%l10n-da[ (("dk") (da-auto-xref-indirect-connector before)) ]]>
     <![%l10n-de[ (("dege") (de-auto-xref-indirect-connector before)) ]]>
@@ -183,13 +183,13 @@
     <![%l10n-no[ (("no") %generate-no-toc-in-front%) ]]>
     <![%l10n-pl[ (("pl") %generate-pl-toc-in-front%) ]]>
     <![%l10n-pt[ (("pt") %generate-pt-toc-in-front%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %generate-pt-BR-toc-in-front%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %generate-ptbr-toc-in-front%) ]]>
     <![%l10n-ro[ (("ro") %generate-ro-toc-in-front%) ]]>
     <![%l10n-ru[ (("ru") %generate-ru-toc-in-front%) ]]>
     <![%l10n-sk[ (("sk") %generate-sk-toc-in-front%) ]]>
     <![%l10n-sl[ (("sl") %generate-sl-toc-in-front%) ]]>
     <![%l10n-sv[ (("sv") %generate-sv-toc-in-front%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %generate-zh-CN-toc-in-front%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %generate-zhcn-toc-in-front%) ]]>
 
     <![%l10n-da[ (("dk") %generate-da-toc-in-front%) ]]>
     <![%l10n-de[ (("dege") %generate-de-toc-in-front%) ]]>
@@ -220,13 +220,13 @@
       <![%l10n-no[ (("no") (gentext-no-element-name giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-element-name giname)) ]]>
       <![%l10n-pt[ (("pt") (gentext-pt-element-name giname)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-element-name giname)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-element-name giname)) ]]>
       <![%l10n-ro[ (("ro") (gentext-ro-element-name giname)) ]]>
       <![%l10n-ru[ (("ru") (gentext-ru-element-name giname)) ]]>
       <![%l10n-sk[ (("sk") (gentext-sk-element-name giname)) ]]>
       <![%l10n-sl[ (("sl") (gentext-sl-element-name giname)) ]]>
       <![%l10n-sv[ (("sv") (gentext-sv-element-name giname)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-element-name giname)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-element-name giname)) ]]>
 
       <![%l10n-da[ (("dk")   (gentext-da-element-name giname)) ]]>
       <![%l10n-de[ (("dege") (gentext-de-element-name giname)) ]]>
@@ -258,13 +258,13 @@
       <![%l10n-no[ (("no") (gentext-no-element-name-space giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-element-name-space giname)) ]]>
       <![%l10n-pt[ (("pt") (gentext-pt-element-name-space giname)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-element-name-space giname)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-element-name-space giname)) ]]>
       <![%l10n-ro[ (("ro") (gentext-ro-element-name-space giname)) ]]>
       <![%l10n-ru[ (("ru") (gentext-ru-element-name-space giname)) ]]>
       <![%l10n-sk[ (("sk") (gentext-sk-element-name-space giname)) ]]>
       <![%l10n-sl[ (("sl") (gentext-sl-element-name-space giname)) ]]>
       <![%l10n-sv[ (("sv") (gentext-sv-element-name-space giname)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-element-name-space giname)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-element-name-space giname)) ]]>
 
       <![%l10n-da[ (("dk")   (gentext-da-element-name-space giname)) ]]>
       <![%l10n-de[ (("dege") (gentext-de-element-name-space giname)) ]]>
@@ -295,13 +295,13 @@
       <![%l10n-no[ (("no") (gentext-no-intra-label-sep giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-intra-label-sep giname)) ]]>
       <![%l10n-pt[ (("pt") (gentext-pt-intra-label-sep giname)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-intra-label-sep giname)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-intra-label-sep giname)) ]]>
       <![%l10n-ro[ (("ro") (gentext-ro-intra-label-sep giname)) ]]>
       <![%l10n-ru[ (("ru") (gentext-ru-intra-label-sep giname)) ]]>
       <![%l10n-sk[ (("sk") (gentext-sk-intra-label-sep giname)) ]]>
       <![%l10n-sl[ (("sl") (gentext-sl-intra-label-sep giname)) ]]>
       <![%l10n-sv[ (("sv") (gentext-sv-intra-label-sep giname)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-intra-label-sep giname)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-intra-label-sep giname)) ]]>
 
       <![%l10n-da[ (("dk")   (gentext-da-intra-label-sep giname)) ]]>
       <![%l10n-de[ (("dege") (gentext-de-intra-label-sep giname)) ]]>
@@ -332,13 +332,13 @@
       <![%l10n-no[ (("no") (gentext-no-label-title-sep giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-label-title-sep giname)) ]]>
       <![%l10n-pt[ (("pt") (gentext-pt-label-title-sep giname)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-label-title-sep giname)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-label-title-sep giname)) ]]>
       <![%l10n-ro[ (("ro") (gentext-ro-label-title-sep giname)) ]]>
       <![%l10n-ru[ (("ru") (gentext-ru-label-title-sep giname)) ]]>
       <![%l10n-sk[ (("sk") (gentext-sk-label-title-sep giname)) ]]>
       <![%l10n-sl[ (("sl") (gentext-sl-label-title-sep giname)) ]]>
       <![%l10n-sv[ (("sv") (gentext-sv-label-title-sep giname)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-label-title-sep giname)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-label-title-sep giname)) ]]>
 
       <![%l10n-da[ (("dk")   (gentext-da-label-title-sep giname)) ]]>
       <![%l10n-de[ (("dege") (gentext-de-label-title-sep giname)) ]]>
@@ -369,13 +369,13 @@
       <![%l10n-no[ (("no") (no-label-number-format target)) ]]>
       <![%l10n-pl[ (("pl") (pl-label-number-format target)) ]]>
       <![%l10n-pt[ (("pt") (pt-label-number-format target)) ]]>
-      <![%l10n-pt-BR[ (("pt-br") (pt-BR-label-number-format target)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (ptbr-label-number-format target)) ]]>
       <![%l10n-ro[ (("ro") (ro-label-number-format target)) ]]>
       <![%l10n-ru[ (("ru") (ru-label-number-format target)) ]]>
       <![%l10n-sk[ (("sk") (sk-label-number-format target)) ]]>
       <![%l10n-sl[ (("sl") (sl-label-number-format target)) ]]>
       <![%l10n-sv[ (("sv") (sv-label-number-format target)) ]]>
-      <![%l10n-zh-CN[ (("zh-cn") (zh-CN-label-number-format target)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (zhcn-label-number-format target)) ]]>
 
       <![%l10n-da[ (("dk")   (da-label-number-format target)) ]]>
       <![%l10n-de[ (("dege") (de-label-number-format target)) ]]>
@@ -404,13 +404,13 @@
     <![%l10n-no[ (("no") ($lot-title-no$ lotgi)) ]]>
     <![%l10n-pl[ (("pl") ($lot-title-pl$ lotgi)) ]]>
     <![%l10n-pt[ (("pt") ($lot-title-pt$ lotgi)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") ($lot-title-pt-BR$ lotgi)) ]]>
+    <![%l10n-ptbr[ (("pt_br") ($lot-title-ptbr$ lotgi)) ]]>
     <![%l10n-ro[ (("ro") ($lot-title-ro$ lotgi)) ]]>
     <![%l10n-ru[ (("ru") ($lot-title-ru$ lotgi)) ]]>
     <![%l10n-sk[ (("sk") ($lot-title-sk$ lotgi)) ]]>
     <![%l10n-sl[ (("sl") ($lot-title-sl$ lotgi)) ]]>
     <![%l10n-sv[ (("sv") ($lot-title-sv$ lotgi)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") ($lot-title-zh-CN$ lotgi)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") ($lot-title-zhcn$ lotgi)) ]]>
 
     <![%l10n-da[ (("dk")   ($lot-title-da$ lotgi)) ]]>
     <![%l10n-de[ (("dege") ($lot-title-de$ lotgi)) ]]>
@@ -439,13 +439,13 @@
     <![%l10n-no[ (("no") %gentext-no-start-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-start-quote%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-start-quote%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-start-quote%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-start-quote%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-start-quote%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-start-quote%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-start-quote%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-start-quote%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-start-quote%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-start-quote%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-start-quote%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-start-quote%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-start-quote%) ]]>
@@ -474,13 +474,13 @@
     <![%l10n-no[ (("no") %gentext-no-end-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-end-quote%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-end-quote%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-end-quote%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-end-quote%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-end-quote%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-end-quote%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-end-quote%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-end-quote%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-end-quote%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-end-quote%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-end-quote%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-end-quote%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-end-quote%) ]]>
@@ -509,13 +509,13 @@
     <![%l10n-no[ (("no") %gentext-no-start-nested-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-start-nested-quote%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-start-nested-quote%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-start-nested-quote%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-start-nested-quote%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-start-nested-quote%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-start-nested-quote%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-start-nested-quote%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-start-nested-quote%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-start-nested-quote%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-start-nested-quote%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-start-nested-quote%) ]]>
     (else (error "L10N ERROR: gentext-start-nested-quote"))))
 
 (define (gentext-end-nested-quote)
@@ -538,13 +538,13 @@
     <![%l10n-no[ (("no") %gentext-no-end-nested-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-end-nested-quote%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-end-nested-quote%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-end-nested-quote%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-end-nested-quote%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-end-nested-quote%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-end-nested-quote%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-end-nested-quote%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-end-nested-quote%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-end-nested-quote%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-end-nested-quote%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-end-nested-quote%) ]]>
     (else (error "L10N ERROR: gentext-end-nested-quote"))))
 
 (define (gentext-by)
@@ -567,13 +567,13 @@
     <![%l10n-no[ (("no") %gentext-no-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-by%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-by%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-by%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-by%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-by%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-by%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-by%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-by%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-by%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-by%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-by%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-by%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-by%) ]]>
@@ -602,13 +602,13 @@
     <![%l10n-no[ (("no") %gentext-no-edited-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-edited-by%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-edited-by%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-edited-by%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-edited-by%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-edited-by%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-edited-by%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-edited-by%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-edited-by%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-edited-by%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-edited-by%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-edited-by%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-edited-by%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-edited-by%) ]]>
@@ -637,13 +637,13 @@
     <![%l10n-no[ (("no") %gentext-no-revised-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-revised-by%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-revised-by%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-revised-by%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-revised-by%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-revised-by%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-revised-by%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-revised-by%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-revised-by%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-revised-by%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-revised-by%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-revised-by%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-revised-by%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-revised-by%) ]]>
@@ -672,13 +672,13 @@
     <![%l10n-no[ (("no") %gentext-no-page%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-page%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-page%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-page%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-page%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-page%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-page%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-page%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-page%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-page%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-page%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-page%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-page%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-page%) ]]>
@@ -707,13 +707,13 @@
     <![%l10n-no[ (("no") %gentext-no-and%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-and%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-and%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-and%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-and%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-and%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-and%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-and%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-and%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-and%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-and%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-and%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-and%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-and%) ]]>
@@ -742,13 +742,13 @@
     <![%l10n-no[ (("no") %gentext-no-bibl-pages%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-bibl-pages%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-bibl-pages%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-bibl-pages%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-bibl-pages%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-bibl-pages%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-bibl-pages%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-bibl-pages%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-bibl-pages%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-bibl-pages%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-bibl-pages%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-bibl-pages%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-bibl-pages%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-bibl-pages%) ]]>
@@ -777,13 +777,13 @@
     <![%l10n-no[ (("no") %gentext-no-endnotes%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-endnotes%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-endnotes%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-endnotes%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-endnotes%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-endnotes%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-endnotes%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-endnotes%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-endnotes%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-endnotes%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-endnotes%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-endnotes%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-endnotes%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-endnotes%) ]]>
@@ -812,13 +812,13 @@
     <![%l10n-no[ (("no") %gentext-no-table-endnotes%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-table-endnotes%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-table-endnotes%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-table-endnotes%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-table-endnotes%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-table-endnotes%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-table-endnotes%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-table-endnotes%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-table-endnotes%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-table-endnotes%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-table-endnotes%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-table-endnotes%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-table-endnotes%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-table-endnotes%) ]]>
@@ -847,13 +847,13 @@
     <![%l10n-no[ (("no") %gentext-no-index-see%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-index-see%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-index-see%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-index-see%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-index-see%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-index-see%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-index-see%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-index-see%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-index-see%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-index-see%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-index-see%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-index-see%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-index-see%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-index-see%) ]]>
@@ -882,13 +882,13 @@
     <![%l10n-no[ (("no") %gentext-no-index-seealso%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-index-seealso%) ]]>
     <![%l10n-pt[ (("pt") %gentext-pt-index-seealso%) ]]>
-    <![%l10n-pt-BR[ (("pt-br") %gentext-pt-BR-index-seealso%) ]]>
+    <![%l10n-ptbr[ (("pt_br") %gentext-ptbr-index-seealso%) ]]>
     <![%l10n-ro[ (("ro") %gentext-ro-index-seealso%) ]]>
     <![%l10n-ru[ (("ru") %gentext-ru-index-seealso%) ]]>
     <![%l10n-sk[ (("sk") %gentext-sk-index-seealso%) ]]>
     <![%l10n-sl[ (("sl") %gentext-sl-index-seealso%) ]]>
     <![%l10n-sv[ (("sv") %gentext-sv-index-seealso%) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") %gentext-zh-CN-index-seealso%) ]]>
+    <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-index-seealso%) ]]>
 
     <![%l10n-da[ (("dk")   %gentext-da-index-seealso%) ]]>
     <![%l10n-de[ (("dege") %gentext-de-index-seealso%) ]]>
@@ -917,13 +917,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-prev prev)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-prev prev)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-prev prev)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-prev prev)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-prev prev)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-prev prev)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-prev prev)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-prev prev)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-prev prev)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-prev prev)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-prev prev)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-prev prev)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-prev prev)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-prev prev)) ]]>
@@ -952,13 +952,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-prev-sibling prevsib)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-prev-sibling prevsib)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-prev-sibling prevsib)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-prev-sibling prevsib)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-prev-sibling prevsib)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-prev-sibling prevsib)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-prev-sibling prevsib)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-prev-sibling prevsib)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-prev-sibling prevsib)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-prev-sibling prevsib)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-prev-sibling prevsib)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-prev-sibling prevsib)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-prev-sibling prevsib)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-prev-sibling prevsib)) ]]>
@@ -987,13 +987,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-next-sibling nextsib)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-next-sibling nextsib)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-next-sibling nextsib)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-next-sibling nextsib)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-next-sibling nextsib)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-next-sibling nextsib)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-next-sibling nextsib)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-next-sibling nextsib)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-next-sibling nextsib)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-next-sibling nextsib)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-next-sibling nextsib)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-next-sibling nextsib)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-next-sibling nextsib)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-next-sibling nextsib)) ]]>
@@ -1022,13 +1022,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-next next)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-next next)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-next next)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-next next)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-next next)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-next next)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-next next)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-next next)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-next next)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-next next)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-next next)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-next next)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-next next)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-next next)) ]]>
@@ -1057,13 +1057,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-up up)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-up up)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-up up)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-up up)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-up up)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-up up)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-up up)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-up up)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-up up)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-up up)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-up up)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-up up)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-up up)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-up up)) ]]>
@@ -1092,13 +1092,13 @@
     <![%l10n-no[ (("no") (gentext-no-nav-home home)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-home home)) ]]>
     <![%l10n-pt[ (("pt") (gentext-pt-nav-home home)) ]]>
-    <![%l10n-pt-BR[ (("pt-br") (gentext-pt-BR-nav-home home)) ]]>
+    <![%l10n-ptbr[ (("pt_br") (gentext-ptbr-nav-home home)) ]]>
     <![%l10n-ro[ (("ro") (gentext-ro-nav-home home)) ]]>
     <![%l10n-ru[ (("ru") (gentext-ru-nav-home home)) ]]>
     <![%l10n-sk[ (("sk") (gentext-sk-nav-home home)) ]]>
     <![%l10n-sl[ (("sl") (gentext-sl-nav-home home)) ]]>
     <![%l10n-sv[ (("sv") (gentext-sv-nav-home home)) ]]>
-    <![%l10n-zh-CN[ (("zh-cn") (gentext-zh-CN-nav-home home)) ]]>
+    <![%l10n-zhcn[ (("zh_cn") (gentext-zhcn-nav-home home)) ]]>
 
     <![%l10n-da[ (("dk")   (gentext-da-nav-home home)) ]]>
     <![%l10n-de[ (("dege") (gentext-de-nav-home home)) ]]>
