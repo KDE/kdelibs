@@ -101,7 +101,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "tscii-0",
     "utf8",
     "utf16",
-    "tis620-*",
+    "tis620-0",
     "koi8-u",
     ""  // this will always return true...
         // adjust xNameToId if you remove this
@@ -195,14 +195,14 @@ void KCharsetsPrivate::getAvailableCharsets()
 
     availableCharsets = new QMap<QFont::CharSet, QValueList<QCString> >;
 
-    QStringList f = db->families(false);
-
+    QStringList f = db->families( false );
+    
     for ( QStringList::Iterator it = f.begin(); it != f.end(); ++it ) {
 	QStringList chSets = db->charSets(*it, false);
 	QCString family = (*it).latin1(); // can only be latin1
 	if ( family. contains('-') ) // remove foundry
 	    family = family.right( family.length() - family.find('-' ) - 1);
-	//kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *it << " " << family <<endl;
+	//kdDebug() << "KCharsetsPrivate family " << *it << " " << family <<endl;
 	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
 	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
@@ -565,10 +565,8 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "iso8859-15";
     case QFont::KOI8R:
         return "koi8-r";
-#if QT_VERSION > 220
     case QFont::KOI8U:
         return "koi8-u";
-#endif
     case QFont::Set_Ko:
         return "ksc5601.1987-0";
     case QFont::Set_Ja:
@@ -652,8 +650,9 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     int i = CHARSETS_COUNT-1; // avoid the "" entry
     while( i-- )
     {
-       if( !QRegExp( xNames[i] ).match(name) )
-            return charsetsIds[i];
+	if( !QRegExp( xNames[i] ).match(name) ) {
+	    return charsetsIds[i];
+	}
     }
 
     return QFont::AnyCharSet;
@@ -753,8 +752,13 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
 QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
 {
+    return charsetForEncoding( e, false );
+}
+
+QFont::CharSet KCharsets::charsetForEncoding(const QString &e, bool noUnicode) const
+{
     QCString encoding = e.lower().latin1();
-    if(d->charsetForEncodingMap.contains(encoding))
+    if(!noUnicode && d->charsetForEncodingMap.contains(encoding))
         return d->charsetForEncodingMap[encoding]; // cache hit
 
     KConfig conf( "charsets", true );
@@ -777,11 +781,16 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
         QFont::CharSet cs = nameToID(*it);
-        if( const_cast<KCharsets *>(this)->isAvailable(cs) ) {
-            //kdDebug(0) << *it << " available" << endl;
-            d->charsetForEncodingMap.replace(QCString(e.latin1()), cs);
-            return cs;
-        }
+	if ( noUnicode ) {
+	    if ( cs != QFont::Unicode )
+		return cs;
+	} else {
+	    if( const_cast<KCharsets *>(this)->isAvailable(cs) ) {
+		//kdDebug(0) << *it << " available" << endl;
+		d->charsetForEncodingMap.replace(QCString(e.latin1()), cs);
+		return cs;
+	    }
+	}
         //kdDebug(0) << *it << " is not available" << endl;
     }
 
@@ -790,3 +799,66 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     return QFont::Unicode;
 }
 
+bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
+{
+    QChar ch;
+    QFont::CharSet fcs = f.charSet();
+    switch( charset ) {
+	case QFont::ISO_8859_1:
+	    ch = 0xc0; break; //Latin A circumflex
+	case QFont::ISO_8859_2:
+	    ch = 0x013d; break; 
+	case QFont::ISO_8859_3:
+	    ch = 0x0126; break;
+	case QFont::ISO_8859_10:
+	case QFont::ISO_8859_4:
+	    ch = 0x014b; break;
+	case QFont::ISO_8859_6:
+	    if ( fcs != QFont::Unicode ) return false;
+	    ch = 0xfef5; break;
+	case QFont::ISO_8859_7:
+	    ch = 0x3aa; break;
+	case QFont::ISO_8859_8:
+	    ch  = 0x05D3; break;
+	case QFont::ISO_8859_9:
+	    ch = 0x0131; break;
+	case QFont::ISO_8859_11:
+	case QFont::Set_Th_TH:
+	    ch = 0x0E23; break;
+	case QFont::ISO_8859_13:
+	    ch  = 0x0179; break;
+	case QFont::ISO_8859_14:
+	    ch  = 0x0177; break;
+	case QFont::ISO_8859_15:
+	    ch  = 0x0153; break;
+	case QFont::ISO_8859_5:
+	case QFont::KOI8U:
+	case QFont::CP1251:
+	case QFont::PT154:
+	    ch = 0x0454; break;
+	case QFont::KOI8R:
+	    ch = 0x0431; break;
+	case QFont::Set_Ja:
+	    ch  = 0x3041; break;
+	case QFont::Set_Ko:
+	    ch = 0xac00; break;
+	case QFont::Set_Zh:
+	case QFont::Set_GBK:
+	case QFont::Set_Big5:
+	case QFont::Set_Zh_TW:
+	    ch = 0x4e00; break;
+	case QFont::Unicode:
+	    return (fcs == charset);
+	case QFont::TSCII:
+	    ch = 0x0b90;
+	case QFont::ISO_8859_12:
+	case QFont::AnyCharSet:
+	default:
+	    ch = 0x0; break;
+    }
+    QFontMetrics fm( f );
+    if ( charset == fcs || ch == QChar(0x0) )
+	return true;
+
+    return fm.inFont( ch );
+}

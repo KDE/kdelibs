@@ -73,6 +73,13 @@ public:
      */
     QFont::CharSet charsetForEncoding(const QString &encoding) const;
 
+    // ### BCI merge with above in 3.0
+    /**
+     * overloaded member function. Usually you don't mind getting unicode charsets, so
+     * this method should rarely be needed.
+     */
+    QFont::CharSet charsetForEncoding(const QString &e, bool noUnicode) const;
+
     /**
      * converts an entity to a character. The string must contain only the
      * entity without the trailing ';'.
@@ -190,6 +197,18 @@ public:
      */
     bool hasUnicode(QFont &font) const;
 
+    /**
+     * does the give font support the script given by charset?
+     * This can return tru in two cases: Either the font is in the
+     * right charset  or it is a unicode font containing glyphs to display
+     * this charset.
+     *
+     * There are some exceptions. A 8859-6 font will return false if asked
+     * if it supports the 8859-6 charset, because we need a unicode font
+     * to properly display arabic.
+     */
+    bool supportsScript( const QFont &f, QFont::CharSet charset );
+    
     enum FixedType { FixedUnknown, Fixed, Proportional };
     enum WeightType { WeightUnknown, Medium, Bold };
     enum SlantType { SlantUnknown, Normal, Italic };
