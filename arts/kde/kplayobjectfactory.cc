@@ -6,7 +6,7 @@
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
 	version 2 of the License, or (at your option) any later version.
-  
+
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -68,9 +68,9 @@ KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString
 		{
 			Arts::KIOInputStream instream;
 			instream.openURL(url.url().latin1());
-	    
+
 			m_stream = true;
-		
+
 			// TODO: what else than hardcoding audio/x-mp3 ?
 			return new KPlayObject(m_server.createPlayObjectForStream(instream, string("audio/x-mp3"), createBUS), true);
 		}
@@ -237,6 +237,7 @@ void KDE::POFHelper::connectAmanPlay()
 	Arts::connect( po->object(), "right", ap->amanPlay(), "right" );
 }
 
+#include "kplayobjectfactory.moc"
 
 #include "kplayobjectfactory_p.moc"
 
