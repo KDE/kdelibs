@@ -3431,7 +3431,7 @@ bool HTTPProtocol::getAuthorization()
       info.url = m_proxyURL;
       info.url.setPass( QString::null );
       info.url.setUser( QString::null );
-      info.url = m_strProxyRealm;
+      info.realmValue = m_strProxyRealm;
     }
     else
     {
