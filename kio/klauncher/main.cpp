@@ -44,7 +44,7 @@ start_launcher(int socket)
    char *name = cname.data();
    // Started via kdeinit.
    KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.",
-                       "v0.1");
+                       "v1.0");
    KLauncher::addCmdLineOptions();
 
    // WABA: Make sure not to enable session management.

@@ -93,4 +93,10 @@ typedef struct
 
 #define LAUNCHER_TERMINATE_KDE 7
 
+/*
+ * LAUNCHER_TERMINATE_KDEINIT
+ *
+ * Suicide is painless
+ */
+#define LAUNCHER_TERMINATE_KDEINIT	8
 #endif
