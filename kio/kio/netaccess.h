@@ -94,6 +94,10 @@ public:
      * Remove the specified file if and only if it was created
      * by KIO::NetAccess as temporary file for a former download.
      *
+     * Note: This means that if you created your temporary with KTempFile,
+     * use KTempFile::unlink() or KTempFile::setAutoDelete() to have
+     * it removed.
+     *
      * @param name Path to temporary file to remove.  May not be
      *             empty.
      */
