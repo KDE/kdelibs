@@ -3476,7 +3476,7 @@ void CopyJob::slotResult( Job *job )
                     // Offer overwrite only if the existing thing is a file
                     // If src==dest, use "overwrite-itself"
                     RenameDlg_Mode mode = (RenameDlg_Mode)
-                        ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
+                        ( ( err == ERR_DIR_ALREADY_EXIST ? 0 :
                             ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
                     // I won't use M_MULTI or M_SKIP there. It's too ambiguous:
                     // we are in the middle of the stat phase, so it's hard to know
