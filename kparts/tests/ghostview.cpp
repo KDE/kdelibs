@@ -16,11 +16,10 @@ Shell::Shell()
 {
   setXMLFile( "ghostviewtest_shell.rc" );
 
-  KAction * paOpen = new KAction( i18n( "&Open file" ), 0, this, SLOT( slotFileOpen() ), actionCollection(), "file_open" );
-  paOpen->setIconSet(QIconSet(BarIcon("fileopen")));
+  KAction * paOpen = new KAction( i18n( "&Open file" ), "fileopen", 0, this,
+    SLOT( slotFileOpen() ), actionCollection(), "file_open" );
 
-  KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "file_quit" );
-  paQuit->setIconSet(QIconSet(BarIcon("exit")));
+  KAction * paQuit = new KAction( i18n( "&Quit" ), "exit", 0, this, SLOT( close() ), actionCollection(), "file_quit" );
 
   // Try to find libkghostview
   KLibFactory *factory = KLibLoader::self()->factory( "libkghostview" );
