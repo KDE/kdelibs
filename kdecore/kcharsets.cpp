@@ -161,7 +161,7 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
 };
 #endif // QT_VERSION < 300
 
-static const char * const languages[] = {
+static const char * const language_names[] = {
     I18N_NOOP( "other" ),
 	I18N_NOOP( "Arabic" ),
 	I18N_NOOP( "Baltic" ),
@@ -423,7 +423,7 @@ QString KCharsets::languageForEncoding( const QString &encoding )
     d->conf->setGroup("LanguageForEncoding");
 
     int lang = d->conf->readNumEntry(encoding, 0 );
-    return i18n( languages[lang] );
+    return i18n( language_names[lang] );
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName )
@@ -919,6 +919,36 @@ bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
 	return true;
 
     return QFontMetrics(f).inFont( ch );
+}
+
+QStringList KCharsets::languages()
+{
+    QStringList languages_list;
+    for (unsigned int i=0; i<(sizeof(language_names) / sizeof(language_names[0])); i++) {
+        languages_list.append( i18n(language_names[i]) );
+    }
+    return languages_list;
+}
+
+QStringList KCharsets::encodingsForLanguage( const QString &language )
+{
+    unsigned int language_index = 0;
+    for (unsigned int i=0; i<(sizeof(language_names) / sizeof(language_names[0])); i++) {
+        if (language.compare(i18n(language_names[i])) == 0) {
+            language_index = i;
+            break;
+        }
+    }
+
+    QMap<QString, QString> map = d->conf->entryMap("LanguageForEncoding");
+    QMap<QString, QString>::Iterator it;
+    QStringList encodings;
+    
+    for ( it = map.begin(); it != map.end(); ++it ) {
+        if (it.data().toUInt() == language_index)
+            encodings.append(it.key());
+    }
+    return encodings;
 }
 
 #endif

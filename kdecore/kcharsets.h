@@ -106,7 +106,7 @@ public:
      * It is the resonsability of the caller to delete the items in the list.
      */
     QList<QFont::CharSet> availableCharsets(QString family = QString::null);
-
+    
     /**
      * as above, but returns the names of the charsets
      */
@@ -123,6 +123,16 @@ public:
      */
     QStringList descriptiveEncodingNames();
 
+    /**
+     * Lists all languages.
+     */
+    QStringList languages();
+    
+    /**
+     * Lists all available encodings for language name 'language'.
+     */
+    QStringList encodingsForLanguage( const QString &language );
+    
     /**
      * returns the language the encoding is used for. 
      */
