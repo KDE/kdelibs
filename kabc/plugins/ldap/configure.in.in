@@ -23,7 +23,7 @@ if test "x$with_ldap" = "xCHECK" ; then
   fi
   if test $with_ldap = FOUND ; then
     with_ldap=NOTFOUND
-    for ext in la so sl a ; do
+    for ext in la so sl dylib a ; do
       AC_FIND_FILE(libldap.$ext, $kde_libraries $libdir /usr/lib$kdelibsuff /usr/local/lib$kdelibsuff,
         ldap_libdir)
       if test -r $ldap_libdir/libldap.$ext ; then
@@ -42,6 +42,12 @@ fi
 case "$with_ldap" in
 no) AC_MSG_RESULT(no) ;;
 NOTFOUND) AC_MSG_RESULT(searched but not found) ;;
+framework)
+  LDAP_LIBS="-Xlinker -framework -Xlinker LDAP"
+  AC_DEFINE_UNQUOTED(HAVE_LIBLDAP, 1, [Define if you have LDAP libraries])
+  LDAP_SUBDIR="ldap"
+  AC_MSG_RESULT(Apple framework)
+  ;;
 *)
   if test "x$with_ldap" = "xFOUND" ; then
     msg="incs=$ldap_incdir libs=$ldap_libdir"
