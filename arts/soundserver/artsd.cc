@@ -48,8 +48,9 @@ int main()
 	SimpleSoundServer_var server = new SimpleSoundServer_impl;
 
 	bool result = ObjectManager::the()
-				->addGlobalReference(server,"Arts_SimpleSoundServer");
-
+				->addGlobalReference(server,"Arts_SimpleSoundServer")
+             &&   ObjectManager::the()
+				->addGlobalReference(server,"Arts_PlayObjectFactory");
 	if(!result)
 	{
 		cerr <<

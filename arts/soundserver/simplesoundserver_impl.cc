@@ -50,14 +50,11 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 
 SimpleSoundServer_impl::~SimpleSoundServer_impl()
 {
-	add_left->_node()->stop();
-	add_right->_node()->stop();
-	play_obj->_node()->stop();
-
-	add_left->_release();
-	add_right->_release();
-	play_obj->_release();
-
+	/*
+	 * we don't need to care about the flow system nodes we started, since
+	 * we have put them into Object_var's, which means that they will be
+	 * freed automatically here
+	 */
 	Dispatcher::the()->ioManager()->removeTimer(this);
 }
 
@@ -94,13 +91,31 @@ void SimpleSoundServer_impl::notifyTime()
 		if(playwav->finished())
 		{
 			cout << "finished" << endl;
-			add_left->_node()->disconnect("invalue",playwav->_node(),"left");
-			add_right->_node()->disconnect("invalue",playwav->_node(),"right");
-			playwav->_node()->stop();
 			playwav->_release();
 			activeWavs.erase(i);
 			i = activeWavs.begin();
 		}
 		else i++;
 	}
+}
+
+PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
+{
+	ReferenceHelper<Object_skel>
+		obj = ObjectManager::the()->create("WavPlayObject");
+	if(obj)
+	{
+		WavPlayObject *result = (WavPlayObject *)obj->_cast("WavPlayObject");
+		if(result)
+		{
+			if(result->loadMedia(filename))
+			{
+				add_left->_node()->connect("invalue",result->_node(),"left");
+				add_right->_node()->connect("invalue",result->_node(),"right");
+				result->_node()->start();
+				return result->_copy();
+			}
+		}
+	}
+	return 0;
 }

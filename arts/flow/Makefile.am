@@ -1,12 +1,16 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
+CLOSURE = $(libartsflow_la_OBJECTS) $(libartsflow_idl_la_OBJECTS)
 
 ####### Files
 
-lib_LTLIBRARIES = libartsflow.la
+lib_LTLIBRARIES = libartsflow_idl.la libartsflow.la
 
-libartsflow_la_SOURCES = artsflow.cc synth_play_impl.cc artsserver_impl.cc \
+libartsflow_idl_la_SOURCES = artsflow.cc
+
+libartsflow_la_LIBADD = libartsflow_idl.la
+libartsflow_la_SOURCES =  synth_play_impl.cc artsserver_impl.cc \
   executionman_impl.cc execrequest.cc synthschedule.cc debug.cc audiosubsys.cc \
   pipebuffer.cc convert.cc synth_wave_sin_impl.cc synth_frequency_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
@@ -14,7 +18,7 @@ libartsflow_la_SOURCES = artsflow.cc synth_play_impl.cc artsserver_impl.cc \
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h artsserver_impl.h audiosubsys.h cache.h \
-  convert.h debug.h execrequest.h pipebuffer.h stdsynthmodule.h \
+  cachedwav.h convert.h debug.h execrequest.h pipebuffer.h stdsynthmodule.h \
   synthschedule.h utils.h
 
 DISTCLEANFILES = $(SRCMETA) artsflow.cc artsflow.h
@@ -28,9 +32,9 @@ artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 #
 # -frepo closure (experimental)
 #
-closure: $(libartsflow_la_OBJECTS)
+closure: $(CLOSURE)
 	@echo "Building -frepo compliant library closure"
 	@echo "int main() {}" > closure.cc
-	$(CXXLINK) -o closure $(libartsflow_la_OBJECTS) closure.cc
+	$(CXXLINK) -o closure $(CLOSURE) closure.cc
 	@echo "closure timestamp" > closure
 	@rm -f closure.cc

@@ -1,8 +1,17 @@
+#include "artsflow.idl"
+#include "kmedia2.idl"
+
 /*
  * This is a very simple sound server interface
  */
 
-interface SimpleSoundServer {
+interface SimpleSoundServer
+/*
+ * Warning: This currently inherits a KMedia2 PlayObjectFactory for test
+ *    purposes, but don't rely on that
+ */
+			: PlayObjectFactory
+{
 	/**
 	 * tries to play the sound in "filename"
 	 *
@@ -19,4 +28,13 @@ interface SimpleSoundServer {
 	 * stops a playing sound by ID
 	 */
 	//void stop(long ID);
+};
+
+/*
+ * Test KMedia2 interface
+ */
+
+interface WavPlayObject : PlayObject, SynthModule
+{
+	out audio stream left,right;
 };

@@ -28,7 +28,7 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
 #include "utils.h"
-#include "cache.h"
+#include "cachedwav.h"
 #include "convert.h"
 #include <stdio.h>
 
@@ -52,37 +52,6 @@ extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 
-class CachedWav : public CachedObject
-{
-protected:
-	struct stat oldstat;
-	string filename;
-	bool initOk;
-
-	CachedWav(Cache *cache, string filename);
-	~CachedWav();
-
-	typedef unsigned char uchar;
-public:
-	double samplingRate;
-	long bufferSize;
-	int channelCount;
-	int sampleWidth;
-	unsigned char *buffer;
-
-	static CachedWav *load(Cache *cache, string filename);
-	/**
-	 * validity test for the cache - returns false if the object is having
-	 * reflecting the correct contents anymore (e.g. if the file on the
-	 * disk has changed), and there is no point in keeping it in the cache any
-	 * longer
-	 */
-	bool isValid();
-	/**
-	 * memory usage for the cache
-	 */
-	int memoryUsage();
-};
 
 CachedWav *CachedWav::load(Cache *cache, string filename)
 {
@@ -246,6 +215,30 @@ static const int samplingRate=44100;
 
 void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 {
+	unsigned long haveSamples = 0;
+
+	if(cachedwav)
+	{
+		float speed = cachedwav->samplingRate / (float)samplingRate * _speed;
+
+		haveSamples = uni_convert_stereo_2float(samples, cachedwav->buffer,
+		   cachedwav->bufferSize,cachedwav->channelCount,cachedwav->sampleWidth,
+		   left,right,speed,flpos);
+
+		flpos += (float)haveSamples * speed;
+	}
+
+	if(haveSamples != samples)
+	{
+		unsigned long i;
+
+		for(i=haveSamples;i<samples;i++)
+			left[i] = right[i] = 0.0;
+
+		_finished = true;
+	}
+
+/*
 	float speed = 0.0;
 	unsigned long haveSamples = 0;
 
@@ -307,6 +300,7 @@ void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 
 		_finished = true;
 	}
+*/
 }
 
 

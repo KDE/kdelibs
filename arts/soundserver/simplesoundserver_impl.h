@@ -34,7 +34,7 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 										public TimeNotify
 {
 protected:
-	Object_skel *play_obj, *add_left, *add_right;
+	Object_var play_obj, add_left, add_right;
 	list<Synth_PLAY_WAV *> activeWavs;
 
 public:
@@ -42,6 +42,8 @@ public:
 	~SimpleSoundServer_impl();
 
 	long play(const string& s);
+	PlayObject *createPlayObject(const string& filename);
+
 	void notifyTime();
 };
 

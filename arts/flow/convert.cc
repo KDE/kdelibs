@@ -25,6 +25,8 @@
 
 #include "convert.h"
 #include <math.h>
+#include <string.h>
+#include <assert.h>
 
 /*---------------------------- new code begin -------------------------- */
 
@@ -195,4 +197,66 @@ void convert_mono_float_16le(unsigned long samples, float *from, unsigned char *
 		*to++ = syn & 0xff;
 		*to++ = (syn >> 8) & 0xff;
 	}	
+}
+
+unsigned long uni_convert_stereo_2float(
+		unsigned long samples,		// number of required samples
+		unsigned char *from,		// buffer containing the samples
+		unsigned long fromLen,		// length of the buffer
+	    unsigned int fromChannels,  // channels stored in the buffer
+		unsigned int fromBits,		// number of bits per sample
+	    float *left, float *right,	// output buffers for left and right channel
+		float speed,				// speed (2.0 means twice as fast)
+		float startposition			// startposition
+	)
+{
+	unsigned long doSamples = 0;
+
+	// how many samples does the from-buffer contain?
+	float allSamples = (fromLen*8) / (fromChannels * fromBits);
+
+	// how many samples are remaining?
+	float fHaveSamples = allSamples - startposition;
+	fHaveSamples /= speed;
+
+	fHaveSamples -= 2.0;	// one due to interpolation and another against
+							// rounding errors
+
+	// convert do "how many samples to do"?
+	if(fHaveSamples > 0)
+	{
+		doSamples = (int)fHaveSamples;
+		if(doSamples > samples) doSamples = samples;
+	}
+
+	// do conversion
+	if(doSamples)
+	{
+		if(fromChannels == 1)
+		{
+			if(fromBits == 16) {
+				interpolate_mono_16le_float(doSamples,
+							startposition,speed,from,left);
+			}
+			else {
+				interpolate_mono_8_float(doSamples,
+							startposition,speed,from,left);
+			}
+			memcpy(right,left,sizeof(float)*doSamples);
+		}
+		else if(fromChannels == 2)
+		{
+			if(fromBits == 16) {
+				interpolate_stereo_i16le_2float(doSamples,
+							startposition,speed,from,left,right);
+			}
+			else {
+				interpolate_stereo_i8_2float(doSamples,
+							startposition,speed,from,left,right);
+			}
+		} else {
+			assert(false);
+		}
+	}
+	return doSamples;
 }
