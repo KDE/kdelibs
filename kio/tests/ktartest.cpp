@@ -38,7 +38,7 @@ int main( int argc, char** argv )
 
     if ( !tar.open( IO_ReadOnly ) )
     {
-      printf("Could not open %s for reading\n", argv[1] );
+      printf("Could not open %s for reading\n", argv[2] );
       return 1;
     }
 
