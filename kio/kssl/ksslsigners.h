@@ -26,8 +26,6 @@ class QString;
 class KSSLCertificate;
 class DCOPClient;
 
-#include <qstringlist.h>
-
 
 // ### KDE4 - Fix constness
 /**

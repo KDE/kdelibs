@@ -65,7 +65,7 @@ public:
 	 *   Returns: true on success, false error
 	 */
 	static bool addCertificate(QString filename, QString password, bool storePass = false);
-	static void addCertificate(KSSLPKCS12 *cert, QString passToStore = QString() );
+	static void addCertificate(KSSLPKCS12 *cert, QString passToStore = "");
  
 	/*
 	 *   Returns the list of certificates available

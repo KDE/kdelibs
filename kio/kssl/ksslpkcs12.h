@@ -33,8 +33,6 @@ class EVP_PKEY;
 class X509;
 #endif
 
-#include <qstring.h>
-
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 
@@ -78,7 +76,7 @@ public:
 	 *  @param password a password for the certificate if encrypted
 	 *  @return the PKCS#12 object, or NULL on failure.
 	 */
-	static KSSLPKCS12* fromString(QString base64, QString password = QString() );
+	static KSSLPKCS12* fromString(QString base64, QString password = "");
 
 	/**
 	 *  Create a KSSLPKCS12 object by reading a PKCS#12 file.
@@ -86,7 +84,7 @@ public:
 	 *  @param password a password for the certificate if encrypted
 	 *  @return the PKCS#12 object, or NULL on failure.
 	 */
-	static KSSLPKCS12* loadCertFile(QString filename, QString password = QString() );
+	static KSSLPKCS12* loadCertFile(QString filename, QString password = "");
 
 	/**
 	 *  Convert to a Base64 string.
