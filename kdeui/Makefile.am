@@ -64,7 +64,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
 		klineeditdlg.cpp kurlcompletion.cpp kthemebase.cpp \
 		kcharselect.cpp kcolordrag.cpp qxembed.cpp \
-		knumvalidator.cpp kdialog.cpp dialogbase.cpp kdialogbase.cpp \
+		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
