@@ -43,22 +43,6 @@ class QPixmap;
 class KFileViewItem;
 class KFileView;
 
-// typedef QList<KFileViewItem> KFileViewBaseList;
-
-/*
-class KFileViewItemList : public KFileViewBaseList
-{
-public:
-    void append( const KFileViewItem * );
-    void clear();
-    const KFileViewItem * findByName( const QString& ) const;
-
-private:
-    QDict<KFileViewItem> myDict;
-    bool dictdirty;
-};
-*/
-
 /**
   * Provides information about a file that has been created
   * by KDirLister/KIO.
