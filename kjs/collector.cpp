@@ -1,8 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,272 +20,297 @@
  */
 
 #include "collector.h"
+
+#include "value.h"
 #include "internal.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#ifdef KJS_DEBUG_MEM
-#include <typeinfo>
+#include <collector.h>
+#include <value.h>
+#include <internal.h>
+
+#ifndef MAX
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
 namespace KJS {
 
-  class CollectorBlock {
-  public:
-    CollectorBlock(int s);
-    ~CollectorBlock();
-    int size;
-    int filled;
-    ValueImp** mem;
-    CollectorBlock *prev, *next;
-  };
+// tunable parameters
+const int MINIMUM_CELL_SIZE = 56;
+const int BLOCK_SIZE = (8 * 4096);
+const int SPARE_EMPTY_BLOCKS = 2;
+const int MIN_ARRAY_SIZE = 14;
+const int GROWTH_FACTOR = 2;
+const int LOW_WATER_FACTOR = 4;
+const int ALLOCATIONS_PER_COLLECTION = 1000;
 
-}; // namespace
+// derived constants
+const int CELL_ARRAY_LENGTH = (MINIMUM_CELL_SIZE / sizeof(double)) + (MINIMUM_CELL_SIZE % sizeof(double) != 0 ? sizeof(double) : 0);
+const int CELL_SIZE = CELL_ARRAY_LENGTH * sizeof(double);
+const int CELLS_PER_BLOCK = ((BLOCK_SIZE * 8 - sizeof(int32_t) * 8 - sizeof(void *) * 8) / (CELL_SIZE * 8));
 
-using namespace KJS;
 
-CollectorBlock::CollectorBlock(int s)
-  : size(s),
-    filled(0),
-    prev(0L),
-    next(0L)
-{
-  mem = new ValueImp*[size];
-}
 
-CollectorBlock::~CollectorBlock()
-{
-  delete [] mem;
-  mem = 0L;
-}
+struct CollectorCell {
+  double memory[CELL_ARRAY_LENGTH];
+};
 
-CollectorBlock* Collector::root = 0L;
-CollectorBlock* Collector::currentBlock = 0L;
-unsigned long Collector::filled = 0;
-unsigned long Collector::softLimit = KJS_MEM_INCREMENT;
 
-bool Collector::memLimitReached = false;
+struct CollectorBlock {
+  CollectorCell cells[CELLS_PER_BLOCK];
+  int32_t usedCells;
+  CollectorCell *freeList;
+};
 
-#ifdef KJS_DEBUG_MEM
-bool Collector::collecting = false;
-#endif
+struct CollectorHeap {
+  CollectorBlock **blocks;
+  int numBlocks;
+  int usedBlocks;
+  int firstBlockWithPossibleSpace;
+  
+  CollectorCell **oversizeCells;
+  int numOversizeCells;
+  int usedOversizeCells;
+
+  int numLiveObjects;
+  int numAllocationsSinceLastCollect;
+};
+
+static CollectorHeap heap = {NULL, 0, 0, 0, NULL, 0, 0, 0, 0};
+
+bool Collector::memoryFull = false;
 
 void* Collector::allocate(size_t s)
 {
   if (s == 0)
     return 0L;
-
-  // Try and deal with memory requirements in a scalable way. Simple scripts
-  // should only require small amounts of memory, but for complex scripts we don't
-  // want to end up running the garbage collector hundreds of times a second.
-  if (filled >= softLimit) {
+  
+  // collect if needed
+  if (++heap.numAllocationsSinceLastCollect >= ALLOCATIONS_PER_COLLECTION) {
     collect();
-    if (softLimit/(1+filled) < 2 && softLimit < KJS_MEM_LIMIT) {
-      // Even after collection we are still using more than half of the limit,
-      // so increase the limit
-      softLimit = (unsigned long) (softLimit * 1.4);
+  }
+  
+  if (s > (unsigned)CELL_SIZE) {
+    // oversize allocator
+    if (heap.usedOversizeCells == heap.numOversizeCells) {
+      heap.numOversizeCells = MAX(MIN_ARRAY_SIZE, heap.numOversizeCells * GROWTH_FACTOR);
+      heap.oversizeCells = (CollectorCell **)realloc(heap.oversizeCells, heap.numOversizeCells * sizeof(CollectorCell *));
+    }
+    
+    void *newCell = malloc(s);
+    heap.oversizeCells[heap.usedOversizeCells] = (CollectorCell *)newCell;
+    heap.usedOversizeCells++;
+    heap.numLiveObjects++;
+
+    ((ValueImp *)(newCell))->_flags = 0;
+    return newCell;
+  }
+  
+  // slab allocator
+  
+  CollectorBlock *targetBlock = NULL;
+  
+  int i;
+  for (i = heap.firstBlockWithPossibleSpace; i < heap.usedBlocks; i++) {
+    if (heap.blocks[i]->usedCells < CELLS_PER_BLOCK) {
+      targetBlock = heap.blocks[i];
+      break;
     }
   }
 
-  ValueImp *m = static_cast<ValueImp*>(malloc(s));
-#ifdef KJS_DEBUG_MEM
-  //fprintf( stderr, "allocate: size=%d valueimp=%p\n",s,m);
-#endif
+  heap.firstBlockWithPossibleSpace = i;
+  
+  if (targetBlock == NULL) {
+    // didn't find one, need to allocate a new block
+    
+    if (heap.usedBlocks == heap.numBlocks) {
+      heap.numBlocks = MAX(MIN_ARRAY_SIZE, heap.numBlocks * GROWTH_FACTOR);
+      heap.blocks = (CollectorBlock **)realloc(heap.blocks, heap.numBlocks * sizeof(CollectorBlock *));
+    }
+    
+    targetBlock = (CollectorBlock *)calloc(1, sizeof(CollectorBlock));
+    targetBlock->freeList = targetBlock->cells;
+    heap.blocks[heap.usedBlocks] = targetBlock;
+    heap.usedBlocks++;
+  }
+  
+  // find a free spot in the block and detach it from the free list
+  CollectorCell *newCell = targetBlock->freeList;
 
-  // VI_CREATED and VI_GCALLOWED being unset ensure that value
-  // is protected from GC before any constructors are run
-  static_cast<ValueImp*>(m)->_flags = 0;
-
-  if (!root) {
-    root = new CollectorBlock(BlockSize);
-    currentBlock = root;
+  ValueImp *imp = (ValueImp*)newCell;
+  if (imp->_vd != NULL) {
+    targetBlock->freeList = (CollectorCell*)(imp->_vd);
+  } else if (targetBlock->usedCells == (CELLS_PER_BLOCK - 1)) {
+    // last cell in this block
+    targetBlock->freeList = NULL;
+  } else {
+    // all next pointers are initially 0, meaning "next cell"
+    targetBlock->freeList = newCell + 1;
   }
 
-  CollectorBlock *block = currentBlock;
-  if (!block)
-    block = root;
+  targetBlock->usedCells++;
+  heap.numLiveObjects++;
 
-  // search for a block with space left
-  while (block->next && block->filled == block->size)
-    block = block->next;
-
-  if (block->filled >= block->size) {
-#ifdef KJS_DEBUG_MEM
-    //fprintf( stderr, "allocating new block of size %d\n", block->size);
-#endif
-    CollectorBlock *tmp = new CollectorBlock(BlockSize);
-    block->next = tmp;
-    tmp->prev = block;
-    block = tmp;
-  }
-  currentBlock = block;
-  // fill free spot in the block
-  *(block->mem + block->filled) = m;
-  filled++;
-  block->filled++;
-
-  if (softLimit >= KJS_MEM_LIMIT) {
-    memLimitReached = true;
-    fprintf(stderr,"Out of memory");
-  }
-
-  return m;
+  ((ValueImp *)(newCell))->_flags = 0;
+  return (void *)(newCell);
 }
 
-/**
- * Mark-sweep garbage collection.
- */
 bool Collector::collect()
 {
-#ifdef KJS_DEBUG_MEM
-  fprintf(stderr,"Collector::collect()\n");
-#endif
   bool deleted = false;
-  // MARK: first unmark everything
-  CollectorBlock *block = root;
-  while (block) {
-    ValueImp **r = block->mem;
-    assert(r);
-    for (int i = 0; i < block->filled; i++, r++)
-      (*r)->_flags &= ~ValueImp::VI_MARKED;
-    block = block->next;
-  }
 
-  // mark all referenced objects recursively
+  // MARK: first mark all referenced objects recursively
   // starting out from the set of root objects
   if (InterpreterImp::s_hook) {
     InterpreterImp *scr = InterpreterImp::s_hook;
     do {
-#ifdef KJS_DEBUG_MEM
-      fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
-#endif
+      //fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
       scr->mark();
       scr = scr->next;
     } while (scr != InterpreterImp::s_hook);
   }
-
+  
   // mark any other objects that we wouldn't delete anyway
-  block = root;
-  while (block) {
-    ValueImp **r = block->mem;
-    assert(r);
-    for (int i = 0; i < block->filled; i++, r++)
-    {
-      ValueImp *imp = (*r);
-      // Check for created=true, marked=false and (gcallowed=false or refcount>0)
-      if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
-          ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount ) ) {
-#ifdef KJS_DEBUG_MEM
-        if ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 )
-          fprintf( stderr, "Collector marking imp=%p (%s) because no GC allowed on it\n",(void*)imp, typeid(*imp).name());
-        else
-          fprintf( stderr, "Collector marking imp=%p (%s) because refcount=%d\n",(void*)imp, typeid(*imp).name(), imp->refcount);
-#endif
-        imp->mark();
+  for (int block = 0; block < heap.usedBlocks; block++) {
+
+    int minimumCellsToProcess = heap.blocks[block]->usedCells;
+    CollectorBlock *curBlock = heap.blocks[block];
+
+    for (int cell = 0; cell < CELLS_PER_BLOCK; cell++) {
+      if (minimumCellsToProcess < cell) {
+	goto skip_block_mark;
+      }
+	
+      ValueImp *imp = (ValueImp *)(curBlock->cells + cell);
+
+      if (!(imp->_flags & ValueImp::VI_DESTRUCTED)) {
+	
+	if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
+	    ((imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount != 0)) {
+	  imp->mark();
+	}
+      } else {
+	minimumCellsToProcess++;
       }
     }
-    block = block->next;
+  skip_block_mark: ;
+  }
+  
+  for (int cell = 0; cell < heap.usedOversizeCells; cell++) {
+    ValueImp *imp = (ValueImp *)heap.oversizeCells[cell];
+    if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
+	((imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount != 0)) {
+      imp->mark();
+    }
   }
 
-  // SWEEP: delete everything with a zero refcount (garbage)
-  // 1st step: destruct all objects
-  block = root;
-  while (block) {
-    ValueImp **r = block->mem;
-    for (int i = 0; i < block->filled; i++, r++) {
-      ValueImp *imp = (*r);
-      // Can delete if marked==false
-      if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED ) {
-        // emulate destructing part of 'operator delete()'
-#ifdef KJS_DEBUG_MEM
-        fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
-#endif
-        imp->~ValueImp();
+  // SWEEP: delete everything with a zero refcount (garbage) and unmark everything else
+  
+  int emptyBlocks = 0;
+
+  for (int block = 0; block < heap.usedBlocks; block++) {
+    CollectorBlock *curBlock = heap.blocks[block];
+
+    int minimumCellsToProcess = curBlock->usedCells;
+
+    for (int cell = 0; cell < CELLS_PER_BLOCK; cell++) {
+      if (minimumCellsToProcess < cell) {
+	goto skip_block_sweep;
+      }
+
+      ValueImp *imp = (ValueImp *)(curBlock->cells + cell);
+
+      if (!(imp->_flags & ValueImp::VI_DESTRUCTED)) {
+	if (!imp->refcount && imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
+	  //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
+	  // emulate destructing part of 'operator delete()'
+	  imp->~ValueImp();
+	  curBlock->usedCells--;
+	  heap.numLiveObjects--;
+	  deleted = true;
+
+	  // put it on the free list
+	  imp->_vd = (ValueImpPrivate*)curBlock->freeList;
+	  curBlock->freeList = (CollectorCell *)imp;
+
+	} else {
+	  imp->_flags &= ~ValueImp::VI_MARKED;
+	}
+      } else {
+	minimumCellsToProcess++;
       }
     }
-    block = block->next;
+
+  skip_block_sweep:
+
+    if (heap.blocks[block]->usedCells == 0) {
+      emptyBlocks++;
+      if (emptyBlocks > SPARE_EMPTY_BLOCKS) {
+#ifndef DEBUG_COLLECTOR
+	free(heap.blocks[block]);
+#endif
+	// swap with the last block so we compact as we go
+	heap.blocks[block] = heap.blocks[heap.usedBlocks - 1];
+	heap.usedBlocks--;
+	block--; // Don't move forward a step in this case
+
+	if (heap.numBlocks > MIN_ARRAY_SIZE && heap.usedBlocks < heap.numBlocks / LOW_WATER_FACTOR) {
+	  heap.numBlocks = heap.numBlocks / GROWTH_FACTOR; 
+	  heap.blocks = (CollectorBlock **)realloc(heap.blocks, heap.numBlocks * sizeof(CollectorBlock *));
+	}
+      } 
+    }
   }
 
-  // 2nd step: free memory
-  block = root;
-  while (block) {
-    ValueImp **r = block->mem;
-    int freespot = block->filled;
-    bool firstfreeset = false;
-    int del = 0;
-    for (int i = 0; i < block->filled; i++, r++) {
-      ValueImp *imp = (*r);
-      if ((imp->_flags & ValueImp::VI_DESTRUCTED) != 0) {
-        free(imp);
-        del++;
-        if (!firstfreeset) {
-          firstfreeset = true;
-          freespot = r - block->mem;
-        }
-      } else if (firstfreeset) {
-         *(block->mem + freespot) = imp;
-         freespot++;
-      }
-    }
-    filled -= del;
-    block->filled -= del;
-    assert(freespot == block->filled);
-    block = block->next;
-    if (del)
+  if (deleted) {
+    heap.firstBlockWithPossibleSpace = 0;
+  }
+  
+  int cell = 0;
+  while (cell < heap.usedOversizeCells) {
+    ValueImp *imp = (ValueImp *)heap.oversizeCells[cell];
+    
+    if (!imp->refcount && 
+	imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
+      
+      imp->~ValueImp();
+#ifndef DEBUG_COLLECTOR
+      free((void *)imp);
+#endif
+
+      // swap with the last oversize cell so we compact as we go
+      heap.oversizeCells[cell] = heap.oversizeCells[heap.usedOversizeCells - 1];
+
+      heap.usedOversizeCells--;
       deleted = true;
-  }
+      heap.numLiveObjects--;
 
-  // delete the empty containers
-  block = root;
-  currentBlock = 0L;
-  CollectorBlock *last = root;
-  while (block) {
-    CollectorBlock *next = block->next;
-    if (block->filled == 0) {
-      if (block->prev)
-        block->prev->next = next;
-      if (block == root)
-        root = next;
-      if (next)
-        next->prev = block->prev;
-      assert(block != root);
-      delete block;
-    } else if (!currentBlock) {
-        if (block->filled < block->size)
-          currentBlock = block;
-        else
-          last = block;
+      if (heap.numOversizeCells > MIN_ARRAY_SIZE && heap.usedOversizeCells < heap.numOversizeCells / LOW_WATER_FACTOR) {
+	heap.numOversizeCells = heap.numOversizeCells / GROWTH_FACTOR; 
+	heap.oversizeCells = (CollectorCell **)realloc(heap.oversizeCells, heap.numOversizeCells * sizeof(CollectorCell *));
+      }
+
+    } else {
+      imp->_flags &= ~ValueImp::VI_MARKED;
+      cell++;
     }
-    block = next;
   }
-  if (!currentBlock)
-    currentBlock = last;
-#ifdef KJS_DEBUG_MEM
-  static int s_count = 0;
-  fprintf(stderr, "Collector done (was run %d)\n",s_count);
-  if (s_count++ % 50 == 2)
-    finalCheck();
-#endif
+  
+  heap.numAllocationsSinceLastCollect = 0;
+  
+  memoryFull = (heap.numLiveObjects >= KJS_MEM_LIMIT);
+
   return deleted;
+}
+
+int Collector::size() 
+{
+  return heap.numLiveObjects; 
 }
 
 #ifdef KJS_DEBUG_MEM
 void Collector::finalCheck()
 {
-  CollectorBlock *block = root;
-  while (block) {
-    ValueImp **r = block->mem;
-    for (int i = 0; i < block->filled; i++, r++) {
-      assert( *r );
-      fprintf( stderr, "Collector::finalCheck() still having ValueImp %p (%s)  [marked:%d gcAllowed:%d created:%d refcount:%d]\n",
-               (void*)(*r), typeid( **r ).name(),
-               (bool)((*r)->_flags & ValueImp::VI_MARKED),
-               (bool)((*r)->_flags & ValueImp::VI_GCALLOWED),
-               (bool)((*r)->_flags & ValueImp::VI_CREATED),
-               (*r)->refcount);
-    }
-    block = block->next;
-  }
 }
 #endif
+
+} // namespace KJS
