@@ -1622,9 +1622,12 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
           //  [ auto | crosshair | default | pointer | progress | move | e-resize | ne-resize |
           // nw-resize | // n-resize | se-resize | sw-resize | s-resize | w-resize | text |
           // wait | help ] ] | inherit
-          if (cssval && cssval->id >= CSS_VAL_AUTO && cssval->id <= CSS_VAL_HELP) {
-	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-	      break;
+          if (cssval) {
+              // MSIE 5 compatibility :/
+              if (!strictParsing && cssval->id == CSS_VAL_HAND)
+                  parsedValue = new CSSPrimitiveValueImpl(CSS_VAL_POINTER);
+              else if (cssval->id >= CSS_VAL_AUTO && cssval->id <= CSS_VAL_HELP)
+                  parsedValue = new CSSPrimitiveValueImpl(cssval->id);
           }
           break;
       case CSS_PROP_BACKGROUND_IMAGE:     // <uri> | none | inherit
