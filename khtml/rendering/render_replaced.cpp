@@ -60,7 +60,7 @@ short RenderReplaced::calcReplacedWidth(bool* ieHack) const
     Length w = style()->width();
     short width;
     if ( ieHack )
-        ieHack = false;
+        *ieHack = false;
 
     switch( w.type ) {
     case Variable:
