@@ -25,9 +25,9 @@ lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkspell_la_LIBADD = ../kdeui/libkdeui.la
 
-include_HEADERS = kspell.h ksconfig.h kspelldlg.h
+include_HEADERS = kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h
 noinst_HEADERS = version.h
-libkspell_la_SOURCES = ksconfig.cpp kspelldlg.cpp kspell.cpp
+libkspell_la_SOURCES = ksconfig.cpp kspelldlg.cpp kspell.cpp ksyntaxhighlighter.cpp
 
 libkspell_la_METASOURCES = AUTO
 
