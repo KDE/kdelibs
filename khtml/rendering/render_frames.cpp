@@ -595,12 +595,15 @@ void RenderPartObject::updateWidget()
   QString serviceType;
   QStringList params;
   KHTMLPart *part = m_view->part();
+  HTMLObjectBaseElementImpl *objbase;
 
   setMinMaxKnown(false);
   setLayouted(false);
 
   // ### this should be constant true - move iframe to somewhere else
   if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET) {
+
+      objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
 
       for (NodeImpl* child = element()->firstChild(); child; child=child->nextSibling()) {
           if ( child->id() == ID_PARAM ) {
@@ -610,8 +613,10 @@ void RenderPartObject::updateWidget()
               aStr += QString::fromLatin1("=\"");
               aStr += p->value();
               aStr += QString::fromLatin1("\"");
-              if (p->name().lower() == QString::fromLatin1("type"))
-                  static_cast<HTMLObjectBaseElementImpl *>(element())->setServiceType(p->value());
+              if (p->name().lower() == QString::fromLatin1("type")) {
+                  objbase->setServiceType(p->value());
+                  objbase->needWidgetUpdate = false;
+              }
               params.append(aStr);
           }
       }
@@ -619,13 +624,12 @@ void RenderPartObject::updateWidget()
       params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(element()->getDocument()->baseURL()));
       if (element()->id() != ID_OBJECT) {
           // add all attributes set on the embed object
-          HTMLElementImpl *o = static_cast<HTMLElementImpl *>(element());
-          NamedAttrMapImpl* a = o->attributes();
+          NamedAttrMapImpl* a = objbase->attributes();
           if (a) {
               for (unsigned long i = 0; i < a->length(); ++i) {
                   NodeImpl::Id id = a->idAt(i);
                   DOMString value = a->valueAt(i);
-              params.append(o->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
+              params.append(objbase->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
               }
           }
       }
@@ -634,32 +638,31 @@ void RenderPartObject::updateWidget()
   if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET) {
 
       // check for embed child object
-      HTMLObjectBaseElementImpl *o = static_cast<HTMLObjectBaseElementImpl *>(element());
       HTMLEmbedElementImpl *embed = 0;
-      for (NodeImpl *child = o->firstChild(); child; child = child->nextSibling())
+      for (NodeImpl *child = objbase->firstChild(); child; child = child->nextSibling())
           if ( child->id() == ID_EMBED ) {
               embed = static_cast<HTMLEmbedElementImpl *>( child );
               break;
           }
 
-      params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
-      params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( o->getAttribute(ATTR_CODEBASE).string() ) );
-      if (!o->getAttribute(ATTR_WIDTH).isEmpty())
-          params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( o->getAttribute(ATTR_WIDTH).string() ) );
-      if (!o->getAttribute(ATTR_HEIGHT).isEmpty())
-          params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( o->getAttribute(ATTR_HEIGHT).string() ) );
+      params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( objbase->classId ) );
+      params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( objbase->getAttribute(ATTR_CODEBASE).string() ) );
+      if (!objbase->getAttribute(ATTR_WIDTH).isEmpty())
+          params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( objbase->getAttribute(ATTR_WIDTH).string() ) );
+      if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
+          params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
 
       if ( !embed )
       {
-          url = o->url;
-          serviceType = o->serviceType;
-          if(serviceType.isEmpty() && !o->classId.isEmpty()) {
+          url = objbase->url;
+          serviceType = objbase->serviceType;
+          if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
               // We have a clsid, means this is activex (Niko)
               serviceType = "application/x-activex-handler";
               url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
 
-              if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+              if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
                   // It is ActiveX, but the nsplugin system handling
                   // should also work, that's why we don't override the
                   // serviceType with application/x-activex-handler
@@ -668,18 +671,18 @@ void RenderPartObject::updateWidget()
                   // with nspluginviewer (Niko)
                   serviceType = "application/x-shockwave-flash";
               }
-              else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+              else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
                   serviceType = "audio/x-pn-realaudio-plugin";
 
               else
-                  kdDebug(6031) << "ActiveX classId " << o->classId << endl;
+                  kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
 
               // TODO: add more plugins here
           }
 
           if((url.isEmpty() || url.isNull())) {
               // look for a SRC attribute in the params
-              NodeImpl *child = o->firstChild();
+              NodeImpl *child = objbase->firstChild();
               while ( child ) {
                   if ( child->id() == ID_PARAM ) {
                       HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
@@ -718,13 +721,12 @@ void RenderPartObject::updateWidget()
           }
           part->requestObject( this, url, serviceType, params );
       }
-      o->setLiveConnect(part->liveConnectExtension(this));
+      objbase->setLiveConnect(part->liveConnectExtension(this));
   }
   else if ( element()->id() == ID_EMBED ) {
 
-      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(element());
-      url = o->url;
-      serviceType = o->serviceType;
+      url = objbase->url;
+      serviceType = objbase->serviceType;
 
       if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
@@ -733,7 +735,7 @@ void RenderPartObject::updateWidget()
           return;
       }
       part->requestObject( this, url, serviceType, params );
-      o->setLiveConnect(part->liveConnectExtension(this));
+      objbase->setLiveConnect(part->liveConnectExtension(this));
   } else {
       assert(element()->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
