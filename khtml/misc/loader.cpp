@@ -612,6 +612,10 @@ void CachedImage::movieStatus(int status)
 #endif
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
+        // ### the html image objects are supposed to send the load event after every frame (according to
+        // netscape). We have a problem though where an image is present, and js code creates a new Image object,
+        // which uses the same CachedImage, the one in the document is not supposed to be notified
+
         // just another Qt 2.2.0 bug. we cannot call
         // QMovie::frameImage if we're after QMovie::EndOfMovie
         if(status == QMovie::EndOfFrame)

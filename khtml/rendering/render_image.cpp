@@ -321,6 +321,7 @@ void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)
 {
     CachedImage *new_image = docLoader->requestImage(url);
     if(new_image && new_image != image) {
+        loadEventSent = false;
         if(image) image->deref(this);
         image = new_image;
         image->ref(this);
@@ -335,8 +336,6 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    // ### in some cases this seems to get called repeatedly when an image completes loading
-    // (e.g. on xml.apache.org) - qt bug?
     if (image == finishedObj && element && !loadEventSent) {
         loadEventSent = true;
         element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
