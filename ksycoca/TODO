@@ -1,6 +1,11 @@
 allMimeTypes                                        (easy)
 No mimetype installed ? (for KMimeType::check())    (easy)
 matchFileName [without creating the mimetypes]      (difficult)
+Move canossa's koTrader and make it ktrader in libkio 
+(no problem but with the parser, the lex & yacc file, libkio is going to grow again)
+(well at least we'll have everything about services and servicetypes there)
 
-and then move back to libkio
+and then move ksycoca back to libkio
+
+David Faure <faure@kde.org>
 
