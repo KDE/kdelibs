@@ -15,7 +15,7 @@
   <Action name="viewFrameInfo" />
  </Menu>
  <Separator weakSeparator="1" />
- <Menu name="frame"><text>Image</text>
+ <Menu name="image"><text>Image</text>
   <Action name="saveimageas" />
   <Action name="sendimage" />
   <Action name="copyimagelocation" />
