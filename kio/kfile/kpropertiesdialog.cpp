@@ -1428,10 +1428,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       groupList += name;
   }
 
+  bool isMyGroup = groupList.contains(strGroup);
+
   /* add the group the file currently belongs to ..
    * .. if its not there already
    */
-  if (!groupList.contains(strGroup))
+  if (!isMyGroup)
     groupList += strGroup;
 
   l = new QLabel( i18n("Group:"), gb );
@@ -1486,7 +1488,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   if (isMyFile)
     cl[0]->setText(i18n("<b>User</b>"));
-  else if (groupList.contains(strGroup))
+  else if (isMyGroup)
     cl[1]->setText(i18n("<b>Group</b>"));
   else
     cl[2]->setText(i18n("<b>Others</b>"));
