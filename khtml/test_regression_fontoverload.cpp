@@ -167,7 +167,6 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 {
     QString xlfd;
     QString family = request.family.lower();
-    qDebug( "%s %d", family.latin1(), request.pixelSize );
     if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
         xlfd = courier_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
     }
