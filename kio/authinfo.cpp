@@ -26,7 +26,6 @@
 #include <qdir.h>
 #include <qfile.h>
 
-#include <kurl.h>
 #include <kdebug.h>
 #include <kstddirs.h>
 #include <ksavefile.h>
