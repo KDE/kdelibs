@@ -45,14 +45,14 @@ KHTMLPrintSettings::~KHTMLPrintSettings()
 
 void KHTMLPrintSettings::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	opts["kde-khtml-printfriendly"] = (m_printfriendly->isChecked() ? "true" : "false");
-	opts["kde-khtml-printimages"] = (m_printimages->isChecked() ? "true" : "false");
+	opts["app-khtml-printfriendly"] = (m_printfriendly->isChecked() ? "true" : "false");
+	opts["app-khtml-printimages"] = (m_printimages->isChecked() ? "true" : "false");
 }
 
 void KHTMLPrintSettings::setOptions(const QMap<QString,QString>& opts)
 {
-	m_printfriendly->setChecked(opts["kde-khtml-printfriendly"] != "false");
-	m_printimages->setChecked(opts["kde-khtml-printimages"] != "false");
+	m_printfriendly->setChecked(opts["app-khtml-printfriendly"] != "false");
+	m_printimages->setChecked(opts["app-khtml-printimages"] != "false");
 }
 
 #include "khtml_printsettings.moc"
