@@ -1,3 +1,3 @@
 
 SUBDIRS=utils themes highcolor \
-	basicplugin klegacy riscos
+	basicplugin klegacy riscos megagradient
