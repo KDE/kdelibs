@@ -877,7 +877,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _err
   }
 
   QString exec = KProtocolManager::self().executable( _protocol );
-  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
+  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", debugString(exec) );
 
   if ( exec.isEmpty() ) {
     _error = ERR_UNSUPPORTED_PROTOCOL;

@@ -462,7 +462,7 @@ void KHTMLWidget::slotReloadFrames()
 void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* _post_data )
 {
 
-    printf("======================>>>>>>>> openURL this=%p, url=%s\n", this, _url.ascii());
+    printf("======================>>>>>>>> openURL this=%p, url=%s\n", this, debugString(_url));
   // Check URL
   if ( KURL::split( _url ).isEmpty() )
   {
