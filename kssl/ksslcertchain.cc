@@ -162,3 +162,12 @@ void KSSLCertChain::setChain(QStringList chain) {
 }
 
 
+#ifdef HAVE_SSL
+#undef sk_new
+#undef sk_push
+#undef sk_free
+#undef sk_value
+#undef sk_num
+#undef sk_dup
+#endif
+

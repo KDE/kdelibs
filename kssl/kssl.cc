@@ -405,3 +405,6 @@ bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
   return false;
 #endif
 }
+
+#undef sk_dup
+

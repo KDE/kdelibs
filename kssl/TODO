@@ -2,12 +2,6 @@
 - KHTML needs a dialog to warn on an insecure post (unencrypted)
   if the user has selected to do so in kcmcrypto
 
-- KHTML needs a dialog and logic to warn on pages that have some
-  frames in SSL and others in non-SSL
-
-- There needs to be a way to warn the user if an SSL page does a redirect
-  to a non-SSL page
-
 - The "back" button on konqueror doesn't behave well with kio_https.  Try
   it, you'll see :)
 
