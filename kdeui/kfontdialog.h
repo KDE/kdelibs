@@ -51,7 +51,7 @@ class KIntNumInput;
 class KFontChooser : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY( QColor font READ font WRITE setFont )
+  Q_PROPERTY( QFont font READ font WRITE setFont )
   
 public:
   /**
