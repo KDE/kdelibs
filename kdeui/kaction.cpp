@@ -3398,8 +3398,6 @@ bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConf
 }
 
 bool KActionCollection::writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig ) const
-3C
-3C
 {
   return KActionShortcutList((KActionCollection*)this).writeSettings( sConfigGroup, pConfig );
 }
