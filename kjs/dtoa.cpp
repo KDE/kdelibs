@@ -170,6 +170,9 @@
  */
 
 #include <config.h>
+
+#include "stdlib.h"
+
 #ifdef WORDS_BIGENDIAN
 #define IEEE_MC68k
 #else
@@ -195,7 +198,6 @@ typedef unsigned Long ULong;
 #define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
 #endif
 
-#include "stdlib.h"
 #include "string.h"
 
 #ifdef USE_LOCALE
