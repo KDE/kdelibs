@@ -62,12 +62,12 @@
 // We want a statusbar-fields to be by this amount heigher than fm.height().
 // This does NOT include the border width which we set separately for the statusbar.
 
+#define FONT_Y_DELTA 3
+#define DEFAULT_BORDERWIDTH 0
+
 KStatusBarLabel::KStatusBarLabel( const char *text, int _id,
                                  QWidget *parent, const char *) :
   QLabel( parent ) 
-KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
-                                 QWidget *parent, const char *name) :
-  QLabel( parent, name) 
 {   
   id = _id;
 
@@ -75,10 +75,10 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   w = fm.width( text )+8;
   h = fm.height() + FONT_Y_DELTA;
   resize( w, h );
-    setFrameStyle( QFrame::Panel | QFrame::Sunken );
+    
   setText( text );
   if ( style() == MotifStyle )
-      setFrameStyle( QFrame::Panel | QFrame::Sunken );
+    setFrameStyle( QFrame::Panel | QFrame::Sunken );
   setAlignment( AlignLeft | AlignVCenter );
 }
 
@@ -209,10 +209,10 @@ bool KStatusBar::enable( BarStatus stat )
     hide();
   else
     show();
-int KStatusBar::insertItem( const char *text, int id )
+  return ( isVisible() == mystat );
 }	
 
-int KStatusBar::insertItem( const QString& text, int id )
+int KStatusBar::insertItem( const char *text, int id )
 {
   KStatusBarLabel *label = new KStatusBarLabel( text, id, this );
   KStatusBarItem *item = new KStatusBarItem(label, id, true);
@@ -253,20 +253,20 @@ void KStatusBar::removeItem (int id)
       delete b;
       updateRects(false );
     }
-void KStatusBar::replaceItem(int /* _id */, const char * /* _text */ )
-}
- debug ("Not yet implemented. Sorry.");
-void KStatusBar::replaceItem(int /* _id */, const QString& /* _text */ )
-{
-    debug ("Not yet implemented. Sorry.");
-}
- debug ("Not yet implemented. Sorry.");
-void KStatusBar::replaceItem(int /* _id */ , QWidget * /* _widget */)
-{
-void KStatusBar::changeItem( const char *text, int id )
+  
 }
 
-void KStatusBar::changeItem( const QString& text, int id )
+void KStatusBar::replaceItem(int /* _id */, const char * /* _text */ )
+{
+ debug ("Not yet implemented. Sorry.");
+}
+
+void KStatusBar::replaceItem(int /* _id */ , QWidget * /* _widget */)
+{
+ debug ("Not yet implemented. Sorry.");
+}
+
+void KStatusBar::changeItem( const char *text, int id )
 {
   for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 
 	if ( b->ID() == id )
@@ -278,10 +278,10 @@ void KStatusBar::setAlignment( int id, int align)
   for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 
     if ( b->ID() == id ){
 	  ((KStatusBarLabel *)b->getItem())->setAlignment(align|AlignVCenter);
-void KStatusBar::message(const char *text, int time)
+    }
 }
 
-void KStatusBar::message(const QString& text, int time)
+void KStatusBar::message(const char *text, int time)
 {
   if (tmpTimer->isActive())
     tmpTimer->stop();
