@@ -55,7 +55,8 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
 		kpanelextension.h kcompletionbox.h kalphapainter.h ksqueezedtextlabel.h \
-		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h
+		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
+    karrowbutton.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -91,7 +92,8 @@ libkdeui_la_SOURCES = \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
 		kcompletionbox.cpp kalphapainter.cpp ksqueezedtextlabel.cpp \
-		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp
+		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
+    karrowbutton.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
