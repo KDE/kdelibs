@@ -43,21 +43,6 @@ KWalletBackend::~KWalletBackend() {
 
 
 static int password2hash(const QByteArray& password, QByteArray& hash) {
-	QByteArray even;
-	QByteArray odd;
-
-	// Split the odd entries and the even entries in the password
-	// into separate hashes
-
-	even.resize(password.size()/2+password.size()%2);
-	odd.resize(password.size()/2);
-
-	for (unsigned int i = 0; i < password.size(); i++) {
-		if (i % 2 == 0)
-			even[i/2] = password[i];
-		else 
-			odd[i/2] = password[i];
-	}
 
 	SHA1 sha;
 
@@ -67,20 +52,6 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 	sha.reset();
 
-	sha.process(even.data(), even.size());
-
-	// FIXME: fill in this part
-	
-	sha.reset();
-
-	sha.process(odd.data(), odd.size());
-
-	// FIXME: fill in this part
-	
-	sha.reset();
-
-	even.fill(0);
-	odd.fill(0);
 	return 0;
 }
 
