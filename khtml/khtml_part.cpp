@@ -2458,9 +2458,11 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it).m_frame = frame;
   (*it).m_params = params;
 
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 && !isIFrame )
   {
-      khtml::RenderFrame* rf = dynamic_cast<khtml::RenderFrame*>(frame);
+      // static cast is safe as of isIFrame being false.
+      // but: shouldn't we support this javascript hack for iframes aswell?
+      khtml::RenderFrame* rf = static_cast<khtml::RenderFrame*>(frame);
       assert(rf);
       QVariant res = executeScript( DOM::Node(rf->frameImpl()), url.right( url.length() - 11) );
       if ( res.type() == QVariant::String ) {
@@ -2633,9 +2635,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     child->m_extension->setURLArgs( child->m_args );
 
   if(url.protocol() == "javascript") {
-      KHTMLPart* p = dynamic_cast<KHTMLPart*>( ((KParts::ReadOnlyPart*) child->m_part));
-      // ### ?
-      if(!p) return false;
+      if (!child->m_part->inherits("KHTMLPart"))
+          return false;
+
+      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
 
       p->begin();
       p->write(url.path());
