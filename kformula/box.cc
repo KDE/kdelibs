@@ -704,7 +704,7 @@ QRect box::getCursorPos(charinfo i, int x, int y)
     //to make sure the spaces at the end are computed, we append a . and
     //then subtract off its width (also tweak it a few pixels since
     //there is a space between the last char and the dot).
-    QString temptext( text.left( i.posinbox + 1 ) );
+    QString temptext( text.left( i.posinbox ) );
     temptext.append(".");
 
     if(i.posinbox == 0) tmp.setX(rect.left() + x - 1);
