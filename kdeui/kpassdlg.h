@@ -87,6 +87,23 @@ public:
 
     static const int PassLen;
 
+    /**
+     * Set the current maximum password length.  If a password longer than the limit
+     * specified is currently entered, it is truncated accordingly.
+     *
+     * The length is capped to lie between 0 and 199 inclusive.
+     *
+     * @param newLength: The new maximum password length
+     * @since 3.4
+     */
+    void setMaxPasswordLength(int newLength);
+
+    /**
+     * Returns the current maximum password length.
+     * @since 3.4
+     */
+    int maxPasswordLength() const;
+
 public slots:
     /**
      * Reimplementation
@@ -243,6 +260,56 @@ public:
      * @since 3.4
      */
     bool allowEmptyPasswords() const;
+
+    /**
+     * Minimum acceptable password length.
+     * Default: If empty passwords are forbidden, 1;
+     *          Otherwise, 0.
+     *
+     * @param minLength: The new minimum password length
+     * @since 3.4
+     */
+    void setMinimumPasswordLength(int minLength);
+
+    /**
+     * Minimum acceptable password length.
+     * @since 3.4
+     */
+    int minimumPasswordLength() const;
+
+    /**
+     * Maximum acceptable password length.  Limited to 199.
+     * Default: No limit, i.e. -1
+     *
+     * @param maxLength: The new maximum password length.
+     * @since 3.4
+     */
+    void setMaximumPasswordLength(int maxLength);
+
+    /**
+     * Maximum acceptable password length.
+     * @since 3.4
+     */
+    int maximumPasswordLength() const;
+
+
+    /**
+     * Set the password strength level below which a warning is given
+     * Value is in the range 0 to 99. Empty passwords score 0;
+     * non-empty passwords score up to 100, depending on their length and whether they
+     * contain numbers, mixed case letters and punctuation.
+     *
+     * Default: 1 - warn if the password has no discernable strength whatsoever
+     * @param warningLevel: The level below which a warning should be given.
+     * @since 3.4
+     */
+    void setPasswordStrengthWarningLevel(int warningLevel);
+
+    /**
+     * Password strength level below which a warning is given
+     * @since 3.4
+     */
+    int passwordStrengthWarningLevel() const;
 
     /**
      * Returns the password entered. The memory is freed in the destructor,

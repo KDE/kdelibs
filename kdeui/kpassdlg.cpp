@@ -51,19 +51,25 @@
  * Password line editor.
  */
 
+const int KPasswordEdit::PassLen = 200;
+
 class KPasswordDialog::KPasswordDialogPrivate
 {
     public:
 	KPasswordDialogPrivate()
-	    : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false )
+	 : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false ),
+	   minimumPasswordLength(0), maximumPasswordLength(KPasswordEdit::PassLen - 1),
+	   passwordStrengthWarningLevel(1)
 	    {}
 	QLabel *m_MatchLabel;
 	QString iconName;
 	bool allowEmptyPasswords;
+	int minimumPasswordLength;
+	int maximumPasswordLength;
+	int passwordStrengthWarningLevel;
 	KProgress* m_strengthBar;
 };
 
-const int KPasswordEdit::PassLen = 200;
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name)
@@ -80,6 +86,7 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 	m_EchoMode = NoEcho;
     else
 	m_EchoMode = OneStar;
+
 }
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
@@ -105,6 +112,7 @@ void KPasswordEdit::init()
 {
     setEchoMode(QLineEdit::Password); // Just in case
     setAcceptDrops(false);
+    setMaxLength(3 * (PassLen - 1)); // 3 * the internal max length
     m_Password = new char[PassLen];
     m_Password[0] = '\000';
     m_Length = 0;
@@ -120,10 +128,11 @@ void KPasswordEdit::insert(const QString &txt)
 {
     const QCString localTxt = txt.local8Bit();
     const unsigned int lim = localTxt.length();
+    const int m_MaxLength = maxPasswordLength();
     for(unsigned int i=0; i < lim; ++i)
     {
         const unsigned char ke = localTxt[i];
-        if (m_Length < (PassLen - 1))
+        if (m_Length < m_MaxLength)
         {
             m_Password[m_Length] = ke;
             m_Password[++m_Length] = '\000';
@@ -235,7 +244,22 @@ void KPasswordEdit::showPass()
     }
 }
 
+void KPasswordEdit::setMaxPasswordLength(int newLength)
+{
+    if (newLength >= PassLen) newLength = PassLen - 1; // belt and braces
+    if (newLength < 0) newLength = 0;
+    setMaxLength(3 * newLength); // at most it needs 3 stars per character
+    while (m_Length > newLength) {
+        m_Password[m_Length] = '\000';
+        --m_Length;
+    }
+    showPass();
+}
 
+int KPasswordEdit::maxPasswordLength() const
+{
+    return (maxLength() / 3);
+}
 /*
  * Password dialog.
  */
@@ -316,6 +340,7 @@ void KPasswordDialog::init()
     QHBoxLayout *h_lay = new QHBoxLayout();
     m_pGrid->addLayout(h_lay, 7, 2);
     m_pEdit = new KPasswordEdit(m_pMain);
+    m_pEdit2 = 0;
     lbl->setBuddy(m_pEdit);
     QSize size = m_pEdit->sizeHint();
     m_pEdit->setFixedHeight(size.height());
@@ -365,7 +390,7 @@ void KPasswordDialog::init()
         d->m_strengthBar = new KProgress(100, strengthBox, "PasswordStrengthMeter");
         d->m_strengthBar->setPercentageVisible(false);
 
-        const QString strengthBarWhatsThis(i18n("The password strength bar gives an indication of the security "
+        const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
                                                 "of the password you have entered.  To improve the strength of "
                                                 "the password, try:\n"
                                                 " - using a longer password;\n"
@@ -457,6 +482,19 @@ void KPasswordDialog::slotOk()
 	    return;
 	}
     }
+    if (d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) {
+	int retVal = KMessageBox::warningYesNo(this,
+		i18n(	"The password you have entered has a low strength. "
+			"To improve the strength of "
+			"the password, try:\n"
+			" - using a longer password;\n"
+			" - using a mixture of upper- and lower-case letters;\n"
+			" - using numbers or symbols as well as letters.\n"
+			"\n"
+			"Would you like to use this password anyway?"),
+		i18n("Low Password Strength"));
+	if (retVal == KMessageBox::No) return;
+    }
     if (!checkPassword(m_pEdit->password())) {
 	erase();
 	return;
@@ -523,12 +561,25 @@ void KPasswordDialog::enableOkBtn()
       const bool match = strcmp(m_pEdit->password(), m_pEdit2->password()) == 0
                    && (d->allowEmptyPasswords || m_pEdit->password()[0]);
 
-      enableButtonOK( match );
+      const QString pass(m_pEdit->password());
+
+      const int minPasswordLength = minimumPasswordLength();
+
+      if ((int) pass.length() < minPasswordLength) {
+          enableButtonOK(false);
+      } else {
+          enableButtonOK( match );
+      }
+
       if ( match && d->allowEmptyPasswords && m_pEdit->password()[0] == 0 ) {
           d->m_MatchLabel->setText( i18n("Password is empty") );
       } else {
-          d->m_MatchLabel->setText( match? i18n("Passwords match")
-                                          :i18n("Passwords do not match") );
+          if ((int) pass.length() < minPasswordLength) {
+              d->m_MatchLabel->setText(i18n("Password must be at least 1 character long", "Password must be at least %n characters long", minPasswordLength));
+          } else {
+              d->m_MatchLabel->setText( match? i18n("Passwords match")
+                                              :i18n("Passwords do not match") );
+          }
       }
 
       // Password strength calculator
@@ -537,20 +588,23 @@ void KPasswordDialog::enableOkBtn()
       // Original code triple-licensed under the MPL, GPL, and LGPL
       // so is license-compatible with this file
 
-      const QString pass(m_pEdit->password());
-      int pwlength = pass.length();
+      const int maxPasswordLength = maximumPasswordLength();
+      const double lengthFactor = (maxPasswordLength == -1 ? 1 : maxPasswordLength / 8.0);
+
+      
+      int pwlength = (int) (pass.length() / lengthFactor);
       if (pwlength > 5) pwlength = 5;
 
       const QRegExp numRxp("[0-9]", true, false);
-      int numeric = pass.contains(numRxp);
+      int numeric = (int) (pass.contains(numRxp) / lengthFactor);
       if (numeric > 3) numeric = 3;
 
       const QRegExp symbRxp("\\W", false, false);
-      int numsymbols = pass.contains(symbRxp);
+      int numsymbols = (int) (pass.contains(symbRxp) / lengthFactor);
       if (numsymbols > 3) numsymbols = 3;
 
       const QRegExp upperRxp("[A-Z]", true, false);
-      int upper = pass.contains(upperRxp);
+      int upper = (int) (pass.contains(upperRxp) / lengthFactor);
       if (upper > 3) upper = 3;
 
       int pwstrength=((pwlength*10)-20) + (numeric*10) + (numsymbols*15) + (upper*10);
@@ -577,5 +631,41 @@ void KPasswordDialog::setAllowEmptyPasswords(bool allowed) {
 bool KPasswordDialog::allowEmptyPasswords() const {
     return d->allowEmptyPasswords;
 }
+
+void KPasswordDialog::setMinimumPasswordLength(int minLength) {
+    d->minimumPasswordLength = minLength;
+    enableOkBtn();
+};
+
+int KPasswordDialog::minimumPasswordLength() const {
+    return d->minimumPasswordLength;
+};
+
+void KPasswordDialog::setMaximumPasswordLength(int maxLength) {
+
+    if (maxLength < 0) maxLength = 0;
+    if (maxLength >= KPasswordEdit::PassLen) maxLength = KPasswordEdit::PassLen - 1;
+
+    d->maximumPasswordLength = maxLength;
+
+    m_pEdit->setMaxPasswordLength(maxLength);
+    if (m_pEdit2) m_pEdit2->setMaxPasswordLength(maxLength);
+
+};
+
+int KPasswordDialog::maximumPasswordLength() const {
+    return d->maximumPasswordLength;
+};
+
+
+void KPasswordDialog::setPasswordStrengthWarningLevel(int warningLevel) {
+    if (warningLevel < 0) warningLevel = 0;
+    if (warningLevel > 99) warningLevel = 99;
+    d->passwordStrengthWarningLevel = warningLevel;
+};
+
+int KPasswordDialog::passwordStrengthWarningLevel() const {
+    return d->passwordStrengthWarningLevel;
+};
 
 #include "kpassdlg.moc"
