@@ -18,6 +18,16 @@
 ##   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 
+## IMPORTANT NOTE:
+## Please do not modify this file unless you expect your modifications to be
+## carried into every other module in the repository. If you decide that you
+## really want to modify it, contact coolo@kde.org mentioning that you have
+## and that the modified file should be committed to every module.
+##
+## Single-module modifications are best placed in configure.in for kdelibs
+## and kdebase and configure.in.1 for the rest. 
+
+
 ## ------------------------------------------------------------------------
 ## Find a file (or one of more files in a list of dirs)
 ## ------------------------------------------------------------------------
@@ -927,31 +937,6 @@ if eval "test \"`echo $ac_cv_lib_gif`\" = yes"; then
   AC_DEFINE_UNQUOTED(HAVE_LIBGIF)
 else
   AC_MSG_ERROR(You need giflib23. Please install the kdesupport package)
-fi
-])
-
-AC_DEFUN(AC_FIND_TIFF,
-   [AC_MSG_CHECKING([for libtiff])
-AC_CACHE_VAL(ac_cv_lib_tiff,
-[ac_save_LIBS="$LIBS"
-LIBS="$all_libraries -ltiff -lX11 $LIBSOCKET"
-AC_TRY_LINK(dnl
-[
-#include<tiff.h>
-],
-            [return (TIFFOpen( "", "r") == 0); ],
-            eval "ac_cv_lib_tiff=yes",
-            eval "ac_cv_lib_tiff=no")
-LIBS="$ac_save_LIBS"
-])dnl
-if eval "test \"`echo $ac_cv_lib_tiff`\" = yes"; then
-  AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED(HAVE_LIBTIFF)
-  LIBTIFF="$ac_cv_lib_tiff"
-  AC_SUBST(LIBTIFF)
-  AC_MSG_RESULT($ac_cv_lib_tiff)
-else
-  AC_MSG_RESULT(no)
 fi
 ])
 
