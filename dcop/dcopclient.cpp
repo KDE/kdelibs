@@ -175,8 +175,14 @@ public:
     Q_INT32 transactionId;
     int opcode;
 
+    // Special key values:
+    // 0 : Not specified
+    // 1 : DCOPSend
+    // 2 : Priority
+    // >= 42: Normal
     CARD32 key;
-    CARD32 currentKey;
+    CARD32 currentKey; 
+    CARD32 currentKeySaved;
 
     QTimer postMessageTimer;
     QPtrList<DCOPClientMessage> messages;
@@ -431,7 +437,7 @@ void DCOPClient::processPostedMessagesInternal()
         delete msg;
     }
     if ( !d->messages.isEmpty() )
-        d->postMessageTimer.start( 0, true );
+        d->postMessageTimer.start( 100, true );
 }
 
 /**
@@ -473,6 +479,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     d->senderId = fromApp;
     d->objId = objId;
     d->function = fun;
+
+// qWarning("DCOP: %s got call: %s:%s:%s key = %d currentKey = %d", d->appId.data(), app.data(), objId.data(), fun.data(), key, d->currentKey);
 
     if ( canPost && d->currentKey && key != d->currentKey ) {
         DCOPClientMessage* msg = new DCOPClientMessage;
@@ -1764,6 +1772,8 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     int datalen = ba.size() + data.size();
     pMsg->length += datalen;
 
+// qWarning("DCOP: %s made call %s:%s:%s key = %d", d->appId.data(), remApp.data(), remObjId.data(), remFun.data(), pMsg->key);
+
     IceSendData(d->iceConn, ba.size(), const_cast<char *>(ba.data()));
     IceSendData(d->iceConn, data.size(), const_cast<char *>(data.data()));
 
@@ -2092,6 +2102,28 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal
 {
     return disconnectDCOPSignal( sender, 0, signal, receiverObj, slot);
 }
+
+void
+DCOPClient::setPriorityCall(bool b)
+{
+    if (b)
+    {
+       if (d->currentKey == 2)
+          return;
+       d->currentKeySaved = d->currentKey;
+       d->currentKey = 2;
+    }
+    else
+    {
+       if (d->currentKey != 2)
+          return;
+       d->currentKey = d->currentKeySaved;
+       if ( !d->messages.isEmpty() )
+          d->postMessageTimer.start( 0, true ); // Process queued messages
+    }
+}
+
+
 
 void
 DCOPClient::emergencyClose()

@@ -188,6 +188,7 @@ KUniqueApplication::start()
 #endif
            return false;
         }
+        dc->setPriorityCall(true);
      }
 
      {
@@ -271,6 +272,7 @@ KUniqueApplication::start()
      KCmdLineArgs::saveAppArgs(ds);
      ds << new_asn_id;
 
+     dc->setPriorityCall(true);
      QCString replyType;
      if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
      {
@@ -278,6 +280,7 @@ KUniqueApplication::start()
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
+     dc->setPriorityCall(false);
      if (replyType != "int")
      {
         kdError() << "KUniqueApplication: DCOP communication error!" << endl;
@@ -382,6 +385,7 @@ KUniqueApplication::processDelayed()
      QByteArray replyData;
      QCString replyType;
      if (request->fun == "newInstance()") {
+       dcopClient()->setPriorityCall(false);
        QDataStream ds(request->data, IO_ReadOnly);
        KCmdLineArgs::loadAppArgs(ds);
        if( !ds.atEnd()) // backwards compatibility

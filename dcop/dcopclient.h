@@ -660,6 +660,13 @@ class DCOPClient : public QObject
   void setDaemonMode( bool daemonMode );
 
   /**
+   * @internal
+   *
+   * Switch to priority call mode.
+   */
+  void setPriorityCall(bool);
+
+  /**
    * Returns the application's main dcop client. The main client can
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
