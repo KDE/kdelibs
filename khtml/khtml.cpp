@@ -352,8 +352,8 @@ BrowserView* KHTMLWidget::getFrame( QString _name )
 	if( c->m_pBrowser->frameName() == _name) return c->m_pBrowser;
 	c = m_lstChildren.next();
     }
-    return 0;
 #endif
+    return 0;
 }
 
 
