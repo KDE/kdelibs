@@ -76,12 +76,12 @@ AddressBook::Iterator::~Iterator()
   delete d;
 }
 
-const Addressee &AddressBook::Iterator::operator*() const
+const Addressee AddressBook::Iterator::operator*() const
 {
   return *(d->mIt);
 }
 
-Addressee &AddressBook::Iterator::operator*()
+Addressee AddressBook::Iterator::operator*()
 {
   return *(d->mIt);
 }
@@ -144,7 +144,7 @@ AddressBook::ConstIterator::~ConstIterator()
   delete d;
 }
 
-const Addressee & AddressBook::ConstIterator::operator*() const
+const Addressee AddressBook::ConstIterator::operator*() const
 {
   return *(d->mIt);
 }

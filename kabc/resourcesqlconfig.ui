@@ -1,9 +1,6 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>ResourceSqlConfig</class>
-<include>klineedit.h</include>
-<include>kurlrequester.h</include>
-
-<widget class="QDialog">
+<widget class="ResourceConfigWidget">
     <property name="name">
         <cstring>ResourceSqlConfig</cstring>
     </property>
@@ -11,17 +8,14 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>262</width>
-            <height>241</height>
+            <width>285</width>
+            <height>167</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Resource SQL Configuration</string>
+        <string>Form2</string>
     </property>
-    <property name="sizeGripEnabled">
-        <bool>true</bool>
-    </property>
-    <vbox>
+    <hbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
@@ -31,30 +25,6 @@
         <property name="spacing">
             <number>6</number>
         </property>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>nameGroupBox</cstring>
-            </property>
-            <property name="title">
-                <string>Resource name</string>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>11</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
-                <widget class="KLineEdit">
-                    <property name="name">
-                        <cstring>resourceName</cstring>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
         <widget class="QGroupBox">
             <property name="name">
                 <cstring>dbGroupBox</cstring>
@@ -129,88 +99,12 @@
                 </widget>
             </grid>
         </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>Layout1</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
-                <spacer>
-                    <property name="name">
-                        <cstring>Horizontal Spacing2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonOk</cstring>
-                    </property>
-                    <property name="text">
-                        <string>OK</string>
-                    </property>
-                    <property name="accel">
-                        <number>0</number>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonCancel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Cancel</string>
-                    </property>
-                    <property name="accel">
-                        <number>0</number>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-    </vbox>
+    </hbox>
 </widget>
-<connections>
-    <connection>
-        <sender>buttonOk</sender>
-        <signal>clicked()</signal>
-        <receiver>ResourceSqlConfig</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>buttonCancel</sender>
-        <signal>clicked()</signal>
-        <receiver>ResourceSqlConfig</receiver>
-        <slot>reject()</slot>
-    </connection>
-</connections>
-<tabstops>
-    <tabstop>resourceName</tabstop>
-    <tabstop>user</tabstop>
-    <tabstop>password</tabstop>
-    <tabstop>dbName</tabstop>
-    <tabstop>host</tabstop>
-    <tabstop>buttonOk</tabstop>
-    <tabstop>buttonCancel</tabstop>
-</tabstops>
+<includes>
+    <include location="global" impldecl="in declaration">klocale.h</include>
+    <include location="global" impldecl="in declaration">klineedit.h</include>
+    <include location="local" impldecl="in declaration">resourceconfigwidget.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

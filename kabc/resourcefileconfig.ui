@@ -1,9 +1,7 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>ResourceFileConfig</class>
-<include>klineedit.h</include>
-<include>kurlrequester.h</include>
-
-<widget class="QDialog">
+<author>Tobias Koenig</author>
+<widget class="ResourceConfigWidget">
     <property name="name">
         <cstring>ResourceFileConfig</cstring>
     </property>
@@ -11,15 +9,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>205</width>
-            <height>169</height>
+            <width>245</width>
+            <height>115</height>
         </rect>
     </property>
     <property name="caption">
-        <string>File Resource Configuration</string>
-    </property>
-    <property name="sizeGripEnabled">
-        <bool>true</bool>
+        <string>Form1</string>
     </property>
     <vbox>
         <property name="name">
@@ -33,12 +28,12 @@
         </property>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>nameGroupBox</cstring>
+                <cstring>fileGroupBox</cstring>
             </property>
             <property name="title">
-                <string>Resource name</string>
+                <string>File Settings</string>
             </property>
-            <hbox>
+            <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
@@ -48,110 +43,57 @@
                 <property name="spacing">
                     <number>6</number>
                 </property>
-                <widget class="KLineEdit">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>resourceName</cstring>
+                        <cstring>Layout2</cstring>
                     </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>fileNameLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Location:</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>formatLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Format:</string>
+                            </property>
+                        </widget>
+                        <widget class="KComboBox" row="0" column="1">
+                            <property name="name">
+                                <cstring>formatBox</cstring>
+                            </property>
+                        </widget>
+                        <widget class="KURLRequester" row="1" column="1">
+                            <property name="name">
+                                <cstring>fileNameEdit</cstring>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
-            </hbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>locationGroupBox</cstring>
-            </property>
-            <property name="title">
-                <string>Location</string>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>11</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
-                <widget class="KURLRequester">
-                    <property name="name">
-                        <cstring>fileName</cstring>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>Layout1</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
-                <spacer>
-                    <property name="name">
-                        <cstring>Horizontal Spacing2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonOk</cstring>
-                    </property>
-                    <property name="text">
-                        <string>OK</string>
-                    </property>
-                    <property name="accel">
-                        <number>0</number>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonCancel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Cancel</string>
-                    </property>
-                    <property name="accel">
-                        <number>0</number>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-            </hbox>
+            </vbox>
         </widget>
     </vbox>
 </widget>
-<connections>
-    <connection>
-        <sender>buttonOk</sender>
-        <signal>clicked()</signal>
-        <receiver>ResourceFileConfig</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>buttonCancel</sender>
-        <signal>clicked()</signal>
-        <receiver>ResourceFileConfig</receiver>
-        <slot>reject()</slot>
-    </connection>
-</connections>
+<includes>
+    <include location="global" impldecl="in declaration">klocale.h</include>
+    <include location="global" impldecl="in declaration">kcombobox.h</include>
+    <include location="global" impldecl="in declaration">kurlrequester.h</include>
+    <include location="local" impldecl="in declaration">resourceconfigwidget.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

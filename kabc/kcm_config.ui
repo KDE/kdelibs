@@ -101,17 +101,6 @@
                                 <string>&amp;Edit</string>
                             </property>
                         </widget>
-                        <widget class="KPushButton">
-                            <property name="name">
-                                <cstring>standardButton</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Set &amp;Standard</string>
-                            </property>
-                        </widget>
                         <spacer>
                             <property name="name">
                                 <cstring>Spacer2</cstring>

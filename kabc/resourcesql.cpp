@@ -5,14 +5,21 @@
 #include <klineedit.h>
 
 #include "resourcesql.h"
+#include "resourcesqlconfigimpl.h"
 
 using namespace KABC;
 
-ResourceSql::ResourceSql( AddressBook *ab, const QString &user,
-	const QString &password, const QString &db, const QString &host ) :
-  Resource( ab ), mDb( 0 )
+extern "C"
 {
-    init( user, password, db, host );
+    ResourceConfigWidget *config_widget( QWidget *parent )
+    {
+	return new ResourceSqlConfigImpl( parent, "ResourceSqlConfigImpl" );
+    }
+
+    Resource *resource( AddressBook *ab, const KConfig *config )
+    {
+	return new ResourceSql( ab, config );
+    }
 }
 
 ResourceSql::ResourceSql( AddressBook *ab, const KConfig *config ) :
@@ -20,11 +27,18 @@ ResourceSql::ResourceSql( AddressBook *ab, const KConfig *config ) :
 {
     QString user, password, db, host;
 
-    user = config->readEntry( "DBUser" );
-    password = config->readEntry( "DBPassword " );
-    db = config->readEntry( "DBName" );
-    host = config->readEntry( "DBHost" );
+    user = config->readEntry( "SqlUser" );
+    password = config->readEntry( "SqlPassword " );
+    db = config->readEntry( "SqlName" );
+    host = config->readEntry( "SqlHost" );
 
+    init( user, password, db, host );
+}
+
+ResourceSql::ResourceSql( AddressBook *ab, const QString &user,
+	const QString &password, const QString &db, const QString &host ) :
+  Resource( ab ), mDb( 0 )
+{
     init( user, password, db, host );
 }
 

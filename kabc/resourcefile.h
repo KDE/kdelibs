@@ -19,8 +19,8 @@ class Format;
 class ResourceFile : public QObject, public Resource {
     Q_OBJECT
   public:
+    ResourceFile( AddressBook *, const KConfig * );
     ResourceFile( AddressBook *, const QString &filename, Format *format=0 );
-    ResourceFile( AddressBook *, const KConfig *, Format *format=0 );
     ~ResourceFile();
   
     bool open();

@@ -8,6 +8,8 @@ Resource::Resource( AddressBook *ab ) :
   mAddressBook( ab )
 {
     mAddressBook->addResource( this );
+	mReadOnly = true;
+	mFastResource = true;
 }
 
 Resource::~Resource()
@@ -48,3 +50,24 @@ QString Resource::identifier()
 {
     return "NoIdentifier";
 }
+
+void Resource::setReadOnly( bool value )
+{
+	mReadOnly = value;
+}
+
+bool Resource::readOnly()
+{
+	return mReadOnly;
+}
+
+void Resource::setFastResource( bool value )
+{
+	mFastResource = value;
+}
+
+bool Resource::fastResource()
+{
+	return mFastResource;
+}
+

@@ -2,39 +2,61 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <qtimer.h>
-#include <qregexp.h>
 #include <qfile.h>
+#include <qregexp.h>
+#include <qtimer.h>
 
 #include <kapplication.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 
-#include "vcardformat.h"
 #include "addressbook.h"
+#include "binaryformat.h"
+#include "vcardformat.h"
 
 #include "resourcefile.h"
+#include "resourcefileconfigimpl.h"
+
 #include "resourcefile.moc"
 
 using namespace KABC;
 
-ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config,
-                            Format *format ) :
-  Resource( addressBook )      
+extern "C"
 {
-	QString fileName = config->readEntry( "File" );
-	uint type = config->readNumEntry( "Type", RES_VCARD );
+    ResourceConfigWidget *config_widget( QWidget *parent )
+    {
+	return new ResourceFileConfigImpl( parent, "ResourceFileConfigImpl" );
+    }
 
-	if ( fileName.isEmpty() ) {
-	    switch ( type ) {
-		case RES_BINARY:
-		    fileName = locateLocal( "data", "kabc/std.bin" );
-		    break;
-		case RES_VCARD:
+    Resource *resource( AddressBook *ab, const KConfig *config )
+    {
+	return new ResourceFile( ab, config );
+    }
+}
+
+
+ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
+    : Resource( addressBook )      
+{
+	QString fileName = config->readEntry( "FileName" );
+	uint type = config->readNumEntry( "FileFormat", FORMAT_VCARD );
+
+	Format *format = 0;
+        switch ( type ) {
+	    case FORMAT_VCARD:
+		if ( fileName.isEmpty() )
 		    fileName = locateLocal( "data", "kabc/std.vcf" );
-		    break;
-	    }
+		format = new VCardFormat;
+		break;
+	    case FORMAT_BINARY:
+		if ( fileName.isEmpty() )
+		    fileName = locateLocal( "data", "kabc/std.bin" );
+		format = new BinaryFormat;
+		break;
+	    default:
+		kdDebug( 5700 ) << "ResourceFile: no valid format type." << endl;
 	}
 
 	init( fileName, format );

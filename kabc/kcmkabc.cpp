@@ -35,8 +35,8 @@
 #include "kcmkabc.h"
 
 #include "resource.h"
-#include "resourcefileconfig.h"
-#include "resourcesqlconfig.h"
+#include "resourceconfigdlg.h"
+#include "resourcefactory.h"
 
 class ConfigBoxItem : public QListBoxText
 {
@@ -44,7 +44,7 @@ public:
     ConfigBoxItem( const QString &text = QString::null );
 
     QString key;
-    uint type;
+    QString type;
 
     void setText( const QString &text);
 };
@@ -52,7 +52,7 @@ public:
 ConfigBoxItem::ConfigBoxItem( const QString &text )
     : QListBoxText( text )
 {
-    type = 0;
+    type = "";
 }
 
 void ConfigBoxItem::setText( const QString &text )
@@ -63,16 +63,23 @@ void ConfigBoxItem::setText( const QString &text )
 ConfigPageImpl::ConfigPageImpl( QWidget *parent, const char *name )
     : ConfigPage( parent, name )
 {
-    typeCombo->insertItem( i18n( "VCard" ), RES_VCARD );
-    typeCombo->insertItem( i18n( "Binary" ), RES_BINARY );
-    typeCombo->insertItem( i18n( "SQL-Database" ), RES_SQL );
+    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
+
+    types = factory->resources();
+
+    for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
+	KABC::ResourceInfo *info = factory->info( (*it) );
+	if ( !info )
+	    typeCombo->insertItem( "no name available" );
+	else
+	    typeCombo->insertItem( info->name );
+    }
 
     config = new KConfig( "kabcrc" );
 
     connect( addButton, SIGNAL(clicked()), this, SLOT(slotAdd()) );
     connect( removeButton, SIGNAL(clicked()), this, SLOT(slotRemove()) );
     connect( editButton, SIGNAL(clicked()), this, SLOT(slotEdit()) );
-    connect( standardButton, SIGNAL(clicked()), this, SLOT(slotStandard()) );
     connect( listBox, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
     load();
@@ -87,9 +94,9 @@ void ConfigPageImpl::load()
 
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config->setGroup( "Resource_" + (*it) );
-	ConfigBoxItem *item = new ConfigBoxItem( config->readEntry( "Name" ) );
+	ConfigBoxItem *item = new ConfigBoxItem( config->readEntry( "ResourceName" ) );
 	item->key = (*it);
-	item->type = config->readNumEntry( "Type" );
+	item->type = config->readEntry( "ResourceType" );
 
 	listBox->insertItem( item );
     }
@@ -133,55 +140,25 @@ void ConfigPageImpl::defaults()
 void ConfigPageImpl::slotAdd()
 {
     QString key = KApplication::randomString( 10 );
+    QString type = types[typeCombo->currentItem()];
 
     config->setGroup( "Resource_" + key );
 
-    uint type = typeCombo->currentItem();
-    switch ( typeCombo->currentItem() ) {
-	case RES_VCARD:
-	case RES_BINARY:
-	    {
-		ResourceFileConfig dlg;
+    ResourceConfigDlg dlg( this, type, config, "ResourceConfigDlg" );
 
-		if ( dlg.exec() ) {
-		    config->writeEntry( "File", dlg.fileName->url() );
-		    config->writeEntry( "Name", dlg.resourceName->text() );
-		    config->writeEntry( "Type", type );
+    if ( dlg.exec() ) {
+	config->writeEntry( "ResourceName", dlg.resourceName->text() );
+	config->writeEntry( "ResourceType", type );
+	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
+	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-		    ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() );
-		    item->key = key;
-		    item->type = type;
-		    listBox->insertItem( item );
-		    emit changed( true );
-		} else {
-		    config->deleteGroup( "Resource_" + key );
-		}
-	    }
-	    break;
-	case RES_SQL:
-	    {
-		ResourceSqlConfig dlg;
-
-		if ( dlg.exec() ) {
-		    config->writeEntry( "DBUser", dlg.user->text() );
-		    config->writeEntry( "DBPassword", dlg.password->text() );
-		    config->writeEntry( "DBName", dlg.dbName->text() );
-		    config->writeEntry( "DBHost", dlg.host->text() );
-		    config->writeEntry( "Name", dlg.resourceName->text() );
-		    config->writeEntry( "Type", type );
-
-		    ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() );
-		    item->key = key;
-		    item->type = type;
-		    listBox->insertItem( item );
-		    emit changed( true );
-		} else {
-		    config->deleteGroup( "Resource_" + key );
-		}
-	    }
-	    break;
-	default:
-	    kdDebug() << "Unknown resource, please register" << endl;
+	ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() );
+	item->key = key;
+	item->type = type;
+	listBox->insertItem( item );
+	emit changed( true );
+    } else {
+	config->deleteGroup( "Resource_" + key );
     }
 }
 
@@ -204,64 +181,25 @@ void ConfigPageImpl::slotEdit()
 	return;
 
     QString key = configItem->key;
-    uint type = configItem->type;
+    QString type = configItem->type;
 
     config->setGroup( "Resource_" + key );
 
-    switch ( type ) {
-	case RES_VCARD:
-	case RES_BINARY:
-	    {
-		ResourceFileConfig dlg;
+    ResourceConfigDlg dlg( this, type, config, "ResourceConfigDlg" );
 
-		dlg.resourceName->setURL( config->readEntry( "Name" ) );
-		dlg.fileName->setURL( config->readEntry( "File" ) );
-		if ( dlg.exec() ) {
-		    config->writeEntry( "File", dlg.fileName->url() );
-		    config->writeEntry( "Name", dlg.resourceName->text() );
-		    config->writeEntry( "Type", type );
+    dlg.resourceName->setText( config->readEntry( "ResourceName" ) );
+    dlg.resourceIsReadOnly->setChecked( config->readBoolEntry( "ResourceIsReadOnly" ) );
+    dlg.resourceIsFast->setChecked( config->readBoolEntry( "ResourceIsFast" ) );
 
-		    configItem->setText( dlg.resourceName->text() );
-		    emit changed( true );
-		}
-	    }
-	    break;
-	case RES_SQL:
-	    {
-		ResourceSqlConfig dlg;
+    if ( dlg.exec() ) {
+	config->writeEntry( "ResourceName", dlg.resourceName->text() );
+	config->writeEntry( "ResourceType", type );
+	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
+	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-		dlg.resourceName->setURL( config->readEntry( "Name" ) );
-		dlg.user->setText( config->readEntry( "DBUser" ) );
-		dlg.password->setText( config->readEntry( "DBPassword" ) );
-		dlg.dbName->setText( config->readEntry( "DBName" ) );
-		dlg.host->setText( config->readEntry( "DBHost" ) );
-
-		if ( dlg.exec() ) {
-		    config->writeEntry( "DBUser", dlg.user->text() );
-		    config->writeEntry( "DBPassword", dlg.password->text() );
-		    config->writeEntry( "DBName", dlg.dbName->text() );
-		    config->writeEntry( "DBHost", dlg.host->text() );
-		    config->writeEntry( "Name", dlg.resourceName->text() );
-		    config->writeEntry( "Type", type );
-
-		    configItem->setText( dlg.resourceName->text() );
-		    emit changed( true );
-		}
-	    }
-	    break;
-	default:
-	    kdDebug() << "Unknown resource, please register" << endl;
+	configItem->setText( dlg.resourceName->text() );
+	emit changed( true );
     }
-}
-
-void ConfigPageImpl::slotStandard()
-{
-    QListBoxItem *item = listBox->item( listBox->currentItem() );
-    listBox->setSelected( item, false );
-    listBox->takeItem( item );
-    listBox->insertItem( item, 0 );
-
-    emit changed( true );
 }
 
 void ConfigPageImpl::slotSelectionChanged()
@@ -270,7 +208,6 @@ void ConfigPageImpl::slotSelectionChanged()
 
     removeButton->setEnabled( state );
     editButton->setEnabled( state );
-    standardButton->setEnabled( state );
 }
 
 KCMkabc::KCMkabc( QWidget *parent, const char *name )

@@ -56,7 +56,6 @@ class StdAddressBook : public AddressBook
     
   private:
     static AddressBook *mSelf;
-    QString mName;
     QString mIdentifier;
 };
 

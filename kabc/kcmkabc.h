@@ -22,6 +22,7 @@
 
 #include <qcombobox.h>
 #include <qlistbox.h>
+#include <qstringlist.h>
 #include <qwidget.h>
 
 #include <kcmodule.h>
@@ -55,6 +56,7 @@ signals:
 
 private:
     KConfig *config;
+    QStringList types;
 };
 
 class KCMkabc : public KCModule

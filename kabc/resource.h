@@ -3,11 +3,6 @@
 
 #include "addressbook.h"
 
-#define RES_VCARD	0 // default
-#define RES_BINARY	1
-#define RES_SQL		2
-
-
 namespace KABC {
 
 /**
@@ -49,11 +44,19 @@ class Resource {
 
     virtual QString identifier();
 
+    virtual void setReadOnly( bool value );
+    virtual bool readOnly();
+
+    virtual void setFastResource( bool value );
+    virtual bool fastResource();
+
   protected:
     Ticket *createTicket( Resource * );
 
   private:
     AddressBook *mAddressBook;
+	bool mReadOnly;
+	bool mFastResource;
 };
 
 }

@@ -24,6 +24,9 @@
 
 #include "resource.h"
 
+#define FORMAT_VCARD	0
+#define FORMAT_BINARY	1
+
 namespace KABC {
 
 class AddressBook;

@@ -24,11 +24,7 @@
 #include <kdebug.h>
 
 #include "stdaddressbook.h"
-
-#include "binaryformat.h"
-#include "resourcefile.h"
-#include "resourcesql.h"
-#include "vcardformat.h"
+#include "resourcefactory.h"
 
 using namespace KABC;
 
@@ -36,75 +32,56 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
-  return locateLocal( "data", "kabc/std.vcf" );
+    return locateLocal( "data", "kabc/std.vcf" );
 }
 
 AddressBook *StdAddressBook::self()
 {
-  kdDebug(5700) << "StdAddressBook::self()" << endl;
+    kdDebug(5700) << "StdAddressBook::self()" << endl;
 
-  if ( !mSelf ) {
-    mSelf = new StdAddressBook;
-  }
-  return mSelf;
+    if ( !mSelf ) {
+	mSelf = new StdAddressBook;
+    }
+    return mSelf;
 }
 
 bool StdAddressBook::save()
 {
-  kdDebug(5700) << "StdAddressBook::save()" << endl;
-  Ticket *ticket = self()->requestSaveTicket();
-  if ( !ticket ) {
-    kdError() << "Can't save to standard addressbook. It's locked." << endl;
-    return false;
-  }
-  return self()->save( ticket );
+    kdDebug(5700) << "StdAddressBook::save()" << endl;
+    Ticket *ticket = self()->requestSaveTicket();
+    if ( !ticket ) {
+	kdError() << "Can't save to standard addressbook. It's locked." << endl;
+	return false;
+    }
+
+    return self()->save( ticket );
 }
 
 
 StdAddressBook::StdAddressBook()
 {
     KSimpleConfig config( "kabcrc", true );
+    ResourceFactory *factory = ResourceFactory::self();
     config.setGroup( "General" );
 
     QStringList keys = config.readListEntry( "ResourceKeys" );
     bool firstResource = true;
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config.setGroup( "Resource_" + (*it) );
-	uint type = config.readNumEntry( "Type" );
+	QString type = config.readEntry( "ResourceType" );
 
-	Resource *resource = 0;
+	Resource *resource = factory->resource( type, this, &config );
 
-	QString ident;
-	switch ( type ) {
-	    case RES_SQL:
-		resource = new ResourceSql( this, &config );
-		ident = ((ResourceSql*)resource)->identifier();
-		break;
-	    case RES_BINARY:
-		resource = new ResourceFile( this, &config, new BinaryFormat );
-		ident = ((ResourceFile*)resource)->identifier();
-		break;
-	    case RES_VCARD:
-	    default:
-		resource = new ResourceFile( this, &config, new VCardFormat );
-		ident = ((ResourceFile*)resource)->identifier();
-		break;
-	}
+	if ( !resource )
+	    continue;
 
-	if ( addResource( resource ) ) {
+	resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
+	resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
+
+	QString ident = resource->identifier();
+
+	if ( addResource( resource ) )
 	    mIdentifier += ident + ( firstResource ? "" : ":" );
-
-	    if ( firstResource ) {
-		firstResource = false;
-		mName = config.readEntry( "Name" );
-	    }
-	}
-    }
-
-    if ( keys.count() == 0 ) {
-	/* there is an empty config file, so we create a default resource */
-	addResource( new ResourceFile( this, &config, new VCardFormat ) );
-	mName = config.readEntry( "VCard-Default" );
     }
 
     load();
@@ -112,7 +89,7 @@ StdAddressBook::StdAddressBook()
 
 StdAddressBook::~StdAddressBook()
 {
-  save();
+    save();
 }
 
 QString StdAddressBook::identifier()
