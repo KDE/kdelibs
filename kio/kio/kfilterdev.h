@@ -39,10 +39,10 @@ public:
     /**
      * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.).
      * @param filter the KFilterBase to use
-     * @param autoDeleteFilterbase when true this object will become the
+     * @param autoDeleteFilterBase when true this object will become the
      * owner of @p filter.
      */
-    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false );
+    KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
     /**
      * Destructs the KFilterDev.
      * Calls close() if the filter device is still open.
