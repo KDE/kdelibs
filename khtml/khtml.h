@@ -59,16 +59,14 @@ class KJSWorld;
 
 
 /**
- * This class is meant for displaying html pages. It provides (will provide)
- * full HTML4 support, support for embedding Java applets, and will at some
- * point (hopefully before KDE-2.0 provide support for cascading style sheets
- * (CSS) and JavaScript.
+ * This class is khtml's main class. It features an almost complete
+ * web browser, and html renderer.
  *
  * The easiest way to use this class (if you just want to display a HTML
  * page at some URL) is the following:
  * <code>
  * QString url = "http://www.kde.org";
- * KHTMLWIdget *w = new KHTMLWidget);
+ * KHTMLWidget *w = new KHTMLWidget();
  * w->openURL(url);
  * w->resize(500, 400);
  * w->show();
@@ -103,6 +101,11 @@ class KJSWorld;
  * additional decoding step to convert the written data to Unicode.
  *
  * If you derive from KHTMLWidget you must overload the method @ref #createFrame
+ *
+ * @short HTML Browser Widget
+ * @author Lars Knoll (knoll@kde.org)
+ * @version $Id$
+ *
  */
 class KHTMLWidget : public QScrollView
 {
@@ -526,7 +529,7 @@ public:
      * @return the JavaScript engine, or 0 if JScript is disabled.
      */
     KJSWorld *jScript();
-     
+
     /**
      * Return the job id of the KIOJob responsible for loading the current
      * document (or 0 if none)
@@ -892,9 +895,14 @@ private:
  * including the Konqueror browser/file manager and the KDE Help
  * system.
  *
- * If you want to add to your application a widget that allows full web
- * browsing, you only need to use the @ref KTextBrowser widget in kdeui.
- * 
+ * This library provides (will provide)
+ * full HTML4 support, support for embedding Java applets, and will at some
+ * point (hopefully before KDE-2.0 provide support for cascading style sheets
+ * (CSS) and JavaScript.
+ *
+ * If you want to add to your application a widget that oly needs simple text
+ * browsing, you can also use the @ref KTextBrowser widget in kdeui.
+ *
  * @see KHTMLWidget, KTextBrowser
  */
 
