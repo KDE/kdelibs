@@ -259,14 +259,20 @@ KTabListBox::~KTabListBox()
   if (colList)
   {
     for (i=0; i<numColumns; i++)
+    {
       delete colList[i];
-    delete colList;
+      colList[i] = NULL;
+    }
+    delete[] colList;
   }
   if (itemList)
   {
     for (i=0; i<maxItems; i++)
+    {
       delete itemList[i];
-    delete itemList;
+      itemList[i] = NULL;
+    }
+    delete[] itemList;
   }
 }
 
