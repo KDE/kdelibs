@@ -53,7 +53,7 @@ class KApplicationPrivate;
 * Controls and provides information to all KDE applications.
 *
 * Only one object of this class can be instantiated in a single app.
-* This instance is always accessible via the @ref #kApplication() method.
+* This instance is always accessible via the @ref kApplication() method.
 *
 * This class provides the following services to all KDE applications.
 *
@@ -148,7 +148,7 @@ public:
    *  of the array @ref KApplication::argv().
    *
    * In this array, the arguments
-   *  handled by @ref KApplication itself (eg. '-icon') are already removed
+   *  handled by @ref KApplication itself (ex., '-icon') are already removed
    */
   int argc() const { return pArgc; }
 
@@ -186,7 +186,7 @@ public:
    * Disable session management for this application.
    *
    * Useful in case  your application is started by the
-   * inital "startkde" script.
+   * initial "startkde" script.
    */
   void disableSessionManagement();
 
@@ -257,7 +257,7 @@ public:
    *
    *   @param topWidget A top widget of the application.
    *
-   *  This means bascially applying the right window caption and
+   *  This means basically applying the right window caption and
    *  icon. An application may have several top widgets. You don't
    *  need to call this function manually when using @ref KTMainWindow.
    *
@@ -266,7 +266,7 @@ public:
   void setTopWidget( QWidget *topWidget );
 
   /**
-   * Invoke the khelpcenter HTML help viewer from docbook sources.
+   * Invoke the KHelpCenter HTML help viewer from docbook sources.
    *
    * @param anchor	This has to be a defined anchor in your
    *                    docbook sources. If empty the main index
@@ -427,7 +427,7 @@ public:
    * compliant if you set this to @p false.
    * @param modified If true, a 'modified' sign will be included in the
    * returned string. This is useful when indicating that a file is
-   * modified, i.e., contains data the has not been saved.
+   * modified, i.e., it contains data that has not been saved.
    */
   QString makeStdCaption( const QString &userCaption,
 			  bool withAppName=true, bool modified=false ) const;
@@ -442,7 +442,7 @@ public:
   QString tempSaveName( const QString& pFilename ) const;
 
   /**
-   * Check if there is an auto-save file for the document you want to
+   * Check whether  an auto-save file exists for the document you want to
    * open.
    *
    * @param pFilename The full path to the document you want to open.
@@ -461,7 +461,8 @@ public:
    * Enable style plugins.
    *
    * This is useful only to applications that normally
-   * do not display a GUI and create the @ref KApplication with @p allowStyles = @pfalse.
+   * do not display a GUI and create the @ref KApplication with 
+   *  @p allowStyles set to @tt false.
    */
   void enableStyles();
 
@@ -564,7 +565,7 @@ public:
 
   signals:
   /**
-   * KApplication has changed its Palette due to a KDisplay request.
+   * KApplication has changed its palette due to a KDisplay request.
    *
    * Normally, widgets will update their palettes automatically, but you
    * should connect to this to program special behaviour.
@@ -572,7 +573,7 @@ public:
   void kdisplayPaletteChanged();
 
   /**
-   * KApplication has changed its GUI Style due to a KDisplay request.
+   * KApplication has changed its GUI style in response to a @ref KDisplay request.
    *
    * Normally, widgets will update their styles automatically (as they would
    * respond to an explicit setGUIStyle() call), but you should connect to
@@ -581,7 +582,7 @@ public:
   void kdisplayStyleChanged();
 
   /**
-   * KApplication has changed its Font due to a KDisplay request.
+   * KApplication has changed its font in response to a @ref KDisplay request.
    *
    * Normally widgets will update their fonts automatically, but you should
    * connect to this to monitor global font changes, especially if you are
@@ -590,14 +591,14 @@ public:
   void kdisplayFontChanged();
 
   /**
-   * KApplication has changed either its GUI style, its font or its palette
-   * due to a kdisplay request. Normally, widgets will update their styles
+   * @ref KApplication has changed either its GUI style, its font or its palette
+   * in response to a kdisplay request. Normally, widgets will update their styles
    * automatically, but you should connect to this to program special
    * behavior. */
   void appearanceChanged();
 
   /**
-   * The desktop background has been changed by kcmdisplay.
+   * The desktop background has been changed by @tt kcmdisplay.
    *
    * @param desk The desktop whose background has changed.
    */
@@ -645,14 +646,15 @@ public:
      instance specific datas.
 
      Do not do any closing at this point! The user may still select
-     "cancel" and then he wants to continue working with your
-     application. Cleanups could be done after shutDown() (see below)
+     Cancel  wanting to continue working with your
+     application. Cleanups could be done after shutDown() (see 
+     the following).
 
   */
   void saveYourself();
 
-  /** Your application is killed. Either by your program itself, kwm's
-      killwindow function, xkill or (the usual case) by KDE's logout.
+  /** Your application is killed. Either by your program itself, 
+      @tt xkill or (the usual case) by KDE's logout.
 
       The signal is particularly useful if your application has to do some
       last-second cleanups. Note that no user interaction is possible at
@@ -733,6 +735,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.167  2000/06/21 20:23:09  molnarc
+//
+// bumbed date up to 20000621 since everyone gets to recompile anyway!
+//
 // Revision 1.166  2000/06/21 17:33:57  putzer
 //
 // - cleaned up some more cruft

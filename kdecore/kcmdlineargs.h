@@ -231,7 +231,7 @@ public:
    * You must make sure that all possible options have been added before
    * any class uses the command line arguments. 
    *
-   * @param options A list of options which your code supplies.
+   * @param options A list of options thath your code supplies.
    * @param id A name with which these options can be identified.
    * @param afterId The options are inserted after this set of options.
    *          
@@ -246,11 +246,11 @@ public:
    *    { 0, 0, 0}
    * }
    *
-   * @li "option1" is an option which requires an additional argument
-   * @li "option2" is an option which can be turned on. The default is off.
-   * @li "option3" is an option which can be turned off. The default is on.
+   * @li "option1" is an option that requires an additional argument
+   * @li "option2" is an option that can be turned on. The default is off.
+   * @li "option3" is an option that can be turned off. The default is on.
    * @li "o" does not have a description. It is an alias for the option
-   *     which follows. In this case "option2".
+   *     that follows. In this case "option2".
    * @li "+file" specifies an argument. The '+' is removed. If your program
    *     doesn't specify that it can use arguments your program will abort
    *     when an argument is passed to it.
@@ -283,8 +283,8 @@ public:
   /**
    * Access parsed arguments.
    *
-   * This function returns all command line arguments which your code
-   * handles. If unknown command line arguments are encountered the program
+   * This function returns all command line arguments that your code
+   * handles. If unknown command-line arguments are encountered the program
    * is aborted and usage information is shown. 
    *
    * @param id The name of the options you are interested in.
@@ -322,8 +322,8 @@ public:
   /**
    * Enable i18n to be able to print a translated error message.
    * 
-   * N.B.: This function leaks memory so you are expected to exit 
-   * afterwards, e.g. by calling usage().
+   * N.B.: This function leaks memory, therefore you are expected to exit 
+   * afterwards (e.g., by calling @ref usage()).
    **/
   static void enable_i18n();
 
@@ -358,7 +358,7 @@ public:
    *  @param option The name of the option without '-' or '-no'.
    *
    *  @return The value of the option. If the option was not
-   *          present on the cmdline the default is returned.
+   *          present on the command line the default is returned.
    *          If the option is listed as 'no<option>' the
    *          default is true.
    *          If the option is listed as '<option>' the
@@ -372,10 +372,10 @@ public:
   bool isSet(const char *option);
 
   /**
-   *  Read the number of arguments that aren't options (but
-   *  e.g. filenames).
+   *  Read the number of arguments that aren't options (but,
+   *  for example, filenames).
    *
-   *  @return the number of arguments that aren't options
+   *  @return The number of arguments that aren't options
    */
   int count();
   
@@ -385,7 +385,7 @@ public:
    *  @param n The argument to read. 0 is the first argument.
    *           @ref count()-1 is the last argument.
    *
-   *  @return a @p const @p char @p * pointer to the n'th argument.
+   *  @return A @tt const @tt char @tt * pointer to the n'th argument.
    */
   const char *arg(int n);
 
@@ -406,13 +406,13 @@ public:
 
   /**
    * Used by @ref url
-   * Made public for apps that don't use KCmdLineArgs
+   * Made public for apps that don't use @ref KCmdLineArgs
    * @param urlArgs the argument
    */
   static KURL makeURL( const char * urlArg );
 
   /**
-   * Made public for apps that don't use KCmdLineArgs
+   * Made public for apps that don't use @ref KCmdLineArgs
    * To be done before @ref makeURL, to set the current working
    * directory in case @ref makeURL needs it.
    */

@@ -26,12 +26,12 @@
 
 /** General description of this class:
  *
- * This class is @bf not a substitute for the QString class. What
+ * This class is @em not a substitute for the @ref QString class. What
  * I tried to do with this class is provide an easy way to
  * cut/slice/splice words inside sentences in whatever order desired.
  * While the main focus of this class are words (ie characters
- * separated by spaces/tabs), the two core functions here (@ref split
- * and @ref join) will function given any char to use as a separator.
+ * separated by spaces/tabs), the two core functions here (@ref split()
+ * and @ref join() ) will function given any char to use as a separator.
  * This will make it easy to redefine what a 'word' means in the
  * future if needed.
  *
@@ -61,8 +61,7 @@
  * and so forth.
  *
  * @short Class for manipulating words and sentences in strings
- * @author Ian Zepp
- * @email icszepp@islc.net
+ * @author Ian Zepp <icszepp@islc.net>
  */
 class KStringHandler
 {

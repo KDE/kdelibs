@@ -67,7 +67,7 @@ struct KKeyEntry {
  *
  * For example, "Ctrl+P" could be a shortcut for printing a document. The key
  * codes are listed in ckey.h. "Print" could be the action name for printing.
- * The action name indentifies the key binding in configuration files and the
+ * The action name identifies the key binding in configuration files and the
  * @ref KKeyChooser GUI.
  *
  * When pressed, an accelerator key calls the slot to which it has been
@@ -83,14 +83,14 @@ struct KKeyEntry {
  * standard accelerators.
  *
  * The standard accelerators appear repeatedly in applications for
- * standard document actions like printing and saving. Convenience methods are
+ * standard document actions such as printing and saving. Convenience methods are
  * available to insert and connect these accelerators which are configurable on
  * a desktop-wide basis.
  *
  * It is possible for a user to choose to have no key associated with
  * an action.
  *
- * The translated first argument for @ref insertItem() is only used
+ * The translated first argument for @ref insertItem() is used only
  * in the configuration dialog.
  *<pre>
  * KAccel *a = new KAccel( myWindow );
@@ -131,7 +131,7 @@ struct KKeyEntry {
  * </pre>
  *
  * Please keep the order right:  First insert all functions in the
- * acceleratior, then call a -> @ref readSettings() and @em then_build your
+ * acceleratior, then call a -> @ref readSettings() and @em then build your
  * menu structure.
  *
  * @short Configurable key binding support.
@@ -170,7 +170,7 @@ class KAccel : public QAccel
 
     
 	/**
-	 * Same as @ref connectItem() from above, but for standard
+	 * Same as the preceding @ref connectItem(), but used for standard
 	 * accelerators.
 	 *
 	 * If the standard accelerator was not inserted so far, it
@@ -187,7 +187,7 @@ class KAccel : public QAccel
 	
 	/**
 	* Retrieve the key code of the accelerator item with the action name
-	* action, or zero if either the action name cannot be
+	* @p action, or zero if either the action name cannot be
 	* found or the current key is set to no key.
 	*/
 	int currentKey( const QString& action ) const;
@@ -254,8 +254,8 @@ class KAccel : public QAccel
 	 *  @param defaultKeyCode A key code to be used as the default
 	 *  for the action.  Set it to 0 for no default key (It still
 	 *  may be configured later.)
-	 *  @param id Menu index of menu item associated with this action.
-	 *  @param qmenu Menu containing item associated with this action.
+	 *  @param id Menu index of menu items associated with this action.
+	 *  @param qmenu Menu containing items associated with this action.
 	 *  @param configurable Indicates whether a user can configure
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
@@ -279,8 +279,8 @@ class KAccel : public QAccel
 	 *  is supposed to be the same for all languages.
 	 *  @param defaultKeyCode A key plus a combination of Shift, Ctrl
 	 *	and Alt to be used as the default for the action.
-	 *  @param id Menu index of menu item associated with this action.
-	 *  @param qmenu Menu containing item associated with this action.
+	 *  @param id Menu index of menu items associated with this action.
+	 *  @param qmenu Menu containing items associated with this action.
 	 *  @param configurable Indicates whether a user can configure
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
@@ -320,9 +320,9 @@ class KAccel : public QAccel
 	 *
 	 * If an action already exists the old association and connections
 	 * will be removed.
-	 * param id One of the following: Open,
-	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
+	 * param id One of the following: @tt Open,
+	 *	@tt New, @tt Close, @tt Save, @tt Print, @tt Quit, @tt Cut, @tt Copy, @tt Paste, @tt Undo, @tt Redo,
+	 *	@tt Find, @tt Replace, @tt Insert, @tt Home, @tt End, @tt Prior, @tt Next, or @ttHelp.
 	 * param descr You can optionally also assign a description to
 	 * the standard item which may be used a in a popup menu.
 	 */
@@ -335,7 +335,7 @@ class KAccel : public QAccel
 	 * function name for the user.
 	 *
 	 * This is useful if the accelerator
-	 * is only used internally, without appearing in a menu or a
+	 * is used internally only, without appearing in a menu or a
 	 * keybinding editor.
 	 */
 	bool insertItem( const QString& action, int defaultKeyCode,
@@ -431,7 +431,7 @@ class KAccel : public QAccel
 	void setConfigGlobal( bool global );
 	/**
 	 * Will KAccel write to the global configuration file (instead of
-	 *  the appliation configuration file)?
+	 *  the application configuration file)?
 	 **/
 	bool configGlobal() const;
 	
@@ -482,15 +482,14 @@ class KAccel : public QAccel
 	
 	/**
 	 * Retrieve the key code corresponding to the string @p sKey or
-	 * zero if the string
-	 * is not recognized.
+	 * zero if the string is not recognized.
 	 *
 	 * The string must be something like "Shift+A",
 	 * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
 	 * must consist of a key name plus a combination of
 	 * the modifiers Shift, Ctrl and Alt.
 	 *
-	 * N.B.: @p sKey must @bf not be @ref i18n()'d!
+	 * N.B.: @p sKey must @em not be @ref i18n()'d!
 	 */	
 	static int stringToKey( const QString& sKey );
 	

@@ -42,7 +42,7 @@ class QStringList;
  * </pre>
  * would result in a decoded path "/cgi-bin/test me.pl"
  * and in the encoded query "?cmd=Hello%20you".
- * Since path is internally always encoded you may @bf not use
+ * Since path is internally always encoded you may @em not use
  * "%00" in the path, although this is OK for the query.
  *
  *  @author  Torben Weis <weis@kde.org>
@@ -166,7 +166,7 @@ public:
   void setPort( unsigned short int _p );
 
   /**
-   * @return The current decoded path. This does @bf not include the query.
+   * @return The current decoded path. This does @em not include the query.
    *
    */
   QString path() const  { return m_strPath; }
@@ -236,7 +236,7 @@ public:
   QString query() const { return m_strQuery_encoded; }
 
   /**
-   * The reference is @bf never decoded automatically.
+   * The reference is @em never decoded automatically.
    */
   QString ref() const { return m_strRef_encoded; }
 
@@ -265,7 +265,7 @@ public:
   /**
    * Set the HTML-style reference.
    *
-   * @param _ref This is considered to be @bf not encoded in contrast to @ref setRef()
+   * @param _ref This is considered to be @em not encoded in contrast to @ref setRef()
    *
    * @see htmlRef()
    */
@@ -279,7 +279,7 @@ public:
   bool hasHTMLRef() const;
 
   /**
-   * @return @p true if the URL is malformed. This function does @bf not test
+   * @return @p true if the URL is malformed. This function does @em not test
    *         whether sub URLs are well-formed, too.
    */
   bool isMalformed() const  { return m_bIsMalformed; }
@@ -295,7 +295,7 @@ public:
    *         Use @ref split() to get the sub URLs.
    *
    * The function tests whether the protocol is a filter protocol and whether
-   * the reference is not empty. For performance reasons it does @bf not test
+   * the reference is not empty. For performance reasons it does @em not test
    * whether the reference is in turn a well-formed URL.
    *
    * @see isFilterProtocol()

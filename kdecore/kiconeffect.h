@@ -42,13 +42,13 @@ public:
 
     /** 
      * Returns a fingerprint for the effect selected by 
-     * [@em group, @em state]. This is usefull for caching.
+     * [@p group, @p state]. This is usefull for caching.
      */ 
      QString fingerprint(int group, int state);
 
     /**
      * Apply an effect to an image. The effect to apply depends on the
-     * @em group and @em state parameters, and is configured by the user.
+     * @p group and @p state parameters, and is configured by the user.
      * @param src The image.
      * @param group The group for the icon.
      * @param state The icon's state.
@@ -60,7 +60,7 @@ public:
      * Apply an effect to an image.
      * @param src The image.
      * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
-     * @param value Strength of the effect. 0 <= @em value <= 1.
+     * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.                             
      * @return An image with the effect applied.

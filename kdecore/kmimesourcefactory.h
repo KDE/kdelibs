@@ -57,11 +57,11 @@ public:
    * This function is maps an absolute or relative name for a resource to 
    * the absolute one.
    *
-   * To load an icon, prepend the @em category name before the @em icon name, in the style
+   * To load an icon, prepend the @tt category name before the @tt icon name, in the style
    * of <category>|<icon>.
    *
    * Example:
-   * <pre>"<img src=\"user|ksysv_start\"/>", "<img src="\desktop|trash\">", ...
+   * <pre> "<img src=\"user|ksysv_start\"/>", "<img src="\desktop|trash\">", ...
    * </pre>
    *
    * @param abs_or_rel_name is the absolute or relative pathname.

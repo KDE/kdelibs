@@ -63,11 +63,11 @@ class KProcessPrivate;
  *When the child process exits, the KProcess instance
  *corresponding to it emits the Qt signal @ref processExited().
  *
- *Since this signal is @bf not emitted from within a UN*X
+ *Since this signal is @em not emitted from within a UN*X
  *signal handler, arbitrary function calls can be made.
  *
  *@li  KProcess::Block -- The child process starts and the parent process
- *is suspended until the child process exits. (@bf Really not recommended
+ *is suspended until the child process exits. (@em Really not recommended
  *for programs with a GUI.)
  *
  *KProcess also provides several functions for determining the exit status

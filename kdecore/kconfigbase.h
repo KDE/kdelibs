@@ -48,7 +48,7 @@ class KConfigBasePrivate;
  *
  * All configuration entries are key, value pairs.  Each entry also
  * belongs to a specific group of related entries.  All configuration
- * entries which do not explicitly specify which group they are in are
+ * entries that do not explicitly specify which group they are in are
  * in a special group called the default group.
  *
  * If there is a $ character in an entry, @ref KConfigBase tries to expand
@@ -83,7 +83,7 @@ public:
    * Specify the group in which keys will be searched.
    *
    *  Subsequent
-   * calls to @ref readEntry() will only look for keys in the currently
+   * calls to @ref readEntry() will look only for keys in the currently
    * activated group.
    *
    * Switch back to the default group by passing an empty string.
@@ -109,7 +109,7 @@ public:
    * Returns @p true if the specified group is known about.
    *
    * @param _pGroup The group to search for.
-   * @returns Whether or not the group exists.
+   * @returns Whether the group exists.
    */
   virtual bool hasGroup(const QString &_pGroup) const = 0;
 
@@ -142,7 +142,7 @@ public:
    * Read the value of an entry specified by @p aKey in the current group.
    * The value is treated as if it is of the given type.
    *
-   * @return An empty property on error.
+   * @return An empty property or error.
    */
   QVariant readPropertyEntry( const QString& aKey, QVariant::Type ) const;
 
@@ -363,7 +363,7 @@ public:
                       bool bNLS = false );
 
   /**
-   * @ref writeEntry() overridden to accept a property.
+   * @ref writeEntry() Overridden to accept a property.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -645,13 +645,13 @@ public:
 
   /**
    * Write the key value pair.
-   * Same as above, but write a data & time.
+   * Same as above, but write a date and time.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
-   * _not_ returned here!
+   * @em not returned here!
    *
    * @param pKey The key to write.
-   * @param rValue The date & time value to write.
+   * @param rValue The date and time value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
    * flag will not be set and thus the entry will not be written to
    * disk at deletion time.
@@ -751,11 +751,11 @@ public:
    * @ref writeEntry() again, the global dirty flag is set again and all
    * dirty entries will be written at a subsequent @ref sync() call.
    *
-   * Classes which derive from @ref KConfigObject should override this
+   * Classes that derive from @ref KConfigObject should override this
    * method and implement storage-specific behaviour, as well as
    * calling the @ref KConfigBase::rollback() explicitly in the initializer.
    *
-   * @param bDeep if true, the dirty flags of all entries are cleared,
+   * @param bDeep If @tt true, the dirty flags of all entries are cleared,
    *        as well as the global dirty flag.
    */
   virtual void rollback( bool bDeep = true );
@@ -763,7 +763,7 @@ public:
   /**
    * Flush all changes that currently reside only in memory
    * back to disk / permanent storage. Dirty configuration entries are
-   * written to the the most specific file available.
+   * written to the most specific file available.
    *
    * Asks the back end to flush out all pending writes, and then calls
    * @ref rollback().  No changes are made if the object has @p readOnly
@@ -797,8 +797,8 @@ public:
    bool isReadOnly() const { return bReadOnly; }
 
   /**
-   * Check if the key has an entry in the currently active group.
-   * Use this to determine if a key is not specified for the current
+   * Check whether the key has an entry in the currently active group.
+   * Use this to determine whether a key is not specified for the current
    * group (hasKey() returns false). Keys with null data are considered
    * nonexistent.
    *
@@ -821,7 +821,7 @@ public:
 
   /**
    * Reparses all configuration files. This is useful for programs
-   * which use standalone graphical configuration tools. The base
+   * that use standalone graphical configuration tools. The base
    * method implemented here only clears the group list and then
    * appends the default group.
    *
@@ -857,15 +857,15 @@ public:
 protected:
   /**
    * Read the locale and put in the configuration data struct.
-   * Note: This should be done in the constructor, but this is not
-   * possible due to some mutual dependencies in KApplication::init()
+   * Note that this should be done in the constructor, but this is not
+   * possible due to some mutual dependencies in @ref KApplication::init()
    */
   void setLocale();
 
   /**
    * Sets the global dirty flag of the config object
    *
-   * @param _bDirty how to mark the object's dirty status
+   * @param _bDirty How to mark the object's dirty status
    */
   void setDirty(bool _bDirty = true) { bDirty = _bDirty; }
 
@@ -887,7 +887,7 @@ protected:
    * Do not use this function, the implementation / return type are
    * subject to change.
    *
-   * @param pGroup the group to provide a KEntryMap for.
+   * @param pGroup The group to provide a KEntryMap for.
    * @return The map of the entries in the group.
    * @internal
    */
@@ -899,8 +899,10 @@ protected:
    * Do not use this function, the implementation / return type are
    * subject to change.
    *
-   * @return a map of the entries in the tree.
+   * @return A map of the entries in the tree.
+   *
    * @internal
+   *
    */
   virtual KEntryMap internalEntryMap() const = 0;
 
@@ -925,12 +927,12 @@ protected:
    * Classes that derive from KConfigBase will need to implement this
    * method in a storage-specific manner.
    *
-   * Do not use this function, the implementation / return type are
+   * Do not use this function, the implementation and return type are
    * subject to change.
    *
    * @param _key The key to look up  It contains information both on
    *        the group of the key and the entry's key itself.
-   * @return the KEntry value (data) found for the key.  KEntry.aValue
+   * @return The @ref KEntry value (data) found for the key.  @tt KEntry.aValue
    * will be the null string if nothing was located.
    * @internal
    */
@@ -947,7 +949,7 @@ private:
   QString aGroup;
 
   /**
-   * the locale to retrieve keys under if possible, i.e en_US or fr.  */
+   * The locale to retrieve keys under if possible, i.e en_US or fr.  */
   QString aLocaleString;
 
   /**
@@ -972,10 +974,11 @@ inline void KConfigBase::rollback( bool /*bDeep = true*/ )
 class KConfigGroupSaverPrivate;
 
 /**
-  * Helper class to facilitate working with KConfig/KSimpleConfig groups.
+  * Helper class to facilitate working with @ref KConfig / @ref KSimpleConfig
+  * groups.
   *
   * Careful programmers always set the group of a
-  * KConfig/KSimpleConfig object to the group they want to read from
+  * @ref KConfig @ref KSimpleConfig object to the group they want to read from
   * and set it back to the old one of afterwards. This is usually
   * written as:
   * <pre>

@@ -45,7 +45,7 @@ public:
    KShared() : count(0) { }
 
    /**
-    * Copy constructor.  This will @bf not actually copy the objects
+    * Copy constructor.  This will @em not actually copy the objects
     * but it will initialize the reference count on this object to 0
     */
    KShared( const KShared & ) : count(0) { }

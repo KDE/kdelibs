@@ -45,7 +45,7 @@ class KRegExpPrivate;
  *  Weis
  * </pre>
  *
- * Please notice that @ref KRegExp does @bf not support unicode.
+ * Please notice that @ref KRegExp does @em not support unicode.
  *
  * @author Torben Weis <weis@kde.org>
  * @version $Id$
@@ -85,7 +85,7 @@ public:
 
   /**
    * @return a grouped substring. A substring may be empty.
-   *         In this case 0 is returned. Otherwise you may @bf not
+   *         In this case 0 is returned. Otherwise you may @em not
    *         delete or modify the returned value. In addition the
    *         returned value becomes invalid after the @ref KRegExp instance
    *         is deleted or after @ref @match() was called again.

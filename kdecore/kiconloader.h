@@ -79,7 +79,7 @@ public:
     ~KIconLoader();
 
     /**
-     * Add @em appname to the list of application specific directories.
+     * Add @p appname to the list of application specific directories.
      * @param appname The application name.
      */
     void addAppDir(const QString& appname);
@@ -89,14 +89,14 @@ public:
      * suitable. If no exact match is found, a close match is searched.
      * If neither an exact nor a close match is found, a null pixmap or
      * the "unknown" pixmap is returned, depending on the value of the
-     * @em canReturnNull parameter.
+     * @p canReturnNull parameter.
      *
      * @param name The name of the icon, without extension.
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
-     * @param size If nonzero, this overrides the size specified by @em group.
-     * @param state The icon state: @em DefaultState, @em ActiveState or
-     * @em DisabledState. Depending on the user's preferences, the iconloader
+     * @param size If nonzero, this overrides the size specified by @p group.
+     * @param state The icon state: @tt DefaultState, @tt ActiveState or
+     * @tt DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
@@ -110,8 +110,8 @@ public:
      * Returns the path of an icon.
      * @param name The name of the icon, without extension.
      * @param group_or_size If positive, search icons whose size is
-     * specified by the icon group @em group_or_size. If negative, search
-     * icons whose size is - @em group_or_size.
+     * specified by the icon group @p group_or_size. If negative, search
+     * icons whose size is - @p group_or_size.
      * @param canReturnNull Can return a null pixamp?
      */
     QString iconPath(const QString& name, int group_or_size,
@@ -121,8 +121,8 @@ public:
      * Load an animated icon. In the future, this will be replaced by a
      * routine which loads an MNG animation and returns a QMovie.
      * @param name The name of the icon.
-     * @param group The icon group. See @ref #loadIcon.
-     * @param size Override the default size for @em group.
+     * @param group The icon group. See @ref loadIcon().
+     * @param size Override the default size for @p group.
      * @return A QStringList containing the absolute path of all the frames
      * making up the animation.
      */
