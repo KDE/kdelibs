@@ -3282,6 +3282,8 @@ bool HTTPProtocol::readBody( bool dataInternal )
   bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
   m_bufEncodedData.resize(0);
+  struct timeval last_tv;
+  gettimeofday( &last_tv, 0L );
 
   while (!m_bEOF)
   {
@@ -3382,13 +3384,33 @@ bool HTTPProtocol::readBody( bool dataInternal )
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
 
         sz += bytesReceived;
-        if ( !dataInternal )
-          processedSize( sz );
-        time_t t = time( 0L );
-        if ( t - t_last >= 1 && !dataInternal )
+        if (!dataInternal)
         {
-          speed( (sz - m_request.offset) / ( t - t_start ) );
-          t_last = t;
+            struct timeval tv;
+            if ( gettimeofday( &tv, 0L ) == 0 )
+            {
+                // Compute difference, in ms
+                int msecdiff = 1000 * ( tv.tv_sec - last_tv.tv_sec );
+                int usecdiff = tv.tv_usec - last_tv.tv_usec;
+                if ( usecdiff < 0 ) {
+                    msecdiff--;
+                    msecdiff += 1000;
+                }
+                msecdiff += usecdiff / 1000;
+
+                if ( msecdiff >= 200 ) // emit size 5 times a second
+                {
+                  processedSize( sz );
+                  last_tv = tv;
+                }
+            }
+
+            time_t t = time(0L);
+            if ( t - t_last >= 1 ) // emit speed every second
+            {
+              speed( (sz - m_request.offset) / ( t - t_start ) );
+              t_last = t;
+            }
         }
       }
       else
