@@ -32,7 +32,7 @@
 namespace VCARD
 {
 
-class OrgValue : public Value
+class KVCARD_EXPORT OrgValue : public Value
 {
 	
 #include "OrgValue-generated.h"

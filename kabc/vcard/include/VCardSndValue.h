@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class SndValue : public Value
+class KVCARD_EXPORT SndValue : public Value
 {
 #include "SndValue-generated.h"
 };

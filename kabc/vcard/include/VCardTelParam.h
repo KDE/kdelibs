@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class TelParam : public Param
+class KVCARD_EXPORT TelParam : public Param
 {
 #include "TelParam-generated.h"
 	

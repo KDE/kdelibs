@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class TelValue : public Value
+class KVCARD_EXPORT TelValue : public Value
 {
 	
 #include "TelValue-generated.h"

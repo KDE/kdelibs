@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class TextValue : public Value
+class KVCARD_EXPORT TextValue : public Value
 {
 #include "TextValue-generated.h"
 

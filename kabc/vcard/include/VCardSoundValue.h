@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class SoundValue : public Value
+class KVCARD_EXPORT SoundValue : public Value
 {
 	
 #include "SoundValue-generated.h"

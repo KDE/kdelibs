@@ -39,8 +39,8 @@ class Addressee;
  */
 class KABC_EXPORT Agent
 {
-  friend QDataStream &operator<<( QDataStream &, const Agent & );
-  friend QDataStream &operator>>( QDataStream &, Agent & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Agent & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Agent & );
 
 public:
 

@@ -32,7 +32,7 @@
 namespace VCARD
 {
 
-class LangValue : public Value
+class KVCARD_EXPORT LangValue : public Value
 {
 #include "LangValue-generated.h"
 	

@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class TextBinValue : public Value
+class KVCARD_EXPORT TextBinValue : public Value
 {
 	
 #include "TextBinValue-generated.h"

@@ -32,7 +32,7 @@
 namespace VCARD
 {
 
-class Param : public Entity
+class KVCARD_EXPORT Param : public Entity
 {
 
 #include "Param-generated.h"

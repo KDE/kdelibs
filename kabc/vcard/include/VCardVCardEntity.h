@@ -37,7 +37,7 @@ namespace VCARD
 typedef QPtrList<VCard> VCardList;
 typedef QPtrListIterator<VCard> VCardListIterator;
 
-class VCardEntity : public Entity
+class KVCARD_EXPORT VCardEntity : public Entity
 {
 
 #include "VCardEntity-generated.h"

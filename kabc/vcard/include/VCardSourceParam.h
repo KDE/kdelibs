@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class SourceParam : public Param
+class KVCARD_EXPORT SourceParam : public Param
 {
 
 #include "SourceParam-generated.h"

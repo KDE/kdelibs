@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class ImageValue : public Value
+class KVCARD_EXPORT ImageValue : public Value
 {
 	
 #include "ImageValue-generated.h"

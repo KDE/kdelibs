@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class DateParam : public Param
+class KVCARD_EXPORT DateParam : public Param
 {
 	
 #include "DateParam-generated.h"

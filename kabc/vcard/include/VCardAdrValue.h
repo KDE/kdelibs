@@ -30,7 +30,7 @@
 namespace VCARD
 {
 
-class AdrValue : public Value
+class KVCARD_EXPORT AdrValue : public Value
 {
 	
 #include "AdrValue-generated.h"

@@ -27,10 +27,12 @@
 
 #include <qstrlist.h>
 
+#include <kdelibs_export.h>
+
 namespace VCARD
 {
 
-Q_UINT32 RTokenise(const char * str, const char * delim, QStrList & l);
+KVCARD_EXPORT Q_UINT32 RTokenise(const char * str, const char * delim, QStrList & l);
 
 }
 

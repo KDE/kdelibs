@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class UTCValue : public Value
+class KVCARD_EXPORT UTCValue : public Value
 {
 	
 #include "UTCValue-generated.h"

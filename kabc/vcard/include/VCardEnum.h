@@ -26,6 +26,8 @@
 
 #include <qcstring.h>
 
+#include <kdelibs_export.h>
+
 namespace VCARD
 {
 
@@ -106,13 +108,13 @@ enum ParamType {
 
 extern const ParamType paramTypesTable[];
 
-ParamType EntityTypeToParamType(EntityType);
-ValueType EntityTypeToValueType(EntityType);
-QCString EntityTypeToParamName(EntityType);
-EntityType EntityNameToEntityType(const QCString &);
+KVCARD_EXPORT ParamType EntityTypeToParamType(EntityType);
+KVCARD_EXPORT ValueType EntityTypeToValueType(EntityType);
+KVCARD_EXPORT QCString EntityTypeToParamName(EntityType);
+KVCARD_EXPORT EntityType EntityNameToEntityType(const QCString &);
 
-char * encodeBase64(const char *, unsigned long, unsigned long &);
-char * decodeBase64(const char *, unsigned long, unsigned long &);
+KVCARD_EXPORT char * encodeBase64(const char *, unsigned long, unsigned long &);
+KVCARD_EXPORT char * decodeBase64(const char *, unsigned long, unsigned long &);
 
 }
 

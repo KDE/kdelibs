@@ -32,7 +32,7 @@
 namespace VCARD
 {
 
-class DateValue : public Value
+class KVCARD_EXPORT DateValue : public Value
 {
 #include "DateValue-generated.h"
 	

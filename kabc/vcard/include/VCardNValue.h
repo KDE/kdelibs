@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class NValue : public Value
+class KVCARD_EXPORT NValue : public Value
 {
 #include "NValue-generated.h"
 	NValue *clone();

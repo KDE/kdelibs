@@ -26,7 +26,7 @@
 namespace VCARD
 {
 
-class GeoValue : public Value
+class KVCARD_EXPORT GeoValue : public Value
 {
 	
 #include "GeoValue-generated.h"

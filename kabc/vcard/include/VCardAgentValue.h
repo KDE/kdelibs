@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class AgentValue : public Value
+class KVCARD_EXPORT AgentValue : public Value
 {
 	
 #include "AgentValue-generated.h"

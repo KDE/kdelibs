@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class Group : public Entity
+class KVCARD_EXPORT Group : public Entity
 {
 #include "Group-generated.h"
 };

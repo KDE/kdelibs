@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class PhoneNumberValue : public Value
+class KVCARD_EXPORT PhoneNumberValue : public Value
 {
 #include "PhoneNumberValue-generated.h"
 };

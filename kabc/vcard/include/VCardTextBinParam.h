@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class TextBinParam : public Param
+class KVCARD_EXPORT TextBinParam : public Param
 {
 	
 #include "TextBinParam-generated.h"

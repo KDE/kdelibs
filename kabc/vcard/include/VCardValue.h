@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class Value : public Entity
+class KVCARD_EXPORT Value : public Entity
 {
 #include "Value-generated.h"
 

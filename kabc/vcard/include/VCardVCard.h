@@ -34,7 +34,7 @@
 namespace VCARD
 {
 
-class VCard : public Entity
+class KVCARD_EXPORT VCard : public Entity
 {
 
 #include "VCard-generated.h"

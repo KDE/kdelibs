@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class FloatValue : public Value
+class KVCARD_EXPORT FloatValue : public Value
 {
 	
 #include "FloatValue-generated.h"

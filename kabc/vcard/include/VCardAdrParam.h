@@ -32,7 +32,7 @@
 namespace VCARD
 {
 	
-class AdrParam : public Param
+class KVCARD_EXPORT AdrParam : public Param
 {
 
 #include "AdrParam-generated.h"

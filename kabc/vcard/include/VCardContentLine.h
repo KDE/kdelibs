@@ -34,7 +34,7 @@
 namespace VCARD
 {
 
-class ContentLine : public Entity
+class KVCARD_EXPORT ContentLine : public Entity
 {
 
 #include "ContentLine-generated.h"

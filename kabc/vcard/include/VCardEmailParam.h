@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class EmailParam : public Param
+class KVCARD_EXPORT EmailParam : public Param
 {
 	
 #include "EmailParam-generated.h"

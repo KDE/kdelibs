@@ -50,10 +50,10 @@ namespace KABC {
   
   This class represents information about a postal address.
 */
-class Address
+class KABC_EXPORT Address
 {
-    friend QDataStream &operator<<( QDataStream &, const Address & );
-    friend QDataStream &operator>>( QDataStream &, Address & );
+    friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Address & );
+    friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Address & );
 
   public:
     /**
@@ -331,8 +331,8 @@ class Address
     static QMap<QString, QString> *mISOMap;
 };
 
-QDataStream &operator<<( QDataStream &, const Address & );
-QDataStream &operator>>( QDataStream &, Address & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Address & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Address & );
 
 }
 

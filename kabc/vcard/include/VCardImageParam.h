@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class ImageParam : public Param
+class KVCARD_EXPORT ImageParam : public Param
 {
 	
 #include "ImageParam-generated.h"

@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class URIValue : public Value
+class KVCARD_EXPORT URIValue : public Value
 {
 #include "URIValue-generated.h"
 

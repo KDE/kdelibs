@@ -32,7 +32,7 @@
 namespace VCARD
 {
 
-class AgentParam : public Param
+class KVCARD_EXPORT AgentParam : public Param
 {
 	
 #include "AgentParam-generated.h"

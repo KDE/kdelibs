@@ -31,7 +31,7 @@
 namespace VCARD
 {
 
-class TextParam : public Param
+class KVCARD_EXPORT TextParam : public Param
 {
 	
 #include "TextParam-generated.h"

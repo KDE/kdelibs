@@ -29,7 +29,7 @@
 namespace VCARD
 {
 
-class Entity
+class KVCARD_EXPORT Entity
 {
 	public:
 		
