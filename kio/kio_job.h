@@ -378,7 +378,7 @@ protected:
    *
    * @return @ref m_pSlave on success or 0L on failure.
    */
-  Slave* createSlave( const char *_protocol, int& _error, string& _error_text );
+  Slave* createSlave( const char *_protocol, int& _error, QString & _error_text );
 
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
@@ -390,7 +390,7 @@ protected:
    * @return @ref m_pSlave on success or 0L on failure.
    */
   Slave* createSlave(  const char *_protocol, const char *_host, const char *_user,
-		       const char *_pass, int& _error, string& _error_text );
+		       const char *_pass, int& _error, QString& _error_text );
 
   QDialog* createDialog( const char *_text );
   
@@ -411,18 +411,18 @@ protected:
   
   Slave* m_pSlave;
   QSocketNotifier* m_pNotifier;
-  string m_strSlaveProtocol;
-  string m_strSlaveHost;
-  string m_strSlaveUser;
-  string m_strSlavePass;
+  QString m_strSlaveProtocol;
+  QString m_strSlaveHost;
+  QString m_strSlaveUser;
+  QString m_strSlavePass;
 
   unsigned long m_iTotalSize;
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
   unsigned long m_iProcessedSize;
   bool m_bCanResume;
-  string m_strFrom;
-  string m_strTo;
+  QString m_strFrom;
+  QString m_strTo;
 
   /**
    * Used in @ref #preget
@@ -432,7 +432,7 @@ protected:
   int m_iPreGetBufferSize;
   int m_iPreGetBufferMaxSize;
   bool m_bPreGetFinished;
-  string m_strPreGetMimeType;
+  QString m_strPreGetMimeType;
   
   int m_id;
   static int s_id;
@@ -469,12 +469,12 @@ protected:
   {
     time_t m_time;
     Slave* m_pSlave;
-    string m_host;
-    string m_user;
-    string m_pass;
+    QString m_host;
+    QString m_user;
+    QString m_pass;
   };
   
-  multimap<string,Entry> m_mapSlaves;
+  multimap<QString,Entry> m_mapSlaves;
 
   static KIOSlavePool* s_pSelf;
 };

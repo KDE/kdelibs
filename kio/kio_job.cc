@@ -23,7 +23,6 @@
 #include <time.h>
 #include <sys/wait.h>
 
-#include <string>
 #include <iostream.h>
 
 #ifdef __FreeBSD__
@@ -180,7 +179,7 @@ void KIOJob::showSimpleGUI( bool _mode ) {
   if (! m_pSimpleProgressDlg && _mode ){
     m_pSimpleProgressDlg = new KIOSimpleProgressDlg( this, m_bStartIconified );
 
-    m_pSimpleProgressDlg->copyingFile( m_strFrom.c_str(), m_strTo.c_str() );
+    m_pSimpleProgressDlg->copyingFile( m_strFrom.data(), m_strTo.data() );
     m_pSimpleProgressDlg->totalSize( m_iTotalSize );
     m_pSimpleProgressDlg->totalFiles( m_iTotalFiles );
     m_pSimpleProgressDlg->totalDirs( m_iTotalDirs );
@@ -232,11 +231,11 @@ void KIOJob::dockListGUI( bool _mode ) {
 
 bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
 {
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( "file", errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error );
     return false;
   }
   
@@ -252,11 +251,11 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
 
 bool KIOJob::unmount( const char *_point )
 {
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( "file", errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
   
@@ -279,12 +278,12 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
     return false;
   }
 
-  string error;
+  QString error;
   int errid = 0;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
   
@@ -312,10 +311,10 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
 {
   assert( !m_pSlave );
 
-  string protocol;
-  string host;
-  string user;
-  string pass;
+  QString protocol;
+  QString host;
+  QString user;
+  QString pass;
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
@@ -326,7 +325,7 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
       return false;
     }
 
-    if ( protocol.empty() )
+    if ( protocol.isEmpty() )
     {
       protocol = lst.getLast()->protocol();
       host = lst.getLast()->host();
@@ -341,12 +340,12 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
     }
   }
   
-  string error;
+  QString error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), host.c_str(), user.c_str(),
-		     pass.c_str(), errid, error ) )
+  if ( !createSlave( protocol.data(), host.data(), user.data(),
+		     pass.data(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
   
@@ -386,12 +385,12 @@ bool KIOJob::del( const char *_source )
     return false;
   }
 
-  string error;
+  QString error;
   int errid = 0;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
   
@@ -416,10 +415,10 @@ bool KIOJob::del( list<string>& _source )
 {
   assert( !m_pSlave );
 
-  string protocol;
-  string host;
-  string user;
-  string pass;
+  QString protocol;
+  QString host;
+  QString user;
+  QString pass;
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
@@ -430,7 +429,7 @@ bool KIOJob::del( list<string>& _source )
       return false;
     }
 
-    if ( protocol.empty() )
+    if ( protocol.isEmpty() )
     {
       protocol = lst.getLast()->protocol();
       host = lst.getLast()->host();
@@ -445,12 +444,12 @@ bool KIOJob::del( list<string>& _source )
     }
   }
   
-  string error;
+  QString error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), host.c_str(), user.c_str(),
-		     pass.c_str(), errid, error ) )
+  if ( !createSlave( protocol.data(), host.data(), user.data(),
+		     pass.data(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
   
@@ -471,12 +470,12 @@ bool KIOJob::testDir( const char *_url )
     return false;
   }
 
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
 
@@ -497,12 +496,12 @@ bool KIOJob::get( const char *_url )
     return false;
   }
 
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
 
@@ -532,12 +531,12 @@ bool KIOJob::getSize( const char *_url )
     return false;
   }
 
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
 
@@ -547,8 +546,8 @@ bool KIOJob::getSize( const char *_url )
 
 void KIOJob::cont()
 {
-  if ( !m_strPreGetMimeType.empty() )
-    emit sigMimeType( m_id, m_strPreGetMimeType.c_str() );
+  if ( !m_strPreGetMimeType.isEmpty() )
+    emit sigMimeType( m_id, m_strPreGetMimeType.data() );
   if ( m_pPreGetBuffer )
     emit sigData( m_id, m_pPreGetBuffer, m_iPreGetBufferSize );
 
@@ -571,12 +570,12 @@ bool KIOJob::listDir( const char *_url )
     return false;
   }
 
-  string error;
+  QString error;
   int errid;
   if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
 		      lst.getLast()->pass(), errid, error ) )
   {
-    slotError( errid, error.c_str() );
+    slotError( errid, error.data() );
     return false;
   }
 
@@ -665,10 +664,10 @@ void KIOJob::slotFinished()
     }
 
     if ( m_bCacheToPool )
-      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str(),
-				      m_strSlaveHost.c_str(),
-				      m_strSlaveUser.c_str(),
-				      m_strSlavePass.c_str() );
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.data(),
+				      m_strSlaveHost.data(),
+				      m_strSlaveUser.data(),
+				      m_strSlavePass.data() );
     else
       delete m_pSlave;
 
@@ -717,10 +716,10 @@ void KIOJob::slotError( int _errid, const char *_txt )
     }
 
     if ( m_bCacheToPool )
-      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str(),
-				      m_strSlaveHost.c_str(),
-				      m_strSlaveUser.c_str(),
-				      m_strSlavePass.c_str() );
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.data(),
+				      m_strSlaveHost.data(),
+				      m_strSlaveUser.data(),
+				      m_strSlavePass.data() );
     else
       delete m_pSlave;
 
@@ -923,7 +922,7 @@ void KIOJob::connectSlave( Slave *_s )
 }
 
 
-Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_text )
+Slave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _error_text )
 {
   Slave *s = KIOSlavePool::self()->slave( _protocol );
   if ( s )
@@ -934,17 +933,17 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_t
     return s;
   }
   
-  string exec = ProtocolManager::self()->find( _protocol );
-  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.c_str() );
+  QString exec = ProtocolManager::self()->find( _protocol ).c_str();
+  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
   
-  if ( exec.empty() )
+  if ( exec.isEmpty() )
   {
     _error = ERR_UNSUPPORTED_PROTOCOL;
     _error_text = _protocol;
     return 0L;
   }
   
-  s = new Slave( exec.c_str() );
+  s = new Slave( exec.data() );
   if ( s->pid() == -1 )
   {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -961,8 +960,11 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_t
 
 Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
 			    const char *_user, const char *_pass,
-			    int& _error, string& _error_text )
+			    int& _error, QString& _error_text )
 {
+  // no host, nor user, nor pass : wrong method
+  if (!_host && !_user && !_pass) return createSlave( _protocol, _error, _error_text );
+
   Slave *s = KIOSlavePool::self()->slave( _protocol, _host, _user, _pass );
   debug("KIOJob::createSlave : Slave got");
   if ( s )
@@ -977,17 +979,17 @@ Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
     return s;
   }
   
-  string exec = ProtocolManager::self()->find( _protocol );
-  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.c_str() );
+  QString exec = ProtocolManager::self()->find( _protocol ).c_str();
+  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
   
-  if ( exec.empty() )
+  if ( exec.isEmpty() )
   {
     _error = ERR_UNSUPPORTED_PROTOCOL;
     _error_text = _protocol;
     return 0L;
   }
   
-  s = new Slave( exec.c_str() );
+  s = new Slave( exec.data() );
   if ( s->pid() == -1 )
   {
     _error = ERR_CANNOT_LAUNCH_PROCESS;
@@ -1025,7 +1027,7 @@ void KIOJob::slotDispatch( int )
 	m_pSlave = 0L;
       }
       
-      slotError( ERR_SLAVE_DIED, m_strSlaveProtocol.c_str() );
+      slotError( ERR_SLAVE_DIED, m_strSlaveProtocol.data() );
       slotFinished();
     }
   }
@@ -1069,7 +1071,7 @@ KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
 Slave* KIOSlavePool::slave( const char *_protocol )
 {
-  multimap<string,Entry>::iterator it = m_mapSlaves.find( _protocol );
+  multimap<QString,Entry>::iterator it = m_mapSlaves.find( _protocol );
   if ( it == m_mapSlaves.end() )
     return 0L;
 
@@ -1083,7 +1085,7 @@ Slave* KIOSlavePool::slave( const char *_protocol )
 Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
 			    const char *_user, const char *_pass)
 {
-  multimap<string,Entry>::iterator it = m_mapSlaves.begin();
+  multimap<QString,Entry>::iterator it = m_mapSlaves.begin();
 
   for( ; it != m_mapSlaves.end(); ++it ) {    
     if ( it->first == _protocol && it->second.m_host == _host &&
@@ -1123,7 +1125,7 @@ void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol, const char *_
   e.m_host = _host;
   e.m_user = _user;
   e.m_pass = _pass;
-  m_mapSlaves.insert( multimap<string,Entry>::value_type( _protocol, e ) );
+  m_mapSlaves.insert( multimap<QString,Entry>::value_type( _protocol, e ) );
 }
 
 
@@ -1131,9 +1133,9 @@ void KIOSlavePool::eraseOldest()
 {
   assert( m_mapSlaves.size() >= 1 );
   
-  multimap<string,Entry>::iterator oldie = m_mapSlaves.begin();
+  multimap<QString,Entry>::iterator oldie = m_mapSlaves.begin();
 
-  multimap<string,Entry>::iterator it = oldie;
+  multimap<QString,Entry>::iterator it = oldie;
   it++;
   for( ; it != m_mapSlaves.end(); it++ )
     if ( oldie->second.m_time > it->second.m_time )
