@@ -346,97 +346,130 @@ void PlastikStyle::renderContour(QPainter *p,
 
 // edges
     const int alphaAA = 110; // the alpha value for anti-aliasing...
+
+    // first part...
+    p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
     if(drawLeft && drawTop) {
         switch(flags&Round_UpperLeft) {
             case false:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.left()+1, r.top());
                 p->drawPoint(r.left(), r.top()+1);
-                // anti-alias
-                renderPixel(p,QPoint(r.left(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
                 break;
-            case true:
             default:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.left()+1, r.top()+1);
-                // anti-alias
-                renderPixel(p,QPoint(r.left()+1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.left(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
-                // fill edge in case we don't want to paint alpha-blended...
-                if(!alphaBlend) {
-                    p->setPen( backgroundColor );
-                    p->drawPoint( r.x(), r.y() );
-                }
-                break;
         }
     }
     if(drawLeft && drawBottom) {
         switch(flags&Round_BottomLeft) {
             case false:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.left()+1, r.bottom());
                 p->drawPoint(r.left(), r.bottom()-1);
-                // anti-alias
-                renderPixel(p,QPoint(r.left(),r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
                 break;
-            case true:
             default:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.left()+1, r.bottom()-1);
-                // anti-alias
-                renderPixel(p,QPoint(r.left()+1,r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.left(),r.bottom()-1),alphaAA,contourColor,backgroundColor,alphaBlend);
-                if(!alphaBlend) {
-                    p->setPen( backgroundColor );
-                    p->drawPoint( r.x(), r.bottom() );
-                }
-                break;
         }
     }
     if(drawRight && drawTop) {
         switch(flags&Round_UpperRight) {
             case false:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.right()-1, r.top());
                 p->drawPoint(r.right(), r.top()+1);
-                // anti-alias
-                renderPixel(p,QPoint(r.right(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
                 break;
-            case true:
             default:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.right()-1, r.top()+1);
-                // anti-alias
-                renderPixel(p,QPoint(r.right()-1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.right(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
-                if(!alphaBlend) {
-                    p->setPen( backgroundColor );
-                    p->drawPoint( r.right(), r.y() );
-                }
-                break;
         }
     }
     if(drawRight && drawBottom) {
         switch(flags&Round_BottomRight) {
             case false:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
                 p->drawPoint(r.right()-1, r.bottom());
                 p->drawPoint(r.right(), r.bottom()-1);
-                // anti-alias
+                break;
+            default:
+                p->drawPoint(r.right()-1, r.bottom()-1);
+        }
+    }
+
+    // second part... fill edges in case we don't paint alpha-blended
+    p->setPen( backgroundColor );
+    if (!alphaBlend) {
+        if(drawLeft && drawTop) {
+            switch(flags&Round_UpperLeft) {
+                case true:
+                    p->drawPoint( r.x(), r.y() );
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(drawLeft && drawBottom) {
+            switch(flags&Round_BottomLeft) {
+                case true:
+                    p->drawPoint( r.x(), r.bottom() );
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(drawRight && drawTop) {
+            switch(flags&Round_UpperRight) {
+                case true:
+                    p->drawPoint( r.right(), r.y() );
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(drawRight && drawBottom) {
+            switch(flags&Round_BottomRight) {
+                case true:
+                    p->drawPoint( r.right(), r.bottom() );
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    // third part... anti-aliasing...
+    if(drawLeft && drawTop) {
+        switch(flags&Round_UpperLeft) {
+            case false:
+                renderPixel(p,QPoint(r.left(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                break;
+            default:
+                renderPixel(p,QPoint(r.left()+1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                renderPixel(p,QPoint(r.left(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
+        }
+    }
+    if(drawLeft && drawBottom) {
+        switch(flags&Round_BottomLeft) {
+            case false:
+                renderPixel(p,QPoint(r.left(),r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                break;
+            default:
+                renderPixel(p,QPoint(r.left()+1,r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                renderPixel(p,QPoint(r.left(),r.bottom()-1),alphaAA,contourColor,backgroundColor,alphaBlend);
+        }
+    }
+    if(drawRight && drawTop) {
+        switch(flags&Round_UpperRight) {
+            case false:
+                renderPixel(p,QPoint(r.right(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                break;
+            default:
+                renderPixel(p,QPoint(r.right()-1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                renderPixel(p,QPoint(r.right(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
+        }
+    }
+    if(drawRight && drawBottom) {
+        switch(flags&Round_BottomRight) {
+            case false:
                 renderPixel(p,QPoint(r.right(),r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
                 break;
-            case true:
             default:
-                p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
-                p->drawPoint(r.right()-1, r.bottom()-1);
-                // anti-alias
                 renderPixel(p,QPoint(r.right()-1,r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
                 renderPixel(p,QPoint(r.right(),r.bottom()-1),alphaAA,contourColor,backgroundColor,alphaBlend);
-                if(!alphaBlend) {
-                    p->setPen( backgroundColor );
-                    p->drawPoint( r.right(), r.bottom() );
-                }
-                break;
         }
     }
 
