@@ -34,7 +34,7 @@ libksycoca_la_SOURCES = \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp \
 	kservice.cpp kservicefactory.cpp \
-	kuserpaths.cpp kuserprofile.cpp \
+	kuserprofile.cpp \
 	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp \
 	kopenwith.cpp krun.cpp \
@@ -42,7 +42,7 @@ libksycoca_la_SOURCES = \
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-        krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
+        krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kopenwith.h kurifilter.h \
 	progressbase.h defaultprogress.h statusbarprogress.h
 
