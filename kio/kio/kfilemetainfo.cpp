@@ -502,15 +502,10 @@ bool KFileMetaInfo::applyChanges()
     }
 
     if (!doit)
-    {
-        kdDebug(7033) << "Don't need to write, nothing changed\n";
         return true;
-    }
 
     KFilePlugin* p = plugin();
-    if (!p) return false;
-
-//    kdDebug(7033) << "Ok, trying to write the info\n";
+    if ( !p ) return false;
 
     return p->writeInfo(*this);
 }
@@ -709,7 +704,6 @@ KFilePlugin::KFilePlugin( QObject *parent, const char *name,
 
 KFilePlugin::~KFilePlugin()
 {
-    kdDebug(7033) << "unloaded a plugin for " << name() << endl;
 }
 
 KFileMimeTypeInfo * KFilePlugin::addMimeTypeInfo( const QString& mimeType )
@@ -1208,23 +1202,14 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
 bool KFileMetaInfoGroup::removeItem( const QString& key )
 {
     if (!isValid())
-    {
-          kdDebug(7033) << "trying to remove an item from an invalid group\n";
           return false;
-    }
 
     QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
     if ( it==d->items.end() )
-    {
-          kdDebug(7033) << "trying to remove the non existant item " << key << "\n";
           return false;
-    }
 
     if (!((*it).attributes() & KFileMimeTypeInfo::Removable))
-    {
-        kdDebug(7033) << "trying to remove a non removable item\n";
         return false;
-    }
 
     d->items.remove(it);
     d->removedItems.append(key);
@@ -1256,8 +1241,6 @@ KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
         item = KFileMetaInfoItem(ginfo->variableItemInfo(), key, value);
     else
         item = KFileMetaInfoItem(info, key, value);
-
-    kdDebug(7033) << "KFileMetaInfogroup inserting a " << key << endl;
 
     d->items.insert(key, item);
     return item;
@@ -1388,8 +1371,6 @@ KFileMimeTypeInfo::ItemInfo* KFileMimeTypeInfo::GroupInfo::addItemInfo(
                   const QString& key, const QString& translatedKey,
                   QVariant::Type type)
 {
-//    kdDebug(7034) << key << "(" << translatedKey << ") -> " << QVariant::typeToName(type) << endl;
-
     ItemInfo* item = new ItemInfo(key, translatedKey, type);
     m_supportedKeys.append(key);
     m_itemDict.insert(key, item);
