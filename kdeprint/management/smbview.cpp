@@ -103,7 +103,7 @@ void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 
 void SmbView::init()
 {
-	QString	cmd("nmblookup -M - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
+	QString	cmd("nmblookup -M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
 	*m_proc << cmd;
 	startProcess(GroupListing);
 }
