@@ -87,7 +87,8 @@ void KBookmarkFolderTree::recreateTree(
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   fillGroup( rootItem, root );
-  
+  rootItem->setOpen( true );
+
   listview->setFocus();
   listview->setCurrentItem( rootItem );
   listview->firstChild()->setSelected( true );
@@ -117,6 +118,7 @@ KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *paren
 
 static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group )
 {
+  bool noSubGroups = true;
   KBookmarkFolderTreeItem * lastItem = 0L;
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
@@ -125,9 +127,13 @@ static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup grou
       KBookmarkGroup grp = bk.toGroup();
       KBookmarkFolderTreeItem * item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
       fillGroup( item, grp );
-      if (grp.isOpen())
+      if ( grp.isOpen() )
         item->setOpen( true );
       lastItem = item;
+      noSubGroups = false;
     }
+  }
+  if ( noSubGroups ) {
+     parentItem->setOpen( true );
   }
 }
