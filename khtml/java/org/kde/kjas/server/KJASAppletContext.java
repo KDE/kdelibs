@@ -50,8 +50,6 @@ public class KJASAppletContext implements AppletContext
     private String myID;
     private KJASAppletClassLoader loader;
     private boolean active;
-    // a mapping JS referenced Java objects
-    private Hashtable jsReferencedObjects;
     private final static KJASAuthenticator authenticator = new KJASAuthenticator();
     // keep this in sync with KParts::LiveConnectExtension::Type
     private final static int JError    = -1;
@@ -72,7 +70,6 @@ public class KJASAppletContext implements AppletContext
         pendingImages = new Vector();
         streams = new Hashtable();
         jsobjects = new Stack();
-        jsReferencedObjects = new Hashtable();
         myID   = _contextID;
         active = true;
     }
@@ -97,10 +94,6 @@ public class KJASAppletContext implements AppletContext
 
     public Applet getAppletById(String appletId) {
         return ((KJASAppletStub) stubs.get( appletId )).getApplet();
-    }
-
-    public Object getJSReferencedObject(int objid) {
-        return jsReferencedObjects.get(new Integer(objid));
     }
 
     public String getAppletName(String appletID) {
@@ -264,11 +257,10 @@ public class KJASAppletContext implements AppletContext
         {
             KJASAppletStub stub = (KJASAppletStub) e.nextElement();
             stub.destroyApplet();
+            stub.loader.getJSReferencedObjects().clear();
         }
 
         stubs.clear();
-        jsReferencedObjects.clear();
-        jsobjects.clear();
         active = false;
     }
 
@@ -420,7 +412,7 @@ public class KJASAppletContext implements AppletContext
             Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "eval", types, arglist);
         }
     }
-    private int[] getJSTypeValue(Object obj, int objid, StringBuffer value) {
+    private int[] getJSTypeValue(Hashtable jsRefs, Object obj, int objid, StringBuffer value) {
         String val = obj.toString();
         int[] rettype = { JError, objid };
         String type = obj.getClass().getName();
@@ -435,7 +427,7 @@ public class KJASAppletContext implements AppletContext
         else {
             rettype[0] = JObject;
             rettype[1] = obj.hashCode();
-            jsReferencedObjects.put(new Integer(rettype[1]), obj);
+            jsRefs.put(new Integer(rettype[1]), obj);
         }
         value.insert(0, val);
         return rettype;
@@ -444,23 +436,19 @@ public class KJASAppletContext implements AppletContext
     public int[] getMember(String appletID, int objid, String name, StringBuffer value)
     {
         Main.debug("getMember: " + name);
-        Object o = null;
-        KJASAppletStub stub = null;
-        if (objid != 0)
-            o = jsReferencedObjects.get(new Integer(objid));
-        else {
-            stub = (KJASAppletStub) stubs.get( appletID );
-            if (stub != null)
-                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
-        } 
         int ret[] = { JError, objid };
-        if (o == null || (stub != null && !stub.isLoaded()))
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if (stub == null || !stub.isLoaded())
+            return ret;
+        Hashtable jsRefs = stub.loader.getJSReferencedObjects();
+        Object o = objid==0 ? stub.getApplet() : jsRefs.get(new Integer(objid));
+        if (o == null)
             return ret;
 
         Class c = o.getClass();
         try {
             Field field = c.getField(name);
-            ret = getJSTypeValue(field.get(o), objid, value);
+            ret = getJSTypeValue(jsRefs, field.get(o), objid, value);
         } catch (Exception ex) {
             Method [] m = c.getMethods();
             for (int i = 0; i < m.length; i++)
@@ -490,16 +478,13 @@ public class KJASAppletContext implements AppletContext
             } catch (SecurityException ex) {}
             return true;
         }
-        KJASAppletStub stub = null;
-        Object o = null;
-        if (objid != 0)
-            o = jsReferencedObjects.get(new Integer(objid));
-        else {
-            stub = (KJASAppletStub) stubs.get( appletID );
-            if (stub != null)
-                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
-        }
-        if (o == null || (stub != null && !stub.isLoaded())) {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if (stub == null || !stub.isLoaded())
+            return false;
+
+        Hashtable jsRefs = stub.loader.getJSReferencedObjects();
+        Object o = objid==0 ? stub.getApplet() : jsRefs.get(new Integer(objid));
+        if (o == null) {
             Main.debug("Error in putValue: applet " + appletID + " not found");
             return false;
         }
@@ -628,21 +613,20 @@ public class KJASAppletContext implements AppletContext
         }
         return ret;
     }
-    
+    public Object getJSReferencedObject(Applet applet, int objid) {
+        return ((KJASAppletClassLoader)(applet.getClass().getClassLoader())).getJSReferencedObjects().get(new Integer(objid));
+    }
     public int[] callMember(String appletID, int objid, String name, StringBuffer value, java.util.List args)
     {
-        Object o = null;
-        KJASAppletStub stub = null;
-        if (objid != 0)
-            o = jsReferencedObjects.get(new Integer(objid));
-        else {
-            stub = (KJASAppletStub) stubs.get( appletID );
-            if (stub != null)
-                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
-        }
-
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
         int [] ret = { JError, objid };
-        if (o == null || (stub != null && !stub.isLoaded()))
+
+        if (stub == null || !stub.isLoaded())
+            return ret;
+
+        Hashtable jsRefs = stub.loader.getJSReferencedObjects();
+        Object o = objid==0 ? stub.getApplet() : jsRefs.get(new Integer(objid));
+        if (o == null)
             return ret;
 
         try {
@@ -664,7 +648,7 @@ public class KJASAppletContext implements AppletContext
                 if (retval == null)
                     ret[0] = JVoid;
                 else
-                    ret = getJSTypeValue(retval, objid, value);
+                    ret = getJSTypeValue(jsRefs, retval, objid, value);
              }
         } catch (Exception e) {
             Main.debug("callMember threw exception: " + e.toString());
@@ -672,10 +656,14 @@ public class KJASAppletContext implements AppletContext
         }
         return ret;
     }
-    public void derefObject(int objid) {
+    public void derefObject(String appletID, int objid) {
         if (objid == 0)
             return; // that's an applet
-        if (jsReferencedObjects.remove(new Integer(objid)) == null)
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if (stub == null)
+            return;
+        Hashtable jsRefs = stub.loader.getJSReferencedObjects();
+        if (jsRefs.remove(new Integer(objid)) == null)
             Main.debug("couldn't remove referenced object");
     }
 

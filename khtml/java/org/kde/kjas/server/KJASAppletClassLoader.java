@@ -120,6 +120,8 @@ public final class KJASAppletClassLoader
     private int myId = 0;
     private Vector statusListeners = new Vector();
     private AccessControlContext acc;
+    // a mapping JS referenced Java objects
+    private Hashtable jsReferencedObjects = new Hashtable();
     
     public KJASAppletClassLoader( URL[] urlList, URL _docBaseURL, URL _codeBaseURL)
     {
@@ -210,6 +212,9 @@ public final class KJASAppletClassLoader
         return codeBaseURL;
     }
 
+    Hashtable getJSReferencedObjects() {
+        return jsReferencedObjects;
+    }
     /***************************************************************************
      **** Class Loading Methods
      **************************************************************************/

@@ -332,7 +332,7 @@ public class KJASProtocolHandler
             String objid  = getArg( command );
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
-                context.derefObject(Integer.parseInt(objid));
+                context.derefObject(appletID, Integer.parseInt(objid));
             Main.debug( "DerefObject " + objid);
         } else
         if (cmd_code_value == SecurityConfirmCode)

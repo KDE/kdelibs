@@ -66,7 +66,8 @@ public final class KJASAppletStub
     private static final int FAILED = 8;
    
     
-    private KJASAppletClassLoader loader;
+    //private KJASAppletClassLoader loader;
+    KJASAppletClassLoader loader;
     private KJASAppletPanel       panel;
     private Applet                app;
     KJASAppletStub                me;
@@ -188,7 +189,7 @@ public final class KJASAppletStub
         public void run() {
             while (true) {
                 int nstate = getRequestState();
-                if (nstate == TERMINATE)
+                if (nstate >= TERMINATE)
                     return;
                 try {
                     doState(nstate);
