@@ -3046,8 +3046,8 @@ bool HTTPProtocol::readHeader()
   // Send the response header if it was requested
   if (!responseHeader.isEmpty())
   {
-    kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " << endl
-                  << responseHeader.join("\n") << endl;
+    //kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " << endl
+    //              << responseHeader.join("\n") << endl;
     setMetaData("HTTP-Headers", responseHeader.join("\n"));
   }
 
