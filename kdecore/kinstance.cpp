@@ -32,10 +32,9 @@
 class KInstancePrivate
 {
 public:
-  KInstancePrivate (KInstance* p)
-    : mimeSourceFactory (new KMimeSourceFactory(p->iconLoader()))
+  KInstancePrivate ()
   {
-	QMimeSourceFactory::setDefaultFactory (mimeSourceFactory);
+    mimeSourceFactory = 0L;
   }
 
   ~KInstancePrivate ()
@@ -59,7 +58,7 @@ KInstance::KInstance( const QCString& name)
       KGlobal::_activeInstance = this;
     }
 
-    d = new KInstancePrivate (this);
+    d = 0L; //new KInstancePrivate (this);
 
     kdDebug() << "Instance " << _name.data() << " has no about data" << endl;
 }
@@ -78,7 +77,7 @@ KInstance::KInstance( const KAboutData * aboutData )
       KGlobal::_activeInstance = this;
     }
 
-    d = new KInstancePrivate (this);
+    d = 0L; //new KInstancePrivate (this);
 }
 
 KInstance::~KInstance()
@@ -149,5 +148,9 @@ QCString KInstance::instanceName() const
 
 KMimeSourceFactory* KInstance::mimeSourceFactory () const
 {
+  if ( d->mimeSourceFactory )
+  {
+    d->mimeSourceFactory = new KMimeSourceFactory(iconLoader());
+  }
   return d->mimeSourceFactory;
 }

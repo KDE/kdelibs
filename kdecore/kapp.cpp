@@ -291,6 +291,9 @@ void KApplication::init(bool GUIenabled)
     sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
     sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
     sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
+
+    // Set default mime-source factory
+    QMimeSourceFactory::setDefaultFactory (mimeSourceFactory());
   }
 
   installTranslator(new KDETranslator(this));
@@ -752,7 +755,7 @@ KApplication::~KApplication()
 {
   // cleanup in the library loader: destruct all factories and unload the libraries (Simon)
   KLibLoader::cleanUp();
- 
+
   delete smw;
 
   // close down IPC
@@ -1596,7 +1599,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
-    
+
     // set a short icon text
     // TODO: perhaps using .ascii() isn't right here as this may be seen by
     // a user?
