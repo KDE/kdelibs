@@ -250,6 +250,7 @@ public:
   QString m_strSelectedURL;
 
   bool m_bMousePressed;
+  DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
   DOM::Node m_selectionStart;
   long m_startOffset;
@@ -833,6 +834,8 @@ void KHTMLPart::clear()
   }
 
   findTextBegin(); // resets d->m_findNode and d->m_findPos
+
+  d->m_mousePressNode = DOM::Node();
 
   if ( d->m_jscript )
     d->m_jscript->clear();
@@ -2759,6 +2762,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
   DOM::DOMString url = event->url();
   QMouseEvent *_mouse = event->qmouseEvent();
   DOM::Node innerNode = event->innerNode();
+  d->m_mousePressNode = innerNode;
 
    d->m_dragStartPos = _mouse->pos();
 
@@ -2812,7 +2816,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
   if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || innerNode.elementId() == ID_IMG ) &&
       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
-      d->m_bDnd ) {
+      d->m_bDnd && d->m_mousePressNode == innerNode ) {
 
       QPixmap p;
       QDragObject *drag = 0;
@@ -2946,6 +2950,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
   DOM::Node innerNode = event->innerNode();
+  d->m_mousePressNode = DOM::Node();
 
   if ( d->m_bMousePressed )
   {

@@ -104,7 +104,8 @@ public:
 
     virtual void createSelector();
     virtual void applyChanges(bool top = true, bool force = true);
-
+    virtual void recalcStyle();
+    
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
 

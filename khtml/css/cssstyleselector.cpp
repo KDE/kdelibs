@@ -57,12 +57,14 @@ using namespace DOM;
 #include <qstring.h>
 #include <kdebug.h>
 #include <kurl.h>
-
+#include <qdatetime.h>
 #include <assert.h>
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
 
+enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited };
+static PseudoState pseudoState;
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
 {
@@ -106,11 +108,9 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
     HTMLElementImpl *e = doc->body();
     if(e && e->id() == ID_BODY)
     {
-        kdDebug( 6080 ) << "found body element" << endl;
         HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
         if(body->sheet())
         {
-            kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
             authorStyle->append(body->sheet());
         }
     }
@@ -151,7 +151,6 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     QTextStream t( &f );
     QString style = t.read();
     if(s) {
-	kdDebug() << "adding to style sheet: " << s->settingsToCSS() << endl;
 	style += s->settingsToCSS();
     }
     DOMString str(style);
@@ -164,16 +163,18 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     defaultStyle->append(sheet);
 }
 
-
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
-    // the higher the offset or important number, the later the rules get applied.
+   // the higher the offset or important number, the later the rules get applied.
 
+    pseudoState = PseudoUnknown;
+    
     if(defaultStyle) defaultStyle->collect(propsToApply, e, 0x00100000); // no important rules here
     // important rules from user styles are higher than important rules from author styles.
     // for non important rules the order is reversed
+
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
     // these count as author rules, and come after all other style sheets
@@ -190,11 +191,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     else
         style = new RenderStyle();
 
+     
     for(int i = 0; i < (int)propsToApply->count(); i++)
         applyRule(style, propsToApply->at(i)->prop, e);
-
-
-//    kdDebug( 6080 ) << "STYLE count=" << RenderStyle::counter << ", DATA count=" << SharedData::counter << endl;
 
     delete propsToApply;
 
@@ -273,6 +272,24 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
     return true;
 }
 
+static void checkPseudoState( DOM::ElementImpl *e )
+{
+    if( e->getAttribute(ATTR_HREF).isNull() ) {
+	pseudoState = PseudoNone;
+	return;
+    }
+    KHTMLView *v = e->ownerDocument()->view();
+    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
+    QValueList<KURL> *list = KHTMLFactory::vLinks();
+    QValueList<KURL>::Iterator it;
+    for( it = list->begin(); it != list->end(); ++it )
+	if( *it == url ) {
+	    pseudoState = PseudoVisited;
+	    return;
+	}
+    pseudoState = PseudoLink;
+}
+
 bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
     if(!e || !e->isHTMLElement())
@@ -333,28 +350,19 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    if(e->parentNode()->firstChild() != e)
 		return false;
 	} else if(sel->value == ":link") {
-	    if( e->getAttribute(ATTR_HREF).isNull() )
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( e );
+	    if ( pseudoState == PseudoLink )
+		return true;
+	    else
 		return false;
-	    QValueList<KURL> *list = KHTMLFactory::vLinks();
-	    KHTMLView *v = e->ownerDocument()->view();
-	    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
-	    QValueList<KURL>::Iterator it;
-	    for( it = list->begin(); it != list->end(); ++it )
-		if( *it == url )
-		    return false;
-	    //kdDebug() << "matches" << endl;
-	    return true;
 	} else if ( sel->value == ":visited" ) {
-	    if( e->getAttribute(ATTR_HREF).isNull() )
+	    if ( pseudoState == PseudoUnknown )
+		checkPseudoState( e );
+	    if ( pseudoState == PseudoVisited )
+		return true;
+	    else 
 		return false;
-	    QValueList<KURL> *list = KHTMLFactory::vLinks();
-	    KHTMLView *v = e->ownerDocument()->view();
-	    KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
-	    QValueList<KURL>::Iterator it;
-	    for( it = list->begin(); it != list->end(); ++it )
-		if( *it == url )
-		    return true;
-	    return false;
 	} else
 	    return false;
     }
@@ -427,7 +435,7 @@ void CSSStyleSelectorList::append(CSSStyleRuleImpl *rule)
 }
 
 void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::ElementImpl *e,
-                                   int offset, int important)
+                                   int offset, int important )
 {
     int i;
     int num = count();
@@ -1811,6 +1819,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_FAMILY:
         // list of strings and ids
     {
+//	QTime qt;
+//	qt.start();
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
@@ -1826,8 +1836,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
             DOMStringImpl *str = val->getStringValue();
-            QString face(str->s, str->l);
-            face = face.lower();
+            QString face = QConstString(str->s, str->l).string().lower();
             //kdDebug(0) << "searching for face '" << face << "'" << endl;
             if(face == "serif")
                 face = s->serifFontName();
@@ -1861,6 +1870,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    }
             //kdDebug( 6080 ) << "no match for font family " << face << ", got " << fi.family() << endl;
         }
+	//kdDebug() << "khtml::setFont: time=" << qt.elapsed() << endl;
         break;
     }
     case CSS_PROP_QUOTES:

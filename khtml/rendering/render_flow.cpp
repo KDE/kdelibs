@@ -509,12 +509,13 @@ void RenderFlow::positionNewFloats()
     while(1)
     {
         lastFloat = specialObjects->prev();
-        if(!lastFloat || lastFloat->startY != -1) {
+        if(!lastFloat || (lastFloat->startY != -1 && lastFloat->type!=SpecialObject::Positioned)) {
             specialObjects->next();
             break;
         }
         f = lastFloat;
     }
+
 
     int y = m_height;
 
@@ -525,14 +526,15 @@ void RenderFlow::positionNewFloats()
 
     while(f)
     {
-        RenderObject *o = f->node;
-        int _height = o->height() + o->marginTop() + o->marginBottom();
-
-        if (f->node->containingBlock()!=this)
+        //skip elements copied from elsewhere and positioned elements
+        if (f->node->containingBlock()!=this || f->type==SpecialObject::Positioned)
         {
             f = specialObjects->next();
             continue;
         }
+                
+        RenderObject *o = f->node;
+        int _height = o->height() + o->marginTop() + o->marginBottom();
 
         if (o->style()->floating() == FLEFT)
         {
@@ -807,16 +809,16 @@ RenderFlow::rightBottom()
 void
 RenderFlow::clearFloats()
 {
-
-//    kdDebug( 6040 ) << "clearFloats" << endl;
+//    kdDebug( 6040 ) << "clearFloats" << endl; 
+    
     if (specialObjects) {
 	if( containsPositioned() ) {
-	    SpecialObject* r = specialObjects->first();
-	    while ( r ) {
-		SpecialObject *next = specialObjects->next();
-		if ( r->type != SpecialObject::Positioned ) 
-		    specialObjects->remove( r );
-		r = next;
+            specialObjects->first();            
+            while ( specialObjects->current()) {
+		if ( specialObjects->current()->type != SpecialObject::Positioned ) 
+		    specialObjects->remove();
+                else
+		    specialObjects->next();
 	    }	
 	} else
 	    specialObjects->clear();
@@ -928,6 +930,9 @@ void RenderFlow::calcMinMaxWidth()
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
     
+    m_minWidth = 0;
+    m_maxWidth = 0;
+        
     if (isInline())
         return;
 
@@ -936,9 +941,6 @@ void RenderFlow::calcMinMaxWidth()
 
     // non breaking space
     const QChar nbsp = 0xa0;
-
-    m_minWidth = 0;
-    m_maxWidth = 0;
 
     RenderObject *child = firstChild();
     RenderObject *prevchild = 0;
@@ -984,7 +986,8 @@ void RenderFlow::calcMinMaxWidth()
                     }
                     if (hasNbsp)
                     {
-                        child = child->nextSibling();
+                        child = next(child);
+	        prevchild = child;
                         hasNbsp = false;
                         continue;
                     }
@@ -1000,7 +1003,6 @@ void RenderFlow::calcMinMaxWidth()
                 {
                     if(inlineMin < childMin) inlineMin = childMin;
                     inlineMax += childMax;
-
                 }
             }
             else
@@ -1014,6 +1016,7 @@ void RenderFlow::calcMinMaxWidth()
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
+//        kdDebug( 6040 ) << "m_maxWidth=" << m_maxWidth << endl;
     }
     else
     {

@@ -382,26 +382,9 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 {
     m_view = w;
     if(!m_styleSelector) createSelector();
-    m_style = new RenderStyle();
-    m_style->setDisplay(BLOCK);
-    // ### make the font stuff _really_ work!!!!
-    const KHTMLSettings *settings = w->part()->settings();
-    QValueList<int> fs = settings->fontSizes();
-    int size = fs[3];
-    if(size < settings->minFontSize())
-        size = settings->minFontSize();
-    QFont f = KGlobalSettings::generalFont();
-    f.setFamily(settings->stdFontName());
-    f.setPointSize(size);
-    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl; 
-    KGlobal::charsets()->setQFont(f, settings->charset());
-    m_style->setFont(f);
-
-    m_style->setHtmlHacks(true); // enable html specific rendering tricks
-
     m_render = new RenderRoot(w);
-    m_render->setStyle(m_style);
-
+    recalcStyle();
+    
     NodeBaseImpl::attach(w);
 }
 
@@ -440,27 +423,13 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
 
-    if (force || changed()) {
-        const KHTMLSettings *settings = m_view->part()->settings();
-        QValueList<int> fs = settings->fontSizes();
-        int size = fs[3];
-        if(size < settings->minFontSize())
-            size = settings->minFontSize();
-        QFont f = KGlobalSettings::generalFont();
-        f.setFamily(settings->stdFontName());
-        f.setPointSize(size);
-	//kdDebug() << "HTMLDocumentImpl::applyChanges: setting to charset " << settings->charset() << endl; 
-	KGlobal::charsets()->setQFont(f, settings->charset());
-	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl; 
-	//kdDebug() << "HTMLDocumentImpl::applyChanges using " << f.rawName() << endl; 
-        m_style->setFont(f);
-    }
+    recalcStyle();
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-        n->applyChanges(true,force || changed());
+        n->applyChanges(false,force || changed());
         n = n->nextSibling();
     }
 
@@ -471,6 +440,37 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     // repaint, so we might do double work here...
     m_render->repaint();
     setChanged(false);
+}
+
+void HTMLDocumentImpl::recalcStyle()
+{
+    QTime qt;
+    qt.start();
+    if( !m_render ) return;
+    if( m_style ) delete m_style;
+    m_style = new RenderStyle();
+    m_style->setDisplay(BLOCK);
+    // ### make the font stuff _really_ work!!!!
+    const KHTMLSettings *settings = m_view->part()->settings();
+    QValueList<int> fs = settings->fontSizes();
+    int size = fs[3];
+    if(size < settings->minFontSize())
+        size = settings->minFontSize();
+    QFont f = KGlobalSettings::generalFont();
+    f.setFamily(settings->stdFontName());
+    f.setPointSize(size);
+    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl; 
+    KGlobal::charsets()->setQFont(f, settings->charset());
+    m_style->setFont(f);
+
+    m_style->setHtmlHacks(true); // enable html specific rendering tricks
+    if(m_render)
+	m_render->setStyle(m_style);
+
+    NodeImpl *n;
+    for (n = _first; n; n = n->nextSibling())
+	n->recalcStyle();
+    kdDebug( ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 }
 
 void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)

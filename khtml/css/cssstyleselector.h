@@ -175,7 +175,7 @@ namespace khtml
 	 * offset is used to get the ordering between default user and author style sheets right
 	 */
 	void collect(khtml::CSSOrderedPropertyList *propsToApply, DOM::ElementImpl *e,
-		     int offset = 0x0, int important = 0x0);
+		     int offset = 0x0, int important = 0x0 );
 
     };
 
