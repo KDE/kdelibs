@@ -630,9 +630,8 @@ void RenderText::calcMinMaxWidth()
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
-        do {
+        while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
             wordlen++;
-        } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
             int w = f->width(str->s, str->l, i, wordlen);
