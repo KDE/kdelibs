@@ -228,9 +228,10 @@ void PreviewJob::determineNextFile()
         d->items.remove(d->items.begin());
         if (d->bSave)
         {
-            oldURL.setPath(QDir::cleanDirPath(oldURL.path()));
+            oldURL.setPath(QDir::cleanDirPath(oldURL.directory()));
             KURL newURL = d->currentItem.item->url();
-            newURL.setPath(QDir::cleanDirPath(newURL.path()));
+            newURL.setPath(QDir::cleanDirPath(newURL.directory()));
+            kdDebug() << "oldURL: " << oldURL.url() << ", newURL: " << newURL.url() << endl;
             // different path, determine cache dir
             if (oldURL != newURL)
             {
