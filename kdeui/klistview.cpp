@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Reginald Stadlbauer <reggie@kde.org>
    Copyright (C) 2000 Charles Samuels <charles@kde.org>
+   Copyright (C) 2000 Peter Putzer
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -534,64 +535,66 @@ void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
 void KListView::slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c )
 {
   if( (btn == LeftButton) && item )
-    emitExecute( item, pos, c );
+    emitExecute(item, pos, c);
 }
 
-void KListView::contentsDropEvent (QDropEvent* e)
+void KListView::contentsDropEvent(QDropEvent* e)
 {
-  cleanDropVisualizer ();
+  cleanDropVisualizer();
 
   if (acceptDrag (e))
-	{
-	  QListViewItem *afterme;
-	  QListViewItem *parent;
-	  findDrop(e->pos(), parent, afterme);
+  {
+    e->accept();
+    QListViewItem *afterme;
+    QListViewItem *parent;
+    findDrop(e->pos(), parent, afterme);
 
-	  emit dropped (e, afterme);
-	  emit dropped (this, e, afterme);
-	}
+    emit dropped(e, afterme);
+    emit dropped(this, e, afterme);
+    emit dropped(e, parent, afterme);
+    emit dropped(this, e, parent, afterme);
+  }
 }
 
 void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
-  if (acceptDrops() && acceptDrag (event))
-	{
-	  //Clean up the view
-	  QListViewItem *afterme;
-	  QListViewItem *parent;
-	  findDrop(event->pos(), parent, afterme);
-	  
-	  if (dropVisualizer())
-		{
-		  QRect tmpRect = drawDropVisualizer (0, parent, afterme);
+  if (acceptDrops() && acceptDrag(event))
+  {
+    event->accept();
+    //Clean up the view
+    QListViewItem *afterme;
+    QListViewItem *parent;
+    findDrop(event->pos(), parent, afterme);
 
-		  if (tmpRect != mOldDropVisualizer)
-			{
-			  cleanDropVisualizer();
+    if (dropVisualizer())
+    {
+      QRect tmpRect = drawDropVisualizer(0, parent, afterme);
 
-			  QPainter painter(viewport());
-			  mOldDropVisualizer = drawDropVisualizer(&painter,parent, afterme);
-			}
-		}
-	}
+      if (tmpRect != mOldDropVisualizer)
+      {
+        cleanDropVisualizer();
+
+        QPainter painter(viewport());
+        mOldDropVisualizer = drawDropVisualizer(&painter,parent, afterme);
+      }
+    }
+  }
   else
-	{
 	  event->ignore();
-	}
 }
 
 void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 {
-    cleanDropVisualizer();
+  cleanDropVisualizer();
 }
 
 void KListView::cleanDropVisualizer()
 {
-    if (mOldDropVisualizer.isValid())
-	  {
-		viewport()->repaint (mOldDropVisualizer, true);
-		mOldDropVisualizer = QRect();
-	  }
+  if (mOldDropVisualizer.isValid())
+  {
+    viewport()->repaint (mOldDropVisualizer, true);
+    mOldDropVisualizer = QRect();
+  }
 }
 
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
@@ -734,7 +737,8 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
 
 void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
 {
-  acceptDrag (event); // acceptDrag should call "accept"
+  if (acceptDrag (event))
+    event->accept();
 }
 
 void KListView::setDropVisualizerWidth (int w)
@@ -779,38 +783,35 @@ void KListView::cleanItemHighlighter ()
 
 void KListView::rename(QListViewItem *item, int c)
 {
-	d->editor->load(item,c);
-
+  d->editor->load(item,c);
 }
 
 bool KListView::isRenameable (int col) const
 {
-	return d->renameable.contains(col);
+  return d->renameable.contains(col);
 }
 
 void KListView::setRenameable (int col, bool yesno)
 {
-	if (col>=header()->count()) return;
+  if (col>=header()->count()) return;
 
-	d->renameable.remove(col);
-	if (yesno && d->renameable.find(col)==d->renameable.end())
-		d->renameable+=col;
-	else if (!yesno && d->renameable.find(col)!=d->renameable.end())
-		d->renameable.remove(col);
+  d->renameable.remove(col);
+  if (yesno && d->renameable.find(col)==d->renameable.end())
+    d->renameable+=col;
+  else if (!yesno && d->renameable.find(col)!=d->renameable.end())
+    d->renameable.remove(col);
 }
 
 void KListView::doneEditing(QListViewItem *item, int row)
 {
-	emit itemRenamed(item, item->text(row), row);
-	emit itemRenamed(item);
+  emit itemRenamed(item, item->text(row), row);
+  emit itemRenamed(item);
 }
 
 bool KListView::acceptDrag(QDropEvent* e) const
 {
-	e->accept();
-	return true;
+  return itemsMovable() && (e->source()==viewport());
 }
-
 
 void KListView::setCreateChildren(bool b)
 {

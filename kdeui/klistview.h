@@ -40,6 +40,7 @@ class QDragObject;
  * Drag-and-Drop is supported with the signal @ref #dropped(), just @ref #setAcceptDrops(true)
  * and connect it to a suitable slot.
  * To see where you are dropping, @ref setDropVisualizer(true).
+ * And also you'll need @ref acceptDrag(QDropEvent*)
  *
  * KListView is drag-enabled, too: to benefit from that you've got derive from it.
  * Reimplement @ref dragObject() and (possibly) @ref startDrag(),
@@ -276,6 +277,33 @@ signals:
    * the drop was above all items
    */
   void dropped (KListView* list, QDropEvent* e, QListViewItem* after);
+
+  /**
+   * This signal gets emitted whenever something acceptable is
+   * dropped onto the listview.
+   *
+   * This function also provides a parent, in the event that your listview
+   * is a tree
+   * @param list is the listview
+   * @param e is the drop event itself (it has already been accepted)
+   * @param parent the item that is to be the parent of the new item
+   * @param after is the item after which the drop occured (or 0L, if
+   * the drop was above all items
+   */
+  void dropped (KListView* list, QDropEvent* e, QListViewItem* parent, QListViewItem* after);
+
+  /**
+   * This signal gets emitted whenever something acceptable is
+   * dropped onto the listview.
+   *
+   * This function also provides a parent, in the event that your listview
+   * is a tree
+   * @param e is the drop event itself (it has already been accepted)
+   * @param parent the item that is to be the parent of the new item
+   * @param after is the item after which the drop occured (or 0L, if
+   * the drop was above all items
+   */
+  void dropped(QDropEvent* e, QListViewItem* parent, QListViewItem* after);
 
   /**
    * For future expansions.
