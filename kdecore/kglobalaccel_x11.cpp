@@ -67,6 +67,14 @@ KGlobalAccelPrivate::KGlobalAccelPrivate()
 	kapp->installX11EventFilter( this );
 }
 
+KGlobalAccelPrivate::~KGlobalAccelPrivate()
+{
+	// TODO: Need to release all grabbed keys if the main window is not shutting down.
+	//for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
+	//	const CodeMod& codemod = it.key();
+	//}
+}
+
 void KGlobalAccelPrivate::setEnabled( bool bEnable )
 {
 	m_bEnabled = bEnable;
@@ -210,12 +218,14 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 
 	// Search for which accelerator activated this event:
 	if( !m_rgCodeModToAction.contains( codemod ) ) {
+#ifndef NDEBUG
 		for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
 			KAccelAction* pAction = *it;
 			kdDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
 			<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString::null)
 			<< endl;
 		}
+#endif
 		return false;
 	}
 	KAccelAction* pAction = m_rgCodeModToAction[codemod];

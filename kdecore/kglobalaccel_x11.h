@@ -29,6 +29,7 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	Q_OBJECT
  public:
 	KGlobalAccelPrivate();
+	virtual ~KGlobalAccelPrivate();
 
 	virtual void setEnabled( bool );
 
