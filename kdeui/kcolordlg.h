@@ -118,9 +118,12 @@ protected:
   virtual void paintCell( QPainter *painter, int row, int col );
   virtual void resizeEvent( QResizeEvent * );
   virtual void mouseReleaseEvent( QMouseEvent * );
+  virtual void mousePressEvent( QMouseEvent * );
   virtual void mouseMoveEvent( QMouseEvent * );
   virtual void dragEnterEvent( QDragEnterEvent *);
   virtual void dropEvent( QDropEvent *);
+
+  int posToCell(const QPoint &pos, bool ignoreBorders=false);
 
   QColor *colors;
   bool inMouse;
