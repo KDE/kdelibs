@@ -1,3 +1,8 @@
+2004-01-19  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_object.cpp (getVerticalPosition): improve
+	logic (#65121).
+
 2004-01-16  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_image.cpp: remove some asserts that
