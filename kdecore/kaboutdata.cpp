@@ -298,6 +298,7 @@ KAboutData::otherText() const
 QString
 KAboutData::license() const
 {
+  QString result = copyrightStatement() + "\n\n";
   QString l;
   QString f;
   switch ( mLicenseKey )
@@ -330,14 +331,14 @@ KAboutData::license() const
           return( i18n(mLicenseText) );
        // fall through
     default:
-       return i18n("No licensing terms for this program have been specified.\n"
+       result += i18n("No licensing terms for this program have been specified.\n"
                    "Please check the documentation or the source for any\n"
                    "licensing terms.\n");
-      }
+       return result;
+  }
 
-  QString result;
   if (!l.isEmpty())
-     result = i18n("This program is distributed under the terms of the %1.").arg( l );
+     result += i18n("This program is distributed under the terms of the %1.").arg( l );
 
   if (!f.isEmpty())
   {
