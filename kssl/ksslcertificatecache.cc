@@ -243,6 +243,7 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
       node->permanent = permanent;
       if (!permanent) {
         node->expires = QDateTime::currentDateTime();
+// FIXME: make this configurable
         node->expires.addSecs(3600);
       }
       saveToDisk();
