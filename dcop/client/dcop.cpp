@@ -459,6 +459,8 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	else if ( type == "QVariant" ) {
 	    if ( s == "true" || s == "false" )
 		arg << QVariant( mkBool( s ), 42 );
+	    else if ( s.left( 4 ) == "int(" )
+		arg << QVariant( s.mid(4, s.length()-5).toInt() );
 	    else if ( s.left( 7 ) == "QPoint(" )
 		arg << QVariant( mkPoint( s.mid(7, s.length()-8) ) );
 	    else if ( s.left( 6 ) == "QSize(" )
