@@ -70,6 +70,7 @@ protected:
   int openStream();
   ssize_t write (const void *buf, size_t nbytes);
   ssize_t read (void *b, size_t nbytes);
+  char *gets (char *str, int size);
   bool eof ();
   bool m_bEOF;
 

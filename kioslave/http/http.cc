@@ -360,6 +360,21 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
   return ::write(m_sock, buf, nbytes);
 }
 
+char *HTTPProtocol::gets (char *s, int size)
+{
+  int len=0;
+  char *buf=s, mybuf[2]={0,0};
+  while (len < size) {
+    read(mybuf, 1);
+    memcpy(buf, mybuf, 1);
+    if (*buf == '\n')
+      break;
+    len++; buf++;
+  }
+  *buf=0;
+  return s;
+}
+
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret;
@@ -558,7 +573,7 @@ repeat2:
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  while( len && (read( f_buffer, 1024) ) ) { 
+  while( len && (gets( f_buffer, 1024) ) ) { 
     len = strlen( f_buffer );
     while( len && (f_buffer[ len-1 ] == '\n' || f_buffer[ len-1 ] == '\r') )
       f_buffer[ --len ] = 0;
@@ -773,7 +788,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.032899.2");
+  QString user_agent("Konqueror/1.9.032899.3");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
