@@ -338,6 +338,7 @@ int Backend::open(const QByteArray& password) {
 		MD5Digest ba;
 		QMap<MD5Digest,QValueList<MD5Digest> >::iterator it;
 		Q_UINT32 fsz;
+		if (hds.atEnd()) return -43;
 		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
 		ba.duplicate(reinterpret_cast<char *>(d), 16);
