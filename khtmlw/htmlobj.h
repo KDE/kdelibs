@@ -33,10 +33,9 @@
 #include <qfont.h>
 #include <qtimer.h>
 
-#if QT_VERSION >= 130
-//#include <qmovie.h>
-//#define USE_QMOVIE
-#endif
+class QMovie;
+
+#define USE_QMOVIE
 
 #include <kurl.h>
 
@@ -133,9 +132,11 @@ public:
 
     /*
      * Some objects may need to know their absolute position on the page.
-     * This is only used by form elements so far.
      */
     virtual void calcAbsolutePos( int, int ) { }
+
+    virtual int  getAbsX() { return -1; }
+    virtual int  getAbsY() { return -1; }
 
     virtual void reset() { setPrinted( false ); }
 
@@ -189,14 +190,13 @@ public:
     void setYPos( int _y ) { y=_y; }
 
     enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-			FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20,
-			Printed = 0x40 };
+			FixedWidth = 0x08, Aligned = 0x10,
+			Printed = 0x20 };
 
     bool isSeparator() const { return flags & Separator; }
     bool isNewline() const { return flags & NewLine; }
     bool isSelected() const { return flags & Selected; }
     bool isFixedWidth() const { return flags & FixedWidth; }
-    bool isPrinting() const { return flags & Printing; }
     bool isAligned() const { return flags & Aligned; }
     bool isPrinted() const { return flags & Printed; }
     
@@ -204,7 +204,6 @@ public:
     void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
     void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
     void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
-    void setPrinting( bool p ) { p ? flags|=Printing : flags&=~Printing; }
     void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
     
@@ -331,8 +330,16 @@ protected:
 class HTMLVSpace : public HTMLObject
 {
 public:
-    HTMLVSpace( int _vspace );
+    enum Clear { CNone, Left, Right, All };
+
+    HTMLVSpace( int _vspace, Clear c = CNone );
     virtual ~HTMLVSpace() { }
+
+    Clear clear()
+	{ return cl; }
+
+private:
+    Clear cl;
 };
 
 //-----------------------------------------------------------------------------
@@ -387,6 +394,10 @@ public:
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
+
+    virtual void calcAbsolutePos( int _x, int _y );
+    virtual int  getAbsX();
+    virtual int  getAbsY();
 
     static void cacheImage( const char * );
     static QPixmap* findImage( const char * );
@@ -487,6 +498,10 @@ protected:
 
     char *url;
     char *target;
+
+    // The absolute position of this object on the page
+    int absX;
+    int absY;
 };
 
 //----------------------------------------------------------------------------
@@ -530,7 +545,7 @@ class HTMLMap : public HTMLObject
 {
 public:
     HTMLMap( KHTMLWidget *w, const char *_url );
-    virtual ~HTMLMap() { }
+    virtual ~HTMLMap();
 
     virtual void fileLoaded( const char *_filename );
     virtual const char *requestedFile()

@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1101		// 00.11.01
+#define KHTMLW_VERSION  1200		// 00.12.00
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -38,6 +38,7 @@
 class KHTMLWidget;
 
 #include "drag.h"
+#include "htmldata.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
 #include "htmlform.h"
@@ -395,7 +396,7 @@ public:
     void setDefaultFontBase( int size )
     {	if ( size < 2 ) size = 2;
         else if ( size > 5 ) size = 5;
-        defaultFontBase = size - 1;
+        defaultSettings->fontBaseSize = size - 1;
     }
 
     /**
@@ -404,7 +405,7 @@ public:
      * @param name is the font name to use for standard text.
      */
     void setStandardFont( const char *name )
-	{	standardFont = name; }
+	{	defaultSettings->fontBaseFace = name; }
 
     /**
      * Sets the fixed font style.
@@ -413,14 +414,14 @@ public:
      * the <tt>&lt;pre&gt;</tt> tag.
      */
     void setFixedFont( const char *name )
-	{	fixedFont = name; }
+	{	defaultSettings->fixedFontFace = name; }
 
     /**
      * Sets the default background color to use when one isn't specified
      * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
      */
     void setDefaultBGColor( const QColor &col )
-	{	defaultBGColor = col; }
+	{	defaultSettings->bgColor = col; }
 
     /**
      * Sets the default text colors.
@@ -428,10 +429,16 @@ public:
     void setDefaultTextColors( const QColor &normal, const QColor &link,
 	const QColor &vlink )
     {
-	defTextColor = normal;
-	defLinkColor = link;
-	defVLinkColor = vlink;
+	defaultSettings->fontBaseColor = normal;
+	defaultSettings->linkColor = link;
+	defaultSettings->vLinkColor = vlink;
     }
+
+    /**
+     * Set whether links are drawn in underlined text.
+     */
+    void setUnderlineLinks( bool ul )
+	{ defaultSettings->underlineLinks = ul; }
 
     /**
      * Sets the cursor to use when the cursor is on a link.
@@ -448,22 +455,37 @@ public:
     void setGranularity( int g )
 	{   granularity = g; }
 
-    // Requests a file
     /*
      * If a HTMLObject object needs a file from the web, it
      * calls this function.
      */
     void requestFile( HTMLObject *_obj, const char *_url );
 
+    /*
+     * Cancels a previous @ref requestFile.
+     */
+    void cancelRequestFile( HTMLObject *_obj );
+
     // This function is called to download the background image from the web
     void requestBackgroundImage( const char *_url );
 
-    // Redraws a single object
     /*
      * This function is used to repaint images that have been loaded from the
      * web.
      */
     void paintSingleObject( HTMLObject *_obj );
+
+    /*
+     * Schedule a paint event.  This is used internally to force a paint
+     * event when, for example, an image has been loaded and the document
+     * has been layed out again.
+     */
+    void scheduleUpdate( bool clear );
+
+    /**
+     * Internal use - calculates the absolute position of the objects.
+     */
+    void calcAbsolutePos();
 
     /*
      * return the map matching mapurl
@@ -659,6 +681,13 @@ protected slots:
     /*
      * INTERNAL
      *
+     * Called when the widget needs an update.
+     */
+    void slotUpdate();
+
+    /*
+     * INTERNAL
+     *
      * Called by timer event when the widget is due to autoscroll.
      */
     void slotAutoScrollY();
@@ -737,6 +766,9 @@ protected:
     virtual void focusInEvent( QFocusEvent * ) { }
     virtual void focusOutEvent( QFocusEvent * ) { }
 
+    // flush key presses from the event queue
+    void flushKeys();
+
     // do </a> if necessary
     void closeAnchor()
     {
@@ -762,6 +794,8 @@ protected:
      * You may even set the second one to "" if you dont need it.
      */
     const char* parseBody( HTMLClueV *_clue, const char *[], bool toplevel = FALSE );
+
+    const char* parseOneToken( HTMLClueV *_clue, const char *str );
 
     /*
      * Parse marks starting with character, e.g.
@@ -885,9 +919,14 @@ protected:
     QTimer autoScrollYTimer;
 
     /*
+     * Timer used to schedule paint events
+     */
+    QTimer updateTimer;
+
+    /*
      * This object contains the complete text. This text is referenced
      * by HTMLText objects for example. So you may not delete
-     * 'ht' until you have deletet the complete tree 'clue' is
+     * 'ht' until you have delete the complete tree 'clue' is
      * pointing to.
      */
     HTMLTokenizer *ht;
@@ -938,18 +977,6 @@ protected:
      * one font on the stack.
      */
     QStack<HTMLFont> font_stack;
-
-    /*
-     * The base font size
-     */
-    int fontBase;
-    int defaultFontBase;
-
-    /*
-     * The font styles
-     */
-    QString standardFont;
-    QString fixedFont;
 
     /*
      * The weight currently selected. This is affected by <b>..</b>
@@ -1027,23 +1054,15 @@ protected:
 			// <base ...>
 
     /*
-     * Text colors
-     */
-    QColor textColor;
-    QColor linkColor;
-    QColor vLinkColor;
-
-    /*
-     * Default text colors
-     */
-    QColor defTextColor;
-    QColor defLinkColor;
-    QColor defVLinkColor;
-
-    /*
      * Current text color is at the top of the stack
      */
     QStack<QColor> colorStack;
+
+    /*
+     * A color context for the current page so that we can free the colors
+     * when we close the page.
+     */
+    int colorContext;
 
     /*
      * Timer to parse html in background
@@ -1138,14 +1157,19 @@ protected:
     QPixmap bgPixmap;
 
     /*
-     * Default background color to use if one isn't specified.
-     */
-    QColor defaultBGColor;
-
-    /*
      * This is the cusor to use when over a link
      */
     QCursor linkCursor;
+
+    /*
+     * Current fontbase, colors, etc.
+     */
+    HTMLSettings *settings;
+
+    /*
+     * Default settings.
+     */
+    HTMLSettings *defaultSettings;
 
     // should the background be painted?
     bool bDrawBackground;
@@ -1153,8 +1177,8 @@ protected:
     /*
      * The URL of the not loaded!! background image
      * If we are waiting for a background image then this is its URL.
-     * If the image is already loaded or if we dont have one this variable
-     * contains 0L. You can write bgPixmapURL.isNull() to test wether we are
+     * If the image is already loaded or if we don't have one this variable
+     * contains 0. You can write bgPixmapURL.isNull() to test wether we are
      * waiting for a background pixmap.
      */
     QString bgPixmapURL;

@@ -1,7 +1,38 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 23 October 1997 - Martin Jones.
+Last Change: 7 November 1997 - Martin Jones.
+
+Version 0.12.00 - Martin
+------------------------
+
+Finally found the source of the slow-down.  Comparing QColor of fonts
+ was not working, so new fonts were always created.  This also fixes
+ one of the memory leaks.
+Change tokenizer to use custom link list instead of QList, plus lots
+ of other tokeniser fixes.
+totalRows calculation in tables corrected and better handling of illegal
+ html.
+Allow empty <frame>.  Some people use this to space out the page.
+Implement frameborder=0
+Reimplement HTMLClueFlow to handle layout properly, i.e. don't break after
+ tags ONLY on whitespace.
+Implement <br clear=...
+Tokeniser optimisations from Norman Markgraf and some more from me.
+Added setUnderlineLinks( bool ).
+Allow <table> ... </table> without any <td>, <tr>, <th>.
+Delayed updates to prevent multiple updates causing flickering.
+Added password form element from Henner Zeller <zeller@stud.fh-heilbronn.de>.
+Discard repeated keys to prevent overrun when scrolling (from Alessandro
+ Russo <alessandro.russo@ntt.it>).
+Enabled QMovies and improved paintSingleObject for objects which need to be
+ frequently updated (like HTMLImage).
+Support for target=_top/_parent/_self/_blank
+Allow <img src="a.gif"align=left>  i.e. don't mind if there is no space
+ after a " in tags.
+Killed some memory leaks - probably introduced new ones.
+And LOTS of bug fixes.
+
 
 Version 0.11.01 - Martin
 -----------------------

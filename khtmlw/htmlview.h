@@ -307,7 +307,7 @@ public:
      * @see #setName
      * @see #name
      */
-    static KHTMLView* findView( const char *_name );
+    KHTMLView* findView( const char *_name );
 
     /**
      * @return the view that represents the currently selected frame or 0L

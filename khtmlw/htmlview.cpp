@@ -35,9 +35,12 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
     
     // Allow resizing of frame
     bAllowResize = TRUE;
+
     // Set scrolling to auto
     scrolling = -1;
-    frameBorder = -1;
+
+    // border on
+    frameBorder = 1;
     
     // debugT("Constructed KHTML View\n");
     
@@ -87,7 +90,31 @@ KHTMLView* KHTMLView::newView( QWidget *_parent, const char *_name, int _flags )
 KHTMLView* KHTMLView::findView( const char *_name )
 {
     KHTMLView *v;
-    for ( v = viewList->first(); v != 0L; v = viewList->next() )
+ 
+    if ( strcmp( _name, "_top" ) == 0 )
+    {
+	v = this;
+
+	while ( v->getParentView() )
+	    v = v->getParentView();
+	
+	return v;
+    }
+    else if ( strcmp( _name, "_self" ) == 0 )
+    {
+	return this;
+    }
+    else if ( strcmp( _name, "_parent" ) == 0 )
+    {
+	if ( getParentView() )
+	    return getParentView();
+    }
+    else if ( strcmp( _name, "_blank" ) == 0 )
+    {
+	return 0;
+    }
+
+    for ( v = viewList->first(); v != 0; v = viewList->next() )
     {
 	if ( v->getFrameName() )
 	{
@@ -97,7 +124,7 @@ KHTMLView* KHTMLView::findView( const char *_name )
 	}
     }
     
-    return 0L;
+    return 0;
 }
 
 void KHTMLView::begin( const char *_url, int _dx, int _dy )

@@ -1,9 +1,6 @@
-// -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
-
-    With some minor changes by Norman Markgraf
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,24 +18,34 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef AMPSEQ_H
-#define AMPSEQ_H
+#ifndef __HTMLDATA_H__
+#define __HTMLDATA_H__
 
-#define NUM_AMPSEQ      164
+#include <qcolor.h>
+#include <qcursor.h>
+#include <qstring.h>
 
-struct ampseq_s
+class HTMLSettings
 {
-    char *tag;          // amp-tag
-    char fontid;        // fontid    <--> font             <--> why?
-                        //-----------------------------------------------------
-                        //     0       standardFont       all normal letters
-                        //     1       symbol             for greek letters
-    char value;         // the character
+public:
+    HTMLSettings();
+    HTMLSettings( const HTMLSettings & );
+
+    const HTMLSettings &operator=( const HTMLSettings & );
+
+    int     fontBaseSize;
+    QColor  fontBaseColor;
+    QString fontBaseFace;
+
+    QString fixedFontFace;
+
+    QColor  linkColor;
+    QColor  vLinkColor;
+
+    QColor  bgColor;
+
+    bool    underlineLinks;
 };
-
-extern char* AmpSeqFontFaces[];
-
-extern ampseq_s AmpSequences[];
 
 #endif
 

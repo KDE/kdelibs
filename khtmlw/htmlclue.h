@@ -139,6 +139,10 @@ public:
         { return 0; }
     virtual int  getRightMargin( int )
 	{ return max_width; }
+    virtual int  getLeftClear( int _y )
+	{ return _y; }
+    virtual int  getRightClear( int _y )
+	{ return _y; }
     
     void setVAlign( VAlign _v ) { valign = _v; }
     void setHAlign( HAlign _h ) { halign = _h; }
@@ -234,6 +238,8 @@ public:
     virtual void appendRightAligned( HTMLClueAligned *_clue );
     virtual int  getLeftMargin( int _y );
     virtual int  getRightMargin( int _y );
+    virtual int  getLeftClear( int _y );
+    virtual int  getRightClear( int _y );
 
 protected:
     void removeAlignedByParent( HTMLObject *p );
@@ -308,8 +314,6 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-// HTMLTable is totally unprepared for improperly formatted tables.
-// MRJ - remember to add error checking to tables.
 //
 class HTMLTable : public HTMLObject
 {
@@ -380,7 +384,7 @@ protected:
     QArray<int> rowHeights;
     QArray<ColType> colType;
     unsigned int col, totalCols;
-    unsigned int row, totalRows;
+    unsigned int row, totalRows, allocRows;
     int spacing;
     int padding;
     int border;

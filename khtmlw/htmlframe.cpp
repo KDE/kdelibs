@@ -28,7 +28,7 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
 {
     lastPanner = 0L;
     
-    frameBorder = -1;
+    frameBorder = 1;
     bAllowResize = TRUE;
     
     widgetList.setAutoDelete( TRUE );
@@ -160,6 +160,7 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
 
     int j = 0;
     int i = 0;
+    int pannerSize = frameBorder > 0 ? 5 : 0;
     QWidget *w;
     QWidget* next;
     for ( w = widgetList.first(); w != 0L; w = next )
@@ -170,13 +171,13 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
 	{
 	    if ( w->isA( "HTMLFramePanner" ) )
 	    {
-		w->setGeometry( 0, j, width(), 5 );
-		j += 5;
+		w->setGeometry( 0, j, width(), pannerSize );
+		j += pannerSize;
 	    }
 	    else
 	    {
 		if ( next && next->isA( "HTMLFramePanner" ) )
-		    size[i] -= 5;
+		    size[i] -= pannerSize;
 		w->setGeometry( 0, j, width(), size[ i ] );
 		j += size[ i ];
 		i++;
@@ -186,25 +187,25 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
 	{
 	    if ( w->isA( "HTMLFramePanner" ) )
 	    {
-		w->setGeometry( j, 0, 5, height() );
-		j += 5;
+		w->setGeometry( j, 0, pannerSize, height() );
+		j += pannerSize;
 	    }
 	    else
 	    {
 		if ( next && next->isA( "HTMLFramePanner" ) )
-		    size[i] -= 5;
+		    size[i] -= pannerSize;
 		w->setGeometry( j, 0, size[ i ], height() );
 		j += size[ i ];
 		i++;	
 	    }
 	}
     }
-    printf("Done Set\n");
+    debug("Done Set");
 }
 
 int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 {	
-  printf("Calculating size\n");
+    debug("Calculating size");
   
     int value[1024];
     int mode[1024];
@@ -241,9 +242,9 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	}
     }
 
-    printf("********************** CALC SIZE elements = %i **************************\n",i);
+    debug("*************** CALC SIZE elements = %i ******************",i);
     
-    printf("max. width=%i   max. height=%i\n",width(),height() );
+    debug("max. width=%i   max. height=%i",width(),height() );
 
     bool joker = FALSE;
     
@@ -456,3 +457,4 @@ void HTMLFramePanner::mouseReleaseEvent( QMouseEvent * )
 }
 
 #include "htmlframe.moc"
+

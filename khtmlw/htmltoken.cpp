@@ -39,7 +39,7 @@
 
 //-----------------------------------------------------------------------------
 
-const char *BlockingToken::token()
+const char *BlockingToken::tokenName()
 {
     switch ( ttype )
     {
@@ -71,18 +71,35 @@ HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
     scriptString = "</script>";
     jsEnvironment = 0L;
     widget = _widget;
+    head = tail = curr = 0;
+    buffer = 0;
+}
+
+void HTMLTokenizer::reset()
+{
+    while ( head )
+    {
+	curr = head->next();
+	delete head;
+	head = curr;
+    }
+
+    head = tail = curr = 0;
+
+    if ( buffer )
+	delete [] buffer;
 }
 
 void HTMLTokenizer::begin()
 {
+    reset();
+    blocking.clear();
     size = 1000;
     buffer = new char[ 1024 ];
     dest = buffer;
-    tokenList.clear();
-    tokenList.append( "" );		// dummy first token
-    blocking.clear();
     tag = false;
     space = false;
+    discardCR = false;
     pre = false;
     script = false;
     comment = false;
@@ -106,9 +123,6 @@ void HTMLTokenizer::write( const char *str )
 	return;
     
     const char *src = str;
-    if ( tokenList.current() == 0L )
-	tokenList.last();
-    int pos = tokenList.at();
 
     // If we have <pre> and get a '\t' we need to know
     // in which row we are in order to calculate the next
@@ -117,6 +131,7 @@ void HTMLTokenizer::write( const char *str )
 
     while ( *src != 0 )
     {
+	// do we need to enlarge the buffer?
 	if ( dest - buffer > size )
 	{
 	    char *newbuf = new char [ size + 1024 ];
@@ -242,7 +257,22 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    char *endptr;
 		    int z = (int) strtol( src+2, &endptr, 10 );
-		    *dest++ = z;
+		    if ( z > 255 )
+		    {
+			if ( z > 912 && z < 938 ) {
+			    // Capital greek letters
+			}
+			else if ( z > 944 && z < 970 ) {
+			    // lower greek letters
+			}
+			else if ( (z>976 && z<979) || (z=982)) {
+			    // lower var letters
+			}
+		    }
+		    else
+		    {
+			*dest++ = z;
+		    }
 		    src = endptr;
 		    // Skip a trailing ';' ?
 		    if ( *src == ';' )
@@ -278,14 +308,13 @@ void HTMLTokenizer::write( const char *str )
 			{
 			    // add current tag
 			    *dest = 0;
-			    tokenList.append( buffer );
+			    appendToken( buffer, dest-buffer );
 			    dest = buffer;
 
 			    // set the new font
 			    sprintf( ampBuffer, "%c<FONT FACE=\"%s\">",
 				(char)TAG_ESCAPE, AmpSeqFontFaces[ampFontId] );
-			    tokenList.append( ampBuffer );
-			    debug( "Selected font: %s", ampBuffer+1 );
+			    appendToken( ampBuffer, strlen( ampBuffer ) );
 			}
 
 			*dest++ = AmpSequences[ tmpcnt ].value;
@@ -296,11 +325,11 @@ void HTMLTokenizer::write( const char *str )
 			if ( ampFontId > 0 )
 			{
 			    *dest = 0;
-			    tokenList.append( buffer );
+			    appendToken( buffer, dest-buffer );
 			    dest = buffer;
 
 			    sprintf( ampBuffer, "%c</FONT>", (char)TAG_ESCAPE );
-			    tokenList.append( ampBuffer );
+			    appendToken( ampBuffer, strlen( ampBuffer ) );
 			}
 		    }
 		    else
@@ -314,142 +343,242 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if ( *src == '<' )
 	{
-	    if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
+	    src++;
+	    if ( strncmp( src, "!-", 2 ) == 0 )
 	    {
-		src += 4;
+		src += 2;
 		comment = true;
 		continue;
 	    }
 
-	    space = false;
+	    space = true;      // skip leading spaces
+	    discardCR = true;  // skip leading CR
 	    tquote = false;
 
 	    if ( dest > buffer )
 	    {
 		*dest = 0;
-		tokenList.append( buffer );
+		appendToken( buffer, dest-buffer );
 		dest = buffer;
 	    }
 	    *dest++ = TAG_ESCAPE;
 	    *dest++ = '<';
 	    tag = true;
-	    src++;
 	}
 	else if ( *src == '>' && tag && !tquote )
 	{
-	    if ( strncasecmp( buffer+1, "<pre", 4 ) == 0 )
+	    space = false;
+//	    discardCR = true;
+	    discardCR = false;
+
+	    *dest++ = '>';
+	    *dest = 0;
+
+	    // make the tag lower case
+	    char *ptr = buffer+2;
+	    while ( *ptr && *ptr != ' ' )
+		*ptr++ = tolower( *ptr );
+
+	    appendToken( buffer, dest-buffer );
+	    dest = buffer;
+
+	    tag = false;
+	    src++;
+
+	    if ( strncasecmp( buffer+2, "pre", 3 ) == 0 )
 	    {
 		pre_pos = 0;
 		pre = true;
 	    }
-	    else if ( strncasecmp( buffer+1, "</pre", 5 ) == 0 )
+	    else if ( strncasecmp( buffer+2, "/pre", 4 ) == 0 )
+	    {
 		pre = false;
-	    else if ( strncasecmp( buffer+1, "<script", 7 ) == 0 )
+	    }
+	    else if ( strncasecmp( buffer+2, "script", 6 ) == 0 )
 	    {
 		script = true;
-//		blocking.append( new BlockingToken( BlockingToken::Script,
-//				tokenList.at() ) );
+//		blocking.append(new BlockingToken(BlockingToken::Script,tail));
 
 		scriptCode = new char[ 1024 ];
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
 	    }
-	    else if ( strncasecmp( buffer+1, "<frameset", 9 ) == 0 )
+	    else if ( strncasecmp( buffer+2, "frameset", 8 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::FrameSet,
-				tokenList.at() ) );
+				tail ) );
 	    }
-	    else if ( strncasecmp( buffer+1, "<cell", 5 ) == 0 )
+	    else if ( strncasecmp( buffer+2, "cell", 4 ) == 0 )
 	    {
-		blocking.append( new BlockingToken( BlockingToken::Cell,
-				tokenList.at() ) );
+		blocking.append( new BlockingToken(BlockingToken::Cell,tail) );
 	    }
-	    else if ( strncasecmp( buffer+1, "<table", 6 ) == 0 )
+	    else if ( strncasecmp( buffer+2, "table", 5 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Table,
-				tokenList.at() ) );
+				tail ) );
 	    }
 	    else if ( !blocking.isEmpty() && 
-		    strncasecmp( buffer+1, blocking.getLast()->token(),
-			strlen( blocking.getLast()->token() ) ) == 0 )
+		    strncasecmp( buffer+1, blocking.getLast()->tokenName(),
+			strlen( blocking.getLast()->tokenName() ) ) == 0 )
 	    {
 		blocking.removeLast();
 	    }
-
-	    space = false;
-
-	    *dest++ = '>';
-	    *dest = 0;
-	    tokenList.append( buffer );
-	    dest = buffer;
-	    tag = false;
-	    src++;
 	}
-	else if ( !tag && pre && ( *src == ' ' || *src == '\t' ||
-		*src == '\n' || *src == 13 ) )
+	else if ( *src == '\n' )
 	{
-	    // For every line break in <pre> insert the tag '\n'.
-	    if ( *src == '\n' )
+	    if ( !discardCR )
 	    {
-		if ( dest > buffer )
+		if ( tag )
+		{
+		    if ( !space )
+		    {
+			*dest++ = ' ';
+			space = true;
+		    }
+		}
+		else if ( pre )
+		{ // For every line break in <pre> insert the tag '\n'.
+		    if ( dest > buffer )
+		    {
+			*dest = 0;
+			appendToken( buffer, dest-buffer );
+			dest = buffer;
+		    }
+		    *dest++ = TAG_ESCAPE;
+		    *dest++ = '\n';
+		    *dest = 0;
+		    appendToken( buffer, 2 );
+		    dest = buffer;
+		    pre_pos = 0; 
+		}
+		else if ( !space )
 		{
 		    *dest = 0;
-		    tokenList.append( buffer );
+		    appendToken( buffer, dest-buffer );
 		    dest = buffer;
+
+		    *dest++ = ' ';
+		    *dest = 0;
+		    appendToken( buffer, 1 );
+		    dest = buffer;
+
+		    space = true;
 		}
-		*dest++ = TAG_ESCAPE;
-		*dest++ = '\n';
-		*dest = 0;
-		tokenList.append( buffer );
-		dest = buffer;
-		pre_pos = 0; 
 	    }
-	    else if ( *src == '\t' )
+	    src++;
+	}
+	else if ( *src == ' ' )
+	{
+	    if ( tag )
+	    {
+		if ( !space )
+		{
+		    *dest++ = ' ';
+		    space = true;
+		}
+	    }
+	    else if ( pre )
+	    {
+		pre_pos++;
+		*dest++ = ' ';
+	    }
+	    else if ( !space )
+	    {
+		*dest = 0;
+		appendToken( buffer, dest-buffer );
+		dest = buffer;
+
+		*dest++ = ' ';
+		*dest = 0;
+		appendToken( buffer, 1 );
+		dest = buffer;
+
+		space = true;
+	    }
+	    src++;
+	}
+	else if ( *src == '\t' )
+	{
+	    if ( tag )
+	    {
+		if ( !space )
+		{
+		    *dest++ = ' ';
+		    space = true;
+		}
+	    }
+	    else if ( pre )
 	    {
 		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
 		for ( int x = 0; x < p; x++ )
 		    *dest++ = ' ';
 	    }
-	    else if ( *src == ' ' )
+	    else if ( !space )
 	    {
-		pre_pos++;
+		*dest = 0;
+		appendToken( buffer, dest-buffer );
+		dest = buffer;
+
 		*dest++ = ' ';
+		*dest = 0;
+		appendToken( buffer, 1 );
+		dest = buffer;
+
 		space = true;
 	    }
 	    src++;
 	}
-	else if ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 )
+	else if ( *src == 13 )
 	{
-	    if ( !space )
-	    {
-		*dest++ = ' ';
-		if ( !tag )
-		{
-		    *dest = 0;
-		    tokenList.append( buffer );
-		    dest = buffer;
-		}
-		space = true;
-	    }
+	    // discard
 	    src++;
+	}
+	else if ( *src == '\"' )
+	{
+	    src++;
+
+	    if ( tag )
+	    {
+		if ( *(dest-1) == '=' )
+		{
+		    tquote = true;
+		    *dest++ = '\"';
+		    space = false;
+		    discardCR = false;
+		}
+		else if ( tquote )
+		{
+		    tquote = false;
+		    *dest++ = '\"';
+		    *dest++ = ' ';
+		    space = true;
+		    discardCR = true;
+		}
+		else
+		    continue;  // stray '\"'
+	    }
+	    else
+	    {
+		space = false;
+		discardCR = false;
+
+		if ( pre )
+		    pre_pos++;
+
+		*dest++ = '\"';
+	    }
 	}
 	else
 	{
 	    space = false;
+	    discardCR = false;
+
 	    if ( pre )
 		pre_pos++;
 
-	    if ( tag && *src == '\"' )
-		tquote = !tquote;
-	    
 	    *dest++ = *src++;
 	}
     }
-
-    if ( pos >= 0 )
-	tokenList.at( pos );
-    else
-	tokenList.last();
 
     if ( srcPtr )
 	delete [] srcPtr;
@@ -457,44 +586,40 @@ void HTMLTokenizer::write( const char *str )
 
 void HTMLTokenizer::end()
 {
-    int pos = tokenList.at();
-
     if ( dest > buffer )
     {
 	*dest = 0;
-	tokenList.append( buffer );
+	appendToken( buffer, dest-buffer );
     }
 
     delete [] buffer;
+    buffer = 0;
 
     // if there are still blocking tokens then the HTML is illegal - remove
     // blocks anyway and hope for the best
     blocking.clear();
-
-    if ( pos >= 0 )
-	tokenList.at( pos );
-    else
-	tokenList.last();
 }
 
-const char* HTMLTokenizer::nextToken()
+char* HTMLTokenizer::nextToken()
 {
-    const char *ret = tokenList.next();
+    char *t = curr->token();
+    curr = curr->next();
 
-    return ret;
+    return t;
 }
 
 bool HTMLTokenizer::hasMoreTokens()
 {
     if ( !blocking.isEmpty() &&
-	    blocking.getFirst()->getPosition() <= tokenList.at() )
+	    blocking.getFirst()->token() == curr )
 	return false;
 
-    return (tokenList.current() && tokenList.current() != tokenList.getLast());
+    return ( curr != 0 );
 }
 
 HTMLTokenizer::~HTMLTokenizer()
 {
+    reset();
 }
 
 //-----------------------------------------------------------------------------

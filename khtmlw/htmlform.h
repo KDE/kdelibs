@@ -310,7 +310,8 @@ class HTMLTextInput : public HTMLInput
 {
 	Q_OBJECT
 public:
-	HTMLTextInput( QWidget *parent, const char *n, const char *v, int s );
+	HTMLTextInput( QWidget *parent, const char *n, const char *v, int s,
+		    bool password = false );
 	virtual ~HTMLTextInput() { }
 
 	virtual QString encoding();

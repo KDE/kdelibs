@@ -34,6 +34,7 @@
 
 #include <qimage.h>
 #include <qdrawutl.h>
+#include <qmovie.h>
 
 #include "htmlobj.moc"
 
@@ -47,7 +48,6 @@ HTMLObject::HTMLObject()
 {
     flags = 0;
     setFixedWidth( true );
-    setPrinting( true );
     max_width = 0;
     width = 0;
     ascent = 0;
@@ -208,11 +208,13 @@ int HTMLObject::findPageBreak( int _y )
 
 //-----------------------------------------------------------------------------
 
-HTMLVSpace::HTMLVSpace( int _vspace ) : HTMLObject()
+HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
 {
+    setNewline( true );
     ascent = _vspace;    
     descent = 0;
     width = 1;
+    cl = c;
 }
 
 //-----------------------------------------------------------------------------
@@ -381,9 +383,6 @@ bool HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !isPrinting() )
-	return;
-
     if ( isNewline() )
 	return;
  
@@ -471,9 +470,6 @@ bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !isPrinting() )
-	return;
-
     QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
 	    black, white );
 
@@ -518,9 +514,6 @@ bool HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _
 
 void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !isPrinting() )
-	return;
-
 	int yp = y + _ty - 9;
 	int xp = x + _tx + 2;
 
@@ -593,10 +586,10 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
-    if ( pCache == 0L )
+    if ( pCache == 0 )
 	pCache = new QList<HTMLCachedImage>;
 
-    pixmap = 0L;
+    pixmap = 0;
     movie = 0;
 
     htmlWidget = widget;
@@ -615,6 +608,9 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     ascent = _height;
     descent = 0;
     width = _width;
+
+    absX = -1;
+    absY = -1;
     
     if ( _filename[0] != '/' )
     {
@@ -713,29 +709,28 @@ void HTMLImage::fileLoaded( const char *_filename )
 #endif
 	pixmap = new QPixmap();
 	pixmap->load( _filename );	    
+	cached = false;
+
+	if ( pixmap == 0 || pixmap->isNull() )
+	    return;
+
+	init();
+
+	debugM( "Loaded Image: %s, %d, %d, %d\n",  imageURL.data(), predefinedWidth,
+		    predefinedHeight, synchron );
+
+	// We knew the size during the HTML parsing ?
+	if ( predefinedWidth && predefinedHeight && !synchron )
+	    htmlWidget->paintSingleObject( this );
+	else if ( !synchron )
+	{
+	    htmlWidget->calcSize();
+	    htmlWidget->calcAbsolutePos();
+	    htmlWidget->scheduleUpdate( true );
+	}
 #ifdef USE_QMOVIE
     }
 #endif
-    cached = false;
-
-    if ( pixmap == 0 || pixmap->isNull() )
-	return;
-
-    init();
-
-    debugM( "Loaded Image: %s, %d, %d, %d\n",  imageURL.data(), predefinedWidth,
-		predefinedHeight, synchron );
-
-    // We knew the size during the HTML parsing ?
-    if ( predefinedWidth && predefinedHeight && !synchron )
-	htmlWidget->paintSingleObject( this );
-    else if ( !synchron )
-    {
-	htmlWidget->calcSize();
-	QPaintEvent *e = new QPaintEvent( QRect(0, 0,
-		htmlWidget->width(), htmlWidget->height() ) );
-	QApplication::postEvent( htmlWidget, e );
-    }
 }
 
 int HTMLImage::calcMinWidth()
@@ -807,31 +802,61 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 		    colorGrp, true, 1 );
 	}
     }
-    else if ( (width - border*2 != pixptr->width() ||
-	ascent - border*2 != pixptr->height() ) &&
-	pixptr->width() != 0 && pixptr->height() != 0 )
-    {
-	QWMatrix matrix;
-	matrix.scale( (float)(width-border*2)/pixptr->width(),
-		(float)(ascent-border*2)/pixptr->height() );
-	QPixmap tp = pixptr->xForm( matrix );
-	rect.setRight( rect.right() * (width-border*2)/pixptr->width() );
-	rect.setBottom( rect.bottom() * (ascent-border*2)/pixptr->height() );
-	_painter->drawPixmap( QPoint( x + _tx + border,
-		y - ascent + _ty + border ), tp );
-    }
     else
-	_painter->drawPixmap( QPoint( x + _tx + border,
-		y - ascent + _ty + border ), *pixptr, rect );
+    {
+	QPixmap pm = *pixptr;
+
+	if ( isSelected() )
+	{
+	    QPainter p( &pm );
+	    p.setRasterOp( NotEraseROP );
+	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
+	}
+
+	if ( (width - border*2 != pixptr->width() ||
+	    ascent - border*2 != pixptr->height() ) &&
+	    pixptr->width() != 0 && pixptr->height() != 0 )
+	{
+	    QWMatrix matrix;
+	    matrix.scale( (float)(width-border*2)/pixptr->width(),
+		    (float)(ascent-border*2)/pixptr->height() );
+	    QPixmap tp = pm.xForm( matrix );
+	    rect.setRight( rect.right() * (width-border*2)/pixptr->width() );
+	    rect.setBottom( rect.bottom() * (ascent-border*2)/pixptr->height());
+	    _painter->drawPixmap( QPoint( x + _tx + border,
+		    y - ascent + _ty + border ), tp, rect );
+	}
+	else
+	    _painter->drawPixmap( QPoint( x + _tx + border,
+		    y - ascent + _ty + border ), pm, rect );
+    }
 
     if ( border )
     {
 	QPen pen( borderColor );
 	_painter->setPen( pen );
+	QBrush brush;
+	_painter->setBrush( brush );	// null brush
 	for ( int i = 0; i < border; i++ )
 	    _painter->drawRect( x + _tx + i, y - ascent + _ty + i,
 		width - i*2, ascent - i*2 );
     }
+}
+
+void HTMLImage::calcAbsolutePos( int _x, int _y )
+{
+    absX = _x + x;
+    absY = _y + y - ascent;
+}
+
+int HTMLImage::getAbsX()
+{
+    return absX;
+}
+
+int HTMLImage::getAbsY()
+{
+    return absY;
 }
 
 void HTMLImage::movieUpdated( const QRect & )
@@ -845,9 +870,9 @@ void HTMLImage::movieUpdated( const QRect & )
 	if ( !predefinedWidth || !predefinedHeight )
 	{
 	    htmlWidget->calcSize();
-	    QPaintEvent *e = new QPaintEvent( QRect(0, 0,
-		    htmlWidget->width(), htmlWidget->height() ) );
-	    QApplication::postEvent( htmlWidget, e );
+	    htmlWidget->calcAbsolutePos();
+	    htmlWidget->scheduleUpdate( true );
+	    return;
 	}
     }
     htmlWidget->paintSingleObject( this );
@@ -856,11 +881,17 @@ void HTMLImage::movieUpdated( const QRect & )
 
 HTMLImage::~HTMLImage()
 {
+    if ( !imageURL.isEmpty() && !pixmap )
+	htmlWidget->cancelRequestFile( this );
+
     if ( pixmap && !cached )
 	delete pixmap;
 #ifdef USE_QMOVIE
     if ( movie )
+    {
+	movie->disconnectUpdate( this, 0 );
     	delete movie;
+    }
 #endif
 }
 
@@ -902,6 +933,12 @@ HTMLMap::HTMLMap( KHTMLWidget *w, const char *_url )
 
     if ( strchr ( mapurl, ':' ) )
 	htmlWidget->requestFile( this, mapurl );
+}
+
+HTMLMap::~HTMLMap()
+{
+    if ( strchr ( mapurl, ':' ) )
+	htmlWidget->cancelRequestFile( this );
 }
 
 // The external map has been downloaded

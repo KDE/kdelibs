@@ -37,7 +37,7 @@ public:
 	HTMLFont( const char *_family, int _size, int _weight=QFont::Normal, bool _italic=FALSE );
 	HTMLFont( const HTMLFont &f );
 
-	void setWeight( bool w )
+	void setWeight( int w )
 		{	font.setWeight( w ); }
 	void setItalic( bool u )
 		{	font.setItalic( u ); }
@@ -50,7 +50,7 @@ public:
 
 	const char *family() const
 		{	return font.family(); }
-	const bool weight() const
+	const int  weight() const
 		{	return font.weight(); }
 	const bool italic() const
 		{	return font.italic(); }
@@ -95,7 +95,15 @@ inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
 
 inline bool HTMLFont::operator==( const HTMLFont &f )
 {
-	return ( font == f.font && textCol == f.textCol && fsize == f.fsize );
+	return ( !strcmp( font.family(), f.font.family() ) &&
+		font.weight() == f.font.weight() &&
+		font.italic() == f.font.italic() &&
+		font.underline() == f.font.underline() &&
+		font.strikeOut() == f.font.strikeOut() &&
+		textCol.red() == f.textCol.red() &&
+		textCol.green() == f.textCol.green() &&
+		textCol.blue() == f.textCol.blue() &&
+		fsize == f.fsize );
 }
 
 //-----------------------------------------------------------------------------

@@ -42,23 +42,54 @@ class HTMLTokenizer;
 #define TAB_SIZE 8
 
 
+
+//-----------------------------------------------------------------------------
+
+class Token
+{
+public:
+    Token( const char *t, int len )
+    {
+	tok = new char [ len + 1 ];
+	strcpy( tok, t );
+	nextToken = 0;
+    }
+
+    ~Token()
+    {
+	delete [] tok;
+    }
+
+    char *token()
+	{ return tok; }
+
+    Token *next()
+	{ return nextToken; }
+    void setNext( Token *n )
+	{ nextToken = n; }
+
+private:
+    char *tok;
+    Token *nextToken;
+};
+
 //-----------------------------------------------------------------------------
 
 class BlockingToken
 {
 public:
-    enum Token { Table, FrameSet, Script, Cell };
+    enum TokenType { Table, FrameSet, Script, Cell };
 
-    BlockingToken( Token t, int p )
-	    {	ttype = t; pos = p; }
+    BlockingToken( TokenType tt, Token *t )
+	    {	ttype = tt; tok = t; }
 
-    int getPosition()
-	    {	return pos; }
-    const char *token();
+    Token *token()
+	    {	return tok; }
+    const char *tokenName();
 
 protected:
-    Token ttype;
-    int pos;
+    TokenType ttype;
+    Token *tok;
 };
 
 //-----------------------------------------------------------------------------
@@ -73,23 +104,41 @@ public:
     void write( const char * );
     void end();
 
-    const char* nextToken();
+    char* nextToken();
     bool hasMoreTokens();
 
-    int getPosition()
-    {	return tokenList.at(); }
-    void setPosition( int p )
-    {	if ( p >= 0 ) tokenList.at( p ); }
-    
-    const char *first()
-    {	return tokenList.first(); }
-    const char *last()
-    {	return tokenList.last(); }
+    void first()
+	{ curr = head; }
+
+protected:
+    void reset();
+    void appendToken( const char *t, int len )
+    {
+	Token *tok = new Token( t, len );
+
+	if ( head )
+	{
+	    tail->setNext( tok );
+	    tail = tok;
+	}
+	else
+	{
+	    head = tail = tok;
+	}
+
+	if ( !curr )
+	    curr = tok;
+    }
     
 protected:
-    QStrList tokenList;
+//    QStrList tokenList;
     char *buffer;
     char *dest;
+
+    Token *head;
+    Token *tail;
+
+    Token *curr;
     
     // the size of buffer
     int size;
@@ -102,6 +151,9 @@ protected:
     
     // To avoid multiple spaces
     bool space;
+
+    // Discard line breaks immediately after tags
+    bool discardCR;
     
     // Are we in a <pre> ... </pre> block
     bool pre;
