@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 2001,2001 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -78,7 +78,13 @@ class KKeyChooser : public QWidget
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * already associated with the KKeyChooser object.
 	 */
-	bool insert( KActionCollection* );
+	bool insert( KActionCollection* ); // #### KDE4 : remove me
+    /**
+	 * Insert an action collection, i.e. add all its actions to the ones
+	 * already associated with the KKeyChooser object.
+     * @param title subtree title of this collection of shortcut.
+	 */
+    bool insert( KActionCollection *, const QString &title);
 
 	void syncToConfig( const QString& sConfigGroup, KConfigBase* pConfig, bool bClearUnset );
 
@@ -122,7 +128,7 @@ class KKeyChooser : public QWidget
 	bool insert( KAccel* );
 	bool insert( KGlobalAccel* );
 	bool insert( KShortcutList* );
-	void buildListView( uint iList );
+	void buildListView( uint iList, const QString &title );
 
 	void readGlobalKeys();
 
@@ -226,7 +232,19 @@ class KKeyDialog : public KDialogBase
 	 * Simply call @ref insert with the action collections of each one in turn.
 	 * @return true :)
 	 */
-	bool insert( KActionCollection* );
+	bool insert( KActionCollection* ); // #### KDE4: remove me
+    /**
+	 * Insert an action collection, i.e. add all its actions to the ones
+	 * displayed by the dialog.
+	 * This method can be useful in applications following the document/view
+	 * design, with actions in both the document and the view.
+	 * Simply call @ref insert with the action collections of each one in turn.
+     *
+     * @param title the title associated with the collection (if null, the
+     *        @ref KAboutData::progName() of the collection's instance is used)
+     * @return true :)
+	 */
+    bool insert(KActionCollection *, const QString &title);
 
 	bool configure( bool bSaveSettings = true );
 

@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
 
@@ -47,6 +47,7 @@
 #include <kshortcut.h>
 #include <kshortcutlist.h>
 #include <kxmlguifactory.h>
+#include <kaboutdata.h>
 
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
@@ -88,7 +89,7 @@ class KKeyChooserItem : public KListViewItem
 
 	virtual QString text( int iCol ) const;
 	virtual int compare( QListViewItem*, int iCol, bool bAscending ) const;
-    
+
  protected:
 	KShortcutList* m_pList;
 	uint m_iAction;
@@ -203,12 +204,22 @@ KKeyChooser::~KKeyChooser()
 	delete d;
 }
 
-bool KKeyChooser::insert( KActionCollection* pColl )
+bool KKeyChooser::insert( KActionCollection *pColl)
 {
+    return insert(pColl, QString::null);
+}
+
+bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
+{
+    QString str = title;
+    if ( title.isEmpty() && pColl->instance()
+         && pColl->instance()->aboutData() )
+        str = pColl->instance()->aboutData()->programName();
+
 	KShortcutList* pList = new KActionShortcutList( pColl );
 	d->rgpListsAllocated.append( pList );
 	d->rgpLists.append( pList );
-	buildListView( d->rgpLists.count() - 1 );
+	buildListView(d->rgpLists.count() - 1, str);
 	return true;
 }
 
@@ -229,7 +240,7 @@ bool KKeyChooser::insert( KGlobalAccel* pAccel )
 bool KKeyChooser::insert( KShortcutList* pList )
 {
 	d->rgpLists.append( pList );
-	buildListView( d->rgpLists.count() - 1 );
+	buildListView( d->rgpLists.count() - 1, QString::null );
 	return true;
 }
 
@@ -386,14 +397,15 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 }
 
 // Add all shortcuts to the list
-void KKeyChooser::buildListView( uint iList )
+void KKeyChooser::buildListView( uint iList, const QString &title )
 {
 	KShortcutList* pList = d->rgpLists[iList];
 
 	//d->pList->setSorting( -1 );
 	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
-	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, i18n("Shortcuts") );
+    QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
+	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, str);
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
@@ -818,6 +830,11 @@ KKeyDialog::~KKeyDialog()
 bool KKeyDialog::insert( KActionCollection* pColl )
 {
 	return m_pKeyChooser->insert( pColl );
+}
+
+bool KKeyDialog::insert(KActionCollection *pColl, const QString &title)
+{
+    return m_pKeyChooser->insert(pColl, title);
 }
 
 bool KKeyDialog::configure( bool bSaveSettings )
