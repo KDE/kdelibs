@@ -20,14 +20,11 @@ INCLUDES= $(all_includes)
 
 CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
 
+SUBDIRS = . kded
+
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
-
-bin_PROGRAMS = ksycocatest
-ksycocatest_LDADD = libkio.la
-ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-ksycocatest_SOURCES = main.cpp kbuildsycoca.cpp
 
 libkio_la_SOURCES = \
 	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp ksycocafactory.cc \
@@ -56,8 +53,6 @@ include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h ksycoc
         kio_error.h kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
         ktar.h
-
-noinst_HEADERS = kbuildsycoca.h
 
 magic_DATA = magic
 magicdir = $(kde_mimedir)

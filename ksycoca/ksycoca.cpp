@@ -125,7 +125,8 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
 //static
 bool KSycoca::isBuilding()
 {
-  assert( self );
+  if (!self)
+    self = new KSycoca();
   return self->_isBuilding();
 }
 
