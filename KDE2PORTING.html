@@ -16,6 +16,7 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 
 <UL>
 <LI><A HREF="#general">General Information</A></LI>
+<LI><A HREF="#launching">Starting other programms</A></LI>
 <LI><A HREF="#khtmlw">khtmlw</A></LI>
 <LI><A HREF="#KIntegerLine">KIntegerLine, KIntLineEdit</A></LI>
 <LI><A HREF="#KLocale">KLocale</A></LI>
@@ -72,6 +73,44 @@ in kdesdk/scripts called "fixheaders" that takes care of most of these
 cases. Just call "make -k 2&gt;&amp;1 | perl .../fixheaders" and it will try
 to look after the error messages and add includes as it recognize the
 errors.<P>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="launching">Starting other programs</A></H3>
+
+In KDE 2.0 there are several ways to start other programs from within
+your application. Here is a short summary of your options with reasons why
+you should or should not use them.
+<H4>1. fork + exec</H4>
+<P>
+You never want to use this unless you have a very good reason why it is 
+impossible to use KProcess.
+</P>
+<H4>2. KProcess</H4>
+<P>
+You want to use this if you need to start a new process which needs to be a 
+child of your process, e.g. because you want to catch stdout/stderr or need 
+to send it data via stdin. You should never use this to start other KDE 
+applications unless your application is called kgdb :-)
+</P>
+<H4>3. startServiceByDesktopPath</H4>
+<P>
+Preferred way to launch desktop (KDE/Gnome/X) applications or KDE services. 
+The application/service must have a .desktop file. It will make use of 
+KDEinit for increased startup performance and lower memory usage. These 
+benefits only apply to applications available as KDEinit loadable module (KLM)
+</P>
+<H4>4. KRun</H4>
+<P>
+Generic way to open documents/applications/shell commands. Will use 
+startServiceBy.... where applicable (in the future). Offers the additional 
+benefit of startup-notification.
+</P>
+<P>
+Currently the difference between the roles of KRun and startServiceBy... are 
+not completely clear. KDE 1.x only had KRun and with KDE 2.0 a lot of the 
+functionality has migrated to startServiceBy....<BR>
+</P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
