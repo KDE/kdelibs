@@ -2378,6 +2378,10 @@ bool HTTPProtocol::readHeader()
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
+      // Upgrade Required
+      else if (m_responseCode == 426)
+      {
+      }
       // Any other client errors
       else if (m_responseCode >= 400 && m_responseCode <= 499)
       {
@@ -2605,6 +2609,9 @@ bool HTTPProtocol::readHeader()
       configAuth(trimLead(buf + 19), true);
     }
 
+    else if (strncasecmp(buf, "Upgrade:", 8) == 0) {
+    }
+
     // content?
     else if (strncasecmp(buf, "Content-Encoding:", 17) == 0) {
       // This is so wrong !!  No wonder kio_http is stripping the
@@ -2696,6 +2703,13 @@ bool HTTPProtocol::readHeader()
           m_bKeepAlive = false;
         } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
           m_bKeepAlive = true;
+        } else if (strncasecmp(trimLead(buf + 11), "Upgrade", 7)==0) {
+          // The server is demanding that we upgrade.  The upgrade that
+          // is required is listed in the Upgrade: header line.
+          // If we got HTTP/1.1 101 Switching Protocols along with this,
+          // then it is a response to our request to switch to TLS (affirmative)
+          // but if it is HTTP/1.1 426, then it is a demand from the server.
+          // In any other case, it is simply an "offer" but not required.
         }
 
       }
