@@ -1,6 +1,11 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.22  1997/08/31 15:56:10  kdecvs
+ * Kalle:
+ * - Internationalized Config Entries
+ * - Default-String in readEntry changed to const char*
+ *
  * Revision 1.21  1997/08/30 15:51:55  kdecvs
  * Kalle: BINARY INCOMPATIBLE!!!!!
  * KApplication provides an IconLoader
@@ -371,10 +376,12 @@ QString KConfig::readEntry( const QString& rKey,
       if( pEntryData )
 	aValue = pEntryData->aValue;
       else if( pDefault )
-	aValue = *pDefault;
+	{
+	  aValue = pDefault;
+	}
     }
   else if( pDefault )
-	aValue = *pDefault;
+	aValue = pDefault;
 
   // check for environment variables and make necessary translations
   int nDollarPos = aValue.find( '$' );
