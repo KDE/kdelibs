@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   globalKapp = new KApplication( argc, argv, "knotify" );
   // setup dcop communication
   if ( !kapp->dcopClient()->isAttached() ) {
-    kapp->dcopClient()->registerAs("knotify");
+    kapp->dcopClient()->registerAs("knotify",false);
   }
   KNotify *l_dcop_notify = new KNotify();
 
