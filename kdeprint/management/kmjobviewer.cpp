@@ -533,7 +533,10 @@ void KMJobViewer::removePluginActions()
 void KMJobViewer::aboutToReload()
 {
 	if (m_view)
+	{
 		m_view->clear();
+		m_items.clear();
+	}
 	m_jobs.clear();
 }
 
@@ -541,6 +544,10 @@ void KMJobViewer::reload()
 {
 	removePluginActions();
 	loadPluginActions();
+	// re-add the current printer to the job manager: the job
+	// manager has been destroyed, so the new one doesn't know
+	// which printer it has to list
+	addToManager();
 	// no refresh needed: view has been cleared before reloading
 	// and the actual refresh will be triggered either by the KControl
 	// module, or by KJobViewerApp using timer.
