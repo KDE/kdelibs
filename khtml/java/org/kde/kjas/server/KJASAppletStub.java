@@ -5,6 +5,7 @@ import java.util.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.JFrame;
 
 
 /**
@@ -25,7 +26,7 @@ public final class KJASAppletStub
     private String            windowName;
     private String            className;
     private Class             appletClass;
-    private Frame             frame;
+    private JFrame            frame;
     private boolean           failed = false;
    
     
@@ -143,7 +144,7 @@ public final class KJASAppletStub
     
     void createApplet() {
         panel = new KJASAppletPanel();
-        frame = new Frame(windowName);
+        frame = new JFrame(windowName);
         // under certain circumstances, it may happen that the
         // applet is not embedded but shown in a separate window.
         // think of konqueror running under fvwm or gnome.
@@ -157,7 +158,7 @@ public final class KJASAppletStub
                 }
             }
         );
-        frame.add( panel, BorderLayout.CENTER );
+        frame.getContentPane().add( panel, BorderLayout.CENTER );
         frame.setUndecorated(true);
         frame.setLocation( 0, 0 );
         frame.pack();
