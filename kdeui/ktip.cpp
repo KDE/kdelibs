@@ -203,12 +203,12 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     KPushButton *prev = new KPushButton( KStdGuiItem::back( 
             KStdGuiItem::UseRTL ), this );
-    prev->setText( "&Previous" );
+    prev->setText( i18n("&Previous") );
     hbox2->addWidget(prev);
 
     KPushButton *next = new KPushButton( KStdGuiItem::forward( 
             KStdGuiItem::UseRTL ), this );
-    next->setText( "&Next" );
+    next->setText( i18n("&Next") );
     hbox2->addWidget(next);
 
     KPushButton *ok = new KPushButton(KStdGuiItem::close(), this);
