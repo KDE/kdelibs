@@ -46,7 +46,8 @@ class Connection;
    CMD_COPY,
    CMD_DEL,
    CMD_CHMOD,
-   CMD_SPECIAL
+   CMD_SPECIAL,
+   CMD_USERPASS
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };

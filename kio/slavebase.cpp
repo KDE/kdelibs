@@ -216,6 +216,8 @@ void SlaveBase::closeConnection(void)
    ready();
 }
 
+
+
 void SlaveBase::stat(QString const &)
 { error(  ERR_UNSUPPORTED_ACTION, "stat" ); }
 void SlaveBase::put(QString const &, int, bool, bool)
@@ -257,6 +259,23 @@ bool SlaveBase::dispatch()
     return true;
 }
 
+bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
+{
+    KIO_DATA << head;
+    m_pConnection->send( ERR_NEED_PASSWD, data );
+    int cmd;
+    if ( m_pConnection->read( &cmd, data ) == -1 )
+      return false;
+    if (cmd != CMD_USERPASS) {
+      dispatch( cmd, data );
+      return false;
+    } else {
+      QDataStream stream( data, IO_ReadOnly );
+      stream >> user >> pass;
+      return true;
+    }
+}
+
 int SlaveBase::readData( QByteArray &buffer)
 {
    int cmd;
@@ -273,6 +292,7 @@ int SlaveBase::readData( QByteArray &buffer)
 
    return result;
 }
+
 
 void SlaveBase::dispatch( int command, const QByteArray &data )
 {

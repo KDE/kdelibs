@@ -88,6 +88,7 @@ public:
     void mimeType( const QString &_type );
     void gettingFile( const QString &_type );
     void warning( const QString &msg );
+    bool openPassDlg( const QString& head, QString& user, QString& pass );
 
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement
