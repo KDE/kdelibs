@@ -870,12 +870,15 @@ void KDoubleNumInput::setFormat(const char* fmt)
 
 void KDoubleNumInput::resetEditBox()
 {
-    if(!m_specialvalue.isEmpty() && (fabs(m_value - m_lower) < 1e-10))
+    if(!m_specialvalue.isEmpty() && (fabs(m_value - m_lower) < 1e-10)) {
         edit->setText(m_specialvalue);
+        edit->home( false );
+    }
     else {
         QString s;
         s.sprintf(m_format, m_value);
         edit->setText(m_prefix + s + m_suffix);
+        edit->home( false );
     }
 }
 
