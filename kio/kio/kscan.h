@@ -24,9 +24,6 @@
 #include <kinstance.h>
 #include <klibloader.h>
 
-// Can be removed once KDE-2.2 is released
-#define KSCANDIALOG_HAS_SETUP 1
-
 class QImage;
 
 /**
