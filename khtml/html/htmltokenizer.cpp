@@ -908,19 +908,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case Value:
             {
-                if ( curchar == '&' )
-                {
-                    ++src;
-
-                    discard = NoneDiscard;
-                    if (pending)
-                        addPending();
-
-                    charEntity = true;
-                    parseEntity(src, dest, true);
-                    break;
-                }
-                else if( tquote )
+                if( tquote )
                 {
                   // additional quote. discard it, and define as end of
                   // attribute
