@@ -22,12 +22,14 @@
 
 #include <kaccelbase.h>
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kkeysequence.h>
 
 struct KStdAccelInfo
 {
+	KStdAccel::StdAccel id;
 	const char* psName;
 	const char* psDesc;
 	int keyDefault, keyDefault4, keyDefault3B, keyDefault4B;
@@ -37,53 +39,58 @@ struct KStdAccelInfo
 
 static KStdAccelInfo g_infoStdAccel[] =
 {
-	{ I18N_NOOP("Open"), 0,     Qt::CTRL+Qt::Key_O },
-	{ I18N_NOOP("New"), 0,      Qt::CTRL+Qt::Key_N },
-	{ I18N_NOOP("Close"), 0,    Qt::CTRL+Qt::Key_W, Qt::CTRL+Qt::Key_Escape },
-	{ I18N_NOOP("Save"), 0,     Qt::CTRL+Qt::Key_S },
-	{ I18N_NOOP("Print"), 0,    Qt::CTRL+Qt::Key_P },
-	{ I18N_NOOP("Quit"), 0,     Qt::CTRL+Qt::Key_Q },
-	{ I18N_NOOP("Cut"), 0,      Qt::CTRL+Qt::Key_X, 0, Qt::SHIFT+Qt::Key_Delete },
-	{ I18N_NOOP("Copy"), 0,     Qt::CTRL+Qt::Key_C, 0, Qt::CTRL+Qt::Key_Insert },
-	{ I18N_NOOP("Paste"), 0,    Qt::CTRL+Qt::Key_V, 0, Qt::SHIFT+Qt::Key_Insert },
-	{ I18N_NOOP("Undo"), 0,     Qt::CTRL+Qt::Key_Z },
-	{ I18N_NOOP("Redo"), 0,     Qt::CTRL+Qt::SHIFT+Qt::Key_Z },
-	{ I18N_NOOP("Find"), 0,     Qt::CTRL+Qt::Key_F },
-	{ I18N_NOOP("Replace"), 0,  Qt::CTRL+Qt::Key_R },
-	{ I18N_NOOP("Insert"), 0,   Qt::CTRL+Qt::Key_Insert },
-	{ I18N_NOOP("Home"), 0,     Qt::CTRL+Qt::Key_Home },
-	{ I18N_NOOP("End"), 0,      Qt::CTRL+Qt::Key_End },
-	{ I18N_NOOP("Prior"), 0,    Qt::Key_Prior },
-	{ I18N_NOOP("Next"), 0,     Qt::Key_Next },
-	{ I18N_NOOP("Help"), 0,     Qt::Key_F1 },
-	{ "FindNext", I18N_NOOP("Find Next"), Qt::Key_F3 },
-	{ "FindPrev", I18N_NOOP("Find Prev"), Qt::SHIFT+Qt::Key_F3 },
-	{ "ZoomIn", I18N_NOOP("Zoom In"), Qt::CTRL+Qt::Key_Plus },
-	{ "ZoomOut", I18N_NOOP("Zoom Out"), Qt::CTRL+Qt::Key_Minus },
-	{ "AddBookmark", I18N_NOOP("Add Bookmark"), Qt::CTRL+Qt::Key_B },
-	{ "TextCompletion", I18N_NOOP("Text Completion"), Qt::CTRL+Qt::Key_E },
-	{ "PrevCompletion", I18N_NOOP("Previous Completion Match"), Qt::CTRL+Qt::Key_Up },
-	{ "NextCompletion", I18N_NOOP("Next Completion Match"), Qt::CTRL+Qt::Key_Down },
-	{ "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up },
-	{ "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down },
-	{ "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu },
-	{ "WhatThis", I18N_NOOP("What's This"), Qt::SHIFT+Qt::Key_F1 },
-	{ I18N_NOOP("Reload"), 0,   Qt::Key_F5 },
-	{ "SelectAll", I18N_NOOP("Select All"), Qt::CTRL+Qt::Key_A },
-	{ I18N_NOOP("Up"), 0,       Qt::ALT+Qt::Key_Up },
-	{ I18N_NOOP("Back"), 0,     Qt::ALT+Qt::Key_Left },
-	{ I18N_NOOP("Forward"), 0,  Qt::ALT+Qt::Key_Right },
-	{ "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M },
-	{ "GotoLine", I18N_NOOP("Go to Line"), Qt::CTRL+Qt::Key_G },
-	{ "DeleteWordBack", I18N_NOOP("Delete Word Backwards"), Qt::CTRL+Qt::Key_Backspace },
-	{ "DeleteWordForward", I18N_NOOP("Delete Word Forward"), Qt::CTRL+Qt::Key_Delete },
-	{ "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T }
+	{ KStdAccel::Open,                I18N_NOOP("Open"), 0,     Qt::CTRL+Qt::Key_O },
+	{ KStdAccel::New,                 I18N_NOOP("New"), 0,      Qt::CTRL+Qt::Key_N },
+	{ KStdAccel::Close,               I18N_NOOP("Close"), 0,    Qt::CTRL+Qt::Key_W, Qt::CTRL+Qt::Key_Escape },
+	{ KStdAccel::Save,                I18N_NOOP("Save"), 0,     Qt::CTRL+Qt::Key_S },
+	{ KStdAccel::Print,               I18N_NOOP("Print"), 0,    Qt::CTRL+Qt::Key_P },
+	{ KStdAccel::Quit,                I18N_NOOP("Quit"), 0,     Qt::CTRL+Qt::Key_Q },
+	{ KStdAccel::Undo,                I18N_NOOP("Undo"), 0,     Qt::CTRL+Qt::Key_Z },
+	{ KStdAccel::Redo,                I18N_NOOP("Redo"), 0,     Qt::CTRL+Qt::SHIFT+Qt::Key_Z },
+	{ KStdAccel::Cut,                 I18N_NOOP("Cut"), 0,      Qt::CTRL+Qt::Key_X, 0, Qt::SHIFT+Qt::Key_Delete },
+	{ KStdAccel::Copy,                I18N_NOOP("Copy"), 0,     Qt::CTRL+Qt::Key_C, 0, Qt::CTRL+Qt::Key_Insert },
+	{ KStdAccel::Paste,               I18N_NOOP("Paste"), 0,    Qt::CTRL+Qt::Key_V, 0, Qt::SHIFT+Qt::Key_Insert },
+	{ KStdAccel::SelectAll,           "SelectAll", I18N_NOOP("Select All"), Qt::CTRL+Qt::Key_A },
+	{ KStdAccel::Deselect,            I18N_NOOP("Deselect"), 0, Qt::CTRL+Qt::SHIFT+Qt::Key_A },
+	{ KStdAccel::DeleteWordBack,      "DeleteWordBack", I18N_NOOP("Delete Word Backwards"), Qt::CTRL+Qt::Key_Backspace },
+	{ KStdAccel::DeleteWordForward,   "DeleteWordForward", I18N_NOOP("Delete Word Forward"), Qt::CTRL+Qt::Key_Delete },
+	{ KStdAccel::Find,                I18N_NOOP("Find"), 0,     Qt::CTRL+Qt::Key_F },
+	{ KStdAccel::FindNext,            "FindNext", I18N_NOOP("Find Next"), Qt::Key_F3 },
+	{ KStdAccel::FindPrev,            "FindPrev", I18N_NOOP("Find Prev"), Qt::SHIFT+Qt::Key_F3 },
+	{ KStdAccel::Replace,             I18N_NOOP("Replace"), 0,  Qt::CTRL+Qt::Key_R },
+	{ KStdAccel::Home,                I18N_NOOP("Home"), 0,     Qt::CTRL+Qt::Key_Home },
+	{ KStdAccel::End,                 I18N_NOOP("End"), 0,      Qt::CTRL+Qt::Key_End },
+	{ KStdAccel::Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_Prior },
+	{ KStdAccel::Next,                I18N_NOOP("Next"), 0,     Qt::Key_Next },
+	{ KStdAccel::GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), Qt::CTRL+Qt::Key_G },
+	{ KStdAccel::AddBookmark,         "AddBookmark", I18N_NOOP("Add Bookmark"), Qt::CTRL+Qt::Key_B },
+	{ KStdAccel::ZoomIn,              "ZoomIn", I18N_NOOP("Zoom In"), Qt::CTRL+Qt::Key_Plus },
+	{ KStdAccel::ZoomOut,             "ZoomOut", I18N_NOOP("Zoom Out"), Qt::CTRL+Qt::Key_Minus },
+	{ KStdAccel::Up,                  I18N_NOOP("Up"), 0,       Qt::ALT+Qt::Key_Up },
+	{ KStdAccel::Back,                I18N_NOOP("Back"), 0,     Qt::ALT+Qt::Key_Left },
+	{ KStdAccel::Forward,             I18N_NOOP("Forward"), 0,  Qt::ALT+Qt::Key_Right },
+	{ KStdAccel::Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5 },
+	{ KStdAccel::PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu },
+	{ KStdAccel::ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M },
+	{ KStdAccel::Help,                I18N_NOOP("Help"), 0,     Qt::Key_F1 },
+	{ KStdAccel::WhatThis,            "WhatThis", I18N_NOOP("What's This"), Qt::SHIFT+Qt::Key_F1 },
+	{ KStdAccel::TextCompletion,      "TextCompletion", I18N_NOOP("Text Completion"), Qt::CTRL+Qt::Key_E },
+	{ KStdAccel::PrevCompletion,      "PrevCompletion", I18N_NOOP("Previous Completion Match"), Qt::CTRL+Qt::Key_Up },
+	{ KStdAccel::NextCompletion,      "NextCompletion", I18N_NOOP("Next Completion Match"), Qt::CTRL+Qt::Key_Down },
+	{ KStdAccel::SubstringCompletion, "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T },
+	{ KStdAccel::RotateUp,            "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up },
+	{ KStdAccel::RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down }
 };
 
 static void initialize(KStdAccel::StdAccel id)
 {
 	KConfigGroupSaver saver( KGlobal::config(), "Shortcuts" );
 	KStdAccelInfo& info = g_infoStdAccel[id];
+
+	if( info.id != id ) {
+		kdWarning(125) << "KStdAccel: id's don't match!" << endl; // -- ellis
+		return;
+	}
 
 	if( saver.config()->hasKey( info.psName ) ) {
 		QString s = saver.config()->readEntry( info.psName );
@@ -244,15 +251,14 @@ uint KStdAccel::find()                  { return key(Find); }
 uint KStdAccel::findNext()              { return key(FindNext); }
 uint KStdAccel::findPrev()              { return key(FindPrev); }
 uint KStdAccel::replace()               { return key(Replace); }
-uint KStdAccel::zoomIn()                { return key(ZoomIn); }
-uint KStdAccel::zoomOut()               { return key(ZoomOut); }
-uint KStdAccel::insert()                { return key(Insert); }
 uint KStdAccel::home()                  { return key(Home); }
 uint KStdAccel::end()                   { return key(End); }
 uint KStdAccel::prior()                 { return key(Prior); }
 uint KStdAccel::next()                  { return key(Next); }
 uint KStdAccel::gotoLine()              { return key(GotoLine); }
 uint KStdAccel::addBookmark()           { return key(AddBookmark); }
+uint KStdAccel::zoomIn()                { return key(ZoomIn); }
+uint KStdAccel::zoomOut()               { return key(ZoomOut); }
 uint KStdAccel::help()                  { return key(Help); }
 uint KStdAccel::completion()            { return key(TextCompletion); }
 uint KStdAccel::prevCompletion()        { return key(PrevCompletion); }

@@ -41,12 +41,20 @@ public:
 
   // Always add new std-accels to the end of this enum, never in the middle!
   enum StdAccel {
-    Open=0, New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-    Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
-    ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion,
-    NextCompletion, RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload,
-    SelectAll, Up, Back, Forward, ShowMenubar, GotoLine, DeleteWordBack,
-    DeleteWordForward, SubstringCompletion, NB_STD_ACCELS
+    // File menu
+    Open=0, New, Close, Save, Print, Quit,
+    // Edit menu
+    Undo, Redo, Cut, Copy, Paste, SelectAll, Deselect, DeleteWordBack,
+    DeleteWordForward, Find, FindNext, FindPrev, Replace,
+    // Navigation
+    Home, End, Prior, Next, GotoLine, AddBookmark, ZoomIn, ZoomOut,
+    Up, Back, Forward, Reload, PopupMenuContext, ShowMenubar,
+    // Help menu
+    Help, WhatThis,
+    // Text completion
+    TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
+    RotateUp, RotateDown,
+    NB_STD_ACCELS
   };
 
   /** Open file. Default: Ctrl-o */
