@@ -540,6 +540,8 @@
 
 100200       kfs
 
+100300       kproperty
+
 101000       amarok (Common)
 101001       amarok (Player)
 101002       amarok (Playlist)
