@@ -853,6 +853,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         tag = SearchValue;
                         *dest++ = 0;
                         attrName = QString::null;
+                        attrId = 0;
                     }
                     else
                         tag = AttributeName;
@@ -882,6 +883,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         a = khtml::getAttrID(cBuffer, cBufferPos);
                         if ( !a )
                             attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
+                        attrId = a;
 
                         dest = buffer;
                         *dest++ = a;
@@ -929,11 +931,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         tag = SearchValue;
                         *dest++ = 0;
                         attrName = QString::null;
+                        attrId = 0;
                     }
                     else {
                         AttrImpl* a = 0;
-                        if(*buffer)
-                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
+                        if(attrId)
+                            a = new AttrImpl(parser->docPtr(), attrId);
                         else if ( !attrName.isEmpty() && attrName != "/" )
                             a = new AttrImpl(parser->docPtr(), attrName);
 
@@ -996,8 +999,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // end of attribute
                         AttrImpl* a;
 
-                        if(buffer->unicode())
-                            a = new AttrImpl(parser->docPtr(), buffer->unicode());
+                        if(attrId)
+                            a = new AttrImpl(parser->docPtr(), attrId);
                         else
                             a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 
@@ -1050,8 +1053,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     {
                         // no quotes. Every space means end of value
                         AttrImpl* a;
-                        if(*buffer)
-                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
+                        if(attrId)
+                            a = new AttrImpl(parser->docPtr(), attrId);
                         else
                             a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 
