@@ -478,7 +478,7 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 	return FALSE;
     }
 
-    if ( ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick ) && m_policy == TriState )
+    if ( ( ev->type() == QEvent::MouseButtonPress /*|| ev->type() == QEvent::MouseButtonDblClick*/ ) && m_policy == TriState )
     {
 	if ( obj->inherits("Frame") )
 	    return FALSE;
