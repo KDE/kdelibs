@@ -236,6 +236,7 @@ void HTMLBRElementImpl::attach()
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
+    m_attached = true;
 }
 
 // -------------------------------------------------------------------------
