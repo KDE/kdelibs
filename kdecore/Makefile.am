@@ -29,7 +29,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurl.h ksock.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwinmodule.h kwm.h kwin.h krootprop.h kpixmap.h dither.h \
-	kaccel.h kglobalaccel.h ltdl.h \
+	kaccel.h kglobalaccel.h  \
 	kprotocolmanager.h kregexp.h kstyle.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h \
 	kstartparams.h kallocator.h kautoarray.h ksharedpixmap.h \
@@ -45,13 +45,13 @@ libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwinmodule.cpp kwm.cpp kwin.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp dither.cpp kckey.cpp kaccel.cpp \
-	kprotocolmanager.cpp kurl.cpp ltdl.c kregexp.cpp \
+	kprotocolmanager.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp dmalloc.cpp  kstartparams.cpp \
 	kallocator.cpp ksharedpixmap.cpp vsnprintf.c \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp ksavefile.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
-libkdecore_la_LIBADD = ../qk/libqk.la -lXext $(LIB_DCOP) $(LIBDL) $(LIB_DMALLOC)
+libkdecore_la_LIBADD = ../libltdl/libltdlc.la ../qk/libqk.la -lXext $(LIB_DCOP) $(LIB_DMALLOC)
 
 libkdecore_la_METASOURCES = AUTO
 

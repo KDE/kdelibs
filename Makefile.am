@@ -18,12 +18,12 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = qk dcop kdecore kdeui kformula mimetypes \
+SUBDIRS = qk dcop libltdl kdecore kdeui kformula mimetypes \
 	mediatool kspell kio kimgio kfile kab khtml kstyles \
 	kparts doc toolbar interfaces kdetest pics
 
-$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/ltdl.m4
-	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in ltdl.m4 > acinclude.m4
+$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in 
+	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
