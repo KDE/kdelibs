@@ -607,8 +607,6 @@ int TCPSlaveBase::verifyCertificate()
     KSSLCertificate::KSSLValidation ksv = pc.validate();
 
     /* Setting the various bits of meta-info that will be needed. */
-    setMetaData("ssl_peer_cert_subject", pc.getSubject());
-    setMetaData("ssl_peer_cert_issuer", pc.getIssuer());
     setMetaData("ssl_cipher", d->kssl->connectionInfo().getCipher());
     setMetaData("ssl_cipher_desc",
                             d->kssl->connectionInfo().getCipherDescription());
@@ -620,9 +618,18 @@ int TCPSlaveBase::verifyCertificate()
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
     setMetaData("ssl_peer_ip", d->ip);
     setMetaData("ssl_cert_state", QString::number(ksv));
-    setMetaData("ssl_good_from", pc.getNotBefore());
-    setMetaData("ssl_good_until", pc.getNotAfter());
-    setMetaData("ssl_peer_cert_serial", pc.getSerialNumber());
+    setMetaData("ssl_peer_certificate", pc.toString());
+
+    if (pc.chain().isValid() && pc.chain().depth() >= 1) {
+       QString theChain;
+       QPtrList<KSSLCertificate> chain = pc.chain().getChain();
+       for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
+          theChain += c->toString();
+          theChain += "\n";
+       }
+       setMetaData("ssl_peer_chain", theChain);
+    } else setMetaData("ssl_peer_chain", "");
+
 
    if (ksv == KSSLCertificate::Ok) {
       rc = 1;

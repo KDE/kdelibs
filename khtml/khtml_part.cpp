@@ -86,6 +86,7 @@ using namespace DOM;
 #endif
 
 #include <kssl.h>
+#include <ksslcertchain.h>
 #include <ksslinfodlg.h>
 
 #include <qtextcodec.h>
@@ -273,18 +274,15 @@ public:
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
   bool m_ssl_in_use;
-  QString m_ssl_peer_cert_subject,
-          m_ssl_peer_cert_issuer,
+  QString m_ssl_peer_certificate,
+          m_ssl_peer_chain,
           m_ssl_peer_ip,
           m_ssl_cipher,
           m_ssl_cipher_desc,
           m_ssl_cipher_version,
           m_ssl_cipher_used_bits,
           m_ssl_cipher_bits,
-          m_ssl_cert_state,
-          m_ssl_good_from,
-          m_ssl_good_until,
-          m_ssl_serial_num;
+          m_ssl_cert_state;
 
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
@@ -1238,18 +1236,15 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
-    d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
-    d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
+    d->m_ssl_peer_certificate = d->m_job->queryMetaData("ssl_peer_certificate");
+    d->m_ssl_peer_chain = d->m_job->queryMetaData("ssl_peer_chain");
     d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
     d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
     d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
     d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
-    d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
-    d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
-    d->m_ssl_serial_num = d->m_job->queryMetaData("ssl_peer_cert_serial");
 
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
@@ -2449,27 +2444,35 @@ void KHTMLPart::slotSecurity()
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
   if (d->m_ssl_in_use) {
-    kid->setup(d->m_ssl_peer_cert_subject,
-               d->m_ssl_peer_cert_issuer,
-               d->m_ssl_peer_ip,
-               m_url.url(),
-               d->m_ssl_cipher,
-               d->m_ssl_cipher_desc,
-               d->m_ssl_cipher_version,
-               d->m_ssl_cipher_used_bits.toInt(),
-               d->m_ssl_cipher_bits.toInt(),
-               (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
-               d->m_ssl_good_from, d->m_ssl_good_until
-#ifdef Q_WS_QWS
-               , d->m_ssl_serial_num
-#else
-#if KDE_VERSION >= 290
-               , d->m_ssl_serial_num
-#endif
-#endif
-               );
-  }
-  kid->exec();
+    KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.local8Bit());
+    if (x) {
+       // Set the chain back onto the certificate
+       QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
+       QPtrList<KSSLCertificate> ncl;
+
+       ncl.setAutoDelete(true);
+       for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
+          KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
+          if (y) ncl.append(y);
+       }
+
+       if (ncl.count() > 0)
+          x->chain().setChain(ncl);
+
+       kid->setup(x,
+                  d->m_ssl_peer_ip,
+                  m_url.url(),
+                  d->m_ssl_cipher,
+                  d->m_ssl_cipher_desc,
+                  d->m_ssl_cipher_version,
+                  d->m_ssl_cipher_used_bits.toInt(),
+                  d->m_ssl_cipher_bits.toInt(),
+                  (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt()
+                  );
+        kid->exec();
+        delete x;
+     } else kid->exec();
+  } else kid->exec();
 }
 
 void KHTMLPart::slotSaveFrame()
@@ -3225,18 +3228,15 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   // Save ssl data
   stream << d->m_ssl_in_use
-         << d->m_ssl_peer_cert_subject
-         << d->m_ssl_peer_cert_issuer
+         << d->m_ssl_peer_certificate
+         << d->m_ssl_peer_chain
          << d->m_ssl_peer_ip
          << d->m_ssl_cipher
          << d->m_ssl_cipher_desc
          << d->m_ssl_cipher_version
          << d->m_ssl_cipher_used_bits
          << d->m_ssl_cipher_bits
-         << d->m_ssl_cert_state
-         << d->m_ssl_good_from
-         << d->m_ssl_good_until
-         << d->m_ssl_serial_num;
+         << d->m_ssl_cert_state;
 
   // Save frame data
   stream << (Q_UINT32)d->m_frames.count();
@@ -3311,18 +3311,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   // Restore ssl data
   stream >> d->m_ssl_in_use
-         >> d->m_ssl_peer_cert_subject
-         >> d->m_ssl_peer_cert_issuer
+         >> d->m_ssl_peer_certificate
+         >> d->m_ssl_peer_chain
          >> d->m_ssl_peer_ip
          >> d->m_ssl_cipher
          >> d->m_ssl_cipher_desc
          >> d->m_ssl_cipher_version
          >> d->m_ssl_cipher_used_bits
          >> d->m_ssl_cipher_bits
-         >> d->m_ssl_cert_state
-         >> d->m_ssl_good_from
-         >> d->m_ssl_good_until
-         >> d->m_ssl_serial_num;
+         >> d->m_ssl_cert_state;
 
   d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
 
