@@ -295,7 +295,7 @@ void KTMainWindow::updateRects()
 	CHECK_PTR(layoutMgr);
 
 	/* add menu bar */
-	if (kmenubar && kmenubar->isVisible())
+	if (kmenubar && kmenubar->isVisibleTo(this))
 		switch (kmenubar->menuBarPos())
 		{
 		case KMenuBar::Top:
@@ -313,7 +313,7 @@ void KTMainWindow::updateRects()
 
 	/* add toolbars */
 	for (toolbars.first(); toolbars.current(); toolbars.next())
-		if (toolbars.current()->isVisible())
+		if (toolbars.current()->isVisibleTo(this))
 		{
 			switch (toolbars.current()->barPos())
 			{
@@ -348,7 +348,7 @@ void KTMainWindow::updateRects()
 	}
 
 	/* add the status bar */
-	if (kstatusbar && kstatusbar->isVisible())
+	if (kstatusbar && kstatusbar->isVisibleTo(this))
 		layoutMgr->addStatusBar(kstatusbar);
 
 	layoutMgr->activate();
