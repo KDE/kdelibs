@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 194
-#define KDE_VERSION_STRING "1.93 Beta >= 20000813"
+#define KDE_VERSION 195
+#define KDE_VERSION_STRING "1.94 >= 20000911"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 4
+#define KDE_VERSION_RELEASE 5
 
 class KConfig;
 class KCharsets;
@@ -785,6 +785,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.187  2000/09/10 04:15:41  waba
+// * Support for "Select All" and "Kill from start of line" in QLineEdit.
+// * Support for "Select All" in QMultiLineEdit.
+// * Added Ctrl-A as standard key-binding for "Select-All".
+//
 // Revision 1.186  2000/09/09 14:13:43  rikkus
 // Removed libmapnotify() function from kapp
 // Added pid() method to kprocess and marked getPid() as deprecated (just making
