@@ -67,7 +67,7 @@ void KDirWatch::addDir( const QString& _path )
     return;
   }
 
-  stat( path, &statbuff );
+  stat( path.ascii(), &statbuff );
   Entry e;
   e.m_clients = 1;
   e.m_ctime = statbuff.st_ctime;
@@ -132,7 +132,7 @@ bool KDirWatch::restartDirScan( const QString& _path )
   if ( it == m_mapDirs.end() )
     return false;
 
-  stat( path, &statbuff );
+  stat( path.ascii(), &statbuff );
   it->m_ctime = statbuff.st_ctime;
   return true;
 }
@@ -161,7 +161,7 @@ void KDirWatch::resetList( bool skippedToo )
   {
     if ( it->m_ctime != NO_NOTIFY || skippedToo )
     {
-      stat( it.key(), &statbuff );
+      stat( it.key().ascii(), &statbuff );
       it->m_ctime = statbuff.st_ctime;
     }
   }
@@ -174,7 +174,7 @@ void KDirWatch::slotRescan()
   QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
   for( ; it != m_mapDirs.end(); ++it )
   {
-    if ( stat( it.key(), &statbuff ) == -1 )
+    if ( stat( it.key().ascii(), &statbuff ) == -1 )
     {
       kdebug( KDEBUG_INFO, 7001, "Deleting %s", it.key().ascii() );
       emit deleted( it.key() );

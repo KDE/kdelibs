@@ -586,15 +586,15 @@ HTMLClue::printDebug( bool propagate, int indent, bool printObjects )
     for( i=0; i<indent; i++)
 	iStr += str;
 
-    printf(iStr + objectName());
+    printf((iStr + objectName()).ascii());
     printf("\n");
 
     if(!propagate) return;
 
-    printf(iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n",
+    printf((iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n").ascii(),
 	   x, y, width, ascent+descent);
-    //printf(iStr + " ---> leftMargin = %d\n", getLeftMargin( getYPos() ));
-    printf(iStr + " ---> this = %p\n", this);
+    //printf((iStr + " ---> leftMargin = %d\n").ascii(), getLeftMargin( getYPos() ));
+    printf((iStr + " ---> this = %p\n").ascii(), this);
     
     // ok... go through the children
     HTMLObject *obj;
@@ -1215,17 +1215,17 @@ HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
     for( i=0; i<indent; i++)
 	iStr += str;
 
-    printf(iStr + objectName());
+    printf((iStr + objectName()).ascii());
     printf("\n");
 
     if(!propagate) return;
 
-    printf(iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n",
+    printf((iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n").ascii(),
 	   x, y, width, ascent+descent);
     if(alignLeftList)
-	printf(iStr + " ---> alignLeftList != 0\n");
-    //printf(iStr + " ---> leftMargin = %d\n", getLeftMargin( getYPos() ));
-    printf(iStr + " ---> this = %p\n", this);
+	printf((iStr + " ---> alignLeftList != 0\n").ascii());
+    //printf((iStr + " ---> leftMargin = %d\n").ascii(), getLeftMargin( getYPos() ));
+    printf((iStr + " ---> this = %p\n").ascii(), this);
 
     // ok... go through the children
     HTMLObject *obj;

@@ -136,17 +136,18 @@ void  KAccel::disconnectItem( const QString& action,
 	pAccel->disconnectItem( pEntry->aAccelId, receiver, member );
 }
 
-const QString KAccel::findKey( int key ) const
+QString KAccel::findKey( int key ) const
 {
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
 #define pE aKeyIt.current()
 	while ( pE ) {
-		if ( (unsigned int)key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
-		++aKeyIt;
+	    if ( (unsigned int)key == pE->aCurrentKeyCode ) 
+		return aKeyIt.currentKey();
+	    ++aKeyIt;
 	}
 #undef pE
-	return QString::null;	
+	return 0;	
 }
 
 bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,

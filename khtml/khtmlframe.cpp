@@ -208,7 +208,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     
     QString s = _str;
     StringTokenizer st;
-    st.tokenize( s, "," );
+    st.tokenize( s.ascii(), "," );
     while ( st.hasMoreTokens() )
     {
 	if ( i == 1024 )

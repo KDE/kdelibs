@@ -21,7 +21,7 @@ public:
   KIORenameDlg( QWidget *parent, const char *_src, const char *_dest, RenameDlg_Mode _mode,  bool _modal = FALSE );
   ~KIORenameDlg();
     
-  const char* newName() { return m_pLineEdit->text(); }
+  const char* newName() { return m_pLineEdit->text().ascii(); }
 
 protected:
   QPushButton *b0, *b1, *b2, *b3, *b4, *b5, *b6, *b7;
@@ -44,7 +44,7 @@ public slots:
   void b7Pressed();
 
 signals:
-  void result( QWidget* _widget, int _button, const char* _src, const char* _data );
+  void result( QWidget* _widget, int _button, const char *_src, const char *_data );
 };
 
 RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new );

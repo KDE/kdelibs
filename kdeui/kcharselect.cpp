@@ -335,14 +335,14 @@ QSize KCharSelect::sizeHint()
 //==================================================================
 void KCharSelect::setFont(const QString &_font)
 {
-  int i = fontList.find(_font);
+  int i = fontList.find(_font.ascii());
   if (i != -1)
     {
       fontCombo->setCurrentItem(i);
       charTable->setFont(_font);
     }
   else
-    warning(i18n("Can't find Font: %s"),_font.ascii());
+    warning("Can't find Font: %s", _font.ascii());
 }
 
 //==================================================================
@@ -408,8 +408,8 @@ void KCharSelect::fillFontCombo()
 	    {
 	      if (qfontname != "nil")
 		{
-		  if (fontList.find(qfontname) == -1)
-		    fontList.inSort(qfontname);
+		  if (fontList.find(qfontname.ascii()) == -1)
+		    fontList.inSort(qfontname.ascii());
 		}
 	    }
 

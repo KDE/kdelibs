@@ -89,7 +89,7 @@ public:
       * Note: If this object does not refer to a real file
       * (broken symlink), it will return 0
       **/
-    const char *fileName() const { return myName; }
+    const char *fileName() const { return myName.ascii(); }
     QString filePath();
 
     /**

@@ -238,7 +238,7 @@ HTMLObject::printDebug( bool, int indent, bool printObjects )
     QString str = "    ";
     int i;
     for( i=0; i<indent; i++)
-	printf(str);
+	printf(str.ascii());
 
     printf(objectName());
     printf("\n");
@@ -566,7 +566,7 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
     QString str = "    ";
     int i;
     for( i=0; i<indent; i++)
-	printf(str);
+	printf(str.ascii());
 
     str = objectName();
     QString aStr = text;
@@ -578,7 +578,7 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
     } else
 	str += aStr;
     str += "\")\n";
-    printf(str);
+    printf(str.ascii());
 }
 
 
@@ -1341,7 +1341,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
 void HTMLImage::changeImage( const char *_url )
 {
-  htmlWidget->imageCache()->free( imageURL, this);
+  htmlWidget->imageCache()->free( imageURL.ascii(), this);
   imageURL = _url;
   pixmap = 0;
 
@@ -1585,7 +1585,7 @@ int HTMLImage::getAbsY()
 
 HTMLImage::~HTMLImage()
 {
-   htmlWidget->imageCache()->free( imageURL, this );
+   htmlWidget->imageCache()->free( imageURL.ascii(), this );
 }
 
 void
@@ -1597,7 +1597,7 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
     QString str = "    ";
     int i;
     for( i=0; i<indent; i++)
-	printf(str);
+	printf(str.ascii());
 
     QString aStr = imageURL;
     if(aStr.length() > 20)
@@ -1712,7 +1712,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	continue;
 
       StringTokenizer st;
-      st.tokenize( buffer, " " );
+      st.tokenize( buffer.ascii(), " " );
 
       // get shape
       const char *p = st.nextToken();
@@ -1754,7 +1754,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  int x1, y1, x2, y2;
 	  sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 	  QRect rect( x1, y1, x2-x1, y2-y1 );
-	  area = new HTMLArea( rect, href, "" );
+	  area = new HTMLArea( rect, href.ascii(), "" );
 	  printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 	}
       break;
@@ -1764,7 +1764,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  p = st.nextToken();
 	  int xc, yc, rc;
 	  sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
-	  area = new HTMLArea( xc, yc, rc, href, "" );
+	  area = new HTMLArea( xc, yc, rc, href.ascii(), "" );
 	  printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
 	}
       break;
@@ -1785,7 +1785,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	    }
 	  printf( "\n" );
 	  if ( count > 2 )
-	    area = new HTMLArea( parray, href, "" );
+	    area = new HTMLArea( parray, href.ascii(), "" );
 	}
       break;
       }

@@ -13,41 +13,41 @@
 
 QPixmap* KPixmapCache::pixmapForURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
-  return pixmap( KMimeType::findByURL( _url, _mode, _is_local_file )->icon( _url, _is_local_file ), _mini );
+  return pixmap( KMimeType::findByURL( _url, _mode, _is_local_file )->icon( _url, _is_local_file ).ascii(), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   KURL url( _url );
   
-  return pixmap( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ), _mini );
+  return pixmap( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ).ascii(), _mini );
 }
 
 QString KPixmapCache::pixmapFileForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   KURL url( _url );
   
-  return pixmapFile( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ), _mini );
+  return pixmapFile( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ).ascii(), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForMimeType( const char *_mime_type, bool _mini )
 {
-  return pixmap( KMimeType::mimeType( _mime_type )->icon( QString::null, false ), _mini );
+  return pixmap( KMimeType::mimeType( _mime_type )->icon( QString::null, false ).ascii(), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, bool _mini )
 {
-  return pixmap( _mime_type->icon( QString::null, false ), _mini );
+  return pixmap( _mime_type->icon( QString::null, false ).ascii(), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, KURL& _url, bool _is_local_file, bool _mini )
 {
-  return pixmap( _mime_type->icon( _url, _is_local_file ), _mini );
+  return pixmap( _mime_type->icon( _url, _is_local_file ).ascii(), _mini );
 }
 
 QString KPixmapCache::pixmapFileForMimeType( const char *_mime_type, bool _mini )
 {
-  return pixmapFile( KMimeType::mimeType( _mime_type )->icon( QString::null, false ), _mini );
+  return pixmapFile( KMimeType::mimeType( _mime_type )->icon( QString::null, false ).ascii(), _mini );
 }
 
 QPixmap* KPixmapCache::toolbarPixmap( const char *_pixmap )
@@ -172,14 +172,14 @@ QString KPixmapCache::pixmapFile( const char *_pixmap, bool _mini )
   file += key;
 
   struct stat buff;
-  if ( stat( file, &buff ) != -1 )
+  if ( stat( file.ascii(), &buff ) != -1 )
     return file;
   
   file = kapp->kde_icondir().data();
   file += "/";
   file += key;
 
-  if ( stat( file, &buff ) != -1 )
+  if ( stat( file.ascii(), &buff ) != -1 )
     return file;
 
   file = kapp->kde_icondir().data();

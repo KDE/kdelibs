@@ -33,7 +33,7 @@ void KFileFilter::setFilter(const char *filter)
 	}
 	delete [] tmp;
     } else
-	filters->append(i18n("*|All Files"));
+	filters->append(i18n("*|All Files").ascii());
 
     clear();
     QString name;

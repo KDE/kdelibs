@@ -122,9 +122,9 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTre
     text_name         = kconfig.readEntry("Name", text_name);
 
     if( !mini_pixmap_name.isEmpty() )
-      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(mini_pixmap_name, 16, 16);
+      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(mini_pixmap_name.ascii(), 16, 16);
     if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
-      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(big_pixmap_name, 16, 16);
+      pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon(big_pixmap_name.ascii(), 16, 16);
     if( pixmap.isNull() )
       pixmap = KApplication::getKApplication()->getIconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);	
   }
@@ -143,7 +143,7 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KTreeList *tree, KAppTre
 
   if( fi->isDir() )
   {
-    dummy = new KAppTreeListItem( i18n("This group is empty!"), 0, true, false, false, "", "" );	
+    dummy = new KAppTreeListItem( i18n("This group is empty!").ascii(), 0, true, false, false, "", "" );
     it2->appendChild( dummy );
   }
 }
@@ -176,7 +176,7 @@ short KApplicationTree::parseDesktopDir( QDir d, KTreeList *tree, KAppTreeListIt
     }
     else 
     {
-      if( !isDesktopFile( fi->absFilePath() ) )
+      if( !isDesktopFile( fi->absFilePath().ascii() ) )
       {
 	++it;
 	continue;

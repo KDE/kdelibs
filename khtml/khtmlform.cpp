@@ -384,7 +384,7 @@ void HTMLSelect::setText( const char *text )
 	}
 
         if ( value( item ).isNull() )
-		setValue( t, item );
+		setValue( t.ascii(), item );
 }
 
 QString HTMLSelect::encoding()
@@ -517,7 +517,7 @@ HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, 
     if( font )
 	w->setFont( *font );
 
-    if ( strlen( value() ) != 0 )
+    if ( strlen( value().ascii() ) != 0 )
 	((QPushButton *)w)->setText( value() );
     else if ( strlen( _name ) != 0 )
 	((QPushButton *)w)->setText( _name );
@@ -675,7 +675,7 @@ void HTMLRadio::resetElement(const char *)
 
 void HTMLRadio::slotClicked()
 {
-	emit radioSelected( elementName(), value() );
+	emit radioSelected( elementName().ascii(), value().ascii() );
 }
 
 void HTMLRadio::slotRadioSelected( const char *n, const char *v )
@@ -697,7 +697,7 @@ HTMLReset::HTMLReset( QWidget *parent, const char *v, const HTMLFont *f )
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value() ) != 0 )
+	if ( strlen( value().ascii() ) != 0 )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Reset" );
@@ -730,7 +730,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value() ) != 0 )
+	if ( strlen( value().ascii() ) != 0 )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Submit Query" );
@@ -782,7 +782,7 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value() ) != 0 )
+	if ( strlen( value().ascii() ) != 0 )
 		((QLineEdit *)w)->setText( value() );
 	if ( password )
 	    ((QLineEdit *)w)->setEchoMode ( QLineEdit::Password );
@@ -974,7 +974,7 @@ void HTMLForm::slotSubmit()
 
 	QString url = action();
 
-	emit submitted( method(), url, encoding, _target );
+	emit submitted( method(), url.ascii(), encoding.ascii(), _target.ascii() );
 }
 
 void HTMLForm::slotRadioSelected( const char *n, const char *v )
@@ -986,7 +986,7 @@ void HTMLForm::saveForm(QStrList *saveList)
 {
     for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
     {
-	saveList->append( e->encoding() );
+	saveList->append( e->encoding().ascii() );
     }
 }
 

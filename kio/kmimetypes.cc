@@ -123,7 +123,7 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( !_fast_mode && _is_local_file && _mode == 0 )
   {
     struct stat buff;
-    if ( stat( _url.path(), &buff ) != -1 )
+    if ( stat( _url.path().ascii(), &buff ) != -1 )
       _mode = buff.st_mode;
   }
 
@@ -162,11 +162,11 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
       return it.current();
   
   // Another filename binding, hardcoded, is .desktop:
-  if ( !strcmp(path.right(8), ".desktop") )
+  if ( path.right(8) == ".desktop" )
     return find( "application/x-desktop" );
   // Another filename binding, hardcoded, is .kdelnk;
   // this is preserved for backwards compatibility
-  if ( !strcmp(path.right(7), ".kdelnk") )
+  if ( path.right(7) == ".kdelnk" )
     return find( "application/x-desktop" );
 
   if ( !_is_local_file || _fast_mode )
@@ -182,7 +182,7 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   
   // Do some magic for local files
   kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
-  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
+  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
   /** DEBUG code **/
   /* assert( result );
   assert( result->mimeType() );
@@ -347,7 +347,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
     bool isempty = false;
     DIR *dp = 0L;
     struct dirent *ep;
-    dp = opendir( _url.path() );
+    dp = opendir( _url.path().ascii() );
     if ( dp )
     {
       ep=readdir( dp );
@@ -432,7 +432,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
     QString dev = cfg.readEntry( "Dev" );
     if ( !icon.isEmpty() && !unmount_icon.isEmpty() && !dev.isEmpty() )
     {
-      QString mp = KIOJob::findDeviceMountPoint( dev );
+      QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
       // Is the device not mounted ?
       if ( mp.isNull() )
 	return unmount_icon;
@@ -518,14 +518,14 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
     return false;
   }
 
-  QString mp = KIOJob::findDeviceMountPoint( dev );
+  QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
   // Is the device already mounted ?
   if ( !mp.isNull() )
   {
     QString mp2 = "file:";
     mp2 += mp;
     // Open a new window
-    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
+    KFileManager::getFileManager()->openFileManagerWindow( mp2.ascii() );
   }
   else
   {    
@@ -535,7 +535,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
       if ( readonly == "1" )
 	ro = true;
 		    
-    (void) new KAutoMount( ro, 0L, dev, 0L );
+    (void) new KAutoMount( ro, 0L, dev.ascii(), 0L );
   }
 
   return true;
@@ -598,7 +598,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
     }
     else
     {
-      QString mp = KIOJob::findDeviceMountPoint( dev );
+      QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
       // not mounted ?
       if ( mp.isEmpty() )
       {
@@ -693,7 +693,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
       return;
     }
-    QString mp = KIOJob::findDeviceMountPoint( dev );
+    QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
 
     if ( _service.m_type == ST_MOUNT )
     {
@@ -710,7 +710,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 	if ( readonly == "1" )
 	  ro = true;
 
-      (void)new KAutoMount( ro, 0L, dev, 0L, false );
+      (void)new KAutoMount( ro, 0L, dev.ascii(), 0L, false );
     }
     else if ( _service.m_type == ST_UNMOUNT )
     {
@@ -718,7 +718,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       if ( mp.isEmpty() )
 	return;
 
-      (void)new KAutoUnmount( mp );
+      (void)new KAutoUnmount( mp.ascii() );
     }
   }
   else

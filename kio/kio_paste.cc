@@ -90,17 +90,17 @@ void pasteData( const char *_dest_url, QByteArray _data )
     u.addPath( l.text() );
     
     struct stat buff;
-    if ( stat( u.path(), &buff ) == 0 )
+    if ( stat( u.path().ascii(), &buff ) == 0 )
     {
       QString tmp = i18n("The file %s does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
       if ( QMessageBox::critical( 0L, i18n("Warning"), tmp,i18n("Yes"), i18n("No") ) == 1 )
 	return;
     }
     
-    FILE *f = fopen( u.path(), "wb" );
+    FILE *f = fopen( u.path().ascii(), "wb" );
     if ( f == 0L )
     {
-      kioErrorDialog( ERR_WRITE_ACCESS_DENIED, u.path() );
+      kioErrorDialog( ERR_WRITE_ACCESS_DENIED, u.path().ascii() );
       return;
     }
     

@@ -203,20 +203,20 @@ void KIORenameDlg::b0Pressed()
 // Rename
 void KIORenameDlg::b1Pressed()
 {
-  if ( strcmp( "", m_pLineEdit->text() ) == 0 )
-    return;
+    if ( m_pLineEdit->text()  == "" )
+	return;
 
   KURL u( m_pLineEdit->text() );
   if ( u.isMalformed() )
   {
-    string str = (const char*)i18n( "Malformed URL\n" );
+    QString str = i18n( "Malformed URL\n" );
     str += m_pLineEdit->text();
-    QMessageBox::critical( this, i18n( "Error" ), str.c_str(), i18n( "OK" ) );
+    QMessageBox::critical( this, i18n( "Error" ), str, i18n( "OK" ) );
     return;
   }
 
   KURL d( dest.c_str() );
-  if ( strcmp( u.protocol(), d.protocol() ) != 0 )
+  if ( u.protocol() != d.protocol() )
   {
     QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "OK" ) );
     return;
@@ -233,7 +233,7 @@ void KIORenameDlg::b1Pressed()
   if ( modal )
     done( 1 );
   else
-    emit result( this, 1, src.c_str(), m_pLineEdit->text() );
+    emit result( this, 1, src.c_str(), m_pLineEdit->text().ascii() );
 }
 
 void KIORenameDlg::b2Pressed()

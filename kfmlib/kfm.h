@@ -174,7 +174,7 @@ public:
     DlgLocation( const char *_text, const char *_value, QWidget *parent = 0L );
 
     /// Return the value the user entered
-    const char * getText() { return edit->text(); }
+    const char * getText() { return edit->text().ascii(); }
 
     /// The dialog is being resized
     void resizeEvent(QResizeEvent *e);

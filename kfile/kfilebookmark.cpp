@@ -89,7 +89,7 @@ void KFileBookmarkManager::read( const char *filename )
 	BookmarkTokenizer *ht = new BookmarkTokenizer();
 
 	ht->begin();
-	ht->write( text );
+	ht->write( text.ascii() );
 	ht->end();
 
 	const char *str;
@@ -191,7 +191,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 							p++;
 						}
 
-						bm->setURL( text );
+						bm->setURL( text.ascii() );
 			
 						if ( *p == ' ' )
 							p++;
@@ -216,7 +216,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 			else if ( strncasecmp( str, "</H3>", 5 ) == 0 ||
 						strncasecmp( str, "</a>", 4 ) == 0 )
 			{
-				bm->setText( text );
+				bm->setText( text.ascii() );
 			}
 		}
 		else if ( str[0] )
@@ -376,13 +376,13 @@ bool KFileBookmarkManager::moveDown(int i)
 // rich
 void KFileBookmarkManager::reread()
 {
-  read(myFilename);
+  read(myFilename.ascii());
 }
 
 // rich
 void KFileBookmarkManager::write()
 {
-  write(myFilename);
+  write(myFilename.ascii());
 }
 
 #include "kfilebookmark.moc"

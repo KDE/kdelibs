@@ -58,7 +58,7 @@ public:
 		{	 chset=ch; chset.setQFont(font);}
 
 	const char *family() const
-		{	return font.family(); }
+		{	return font.family().ascii(); }
 	const int  weight() const
 		{	return font.weight(); }
 	const bool italic() const
@@ -110,7 +110,7 @@ inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
 
 inline bool HTMLFont::operator==( const HTMLFont &f )
 {
-	return ( !strcmp( font.family(), f.font.family() ) &&
+	return ( font.family() == f.font.family() &&
 		font.weight() == f.font.weight() &&
 		font.italic() == f.font.italic() &&
 		font.underline() == f.font.underline() &&

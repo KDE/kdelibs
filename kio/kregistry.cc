@@ -112,12 +112,12 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
   unsigned int count = d.count();
   for( i = 0; i < count; i++ )                        // check all entries
     {
-      if (strcmp(d[i],".")==0 || strcmp(d[i],"..")==0 || strcmp(d[i],"magic")==0)
+      if (d[i] == "." || d[i] == ".." || d[i] == "magic")
 	continue;                          // discard those ".", "..", "magic"...
       
       file = path.data();                          // set full path
       file += d[i];                          // and add the file name.
-      if ( stat( file, &m_statbuff ) == -1 )           // get stat...
+      if ( stat( file.ascii(), &m_statbuff ) == -1 )           // get stat...
 	continue;                                   // no such, continue.
       
       if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
@@ -149,7 +149,7 @@ bool KRegistry::readDirectory( const QString& _path, bool _init )
 	  else if ( file.right(1) != "~" )         // we don't have this one..
 	    {
 	      // Can we read the file ?
-	      if ( access( file, R_OK ) != -1 )
+	      if ( access( file.ascii(), R_OK ) != -1 )
 		{   
 		  // Create a new entry
 		  m_lstEntries.append( createEntry( file ) );
@@ -199,7 +199,7 @@ int KRegistry::exists( const QString& _file ) const
   QListIterator<KRegEntry> it( m_lstEntries );
   for( ; it.current(); ++it )
   {
-    if ( strcmp( it.current()->file(), _file ) == 0 )
+    if ( it.current()->file() == _file )
       return pos;
     pos++;
   }
@@ -284,7 +284,7 @@ bool KRegistry::save( const QString& _dbfile ) const
 
 void KRegistry::update( const QString& _path )
 {
-  if ( _path )
+  if ( !_path.isNull() )
     readDirectory( _path );
   else
   {
@@ -368,7 +368,7 @@ KRegEntry::KRegEntry( KRegistry* _reg, const QString& _file )
   m_pRegistry = _reg;
   
   struct stat statbuff;
-  if ( stat( m_strFile, &statbuff ) == -1 )
+  if ( stat( m_strFile.ascii(), &statbuff ) == -1 )
   {
     kdebug( KDEBUG_ERROR, 7011, "Oooops %s", m_strFile.ascii() );
   }
@@ -380,7 +380,7 @@ bool KRegEntry::isInDirectory( const QString& _path, bool _allow_subdir ) const
 {
   if ( _allow_subdir )
   {
-    if ( strncmp( m_strFile.ascii(), _path, _path.length() ) == 0 )
+    if ( strncmp( m_strFile.ascii(), _path.ascii(), _path.length() ) == 0 )
       return true;
     return false;
   }
@@ -389,7 +389,7 @@ bool KRegEntry::isInDirectory( const QString& _path, bool _allow_subdir ) const
   if ( pos != _path.length() )
     return false;
   
-  if ( strncmp( _path, m_strFile.ascii(), pos + 1 ) == 0 )
+  if ( strncmp( _path.ascii(), m_strFile.ascii(), pos + 1 ) == 0 )
     return true;
   
   return false;
@@ -401,7 +401,7 @@ bool KRegEntry::update()
 
   // Does the file still exist ?
   struct stat statbuff;
-  if (stat( m_strFile, &statbuff) == -1)
+  if (stat( m_strFile.ascii(), &statbuff) == -1)
   {
     kdebug( KDEBUG_INFO, 7011, "Removing us" );
     // We are going to be deleted now
@@ -412,7 +412,7 @@ bool KRegEntry::update()
   }
 
   // Still readable ?
-  if ( access( m_strFile, R_OK ) == -1 )
+  if ( access( m_strFile.ascii(), R_OK ) == -1 )
   {
     kdebug( KDEBUG_INFO, 7011, "We are no longer readable" );
     // We are going to be deleted now

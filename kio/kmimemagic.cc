@@ -26,7 +26,7 @@ void KMimeMagic::initStatic()
   // Magic file detection init
   QString mimefile = kapp->kde_mimedir().copy();
   mimefile += "/magic";
-  s_pSelf = new KMimeMagic( mimefile );
+  s_pSelf = new KMimeMagic( mimefile.ascii() );
   s_pSelf->setFollowLinks( TRUE );
 }
 
@@ -1273,11 +1273,11 @@ KMimeMagic::finishResult()
 	/* save the info in the request record */
 	if (state == rsl_subtype || state == rsl_encoding ||
 	    state == rsl_encoding || state == rsl_separator) {
-		magicResult->setMimeType(resultBuf.mid(type_pos, type_len));
+		magicResult->setMimeType(resultBuf.mid(type_pos, type_len).ascii());
 	}
 	if (state == rsl_encoding)
 		magicResult->setEncoding(resultBuf.mid(encoding_pos,
-						       encoding_len));
+						       encoding_len).ascii());
 	/* detect memory allocation errors */
 	if (!magicResult->mimeType() ||
 	    (state == rsl_encoding && !magicResult->encoding())) {
@@ -2001,7 +2001,7 @@ KMimeMagic::revision_suffix(const char * fn)
 #endif
 	if (suffix_pos == -1)
 		return NULL;
-	return findFileType((const char *)newfn.left(suffix_pos));
+	return findFileType(newfn.left(suffix_pos).ascii());
 }
 
 /*
@@ -2134,14 +2134,14 @@ refineResult(KMimeMagicResult *r, const char * _filename)
 	QString tmp = r->mimeType();
 	if (tmp.isEmpty())
 		return;
-	if ((strcmp(tmp, "text/x-c") == 0) ||
-	    (strcmp(tmp, "text/x-c++") == 0)   )
+	if ( tmp == "text/x-c"  ||
+	     tmp == "text/x-c++" )
 	{
 		if ( QString(_filename).right(2) == ".h" )
 			tmp += "hdr";
 		else
 			tmp += "src";
-		r->setMimeType(tmp);
+		r->setMimeType(tmp.ascii());
 	}
 }
 

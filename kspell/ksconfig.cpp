@@ -366,7 +366,7 @@ void KSpellConfig::fillInDialog (void)
 	  QString fname, lname, hname;
 
 	  //	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
-	  fname = (const char *)thedir [i];
+	  fname = thedir [i].ascii();
 
 	  if (interpret (fname, lname, hname))
 	    { // This one is the KDE default language
@@ -374,7 +374,7 @@ void KSpellConfig::fillInDialog (void)
 
 	      //	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
 	      langfnames->removeFirst();
-	      langfnames->insert (0,fname);
+	      langfnames->insert (0,fname.ascii());
 
 	      hname="Default - "+hname+"("+fname+")";
 	      //	      langnames->insert (0,hname);
@@ -384,7 +384,7 @@ void KSpellConfig::fillInDialog (void)
 	    }
 	  else
 	    {
-	      langfnames->append (fname);
+	      langfnames->append (fname.ascii());
 	      hname=hname+" ("+fname+")";
 	      //	      langnames->append (hname);
 	      
@@ -400,7 +400,7 @@ void KSpellConfig::fillInDialog (void)
     for (unsigned i=0;i<langfnames->count();i++)
       {
 	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
-	if (!strcmp(langfnames->at(i),dictionary()))
+	if (langfnames->at(i) == dictionary())
 	  whichelement=i;
       }
 
@@ -512,7 +512,7 @@ void KSpellConfig::sBrowseDict()
 
   QString qs( QFileDialog::getOpenFileName ("/usr/local/lib","*.hash") );
   if ( !qs.isNull() )
-    kle1->setText (qs.data());
+    kle1->setText (qs);
 
 }
 /*
@@ -521,7 +521,7 @@ void KSpellConfig::sBrowsePDict()
   //how do I find home directory path??
   QString qs( QFileDialog::getOpenFileName ("",".ispell_*") );
   if ( !qs.isNull() )
-      kle2->setText (qs.data());
+      kle2->setText (qs);
 
   
 }

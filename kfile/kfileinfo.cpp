@@ -110,13 +110,13 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
     struct stat buf;
     myIsSymLink = false;
 
-    if (lstat(dir + myName, &buf) == 0) {
+    if (lstat((dir + myName).ascii(), &buf) == 0) {
 	myIsDir = (buf.st_mode & S_IFDIR) != 0;
         // check if this is a symlink to a directory
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat(dir + myName, &st) == 0)
+	  if (stat((dir + myName).ascii(), &st) == 0)
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken
@@ -141,8 +141,8 @@ KFileInfo::KFileInfo(const QString& dir, const QString& name)
 	
     } else {
 	// default
-	debug(QString("the file does not exist %1%2").arg(dir.ascii())
-	      .arg(name.ascii()));
+	debug(QString("the file does not exist %1%2").arg(dir)
+	      .arg(name).ascii());
 	myName.insert(0, "?");
 	mySize = 0;
 	myIsFile = false;
@@ -182,7 +182,7 @@ KFileInfo &KFileInfo::operator=(const KFileInfo &i)
 
 bool KFileInfo::isReadable() const
 {
-    return (::access(myBaseURL + myName, R_OK | (myIsDir ? X_OK : 0)) == 0) ;
+    return (::access((myBaseURL + myName).ascii(), R_OK | (myIsDir ? X_OK : 0)) == 0) ;
 }
 
 void KFileInfo::parsePermissions(const char *perms)

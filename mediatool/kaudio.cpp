@@ -157,7 +157,7 @@ bool KAudio::setFilename(QString& filename)
     ::free(WAVname);
   int fnlen= filename.length();
   WAVname = (char *)malloc(fnlen+1);
-  strcpy(WAVname, (const char*)filename);
+  strcpy(WAVname, filename.ascii());
 
   return true;
 }

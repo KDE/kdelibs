@@ -27,10 +27,10 @@ KAutoMount::KAutoMount( bool _readonly, const char *_format, const char *_device
 
 void KAutoMount::slotFinished( int )
 {
-  QString mp = KIOJob::findDeviceMountPoint( m_strDevice );
+  QString mp = KIOJob::findDeviceMountPoint( m_strDevice.ascii() );
 
   if ( m_bShowFilemanagerWindow )
-    KFileManager::getFileManager()->openFileManagerWindow( mp );
+    KFileManager::getFileManager()->openFileManagerWindow( mp.ascii() );
 
   // TODO: Fake update of window which contains the desktop entry which
   // is used for mount/unmount

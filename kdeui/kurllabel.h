@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1999/03/01 23:35:30  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.4.2.1  1999/02/14 02:40:07  granroth
  * Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
  * Qt SIGNALs and SLOTs
@@ -98,7 +101,7 @@ public:
 	/**
 	 * Constructor.  Use this exactly like you would QLabel.
 	 */
-	KURLLabel(QWidget *parent=0, const QString& name=QString::null, WFlags f=0);
+	KURLLabel(QWidget *parent=0, const char *name=0, WFlags f=0);
 
 	/**
 	 * Destructor.

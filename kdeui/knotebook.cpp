@@ -144,7 +144,7 @@ int KNoteBook::addPage(KWizardPage *p)
 {
   if(!pnote->numtabs)
   {
-    debug(i18n("Trying to add page when no KWizards are added!"));
+    debug("Trying to add page when no KWizards are added!");
     return -1;
   }
   KWizard *wiz = sections->at(pnote->numtabs-1);

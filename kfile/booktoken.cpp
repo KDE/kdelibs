@@ -166,7 +166,7 @@ void BookmarkTokenizer::write( const char *str )
 		       const QString res=charsets->convertTag(src,len).copy();
 		       if ( len > 0 )
 		       {
-			   memcpy(dest,(const char *)res,res.length());
+			   memcpy(dest,res.ascii(),res.length());
 			   dest+=res.length();
 			   src+=len;
 		       }

@@ -33,7 +33,7 @@ KService* KService::service( const QString& _name )
 
   KService *s;
   for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
-    if ( strcmp( s->name(), _name ) == 0 )
+    if ( s->name() == _name )
       return s;
   
   return 0L;
@@ -42,7 +42,7 @@ KService* KService::service( const QString& _name )
 KService::KService( const QString& _name, const QString& _exec, const QString& _icon,
 		    const QStringList& _lstServiceTypes, const QString& _comment,
 		    bool _allow_as_default, const QString& _path,
-		    const QString& _terminal, const QString& _file, const QString& _act_mode,
+		    const QString& _terminal, const QString&, const QString& _act_mode,
 		    const QStringList& _repo_ids, bool _put_in_list )
 {
   initStatic();

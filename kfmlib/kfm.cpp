@@ -75,9 +75,9 @@ QStrList* KFM::tmpfiles = 0;
 void KFM::removeTempFile(const QString & name){
   if (!tmpfiles)
     return;
-  if (tmpfiles->contains(name)){
-    unlink(name);
-    tmpfiles->remove(name);
+  if (tmpfiles->contains(name.ascii())){
+    unlink(name.ascii());
+    tmpfiles->remove(name.ascii());
   }
 }
 
@@ -100,7 +100,7 @@ bool KFM::downloadInternal(const QString & src, QString & target){
   */
   modal_hack_widget = new QWidget(0,0,WType_Modal);
   modal_hack_widget->setGeometry(-10,-10,2,2);
-  copy(src, target);
+  copy(src.ascii(), target.ascii());
   modal_hack_widget->show();
   qApp->enter_loop();
   return download_state; 

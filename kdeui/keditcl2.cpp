@@ -410,7 +410,7 @@ void KEdit::replace_search_slot(){
     col = col  - pattern.length() -1;
     if (col < 0 ) {
       if(line !=0){
-	col = strlen(textLine(line - 1));
+	col = strlen(textLine(line - 1).ascii());
 	line --;
       }
       else{

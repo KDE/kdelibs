@@ -101,7 +101,7 @@ void KIconLoaderCanvas::process()
   for( int i = 0; i < 10 && current != file_list.end(); i++, curr_indx++ )
     {
       new_xpm = new KPixmap;
-      new_xpm->load( dir_name + '/' + *current, QString::null, KPixmap::LowColor );
+      new_xpm->load( dir_name + '/' + *current, 0, KPixmap::LowColor );
       if( new_xpm->isNull() )
         {
           delete new_xpm;
@@ -353,7 +353,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
   if( exec(old_filter) )
   {
       if( !(pix_name = canvas->getCurrent()).isNull() )
-	  pixmap = icon_loader->loadIcon( pix_name );
+	  pixmap = icon_loader->loadIcon( pix_name.ascii() );
   }
   name = pix_name;
   return pixmap;
@@ -392,7 +392,7 @@ void KIconLoaderButton::setIcon(const QString& _icon)
     iconStr = _icon;
 
     // A Hack, since it uses loadApplicationIcon!!!
-    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr ) );
+    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr.ascii() ) );
 }
 
 KIconLoaderButton::~KIconLoaderButton() 

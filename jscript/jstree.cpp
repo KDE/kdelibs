@@ -288,7 +288,7 @@ int JSBinaryOperator::rightValue( JSScopeStack *_scope, JSValue *_val )
 	    case OP_ADD:
 		{
 		    _val->setAutoDelete( TRUE );
-		    JSStringObject *obj = new JSStringObject( s1->getQString() + s2->getQString() );
+		    JSStringObject *obj = new JSStringObject( (s1->getQString() + s2->getQString()).ascii() );
 		    _val->setObject( obj );
 		}
 	        break;
@@ -445,7 +445,7 @@ int JSIdentifier::rightValue( JSScopeStack *_scopes, JSValue *_rv )
  
     // Is it a function ?
     JSFunctionObject* func;
-    func = _scopes->findFunction( name );
+    func = _scopes->findFunction( name.ascii() );
     if ( func )
     {
 	_rv->setObject( func );
@@ -456,7 +456,7 @@ int JSIdentifier::rightValue( JSScopeStack *_scopes, JSValue *_rv )
     
     // Is it a variable ?
     JSVariableObject* var;
-    var = _scopes->findVariable( name, FALSE );
+    var = _scopes->findVariable( name.ascii(), FALSE );
     if ( !var )
 	return ERROR_JSUnknownIdentifier;
     
@@ -476,12 +476,12 @@ int JSIdentifier::leftValue( JSScopeStack *_scopes, JSValue *_lv )
     
     // int ret = 0;
     
-    var = _scopes->findVariable( name, TRUE );
+    var = _scopes->findVariable( name.ascii(), TRUE );
     if ( !var )
     {
 	JSScope* scope = _scopes->topScope();
 	scope->insertObject( var = new JSVariableObject() );
-	var->setName( name );
+	var->setName( name.ascii() );
     }
     
     _lv->setObject( var );
@@ -776,7 +776,7 @@ int JSMember::rightValue( JSScopeStack* _s, JSValue *rv )
 
     // Test for variables.
     // Mention that variables may be function pointers, too.
-    JSVariableObject* var = s->findVariable( name );
+    JSVariableObject* var = s->findVariable( name.ascii() );
     if ( var )
     {
 	// Is it a reference to a function ?
@@ -800,7 +800,7 @@ int JSMember::rightValue( JSScopeStack* _s, JSValue *rv )
     }
 
     // Test for hard coded functions
-    JSFunctionObject* func = s->findFunction( name );
+    JSFunctionObject* func = s->findFunction( name.ascii() );
     if ( !func )
 	return ERROR_JSUnknownIdentifier;
 
@@ -827,7 +827,7 @@ int JSMember::leftValue( JSScopeStack* _s, JSValue *rv )
 
     // Test for variables.
     // Mention that variables may be function pointers, too.
-    JSVariableObject* var = s->findVariable( name );
+    JSVariableObject* var = s->findVariable( name.ascii() );
     if ( var )
     {
 	rv->setObject( var );
@@ -837,7 +837,7 @@ int JSMember::leftValue( JSScopeStack* _s, JSValue *rv )
     }
 
     // Hard coded functions can not be overwritten
-    JSFunctionObject* func = s->findFunction( name );
+    JSFunctionObject* func = s->findFunction( name.ascii() );
     if ( func )
     {
 	rv->setObject( func );
@@ -848,7 +848,7 @@ int JSMember::leftValue( JSScopeStack* _s, JSValue *rv )
     
     // Insert new variable
     s->insertObject( var = new JSVariableObject() );
-    var->setName( name );
+    var->setName( name.ascii() );
     rv->setObject( var );
     rv->setAutoDelete( FALSE );
     rv->setLeftValue( TRUE );

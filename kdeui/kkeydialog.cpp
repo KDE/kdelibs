@@ -1029,7 +1029,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Global key conflict"), str);
+			QMessageBox::warning( this, i18n("Global key conflict"), str, i18n("OK"));
 			
 			return TRUE;
 		}
@@ -1058,7 +1058,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 			
-			QMessageBox::warning( this, i18n("Standard key conflict"), str );
+			QMessageBox::warning( this, i18n("Standard key conflict"), str, i18n("OK"));
 			
 			return TRUE;
 		}
@@ -1084,7 +1084,7 @@ bool KKeyChooser::isKeyPresent()
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 				
-			QMessageBox::warning( this, i18n("Key conflict"), str );
+			QMessageBox::warning( this, i18n("Key conflict"), str, i18n("OK"));
 			
 			return TRUE;
 		}

@@ -413,15 +413,15 @@ QString KFileInfoContents::findCompletion( const char *base,
     for ( name = nameList->first(); name; name = nameList->next() ) {
 	if ( strlen(name) < remainder.length())
 	    continue;
-	if (strncmp(name, remainder, remainder.length()) == 0)
+	if (strncmp(name, remainder.ascii(), remainder.length()) == 0)
 	    break;
     }
     
     
     if (name) {
 	
-        QString body = name;
-        QString backup = name;
+        QCString body = name;
+        QCString backup = name;
 
         // get the possible text completions and store the smallest 
 	// common denominator in QString body
@@ -433,15 +433,15 @@ QString KFileInfoContents::findCompletion( const char *base,
             counter = strlen(base);
             // case insensitive comparison needed because items are stored insensitively
             // so next instruction stop loop when first letter does no longer match
-            if ( strnicmp( extra, remainder, 1 ) != 0 )  
+            if ( strnicmp( extra, remainder.ascii(), 1 ) != 0 )  
                 break;
             // this is case sensitive again!
             // goto next item if no completion possible with current item (->extra)
-            if ( strncmp(extra, remainder, remainder.length()) != 0 )
+            if ( strncmp(extra, remainder.ascii(), remainder.length()) != 0 )
                 continue;
             // get smallest common denominator
             for ( ; counter <= strlen(extra) ; counter++ ) {
-                if (strncmp( extra, body, counter) != 0)
+                if (strncmp( extra, body.data(), counter) != 0)
                     break;
             }
             // truncate body, we have the smalles common denominator so far
@@ -452,12 +452,12 @@ QString KFileInfoContents::findCompletion( const char *base,
             // this is needed because we want to highlight the first item in list
             // so we separately keep the "smallest" item separate, 
             // we need the biggest in case the list is reversed
-            if ( extra && ( reversed ? (strcmp( extra, backup ) > 0) : (strcmp( extra, backup ) < 0) ) )
+            if ( extra && ( reversed ? (strcmp( extra, backup.data() ) > 0) : (strcmp( extra, backup ) < 0) ) )
               backup = extra;
         }
 	name = backup;
         
-	debugC("completion base (%s) name (%s) body (%s)", base, name, body.ascii());
+	debugC("completion base (%s) name (%s) body (%s)", base, name, body.data());
 
 	bool matchExactly = (name == body);
 

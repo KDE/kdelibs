@@ -34,7 +34,7 @@
 
 #include "keditcl.h"
 
-KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
+KEdit::KEdit(KApplication *, QWidget *parent, const char *name,
 	     const QString& fname) : 
     QMultiLineEdit(parent, name){
 
@@ -178,7 +178,7 @@ int KEdit::loadFile(const QString& name, int mode){
     }
 
 
-    fdesc = open(name, O_RDONLY);
+    fdesc = open(name.ascii(), O_RDONLY);
 
     if(fdesc == -1) {
         switch(errno) {
@@ -980,7 +980,7 @@ bool KEdit::format(QStrList& par){
     else{
 
       par.remove(i);
-      par.insert(i,pstring.left(space_pos));
+      par.insert(i,pstring.left(space_pos).ascii());
 
 
       if(i < (int)par.count() - 1){
@@ -994,13 +994,13 @@ bool KEdit::format(QStrList& par){
 	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
-	par.insert(i+1,temp1);
+	par.insert(i+1,temp1.ascii());
       }
       else{
 	if(autoIndent)
-	  par.append(prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length()));
+	  par.append((prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length())).ascii());
 	else
-	  par.append(pstring.mid(space_pos+1,pstring.length()));
+	  par.append(pstring.mid(space_pos+1,pstring.length()).ascii());
       }
       if(i==0){
 	cursor_offset = pstring.length() - space_pos -1;
@@ -1035,7 +1035,7 @@ void KEdit::getpar(int line,QStrList& par){
     }
     if(linestr.isEmpty())
       break;
-    par.append(linestr);
+    par.append(linestr.ascii());
     removeLine(line);
   }
 
@@ -1156,7 +1156,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     else{
 
       par.remove(i);
-      par.insert(i,pstring.left(space_pos));
+      par.insert(i,pstring.left(space_pos).ascii());
 
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
@@ -1169,13 +1169,13 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
-	par.insert(i+1,temp1);
+	par.insert(i+1,temp1.ascii());
       }
       else{
 	if(autoIndent)
-	  par.append(prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length()));
+	  par.append((prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length())).ascii());
 	else
-	  par.append(pstring.mid(space_pos+1,pstring.length()));
+	  par.append(pstring.mid(space_pos+1,pstring.length()).ascii());
       }
       if(i==0){
 	cursor_offset = pstring.length() - space_pos -1;
@@ -1239,7 +1239,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
       pstring = pstring + QString(" ") + mstring;
       par.remove(i);
-      par.insert(i,pstring);
+      par.insert(i,pstring.ascii());
       par.remove(i+1);
       i --; // check again whether line i is full now
 
@@ -1256,10 +1256,10 @@ bool KEdit::format2(QStrList& par, int& upperbound){
       pstring = pstring + QString(" ") + mstring.left(space_pos );
       //printf("adding: %s %d\n",mstring.left(space_pos).data(),space_pos);
       par.remove(i);
-      par.insert(i,pstring);
+      par.insert(i,pstring.ascii());
       mstring = mstring.mid(space_pos + 1,mstring.length());
       par.remove(i+1);
-      par.insert(i+1,mstring);
+      par.insert(i+1,mstring.ascii());
     }
 
   }
@@ -1274,7 +1274,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
    for (i = 0 ; i < (int)par.count() ; i ++){
      prerun = prefix + (QString) par.at(i);
      par.remove(i);
-     par.insert(i,prerun);
+     par.insert(i,prerun.ascii());
    }
    /*
    printf("PASS 4\n");	
@@ -1349,7 +1349,7 @@ void KEdit::getpar2(int line,QStrList& par,int& upperbound,QString& prefix){
     if(reduce_white_on_justify){
       linestr = linestr.stripWhiteSpace();
     }
-    par.append(linestr);
+    par.append(linestr.ascii());
     removeLine(line2);
   }
 

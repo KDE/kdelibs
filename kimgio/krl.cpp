@@ -140,7 +140,7 @@ void kimgio_krl_read( QImageIO *iio )
 	return;
 }
 
-void kimgio_krl_write( QImageIO *iio )
+void kimgio_krl_write( QImageIO * )
 {
         // TODO: implement this
         warning("kimgio_krl_write: not (yet?) implemented");

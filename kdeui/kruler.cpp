@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/03/01 23:35:08  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.7  1999/02/19 08:52:45  habenich
  * ID und LOG tags included
  *
@@ -498,13 +501,13 @@ KRuler::drawContents(QPainter *p)
 
   // draw endlabel
   if (horizontal==dir) {
-    p->drawText( END_LABEL_X, END_LABEL_Y, (const char *)endlabel );
+    p->drawText( END_LABEL_X, END_LABEL_Y, endlabel );
   }
   else { // rotate text +pi/2 and move down a bit
     p->rotate(90.0);
     p->translate( /*(float)LABEL_SIZE*/ 0,
-    		  -(float)(p->fontMetrics().boundingRect((const char *)endlabel).width()) );
-    p->drawText( END_LABEL_X, END_LABEL_Y, (const char *)endlabel );
+    		  -(float)(p->fontMetrics().boundingRect(endlabel).width()) );
+    p->drawText( END_LABEL_X, END_LABEL_Y, endlabel );
     p->resetXForm();
   }
   // draw the tiny marks

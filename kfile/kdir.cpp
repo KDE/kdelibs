@@ -139,11 +139,11 @@ void KDir::setPath(const QString& url)
     if (tmp.isLocalFile()) { // we can check, if the file is there
 	struct stat buf;
 	QString ts = tmp.path();
-	int ret = stat( ts, &buf);
+	int ret = stat( ts.ascii(), &buf);
 	readable = (ret == 0);
 	if (readable) { // further checks
 	    DIR *test;
-	    test = opendir(ts); // we do it just to test here
+	    test = opendir(ts.ascii()); // we do it just to test here
 	    readable = (test != 0); 
 	    if (test)
 		closedir(test);
@@ -158,7 +158,7 @@ void KDir::setPath(const QString& url)
     else
 	warning("Malformed url %s\n", url.ascii());
 
-    root = (strcmp(myLocation.path(),"/") == 0);
+    root = (myLocation.path() == "/");
     
     if (!readable)
 	return;  // nothing more we can do here
@@ -243,7 +243,7 @@ void KDir::getEntries() {
     
     if (!myOpendir) {
 	QString ts = myLocation.path();
-	myOpendir = opendir(ts);
+	myOpendir = opendir(ts.ascii());
 	if (!myOpendir)
 	    return;
 	dp = readdir(myOpendir); // take out the "."
@@ -312,7 +312,7 @@ const KFileInfoList *KDir::entryInfoList(int filterSpec,
 bool KDir::match(const QString& filter, const QString& name)
 {
     // Split on white space
-    char *s = qstrdup(filter);
+    char *s = qstrdup(filter.ascii());
     char *g = strtok(s, " ");
     
     bool matched = false;
@@ -374,7 +374,7 @@ bool KDir::startLoading()
 		    SLOT(slotKfmError(int, int, const char * )));
 	    connect(myJob, SIGNAL(sigListEntry(int, const UDSEntry&)),
 		    SLOT(slotListEntry(int, const UDSEntry&)));
-	    myJob->listDir(myLocation.url());
+	    myJob->listDir(myLocation.url().ascii());
 	    return true;
 	}
     }

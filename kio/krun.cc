@@ -232,7 +232,7 @@ bool KRun::run( const QString& _cmd )
   
   QString exec = _cmd;
   exec += " &";
-  system( exec );
+  system( exec.ascii() );
 
   return true;
 }
@@ -318,10 +318,10 @@ void KRun::init()
     if ( m_mode == 0 )
     {
       struct stat buff;
-      if ( stat( url.path(), &buff ) == -1 )
+      if ( stat( url.path().ascii(), &buff ) == -1 )
       {
 	// HACK: Use general error message function ( yet to do )
-	kioErrorDialog( ERR_DOES_NOT_EXIST, m_strURL );
+	kioErrorDialog( ERR_DOES_NOT_EXIST, m_strURL.ascii() );
 	m_bFault = true;
 	m_bFinished = true;
 	m_timer.start( 0, true );
@@ -333,7 +333,7 @@ void KRun::init()
     KMimeType* mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
     assert( mime );
     kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
-    foundMimeType( mime->mimeType() );
+    foundMimeType( mime->mimeType().ascii() );
     return;
   }
 
@@ -366,7 +366,7 @@ void KRun::init()
   job->setAutoDelete( false );
   m_jobId = job->id();
   job->setGUImode( KIOJob::NONE );
-  job->testDir( m_strURL );
+  job->testDir( m_strURL.ascii() );
 }
 
 KRun::~KRun()
@@ -388,7 +388,7 @@ void KRun::scanFile()
   job->setAutoDelete( false );
   m_jobId = job->id();
   job->setGUImode( KIOJob::NONE );
-  job->preget( m_strURL, 2048 );
+  job->preget( m_strURL.ascii(), 2048 );
 }
 
 void KRun::slotTimeout()
@@ -491,7 +491,7 @@ void KRun::slotPreData( int, const char *_data, int _len )
   if ( !result || result->mimeType().isEmpty())
     foundMimeType( "application/octet-stream" );
   else
-    foundMimeType( result->mimeType() );
+    foundMimeType( result->mimeType().ascii() );
 }
 
 void KRun::foundMimeType( const char *_type )
@@ -532,11 +532,11 @@ void KRun::foundMimeType( const char *_type )
     job->setAutoDelete( false );
     m_jobId = job->id();
     job->setGUImode( KIOJob::NONE );
-    job->preget( m_strURL, 2048 );
+    job->preget( m_strURL.ascii(), 2048 );
     return;
   }
 
-  if (KRun::runURL( m_strURL, _type )){
+  if (KRun::runURL( m_strURL.ascii(), _type )){
       emit finished(); // tell owner that we finished (David)
       emit finishedRef(this);
   }

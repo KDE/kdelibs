@@ -123,7 +123,7 @@ void KAccelMenu::popMsg () {
 		,pos().y() + yp + cellHeight(idx));
     } else {
       msg = i18n("Global Key: cannot change shortcut");
-      QMessageBox::warning(this,"Kpackage",msg);
+      QMessageBox::warning(this, "Kpackage", msg, i18n("OK"));
     }
   }
 }
@@ -179,11 +179,11 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	    keys->clearItem(actions[cid]);
 	    keys->changeMenuAccel(this,cid,actions[cid]);
 	  } else {
-	    const char *oldact = keys->findKey(kcode);
-	    if (oldact && !keys->configurable(oldact)) {
+	    QString oldact = keys->findKey(kcode);
+	    if (!oldact.isNull() && !keys->configurable(oldact)) {
 	      stmp = i18n("Key already used as global key: ");
 	      stmp += keys->description(oldact);
-	      QMessageBox::warning(this,"Kpackage",stmp.data());
+	      QMessageBox::warning(this,"Kpackage",stmp, i18n("OK"));
 	    } else {
 	      keys->clearItem(oldact);
 	      keys->updateItem(actions[cid],kcode);
@@ -192,7 +192,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	  }
 	} else {
 	  stmp = i18n("Global key cannot be changed");
-	  QMessageBox::warning(this,"Kpackage",stmp.data());
+	  QMessageBox::warning(this,"Kpackage",stmp, i18n("OK"));
 	}
       }
     }

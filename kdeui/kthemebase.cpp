@@ -32,7 +32,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
 {
     int i;
     QString tmpStr;
-    warning(i18n("KThemeStyle: Reading theme settings."));
+    warning("KThemeStyle: Reading theme settings.");
     // Read in the scale hints
     config->setGroup("Scale");
     for(i=0; i < WIDGETS; ++i){
@@ -45,8 +45,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                 scaleHints[i] = VerticalScale;
             else{
                 if(tmpStr != "Tile" && !tmpStr.isEmpty())
-                    warning(i18n("KThemeStyle: Unrecognized scale option %s, using Tile."),
-                            (const char*)tmpStr);
+                    warning("KThemeStyle: Unrecognized scale option %s, using Tile.",
+                            tmpStr.ascii());
                 scaleHints[i] = TileScale;
             }
     }
@@ -62,8 +62,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             gradients[i] = GrVertical;
         else{
             if(tmpStr != "None" && !tmpStr.isEmpty())
-                warning(i18n("KThemeStyle: Unrecognized gradient option %s, using None."),
-                        (const char*)tmpStr);
+                warning("KThemeStyle: Unrecognized gradient option %s, using None.",
+                        tmpStr.ascii());
             gradients[i] = GrNone;
         }
     }
@@ -137,14 +137,14 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                     images[i] = NULL;
                     duplicate[i] = true;
                     warning("KThemeStyle: Marking %s as duplicate.",
-                            (const char *)pixnames[i]);
+                            pixnames[i].ascii());
                     break;
                 }
             }
             // load pixmap
             if(!duplicate[i]){
                 if(tmpStr.isEmpty()){
-                    warning(i18n("KThemeStyle: No pixmap specified for %s."),
+                    warning("KThemeStyle: No pixmap specified for %s.",
                             widgetEntries[i]);
                 }
                 else{
@@ -169,8 +169,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         sbPlacement = SBBottomRight;
     else{
         if(tmpStr != "Opposite" && !tmpStr.isEmpty())
-            warning(i18n("KThemeStyle: Unrecognized sb button option %s, using Opposite."),
-                    (const char*)tmpStr);
+            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
+                    tmpStr.ascii());
         sbPlacement = SBOpposite;
     }
     tmpStr = config->readEntry("ArrowType");
@@ -180,8 +180,8 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         arrowStyle = MotifArrow;
     else{
         if(tmpStr != "Normal" && !tmpStr.isEmpty())
-            warning(i18n("KThemeStyle: Unrecognized arrow option %s, using Windows."),
-                    (const char*)tmpStr);
+            warning("KThemeStyle: Unrecognized arrow option %s, using Windows.",
+                    tmpStr.ascii());
         arrowStyle = LargeArrow;
     }
     tmpStr = config->readEntry("ShadeStyle");
@@ -208,7 +208,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             ++existing;
     warning("KThemeStyle: %d out of %d pixmaps allocated", existing, WIDGETS);
 #endif
-    warning(i18n("KThemeStyle: Finished reading theme settings."));
+    warning("KThemeStyle: Finished reading theme settings.");
 
 }
 
@@ -431,7 +431,7 @@ QImage* KThemeBase::loadImage(QString &name)
     image->load(globalDir+name);
     if(!image->isNull())
         return(image);
-    warning(i18n("KThemeStyle: Unable to load image %s."), name.ascii());
+    warning("KThemeStyle: Unable to load image %s.", name.ascii());
     delete image;
     return(NULL);
 }
@@ -445,7 +445,7 @@ KPixmap* KThemeBase::loadPixmap(QString &name)
     pixmap->load(globalDir+name);
     if(!pixmap->isNull())
         return(pixmap);
-    warning(i18n("KThemeStyle: Unable to load pixmap %s."), name.ascii());
+    warning("KThemeStyle: Unable to load pixmap %s.", name.ascii());
     delete pixmap;
     return(NULL);
 }

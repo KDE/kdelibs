@@ -116,7 +116,7 @@ void setNamedColor(QColor &color, const char *name)
     {
         QString col("#");
         col += name;
-        color.setNamedColor(col.data());
+        color.setNamedColor(col);
     }
     else
     {

@@ -302,7 +302,7 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
 	  qs.remove(i,1);
   }
   
-  return proc->fputs (qs, appendCR);
+  return proc->fputs (qs.ascii(), appendCR);
 }
 
 bool
@@ -325,7 +325,7 @@ KSpell::cleanFputs (QString s, bool appendCR)
       if (qs.isEmpty())
 	qs="";
       
-      return proc->fputs (qs, appendCR);
+      return proc->fputs (qs.ascii(), appendCR);
     }
   else
     return proc->fputs ("\n",appendCR);
@@ -354,7 +354,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
   proc->fputs ("%"); // turn off terse mode
-  proc->fputs (buffer); // send the word to ispell
+  proc->fputs (buffer.ascii()); // send the word to ispell
   
   return TRUE;
 }
@@ -462,7 +462,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
       //we can't interrupt ispell's output (when checking a large
       //buffer) to add a word to _it's_ ignore-list.
       QString qword (word);
-      if (ignorelist.find (qword.lower())!=-1)
+      if (ignorelist.find (qword.lower().ascii())!=-1)
 	return IGNORE;
 
       //// Position in line ///
@@ -479,7 +479,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
 
       ///// Replace-list stuff ////
       replacelist.first();
-      while ((e=replacelist.findNext ((const char *)word))!=-1 && e%2!=0)
+      while ((e=replacelist.findNext (word.ascii()))!=-1 && e%2!=0)
 	replacelist.next();
 
       if (e!=-1)
@@ -501,7 +501,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
 	  while ((unsigned int)i<qs.length())
 	    {
 	      temp = qs.mid (i,(j=qs.find (',',i))-i).data();
-	      sugg->append (funnyWord (temp));
+	      sugg->append (funnyWord (temp).ascii());
 	      
 	      i=j+2;
 	    }
@@ -630,7 +630,7 @@ void KSpell::checkList4 ()
     case KS_REPLACEALL:
       //      kdebug(KDEBUG_INFO, 750, "cklist4: lastpos==(%d)", lastpos);
       wordlist->remove (lastpos-1);
-      wordlist->insert (lastpos-1, (const char *)replacement());
+      wordlist->insert (lastpos-1, replacement().ascii());
       wordlist->next();
       break;
     case KS_CANCEL:
@@ -716,7 +716,7 @@ void KSpell::check2 (KProcIO *)
 	      if (e==REPLACE)
 		{
 		  dlgreplacement=word;
-		  emit corrected (orig, (const char *)replacement(), lastpos);
+		  emit corrected (orig, replacement(), lastpos);
 		  offset+=replacement().length()-orig.length();
 		  newbuffer.replace (lastpos, orig.length(), word);
 		}
@@ -753,7 +753,7 @@ void KSpell::check2 (KProcIO *)
       lastpos=(lastlastline=lastline)+offset; //do we really want this?
       i=origbuffer.find('\n', lastline)+1;
       qs=origbuffer.mid (lastline, i-lastline);
-      cleanFputs ((const char*)qs,FALSE);
+      cleanFputs (qs.ascii(),FALSE);
       lastline=i;
       return;  
     }
@@ -783,7 +783,7 @@ void KSpell::check3 ()
     case KS_REPLACEALL:
       offset+=replacement().length()-cwword.length();
       newbuffer.replace (lastpos, cwword.length(), 
-			 (const char *)replacement());
+			 replacement().ascii());
       break;
     case KS_CANCEL:
     //      kdebug (KDEBUG_INFO, 750, "cancelled\n");
@@ -846,16 +846,16 @@ void KSpell::dialog2 (int result)
   switch (dlgresult)
     {
     case KS_IGNOREALL:
-      ignorelist.inSort (dlgorigword.lower());
+      ignorelist.inSort (dlgorigword.lower().ascii());
       break;
     case KS_ADD:
-      addPersonal ((const char*)dlgorigword);
+      addPersonal (dlgorigword);
       personaldict=TRUE;
-      ignorelist.inSort (dlgorigword.lower());
+      ignorelist.inSort (dlgorigword.lower().ascii());
       break;
     case KS_REPLACEALL:
-      replacelist.append (dlgorigword);
-      replacelist.append ((const char *)replacement());
+      replacelist.append (dlgorigword.ascii());
+      replacelist.append (replacement().ascii());
       break;
     }
 

@@ -9,7 +9,7 @@
 #include <qtooltip.h>
 #include <kcursor.h>
 
-KURLLabel::KURLLabel(QWidget *parent, const QString& name, WFlags f)
+KURLLabel::KURLLabel(QWidget *parent, const char *name, WFlags f)
 	: QLabel(parent, name, f),
 	  m_textAlign(Bottom),
 	  m_url(QString::null),
@@ -61,7 +61,7 @@ void KURLLabel::setURL(const QString& url)
 	/* show the tool tip if we are allowed to */
 	if (m_tips)
 	{
-		if (m_tipText)
+		if (!m_tipText.isNull())
 			QToolTip::add(this, m_tipText);
 		else
 			QToolTip::add(this, m_url);
@@ -125,9 +125,9 @@ void KURLLabel::setUseTips(bool tips)
 	if (m_tips)
 	{
 		/* can we use a user tip? */
-		if (m_tipText)
+		if (!m_tipText.isNull())
 			QToolTip::add(this, m_tipText);
-		else if (m_url)
+		else if (!m_url.isNull())
 			QToolTip::add(this, m_url);
 	}
 }
@@ -176,7 +176,7 @@ void KURLLabel::setText(const QString& text)
 	/* show the tool tip if we are allowed to */
 	if (m_tips)
 	{
-		if (m_tipText)
+		if (!m_tipText.isNull())
 			QToolTip::add(this, m_tipText);
 		else
 			QToolTip::add(this, m_url);

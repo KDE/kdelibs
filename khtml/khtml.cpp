@@ -238,8 +238,8 @@ void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
     it.current()->m_lstClients.removeRef( _obj );
     if ( it.current()->m_lstClients.count() == 0 )
     {
-      emit cancelFileRequest( it.current()->m_strURL );
-      lst.append( it.currentKey() );
+      emit cancelFileRequest( it.current()->m_strURL.ascii() );
+      lst.append( it.currentKey().ascii() );
     }
   }
   
@@ -258,7 +258,7 @@ void KHTMLWidget::cancelAllRequests()
 {
   QDictIterator<HTMLPendingFile> it( mapPendingFiles );
   for( ; it.current(); ++it )
-    emit cancelFileRequest( it.current()->m_strURL );
+    emit cancelFileRequest( it.current()->m_strURL.ascii() );
   mapPendingFiles.clear();
 }
 
@@ -463,7 +463,7 @@ void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 		{
 		    setCursor( linkCursor );
 		    overURL = obj->getURL();
-		    emit onURL( overURL );
+		    emit onURL( overURL.ascii() );
 		}
 	    }
 	    else if ( overURL != "" )
@@ -1257,7 +1257,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     emit scrollVert( y_offset );
     
     if ( !bgPixmapURL.isEmpty() )
-	emit cancelFileRequest( bgPixmapURL );
+	emit cancelFileRequest( bgPixmapURL.ascii() );
     bgPixmapURL = QString::null;
     
     stopParser();
@@ -2769,11 +2769,11 @@ KHTMLWidget::restore(SavedPage *p)
 	    printf("restoring view\n");
 	    printf("framename = %s\n",p->frameName.data());
 	    printf("url = %s\n",p->url.data());
-	    htmlView->openURL( p->url );
+	    htmlView->openURL( p->url.ascii() );
 	    htmlView->setIsFrame( p->isFrame );
 	    if( p->isFrame )
 	    {
-		htmlView->setFrameName( p->frameName );
+		htmlView->setFrameName( p->frameName.ascii() );
 		htmlView->setScrolling( p->scrolling );
 		htmlView->setAllowResize( p->allowresize );
 		htmlView->setFrameBorder( p->frameborder );
@@ -2785,13 +2785,13 @@ KHTMLWidget::restore(SavedPage *p)
 	else
 	{
 	    printf("NO VIEW!!!!\n");
-	    emit URLSelected( p->url, LeftButton, 0L );
+	    emit URLSelected( p->url.ascii(), LeftButton, 0L );
 	}
     }
     else
     {
 	// dirty hack, to get kfm to display the right url in the lineedit...
-	htmlView->openURL( "restored:" + p->url );
+	htmlView->openURL( ("restored:" + p->url).ascii() );
 
 	// we construct a html sequence, which represents the frameset to see
 	QString s = "<html><head><title>\n";
@@ -2803,12 +2803,12 @@ KHTMLWidget::restore(SavedPage *p)
 	printf("restoring frameset:\n%s\n", s.data());
 	begin();
 	parse();
-	write(s);
+	write(s.ascii());
 	end();
 	
 	actualURL = p->url;
 	reference = actualURL.ref();
-	setBaseURL( p->url);
+	setBaseURL( p->url.ascii());
     }
     
 }

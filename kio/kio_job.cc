@@ -254,14 +254,14 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
   int errid;
   if ( !createSlave( "file", errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
   
   if ( m_iGUImode != NONE )
   {
     QString buffer = i18n("Mounting %1 ...").arg( _dev );
-    m_pDialog = createDialog( buffer );
+    m_pDialog = createDialog( buffer.ascii() );
   }
   
   return IOJob::mount( _ro, _fstype, _dev, _point );  
@@ -281,7 +281,7 @@ bool KIOJob::unmount( const char *_point )
   if ( m_iGUImode != NONE )
   {
     QString buffer = i18n("Unmounting %1 ...").arg( _point );
-    m_pDialog = createDialog( buffer );
+    m_pDialog = createDialog( buffer.ascii() );
   }
   
   return IOJob::unmount( _point );  
@@ -299,7 +299,7 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 
   QString error;
   int errid = 0;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
     slotError( errid, error.data() );
     return false;
@@ -361,9 +361,9 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
   
   QString error;
   int errid = 0;
-  if ( !createSlave( protocol, host, user, pass, errid, error ) )
+  if ( !createSlave( protocol.ascii(), host.ascii(), user.ascii(), pass.ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
   
@@ -405,9 +405,9 @@ bool KIOJob::del( const char *_source )
 
   QString error;
   int errid = 0;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
   
@@ -464,9 +464,9 @@ bool KIOJob::del( list<string>& _source )
   
   QString error;
   int errid = 0;
-  if ( !createSlave( protocol, host, user, pass, errid, error ) )
+  if ( !createSlave( protocol.ascii(), host.ascii(), user.ascii(), pass.ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
   
@@ -489,9 +489,9 @@ bool KIOJob::testDir( const char *_url )
 
   QString error;
   int errid;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
 
@@ -514,9 +514,9 @@ bool KIOJob::get( const char *_url )
 
   QString error;
   int errid;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
 
@@ -548,9 +548,9 @@ bool KIOJob::getSize( const char *_url )
 
   QString error;
   int errid;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
 
@@ -586,9 +586,9 @@ bool KIOJob::listDir( const char *_url )
 
   QString error;
   int errid;
-  if ( !createSlave( u.protocol(), u.host(), u.user(), u.pass(), errid, error ) )
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
   {
-    slotError( errid, error );
+    slotError( errid, error.ascii() );
     return false;
   }
 

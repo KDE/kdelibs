@@ -607,7 +607,7 @@ public:
     HTMLAnchor( const char *_name ) : name( _name ) {}
     virtual ~HTMLAnchor() { }
 
-    const char* getName() { return name; }
+    const char* getName() { return name.ascii(); }
 
     virtual VAlign isVAligned( void ) { return Top; }
     virtual HTMLAnchor* findAnchor( const char *_name, int &_x, int &_y );

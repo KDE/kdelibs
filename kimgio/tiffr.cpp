@@ -19,7 +19,7 @@ void kimgio_tiff_read( QImageIO *io )
 	// FIXME: use qdatastream
 
 	// open file
-	tiff = TIFFOpen( io->fileName(), "r" );
+	tiff = TIFFOpen( io->fileName().ascii(), "r" );
 
 	if( tiff == 0 ) {
 		return;

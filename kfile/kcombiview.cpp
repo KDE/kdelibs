@@ -177,10 +177,10 @@ QString KCombiView::findCompletion( const char *base, bool )
         QString foundDir = dirList->findCompletion(base, false);
         // if we find anything -> highlight it and least common denominator
         // is the last result
-	if ( foundDir ) {
+	if ( !foundDir.isNull() ) {
 	    unsigned int i;
             for ( i=1; (i<=found.length()) && (i<=foundDir.length()) ; i++) {
-                if ( strncmp( found, foundDir, i) != 0 )
+                if ( strncmp( found.ascii(), foundDir.ascii(), i) != 0 )
                     break;
             }
             if ( i==1 ) i++;

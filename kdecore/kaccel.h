@@ -213,7 +213,7 @@ class KAccel
 	 * Returns that identifier of the accelerator item with the keycode key,
 	 * or zero if the item cannot be found.
 	 */
-	const QString findKey( int key ) const;
+	QString findKey( int key ) const;
 	
 	/**
 	 * Inserts an accelerator item and returns -1 if the key code

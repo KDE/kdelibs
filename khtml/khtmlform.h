@@ -405,9 +405,9 @@ public:
 	void removeElement( HTMLElement *e );
 
 	const char *method() const
-		{	return _method; }
+		{	return _method.ascii(); }
 	const char *action() const
-		{	return _action; }
+		{	return _action.ascii(); }
 
 	void position( int _x, int _y, int _width, int _height );
 

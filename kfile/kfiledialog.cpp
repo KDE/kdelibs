@@ -152,7 +152,7 @@ void KFileBaseDialog::init()
 
     bmFile += "bookmarks.html";
 
-    bookmarks->read(bmFile);
+    bookmarks->read(bmFile.ascii());
 
     toolbar->insertButton(kapp->getIconLoader()->loadIcon("flag.xpm"),
 			  HOTLIST_BUTTON, true,
@@ -218,7 +218,7 @@ void KFileBaseDialog::init()
 	filterLabel->resize(locationLabel->width(), filterLabel->height());
 	
 	filterWidget = new KFileFilter(wrapper, "filterwidget");
-	filterWidget->setFilter(filterString);
+	filterWidget->setFilter(filterString.ascii());
 	filterLabel->setBuddy(filterWidget);
 	filterWidget->adjustSize();
 	filterWidget->setMinimumWidth(100);
@@ -294,7 +294,7 @@ void KFileBaseDialog::setFilter(const QString& filter)
 {
     filterString = filter;
     if (showFilter) {
-	filterWidget->setFilter(filter);
+	filterWidget->setFilter(filter.ascii());
 	dir->setNameFilter(filterWidget->currentFilter());
 	pathChanged();
     }
@@ -501,7 +501,7 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 
     // make a little test to avoid creating of a KURL object
     // in most cases
-    if ( !acceptUrls && strchr(_pathstr, ':') ) {
+    if ( !acceptUrls && strchr(_pathstr.ascii(), ':') ) {
 	KURL testURL(pathstr);
 	if ( !testURL.isLocalFile() ) {
 	    QMessageBox::message(i18n("Error: Not local file"),
@@ -592,13 +592,13 @@ void KFileBaseDialog::pathChanged()
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
 
-    char *path= qstrdup(dir->path());
+    char *path= qstrdup(dir->path().ascii());
     QString pos= strtok(path, "/");
     QStrList list;
 
-    list.insert(0, i18n("Root Directory"));
+    list.insert(0, i18n("Root Directory").ascii());
     while (!(pos.isNull())) {
-	list.insert(0, pos+"/");
+	list.insert(0, (pos+"/").ascii());
 	pos= strtok(0, "/");
     }
     toolbar->getCombo(PATH_COMBO)->insertStrList(&list);
@@ -645,8 +645,8 @@ void KFileBaseDialog::pathChanged()
 
 	if ((url.isEmpty()) || (url.right(1)[0] != '/'))
 	    url += "/";
-	if (visitedDirs->find(url) == -1)
-	    visitedDirs->inSort(url);
+	if (visitedDirs->find(url.ascii()) == -1)
+	    visitedDirs->inSort(url.ascii());
 	
 	locationEdit->clear();
 	locationEdit->insertStrList(visitedDirs);
@@ -759,7 +759,7 @@ void KFileBaseDialog::updateHistory(bool f, bool b)
 void KFileBaseDialog::addToBookmarks() // SLOT
 {
     debugC("Add to bookmarks called");
-    bookmarks->add(dir->url(), dir->url());
+    bookmarks->add(dir->url().ascii(), dir->url().ascii());
     bookmarks->write();
 }
 
@@ -1157,7 +1157,7 @@ void KFileBaseDialog::completion() // SLOT
 
 	QString complete =
 	    fileList->findCompletion(text.right(text.length() -
-						base.length()));
+						base.length()).ascii());
 	
 	if (!complete.isNull()) {
 	    debugC("Complete %s", complete.ascii());

@@ -455,7 +455,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	else
 	{
 	    // We have a complete sequence
-	    if (res && (res.length() == 1))
+	    if (!res.isNull() && (res.length() == 1))
 	    {
 	        entityValue = *((unsigned char *)res.data());
 	    }
@@ -518,7 +518,7 @@ void HTMLTokenizer::parseEntity( const char * &src)
 		if (*src == ';')
 		    src++;
 	    }
-	    else if (res)
+	    else if (!res.isNull())
 	    {
 	        // insert the characters, assuming iso-8859-1
 	        memcpy(dest, res.data(), res.length());

@@ -55,7 +55,7 @@ bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
   if (appendnewline)
     qs+='\n';
 
-  qlist.append (qs);
+  qlist.append (qs.ascii());
 
   kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
 
@@ -148,7 +148,7 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
   if (len<0 && (unsigned)rbi<recvbuffer.length())
     {
       QString qs=recvbuffer.mid (rbi,recvbuffer.length()-rbi).data();
-      recvbuffer=(const char*)qs;
+      recvbuffer=qs.ascii();
       rbi=0;
       return -1;
     }
@@ -157,14 +157,14 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
     {
     if (len-rbi<max)
       {
-	strcpy (buffer, recvbuffer.mid (rbi,len));
+	strcpy (buffer, recvbuffer.mid (rbi,len).ascii());
 	buffer [len]='\0';
 	rbi+=len+1;
 	return len;
       }
     else
       {
-	strcpy (buffer, recvbuffer.mid (rbi,max));
+	strcpy (buffer, recvbuffer.mid (rbi,max).ascii());
 	buffer [max]='\0';
 	rbi+=max+1;
 	return max;

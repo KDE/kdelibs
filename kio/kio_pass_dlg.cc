@@ -19,7 +19,7 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    //
    // Bei Bedarf einen kleinen Kommentar als Label einfuegen
    //
-   if ( _head )
+   if ( !_head.isNull() )
    {
       QLabel *l = new QLabel(_head, this);
       l->setFixedSize( l->sizeHint() );
@@ -50,9 +50,9 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    m_pPass->setMinimumWidth( 200 );
    grid->addWidget( m_pPass, 2, 3 );
 
-   if ( _user )
+   if ( !_user.isNull() )
      m_pUser->setText( _user );
-   if ( _pass )
+   if ( !_pass.isNull() )
      m_pPass->setText( _pass );
       
    layout->addSpacing( 10 );

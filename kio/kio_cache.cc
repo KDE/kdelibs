@@ -328,8 +328,8 @@ bool KIOCache::clear()
     
     QDictIterator<KIOCacheEntry> it( cacheDict );
     for ( ; it.current() != 0L; ++it )
-	if ( unlink( cachePath + it.current()->localKey() ) == 0 )
-	    todie.append( it.current()->url() );
+	if ( unlink( (cachePath + it.current()->localKey()).ascii() ) == 0 )
+	    todie.append( it.current()->url().ascii() );
 
     const char *s;
     for ( s = todie.first(); s != 0L; s = todie.next() )
@@ -400,9 +400,9 @@ QString KIOCache::htmlIndex()
 	cacheIndex += cachedFile;
 	cacheIndex += "\"><img border=0 src=\"";
 	if ( !it.current()->mimeType().isEmpty() )
-	  cacheIndex += KPixmapCache::pixmapFileForMimeType( it.current()->mimeType(), true );
+	  cacheIndex += KPixmapCache::pixmapFileForMimeType( it.current()->mimeType().ascii(), true );
 	else
-	  cacheIndex += KPixmapCache::pixmapFileForURL( cachedFile, 0, true, true );
+	  cacheIndex += KPixmapCache::pixmapFileForURL( cachedFile.ascii(), 0, true, true );
 	
 	cacheIndex += "\"></a></td> ";
 	// Second entry is a href to the actual URL, displaying the
@@ -485,7 +485,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
     KIOCacheEntry oldEntry = lookup( entry->url() );
     if ( !oldEntry.isEmpty() )
     {
-      unlink( cachePath + oldEntry.localFile() );
+      unlink( (cachePath + oldEntry.localFile()).ascii() );
     }
     
   kdebug( KDEBUG_INFO, 7002, "########### CACHE 4"  );
@@ -531,7 +531,7 @@ bool KIOCache::isCacheable(const QString &_url)
 
     for (entry = cacheProtocols.first(); entry != 0;
 	 entry = cacheProtocols.next()) {
-	if (strcmp(entry, url.protocol()) == 0) return true;
+	if ( entry == url.protocol() ) return true;
     }
     return false;
 }
@@ -696,7 +696,7 @@ void CachedKIOJob::slotTimeout()
     case STEP_REDIRECTION:
       m_step = STEP_DATE;
       if ( !m_pCurrentDoc->redirection().isEmpty() )
-	emit sigRedirection( m_id, m_pCurrentDoc->redirection() );
+	emit sigRedirection( m_id, m_pCurrentDoc->redirection().ascii() );
       else
       {  
 	slotTimeout();
@@ -712,7 +712,7 @@ void CachedKIOJob::slotTimeout()
     case STEP_MIME:
       m_step = STEP_DATA;
       if ( !m_pCurrentDoc->mimeType().isEmpty() )
-	emit sigMimeType( m_id,  m_pCurrentDoc->mimeType() );
+	emit sigMimeType( m_id,  m_pCurrentDoc->mimeType().ascii() );
       else
       {  
 	slotTimeout();

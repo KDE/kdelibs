@@ -44,8 +44,8 @@ public:
 	void setURL( const char *_url )	{	url = _url; }
 	void setType( int _type )	{	type = _type; }
 
-	const char *getText()	{	return text; }
-	const char *getURL()	{	return url; }
+	const char *getText()	{	return text.ascii(); }
+	const char *getURL()	{	return url.ascii(); }
 	int getType()	{	return type; }
 
 	QList<KFileBookmark> &getChildren() 	{ return children; }
