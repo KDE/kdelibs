@@ -30,9 +30,11 @@
 #include <karchive.h>
 
 /**
+ * A class for reading / writing (optionally compressed) tar archives.
+ *
  * KTar allows you to read and write tar archives, including those 
  * that are compressed using gzip or bzip2.
- * @short A class for reading/writing (optionnally compressed) tar archives.
+ * 
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
 class KIO_EXPORT KTar : public KArchive
@@ -44,8 +46,9 @@ public:
      *
      * @param filename is a local path (e.g. "/home/weis/myfile.tgz")
      * @param mimetype "application/x-gzip" or "application/x-bzip2"
-     * Do not use application/x-tgz or so. Only the compression layer !
-     * If the mimetype is ommitted, it will be determined from the filename.
+     * Do not use application/x-tgz or similar - you only need to
+     * specify the compression layer !  If the mimetype is omitted, it
+     * will be determined from the filename.
      */
     KTar( const QString& filename, const QString & mimetype = QString::null );
 
