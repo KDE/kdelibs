@@ -13,17 +13,17 @@
  *
  * Shared pixmap client for KDE.
  *
- * 5 Dec 99 Geert Jansen:   
- * 
- *	MAJOR change: KSharedPixmap is client-only and asynchronous now. It 
+ * 5 Dec 99 Geert Jansen:
+ *
+ *	MAJOR change: KSharedPixmap is client-only and asynchronous now. It
  *	uses the new selection mechanism to transfer the pixmap handle. This
- *	has the advantage that shared pixmaps can be deleted and/or changed 
+ *	has the advantage that shared pixmaps can be deleted and/or changed
  *	now, and that the very ugly XSetCloseDownMode() is not necessary
- *	anymore. 
+ *	anymore.
  *	The server is implemented in KPixmapServer, see the file
  *	kdebase/kdesktop/pixmapserver.cpp.
  *
- * 1 Oct 99 Geert Jansen:   
+ * 1 Oct 99 Geert Jansen:
  *
  *	Initial implementation.
  */
@@ -74,7 +74,7 @@ bool KSharedPixmap::isAvailable(QString name)
 	return false;
     return XGetSelectionOwner(qt_xdisplay(), sel) != None;
 }
-    
+
 
 bool KSharedPixmap::loadFromShared(QString name, QRect rect)
 {
@@ -94,7 +94,7 @@ bool KSharedPixmap::loadFromShared(QString name, QRect rect)
 	return false;
     }
 
-    XConvertSelection(qt_xdisplay(), m_Selection, pixmap, target, 
+    XConvertSelection(qt_xdisplay(), m_Selection, pixmap, target,
 	    winId(), CurrentTime);
     return true;
 }
@@ -117,13 +117,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     // Read pixmap handle from ev->property
 
-    int dummy, format; 
+    int dummy, format;
     unsigned long nitems, ldummy;
-    Drawable *pixmap_id; 
+    Drawable *pixmap_id;
     Atom type;
 
-    XGetWindowProperty(qt_xdisplay(), winId(), ev->property, 0, 1, false, 
-	    pixmap, &type, &format, &nitems, &ldummy, 
+    XGetWindowProperty(qt_xdisplay(), winId(), ev->property, 0, 1, false,
+	    pixmap, &type, &format, &nitems, &ldummy,
 	    (unsigned char **) &pixmap_id);
 
     if (nitems != 1) {
@@ -138,7 +138,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if (m_Rect.isEmpty()) {
 	QPixmap::resize(width, height);
-	XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 		0, 0, width, height, 0, 0);
 	XDeleteProperty(qt_xdisplay(), winId(), ev->property);
 	m_Selection = None;
@@ -156,13 +156,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     QPixmap::resize(tw, th);
 
-    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    xa, ya, t1w, t1h, 0, 0);
-    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     m_Selection = None;
