@@ -1217,6 +1217,9 @@ class kspeech : virtual public DCOPObject {
         * This signal is emitted whenever a speaking text job stops speaking.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
+        *
+        * The signal is only emitted if stopText() is called and the job is currently
+        * speaking.
         */
         void textStopped(const QCString& appId, const uint jobNum);
         /**
