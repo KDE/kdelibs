@@ -732,7 +732,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     nameArea = lined;
     lined->setFocus();
     connect( lined, SIGNAL( textChanged( const QString & ) ),
-             this, SIGNAL( changed() ) );
+             this, SLOT( nameFileChanged(const QString & ) ) );
   }
 
   grid->addWidget(nameArea, curRow++, 2);
@@ -873,6 +873,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 //   return i18n ("&General");
 // }
 
+
+void KFilePropsPlugin::nameFileChanged(const QString &text )
+{
+  properties->enableButtonOK(!text.isEmpty());
+  changed();
+}
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
     m_sRelativePath = "";

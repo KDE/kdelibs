@@ -393,7 +393,7 @@ protected slots:
 private slots:
   // workaround for compiler bug
 void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& kBUsed, const unsigned long& kBAvail, const QString& mp );
-
+ void nameFileChanged(const QString &text );
 private:
 
   void determineRelativePath( const QString & path );
