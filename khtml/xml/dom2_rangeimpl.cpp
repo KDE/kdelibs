@@ -275,6 +275,9 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *source
 
 short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB )
 {
+    // see DOM2 traversal & range section 2.5
+
+    // case 1: both points have the same container
     if( containerA == containerB )
     {
         if( offsetA == offsetB )  return 0;    // A is equal to B
@@ -282,46 +285,66 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
         else  return 1;                        // A is after B
     }
 
-    NodeImpl *n;
-    NodeListImpl *childNodes = containerA->childNodes();
-    if (offsetA+1 >= (long)childNodes->length()) {
-	// find the next node
-	n = containerA->parentNode();
-	while (n && !n->nextSibling())
-	    n = n->parentNode();
-	if (n)
+    // case 2: node C (container B or an ancestor) is a child node of A
+    NodeImpl *c = containerB;
+    while (c && c->parentNode() != containerA)
+	c = c->parentNode();
+    if (c) {
+	int offsetC = 0;
+	NodeImpl *n = n = containerA->firstChild();
+	while (n != c) {
+	    offsetC++;
 	    n = n->nextSibling();
-    }
-    else
-	n = containerA->childNodes()->item(offsetA+1);
-    delete childNodes;
-
-    bool atParentEnd = false;	
-    while (n) {
-	// traverse forwards and see if we find B
-        if( n == containerB)  return -1;       // A is before B
-
-        if (!atParentEnd) {
-	    if (n->firstChild())
-		n = n->firstChild();
-	    else if (n->nextSibling())
-		n = n->nextSibling();
-	    else {
-		n = n->parentNode();
-		atParentEnd = true;
-	    }
 	}
-	else {
-	    if (n->nextSibling()) {
-		n = n->nextSibling();
-		atParentEnd = false;
-	    }
-	    else
-		n = n->parentNode();
-	}
+
+        if( offsetA == offsetC )  return 0;    // A is equal to B
+        if( offsetA < offsetC )  return -1;    // A is before B
+        else  return 1;                        // A is after B
     }
 
-    return 1;                                  // A is after B
+    // case 3: node C (container A or an ancestor) is a child node of B
+    c = containerA;
+    while (c && c->parentNode() != containerB)
+	c = c->parentNode();
+    if (c) {
+	int offsetC = 0;
+	NodeImpl *n = n = containerB->firstChild();
+	while (n != c) {
+	    offsetC++;
+	    n = n->nextSibling();
+	}
+
+        if( offsetC == offsetB )  return 0;    // A is equal to B
+        if( offsetC < offsetB )  return -1;    // A is before B
+        else  return 1;                        // A is after B
+    }
+
+    // case 4: containers A & B are siblings, or children of siblings
+    int exceptioncode;
+    NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
+    NodeImpl *childA = containerA;
+    while (childA->parentNode() != cmnRoot)
+	childA = childA->parentNode();
+    NodeImpl *childB = containerB;
+    while (childB->parentNode() != cmnRoot)
+	childB = childB->parentNode();
+	
+    NodeImpl *n = cmnRoot->firstChild();
+    int i = 0;
+    int childAOffset = -1;
+    int childBOffset = -1;
+    while (childAOffset < 0 && childBOffset < 0) {
+	if (n == childA)
+	    childAOffset = i;
+	if (n == childB)
+	    childBOffset = i;
+	n = n->nextSibling();
+	i++;
+    }
+
+    if( childAOffset == childBOffset )  return 0;    // A is equal to B
+    if( childAOffset < childBOffset )   return -1;    // A is before B
+    else  return 1;                        // A is after B
 }
 
 bool RangeImpl::boundaryPointsValid(  )
@@ -333,34 +356,50 @@ bool RangeImpl::boundaryPointsValid(  )
 
 }
 
-void RangeImpl::deleteContents( int &exceptioncode )
-{
+void RangeImpl::deleteContents( int &exceptioncode ) {
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
 	return;
     }
 
+    processContents(DELETE_CONTENTS,exceptioncode);
+}
+
+DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &exceptioncode )
+{
     // ### when mutation events are implemented, we will have to take into account
     // situations where the tree is being transformed while we delete - ugh!
 
     // ### perhaps disable node deletion notification for this range while we do this?
 
     if (collapsed(exceptioncode))
-	return;
+	return 0;
     if (exceptioncode)
-	return;
+	return 0;
 	
     NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
     if (exceptioncode)
-	return;
-
+	return 0;
 	
-    if(m_startContainer == m_endContainer) {
+    DocumentFragmentImpl *fragment = 0;
+    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
+	fragment = new DocumentFragmentImpl(m_ownerDocument);
+
+    // Simple case: the start and end containers are the same. We just grab
+    // everything >= start offset and < end offset
+    if (m_startContainer == m_endContainer) {
         if(m_startContainer->nodeType() == Node::TEXT_NODE ||
            m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
            m_startContainer->nodeType() == Node::COMMENT_NODE) {
 
-            static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,m_endOffset-m_startOffset,exceptioncode);
+	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+		c->deleteData(0,m_startOffset,exceptioncode);
+		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_endOffset,exceptioncode);
+		fragment->appendChild(c,exceptioncode);
+	    }
+	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+		static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,m_endOffset-m_startOffset,exceptioncode);
         }
         else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
             // ### operate just on data ?
@@ -372,68 +411,124 @@ void RangeImpl::deleteContents( int &exceptioncode )
                 n = n->nextSibling();
             NodeImpl *next = n->nextSibling();
             while (n && i < m_endOffset) { // delete until m_endOffset
-		m_startContainer->removeChild(n,exceptioncode);
+		if (action == EXTRACT_CONTENTS)
+		    fragment->appendChild(n,exceptioncode); // will remove n from it's parent
+		else if (action == CLONE_CONTENTS)
+		    fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+		else	
+		    m_startContainer->removeChild(n,exceptioncode);		
 		n = next;
 		next = next->nextSibling();
 		i++;
 	    }
         }
         collapse(true,exceptioncode);
-        return;
+        return fragment;
     }
 
+    // Complex case: Start and end containers are different.
+    // There are three possiblities here:
+    // 1. Start container == cmnRoot (End container must be a descendant)
+    // 2. End container == cmnRoot (Start container must be a descendant)
+    // 3. Neither is cmnRoot, they are both descendants
+    //
+    // In case 3, we grab everything after the start (up until a direct child
+    // of cmnRoot) into leftContents, and everything before the end (up until
+    // a direct child of cmnRoot) into rightContents. Then we process all
+    // cmnRoot children between leftContents and rightContents
+    //
+    // In case 1 or 2, we skip either processing of leftContents or rightContents,
+    // in which case the last lot of nodes either goes from the first or last
+    // child of cmnRoot.
+    //
+    // These are deleted, cloned, or extracted (i.e. both) depending on action.
+
+    NodeImpl *leftContents = 0;
     if (m_startContainer != cmnRoot) {
-	// delete the left-hand side of the range, up until the last ancestor of
+	// process the left-hand side of the range, up until the last ancestor of
 	// m_startContainer before cmnRoot
 	if(m_startContainer->nodeType() == Node::TEXT_NODE ||
 	   m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
 	   m_startContainer->nodeType() == Node::COMMENT_NODE) {
-
-	    static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(
-		m_startOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,exceptioncode);
+	
+	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+		c->deleteData(0,m_startOffset,exceptioncode);
+		leftContents = c;
+	    }
+	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+		static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(
+		    m_startOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,exceptioncode);
 	}
 	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
 	    // ### operate just on data ?
+	    // leftContents = ...
 	}
 	else {
+	    leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
 	    NodeImpl *n = m_startContainer->firstChild();
 	    unsigned long i;
 	    for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
 		n = n->nextSibling();
 	    NodeImpl *next = n->nextSibling();
-	    while (n) { // delete until end
-		m_startContainer->removeChild(n,exceptioncode);
+	    while (n) { // process until end
+		if (action == EXTRACT_CONTENTS)
+		    leftContents->appendChild(n,exceptioncode); // will remove n from m_startContainer
+		else if (action == CLONE_CONTENTS)
+		    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+		else	
+		    m_startContainer->removeChild(n,exceptioncode);
 		n = next;
 		next = next->nextSibling();
 	    }
 	}
-
+	
 	NodeImpl *leftParent = m_startContainer->parentNode();
 	NodeImpl *n = m_startContainer->nextSibling();
 	for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
+	    NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
+	    leftContentsParent->appendChild(leftContents,exceptioncode);
+	    leftContents = leftContentsParent;
+	
 	    NodeImpl *next;
 	    for (; n; n = next ) {
 		next = n->nextSibling();
-		leftParent->removeChild(n,exceptioncode);
+		if (action == EXTRACT_CONTENTS) {
+		    leftParent->removeChild(n,exceptioncode);
+		    leftContents->appendChild(n,exceptioncode);
+		}
+		else if (action == CLONE_CONTENTS) {
+		    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+		}
+		else
+		    leftParent->removeChild(n,exceptioncode);
 	    }
 	    n = leftParent->nextSibling();
 	}
     }
 
+    NodeImpl *rightContents = 0;;
     if (m_endContainer != cmnRoot) {
-
 	// delete the right-hand side of the range, up until the last ancestor of
 	// m_endContainer before cmnRoot
 	if(m_endContainer->nodeType() == Node::TEXT_NODE ||
 	   m_endContainer->nodeType() == Node::CDATA_SECTION_NODE ||
 	   m_endContainer->nodeType() == Node::COMMENT_NODE) {
 
-	    static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
+	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_endContainer)->length()-m_endOffset,exceptioncode);
+		rightContents = c;
+	    }
+	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+		static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
 	}
 	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
 	    // ### operate just on data ?
+	    // rightContents = ...
 	}
 	else {
+	    rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
 	    NodeImpl *n = m_endContainer->firstChild();
 	    unsigned long i;
 	    for(i = 0; i < m_endOffset-1; i++) // skip to m_endOffset
@@ -441,17 +536,35 @@ void RangeImpl::deleteContents( int &exceptioncode )
 	    NodeImpl *prev;
 	    for (; n; n = prev ) {
 		prev = n->previousSibling();
-		m_endContainer->removeChild(n,exceptioncode);
+		if (action == EXTRACT_CONTENTS)
+		    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+		else if (action == CLONE_CONTENTS)
+		    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
+		else
+		    m_endContainer->removeChild(n,exceptioncode);
 	    }
 	}
 
 	NodeImpl *rightParent = m_endContainer->parentNode();
 	NodeImpl *n = m_endContainer->previousSibling();
 	for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
+	    NodeImpl *rightContentsParent = rightParent->cloneNode(false,exceptioncode);
+	    rightContentsParent->appendChild(rightContents,exceptioncode);
+	    rightContents = rightContentsParent;
+	
 	    NodeImpl *prev;
 	    for (; n; n = prev ) {
 		prev = n->previousSibling();
-		rightParent->removeChild(n,exceptioncode);
+		if (action == EXTRACT_CONTENTS) {
+		    rightParent->removeChild(n,exceptioncode);
+		    rightContents->appendChild(n,exceptioncode);
+		}
+		else if (action == CLONE_CONTENTS) {
+		    rightContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+		}
+		else		
+		    rightParent->removeChild(n,exceptioncode);
+		
 	    }
 	    n = rightParent->previousSibling();
 	}
@@ -459,42 +572,58 @@ void RangeImpl::deleteContents( int &exceptioncode )
 
     // delete all children of cmnRoot between the start and end container
 
-    NodeImpl *delStart; // child of cmnRooot
+    NodeImpl *processStart; // child of cmnRooot
     if (m_startContainer == cmnRoot) {
 	unsigned long i;
-	delStart = delStart->firstChild();
+	processStart = m_startContainer->firstChild();
 	for (i = 0; i < m_startOffset; i++)
-	    delStart = delStart->nextSibling();
+	    processStart = processStart->nextSibling();
     }
     else {
-	delStart = m_startContainer;
-	while (delStart->parentNode() != cmnRoot)
-	    delStart = delStart->parentNode();
-	delStart = delStart->nextSibling();
+	processStart = m_startContainer;
+	while (processStart->parentNode() != cmnRoot)
+	    processStart = processStart->parentNode();
+	processStart = processStart->nextSibling();
     }
-    NodeImpl *delEnd; // child of cmnRooot
+    NodeImpl *processEnd; // child of cmnRooot
     if (m_endContainer == cmnRoot) {
 	unsigned long i;
-	delEnd = m_endContainer->firstChild();
+	processEnd = m_endContainer->firstChild();
 	for (i = 0; i < m_endOffset; i++)
-	    delEnd = delEnd->nextSibling();
+	    processEnd = processEnd->nextSibling();
     }
     else {
-	delEnd = m_endContainer;
-	while (delEnd->parentNode() != cmnRoot)
-	    delEnd = delEnd->parentNode();
+	processEnd = m_endContainer;
+	while (processEnd->parentNode() != cmnRoot)
+	    processEnd = processEnd->parentNode();
     }
+
+    // Now add leftContents, stuff in between, and rightContents to the fragment
+    // (or just delete the stuff in between)
+
+    if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && leftContents)
+      fragment->appendChild(leftContents,exceptioncode);
 
     NodeImpl *next;
     NodeImpl *n;
-    if (delStart) {
-	for (n = delStart; n && n != delEnd; n = next) {
+    if (processStart) {
+	for (n = processStart; n && n != processEnd; n = next) {
 	    next = n->nextSibling();
-	    cmnRoot->removeChild(n,exceptioncode);
+	
+	    if (action == EXTRACT_CONTENTS)
+		fragment->appendChild(n,exceptioncode); // will remove from cmnRoot
+	    else if (action == CLONE_CONTENTS)
+		fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+	    else
+		cmnRoot->removeChild(n,exceptioncode);
 	}
     }
 
+    if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
+      fragment->appendChild(rightContents,exceptioncode);
+
     collapse(true,exceptioncode);
+    return fragment;
 }
 
 
@@ -505,7 +634,7 @@ DocumentFragmentImpl *RangeImpl::extractContents( int &exceptioncode )
 	return 0;
     }
 
-    return masterTraverse( true, exceptioncode );
+    return processContents(EXTRACT_CONTENTS,exceptioncode);
 }
 
 DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
@@ -515,7 +644,7 @@ DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
 	return 0;
     }
 
-    return masterTraverse( false, exceptioncode );
+    return processContents(CLONE_CONTENTS,exceptioncode);
 }
 
 void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )

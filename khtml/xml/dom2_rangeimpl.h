@@ -75,6 +75,13 @@ public:
     void surroundContents( NodeImpl *newParent, int &exceptioncode );
     void setStartBefore( NodeImpl *refNode, int &exceptioncode );
 
+    enum ActionType {
+	DELETE_CONTENTS,
+	EXTRACT_CONTENTS,
+	CLONE_CONTENTS
+    };
+    DocumentFragmentImpl *processContents ( ActionType action, int &exceptioncode );
+
 protected:
     DocumentImpl *m_ownerDocument;
     NodeImpl *m_startContainer;
