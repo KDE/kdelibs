@@ -47,7 +47,7 @@ namespace
         "</kpartgui>";
 
     const char *resourceFileName = "kmdiviewactions.rc";
- 
+
 }
 
 
@@ -62,7 +62,7 @@ ToggleToolViewAction::ToggleToolViewAction( const QString& text, const KShortcut
   if (m_dw) {
     connect(this,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
     connect(m_dw->dockManager(),SIGNAL(change()),this,SLOT(anDWChanged()));
-    //connect(m_dw,SIGNAL(destroyed()),this,SLOT(slotWidgetDestroyed()));
+    connect(m_dw,SIGNAL(destroyed()),this,SLOT(slotWidgetDestroyed()));
     setChecked(m_dw->mayBeHide());
   }
 }
@@ -100,7 +100,7 @@ void ToggleToolViewAction::slotWidgetDestroyed()
 }
 
 
-KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ), 
+KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ),
 KXMLGUIClient( mdiMainFrm )
 {
    m_mdiMode=KMdi::ChildframeMode;
@@ -121,14 +121,14 @@ KXMLGUIClient( mdiMainFrm )
 
         setXML( completeDescription, false /*merge*/ );
     }
- 
+
     if (actionCollection()->kaccel()==0)
 	    actionCollection()->setWidget(mdiMainFrm);
     m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
     if (showMDIModeAction) {
 	    m_mdiModeAction=new KSelectAction(i18n("MDI Mode"),0,actionCollection());
 	    QStringList modes;
-	    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
+	    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAl Mode");
 	    m_mdiModeAction->setItems(modes);
 	    connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
     } else m_mdiModeAction=0;
@@ -150,13 +150,13 @@ KXMLGUIClient( mdiMainFrm )
 		actionCollection(),"kmdi_prev_toolview"));
     m_gotoToolDockMenu->insert(new KAction(i18n("Next Tool View"),ALT+CTRL+Key_Right,m_mdiMainFrm,SLOT(nextToolViewInDock()),
 		actionCollection(),"kmdi_next_toolview"));
-    
+
 }
 
 KMDIGUIClient::~KMDIGUIClient()
 {
 
-    for (int i=0;i<m_toolViewActions.count();i++)
+    for (uint i=0;i<m_toolViewActions.count();i++)
 	    disconnect(m_toolViewActions.at(i),0,this,0);
 
     m_toolViewActions.setAutoDelete( false );
@@ -188,7 +188,7 @@ void KMDIGUIClient::setupActions()
 
 //    BarActionBuilder builder( actionCollection(), m_mainWindow, m_toolBars );
 
-//    if ( !builder.needsRebuild() ) 
+//    if ( !builder.needsRebuild() )
 //        return;
 
 
@@ -206,7 +206,7 @@ void KMDIGUIClient::setupActions()
 //             this, SLOT(blah()),actionCollection(),"nothing"));
 
       QPtrList<KAction> addList;
-      if (m_toolViewActions.count()<3) 
+      if (m_toolViewActions.count()<3)
 	for (uint i=0;i<m_toolViewActions.count();i++)
 		addList.append(m_toolViewActions.at(i));
       else
