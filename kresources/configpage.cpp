@@ -170,6 +170,7 @@ void ConfigPage::load()
   mListView->clear();
   mFamilyMap.clear();
   mInfoMap.clear();
+  QStringList familyDisplayNames;
 
   // KDE-3.3 compatibility code: get families from the plugins
   QStringList compatFamilyNames;
@@ -186,10 +187,11 @@ void ConfigPage::load()
   KTrader::OfferList::ConstIterator m_it;
   for( m_it = managers.begin(); m_it != managers.end(); ++m_it ) {
     QString displayName = (*m_it)->property( "Name" ).toString();
-    mFamilyMap.append( displayName );
+    familyDisplayNames.append( displayName );
     QString family = (*m_it)->property( "X-KDE-ResourceFamily" ).toString();
     if ( !family.isEmpty() ) {
       compatFamilyNames.remove( family );
+      mFamilyMap.append( family );
       loadManager( family );
     }
   }
@@ -198,13 +200,14 @@ void ConfigPage::load()
   QStringList::ConstIterator cfit = compatFamilyNames.begin();
   for ( ; cfit != compatFamilyNames.end(); ++cfit ) {
       mFamilyMap.append( *cfit );
+      familyDisplayNames.append( *cfit );
       loadManager( *cfit );
   }
 
   mCurrentManager = 0;
 
   mFamilyCombo->clear();
-  mFamilyCombo->insertStringList( mFamilyMap );
+  mFamilyCombo->insertStringList( familyDisplayNames );
 
   int currentFamily = mConfig->readNumEntry( "CurrentFamily", 0 );
   mFamilyCombo->setCurrentItem( currentFamily );
