@@ -38,6 +38,7 @@
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
 QString* KGlobalSettings::s_trashPath = 0;
+QString* KGlobalSettings::s_documentPath = 0;
 QFont *KGlobalSettings::_generalFont = 0;
 QFont *KGlobalSettings::_fixedFont = 0;
 QFont *KGlobalSettings::_toolBarFont = 0;
@@ -319,6 +320,7 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     s_desktopPath = new QString();
     s_autostartPath = new QString();
     s_trashPath = new QString();
+    s_documentPath = new QString();
 
     KConfig *config = KGlobal::config();
     bool dollarExpansion = config->isDollarExpansion();
@@ -356,10 +358,20 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     if ( s_autostartPath->right(1) != "/")
         *s_autostartPath += "/";
 
+    // Document Path
+    *s_documentPath = QString::null;
+    *s_documentPath = config->readEntry( "Documents" , *s_documentPath);
+    if ( (*s_documentPath)[0] != '/' )
+      s_documentPath->prepend( QDir::homeDirPath() + "/" );
+    *s_documentPath = QDir::cleanDirPath( *s_documentPath );
+    if ( s_documentPath->right(1) != "/")
+        *s_documentPath += "/";
+
     config->setDollarExpansion(dollarExpansion);
 
     // Make sure this app gets the notifications about those paths
-    kapp->addKipcEventMask(KIPC::SettingsChanged);
+    if (kapp)
+        kapp->addKipcEventMask(KIPC::SettingsChanged);
 }
 
 void KGlobalSettings::initColors()
@@ -393,6 +405,8 @@ void KGlobalSettings::rereadPathSettings()
     s_trashPath = 0L;
     delete s_desktopPath;
     s_desktopPath = 0L;
+    delete s_documentPath;
+    s_documentPath = 0L;
 }
 
 KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()

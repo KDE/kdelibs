@@ -190,6 +190,11 @@ class KGlobalSettings
      */
     static QString trashPath() { initStatic(); return *s_trashPath; }
 
+    /**
+     * The path where documents are stored of the current user.
+     */
+    static QString documentPath() { initStatic(); return *s_documentPath; }
+
 
     /**
      * The default color to use when highlighting toolbar buttons
@@ -243,6 +248,7 @@ private:
     static QString* s_desktopPath;
     static QString* s_autostartPath;
     static QString* s_trashPath;
+    static QString* s_documentPath;
     static QFont *_generalFont;
     static QFont *_fixedFont;
     static QFont *_toolBarFont;
