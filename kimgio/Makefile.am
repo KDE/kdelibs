@@ -9,7 +9,7 @@ KIMGIO_JP2_MODULES=kimg_jp2.la
 KIMGIO_JP2_DATAFILES=jp2.kimgio
 endif
 
-kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
+kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	         $(KIMGIO_TIFF_MODULES) kimg_ico.la $(KIMGIO_JP2_MODULES) \
              kimg_pcx.la kimg_tga.la
 
@@ -26,10 +26,6 @@ kimg_tiff_la_LIBADD = $(LIBTIFF) $(LIB_QT)
 kimg_xview_la_SOURCES = xview.cpp
 kimg_xview_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_xview_la_LIBADD  = $(LIB_QT)
-
-kimg_krl_la_SOURCES = krl.cpp
-kimg_krl_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
-kimg_krl_la_LIBADD  = $(LIB_QT)
 
 kimg_eps_la_SOURCES = eps.cpp
 kimg_eps_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
@@ -57,6 +53,6 @@ INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(al
 
 servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
-	       ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio krl.kimgio eps.kimgio \
+	       ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio eps.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
            gif.kimgio pcx.kimgio tga.kimgio
