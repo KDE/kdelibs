@@ -54,6 +54,8 @@ extern "C" {
    KDEDModule *create_kssld(const QCString &name) {
 	   return new KSSLD(name);
    }
+
+   void *__kde_do_unload;
 }
 
 
