@@ -694,7 +694,6 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
             if ( pos[0] ) {
                 pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
-                kdDebug() << "units " << pos[1] << endl;
 
                 if ( pos_ok[1] && pos[1] && pos[1]->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
                     // as the first hit the horizontal value as unit, the second value can only
@@ -715,20 +714,17 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         if ( invalid )
             break;
 
-        kdDebug() << "pos_ok " << pos_ok[0] << " " << pos_ok[1] << endl;
         if ( !pos_ok[0] || !pos_ok[1] ) {
             delete pos[0];
             delete pos[1];
             return false; // invalid
         }
 
-        kdDebug() << "pos " << pos[0] << " " << pos[1] << endl;
 
         if ( !pos[0] )
             pos[0] = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
         else if ( pos[0]->primitiveType() == CSSPrimitiveValue::CSS_IDENT )
         {
-            kdDebug() << "ident " << pos[0]->getIdent() << endl;
             // map the values to percentages
             id = pos[0]->getIdent();
             delete pos[0];
