@@ -196,7 +196,14 @@ public:
      */
     virtual void del( const QString &path, bool isfile);
 
-    // TODO : docu
+    /**
+     * Used for any command that is specific to this slave (protocol)
+     * Examples are : HTTP POST, mount and unmount (kio_file)
+     *
+     * @param data packed data; the meaning is completely dependent on the
+     *        slave, but usually starts with an int for the command number.
+     * Document your slave's commands, at least in its header file.
+     */ 
     virtual void special( const QByteArray & );
 
     static void sigsegv_handler(int);

@@ -68,11 +68,11 @@ public:
      * application has a loadFile function):
      *
      * <pre>
-     * QString s;
-     * if( KIO::NetAccess::download( u, s ) )
+     * QString tmpFile;
+     * if( KIO::NetAccess::download( u, tmpFile ) )
      * {
-     *   loadFile( s );
-     *   KIO::NetAccess::removeTempFile( s );
+     *   loadFile( tmpFile );
+     *   KIO::NetAccess::removeTempFile( tmpFile );
      *   }
      * </pre>
      *
@@ -102,8 +102,8 @@ public:
     static void removeTempFile(const QString& name);
 
     /**
-	 * Upload file src to url target.  Both must be specified,
-	 * unlike @ref download.
+     * Upload file src to url target.  Both must be specified,
+     * unlike @ref download.
      *
      * @param src URL referencing the file to upload
      *

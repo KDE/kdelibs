@@ -212,8 +212,15 @@ namespace KIO {
      */
     SimpleJob * chmod( const KURL& url, int permissions );
 
-    // The url isn't passed to the slave, but is used to know which
-    // slave to send it to :-)
+    /**
+     * Any command that is specific to one slave (protocol)
+     * Examples are : HTTP POST, mount and unmount (kio_file)
+     *
+     * @param url the url isn't passed to the slave, but is used to know 
+     *        which slave to send it to :-)
+     * @param data packed data; the meaning is completely dependent on the
+     *        slave, but usually starts with an int for the command number.
+     */
     SimpleJob * special( const KURL& url, const QByteArray & data );
 
     /**
