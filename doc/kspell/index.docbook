@@ -36,7 +36,8 @@ from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International
 <sect1 id="general-use-">
 <title>General Use </title>
 
-<para>The top line in the dialog displays a misspelled word which was found in your
+<para><anchor id="spelldlg">
+The top line in the dialog displays a misspelled word which was found in your
 document. KSpell attempts to find an appropriate replacement word. One or
 several may be found. The best guess is shown to the right of <emphasis>Replacement:.</emphasis>
 To accept this replacement, click on <emphasis remap="bf">Replace.</emphasis> You may also choose a word
@@ -71,6 +72,7 @@ will not be seen by other users).</para>
 
 <chapter id="configuration-dialog-">
 <title>Configuration Dialog </title>
+<anchor id="configuration">
 
 <sect1 id="dictionaries">
 <title>Dictionaries</title>

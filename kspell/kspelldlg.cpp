@@ -374,5 +374,5 @@ void
 KSpellDlg::help()
 {
   // give some help
-  kapp->invokeHTMLHelp ("kspell/ksdialog.html", "");
+  kapp->invokeHelp ("spelldlg", "kspell");
 }

@@ -641,8 +641,7 @@ void KSpellConfig::activateHelp( void )
 
 void KSpellConfig::sHelp( void )
 {
-  QString file ("kspell/index-2.html"), label ("");
-  kapp->invokeHTMLHelp(file, label);
+  kapp->invokeHelp("configuration", "kspell");
 }
 
 /*

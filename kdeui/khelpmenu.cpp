@@ -166,9 +166,7 @@ QPopupMenu* KHelpMenu::menu()
 
 void KHelpMenu::appHelpActivated()
 {
-  kapp->invokeHTMLHelp( QString::fromLatin1(kapp->name()) + 
-			QString::fromLatin1("/index.html"), 
-			QString::fromLatin1("") );
+  kapp->invokeHelp();
 }
 
 

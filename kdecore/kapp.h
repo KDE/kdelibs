@@ -267,18 +267,31 @@ public:
   void setTopWidget( QWidget *topWidget );
 
   /**
-   * Invoke the khelpcenter HTML help viewer.
+   * Invoke the khelpcenter HTML help viewer from docbook sources.
    *
-   * @param aFilename	The filename that is to be loaded. Its
-   *			location is computed automatically
-   *			according to the KFSSTND.  If @p aFilename
-   *			is empty, the logical appname with .html
-   *			appended to it is used.
-   * @param aTopic	This allows context-sensitive help. Its
-   *			value will be appended to the filename,
-   *			prefixed with a "#" (hash) character.
+   * @param anchor	This has to be a defined anchor in your
+   *                    docbook sources. If empty the main index
+   *                    is loaded
+   * @param appname	This allows you to show the help of another
+   *                    application. If empty the current name() is
+   *                    used
    */
-  void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
+  void invokeHelp( const QString& anchor = QString::null, 
+		   const QString& appname = QString::null ) const;
+
+  /**
+   * Invoke the khelpcenter HTML help viewer from HTML sources.
+   *    
+   * @param aFilename  The filename that is to be loaded. Its
+   *                   location is computed automatically
+   *                   according to the KFSSTND.  If @p aFilename
+   *                   is empty, the logical appname with .html
+   *                   appended to it is used.
+   * @param aTopic     This allows context-sensitive help. Its
+   *                   value will be appended to the filename,
+   *                   prefixed with a "#" (hash) character.
+   */
+  void invokeHTMLHelp_x( const QString& aFilename, const QString& aTopic ) const;
 
   /**
    * Invoke the standard email application.
@@ -740,6 +753,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.152  2000/05/21 23:09:03  pfeiffer
+// fix against people calling QApplication::setStyle()
+// I.e. Magellan doesn't crash on startup anymore.
+//
 // Revision 1.151  2000/05/17 09:30:12  faure
 // Updated date in version number - since you have to recompile all of
 // KDE anyway :/

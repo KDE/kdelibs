@@ -705,14 +705,7 @@ void KDialogBase::setIconListAllVisible( bool state )
 void KDialogBase::slotHelp() 
 {
   emit helpClicked();
-  if( mHelpPath.isEmpty() == true )
-  {
-    kapp->beep();
-  } 
-  else 
-  {
-    kapp->invokeHTMLHelp( mHelpPath, mHelpTopic );
-  }
+  kapp->invokeHelp( mAnchor, mHelpApp );
 }
 
 
@@ -837,10 +830,10 @@ void KDialogBase::enableLinkedHelp( bool state )
 }
 
 
-void KDialogBase::setHelp( const QString &path, const QString &topic )
+void KDialogBase::setHelp( const QString &anchor, const QString &appname )
 {
-  mHelpPath  = path;
-  mHelpTopic = topic;
+  mAnchor  = anchor;
+  mHelpApp = appname;
 }
 
 

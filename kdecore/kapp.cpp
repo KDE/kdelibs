@@ -1267,10 +1267,40 @@ void KApplication::kdisplaySetStyle()
 }
 
 
-void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
+void KApplication::invokeHelp( const QString& anchor, 
+			       const QString& _appname) const
 {
-   if( filename.isEmpty() )
-      filename = QString(name()) + "/index.html";
+   QString url;
+   QString appname;
+   if (_appname.isEmpty())
+     appname = name();
+   else
+     appname = _appname;
+
+   if (!anchor.isEmpty())
+     url = QString("help:/%1/%2").arg(appname).arg(anchor);
+   else
+     url = QString("help:/%1").arg(appname);
+
+   QString error;
+
+   if (startServiceByDesktopName("khelpcenter", url, &error))
+   {
+      warning("Could not launch help:\n%s\n", error.local8Bit().data());
+      return;
+   }
+}
+
+void KApplication::invokeHTMLHelp_x( const QString& _filename, const QString& topic ) const
+{
+   warning("invoking HTML help is deprecated! use docbook and invokeHelp!");
+  
+   QString filename;
+
+   if( _filename.isEmpty() )
+     filename = QString(name()) + "/index.html";
+   else
+     filename = _filename;
 
    QString url;
    if (!topic.isEmpty())

@@ -990,10 +990,12 @@ class KDialogBase : public KDialog
     /** 
      * Set the help path and topic.
      *
-     * @param path Path to help text.
-     * @param topic Topic in help text.
+     * @param anchor Defined anchor in your docbook sources
+     * @param appname Defines the appname the help belongs to
+     *                If empty it's the current one
      */
-    void setHelp( const QString &path, const QString &topic );
+    void setHelp( const QString &anchor, 
+		  const QString &appname = QString::null );
 
     /** 
      * Connected to help link label. 
@@ -1277,8 +1279,8 @@ class KDialogBase : public KDialog
     SButton mButton;
     bool mIsActivated;
 
-    QString mHelpPath;
-    QString mHelpTopic;
+    QString mAnchor;
+    QString mHelpApp;
     QString mHelpLinkText;
 
     static KDialogBaseTile *mTile;
