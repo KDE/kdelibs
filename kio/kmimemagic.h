@@ -55,7 +55,7 @@ public:
    */
   const QString encoding() { return QString::null; }
   /**
-   * Retrievee the accuracy of the matching.
+   * Retrieve the accuracy of the matching.
    */
   int accuracy() { return m_iAccuracy; }
   /**
