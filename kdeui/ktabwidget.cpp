@@ -53,7 +53,7 @@ void KTabWidget::setTabColor( QWidget *w, const QColor& color )
     }
 }
 
-const QColor &KTabWidget::tabColor( QWidget *w ) const
+QColor KTabWidget::tabColor( QWidget *w ) const
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
     if (t) {

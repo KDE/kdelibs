@@ -42,7 +42,7 @@ public:
       Set the tab of the given widget to \a color.
     */
     void setTabColor( QWidget *, const QColor& color );
-    const QColor &tabColor( QWidget * ) const;
+    QColor tabColor( QWidget * ) const;
 
     /*!
       If \a enable is TRUE, tab reordering with middle button will be enabled.
