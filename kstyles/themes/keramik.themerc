@@ -22,6 +22,7 @@ ConfigPage=kstyle_keramik_config
 Comment=The default style using alphablending
 Comment[az]=Alfa şəffaflıq işlədən ön qurğulu tərz
 Comment[bg]=Стандартния стил, използващ алфа сливане
+Comment[bn]= ডিফল্ট ধরন,স্টাইল
 Comment[bs]=Standardni stil koji koristi alphablending
 Comment[ca]=L'estil per omissió usant la mescla alfa
 Comment[cs]=Výchozí styl používající alfa kanál
