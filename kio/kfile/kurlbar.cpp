@@ -696,9 +696,9 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
     if (item != 0L && item->isPersistent())
     {
         popup->insertItem(SmallIconSet("edit"), i18n("&Edit Entry..."), EditItem);
+        popup->insertSeparator();
     }
 
-    popup->insertSeparator();
     popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
 
     if (item != 0L && item->isPersistent())
