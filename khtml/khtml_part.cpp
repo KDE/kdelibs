@@ -413,6 +413,8 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_workingURL = m_url;
 
   args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
+  args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
+  args.metaData().insert("ssl_parent_cert", d->m_ssl_parent_cert);
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
@@ -1031,6 +1033,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
+    d->m_ssl_parent_ip = d->m_job->queryMetaData("ssl_parent_ip");
+    d->m_ssl_parent_cert = d->m_job->queryMetaData("ssl_parent_cert");
     d->m_ssl_peer_certificate = d->m_job->queryMetaData("ssl_peer_certificate");
     d->m_ssl_peer_chain = d->m_job->queryMetaData("ssl_peer_chain");
     d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
@@ -2585,6 +2589,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
+  args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
+  args.metaData().insert("ssl_parent_cert", d->m_ssl_parent_cert);
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
@@ -2972,6 +2978,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     child->m_args.metaData()["referrer"] = d->m_referrer;
 
   child->m_args.metaData().insert("PropagateHttpHeader", "true");
+  child->m_args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
+  child->m_args.metaData().insert("ssl_parent_cert", d->m_ssl_parent_cert);
   child->m_args.metaData().insert("main_frame_request",
                                   parentPart() == 0 ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_was_in_use",
@@ -3319,6 +3327,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
      args.metaData()["referrer"] = d->m_referrer;
 
   args.metaData().insert("PropagateHttpHeader", "true");
+  args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
+  args.metaData().insert("ssl_parent_cert", d->m_ssl_parent_cert);
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
@@ -3717,7 +3727,9 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_version
          << d->m_ssl_cipher_used_bits
          << d->m_ssl_cipher_bits
-         << d->m_ssl_cert_state;
+         << d->m_ssl_cert_state
+         << d->m_ssl_parent_ip
+         << d->m_ssl_parent_cert;
 
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
@@ -3797,7 +3809,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_cipher_version
          >> d->m_ssl_cipher_used_bits
          >> d->m_ssl_cipher_bits
-         >> d->m_ssl_cert_state;
+         >> d->m_ssl_cert_state
+         >> d->m_ssl_parent_ip
+         >> d->m_ssl_parent_cert;
 
   d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
 
