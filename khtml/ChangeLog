@@ -1,5 +1,8 @@
 2003-10-05  Dirk Mueller  <mueller@kde.org>
 
+	* ecma/kjs_css.cpp (tryPut): Fix CSSValue refcounting error causing major
+	memory leak.
+
 	* dom/css_value.cpp/h (class CSSStyleDeclaration): make accessors const. Add
 	binary compatibility wrappers. 
 

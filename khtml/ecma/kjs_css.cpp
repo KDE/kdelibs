@@ -141,7 +141,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
   QString p = cssPropertyName(propertyName, asNumber);
 
   if (asNumber) {
-    DOM::CSSValue v = const_cast<DOM::CSSStyleDeclaration &>( styleDecl ).getPropertyCSSValue(p);
+    DOM::CSSValue v = styleDecl.getPropertyCSSValue(p);
     if ( !v.isNull() && v.cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
       return Number(static_cast<DOM::CSSPrimitiveValue>(v).getFloatValue(DOM::CSSPrimitiveValue::CSS_PX));
   }
@@ -176,9 +176,8 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &propertyN
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
 #endif
-    // Look whether the property is known. In that case add it as a CSS property.
-    QCString cprop = prop.latin1();
-    if (DOM::getPropertyID(cprop.data(), cprop.length())) {
+    // Look whether the property is known.d In that case add it as a CSS property.
+    if (DOM::getPropertyID(prop.latin1(), prop.length())) {
       if (propvalue.isEmpty())
         styleDecl.removeProperty(prop);
       else
