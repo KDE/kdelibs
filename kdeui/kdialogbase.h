@@ -188,13 +188,6 @@ class KDialogBase : public KDialog
       Swallow  = KJanusWidget::Swallow
     };
 
-    enum ResizeMode
-    {
-      ResizeFixed=0,
-      ResizeMinimum,
-      ResizeFree
-    };
-
   private:
     struct SButton
     {
@@ -311,7 +304,7 @@ class KDialogBase : public KDialog
      * Constructor for a message box mode where the buttonMask can only 
      * contain Yes No and Cancel. If you need other names you can rename
      * the buttons with @ref setButtonText The dialog box is not resizeable 
-     * by default but this can be changed by @ref setResizeMode If you select 
+     * by default but this can be changed by @ref setInitialSize. If you select 
      * 'modal' to be true, the dialog will return Yes, No or Cancel when 
      * closed otherwise you can use the signals @ref yesClicked 
      * @ref noClicked or @ref cancelClicked to determine the state.
