@@ -850,26 +850,30 @@ void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
   DirItem *dir = itemsInUse.take( oldUrlStr );
   if ( dir )
   {
-    dir->rootItem->setURL( url );
+    if ( dir->rootItem )
+      dir->rootItem->setURL( url );
     itemsInUse.insert( url.url(-1), dir );
-    // Rename all items under there
-    // Theorically this can only happen when called by FileRenamed.
-    // A redirection in a list job happens before any items have been created yet.
-    KFileItemListIterator kit( *dir->lstItems );
-    for ( ; kit.current(); ++kit )
+    if ( dir->lstItems )
     {
-      KURL oldUrl = (*kit)->url();
-      QString oldUrlStr( oldUrl.url(-1) );
-      KURL newUrl( oldUrl );
-      newUrl.setPath( url.path() );
-      newUrl.addPath( oldUrl.fileName() );
-      kdDebug() << "KDirListerCache::handleRedirection renaming " << oldUrlStr << " to " << newUrl.url() << endl;
-      (*kit)->setURL( newUrl );
-      if ( (*kit)->isDir() && ( urlsCurrentlyHeld[oldUrlStr] || urlsCurrentlyListed[oldUrlStr] ) )
-      {
-        // A dir that we're listing/showing? need to 'redirect' it...
-        handleRedirection( oldUrl, newUrl );
-      }
+        // Rename all items under there
+        // Theorically this can only happen when called by FileRenamed.
+        // A redirection in a list job happens before any items have been created yet.
+        KFileItemListIterator kit( *dir->lstItems );
+        for ( ; kit.current(); ++kit )
+        {
+            KURL oldUrl = (*kit)->url();
+            QString oldUrlStr( oldUrl.url(-1) );
+            KURL newUrl( oldUrl );
+            newUrl.setPath( url.path() );
+            newUrl.addPath( oldUrl.fileName() );
+            kdDebug() << "KDirListerCache::handleRedirection renaming " << oldUrlStr << " to " << newUrl.url() << endl;
+            (*kit)->setURL( newUrl );
+            if ( (*kit)->isDir() && ( urlsCurrentlyHeld[oldUrlStr] || urlsCurrentlyListed[oldUrlStr] ) )
+            {
+                // A dir that we're listing/showing? need to 'redirect' it...
+                handleRedirection( oldUrl, newUrl );
+            }
+        }
     }
   }
 
@@ -905,17 +909,21 @@ void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
   // Check if we are currently displaying this directory (odds opposite wrt above)
   // Update urlsCurrentlyHeld dict with new URL
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld.take( oldUrlStr );
-  urlsCurrentlyHeld.insert( url.url(-1), holders );
-  // And notify the dirlisters of the redirection
-  for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
+  if ( holders )
   {
-    *kdl->d->lstDirs.find( oldUrl ) = url;
-    if ( kdl->d->lstDirs.count() == 1 )
-    {
-      emit kdl->redirection( url );
-    }
-    emit kdl->redirection( oldUrl, url );
+      urlsCurrentlyHeld.insert( url.url(-1), holders );
+      // And notify the dirlisters of the redirection
+      for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
+      {
+        *kdl->d->lstDirs.find( oldUrl ) = url;
+        if ( kdl->d->lstDirs.count() == 1 )
+        {
+          emit kdl->redirection( url );
+        }
+        emit kdl->redirection( oldUrl, url );
+      }
   }
+
   // Is oldUrl a directory in the cache?
   // Remove any child of oldUrl from the cache - even if the renamed dir itself isn't in it!
   removeDirFromCache( oldUrl );
