@@ -181,7 +181,8 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Key, VirtKey, OutputString, InitTextEvent, InputGenerated, NumPad };
+    enum { Key, VirtKey, OutputString, InitTextEvent, InputGenerated, NumPad,
+           CtrlKey, ShiftKey, AltKey, MetaKey };
     DOM::TextEvent toTextEvent() const { return static_cast<DOM::TextEvent>(event); }
   };
 

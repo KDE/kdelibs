@@ -571,12 +571,12 @@ void TextEvent::initModifier(unsigned long modifierArg, bool valueArg)
     return static_cast<TextEventImpl*>(impl)->initModifier(modifierArg,valueArg);
 }
 
-bool TextEvent::checkModifier(unsigned long modiferArg)
+bool TextEvent::checkModifier(unsigned long modifierArg)
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return static_cast<TextEventImpl*>(impl)->checkModifier(modiferArg);
+    return static_cast<TextEventImpl*>(impl)->checkModifier(modifierArg);
 }
 
 bool TextEvent::inputGenerated() const

@@ -337,7 +337,7 @@ public:
                     bool numPadArg);
   void initModifier(unsigned long modifierArg, bool valueArg);
 
-  bool checkModifier(unsigned long modiferArg);
+  bool checkModifier(unsigned long modifierArg);
 
  //Attributes:
     bool             inputGenerated() const { return m_inputGenerated; }

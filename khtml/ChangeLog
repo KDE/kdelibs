@@ -1,5 +1,7 @@
 2005-02-27  Harri Porten  <porten@kde.org>
 
+        * ecma/kjs_events.cpp: bind keyboard modifier properties like ctrlKey 
+
         * xml/dom2_eventsimpl.cpp: returning meaningful keyCode() values
         for "special" keys
 

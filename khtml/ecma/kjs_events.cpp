@@ -691,12 +691,17 @@ Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
 const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMUIEvent::info, &DOMTextEventTable, 0 };
 
 /*
-@begin DOMTextEventTable 2
+@begin DOMTextEventTable 5
   keyVal   	 DOMTextEvent::Key	     DontDelete|ReadOnly
   virtKeyVal	 DOMTextEvent::VirtKey        DontDelete|ReadOnly
   outputString	 DOMTextEvent::OutputString   DontDelete|ReadOnly
   inputGenerated DOMTextEvent::InputGenerated DontDelete|ReadOnly
   numPad         DOMTextEvent::NumPad         DontDelete|ReadOnly
+  # actually belonging to KeyboardEvent
+  ctrlKey        DOMTextEvent::CtrlKey     DontDelete|ReadOnly
+  altKey         DOMTextEvent::AltKey      DontDelete|ReadOnly
+  shiftKey       DOMTextEvent::ShiftKey    DontDelete|ReadOnly
+  altKey         DOMTextEvent::AltKey      DontDelete|ReadOnly
 @end
 @begin DOMTextEventProtoTable 1
   initTextEvent	DOMTextEvent::InitTextEvent	DontDelete|Function 10
@@ -724,20 +729,31 @@ Value DOMTextEvent::tryGet(ExecState *exec, const Identifier &p) const
 
 Value DOMTextEvent::getValueProperty(ExecState *, int token) const
 {
+  // ### KDE 4: use const reference
+  DOM::TextEvent tevent = static_cast<DOM::TextEvent>(event);
   switch (token) {
   case Key:
-    return Number(static_cast<DOM::TextEvent>(event).keyVal());
+    return Number(tevent.keyVal());
   case VirtKey:
-    return Number(static_cast<DOM::TextEvent>(event).virtKeyVal());
+    return Number(tevent.virtKeyVal());
   case OutputString:
-    return String(static_cast<DOM::TextEvent>(event).outputString());
+    return String(tevent.outputString());
   case InputGenerated:
-    return Boolean(static_cast<DOM::TextEvent>(event).inputGenerated());
+    return Boolean(tevent.inputGenerated());
   case NumPad:
-    return Boolean(static_cast<DOM::TextEvent>(event).numPad());
+    return Boolean(tevent.numPad());
+  // these modifier attributes actually belong into a KeyboardEvent interface
+  case CtrlKey:
+    return Boolean(tevent.checkModifier(Qt::ControlButton));
+  case ShiftKey:
+    return Boolean(tevent.checkModifier(Qt::ShiftButton));
+  case AltKey:
+    return Boolean(tevent.checkModifier(Qt::AltButton));
+  case MetaKey:
+    return Boolean(tevent.checkModifier(Qt::MetaButton));
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
-    return Value();
+    return KJS::Undefined();
   }
 }
 
