@@ -50,9 +50,9 @@ ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
                               int id, const QString &_mergingName,
                               const QString &_groupName, const QStringList &customTags,
                               const QStringList &containerTags )
-    : parent( _parent ), client( _client ), builder( _builder ), 
-      builderCustomTags( customTags ), builderContainerTags( containerTags ), 
-      container( _container ), containerId( id ), tagName( _tagName ), name( _name ), 
+    : parent( _parent ), client( _client ), builder( _builder ),
+      builderCustomTags( customTags ), builderContainerTags( containerTags ),
+      container( _container ), containerId( id ), tagName( _tagName ), name( _name ),
       groupName( _groupName ), index( 0 ), mergingName( _mergingName )
 {
     children.setAutoDelete( true );
@@ -135,7 +135,7 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
     if ( !name.isEmpty() )
     {
         for (; nIt.current(); ++nIt )
-            if ( nIt.current()->name == name && 
+            if ( nIt.current()->name == name &&
                  !excludeList->containsRef( nIt.current()->container ) )
             {
                 res = nIt.current();
@@ -150,7 +150,7 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
         {
             if ( nIt.current()->tagName == tagName &&
                  !excludeList->containsRef( nIt.current()->container )
-                 /* 
+                 /*
                   * It is a bad idea to also compare the client, because
                   * we don't want to do so in situations like these:
                   *
@@ -237,8 +237,8 @@ void ContainerNode::plugActionList( BuildState &state, const MergingIndexList::I
     if ( k != state.actionListName )
         return;
 
-    ContainerClient *client = findChildContainerClient( state.guiClient, 
-                                                        QString::null, 
+    ContainerClient *client = findChildContainerClient( state.guiClient,
+                                                        QString::null,
                                                         mergingIndices.end() );
 
     client->actionLists.insert( k, state.actionList );
@@ -279,8 +279,8 @@ void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList:
     if ( k != state.actionListName )
         return;
 
-    ContainerClient *client = findChildContainerClient( state.guiClient, 
-                                                        QString::null, 
+    ContainerClient *client = findChildContainerClient( state.guiClient,
+                                                        QString::null,
                                                         mergingIndices.end() );
 
     ActionListMap::Iterator lIt( client->actionLists.find( k ) );
@@ -466,7 +466,7 @@ void ContainerNode::reset()
         client->setFactory( 0L );
 }
 
-int ContainerNode::calcMergingIndex( const QString &mergingName, 
+int ContainerNode::calcMergingIndex( const QString &mergingName,
                                      MergingIndexList::Iterator &it,
                                      BuildState &state,
                                      bool ignoreDefaultMergingIndex )
@@ -516,7 +516,7 @@ int BuildHelper::calcMergingIndex( const QDomElement &element, MergingIndexList:
 }
 
 BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
-    : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ), 
+    : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ),
       parentNode( node )
 {
     static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
@@ -537,7 +537,7 @@ BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
     }
 
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt, 
+    parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
                                   m_state, /*ignoreDefaultMergingIndex*/ false );
 }
 
@@ -603,6 +603,7 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     // look up the action and plug it in
     KAction *action = m_state.guiClient->action( e );
 
+    //kdDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")" << endl;
     if ( !action )
         return false;
 
@@ -639,7 +640,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
 
         if ( tagName != "enable" && tagName != "disable" )
             continue;
-    
+
         bool processingActionsToEnable = (tagName == "enable");
 
         // process action names
@@ -695,7 +696,7 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name, 
     MergingIndexList::Iterator mIt( parentNode->mergingIndices.end() );
 
     QString group( e.attribute( attrGroup ) );
-    if ( !group.isEmpty() ) 
+    if ( !group.isEmpty() )
         group.prepend( attrGroup );
 
     // calculate the index of the new merging index. Usually this does not need any calculation,
@@ -752,7 +753,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         parentNode->adjustMergingIndices( 1, it );
 
         assert( parentNode->findContainerNode( container ) == 0 );
-        
+
         containerList.append( container );
 
         QString mergingName;
@@ -768,7 +769,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         }
 
         containerNode = new ContainerNode( container, tag, name, parentNode,
-                                           m_state.guiClient, builder, id, 
+                                           m_state.guiClient, builder, id,
                                            mergingName, group, cusTags, conTags );
     }
 
@@ -780,8 +781,8 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
                                   m_state, ignoreDefaultMergingIndex );
 }
 
-QWidget *BuildHelper::createContainer( QWidget *parent, int index, 
-                                       const QDomElement &element, int &id, 
+QWidget *BuildHelper::createContainer( QWidget *parent, int index,
+                                       const QDomElement &element, int &id,
                                        KXMLGUIBuilder **builder )
 {
     QWidget *res = 0L;
