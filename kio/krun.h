@@ -226,6 +226,8 @@ public:
     return pOpenWithHandler;
   }
 
+  static bool exists() { return pOpenWithHandler != 0L; }
+
 private:
   static KOpenWithHandler * pOpenWithHandler;
 };
