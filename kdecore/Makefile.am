@@ -127,7 +127,7 @@ kde_config_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 
 DISTCLEANFILES = kde-config.cpp
 
-DOXYGEN_REFERENCES = dcop kdeui
+DOXYGEN_REFERENCES = dcop kdeui kparts
 DOXYGEN_EXCLUDE = malloc/*
 
 include ../admin/Doxyfile.am
