@@ -844,7 +844,7 @@ void KFilePlugin::appendItem(KFileMetaInfoGroup& group, const QString& key, QVar
 ///////////////////////////////////////////////////////////////////
 
 
-static KFileMetaInfoProvider * KFileMetaInfoProvider::s_self;
+KFileMetaInfoProvider * KFileMetaInfoProvider::s_self;
 static KStaticDeleter<KFileMetaInfoProvider> sd;
 
 KFileMetaInfoProvider * KFileMetaInfoProvider::self()
