@@ -1,7 +1,7 @@
 /*
-   Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
-   Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
-   Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2000-2002 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2000-2002 George Staikos <staikos@kde.org>
+   Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <meddie@yoyo.cc.monash.edu.au>
 
 
@@ -2713,6 +2713,41 @@ bool HTTPProtocol::readHeader()
         m_bKeepAlive = true;
       }
     }
+    else if (strncasecmp(buf, "P3P:", 4) == 0) {
+      QString p3pstr = buf;
+      p3pstr = p3pstr.mid(4).simplifyWhiteSpace();
+      QStringList policyrefs, compact;
+      QStringList policyfields = QStringList::split(QRegExp(",[ ]*"), p3pstr);
+      for (QStringList::Iterator it = policyfields.begin(); 
+                                  it != policyfields.end(); 
+                                                      ++it) {
+         QStringList policy = QStringList::split("=", *it);
+
+         if (policy.count() == 2) {
+            if (policy[0].lower() == "policyref") {
+               policyrefs << policy[1].replace(QRegExp("[\"\']"), "")
+                                      .stripWhiteSpace();
+            } else if (policy[0].lower() == "cp") {
+               // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
+               // other metadata sent in strings.  This could be a bit more
+               // efficient but I'm going for correctness right now.
+               QStringList cps = QStringList::split(" ", 
+                                        policy[1].replace(QRegExp("[\"\']"), "")
+                                                 .simplifyWhiteSpace());
+
+               for (QStringList::Iterator j = cps.begin(); j != cps.end(); ++j)
+                 compact << *j;
+            }
+         }
+      }
+
+      if (!policyrefs.isEmpty())
+         setMetaData("PrivacyPolicy", policyrefs.join("\n"));
+
+      if (!compact.isEmpty())
+         setMetaData("PrivacyCompactPolicy", compact.join("\n"));
+    }
+
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
