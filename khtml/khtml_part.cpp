@@ -1527,8 +1527,8 @@ void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::Cac
 
 void KHTMLPart::checkCompleted()
 {
-//     kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
-//     kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
+  //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
   if (d->m_doc && !d->m_bParsing && !d->m_focusNodeRestored)
@@ -1554,23 +1554,28 @@ void KHTMLPart::checkCompleted()
 
   int requests = 0;
 
+  // Any frame that hasn't completed yet ?
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !(*it).m_bCompleted )
       return;
 
+  // Are we still parsing - or have we done the completed stuff already ?
   if ( d->m_bParsing || d->m_bComplete )
     return;
 
-  d->m_bComplete = true;
-
-  checkEmitLoadEvent();
-
+  // Still waiting for images/scripts from the loader ?
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
   //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
     return;
+
+  // OK, completed.
+  // Now do what should be done when we are really completed.
+  d->m_bComplete = true;
+
+  checkEmitLoadEvent(); // if we didn't do it before
 
   if (!parentPart())
     emit setStatusBarText(i18n("Done."));
