@@ -29,14 +29,14 @@ class KAboutData;
 class KBugReportPrivate;
 
 /**
- * A dialog box for sending bug reports.
+ * @short A dialog box for sending bug reports.
+ *
  * All the information needed by the dialog box
  * (program name, version, bug-report address, etc.)
  * comes from the KAboutData class.
  * Make sure you create an instance of KAboutData and pass it
  * to KCmdLineArgs.
  *
- * @short A dialog box for sending bug reports.
  * @author David Faure <faure@kde.org>
  */
 class KDEUI_EXPORT KBugReport : public KDialogBase
@@ -81,23 +81,23 @@ protected slots:
 
   /**
    * Application combo selection changed (and was activated)
-   */ 
+   */
   void appChanged(int);
   /**
    * Update the url to match the current os, compiler, selected app, etc
-   */ 
+   */
   void updateURL();
 
 protected:
   /**
    * A complete copy of the bug report
    * @return QString copy of the bug report.
-   */ 
+   */
   QString text() const;
   /**
    * Attempt to e-mail the bug report.
    * @return true on success
-   */ 
+   */
   bool sendBugReport();
 
   KProcess * m_process;

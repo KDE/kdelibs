@@ -297,11 +297,12 @@ private:
 };
 
 /**
+ * @short A color displayer.
+ *
  * The KColorPatch widget is a (usually small) widget showing
  * a selected color e. g. in the KColorDialog. It
  * automatically handles drag and drop from and on the widget.
  *
- * @short A color displayer.
  */
 class KDEUI_EXPORT KColorPatch : public QFrame
 {
@@ -334,7 +335,7 @@ private:
 };
 
 /**
- * The KColorDialog provides a dialog for color selection.
+ * @short A color selection dialog.
  *
  * <b>Features:</b>\n
  *
@@ -368,7 +369,6 @@ private:
  * palettes or a palette configured by the user. The small field showing
  * the currently selected color is a KColorPatch.
  *
- * @short A color selection dialog.
  **/
 class KDEUI_EXPORT KColorDialog : public KDialogBase
 {
