@@ -1735,7 +1735,8 @@ void KApplication::updateUserTimestamp( unsigned long time )
         time = ev.xproperty.time;
         XDestroyWindow( qt_xdisplay(), w );
     }
-    if( time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+    if( qt_x_user_time == 0
+        || time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
         qt_x_user_time = time;
 #endif
 }
