@@ -216,7 +216,11 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   {
     QString path = _url.path();
     if ( path.right(1) == "/" || path.isEmpty() )
-      return mimeType( "inode/directory" );
+    {
+      // Assume HTML for http/https protocol
+      return (_url.protocol().left(4) == "http") ? mimeType( "text/html" )
+                                                 : mimeType( "inode/directory" );
+    }
   }
 
   // No more chances for non local URLs
