@@ -1,5 +1,5 @@
-#ifndef __kio_dlg_h__
-#define __kio_dlg_h__
+#ifndef __klineeditdlg_h__
+#define __klineeditdlg_h__
 
 #include <qdialog.h>
 #include <qlineedit.h>
