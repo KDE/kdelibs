@@ -399,7 +399,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
                 c = textcolor;
         }
 
-    int half = width/2;
+    int smallhalf = width/2;
+    int bighalf;
     switch(style)
     {
     case BNONE:
@@ -415,18 +416,19 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     case DASHED:
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
-
+	
+	bighalf = smallhalf + width%2;
         switch(s)
         {
         case BSTop:
-            y1 += half; y2 += half;   break;
+            y1 += smallhalf; y2 += smallhalf;   break;
         case BSBottom:
-            y1 -= half; y2 -= half;   break;
+            y1 -= bighalf; y2 -= bighalf;   break;
         case BSLeft:
-            x1 += half; x2 += half;
+            x1 += smallhalf; x2 += smallhalf;
             y1 += width; y2 -= width; break;
         case BSRight:
-            x1 -= half; x2 -= half;
+            x1 -= bighalf; x2 -= bighalf;
             y2 -= width; y1 += width; break;
         }
 
@@ -467,11 +469,11 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         // disadvantage is that current edges doesn't look right because of reverse
         // drawing order
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, true, true, adjbw1, adjbw2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, true, true, adjbw1/2, adjbw2/2);
+        drawBorder(p, x1, y1, x2, y2, smallhalf, s, c, textcolor, OUTSET, true, true, adjbw1/2, adjbw2/2);
         break;
     case RIDGE:
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, true, true, adjbw1, adjbw2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, true, true, adjbw1/2, adjbw2/2);
+        drawBorder(p, x1, y1, x2, y2, smallhalf, s, c, textcolor, INSET, true, true, adjbw1/2, adjbw2/2);
         break;
     case INSET:
         if(s == BSTop || s == BSLeft)
