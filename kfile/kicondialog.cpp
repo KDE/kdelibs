@@ -112,10 +112,21 @@ void KIconCanvas::slotLoadFiles()
     d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
+    uint emitProgress = 10; // so we will emit it once in the beginning
     for (it=mFiles.begin(), i=0; it!=mFiles.end(); it++, i++)
     {
-	emit progress(i);
-	kapp->processEvents();
+	// Calling kapp->processEvents() makes the iconview flicker like hell
+	// (it's being repainted once for every new item), so we don't do this.
+	// Instead, we directly repaint the progress bar without going through
+	// the event-loop. We do that just once for every 10th item so that
+	// the progress bar doesn't flicker in turn. (pfeiffer)
+	if ( emitProgress >= 10 ) {
+	    emit progress(i);
+            emitProgress = 0;
+        }
+        
+        emitProgress++;
+//	kapp->processEvents();
         if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
             break;
 	QImage img;
@@ -393,6 +404,7 @@ void KIconDialog::slotStartLoading(int steps)
 void KIconDialog::slotProgress(int p)
 {
     mpProgress->setValue(p);
+    mpProgress->repaint();
 }
 
 void KIconDialog::slotFinished()
