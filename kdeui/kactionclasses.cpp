@@ -2215,14 +2215,14 @@ void KPasteTextAction::menuAboutToShow()
         list = reply;
     }
     QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
-    clipboardText.replace("&", "&&");
-    clipboardText = KStringHandler::csqueeze(clipboardText, 45);
     if (list.isEmpty())
         list << clipboardText;
     bool found = false;
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+    for ( QStringList::ConstIterator it = list.begin(); it != list.end(); ++it )
     {
-      int id = m_popup->insertItem(*it);
+      QString text = KStringHandler::cEmSqueeze((*it).simplifyWhiteSpace(), m_popup->fontMetrics(), 20);
+      text.replace("&", "&&");
+      int id = m_popup->insertItem(text);
       if (!found && *it == clipboardText)
       {
         m_popup->setItemChecked(id, true);
