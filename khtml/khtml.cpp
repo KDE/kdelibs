@@ -988,7 +988,7 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     if(!document) return;
     NodeImpl *body = document->body();
     if(!body) return;
-#if 0
+#if 1
     if (paintBuffer==0)
             paintBuffer=new QPixmap(width()+100,height()+100);
     else if ( paintBuffer->width() < width() 
