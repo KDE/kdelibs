@@ -1,18 +1,18 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.32  1999/07/25 10:55:46  kulow
+// adding #errors in case Bool is defined
+//
 // Revision 1.31  1999/07/25 10:42:44  kulow
 // taking over qvariant from koffice and porting kdelibs to QVariant.
 // I mainly s/QProperty/QVariant and sorted header files to make it
@@ -78,9 +81,6 @@
 #include <qfont.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
-#ifdef Bool
-#error include X11/Xlib.h after Qt and KDE includes
-#endif
 #include <qvariant.h>
 #include <qmap.h>
 
@@ -108,7 +108,7 @@
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
  * @see KApplication::getConfig KConfig KSimpleConfig
- * @short KDE Configuration Management abstract base class 
+ * @short KDE Configuration Management abstract base class
  */
 class KConfigBase : public QObject
 {
@@ -122,7 +122,7 @@ public:
    * Construct a KConfigBase object.
    */
   KConfigBase();
-  
+
   /**
    * Destructor.
    */
@@ -189,7 +189,7 @@ public:
    * @return an empty property on error.
    */
   QVariant readPropertyEntry( const QString& aKey, QVariant::Type ) const;
- 
+
   /**
    * Read a list of strings.
    *
@@ -202,7 +202,7 @@ public:
    */
   int readListEntry( const QString& pKey, QStrList &list,
                      char sep = ',' ) const;
- 
+
   /**
    * Read a list of strings.
    *
@@ -211,7 +211,7 @@ public:
    * @return The list.
    */
   QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
- 
+
   /**
    * Read a numerical value.
    *
@@ -223,7 +223,7 @@ public:
    * @return The value for this key or 0 if no value was found.
    */
   int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
- 
+
   /**
    * Read a numerical value.
    *
@@ -249,7 +249,7 @@ public:
    * @return The value for this key or 0 if no value was found.
    */
   long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
- 
+
   /**
    * Read a numerical value.
    *
@@ -262,7 +262,7 @@ public:
    */
   unsigned long readUnsignedLongNumEntry( const QString& pKey,
                                           unsigned long nDefault = 0 ) const;
- 
+
   /**
    * Read a numerical value.
    *
@@ -273,7 +273,7 @@ public:
    * @param nDefault A default value returned if the key was not found.
    * @return The value for this key or 0 if no value was found.
    */
-  double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const; 
+  double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
   /**
    * Read a QFont.
    *
@@ -301,8 +301,8 @@ public:
    * found.
    */
   bool readBoolEntry( const QString& pKey, const bool bDefault = false ) const;
- 
- 
+
+
   /**
    * Read a rect entry.
    *
@@ -316,8 +316,8 @@ public:
    * was found.
    */
   QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
- 
- 
+
+
   /**
    * Read a point entry.
    *
@@ -345,8 +345,8 @@ public:
    * was found.
    */
   QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
- 
- 
+
+
   /**
    * Read a QColor.
    *
@@ -360,7 +360,7 @@ public:
    */
   QColor readColorEntry( const QString& pKey,
                          const QColor* pDefault = 0L ) const;
- 
+
   /**
    * Write the key/value pair.
    *
@@ -450,7 +450,7 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
- 
+
   /**
    * Write the key/value pair.
    *
@@ -494,7 +494,7 @@ public:
   QString writeEntry( const QString& pKey, int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write an unsigned numerical value.
@@ -533,7 +533,7 @@ public:
   QString writeEntry( const QString& pKey, long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write an unsigned long numerical value.
@@ -552,7 +552,7 @@ public:
   QString writeEntry( const QString& pKey, unsigned long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write a floating-point value.
@@ -590,7 +590,7 @@ public:
   QString writeEntry( const QString& pKey, bool bValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write a font
@@ -609,7 +609,7 @@ public:
   QString writeEntry( const QString& pKey, const QFont& rFont,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write a color.
@@ -652,7 +652,7 @@ public:
   void writeEntry( const QString& pKey, const QRect& rColor,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
- 
+
   /**
    * Write the key value pair.
    * Same as above, but write a point.
@@ -695,41 +695,41 @@ public:
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
 
-  /** 
+  /**
    * Turns on or off "dollar expansion" when reading config entries.
    * Dollar expansion is initially ON.
-   * 
+   *
    * @param _bExpand if true, dollar expansion is turned on.
    */
   void setDollarExpansion( bool _bExpand = true ) { bExpand = _bExpand; }
- 
+
   /**
    * Returns whether dollar expansion is on or off.  It is initially ON.
    *
    * @return true if dollar expansion is on.
    */
   bool isDollarExpansion() const { return bExpand; }
- 
+
   /**
    * Mark the config object as "clean," i.e. don't write dirty entries
    * at destruction time. If bDeep is false, only the global dirty
    * flag of the KConfig object gets cleared. If you then call
    * writeEntry again, the global dirty flag is set again and all
    * dirty entries will be written at a subsequent sync() call.
-   * 
+   *
    * Classes which derive from KConfigObject should override this
    * method and implement storage-specific behaviour, as well as
    * calling the KConfigBase::rollback() explicitly in the initializer.
    *
    * @param bDeep if true, the dirty flags of all entries are cleared,
-   *        as well as the global dirty flag.  
+   *        as well as the global dirty flag.
    */
   virtual void rollback( bool bDeep = true );
- 
+
   /**
    * Flush all changes that currently reside only in memory
    * back to disk / permanent storage. Dirty configuration entries are
-   * written to the the most specific file available. 
+   * written to the the most specific file available.
    *
    * Asks the back end to flush out all pending writes, and then calls
    * rollback().  No changes are made if the object has readOnly
@@ -754,7 +754,7 @@ public:
    *
    */
    void setReadOnly(bool _ro) { bReadOnly = _ro; }
-   
+
    /**
     * Queries the read-only status of the config object.
     *
@@ -795,7 +795,7 @@ public:
    * then simply call parseConfigFiles() when implementing this
    * method.
    *
-   * @see #parseConfigFiles 
+   * @see #parseConfigFiles
    */
   virtual void reparseConfiguration(void) = 0;
 
@@ -844,7 +844,7 @@ protected:
 
   /**
    * Returns an map (tree) of the entries in the specified group.
-   * This may or may not return all entries that belong to the 
+   * This may or may not return all entries that belong to the
    * config object.  The only guarantee that you are given is that
    * any entries that are dirty (i.e. modified and not yet written back
    * to the disk) will be contained in the map.  Some derivative
@@ -852,29 +852,29 @@ protected:
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
-   * 
+   *
    * @param pGroup the group to provide a KEntryMap for.
    * @return The map of the entries in the group.
    * @internal
    */
   virtual KEntryMap internalEntryMap( const QString& pGroup ) const = 0;
- 
+
   /**
    * Returns an map (tree) of the entries in the tree.
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
-   * 
+   *
    * @return a map of the entries in the tree.
    * @internal
    */
   virtual KEntryMap internalEntryMap() const = 0;
 
-  /** 
+  /**
    * Insert a key,value pair into the internal storage mechanism of
    * the configuration object. Classes that derive from KConfigBase
    * will need to implement this method in a storage-specific manner.
-   * 
+   *
    * Do not use this function, the implementation / return type are
    * subject to change.
    *
@@ -897,7 +897,7 @@ protected:
    * @param _key The key to look up  It contains information both on
    *        the group of the key and the entry's key itself.
    * @return the KEntry value (data) found for the key.  KEntry.aValue
-   * will be the null string if nothing was located.  
+   * will be the null string if nothing was located.
    * @internal
    */
   virtual KEntry lookupData(const KEntryKey &_key) const = 0;
@@ -911,11 +911,11 @@ private:
   /**
    * The currently selected group. */
   QString aGroup;
-  
+
   /**
    * the locale to retrieve keys under if possible, i.e en_US or fr.  */
   QString aLocaleString;
-  
+
   /**
    * Indicates whether there are any dirty entries in the config object
    * that need to be written back to disk. */
@@ -930,7 +930,7 @@ private:
 // avoid warnings about the unused parameter.
 inline void KConfigBase::rollback( bool /*bDeep = true*/ )
 {
-  bDirty = false; 
+  bDirty = false;
 }
 
 /**
@@ -964,7 +964,7 @@ inline void KConfigBase::rollback( bool /*bDeep = true*/ )
   * @see KConfigBase, KConfig, KSimpleConfig
   * @short Helper class for easier use of KConfig/KSimpleConfig groups
   */
- 
+
 class KConfigGroupSaver
 {
 public:
@@ -981,11 +981,11 @@ public:
         { _config->setGroup( group ); }
 
   ~KConfigGroupSaver() { _config->setGroup( _oldgroup ); }
-  
+
 private:
   KConfigBase* _config;
   QString _oldgroup;
-  
+
   KConfigGroupSaver(const KConfigGroupSaver&);
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 };

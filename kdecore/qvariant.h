@@ -72,7 +72,7 @@ public:
       Point,
       Image,
       Int,
-      Bool,
+      Boolean,
       Double,
       // Movie,
       NTypes,

@@ -180,7 +180,7 @@ QVariant::QVariant( const QPoint& _v )
   Creates a new variant with a rect value.
 */
 QVariant::QVariant( const QRect& _v )
-{ 
+{
   typ = Empty;
   setValue( _v );
 }
@@ -308,7 +308,7 @@ QVariant& QVariant::operator= ( const QVariant& p )
     case Int:
       val.i = p.intValue();
       break;
-    case Bool:
+    case Boolean:
       val.b = p.boolValue();
       break;
     case Double:
@@ -513,7 +513,7 @@ void QVariant::setValue( int _value )
 void QVariant::setValue( bool _value )
 {
   clear();
-  typ = Bool;
+  typ = Boolean;
   val.b = _value;
 }
 
@@ -536,7 +536,7 @@ void QVariant::clear()
     {
     case Empty:
     case Int:
-    case Bool:
+    case Boolean:
     case Double:
       break;
     case String:
@@ -615,7 +615,7 @@ void QVariant::initTypeNameMap()
     typ_to_name[(int)Palette] = QString::fromLatin1("QPalette");
     typ_to_name[(int)ColorGroup] = QString::fromLatin1("QColorGroup");
     typ_to_name[(int)Int] = QString::fromLatin1("int");
-    typ_to_name[(int)Bool] = QString::fromLatin1("bool");
+    typ_to_name[(int)Boolean] = QString::fromLatin1("bool");
     typ_to_name[(int)Double] = QString::fromLatin1("double");
     //typ_to_name[(int)Movie] = QString::fromLatin1("QMovie");
 }
@@ -705,7 +705,7 @@ void QVariant::load( QDataStream& s )
     case Int:
       { int x; s >> x; setValue( x ); };
       break;
-    case Bool:
+    case Boolean:
       { Q_INT8 x; s >> x; setValue( (bool)x ); };
       break;
     case Double:
@@ -776,7 +776,7 @@ void QVariant::save( QDataStream& s ) const
     case Int:
       s << intValue();
       break;
-    case Bool:
+    case Boolean:
       s << (Q_INT8)boolValue();
       break;
     case Double:
@@ -871,7 +871,7 @@ QStringList QVariant::stringListValue() const
   or typeName() first wether the variant holds the correct
   data type.
 */
-QValueList<int> QVariant::intListValue() const 
+QValueList<int> QVariant::intListValue() const
 {
   if ( typ != IntList )
     return QValueList<int>();
@@ -1055,7 +1055,7 @@ int QVariant::intValue() const
 */
 bool QVariant::boolValue() const
 {
-  if ( typ != Bool )
+  if ( typ != Boolean )
     return false;
   return val.b;
 }

@@ -1,18 +1,18 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -30,7 +30,7 @@
 #include "kconfigbackend.h"
 
 KConfigBase::KConfigBase()
-  : backEnd(0L), bDirty(false), bLocaleInitialized(false), 
+  : backEnd(0L), bDirty(false), bLocaleInitialized(false),
     bReadOnly(false), bExpand(true)
 {
 }
@@ -61,7 +61,7 @@ void KConfigBase::setGroup( const QString& pGroup )
   } else
     aGroup = pGroup;
 }
- 
+
 void KConfigBase::setDesktopGroup()
 {
   // we maintain the first for backwards compatibility with
@@ -72,7 +72,7 @@ void KConfigBase::setDesktopGroup()
     aGroup = "Desktop Entry";
 }
 
-QString KConfigBase::readEntry( const QString& aKey, 
+QString KConfigBase::readEntry( const QString& aKey,
 				const QString& aDefault ) const
 {
   // we need to access _locale instead of the method locale()
@@ -115,7 +115,7 @@ QString KConfigBase::readEntry( const QString& aKey,
     {
       // check for environment variables and make necessary translations
       int nDollarPos = aValue.find( '$' );
-	  
+	
       while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length())) {
 	// there is at least one $
 	if( (aValue)[nDollarPos+1] != '$' ) {
@@ -127,7 +127,7 @@ QString KConfigBase::readEntry( const QString& aKey,
 		    || aValue[nEndPos].isLetter() || nEndPos > aValue.length() );
 	  QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
 	  const char* pEnv = 0;
-	  if (!aVarName.isEmpty()) 
+	  if (!aVarName.isEmpty())
 	       pEnv = getenv( aVarName.ascii() );
 	  if( pEnv )
 	    aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
@@ -147,13 +147,13 @@ QString KConfigBase::readEntry( const QString& aKey,
 
 QVariant KConfigBase::readPropertyEntry( const QString& aKey,
 					  QVariant::Type type ) const
-{ 
+{
   QValueList<int> intList;
   QValueList<double> doubleList;
   QStringList strList;
   QStringList::ConstIterator it;
   QStringList::ConstIterator end;
-  
+
   switch( type )
     {
     case QVariant::Empty:
@@ -165,10 +165,10 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
     case QVariant::IntList:
 
       strList = readListEntry( aKey );
-      
+
       it = strList.begin();
       end = strList.end();
-      
+
       for (; it != end; ++it )
         intList.append( (*it).toInt() );
 
@@ -176,10 +176,10 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
     case QVariant::DoubleList:
 
       strList = readListEntry( aKey );
-      
+
       it = strList.begin();
       end = strList.end();
-      
+
       for (; it != end; ++it )
         doubleList.append( (*it).toDouble() );
 
@@ -211,24 +211,24 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
       return QVariant();
     case QVariant::Int:
       return QVariant( readNumEntry( aKey ) );
-    case QVariant::Bool:
+    case QVariant::Boolean:
       return QVariant( readBoolEntry( aKey ) );
     case QVariant::Double:
       return QVariant( readDoubleNumEntry( aKey ) );
     default:
       ASSERT( 0 );
-    }  
+    }
 
   // Never reached
   return QVariant();
 }
 
-int KConfigBase::readListEntry( const QString& pKey, 
+int KConfigBase::readListEntry( const QString& pKey,
 				QStrList &list, char sep ) const
 {
   if( !hasKey( pKey ) )
     return 0;
-  
+
   QString str_list, value;
   str_list = readEntry( pKey );
   if (str_list.isEmpty())
@@ -254,12 +254,12 @@ int KConfigBase::readListEntry( const QString& pKey,
     list.append( value.ascii() );
     value.truncate(0);
   }
-  
+
   if ( str_list[len-1].latin1() != sep )
     list.append( value.ascii() );
   return list.count();
   }
-  
+
 QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
 {
   QStringList list;
@@ -268,7 +268,7 @@ QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
   QString str_list, value;
   str_list = readEntry( pKey );
   if( str_list.isEmpty() )
-    return list; 
+    return list;
   int i;
   value = "";
   int len = str_list.length();
@@ -317,7 +317,7 @@ unsigned int KConfigBase::readUnsignedNumEntry( const QString& pKey, unsigned in
 {
   bool ok;
   unsigned int rc;
-  
+
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
     return nDefault;
@@ -399,7 +399,7 @@ bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) cons
     }
 }
 
- 
+
 
 
 QFont KConfigBase::readFontEntry( const QString& pKey,
@@ -418,7 +418,7 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 	return aRetFont;
       }
       aRetFont.setFamily( aValue.left( nIndex ) );
-      
+
       // find second part (point size)
       int nOldIndex = nIndex;
       nIndex = aValue.find( ',', nOldIndex+1 );
@@ -427,38 +427,38 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 	  aRetFont = *pDefault;
 	return aRetFont;
       }
-      
-      aRetFont.setPointSize( aValue.mid( nOldIndex+1, 
+
+      aRetFont.setPointSize( aValue.mid( nOldIndex+1,
 					 nIndex-nOldIndex-1 ).toInt() );
-      
+
       // find third part (style hint)
       nOldIndex = nIndex;
       nIndex = aValue.find( ',', nOldIndex+1 );
-      
+
       if( nIndex == -1 ){
 	if( pDefault )
 	  aRetFont = *pDefault;
 	return aRetFont;
       }
-      
+
       aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1, nIndex-nOldIndex-1 ).toUInt() );
-      
+
       // find fourth part (char set)
       nOldIndex = nIndex;
       nIndex = aValue.find( ',', nOldIndex+1 );
-      
+
       if( nIndex == -1 ){
 	if( pDefault )
 	  aRetFont = *pDefault;
 	return aRetFont;
       }
-      
-      QString chStr=aValue.mid( nOldIndex+1, 
+
+      QString chStr=aValue.mid( nOldIndex+1,
 				nIndex-nOldIndex-1 );
-      bool chOldEntry;			 
-      QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1, 
-						      nIndex-nOldIndex-1 ).toUInt(&chOldEntry);			   
-      if (chOldEntry)  
+      bool chOldEntry;			
+      QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1,
+						      nIndex-nOldIndex-1 ).toUInt(&chOldEntry);			
+      if (chOldEntry)
 	aRetFont.setCharSet( chId );
       else if (kapp) {
 	if (chStr == "default")
@@ -467,42 +467,42 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 	  else chStr = "iso-8859-1";
 	KGlobal::charsets()->setQFont(aRetFont,chStr);
       }
-      
+
       // find fifth part (weight)
       nOldIndex = nIndex;
       nIndex = aValue.find( ',', nOldIndex+1 );
-      
+
       if( nIndex == -1 ){
 	if( pDefault )
 	  aRetFont = *pDefault;
 	return aRetFont;
       }
-      
+
       aRetFont.setWeight( aValue.mid( nOldIndex+1,
 				      nIndex-nOldIndex-1 ).toUInt() );
-      
+
       // find sixth part (font bits)
       uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
       if( nFontBits & 0x01 )
 	aRetFont.setItalic( true );
       else
 	aRetFont.setItalic( false );
-      
+
       if( nFontBits & 0x02 )
 	aRetFont.setUnderline( true );
       else
 	aRetFont.setUnderline( false );
-      
+
       if( nFontBits & 0x04 )
 	aRetFont.setStrikeOut( true );
       else
 	aRetFont.setStrikeOut( false );
-      
+
       if( nFontBits & 0x08 )
 	aRetFont.setFixedPitch( true );
       else
 	aRetFont.setFixedPitch( false );
-      
+
       if( nFontBits & 0x20 )
 	aRetFont.setRawMode( true );
       else
@@ -513,7 +513,7 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
       if( pDefault )
 	aRetFont = *pDefault;
     }
-  
+
   return aRetFont;
 }
 
@@ -521,7 +521,7 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
 QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) const
 {
   QStrList list;
-  
+
   if( !hasKey( pKey ) )
     {
       if( pDefault )
@@ -529,14 +529,14 @@ QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) c
       else
 	return QRect();
     }
-  
+
   int count = readListEntry( pKey, list, ',' );
   if( count != 4 )
     return QRect();
   else
-    return QRect( QString( list.at( 0 ) ).toInt(), 
-		  QString( list.at( 1 ) ).toInt(), 
-		  QString( list.at( 2 ) ).toInt(), 
+    return QRect( QString( list.at( 0 ) ).toInt(),
+		  QString( list.at( 1 ) ).toInt(),
+		  QString( list.at( 2 ) ).toInt(),
 		  QString( list.at( 3 ) ).toInt() );
 }
 
@@ -545,7 +545,7 @@ QPoint KConfigBase::readPointEntry( const QString& pKey,
 				    const QPoint* pDefault ) const
 {
   QStrList list;
-  
+
   if( !hasKey( pKey ) )
     {
       if( pDefault )
@@ -553,12 +553,12 @@ QPoint KConfigBase::readPointEntry( const QString& pKey,
       else
 	return QPoint();
     }
-  
+
   int count = readListEntry( pKey, list, ',' );
   if( count != 2 )
     return QPoint();
   else
-    return QPoint( QString( list.at( 0 ) ).toInt(), 
+    return QPoint( QString( list.at( 0 ) ).toInt(),
 		   QString( list.at( 1 ) ).toInt() );
 }
 
@@ -567,7 +567,7 @@ QSize KConfigBase::readSizeEntry( const QString& pKey,
 				  const QSize* pDefault ) const
 {
   QStrList list;
-  
+
   if( !hasKey( pKey ) )
     {
       if( pDefault )
@@ -575,50 +575,50 @@ QSize KConfigBase::readSizeEntry( const QString& pKey,
       else
 	return QSize();
     }
-  
+
   int count = readListEntry( pKey, list, ',' );
   if( count != 2 )
     return QSize();
   else
-    return QSize( QString( list.at( 0 ) ).toInt(), 
+    return QSize( QString( list.at( 0 ) ).toInt(),
 		  QString( list.at( 1 ) ).toInt() );
 }
 
 
-QColor KConfigBase::readColorEntry( const QString& pKey, 
+QColor KConfigBase::readColorEntry( const QString& pKey,
 				    const QColor* pDefault ) const
 {
   QColor aRetColor;
   int nRed = 0, nGreen = 0, nBlue = 0;
-  
+
   QString aValue = readEntry( pKey );
   if( !aValue.isEmpty() )
     {
-      if ( aValue.at(0) == '#' ) 
+      if ( aValue.at(0) == '#' )
         {
 	  aRetColor.setNamedColor(aValue);
-	} 
+	}
       else
 	{
-	  
+	
 	  bool bOK;
-      
+
 	  // find first part (red)
 	  int nIndex = aValue.find( ',' );
-	  
+	
 	  if( nIndex == -1 ){
 	    // return a sensible default -- Bernd
 	    if( pDefault )
 	      aRetColor = *pDefault;
 	    return aRetColor;
 	  }
-	  
+	
 	  nRed = aValue.left( nIndex ).toInt( &bOK );
-	  
+	
 	  // find second part (green)
 	  int nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  
+	
 	  if( nIndex == -1 ){
 	    // return a sensible default -- Bernd
 	    if( pDefault )
@@ -627,15 +627,15 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
 	  }
 	  nGreen = aValue.mid( nOldIndex+1,
 			       nIndex-nOldIndex-1 ).toInt( &bOK );
-	  
+	
 	  // find third part (blue)
 	  nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
-	  
+	
 	  aRetColor.setRgb( nRed, nGreen, nBlue );
 	}
     }
   else {
-    
+
     if( pDefault )
       aRetColor = *pDefault;
   }
@@ -645,7 +645,7 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
 
 
 QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
-				 bool bPersistent, 
+				 bool bPersistent,
 				 bool bGlobal,
 				 bool bNLS )
 {
@@ -659,7 +659,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
 
   if (!bLocaleInitialized && KGlobal::locale())
     setLocale();
-  
+
   // if this is localized entry, add the locale
   QString aLocalizedKey = pKey;
   if( bNLS )
@@ -668,28 +668,28 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
   KEntryKey entryKey = { aGroup, aLocalizedKey };
   KEntry aEntryData;
   QString aValue;
-  
+
   // try to retrieve the current entry for this key
   aEntryData = lookupData(entryKey);
   if (!aEntryData.aValue.isNull()) {
     // there already is such a key
     aValue = aEntryData.aValue; // save old key as return value
-  } 
-  
+  }
+
   aEntryData.aValue = value;  // set new value
   aEntryData.bGlobal = bGlobal;
   aEntryData.bNLS = bNLS;
   if (bPersistent)
     aEntryData.bDirty = true;
-  
+
   // rewrite the new value
   putData(entryKey, aEntryData);
-  
+
   return aValue;
 }
 
-void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop, 
-			       bool bPersistent, 
+void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
+			       bool bPersistent,
 			       bool bGlobal, bool bNLS )
 {
   QValueList<int> intList;
@@ -712,26 +712,26 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       writeEntry( pKey, prop.stringListValue(), ',', bPersistent, bGlobal, bNLS );
       break;
     case QVariant::IntList:
-    
+
       iIt = prop.intListValue().begin();
       iEnd = prop.intListValue().end();
-      
+
       for (; iIt != iEnd; ++iIt )
         strList.append( QString().setNum( *iIt ) );
 	
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
-      
+
       break;
     case QVariant::DoubleList:
-      
+
       dIt = prop.doubleListValue().begin();
       dEnd = prop.doubleListValue().end();
-      
+
       for (; dIt != dEnd; ++dIt )
         strList.append( QString().setNum( *dIt ) );
 	
       writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
-      
+
       break;
     case QVariant::Font:
       writeEntry( pKey, prop.fontValue(), bPersistent, bGlobal, bNLS );
@@ -768,7 +768,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
     case QVariant::Int:
       writeEntry( pKey, prop.intValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QVariant::Bool:
+    case QVariant::Boolean:
       writeEntry( pKey, prop.boolValue(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Double:
@@ -776,16 +776,16 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       break;
     default:
       ASSERT( 0 );
-    }  
+    }
 }
 
-void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list, 
-			       char sep , bool bPersistent, 
+void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
+			       char sep , bool bPersistent,
 			       bool bGlobal, bool bNLS )
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString(""), bPersistent );      
+      writeEntry( pKey, QString(""), bPersistent );
       return;
     }
   QString str_list;
@@ -807,13 +807,13 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list, 
-			       char sep , bool bPersistent, 
+void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
+			       char sep , bool bPersistent,
 			       bool bGlobal, bool bNLS )
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString(""), bPersistent );      
+      writeEntry( pKey, QString(""), bPersistent );
       return;
     }
   QString str_list;
@@ -896,7 +896,7 @@ QString KConfigBase::writeEntry( const QString& pKey, double nValue,
 
 
 QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
-				 bool bPersistent, 
+				 bool bPersistent,
 				 bool bGlobal,
 				 bool bNLS )
 {
@@ -904,14 +904,14 @@ QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
 
   if( bValue )
     aValue = "true";
-  else 
+  else
     aValue = "false";
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont, 
+QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
@@ -944,7 +944,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
 }
 
 
-void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect, 
+void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
 			      bool bPersistent, bool bGlobal,
 			      bool bNLS )
 {
@@ -959,7 +959,7 @@ void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
 }
 
 
-void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint, 
+void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
 			      bool bPersistent, bool bGlobal,
 			      bool bNLS )
 {
@@ -972,7 +972,7 @@ void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
 }
 
 
-void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize, 
+void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
 			      bool bPersistent, bool bGlobal,
 			      bool bNLS )
 {
@@ -985,8 +985,8 @@ void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
 }
 
 
-void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor, 
-			      bool bPersistent, 
+void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
+			      bool bPersistent,
 			      bool bGlobal,
 			      bool bNLS  )
 {
@@ -996,16 +996,16 @@ void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
   writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigBase::parseConfigFiles(void) 
-{ 
-  backEnd->parseConfigFiles(); 
-} 
+void KConfigBase::parseConfigFiles(void)
+{
+  backEnd->parseConfigFiles();
+}
 
 void KConfigBase::sync()
 {
   if (isReadOnly())
     return;
-  
+
   backEnd->sync(true);
   if (bDirty)
     rollback();
