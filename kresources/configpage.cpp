@@ -73,27 +73,30 @@ class ConfigViewItem : public QCheckListItem
     bool mIsStandard;
 };
 
-ResourcesConfigPage::ResourcesConfigPage( const QString &family, const QString &config,
+ResourcesConfigPage::ResourcesConfigPage( const QString &family,
+                                          const QString &configFile,
                                           QWidget *parent, const char *name )
-  : QWidget( parent, name ), mFamily( family ), mConfig( config )
+  : QWidget( parent, name ), mFamily( family )
 {
   kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
 
-  init();
+  init( configFile );
 }
 
 ResourcesConfigPage::ResourcesConfigPage( const QString &family, QWidget *parent,
                                           const char *name )
-  : QWidget( parent, name ), mFamily( family ), mConfig( QString::null )
+  : QWidget( parent, name ), mFamily( family )
 {
   kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
 
-  init();
+  init( QString::null );
 }
 
 ResourcesConfigPage::~ResourcesConfigPage()
 {
   mManager->removeListener( this );
+
+  delete mConfig;
 }
 
 void ResourcesConfigPage::load()
@@ -101,8 +104,8 @@ void ResourcesConfigPage::load()
   kdDebug(5650) << "ResourcesConfigPage::load()" << endl;
 
   delete mManager;
-  mManager = new ResourceManager<Resource>( mFamily, mConfig );
-  mManager->load();
+  mManager = new ResourceManager<Resource>( mFamily );
+  mManager->readConfig( mConfig );
 
   if ( !mManager )
     kdDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
@@ -125,7 +128,7 @@ void ResourcesConfigPage::load()
   if ( mListView->childCount() == 0 ) {
     defaults();
     emit changed( true );
-    mManager->sync();
+    mManager->writeConfig( mConfig );
   } else {
     if ( !standardResource )
       KMessageBox::sorry( this, i18n( "There is no standard resource! Please select one." ) );
@@ -150,7 +153,7 @@ void ResourcesConfigPage::save()
 
     item = item->nextSibling();
   }
-  mManager->sync();
+  mManager->writeConfig( mConfig );
 
   if ( !mManager->standardResource() )
     KMessageBox::sorry( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
@@ -340,8 +343,11 @@ void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
   }
 }
 
-void ResourcesConfigPage::init()
+void ResourcesConfigPage::init( const QString &configFile )
 {
+  if ( configFile.isEmpty() ) mConfig = 0;
+  else mConfig = new KConfig( configFile );
+
   setCaption( i18n( "Resource Configuration" ) );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );

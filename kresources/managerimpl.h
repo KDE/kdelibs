@@ -54,10 +54,11 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
 {
     Q_OBJECT
   public:
-    ResourceManagerImpl( const QString &family, const QString &config );
+    ResourceManagerImpl( const QString &family );
     ~ResourceManagerImpl();
 
-    void sync();
+    void readConfig( KConfig * );
+    void writeConfig( KConfig * );
 
     void add( Resource *resource, bool useDCOP = true );
     void remove( Resource *resource, bool useDCOP = true );
@@ -78,8 +79,6 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
 
     void setListener( ManagerImplListener *listener );
 
-    void load();
-
   public slots:
     void resourceChanged( Resource *resource );
 
@@ -90,20 +89,22 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     void dcopResourceDeleted( QString identifier );
 
   private:
-    void save();
-    Resource *loadResource( const QString& identifier, bool checkActive );
-    void saveResource( Resource *resource, bool checkActive );
+    void createStandardConfig();
+    
+    Resource *readResourceConfig( const QString& identifier, bool checkActive );
+    void writeResourceConfig( Resource *resource, bool checkActive );
+    
     void removeResource( Resource *resource );
     Resource *getResource( Resource *resource );
     Resource *getResource( const QString& identifier );
 
-    Resource *mStandard;
     QString mFamily;
-    QString mConfigLocation;
+    KConfig *mConfig;
+    KConfig *mStdConfig;
+    Resource *mStandard;
+    ResourceFactory *mFactory;
     Resource::List mResources;
     ManagerImplListener *mListener;
-    ResourceFactory *mFactory;
-    KConfig *mConfig;
 };
 
 }

@@ -36,24 +36,13 @@
 
 using namespace KRES;
 
-ResourceManagerImpl::ResourceManagerImpl( const QString &family,
-                                          const QString &config )
+ResourceManagerImpl::ResourceManagerImpl( const QString &family )
   : DCOPObject( "ResourceManagerIface_" + family.utf8() + "_" +
                 QCString().setNum( kapp->random() ) ),
-    mFamily( family )
+    mFamily( family ), mConfig( 0 ), mStdConfig( 0 ), mStandard( 0 ),
+    mFactory( 0 )
 {
   kdDebug(5650) << "ResourceManagerImpl::ResourceManagerImpl()" << endl;
-  mConfig = 0;
-  mStandard = 0;
-  mFactory = 0;
-
-  if ( config.isEmpty() )
-    mConfigLocation = locateLocal( "data", QString( kapp->aboutData()->appName() )
-                                   + "/kresources/" + mFamily + "rc" );
-  else
-    mConfigLocation = config;
-
-  kdDebug() << "ResourceManagerImpl(): config: " << mConfigLocation << endl;
 
   // Register with DCOP
   if ( !kapp->dcopClient()->isRegistered() ) {
@@ -84,14 +73,85 @@ ResourceManagerImpl::~ResourceManagerImpl()
     delete *it;
   }
  
-  delete mConfig;
-  mConfig = 0;
+  delete mStdConfig;
 }
 
-void ResourceManagerImpl::sync()
+void ResourceManagerImpl::createStandardConfig()
 {
-  kdDebug(5650) << "ResourceManagerImpl::sync()" << endl;
-  save();
+  if ( !mStdConfig ) {
+    QString file = locateLocal( "data", QString( kapp->aboutData()->appName() )
+                                + "/kresources/" + mFamily + "rc" );
+    mStdConfig = new KConfig( file );
+  }
+  
+  mConfig = mStdConfig;
+}
+
+void ResourceManagerImpl::readConfig( KConfig *cfg )
+{
+  kdDebug(5650) << "ResourceManagerImpl::readConfig()" << endl;
+
+  delete mFactory;
+  mFactory = ResourceFactory::self( mFamily );
+
+  if ( !cfg ) {
+    createStandardConfig();
+  } else {
+    mConfig = cfg;
+  }
+
+  mStandard = 0;
+
+  mConfig->setGroup( "General" );
+
+  QStringList keys = mConfig->readListEntry( "ResourceKeys" );
+  keys += mConfig->readListEntry( "PassiveResourceKeys" );
+
+  QString standardKey = mConfig->readEntry( "Standard" );
+
+  for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
+    readResourceConfig( *it, false );
+  }
+}
+
+void ResourceManagerImpl::writeConfig( KConfig *cfg )
+{
+  kdDebug(5650) << "ResourceManagerImpl::writeConfig()" << endl;
+
+  if ( !cfg ) {
+    createStandardConfig();
+  } else {
+    mConfig = cfg;
+  }
+
+  QStringList activeKeys;
+  QStringList passiveKeys;
+
+  // First write all keys, collect active and passive keys on the way
+  Resource::List::Iterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    writeResourceConfig( *it, false );
+
+    QString key = (*it)->identifier();
+    if( (*it)->isActive() )
+      activeKeys.append( key );
+    else
+      passiveKeys.append( key );
+  }
+
+  // And then the general group
+
+  kdDebug(5650) << "Saving general info" << endl;
+  mConfig->setGroup( "General" );
+  mConfig->writeEntry( "ResourceKeys", activeKeys );
+  mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
+  if ( mStandard ) 
+    mConfig->writeEntry( "Standard", mStandard->identifier() );
+  else
+    mConfig->writeEntry( "Standard", "" );
+
+  mConfig->sync();
+  kdDebug(5650) << "ResourceManagerImpl::save() finished" << endl;
 }
 
 void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
@@ -104,7 +164,7 @@ void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
 
   mResources.append( resource );
 
-  saveResource( resource, true );
+  writeResourceConfig( resource, true );
 
   if ( useDCOP ) signalResourceAdded( resource->identifier() );
 }
@@ -142,7 +202,7 @@ void ResourceManagerImpl::setStandardResource( Resource *resource )
 
 void ResourceManagerImpl::resourceChanged( Resource *resource )
 {
-  saveResource( resource, true );
+  writeResourceConfig( resource, true );
 
   signalResourceModified( resource->identifier() );
 //  ResourceManagerIface_stub allManagers( "*", "ResourceManagerIface_" + mFamily.utf8() );
@@ -163,8 +223,10 @@ void ResourceManagerImpl::dcopResourceAdded( QString identifier )
     kdDebug(5650) << "Wait a minute! This resource is already known to me!" << endl;
   }
 
+  if ( !mConfig ) createStandardConfig();
+
   mConfig->reparseConfiguration();
-  Resource *resource = loadResource( identifier, true );
+  Resource *resource = readResourceConfig( identifier, true );
 
   if ( resource ) {
     if ( mListener ) {
@@ -264,44 +326,11 @@ void ResourceManagerImpl::setListener( ManagerImplListener *listener )
   mListener = listener;
 }
 
-
-//////////////////////////////
-/// Config file handling /////
-//////////////////////////////
-
-void ResourceManagerImpl::load()
+Resource* ResourceManagerImpl::readResourceConfig( const QString& identifier,
+                                                   bool checkActive )
 {
-  kdDebug(5650) << "ResourceManagerImpl::load()" << endl;
+  kdDebug() << "ResourceManagerImpl::readResourceConfig() " << identifier << endl;
 
-  delete mFactory;
-  mFactory = ResourceFactory::self( mFamily );
-
-  delete mConfig;
-  mConfig = new KConfig( mConfigLocation );
-
-  mStandard = 0;
-
-  mConfig->setGroup( "General" );
-
-  QStringList keys = mConfig->readListEntry( "ResourceKeys" );
-  keys += mConfig->readListEntry( "PassiveResourceKeys" );
-
-  QString standardKey = mConfig->readEntry( "Standard" );
-
-  uint counter = 0;
-  for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
-    loadResource( *it, false );
-    counter++;
-  }
-}
-
-
-Resource* ResourceManagerImpl::loadResource( const QString& identifier,
-                                             bool checkActive )
-{
-  kdDebug() << "ResourceManagerImpl::loadResource() " << identifier << endl;
-
-  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
   mConfig->setGroup( "Resource_" + identifier );
 
   QString type = mConfig->readEntry( "ResourceType" );
@@ -331,46 +360,14 @@ Resource* ResourceManagerImpl::loadResource( const QString& identifier,
   return resource;
 }
 
-void ResourceManagerImpl::save()
-{
-  kdDebug(5650) << "ResourceManagerImpl::save()" << endl;
-  QStringList activeKeys;
-  QStringList passiveKeys;
-
-  // First write all keys, collect active and passive keys on the way
-  Resource::List::Iterator it;
-  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
-    saveResource( *it, false );
-
-    QString key = (*it)->identifier();
-    if( (*it)->isActive() )
-      activeKeys.append( key );
-    else
-      passiveKeys.append( key );
-  }
-
-  // And then the general group
-
-  kdDebug(5650) << "Saving general info" << endl;
-  mConfig->setGroup( "General" );
-  mConfig->writeEntry( "ResourceKeys", activeKeys );
-  mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
-  if ( mStandard ) 
-    mConfig->writeEntry( "Standard", mStandard->identifier() );
-  else
-    mConfig->writeEntry( "Standard", "" );
-
-  mConfig->sync();
-  kdDebug(5650) << "ResourceManagerImpl::save() finished" << endl;
-}
-
-void ResourceManagerImpl::saveResource( Resource *resource, bool checkActive )
+void ResourceManagerImpl::writeResourceConfig( Resource *resource,
+                                               bool checkActive )
 {
   QString key = resource->identifier();
 
   kdDebug(5650) << "Saving resource " << key << endl;
 
-  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
+  if ( !mConfig ) createStandardConfig();
 
   mConfig->setGroup( "Resource_" + key );
   resource->writeConfig( mConfig );
@@ -401,7 +398,7 @@ void ResourceManagerImpl::removeResource( Resource *resource )
 {
   QString key = resource->identifier();
 
-  if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
+  if ( !mConfig ) createStandardConfig();
   
   mConfig->setGroup( "General" );
   QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );

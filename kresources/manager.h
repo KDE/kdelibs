@@ -159,12 +159,12 @@ class ResourceManager : private ManagerImplListener
 
     bool isEmpty() const { return mImpl->resourceList()->isEmpty(); }
   
-    ResourceManager( const QString &family, const QString &config = QString::null )
+    ResourceManager( const QString &family )
     {
       mFactory = ResourceFactory::self( family );
       // The managerimpl will use the same Factory object as the manager
       // because of the ResourceFactory::self() pattern
-      mImpl = new ResourceManagerImpl( family, config );
+      mImpl = new ResourceManagerImpl( family );
       mImpl->setListener( this );
       mListeners = new QPtrList<ManagerListener<T> >;
     }
@@ -176,9 +176,22 @@ class ResourceManager : private ManagerImplListener
       delete mImpl;
     }
 
-    void sync()
+    /**
+      Recreate Resource objects from configuration file. If cfg is 0, read standard
+      configuration file.
+    */
+    void readConfig( KConfig *cfg = 0 )
     {
-      mImpl->sync();
+      mImpl->readConfig( cfg );
+    }
+
+    /**
+      Write configuration of Resource objects to configuration file. If cfg is 0, write
+      to standard configuration file.
+    */
+    void writeConfig( KConfig *cfg = 0 )
+    {
+      mImpl->writeConfig( cfg );
     }
 
     /**
@@ -290,11 +303,6 @@ class ResourceManager : private ManagerImplListener
         kdDebug(5650) << "Notifying a listener to ResourceManager..." << endl;
         listener->resourceDeleted( resource );
       }
-    }
-
-    void load()
-    {
-      mImpl->load();
     }
 
   private:

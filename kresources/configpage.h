@@ -73,11 +73,11 @@ class ResourcesConfigPage : public QWidget, public ManagerListener<Resource>
     void changed( bool );
 
   private:
-    void init();
+    void init( const QString &configFile );
 
     ResourceManager<Resource>* mManager;
     QString mFamily;
-    QString mConfig;
+    KConfig *mConfig;
 
     KListView* mListView;
     QPushButton* mAddButton;
