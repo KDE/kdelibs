@@ -96,7 +96,6 @@
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
-
 extern int yylex();
 int yyerror (const char *);
 bool automatic();
@@ -1257,11 +1256,11 @@ case 14:
     break;}
 case 15:
 #line 163 "grammar.y"
-{ yyval.node = new ArrayNode(yyvsp[-1].elm, 0L); ;
+{ yyval.node = new ArrayNode(yyvsp[-1].elm); ;
     break;}
 case 16:
 #line 164 "grammar.y"
-{ yyval.node = new ArrayNode(yyvsp[-3].elm, yyvsp[-1].eli); ;
+{ yyval.node = new ArrayNode(yyvsp[-1].eli, yyvsp[-3].elm); ;
     break;}
 case 17:
 #line 168 "grammar.y"
@@ -1269,7 +1268,7 @@ case 17:
     break;}
 case 18:
 #line 170 "grammar.y"
-{ yyval.elm = yyvsp[-3].elm->append(yyvsp[-1].eli, yyvsp[0].node); ;
+{ yyval.elm = new ElementNode(yyvsp[-3].elm, yyvsp[-1].eli, yyvsp[0].node); ;
     break;}
 case 19:
 #line 174 "grammar.y"

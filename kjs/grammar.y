@@ -23,7 +23,6 @@
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
-
 extern int yylex();
 int yyerror (const char *);
 bool automatic();
@@ -161,14 +160,14 @@ PrimaryExpr:
 
 ArrayLiteral:
     '[' ElisionOpt ']'                 { $$ = new ArrayNode($2); }
-  | '[' ElementList ']'                { $$ = new ArrayNode($2, 0L); }
-  | '[' ElementList ',' ElisionOpt ']' { $$ = new ArrayNode($2, $4); }
+  | '[' ElementList ']'                { $$ = new ArrayNode($2); }
+  | '[' ElementList ',' ElisionOpt ']' { $$ = new ArrayNode($4, $2); }
 ;
 
 ElementList:
     ElisionOpt AssignmentExpr      { $$ = new ElementNode($1, $2); }
   | ElementList ',' ElisionOpt AssignmentExpr
-                                   { $$ = $1->append($3, $4); }
+                                   { $$ = new ElementNode($1, $3, $4); }
 ;
 
 ElisionOpt:

@@ -151,22 +151,36 @@ namespace KJS {
 
   class ElisionNode : public Node {
   public:
-    ElisionNode(ElisionNode *) { /* TODO */ }
-    KJSO evaluate() { /* TODO */ return KJSO(); }
+    ElisionNode(ElisionNode *e) : elision(e) { }
+    KJSO evaluate();
+  private:
+    ElisionNode *elision;
   };
 
   class ElementNode : public Node {
   public:
-    ElementNode(ElisionNode *, Node *) { /* TODO */ }
-    ElementNode *append(ElisionNode *, Node *) { /* TODO */ return 0L; }
-    KJSO evaluate() { /* TODO */ return KJSO(); }
+    ElementNode(ElisionNode *e, Node *n) : list(0l), elision(e), node(n) { }
+    ElementNode(ElementNode *l, ElisionNode *e, Node *n)
+      : list(l), elision(e), node(n) { }
+    KJSO evaluate();
+  private:
+    ElementNode *list;
+    ElisionNode *elision;
+    Node *node;
   };
 
   class ArrayNode : public Node {
   public:
-    ArrayNode(ElisionNode *) { /* TODO */ }
-    ArrayNode(ElementNode *, ElisionNode *) { /* TODO */ }
-    KJSO evaluate() { /* TODO */ return KJSO(); }
+    ArrayNode(ElisionNode *e) : element(0L), elision(e), opt(true) { }
+    ArrayNode(ElementNode *ele)
+      : element(ele), elision(0), opt(false) { }
+    ArrayNode(ElisionNode *eli, ElementNode *ele)
+      : element(ele), elision(eli), opt(true) { }
+    KJSO evaluate();
+  private:
+    ElementNode *element;
+    ElisionNode *elision;
+    bool opt;
   };
 
   class ObjectLiteralNode : public Node {

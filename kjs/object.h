@@ -135,6 +135,7 @@ namespace KJS {
    * @short Main base class for every KJS object.
    */
   class KJSO {
+    friend class ElementNode;
   public:
     /**
      * Constructor.

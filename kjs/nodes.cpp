@@ -144,9 +144,54 @@ KJSO ResolveNode::evaluate()
 }
 
 // ECMA 11.1.4
-KJSO GroupNode::evaluate()
+KJSO ArrayNode::evaluate()
 {
-  return group->evaluate();
+  KJSO array;
+  int length;
+  int elisionLen = elision ? elision->evaluate().toInt32() : 0;
+  
+  if (element) {
+    array = element->evaluate();
+    length = opt ? array.get("length").toInt32() : 0;
+  } else {
+    array = Object::create(ArrayClass);
+    length = 0;
+  }
+
+  if (opt)
+    array.put("length", Number(elisionLen + length));
+
+  return array;
+}
+
+// ECMA 11.1.4
+KJSO ElementNode::evaluate()
+{
+  KJSO array, val;
+  int length = 0;
+  int elisionLen = elision ? elision->evaluate().toInt32() : 0;
+
+  if (list) {
+    array = list->evaluate();
+    val = node->evaluate().getValue();
+    length = array.get("length").toInt32();
+  } else {
+    array = Object::create(ArrayClass);
+    val = node->evaluate().getValue();
+  }
+
+  array.putArrayElement(UString::from(elisionLen + length), val);
+
+  return array;
+}
+
+// ECMA 11.1.4
+KJSO ElisionNode::evaluate()
+{
+  if (elision)
+    return Number(elision->evaluate().toNumber().value() + 1);
+  else
+    return Number(1);
 }
 
 // ECMA 11.1.5
@@ -186,6 +231,12 @@ KJSO PropertyNode::evaluate()
     s = String(str);
 
   return s;
+}
+
+// ECMA 11.1.6
+KJSO GroupNode::evaluate()
+{
+  return group->evaluate();
 }
 
 // ECMA 11.2.1a
@@ -727,7 +778,7 @@ Completion EmptyStatementNode::execute()
   return Completion(Normal);
 }
 
-// ECMA 12.6.2
+// ECMA 12.6.3
 Completion ForNode::execute()
 {
   KJSO e, v, cval;
@@ -758,7 +809,7 @@ Completion ForNode::execute()
   }
 }
 
-// ECMA 12.6.3
+// ECMA 12.6.4
 Completion ForInNode::execute()
 {
   /* TODO */
