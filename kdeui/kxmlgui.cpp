@@ -28,6 +28,9 @@
 #include <kdebug.h>
 #include <qtextstream.h>
 #include <kaccel.h>
+#include <kinstance.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 /**
  * This structure is used to know to which servant certain actions belong. In addition we store
@@ -122,7 +125,15 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
 
 QString KXMLGUIFactory::readConfigFile( const QString &filename )
 {
-  QFile file( filename );
+  QString xml_file;
+
+  if (filename[0] == '/')
+    xml_file = filename;
+  else
+    xml_file = locate("data", QString(KGlobal::instance()->instanceName()) +
+                              "/" + filename);
+
+  QFile file( xml_file );
   if ( !file.open( IO_ReadOnly ) )
   {
     kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
