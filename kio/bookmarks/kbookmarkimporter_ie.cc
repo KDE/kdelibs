@@ -143,9 +143,8 @@ private:
 };
 
 static QString ieStyleQuote( const QString &str ) {
-    // gotta test all the possible chars that ie replaces...
     QString s(str);
-    s.replace( "/", "%67" );
+    s.replace(QRegExp("[/\\:*?\"<>|]"), "_");
     return s;
 }
 
