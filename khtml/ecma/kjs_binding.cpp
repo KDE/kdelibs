@@ -27,6 +27,8 @@
 
 #include <kdebug.h>
 
+#include <assert.h>
+
 using namespace KJS;
 
 /* TODO:
