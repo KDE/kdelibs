@@ -41,12 +41,20 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KIntegerLine, KIntLineEdit
 
-  KIntegerLine has been replaced by KIntLineEdit. The new header file
-  is called knumlineedit.h, because it contains one additional class
-  KFloatLineEdit. If you were using the former KIntLineEdit
-  from keditcl.h or kintlineedit.h, no changes should be necessary
-  at all, althouth the (QWidget *parent) parameter is now required.
-  It is necessary to switch to the new include file, though.
+  KIntegerLine and KIntLineEdit  has been replaced by KIntNumInput. 
+  The new header file is called knuminput.h. 
+
+  The new KIntNumInput can have an optional slider attached, ensures
+  that the entered value is in a given range (use MAX_INT or similiar
+  if you don't care about the range) and can maintain a descriptive
+  label and also a unit for the edited value. 
+
+  The API is almost the same and it simplifies exisiting code a bit,
+  so give it a try. If you need more functionality, please contact 
+  me (Dirk A. Mueller <dmuell@gmx.net>). 
+
+  The additional class KDoubleNumInput gives you the same look&feel,
+  but allows to edit floating point numbers. 
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale
@@ -87,10 +95,8 @@ khtmlw has been replaced with khtml.
   appName() is deprecated. Please use QApplication::name() instead.
 
 //////////////////////////////////////////////////////////////////////
-// * KDNDIcon, KDNDDropZone, KDNDWidget
+// * KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h
 
-//////////////////////////////////////////////////////////////////////
-// * kdelibs/drag.h
 KDE Drag and Drop is Dead.  Long live Qt Xdnd.
 
 Xdnd is better anyway, because it has been adopted by all the other
@@ -125,7 +131,6 @@ are necessary to convert your old KDND-based stuff to Qt DND.
 - The mimetype for Uri's is now text/uri-list. If you've used
   the proprietary Qt 1.x url/url, you need to adjust that.  
 
-
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
 
@@ -151,7 +156,6 @@ are necessary to convert your old KDND-based stuff to Qt DND.
    // body here.  Access iterator key as aIt.key(),
    // data as *aIt.
   }
-
 
 //////////////////////////////////////////////////////////////////////
 // * libkfm has disappeared
@@ -333,7 +337,7 @@ when porting:
 - Please note too that it's recommended to use kapp->getCaption as second
   argument 
 
-NEW: you may now also use KMessageBox as a replacement for KMsgBox
+NEW: you should now also use KMessageBox as a replacement for KMsgBox
 directly.  It is a thin wrapper on top of QMessageBox that provides
 default i18n'ed text and some other convenience features.
 
@@ -347,6 +351,7 @@ KCombo::setEditText.
 
 ////////////////////////////////////////////////////////////////////////
 // * KQuickHelp
+
 KQuickHelp, the "super-tooltip" widget, has been replaced by QWhatsThis.
 It provides a compatible API and almost the same look and feel, in addition
 to some new functionality.
@@ -354,9 +359,11 @@ to some new functionality.
 ////////////////////////////////////////////////////////////////////////
 // * KPixmap::gradientFill
 
-Use KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int) instead.
+Use 
 
-Hence:
+KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int) 
+
+instead. Hence:
 
 pix.gradientFill(ca, cb, direction, ncols)
 
@@ -364,10 +371,30 @@ becomes, for direction == true :
 
 KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::VerticalGradient, ncols)
 
-There are now: KPixmapEffect::[Vertical,Horizontal,Diagonal,CrossDiagonal,Rectangle,Pyramid,PipeCross,Elliptic]Gradient
+There are now: 
+
+KPixmapEffect:: [Vertical,
+                 Horizontal,
+                 Diagonal,
+                 CrossDiagonal,
+                 Rectangle,
+                 Pyramid,
+                 PipeCross,
+                 Elliptic] 
+
+Gradients. See kdelibs/kdetest/kgradienttest && kunbalancedgradienttest for
+information on how they actually look. 
 
 There is still some code in KPixmap::gradientFill() kept there because
 of the backwards compatibility and because we can't link kdecore to
 kdeui (as KPixmapEffect is in kdeui) but be warned it will be taken
 out (and supposedly replaced with a bare warning) ASA the applications
 in the base package have been corrected.
+
+////////////////////////////////////////////////////////////////////////
+// * KTabListBox
+
+This widget has been replaced by the almighty QListView. Everything said
+about KTreeList could be repeated here. The good thing is, that you now
+can combine TreeView's and normal Tablists without problems. 
+
