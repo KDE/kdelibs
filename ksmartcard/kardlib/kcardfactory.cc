@@ -95,25 +95,21 @@ KCardImplementation * KCardFactory::getCard (const QString & slot,
   KCardDB cardBase;
   KCardImplementation * impl=NULL;
   QString handler = cardBase.getModuleName(atr);
-  
 
-  if (handler==QString::null) {
-   return NULL;
-  }
-  QStringList types = QStringList::split(",",handler);
+  if (handler.isNull())
+    return NULL;
   
+  QStringList types = QStringList::split(",",handler);
   
   KService::Ptr serv = _modules[types[0]][types[1]][types[2]];
 
-  
-  
   impl= (KCardImplementation *)loadModule(serv);
 
-  
-  
-  if (impl==NULL) return NULL;
-  if (impl->init(slot)) return NULL;
-  
+  if (impl==NULL) 
+    return NULL;
+
+  if (impl->init(slot)) 
+    return NULL;
 
   return impl;
   

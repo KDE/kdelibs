@@ -1379,7 +1379,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
 
   lockType.appendChild( lockReq.createElement( type ) );
 
-  if ( owner != QString::null) {
+  if ( !owner.isNull() ) {
     QDomElement ownerElement = lockReq.createElement( "owner" );
     lockReq.appendChild( ownerElement );
 
@@ -1447,7 +1447,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     callError = true;
   }
 
-  if ( url != QString::null )
+  if ( !url.isNull() )
     url = m_request.url.url();
 
   QString action, errorString;

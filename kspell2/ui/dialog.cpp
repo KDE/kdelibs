@@ -119,7 +119,7 @@ void Dialog::initGui()
     d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui->m_language->clear();
     d->ui->m_language->insertStringList( d->checker->broker()->languages() );
-    for ( int i = 0; d->ui->m_language->text( i ) != QString::null; ++i ) {
+    for ( int i = 0; !d->ui->m_language->text( i ).isNull(); ++i ) {
         QString ct = d->ui->m_language->text( i );
         if ( ct == d->checker->broker()->settings()->defaultLanguage() ) {
             d->ui->m_language->setCurrentItem( i );

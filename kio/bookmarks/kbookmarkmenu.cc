@@ -956,7 +956,7 @@ void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, 
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   listview->setCurrentItem( rootItem );
   rootItem->setSelected( true );
-  fillGroup( listview, rootItem, root, (address == root.groupAddress() || address == QString::null) ? true : false, address );
+  fillGroup( listview, rootItem, root, (address == root.groupAddress() || address.isNull()) ? true : false, address );
   rootItem->setOpen( true );
 }
 

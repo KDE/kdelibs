@@ -66,7 +66,7 @@ void KFindTest::findNext(const QString &pattern)
 {
 	Q_ASSERT(m_find != 0);
 
-	if(pattern != QString::null)
+	if(!pattern.isNull())
 	{
 		m_find->setPattern(pattern);
 	}

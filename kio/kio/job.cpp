@@ -479,8 +479,10 @@ void SimpleJob::start(Slave *slave)
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
-    if (sslSession != QString::null)
-	addMetaData("ssl_session_id", sslSession);
+    if ( !sslSession.isNull() )
+    {
+	    addMetaData("ssl_session_id", sslSession);
+    }
 
     if (!m_outgoingMetaData.isEmpty())
     {
@@ -604,9 +606,9 @@ void SimpleJob::slotMetaData( const KIO::MetaData &_metaData)
 void SimpleJob::storeSSLSessionFromJob(const KURL &m_redirectionURL) {
     QString sslSession = queryMetaData("ssl_session_id");
 
-    if (sslSession != QString::null) {
-	const KURL &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
-	KSSLCSessionCache::putSessionForURL(queryURL, sslSession);
+    if ( !sslSession.isNull() ) {
+	    const KURL &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
+	    KSSLCSessionCache::putSessionForURL(queryURL, sslSession);
     }
 }
 

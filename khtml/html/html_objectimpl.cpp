@@ -139,7 +139,7 @@ void HTMLObjectBaseElementImpl::attach() {
     {
         needWidgetUpdate = false;
         bool imagelike = serviceType.startsWith("image/") &&
-                         (KImageIO::typeForMime(serviceType) != QString::null);
+                         !KImageIO::typeForMime(serviceType).isNull();
         if (imagelike) {
             m_render = new (getDocument()->renderArena()) RenderImage(this);
             // make sure we don't attach the inner contents

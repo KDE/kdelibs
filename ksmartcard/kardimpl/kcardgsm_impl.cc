@@ -108,7 +108,7 @@ int KCardGsmImplementation::readBinary (QString & fileContent){
   QString readBinaryCommand="A0B0";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -142,7 +142,7 @@ int KCardGsmImplementation::readBinary   (QString & fileContent, unsigned short 
   QString readBinaryCommand="A0B0";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -180,7 +180,7 @@ int KCardGsmImplementation:: updateBinary (const QString & newContent,
   QString updateBinaryCommand="A0DC";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -215,7 +215,7 @@ int KCardGsmImplementation::updateBinary (const QString & newContent){
   QString updateBinaryCommand="A0DC0000";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -253,7 +253,7 @@ int KCardGsmImplementation::readRecord ( QString & recordContent, unsigned char 
   QString readRecordCommand="A0B2";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -301,7 +301,7 @@ int KCardGsmImplementation::updateRecord (const QString & recordContent, unsigne
   QString updateRecordCommand="A0DC";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -351,14 +351,11 @@ int KCardGsmImplementation::seek (const QString & pattern, const seekMode mode, 
   QString result=QString::null;
   recordNumber=-1;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
   }
-
-		 
-		 
 		
   switch (mode){
     
@@ -677,7 +674,7 @@ int KCardGsmImplementation::invalidate(){
   QString invalidateCommand="A004000000";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
@@ -713,7 +710,7 @@ int KCardGsmImplementation::rehabilitate(){
  QString rehabCommand="A044000000";
   QString status=QString::null;
   
-  if (_fileHeader==QString::null) {
+  if (_fileHeader.isNull()) {
     _errorMessage= i18n("No GSM file selected ");
     return -1;
 
