@@ -640,6 +640,7 @@ bool KSpell::checkList (QStringList *_wordlist)
   //  connect (this, SIGNAL (eza()), this, SLOT (checkList2()));
   //emit eza();
 
+  lastpos = -1;
   checkList2();
 
   // when checked, KProcIO calls checkList3a
@@ -658,6 +659,7 @@ void KSpell::checkList2 ()
       kdDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
 
       bool put;
+      lastpos++;
       put = cleanFputsWord (*wlIt);
       wlIt++;
 
@@ -665,7 +667,6 @@ void KSpell::checkList2 ()
       // try next word; may be this is not good for other
       // problems, because this will make read the list up to the end
       if (!put) {
-	lastpos++;
 	checkList2();
       }
     }
@@ -691,7 +692,6 @@ void KSpell::checkList3a (KProcIO *)
 	tempe=proc->fgets (line, TRUE); //get ispell's response
 	if (tempe>0)
 	  {
-	    lastpos++;
 	    //kdDebug(750) << "lastpos advance on [" << temp << "]" << endl;
 	    if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
 		e==REPLACE)
@@ -700,7 +700,7 @@ void KSpell::checkList3a (KProcIO *)
 
 		if (e==REPLACE)
 		  {
-		    emit corrected (orig, replacement(), lastpos-1);
+		    emit corrected (orig, replacement(), lastpos);
 		  }
 		else
 		  {
