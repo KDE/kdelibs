@@ -17,29 +17,29 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kservicefactory.h"
-#include "kservicetypefactory.h"
-#include "kservice.h"
-#include "kservicetype.h"
-#include "kuserprofile.h"
-#include "ksycoca.h"
+// $Id$
 
-#include <unistd.h>
+
 #include <sys/types.h>
-#include <stddef.h>
-#include <dirent.h>
 #include <sys/stat.h>
-#include <errno.h>
-#include <assert.h>
+
+#include <stddef.h>
+#include <unistd.h>
 
 #include <qstring.h>
-#include <qmessagebox.h>
 #include <qtl.h>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
+
+#include "kservicefactory.h"
+#include "kservicetypefactory.h"
+#include "kservice.h"
+#include "kservicetype.h"
+#include "kuserprofile.h"
+#include "ksycoca.h"
 
 /*
   Commented out, to see if it's really used...
@@ -294,4 +294,3 @@ KService::Ptr KService::service( const QString& _name )
   KService * s = KServiceFactory::self()->findServiceByName( _name );
   return KService::Ptr( s );
 }
-
