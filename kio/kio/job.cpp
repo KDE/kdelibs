@@ -1668,8 +1668,8 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 // Ask confirmation about resuming previous transfer
                 res = Observer::self()->open_RenameDlg(
                       job, i18n("File Already Exists"),
-                      m_src.pathOrURL(),
-                      m_dest.pathOrURL(),
+                      m_src.url(),
+                      m_dest.url(),
                       (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
                       d->m_sourceSize, offset );
             }
@@ -2810,8 +2810,8 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     if (m_reportTimer)
         m_reportTimer->stop();
     RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Folder Already Exists"),
-                                         (*it).uSource.pathOrURL(),
-                                         (*it).uDest.pathOrURL(),
+                                         (*it).uSource.url(),
+                                         (*it).uDest.url(),
                                          mode, newPath,
                                          (*it).size, destsize,
                                          (*it).ctime, destctime,
@@ -3093,8 +3093,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                                (*it).uSource.pathOrURL(),
-                                (*it).uDest.pathOrURL(),
+                                (*it).uSource.url(),
+                                (*it).uDest.url(),
                                 mode, newPath,
                               (*it).size, destsize,
                               (*it).ctime, destctime,
@@ -3552,8 +3552,8 @@ void CopyJob::slotResultRenaming( Job* job )
                 RenameDlg_Result r = Observer::self()->open_RenameDlg(
                     this,
                     err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                    m_currentSrcURL.pathOrURL(),
-                    dest.pathOrURL(),
+                    m_currentSrcURL.url(),
+                    dest.url(),
                     mode, newPath,
                     sizeSrc, sizeDest,
                     ctimeSrc, ctimeDest,

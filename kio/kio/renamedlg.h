@@ -122,8 +122,8 @@ private:
    * class RenameDlg directly.
 
    * @param caption the caption for the dialog box
-   * @param src the file/dir we're trying to copy, as it's part of the text message
-   * @param dest the destination file/dir, i.e. the one that already exists
+   * @param src the URL of the file/dir we're trying to copy, as it's part of the text message
+   * @param dest the URL of the destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
    *             see RenameDlg_Mode
    * @param newDest the new destination path, valid if R_RENAME was returned.
@@ -136,7 +136,7 @@ private:
    * @return the result
    */
 KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
-                                 // KDE4: make those KURLs, and use pathOrURL() internally.
+                                 // KDE4: make those KURLs
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
                                  KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,

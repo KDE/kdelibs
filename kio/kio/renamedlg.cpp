@@ -159,7 +159,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src.prettyURL(),100 ) ), this );
+                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src.pathOrURL(),100 ) ), this );
         d->bRename->setText(i18n("C&ontinue"));
         pLayout->addWidget( lb );
     }
@@ -235,7 +235,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             else
                 sentence1 = i18n("A newer item named '%1' already exists.");
 
-            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest.prettyURL()), this );
+            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest.pathOrURL() ), this );
             gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
             lb1 = new QLabel( this );
@@ -270,7 +270,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
                 gridLayout->addRowSpacing( 4, 20 );
 
-                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src.prettyURL()), this );
+                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src.pathOrURL()), this );
                 gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
@@ -314,7 +314,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         else
             sentence1 = i18n("A newer item named '%1' already exists.");
 
-        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->dest.url()), this );
+        QLabel *lb = new KSqueezedTextLabel( sentence1.arg(d->dest.pathOrURL()), this );
         pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
@@ -428,7 +428,7 @@ void RenameDlg::b1Pressed()
   KURL u = newDestURL();
   if ( !u.isValid() )
   {
-    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.prettyURL() ) );
+    KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.url() ) );
     return;
   }
 
