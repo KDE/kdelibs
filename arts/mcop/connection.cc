@@ -27,13 +27,27 @@
 #include "dispatcher.h"
 #include <stdio.h>
 
-Connection::Connection()
+Connection::Connection() :_refCnt(1)
 {
 	_connState = unknown;
 }
 
 Connection::~Connection()
 {
+	assert(_refCnt == 0);
+}
+
+void Connection::_copy()
+{
+	_refCnt++;
+}
+
+void Connection::_release()
+{
+	assert(_refCnt > 0);
+	_refCnt--;
+	if(_refCnt == 0)
+		delete this;
 }
 
 void Connection::initReceive()

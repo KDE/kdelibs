@@ -187,17 +187,21 @@ Dispatcher *Dispatcher::the()
 	return _instance;
 }
 
-Buffer *Dispatcher::waitForResult(long requestID)
+Buffer *Dispatcher::waitForResult(long requestID, Connection *connection)
 {
 	Buffer *b;
 
 	do {
 		_ioManager->processOneEvent(true);
 		b = requestResultPool[requestID];
-	} while(!b);
+	} while(!b && !connection->broken());
 
 	requestResultPool.releaseSlot(requestID);
-	return b;
+
+	if(connection->broken()) // connection went away before we got some result
+		return 0;
+	else
+		return b;
 }
 
 Buffer *Dispatcher::createRequest(long& requestID, long objectID, long methodID)
@@ -571,7 +575,7 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 			printf("bad luck: connecting server didn't work\n");
 			
 			// well - bad luck (connecting that server failed)
-			delete conn;
+			conn->_release();
 		}
 	}
 	return 0;
@@ -642,7 +646,7 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 	 * there may be error handling to do (e.g., check that the _stub's that
 	 * still refer to that connection don't crash now).
 	 */
-	delete connection;
+	connection->_release();
 
 	list<Connection *>::iterator i;
 	for(i=connections.begin(); i != connections.end();i++)

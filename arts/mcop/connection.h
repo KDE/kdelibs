@@ -46,6 +46,8 @@ protected:
 	std::string serverID;
 	std::string _cookie;
 
+	long _refCnt;
+
 	/**
 	 * If you don't want to handle message fragmentation yourself:
 	 * 
@@ -56,9 +58,10 @@ protected:
 	 */
 	void initReceive();
 	void receive(unsigned char *data, long len);
+
+	virtual ~Connection();
 public:
 	Connection();
-	virtual ~Connection();
 
 	inline void setServerID(std::string serverID) { this->serverID = serverID; }
 	inline bool isConnected(std::string s) { return (serverID == s); } 
@@ -71,6 +74,9 @@ public:
 	virtual void drop() = 0;
 	virtual bool broken() = 0;
 	virtual void qSendBuffer(Buffer *buffer) = 0;
+
+	void _release();
+	void _copy();
 };
 
 #endif

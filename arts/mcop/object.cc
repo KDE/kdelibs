@@ -31,6 +31,12 @@
 
 using namespace std;
 
+struct Object::ObjectStreamInfo {
+	string name;
+	long flags;
+	void *ptr;
+};
+
 struct Object_skel::MethodTableEntry {
 	DispatchFunction dispatcher;
 	OnewayDispatchFunction onewayDispatcher;
@@ -56,15 +62,15 @@ void Object::_destroy()
 
 	if(_scheduleNode)
 	{
-		FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
-		assert(fs);
-
 		if(_scheduleNode->remoteScheduleNode())
 		{
 			delete _scheduleNode;
 		}
 		else
 		{
+			FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
+			assert(fs);
+
 			fs->removeObject(_scheduleNode);
 		}
 	}
@@ -79,6 +85,12 @@ Object::~Object()
 		cerr << "       call delete manually - use _release() instead" << endl;
 	}
 	assert(_deleteOk);
+
+	/* clear stream list */
+	list<ObjectStreamInfo *>::iterator osii;
+	for(osii = _streamList.begin(); osii != _streamList.end(); osii++)
+		delete (*osii);
+
 	_staticObjectCount--;
 }
 
@@ -86,20 +98,38 @@ ScheduleNode *Object::_node()
 {
 	if(!_scheduleNode)
 	{
-		FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
-		assert(fs);
-
 		switch(_location())
 		{
-			case objectIsLocal: _scheduleNode = fs->addObject(_skel());
-							break;
-			case objectIsRemote: _scheduleNode=new RemoteScheduleNode(_stub());
-							break;
+			case objectIsLocal:
+				{
+					FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
+					assert(fs);
+					_scheduleNode = fs->addObject(_skel());
+
+					/* init streams */
+
+					list<ObjectStreamInfo *>::iterator osii;
+					for(osii = _streamList.begin(); osii != _streamList.end(); osii++)
+					{
+						_scheduleNode->initStream((*osii)->name,(*osii)->ptr,(*osii)->flags);
+					}
+				}
+				break;
+
+			case objectIsRemote:
+					_scheduleNode=new RemoteScheduleNode(_stub());
+				break;
 		}
 
 		assert(_scheduleNode);
 	}
 	return _scheduleNode;
+}
+
+bool Object::_error()
+{
+	// no error as default ;)
+	return false;
 }
 
 Object_skel *Object::_skel()
@@ -141,13 +171,11 @@ Object::ObjectLocation Object_skel::_location()
 
 void Object_skel::_initStream(string name, void *ptr, long flags)
 {
-	_streamMap[name] = ptr;
-	_node()->initStream(name,ptr,flags);
-}
-
-void *Object::_lookupStream(string name)
-{
-	return _streamMap[name];
+	ObjectStreamInfo *osi = new ObjectStreamInfo;
+	osi->name = name;
+	osi->ptr = ptr;
+	osi->flags = flags;
+	_streamList.push_back(osi);
 }
 
 void Object::calculateBlock(unsigned long)
@@ -514,6 +542,7 @@ Object_stub::Object_stub()
 Object_stub::Object_stub(Connection *connection, long objectID)
 {
 	_connection = connection;
+	_connection->_copy();
 	_objectID = objectID;
 	_lookupCacheRandom = rand();
 }
@@ -534,6 +563,19 @@ Object_stub::~Object_stub()
 				_lookupMethodCache[pos] = 0;
 		}
 	}
+	_connection->_release();
+}
+
+bool Object_stub::_error()
+{
+	/*
+	 * servers are trustworthy - they don't do things wrong (e.g. send
+	 * wrong buffers or things like that) - however, if the connection is
+	 * lost, this indicates that something went terrible wrong (probably
+	 * the remote server crashed, or maybe the network is dead), and you
+	 * can't rely on results of invocations any longer
+	 */
+	return _connection->broken();
 }
 
 void Object_stub::_release()
@@ -594,7 +636,8 @@ string Object_stub::_interfaceName()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return ""; // error
 	string returnCode;
 	result->readString(returnCode);
 	delete result;
@@ -611,7 +654,8 @@ InterfaceDef* Object_stub::_queryInterface(const string& name)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return new InterfaceDef(); // error
 	InterfaceDef *_returnCode = new InterfaceDef(*result);
 	delete result;
 	return _returnCode;
@@ -627,7 +671,8 @@ TypeDef* Object_stub::_queryType(const string& name)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return new TypeDef(); // error
 	TypeDef *_returnCode = new TypeDef(*result);
 	delete result;
 	return _returnCode;
@@ -643,7 +688,8 @@ long Object_stub::_lookupMethod(const MethodDef& methodDef)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return 0; // error
 	long returnCode = result->readLong();
 	delete result;
 	return returnCode;
@@ -686,7 +732,8 @@ string Object_stub::_toString()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return ""; // error
 	string returnCode;
 	result->readString(returnCode);
 	delete result;
@@ -703,8 +750,8 @@ void Object_stub::_copyRemote()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 void Object_stub::_useRemote()
@@ -717,8 +764,8 @@ void Object_stub::_useRemote()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 void Object_stub::_releaseRemote()
@@ -731,8 +778,8 @@ void Object_stub::_releaseRemote()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 FlowSystem *Object_stub::_flowSystem()
@@ -745,7 +792,8 @@ FlowSystem *Object_stub::_flowSystem()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return 0; // error
 	FlowSystem* returnCode;
 	readObject(*result,returnCode);
 	delete result;

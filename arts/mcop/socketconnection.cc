@@ -35,6 +35,23 @@
 #include <sys/un.h>
 #include <errno.h>
 
+/*
+ * These parameters impact the performance significantly. There are two sides:
+ *
+ * when you use too large buffers for reading/writing
+ *  - it may be, that each operation takes too long, so that for instance
+ *    an important real time audio job drops during that time
+ *  - it may be, that dealing with large buffers (allocation, cache, etc)
+ *    itself causes a penalty
+ *
+ * on the other hand, small buffers lead to repeated operating system calls,
+ * which is bad especially if you even go through all the chain: check what
+ * can be written with select, invoke the corresponding object, actually
+ * read (or write), do messages, do timers, go sleep again on select.
+ */
+static const int MCOP_MAX_READ_SIZE=8192;
+static const int MCOP_MAX_WRITE_SIZE=8192;
+
 SocketConnection::SocketConnection()
 {
 }
@@ -52,6 +69,12 @@ SocketConnection::SocketConnection(int fd)
 
 void SocketConnection::qSendBuffer(Buffer *buffer)
 {
+	if(_broken)
+	{
+		// forget it ;) - no connection there any longer
+		delete buffer;
+		return;
+	}
 	if(pending.size() == 0)
 	{
 		// if there is nothing pending already, it may be that we are lucky
@@ -78,9 +101,9 @@ void SocketConnection::notifyIO(int fd, int types)
 	if(types & IOType::read)
 	{
 		//printf("processing read notification\n");
-		unsigned char buffer[1024];
+		unsigned char buffer[MCOP_MAX_READ_SIZE];
 
-		long n = read(fd,buffer,1024);
+		long n = read(fd,buffer,MCOP_MAX_READ_SIZE);
 		//printf("ok, got %ld bytes\n",n);
 
 		if(n > 0)
@@ -125,7 +148,7 @@ void SocketConnection::notifyIO(int fd, int types)
 
 void SocketConnection::writeBuffer(Buffer *buffer)
 {
-	long len = 1024;
+	long len = MCOP_MAX_WRITE_SIZE;
 	if(buffer->remaining() < len) len = buffer->remaining();
 
 	void *data = buffer->peek(len);

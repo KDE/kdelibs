@@ -215,7 +215,7 @@ string createTypeCode(string type, const string& name, long model,
 	{
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "delete result;\n";
+			result = indent + "if(result) delete result;\n";
 		}
 		else if(model==MODEL_INVOKE)
 		{
@@ -245,7 +245,8 @@ string createTypeCode(string type, const string& name, long model,
 			result = name+" = stream.readFloat()";
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "float returnCode = result->readFloat();\n";
+			result = indent + "if(!result) return 0.0; // error occured\n";
+			result += indent + "float returnCode = result->readFloat();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
@@ -270,7 +271,8 @@ string createTypeCode(string type, const string& name, long model,
 			result = name+" = stream.readBool()";
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "bool returnCode = result->readBool();\n";
+			result = indent + "if(!result) return false; // error occured\n";
+			result += indent + "bool returnCode = result->readBool();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
@@ -297,7 +299,8 @@ string createTypeCode(string type, const string& name, long model,
 			result = "stream.readByteSeq("+name+")";
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "mcopbyte returnCode = result->readByte();\n";
+			result = indent + "if(!result) return 0; // error occured\n";
+			result += indent + "mcopbyte returnCode = result->readByte();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
@@ -329,7 +332,8 @@ string createTypeCode(string type, const string& name, long model,
 			result = "stream.readLongSeq("+name+")";
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "long returnCode = result->readLong();\n";
+			result = indent + "if(!result) return 0; // error occured\n";
+			result += indent + "long returnCode = result->readLong();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
@@ -361,7 +365,8 @@ string createTypeCode(string type, const string& name, long model,
 		}
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "std::string returnCode;\n";
+			result = indent + "if(!result) return\"\"; // error occured\n";
+			result += indent + "std::string returnCode;\n";
 			result += indent + "result->readString(returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
@@ -408,7 +413,9 @@ string createTypeCode(string type, const string& name, long model,
 
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + type + " *_returnCode = new "+type+"(*result);\n";
+			result = indent +
+					"if(!result) return new "+type+"(); // error occured\n";
+			result += indent+ type + " *_returnCode = new "+type+"(*result);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return _returnCode;\n";
 		}
@@ -428,7 +435,9 @@ string createTypeCode(string type, const string& name, long model,
 			result = "stream.readLongSeq("+name+")";		// TODO
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + type+" returnCode = ("+
+			result = indent  +
+						"if(!result) return ("+type+")0; // error occured\n";
+			result += indent + type+" returnCode = ("+
 												type+")result->readLong();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
@@ -461,7 +470,8 @@ string createTypeCode(string type, const string& name, long model,
 		//	result = "stream.readLongSeq("+name+")";		// TODO
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + type+"* returnCode;\n";
+			result = indent + "if(!result) return 0; // error occured\n";
+			result += indent + type+"* returnCode;\n";
 			result += indent + "readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
@@ -827,8 +837,8 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md,
 
 	if(md->flags & methodTwoway)
 	{
-		fprintf(source,
-			"\tresult = Dispatcher::the()->waitForResult(requestID);\n");
+		fprintf(source,"\tresult = "
+			"Dispatcher::the()->waitForResult(requestID,_connection);\n");
 
 		fprintf(source,"%s",
 			createTypeCode(md->type,"",MODEL_RES_READ,"\t").c_str());

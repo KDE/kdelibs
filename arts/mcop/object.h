@@ -49,6 +49,8 @@ private:
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
 protected:
+	struct ObjectStreamInfo;
+
 	Object();
 	virtual ~Object();
 
@@ -56,7 +58,7 @@ protected:
 	 * internal management for streams
 	 */
 	ScheduleNode *_scheduleNode;
-	std::map<std::string, void*> _streamMap;
+	list<ObjectStreamInfo *> _streamList;
 
 	virtual Object_skel *_skel();
 	virtual Object_stub *_stub();
@@ -97,7 +99,6 @@ public:
 	/*
 	 * stuff for streaming (put in a seperate interface?)
 	 */
-	void *_lookupStream(std::string s);
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
 	virtual FlowSystem * _flowSystem() = 0;
@@ -115,6 +116,13 @@ public:
 		_refCnt++;
 		return this;
 	}
+
+	/*
+	 * when this is true, a fatal communication error has occured (of course
+	 * only possible for remote objects) - maybe your returncode is invalid,
+	 * maybe your last invocation didn't succeed...
+	 */
+	virtual bool _error();
 
 	inline static long _objectCount() { return _staticObjectCount; }
 	inline long _mkNotifyID() { return _nextNotifyID++; }
@@ -255,5 +263,14 @@ public:
 	virtual void _copyRemote();
 	virtual void _useRemote();
 	virtual void _releaseRemote();
+
+	/*
+	 * communication error? this is true when your connection to the remote
+	 * object is lost (e.g. when the remote server crashed) - your return
+	 * values are then undefined, so check this before relying too much
+	 * on some invocation
+	 */
+
+	bool _error();
 };
 #endif

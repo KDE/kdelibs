@@ -87,7 +87,10 @@ public:
 
 	void refillRequestIDs();
 
-	Buffer *waitForResult(long requestID);		// blocking wait for result
+	// blocking wait for result
+	Buffer *waitForResult(long requestID,Connection *connection);
+
+	// request creation for oneway and twoway requests
 	Buffer *createRequest(long& requestID, long objectID, long methodID);
 	Buffer *createOnewayRequest(long objectID, long methodID);
 

@@ -789,7 +789,8 @@ long InterfaceRepo_stub::insertModule(const ModuleDef& newModule)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return 0; // error occured
 	long returnCode = result->readLong();
 	delete result;
 	return returnCode;
@@ -806,8 +807,8 @@ void InterfaceRepo_stub::removeModule(long moduleID)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 InterfaceDef* InterfaceRepo_stub::queryInterface(const std::string& name)
@@ -821,7 +822,8 @@ InterfaceDef* InterfaceRepo_stub::queryInterface(const std::string& name)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return new InterfaceDef(); // error occured
 	InterfaceDef *_returnCode = new InterfaceDef(*result);
 	delete result;
 	return _returnCode;
@@ -838,7 +840,8 @@ TypeDef* InterfaceRepo_stub::queryType(const std::string& name)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return new TypeDef(); // error occured
 	TypeDef *_returnCode = new TypeDef(*result);
 	delete result;
 	return _returnCode;
@@ -1037,7 +1040,8 @@ long FlowSystemReceiver_stub::receiveHandlerID()
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return 0; // error occured
 	long returnCode = result->readLong();
 	delete result;
 	return returnCode;
@@ -1125,8 +1129,8 @@ void FlowSystem_stub::startObject(Object * node)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 void FlowSystem_stub::stopObject(Object * node)
@@ -1140,8 +1144,8 @@ void FlowSystem_stub::stopObject(Object * node)
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 void FlowSystem_stub::connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
@@ -1158,8 +1162,8 @@ void FlowSystem_stub::connectObject(Object * sourceObject, const std::string& so
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 void FlowSystem_stub::disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
@@ -1176,8 +1180,8 @@ void FlowSystem_stub::disconnectObject(Object * sourceObject, const std::string&
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
-	delete result;
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(result) delete result;
 }
 
 AttributeType FlowSystem_stub::queryFlags(Object * node, const std::string& port)
@@ -1192,7 +1196,8 @@ AttributeType FlowSystem_stub::queryFlags(Object * node, const std::string& port
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return (AttributeType)0; // error occured
 	AttributeType returnCode = (AttributeType)result->readLong();
 	delete result;
 	return returnCode;
@@ -1211,7 +1216,8 @@ FlowSystemReceiver * FlowSystem_stub::createReceiver(Object * destObject, const 
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID);
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return 0; // error occured
 	FlowSystemReceiver* returnCode;
 	readObject(*result,returnCode);
 	delete result;
