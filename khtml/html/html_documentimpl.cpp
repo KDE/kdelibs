@@ -321,7 +321,7 @@ void HTMLDocumentImpl::close()
                 //kdDebug() << "dispatching LOAD_EVENT on element " << elt << " " << elt->tagName() << endl;
                 elt->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
             } else {
-                kdWarning(6010) << "Load event: access denied to [i]frame " << domain() << " from " << parentDoc->domain() << endl;
+	      kdWarning(6010) << "Load event: access denied to [i]frame " << domain().string() << " from " << parentDoc->domain().string() << endl;
             }
         }
 
