@@ -52,8 +52,10 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
 }
 
 void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
-  if (d->host) delete d->host;
-  d->host = new KInetSocketAddress(addr.addressV4(), addr.size());
+  if (!d->host)
+    d->host = new KInetSocketAddress(addr);
+  else
+    (*d->host) = addr;
 }
 
 
@@ -62,14 +64,15 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   int err;
   QList<KAddressInfo> cns = KExtendedSocket::lookup(certinfo.getValue("CN").latin1(), 0, 0, &err);
+  cns.setAutoDelete(true);
 
-  kdDebug() << "The original ones were: " << d->host->prettyHost()
+  kdDebug() << "The original ones were: " << d->host->nodeName()
             << " and: " << certinfo.getValue("CN").latin1()
             << endl;
 
   for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
      // kdDebug() << "Found address: " << (**x).pretty() << endl;
-     if ((**x).isCoreEqual(d->host))
+     if ((*x).address()->isCoreEqual(d->host))
         return true;
   }
 
