@@ -27,6 +27,7 @@
 #include <kurl.h>
 #include <klocale.h>
 #include <qlabel.h>
+#include <kdebug.h>
 #include <qlineedit.h>
 
 #include <sys/types.h>
@@ -112,21 +113,21 @@ bool checkLpdQueue(const char *host, const char *queue)
 
 	char	res[64] = {0};
 	snprintf(res,64,"%c%s\n",(char)4,queue);
-qDebug("write: %s",res);
+kdDebug() << "write: " << res << endl;
 	if ((int)::write(sock,res,strlen(res)) != (int)strlen(res))
 	{
-qDebug("connection closed");
+kdDebug() << "connection closed" << endl;
 		close(sock);
 		return false;
 	}
 
 	char	buf[1024] = {0};
 	int	n;
-qDebug("reading");
+kdDebug() << "reading" << endl;
 	while ((n=::read(sock,res,63)) > 0)
 	{
 		res[n] = 0;
-qDebug("%s",buf);
+kdDebug() << buf << endl;
 		strncat(buf,res,1023);
 	}
 	close(sock);

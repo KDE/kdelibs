@@ -593,9 +593,9 @@ QSize rangeToSize(const QString& s)
 
 void dumpOptions(const QMap<QString,QString>& opts)
 {
-	qDebug("********************");
+	kdDebug() << "********************" << endl;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		qDebug("%s = %s",it.key().latin1(),it.data().latin1());
+		kdDebug() << it.key() << " = " << it.data() << endl;
 }
 
 KPrinterImpl* KPrinter::implementation() const

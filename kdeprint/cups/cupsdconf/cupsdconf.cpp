@@ -21,6 +21,7 @@
 
 #include <qfile.h>
 #include <klocale.h>
+#include <kdebug.h>
 #include <kconfig.h>
 
 #include <stdlib.h>
@@ -331,7 +332,7 @@ bool CupsdConf::parseOption(const QString& line)
 		return false;
 	if (wordlist_.count() == 1)
 	{
-qDebug("warning: empty option \"%s\", adding a pseudo empty argument",(*(wordlist_.at(0))).latin1());
+kdDebug() << "warning: empty option \"" << (*(wordlist_.at(0))) << "\", adding a pseudo empty argument" << endl;
 		wordlist_.append(QString(""));
 	}
 	QString	opt = *(wordlist_.at(0));
@@ -533,7 +534,7 @@ bool CupsLocation::parseOption(const QString& line)
 	if (wordlist_.count() == 0) return false;
 	if (wordlist_.count() == 1)
 	{
-qDebug("warning: empty option \"%s\", adding a pseudo empty argument",(*(wordlist_.at(0))).latin1());
+kdDebug() << "warning: empty option \"" << (*(wordlist_.at(0))) << "\", adding a pseudo empty argument" << endl;
 		wordlist_.append(QString(""));
 	}
 	QString	opt = *(wordlist_.at(0)), value = *(wordlist_.at(1));;

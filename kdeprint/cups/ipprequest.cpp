@@ -24,30 +24,31 @@
 
 #include <stdlib.h>
 #include <cups/language.h>
+#include <kdebug.h>
 #include <cups/cups.h>
 
 void dumpRequest(ipp_t *req)
 {
-	qDebug("------------------------------");
-	qDebug("state = 0x%x",req->state);
-	qDebug("current tag = 0x%x",req->curtag);
-	qDebug("request operation ID = 0x%x",req->request.op.operation_id);
-	qDebug("request ID = 0x%x",req->request.op.request_id);
-	qDebug("request version = %c%c",req->request.op.version[0],req->request.op.version[1]);
+	kdDebug() << "------------------------------" << endl;
+	kdDebug() << "state = 0x" << req->state << endl;
+	kdDebug() << "current tag = 0x" << req->curtag << endl;
+	kdDebug() << "request operation ID = 0x" << req->request.op.operation_id << endl;
+	kdDebug() << "request ID = 0x" << req->request.op.request_id << endl;
+	kdDebug() << "request version = " << req->request.op.version[0] << req->request.op.version[1] << endl;
 	ipp_attribute_t	*attr = req->attrs;
 	while (attr)
 	{
-		qDebug(" ");
-		qDebug("attribute: %s",attr->name);
-		qDebug("group tag = 0x%x",attr->group_tag);
-		qDebug("value tag = 0x%x",attr->value_tag);
-		qDebug("number of values = %d",attr->num_values);
+		kdDebug() << " " << endl;
+		kdDebug() << "attribute: " << attr->name << endl;
+		kdDebug() << "group tag = 0x" << attr->group_tag << endl;
+		kdDebug() << "value tag = 0x" << attr->value_tag << endl;
+		kdDebug() << "number of values = " << attr->num_values << endl;
 		if (attr->value_tag >= IPP_TAG_TEXT)
 			for (int i=0;i<attr->num_values;i++)
-				qDebug("value[%d] = %s",i,attr->values[i].string.text);
+				kdDebug() << "value[" << i << "] = " << attr->values[i].string.text << endl;
 		attr = attr->next;
 	}
-	qDebug("------------------------------");
+	kdDebug() << "------------------------------" << endl;
 }
 
 //*************************************************************************************
@@ -201,7 +202,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	if (HTTP == NULL)
 		return false;
 #if 0
-qDebug("---------------------\nRequest\n---------------------");
+kdDebug() << "---------------------\nRequest\n---------------------" << endl;
 dumpRequest(request_);
 #endif
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
@@ -209,7 +210,7 @@ dumpRequest(request_);
 	if (!request_ || request_->state == IPP_ERROR)
 		return false;
 #if 0
-qDebug("---------------------\nAnswer\n---------------------");
+kdDebug() << "---------------------\nAnswer\n---------------------" << endl;
 dumpRequest(request_);
 #endif
 	return true;

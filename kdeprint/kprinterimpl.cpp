@@ -147,7 +147,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 		if (QFile::exists(*it))
 			printfiles.append(*it);
 		else
-			qDebug("File not found: %s",(*it).latin1());
+			kdDebug() << "File not found: " << (*it) << endl;
 
 	if (printfiles.count() > 0)
 	{

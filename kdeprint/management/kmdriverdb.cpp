@@ -24,6 +24,7 @@
 #include "kmdbcreator.h"
 #include "kmmanager.h"
 #include "kmfactory.h"
+#include <kdebug.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -118,7 +119,7 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	// first check entry
 	if (!entry->validate())
 	{
-		qDebug("Incorrect entry, skipping...(%s)",entry->file.latin1());
+		kdDebug() << "Incorrect entry, skipping...(" << entry->file << ")" << endl;
 		delete entry;
 		return;
 	}
