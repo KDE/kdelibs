@@ -31,6 +31,8 @@
 #include <kaction.h>
 #include <klibloader.h>
 #include <ktrader.h>
+#include <kuserprofile.h>
+#include <krun.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
@@ -42,6 +44,7 @@
 KPreviewProc::KPreviewProc()
 : KProcess()
 {
+	m_bOk = false;
 	connect(this, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
 }
 
@@ -54,15 +57,20 @@ bool KPreviewProc::startPreview()
 	if (start())
 	{
 		kapp->enter_loop();
-		return true;
+		return m_bOk;
 	}
 	else
 		return false;
 }
 
-void KPreviewProc::slotProcessExited(KProcess*)
+void KPreviewProc::slotProcessExited(KProcess* proc)
 {
 	kapp->exit_loop();
+	if ( proc->normalExit() && proc->exitStatus() == 0 )
+		m_bOk = true;
+	else
+		kdDebug() << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
+			<< " exitStatus=" << proc->exitStatus() << endl;
 }
 
 //*******************************************************************************************
@@ -134,7 +142,6 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	}
 
 	// populate the toolbar
-	KAction	*act;
 	if (previewOnly)
 		d->plugAction(d->actions_->action("close_print"));
 	else
@@ -167,7 +174,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	l0->addWidget(d->toolbar_, AlignTop);
 	if (d->gvpart_)
 		l0->addWidget(d->gvpart_->widget());
-	
+
 	resize(855, 500);
 	setCaption(i18n("Print Preview"));
 }
@@ -226,7 +233,29 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 			dlg.openFile(file);
 			return dlg.exec();
 		}
-		else
+		else if (previewOnly)
+                {
+			KService::Ptr serv = KServiceTypeProfile::preferredService( "application/postscript", QString::null );
+			if ( serv )
+			{
+				KURL url;
+				url.setPath( file );
+				QStringList args = KRun::processDesktopExec( *serv, url, false );
+				KPreviewProc	proc;
+				proc << args;
+				//kdDebug() << args.join(" ") << endl;
+				if (!proc.startPreview())
+				{
+					KMessageBox::error(NULL, i18n("Preview failed: unable to start program %1.").arg(serv->name()));
+					return false;
+				}
+				return !previewOnly;
+			} else {
+				KMessageBox::error(NULL, i18n("Preview failed: no postscript viewer found."));
+				return false;
+			}
+                }
+                else
 			return (KMessageBox::warningYesNo(parentW,
 				i18n("KDE was unable to locate an appropriate object "
 				     "for print previewing. Do you want to continue "

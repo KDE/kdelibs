@@ -54,6 +54,8 @@ public:
 
 protected slots:
 	void slotProcessExited(KProcess*);
+private:
+	bool m_bOk;
 };
 
 #endif
