@@ -48,14 +48,14 @@ class KFontChooser : public QWidget
   
 public:
   /**
-   *  @li @p FamilyList Identifies the family (leftmost) list.
-   *  @li @p StyleList  Identifies the style (center) list
-   *  @li @p SizeList   Identifies the size (rightmost) list
+   *  @li @p FamilyList - Identifies the family (leftmost) list.
+   *  @li @p StyleList -  Identifies the style (center) list
+   *  @li @p SizeList -   Identifies the size (rightmost) list
    */
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
 
   /**
-   * Constructor.  Create a new font picker dialog.
+   * Constructor.  Create a new font picker widget.
    *
    * @param parent The parent widget.
    * @param name The widget name.
@@ -97,12 +97,12 @@ public:
   /**
    * @return The currently selected font in the chooser.
    */
-  QFont font() { return selFont; }
+  QFont font() const { return selFont; }
   
   /**
    * @return The current text in the sample text input area.
    */
-  QString sampleText() { return sampleEdit->text(); }
+  QString sampleText() const { return sampleEdit->text(); }
 
   /**
    * Set the sample text. Normally you should not change this 
@@ -232,7 +232,7 @@ public:
   /**
    * @return The currently selected font in the dialog.
    */
-  QFont font() { return chooser->font(); }
+  QFont font() const { return chooser->font(); }
   
   /**
    * This is probably the function you are looking for.
