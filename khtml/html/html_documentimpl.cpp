@@ -58,7 +58,7 @@ using namespace khtml;
 
 
 HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
-  : DocumentImpl(_implementation,_doctype)
+  : DocumentImpl(_implementation, _doctype, v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     bodyElement = 0;
@@ -73,8 +73,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, Docum
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
 
-    if (v)
-        m_styleSelector = new CSSStyleSelector(this); // ###
+    m_styleSelector = new CSSStyleSelector(this);
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
