@@ -89,6 +89,7 @@ bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p,
 					 bool recursive) const
 {
   DOM::DOMString cssprop = jsNameToProp(p);
+  // strip pos- / pixel- prefix here?
   if (DOM::getPropertyID(cssprop.string().ascii(), cssprop.length()))
       return true;
 
@@ -128,9 +129,22 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 #endif
   DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
   DOM::DOMString p = jsNameToProp(propertyName);
-  DOM::DOMString v = styleDecl2.getPropertyValue(p);
-  if (!v.isNull())
-    return getString(v);
+  bool asNumber = false;
+  {
+    QString prop = p.string();
+    if(prop.startsWith( "pixel-") || prop.startsWith( "pos-" ) ) {
+      p = prop.mid(prop.find( '-' )+1);
+      asNumber = true;
+    }
+  }
+
+  DOM::CSSValue v = styleDecl2.getPropertyCSSValue(p);
+  if (!v.isNull()) {
+    if (asNumber && v.cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
+      return Number(static_cast<DOM::CSSPrimitiveValue>(v).getFloatValue(DOM::CSSPrimitiveValue::CSS_PX));
+
+    return getString(v.cssText());
+  }
 
   // see if we know this css property, return empty then
   QCString prop = p.string().latin1();
