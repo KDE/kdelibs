@@ -467,10 +467,10 @@ protected:
   // void paintEvent(QPaintEvent*); /**< The paint event. */
   // void resizeEvent(QResizeEvent*); /**< The resize event. */
   /** Get the next available entry key for this file. For internal use only. */
-  KabKey nextAvailEntryKey(); // fertig
+  KabKey nextAvailEntryKey();
   /** Returns true if both pathes point to the same file.
    *  The method resolves relative file names to find this out. */
-  bool isSameFile(const QString& a, const QString& b); // fertig
+  bool isSameFile(const QString& a, const QString& b);
   /** Parse the section and copy its contents into \a entry.
    *  The method expects a subsection called \e addresses that contains a
    *  number of subsections each containing data for one Entry::Address object.
@@ -485,7 +485,7 @@ protected:
   ErrorCode updateMirrorMap();
   /** Get the entry section of the file. Maybe a NULL pointer if no file is
    *  opened. */
-  Section* entrySection(); // fertig
+  Section* entrySection();
   /** Lock the file for changing.
    *  Since all database files are opened read-only, they must be locked before
    *  the files contents are changed. After changing the file must be saved and
@@ -494,13 +494,13 @@ protected:
    *  locked.
    *  @see unlock
    *  @see QConfigDB::setFileName */
-  ErrorCode lock(); // fertig
+  ErrorCode lock();
   /** Unlock the file after changes. Returns ::NoError if the file was locked
    *  and could be unlocked, ::PermDenied if the file was not locked and
    *  possibly ::InternError if anything fails.
    *  @see ::lock
    *  @see QConfigDB::setFileName */ 
-  ErrorCode unlock(); // fertig ab hier
+  ErrorCode unlock();
   /** Set the background image. Kab will store a deep copy of the image.
    *  If the image is a null image nothing will be displayed. */
   // void setBackground(const QImage&);
