@@ -644,14 +644,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             insertNode(e);
             handled = true;
             break;
-            case ID_DL:
-                popBlock(ID_DL);
-                handled = true;
-                break;
-            case ID_DT:
-                popBlock(ID_DT);
-                handled = true;
-                break;
         case ID_SELECT:
             if( n->isInline() )
                 return false;
@@ -683,16 +675,14 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             }
             break;
             // head elements in the body should be ignored.
+
+        case ID_DL:
+        case ID_DT:
         case ID_ADDRESS:
-            popBlock(ID_ADDRESS);
-            handled = true;
-            break;
         case ID_COLGROUP:
-            popBlock(ID_COLGROUP);
-            handled = true;
-            break;
         case ID_FONT:
-            popBlock(ID_FONT);
+        case ID_CAPTION:
+            popBlock(current->id());
             handled = true;
             break;
         default:
