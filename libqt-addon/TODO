@@ -17,14 +17,14 @@ to be seen:
 
 Resolver:
 =========
+- Test reverse resolution
 - Add SRV-based resolution
   -> library that does low-level DNS (-lresolv), maybe in C
   -> the rest of the processing, sorting, etc. in C++
   to break dependency on -lresolv on the main library, maybe even allow
   for other DNS implementation
-- Add non-blocking reverse resolution
-  -> no need for special class
-  -> simple signal-based 
-     SIGNAL(resolved(const QString&, const QString&))
-     or something similar
 - Add PF_LLC to the resolving possibilities
+
+General:
+========
+- Clean up documentation (go through Doxygen's errors)
