@@ -65,6 +65,18 @@ public:
     QCString plainAppId;
     IceConn iceConn;
     bool notifyRegister;
+    /**
+     * When client A has called client B then for the duration of the call:
+     * A->waitingOnReply contains B 
+     *   and either
+     * B->waitingForReply contains A
+     *   or
+     * B->waitingForDelayedReply contains A
+     *
+     * This allows us to do proper bookkeeping in case client A, client B 
+     * or both unregister during the call.
+     */
+    QList <_IceConn> waitingOnReply;
     QList <_IceConn> waitingForReply;
     QList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;

@@ -423,6 +423,11 @@ void DCOPProcessMessage( IceConn iceConn, IcePointer /*clientData*/,
 void DCOPServer::processMessage( IceConn iceConn, int opcode,
 				 unsigned long length, Bool /*swap*/)
 {
+    DCOPConnection* conn = clients.find( iceConn );
+    if ( !conn ) {
+	qWarning("DCOPServer::processMessage message from unknown connection. [opcode = %d]", opcode);
+	return;
+    }
     switch( opcode ) {
     case DCOPSend:
     case DCOPReplyDelayed:
@@ -436,7 +441,6 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    QCString fromApp, toApp;
 	    ds >> fromApp >> toApp;
 	    DCOPConnection* target = findApp( toApp );
-	    DCOPConnection* conn = clients.find( iceConn );
 	    int datalen = ba.size();
 	    if ( opcode == DCOPReplyDelayed ) {
 		if ( !target )
@@ -445,6 +449,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    qWarning("DCOPServer::DCOPReplyDelayed from unknown connection.");
 		else if (!conn->waitingForDelayedReply.removeRef( target->iceConn ))
 		    qWarning("DCOPServer::DCOPReplyDelayed from/to does not match. (#2)");
+                else if (!target->waitingOnReply.removeRef(iceConn))
+                       qWarning("DCOPServer::DCOPReplyDelayed for client who wasn't waiting on one!");
 	    }
 	    if ( target ) {
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
@@ -495,6 +501,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 
 	    if ( target ) {
 		target->waitingForReply.append( iceConn );
+                conn->waitingOnReply.append( target->iceConn);
 
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
@@ -558,21 +565,23 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    QDataStream ds( ba, IO_ReadOnly );
 	    QCString fromApp, toApp;
 	    ds >> fromApp >> toApp;
-	    DCOPConnection* conn = clients.find( iceConn );
-	    if ( !conn ) {
-		qWarning("DCOPServer::DCOPReply from unknown connection.");
-		break;
-	    }
+
 	    DCOPConnection* connreply = findApp( toApp );
 	    int datalen = ba.size();
 
-// 	    DCOPConnection* connreply = clients.find( conn->waitingForReply.take(0) );
 	    if ( !connreply )
 		qWarning("DCOPServer::DCOPReply for unknown connection.");
 	    else {
 		conn->waitingForReply.removeRef( connreply->iceConn );
 		if ( opcode == DCOPReplyWait )
+                {
 		    conn->waitingForDelayedReply.append( connreply->iceConn );
+                }
+                else
+                { // DCOPReply or DCOPReplyFailed
+                    if (!connreply->waitingOnReply.removeRef(iceConn))
+                       qWarning("DCOPServer::DCOPReply for client who wasn't waiting on one!");
+                }
 		IceGetHeader( connreply->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
@@ -850,6 +859,10 @@ void DCOPServer::removeConnection( void* data )
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+            if (!target)
+               qWarning("DCOP Error: unknown target in waitingForReply");
+            else if (!target->waitingOnReply.removeRef(conn->iceConn))
+               qWarning("DCOP Error: client in waitingForReply wasn't waiting on reply");
 	}
     }
 
@@ -866,7 +879,27 @@ void DCOPServer::removeConnection( void* data )
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+            if (!target)
+               qWarning("DCOP Error: unknown target in waitingForDelayedReply");
+            else if (!target->waitingOnReply.removeRef(conn->iceConn))
+               qWarning("DCOP Error: client in waitingForDelayedReply wasn't waiting on reply");
 	}
+    }
+    while (!conn->waitingOnReply.isEmpty())
+    {
+	IceConn iceConn = conn->waitingOnReply.take(0);
+        if (iceConn) {
+           DCOPConnection* target = clients.find( iceConn );
+           if (!target)
+           {
+               qWarning("DCOP Error: still waiting for answer from non-existing client.");
+               continue;
+           }
+           qWarning("DCOP aborting while waiting for answer from '%s'", target->appId.data());
+           if (!target->waitingForReply.removeRef(conn->iceConn) &&
+               !target->waitingForDelayedReply.removeRef(conn->iceConn))
+              qWarning("DCOP Error: called client has forgotten about caller");
+        }
     }
 
     if ( !conn->appId.isNull() ) {
