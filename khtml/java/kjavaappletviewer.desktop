@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Embedded Java Applet Viewer
+Name[af]=Ingelegde Java Program Bekyker
 Name[ar]=عارض بريمجات جافا المدمج
 Name[az]=Daxili Java Applet Nümayişçisi
 Name[bg]=Вграден визуализатор на аплети Java
@@ -33,6 +34,7 @@ Name[mk]=Вгнезден гледач на Java аплети
 Name[mn]=Суулгаж болох Жава Апплет Харагч
 Name[ms]=Pelihat Aplet Java Terserta
 Name[nb]=Innebygd Java Applet-viser
+Name[nds]=Inbett Kieker vör Java-Programmen
 Name[nl]=Ingebed Java Applet-weergaveprogramma
 Name[nn]=Innebygd Java-appletvisar
 Name[pa]=ਸ਼ਾਮਿਲ Java Applet ਦਰਸ਼ਕ
@@ -55,7 +57,6 @@ Name[tr]=Gömülü Java Aplet Görüntüleyici
 Name[uk]=Вмонтований переглядач аплетів Java
 Name[uz]=Ички Java апплетини кўрувчи
 Name[wa]=Ravalé håyneu d' apliketes Java
-Name[xx]=xxEmbedded Java Applet Viewerxx
 Name[zh_CN]=嵌入的 Java 小程序查看器
 Name[zh_TW]=Embedded Java Applet 檢視器
 X-KDE-Library=kjavaappletviewer

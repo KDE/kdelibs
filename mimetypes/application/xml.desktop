@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XML Document
+Comment[af]=XML Dokument
 Comment[ar]=مستند XML
 Comment[az]=XML Sənədi
 Comment[be]=Дакумэнт XML
@@ -59,7 +60,6 @@ Comment[tr]=XML Belgesi
 Comment[uk]=Документ XML
 Comment[uz]=XML ҳужжати
 Comment[wa]=Documint XML
-Comment[xx]=xxXML Documentxx
 Comment[zh_CN]=XML 文档
 Comment[zh_TW]=XML 文件
 Icon=html
