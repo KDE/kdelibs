@@ -37,7 +37,8 @@ RenderRoot::RenderRoot(KHTMLView *view)
 
     m_positioned=true; // to 0,0 :)
     printingMode = false;
-
+    updateCount = 0;
+    
     selectionStart = 0;
     selectionEnd = 0;
     selectionStartPos = -1;
@@ -57,14 +58,14 @@ void RenderRoot::calcWidth()
     if(printingMode) return;
 
     m_width = m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
-    
+
     if(m_width < m_minWidth) m_width = m_minWidth;
-        
+
     if (style()->marginLeft().type==Fixed)
         m_marginLeft = style()->marginLeft().value;
     else
         m_marginLeft = 0;
-    
+
     if (style()->marginRight().type==Fixed)
         m_marginRight = style()->marginRight().value;
     else
@@ -74,7 +75,7 @@ void RenderRoot::calcWidth()
 void RenderRoot::calcMinMaxWidth()
 {
     RenderFlow::calcMinMaxWidth();
-    if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;    
+    if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
 }
 
 void RenderRoot::layout(bool deep)
@@ -99,7 +100,7 @@ void RenderRoot::layout(bool deep)
     	    if (h>m_height)
 	    	m_height=h;
     	}	
-    }    
+    }
 }
 
 QScrollView *RenderRoot::view()
@@ -153,17 +154,29 @@ void RenderRoot::updateHeight()
 
     if (parsing())
     {
-	if (!updateTimer.isNull() && updateTimer.elapsed()<1000)
-	{
+	if (!updateTimer.isNull() && updateTimer.elapsed()<1000) {
+	    updateCount++;
+	    return;
+	} else
+	    updateTimer.start();	
+	if(updateCount < 500) {
+	    updateCount++;
 	    return;
 	}
-	else
-	    updateTimer.start();	
     }
-
+    updateCount = 0;
 
     int oldHeight = m_height;
-    m_view->layout(true);	
+
+    if (parsing()) {
+	layout(false);
+    } else {
+
+    kdDebug(6040) << "RenderRoot::starting a full layout" << endl;
+
+    m_view->layout(true);
+    }
+
     if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;

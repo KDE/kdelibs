@@ -522,7 +522,7 @@ void RenderBox::calcWidth()
 	    if(m_width < m_minWidth) m_width = m_minWidth;
 	
             calcHorizontalMargins(ml,mr,cw);
-            
+
 	}
 	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
 	{
@@ -534,7 +534,7 @@ void RenderBox::calcWidth()
 	}
     }
 
-    
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
     kdDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
@@ -569,7 +569,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
         {
 	    m_marginLeft = ml.minWidth(cw);
 	    m_marginRight = mr.minWidth(cw);
-        }    
+        }
     }
 }
 
