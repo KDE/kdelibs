@@ -29,6 +29,7 @@ namespace KJS {
   class KJSContext;
   class KJSGlobal;
   class ProgramNode;
+  class KJSError;
 };
 
 /**
@@ -64,10 +65,12 @@ private:
   KHTMLWidget *htmlw;
 
 public:
+  // this is very ugly but makes life easy
   static KJS::KJSLexer *lexer;
   static KJS::KJSContext *context;
   static KJS::KJSGlobal *global;
   static KJS::ProgramNode *prog;
+  static KJS::KJSError *error;
 };
 
 #endif

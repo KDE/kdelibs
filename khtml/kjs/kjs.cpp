@@ -37,6 +37,7 @@ KJSLexer*    KJSWorld::lexer     = 0L;
 KJSContext*  KJSWorld::context   = 0L;
 KJSGlobal*   KJSWorld::global    = 0L;
 ProgramNode* KJSWorld::prog      = 0L;
+KJSError*    KJSWorld::error     = 0L;
 
 KJSWorld::KJSWorld(KHTMLWidget *w)
   : htmlw(w)
@@ -48,6 +49,8 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
   assert(context == 0);
   assert(global == 0);
   assert(prog == 0);
+
+  error = 0L;
 }
 
 bool KJSWorld::evaluate(const char *code)

@@ -30,8 +30,6 @@ namespace KJS {
   enum { IDDocument, IDURL, IDURL2S, IDTitle, IDTitle2S, IDDocWrite,
 	 IDDomain, IDDomain2S };
 
-  class KJSDocProperty;
-
   class HTMLDocument : public KJSObject {
   public:
     HTMLDocument(KHTMLWidget *w, int type = IDDocument);

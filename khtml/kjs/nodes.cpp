@@ -486,6 +486,7 @@ KJSO *StatListNode::evaluate()
     return statement->evaluate();
 
   Ptr l = list->evaluate();
+
   if (l->isA(Completion) && l->cVal() != Normal) // Completion check needed ?
     return l->ref();
   Ptr e = statement->evaluate();
@@ -608,6 +609,7 @@ KJSO *WhileNode::evaluate()
 	return e->ref();
     }
   }
+
   return new KJSCompletion(Normal, value);
 }
 
@@ -678,15 +680,23 @@ KJSO *ProgramNode::evaluate()
 // ECMA 14
 KJSO *SourceElementsNode::evaluate()
 {
+  if (KJSWorld::error)
+    return new KJSCompletion(ReturnValue, KJSWorld::error);
+
   if (!elements)
     return element->evaluate();
 
   Ptr res1 = elements->evaluate();
+  if (KJSWorld::error)
+    return new KJSCompletion(ReturnValue, KJSWorld::error);
+
   Ptr res2 = element->evaluate();
+  if (KJSWorld::error)
+    return new KJSCompletion(ReturnValue, KJSWorld::error);
 
   if (res2->isA(Completion))
     return res2.ref();
-  
+
   return res1.ref();
 }
 

@@ -462,6 +462,9 @@ KJSError::KJSError(ErrorCode e, Node *n)
 {
   line = n ? n->lineNo() : -1;
 
+  if (!KJSWorld::error)
+    KJSWorld::error = this;
+
   cerr << "Runtime error " << (int) e << " at line " << line << endl;
 }
 
@@ -469,5 +472,8 @@ KJSError::KJSError(ErrorCode e, Node *n)
 KJSError::KJSError(ErrorCode e, KJSO *)
   : errNo(e)
 {
+  if (!KJSWorld::error)
+    KJSWorld::error = this;
+
   cerr << "Runtime error " << (int) e << endl;
 }
