@@ -12,7 +12,7 @@ libgsl_la_SOURCES = gslcommon.c gsldatacache.c gslengine.c gslfilter.c \
   gslmath.c gslopmaster.c gslopschedule.c gsloputil.c gslwavechunk.c \
   gslwavedsc.c gslwaveloader.c gslglib.c gslglibhash.cc gslartsthreads.cc \
   gsldatahandle.c
-libgsl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la
+libgsl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la -lm
 libgsl_la_LDFLAGS = -no-undefined
 
 check_PROGRAMS = gslglibhashtest
