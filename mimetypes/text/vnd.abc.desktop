@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=ABC Music File
+Icon=sound
+Type=MimeType
+MimeType=text/vnd.abc
+Patterns=*.abc;*.ABC;
+
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
