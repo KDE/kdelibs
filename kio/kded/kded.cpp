@@ -266,8 +266,8 @@ void Kded::update(const QString& )
   m_pTimer->start( 2000, true /* single shot */ );
 }
 
-bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
-                           QCString &replyType, QByteArray &/*replyData*/)
+bool Kded::process(const QCString &fun, const QByteArray &data,
+                           QCString &replyType, QByteArray &replyData)
 {
   if (fun == "recreate()") {
     kdDebug() << "got a recreate signal!" << endl;
@@ -278,9 +278,9 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
     m_requests.append(kapp->dcopClient()->beginTransaction());
     replyType = "void";
     return true;
-  } else 
-    return false;
-    // don't call KSycoca::process - this is for other apps, not kded
+  } else {
+    return DCOPObject::process(fun, data, replyType, replyData);
+  }
 }
 
 
@@ -362,6 +362,7 @@ KUpdateD::KUpdateD(int pollInterval, int NFSPollInterval) :
        if (!dirWatch->contains(path))
           dirWatch->addDir(path);
     }
+    runKonfUpdate();
 }
 
 KUpdateD::~KUpdateD()
