@@ -50,19 +50,21 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   d = new KServiceGroup::Private;
   m_bDeleted = false;
 
-  if (!configFile.isEmpty())
-  {
-     KConfig config( _relpath+".directory", true, false, "apps" );
+  QString cfg = configFile;
+  if (cfg.isEmpty())
+     cfg = _relpath+".directory";
+     
+  KConfig config( cfg, true, false, "apps" );
 
-     config.setDesktopGroup();
+  config.setDesktopGroup();
 
-     m_strCaption = config.readEntry( "Name" );
-     m_strIcon = config.readEntry( "Icon" );
-     m_strComment = config.readEntry( "Comment" );
-     m_bDeleted = config.readBoolEntry( "Hidden", false );
-     d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
-     m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
-  }
+  m_strCaption = config.readEntry( "Name" );
+  m_strIcon = config.readEntry( "Icon" );
+  m_strComment = config.readEntry( "Comment" );
+  m_bDeleted = config.readBoolEntry( "Hidden", false );
+  d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
+  m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
+
   // Fill in defaults.
   if (m_strCaption.isEmpty())
   {
@@ -142,13 +144,15 @@ void KServiceGroup::load( QDataStream& s )
         {
            KServiceGroup *serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
-           m_serviceList.append( SPtr(serviceGroup) );
+           if (serviceGroup)
+              m_serviceList.append( SPtr(serviceGroup) );
         }
         else
         {
            KService *service;
            service = KServiceFactory::self()->findServiceByDesktopPath(path);
-           m_serviceList.append( SPtr(service) );
+           if (service)
+              m_serviceList.append( SPtr(service) );
         }
      }
   }
