@@ -13,5 +13,6 @@ Comment[pt]=O sistema de impressão LPR/LPRng
 Comment[pt_BR]=O sistema de impressão LPR/LPRng
 Comment[sk]=Tlačový systém LPR/LPRng
 Comment[sv]=LPR/LPRNG-skrivarsystem
+Comment[xx]=xx
 DetectUris=service:/printer
 DetectPrecedence=0

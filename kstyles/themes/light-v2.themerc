@@ -10,6 +10,7 @@ Name[pt]=Estilo Leve, 2a versão
 Name[pt_BR]=Estilo Leve, 2a versão
 Name[sk]=Štýl Light, 2. revízia
 Name[sv]=Lätt stil, andra revisionen
+Name[xx]=xx
 Comment=Second revision of the simple and elegant 'Light' widget style.
 Comment[da]=Anden revision af den simple og elegante 'Light' dims-stil.
 Comment[es]=Segunda revisión del elegante estilo de widgets 'Ligero'.
@@ -21,5 +22,6 @@ Comment[pt]=Segunda versão do estilo gráfico simples e elegante 'Leve'.
 Comment[pt_BR]=Segunda versão do estilo gráfico simples e elegante 'Leve'.
 Comment[sk]=Druhá revízia jednoduchého a elegantného štýlu prvkov 'Light'.
 Comment[sv]=Andra revisionen av den simpla och eleganta komponentstilen "Lätt".
+Comment[xx]=xx
 [KDE]
 WidgetStyle=Light, 2nd revision
