@@ -32,6 +32,7 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 
 #include <unistd.h>
 
@@ -150,9 +151,22 @@ void KMVirtualManager::remove(KMPrinter *p, const QString& name)
 	triggerSave();
 }
 
-void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name)
+void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name, QWidget *parent)
 {
 	QString	instname(instanceName(p->printerName(),name));
+
+	if ( p->isSpecial() )
+	{
+		if ( KMessageBox::warningYesNo( parent,
+					i18n( "<qt>You are about to set a pseudo-printer as your personal default. "
+						  "This setting is specific to KDE and will not be available outside KDE "
+						  "applications. Note that this will only make your personal default printer "
+						  "as undefined for non-KDE applications and should not prevent you from "
+						  "printing normally. Do you really want to set <b>%1</b> as your personal default?</qt>" ).arg( instname ),
+					QString::null, KStdGuiItem::yes(), KStdGuiItem::no(), "setSpecialAsDefault" ) == KMessageBox::No )
+			return;
+	}
+
 	KMPrinter	*printer = findPrinter(instname);
 	if (!printer)
 	{ // create it if necessary
@@ -271,8 +285,8 @@ void KMVirtualManager::loadFile(const QString& filename)
 				// add printer to the manager
 				addPrinter(printer);	// don't use "printer" after this point !!!
 				// check default state
-				if (words[0].lower() == "default")
-					setDefault(findPrinter(words[1]),false);
+				if (words[0].lower().startsWith("default"))
+					setDefault(findPrinter(KURL::decode_string(words[1])),false);
 			}
 		}
 	}
@@ -306,7 +320,8 @@ void KMVirtualManager::saveFile(const QString& filename)
 		{
 			if (it.current()->isSpecial())
 			{
-				t << "Special " << KURL::encode_string_no_slash( it.current()->printerName() );
+				t << ( it.current()->isSoftDefault() ? "DefaultSpecial " : "Special " );
+				t << KURL::encode_string_no_slash( it.current()->printerName() );
 				if ( !it.current()->instanceName().isEmpty() )
 					t << "/" << KURL::encode_string_no_slash( it.current()->instanceName() );
 			}

@@ -358,7 +358,7 @@ void KMMainView::slotPrinterSelected(const QString& prname)
 		m_actions->action("printer_remove")->setEnabled(!sp || ((mask & KMManager::PrinterRemoval) && p && p->isLocal() && !p->isImplicit()));
 		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) /*&& p->isLocal()*/));
 		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
-		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
+		m_actions->action("printer_soft_default")->setEnabled((p && !p->isSoftDefault()));
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
 		bool	stmask = (sp && (mask & KMManager::PrinterEnabling) && p);
 		m_actions->action("printer_state_change")->setEnabled(stmask && p->isLocal());

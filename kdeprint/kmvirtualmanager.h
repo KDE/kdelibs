@@ -28,6 +28,7 @@
 
 class KMPrinter;
 class KMManager;
+class QWidget;
 
 class KMVirtualManager : public QObject, public KPReloadObject
 {
@@ -50,7 +51,7 @@ public:
 	void create(KMPrinter *p, const QString& name);
 	void remove(KMPrinter *p, const QString& name);
 	void copy(KMPrinter *p, const QString& src, const QString& name);
-	void setAsDefault(KMPrinter *p, const QString& name);
+	void setAsDefault(KMPrinter *p, const QString& name, QWidget *parent = NULL);
 
 protected:
 	void loadFile(const QString& filename);
