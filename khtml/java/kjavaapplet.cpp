@@ -24,6 +24,7 @@
 
 #include <klocale.h>
 #include <kdebug.h>
+#include <kparts/browserextension.h>
 
 
 
@@ -149,8 +150,12 @@ void KJavaApplet::resizeAppletWidget( int width, int height )
 {
     kdDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height << endl;
 
-    if( d->UIwidget )
-        d->UIwidget->resize( width, height );
+    QStringList sl;
+    sl.push_back( QString::number( 0 ) ); // applet itself has id 0
+    sl.push_back( QString( "eval" ) );    // evaluate next script
+    sl.push_back( QString::number( KParts::LiveConnectExtension::TypeString ) );
+    sl.push_back( QString( "this.setAttribute('WIDTH',%1);this.setAttribute('HEIGHT',%2)" ).arg( width ).arg( height ) );
+    jsData( sl );
 }
 
 void KJavaApplet::setAppletName( const QString& name )

@@ -623,7 +623,7 @@ public class KJASProtocolHandler
 
         System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
         index += tmp_bytes.length;
-        bytes[index++] = (byte) ShowStatusCode;
+        bytes[index++] = (byte) ResizeAppletCode;
         bytes[index++] = sep;
 
         tmp_bytes = contextID.getBytes();
