@@ -88,6 +88,7 @@ public:
     virtual void specialHandler(BiDiObject */*special*/);
 
     virtual short baselineOffset() const;
+    virtual void absolutePosition(int &xPos, int &yPos);
 
     // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;

@@ -166,6 +166,13 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 
     if(!m_render) return false;
 
+    if(m_render->parent() && m_render->parent()->isAnonymousBox())
+    {
+	// we need to add the offset of the anonymous box
+	_tx += m_render->parent()->xPos();
+	_ty += m_render->parent()->yPos();
+    }
+
     int off = 0;
     if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty, off) )
     {

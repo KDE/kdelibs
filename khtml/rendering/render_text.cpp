@@ -301,8 +301,29 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   _x = s->x + (fm->boundingRect(tekst, pos)).right();
   if(pos)
       _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
+
+  int absx, absy;
+  absolutePosition(absx,absy);
+  if (absx == -1) {
+    // we don't know out absoluate position, and there is not point returning
+    // just a relative one
+    _x = _y = -1;
+  }
+  else {
+    _x += absx;
+    _y += absy;
+  }
+
 }
 
+void RenderText::absolutePosition(int &xPos, int &yPos)
+{
+    if(m_parent)
+	m_parent->absolutePosition(xPos, yPos);
+    else
+	xPos = yPos = -1;
+}
+	
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		      int tx, int ty)
 {

@@ -411,3 +411,12 @@ QRect RenderObject::viewRect() const
 {
     return m_containingBlock->viewRect();
 }
+
+void RenderObject::absolutePosition(int &xPos, int &yPos)
+{
+    if(m_parent)
+	m_parent->absolutePosition(xPos, yPos);
+    else
+	xPos = yPos = -1;
+}
+

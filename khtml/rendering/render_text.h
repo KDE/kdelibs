@@ -144,6 +144,7 @@ public:
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
+    virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/);
 
 
 protected:
