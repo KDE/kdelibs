@@ -64,6 +64,18 @@ void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
   emit endFolder();
 }
 
+void KBookmarkImporterBase::setupSignalForwards(QObject *src, QObject *dst)
+{
+  connect(src, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
+          dst, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
+  connect(src, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
+          dst, SIGNAL( newFolder( const QString &, bool, const QString & ) ));
+  connect(src, SIGNAL( newSeparator() ),
+          dst, SIGNAL( newSeparator() ) );
+  connect(src, SIGNAL( endFolder() ),
+          dst, SIGNAL( endFolder() ) );
+}
+
 KBookmarkImporterBase* KBookmarkImporterBase::factory( const QString &type )
 {
   if (type == "netscape")

@@ -123,15 +123,8 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
 {
     KNSBookmarkImporterImpl importer;
     importer.setFilename(m_fileName);
-    connect(&importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
-            this,      SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ));
-    connect(&importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
-            this,      SIGNAL( newFolder( const QString &, bool, const QString & ) ));
-    connect(&importer, SIGNAL( newSeparator() ),
-            this,      SIGNAL( newSeparator() ) );
-    connect(&importer, SIGNAL( endFolder() ),
-            this,      SIGNAL( endFolder() ) );
     importer.setUtf8(utf8);
+    importer.setupSignalForwards(&importer, this);
     importer.parse();
 }
 

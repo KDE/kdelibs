@@ -113,6 +113,7 @@ QString KIEBookmarkImporter::IEBookmarksDir()
 
 void KIEBookmarkImporterImpl::parse() {
    KIEBookmarkImporter importer(m_fileName);
+   setupSignalForwards(&importer, this);
    importer.parseIEBookmarks();
 }
 

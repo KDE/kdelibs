@@ -43,20 +43,21 @@ public:
     virtual void parse() = 0;
     virtual QString findDefaultLocation(bool forSaving = false) const = 0;
 
-    static KBookmarkImporterBase *factory( const QString &type );
+    void setupSignalForwards(QObject *src, QObject *src);
+    static KBookmarkImporterBase *factory(const QString &type);
 
 signals:
     /**
      * Notify about a new bookmark
      * Use "html" for the icon
      */
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+    void newBookmark(const QString & text, const QCString & url, const QString & additionalInfo);
 
     /**
      * Notify about a new folder
      * Use "bookmark_folder" for the icon
      */
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+    void newFolder(const QString & text, bool open, const QString & additionalInfo);
 
     /**
      * Notify about a new separator

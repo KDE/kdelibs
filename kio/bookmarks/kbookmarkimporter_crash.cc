@@ -162,6 +162,7 @@ void KCrashBookmarkImporterImpl::setShouldDelete(bool shouldDelete) {
 
 void KCrashBookmarkImporterImpl::parse() {
    KCrashBookmarkImporter importer(QString::null);
+   setupSignalForwards(&importer, this);
    importer.parseCrashBookmarks(m_shouldDelete);
 }
 

@@ -94,6 +94,7 @@ QString KOperaBookmarkImporter::operaBookmarksFile()
 
 void KOperaBookmarkImporterImpl::parse() {
    KOperaBookmarkImporter importer(m_fileName);
+   setupSignalForwards(&importer, this);
    importer.parseOperaBookmarks();
 }
 
