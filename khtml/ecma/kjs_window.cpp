@@ -1215,7 +1215,7 @@ KJSO Location::get(const UString &p) const
   QString str;
 
   if (p == "hash")
-    str = url.ref().isEmpty() ? QString("") : "#" + url.ref();
+    str = url.ref().isNull() ? QString("") : "#" + url.ref();
   else if (p == "host") {
     str = url.host();
     if (url.port())
