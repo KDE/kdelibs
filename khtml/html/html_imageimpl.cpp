@@ -79,12 +79,14 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     if (usemap.length()>0)
     {
-	if(m_render->parent()->isAnonymousBox())
-	{
+        RenderObject* p = m_render->parent();
+        while( p && p->isAnonymousBox() )
+        {
 	    //kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	    // we need to add the offset of the anonymous box
-	    _tx += m_render->parent()->xPos();
-	    _ty += m_render->parent()->yPos();
+	    _tx += p->xPos();
+	    _ty += p->yPos();
+            p = p->parent();
 	}
 
         //cout << "usemap: " << usemap.string() << endl;
