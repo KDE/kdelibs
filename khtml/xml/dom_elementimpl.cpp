@@ -406,7 +406,9 @@ void ElementImpl::removeAttribute( const DOMString &name, int &exceptioncode )
     }
 
     if(!namedAttrMap) return;
-    namedAttrMap->removeNamedItem(name,exceptioncode);
+    // If the attribute doesn't exist, removeAttribute does NOT emit an exception
+    int dummyExceptionCode = 0;
+    namedAttrMap->removeNamedItem(name,dummyExceptionCode);
 }
 
 AttrImpl *ElementImpl::getAttributeNode( const DOMString &name, int &exceptioncode )
@@ -519,13 +521,15 @@ void ElementImpl::removeAttributeNS( const DOMString &namespaceURI, const DOMStr
     // NOT_FOUND_ERR: Raised if oldAttr is not an attribute of the element.
     // removeNamedItemNS() will take care of throwing an exception where we have a map but the
     // attribute doesn't exist in it
+    // - WRONG. The DOM2 spec doesn't say that removeAttribute[NS] throws NOT_FOUND_ERR - David
     if (!namedAttrMap) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
+        //exceptioncode = DOMException::NOT_FOUND_ERR;
         return;
     }
 
     // Remove the attribute from the map
-    namedAttrMap->removeNamedItemNS(namespaceURI,localName,exceptioncode);
+    int dummyExceptionCode = 0;
+    namedAttrMap->removeNamedItemNS(namespaceURI,localName,dummyExceptionCode);
 }
 
 AttrImpl *ElementImpl::getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
@@ -1303,7 +1307,7 @@ Attr NamedAttrMapImpl::removeItem ( int id, const DOMString &name, const DOMStri
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
     if (isReadOnly()) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
         return 0;
     }
 
