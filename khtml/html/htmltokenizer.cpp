@@ -482,6 +482,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
     while( src.length() )
     {
+        char cc = src[0].lower().latin1();
         if(entityPos > 8) {
             checkBuffer(10);
             // entity too long, ignore and insert as is
@@ -493,9 +494,9 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             charEntity = false;
             return;
         }
-        if( (src[0].lower() >= 'a' && src[0].lower() <= 'z') ||
-            (src[0] >= '0' && src[0] <= '9') ||
-             src[0] == '#' )
+        if( (entityPos && *entityBuffer == '#' && (cc >= '0' && cc <= '9')) || // numeric entity
+            (entityPos && *entityBuffer != '#' && (cc >= 'a' && cc <= 'z')) || // alpha entity
+            (!entityPos && ((cc >= 'a' && cc <= 'z') || (cc >= '0' && '9') || cc == '#')))  // first character
         {
             entityBuffer[entityPos] = src[0];
             entityPos++;
