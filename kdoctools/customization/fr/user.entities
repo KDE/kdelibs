@@ -8,6 +8,9 @@
 
 <!-- ROLES OF TRANSLATORS -->
 
+<!ENTITY traducteurDavidAmmouial      '<othercredit role="translator"><firstname>David</firstname><surname>Ammouial</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurDavidAmmouial        '<othercredit role="reviewer"><firstname>David</firstname><surname>Ammouial</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurEricBischoff       '<othercredit role="translator"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurEricBischoff        '<othercredit role="reviewer"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -140,6 +143,7 @@
 
 <!-- CREDITS FOR TRANSLATORS -->
 
+<!ENTITY DavidAmmouial     'David Ammouial <email></email>'>
 <!ENTITY EricBischoff      'Éric Bischoff <email>e.bischoff@noos.fr</email>'>
 <!ENTITY JeromeBlanc       'Jérôme Blanc <email>01246774@brookes.ac.uk</email>'>
 <!ENTITY YvesBrenner       'Yves Brenner <email>ybrenner@chez.com</email>'>
