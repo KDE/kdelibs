@@ -96,7 +96,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
   if (!config)
     return;
 
-  KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
+  KConfigGroupSaver saver(config, "Locale");
 
   m_country = config->readEntry( "Country" );
   if ( m_country.isEmpty() )
@@ -221,7 +221,7 @@ void KLocale::doFormatInit()
   KLocale *lsave = KGlobal::_locale;
   KGlobal::_locale = this;
 
-  KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
+  KConfigGroupSaver saver(config, "Locale");
 
   KSimpleConfig entry(locate("locale",
                              QString::fromLatin1("l10n/%1/entry.desktop")
@@ -229,79 +229,79 @@ void KLocale::doFormatInit()
   entry.setGroup("KCM Locale");
 
   // Numeric
-  m_decimalSymbol = config->readEntry(QString::fromLatin1("DecimalSymbol"));
+  m_decimalSymbol = config->readEntry("DecimalSymbol");
   if (m_decimalSymbol.isNull())
-    m_decimalSymbol = entry.readEntry(QString::fromLatin1("DecimalSymbol"),
+    m_decimalSymbol = entry.readEntry("DecimalSymbol",
 				     QString::fromLatin1("."));
 
-  m_thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
+  m_thousandsSeparator = config->readEntry("ThousandsSeparator");
   if (m_thousandsSeparator.isNull())
-    m_thousandsSeparator = entry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
+    m_thousandsSeparator = entry.readEntry("ThousandsSeparator", QString::fromLatin1(","));
   m_thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
 				       QString::fromLatin1("") );
   //kdDebug(173) << "m_thousandsSeparator=" << m_thousandsSeparator << endl;
 
-  m_positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
+  m_positiveSign = config->readEntry("PositiveSign");
   if (m_positiveSign.isNull())
-    m_positiveSign = entry.readEntry(QString::fromLatin1("PositiveSign"));
+    m_positiveSign = entry.readEntry("PositiveSign");
 
-  m_negativeSign = config->readEntry(QString::fromLatin1("NegativeSign"));
+  m_negativeSign = config->readEntry("NegativeSign");
   if (m_negativeSign.isNull())
-    m_negativeSign = entry.readEntry(QString::fromLatin1("NegativeSign"),
+    m_negativeSign = entry.readEntry("NegativeSign",
 				    QString::fromLatin1("-"));
 
   // Monetary
-  m_currencySymbol = config->readEntry(QString::fromLatin1("CurrencySymbol"));
+  m_currencySymbol = config->readEntry("CurrencySymbol");
   if (m_currencySymbol.isNull())
-    m_currencySymbol = entry.readEntry(QString::fromLatin1("CurrencySymbol"),
+    m_currencySymbol = entry.readEntry("CurrencySymbol",
 				      QString::fromLatin1("$"));
 
-  m_monetaryDecimalSymbol = config->readEntry(QString::fromLatin1("MonetaryDecimalSymbol"));
+  m_monetaryDecimalSymbol = config->readEntry("MonetaryDecimalSymbol");
   if (m_monetaryDecimalSymbol.isNull())
-    m_monetaryDecimalSymbol = entry.readEntry(QString::fromLatin1("MonetaryDecimalSymbol"), QString::fromLatin1("."));
+    m_monetaryDecimalSymbol = entry.readEntry("MonetaryDecimalSymbol", QString::fromLatin1("."));
 
-  m_monetaryThousandsSeparator = config->readEntry(QString::fromLatin1("MonetaryThousendSeparator"));
+  m_monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
   if (m_monetaryThousandsSeparator.isNull())
-    m_monetaryThousandsSeparator = entry.readEntry(QString::fromLatin1("MonetaryThousandsSeparator"), QString::fromLatin1(","));
+    m_monetaryThousandsSeparator = entry.readEntry("MonetaryThousandsSeparator", QString::fromLatin1(","));
   m_monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("$0")),
 				      QString::null);
 
-  m_fracDigits = config->readNumEntry(QString::fromLatin1("FractDigits"), -1);
+  m_fracDigits = config->readNumEntry("FractDigits", -1);
   if (m_fracDigits == -1)
-    m_fracDigits = entry.readNumEntry(QString::fromLatin1("FractDigits"), 2);
+    m_fracDigits = entry.readNumEntry("FractDigits", 2);
 
-  m_positivePrefixCurrencySymbol = entry.readBoolEntry(QString::fromLatin1("PositivePrefixCurrencySymbol"), true);
-  m_positivePrefixCurrencySymbol = config->readNumEntry(QString::fromLatin1("PositivePrefixCurrencySymbol"), m_positivePrefixCurrencySymbol);
+  m_positivePrefixCurrencySymbol = entry.readBoolEntry("PositivePrefixCurrencySymbol", true);
+  m_positivePrefixCurrencySymbol = config->readNumEntry("PositivePrefixCurrencySymbol", m_positivePrefixCurrencySymbol);
 
-  m_negativePrefixCurrencySymbol = entry.readBoolEntry(QString::fromLatin1("NegativePrefixCurrencySymbol"), true);
-  m_negativePrefixCurrencySymbol = config->readNumEntry(QString::fromLatin1("NegativePrefixCurrencySymbol"), m_negativePrefixCurrencySymbol);
+  m_negativePrefixCurrencySymbol = entry.readBoolEntry("NegativePrefixCurrencySymbol", true);
+  m_negativePrefixCurrencySymbol = config->readNumEntry("NegativePrefixCurrencySymbol", m_negativePrefixCurrencySymbol);
 
-  m_positiveMonetarySignPosition = (SignPosition)config->readNumEntry(QString::fromLatin1("PositiveMonetarySignPosition"), -1);
+  m_positiveMonetarySignPosition = (SignPosition)config->readNumEntry("PositiveMonetarySignPosition", -1);
   if (m_positiveMonetarySignPosition == -1)
-    m_positiveMonetarySignPosition = (SignPosition)entry.readNumEntry(QString::fromLatin1("PositiveMonetarySignPosition"), BeforeQuantityMoney);
+    m_positiveMonetarySignPosition = (SignPosition)entry.readNumEntry("PositiveMonetarySignPosition", BeforeQuantityMoney);
 
-  m_negativeMonetarySignPosition = (SignPosition)config->readNumEntry(QString::fromLatin1("NegativeMonetarySignPosition"), -1);
+  m_negativeMonetarySignPosition = (SignPosition)config->readNumEntry("NegativeMonetarySignPosition", -1);
   if (m_negativeMonetarySignPosition == -1)
-    m_negativeMonetarySignPosition = (SignPosition)entry.readNumEntry(QString::fromLatin1("NegativeMonetarySignPosition"), ParensAround);
+    m_negativeMonetarySignPosition = (SignPosition)entry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
 
   // Date and time
-  m_timeFormat = config->readEntry(QString::fromLatin1("TimeFormat"));
+  m_timeFormat = config->readEntry("TimeFormat");
   if (m_timeFormat.isNull())
-    m_timeFormat = entry.readEntry(QString::fromLatin1("TimeFormat"),
+    m_timeFormat = entry.readEntry("TimeFormat",
 			       QString::fromLatin1("%H:%M:%S"));
 
-  m_dateFormat = config->readEntry(QString::fromLatin1("DateFormat"));
+  m_dateFormat = config->readEntry("DateFormat");
   if (m_dateFormat.isNull())
-    m_dateFormat = entry.readEntry(QString::fromLatin1("DateFormat"),
+    m_dateFormat = entry.readEntry("DateFormat",
 				 QString::fromLatin1("%A %d %B %Y"));
 
-  m_dateFormatShort = config->readEntry(QString::fromLatin1("DateFormatShort"));
+  m_dateFormatShort = config->readEntry("DateFormatShort");
   if (m_dateFormatShort.isNull())
-    m_dateFormatShort = entry.readEntry(QString::fromLatin1("DateFormatShort"),
+    m_dateFormatShort = entry.readEntry("DateFormatShort",
 				    QString::fromLatin1("%Y-%m-%d"));
 
-  m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
-  m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
+  m_weekStartsMonday = entry.readBoolEntry("WeekStartsMonday", true);
+  m_weekStartsMonday = config->readBoolEntry("WeekStartsMonday", m_weekStartsMonday);
 
 
   // end of hack
@@ -1504,8 +1504,8 @@ void KLocale::initCharset(KConfig *config)
 {
   if (config)
     {
-      KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
-      m_charset = config->readEntry(QString::fromLatin1("Charset"));
+      KConfigGroupSaver saver(config, "Locale");
+      m_charset = config->readEntry("Charset");
     }
 
   if (m_charset.isEmpty())
@@ -1533,8 +1533,8 @@ void KLocale::initEncoding(KConfig *config)
   int encodingMib = mibDefault; // set to default
   if (config)
     {
-      KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
-      encodingMib = config->readNumEntry(QString::fromLatin1("EncodingMib"),
+      KConfigGroupSaver saver(config, "Locale");
+      encodingMib = config->readNumEntry("EncodingMib",
 					 encodingMib);
     }
 
