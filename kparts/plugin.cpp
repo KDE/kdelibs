@@ -31,28 +31,13 @@
 using namespace KParts;
 
 Plugin::Plugin( QObject* parent, const char* name )
-    : QObject( parent, name ), m_collection( this )
+    : QObject( parent, name )
 {
   qDebug( className() );
 }
 
 Plugin::~Plugin()
 {
-}
-
-KAction* Plugin::action( const char* name )
-{
-    return m_collection.action( name );
-}
-
-KActionCollection* Plugin::actionCollection()
-{
-    return &m_collection;
-}
-
-KAction *Plugin::action( const QDomElement &element )
-{
-  return action( element.attribute( "name" ).latin1() );
 }
 
 void Plugin::setDocument( QDomDocument doc )

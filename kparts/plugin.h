@@ -52,20 +52,6 @@ public:
     ~Plugin();
 
     /**
-     * Retrieve an action by name.
-     **/
-    KAction* action( const char* name );
-    /**
-     * Retrieve the entire action collection for the plugin.
-     **/
-    KActionCollection* actionCollection();
-
-    /**
-     * Retrieve an action for a given @ref QDomElement.
-     **/
-    virtual KAction *action( const QDomElement &element );
-
-    /**
      * Set the @ref QDomDocument describing the part.
      **/
     virtual void setDocument( QDomDocument doc );
@@ -101,7 +87,6 @@ protected:
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
 private:
-    KActionCollection m_collection;
     QDomDocument m_doc;
 
     class PluginPrivate;
