@@ -648,7 +648,7 @@ KAction *KStdAction::up(const QObject *recvr, const char *slot,
 KAction *KStdAction::back(const QObject *recvr, const char *slot,
 						  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Back"), "back", 0,
+    return new KAction(i18n("go back", "&Back"), "back", 0,
                        recvr, slot, parent, name ? name :
                        stdName(Back));
 }
@@ -656,7 +656,7 @@ KAction *KStdAction::back(const QObject *recvr, const char *slot,
 KAction *KStdAction::forward(const QObject *recvr, const char *slot,
 							 QObject *parent, const char *name )
 {
-    return new KAction(i18n("send forward", "&Forward"), "forward", 0,
+    return new KAction(i18n("go forward", "&Forward"), "forward", 0,
                        recvr, slot, parent, name ? name :
                        stdName(Forward));
 }
