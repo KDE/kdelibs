@@ -2384,7 +2384,7 @@ void KMdiMainFrm::setEnableMaximizedChildFrmMode( bool enableMaxChildFrameMode )
 		KMdiChildFrm* pCurrentChild = m_pMdi->topChild();
 		
 		//If we have no child and there is no menubar, we do nothing
-		if ( !pCurrentChild && !m_pMainMenuBar )
+		if ( !pCurrentChild || !m_pMainMenuBar )
 			return ;
 
 		QObject::connect( m_pUndock, SIGNAL( clicked() ), pCurrentChild, SLOT( undockPressed() ) );
