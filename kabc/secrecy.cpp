@@ -87,14 +87,16 @@ QString Secrecy::asString() const
   return typeLabel( mType );
 }
 
-QDataStream &KABC::operator<<( QDataStream &s, const Secrecy &secrecy )
+QDataStream &operator<<( QDataStream &s, const Secrecy &secrecy )
 {
-    return s << secrecy.mType;
+    return s << secrecy.type();
 }
 
-QDataStream &KABC::operator>>( QDataStream &s, Secrecy &secrecy )
+QDataStream &operator>>( QDataStream &s, Secrecy &secrecy )
 {
-    s >> secrecy.mType;
+    int x;
+    s >> x;
+    secrecy.setType(x);
 
     return s;
 }

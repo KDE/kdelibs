@@ -83,7 +83,7 @@ namespace KABC {
    * @param allowEncode Set to false if you wish no encoding of the value.
    * @since 3.2
    */
-  QString LDIFConverter::makeLDIFfieldString( QString field, QString value, bool allowEncode = true );
+  QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true );
 
 
 
