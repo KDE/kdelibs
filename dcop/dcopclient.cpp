@@ -1617,7 +1617,9 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
         gettimeofday( &time_start, NULL );
     for(;;) {
 	bool timed_out = false;
-	if ( d->notifier && ( useEventLoop || timeout >= 0 )) { // we have a socket notifier and a qApp
+	if ( useEventLoop
+	     ? d->notifier != NULL  // useEventLoop needs a socket notifier and a qApp
+	     : timeout >= 0 ) {     // !useEventLoop doesn't block only for timeout >= 0
 
 	    int msecs = useEventLoop
 		? 100  // timeout for the GUI refresh
