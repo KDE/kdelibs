@@ -290,6 +290,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 
         char ch = src->latin1();
 
+        if ( !escaped && !src.escaped() ) {
+            if(script && ch == '\"')
+                tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
+            else if(script && ch == '\'')
+                tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
+            else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
+                tquote = NoQuote;
+        }
+
         if ( (!script || tquote == NoQuote) && !escaped && !src.escaped() && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
@@ -331,6 +340,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             else
                 currToken.id = ID_LISTING + ID_CLOSE_TAG;
             processToken();
+            QString prependingSrc;
+
             if (cachedScript) {
 //                 qDebug( "cachedscript extern!" );
 //                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
@@ -345,7 +356,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     loadingExtScript = true;
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
-                pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+                if ( !m_executingScript )
+                    pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+                else
+                    prependingSrc = QString( src.current(), src.length() ); // deep copy
+
                 _src = QString::null;
                 src = DOMStringIt( _src );
                 m_executingScript++;
@@ -360,6 +375,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             scriptCodeSize = 0;
             if ( !m_executingScript && !loadingExtScript )
                 addPendingSource();
+            else if ( !prependingSrc.isEmpty() )
+                write( prependingSrc, false );
+
 
             return; // Finished parsing script/style/listing
         }
@@ -369,15 +387,17 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = *src;
-            // be tolerant: skip garbage before the ">", i.e "</script foo>"
-            // ### handle quotes!
-            if (searchFor[searchCount].latin1() == '>')
-            {
-                ++src;
-            }
-            else if (!escaped && !src.escaped() && searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
+            if (( !script || tquote == NoQuote ) && !escaped && !src.escaped() &&
+                searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
+                ++src;
+            }
+            // be tolerant: skip garbage before the ">", i.e "</script foo>"
+            // ### handle quotes!
+            else if ( ( !script || ( tquote == NoQuote && cmp != '>' ) || ( tquote != NoQuote ) ) &&
+                      searchFor[searchCount].latin1() == '>')
+            {
                 ++src;
             }
             // We were wrong => print all buffered characters and the current one;
@@ -416,15 +436,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 scriptCodeSize = scriptCodeDest-scriptCode;
             }
             else {
-                if ( !escaped && !src.escaped() ) {
-                    if(script && ch == '\"')
-                        tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-                    else if(script && ch == '\'')
-                        tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-                    else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
-                        tquote = NoQuote;
-                }
-
                 scriptCode[ scriptCodeSize++ ] = *src;
                 if ( script && !escaped && ch == '\\' )
                     escaped = true;
