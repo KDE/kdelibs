@@ -66,7 +66,7 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "set-gbk",
     "set-zh",
     "set-zh-tw",
-    "set-big5",
+    "big5",
     "tscii",
     "utf-8",
     "utf-16",
@@ -102,7 +102,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "tis620.2533-1",
     "gb2312.1980-0",
     "gb2312.1980-0",
-    "big5-0",
+    "cns11643.1986-*",
     "big5-0",
     "tscii-0",
     "utf8",
@@ -138,8 +138,8 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Set_Th_TH,
     QFont::Set_GBK,
     QFont::Set_Zh,
-    QFont::Set_Big5,
     QFont::Set_Zh_TW,
+    QFont::Set_Big5,
     QFont::TSCII,
     QFont::Unicode,
     QFont::Unicode,
@@ -540,8 +540,9 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
 	return "unknown";
 	case QFont::Set_GBK:
 	case QFont::Set_Zh:
-	    return "set-gbk";
+	 return "set-gbk";
     case QFont::Set_Zh_TW:
+        return "cns11643.1986-*";
     case QFont::Set_Big5:
 	return "big5-0";
     case QFont::AnyCharSet:
