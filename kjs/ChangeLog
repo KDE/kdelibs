@@ -1,5 +1,8 @@
 2003-10-29  Harri Porten  <porten@kde.org>
 
+	* object.cpp (call): patch from Maciej that makes us back away
+	from the recursion limit once we have hit it
+
 	* nodes.*: got rid of remaining reverse*() functions
 
 2003-10-26  Harri Porten  <porten@kde.org>

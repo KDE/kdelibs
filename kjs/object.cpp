@@ -59,6 +59,7 @@ Value Object::call(ExecState *exec, Object &thisObj, const List &args)
 #ifndef NDEBUG
     fprintf(stderr, "Exceeded maximum function call depth\n");
 #endif
+    --depth;
     Object err = Error::create(exec, RangeError,
                                "Exceeded maximum function call depth.");
     exec->setException(err);
