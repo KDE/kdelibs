@@ -904,6 +904,8 @@ public:
     QSizePolicy sizePolicy() const;
     bool highlight() const;
     QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+    QSize minimumSize() const;
 
     void hide();
     void show();

@@ -99,6 +99,7 @@ public:
   KToolBar *m_parent;
   KToolBar::IconText m_iconText;
   int m_iconSize;
+  QSize size;
 
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
@@ -200,59 +201,62 @@ void KToolBarButton::modeChange()
   if (!d->m_defaultIconName.isNull())
     setDefaultIcon(d->m_defaultIconName);
 
-  // we'll go with the size of our pixmap (plus a bit of padding) as
-  // the default size...
-  int pix_width  = activePixmap.width() + 6;
-  int pix_height = activePixmap.height() + 6;
+  // we'll start with the size of our pixmap 
+  int pix_width  = activePixmap.width();
+  int pix_height = activePixmap.height();
 
-  // handle the simplest case (Icon only) now so we don't do an
-  // unneccesary object instantiation and the like
-  if (d->m_iconText == KToolBar::IconOnly)
-  {
-    QToolTip::remove(this);
-    QToolTip::add(this, textLabel());
-    mysize = QSize(pix_width, pix_height);
-    setMinimumSize( mysize );
-    updateGeometry();
-    return;
-  }
+  int text_height = 0;
+  int text_width = 0;
 
-  // okay, we have to deal with fonts.  let's get our information now
-  QFont tmp_font;
-
-  tmp_font = KGlobalSettings::toolBarFont();
-
-  // now parse out our font sizes from our chosen font
-  QFontMetrics fm(tmp_font);
-
-  int text_height = fm.lineSpacing();
-  int text_width  = fm.width(textLabel());
-
-  // none of the other modes want tooltips
   QToolTip::remove(this);
+  if (d->m_iconText != KToolBar::IconOnly)
+  {
+    // okay, we have to deal with fonts.  let's get our information now
+    QFont tmp_font = KGlobalSettings::toolBarFont();
+
+    // now parse out our font sizes from our chosen font
+    QFontMetrics fm(tmp_font);
+
+    text_height = fm.lineSpacing();
+    text_width  = fm.width(textLabel());
+
+    // none of the other modes want tooltips
+  }
+  else
+  {
+    QToolTip::add(this, textLabel());
+  }
+  
   switch (d->m_iconText)
   {
+  case KToolBar::IconOnly:
+    mysize = QSize(pix_width, pix_height);
+    break;
+
   case KToolBar::IconTextRight:
-    mysize = QSize((pix_width + text_width) + 6, pix_height);
+    mysize = QSize(pix_width + text_width + 4, pix_height);
     break;
 
   case KToolBar::TextOnly:
-    mysize = QSize(text_width + 10, text_height + 6);
+    mysize = QSize(text_width + 4, text_height);
     break;
 
   case KToolBar::IconTextBottom:
-    mysize = QSize((text_width + 10 > pix_width) ? text_width + 10 : pix_width, pix_height + text_height + 3);
+    mysize = QSize((text_width + 4 > pix_width) ? text_width + 4 : pix_width, pix_height + text_height);
     break;
 
   default:
     break;
   }
 
+  mysize = style().sizeFromContents(QStyle::CT_ToolButton, this, mysize).
+               expandedTo(QApplication::globalStrut());
+
   // make sure that this isn't taller then it is wide
   if (mysize.height() > mysize.width())
     mysize.setWidth(mysize.height());
 
-  setMinimumSize( mysize );
+  d->size = mysize;
   updateGeometry();
 }
 
@@ -788,7 +792,17 @@ void KToolBarButton::setToggle(bool flag)
 
 QSize KToolBarButton::sizeHint() const
 {
-   return minimumSize();
+   return d->size;
+}
+
+QSize KToolBarButton::minimumSizeHint() const
+{
+   return d->size;
+}
+
+QSize KToolBarButton::minimumSize() const
+{
+   return d->size;
 }
 
 // KToolBarButtonList

@@ -287,6 +287,8 @@ protected:
   bool eventFilter (QObject *o, QEvent *e);
   void showMenu();
   QSize sizeHint() const;
+  QSize minimumSizeHint() const;
+  QSize minimumSize() const;
 
   void makeDefaultPixmap();
   void makeDisabledPixmap();

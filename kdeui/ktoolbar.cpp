@@ -1314,7 +1314,11 @@ QSize KToolBar::sizeHint() const
 {
     QSize minSize(0,0);
     KToolBar *this_too = (KToolBar *)this;
-    switch( barPos())
+
+    this_too->polish();
+    
+    int margin = ((QWidget *)this)->layout()->margin();
+    switch( barPos() )
     {
      case KToolBar::Top:
      case KToolBar::Bottom:
@@ -1328,12 +1332,14 @@ QSize KToolBar::sizeHint() const
           else
           {
              QSize sh = w->sizeHint();
+             if (!sh.isValid())
+                sh = w->minimumSize();
              minSize = minSize.expandedTo(QSize(0, sh.height()));
              minSize += QSize(sh.width()+1, 0);
           }
        }
        minSize += QSize(kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
-       minSize += QSize(2, 2);
+       minSize += QSize(margin*2, margin*2);
        break;
        
      case KToolBar::Left:
@@ -1348,12 +1354,14 @@ QSize KToolBar::sizeHint() const
           else
           {
              QSize sh = w->sizeHint();
+             if (!sh.isValid())
+                sh = w->minimumSize();
              minSize = minSize.expandedTo(QSize(sh.width(), 0));
              minSize += QSize(0, sh.height()+1);
           }
        }
        minSize += QSize(0, kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
-       minSize += QSize(2, 2);
+       minSize += QSize(margin*2, margin*2);
        break;       
 
      default:
@@ -1361,6 +1369,16 @@ QSize KToolBar::sizeHint() const
        break;
     }
     return minSize;
+}
+
+QSize KToolBar::minimumSize() const
+{
+    return minimumSizeHint();
+}
+
+QSize KToolBar::minimumSizeHint() const
+{
+    return sizeHint();
 }
 
 bool KToolBar::highlight() const
