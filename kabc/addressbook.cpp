@@ -69,6 +69,8 @@ AddressBook::Iterator::Iterator( const AddressBook::Iterator &i )
 
 AddressBook::Iterator &AddressBook::Iterator::operator=( const AddressBook::Iterator &i )
 {
+  if( this == &i ) return *this; // guard against self assignment
+  delete d; // delete the old data the Iterator was completely constructed before
   d = new IteratorData;
   d->mIt = i.d->mIt;
   return *this;
@@ -142,6 +144,8 @@ AddressBook::ConstIterator::ConstIterator( const AddressBook::ConstIterator &i )
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const AddressBook::ConstIterator &i )
 {
+  if( this  == &i ) return *this; // guard for self assignment
+  delete d; // delete the old data because the Iterator was really constructed before
   d = new ConstIteratorData;
   d->mIt = i.d->mIt;
   return *this;
