@@ -12,6 +12,15 @@ Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
 
+Package: kdelibs-doc
+Architecture: all
+Depends: kdelibs2g (= ${Source-Version}), qt1g-doc
+Suggests: kdevelop, kdoc, ktranslator
+Description: KDE core libraries (documentation)
+ KDE core libraries (documentation)
+ .
+ For use in KDE development
+
 Package: kdelibs2g
 Architecture: any
 Depends: ${shlibs:Depends}, libjpeg62

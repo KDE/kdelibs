@@ -80,7 +80,18 @@ binary-arch:  build
 	   libdir=`pwd`/debian/tmp/usr/lib install 
 
 	perl -w admin/debianrules
-	dh_movefiles 
+	if test -f /usr/bin/qt2kdoc; then \
+	mkdir -p debian/tmp/usr/share/kdoc/index ; \
+	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html ; \
+	qt2kdoc --url=/usr/doc/qt1g-doc/html \
+	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--compress \
+	/usr/doc/qt1g-doc/html ; \
+	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
+	done
+	dh_movefiles
+	-rm -rf debian/tmp/usr/doc
 	dh_installdocs 
 	dh_installchangelogs 
 	dh_strip 
