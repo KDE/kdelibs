@@ -1,0 +1,75 @@
+[Includes]
+kinstance.h
+
+[Init]
+new KInstance("kdewidgets");
+
+[KCharSelect]
+ToolTip=Character Selection Widget (KDE)
+WhatsThis=A widget that allows selection a character out ot a table
+
+[KColorButton]
+ToolTip=Color Chooser Button (KDE)
+WhatsThis=A button that allows selecting a color
+
+[KColorCombo]
+ToolTip=Color Combo Box (KDE)
+
+[KComboBox]
+ToolTip=Combo Box (KDE)
+
+[KCModule]
+ToolTip=KControl Center Module (KDE)
+IsContainer=true
+
+[KDateWidget]
+
+[KDialogBase]
+IsContainer=true
+
+[KFontCombo]
+
+[KGradientSelector]
+IncludeFile=kselect.h
+WhatsThis=A widget that allows the user to select two colors to form a gradient
+
+[KLed]
+ToolTip=LED Widget (KDE)
+WhatsThis=A widget showing a light emitter diode
+
+[KListBox]
+ToolTip=Extended List Box (KDE)
+WhatsThis=An improved version of the QListBox that follows KDE settings
+
+[KListView]
+ToolTip=Extended List View (KDE)
+WhatsThis=An improved version of the QListView that allows certain KDE extentions
+
+[KLineEdit]
+
+[KPasswordEdit]
+IncludeFile=kpassdlg.h
+ToolTip=Safe Password LineEdit (KDE)
+WhatsThis=A KLineEdit that is safe for prompting the user for passwords
+
+[KProgress]
+ToolTip=Progress Bar (KDE)
+WhatsThis=An improved progress bar for KDE that uses QFrame and QRangeControl
+
+[KPushButton]
+ToolTip=Improved QPushButton (KDE)
+WhatsThis=An improved QPushButton to follow KDE settings
+
+[KRuler]
+ToolTip=Measuring Ruler Widget (KDE)
+WhatsThis=A measuring ruler widget like that seen in KWord for page widths and heights
+
+[KTextBrowser]
+ToolTip=Improved QTextBrowser (KDE)
+WhatsThis=An improved version of the QTextBrowser with mail or system browser invoktion support
+
+[KURLLabel]
+ToolTip=URL Label (KDE)
+
+[KURLRequester]
+
