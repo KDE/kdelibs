@@ -247,9 +247,13 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		return 0;
 
 	QString	filtercmd;
+	QStringList	inputMimeTypes;
 	for (uint i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
+		if (i == 0)
+			inputMimeTypes = filter->inputMimeTypes();
+
 		QString		subcmd = filter->buildCommand(opts,(i>0),(i<(flist.count()-1)));
 		delete filter;
 		if (!subcmd.isEmpty())
@@ -270,6 +274,17 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	QString	ps = pageSizeToPageName(printer->pageSize());
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
+		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
+		if (inputMimeTypes.find(mime) == inputMimeTypes.end())
+		{
+			printer->setErrorMessage(i18n("Cannot filter the file <tt>%1</tt>. The mime type <b>%2</b> "
+			                              "is not supported as input. This may happen with non CUPS "
+			                              "spoolers when you want to perform page selection with non PostScript "
+			                              "file. See also the <b>Filters</b> tab in the printer properties "
+						      "dialog.").arg(*it).arg(mime));
+			return -1;
+		}
+
 		QString	tmpfile = tempFile();
 		QString	cmd(filtercmd);
 		cmd.replace(rin,quote(*it));

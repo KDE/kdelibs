@@ -244,15 +244,18 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	else if (fresult == 1)
 		flag = true;
 
-	// Automatic conversion to format supported by print system
-	fresult = d->m_impl->autoConvertFiles(this, files, flag);
-	if (fresult == -1)
+	if (status)
 	{
-		reportError(this);
-		status = false;
+		// Automatic conversion to format supported by print system
+		fresult = d->m_impl->autoConvertFiles(this, files, flag);
+		if (fresult == -1)
+		{
+			reportError(this);
+			status = false;
+		}
+		else if (fresult == 1)
+			flag = true;
 	}
-	else if (fresult == 1)
-		flag = true;
 
 	// Continue if status is OK (filtering succeeded) and no output-to-file
 	if (status && files.count() > 0)

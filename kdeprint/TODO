@@ -40,7 +40,21 @@
 - See if the page selection option (psselect) couldn't be enabled/disabled
   according to the file type, or at least warn the user if psselect is
   irrelevant because of the file type.
+  -> Follow up: message implemented, missing recover using autoConvert
+     feature.
 
 - restarting server: use of "ps" in a subshell to get the pid, possibility
   of authentification (put this into separate program that would restart
   itself using kdesu).
+
+- "don't close print dialog when finished" for kprinter use (only in
+  standalone mode (maybe with a --persistent new option).
+
+- add "--nodialog" option to kprinter to allow quick print (just use
+  the preconfigured printer as is, without using a dialog)
+
+- Fix preview crash problem: solution can be to drop the kghostview GUI
+  and embed the part in a simple widget, adding manually my toolbar with
+  "Print" and "Cancel".
+
+- extension of the print ioslave to view jobs (print:/jobs)
