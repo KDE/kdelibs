@@ -8,7 +8,6 @@ class KAccelPrivate : public QObject, public KAccelBase
 	Q_OBJECT
  public:
 	KAccel* m_pAccel;
-	int m_nIDAccelNext;
 	QMap<int, int> m_mapIDToKey;
 	QMap<int, KAccelAction*> m_mapIDToAction;
 	QTimer m_timerShowMenu;

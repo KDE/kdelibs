@@ -20,7 +20,6 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent )
 : KAccelBase( KAccelBase::QT_KEYS )
 {
 	m_pAccel = pParent;
-	m_nIDAccelNext = 1;
 	m_bAutoUpdate = true;
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
 }
@@ -92,7 +91,7 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 bool KAccelPrivate::connectKey( const KKeyServer::Key& key )
 {
 	uint keyQt = key.keyCodeQt();
-	int nID = ((QAccel*)m_pAccel)->insertItem( keyQt, m_nIDAccelNext++ );
+	int nID = ((QAccel*)m_pAccel)->insertItem( keyQt );
 
 	m_mapIDToKey[nID] = keyQt;
 
@@ -105,6 +104,7 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKeyServer::Key& 
 	int keyQt = key.keyCodeQt();
 	QMap<int, int>::iterator it = m_mapIDToKey.begin();
 	for( ; it != m_mapIDToKey.end(); ++it ) {
+		kdDebug(125) << "m_mapIDToKey[" << it.key() << "] = " << QString::number(*it,16) << " == " << QString::number(keyQt,16) << endl;
 		if( *it == keyQt ) {
 			int nID = it.key();
 			kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", 0x" << QString::number(keyQt,16) << " ) : id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
@@ -114,6 +114,7 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKeyServer::Key& 
 			return true;
 		}
 	}
+	//kdWarning(125) << kdBacktrace() << endl;
 	kdWarning(125) << "Didn't find key in m_mapIDToKey." << endl;
 	return false;
 }
@@ -130,6 +131,7 @@ bool KAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 			return true;
 		}
 	}
+	//kdWarning(125) << kdBacktrace() << endl;
 	kdWarning(125) << "Didn't find key in m_mapIDTokey." << endl;
 	return false;
 }
