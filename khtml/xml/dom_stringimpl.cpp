@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller ( mueller@kde.org )
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -258,6 +259,35 @@ DOMStringImpl *DOMStringImpl::lower()
 
     for (unsigned int i = 0; i < l; i++)
 	c->s[i] = s[i].lower();
+
+    return c;
+}
+
+DOMStringImpl *DOMStringImpl::upper()
+{
+    DOMStringImpl *c = new DOMStringImpl;
+    if(!l) return c;
+
+    c->s = QT_ALLOC_QCHAR_VEC(l);
+    c->l = l;
+
+    for (unsigned int i = 0; i < l; i++)
+	c->s[i] = s[i].upper();
+
+    return c;
+}
+
+DOMStringImpl *DOMStringImpl::capitalize()
+{
+    DOMStringImpl *c = new DOMStringImpl;
+    if(!l) return c;
+
+    c->s = QT_ALLOC_QCHAR_VEC(l);
+    c->l = l;
+
+    if ( l ) c->s[0] = s[0].upper();
+    for (unsigned int i = 1; i < l; i++)
+	c->s[i] = s[i-1].isSpace() ? s[i].upper() : s[i].lower();
 
     return c;
 }
