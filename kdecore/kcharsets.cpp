@@ -332,10 +332,9 @@ KCharsets::~KCharsets(){
 
 }
 
-QString KCharsets::defaultCharset()const{
+KCharset KCharsets::defaultCharset()const{
 
-   warning("KCharsets::defaultCharset() is obsolete. Use KCharsets::defaultCh() insteed");
-   return defaultCh().name();
+   return defaultCh();
 }
 
 KCharset KCharsets::defaultCh()const{

@@ -453,7 +453,7 @@ public:
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
   
-  QString defaultCharset()const;
+   KCharset defaultCharset()const;
 };
 
 #endif

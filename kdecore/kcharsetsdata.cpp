@@ -22,16 +22,27 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <qfontinf.h>
 #include <qintdict.h>
 #include <kapp.h>
 #include <ksimpleconfig.h>
 #include <qregexp.h>
 
+#ifdef KCH_DEBUG
+inline void kchdebug(const char *msg,...){
+    va_list ap;
+    va_start( ap, msg );                // use variable arg list
+    vfprintf( stderr, msg, ap );
+    va_end( ap );                    
+}    
+#endif
+
 KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
                        ,const KCharsetEntry * outputCharset,int flags){
 
-  kchdebug("Creating converter...");
+  kchdebug("Creating converter from %s to %s...",inputCharset,outputCharset);
   tempResult=new KCharsetConversionResult();
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
   outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
@@ -43,7 +54,7 @@ KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
 KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
                                              ,int flags){
 
-  kchdebug("Creating converter...");
+  kchdebug("Creating converter from %s...",inputCharset);
   tempResult=new KCharsetConversionResult();
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
   outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
@@ -289,10 +300,12 @@ unsigned unicode;
   rl.clear();
   while(str){
      KCharsetConversionResult *l=new KCharsetConversionResult;
+     kchdebug("Created result: %p\n",l);
      str=convert(str,*l,&unicode);
      rl.append(l); 
      if (unicode){
          KCharsetConversionResult *l=new KCharsetConversionResult;
+         kchdebug("Created result: %p\n",l);
          kcharsetsData->convert(unicode,*l);
          rl.append(l); 
      }
@@ -303,6 +316,9 @@ const char * KCharsetConverterData::convert(const char * str
                                  ,KCharsetConversionResult &result
 				 ,unsigned *pUnicode) {
 
+  kchdebug("Setteing result charset to %p ",&output);
+  kchdebug("(%s)\n",(const char *)output);
+  result.cCharset=output;
   kchdebug("----- %s ----- => ",str);
   if (!isOK) return 0;
   if (conversionType == NoConversion ){
@@ -416,7 +432,6 @@ const char * KCharsetConverterData::convert(const char * str
     if (inBits>8 && str[i]) i++;
   }
   kchdebug("----- %s -----\n",(const char *)result);
-  result.cCharset=output;
   if (pUnicode) *pUnicode=0;
   return 0;
 }
@@ -497,6 +512,7 @@ KCharsetsData::KCharsetsData(){
   tempResult=new KCharsetConversionResult;
 
   QString fileName=KApplication::kde_configdir() + "/charsets";
+  kchdebug("Reading config from %s...\n",(const char *)fileName);
   config=new KSimpleConfig(fileName);
   config->setGroup("general");
   const char * i18dir=config->readEntry("i18ndir");
@@ -547,7 +563,7 @@ void KCharsetsData::scanDirectory(const char *path){
       entry->toUnicode=0;
       entry->registered=FALSE;
       entry->toUnicodeDict=0;
-      i18nCharsets.insert(entry->name,entry);
+      i18nCharsets.insert(name.lower(),entry);
       if (alias!="") aliases.insert(alias,entry);
     }	
     ++it;
@@ -614,17 +630,15 @@ KCharsetsData::~KCharsetsData(){
 KCharsetEntry * KCharsetsData::varCharsetEntry(const char *name){
 
   for(int i=0;charsets[i].name;i++){
-    kchdebug("%i) Testing %p (%s)...\n",i,charsets+i,charsets[i].name);
     if ( stricmp(name,charsets[i].name) == 0 ){
       kchdebug("Found!\n");
       return charsets+i;
     }  
   }  
-  kchdebug("Searching in i18nCharsets...\n");
-  KCharsetEntry *e=i18nCharsets[name];
+  KCharsetEntry *e=i18nCharsets[QString(name).lower()];
   if (!e){
      kchdebug("Searchin in aliases...\n");
-     e=aliases[name];
+     e=aliases[QString(name).lower()];
   }   
   return e;
 }

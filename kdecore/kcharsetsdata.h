@@ -167,14 +167,7 @@ public:
 };
 
 #ifdef KCH_DEBUG
-#include <stdio.h>
-#include <stdarg.h>
-inline void kchdebug(const char *msg,...){
-    va_list ap;
-    va_start( ap, msg );                // use variable arg list
-    vfprintf( stderr, msg, ap );
-    va_end( ap );                    
-}    
+void kchdebug(const char *msg,...);
 #else /* KCH_DEBUG */
 inline void kchdebug(const char *,...){}
 #endif /* KCH_DEBUG */
