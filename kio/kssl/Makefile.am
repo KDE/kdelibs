@@ -3,7 +3,7 @@
 # somewhere else. Another option for the future (needs testing) would be to
 # change SSL_INCLUDES to .../include/openssl and make the source use #include <foo.h>
 # instead of #include <openssl/foo.h>
-INCLUDES=$(all_includes) $(SSL_INCLUDES)
+INCLUDES=$(all_includes) $(SSL_INCLUDES) -I$(top_srcdir)/kwallet/client
 
 noinst_LTLIBRARIES = libkssl.la
 KSSLVERSION=	3.0.0
