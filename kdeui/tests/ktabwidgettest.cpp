@@ -7,7 +7,8 @@
 #include "tab.h"
 
 Test::Test( QWidget* parent, const char *name )
-  :QVBox( parent, name ), mChange(0), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false ), mTabbarContextPopup( false )
+  :QVBox( parent, name ), mChange(0), mLeftPopup( false ), mRightPopup( false ), mContextPopup( false ), mTabbarContextPopup( false ),
+   mLeftWidget(0), mRightWidget(0)
 {
   resize( 600,300 );
 
@@ -79,6 +80,16 @@ Test::Test( QWidget* parent, const char *name )
   QCheckBox * showlabels = new QCheckBox( "Show labels", grid );
   gridlayout->addWidget( showlabels, 4, 1 );
   connect( showlabels, SIGNAL( toggled(bool) ), this, SLOT( toggleLabels(bool) ) );
+
+#if QT_VERSION < 0x030200
+  mLeftButton->setChecked(false);
+  mLeftButton->setEnabled(false);
+  mRightButton->setChecked(false);
+  mRightButton->setEnabled(false);
+  leftPopup->setEnabled(false);
+  rightPopup->setEnabled(false);
+  showlabels->setEnabled(false);
+#endif
 }
 
 void Test::currentChanged(QWidget* w)
@@ -129,7 +140,7 @@ void Test::removeCurrentTab()
 void Test::toggleLeftButton(bool state)
 {
   if (state) {
-    if ( !(mWidget->cornerWidget( TopLeft)) ) {
+    if (!mLeftWidget) {
       mLeftWidget = new QToolButton( mWidget );
       connect( mLeftWidget, SIGNAL( clicked() ), SLOT( addTab() ) );
       mLeftWidget->setIconSet( SmallIcon( "tab_new" ) );
@@ -138,9 +149,14 @@ void Test::toggleLeftButton(bool state)
       mLeftWidget->adjustSize();
     //mLeftWidget->setGeometry( 0, 0, h, h );
       mLeftWidget->setPopup(mLeftPopup);
+#if QT_VERSION >= 0x030200
       mWidget->setCornerWidget( mLeftWidget, TopLeft );
     }
     mLeftWidget->show();
+#else
+    }
+    mLeftWidget->hide();
+#endif
   }
   else
     mLeftWidget->hide();
@@ -179,8 +195,8 @@ void Test::leftPopupActivated(int item)
 
 void Test::toggleRightButton(bool state)
 {
-  if (state) {
-    if ( !(mWidget->cornerWidget( TopRight)) ) {
+if (state) {
+    if ( !mRightWidget) {
       mRightWidget = new QToolButton( mWidget );
       QObject::connect( mRightWidget, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
       mRightWidget->setIconSet( SmallIcon( "tab_remove" ) );
@@ -189,9 +205,14 @@ void Test::toggleRightButton(bool state)
       mRightWidget->adjustSize();
     //mRightButton->setGeometry( 0, 0, h, h );
       mRightWidget->setPopup(mRightPopup);
+#if QT_VERSION >= 0x030200
       mWidget->setCornerWidget( mRightWidget, TopRight );
     }
     mRightWidget->show();
+#else
+    }
+    mRightWidget->hide();
+#endif
   }
   else
     mRightWidget->hide();
@@ -290,9 +311,11 @@ void Test::tabbarContextMenu(const QPoint &p)
       delete mTabbarContextPopup;
 
   mTabbarContextPopup = new QPopupMenu(this);
+#if QT_VERSION >= 0x030200
   mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
   mTabbarContextPopup->insertSeparator();
+#endif
   mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::Top ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
   connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
 
