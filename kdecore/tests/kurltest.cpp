@@ -561,6 +561,12 @@ int main(int argc, char *argv[])
   check("weird.isValid()", weird.isValid() ? "true" : "false", "true");
   check("weird.host()", weird.host(), "::fff:1:23");
 
+  KURL com1("http://server.com/dir/", ".");
+  check("com1.url()", com1.url(), "http://server.com/dir/");
+
+  KURL com2("http://server.com/dir/blubb/", "blah/");
+  check("com2.url()", com2.url(), "http://server.com/dir/blubb/blah/");
+
   printf("\nTest OK !\n");
 }
 
