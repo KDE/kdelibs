@@ -5,22 +5,21 @@
 
 <book lang="&language;">
       
-   <bookinfo>
-      <title>KDE Library Reference</title>
-      <!-- Make jade happy with all required tags... -->
-      <authorgroup>
-         <author>
-            <firstname>Bernd</firstname><surname>Gehrmann</surname>
-            <affiliation><address><email>bernd@physik.hu-berlin.de</email></address></affiliation>
-         </author> 
-      </authorgroup>
-      <date>08/06/2000</date>
-      <releaseinfo>0.00.01</releaseinfo>
-      <abstract><para>The ultimate KDE Library Reference (just kidding :-)</para></abstract>
-      <keywordset><keyword>KDE</keyword></keywordset>
-   </bookinfo>
-
-   
+<bookinfo>
+<title>KDE Library Reference</title>
+<!-- Make jade happy with all required tags... -->
+<authorgroup>
+<author>
+<firstname>Bernd</firstname><surname>Gehrmann</surname>
+<affiliation><address><email>bernd@physik.hu-berlin.de</email></address></affiliation>
+</author> 
+</authorgroup>
+<date>08/06/2000</date>
+<releaseinfo>0.00.01</releaseinfo>
+<abstract><para>The ultimate KDE Library Reference (just kidding :-)</para></abstract>
+<keywordset><keyword>KDE</keyword></keywordset>
+</bookinfo>
+ 
    <chapter id="libraries">
       <title>Libraries in the kdelibs package</title>
       <para>
