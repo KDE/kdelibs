@@ -502,7 +502,7 @@ void KSpell::checkWord2 (KProcIO *)
   QString line;
   proc->fgets (line, TRUE); //get ispell's response
 
-/* ispell man page: "Each sentence of text input is terminated with an 
+/* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
    the input line." */
   QString blank_line;
@@ -668,8 +668,8 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
   return MISTAKE;
 }
 
-bool KSpell::checkList (QStringList *_wordlist)
-  // prepare check or string list
+bool KSpell::checkList (QStringList *_wordlist, bool /*_usedialog not implemented yet*/)
+  // prepare check of string list
 {
   wordlist=_wordlist;
   if ((totalpos=wordlist->count())==0)
@@ -683,11 +683,8 @@ bool KSpell::checkList (QStringList *_wordlist)
   dialog3slot = SLOT (checkList4 ());
 
   proc->fputs ("%"); // turn off terse mode & check one word at a time
-  lastpos=0; //now counts which *word number* we are at in checkListReplaceCurrent()
 
-  //  connect (this, SIGNAL (eza()), this, SLOT (checkList2()));
-  //emit eza();
-
+  //lastpos now counts which *word number* we are at in checkListReplaceCurrent()
   lastpos = -1;
   checkList2();
 
@@ -845,7 +842,7 @@ void KSpell::checkList4 ()
   }
 }
 
-bool KSpell::check( const QString &_buffer )
+bool KSpell::check( const QString &_buffer, bool _usedialog )
 {
   QString qs;
 
@@ -893,8 +890,13 @@ bool KSpell::check( const QString &_buffer )
 
   lastline=i; //the character position, not a line number
 
-  emitProgress();
-  ksdlg->show();
+  if (_usedialog)
+    {
+      emitProgress();
+      ksdlg->show();
+    }
+  else
+    ksdlg->hide();
 
   return TRUE;
 }
