@@ -1323,6 +1323,27 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     setEditable( true );
 }
 
+KFontAction::KFontAction( uint fontListCriteria, const QString& text,
+                          const KShortcut& cut, QObject* parent,
+                          const char* name )
+    : KSelectAction( text, cut, parent, name )
+{
+    d = new KFontActionPrivate;
+    KFontChooser::getFontList( d->m_fonts, fontListCriteria );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( true );
+}
+
+KFontAction::KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
+                          const KShortcut& cut,
+                          QObject* parent, const char* name )
+    : KSelectAction( text, pix, cut, parent, name )
+{
+    d = new KFontActionPrivate;
+    KFontChooser::getFontList( d->m_fonts, fontListCriteria );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( true );
+}
 
 KFontAction::KFontAction( QObject* parent, const char* name )
   : KSelectAction( parent, name )

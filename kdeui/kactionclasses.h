@@ -883,6 +883,16 @@ public:
                  const QObject* receiver, const char* slot, QObject* parent,
                  const char* name = 0 );
 
+// The ctors with fontListCriteria were added after 3.3-beta1.
+// This define is used in koffice. Remove when koffice has a dependency on kdelibs-3.3 or more.
+#define KFONTACTION_HAS_CRITERIA_ARG
+    KFontAction( uint fontListCriteria, const QString& text,
+                 const KShortcut& cut = KShortcut(), QObject* parent = 0,
+                 const char* name = 0 );
+    KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
+                 const KShortcut& cut = KShortcut(),
+                 QObject* parent = 0, const char* name = 0 );
+
     KFontAction( QObject* parent = 0, const char* name = 0 );
     ~KFontAction();
 
