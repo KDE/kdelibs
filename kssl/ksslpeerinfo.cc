@@ -72,14 +72,14 @@ bool KSSLPeerInfo::certMatchesAddress() {
   if (!he) return false;
 
   addrList = he->h_addr_list;
-  kdDebug() << "Looking for " << d->ip << endl;
+  // kdDebug() << "Looking for " << d->ip << endl;
   for (int i = 0; addrList[i]; i++) {
     Q_UINT32 thisAddr;
     thisAddr = (addrList[i][0] << 24)
               +(addrList[i][1] << 16)
               +(addrList[i][2] << 8)
               + addrList[i][3];
-    kdDebug() << "       -- found: " << thisAddr << endl;
+    // kdDebug() << "       -- found: " << thisAddr << endl;
 
     if (thisAddr == d->ip) return true;
   }

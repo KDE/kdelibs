@@ -26,6 +26,9 @@
 class QString;
 class KSSLCertificate;
 
+class KSSLCertificateCache {
+public:
+
 enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 // Unknown: no policy has been set for this record
 // Reject: user has requested to not accept data from this site
@@ -36,10 +39,6 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 // Ambiguous: The state cannot be uniquely determined.  Hopefully this
 //            doesn't happen.
 
-
-class KSSLCertificateCache {
-
-public:
   KSSLCertificateCache();
   ~KSSLCertificateCache();
 

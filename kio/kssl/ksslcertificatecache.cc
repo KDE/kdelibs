@@ -71,9 +71,9 @@
 class KSSLCNode {
 public:
   KSSLCertificate *cert;
-  KSSLCertificatePolicy policy;
+  KSSLCertificateCache::KSSLCertificatePolicy policy;
   bool permanent;
-  KSSLCNode() { cert = NULL; policy = Unknown; 
+  KSSLCNode() { cert = NULL; policy = KSSLCertificateCache::Unknown; 
                 permanent = true; }
   ~KSSLCNode() { if (cert) delete cert; }
 };
@@ -146,7 +146,7 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
 }
 
 
-KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
+KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
@@ -160,7 +160,7 @@ KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(QString& cn) {
 }
 
 
-KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCertificate(KSSLCertificate& cert) {
+KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCertificate(KSSLCertificate& cert) {
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
