@@ -91,32 +91,11 @@ KEdit::insertText(QTextStream *stream)
 
    setModified(true);
    setFocus();
-}
 
-static QStringList split( QString &text , const char *sep )
-{
-    QStringList tmp;
-    
-    if ( text.isEmpty() )
-        return tmp;
+   QString str = text();
+   for (int i = 0; i < str.length(); i++)
+     printf("KEdit: U+%04X\n", str[i].unicode());
 
-    int pos = -1;
-    int old = 0;
-
-    // Append words up to (not including) last
-    while ( (pos = text.find( QString::fromLatin1(sep) , old )) != -1 )
-    {
-        tmp.append( text.mid(old,pos - old) );
-        old = pos + 1;
-    }
-
-    if (old < (int) text.length())
-    {
-        // Append final word
-        tmp.append( text.mid(old) );
-    }
-    
-    return tmp;
 }
 
 void
@@ -125,7 +104,7 @@ KEdit::cleanWhiteSpace()
    if (!hasMarkedText()) return;
    QString oldText = markedText();
    QString newText;
-   QStringList lines = split(oldText, "\n");
+   QStringList lines = QStringList::split('\n', oldText);
    bool addSpace = false;
    bool firstLine = true;
    QChar lastChar = oldText[oldText.length()-1];
