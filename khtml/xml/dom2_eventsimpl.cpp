@@ -591,6 +591,14 @@ RegisteredEventListener::RegisteredEventListener(EventImpl::EventId _id, EventLi
     id = _id;
     listener = _listener;
     useCapture = _useCapture;
+    isInternalListener = _listener->eventListenerType().string().startsWith("_khtml_");
+    if (isInternalListener)
+	static_cast<DomShared*>(listener)->ref();
+}
+
+RegisteredEventListener::~RegisteredEventListener() {
+    if (isInternalListener)
+	static_cast<DomShared*>(listener)->deref();
 }
 
 bool RegisteredEventListener::operator==(const RegisteredEventListener &other)

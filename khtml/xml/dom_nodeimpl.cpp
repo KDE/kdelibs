@@ -371,6 +371,7 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
         m_regdListeners = new QList<RegisteredEventListener>;
+	m_regdListeners->setAutoDelete(true);
     }
 
     // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
@@ -419,7 +420,7 @@ void NodeImpl::removeHTMLEventListener(int id)
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "HTMLEventListener") {
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
             m_regdListeners->removeRef(it.current());
             return;
         }
@@ -440,7 +441,7 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "HTMLEventListener") {
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
             return it.current()->listener;
         }
     return 0;
@@ -495,7 +496,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     evt->setCurrentTarget(0);
     evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
 
-    if (!evt->defaultPrevented()) {
+    if (!evt->defaultPrevented() && evt->bubbles()) {
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
         it.toLast();
         for (; it.current() && !evt->propagationStopped(); --it)
@@ -534,7 +535,12 @@ bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
+    DocumentPtr *doc = document;
+    doc->ref();
     bool r = dispatchGenericEvent( evt, exceptioncode );
+    if (!evt->defaultPrevented())
+	doc->document()->defaultEventHandler(evt);
+    doc->deref();
     evt->deref();
     return r;
 }

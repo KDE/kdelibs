@@ -1415,6 +1415,7 @@ EventListener *DocumentImpl::getWindowEventListener(int id)
 	    return it.current()->listener;
 	}
     }
+    return 0;
 }
 
 void DocumentImpl::removeWindowEventListener(int id)

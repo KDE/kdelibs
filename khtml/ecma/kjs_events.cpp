@@ -66,9 +66,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 DOM::DOMString JSEventListener::eventListenerType()
 {
     if (html)
-	return "HTMLEventListener";
+	return "_khtml_HTMLEventListener";
     else
-	return "JSEventListener";
+	return "_khtml_JSEventListener";
 }
 
 JSEventListener *KJS::getJSEventListener(const KJSO &obj, bool html)

@@ -22,10 +22,11 @@
 
 #include "kjs_dom.h"
 #include <dom2_events.h>
+#include <dom_misc.h>
 
 namespace KJS {
 
-  class JSEventListener : public DOM::EventListener {
+  class JSEventListener : public DOM::EventListener, DOM::DomShared {
   public:
     JSEventListener(KJSO _listener, bool _html = false);
     virtual ~JSEventListener();

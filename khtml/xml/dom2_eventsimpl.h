@@ -257,16 +257,17 @@ protected:
     unsigned short m_attrChange;
 };
 
-
 class RegisteredEventListener {
 public:
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture);
+    ~RegisteredEventListener();
 
     bool operator==(const RegisteredEventListener &other);
 
     EventImpl::EventId id;
     EventListener *listener;
-    bool useCapture;
+    bool useCapture : 1;
+    bool isInternalListener : 1;
 };
 
 }; //namespace
