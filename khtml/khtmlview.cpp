@@ -123,6 +123,13 @@ private:
 class KHTMLViewPrivate {
     friend class KHTMLToolTip;
 public:
+
+    enum PseudoFocusNodes {
+	PFNone,
+	PFTop,
+	PFBottom
+    };
+
     KHTMLViewPrivate()
         : underMouse( 0 )
     {
@@ -164,7 +171,7 @@ public:
         useSlowRepaints = false;
 	tabMovePending = false;
 	lastTabbingDirection = true;
-	focusJustEnteredView = true;
+	pseudoFocusNode = PFNone;
 #ifndef KHTML_NO_SCROLLBARS
         vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
@@ -275,7 +282,7 @@ public:
 
     bool tabMovePending:1;
     bool lastTabbingDirection:1;
-    bool focusJustEnteredView:1;
+    PseudoFocusNodes pseudoFocusNode:2;
     bool scrollBarMoved:1;
 
     QScrollView::ScrollBarMode vmode;
@@ -1384,7 +1391,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
     }
 
     // If we get here, pass tabbing control up to the next/previous child in our parent
-    d->focusJustEnteredView = true;
+    d->pseudoFocusNode = KHTMLViewPrivate::PFNone;
     if (m_part->parentPart() && m_part->parentPart()->view())
         return m_part->parentPart()->view()->focusNextPrevChild(next);
 
@@ -1634,17 +1641,9 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 
     scrollBy(scrollX, scrollY);
 
-
-
-    // generate abs(scroll.)
-    if (scrollX<0)
-        scrollX=-scrollX;
-    if (scrollY<0)
-        scrollY=-scrollY;
-
     d->scrollingSelf = false;
 
-    if ( (scrollX!=maxx) && (scrollY!=maxy) )
+    if ( (abs(deltax)<=maxx) && (abs(deltay)<=maxy) )
 	return true;
     else return false;
 
@@ -1659,37 +1658,8 @@ bool KHTMLView::focusNextPrevNode(bool next)
     // HTML spec (see DocumentImpl::nextFocusNode() and
     // DocumentImpl::previousFocusNode() for details).
 
-// behaviour of this function in pseudo
-// 	if TabMovePending, then
-// 	{
-// 	    if Tabbing-direction changed since last time,
-//                 newFocusNode = actFocusNode; (actFocusNode is not visible ATM!)
-// 	    else
-// 	        newFocusNode = nextPrevNode (current tabbing-direction);
-// 	}
-
-// 	move View at most by one screen towards newFocusNode.
-//         if no NewFocusNode, move by one screen towards upper/lower corner
-//         or, if focus just entered view, directly to upper/lower corner
-
-// 	if newFocusNode visible, then
-// 	    setFocusNode(newFocusNode);
-//             pendingTabMove = true;
-//         else:
-//             pendingTabMove = false
-
-// 	oldTabbingDirection = current Tabbing-direction.
-
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
-    NodeImpl *newFocusNode;
-
-    if (d->tabMovePending && next != d->lastTabbingDirection)
-	newFocusNode = oldFocusNode;
-    else if (next)
-	newFocusNode = doc->nextFocusNode(oldFocusNode);
-    else
-	newFocusNode = doc->previousFocusNode(oldFocusNode);
 
 #if 1
     // If the user has scrolled the document, then instead of picking
@@ -1697,15 +1667,19 @@ bool KHTMLView::focusNextPrevNode(bool next)
     // is within the visible area (if possible).
     if (d->scrollBarMoved)
     {
-	kdDebug(6000) << " searching for visible link" << endl;
-	
 	NodeImpl *toFocus;
 	if (next)
-	    toFocus = doc->nextFocusNode(NULL);
+	    toFocus = doc->nextFocusNode(oldFocusNode);
 	else
-	    toFocus = doc->previousFocusNode(NULL);
+	    toFocus = doc->previousFocusNode(oldFocusNode);
 
-	while (toFocus)
+	if (!toFocus && oldFocusNode)
+	    if (next)
+		toFocus = doc->nextFocusNode(NULL);
+	    else
+		toFocus = doc->previousFocusNode(NULL);
+
+	while (toFocus && toFocus != oldFocusNode)
 	{
 	    
 	    QRect focusNodeRect = toFocus->getRect();
@@ -1718,7 +1692,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 		    d->scrollBarMoved = false;
 		    d->tabMovePending = false;
 		    d->lastTabbingDirection = next;
-		    d->focusJustEnteredView = false;
+		    d->pseudoFocusNode = KHTMLViewPrivate::PFNone;
 		    kdDebug(6000) << "found visible link" << endl;
 		    m_part->xmlDocImpl()->setFocusNode(toFocus);
 		    Node guard(toFocus);
@@ -1733,28 +1707,55 @@ bool KHTMLView::focusNextPrevNode(bool next)
 		toFocus = doc->nextFocusNode(toFocus);
 	    else
 		toFocus = doc->previousFocusNode(toFocus);
+
+	    if (!toFocus && oldFocusNode)
+		if (next)
+		    toFocus = doc->nextFocusNode(NULL);
+		else
+		    toFocus = doc->previousFocusNode(NULL);
 	}
 
 	d->scrollBarMoved = false;
     }
 #endif
 
-    if (d->focusJustEnteredView)
+    if (!oldFocusNode && d->pseudoFocusNode == KHTMLViewPrivate::PFNone)
     {
 	ensureVisible(contentsX(), next?0:contentsHeight());
 	d->scrollBarMoved = false;
-	d->focusJustEnteredView = false;
+	d->pseudoFocusNode = next?KHTMLViewPrivate::PFTop:KHTMLViewPrivate::PFBottom;
 	return true;
     }
 
-    bool targetVisible = false;
+    NodeImpl *newFocusNode = NULL;
 
+    if (d->tabMovePending && next != d->lastTabbingDirection)
+    {
+	kdDebug ( 6000 ) << " tab move pending and tabbing direction changed!\n";
+	newFocusNode = oldFocusNode;
+    }
+    else if (next)
+    {
+	if (oldFocusNode || d->pseudoFocusNode == KHTMLViewPrivate::PFTop )
+	    newFocusNode = doc->nextFocusNode(oldFocusNode);
+    }
+    else
+    {
+	if (oldFocusNode || d->pseudoFocusNode == KHTMLViewPrivate::PFBottom )
+	    newFocusNode = doc->previousFocusNode(oldFocusNode);
+    }
+
+    bool targetVisible = false;
     if (!newFocusNode)
     {
-	if (next)
+	if ( next )
+	{
 	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+	}
 	else
+	{
 	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+	}
     }
     else
     {
@@ -1774,8 +1775,8 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     if (targetVisible)
     {
+	kdDebug ( 6000 ) << " target reached.\n";
 	d->tabMovePending = false;
-	d->lastTabbingDirection = next;
 
 	m_part->xmlDocImpl()->setFocusNode(newFocusNode);
 	if (newFocusNode)
@@ -1787,10 +1788,16 @@ bool KHTMLView::focusNextPrevNode(bool next)
 	    }
 	    return true;
 	}
-	else return false;
+	else
+	{
+	    d->pseudoFocusNode = next?KHTMLViewPrivate::PFBottom:KHTMLViewPrivate::PFTop;
+	    return false;
+	}
     }
     else
     {
+	if (!d->tabMovePending)
+	    d->lastTabbingDirection = next;
 	d->tabMovePending = true;
 	return true;
     }
