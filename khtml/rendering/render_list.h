@@ -37,6 +37,9 @@ namespace khtml
     {
     public:
 	RenderListMarker();
+	~RenderListMarker();
+
+	virtual void setStyle(RenderStyle *style);
 	
 	virtual const char *renderName() const { return "RenderListMarker"; }
 	virtual bool isInline() const { return true; }
@@ -50,9 +53,12 @@ namespace khtml
 				 int xoff, int yoff);
 	virtual void layout( bool );
 	virtual void calcMinMaxWidth();
-	
+
+	virtual void setPixmap( const QPixmap &, CachedObject * );	
+
 	long int val;
 	QString item;
+	CachedImage *listImage;
     };
 
 

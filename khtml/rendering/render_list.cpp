@@ -146,7 +146,26 @@ RenderListMarker::RenderListMarker()
     : RenderBox()
 {
     val = -1;
+    listImage = 0;
 }
+
+RenderListMarker::~RenderListMarker()
+{
+    if(listImage)
+	listImage->deref(this);
+}
+
+void RenderListMarker::setStyle(RenderStyle *s) 
+{
+    RenderBox::setStyle(s);
+    
+    if(listImage)
+	listImage->deref(this);
+    listImage = m_style->listStyleImage();
+    if(listImage) 
+	listImage->ref(this);
+}
+
 
 void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
@@ -174,6 +193,11 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 	    xoff = -xoff + m_parent->width();
     }
 
+    if ( listImage ) {
+	p->drawPixmap( QPoint( _tx + xoff, _ty + yoff ), listImage->pixmap());
+ 	return; 
+    }
+    
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
 
@@ -217,15 +241,44 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 void RenderListMarker::layout(bool)
 {	
     calcMinMaxWidth();
+
+    if(listImage) {
+	m_height = listImage->pixmap().height();
+	return;
+    }
+
     m_height = QFontMetrics(m_style->font()).height();
 }
 
-	
+void RenderListMarker::setPixmap( const QPixmap &p, CachedObject *o )
+{
+    if(o != listImage)
+	RenderBox::setPixmap(p, o);
+
+    if(m_width != p.width() || m_height != p.height())
+    {	
+	setLayouted(false);
+	setMinMaxKnown(false);
+	layout(true);
+	// the updateSize() call should trigger a repaint too
+	updateSize();	
+	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+    }
+    else
+    {
+	repaintRectangle(0, 0, m_width, m_height);
+    }  
+}
 	
 void RenderListMarker::calcMinMaxWidth()
 {
     m_width = 0;
 
+    if(listImage) {
+	m_width = listImage->pixmap().width();
+	return;
+    }
+    
     switch(m_style->listStyleType())
     {
     case DISC:

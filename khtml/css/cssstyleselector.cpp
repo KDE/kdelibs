@@ -1071,7 +1071,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_CUE_BEFORE:
 	break;
     case CSS_PROP_LIST_STYLE_IMAGE:
+    {
+	if(!primitiveValue) return;
+	CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
+	style->setListStyleImage(image->image());
+	kdDebug( 6080 ) << "setting image in list to " << image->image() << endl;
 	break;
+    }
 
 // length
     case CSS_PROP_BORDER_TOP_WIDTH:
