@@ -1440,7 +1440,7 @@ KURL::List& KFileDialog::parseSelectedURLs() const
             d->urlList.append( u );
         else
             KMessageBox::error( d->mainWidget,
-                                i18n("The chosen filenames don't\n"
+                                i18n("The chosen filenames do not\n"
                                      "appear to be valid."),
                                 i18n("Invalid Filenames") );
     }
@@ -1474,8 +1474,8 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
         QWidget *that = const_cast<KFileDialog *>(this);
         KMessageBox::sorry(that, i18n("The requested filenames\n"
                                       "%1\n"
-                                      "don't look valid to me.\n"
-                                      "Make sure every filename is enclosed in double quotes.").arg(line),
+                                      "do not appear to be valid;\n"
+                                      "make sure every filename is enclosed in double quotes.").arg(line),
                            i18n("Filename Error"));
         return urls;
     }
@@ -1915,7 +1915,7 @@ void KFileDialog::updateAutoSelectExtension (void)
                     "This extension is based on the file type that you "
                     "have chosen to save in.<br>"
                     "<br>"
-                    "If you don't want KDE to supply an extension for the "
+                    "If you do not want KDE to supply an extension for the "
                     "filename, you can either turn this option off or you "
                     "can suppress it by adding a period (.) to the end of "
                     "the filename (the period will be automatically "

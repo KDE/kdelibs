@@ -197,7 +197,7 @@ QStringList FileProps::createKeyValueList( const KFileMetaInfoGroup& g,
 static KCmdLineOptions options[] =
 {
     { "m", 0, 0 }, // short option for --mimetype
-    { "nomimetype", I18N_NOOP("Don't print the mimetype of the given file(s)"), 0 },
+    { "nomimetype", I18N_NOOP("Do not print the mimetype of the given file(s)"), 0 },
 
     { "ls", 0, 0 }, // short option for --listsupported
     { "listsupported <mimetype>",
@@ -223,8 +223,8 @@ static KCmdLineOptions options[] =
 
     { "q", 0, 0 }, // short option for --quiet
     { "quiet",
-      I18N_NOOP("Don't print a warning when more than one file was given "
-                "and they don't have all the same mimetype."), 0 },
+      I18N_NOOP("Do not print a warning when more than one file was given "
+                "and they do not all have the same mimetype."), 0 },
 
     { "av", 0, 0 }, // short option for --allValues
     { "allValues",

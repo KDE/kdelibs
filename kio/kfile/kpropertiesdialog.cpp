@@ -1169,7 +1169,7 @@ void KFilePropsPlugin::applyChanges()
       n.truncate( n.length() - 1 );
     if ( n.isEmpty() )
     {
-      KMessageBox::sorry( properties, i18n("The new file name is empty!"));
+      KMessageBox::sorry( properties, i18n("The new file name is empty."));
       properties->abortApplying();
       return;
     }

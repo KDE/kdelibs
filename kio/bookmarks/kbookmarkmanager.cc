@@ -501,7 +501,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 
     if ( url.isEmpty() )
     {
-        KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL."));
+        KMessageBox::error( 0L, i18n("Cannot add bookmark with empty URL."));
         return KBookmarkGroup();
     }
 

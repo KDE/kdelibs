@@ -341,7 +341,7 @@ void RMB::slotRMBActionInsert( int val )
   QString url = m_pOwner->currentURL();
   if (url.isEmpty())
   {
-    KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL."));
+    KMessageBox::error( 0L, i18n("Cannot add bookmark with empty URL."));
     return;
   }
   QString title = m_pOwner->currentTitle();

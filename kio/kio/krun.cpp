@@ -1183,7 +1183,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
     if ( !QFile( binName ).exists() && KStandardDirs::findExe( binName ).isEmpty() )
     {
       kapp->ref();
-      KMessageBox::sorry( 0L, i18n("Couldn't find the program '%1'").arg( binName ) );
+      KMessageBox::sorry( 0L, i18n("Could not find the program '%1'").arg( binName ) );
       kapp->deref();
     }
   }

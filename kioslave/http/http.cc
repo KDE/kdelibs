@@ -413,7 +413,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
 
   if (m_request.hostname.isEmpty())
   {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified."));
      return false;
   }
 
@@ -4838,10 +4838,10 @@ bool HTTPProtocol::retryPrompt()
   switch ( m_responseCode )
   {
     case 401:
-      prompt = i18n("Authentication Failed!");
+      prompt = i18n("Authentication Failed.");
       break;
     case 407:
-      prompt = i18n("Proxy Authentication Failed!");
+      prompt = i18n("Proxy Authentication Failed.");
       break;
     default:
       break;
@@ -4957,10 +4957,10 @@ bool HTTPProtocol::getAuthorization()
       switch ( m_responseCode )
       {
         case 401:
-          errorMsg = i18n("Authentication Failed!");
+          errorMsg = i18n("Authentication Failed.");
           break;
         case 407:
-          errorMsg = i18n("Proxy Authentication Failed!");
+          errorMsg = i18n("Proxy Authentication Failed.");
           break;
         default:
           break;

@@ -237,7 +237,7 @@ int main(int argc, char **argv) {
         QString cache = args->getOption( "cache" );
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
-                kdError() << i18n( "Couldn't write to cache file %1." ).arg( cache ) << endl;
+                kdError() << i18n( "Could not write to cache file %1." ).arg( cache ) << endl;
             }
             goto end;
         }

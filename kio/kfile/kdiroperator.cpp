@@ -416,7 +416,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
         enterDirectory = false;
     }
     else if ( !writeOk ) {
-        KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
+        KMessageBox::sorry(viewWidget(), i18n("You do not have permission to "
                                               "create that folder." ));
     }
     else if ( enterDirectory ) {
@@ -438,7 +438,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
 {
     if ( items.isEmpty() ) {
         KMessageBox::information( parent,
-                                i18n("You didn't select a file to delete."),
+                                i18n("You did not select a file to delete."),
                                 i18n("Nothing to Delete") );
         return 0L;
     }
