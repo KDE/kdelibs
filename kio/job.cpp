@@ -895,7 +895,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
       valid = false;
 
     // filter out some malicious ports
-    if (!(url.port() == 80 || url.port() == 434 || url.port() >= 1024))
+    if (!(url.port() == 80 || url.port() == 443 || url.port() >= 1024))
       valid = false;
     
     // if request is not valid, return an invalid transfer job
