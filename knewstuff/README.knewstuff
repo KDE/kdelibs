@@ -1,0 +1,30 @@
+KNewStuff library
+
+* Hacking
+Since knewstuff used to be in kdepim and kdepim-3.3 must compile
+with kdelibs-3.2, any kind of API changes before the kdepim-3.3
+release should be avoided.
+
+* Documentation
+Beside API docs, please see the documentation made available
+on kstuff.org.
+
+* Testing and experimenting
+Currently, korganizer.kde.org and edu.kde.org provide hotstuff
+directories.
+Also, kstuff.org serves as an experimental platform with upload
+capabilities, automatic indexing in a SQL database and dynamic
+directory creation.
+Distributors should probably think about providing a hotstuff
+service.
+
+* Future
+Immediate plans:
+- stabilizing it so that more apps within KDE can use it
+Future plans:
+- merge download dialog engine functionality into the engine class
+- incremental updates of directories,
+  including cache
+
+Josef Spillner, 01.04.2004
+
