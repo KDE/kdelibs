@@ -750,7 +750,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
       }
       case ST_VERSION_NUM:
       {
-        int endpos;
+        unsigned int endpos;
         for (endpos = pos; endpos <  xml.length(); endpos++)
         {
           if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')
