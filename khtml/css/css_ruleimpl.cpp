@@ -130,15 +130,18 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
     // ### pass correct charset here!!
     m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl(), QString::null);
 
-    m_cachedSheet->ref(this);
-    m_loading = true;
+    if (m_cachedSheet)
+    {
+      m_cachedSheet->ref(this);
+      m_loading = true;
+    }
 }
 
 CSSImportRuleImpl::~CSSImportRuleImpl()
 {
     if(m_lstMedia) m_lstMedia->deref();
     if(m_styleSheet) m_styleSheet->deref();
-    m_cachedSheet->deref(this);
+    if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
 DOMString CSSImportRuleImpl::href() const
