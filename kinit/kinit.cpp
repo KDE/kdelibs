@@ -789,6 +789,8 @@ static void kdeinit_library_path()
         it++)
    {
       QCString dir = QFile::encodeName(*it);
+      if (access(dir, R_OK))
+          continue;
       if (dir[dir.length()-1] == '/') dir.truncate(dir.length()-1);
       if (ltdl_library_path.find(dir) == -1)
       {
