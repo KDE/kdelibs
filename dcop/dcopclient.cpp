@@ -688,7 +688,7 @@ void DCOPClient::resume()
 
 bool DCOPClient::isSuspended() const
 {
-#ifdef Q_WS_WIN //TODO: REMOVE
+#if defined(Q_WS_WIN) || defined(Q_WS_MAC) //TODO: REMOVE
     if (!d->notifier)
         return false;
 #endif
