@@ -1451,16 +1451,17 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     _ke->accept();
 }
 
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-
 void KHTMLView::findTimeout()
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
 	d->typeAheadActivated = false;
 	d->findString = "";
 	releaseKeyboard();
 	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
 void KHTMLView::findAhead(bool increase)
 {
 	QString status;

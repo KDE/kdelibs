@@ -212,9 +212,7 @@ protected slots:
 
 private slots:
     void tripleClickTimeout();
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findTimeout();
-#endif // KHTML_NO_TYPE_AHEAD_FIND
     void accessKeysTimeout();
     
 private:
