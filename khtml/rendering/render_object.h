@@ -29,6 +29,7 @@
 
 #include "qcolor.h"
 #include "qsize.h"
+#include "qrect.h"
 
 #include "render_style.h"
 
@@ -347,6 +348,8 @@ protected:
     // assumes (_tx/_ty) point to the upper left corner of the box
     virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}
     virtual void setContainingBlock();
+    
+    virtual QRect viewRect() const;
 
     bool m_layouted       : 1;
     bool m_parsing        : 1;

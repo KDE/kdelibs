@@ -24,7 +24,7 @@
 #ifndef RENDER_FLOW_H
 #define RENDER_FLOW_H
 
-#include <qlist.h>
+#include <qsortedlist.h>
 
 #include "render_box.h"
 
@@ -132,9 +132,18 @@ protected:
 	Type type; // left or right aligned
 	RenderObject* node;
 	bool noPaint;
+	short zindex;
+	bool operator==(const SpecialObject& o) const
+	{
+	    return zindex==o.zindex;
+	}
+	bool operator<(const SpecialObject& o) const
+	{
+	    return zindex<o.zindex;
+	}
     };
 
-    QList<SpecialObject>* specialObjects;
+    QSortedList<SpecialObject>* specialObjects;
 
 private:
     bool m_inline         : 1;

@@ -30,7 +30,7 @@
 #include "dom_string.h"
 
 #include <qfontmetrics.h>
-#include <qlist.h>
+#include <qsortedlist.h>
 
 #include "render_flow.h"
 #include "render_text.h"
@@ -288,8 +288,7 @@ void RenderFlow::layout( bool deep )
 	    m_height = floatBottom();
 	    m_height += borderBottom() + paddingBottom();
 	}
-	else if( m_next)
-	{
+	else if( m_next)	{
 	    assert(!m_next->isInline());
 	    m_next->setLayouted(false);
 	    m_next->layout();
@@ -488,7 +487,7 @@ void
 RenderFlow::insertPositioned(RenderObject *o)
 {
     if(!specialObjects) {
-	specialObjects = new QList<SpecialObject>;
+	specialObjects = new QSortedList<SpecialObject>;
 	specialObjects->setAutoDelete(true);	
     }
     
@@ -514,7 +513,7 @@ RenderFlow::insertFloat(RenderObject *o)
 {
     // a floating element
     if(!specialObjects) {
-	specialObjects = new QList<SpecialObject>;
+	specialObjects = new QSortedList<SpecialObject>;
 	specialObjects->setAutoDelete(true);	
     }
 
@@ -562,7 +561,7 @@ RenderFlow::insertFloat(RenderObject *o)
 	    	return;
 
 	    if(!par->specialObjects) {
-		par->specialObjects = new QList<SpecialObject>;
+		par->specialObjects = new QSortedList<SpecialObject>;
 		par->specialObjects->setAutoDelete(true);	
 	    }
 	
@@ -828,7 +827,7 @@ RenderFlow::clearFloats()
 	// we have overhanging floats
 	if(!specialObjects)
 	{
-	    specialObjects = new QList<SpecialObject>;
+	    specialObjects = new QSortedList<SpecialObject>;
 	    specialObjects->setAutoDelete(true);	
 	}
 	

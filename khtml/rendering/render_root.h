@@ -60,9 +60,14 @@ public:
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
 
+    virtual void printObject( QPainter *, int x, int y, int w, int h,
+			int tx, int ty);
+
 protected:
 
     virtual void selectionStartEnd(int& spos, int& epos);
+    
+    virtual QRect viewRect() const;
 
     KHTMLView *m_view;
 

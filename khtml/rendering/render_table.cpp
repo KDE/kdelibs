@@ -1060,7 +1060,7 @@ void RenderTable::calcRowHeight(int r)
 
     rowHeights.resize( totalRows+1 );
     rowBaselines.resize( totalRows );
-    rowHeights[0] =  spacing ; // + padding
+    rowHeights[0] =  spacing ;
 
   //int oldheight = rowHeights[r+1] - rowHeights[r];
     rowHeights[r+1] = 0;
@@ -1120,12 +1120,36 @@ void RenderTable::calcRowHeight(int r)
 
     if ( rowHeights[r+1] < rowHeights[r] )
 	rowHeights[r+1] = rowHeights[r];
+	
+    // html tables with percent height are relative to view
+    if (r+1==totalRows) 
+    {
+    	Length h = style()->height();
+	int th=0;
+	if (h.isFixed())
+    	    th = h.value;
+	else if (h.isPercent())
+	{
+    	    Length ch = containingBlock()->style()->height();
+	    if (ch.isFixed())
+    		th = h.width(ch.value);
+	    else if (style()->htmlHacks())
+	    {
+	    	th = h.width(viewRect().height());
+		// not really, but this way the view height change
+		// gets propagated correctly
+		setContainsPositioned(true); 
+	    }
+	}  
+	if (rowHeights[r+1]<th)
+	    rowHeights[r+1]=th;
+    }	
 
 }
 
 void RenderTable::layout(bool deep)
 {
-    if (layouted() && _lastParentWidth == containingBlockWidth())
+    if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
    	return;
 
     _lastParentWidth = containingBlockWidth();
@@ -1136,7 +1160,7 @@ void RenderTable::layout(bool deep)
     m_height = 0;
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::layout(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(Table)::layout1(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
 

@@ -239,3 +239,34 @@ void RenderRoot::selectionStartEnd(int& spos, int& epos)
     spos = selectionStartPos;
     epos = selectionEndPos;
 }
+
+QRect RenderRoot::viewRect() const
+{
+    if (m_view)
+    	return QRect(m_view->contentsX(),
+	    m_view->contentsY(),
+	    m_view->visibleWidth(),
+	    m_view->visibleHeight());
+    else return QRect();
+}
+
+void RenderRoot::printObject(QPainter *p, int _x, int _y,
+				       int _w, int _h, int _tx, int _ty)
+{
+    QColor c = m_style->backgroundColor();
+    if (!c.isValid())
+    {
+    	if (firstChild())
+    	    c = firstChild()->style()->backgroundColor();
+	if (firstChild()->firstChild() && !c.isValid())
+    	    c = firstChild()->firstChild()->style()->backgroundColor();
+    }
+    
+    int w = m_view->visibleWidth();
+    int h = m_view->visibleHeight();	
+
+    if(c.isValid())
+	p->fillRect(_tx, _ty, w, h, c);
+
+    RenderFlow::printObject(p,_x,_y,_w,_h,_tx,_ty);
+}

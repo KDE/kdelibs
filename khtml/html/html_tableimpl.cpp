@@ -253,6 +253,9 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
     case ATTR_WIDTH:
 	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
     	break;
+    case ATTR_HEIGHT:
+	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+    	break;    
     case ATTR_BORDER:
     {
 	int border;

@@ -319,6 +319,7 @@ void RenderObject::printTree(int indent) const
                  << " fl=" << isFloating() << " rp=" << isReplaced()
 		 << " an=" << isAnonymousBox()
 		 << " ps=" << isPositioned()
+		 << " cp=" << containsPositioned()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
@@ -393,4 +394,9 @@ void RenderObject::setKeyboardFocus(DOM::ActivationState b)
 	actChild=actChild->nextSibling();
       }
   hasKeyboardFocus=b;
+}
+
+QRect RenderObject::viewRect() const 
+{ 
+    return m_containingBlock->viewRect(); 
 }

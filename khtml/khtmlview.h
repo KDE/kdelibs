@@ -217,6 +217,7 @@ private:
     bool pressed;
     QString overURL;
     int _width;
+    int _height;
 
     int _marginWidth;
     int _marginHeight;

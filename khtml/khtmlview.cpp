@@ -144,6 +144,7 @@ void KHTMLView::init()
   _marginWidth = -1; // undefined
   _marginHeight = -1; 
   _width = width()- SCROLLBARWIDTH - 2*marginWidth();
+  _height = 0;
 
   resizeContents(clipper()->width(), clipper()->height());
 }
@@ -290,13 +291,14 @@ void KHTMLView::layout(bool force)
 	}
 
 	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
+	int h = visibleHeight();
 
-//	if(w < _width-5 || w > _width + 5)
-    	if (w != _width || force)
+    	if (w != _width || h != _height || force)
 	{
 	    //kdDebug( 6000 ) << "layouting document" << endl;
 
-	    _width = w;
+    	    _width = w;
+	    _height = h;
 
 	    QTime qt;
 	    qt.start();
