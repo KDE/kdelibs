@@ -190,12 +190,6 @@ bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 	if (dlg)
 	{
 		state = dlg->exec();
-		if (state)
-			// call preparePrinting() also here, to be sure that everything is OK
-			// just after calling KPrinter::setup(). Problems may occur if an application
-			// uses the KPrinter object between setup() and QPainter::begin(). Anyway,
-			// preparePrinting() will only be effective once in the print process.
-			preparePrinting();
 		delete dlg;
 	}
 	return state;
