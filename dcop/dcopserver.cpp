@@ -953,7 +953,9 @@ void DCOPServer::removeConnection( void* data )
 
 void DCOPServer::slotTerminate()
 {
+#ifndef NDEBUG
     fprintf( stderr, "DCOPServer : slotTerminate() -> sending terminateKDE signal.\n" );
+#endif
     QByteArray data;
     dcopSignals->emitSignal(0L /* dcopserver */, "terminateKDE()", data, false);
 }
