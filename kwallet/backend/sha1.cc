@@ -63,6 +63,7 @@ int SHA1::reset() {
   _h4 = 0xc3d2e1f0;
   _nblocks = 0;
   _count = 0;
+  memset(_buf, 0, 56);      // clear the buffer
 
   _init = true;
   return 0;

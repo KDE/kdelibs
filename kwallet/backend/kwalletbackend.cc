@@ -19,9 +19,18 @@
  */ 
 
 #include "kwalletbackend.h"
+#include <kglobal.h>
+#include <kstddirs.h>
+#include <qfile.h>
+#include "sha1.h"
 
+
+
+#define KWMAGIC "KWALLET\n\0"
+#define KWMAGIC_LEN 9
 
 KWalletBackend::KWalletBackend(QString name) : _name(name) {
+	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	_open = false;
 }
 
@@ -33,7 +42,87 @@ KWalletBackend::~KWalletBackend() {
 }
 
 
+static int password2hash(const QByteArray& password, QByteArray& hash) {
+	QByteArray even;
+	QByteArray odd;
+
+	// Split the odd entries and the even entries in the password
+	// into separate hashes
+
+	even.resize(password.size()/2+password.size()%2);
+	odd.resize(password.size()/2);
+
+	for (unsigned int i = 0; i < password.size(); i++) {
+		if (i % 2 == 0)
+			even[i/2] = password[i];
+		else 
+			odd[i/2] = password[i];
+	}
+
+	SHA1 sha;
+
+	sha.process(password.data(), password.size());
+
+	hash.duplicate((const char *)sha.getHash(), 20);
+
+	sha.reset();
+
+	sha.process(even.data(), even.size());
+
+	// FIXME: fill in this part
+	
+	sha.reset();
+
+	sha.process(odd.data(), odd.size());
+
+	// FIXME: fill in this part
+	
+	sha.reset();
+
+	even.fill(0);
+	odd.fill(0);
+	return 0;
+}
+
+
 int KWalletBackend::unlock(QByteArray& password) {
+	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
+		       "/"+_name+".kwl";
+
+
+	QByteArray passhash;
+	password2hash(password, passhash);
+
+	// No wallet existed.  Let's create it.
+	if (!QFile::exists(path)) {
+		QFile newfile(path);
+		if (!newfile.open(IO_ReadWrite))
+			return -2;
+		newfile.close();
+		return 1;
+	}
+
+	QFile db(path);
+	db.open(IO_ReadOnly);
+
+	if (!db.open(IO_ReadOnly))
+		return -2;
+
+	char magicBuf[10];
+	db.readBlock(magicBuf, KWMAGIC_LEN);
+	if (qstrncmp(magicBuf, KWMAGIC, KWMAGIC_LEN)) {
+		return -3;         // bad magic
+	}
+
+	QByteArray encrypted = db.readAll();
+
+	// Decrypt the encrypted data
+
+	// Load the data structures up
+
+	// "0" out all the structures that we are done with
+	// that are not encrypted (including hashes)
+
 	return -1;
 }
 
