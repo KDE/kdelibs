@@ -299,7 +299,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             if (script) {
                 if (!scriptSrc.isEmpty()) {
                     // forget what we just got; load from src url instead
-                    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, scriptSrcCharset);
+                    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
                     scriptSrc="";
                 }
                 else {
