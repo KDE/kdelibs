@@ -22,8 +22,6 @@ SUBDIRS = . tests
 
 INCLUDES= $(all_includes)
 
-EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png
-
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -no-undefined -version-info 3:0
 # we should get this to work when libtool 1.3 is released
@@ -56,7 +54,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kedittoolbar.h kdocktabctl.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpanelapplet.h kdcopactionproxy.h kcolorcombo.h \
-		kpanelextension.h
+		kpanelextension.h 
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -93,12 +91,15 @@ libkdeui_la_SOURCES = \
 		kcolorcombo.cpp kpanelextension.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
-		kdialogbase_priv.h kaboutdialog_private.h
+		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
+		kdepackages.h kdeui-doc.h 
 
 libkdeui_la_METASOURCES = AUTO
 
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
+
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm
 
 kdepackages:
 	-rm $(srcdir)/kdepackages.h
