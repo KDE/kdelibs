@@ -231,6 +231,11 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 	emit tableUp();
 	break;
     case Key_Space:
+	emit activated( ' ' );
+	emit activated();
+	emit highlighted( ' ' );
+	emit highlighted();
+        break;
     case Key_Enter: case Key_Return: {
 	QPoint oldPos = vPos;
 
