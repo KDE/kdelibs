@@ -72,6 +72,8 @@ using namespace KJS;
   Operator            op;
   PropertyValueNode   *plist;
   PropertyNode        *pnode;
+  CatchNode           *cnode;
+  FinallyNode         *fnode;
 }
 
 %start Program
@@ -125,7 +127,9 @@ using namespace KJS;
 %type <node>  ConditionalExpr AssignmentExpr
 %type <node>  ExprOpt
 %type <node>  CallExpr
-%type <node>  Catch Finally
+
+%type <cnode> Catch
+%type <fnode> Finally
 
 %type <stat>  Statement Block
 %type <stat>  VariableStatement EmptyStatement ExprStatement
@@ -396,7 +400,7 @@ Statement:
 ;
 
 Block:
-    '{' '}'                        { $$ = new BlockNode(0L); DBG($$, @2, @2); }
+    '{' '}'                        { $$ = new BlockNode(0); DBG($$, @2, @2); }
   | '{' SourceElements '}'          { $$ = new BlockNode($2); DBG($$, @3, @3); }
 ;
 
@@ -447,7 +451,7 @@ ExprStatement:
 ;
 
 IfStatement: /* shift/reduce conflict due to dangling else */
-    IF '(' Expr ')' Statement      { $$ = new IfNode($3,$5,0L);DBG($$,@1,@4); }
+    IF '(' Expr ')' Statement      { $$ = new IfNode($3,$5,0);DBG($$,@1,@4); }
   | IF '(' Expr ')' Statement ELSE Statement
                                    { $$ = new IfNode($3,$5,$7);DBG($$,@1,@4); }
 ;
@@ -465,7 +469,7 @@ IterationStatement:
             Statement              { $$ = new ForInNode($3, $5, $7);
 	                             DBG($$,@1,@6); }
   | FOR '(' VAR IDENT IN Expr ')'
-            Statement              { $$ = new ForInNode(*$4,0L,$6,$8);
+            Statement              { $$ = new ForInNode(*$4,0,$6,$8);
 	                             DBG($$,@1,@7);
                                      delete $4; }
   | FOR '(' VAR IDENT Initializer IN Expr ')'
@@ -475,7 +479,7 @@ IterationStatement:
 ;
 
 ExprOpt:
-    /* nothing */                  { $$ = 0L; }
+    /* nothing */                  { $$ = 0; }
   | Expr
 ;
 
@@ -511,9 +515,9 @@ BreakStatement:
 ;
 
 ReturnStatement:
-    RETURN ';'                     { $$ = new ReturnNode(0L); DBG($$,@1,@2); }
+    RETURN ';'                     { $$ = new ReturnNode(0); DBG($$,@1,@2); }
   | RETURN error                   { if (automatic()) {
-                                       $$ = new ReturnNode(0L); DBG($$,@1,@1);
+                                       $$ = new ReturnNode(0); DBG($$,@1,@1);
                                      } else
 				       YYABORT; }
   | RETURN Expr ';'                { $$ = new ReturnNode($2); DBG($$,@1,@3); }
@@ -535,13 +539,13 @@ SwitchStatement:
 ;
 
 CaseBlock:
-    '{' CaseClausesOpt '}'         { $$ = new CaseBlockNode($2, 0L, 0L); }
+    '{' CaseClausesOpt '}'         { $$ = new CaseBlockNode($2, 0, 0); }
   | '{' CaseClausesOpt DefaultClause CaseClausesOpt '}'
                                    { $$ = new CaseBlockNode($2, $3, $4); }
 ;
 
 CaseClausesOpt:
-    /* nothing */                  { $$ = 0L; }
+    /* nothing */                  { $$ = 0; }
   | CaseClauses
 ;
 
@@ -551,13 +555,13 @@ CaseClauses:
 ;
 
 CaseClause:
-    CASE Expr ':'                  { $$ = new CaseClauseNode($2, 0L); }
+    CASE Expr ':'                  { $$ = new CaseClauseNode($2); }
   | CASE Expr ':' StatementList    { $$ = new CaseClauseNode($2, $4); }
 ;
 
 DefaultClause:
-    DEFAULT ':'                    { $$ = new CaseClauseNode(0L, 0L); }
-  | DEFAULT ':' StatementList      { $$ = new CaseClauseNode(0L, $3); }
+    DEFAULT ':'                    { $$ = new CaseClauseNode(0); }
+  | DEFAULT ':' StatementList      { $$ = new CaseClauseNode(0, $3); }
 ;
 
 LabelledStatement:
@@ -572,7 +576,7 @@ ThrowStatement:
 
 TryStatement:
     TRY Block Catch                { $$ = new TryNode($2, $3); DBG($$,@1,@1); }
-  | TRY Block Finally              { $$ = new TryNode($2, 0L, $3); DBG($$,@1,@1); }
+  | TRY Block Finally              { $$ = new TryNode($2, $3); DBG($$,@1,@1); }
   | TRY Block Catch Finally        { $$ = new TryNode($2, $3, $4); DBG($$,@1,@1); }
 ;
 
@@ -612,14 +616,14 @@ FormalParameterList:
 ;
 
 FunctionBody:
-    '{' '}'  /* TODO: spec ??? */  { $$ = new FunctionBodyNode(0L);
+    '{' '}'  /* TODO: spec ??? */  { $$ = new FunctionBodyNode(0);
 	                             DBG($$, @1, @2);}
   | '{' SourceElements '}'         { $$ = new FunctionBodyNode($2);
 	                             DBG($$, @1, @3);}
 ;
 
 Program:
-    /* nothing, empty script */      { $$ = new FunctionBodyNode(0L);
+    /* nothing, empty script */      { $$ = new FunctionBodyNode(0);
                                      $$->setLoc(0, 0, Parser::source);
                                      Parser::progNode = $$; }
     | SourceElements                 { $$ = new FunctionBodyNode($1);

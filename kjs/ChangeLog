@@ -1,3 +1,9 @@
+2003-11-02  Harri Porten  <harri@froglogic.com>
+
+	* nodes.h: list handling fix for CaseClausNode by Darin Adler
+
+	* grammar.y: added CatchNode and FinallyNode types for greater type safety
+
 2003-10-29  Harri Porten  <porten@kde.org>
 
 	* object.cpp (call): patch from Maciej that makes us back away
@@ -11,10 +17,10 @@
 	functions.
 
 	* ustring.cpp: more and correct use of memcpy()
-	
+
 	* ustring.*: store length within CString to be able to have
 	null bytes in the string (JavaScriptCore)
-	
+
 	* added Apple's Identifier::toArrayIndex() and use it in
 	ArrayInstanceImp instead of our range validity checks
 

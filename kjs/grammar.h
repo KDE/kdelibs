@@ -27,9 +27,10 @@ typedef union {
   Operator            op;
   PropertyValueNode   *plist;
   PropertyNode        *pnode;
+  CatchNode           *cnode;
+  FinallyNode         *fnode;
 } yystype;
 # define YYSTYPE yystype
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 #ifndef YYLTYPE
@@ -43,7 +44,6 @@ typedef struct yyltype
 } yyltype;
 
 # define YYLTYPE yyltype
-# define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 # define	NULLTOKEN	257

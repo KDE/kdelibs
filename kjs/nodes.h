@@ -864,8 +864,9 @@ namespace KJS {
 
   class CaseClauseNode: public Node {
   public:
+    CaseClauseNode(Node *e) : expr(e), list(0) { }
     CaseClauseNode(Node *e, StatListNode *l)
-      : expr(e) { if (l) { list = l; l->list = 0; } else { list = 0; } }
+      : expr(e), list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -976,8 +977,12 @@ namespace KJS {
 
   class TryNode : public StatementNode {
   public:
-    TryNode(StatementNode *b, Node *c = 0L, Node *f = 0L)
-      : block(b), _catch((CatchNode*)c), _final((FinallyNode*)f) {}
+    TryNode(StatementNode *b, CatchNode *c)
+      : block(b), _catch(c), _final(0) {}
+    TryNode(StatementNode *b, FinallyNode *f)
+      : block(b), _catch(0), _final(f) {}
+    TryNode(StatementNode *b, CatchNode *c, FinallyNode *f)
+      : block(b), _catch(c), _final(f) {}
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -1055,7 +1060,7 @@ namespace KJS {
   // A linked list of source element nodes
   class SourceElementsNode : public StatementNode {
   public:
-    // list is circular until cracked in BlockNode/FunctionBodyNode ctor
+    // list is circular until cracked in BlockNode (or subclass) ctor
     SourceElementsNode(StatementNode *s1);
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
     virtual void ref();
