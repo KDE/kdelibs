@@ -241,7 +241,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
   Q_LONG written = 0;
   
   // walk the buffer
-  while (it != end && len)
+  while (it != end && (len || len == -1))
     {
       // we have to write each element up to len bytes
       // but since we can have several very small buffers, we can make things
@@ -254,7 +254,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
       QByteArray buf(bufsize);
       Q_LONG count = 0;
 
-      while (it != end && count + ((*it).size() - offset) < bufsize)
+      while (it != end && count + ((*it).size() - offset) <= bufsize)
 	{
 	  memcpy(buf.data() + count, (*it).data() + offset, (*it).size() - offset);
 	  count += (*it).size() - offset;
