@@ -234,6 +234,7 @@ public:
    */
   virtual ~ReadOnlyPart();
 
+public slots:
   /**
    * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement @ref openFile() only .
@@ -243,6 +244,7 @@ public:
    */
   virtual bool openURL( const KURL &url );
 
+public:
   /**
    *  Retrieves the currently in part used URL.
    *
