@@ -95,6 +95,8 @@ public:
 
     /**
      * Sets the mode of the file dialog.
+     * Note: you can only select one file with the filedialog,
+     * so KFile::Files doesn't make much sense.
      * @see KFileDialog::setMode()
      */
     void setMode( unsigned int m );
