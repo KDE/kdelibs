@@ -131,7 +131,7 @@ void KFM::init()
 	    return;
 	}
 	
-	warning("ERROR: KFM is not running");
+	if (!silent) warning("ERROR: KFM is not running");
 	return;
     }
     
@@ -142,7 +142,7 @@ void KFM::init()
     int pid = atoi( buffer );
     if ( pid <= 0 )
     {
-	warning("ERROR: Invalid PID");
+	if (!silent) warning("ERROR: Invalid PID");
 	fclose( f );
 	return;
     }
@@ -162,7 +162,7 @@ void KFM::init()
 	    return;
 	}
 
-	warning("ERROR: KFM crashed");
+	if (!silent) warning("ERROR: KFM crashed");
 	fclose( f );
 	return;
     }
@@ -174,7 +174,7 @@ void KFM::init()
     char * slot = strdup( buffer );
     if ( slot == (void *) 0 )
     {
-	warning("ERROR: Invalid Slot");
+	if (!silent) warning("ERROR: Invalid Slot");
 	return;
     }
     
@@ -321,10 +321,10 @@ void KFM::moveClient( const char *_src, const char *_dest )
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-    warning( "KFM call: selectRootIcons");
+    //warning( "KFM call: selectRootIcons");
     if ( !test() )
 	return;
-    warning( "KFM doing call");
+    //warning( "KFM doing call");
     
     ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
@@ -392,6 +392,10 @@ void KFM::slotDirEntry(const char* _name, const char* _access, const char* _owne
   entry.size = _size;
   emit dirEntry( entry );
 }
+
+//static
+void KFM::setSilent(bool _silent) { silent = _silent; }
+bool KFM::silent = false;
 
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )

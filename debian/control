@@ -4,18 +4,17 @@ Priority: extra
 Maintainer: Stephan Kulow <coolo@kde.org>
 Standards-Version: 2.1.2.2
 
-Package: kdelibs0g-dev
+Package: kdelibs2g-dev
 Architecture: any
-Depends: kdelibs0g (= ${Source-Version}), qt1g-dev, libjpegg-dev (>= 6a), xlib6g-dev
+Depends: kdelibs2g (= ${Source-Version}), qt1g-dev, libjpeg62-dev, xlib6g-dev
 Conflicts: kdelibs0-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
 
-Package: kdelibs0g
+Package: kdelibs2g
 Architecture: any
-Conflicts: kdelibs0g, kdelibs0
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, libjpeg62
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.

@@ -719,7 +719,7 @@ void KSpell::check2 (KProcIO *)
     {
       ksdlg->hide();
       buffer=newbuffer.data();
-      kdebug (KDEBUG_WARN, 750, "check2() done");
+      kdebug (KDEBUG_INFO, 750, "check2() done");
       emit done (buffer.data());
     }
 
@@ -854,7 +854,7 @@ KSpellConfig KSpell::ksConfig (void) const
 
 void KSpell::cleanUp ()
 {
-  kdebug(KDEBUG_WARN, 750, "KSpell::cleanUp()");
+  kdebug(KDEBUG_INFO, 750, "KSpell::cleanUp()");
   if (personaldict)
     writePersonalDictionary();
   cleaning=TRUE;
@@ -863,7 +863,7 @@ void KSpell::cleanUp ()
 
 void KSpell::ispellExit (KProcess *)
 {
-  kdebug(KDEBUG_WARN, 750, "KSpell::ispellExit()");
+  kdebug(KDEBUG_INFO, 750, "KSpell::ispellExit()");
 
   if (cleaning)
     {

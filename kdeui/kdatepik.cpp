@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
-              (C) 1998 Mirko Sucker (mirko.sucker@hamburg.netsurf.de)
+              (C) 1998, 1999 Mirko Sucker (mirko@kde.org)
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -20,7 +20,7 @@
 /////////////////// KDatePicker widget class //////////////////////
 //
 // Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998 Mirko Sucker
+//           (C) 1998, 1999 Mirko Sucker
 // Original header from Tim:
 // This version of the class is the first release.  Please
 // send comments/suggestions/bug reports to <tdgilman@best.com>

@@ -12,7 +12,7 @@ AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(kdelibs, 1.1) dnl searches for some needed programs
+AM_INIT_AUTOMAKE(kdelibs, 1.1.1pre) dnl searches for some needed programs
 AC_PROG_INSTALL
 
 dnl make $KDEDIR the default for the installation
@@ -106,6 +106,8 @@ AC_CHECK_USLEEP
 AC_CHECK_SETENV
 AC_CHECK_GETDOMAINNAME
 AC_CHECK_GETHOSTNAME
+AC_CHECK_RANDOM
+AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
 
 if test -n "$qt_includes"; then
@@ -127,33 +129,13 @@ AC_SUBST(LIBCOMPAT)
 dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
 
-AC_ARG_ENABLE(new-stuff, [  --enable-new-stuff      compile the experimental code too], [
-    if test "$enableval" = "no";
-      then ac_new_stuff="no"
-    else ac_new_stuff="yes"
-  fi
-  ], [ac_new_stuff="no"]
-  )
-  
-if test "$ac_new_stuff" = "yes"; then
-  EXTRA_SUBDIRS="kdeutils kio khtml"
-else
-  EXTRA_SUBDIRS=""
-fi
-
-AC_SUBST(EXTRA_SUBDIRS)
-
 AC_OUTPUT(Makefile \
-	kio/Makefile \
 	kdecore/Makefile \
 	kdeui/Makefile \
 	kimgio/Makefile \
 	khtmlw/Makefile \
-	khtml/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
-	kdeutils/Makefile \
-	kio/Makefile \
 	jscript/Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \

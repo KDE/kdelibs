@@ -1,3 +1,15 @@
+1999-03-29  Harri Porten  <porten@kde.org>
+
+	* keditcl1.cpp: i18n'ed "Untitled" (Save As ... bug)
+	* keditcl2.cpp: gave QMessageBox'es more appropriate parents
+
+1999-03-04  Harri Porten  <porten@kde.org>
+
+	* kquickhelp.*: changed 'tips' to be a pointer instead of an object.
+	This fixes the segfaults on HP/UX and probably the ones on NetBSD.
+	* kquickhelp.*: use setuid()/setgid() instead of the not-so-portable
+	seteuid()/setegid() pair. Reversed the order, too.
+
 1998-11-09  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kmenubar.h: Fix up some of the comments so they're gramatically

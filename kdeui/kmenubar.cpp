@@ -41,6 +41,12 @@
 
 // $Id$
 // $Log$
+// Revision 1.63.2.1  1999/03/06 21:45:58  radej
+// sven: Flat/Unflat with LMB too. Arrows and animation to come.
+//
+// Revision 1.63  1999/02/05 19:16:54  ettrich
+// fixed mac-style toggling for applications with multiple toplevel windows
+//
 //
 // Revision 1.63  1999/02/05 19:16:54  ettrich
 // fixed mac-style toggling for applications with multiple toplevel windows
@@ -173,6 +179,7 @@
 // Bugfixes: Unhighlighting a handle and catching the fast click
 
 // Revision 1.25  1998/05/07 23:13:09  radej
+static bool toggleFlatOnRelease = false;
 // Moving with KToolBoxManager
 //
 
@@ -189,6 +196,23 @@ _menuBar::_menuBar (QWidget *parent, const char *name)
 _menuBar::~_menuBar ()
  {
  }
+
+
+// workaround for qt-1.44's slightly changed menu bar handling
+
+void _menuBar::resizeEvent( QResizeEvent* e)
+{
+    static bool inHere = FALSE;
+    
+    if (inHere)
+	return;
+    
+    inHere = TRUE;
+    QMenuBar::resizeEvent( e );
+    inHere = FALSE;
+    // ignore;
+}
+
 
 static bool standalone_menubar = FALSE;
 
@@ -237,6 +261,7 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   int hwidth = 9;
   if (standalone_menubar)
     hwidth = 20;
+  
 
   frame->setGeometry(hwidth , 0, width()-hwidth,
                      menu->heightForWidth(width()-hwidth));
@@ -485,8 +510,16 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 	  buttonDownOnHandle = FALSE;
 	  context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
 	  ContextCallback(0);
-      else if (position != Flat)
+      else if (((QMouseEvent*)ev)->button() == LeftButton)
+        toggleFlatOnRelease=true;
+      return TRUE;
+    }
+
+    if (ev->type() == Event_MouseMove &&
+        ((QMouseEvent*) ev)->state() == LeftButton &&
+        toggleFlatOnRelease)
       {
+        toggleFlatOnRelease = false;
         //Move now
         QRect rr(Parent->geometry());
         int ox = rr.x();
@@ -523,15 +556,17 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         mgr=0;
         handle->repaint(false);
         //debug ("KMenuBar: moving done");
+        return true; // Or false? Never knew what evFilter returns...
       }
-      return TRUE;
-		//debug ("KMenuBar: moving done");
-	    }
+
     if (ev->type() == Event_MouseButtonRelease)
 	return TRUE;
 	if (mgr)
-	  mgr->stop();
-	return TRUE;
+          mgr->stop();
+        if (toggleFlatOnRelease && position != Floating)
+          setFlat (position != Flat);
+        toggleFlatOnRelease = false;
+        return TRUE;
 	      mgr->stop();
 	  if ( position != Floating)
     if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){

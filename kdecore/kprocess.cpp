@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29  1999/01/18 10:56:22  kulow
+   .moc files are back in kdelibs. Built fine here using automake 1.3
+
    Revision 1.28  1999/01/15 09:30:40  kulow
    it's official - kdelibs builds with srcdir != builddir. For this I
    automocifized it, the generated rules are easier to maintain than
@@ -138,6 +141,8 @@ KProcess::~KProcess()
 
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
+
+  // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
 
@@ -219,6 +224,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	// Matthias
 	if (run_mode == DontCare)
           setpgid(0,0);
+
+        // restore default SIGPIPE handler (restore)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
 
 	execvp(arglist[0], arglist);
 	exit(-1);
@@ -618,6 +631,14 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// Matthias
 	if (run_mode == DontCare)
           setpgid(0,0);
+
+        // restore default SIGPIPE handler (restore)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
 
 	execvp(arglist[0], arglist);
 	exit(-1);

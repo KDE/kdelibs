@@ -262,7 +262,7 @@ extern int _nl_explode_name  (char *name, const char **language,
 struct loaded_l10nfile *_nl_find_domain  (const char *__dirname,
 					  char *__locale,
 					  const char *__domainname);
-void _nl_load_domain(struct loaded_l10nfile *__domain);
+void k_nl_load_domain(struct loaded_l10nfile *__domain);
 
 static inline nls_uint32
 SWAP (nls_uint32  i)
@@ -289,7 +289,7 @@ static inline unsigned long hash_string  (const char *__str_param);
 
 
 /* Contains the default location of the message catalogs.  */
-extern const char _nl_default_dirname[];
+extern const char k_nl_default_dirname[];
 
 /* List with bindings of specific domains.  */
 extern struct binding *_nl_domain_bindings;
@@ -348,15 +348,15 @@ k_bindtextdomain(const char *domainname, const char *dirname)
 
   if (dirname == NULL)
     /* The current binding has be to returned.  */
-    return binding == NULL ? (char *) _nl_default_dirname : binding->dirname;
+    return binding == NULL ? (char *) k_nl_default_dirname : binding->dirname;
 
   if (binding != NULL)
     {
       /* The domain is already bound.  Replace the old binding.  */
       char *new_dirname;
 
-      if (strcmp (dirname, _nl_default_dirname) == 0)
-	new_dirname = (char *) _nl_default_dirname;
+      if (strcmp (dirname, k_nl_default_dirname) == 0)
+	new_dirname = (char *) k_nl_default_dirname;
       else
 	{
 	  size_t len = strlen (dirname) + 1;
@@ -367,7 +367,7 @@ k_bindtextdomain(const char *domainname, const char *dirname)
 	  memcpy (new_dirname, dirname, len);
 	}
 
-      if (strcmp (binding->dirname, _nl_default_dirname) != 0)
+      if (strcmp (binding->dirname, k_nl_default_dirname) != 0)
         free (binding->dirname);
 
       binding->dirname = new_dirname;
@@ -388,8 +388,8 @@ k_bindtextdomain(const char *domainname, const char *dirname)
 	  return NULL;
       memcpy (new_binding->domainname, domainname, len);
 
-      if (strcmp (dirname, _nl_default_dirname) == 0)
-	new_binding->dirname = (char *) _nl_default_dirname;
+      if (strcmp (dirname, k_nl_default_dirname) == 0)
+	new_binding->dirname = (char *) k_nl_default_dirname;
       else
 	{
 	  len = strlen (dirname) + 1;
@@ -476,10 +476,10 @@ static char *stpcpy  (char *dest, const char *src);
 const char _nl_default_default_domain[] = "messages";
 
 /* Value used as the default domain for gettext(3).  */
-const char *_nl_current_default_domain = _nl_default_default_domain;
+const char *k_nl_current_default_domain = _nl_default_default_domain;
 
 /* Contains the default location of the message catalogs.  */
-const char _nl_default_dirname[] = GNULOCALEDIR;
+const char k_nl_default_dirname[] = GNULOCALEDIR;
 
 /* List with bindings of specific domains created by bindtextdomain()
    calls.  */
@@ -539,7 +539,7 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
   char *single_locale;
   char *retval;
   int saved_errno = errno;
-  const char *_domainname = (domainname == 0L) ? _nl_current_default_domain : domainname;     
+  const char *_domainname = (domainname == 0L) ? k_nl_current_default_domain : domainname;     
 
   /* If no real MSGID is given return NULL.  */
   if (msgid == NULL)
@@ -561,7 +561,7 @@ k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalu
     }
 
   if (binding == NULL)
-    dirname = (char *) _nl_default_dirname;
+    dirname = (char *) k_nl_default_dirname;
   else if (binding->dirname[0] == '/')
     dirname = binding->dirname;
   else
@@ -699,7 +699,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
   struct loaded_domain *domain;
 
   if (domain_file->decided == 0)
-    _nl_load_domain (domain_file);
+    k_nl_load_domain (domain_file);
 
   if (domain_file->data == NULL)
     return NULL;
@@ -988,7 +988,7 @@ _nl_find_domain (const char *dirname, char *locale,
       int cnt;
 
       if (retval->decided == 0)
-	_nl_load_domain (retval);
+	k_nl_load_domain (retval);
 
       if (retval->data != NULL)
 	return retval;
@@ -996,7 +996,7 @@ _nl_find_domain (const char *dirname, char *locale,
       for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
 	{
 	  if (retval->successor[cnt]->decided == 0)
-	    _nl_load_domain (retval->successor[cnt]);
+	    k_nl_load_domain (retval->successor[cnt]);
 
 	  if (retval->successor[cnt]->data != NULL)
 	    break;
@@ -1037,14 +1037,14 @@ _nl_find_domain (const char *dirname, char *locale,
     return NULL;
 
   if (retval->decided == 0)
-    _nl_load_domain (retval);
+    k_nl_load_domain (retval);
   if (retval->data == NULL)
     {
       int cnt;
       for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
 	{
 	  if (retval->successor[cnt]->decided == 0)
-	    _nl_load_domain (retval->successor[cnt]);
+	    k_nl_load_domain (retval->successor[cnt]);
 	  if (retval->successor[cnt]->data != NULL)
 	    break;
 	}
@@ -1374,13 +1374,13 @@ _nl_normalize_codeset (const char *codeset, size_t name_len)
 /* We need a sign, whether a new catalog was loaded, which can be associated
    with all translations.  This is important if the translations are
    cached by one of GCC's features.  */
-int _nl_msg_cat_cntr = 0;
+int k_nl_msg_cat_cntr = 0;
 
 
 /* Load the message catalogs specified by FILENAME.  If it is no valid
    message catalog do nothing.  */
 void
-_nl_load_domain (struct loaded_l10nfile *domain_file)
+k_nl_load_domain (struct loaded_l10nfile *domain_file)
 {
   int fd;
   struct stat st;
@@ -1509,7 +1509,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
 
   /* Show that one domain is changed.  This might make some cached
      translations invalid.  */
-  ++_nl_msg_cat_cntr;
+  ++k_nl_msg_cat_cntr;
 }
 
 struct alias_map
@@ -1771,7 +1771,7 @@ alias_compare (const struct alias_map *map1,
 extern const char _nl_default_default_domain[];
 
 /* Default text domain in which entries for gettext(3) are to be found.  */
-extern const char *_nl_current_default_domain;
+extern const char *k_nl_current_default_domain;
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
@@ -1783,30 +1783,30 @@ k_textdomain (const char *domainname)
 
   /* A NULL pointer requests the current setting.  */
   if (domainname == NULL)
-    return (char *) _nl_current_default_domain;
+    return (char *) k_nl_current_default_domain;
 
-  old = (char *) _nl_current_default_domain;
+  old = (char *) k_nl_current_default_domain;
 
   /* If domain name is the null string set to default domain "messages".  */
   if (domainname[0] == '\0'
       || strcmp (domainname, _nl_default_default_domain) == 0)
-    _nl_current_default_domain = _nl_default_default_domain;
+    k_nl_current_default_domain = _nl_default_default_domain;
   else
     {
-      /* If the following malloc fails `_nl_current_default_domain'
+      /* If the following malloc fails `k_nl_current_default_domain'
 	 will be NULL.  This value will be returned and so signals we
 	 are out of core.  */
       size_t len = strlen (domainname) + 1;
       char *cp = (char *) malloc (len);
       if (cp != NULL)
 	memcpy (cp, domainname, len);
-      _nl_current_default_domain = cp;
+      k_nl_current_default_domain = cp;
     }
 
   if (old != _nl_default_default_domain)
     free (old);
 
-  return (char *) _nl_current_default_domain;
+  return (char *) k_nl_current_default_domain;
 }
 
 

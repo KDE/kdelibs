@@ -20,6 +20,12 @@
 
 //$Id$
 //$Log$
+//Revision 1.15.4.1  1999/03/24 16:48:57  ettrich
+//workaround for qt-1.44 behaviour
+//
+//Revision 1.15  1998/12/16 01:27:14  ettrich
+//fixed slightly broken macstyle removal
+//
 //Revision 1.14  1998/11/25 13:24:53  radej
 //sven: Someone changed protected things to private (was it me?).
 //
@@ -58,6 +64,8 @@ class _menuBar : public QMenuBar
  public:
    _menuBar(QWidget *parent=0, const char *name=0);
    ~_menuBar();
+protected:
+     void resizeEvent( QResizeEvent* );
  };
 
 #include <qmenubar.h>
@@ -115,6 +123,7 @@ class KMenuBar : public QFrame
    /**
     * Enables/disables floating.
     */
+    * This cannot be used to set toolbar flat. For that, use @ref setFlat .
    void enableFloating(bool flag = TRUE);
 
    /**
@@ -150,6 +159,10 @@ class KMenuBar : public QFrame
    virtual void changeItem(const QString& text, int id);
    virtual void setItemChecked(int id , bool flag);
    virtual void setItemEnabled(int id, bool flag);
+   /**
+   * This method switches flat/unflat mode. Carefull: might not work
+   * If menubar is floating.
+   */
    virtual int idAt( int index );
 
    int heightForWidth ( int max_width ) const;

@@ -44,6 +44,12 @@
 /* Define if you have usleep */
 #undef HAVE_USLEEP
 
+/* Define if you have random */
+#undef HAVE_RANDOM
+
+/* Define if you have S_ISSOCK */
+#undef HAVE_S_ISSOCK
+
 /* This is the prefix of the below paths. This may change in the future */
 #undef KDEDIR
 
@@ -152,5 +158,16 @@ int gethostname (char *Name, int Namelen);
  */
 #ifdef _UNIXWARE
 #define HAVE_BOOLEAN
+#endif
+
+#ifndef HAVE_RANDOM
+#define HAVE_RANDOM
+long int random(void); // defined in fakes.cpp
+void srandom(unsigned int seed);
+#endif 
+
+#ifndef HAVE_S_ISSOCK
+#define HAVE_S_ISSOCK
+#define S_ISSOCK(mode) (1==0)
 #endif
 

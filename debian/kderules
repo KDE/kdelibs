@@ -2,6 +2,62 @@
 
 use Shell qw(mv cp mkdir rm) ;
 use File::Find;
+use Cwd;
+
+if (@ARGV && $ARGV[0] eq 'update') {
+  @packages = `ls -1d debian/*/DEBIAN`;
+  foreach $dir (@packages) {
+    chomp $dir;
+    next if (! -d $dir);
+    foreach $file (qw{postinst postrm preinst prerm}) {  
+      next if (! -f "$dir/$file");
+      $found = 0;
+      open(IN, "$dir/$file");
+      open(OUT, ">/tmp/kde.dpkg");
+      while (<IN>) { 
+	if (/^#KDEHELPER#/) {
+	    $found = 1;
+	    if (-d $dir . "/../usr/lib/mime/packages") {
+	      if ($file eq 'postinst') {
+		print OUT "# added by kderules\n";
+		print OUT 'case "$1" in' . "\n";
+		print OUT "  configure)\n";
+		print OUT "    if [ -x /usr/sbin/update-mime ]; then\n";
+		print OUT "       update-mime\n";
+		print OUT "    fi\n";
+		print OUT "  ;;\n";
+		print OUT "esac\n";
+	      } elsif ($file eq 'postrm') {
+		print OUT "# added by kderules\n";
+		print OUT 'case "$1" in' . "\n";
+		print OUT "   remove|purge)\n";
+		print OUT "    if [ -x /usr/sbin/update-mime ]; then\n";
+		print OUT "       update-mime\n";
+		print OUT "    fi\n";
+		print OUT "  ;;\n";
+		print OUT "esac\n";
+	      }
+	    }
+	    
+	    next;
+	  }
+	print OUT $_;
+      }
+      
+      close IN;
+      close OUT;
+
+      if ($found == 0) {
+	rm("/tmp/kde.dpkg");
+      } else {
+	mv("/tmp/kde.dpkg", "$dir/$file");
+	chown("root.root","dir/$file");
+	chmod(0755,"$dir/$file");   
+      }
+    }
+  }
+  exit;
+}
 
 open(CHANGELOG,"debian/changelog") 
 	or die "can't read debian/changelog : $!\n";
@@ -22,7 +78,15 @@ sub docwanted {
 	}
 }
 
-find(\&docwanted,".");
+$pwd = cwd();
+
+find(\&docwanted, $pwd);
+if ($pwd =~ ?^(.*/)build_([^/]*)$?) {
+  $pwd = $1 . $2;
+  if (-d $pwd) {
+     find(\&docwanted, $pwd);
+  }
+}
 
 if (! -d "debian/tmp/usr/doc/$package") {
 	mkdir("-p", "debian/tmp/usr/doc/$package") ;
@@ -32,7 +96,9 @@ if (! -d "debian/tmp/usr/X11R6/include/X11/pixmaps") {
        mkdir("-p", "debian/tmp/usr/X11R6/include/X11/pixmaps");
 }
 
-cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
+if (@docs) {
+       cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
+}
 
 # Create debian/menu files
 
@@ -56,6 +122,7 @@ if (-e "debian/menu.in") {
 }
 
 open MENU, ">debian/menu" or die "can't open debian/menu : $!\n";
+open MIME, ">debian/mailcap" or die "can't open debian/mailcap : $!\n";
 
 foreach $file (@lnkfiles) {
 	open KDELNK, $file;
@@ -71,16 +138,33 @@ foreach $file (@lnkfiles) {
 	close KDELNK;
 	if (defined $kdelnk{"Type"}) {
 		if ($kdelnk{"Type"} ne "Application" ) {
-			print "Type is not Application : $file !\n" ;
+			print STDERR "Type is not Application : $file !\n" ;
 			next ;
 		}
 	} else {
-		print "has no Type= defaults to Application : $file !\n" ;
+		print STDERR "has no Type= defaults to Application : $file !\n" ;
 	}
 	if (! defined $kdelnk{"Exec"}) {
-		print "has no Exec= : $file !\n" ;
+		print STDERR "has no Exec= : $file !\n" ;
 		next ;
 	}
+
+	if (defined $kdelnk{"Mimetype"} && ! $kdelnk{"Mimetype"} eq '') {
+
+  	   $execline = $kdelnk{"Exec"};
+	   $execline =~ s/%f/%s/;
+	   $execline =~ s/%c/$kdelnk{"Name"}/;
+	   $execline =~ s/%i//;
+	   $execline =~ s/%m//;
+	   $execline =~ s/%u/%s/;
+	   $mimeline = $kdelnk{"Mimetype"};
+	   @mimetypes = split(';', $mimeline);
+	   foreach $mimetype (@mimetypes) {
+	   print MIME "$mimetype; $execline;" . 'test=test "$DISPLAY" != ""; priority=7' . "\n";
+	   }
+
+	}
+
 	($prog,)=split / /, $kdelnk{"Exec"} ;
 	if (! defined($type{$prog})) {
 		open MENUIN, ">>debian/menu.in" ;
@@ -91,7 +175,7 @@ foreach $file (@lnkfiles) {
 	if ($sect{$prog} eq "NONE") { next ; }
 	$icon="";
 	if (not defined $kdelnk{"Name"}) {
-		print "No Name : $package $kdelnk";
+		print STDERR "No Name : $package $kdelnk";
 		next ;
 	}
 	if (defined $kdelnk{"Icon"}) {
@@ -109,8 +193,9 @@ foreach $file (@lnkfiles) {
 	print MENU "	section=$sect{$prog}\\\n" ;
 	print MENU "	title=\"$kdelnk{Name}\"\\\n" ;
 	print MENU "	command=$prog\\\n" ;
-	print MENU "	icon=\"$icon\"\\\n" ;
-	print MENU "	kdelnk=$kdelnk\n\n" ;
+	print MENU "	icon=\"$icon\"\n" ;
+#	print MENU "	kdelnk=$kdelnk\n\n" ;
+
 }
 
 if (-e "debian/menu.add") {
@@ -125,5 +210,14 @@ close MENU;
 
 if (-z "debian/menu") {
 	rm("debian/menu");
+}
+
+close MIME;
+
+if (-z "debian/mailcap") {
+  rm("debian/mailcap");
+} else {
+  mkdir("-p", "debian/tmp/usr/lib/mime/packages");
+  cp("debian/mailcap", "debian/tmp/usr/lib/mime/packages/$package");
 }
 

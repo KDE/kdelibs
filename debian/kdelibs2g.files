@@ -1,6 +1,6 @@
 usr/X11R6/lib/lib*.so.*
 etc/kde/charsets
+etc/kde/kdebug.areas
 usr/doc/kde
 usr/share
 usr/doc/kdelibs
-usr/share

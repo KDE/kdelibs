@@ -78,7 +78,7 @@ void ksprintf(QString *str, const char *fmt, ...)
     va_start( ap, fmt );
 
     int i = 0;
-    int len = 255; // default is the same as in QString::sprintf
+    int len = 255 + strlen(fmt); // default is the same as in QString::sprintf
     int dummy; // this ugly hack is just to avoid warnings
 
     while (fmt[i+1]) {

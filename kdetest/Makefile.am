@@ -19,7 +19,7 @@
 
 
 INCLUDES = -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES)
-LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs $(QT_LDFLAGS) $(X_LDFLAGS)
+LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 LDADD = $(LIB_KDEUI)
 
@@ -30,7 +30,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kcharsetstest kledtest kcontainertest klocaletest krulertest \
-		knotebooktest kwizardtest kquickhelptest
+		knotebooktest kwizardtest kquickhelptest kurltest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -72,6 +72,7 @@ kspinboxtest_SOURCES = kspinboxtest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp 
 ktabctltest_SOURCES = ktabctltest.cpp 
 ktreelisttest_SOURCES = ktreelisttest.cpp 
+kurltest_SOURCES = kurltest.cpp 
 kwindowtest_SOURCES = kwindowtest.cpp 
 kwizardtest_SOURCES = kwizardtest.cpp
 

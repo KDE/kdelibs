@@ -1,3 +1,34 @@
+kdelibs (4:1.1.1-19990424-1) unstable; urgency=low
+
+  * new upstream version for KDE 1.1.1
+
+ -- Stephan Kulow <coolo@kde.org>  Sat, 24 Apr 1999 16:53:56 +0200
+
+kdelibs (4:1.1-19990306-1) unstable; urgency=low
+
+  * new upstream version out of CVS (many translation updates and some
+    security fixes
+
+ -- Stephan Kulow <coolo@kde.org>  Sat,  6 Mar 1999 18:03:04 +0100
+
+kdelibs (4:1.1-19990217-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Stephan Kulow <coolo@kde.org>  Wed, 17 Feb 1999 19:09:42 +0100
+
+kdelibs (4:1.1-19990207-2) unstable; urgency=low
+
+  * fixed a bug with the jpeglib version
+
+ -- Stephan Kulow <coolo@kde.org>  Tue,  9 Feb 1999 09:31:40 +0100
+
+kdelibs (4:1.1-19990207-1) unstable; urgency=low
+
+  * new upstream version 1.1 and new epoche
+
+ -- Stephan Kulow <coolo@kde.org>  Sun,  7 Feb 1999 12:12:58 +0100
+
 kdelibs (2:980710-1.0-1) unstable; urgency=low
 
   * new upstream version 1.0

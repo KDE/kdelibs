@@ -89,12 +89,18 @@ void KProcessController::theSigCHLDHandler(int )
   // since waitpid and write change errno, we have to save it and restore it
   // (Richard Stevens, Advanced programming in the Unix Environment)
 
-  this_pid = waitpid(-1, &status, WNOHANG);
-  // J6t: theKProcessController might be already destroyed
-  if (-1 != this_pid && theKProcessController != 0) {
-    ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
-    ::write(theKProcessController->fd[1], &status, sizeof(status));
+  // Waba: Check for multiple childs exiting at the same time
+  do
+  {
+    this_pid = waitpid(-1, &status, WNOHANG);
+    // J6t: theKProcessController might be already destroyed
+    if ((this_pid > 0) && (theKProcessController != 0)) {
+      ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
+      ::write(theKProcessController->fd[1], &status, sizeof(status));
+    }
   }
+  while (this_pid > 0); 
+
   errno = saved_errno;
 }
 

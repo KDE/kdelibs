@@ -20,6 +20,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.122.4.1  1999/04/13 00:20:22  dmuell
+// don't create /.kde/share/config for kdm.
+//
+// Revision 1.122  1999/01/18 10:56:12  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.121  1999/01/15 09:30:30  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
@@ -415,7 +421,8 @@ void KApplication::init()
   QString configPath = KApplication::localkdedir();
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   // But we'll check at least for access permissions (for SUID case)
-  if ( checkAccess(configPath, W_OK) ) {
+  // Don't access if ~/ is unknown (as in kdm).
+  if ( (QDir::home() != QDir::root()) && checkAccess(configPath, W_OK) ) {
     if ( mkdir (configPath.data(), 0755) == 0) {  // make it public(?)
       chown(configPath.data(), getuid(), getgid());
       configPath += "/share";
@@ -643,7 +650,7 @@ void KApplication::aboutKDE()
 "free software development.\n\n"
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n\n"
-"Please report bugs at http://buglist.kde.org.\n"
+"Please report bugs at http://bugs.kde.org.\n"
 ));
 }
 

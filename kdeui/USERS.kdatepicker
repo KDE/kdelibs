@@ -1,11 +1,11 @@
 This file contains known users of the KDatePicker class. It is used to 
 inform users about new features and for seeking bugs.
-It is maintained by Mirko Sucker (mirko.sucker@unibw-hamburg.de).
+It is maintained by Mirko Sucker (mirko@kde.org).
 If you use the class in your application and are not listed here, 
 send me an email.
 
 Programs using KDatePicker are
 
 korganizer (preston.brown@yale.edu)
-kab (mirko.sucker@unibw-hamburg.de)
+kab (mirko@kde.org)
 

@@ -37,7 +37,7 @@
 #ifdef KAB_VERSION
 #undef KAB_VERSION
 #endif
-#define KAB_VERSION 0.9
+#define KAB_VERSION 1.0
 // -----------------------------
 
 class AddressBook : public ConfigDB

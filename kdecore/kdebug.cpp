@@ -130,6 +130,7 @@ void kdebug_null( ushort nLevel, ushort nArea,
 void kdebug( ushort nLevel, ushort nArea, 
                          const char* pFormat, ... )
 {
+#ifndef NO_DEBUG
   // Save old group
   QString aOldGroup = kapp->getConfig()->group();
   kapp->getConfig()->setGroup( "KDebug" );
@@ -149,7 +150,7 @@ void kdebug( ushort nLevel, ushort nArea,
   switch( nLevel )
         {
         case KDEBUG_INFO:
-          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 2 );
+          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 4 );
           aCaption = "Info (" + aAppName.copy() + ")";
           nPriority = LOG_INFO;
           break;
@@ -264,6 +265,7 @@ void kdebug( ushort nLevel, ushort nArea,
 
   // restore old group
   kapp->getConfig()->setGroup( aOldGroup );
+#endif
 }
 
 
@@ -435,7 +437,7 @@ KDebugDialog::~KDebugDialog()
 
 void KDebugDialog::showHelp()
 {
-  kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
+  kapp->invokeHTMLHelp( "kdelibs/kdebug.html", "" );
 }
 
 #include "kdebugdialog.moc"

@@ -357,17 +357,80 @@ void HTMLTokenizer::write( const char *str )
 	        // Check for &abc12 sequence
 	        if (!isalnum(*src))
 	        {
-                    int len;
+	            int len;
 		    charEntity = false;
-	    	    searchBuffer[ searchCount+1] = '\0';
-		    res = charsets->convertTag(searchBuffer+1, len).copy();
-		    if (len <= 0)
-		    {
+		    // check trailing char to be ";", but only if in a tag (David)
+                    if ((searchBuffer[searchCount+1] == ';') || (!tag)) {
+	              searchBuffer[ searchCount+1] = '\0';
+	              res = charsets->convertTag(searchBuffer+1, len).copy();
+	              if (len <= 0)
+	              {
 		    	res = 0;
-		    }
+	              }
+	           }
 	        }
 	    }
-	    
+        // Mapping for MS-Windows Latin-1 extension.
+        // These mappings do not address all the extended
+        // character sets as defined by MS-Windows Latin-1
+        // extension.  Rather it only deals with those that
+        // are heavily used on web pages by MS-Windows based
+        // tools.  Some of the entities do not have corresponding
+        // enteries under ISO-8859-1, hence are not mapped. Also
+        // note that some of the mappings are close but not prefect
+        // matches! (Dawit A)
+	    switch (entityValue)
+	    {
+	    case 139:
+		entityValue = 60;
+		break;
+	    case 145:
+		entityValue = 96;
+		break;
+	    case 146:
+		entityValue = 39;
+		break;
+		// for the next 4 values mapping to a name doesn't work...
+		// perhaps it's just my computer not having these chars...
+	    case 147:
+	        //strcpy(searchBuffer+2, "ldquo");
+		//searchCount = 6;
+		//break;
+	    case 148:
+	        //strcpy(searchBuffer+2, "rdquo");
+		//searchCount = 6;
+                entityValue = 34;
+		break;
+	    case 150:
+	        //strcpy(searchBuffer+2, "ndash");
+		//searchCount = 6;
+		//break;
+	    case 151:
+	        //strcpy(searchBuffer+2, "mdash");
+		//searchCount = 6;
+                entityValue = 45;
+		break;
+	    case 152:
+		entityValue = 126;
+		break;
+	    case 155:
+		entityValue = 62;
+		break;
+	    case 133:
+	        strcpy(searchBuffer+2, "hellip");
+		searchCount = 7;
+		break;
+	    case 149:
+	        strcpy(searchBuffer+2, "bull");
+		searchCount = 5;
+		break;
+	    case 153:
+	        strcpy(searchBuffer+2, "trade");
+		searchCount = 6;
+		break;
+	    default:;
+	    }
+	
 	    if (searchCount > 8)
 	    {
 	    	// This sequence is too long.. we ignore it

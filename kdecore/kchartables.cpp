@@ -432,7 +432,7 @@ KCharsetEntry KCharsetsData::charsets[]={
     	{ "iso-8859-8",QFont::ISO_8859_8,iso_8859_8_tbl,TRUE,0,0},
     	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE,0,0},
     	{ "adobe-symbol",QFont::AnyCharSet,symbol_tbl,FALSE,0,0},
-    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE,0,0},
+//    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE,0,0},
 #if QT_VERSION >= 140	
     	{ "koi8-r",QFont::KOI8R,koi8_r_tbl,TRUE,0,0},
 #else	

@@ -519,7 +519,7 @@ void KKeyChooser::updateAction( int index )
 
 void KKeyChooser::readGlobalKeys()
 {
-	debug("KKeyChooser::readGlobalKeys()");
+	//debug("KKeyChooser::readGlobalKeys()");
 	
 	globalDict->clear();
 	
@@ -551,7 +551,7 @@ void KKeyChooser::readGlobalKeys()
 
 void KKeyChooser::readStdKeys()
 {
-	debug("KKeyChooser::readStdKeys()");
+	//debug("KKeyChooser::readStdKeys()");
 	
 	stdDict->clear();
 	
@@ -1023,7 +1023,7 @@ bool KKeyChooser::isKeyPresent()
 	
 	gIt.toFirst();
 	while ( gIt.current() ) {
-		debug("current %s:%d code %d", gIt.currentKey(), *gIt.current(), pEntry->aConfigKeyCode);
+		//debug("current %s:%d code %d", gIt.currentKey(), *gIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
@@ -1050,7 +1050,7 @@ bool KKeyChooser::isKeyPresent()
 
 	sIt.toFirst();
 	while ( sIt.current() ) {
-		debug("current %s:%d code %d", sIt.currentKey(), *sIt.current(), pEntry->aConfigKeyCode);
+		//debug("current %s:%d code %d", sIt.currentKey(), *sIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();

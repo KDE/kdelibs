@@ -99,7 +99,7 @@ again:
     if(!srchdialog->get_direction()){ // forward search
     
       int query = QMessageBox::information(
-					   this,
+					   srchdialog,
 					   klocale->translate("Find"), 
 					   klocale->translate("End of document reached.\n"\
 							      "Continue from the beginning?"), 
@@ -116,7 +116,7 @@ again:
     else{ //backward search
       
       int query = QMessageBox::information(
-					   this,
+					   srchdialog,
 					   klocale->translate("Find"), 
 					   klocale->translate("Beginning of document reached.\n"\
 							      "Continue from the end?"), 
@@ -356,7 +356,7 @@ again:
   if(!replace_dialog->get_direction()){ // forward search
     
     int query = QMessageBox::information(
-				   this,
+				   replace_dialog,
 				   klocale->translate("Find"), 
 				   klocale->translate("End of document reached.\n"\
 						      "Continue from the beginning?"), 
@@ -373,7 +373,7 @@ again:
   else{ //backward search
     
     int query = QMessageBox::information(
-				   this,
+				   replace_dialog,
 				   klocale->translate("Find"), 
 				   klocale->translate("Beginning of document reached.\n"\
 						      "Continue from the end?"), 
@@ -419,7 +419,7 @@ void KEdit::replace_search_slot(){
       else{
 
 	int query = QMessageBox::information(
-			 this,
+			 replace_dialog,
 			 klocale->translate("Replace"), 
 			 klocale->translate("Beginning of document reached.\n"\
 					    "Continue from the end?"), 
@@ -449,7 +449,7 @@ again:
     if(!replace_dialog->get_direction()){ // forward search
     
       int query = QMessageBox::information(
-				     this,
+				     replace_dialog,
 				     klocale->translate("Replace"), 
 				     klocale->translate("End of document reached.\n"\
 							"Continue from the beginning?"), 
@@ -466,7 +466,7 @@ again:
     else{ //backward search
       
       int query = QMessageBox::information(
-					   this,
+					   replace_dialog,
 					   klocale->translate("Replace"), 
 					   klocale->translate("Beginning of document reached.\n"\
 							      "Continue from the end?"), 
