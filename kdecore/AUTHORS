@@ -51,3 +51,6 @@ KCharset* classes
 These files are part of GNU Libtool, originally by 
 Thomas Tanner <tanner@gmx.de>
 ltdl.c + ltdl.h
+
+Carsten Pfeiffer <pfeiffer@kde.org>
+KCompletion classes
