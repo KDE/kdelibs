@@ -199,9 +199,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
     {
        static uint _selectAll = KStdAccel::selectAll();
-       QLineEdit *edit = dynamic_cast<QLineEdit *>(receiver);
-       if (edit)
+       if (receiver && receiver->inherits("QLineEdit"))
        {
+          QLineEdit* edit = static_cast<QLineEdit*>(receiver);
           // We have a keypress for a lineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (KStdAccel::isEqual(kevent, _selectAll))
@@ -233,12 +233,12 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
              {
                 kevent->accept();
              }
-              
+
           }
        }
-       QMultiLineEdit *medit = dynamic_cast<QMultiLineEdit *>(receiver);
-       if (medit)
+       if (receiver && receiver->inherits("QMultiLineEdit"))
        {
+          QMultiLineEdit* medit = static_cast<QMultiLineEdit*>(receiver);
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (KStdAccel::isEqual(kevent, _selectAll))
