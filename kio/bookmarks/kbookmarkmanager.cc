@@ -404,23 +404,22 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
                      const QString & _url, const QString & _title,
                      const QString & _parentBookmarkAddress 
 ) {
-    KBookmarkManager *m_pManager = this;
     QString url = _url;
     QString title = _title;
     QString parentBookmarkAddress = _parentBookmarkAddress;
 
-    if (url.isEmpty())
+    if ( url.isEmpty() )
     {
         KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
         return KBookmarkGroup();
     }
 
-    if (title.isEmpty())
+    if ( title.isEmpty() )
         title = url;
 
     if ( KBookmarkSettings::self()->m_advanced ) 
     {
-        KBookmarkEditDialog dlg( title, url, m_pManager );
+        KBookmarkEditDialog dlg( title, url, this );
         if ( dlg.exec() != KDialogBase::Accepted )
             return KBookmarkGroup();
         title = dlg.finalTitle();
@@ -429,12 +428,12 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     }
 
     KBookmarkGroup parentBookmark;
-    parentBookmark = m_pManager->findByAddress( parentBookmarkAddress ).toGroup();
-    Q_ASSERT(!parentBookmark.isNull());
+    parentBookmark = findByAddress( parentBookmarkAddress ).toGroup();
+    Q_ASSERT( !parentBookmark.isNull() );
 
     QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
     if ( !uniqueTitle.isNull() )
-        parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
+        parentBookmark.addBookmark( this, uniqueTitle, url );
 
     return parentBookmark;
 }
