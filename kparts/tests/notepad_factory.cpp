@@ -11,7 +11,7 @@
 
 extern "C"
 {
-    void* init_libnotepad()
+    void* init_libnotepadpart()
     {
 	return new NotepadFactory;
     }
