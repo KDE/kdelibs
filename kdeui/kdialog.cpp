@@ -181,8 +181,8 @@ void KDialog::centerOnScreen( QWidget *w, int screen )
   }
 
   QRect r = desktop->screenGeometry( screen );
-  w->move( r.center().x() - w->sizeHint().width()/2,
-           r.center().y() - w->sizeHint().height()/2 );
+  w->move( r.center().x() - w->width()/2,
+           r.center().y() - w->height()/2 );
 }
 
 class KDialogQueuePrivate
