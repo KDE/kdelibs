@@ -17,6 +17,7 @@ libartsflow_idl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la
 libartsflow_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) $(LIBOSSAUDIO) $(LIBAUDIONAS) -lm \
   $(top_builddir)/arts/flow/gsl/libgsl.la
 libartsflow_la_LDFLAGS = -no-undefined -version-info 1:0
+libartsflow_la_COMPILE_FIRST = artsflow.h
 libartsflow_la_SOURCES =  synth_play_impl.cc \
   synthschedule.cc gslschedule.cc audiosubsys.cc \
   pipebuffer.cc convert.cc synth_wave_sin_impl.cc synth_frequency_impl.cc \
@@ -38,30 +39,12 @@ artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
 
 DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 
-######## Build rules
-synthschedule.cc: artsflow.h
+artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
+	$(MCOPIDL) -t $<
+
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
-$(srcdir)/bus.h: artsflow.h
-$(srcdir)/stdsynthmodule.h: artsflow.h
-$(srcdir)/synthschedule.h: artsflow.h
-$(srcdir)/audiomanager_impl.cc: artsflow.h
-$(srcdir)/bytestreamtoaudio_impl.cc: artsflow.h
-$(srcdir)/stereoeffectstack_impl.cc: artsflow.h
-$(srcdir)/stereofftscope_impl.cc: artsflow.h
-$(srcdir)/stereovolumecontrol_impl.cc: artsflow.h
-$(srcdir)/synth_add_impl.cc: artsflow.h
-$(srcdir)/synth_frequency_impl.cc: artsflow.h
-$(srcdir)/synth_mul_impl.cc: artsflow.h
-$(srcdir)/synth_multi_add_impl.cc: artsflow.h
-$(srcdir)/synth_play_impl.cc: artsflow.h
-$(srcdir)/synth_play_wav_impl.cc: artsflow.h
-$(srcdir)/synth_record_impl.cc: artsflow.h
-$(srcdir)/synth_wave_sin_impl.cc: artsflow.h
-
-artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
-	$(MCOPIDL) -t $<
 
 ######## install idl typeinfo files
 
