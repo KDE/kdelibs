@@ -88,7 +88,11 @@ public:
     /// Select all objects matching the regular expression.
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( bool _s ) { setSelected( _s ); }
+	// select text.  returns whether any text was selected.
+	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	    int _x2, int _y2, int _tx, int _ty );
     virtual void getSelected( QStrList & );
+	virtual void getSelectedText( QString & ) {}
 
     /************************************************************
      * Some objects may need to know their absolute position on the page.
@@ -97,6 +101,14 @@ public:
     virtual void calcAbsolutePos( int, int ) { }
     
     virtual void reset() { setPrinted( false ); }
+
+	enum ObjectType { Object, Clue };
+    /************************************************************
+	 * sometimes a clue would like to know if an object is a 
+	 * clue or a basic object.
+	 */
+	virtual ObjectType getObjectType()
+		{	return Object; }
 
     /************************************************************
      * Get X-Position of this object relative to its parent
@@ -207,17 +219,23 @@ public:
     virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( QPainter *, bool, int _tx, int _ty );
-    /**
+    /*
      * Selects every objectsin this clue if it is inside the rectangle
      * and deselects it otherwise.
      */
     virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
     virtual void getSelected( QStrList & );
+	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	    int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
 	virtual void setIndent( int ) { }
     virtual void reset();
+
+	virtual ObjectType getObjectType()
+		{	return Clue; }
 
     /************************************************************
      * Make an object a child of this Box.
@@ -282,6 +300,9 @@ public:
 		: HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
 	virtual ~HTMLClueFlow() { }
     
+	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	    int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & );
     virtual void calcSize( HTMLClue *parent = NULL );
 	virtual int  findPageBreak( int _y );
     virtual int  calcMinWidth();
@@ -309,7 +330,7 @@ public:
 
 	virtual void setMaxWidth( int );
     virtual HTMLObject* checkPoint( int, int );
-    virtual void calcSize( HTMLClue *parent );
+    virtual void calcSize( HTMLClue *parent = NULL );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *_painter, int _x, int _y, int _width,
@@ -416,9 +437,15 @@ public:
      */
     virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
+	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	    int _x2, int _y2, int _tx, int _ty );
     virtual void getSelected( QStrList & );
+    virtual void getSelectedText( QString & );
 
 	virtual void calcAbsolutePos( int _x, int _y );
+
+	virtual ObjectType getObjectType()
+		{	return Clue; }
 
 	virtual HTMLAnchor *findAnchor( const char *_name, QPoint *_p );
 
@@ -461,13 +488,23 @@ public:
     HTMLText( const HTMLFont *, QPainter * );
 	virtual ~HTMLText() { }
 
+	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	    int _x2, int _y2, int _tx, int _ty );
+	virtual void getSelectedText( QString & );
 	virtual void recalcBaseSize( QPainter *_painter );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
+	int getCharIndex( QPainter *_painter, int _xpos );
+
+protected:
     const char* text;
     const HTMLFont *font;
+	// This is a rediculous waste of memory, but I can't think of another
+	// way at the moment.
+	short selStart;
+	short selEnd;
 };
 
 //-----------------------------------------------------------------------------
@@ -475,19 +512,16 @@ protected:
 class HTMLRule : public HTMLObject
 {
 public:
-    HTMLRule( int _max_width, int _width, int _percent, int _size=1,
-		 HAlign _align=HCenter, bool _shade=TRUE );
+    HTMLRule( int _max_width, int _percent, int _size=1, bool _shade=TRUE );
 
-	virtual int  calcMinWidth() { return 1; }
-	virtual int  calcPreferredWidth() { return 1; }
+	virtual int  calcMinWidth();
+	virtual int  calcPreferredWidth() { return calcMinWidth(); }
 	virtual void setMaxWidth( int );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 
 protected:
-	HAlign align;
-	int length;
 	bool shade;
 };
 

@@ -115,6 +115,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     waitingImageList.setAutoDelete( false );
     bParseAfterLastImage = false;
     bPaintAfterParsing = false;
+	bIsTextSelected = false;
     formList.setAutoDelete( true );
 	listStack.setAutoDelete( true );
 
@@ -212,7 +213,18 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
       htmlView->setSelected( TRUE );
     
     if ( _mouse->button() == LeftButton )
-      pressed = TRUE;
+	{
+		// start point for text selection
+    	pressed = TRUE;
+		if ( bIsTextSelected )
+		{
+			bIsTextSelected = false;
+			selectText( NULL, 0, 0, 0, 0 );	// deselect all text
+			emit textSelected( false );
+		}
+		selectPt1.setX( _mouse->pos().x() + x_offset - leftBorder );
+		selectPt1.setY( _mouse->pos().y() + y_offset );
+	}
     press_x = _mouse->pos().x();
     press_y = _mouse->pos().y();    
 	    
@@ -309,27 +321,66 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
     // Does the parent want to process the event now ?
     if ( htmlView )
     {
-      if ( htmlView->mouseMoveHook( _mouse ) )
-	return;
+		if ( htmlView->mouseMoveHook( _mouse ) )
+			return;
     }
 
-    printf("Not handled %i %i %i\n",(int)_mouse->button(),(int)LeftButton,(int)RightButton );
+    printf("Mouse move not handled %i %i %i\n",(int)_mouse->button(),(int)LeftButton,(int)RightButton );
     
+	// text selection
+	if ( pressed )
+	{
+		QPoint point = _mouse->pos();
+		if ( point.y() > height() )
+			point.setY( height() );
+		else if ( point.y() < 0 )
+			point.setY( 0 );
+		selectPt2.setX( point.x() + x_offset - leftBorder );
+		selectPt2.setY( point.y() + y_offset );
+		if ( selectPt2.y() < selectPt1.y() )
+		{
+			selectText( NULL, selectPt2.x(), selectPt2.y(),
+				selectPt1.x(), selectPt1.y() );
+		}
+		else
+		{
+			selectText( NULL, selectPt1.x(), selectPt1.y(),
+				selectPt2.x(), selectPt2.y() );
+		}
+
+		// Do we need to scroll because the user has moved the mouse
+		// outside the widget bounds?
+		if ( _mouse->pos().y() > height() )
+		{
+			autoScrollY( 100, 20 );
+			connect( this, SIGNAL( scrollVert(int) ),
+				SLOT( slotUpdateSelectText(int) ) );
+		}
+		else if ( _mouse->pos().y() < 0 )
+		{
+			autoScrollY( 100, -20 );
+			connect( this, SIGNAL( scrollVert(int) ),
+				SLOT( slotUpdateSelectText(int) ) );
+		}
+		else
+		{
+			stopAutoScrollY();
+			disconnect( this, SLOT( slotUpdateSelectText(int) ) );
+		}
+	}
+
     // Drags are only started with the left mouse button ...
     // if ( _mouse->button() != LeftButton )
     // return;
       
-    printf("Testing 1\n");
-    if ( pressedURL.isNull() )
-	return;
-    printf("Testing 2\n");
-    if ( pressedURL.data()[0] == 0 )
+    printf("Testing pressedURL.isEmpty()\n");
+    if ( pressedURL.isEmpty() )
 	return;
     
     int x = _mouse->pos().x();
     int y = _mouse->pos().y();
 
-    printf("Testing\n");
+    printf("Testing Drag\n");
     
     // Did the user start a drag?
     if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision && !drag )
@@ -347,12 +398,20 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	int dx = - dndDefaultPixmap.width() / 2;
 	int dy = - dndDefaultPixmap.height() / 2;
 
-	startDrag( new KDNDIcon( dndDefaultPixmap, p.x() + dx, p.y() + dy ), pressedURL.data(), pressedURL.length(), DndURL, dx, dy );
+	startDrag( new KDNDIcon( dndDefaultPixmap, p.x() + dx, p.y() + dy ),
+		pressedURL.data(), pressedURL.length(), DndURL, dx, dy );
     }
 }
 
 void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 {
+	if ( pressed )
+	{
+		// in case we started an autoscroll in MouseMove event
+		stopAutoScrollY();
+		disconnect( this, SLOT( slotUpdateSelectText(int) ) );
+	}
+
     // Used to prevent dndMouseMoveEvent from initiating a drag before
     // the mouse is pressed again.
     pressed = false;
@@ -364,11 +423,19 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	return;
     }
 
+	// emit textSelected() if necessary
+	if ( _mouse->button() == LeftButton )
+	{
+		if ( bIsTextSelected )
+		{
+			printf( "Text Selected\n" );
+			emit textSelected( true );
+		}
+	}
+
     if ( clue == 0L )
 	return;
-    if ( pressedURL.isNull() )
-	return;
-    if ( pressedURL[0] == 0 )
+    if ( pressedURL.isEmpty() )
 	return;
     
     // if ( pressedURL.data()[0] == '#' )
@@ -444,6 +511,39 @@ void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
     }
     else
       clue->select( _painter, r, tx, ty );    
+}
+
+void KHTMLWidget::selectText( QPainter * _painter, int _x1, int _y1,
+	int _x2, int _y2 )
+{
+    if ( clue == 0L )
+	return;
+
+    bool newPainter = FALSE;
+
+    int tx = -x_offset + leftBorder;
+    int ty = -y_offset;
+
+    if ( _painter == 0L )
+    {
+	if ( painter == NULL )
+	{
+		painter = new QPainter();
+		painter->begin( this );
+		newPainter = TRUE;
+	}
+    
+	bIsTextSelected = clue->selectText( painter, _x1, _y1, _x2, _y2, tx, ty );
+
+	if ( newPainter )
+	{
+		painter->end();
+		delete painter;
+		painter = NULL;
+	}
+    }
+    else
+		bIsTextSelected = clue->selectText( _painter, _x1, _y1, _x2, _y2, tx, ty );
 }
 
 void KHTMLWidget::paintEvent( QPaintEvent* _pe )
@@ -627,6 +727,14 @@ void KHTMLWidget::getSelected( QStrList &_list )
     clue->getSelected( _list );
 }
 
+void KHTMLWidget::getSelectedText( QString &_str )
+{
+    if ( clue == 0L )
+	return;
+    
+    clue->getSelectedText( _str );
+}
+
 // Print the current document to the printer.
 // This currently prints the entire document without releasing control
 // to the event loop.  This isn't a problem for small documents, but
@@ -765,6 +873,12 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     framesetStack.clear();
     framesetList.clear();
     frameList.clear();
+
+	if ( bIsTextSelected )
+	{
+		bIsTextSelected = false;
+		emit textSelected( false );
+	}
     
     if ( frameSet )
       {
@@ -1819,17 +1933,15 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncasecmp(str, "<hr", 3 ) == 0 )
 	{
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
-
 		int size = 1;
-		int length = _clue->getMaxWidth() - indent;
+		int length = _clue->getMaxWidth();
 		int percent = 100;
-		HTMLRule::HAlign align = divAlign;
+		HTMLClue::HAlign align = divAlign;
+		HTMLClue::HAlign oldAlign = divAlign;
 		bool shade = TRUE;
+
+		if ( flow )
+			oldAlign = align = flow->getHAlign();
 
 		QString s = str + 4;
 		StringTokenizer st( s, " >" );
@@ -1864,9 +1976,18 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 				shade = FALSE;
 			}
 		}
-		flow->append( new HTMLRule( _clue->getMaxWidth() - indent, length,
-			percent, size, align, shade ));
-		flow = 0;
+
+		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
+		flow->setHAlign( align );
+		_clue->append( flow );
+
+		flow->append( new HTMLRule( length, percent, size, shade ) );
+
+		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
+		flow->setHAlign( oldAlign );
+		_clue->append( flow );
 	}
 }
 
@@ -2066,7 +2187,7 @@ void KHTMLWidget::parseN( HTMLClueV *, const char * )
 
 // <ol>             </ol>           partial
 // <option
-void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
+void KHTMLWidget::parseO( HTMLClueV *, const char *str )
 {
 	if ( strncasecmp( str, "<ol", 3 ) == 0 )
 	{
@@ -2154,6 +2275,8 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::HCenter;
 				else if ( strcasecmp( token + 6, "right" ) == 0 )
 					align = HTMLClue::Right;
+				else if ( strcasecmp( token + 6, "left" ) == 0 )
+					align = HTMLClue::Left;
 			}
 		}
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
@@ -2276,7 +2399,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	}
 }
 
-// <table           </table>        partial
+// <table           </table>        most
 // <textarea        </textarea>
 // <title>          </title>
 // <tt>             </tt>
@@ -2284,10 +2407,13 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 {
 	if ( strncasecmp( str, "<table", 6 ) == 0 )
 	{
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
+		if ( flow == NULL )
+		{
+			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+			flow->setIndent( indent );
+			flow->setHAlign( divAlign );
+			_clue->append( flow );
+		}
 		parseTable( flow, _clue->getMaxWidth(), str + 7 );
 	}
 	else if ( strncasecmp( str, "<title>", 7 ) == 0 )
@@ -2366,7 +2492,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
  
 // <u>              </u>
 // <ul              </ul>           partial
-void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
+void KHTMLWidget::parseU( HTMLClueV *, const char *str )
 {
 	if ( strncasecmp(str, "<u>", 3 ) == 0 )
 	{
@@ -2574,7 +2700,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	HTMLClue::HAlign align = HTMLClue::HNone;
 	HTMLClueV *caption = NULL;
 	HTMLClue::VAlign capAlign = HTMLClue::Bottom;
-	HTMLClue::HAlign oldhalign = divAlign;
+	HTMLClue::HAlign olddivalign = divAlign;
+	HTMLClue *oldFlow = flow;
 
 	QString s = attr;
 	StringTokenizer st( s, " >" );
@@ -2781,7 +2908,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 					table->endRow();
 				table->endTable(); 
 				delete table;
-				divAlign = oldhalign;
+				divAlign = olddivalign;
+				flow = oldFlow;
 				return NULL;
 			}
 		}
@@ -2802,6 +2930,10 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		if ( align != HTMLClue::Left && align != HTMLClue::Right )
 		{
 			_clue->append ( table );
+			// add a <br>
+			HTMLText *t = new HTMLText( currentFont(), painter );
+			t->setNewline( true );
+			_clue->append( t );
 		}
 		else
 		{
@@ -2818,8 +2950,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	  delete table;
 	}
 
-	flow = NULL;
-	divAlign = oldhalign;
+	divAlign = olddivalign;
+	flow = oldFlow;
 
 	return str;
 }
@@ -3065,6 +3197,68 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
 //    emit scrollHorz( p.x() );
 
     return TRUE;
+}
+
+void KHTMLWidget::autoScrollY( int _delay, int _dy )
+{
+	if ( clue == NULL )
+		return;
+
+	if ( !autoScrollYTimer.isActive() )
+	{
+		connect( &autoScrollYTimer, SIGNAL(timeout()), SLOT( slotAutoScrollY() ) );
+		autoScrollYDelay = _delay;
+		autoScrollYTimer.start( _delay, true );
+		autoScrollDY = _dy;
+	}
+}
+
+void KHTMLWidget::stopAutoScrollY()
+{
+	autoScrollYTimer.stop();
+}
+
+void KHTMLWidget::slotAutoScrollY()
+{
+	if ( ( autoScrollDY > 0 && y_offset < docHeight() - height() - 1 ) ||
+		 ( autoScrollDY < 0 && y_offset > 0 ) )
+	{
+		int newY = y_offset + autoScrollDY;
+		if ( newY > docHeight() - height()  - 1)
+			newY = docHeight() - height() - 1;
+		else if ( newY < 0 )
+			newY = 0;
+		slotScrollVert( newY );
+		emit scrollVert( newY );
+		autoScrollYTimer.start( autoScrollYDelay, true );
+	}
+}
+
+// used to update the selection when the user has caused autoscrolling
+// by dragging the mouse out of the widget bounds.
+void KHTMLWidget::slotUpdateSelectText( int newy )
+{
+	if ( pressed )
+	{
+		QPoint point = QCursor::pos();
+		mapFromGlobal( point );
+		if ( point.y() > height() )
+			point.setY( height() );
+		else if ( point.y() < 0 )
+			point.setY( 0 );
+		selectPt2.setX( point.x() + x_offset - leftBorder );
+		selectPt2.setY( point.y() + y_offset );
+		if ( selectPt2.y() < selectPt1.y() )
+		{
+			selectText( NULL, selectPt2.x(), selectPt2.y(),
+				selectPt1.x(), selectPt1.y() );
+		}
+		else
+		{
+			selectText( NULL, selectPt1.x(), selectPt1.y(),
+				selectPt2.x(), selectPt2.y() );
+		}
+	}
 }
 
 void KHTMLWidget::select( QPainter *_painter, bool _select )

@@ -1,7 +1,5 @@
 KDE HTML Widget
----------------
-
-This is the alpha version 0.8.3
+===============
 
 Developers
 ----------
@@ -19,454 +17,44 @@ and
 Martin Jones <mjones@kde.org>
 
 
-INT32 PROBLEM
--------------
-
-Both Qt and libjpeg define INT32, unfortunately, the definitions are
-not compatible.
-
-//Quick hack fix:
-//edit jmorecfg.h (one of the jpeg library headers), change INT32 to int.
-
-These problems should now be fixed (included image stuff from kview-0.7).
+It is currently primarily maintained and developed by Martin Jones.
 
 
 Libraries Required
 ------------------
 
-Format: GIF
-Library(version): giflib, compiled to shared lib.
-Where: http://www.ccil.org/~esr/home.html
-
-Format: JPEG
-Library: libgr (built with 2.0.9, IJG JPEG v5 or later will do)
-Where: sunsite
+libkde-devel
 
 
-CHANGES
--------
+Starting Point
+--------------
 
-Version 0.2a - Torben
+You can add the widget to your program by doing something like:
 
- I implemented <a name="#anchor">. Since the widget may scroll automatically
- if the user selects an anchor, you must connect the signals
+#include <html.h>
 
-  scrollVert();
-  scrollHorz();
+   .
+   .
+   .
 
-  Example implementation:
-	void MyHTMLParentWidget::slotScrollVert( int _y )
-	{
-	    vert->setValue( _y );
-	}
+    KHTMLWidget *view = new KHTMLWidget( parent, "Name" );
+	view->show();
 
-
- When the user presses the mouse button over an URL, the signal
- URLSelected is emitted. See the header files for details and
- documentation. When the URL transmitted by this signal is only
- an anchor in the actual document, use only 'gotoAnchor' to
- view the anchor ( anchor <=> <a name="Intro"> ).
- MARTIN: Some of your code has made its way in the widget, for
- example the URLSelected signal. You dont need your own HTML
- class any more I think.
-
- When loading a new HTML URL with a ref., you must use
- gotoAnchor( ref ), to display the referenced section.
- For example for the URL file:/home/html/test.html#myref
- should cause a call like
- 
-	gotoAnchor( "myref" );
-
- To avoid flickering between loading a new file and scrolling
- to the anchor, you can use code like this:
-
-	QString ref="";
-
-	... set 'ref' to whatever ...
-
+	view->begin( "file:/tmp/test.html" );
 	view->parse();
-	if ( view->docHeight() > view->height() )
-		vert->setRange( 0, view->docHeight() - view->height() );
-	else
-		vert->setRange( 0, 0 );
-	
-	if ( ref.data()[0] != 0 )
-	{
-	    if ( !view->gotoAnchor( ref.data() ) )
-		vert->setValue( 0 );
-	}
-	else
-	    vert->setValue( 0 );
-	view->repaint();
+	view->write( "<HTML><TITLE>...." );
+	view->write( "..." );
+	    .
+		.
+		.
+	view->write( "</HTML>" );
+	view->end();
 
- The above is interesting for "file:/usr/local/doc/text.html#Intro" for
- example.
 
- Support for JPEG/Gif has been added by Josip.
+After doing this, control must be returned to the event loop as the HTML
+is parsed in the background using a Qt timer.
 
- Works with quoted hrefs now.
+For more information see the full documentation in JavaDoc format included
+in the header files.
 
- The widgets supports drags. Every <a href...> can be dragged. To override
- this behavior, you must overload
-	
-	dndMouseMoveEvent( QMouseEvent * );
-
- Dont forget to change the definition of KHTMLW_PICS_PATH in html.h. This path
- references an icon that is used for drags.
- Only complete URLs can be dragged. For example <a href="classes.html"> will
- lead into problems because the data of the drag is "classes.html" which does
- not mean very much. When KURL is completed, the HTMLWidget will complete the
- URL itself.  Until then you must live with this bug, sorry :-(
-
-
-Version 0.3a - Torben
-
- The event handling changed a little bit.
- 
- Support for drag and drop.
-
- Some bugs fixed
-
- Needs libkde-0.52 or greater right now. Uses KURL.
-
- For an example of how to use the widget see kfm-0.42 or greater 
- or kdehelp ( a version greate than 0.3 ).
-
- You may ( but you must not ) set -DHAVE_LIBGIF and -DHAVE_JPEG to include
- support for such images formats.
-
-
-Version 0.4 - Martin
-
- HTML is now parsed in the background.  You should connect documentChanged()
- to a function that updates scroll bars.  THERE IS NO NEED TO CALL REPAINT()
- ANYMORE unless you explicitly wish to force a repaint.
-
- The default background color is now lightGray.  Use <body bgcolor=#XXXXXX>
- to set the background color.  Background pixmap implemented.
-
- setDefaultFontBase() sets the default font size.
-
- Reorganised parser and split into more files.  Compiles as a library.
-
- Added basic support for lists, glossaries, <hr> and lots more.
-
- Horizontal Scrolling.
-
-
-Version 0.41 - Torben
-
- Inserted some debug code. Left it there to find bug in kdehelp. Sometimes Qt
- complains about painter.begin() and painter.end() problems. Delete the printf
- stuff if the debug thing is no longer needed.
-
- Changed the 'getSelected' function. It uses QStrList to transmit multiple
- URLs instead of space separated solution.
-
- Some minor bug fixes.
-
-
-Version 0.4.5 - Martin
-
- Bug (see above) fixed and printfs removed
-
- Tables (how much fun do you think this was?)
-
- minor bug fixes, and more mark-ups implemented.
-
- Added onURL() signal which is emitted as links are passed over.
- Added setURLCursor() to set the cursor to use when cursor in on a URL.
-
-
-Version 0.4.7 - Torben
-
- Added supportz for delayed loading of images. The widget emits the signal
- 'imageRequest' to tell its owner that it needs data from the net. The widget
- does NOT load the stuff.
- The owner must signal the widget if the images arrived. The widget will
- display the image if the <img width=.. height=... > was given. If width or
- height is missing the widget weits until all images arrived and parses the
- HTML code again. There are several new functions/slots/signals dealing with
- this. 
-
- KFM implements a cache class that caches images and HTML pages. The widget
- may expect that images arrive before the 'emit imageRequest' call returns.
- In this case the image was already in the cache. This is the best case since
- parsing continous like usual in this case. This means you can call the slot
- 'slotImageLoaded' of the widget if you get the signal 'imageRequest'. Wait
- for kfm-0.5.3 to see how this works.
-
- Added 2 parameters to begin. They allow the owner to tell the widget about the
- position of the upper left corner. If KFM deletes files I don't want to see
- the top of the HTML page after updating the display. Thats what this is for.
-
-
-Version 0.4.9 - Martin
-
- Changes to background parsing stuff
- minor bug fixes
-
-
-Version 0.5.0 - Torben
-
- Changes to the handling of baseURL and changes in the <grid> tag
-
-
-Version 0.5.1 - Martin
-
- Forms implemented, though not complete.
- Fixed bug which caused segv when </ul>, </dl>, etc. was omitted
- 
-
-Version 0.5.2 - Martin
-
- Spent some quality time with the profiler - now at least twice as fast
-  for large HTML documents (qwidget.html is a good test).
- setStandardFont() and setFixedFont() added.
-
-
-Version 0.5.3 - Martin
-
- Fixed horizontal scrolling while partially covered bug.
- Catch setPalette() so that global color changes don't screw up html page.
- Modified HTMLTokenizer so that it keeps space appended to the word
-  preceding it.  This means that there are considerably (~35%) less objects
-  in the parsed HTML - thats a lot less memory and processing in a large
-  document.  I have yet to see a situation where this has caused poor
-  formatting.
- Fixed <pre> so that inline markups don't cause lines to be broken.
-
-
-Version 0.5.4 - Martin
-
- Added align=left|right for images.
- Use gif.cpp with transparency (from Richard J. Moore).
- Fixed <center> and added <div>.
- More general HTML stuff implemented.
- Found bug painting most objects - were testing _y+height() < y-getHeight()
-  and _y > y when should be < y-getAscent() and > y+getDescent().
- Added keyboard control - you must call setFocusPolicy() to enable focus.
- Another profiler session and some speedups.
- bgcolor for table cells.
- Fix <font size=?> stuff
- Accept bgcolor="XXXXXX" when it should be bgcolor="#XXXXXX"
- Implement align and valign in <tr>
-
-
-Version 0.6 - Martin
-
- Moved tokenizers to htmltoken.[h|cpp]
- Many changes to support progressive loading of the page. You can now do
-  something like:
-     begin();
-	 parse();    // doing this here will make the widget parse and display as
-	             // more html is added using write() (provided control is
-				 // released to the event loop).
-	 write();
-	   :
-	   :
-	 write();
-	 end();
- Added support for <li> without <ul></ul> because Netscape supports it.
- Change HTMLImage::pCache and pFontManager to be dynamically constructed
-  so that khtmlw can be created as a shared lib on brain dead systems.
- Applied patches from Christian Czezatke to make more robust when poor
-  (illegal) HTML is processed.
- General cleanups.
- Suppress space at the start of a paragraph (HTMLClueFlow)
-
-Version 0.7 - Torben
-
- This version supports FRAMES! It is not perfect yet, but it seems
- to work. I did not change much in the rendering engine, but added
- some new classes. The most interesting one is KHTMLView.
- I recommend not to use KHTMLWidget directly any more since you
- dont get frames this way. KHTMLWidget cares about frames and comes
- with integrated scrollbars. The scrollbars appear/disappera as needed.
- This causes an ugly hack. I set the right border to 20 pixels. If we
- need a vertical scrollbar, then the scrollbar is just put on top
- op the KHTMLWidget. The horizontal scrollbar does not need this track.
- As a result the scrollbars can appear/disappear very fast. Changing
- the width of the HTML Widget would cause a new parsing session!!!!
-
- KHTMLView is a layer on KHTMLWidget. It has many comments in his
- header files. So using it is not too hard, I hope.
- It is perhaps a good Idea to subclass KHTMLView. KFM does it.
-
- New classes are HTMLFrameSet and HTMLFramePanner.
-
- You can select all URLs in a given rectangle now.
-
- The select( QPainter *_painter, ...) Functions accept a 0L
- as argument to _painter now.
-
- KHTMLView has duplicate signals. One tells that the widget itself
- ( not one of its frames ) wants to tell you something. Use these ones
- if you subclasses KHTMLView.
- The other signals tell you which widget emitted the signal. This
- way you dont have to care about the children of your widget.
- The parent widget informs you about its children and their demands.
- Use this way if you did not subclass KHTMLView.
-
- Design:
- -------
- For every <frameset> a HTMLFrameSet object is created. A HTMLFrameSet
- may contain other frame sets, a HTMLView ( or subclass ) or
- a HTMLFramePanner. On resize events the HTMLFrameSet recalculates
- the size of its children and resizes them.
- A bug right now is this one:
-  The user moves the HTMLFramePanner arround and resizes now
-  the window. The widget wont remember that the user changed the
-  panner. I will fix this later on.
- Every <frame> tag becomes a KHTMLView instance. If you subclass
- KHTMLView, subclass the function:
-  KHTMLView* newView(...)
- This function is asked to create a new frame. This way all children
- of KHTMLWidget are of your subclassed class, not only KHTMLView.
-
- This works like this:
-
- KHTMLView* MyKHTMLView::newView(...)
- {
-   return new MyKHTMLView(...)
- }
-
- The user may select a frame by clicking on it. The active frame
- is highlighted with a black border.
-
- This version is for developers only. My changes seem to not affect
- the stability, but I did not test it too hard yet.
-
- DND
- ---
-
- Make shure that a picture called
- khtmlw_dnd.xpm is in $KDEDIR/lib/pics. This is the default pixmap used for DND.
- The widget can Drag and Drop every link.
-
-Version 0.7.1 - Torben
-
- Some bug fixes, more frame support.
-
- Applied patch from Stephan.
-
-Version 0.7.3 - Torben
-
- <frame noresize frameborder=... marginwidth=...> works now
- 
- <frameset noresize frameborder=... >, too.
- 
- <frame marginheight=... scrolling=...> is recongnized but does not have
- any effect right now.
-
- Other bug fixes related to frames.
-
- You can select a KHTMLView by clicking on it. It will show a black border
- to indicate its state. 
-
-Version 0.7.4 - Torben
- 
- Moving the panner in a framed HTML page works now ( again )
-
- No black frames any more
-
- Loading of background pixmaps from the net works now.
-
-Version 0.7.6 - Martin
-
- Separate parsing and size/position calculations.  Document should now be
- parsed only once.  HTMLWidget handles resizing without reparsing.
-
- General fix-ups in HTMLView scrollbars.
-
-Version 0.7.7 - Martin
-
- Fixes for tables and independant parsing/position stuff.
-
-Version 0.7.8 - Torben
-
- Changed the <cell> tag, deleted the <grid> tag ( html.cpp )
-
- Fixed bug in selecting by rectangle ( html.cpp )
-
-Version 0.7.9 - Martin
-
- Added printing capability - just call HTMLView::print()
- There are still some unresolved printing issues:
-  * should the background be printed?
-  * should all text be printed black?
-  * should highlighted text be printed highlighted?
-  * some objects don't print properly - <hr>, table borders.
-  * form controls don't print.
-  * aligned images not handled by paginator.
-  * printing does not release control to the event loop.
-  * no way of cancelling printing.
-  * do we want to print headers/footers?
-  * Qt-1.2 has some printing problems which do not have work-arounds
-    - who cares... wait for 1.3.
- A long list, but in general I think you should find printer output quite
- good.
-
- Modified table cell width calculation slightly to match Netscape more closely.
-
- Fix left/right alignment.
-
- Support for left/right alignment and centering of tables.
-
- Merge <td> and <th> parsing.
-
- Support table captions
-
-Version 0.8.0 - Torben
-
- Introduced JavaScript. Most code resides in the HTML Tokenizer
- You have to compile and install libjscript now before you
- can compile and use this library. No JavaScript code is executed
- until used for the first time.
-
- Introduced some few JavaScript event handlers in htmlform.cpp
-
- You need libjscript to use the widget
-
- Fixed frame layout problem. The frames are resized and shown only
- if we have scanned the complete frame set. All resize events before
- are ignored.
-
-Version 0.8.1 - Martin
-
- Fixed bug introduced in 0.7.9 affecting lists and glossarys.
-
- More fixes to tables.
-
-Version 0.8.2 - Martin
-
- More work on tables - they seem to be working much better now.
-
- Changed the way lists are parsed so that <ul></ul> can indent text like
- Netscape.  Added indent property to HTMLClueFlow.
-
- Fixed tokenising of tags so that they can be broken by CR, e.g. this
- works now:
-     <a
-     href="http://www.kde.org">KDE</a>
-
-Version 0.8.2a - Martin
-
- Minor changes to make this version compatable with the version in the
- stable libraries.
-
- Added #define KHTMLW_VERSION 820 in html.h
-
-Version 0.8.3 - Martin
-
- Yet more work on tables.
-
- Bugfix from Stephan Kulow - another static object crept in
- (static QList<KHTMLView> viewList).  Changed to pointer and
- constructed on first occurrence.
-
- fixed <br> and <p align=...>
-
-Last change
-15.7.97 Martin Jones
 

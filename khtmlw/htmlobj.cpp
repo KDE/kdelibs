@@ -1,4 +1,3 @@
-//-----------------------------------------------------------------------------
 //
 // KDE HTML Widget
 //
@@ -123,6 +122,53 @@ void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
     print( _painter, _tx, _ty );
 }
 
+bool HTMLObject::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
+{
+	bool selectIt = false;
+
+	if ( _y1 >= y + descent || _y2 <= y - ascent )
+		selectIt = false;
+	// start and end are on this line
+	else if ( _y1 >= y - ascent && _y2 <= y + descent )
+	{
+		if ( _x1 > _x2 )
+		{
+			int tmp = _x1;
+			_x1 = _x2;
+			_x2 = tmp;
+		}
+		if ( _x1 < x + width/2 && _x2 > x + width/2 && _x2 - _x1 > width/2 )
+			selectIt = true;
+	}
+	// starts on this line and extends past it.
+	else if ( _y1 >= y - ascent && _y2 > y + descent )
+	{
+		if ( _x1 < x + width/2 )
+			selectIt = true;
+	}
+	// starts before this line and ends on it.
+	else if ( _y1 < y - ascent && _y2 <= y + descent )
+	{
+		if ( _x2 > x + width/2 )
+			selectIt = true;
+	}
+	// starts before and ends after this line
+	else if ( _y1 < y - ascent && _y2 > y + descent )
+	{
+		selectIt = true;
+	}
+
+	if ( selectIt != isSelected() )
+	{
+		setSelected( selectIt );
+   		_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
+		print( _painter, _tx, _ty );
+	}
+
+	return selectIt;
+}
+
 int HTMLObject::findPageBreak( int _y )
 {
 	if ( _y < y + descent )
@@ -148,12 +194,14 @@ HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();
-    descent = _painter->fontMetrics().descent();
+    descent = _painter->fontMetrics().descent()+1;
     width = _painter->fontMetrics().width( (const char*)_text );
     url = _url;
     url.detach();
     target = _target;
     target.detach();
+	selStart = 0;
+	selEnd = strlen( text );
 }
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
@@ -164,6 +212,118 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     descent = _painter->fontMetrics().descent();
     width = _painter->fontMetrics().width( (const char*)text );
     setSeparator( true );
+	selStart = 0;
+	selEnd = strlen( text );
+}
+
+bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
+{
+	bool selectIt = false;
+	int oldSelStart = selStart;
+	int oldSelEnd = selEnd;
+
+	if ( _y1 >= y + descent || _y2 <= y - ascent )
+		selectIt = false;
+	// start and end are on this line
+	else if ( _y1 >= y - ascent && _y2 <= y + descent )
+	{
+		if ( _x1 > _x2 )
+		{
+			int tmp = _x1;
+			_x1 = _x2;
+			_x2 = tmp;
+		}
+		if ( _x1 < x + width && _x2 > x )
+		{
+			selectIt = true;
+			selStart = 0;
+			if ( _x1 > x )
+				selStart = getCharIndex( _painter, _x1 - x );
+			selEnd = strlen( text );
+			if ( _x2 < x + width )
+				selEnd = getCharIndex( _painter, _x2 - x );
+		}
+	}
+	// starts on this line and extends past it.
+	else if ( _y1 >= y - ascent && _y2 > y + descent )
+	{
+		if ( _x1 < x + width )
+		{
+			selectIt = true;
+			selStart = 0;
+			if ( _x1 > x )
+				selStart = getCharIndex( _painter, _x1 - x );
+			selEnd = strlen( text );
+		}
+	}
+	// starts before this line and ends on it.
+	else if ( _y1 < y - ascent && _y2 <= y + descent )
+	{
+		if ( _x2 > x )
+		{
+			selectIt = true;
+			selStart = 0;
+			selEnd = strlen( text );
+			if ( _x2 < x + width )
+				selEnd = getCharIndex( _painter, _x2 - x );
+		}
+	}
+	// starts before and ends after this line
+	else if ( _y1 < y - ascent && _y2 > y + descent )
+	{
+		selectIt = true;
+		selStart = 0;
+		selEnd = strlen( text );
+	}
+
+	if ( selectIt && selStart == selEnd )
+		selectIt = false;
+
+	if ( selectIt != isSelected() || oldSelStart != selStart ||
+		oldSelEnd != selEnd )
+	{
+		setSelected( selectIt );
+   		_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
+		print( _painter, _tx, _ty );
+	}
+
+	return selectIt;
+}
+
+// get the index of the character at _xpos.
+//
+int HTMLText::getCharIndex( QPainter *_painter, int _xpos )
+{
+	int charWidth, index = 0, xp = 0, len = strlen( text );
+
+	_painter->setFont( *font );
+
+	do
+	{
+		charWidth = _painter->fontMetrics().width( text[ index ] );
+		if ( xp + charWidth/2 >= _xpos )
+			break;
+		xp += charWidth;
+		index++;
+	}
+	while ( index < len );
+
+	return index;
+}
+
+void HTMLText::getSelectedText( QString &_str )
+{
+	if ( isSelected() )
+	{
+		if ( isNewline() )
+			_str += '\n';
+		else
+		{
+			for ( int i = selStart; i < selEnd; i++ )
+				_str += text[ i ];
+		}
+	}
 }
 
 void HTMLText::recalcBaseSize( QPainter *_painter )
@@ -197,52 +357,57 @@ bool HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !isPrinting() )
-	return;
+	if ( !isPrinting() )
+		return;
  
-    const QPen & pen = _painter->pen();
-    
+	_painter->setPen( font->textColor() );
     _painter->setFont( *font );
     
-    if ( isSelected() )
+    if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
     {
-	_painter->fillRect( x + _tx, y - ascent + _ty, width, ascent + descent, black );
-	_painter->setPen( white );
+		if ( !url.isEmpty() )	
+			_painter->setPen( font->linkColor() );
+		_painter->drawText( x + _tx, y + _ty, text, selStart );
+		int fillStart = _painter->fontMetrics().width( text, selStart );
+		int fillEnd = _painter->fontMetrics().width( text, selEnd );
+		_painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
+			fillEnd - fillStart, ascent + descent, black );
+		_painter->setPen( white );
+		_painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
+			selEnd - selStart );
+		_painter->setPen( font->textColor() );
+		if ( !url.isEmpty() )	
+			_painter->setPen( font->linkColor() );
+		_painter->drawText( x + _tx + fillEnd, y + _ty, text + selEnd );
     }
     else
     {
-	_painter->setPen( font->textColor() );
-	if ( !url.isNull() && url.data()[0] != 0 )	
-	    _painter->setPen( font->linkColor() );
-    }
+		if ( !url.isEmpty() )	
+			_painter->setPen( font->linkColor() );
 
 #if QT_VERSION < 130  // remove when Qt-1.3 is released
-	if ( _painter->device()->devType() == PDT_PRINTER )
-	{
-		QString escText = "";
-
-		const char *p = text;
-
-		while ( *p != '\0' )
+		if ( _painter->device()->devType() == PDT_PRINTER )
 		{
-			if ( *p == '(' || *p == ')' || *p == '\\' )
-				escText += '\\';
-			escText += *p++;
-		}
-		_painter->drawText( x + _tx, y + _ty, escText );
-	}
-	else
-#endif
-		_painter->drawText( x + _tx, y + _ty, text );
+			QString escText = "";
+			const char *p = text;
 
-    if ( isSelected() )
-	_painter->setPen( pen );
+			while ( *p != '\0' )
+			{
+				if ( *p == '(' || *p == ')' || *p == '\\' )
+					escText += '\\';
+				escText += *p++;
+			}
+			_painter->drawText( x + _tx, y + _ty, escText );
+		}
+		else
+#endif
+			_painter->drawText( x + _tx, y + _ty, text );
+	}
 }
 
 //-----------------------------------------------------------------------------
 
-HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
-	HAlign _align, bool _shade )
+HTMLRule::HTMLRule( int _max_width, int _percent, int _size, bool _shade )
 	: HTMLObject()
 {
 	if ( _size < 1 )
@@ -251,25 +416,34 @@ HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
     descent = 6;
     max_width = _max_width;
 	width = _max_width;
-	length = _width;
 	percent = _percent;
-	align = _align;
 	shade = _shade;
 
 	if ( percent > 0 )
 	{
-		length = max_width * percent / 100;
+		width = max_width * percent / 100;
 		setFixedWidth( false );
 	}
 }
 
+int HTMLRule::calcMinWidth()
+{
+	if ( isFixedWidth() )
+		return width;
+	
+	return 1;
+}
+
 void HTMLRule::setMaxWidth( int _max_width )
 {
-	max_width = _max_width;
-	width = _max_width;
-
-	if ( percent > 0 )
-		length = max_width * percent / 100;
+	if ( !isFixedWidth() )
+	{
+		max_width = _max_width;
+		if ( percent > 0 )
+			width = _max_width * percent / 100;
+		else
+			width = max_width;
+	}
 }
 
 bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
@@ -299,27 +473,13 @@ void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 	QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
 		black, white );
 
-	int xp, yp = y + _ty;
+	int xp = x + _tx, yp = y + _ty;
 
-	switch ( align )
-	{
-		case Left:
-			xp = x + _tx;
-			break;
-
-		case Right:
-			xp = x + _tx + max_width - length;
-			break;
-
-		default:
-			xp = x + _tx + ((max_width-length)>>1);
-	}
- 
  	if ( shade )
-		qDrawShadeLine( _painter, xp, yp, xp + length, yp,
+		qDrawShadeLine( _painter, xp, yp, xp + width, yp,
 			colorGrp, TRUE, 1, ascent-7 );
 	else
-		_painter->fillRect( xp, yp, length, ascent-6, QBrush(black) );
+		_painter->fillRect( xp, yp, width, ascent-6, QBrush(black) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1376,6 +1536,36 @@ void HTMLTable::select( bool _select )
 	}
 }
 
+bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
+{
+	bool isSel = false;
+	unsigned int r, c;
+	HTMLTableCell *cell;
+
+	_tx += x;
+	_ty += y - ascent;
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			isSel |= cell->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
+				_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+		}
+	}
+
+	return isSel;
+}
+
 void HTMLTable::getSelected( QStrList &_list )
 {
 	unsigned int r, c;
@@ -1398,6 +1588,27 @@ void HTMLTable::getSelected( QStrList &_list )
 	}
 }
 
+void HTMLTable::getSelectedText( QString &_str )
+{
+	unsigned int r, c;
+	HTMLTableCell *cell;
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->getSelectedText( _str );
+		}
+	}
+}
 int HTMLTable::findPageBreak( int _y )
 {
 	if ( _y > y )
@@ -1635,6 +1846,16 @@ void HTMLClue::getSelected( QStrList &_list )
     }
 }
 
+void HTMLClue::getSelectedText( QString &_str )
+{
+    HTMLObject *obj;
+
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+	obj->getSelectedText( _str );
+    }
+}
+
 void HTMLClue::select( bool _select )
 {
     HTMLObject *obj;
@@ -1711,6 +1932,24 @@ void HTMLClue::selectByURL( QPainter *_painter, const char *_url, bool _select, 
     }
 
     // _painter->translate( (float)-x, (float)-( y - ascent ) );
+}
+
+bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
+{
+    HTMLObject *obj;
+	bool isSel = false;
+
+	_tx += x;
+	_ty += y - ascent;
+
+	for ( obj = list.first(); obj != NULL; obj = list.next() )
+	{
+		isSel |= obj->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
+			_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+	}
+
+	return isSel;
 }
 
 HTMLObject* HTMLClue::checkPoint( int _x, int _y )
@@ -2177,6 +2416,77 @@ int HTMLClueH::calcPreferredWidth()
     
 //-----------------------------------------------------------------------------
 
+// process one line at a time, making sure that all objects on a line
+// are able to be selected if the cursor is within the maximum
+// ascent and descent of the line.
+//
+bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty )
+{
+	HTMLObject *lineEnd, *obj;
+	bool isSel = false;
+	int ypos, a, d, rely1, rely2;
+
+	_tx += x;
+	_ty += y - ascent;
+
+	QListIterator<HTMLObject> line( list );
+	lineEnd = line.current();
+	obj = list.first();
+
+	while ( lineEnd )
+	{
+		ypos = lineEnd->getYPos();
+		a = lineEnd->getAscent();
+		d = lineEnd->getDescent();
+
+		while ( lineEnd && lineEnd->getYPos() == ypos )
+		{
+			if ( lineEnd->getAscent() > a )
+				a = lineEnd->getAscent();
+			if ( lineEnd->getDescent() > d )
+				d = lineEnd->getDescent();
+			lineEnd = ++line;
+		}
+
+		rely1 = _y1 - ( y - ascent );
+		rely2 = _y2 - ( y - ascent );
+
+		if ( rely1 > ypos - a && rely1 < ypos + d )
+			rely1 = ypos-1;
+
+		if ( rely2 > ypos - a && rely2 < ypos + d )
+			rely2 = ypos;
+
+		while ( obj != lineEnd )
+		{
+			if ( obj->getObjectType() == Clue )
+				isSel |= obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+					_x2 - x, _y2 - ( y - ascent ), _tx, _ty );
+			else
+				isSel |= obj->selectText( _painter, _x1 - x, rely1,
+					_x2 - x, rely2, _tx, _ty );
+			obj = list.next();
+		}
+	}
+
+	return isSel;
+}
+
+void HTMLClueFlow::getSelectedText( QString &_str )
+{
+	HTMLObject *obj;
+
+	for ( obj = list.first(); obj != 0L; obj = list.next() )
+	{
+		if ( obj != list.getFirst() || !obj->isSeparator() )
+			obj->getSelectedText( _str );
+	}
+
+	if ( list.getLast()->isSelected() )
+		_str += '\n';
+}
+
 void HTMLClueFlow::calcSize( HTMLClue *parent )
 {
 	HTMLClue::calcSize( this );
@@ -2496,6 +2806,7 @@ void HTMLClueFlow::setMaxWidth( int _max_width )
 		obj->setMaxWidth( max_width - indent );
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 
