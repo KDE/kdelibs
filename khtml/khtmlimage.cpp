@@ -148,7 +148,7 @@ bool KHTMLImage::openURL( const KURL &url )
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if ( impl && m_ext->urlArgs().reload )
-        impl->docLoader()->setCachePolicy( KIO::CC_Refresh );
+        impl->docLoader()->setCachePolicy( KIO::CC_Reload );
 
     khtml::DocLoader *dl = impl ? impl->docLoader() : 0;
     m_image = dl->requestImage( m_url.url() );

@@ -72,6 +72,7 @@ using namespace DOM;
 #include <kstringhandler.h>
 #include <kio/job.h>
 #include <kio/global.h>
+#include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -580,9 +581,9 @@ bool KHTMLPart::openURL( const KURL &url )
      d->m_cachePolicy = KIO::CC_Cache;
   }
   else if (args.reload)
-     d->m_cachePolicy = KIO::CC_Refresh;
+     d->m_cachePolicy = KIO::CC_Reload;
   else
-     d->m_cachePolicy = KIO::CC_Verify;
+     d->m_cachePolicy = KProtocolManager::cacheControl();
 
   if ( args.doPost() && (m_url.protocol().startsWith("http")) )
   {
@@ -668,7 +669,7 @@ bool KHTMLPart::closeURL()
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bLoadEventEmitted = true; // don't want that one either
-  d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
+  d->m_cachePolicy = KProtocolManager::cacheControl(); // reset cache policy
 
   KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_doc && d->m_doc->parsing() )
@@ -1336,7 +1337,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
     d->m_job->resume();
 
-    d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
+    if (d->m_cachePolicy == KIO::CC_Refresh)
+      d->m_doc->docLoader()->setCachePolicy(KIO::CC_Verify);
+    else
+      d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
+
     d->m_workingURL = KURL();
 
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
@@ -1971,7 +1976,7 @@ void KHTMLPart::checkCompleted()
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
-  d->m_cachePolicy = KIO::CC_Verify; // reset cache policy
+  d->m_cachePolicy = KProtocolManager::cacheControl(); // reset cache policy
   d->m_totalObjectCount = 0;
   d->m_loadedObjects = 0;
 
@@ -2150,8 +2155,6 @@ void KHTMLPart::slotRedirect()
 
   if ( urlcmp( u, m_url.url(), true, true ) )
   {
-    if (!url.hasRef())
-       args.reload = true;
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
 
@@ -3787,7 +3790,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = child->m_serviceType;
 
   child->m_args = args;
-  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload) || (d->m_cachePolicy == KIO::CC_Refresh);
+  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload);
   child->m_serviceName = QString::null;
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
@@ -3972,7 +3975,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     return true;
   }
 
-  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload) || (d->m_cachePolicy == KIO::CC_Refresh);
+  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload);
 
   // make sure the part has a way to find out about the mimetype.
   // we actually set it in child->m_args in requestObject already,
