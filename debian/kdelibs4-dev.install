@@ -18,8 +18,6 @@ debian/tmp/usr/lib/libkabc_dir.la
 debian/tmp/usr/lib/libkabc_dir.so
 debian/tmp/usr/lib/libkabc_file.la
 debian/tmp/usr/lib/libkabc_file.so
-debian/tmp/usr/lib/libkabc_ldap.la
-debian/tmp/usr/lib/libkabc_ldap.so
 debian/tmp/usr/lib/libkabc_ldapkio.la
 debian/tmp/usr/lib/libkabc_ldapkio.so
 debian/tmp/usr/lib/libkabc_net.la
