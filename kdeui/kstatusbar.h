@@ -143,6 +143,14 @@ public:
   */
   void setItemAlignment(int id, int align);
 
+  /**
+   * Sets item @p id to have fixed width. This cannot be undone.
+   *
+   * @param id id of item
+   * @param width fixed width in pixels
+   */
+  void setItemFixed(int id, int width);
+
 signals:
 
   /**

@@ -73,9 +73,14 @@ void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
 KStatusBar::KStatusBar( QWidget *parent, const char *name )
   : QStatusBar( parent, name )
 {
-  items.setAutoDelete(true);
+  // Don claims that this causes segfaults, because QStatusBar deletes its child
+  // objects. So I won´t delete it here. (sven)
+
+  // items.setAutoDelete(true);
+  items.setAutoDelete(false);
 
   // make the size grip stuff configurable
+  // ...but off by default (sven)
   KConfig *config = KGlobal::config();
   QString group(config->group());
   config->setGroup(QString::fromLatin1("StatusBar style"));
@@ -128,12 +133,25 @@ void KStatusBar::setItemAlignment (int id, int align)
   KStatusBarLabel *l = items[id];
   if (l)
   {
-    clear();
+    //clear();
     l->setAlignment(align);
     //reformat(); Not needed I, think (sven)
   }
   else
     debug ("KStatusBar::setItemAlignment: bad item id: %d", id);
+}
+
+void KStatusBar::setItemFixed(int id, int w)
+{
+   KStatusBarLabel *l = items[id];
+  if (l)
+  {
+    //clear();
+    l->setFixedSize(w, l->height());
+    //reformat(); Not needed I, think (sven)
+  }
+  else
+    debug ("KStatusBar::setItemFixed: bad item id: %d", id);
 }
 
 void KStatusBar::slotPressed(int _id)
