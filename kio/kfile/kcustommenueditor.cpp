@@ -112,11 +112,9 @@ KCustomMenuEditor::~KCustomMenuEditor()
 void KCustomMenuEditor::refreshButton()
 {
     QListViewItem *item = m_listView->currentItem();
-    bool selected = ( item!= 0 );
-    int pos = m_listView->itemPos( item );
-    d->pbRemove->setEnabled( selected );
-    d->pbMoveUp->setEnabled( selected && pos>0);
-    d->pbMoveDown->setEnabled( selected && pos < ( m_listView->childCount() ));
+    d->pbRemove->setEnabled( item );
+    d->pbMoveUp->setEnabled( item && item->itemAbove() );
+    d->pbMoveDown->setEnabled( item && item->itemBelow() );
 }
 
 void
