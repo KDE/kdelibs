@@ -300,7 +300,9 @@ IceConn	iceConn;
 int	majorOpcode;
 
 {
-    char mOp = (char) majorOpcode;
+    char mOp[8];
+    mOp[0] = (char) majorOpcode;
+    mOp[1] = mOp[2] = mOp[3] = mOp[4] = mOp[5] = mOp[6] = mOp[7] = 0;
 
     IceErrorHeader (iceConn,
 	0, ICE_ProtocolSetup,
@@ -309,7 +311,7 @@ int	majorOpcode;
 	IceMajorOpcodeDuplicate,
 	1 /* length */);
 
-    IceWriteData (iceConn, 8, &mOp);
+    IceWriteData (iceConn, 8, mOp);
     IceFlush (iceConn);
 }
 
@@ -352,7 +354,9 @@ int     offendingMinor;
 int	severity;
 
 {
-    char maj = (char) offendingMajor;
+    char maj[8];
+    maj[0] = (char) offendingMajor;
+    maj[1] = maj[2] = maj[3] = maj[4] = maj[5] = maj[6] = maj[7] = 0;
 
     IceErrorHeader (iceConn,
 	0, offendingMinor,
@@ -361,7 +365,7 @@ int	severity;
 	IceBadMajor,
 	1 /* length */);
 
-    IceWriteData (iceConn, 8, &maj);
+    IceWriteData (iceConn, 8, maj);
     IceFlush (iceConn);
 }
 
