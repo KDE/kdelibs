@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.19  1998/09/01 20:21:33  kulow
+ * I renamed all old qt header files to the new versions. I think, this looks
+ * nicer (and gives the change in configure a sense :)
+ *
  * Revision 1.18  1998/08/22 20:02:47  kulow
  * make kdecore have nicer output, when compiled with -Weffc++ :)
  *
@@ -153,6 +157,7 @@ public:
      * @param _port	the port on the remote host.
      */
     KSocket( const char *_host, unsigned short int _port );
+    KSocket( const char *_host, unsigned short int _port, int timeOut);
     
     /** 
      * Connects to a UNIX domain socket.
@@ -245,7 +250,9 @@ protected:
     QSocketNotifier *readNotifier;
     QSocketNotifier *writeNotifier;
 
- private:
+private:
+    int timeOut;
+    
     KSocket(const KSocket&);
     KSocket& operator=(const KSocket&);
 };

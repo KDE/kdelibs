@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.20  1998/08/02 14:49:31  kalle
+ * ANother try at the socket problem. Hope that this works on _all_ platforms now.
+ *
  * Revision 1.19  1998/07/29 12:39:17  kalle
  * Don't hardcode maximum of pending connections in listen(). Should work on all platforms including QNX.
  *
@@ -101,6 +104,8 @@
  * WidgetStyle of KApplication objects configurable via kdisplay
  */
 
+#include <qapplication.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -151,11 +156,20 @@
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
+KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
+  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
+{
+    timeOut = _timeout;
+    domain = PF_INET;
+    connect( _host, _port );
+}
+
 KSocket::KSocket( const char *_host, unsigned short int _port ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
-  domain = PF_INET;
-  connect( _host, _port );
+    timeOut = 30;
+    domain = PF_INET;
+    connect( _host, _port );
 }
 
 KSocket::KSocket( const char *_path ) :
@@ -289,16 +303,49 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
 	  sock = -1;
 	  return false;
 	}
-  
-  if ( 0 > ::connect( sock, (struct sockaddr*)(&server_name), 
-					  sizeof( server_name ) ) )
-	{
-	  ::close( sock );
-	  sock = -1;
-	  return false;
-	}
 
-  return true;
+  fcntl(sock,F_SETFL,(fcntl(sock,F_GETFL)|O_NDELAY));
+
+  errno = 0;
+  if (::connect(sock, (struct sockaddr*)(&server_name), sizeof(server_name))){
+      if(errno != EINPROGRESS && errno != EWOULDBLOCK){
+          ::close( sock );
+          sock = -1;
+          return false;
+      }
+  }else
+      return true;
+
+  fd_set rd, wr;
+  struct timeval timeout;
+  int ret = 0, n;
+
+  n = timeOut;
+  FD_ZERO(&rd);
+  FD_ZERO(&wr);
+  FD_SET(sock, &rd);
+  FD_SET(sock, &wr);
+//  printf("timeout=%d\n", n);
+  while(n--){
+      timeout.tv_usec = 0;
+      timeout.tv_sec = 1;
+
+#ifdef HPUX
+      ret = select((size_t)FD_SETSIZE, (int *)&rd, (int *)&wr, (int *)0,
+                   (const struct timeval *)&timeout);
+#else
+      ret = select(getdtablesize(), (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
+                   (struct timeval *)&timeout);
+#endif
+      qApp->processEvents();
+      qApp->flushX();
+  }
+  if(ret)
+      return(true);
+  warning("Timeout connecting socket...\n");
+  ::close( sock );
+  sock = -1;
+  return false;
 }
 
 unsigned long KSocket::getAddr()

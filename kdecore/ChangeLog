@@ -1,3 +1,8 @@
+1998-11-10  Sam Maloney <thufir@illogic.ml.org>
+
+	* ksock.cpp, ksock.h: Added ability to set a connect timeout
+	  value. Breaks some programs which use KSocket.
+
 1998-11-08  Christian Esken  <esken@kde.org>
 
 	* kconfig.cpp, kapp.cpp: Several security fixes by adding
