@@ -73,7 +73,10 @@ void RenderFlow::setStyle(RenderStyle *style)
 
     RenderBox::setStyle(style);
 
-    if(m_positioned || m_floating || !style->display() == INLINE)
+    if(m_positioned)
+	m_style->setDisplay(BLOCK);
+
+    if( m_floating || !style->display() == INLINE)
         m_inline = false;
 
     if (m_inline == true && m_childrenInline==false)
@@ -429,6 +432,7 @@ bool RenderFlow::checkClear(RenderObject *child)
 void
 RenderFlow::insertPositioned(RenderObject *o)
 {
+    //kdDebug() << "RenderFlow::insertPositioned" << this<< isAnonymousBox() << " " << o << endl; 
     if(!specialObjects) {
         specialObjects = new QSortedList<SpecialObject>;
         specialObjects->setAutoDelete(true);
@@ -444,10 +448,7 @@ RenderFlow::insertPositioned(RenderObject *o)
 
     if (!f) f = new SpecialObject;
 
-    if (o->isRelPositioned())
-        f->type = SpecialObject::RelPositioned;
-    else
-        f->type = SpecialObject::Positioned;
+    f->type = SpecialObject::Positioned;
     f->node = o;
     f->count = specialObjects->count();
 
@@ -1111,7 +1112,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             case ABSOLUTE:
             {
 //              kdDebug( 6040 ) << "absolute found" << endl;
-                setContainsPositioned(true);
                 RenderObject::addChild(newChild,beforeChild);
                 return;
             }

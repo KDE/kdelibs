@@ -802,6 +802,8 @@ void RenderFlow::layoutInlineChildren()
 	    if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
 		//kdDebug(6041) << "layouting replaced or floating child" << endl;
 		o->layout();
+		if(o->isPositioned())
+		    static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
 	    }
 	    else if(o->isText())
 		static_cast<RenderText *>(o)->deleteSlaves();
