@@ -45,7 +45,7 @@ contains(KW_CONFIG,console) {
 }
 
 # global binary destination directory
-isEmpty( BINDESTDIR ) {
+isEmpty( KDEBINDESTDIR ) {
 	KDEBINDESTDIR = $(KDEDIR)
 }
 
@@ -73,10 +73,10 @@ KDELIB_SUFFIX=$$KDEBUG$(KDE_VER).lib
 contains( TEMPLATE, app ) {
   # default dest dir for "app"
 #  contains(CONFIG,debug) {
-    DESTDIR = $$BINDESTDIR\bin
+    DESTDIR = $$KDEBINDESTDIR\bin
 #  }
 #  !contains(CONFIG,debug) {
-#    DESTDIR = $$BINDESTDIR\release-bin
+#    DESTDIR = $$KDEBINDESTDIR\release-bin
 #  }
   LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX \
 		$$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX \
@@ -105,7 +105,7 @@ contains( TEMPLATE, lib ) {
 		CONFIG += plugin
 	}
 #  !contains(CONFIG,debug) {
-#    DESTDIR = $$BINDESTDIR\release-lib
+#    DESTDIR = $$KDEBINDESTDIR\release-lib
 #  }
 
   VERSION		= $(KDE_VER_MAJ).$(KDE_VER_MIN).$(KDE_VER_PAT)
