@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.8  1998/06/18 08:54:31  radej
+ // sven: removed debug outpot before 1.0
+ //
  // Revision 1.7  1998/05/07 16:50:06  radej
  // I caught that mouseRelease without blocking (Yeah!)
  //
@@ -418,6 +421,11 @@ void KToolBoxManager::drawRectangle(int _x, int _y, int _w, int _h)
   if (_h > 2)
     _h -= 2;
   XDrawRectangle(qt_xdisplay(), root, rootgc, _x+1, _y+1, _w, _h);
+  if (_w > 2)
+    _w -= 2;
+  if (_h > 2)
+    _h -= 2;
+  XDrawRectangle(qt_xdisplay(), root, rootgc, _x+2, _y+2, _w, _h);
   
   noLast = false;
 }
@@ -433,6 +441,12 @@ void KToolBoxManager::deleteLastRectangle()
   if (oh > 2)
     oh -= 2;
   XDrawRectangle(qt_xdisplay(), root, rootgc, ox+1, oy+1, ow, oh);
+  if (ow > 2)
+    ow -= 2;
+  if (oh > 2)
+    oh -= 2;
+  XDrawRectangle(qt_xdisplay(), root, rootgc, ox+2, oy+2, ow, oh);
+
   noLast = true;
 }
 
