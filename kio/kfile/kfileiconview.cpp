@@ -492,15 +492,26 @@ void KFileIconView::slotSmallColumns()
     }
     setItemTextPos( Right );
     setArrangement( TopToBottom );
-    // setArrangement( LeftToRight );
+    setWordWrapIconText( false );
+    setVScrollBarMode( AlwaysOff );
+    setHScrollBarMode( Auto );
+    setGridX( 160 );
     setIconSize( KIcon::SizeSmall );
+
+    arrangeItemsInGrid();
 }
 
 void KFileIconView::slotLargeRows()
 {
     setItemTextPos( Bottom );
-    // setArrangement( LeftToRight );
+    setArrangement( LeftToRight );
+    setWordWrapIconText( true );
+    setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
     setIconSize( KIcon::SizeMedium );
+    setHScrollBarMode( AlwaysOff );
+    setVScrollBarMode( Auto );
+    
+    arrangeItemsInGrid();
 }
 
 void KFileIconView::stopPreview()
