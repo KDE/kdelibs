@@ -1,20 +1,20 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef KCOMPLETION_H
@@ -142,8 +142,8 @@ public:
      * completion-lookups.
      */
     enum CompOrder { Sorted,    ///< Use order of insertion
-		     Insertion, ///< Use alphabetically sorted order
-		     Weighted   ///< Use weighted order
+                     Insertion, ///< Use alphabetically sorted order
+                     Weighted   ///< Use weighted order
     };
 
     /**
@@ -151,7 +151,7 @@ public:
      */
     KCompletion();
 
-    // FIXME: copy constructor, assignment constructor...
+    // FIXME: copy constructor, assignment operator...
 
     /**
      * Destructor, nothing special here, either.
@@ -261,7 +261,7 @@ public:
      * @see setCompletionMode
      */
     KGlobalSettings::Completion completionMode() const {
-	return myCompletionMode;
+        return myCompletionMode;
     }
 
     /**
@@ -399,7 +399,7 @@ public slots:
      * @see makeCompletion
      */
     void slotMakeCompletion( const QString& string ) {
-	(void) makeCompletion( string );
+        (void) makeCompletion( string );
     }
 
     /**
@@ -408,7 +408,7 @@ public slots:
      * @see previousMatch
      */
     void slotPreviousMatch() {
-	(void) previousMatch();
+        (void) previousMatch();
     }
 
     /**
@@ -417,7 +417,7 @@ public slots:
      * @see nextMatch
      */
     void slotNextMatch() {
-	(void) nextMatch();
+        (void) nextMatch();
     }
 
     /**
@@ -544,11 +544,11 @@ protected:
     virtual void postProcessMatches( KCompletionMatches * matches ) const {Q_UNUSED(matches)}
 
 private:
-    void 		addWeightedItem( const QString& );
-    QString 		findCompletion( const QString& string );
-    void        	findAllCompletions( const QString&,
-                                            KCompletionMatchesWrapper *matches,
-                                            bool& hasMultipleMatches ) const;
+    void            addWeightedItem( const QString& );
+    QString         findCompletion( const QString& string );
+    void            findAllCompletions( const QString&,
+                                        KCompletionMatchesWrapper *matches,
+                                        bool& hasMultipleMatches ) const;
 
     void extractStringsFromNode( const KCompTreeNode *,
                                  const QString& beginning,
@@ -559,21 +559,21 @@ private:
                                    const QString& restString,
                                    KCompletionMatchesWrapper *matches) const;
 
-    enum 		BeepMode { NoMatch, PartialMatch, Rotation };
-    void 		doBeep( BeepMode ) const;
+    enum        BeepMode { NoMatch, PartialMatch, Rotation };
+    void        doBeep( BeepMode ) const;
 
     KGlobalSettings::Completion myCompletionMode;
 
-    CompOrder 		myOrder;
-    QString             myLastString;
-    QString 		myLastMatch;
-    QString 		myCurrentMatch;
-    KCompTreeNode *     myTreeRoot;
-    QStringList 	myRotations;
-    bool                myBeep;
-    bool 		myIgnoreCase;
-    bool 		myHasMultipleMatches;
-    uint 		myRotationIndex;
+    CompOrder       myOrder;
+    QString         myLastString;
+    QString         myLastMatch;
+    QString         myCurrentMatch;
+    KCompTreeNode * myTreeRoot;
+    QStringList     myRotations;
+    bool            myBeep;
+    bool            myIgnoreCase;
+    bool            myHasMultipleMatches;
+    uint            myRotationIndex;
 
 
 protected:
@@ -597,15 +597,14 @@ class KCompletionMatchesPrivate;
  * \code
  * KCompletionMatches matches = completion->allWeightedMatches( location );
  * if( !location.startsWith( "www." ))
-       matches += completion->allWeightedmatches( "www." + location" );
+ matches += completion->allWeightedmatches( "www." + location" );
  * matches.removeDuplicates();
  * QStringList list = matches.list();
  * \endcode
  *
  * @short List for keeping matches returned from KCompletion
  */
-class KCompletionMatches
-    : public KCompletionMatchesList
+class KCompletionMatches : public KCompletionMatchesList
 {
 public:
     KCompletionMatches( bool sort );
@@ -655,9 +654,7 @@ private:
  */
 class KCompletionBase
 {
-
 public:
-
     /**
      * Constants that represent the items whose short-cut
      * key-binding is programmable.  The default key-bindings
@@ -779,7 +776,7 @@ public:
      * is deleted when this widget's destructor is called.
      *
      * @param autoDelete if true, delete completion object on destruction.
-    */
+     */
     void setAutoDeleteCompletionObject( bool autoDelete ) {
         if ( m_delegate )
             m_delegate->setAutoDeleteCompletionObject( autoDelete );
@@ -884,9 +881,9 @@ public:
      * function.
      *
      * @param item the feature whose key-binding needs to be set:
-     *   @li TextCompletion	the manual completion key-binding.
-     *   @li PrevCompletionMatch	the previous match key for multiple completion.
-     *   @li NextCompletionMatch	the next match key for for multiple completion.
+     *   @li TextCompletion the manual completion key-binding.
+     *   @li PrevCompletionMatch    the previous match key for multiple completion.
+     *   @li NextCompletionMatch    the next match key for for multiple completion.
      *   @li SubstringCompletion  the key for substring completion
      * @param key key-binding used to rotate down in a list.
      * @return true if key-binding can successfully be set.
