@@ -47,7 +47,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
-	m_units->insertItem(i18n("Pixels (1/72th in)"));
+	m_units->insertItem(i18n("Pixels (1/72nd in)"));
 	if ( allowMetricUnit )
 	{
 		m_units->insertItem(i18n("Inches (in)"));
