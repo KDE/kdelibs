@@ -77,6 +77,7 @@ void MidiOut::openDev (int sqfd)
 void MidiOut::closeDev (void)
 {
   if (!ok()) return;
+//  if (deviceType()!=KMID_ALSA) allNotesOff();
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
   seqfd=-1;
@@ -216,6 +217,16 @@ void MidiOut::sysex(uchar *data, ulong size)
 #endif
 }
 
+void MidiOut::allNotesOff (void)
+{
+  for (int i=0; i<16; i++)
+  {
+    chnController(i, 0x78, 0);
+    chnController(i, 0x79, 0);
+  };
+  sync(1);
+}
+
 void MidiOut::channelSilence (uchar chn)
 {
   uchar i;
@@ -223,7 +234,7 @@ void MidiOut::channelSilence (uchar chn)
   {
     noteOff(chn,i,0);
   };
-  SEQ_DUMPBUF();
+  sync();
 }
 
 void MidiOut::channelMute(uchar chn, int a)
@@ -280,3 +291,10 @@ const char * MidiOut::deviceName(void) const
   return "Unknown";
 }
 
+void MidiOut::sync(int i)
+{
+  if (deviceType()==KMID_ALSA)  // XXX : sync should be virtual after next bic
+     return reinterpret_cast<AlsaOut *>(this)->sync(i);
+  SEQ_DUMPBUF();
+  printf("MidiOut::sync\n");
+}

@@ -224,6 +224,12 @@ struct PlayerController
    */
   volatile double ratioTempo;
 
+  /**
+   * @internal Used to stop the main pid until the child has finished to 
+   * send the all notes off event
+   */
+  volatile bool isSendingAllNotesOff;
+
   volatile MidiEvent *ev;
 };
 

@@ -196,6 +196,11 @@ class MidiOut
   virtual void sysex		( uchar *data,ulong size);
 
   /**
+   * Send a All Notes Off event to every channel
+   */
+  void allNotesOff(void);
+
+  /**
    * Mutes all notes being played on a given channel.
    */
   virtual void channelSilence	( uchar chn );
@@ -232,6 +237,13 @@ class MidiOut
    * reads the configuration from, or an empty string if there's no MidiMapper.
    */
   const char *midiMapFilename ();
+ 
+  /**
+   * Sends the buffer to the device and returns when it's played, so you can
+   * synchronize
+   * XXX: sync should be virtual after next bic release
+   */
+  void sync(int i=0);
 
 };
 

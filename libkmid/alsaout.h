@@ -226,7 +226,7 @@ class AlsaOut : public MidiOut
    * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
    * this is what syncronizing really means :-) )
    */
-  virtual void sync        (int i=0);
+  void sync        (int i=0);
 
   class AlsaOutPrivate;
   AlsaOutPrivate *di;

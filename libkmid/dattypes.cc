@@ -98,13 +98,13 @@ void printfdebug(const char *format, double a, double b, double c)
 }
 #else
 
-void printfdebug(const char *format, int a, int b, int c)
+void printfdebug(const char *, int , int , int )
 {
 }
-void printfdebug(const char *format, int a, long b)
+void printfdebug(const char *, int , long )
 {
 }
-void printfdebug(const char *format, double a, double b, double c)
+void printfdebug(const char *, double , double , double )
 {
 }
 #endif

@@ -376,22 +376,22 @@ void DeviceManager::openDev(void)
   }
   else seqfd=0L; // ALSA
 
-  DEBUGPRINTF("Opening devices : ");
+//  DEBUGPRINTF("Opening devices : ");
   for (int i=0;i<n_total;i++)
   {
     device[i]->openDev(seqfd);
-    DEBUGPRINTF("%s ",device[i]->deviceName());
+//    DEBUGPRINTF("%s ",device[i]->deviceName());
   }
-  DEBUGPRINTF("\n");
+//  DEBUGPRINTF("\n");
   for (int i=0;i<n_total;i++) if (!device[i]->ok()) _ok=0;
   if (_ok==0)
   {
     for (int i=0;i<n_total;i++) device[i]->closeDev();
-    DEBUGPRINTF("DeviceMan :: ERROR : Closing devices\n");
+//    DEBUGPRINTF("DeviceMan :: ERROR : Closing devices\n");
     return;
   }
 
-  DEBUGPRINTF("Devices opened\n");
+//  DEBUGPRINTF("Devices opened\n");
 }
 
 void DeviceManager::closeDev(void)
@@ -428,7 +428,7 @@ void DeviceManager::initDev(void)
 {
   if (device!=0L)
   {
-    DEBUGPRINTF("Initializing devices :");
+//    DEBUGPRINTF("Initializing devices :");
     for (int i=0;i<n_total;i++)
     {
       device[i]->initDev();
@@ -766,4 +766,10 @@ void DeviceManager::setVolumePercentage(int v)
 void DeviceManager::setDeviceNumberForChannel(int chn, int dev)
 {
   chn2dev[chn]=dev;
+}
+
+void DeviceManager::allNotesOff(void)
+{
+  for (int i=0;i<n_midi;i++)
+    device[i]->allNotesOff();
 }

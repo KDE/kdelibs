@@ -390,6 +390,11 @@ class DeviceManager
     void tmrContinue(void);
 
     /**
+     * Sends an all notes off event
+     */
+    void allNotesOff(void);
+
+    /**
      * Synchronizes with the MIDI buffer. Midi events are put into a buffer,
      * along with timer delays (see @ref #wait() ). sync returns when the buffer
      * is empty.

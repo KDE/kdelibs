@@ -64,6 +64,7 @@ public:
       strcat(tgtname, "  ");
       strcat(tgtname, pname);
       ev=new snd_seq_event_t;
+      timerStarted=false;
     }
 #else
   AlsaOutPrivate(int, int, const char *,const char *)
@@ -92,6 +93,8 @@ public:
   int tgtclient;
   int tgtport;
   char *tgtname;
+
+  bool timerStarted;
 
 #endif
 };
@@ -147,11 +150,15 @@ void AlsaOut::openDev (int)
 void AlsaOut::closeDev (void)
 {
   if (!ok()) return;
-
 #ifdef HAVE_LIBASOUND
   if (di->handle)
   {
-    if (di->src) snd_seq_delete_simple_port(di->handle,di->src->port);
+    if (di->src) 
+    {
+       snd_seq_delete_simple_port(di->handle,di->src->port);
+       delete di->src;
+    }
+    if (di->tgt) delete di->tgt;
     if (di->queue) 
     {
       snd_seq_free_queue(di->handle, di->queue);
@@ -191,7 +198,9 @@ void AlsaOut::eventInit(snd_seq_event_t *ev)
   tmp.tv_sec=(time)/1000;
   tmp.tv_nsec=(time%1000)*1000000;
 //  printf("time : %d %d %d\n",(int)time,(int)tmp.tv_sec, (int)tmp.tv_nsec);
+  if (!di->src) fprintf(stderr,"AlsaOut::eventInit : no source\n");
   ev->source = *di->src;
+  if (!di->tgt) fprintf(stderr,"AlsaOut::eventInit : no target\n");
   ev->dest = *di->tgt;
 
   snd_seq_ev_schedule_real(ev, di->queue, 0, &tmp);
@@ -470,11 +479,14 @@ void AlsaOut::sync(int i)
     snd_seq_drain_output(di->handle);
   }
 
-  eventInit(di->ev);
-  di->ev->dest = *di->src;
-  eventSend(di->ev);
-  snd_seq_flush_output(di->handle);
-  snd_seq_event_input(di->handle,&di->ev);
+  if (di->timerStarted) 
+  {
+    eventInit(di->ev);
+    di->ev->dest = *di->src;
+    eventSend(di->ev);
+    snd_seq_flush_output(di->handle);
+    snd_seq_event_input(di->handle,&di->ev);
+  }
 
 #endif
 }
@@ -487,6 +499,7 @@ void AlsaOut::tmrStart(int tpcn)
 {
   snd_seq_queue_tempo_t queuetempo;
   int  ret;
+  di->timerStarted=true;
 
   memset(&queuetempo, 0, sizeof(queuetempo));
   queuetempo.queue = di->queue;
@@ -504,6 +517,7 @@ void AlsaOut::tmrStart(int tpcn)
 void AlsaOut::tmrStop(void)
 {
 #ifdef HAVE_LIBASOUND
+  di->timerStarted=false;
   timerEventSend(SND_SEQ_EVENT_STOP);
 #endif
 }
