@@ -22,6 +22,7 @@
 
 #include "kjs.h"
 #include "object.h"
+#include "nodes.h"
 
 namespace KJS {
   const double NaN = 0.0/0.;
@@ -33,7 +34,9 @@ using namespace KJS;
 
 KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
 {
-  return (*call)(0L);
+  KJSFunction *func = static_cast<KJSFunction*>(this);
+
+  return func->execute();
 }
 
 // ECMA 8.7.1
@@ -277,6 +280,19 @@ int KJSArgList::numArgs() const
     num++;
 
   return num;
+}
+
+KJSDeclaredFunction::KJSDeclaredFunction(const CString &i, void *,
+					 StatementNode *b)
+  : block(b)
+{
+  /* TODO */
+}
+
+KJSO* KJSDeclaredFunction::execute()
+{
+ /* TODO */
+  return block->evaluate();
 }
 
 KJSMath::KJSMath()

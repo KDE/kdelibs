@@ -688,7 +688,6 @@ KJSO *PrintNode::evaluate()
   KJSO *s = toString(v);
 
   cout << "---> " << s->sVal().ascii() << endl;
-  QMessageBox::information(0L, "KJS", QString(s->sVal().ascii()));
 
   return new KJSCompletion(Normal);
 }

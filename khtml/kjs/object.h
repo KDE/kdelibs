@@ -39,6 +39,7 @@ union Value {
 // forward declarations
 class KJSProperty;
 class KJSArgList;
+class StatementNode;
 
 class KJSO {
 public:
@@ -159,9 +160,9 @@ class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
   KJSFunction(char *i, void *, void*) { /* TODO */ }
-  virtual void execute() = 0;
+  virtual KJSO* execute() = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
-private:
+protected:
   FunctionAttribute attr;
 };
 
@@ -169,23 +170,25 @@ class KJSInternalFunction : public KJSFunction {
 public:
   KJSInternalFunction(KJSO* (*f)(KJSO*)) { call = f; }
   Type type() const { return InternalFunction; }
-  void execute() { (*func)(0L); }
+  KJSO* execute() { return (*func)(0L); }
 private:
   KJSO* (*func)(KJSO*);
 };
 
 class KJSDeclaredFunction : public KJSFunction {
 public:
-  KJSDeclaredFunction(const CString &i, void *, void*) { /* TODO */ }
+  KJSDeclaredFunction(const CString &i, void *, StatementNode *b);
   Type type() const { return DeclaredFunction; }
-  void execute() { /* TODO */ }
+  KJSO* execute();
+private:
+  StatementNode *block;
 };
 
 class KJSAnonymousFunction : public KJSFunction {
 public:
   KJSAnonymousFunction() { /* TODO */ }
   Type type() const { return AnonymousFunction; }
-  void execute() { /* TODO */ }
+  KJSO* execute() { /* TODO */ }
 };
 
 class KJSCompletion : public KJSO {

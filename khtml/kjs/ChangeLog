@@ -1,5 +1,7 @@
 1999-10-15  Harri Porten  <porten@kde.org>
 
+	* first steps for calls of user declared functions
+
 	* nodes.cpp: Unary + and - 
 
 1999-10-12  Harri Porten  <porten@kde.org>
