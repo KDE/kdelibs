@@ -18,6 +18,7 @@
 #include "klibloader.h"
 #include "kglobal.h"
 #include "kstddirs.h"
+#include "kdebug.h"
 
 template class QAsciiDict<KLibrary>;
 
@@ -79,7 +80,7 @@ KLibFactory* KLibrary::factory()
 
     if( !m_factory )
     {
-	qDebug("KLibrary: The library does not offer a KDE compatible factory");
+	kdDebug(150) << "KLibrary: The library does not offer a KDE compatible factory" << endl;
 	return 0;
     }
 
@@ -94,7 +95,7 @@ void* KLibrary::symbol( const char* symname )
     void* sym = lt_dlsym( m_handle, symname );
     if ( !sym )
     {
-	qDebug("KLibrary: %s", lt_dlerror() );
+	kdDebug(150) << "KLibrary: " << lt_dlerror() << endl;
 	return 0;
     }
 
@@ -121,7 +122,7 @@ void KLibrary::slotObjectDestroyed()
 
   if ( m_objs.count() == 0 )
   {
-    qDebug( "shutdown timer started!" );
+    kdDebug(150) << "KLibrary: shutdown timer started!" << endl;
 
     if ( !m_timer )
     {
@@ -201,7 +202,7 @@ KLibrary* KLibLoader::library( const char *name )
 	libfile = KGlobal::dirs()->findResource( "lib", libname );
 	if ( libfile.isEmpty() )
 	  {
-	    qDebug("KLibLoader: library=%s: No file names %s found in paths.", name, libname.data() );
+	    kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
 	    return 0;
 	  }
       }
@@ -209,7 +210,7 @@ KLibrary* KLibLoader::library( const char *name )
     lt_dlhandle handle = lt_dlopen( libfile.latin1() );
     if ( !handle )
     {
-	qDebug("KLibLoader: library=%s: file=%s: %s", name, libfile.latin1(), lt_dlerror() );
+	kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
 	return 0;
     }
 
@@ -229,7 +230,7 @@ void KLibLoader::unloadLibrary( const char *libname )
   if ( !lib )
     return;
 
-  qDebug( "closing library %s", libname );
+  kdDebug(150) << "closing library " << libname << endl;
 
   m_libs.remove( libname );
   

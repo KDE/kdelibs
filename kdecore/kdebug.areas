@@ -6,6 +6,7 @@
 
 125	kaccel (kdecore)
 126	kurl (kdecore)
+150	KLibLoader (kdecore)
 200	KTMW (kdeui)
 220	KToolBar (kdeui)
 250	kfile (kdelibs)
