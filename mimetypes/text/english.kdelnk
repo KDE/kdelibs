@@ -4,6 +4,7 @@ MimeType=text/english
 Comment=English Text
 Comment[de]=Englischer Text   
 Comment[nl]=english tekst 
+Comment[pl]=Tekst angielski
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

@@ -3,6 +3,7 @@
 Comment=Executable
 Comment[de]=Programm
 Comment[nl]=Programma
+Comment[pl]=Program
 Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-executable

@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=Character Device
 Comment[de]=Zeichen-Orientiertes Gerät
+Comment[pl]=Urz±dzenie znakowe
 Icon=char_dev.xpm
 Type=MimeType
 MimeType=inode/chardevice

@@ -3,7 +3,8 @@
 Comment=C++ sources
 Comment[de]=C++ Quelldatei
 Comment[nl]=C++ bronbestand
+Comment[pl]=¬ród³o C++
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-c++src
-Patterns=*.cpp;*.cxx;*.cc;
+Patterns=*.cpp;*.cxx;*.cc;*.C;

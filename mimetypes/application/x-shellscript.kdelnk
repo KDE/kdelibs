@@ -3,6 +3,7 @@
 Comment=shell script
 Comment[de]=Skript
 Comment[nl]=Shellscript 
+Comment[pl]=Skrypt pow³oki
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript

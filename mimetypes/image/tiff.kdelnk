@@ -7,3 +7,4 @@ Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
 Comment=TIFF Image
 Comment[de]=TIFF Bild
 Comment[nl]=TIFF afbeelding
+Comment[pl]=Obraz TIFF

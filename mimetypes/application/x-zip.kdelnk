@@ -7,3 +7,4 @@ Patterns=*.zip;*.ZIP;
 Comment=Zip archive
 Comment[de]=Zip Archiv
 Comment[nl]=Zip archief
+Comment[pl]=Archiwum Zip

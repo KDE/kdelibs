@@ -7,3 +7,4 @@ Patterns=*.pfa;*.PFB;*.pfb;*.gsf;*.pcf.Z;
 Comment=Fonts
 Comment[de]=Fonts
 Comment[nl]=Lettertype
+Comment[pl]=Czcionki

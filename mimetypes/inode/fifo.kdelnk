@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=Pipe
 Comment[de]=Pipe
+Comment[pl]=Kolejka
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

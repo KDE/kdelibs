@@ -4,6 +4,7 @@ MimeType=text/x-makefile
 Comment=Makefile
 Comment[de]=Makefile  
 Comment[nl]=Makefile
+Comment[pl]=Makefile
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType

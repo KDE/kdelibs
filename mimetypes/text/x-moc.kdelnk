@@ -1,9 +1,10 @@
 # KDE Config File
 [KDE Desktop Entry]
 MimeType=text/x-moc
-Comment=Qt Meta Object Datei
+Comment=Qt Meta Object File
 Comment[de]=Qt Meta Object Datei   
 Comment[nl]=Qt-metaobject bestand 
+Comment[pl]=Metaobjekt Qt
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType

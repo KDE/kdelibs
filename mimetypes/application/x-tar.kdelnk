@@ -7,3 +7,4 @@ Patterns=*.tar;
 Comment=Tar archive
 Comment[de]=Tar Archiv
 Comment[nl]=Tar archief
+Comment[pl]=Archiwum Tar

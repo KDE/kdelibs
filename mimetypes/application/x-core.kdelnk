@@ -7,3 +7,4 @@ MimeType=application/x-core
 Comment=Core dump
 Comment[de]=Speicherauszug
 Comment[nl]=Coredump  
+Comment[pl]=Core dump

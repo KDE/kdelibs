@@ -4,6 +4,7 @@ MimeType=text/plain
 Comment=Plain Text
 Comment[de]=einfacher Text   
 Comment[nl]=Platte tekst 
+Comment[pl]=Czysty tekst
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

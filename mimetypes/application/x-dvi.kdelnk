@@ -3,6 +3,7 @@
 Comment=TeX Device Independent file
 Comment[de]=TeX DVI Datei
 Comment[nl]=TeX apperaat onafhankelijk bestand
+Comment[pl]=Plik TeX DVI
 Icon=dvi.xpm
 Type=MimeType
 MimeType=application/x-dvi

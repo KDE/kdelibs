@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=KDE config file
 Comment[de]=KDE Configuration
+Comment[pl]=Plik konfiguracyjny KDE
 Icon=kmailion.xpm
 Type=MimeType
 MimeType=application/x-kdelnk
