@@ -133,26 +133,29 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
         bool m_oldisDisabled = m_isDisabled;
         m_isDisabled = attr->val();
         if (m_oldisDisabled != m_isDisabled) {
-            // If we change the disabled state while the sheet is still loading, then we have to
-            // perform two checks:
-            // Check #1: If the sheet becomes disabled while it was loading, and if it was either
-            // a main sheet or a sheet that was previously enabled via script, then we need
-            // to remove it from the list of pending sheets.
-            if (isLoading() && m_isDisabled)
-                getDocument()->styleSheetLoaded();
-
-            // Check #2: An alternate sheet becomes enabled while it is still loading.
-            if (isLoading() && m_alternate && m_isDisabled)
-                getDocument()->addPendingSheet();
-
-            // If the sheet is already loading just bail.
+            if (isLoading()) {
+                if (m_oldisDisabled)
+                    getDocument()->addPendingSheet();
+                else if (!m_alternate)
+                    getDocument()->styleSheetLoaded();
+            }
+            if (m_oldisDisabled) {
+                // enabling: if it's an alternate sheet, pretend it's not.
+                m_alternate = false;
+            } else if (!m_alternate) {
+                // disabling: recheck alternate status
+                QString rel =  getAttribute(ATTR_REL).string().lower();
+                QString type = getAttribute(ATTR_TYPE).string().lower();
+                m_alternate = (type.contains("text/css") || rel.contains("stylesheet")) && rel.contains("alternate");
+            }
             if (isLoading())
                 break;
-
-            // Load the sheet, since it's never been loaded before.
-            if (!m_sheet && !m_isDisabled)
-                process();
-            else
+            if (!m_sheet && !m_isDisabled) {
+                process(); 
+                if (isLoading() && m_alternate)
+                    getDocument()->addPendingSheet();
+                m_alternate = false;
+            } else
                 getDocument()->updateStyleSelector(); // Update the style selector.
         }
         break;
@@ -198,7 +201,7 @@ void HTMLLinkElementImpl::process()
                 m_isCSSSheet = true;
 		m_cachedSheet->ref(this);
             }
-            else {
+            else if (!isAlternate()) {
                 // Error requesting sheet; decrement pending sheet count
                 getDocument()->styleSheetLoaded();
             }

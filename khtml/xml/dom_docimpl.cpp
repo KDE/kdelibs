@@ -1811,6 +1811,9 @@ void DocumentImpl::recalcStyleSelector()
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed : QString();
+    bool autoselect = sheetUsed.isEmpty(); 
+    if (autoselect && !m_preferredStylesheetSet.isEmpty())
+        sheetUsed = m_preferredStylesheetSet.string();
     NodeImpl *n;
     for (;;) {
         m_availableSheets.clear();
@@ -1852,16 +1855,18 @@ void DocumentImpl::recalcStyleSelector()
                 QString title;
                 if ( n->id() == ID_LINK ) {
                     HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
-                    if (!l->isDisabled() && l->isCSSStyleSheet()) {
+                    if (l->isCSSStyleSheet()) {
                         sheet = l->sheet();
 
                         if (sheet || l->isLoading() || l->isAlternate() )
                             title = l->getAttribute(ATTR_TITLE).string();
 
-                        if (!title.isEmpty() &&
-                            ( (!l->isAlternate() && sheetUsed.isEmpty()) ||
-                              m_preferredStylesheetSet == title))
+			if ((autoselect || title != sheetUsed) && l->isDisabled()) {
+                            sheet = 0;
+                        } else if (!title.isEmpty() && !l->isAlternate() && sheetUsed.isEmpty()) {
                             sheetUsed = title;
+                            l->setDisabled(false);
+                        }
                     }
                 }
                 else {
@@ -1901,7 +1906,7 @@ void DocumentImpl::recalcStyleSelector()
             if (isHTMLDocument() && n->id() == ID_BODY) {
                 canResetSheet = !canResetSheet;
                 break;
-        }
+            }
         }
 
         // we're done if we don't select an alternative sheet
@@ -1916,7 +1921,11 @@ void DocumentImpl::recalcStyleSelector()
         // so try from scratch again
         if (view())
             view()->part()->d->m_sheetUsed = QString::null;          
-        sheetUsed = QString::null;
+        if (!m_preferredStylesheetSet.isEmpty() && !(sheetUsed == m_preferredStylesheetSet))
+            sheetUsed = m_preferredStylesheetSet.string();
+        else
+            sheetUsed = QString::null;
+        autoselect = true;
     }
 
     // De-reference all the stylesheets in the old list

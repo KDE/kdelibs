@@ -99,6 +99,7 @@ public:
     bool isAlternate() const { return m_alternate; }
     bool isCSSStyleSheet() const { return m_isCSSSheet; }
     bool isDisabled() const { return m_isDisabled; }
+    void setDisabled(bool disabled) { m_isDisabled = disabled; }
 
 protected:
     void finished();

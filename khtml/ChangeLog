@@ -1,3 +1,15 @@
+2003-11-28  Germain Garand  <germain@ebooksfrance.org>
+
+        * html/html_headimpl.cpp (class HTMLLinkElementImpl): grant to alternate sheets
+        enabled via script the same status as preferred sheets. Restore proper tracking
+        of pending stylesheets.(#67453/#68504)
+
+        * html/html_headimpl.h (HTMLLinkElementImpl::setDisabled)
+
+        * xml/dom_docimpl.cpp (recalcStyleSelector): don't remove sheets linked from
+        DOM-disabled link elements from the list of available alternate stylesheets.
+        Re-enabling them manually is a valid option.
+
 2003-11-26  Lubos Lunak  <l.lunak@kde.org>
 
 	* khtmlview.cpp, xml/dom2_eventsimpl.cpp : generate correctly keydown,keypress and keyup events
