@@ -147,6 +147,14 @@ KCModuleInfo::loadAll()
   setDocPath(desktop.readPathEntry("DocPath"));
 }
 
+QStringList
+KCModuleInfo::moduleNames() const
+{
+  QStringList sl = _groups;
+  sl += _name;
+  return sl;
+}
+
 QCString 
 KCModuleInfo::moduleId() const
 {

@@ -82,6 +82,12 @@ public:
   QString moduleName() const { return _name; };
 
   /**
+   * @return The module's (translated) path names. This gives you the path in a
+   * TreeView in KDialogBase where the module belongs to.
+   */
+  QStringList moduleNames() const;
+
+  /**
    * @return a @ref KSharedPtr to @ref KService created from the modules .desktop file
    */
   KService::Ptr service() const { return _service; };
