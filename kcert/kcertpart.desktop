@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+Comment=Embeddable Personal Certificate Manager
+MimeType=application/x-pkcs12;
+Icon=lock
+Name=KCertPart
+ServiceTypes=KParts/ReadWritePart
+X-KDE-Library=libkcertpart
+InitialPreference=15
