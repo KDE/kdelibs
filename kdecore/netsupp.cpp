@@ -127,7 +127,7 @@ make_unix(const char *name, const char *serv)
 }
 
 
-#if defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
+#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
 
 #define KRF_getaddrinfo		0
 #define KRF_resolver		0
