@@ -1,6 +1,4 @@
-# $Id$
-
-SUBDIRS = ktexteditor kscript kregexpeditor
+SUBDIRS = ktexteditor kscript kregexpeditor kmediaplayer
 
 DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts dcop
 DOXYGEN_EXCLUDE = kscript/sample/*
