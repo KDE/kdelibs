@@ -164,7 +164,7 @@ void KThemeBase::generateBorderPix(int i)
     else
         warning("KThemeBase: Tried making border from empty pixmap");
 }
-    
+
 
 void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
                                  QString *brdnames)
@@ -185,7 +185,7 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
         grHighColors[destID] = new QColor(*grHighColors[sourceID]);
     else
         grHighColors[destID] = NULL;
-    
+
     if(colors[sourceID])
         colors[destID] = new QColorGroup(*colors[sourceID]);
     else
@@ -219,7 +219,7 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
         pbPixmaps[destID] = pbPixmaps[sourceID];
         pbDuplicate[destID] = true;
     }
-    
+
     if(sourceID == ActiveTab && destID == InactiveTab)
         aTabLine = iTabLine;
     else if(sourceID == InactiveTab && destID == ActiveTab)
@@ -263,7 +263,7 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
         applyMiscResourceGroup(&config);
     }
     delete testProp;
-    
+
     // initalize defaults that may not be read
     for(i=0; i < WIDGETS; ++i)
         loaded[i] = false;
@@ -271,7 +271,7 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     aTabLine = iTabLine = true;
     roundedButton = roundedCombo = roundedSlider = focus3D = false;
     splitterWidth = 10;
-    
+
     for(i=0; i < WIDGETS; ++i)
         readResourceGroup(i, pixnames, brdnames, loaded);
 
@@ -291,8 +291,6 @@ KThemeBase::KThemeBase(const QString &)
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
-    setButtonDefaultIndicatorWidth(0);
-
 }
 
 void KThemeBase::applyConfigFile(const QString &file)
@@ -321,7 +319,7 @@ void KThemeBase::applyConfigFile(const QString &file)
     KConfig inConfig(file, true, false);
     KConfig *globalConfig = KGlobal::config();
     globalConfig->setGroup("General");
-    inConfig.setGroup("General");                 
+    inConfig.setGroup("General");
     if(inConfig.hasKey("foreground"))
         globalConfig->writeEntry("foreground",
                                  inConfig.readEntry("foreground", " "), true,
@@ -347,7 +345,7 @@ void KThemeBase::applyConfigFile(const QString &file)
                                  inConfig.readEntry("windowBackground", " "),
                                  true, true);
     globalConfig->setGroup("KDE");
-    inConfig.setGroup("KDE");                                 
+    inConfig.setGroup("KDE");
     if(inConfig.hasKey("contrast"))
         globalConfig->writeEntry("contrast",
                                  inConfig.readEntry("contrast", " "), true,
@@ -403,7 +401,7 @@ QImage* KThemeBase::loadImage(QString &name)
     delete image;
     return(NULL);
 }
- 
+
 KThemePixmap* KThemeBase::loadPixmap(QString &name)
 {
     KThemePixmap *pixmap = new KThemePixmap(false);
@@ -540,8 +538,8 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
                    Qt::CopyROP, false);
         else
             mPainter.fillRect(0, 0, bdWidth, bdWidth, color1);
-            
-        
+
+
         tmp = borderPixmap(widget)->border(KThemePixmap::TopRight);
         srcMask = tmp->mask();
         bitBlt(pixmap, w-bdWidth, 0, tmp, 0, 0, bdWidth,
@@ -551,7 +549,7 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
                    bdWidth, Qt::CopyROP, false);
         else
             mPainter.fillRect(w-bdWidth, 0, bdWidth, bdWidth, color1);
-            
+
         tmp = borderPixmap(widget)->border(KThemePixmap::BottomLeft);
         srcMask = tmp->mask();
         bitBlt(pixmap, 0, h-bdWidth, tmp, 0, 0, bdWidth,
@@ -571,7 +569,7 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
                    bdWidth, bdWidth, Qt::CopyROP, false);
         else
             mPainter.fillRect(w-bdWidth, h-bdWidth, bdWidth, bdWidth, color1);
-            
+
         QPainter p;
         p.begin(pixmap);
         if(w-bdWidth*2 > 0){
@@ -583,7 +581,7 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
                        w-bdWidth*2, bdWidth, Qt::CopyROP, false);
             else
                 mPainter.fillRect(bdWidth, 0, w-bdWidth*2, bdWidth, color1);
-            
+
             tmp = borderPixmap(widget)->border(KThemePixmap::Bottom);
             srcMask = tmp->mask();
             p.drawTiledPixmap(bdWidth, h-bdWidth, w-bdWidth*2, bdWidth,
@@ -810,7 +808,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
 {
     KRootProp *tmpProp = new KRootProp("Misc"); // clear the old property
     tmpProp->destroy();
-    delete tmpProp;    
+    delete tmpProp;
 
     KRootProp prop("Misc");
     config->setGroup("Misc");
@@ -845,7 +843,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("ShadeStyle", (int)Next);
     else
         prop.writeEntry("ShadeStyle", (int)Windows);
-    
+
     prop.writeEntry("FrameWidth", config->readNumEntry("FrameWidth", 2));
     prop.writeEntry("Cache", config->readNumEntry("Cache", 1024));
     prop.writeEntry("ScrollBarExtent",
@@ -865,7 +863,7 @@ void KThemeBase::readMiscResourceGroup()
     cacheSize = prop.readNumEntry("Cache", 1024);
     sbExtent = prop.readNumEntry("ScrollBarExtent", 16);
 }
-    
+
 void KThemeBase::applyResourceGroup(KConfig *config, int i)
 {
     QString tmpStr;
@@ -898,7 +896,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
         tmpVal = (int)TileScale;
     }
     prop.writeEntry("ScaleHint", tmpVal);
-    
+
     // Gradient type
     tmpStr = config->readEntry("Gradient");
     if(tmpStr == "Diagonal")
@@ -955,7 +953,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
             fg = config->readColorEntry("Foreground", &fg);
         prop.writeEntry("Foreground", fg);
         prop.writeEntry("Background", bg);
-        
+
     }
     else
         colors[i] = NULL;
@@ -971,7 +969,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
         prop.writeEntry("PixmapBWidth", config->
                         readNumEntry("PixmapBWidth", 0));
     }
-    
+
     // Various widget specific settings. This was more efficent when bunched
         // together in the misc group, but this makes an easier to read config.
     if(i == SliderGroove)
@@ -987,7 +985,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
             prop.writeEntry("Round", config->readBoolEntry("Round", false));
         else
             prop.writeEntry("Round", 5000); // invalid, used w/multiple groups
-            
+
     }
     else if (i == PushButton || i == PushButtonDown){
         if(config->hasKey("XShift"))
@@ -1022,7 +1020,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     if(loadArray[i] == true){
         return; // already been preloaded.
     }
-    
+
     int tmpVal;
     KRootProp prop(widgetEntries[i]);
     QString tmpStr;
@@ -1047,7 +1045,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
         return;
     }
     // special inheritance for disabled arrows (these are tri-state unlike
-    // the rest of what we handle).        
+    // the rest of what we handle).
     for(tmpVal = DisArrowUp; tmpVal <= DisArrowRight; ++tmpVal){
         if(tmpVal == i){
             tmpStr = prop.readEntry(QString::fromLatin1("Pixmap"));
@@ -1058,11 +1056,11 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
             }
         }
     }
-    
+
     // Scale hint
     scaleHints[i] = (ScaleHint)prop.readNumEntry(QString::fromLatin1("ScaleHint"), (int)TileScale);
     gradients[i] = (Gradient)prop.readNumEntry(QString::fromLatin1("Gradient"), (int)GrNone);
-    
+
     // Blend intensity
     tmpStr = prop.readEntry(QString::fromLatin1("Blend"), QString::fromLatin1("0.0"));
     blends[i] = tmpStr.toFloat();
@@ -1107,7 +1105,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     }
     else
         colors[i] = NULL;
-    
+
     // Pixmap
     int existing;
     tmpStr = prop.readEntry(QString::fromLatin1("Pixmap"));
@@ -1167,7 +1165,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
 
     if(pbPixmaps[i] && !pbDuplicate[i])
         generateBorderPix(i);
-    
+
     // Various widget specific settings. This was more efficent when bunched
     // together in the misc group, but this makes an easier to read config.
     if(i == SliderGroove)
@@ -1202,7 +1200,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     }
     loadArray[i] = true;
 }
-            
+
 
 KThemePixmap::KThemePixmap(bool timer)
     : KPixmap()
@@ -1277,7 +1275,7 @@ KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID, bool border,
     key.data.height = h;
     key.data.border = border;
     key.data.mask = mask;
-    
+
     KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
     if(pix)
         pix->updateAccessed();

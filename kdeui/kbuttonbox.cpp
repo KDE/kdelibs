@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-/* 
+/*
  * KButtonBox class
  *
  * A container widget for buttons. Uses Qt layout control to place the
@@ -70,9 +70,9 @@ public:
   QList<KButtonBox::Item> buttons;
 };
 
-KButtonBox::KButtonBox(QWidget *parent, int _orientation, 
-		       int border, int autoborder) 
-  :  QWidget(parent) 
+KButtonBox::KButtonBox(QWidget *parent, int _orientation,
+		       int border, int autoborder)
+  :  QWidget(parent)
 {
   data = new PrivateData;
   assert(data != 0);
@@ -94,16 +94,16 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   item->noexpand  = noexpand;
   data->buttons.append(item);
   item->button->adjustSize();
-  
+
   return item->button;
-}
+}	
 
 void KButtonBox::addStretch(int scale) {
   if(scale > 0) {
     Item *item = new Item;
     item->button = 0;
     item->noexpand  = FALSE;
-    item->stretch = scale;  
+    item->stretch = scale;
     data->buttons.append(item);
   }
 }
@@ -119,9 +119,9 @@ void KButtonBox::layout() {
       if(item->noexpand)
 	b->setFixedSize(buttonSizeHint(b));
       else
-	b->setFixedSize(bs);	
+	b->setFixedSize(bs);
     }
-  }  
+  }
 
   setMinimumSize(sizeHint());
 }
@@ -152,7 +152,7 @@ void KButtonBox::placeButtons() {
       if(item->button != 0) {
 	QPushButton *b = item->button;
 	b->move(x_pos, (height() - b->height()) / 2);
-      
+
 	x_pos += b->width() + data->autoborder;
       } else
 	x_pos += (int)((((double)fs) * item->stretch) / stretch);
@@ -163,7 +163,7 @@ void KButtonBox::placeButtons() {
     int stretch = 0;
     for(i = 0; i < data->buttons.count(); i++) {
       Item *item = data->buttons.at(i);
-      if(item->button != 0) 
+      if(item->button != 0)
 	fs -= item->button->height() + data->autoborder;
       else
 	stretch +=item->stretch;
@@ -176,7 +176,7 @@ void KButtonBox::placeButtons() {
       if(item->button != 0) {
 	QPushButton *b = item->button;
 	b->move((width() - b->width()) / 2, y_pos);
-      
+
 	y_pos += b->height() + data->autoborder;
       } else
 	y_pos += (int)((((double)fs) * item->stretch) / stretch);
@@ -197,14 +197,14 @@ QSize KButtonBox::bestButtonSize() const {
     KButtonBox *that = (KButtonBox*)this; // to remove the const ;(
     Item *item = that->data->buttons.at(i);
     QPushButton *b = item->button;
- 
-    if(b != 0 && !item->noexpand) {      
+
+    if(b != 0 && !item->noexpand) {
       QSize bs = buttonSizeHint(b);
 
       if(bs.width() > s.width())
 	s.setWidth(bs.width());
       if(bs.height() > s.height())
-	s.setHeight(bs.height());      
+	s.setHeight(bs.height());
     }
   }
 
@@ -230,7 +230,7 @@ QSize KButtonBox::sizeHint() const {
 	  s = that->buttonSizeHint(b);
 	else
 	  s = bs;
-	
+
 	if(data->orientation == HORIZONTAL)
 	  dw += s.width();
 	else
@@ -245,16 +245,16 @@ QSize KButtonBox::sizeHint() const {
 	return QSize(dw, bs.height() + 2 * data->border);
     else
 	return QSize(bs.width() + 2 * data->border, dw);
-  }  
+  }
 }
 
 /*
- * Returns the best size for a button. If a button is less than 
- * minButtonWidth pixels wide, return minButtonWidth pixels 
+ * Returns the best size for a button. If a button is less than
+ * minButtonWidth pixels wide, return minButtonWidth pixels
  * as minimum width
  */
 QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
-  QSize s = b->sizeHint();  
+  QSize s = b->sizeHint();
   QSize ms = b->minimumSize();
   if(s.width() < minButtonWidth)
     s.setWidth(minButtonWidth);
@@ -264,7 +264,7 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
     s.setWidth(ms.width());
   if(ms.height() > s.height())
     s.setHeight(ms.height());
-  
+
   return s;
 }
 

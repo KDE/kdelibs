@@ -35,7 +35,7 @@
  * class handles refer to the KDE theme configuration documentation.
  *
  */
- 
+
 class KThemeStyle: public KThemeBase
 {
     Q_OBJECT
@@ -46,9 +46,8 @@ public:
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
      */
-    KThemeStyle(const QString &configFile = QString::null) :
-        KThemeBase(configFile) {;}
-    ~KThemeStyle(){warning("Kthemestyle destructor called");}
+    KThemeStyle(const QString &configFile = QString::null);
+    ~KThemeStyle();
     virtual void polish(QWidget* );
     virtual void unPolish(QWidget* );
     /**
@@ -66,7 +65,7 @@ public:
      * This is a convenience method for drawing widgets with
      * borders, highlights, pixmaps, colors, etc...
      * You specify the widget type and it will draw it according to the
-     * config file settings. 
+     * config file settings.
      *
      * @param p The QPainter to draw on.
      * @param g The color group to use.
@@ -165,7 +164,7 @@ public:
     virtual void drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
                                    int state);
     /**
-     * Sets the mask for pushbuttons. 
+     * Sets the mask for pushbuttons.
      */
     virtual void drawButtonMask(QPainter *p, int x, int y, int w, int h);
     /**
@@ -287,7 +286,7 @@ public:
      */
     virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool active,
-                               QMenuItem *item, QBrush *fill=NULL);  
+                               QMenuItem *item, QBrush *fill=NULL);
     /**
      * Returns the width of the splitter as specified in the config file.
      */
@@ -327,7 +326,7 @@ public:
      */
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
     virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);
-    virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);    
+    virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);
     virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;

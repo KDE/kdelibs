@@ -126,11 +126,9 @@ void KMenuBar::drawContents(QPainter *p)
                     y += h + motifBarHMargin;
                 }
             }
-            popupshown = mi->popup() ? mi->popup()->isVisible() : false;
             stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
                                     palette().normal() : palette().disabled(),
-                                    i == actItem && (hasFocus() || mouseActive
-                                                     || popupshown),
+                                    i == actItem,
                                     mi, NULL);
             x += w;
         }

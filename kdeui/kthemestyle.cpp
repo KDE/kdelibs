@@ -30,16 +30,25 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-void KThemeStyle::polish(QApplication */*app*/)
+KThemeStyle::KThemeStyle(const QString &configFile )  
+    :  KThemeBase(configFile) 
 {
     setScrollBarExtent(getSBExtent(), getSBExtent());
+    setButtonDefaultIndicatorWidth(0); // We REALLY should support one, see drawPushButton() below!
+}
+
+KThemeStyle::~KThemeStyle(){
+    warning("Kthemestyle destructor called");
+}
+
+void KThemeStyle::polish(QApplication */*app*/)
+{
 }
 
 void KThemeStyle::polish(QPalette &p)
 {
     oldPalette = p;
     if(isPixmap(Background) || isColor(Background)){
-        //QPalette newPalette = p;
         if(isColor(Background)){
             p.setColor(QColorGroup::Background,
                                 colorGroup(oldPalette.normal(), Background)
@@ -53,7 +62,6 @@ void KThemeStyle::polish(QPalette &p)
         }
         p.setColor(QColorGroup::ButtonText,
                    colorGroup(oldPalette.normal(), PushButton)->foreground());
-        //kapp->setPalette(newPalette);
     }
 }
 
@@ -61,16 +69,23 @@ void KThemeStyle::polish(QPalette &p)
 void KThemeStyle::unPolish(QApplication *app)
 {
     app->setPalette(oldPalette, true);
-    setScrollBarExtent(16);
 }
 
 void KThemeStyle::polish(QWidget *w)
 {
     if ( !w->isTopLevel() ) {
-        if (w->inherits("QLabel") || w->inherits("QButton")
-            || w->inherits("QGroupBox") || w->inherits("QComboBox")
-           || w->inherits("QSlider"))
-            w->setAutoMask( TRUE );
+	if ( w->inherits("QGroupBox")
+	     || w->inherits("QTabWidget") ) {
+	    w->setAutoMask( TRUE );
+	    return;
+	}
+ 	if (w->inherits("QLabel")
+ 	    || w->inherits("QSlider")
+ 	    || w->inherits("QButton")
+	    || w->inherits("QProgressBar")
+	    ){
+	    w->setBackgroundOrigin( QWidget::ParentOrigin );
+ 	}
     }
     if(w->inherits("QPopupMenu")){
         popupPalette = w->palette();
@@ -87,7 +102,6 @@ void KThemeStyle::polish(QWidget *w)
         }
     }
     if(w->inherits("QCheckBox")){
-        indiPalette = w->palette();
         if(isColor(IndicatorOff) || isColor(IndicatorOn)){
             QPalette newPal(w->palette());
             w->setPalettePropagation(QWidget::SamePalette);
@@ -101,7 +115,6 @@ void KThemeStyle::polish(QWidget *w)
         }
     }
     if(w->inherits("QRadioButton")){
-        exIndiPalette = w->palette();
         if(isColor(ExIndicatorOff) || isColor(ExIndicatorOn)){
             QPalette newPal(w->palette());
             w->setPalettePropagation(QWidget::SamePalette);
@@ -120,17 +133,25 @@ void KThemeStyle::polish(QWidget *w)
 void KThemeStyle::unPolish(QWidget* w)
 {
     if ( !w->isTopLevel() ) {
-        if (w->inherits("QLabel") || w->inherits("QButton")||
-            w->inherits("QGroupBox") || w->inherits("QComboBox")
-           || w->inherits("QSlider"))
-            w->setAutoMask( FALSE );
+	if ( w->inherits("QGroupBox")
+	     || w->inherits("QTabWidget") ) {
+	    w->setAutoMask( FALSE );
+	    return;
+	}
+ 	if (w->inherits("QLabel")
+ 	    || w->inherits("QSlider")
+ 	    || w->inherits("QButton")
+	    || w->inherits("QProgressBar")
+	    ){
+	    w->setBackgroundOrigin( QWidget::WidgetOrigin );
+ 	}
     }
     if(w->inherits("QPopupMenu"))
-        w->setPalette(popupPalette);
+        w->unsetPalette();
     if(w->inherits("QCheckBox"))
-        w->setPalette(indiPalette);
+        w->unsetPalette();
     if(w->inherits("QRadioButton"))
-        w->setPalette(exIndiPalette);
+        w->unsetPalette();
 }
 
 void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
