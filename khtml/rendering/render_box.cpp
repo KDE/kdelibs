@@ -648,13 +648,15 @@ void RenderBox::calcAbsoluteHorizontal()
 	r = m_style->right().width(cw);		
     if(!m_style->width().isVariable())
 	w = m_style->width().width(cw);
+    else if (isReplaced())
+        w = intrinsicWidth();   
     if(!m_style->marginLeft().isVariable())
 	ml = m_style->marginLeft().width(cw);		
     if(!m_style->marginRight().isVariable())
 	mr = m_style->marginRight().width(cw);
 
     
-    // css2 spec 10.3.7
+    // css2 spec 10.3.7 & 10.3.8
     // 1
     RenderObject* o=parent();
     if (style()->direction()==LTR && l==AUTO && r==AUTO)
@@ -729,16 +731,18 @@ void RenderBox::calcAbsoluteHorizontal()
 void RenderBox::calcAbsoluteVertical()
 {
     const int AUTO = -666666;
-    int t,b,h, ch;
+    int t,b,h,mt,mb,ch;
 
-    t=b=h=AUTO;
+    t=b=h=mt=mb=AUTO;
+    
+    int pab = borderTop()+borderBottom()+paddingTop()+paddingBottom();
 
     Length hl = containingBlock()->style()->height();
     if (hl.isFixed())
     	ch = hl.value + containingBlock()->paddingTop()
 	     + containingBlock()->paddingBottom();
     else
-    	ch = containingBlock()->height();
+    	ch = containingBlock()->height();   
 
     if(!m_style->top().isVariable())
 	t = m_style->top().width(ch);
@@ -746,15 +750,18 @@ void RenderBox::calcAbsoluteVertical()
 	b = m_style->bottom().width(ch);		
     if(!m_style->height().isVariable())
 	h = m_style->height().width(ch);
+    else if (isReplaced())
+        h = intrinsicHeight();
+    if(!m_style->marginTop().isVariable())
+	mt = m_style->marginTop().width(ch);		
+    if(!m_style->marginBottom().isVariable())
+	mb = m_style->marginBottom().width(ch);
 
-/*    if (t==AUTO && b!=AUTO && h!=AUTO)
-    {
-    	t = ch - b -
-	    (h +borderBottom()+paddingTop()+paddingBottom());
-    }*/
-
+    
+    // css2 spec 10.6.4 & 10.6.5
+    // 1
     RenderObject* o = parent();
-    if (t==AUTO)
+    if (t==AUTO && (h==AUTO || b==AUTO))
     {
 	if (m_next) t = m_next->yPos();
 	else if (m_previous) t = m_previous->yPos()+m_previous->height();
@@ -762,19 +769,42 @@ void RenderBox::calcAbsoluteVertical()
 	while (o && o!=containingBlock()) { t+=o->yPos(); o=o->parent(); }
     }
 
+    // 2
     if (b==AUTO && h==AUTO)
     	b=0;
 
+    // 3
+    if (b==AUTO || h==AUTO || t==AUTO)
+    {
+    	if (mt==AUTO) mt=0;
+        if (mb==AUTO) mb=0;
+    }
+    
+    // 4
+    if (mt==AUTO && mb==AUTO)
+    {
+        int ot = h + t + b + pab;
+        mt = (ch - ot)/2;
+        mb = ch - ot - mt;
+    }
+    
+    // 5
     if (h==AUTO)
-    	h = ch - ( t+b+marginTop()+marginBottom()+
-	    borderTop()+borderBottom()+paddingTop()+paddingBottom());	
+    	h = ch - ( t+b+mt+mb+pab);
+    if (t==AUTO)
+    	t = ch - ( h+b+mt+mb+pab);
+    if (b==AUTO)
+    	b = ch - ( h+t+mt+mb+pab);
+    if (mt==AUTO)
+    	mt = ch - ( h+t+b+mb+pab);
+    if (mb==AUTO)
+    	mb = ch - ( h+t+b+mt+pab);
 
-    h += borderTop()+borderBottom()+paddingTop()+paddingBottom();
-
-    if (m_height<h)
-    	m_height = h;
-
-    m_y = t + marginTop() +
+    if (m_height<h+pab)
+    	m_height = h+pab;
+    m_marginTop = mt;
+    m_marginBottom = mb;    
+    m_y = t + mt +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
 	
 //    printf("v: %d, %d, %d, %d\n",t,h,b,m_y);
