@@ -212,11 +212,8 @@ void KToolBarButton::modeChange()
     mysize = QSize(pix_width, pix_height);
     setMinimumSize( mysize );
     updateGeometry();
-    QToolButton::setUsesTextLabel(false);
     return;
   }
-
-  QToolButton::setUsesTextLabel(true);
 
   // okay, we have to deal with fonts.  let's get our information now
   QFont tmp_font;
@@ -273,6 +270,7 @@ void KToolBarButton::setTextLabel( const QString& text)
     txt.truncate(txt.length() - 3);
 
   QToolButton::setTextLabel(txt);
+  update();
 }
 
 void KToolBarButton::setText( const QString& text)
