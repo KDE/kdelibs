@@ -222,7 +222,7 @@ void KRegistry::load( const QString& _dbfile )
 	QString file;
 	str >> file;
 
-	kdebug( KDEBUG_INFO, 7011, "STORE: %s", file.ascii());
+	// kdebug( KDEBUG_INFO, 7011, "STORE: %s", file.ascii());
 	
 	KRegEntry *entry = 0;
 	if ( file == "//Dummy//" )
@@ -315,7 +315,7 @@ void KRegistry::dirDeleted( const QString& _path )
 
 KRegEntry* KRegistry::createEntry( QDataStream& _str, const QString& _file )
 {
-  kdebug( KDEBUG_INFO, 7011, "KRegistry: createEntry from datastream for %s", _file.ascii());
+  // kdebug( KDEBUG_INFO, 7011, "KRegistry: createEntry from datastream for %s", _file.ascii());
   KRegFactory *f;
   for( f = m_lstFactories.first(); f != 0L; f = m_lstFactories.next() )
   {
@@ -398,7 +398,7 @@ bool KRegEntry::isInDirectory( const QString& _path, bool _allow_subdir ) const
 
 bool KRegEntry::update()
 {
-  kdebug( KDEBUG_INFO, 7011, "Checking %s", m_strFile.ascii() );
+  // kdebug( KDEBUG_INFO, 7011, "Checking %s", m_strFile.ascii() );
 
   // Does the file still exist ?
   struct stat statbuff;
