@@ -352,16 +352,16 @@ are necessary to convert your old KDND-based stuff to Qt DND.<P>
  <STRONG> Replacement table :</STRONG><P>
 <TABLE BORDER="1">
 
-<TR><TD>KFM::download         </TD><TD>-&gt; KIONetAccess::download (kdelibs/kio/kio_netaccess.h)</TD></TR>
-<TR><TD>KFM::removeTempFile   </TD><TD>-&gt; KIONetAccess::removeTempFile</TD></TR>
+<TR><TD>KFM::download         </TD><TD>-&gt; KIO::NetAccess::download (kdelibs/kio/netaccess.h)</TD></TR>
+<TR><TD>KFM::removeTempFile   </TD><TD>-&gt; KIO::NetAccess::removeTempFile</TD></TR>
 <TR><TD COLSPAN="2" ROWSPAN="0">refreshDesktop, sortDesktop, selectRootIcons : removed; kdesktop handles it</TD></TR>
-<TR><TD>KFM::configure        </TD><TD>-&gt; see konqueror interface (IDL, soon DCOP)</TD></TR>
+<TR><TD>KFM::configure        </TD><TD>-&gt; see konqueror DCOP interface</TD></TR>
 <TR><TD>KFM::openURL          </TD><TD>-&gt; "(void) new KRun (url)" (kdelibs/kio/krun.h)</TD></TR>
 <TR><TD>KFM::refreshDirectory </TD><TD>-&gt; not needed anymore since konqy/kdesktop use KDirWatch</TD></TR>
-<TR><TD>KFM::openProperties   </TD><TD>-&gt; "(void) new PropertiesDialog (url)" (kdebase/libkonq/kpropsdlg.h)</TD></TR>
+<TR><TD>KFM::openProperties   </TD><TD>-&gt; "(void) new KPropertiesDialog (url)" (kdelibs/kfile/kpropsdlg.h)</TD></TR>
 <TR><TD>KFM::exec             </TD><TD>-&gt; "(void) new KRun (url)" (kdelibs/kio/krun.h)</TD></TR>
-<TR><TD>KFM::copy, KFM::move  </TD><TD>-&gt; KIOJob (async, see kio_job.h)<BR>
-                            or KIONetAccess (sync, see kio_netaccess.h)</TD></TR>
+<TR><TD>KFM::copy, KFM::move  </TD><TD>-&gt; KIO::Job (async, see kio/job.h)<BR>
+                            or KIO::NetAccess (sync, see kio/netaccess.h)</TD></TR>
 <TR><TD>DlgLocation           </TD><TD>-&gt; Use KLineEditDlg (kdeui/klineeditdlg.h) instead</TD></TR>
 </TABLE>
 
@@ -631,20 +631,6 @@ renamed to kuserpaths.h, the old include will work for a while, but you
 will get a warning message. If you have any questions about the changes
 then mail me (<A HREF="mailto:rich@kde.org">rich@kde.org</A>).<P>
 
-<STRONG>Conversion table (new names on the left) :</STRONG><P>
-<TABLE BORDER="1">
-
-<TR><TD>KUDSAtom </TD><TD>-&gt; UDSAtom</TD></TR>
-<TR><TD>KIOProtocol </TD><TD>-&gt; IOProtocol</TD></TR>
-<TR><TD>KUDSEntry </TD><TD>-&gt; UDSEntry;</TD></TR>
-<TR><TD>KIOConnection </TD><TD>-&gt; Connection</TD></TR>
-<TR><TD>KIOConnectionSignals </TD><TD>-&gt; ConnectionSignals</TD></TR>
-<TR><TD>KIOConnectionSlots </TD><TD>-&gt; ConnectionSlots</TD></TR>
-<TR><TD>KIOJobBase </TD><TD>-&gt; IOJob</TD></TR>
-<TR><TD>KIOSlave </TD><TD>-&gt; Slave</TD></TR>
-<TR><TD>KIOFilter </TD><TD>-&gt; Filter</TD></TR>
-</TABLE>
-
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kstring">kstring.h / KString</A></H3>
@@ -777,12 +763,11 @@ provides some useful lists, like the list of all managed windows).
 
 <H3><A NAME="KDebug">kDebug</A></H3>
 
-Use the kDebug* functions to log debug output, warnings and errors in a
-very flexible way. kdebug has been improved, and the API simplified.
-kdebug.h provides a small script for automating the conversion.
+Use kdDebug, kdWarning, kdError, kdFatal to log debug output, warnings and
+errors in a very flexible way. kdebug has been improved, and the API simplified.
+kdesdk/scripts/kDebug2kdDebug.sh provides a script for automating the conversion.
 Note that enabling/disabling debug output can now be done with kdebugdialog,
-which can be found in kdebase. The hidden dialog on C+S+F12 has disappeared.
-Also, consider using nana for assertions and debugger checks (see nana/*.h).
+which can be found in kdebase. The hidden dialog on C+S+F12 no longer exists.
 (<A HREF="mailto:faure@kde.org">faure@kde.org</A>)<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
