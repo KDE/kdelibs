@@ -1893,6 +1893,7 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KURLRequester", "url" );
     kdeMap->insert( "KPasswordEdit", "password" );
     kdeMap->insert( "KIntNumInput", "value" );
+    kdeMap->insert( "KIntSpinBox", "value" );
     kdeMap->insert( "KDoubleNumInput", "value" );
     #if QT_VERSION < 0x030200
       kdeMap->insert( "QRadioButton", "checked" );
