@@ -1144,7 +1144,8 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
           SLOT(ButtonHighlighted(int, bool)));
 
   item->setEnabled( enabled );
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1165,7 +1166,6 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
     items->insert( index, item );
 
   item->setEnabled( enabled );
-  item->show();
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1174,6 +1174,8 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   connect(button, SIGNAL(highlighted(int, bool)), this,
           SLOT(ButtonHighlighted(int, bool)));
 
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1204,7 +1206,8 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 
   connect( button, signal, receiver, slot );
   item->setEnabled( enabled );
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1223,6 +1226,8 @@ int KToolBar::insertSeparator( int index )
   else
     items->insert( index, item );
 	
+  if (position == Flat)
+    item->hide();
   updateRects(true);
   return items->at();
 }
@@ -1244,6 +1249,8 @@ int KToolBar::insertLineSeparator( int index )
   else
     items->insert( index, item );
 	
+  if (position == Flat)
+    item->hide();
   updateRects(true);
   return items->at();
 }
@@ -1270,7 +1277,8 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
   else
     items->insert(_index, item);
   item-> resize (_size, item_size-2);
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1286,7 +1294,10 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
   else
     items->insert(_index, item);
   item-> resize (_size, item_size-2);
-  item->show();
+  if (position == Flat)
+    item->move(100,100);       // Nasty hack : move item out of sight
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1314,7 +1325,8 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
   lined->setText(text);
   item->resize(size, item_size-2);
   item->setEnabled(enabled);
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1345,7 +1357,8 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1375,7 +1388,8 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
@@ -1405,7 +1419,8 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  item->show();
+  if (position != Flat)
+    item->show();
   updateRects(true);
   return items->at();
 }
