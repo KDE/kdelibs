@@ -317,12 +317,17 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = src[0];
-            // broken HTML workaround "--->" or "--!>"
+            // broken HTML: "--->" or "--!>"
             if (comment && searchCount == 2 && cmp.latin1() == '-' || cmp.latin1() == '!')
             {
                 // it's "--->"
                 if(searchFor[searchCount].latin1() != '>')
                     scriptCode[ scriptCodeSize++ ] = cmp;
+                ++src;
+            }
+            // broken HTML: skip spaces before the ">", i.e "</script >"
+            else if (!comment && cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            {
                 ++src;
             }
             else if ( cmp.lower() == searchFor[ searchCount ] )
