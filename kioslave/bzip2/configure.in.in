@@ -23,7 +23,6 @@ AC_MSG_RESULT($ac_cv_lib_bzip2)
 
 if test ! "$ac_cv_lib_bzip2" = no; then
   BZIP2DIR=bzip2
-  AC_SUBST(BZIP2DIR)
 
   LIBBZ2="$ac_cv_lib_bzip2"
   AC_SUBST(LIBBZ2)
@@ -54,7 +53,6 @@ else
     
    if test ! "$ac_cv_lib_bzip2_prefix" = no; then
      BZIP2DIR=bzip2
-     AC_SUBST(BZIP2DIR)
     
      LIBBZ2="$ac_cv_lib_bzip2_prefix"
      AC_SUBST(LIBBZ2)
@@ -68,8 +66,8 @@ fi
 
 AC_FIND_BZIP2
 
+AM_CONDITIONAL(include_bzip2, test -n "$BZIP2DIR")
 if test -n "$BZIP2DIR"; then
   AC_DEFINE(HAVE_BZIP2_SUPPORT, 1, [Defines if bzip2 is compiled])
-  BZIP2_FILTER='$(top_builddir)/kio/bzip2/kbzip2filter.la'
 fi
-AC_SUBST(BZIP2_FILTER)
+
