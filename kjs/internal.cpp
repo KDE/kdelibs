@@ -421,6 +421,7 @@ void KJScriptImp::init()
     con = new Context();
     firstNode = 0L;
     progNode = 0L;
+    recursion = 0;
     initialized = true;
   } else
     Collector::attach(collector);
@@ -448,6 +449,11 @@ void KJScriptImp::clear()
 bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
 {
   init();
+  
+  if (recursion > 0) {
+    fprintf(stderr, "Blocking recursive JS call.\n");
+    return false;
+  }
 
   assert(Lexer::curr());
   Lexer::curr()->setCode((UChar*)code, length);
@@ -467,8 +473,10 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   if (thisV)
     Context::current()->setThisValue(thisV);
 
+  recursion++;
   assert(progNode);
   KJSO res = progNode->evaluate();
+  recursion--;
 
   if (context->hadError()) {
     /* TODO */
