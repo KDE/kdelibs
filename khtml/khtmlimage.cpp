@@ -204,4 +204,6 @@ void KHTMLImageBrowserExtension::reparseConfiguration()
     m_imgPart->doc()->autoloadImages( true );
 }
 
+using namespace KParts;
+
 #include "khtmlimage.moc"

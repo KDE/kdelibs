@@ -282,8 +282,10 @@ void RenderObject::appendChildNode(RenderObject* newChild)
 
 void RenderObject::insertChildNode(RenderObject* child, RenderObject* beforeChild)
 {
-    if(!beforeChild)
-        return appendChildNode(child);
+    if(!beforeChild) {
+        appendChildNode(child);
+	return;
+    }
 
     ASSERT(!child->parent());
     ASSERT(beforeChild->parent() == this);
