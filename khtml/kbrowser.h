@@ -90,6 +90,9 @@ public:
   virtual bool isFileManagerMode() { return m_bFileManagerMode; }
   virtual void setFileManagerMode( bool _m ) { m_bFileManagerMode = _m; }
   
+  void enableImages( bool enable ) { m_bEnableImages = enable; }
+  bool imagesEnabled() const { return m_bEnableImages; }
+  
 public slots:
   virtual void slotStop();
   virtual void slotReload();
@@ -311,6 +314,13 @@ protected:
    * This is needed to use the same cache policy for loading images and stuff.
    */
   bool m_bReload;
+  
+  /**
+   * This flag indicates whether images should be loaded automatically.
+   * The default value is TRUE.
+   * see also: @ref enableImages and @ref imagesEnabled
+   */
+  bool m_bEnableImages;
 };
 
 #endif

@@ -45,6 +45,7 @@ KBrowser::KBrowser( QWidget *parent, const char *name, KBrowser *_parent_browser
   m_bParsing           = false;
   m_bComplete          = true;
   m_bReload            = false;
+  m_bEnableImages      = true;
   
   // m_lstPendingURLRequests.setAutoDelete( true );
   m_lstURLRequestJobs.setAutoDelete( true );
@@ -272,9 +273,14 @@ void KBrowser::slotURLRequest( QString _url )
 {
   kdebug(0,1202,"URLRequest %s", _url.ascii());
   
-  m_lstPendingURLRequests.append( _url );
- 
-  servePendingURLRequests();
+  if ( m_bEnableImages )
+  {
+    m_lstPendingURLRequests.append( _url );
+    servePendingURLRequests();
+  }
+  else
+    data( _url, "", 0, true );
+
 }
 
 void KBrowser::servePendingURLRequests()
