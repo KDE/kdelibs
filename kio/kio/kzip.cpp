@@ -20,7 +20,7 @@
 
 /*
 	This class implements a kioslave to acces ZIP files from KDE.
-    you can use it in IO_ReadOnly or in IO_WriteOnly mode, and it 
+    you can use it in IO_ReadOnly or in IO_WriteOnly mode, and it
     behaves just as expected (i hope ;-) ).
     It can also be used in IO_ReadWrite mode, in this case one can
     append files to an existing zip archive. when you append new files, which
@@ -33,7 +33,7 @@
     in IO_WriteOnly mode. exspecially take care of this, when you don´t want
     to leak information of how intermediate versions of files in the zip
     were looking.
-    for more information on the zip fileformat go to 
+    for more information on the zip fileformat go to
     http://www.pkware.com/support/appnote.html .
 
 */
@@ -105,14 +105,14 @@ public:
           m_currentDev( 0L ),
           m_compression( 8 ),
 	  m_offset( 0L ) { }
- 
+
     unsigned long           m_crc;         // checksum
     KZipFileEntry*          m_currentFile; // file currently being written
     QIODevice*              m_currentDev;  // filterdev used to write to the above file
     QPtrList<KZipFileEntry> m_fileList;    // flat list of all files, for the index (saves a recursive method ;)
     int                     m_compression;
     unsigned int	        m_offset; // holds the offset of the place in the zip,
-    // where new data can be appended. after openarchive it points to 0, when in 
+    // where new data can be appended. after openarchive it points to 0, when in
     // writeonly mode, or it points to the beginning of the central directory.
     // each call to writefile updates this value.
 };
@@ -182,37 +182,77 @@ bool KZip::openArchive( int mode )
 
         if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
-		    // here we calculate the length of the file in the zip
-		    // with headers and jump to the next header.
-            dev->at( dev->at() + 14 );
+            dev->at( dev->at() + 2 ); // skip 'version needed to extract'
 
-            uint skip;
-          
-            n = dev->readBlock( buffer, 4 ); // compressed file size
-            skip = (uchar)buffer[3] << 24 | (uchar)buffer[2] << 16 |
-	    	(uchar)buffer[1] << 8 | (uchar)buffer[0];
+            // we have to take care of the 'general purpose bit flag'.
+            // if bit 3 is set, the header doesn't contain the length of
+            // the file and we look for the signature 'PK\7\8'.
 
-            dev->at( dev->at() + 4 );
-            n = dev->readBlock( buffer, 2 ); // file name length
-            skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+            dev->readBlock( buffer, 2 );
+            if ( buffer[0] && 8 )
+            {
+                bool foundSignature = false;
 
-            n = dev->readBlock( buffer, 2 ); // extra field length
-            skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+                while (!foundSignature)
+                {
+                    n = dev->readBlock( buffer, 1 );
+                    if (n < 1)
+                    {
+                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
+                        return false;
+                    }
 
-            dev->at( dev->at() + skip );
-            offset += 30 + skip;
+                    if ( buffer[0] != 'P' )
+                        continue;
+
+                    n = dev->readBlock( buffer, 3 );
+                    if (n < 3)
+                    {
+                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
+                        return false;
+                    }
+
+                    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+                    {
+                        foundSignature = true;
+                        dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
+                    }
+                }
+            }
+            else
+            {
+                // here we calculate the length of the file in the zip
+                // with headers and jump to the next header.
+                dev->at( dev->at() + 10 );
+
+                uint skip;
+
+                n = dev->readBlock( buffer, 4 ); // compressed file size
+                skip = (uchar)buffer[3] << 24 | (uchar)buffer[2] << 16 |
+                       (uchar)buffer[1] << 8 | (uchar)buffer[0];
+
+                dev->at( dev->at() + 4 );
+                n = dev->readBlock( buffer, 2 ); // file name length
+                skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+
+                n = dev->readBlock( buffer, 2 ); // extra field length
+                skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+
+                dev->at( dev->at() + skip );
+                offset += 30 + skip;
+            }
         }
         else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
         {
-            
+
             // so we reached the central header at the end of the zip file
 		    // here we get all interesting data out of the central header
             // of a file
             offset = dev->at() - 4;
 
             //set offset for appending new files
-            if ( d->m_offset == 0L ) d->m_offset = offset;	      
-            
+            if ( d->m_offset == 0L ) d->m_offset = offset;
+
 		    n = dev->readBlock( buffer + 4, 42 );
             if (n < 42) {
                 kdWarning(7040) << "Invalid ZIP file, central entry too short" << endl; // not long enough for valid entry
@@ -245,11 +285,11 @@ bool KZip::openArchive( int mode )
             // compressed file size
             uint csize = (uchar)buffer[23] << 24 | (uchar)buffer[22] << 16 |
 	    		(uchar)buffer[21] << 8 | (uchar)buffer[20];
-		    
+
             // offset of local header
             uint localheaderoffset = (uchar)buffer[45] << 24 | (uchar)buffer[44] << 16 |
 				(uchar)buffer[43] << 8 | (uchar)buffer[42];
-	    
+
             // some clever people use different extra field lengths
             // in the central header and in the local header... funny.
             // so we need to get the localextralen to calculate the offset
@@ -262,7 +302,7 @@ bool KZip::openArchive( int mode )
 		    dev->at(save_at);
 
             //kdDebug(7040) << "localextralen: " << localextralen << endl;
-            
+
             // offset, where the real data for uncompression starts
             uint dataoffset = localheaderoffset + 30 + localextralen + namelen; //comment only in central header
 
@@ -275,7 +315,7 @@ bool KZip::openArchive( int mode )
             int time = getActualTime();
 
             QString entryName;
-              
+
 		    if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
             {
                 isdir = true;
@@ -518,7 +558,7 @@ bool KZip::writeFile( const QString& name, const QString& user, const QString& g
         kdWarning() << "KZip::writeFile doneWriting failed" << endl;
         return false;
     }
-    // update saved offset for appending new files 
+    // update saved offset for appending new files
     d->m_offset = device()->at();
     return true;
 }
@@ -554,7 +594,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
 	        d->m_fileList.remove();
         }
 
-    }    
+    }
     // Find or create parent dir
     KArchiveDirectory* parentDir = rootDir();
     QString fileName( name );
