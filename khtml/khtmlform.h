@@ -137,6 +137,8 @@ public:
     bool isInPixmapMode() { return !showAsWidget; }
     void setPixmapMode( bool flag ) { showAsWidget = !flag; if (!showAsWidget) w->hide(); }
 
+    QPixmap *pixmap() { return p; }    
+
 private:
 	QWidget *w;
 	// holds the widgets information...
@@ -463,7 +465,7 @@ public:
    ~HTMLMultiLineEditWidget();
 
 protected:
-    bool eventFilter( QObject *, QEvent * );
+    void paintEvent( QPaintEvent *pe );
        
 private:
     HTMLWidgetElement *widgetElement;

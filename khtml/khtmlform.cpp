@@ -200,11 +200,12 @@ void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 //  if ( w == 0 || p == 0 || p->isNull() || w->isVisible())
   if ( w == 0 || p == 0 || p->isNull() || showAsWidget)
     {
-      printf("hidden %s\n", className());
+//      printf("hidden %s\n", className());
       return;
     }  
 
-  printf("printing %s\n", className());
+  if (p->size() != w->size() )
+     p->resize( w->width(), w->height() );
     
   paintWidget( w );
 
@@ -216,7 +217,7 @@ void HTMLWidgetElement::paintWidget( QWidget *widget )
   QPainter::redirect( widget, p );
   QPaintEvent pe( QRect(widget->pos().x(), widget->pos().y(), widget->width(), widget->height()) );
   QApplication::sendEvent( widget, &pe );
-  QPainter::redirect( w, 0 );
+  QPainter::redirect( widget, 0 );
   
   const QObjectList *childrenList = w->children();
   if (childrenList)
@@ -234,21 +235,24 @@ void HTMLWidgetElement::paintWidget( QWidget *widget )
 
 HTMLObject *HTMLWidgetElement::mouseEvent( int _x, int _y, int button, int state )
 {
-  if (!w->isVisible())
+//    printf("currentFormFocusWidget = %p ; this = %p \n", currentFormFocusWidget, this );
+
+    if ( (!w->isVisible()) && currentFormFocusWidget != this )
      {
        if (currentFormFocusWidget)
           {
-	    printf("hiding active widget %s\n", currentFormFocusWidget->className());
+//	    printf("hiding active widget %s = %p\n", currentFormFocusWidget->className(), currentFormFocusWidget);
 	    currentFormFocusWidget->setPixmapMode( true );
-//	    currentFormFocusWidget->widget()->clearFocus();
-//	    currentFormFocusWidget->widget()->hide();
-//	    w->topLevelWidget()->repaint();
 	  }    
-     
+
+       printf("activating %s = %p\n", className(), this);
+	       
        currentFormFocusWidget = this;
        w->move( _relX, _relY );
        w->show();
        showAsWidget = true;
+       
+       w->setFocus();
      }
 //  else w->hide();
   
@@ -265,7 +269,6 @@ void HTMLWidgetElement::setWidget( QWidget *_w )
 { 
     w = _w; 
     p = new QPixmap( w->width(), w->height() );
-    // redirect all paint events for the widget into the pixmap
 
     p->fill( w->backgroundColor() );
 }
@@ -1012,20 +1015,23 @@ HTMLMultiLineEditWidget::HTMLMultiLineEditWidget( HTMLWidgetElement *htmlParent,
 : QMultiLineEdit( parent, name )
 {
   widgetElement = htmlParent;
-  if ( parent )
-    parent->topLevelWidget()->installEventFilter( this );
-    
-  setMouseTracking( true );    
 }
 
 HTMLMultiLineEditWidget::~HTMLMultiLineEditWidget()
 {
 }
 
-bool HTMLMultiLineEditWidget::eventFilter( QObject *, QEvent * )
+void HTMLMultiLineEditWidget::paintEvent( QPaintEvent *pe )
 {
-//  printf("bool HTMLMultiLineEditWidget::eventFilter( QObject *, QEvent *e );\n");
-  return false;
+  if ( widgetElement->isInPixmapMode() )
+     {
+       bool f = testWFlags( WState_Visible );
+       setWFlags( WState_Visible );
+       QTableView::paintEvent( pe );
+       if (!f) clearWFlags( WState_Visible );
+     }
+   else
+       QTableView::paintEvent( pe );  
 }
 
 //----------------------------------------------------------------------------
