@@ -294,7 +294,7 @@ LdapSearch::LdapSearch()
       LdapClient* ldapClient = new LdapClient( this );
     
       QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ), "" ).stripWhiteSpace();
-      if ( host != "" )
+      if ( !host.isEmpty() )
         ldapClient->setHost( host );
 
       QString port = QString::number( config.readUnsignedNumEntry( QString( "SelectedPort%1" ).arg( j ) ) );
@@ -302,7 +302,7 @@ LdapSearch::LdapSearch()
         ldapClient->setPort( port );
 
       QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ), "" ).stripWhiteSpace();
-      if ( base != "" )
+      if ( !base.isEmpty() )
         ldapClient->setBase( base );
 
       QStringList attrs;
