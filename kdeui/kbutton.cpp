@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Torben Weis (weis@kde.org)
-	              1997 Matthias Ettrich (ettrich@kde.org)
+                  1997 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -61,21 +61,21 @@ void KButton::paint( QPainter *painter )
 {
   if ( isDown() || isOn() )
     {
-      if ( style() == WindowsStyle )
-	qDrawWinButton( painter, 0, 0, width(), 
-			height(), colorGroup(), TRUE );
-      else
+      //      if ( style() == WindowsStyle )
+      //	qDrawWinButton( painter, 0, 0, width(), 
+      //			height(), colorGroup(), TRUE );
+      //      else
 	qDrawShadePanel( painter, 0, 0, width(), 
-			 height(), colorGroup(), TRUE, 2, 0L );
+			 height(), colorGroup(), TRUE, 1, 0L );
     }
   else if ( raised )
     {
-      if ( style() == WindowsStyle )
-	qDrawWinButton( painter, 0, 0, width(), height(), 
-			colorGroup(), FALSE );
-      else
+      //      if ( style() == WindowsStyle )
+      //	qDrawWinButton( painter, 0, 0, width(), height(), 
+      //			colorGroup(), FALSE );
+      //      else
 	qDrawShadePanel( painter, 0, 0, width(), height(), 
-			 colorGroup(), FALSE, 2, 0L );
+			 colorGroup(), FALSE, 1, 0L );
     }
   
   if ( pixmap() )

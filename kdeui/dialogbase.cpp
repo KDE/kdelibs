@@ -29,6 +29,7 @@
 #include <qframe.h>
 #include <qpainter.h>
 #include <qrect.h>
+#include <qwhatsthis.h>
 
 // disable debugging system:
 // #include "debug.h"
@@ -36,7 +37,6 @@
 #define REQUIRE(x)
 #define ENSURE(x)
 
-#include <kquickhelp.h>
 #include <kurllabel.h>
 #include <kapp.h>
 #include <klocale.h>
@@ -129,9 +129,9 @@ DialogBase::setButtonOKText(const QString& text, const QString& tooltip,
   QToolTip::add(buttonOK, tooltip=="" ? i18n("Accept settings.") : tooltip);
   if(init) // after first initialization is done
     {
-      KQuickHelp::remove(buttonOK);
+      QWhatsThis::remove(buttonOK);
     }
-  KQuickHelp::add(buttonOK, quickhelp=="" ? WhatsOK : quickhelp);
+  QWhatsThis::add(buttonOK, quickhelp=="" ? WhatsOK : quickhelp);
   // ############################################################################
 }
 
@@ -150,9 +150,9 @@ DialogBase::setButtonApplyText(const QString& text, const QString& tooltip,
   QToolTip::add(buttonApply, tooltip=="" ? i18n("Apply settings.") : tooltip);
   if(init) // after first initialization is done
     {
-      KQuickHelp::remove(buttonApply);
+      QWhatsThis::remove(buttonApply);
     }
-  KQuickHelp::add(buttonApply, quickhelp=="" ? WhatsApply : quickhelp);
+  QWhatsThis::add(buttonApply, quickhelp=="" ? WhatsApply : quickhelp);
   // ############################################################################
 }
 
@@ -172,9 +172,9 @@ DialogBase::setButtonCancelText(const QString& text, const QString& tooltip,
   QToolTip::add(buttonCancel, tooltip=="" ? i18n("Cancel settings.") : tooltip);
   if(init) // after first initialization is done
     {
-      KQuickHelp::remove(buttonCancel);
+      QWhatsThis::remove(buttonCancel);
     }  
-  KQuickHelp::add(buttonCancel, quickhelp=="" ? WhatsCancel : quickhelp);
+  QWhatsThis::add(buttonCancel, quickhelp=="" ? WhatsCancel : quickhelp);
   // ############################################################################
 }
 
