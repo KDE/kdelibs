@@ -239,12 +239,15 @@ Name[zh_TW.Big5]=RISC 作業系統
 Comment=RISC OS-like theme
 Comment[da]=RISC OS-lignende tema
 Comment[de]=Stil ähnlich RISC OS
+Comment[es]=Tema estilo RISC OS
 Comment[fi]=RISC OS kaltainen tyyli
 Comment[hu]=RISC OS-szerű téma
 Comment[lv]=RISC OS-līdzīga tēma
 Comment[no_NY]=RISC OS-aktig tema
 Comment[pt]=Estilo tipo RISC OS
 Comment[pt_BR]=Estilo tipo RISC OS
+Comment[ru]=тема, похожая на RISC OS
+Comment[sk]=Téma ako RISC OS
 SButtonPosition=Opposite
 FrameWidth=1
 
