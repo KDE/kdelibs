@@ -34,7 +34,7 @@ class Kded : public KSycoca
 {
   Q_OBJECT
 public:
-   Kded( bool needUpdate );
+   Kded( );
    virtual ~Kded();
 
    /**
@@ -56,11 +56,6 @@ public slots:
     */
    void build();
 
-   /**
-    * @return true if it is necassery to rebuild the database upon start
-    */
-   bool needUpdate() { return m_needUpdate; }
-   
 protected slots:
 
    /**
@@ -99,9 +94,6 @@ protected:
     * in only one rebuilding.
     */
    QTimer* m_pTimer;
-   
-   bool m_needUpdate;
-   time_t m_sycocaDate;
 };
 
 #endif

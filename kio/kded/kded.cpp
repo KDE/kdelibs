@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 
 #include <qfile.h>
 #include <qtimer.h>
@@ -44,22 +45,12 @@
 #include <kdirwatch.h>
 #include <kstddirs.h>
 
-Kded::Kded( bool needUpdate)
+Kded::Kded()
   : KSycoca( true )
 {
   QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
   QCString cPath = QFile::encodeName(path);
   struct stat buff;
-  if (!needUpdate && (stat( cPath, &buff) == 0))
-  {
-     m_sycocaDate = buff.st_ctime;
-     m_needUpdate = false;
-  }
-  else
-  {
-     m_sycocaDate = 0;
-     m_needUpdate = true;
-  }
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
@@ -188,12 +179,6 @@ void Kded::readDirectory( const QString& _path )
     return;                             // return false
   }
 
-  if (!m_needUpdate)
-  {
-     time_t ctime = m_pDirWatch->ctime(path);
-     if (ctime && (ctime > m_sycocaDate))
-        m_needUpdate = true;
-  }
   // Note: If some directory is gone, dirwatch will delete it from the list.
 
   //************************************************************************
@@ -221,7 +206,6 @@ static void sighandler(int /*sig*/)
 
 static KCmdLineOptions options[] =
 {
-  { "check", I18N_NOOP("Check sycoca database only once."), 0 },
   { 0, 0, 0 }
 };
 
@@ -247,31 +231,16 @@ int main(int argc, char *argv[])
      (void) instance->config(); // Enable translations.
 
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-     bool check = args->isSet("check");
 
-     if (!check)
+     if (!KUniqueApplication::start())
      {
-        if (!KUniqueApplication::start())
-        {
-           fprintf(stderr, "KDE Daemon (kded) already running.\n");
-           exit(0);
-        }
+        fprintf(stderr, "KDE Daemon (kded) already running.\n");
+        exit(0);
      }
 
-     QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
-     delete KSycoca::self();
-     QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
+     Kded *kded = new Kded(); // Build data base
 
-     Kded *kded = new Kded(ksycoca_kfsstnd != current_kfsstnd); // Build data base
-
-     kded->build();
-
-     bool needUpdate = kded->needUpdate();
-     if (needUpdate)
-        kded->recreate();
-
-     if (check)
-        return 0;
+     kded->recreate();
 
      signal(SIGTERM, sighandler);
      KUniqueApplication k( false, false ); // No styles, no GUI

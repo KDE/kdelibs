@@ -20,6 +20,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qdict.h>
 #include <ksycoca.h>
 #include <ksycocatype.h>
 #include <ksycocaentry.h>
@@ -40,14 +41,14 @@ public:
    /**
     * Recreate the database file
     */
-   void recreate(KSycocaEntryListList *);
+   void recreate(KSycocaEntryListList *, QDict<Q_UINT32> *);
 
 protected:
 
    /**
     * Build the whole system cache, from .desktop files
     */
-   void build(KSycocaEntryListList *);
+   void build(KSycocaEntryListList *, QDict<Q_UINT32> *);
    
    /**
     * Save the ksycoca file

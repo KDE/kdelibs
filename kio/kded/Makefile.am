@@ -33,7 +33,8 @@ kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp \
 				kbuildservicegroupfactory.cpp \
 				kbuildimageiofactory.cpp \
-				kbuildprotocolinfofactory.cpp
+				kbuildprotocolinfofactory.cpp \
+				kctimefactory.cpp
 
 bin_PROGRAMS = kded kbuildsycoca
 

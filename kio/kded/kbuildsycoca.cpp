@@ -28,6 +28,7 @@
 #include <kbuildservicegroupfactory.h>
 #include <kbuildimageiofactory.h>
 #include <kbuildprotocolinfofactory.h>
+#include <kctimefactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -50,7 +51,6 @@
 #include <unistd.h>
 
 static Q_UINT32 newTimestamp = 0;
-static Q_UINT32 oldTimestamp = 0;
 
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
@@ -61,7 +61,8 @@ KBuildSycoca::~KBuildSycoca()
 {
 }
 
-void KBuildSycoca::build(KSycocaEntryListList *allEntries)
+void KBuildSycoca::build(KSycocaEntryListList *allEntries,
+                         QDict<Q_UINT32> *ctimeDict)
 {
   typedef QDict<KSycocaEntry> myEntryDict;
   typedef QList<myEntryDict> myEntryDictList;
@@ -109,6 +110,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
     }
   }
 
+  KCTimeInfo *ctimeInfo = new KCTimeInfo();
   // For all resources
   for( QStringList::ConstIterator it1 = allResources.begin();
        it1 != allResources.end();
@@ -123,6 +125,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                                                true, // Recursive!
                                                true, // uniq
                                                relFiles);
+
 
      // Now find all factories that use this resource....
      // For each factory
@@ -151,24 +154,25 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                // Check if file matches filter
                if (res.filter.match(*it3) == -1) continue;
 
-               // Check if file is accessible
-               if (::access(QFile::encodeName(
-                   KGlobal::dirs()->findResource(resource, *it3)), R_OK)) {
-                   kdDebug() << "skipping resource " << *it3 << ", not readable\n";
-                   continue;
-               }
-
-               KSycocaEntry* entry = 0;
-               if (entryDict)
+               Q_UINT32 timeStamp = ctimeInfo->ctime(*it3);
+               if (!timeStamp)
                {
-                   Q_UINT32 timeStamp = 0;
+                   QCString file = QFile::encodeName(
+                       KGlobal::dirs()->findResource(resource, *it3));
                    struct stat buff;
-                   if(::stat(QFile::encodeName(
-                         KGlobal::dirs()->findResource(resource, *it3)), &buff) == 0)
+                   if(::stat(file, &buff) == 0)
                    {
-                      timeStamp = (Q_UINT32) buff.st_ctime;
+                       timeStamp = (Q_UINT32) buff.st_ctime;
                    }
-                   if (!timeStamp || (timeStamp < oldTimestamp))
+               }
+               KSycocaEntry* entry = 0;
+               if (allEntries)
+               {
+                   assert(ctimeDict);
+                   Q_UINT32 *timeP = (*ctimeDict)[*it3];
+                   Q_UINT32 oldTimestamp = timeP ? *timeP : 0;
+
+                   if (timeStamp && (timeStamp == oldTimestamp))
                    {
                       // Re-use old entry
                       entry = entryDict->find(*it3);
@@ -177,7 +181,12 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                    {
                       kdDebug() << "modified: " << (*it3) << endl;
                    }
+                   else 
+                   {
+                      kdDebug() << "new: " << (*it3) << endl;
+                   }
                }
+               ctimeInfo->addCTime(*it3, timeStamp );
                if (!entry)
                {
                    // Create a new entry
@@ -191,7 +200,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
   }
 }
 
-void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
+void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
 {
   QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
 
@@ -217,7 +226,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
   (void) new KBuildProtocolInfoFactory();
 
   time_t Time1 = time(0);
-  build(allEntries); // Parse dirs
+  build(allEntries, ctimeDict); // Parse dirs
   time_t Time2 = time(0);
   save(); // Save database
   time_t Time3 = time(0);
@@ -343,18 +352,20 @@ int main(int argc, char **argv)
    }
 
    KBuildSycoca::KSycocaEntryListList *allEntries = 0;
+   QDict<Q_UINT32> *ctimeDict = 0;
    if (incremental)
    {
-      oldTimestamp = KSycoca::self()->timeStamp();
       KSycoca *oldSycoca = KSycoca::self();
       KSycocaFactoryList *factories = new KSycocaFactoryList;
       allEntries = new KBuildSycoca::KSycocaEntryListList;
+      ctimeDict = new QDict<Q_UINT32>(523);
 
       // Must be in same order as in KBuildSycoca::recreate()!
       factories->append( new KServiceTypeFactory );
       factories->append( new KServiceGroupFactory );
       factories->append( new KServiceFactory );
       factories->append( new KImageIOFactory );
+      factories->append( new KProtocolInfoFactory );
 
       // For each factory
       for (KSycocaFactory *factory = factories->first();
@@ -366,13 +377,15 @@ int main(int argc, char **argv)
           allEntries->append( list );
       }
       delete factories; factories = 0;
+      KCTimeInfo *ctimeInfo = new KCTimeInfo;
+      ctimeInfo->fillCTimeDict(*ctimeDict);
       delete oldSycoca;
    }
 
    newTimestamp = (Q_UINT32) time(0);
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-   sycoca->recreate(allEntries);
+   sycoca->recreate(allEntries, ctimeDict);
 
    if (args->isSet("signal"))
    {
@@ -381,7 +394,5 @@ int main(int argc, char **argv)
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
    }
 }
-
-
 
 #include "kbuildsycoca.moc"

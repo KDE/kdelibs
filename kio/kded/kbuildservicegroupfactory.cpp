@@ -62,7 +62,7 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
   KServiceGroup *entry = 0;
   KSycocaEntry::Ptr *ptr = m_entryDict->find(name);
   if (ptr)
-     entry = dynamic_cast<KServiceGroup *>((KSycocaEntry *)(*ptr));
+     entry = dynamic_cast<KServiceGroup *>(ptr->data());
 
   if (!entry)
   {
@@ -86,7 +86,7 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
         parentEntry = 0;
         ptr = m_entryDict->find(parent);
         if (ptr)
-           parentEntry = dynamic_cast<KServiceGroup *>((KSycocaEntry *)(*ptr));
+           parentEntry = dynamic_cast<KServiceGroup *>(ptr->data());
         if (!parentEntry)
         {
            parentEntry = addNewEntry( parent, resource, 0 );
