@@ -320,7 +320,7 @@
 <!ENTITY Hamish.Rodda '<personname><firstname>Hamish</firstname><surname>Rodda</surname></personname>'>
 <!ENTITY Hamish.Rodda.mail '<email>rodda@kde.org</email>'>
 <!ENTITY Philip.Rodrigues '<personname><firstname>Philip</firstname><surname>Rodrigues</surname></personname>'>
-<!ENTITY Philip.Rodrigues.mail '<email>phil.rod@kde.org</email>'>
+<!ENTITY Philip.Rodrigues.mail '<email>phil@kde.org</email>'>
 <!ENTITY Seth.Rothberg '<personname><firstname>Seth</firstname><surname>Rothberg</surname></personname>'>
 <!ENTITY Seth.Rothberg.mail '<email>sethmr@bellatlantic.org</email>'>
 <!ENTITY David.Rugge '<personname><firstname>David</firstname><surname>Rugge</surname></personname>'>
