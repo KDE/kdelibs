@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000-2002 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -900,7 +900,9 @@ public:
    */
   static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 
-  /**
+  /** @deprecated
+   * This function is now deprecated. Please use @ref QResolver::resolve.
+   *
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
    * The error code can be transformed into string by KExtendedSocket::strError()
@@ -965,7 +967,9 @@ private:
   friend class KServerSocket;
 };
 
-/**
+/** @deprecated
+ * This class is now deprecated. Please see @ref QResolver for the new API.
+ *
  * Contains information about an internet address. It wraps addrinfo,
  * see getaddrinfo(3) for more information.
  */
@@ -978,7 +982,7 @@ private:
   inline KAddressInfo() : ai(0), addr(0)
   { }
 
-  KAddressInfo(addrinfo *ai);
+  //  KAddressInfo(addrinfo *ai);
   KAddressInfo(KAddressInfo&) { }
   KAddressInfo& operator=(KAddressInfo&) { return *this; }
 

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000-2002 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  $Id$
  *
@@ -50,40 +50,13 @@ extern "C" int res_init();
 #include <qsocketnotifier.h>
 #include <qdns.h>
 #include <qguardedptr.h>
+#include <qresolver.h>
+#include <qsocketaddress.h>
 
-#include "kidna.h"
 #include "kdebug.h"
 #include "kextsock.h"
 #include "ksockaddr.h"
 #include "ksocks.h"
-
-#ifndef HAVE_SOCKADDR_IN6
-// The system doesn't have sockaddr_in6
-// But we can tell netsupp.h to define it for us, according to the RFC
-#define CLOBBER_IN6
-#endif
-#include "netsupp.h"
-
-#include "kextsocklookup.h"
-
-//
-// Workarounds
-//
-
-/*
- * getaddrinfo is defined in IEEE POSIX 1003.1g (Protocol Independent Interfaces)
- * and RFC 2553 (Basic Socket Interface for IPv6) extends that specification
- */
-
-#ifndef AI_NUMERICHOST
-	/* Some systems have getaddrinfo according to POSIX, but not the RFC */
-# define AI_NUMERICHOST		0
-#endif
-
-#ifdef offsetof
-# undef offsetof
-#endif
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 //
 // Internal class definitions
@@ -97,13 +70,10 @@ public:
   int syserror;			// the system error value
 
   timeval timeout;		// connection/acception timeout
-  QString host;			// requested hostname
-  QString service;		// requested service
-  QString localhost;		// requested bind host or local hostname
-  QString localservice;		// requested bind service or local port
-  kde_addrinfo *resolution;	// the resolved addresses
-  kde_addrinfo *bindres;	// binding resolution
-  addrinfo *current;		// used by asynchronous connection
+
+  QResolver resRemote;		// the resolved addresses
+  QResolver resLocal;		// binding resolution
+  unsigned current;		// used by the asynchronous connection
 
   KSocketAddress *local;	// local socket address
   KSocketAddress *peer;		// peer socket address
@@ -113,20 +83,18 @@ public:
   bool emitRead : 1, emitWrite : 1;
   mutable bool addressReusable : 1, ipv6only : 1;
 
-  KExtendedSocketLookup *dns, *dnsLocal;
-
   KExtendedSocketPrivate() :
     flags(0), status(0), syserror(0),
-    host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
-    resolution(0), bindres(0), current(0), local(0), peer(0),
+    current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
-    addressReusable(false), ipv6only(false), dns(0), dnsLocal(0)
+    addressReusable(false), ipv6only(false)
   {
     timeout.tv_sec = timeout.tv_usec = 0;
   }
 };
 
-static bool process_flags(int flags, addrinfo &hint)
+// translate KExtendedSocket flags into QResolver ones
+static bool process_flags(int flags, int& socktype, int& familyMask, int& outflags)
 {
   switch (flags & (KExtendedSocket::streamSocket | KExtendedSocket::datagramSocket | KExtendedSocket::rawSocket))
     {
@@ -135,17 +103,17 @@ static bool process_flags(int flags, addrinfo &hint)
 
     case KExtendedSocket::streamSocket:
       /* streaming socket requested */
-      hint.ai_socktype = SOCK_STREAM;
+      socktype = SOCK_STREAM;
       break;
 
     case KExtendedSocket::datagramSocket:
       /* datagram packet socket requested */
-      hint.ai_socktype = SOCK_DGRAM;
+      socktype = SOCK_DGRAM;
       break;
 
     case KExtendedSocket::rawSocket:
       /* raw socket requested. I wouldn't do this if I were you... */
-      hint.ai_socktype = SOCK_RAW;
+      socktype = SOCK_RAW;
       break;
 
     default:
@@ -153,91 +121,35 @@ static bool process_flags(int flags, addrinfo &hint)
       return false;
     }
 
-  if ((flags & KExtendedSocket::unixSocket) == KExtendedSocket::unixSocket)
-     hint.ai_family = PF_LOCAL;
-  else if ((flags & KExtendedSocket::ipv4Socket) == KExtendedSocket::ipv4Socket)
-     hint.ai_family = PF_INET;
-#ifdef PF_INET6
-  else if ((flags & KExtendedSocket::ipv6Socket) == KExtendedSocket::ipv6Socket)
-     hint.ai_family = PF_INET6;
-#endif     
-
-  /* check other flags */
-  hint.ai_flags |= (flags & KExtendedSocket::passiveSocket ? AI_PASSIVE : 0) |
-    (flags & KExtendedSocket::canonName ? AI_CANONNAME : 0) |
-    (flags & KExtendedSocket::noResolve ? AI_NUMERICHOST : 0);
-  return true;
-}
-
-static bool valid_family(addrinfo *p, int flags)
-{
   if (flags & KExtendedSocket::knownSocket)
     {
-      if (p->ai_family == PF_INET)
-	{
-	  if (flags & 0x0e && (flags & 0x4) == 0)
-	    return false;	// user hasn't asked for Internet sockets
-	  if (flags & 0xf00 && (flags & 0x100) == 0)
-	    return false;	// user hasn't asked for IPv4 sockets
-	}
-#ifdef PF_INET6
-      else if (p->ai_family == PF_INET6)
-	{
-	  if (flags & 0x0e && (flags & 0x4) == 0)
-	    return false;	// user hasn't asked for Internet sockets
-	  if (flags & 0xf00 && (flags & 0x200) == 0)
-	    return false;	// user hasn't asked for IPv6 sockets
-	}
-#endif
-      else if (p->ai_family == PF_UNIX)
-	{
-	  if (flags & 0x0e && (flags & 0x2) == 0)
-	    return false;	// user hasn't asked for Unix Sockets
-	}
-      if (p->ai_family != PF_INET && p->ai_family != PF_UNIX
-#ifdef PF_INET6
-	  && p->ai_family != PF_INET6
-#endif
-	  )
-	return false;		// not a known socket
+      familyMask = 0;
+      if ((flags & KExtendedSocket::unixSocket) == KExtendedSocket::unixSocket)
+	familyMask |= QResolver::UnixFamily;
 
-      // if we got here, the family is acceptable
+      switch ((flags & (KExtendedSocket::ipv6Socket|KExtendedSocket::ipv4Socket)))
+	{
+	case KExtendedSocket::ipv4Socket:
+	  familyMask |= QResolver::IPv4Family;
+	  break;
+	case KExtendedSocket::ipv6Socket:
+	  familyMask |= QResolver::IPv6Family;
+	  break;
+	case KExtendedSocket::inetSocket:
+	  familyMask |= QResolver::InternetFamily;
+	  break;
+	}
+
+      // those are all the families we know about
     }
+  else
+    familyMask = QResolver::KnownFamily;
+
+  /* check other flags */
+  outflags = (flags & KExtendedSocket::passiveSocket ? QResolver::Passive : 0) |
+    (flags & KExtendedSocket::canonName ? QResolver::CanonName : 0) |
+    (flags & KExtendedSocket::noResolve ? QResolver::NoResolve : 0);
   return true;
-}
-
-static QString pretty_sock(addrinfo *p)
-{
-  KSocketAddress *sa;
-  QString ret;
-
-  sa = KSocketAddress::newAddress(p->ai_addr, p->ai_addrlen);
-  if (sa == NULL)
-    return QString::fromLocal8Bit("<invalid>");
-
-  switch (p->ai_family)
-    {
-    case AF_UNIX:
-      ret = QString::fromLocal8Bit("Unix ");
-      break;
-
-    case AF_INET:
-      ret = QString::fromLocal8Bit("Inet ");
-      break;
-
-#ifdef AF_INET6
-    case AF_INET6:
-      ret = QString::fromLocal8Bit("Inet6 ");
-      break;
-#endif
-
-    default:
-      ret = QString::fromLocal8Bit("<unknown> ");
-      break;
-    }
-
-  ret += sa->pretty();
-  return ret;
 }
 
 // "skips" at most len bytes from file descriptor fd
@@ -263,144 +175,6 @@ static int skipData(int fd, unsigned len)
 	}
     }
   return skipped;
-}
-
-// calls the correct deallocation routine
-// also uses by-reference parameter to simplify caller routines, because
-// we set the parameter to NULL after deallocation
-static void local_freeaddrinfo(kde_addrinfo *&p)
-{
-  if (p == NULL)
-    return;
-
-  if (p->origin == KAI_QDNS)
-    KExtendedSocketLookup::freeresults(p);
-  else
-    kde_freeaddrinfo(p);
-
-  p = NULL;
-}
-
-/*
- * class KExtendedSocketLookup (internal use)
- */
-kde_addrinfo* KExtendedSocketLookup::results()
-{
-  QValueList<QHostAddress> v4 = dnsIpv4.addresses();
-#ifdef AF_INET6
-  QValueList<QHostAddress> v6 = dnsIpv6.addresses();
-#endif    
-  addrinfo *p = NULL;
-  kde_addrinfo *res = new kde_addrinfo;
-  res->origin = KAI_QDNS;
-  QValueList<QHostAddress>::Iterator it;
-  unsigned short port;
-
-  QString canon = dnsIpv4.canonicalName();
-#ifdef AF_INET6
-  if (canon.isNull())
-    canon = dnsIpv6.canonicalName();
-#endif
-  char* canonname;
-  if (!canon.isNull())
-    canonname = strdup(canon.latin1());
-  else
-    canonname = 0L;
-
-  if (hint.ai_socktype == 0)
-    hint.ai_socktype = SOCK_STREAM;
-  if (hint.ai_protocol == 0)
-    hint.ai_protocol = IPPROTO_TCP;
-
-  {
-    bool ok;
-    port = htons(servname.toUShort(&ok));
-    if (!ok)
-      {
-	struct servent *sent;
-	sent = getservbyname(servname.latin1(),
-			     hint.ai_protocol == SOCK_DGRAM ? "udp" : "tcp");
-	if (sent == NULL)
-	  port = 0;		// no service; error?
-	else
-	  port = sent->s_port;
-      }
-  }
-
-#ifdef AF_INET6
-  for (it = v6.begin(); it != v6.end(); ++it)
-    {
-      addrinfo *q = new addrinfo;
-      sockaddr_in6 *sin6 = new sockaddr_in6;
-      q->ai_flags = 0;
-      q->ai_family = AF_INET6;
-      q->ai_socktype = hint.ai_socktype;
-      q->ai_protocol = hint.ai_protocol;
-      q->ai_addrlen = sizeof(*sin6);
-      q->ai_addr = (sockaddr*)sin6;
-      q->ai_canonname = canonname;
-      q->ai_next = p;
-
-      memset(sin6, 0, sizeof(*sin6));
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-      sin6->sin6_len = sizeof(*sin6);
-# endif
-      sin6->sin6_family = AF_INET6;
-      sin6->sin6_port = port;
-      KInetSocketAddress::stringToAddr(AF_INET6, (*it).toString().latin1(),
-				       (void*)&sin6->sin6_addr);
-
-      p = q;
-    }
-#endif
-
-  for (it = v4.begin(); it != v4.end(); ++it)
-    {
-      addrinfo *q = new addrinfo;
-      sockaddr_in *sin = new sockaddr_in;
-      q->ai_flags = 0;
-      q->ai_family = AF_INET;
-      q->ai_socktype = hint.ai_socktype;
-      q->ai_protocol = hint.ai_protocol;
-      q->ai_addrlen = sizeof(*sin);
-      q->ai_addr = (sockaddr*)sin;
-      q->ai_canonname = canonname;
-      q->ai_next = p;
-
-      memset(sin, 0, sizeof(*sin));
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-      sin->sin_len = sizeof(*sin);
-# endif
-      sin->sin_family = AF_INET;
-      sin->sin_port = port;
-      *(Q_UINT32*)&sin->sin_addr = htonl((*it).ip4Addr());
-
-      p = q;
-    }
-
-  res->data = p;
-  return res;
-}
-
-void KExtendedSocketLookup::freeresults(kde_addrinfo *res)
-{
-  addrinfo *ai = res->data;
-  if (ai == NULL)
-    return;			// No data? Bizarre, but nonetheless possible
-
-  if (ai->ai_canonname)
-    free(ai->ai_canonname);
-  while (ai)
-    {
-      struct addrinfo *ai2 = ai;
-
-      if (ai->ai_addr != NULL)
-	delete ai->ai_addr;
-
-      ai = ai->ai_next;
-      delete ai2;
-    }
-  delete res;
 }
 
 /*
@@ -433,9 +207,6 @@ KExtendedSocket::KExtendedSocket(const QString& host, const QString& service, in
 KExtendedSocket::~KExtendedSocket()
 {
   closeNow();
-
-  local_freeaddrinfo(d->resolution);
-  local_freeaddrinfo(d->bindres);
 
   if (d->local != NULL)
     delete d->local;
@@ -506,7 +277,7 @@ bool KExtendedSocket::setHost(const QString& host)
   if (d->status > nothing)
     return false;		// error!
 
-  d->host = host;
+  d->resRemote.setNodeName(host);
   return true;
 }
 
@@ -515,7 +286,7 @@ bool KExtendedSocket::setHost(const QString& host)
  */
 QString KExtendedSocket::host() const
 {
-  return d->host;
+  return d->resRemote.nodeName();
 }
 
 /*
@@ -532,7 +303,7 @@ bool KExtendedSocket::setPort(const QString& service)
   if (d->status > nothing)
     return false;		// error
 
-  d->service = service;
+  d->resRemote.setServiceName(service);
   return true;
 }
 
@@ -541,7 +312,7 @@ bool KExtendedSocket::setPort(const QString& service)
  */
 QString KExtendedSocket::port() const
 {
-  return d->service;
+  return d->resRemote.serviceName();
 }
 
 /*
@@ -570,7 +341,7 @@ bool KExtendedSocket::setBindHost(const QString& host)
   if (d->status > nothing || d->flags & passiveSocket)
     return false;		// error
 
-  d->localhost = host;
+  d->resLocal.setServiceName(host);
   return true;
 }
 
@@ -580,11 +351,7 @@ bool KExtendedSocket::setBindHost(const QString& host)
  */
 bool KExtendedSocket::unsetBindHost()
 {
-  if (d->status > nothing || d->flags & passiveSocket)
-    return false;		// error
-
-  d->localhost.truncate(0);
-  return true;
+  return setBindHost(QString::null);
 }
 
 /*
@@ -592,7 +359,7 @@ bool KExtendedSocket::unsetBindHost()
  */
 QString KExtendedSocket::bindHost() const
 {
-  return d->localhost;
+  return d->resLocal.serviceName();
 }
 
 /*
@@ -609,7 +376,7 @@ bool KExtendedSocket::setBindPort(const QString& service)
   if (d->status > nothing || d->flags & passiveSocket)
     return false;		// error
 
-  d->localservice = service;
+  d->resLocal.setServiceName(service);
   return true;
 }
 
@@ -618,11 +385,7 @@ bool KExtendedSocket::setBindPort(const QString& service)
  */
 bool KExtendedSocket::unsetBindPort()
 {
-  if (d->status > nothing || d->flags & passiveSocket)
-    return false;
-
-  d->localservice.truncate(0);
-  return true;
+  return setBindPort(QString::null);
 }
 
 /*
@@ -630,7 +393,7 @@ bool KExtendedSocket::unsetBindPort()
  */
 QString KExtendedSocket::bindPort() const
 {
-  return d->localservice;
+  return d->resLocal.serviceName();
 }
 
 /*
@@ -979,41 +742,13 @@ const KSocketAddress* KExtendedSocket::peerAddress()
  */
 int KExtendedSocket::lookup()
 {
-  cleanError();
-  if (d->status >= lookupInProgress)
-    return EAI_BADFLAGS;	// we needed an error...
+  if (startAsyncLookup() != 0)
+    return -1;
 
-  addrinfo hint;
-
-  memset(&hint, 0, sizeof(hint));
-  hint.ai_family = AF_UNSPEC;
-
-  // perform the global lookup before
-  if (d->resolution == NULL)
+  if (!d->resRemote.wait() || !d->resLocal.wait())
     {
-      /* check socket type flags */
-      if (!process_flags(d->flags, hint))
-	return EAI_BADFLAGS;
-
-      int err = doLookup(d->host, d->service, hint, &d->resolution);
-      if (err != 0)
-	{
-	  setError(IO_LookupError, err);
-	  return err;
-	}
-    }
-
-  if (d->bindres == NULL && (d->localhost.length() > 0 || d->localservice.length() > 0))
-    {
-      /* leave hint.ai_socktype the same */
-      hint.ai_flags |= AI_PASSIVE;  // this is passive, for bind()
-
-      int err = doLookup(d->localhost, d->localservice, hint, &d->bindres);
-      if (err != 0)
-	{
-	  setError(IO_LookupError, err);
-	  return err;
-	}
+      d->status = nothing;
+      return -1;
     }
 
   d->status = lookupDone;
@@ -1032,66 +767,52 @@ int KExtendedSocket::startAsyncLookup()
     // already in progress
     return 0;
 
-  addrinfo hint;
-  memset(&hint, 0, sizeof(hint));
-  hint.ai_family = AF_UNSPEC;
+  /* check socket type flags */
+  int socktype, familyMask, flags;
+  if (!process_flags(d->flags, socktype, familyMask, flags))
+    return -2;
 
-  if (!process_flags(d->flags, hint))
-    return -1;
-
-  int n = 0;			// number of asynchronous lookups
-  if (d->host.length() > 0)
+  // perform the global lookup before
+  if (!d->resRemote.isRunning())
     {
-      if ((d->flags & noResolve) == 0)
+      d->resRemote.setFlags(flags);
+      d->resRemote.setFamily(familyMask);
+      d->resRemote.setSocketType(socktype);
+      QObject::connect(&d->resRemote, SIGNAL(finished(QResolverResults)), 
+		       this, SLOT(dnsResultsReady()));
+
+      if (!d->resRemote.start())
 	{
-	  d->dns = new KExtendedSocketLookup(d->host, d->service, hint);
-	  QObject::connect(d->dns, SIGNAL(resultsReady()), this, SLOT(dnsResultsReady()));
-	  n++;
-	}
-      else
-	{
-	  int err = doLookup(d->host, d->service, hint, &d->resolution);
-	  if (err != 0)
-	    {
-	      setError(IO_LookupError, err);
-	      return -1;
-	    }
+	  setError(IO_LookupError, d->resRemote.errorCode());
+	  return d->resRemote.errorCode();
 	}
     }
 
-  if (d->localhost.length() > 0)
+  if ((d->flags & passiveSocket) == 0 && !d->resLocal.isRunning())
     {
-      if ((d->flags & noResolve) == 0)
+      /* keep flags, but make this passive */
+      flags |= QResolver::Passive;
+      d->resLocal.setFlags(flags);
+      d->resLocal.setFamily(familyMask);
+      d->resLocal.setSocketType(socktype);
+      QObject::connect(&d->resLocal, SIGNAL(finished(QResolverResults)), 
+		       this, SLOT(dnsResultsReady()));
+
+      if (!d->resLocal.start())
 	{
-	  hint.ai_flags |= AI_PASSIVE;
-	  d->dnsLocal = new KExtendedSocketLookup(d->localhost, d->localservice, hint);
-	  QObject::connect(d->dnsLocal, SIGNAL(resultsReady()), this, SLOT(dnsResultsReady()));
-	  n++;
-	}
-      else
-	{
-	  int err = doLookup(d->localhost, d->localservice, hint, &d->bindres);
-	  if (err != 0)
-	    {
-	      // damn! Early error in the lookup
-	      setError(IO_LookupError, err);
-	      if (d->dns != NULL)
-		{
-		  delete d->dns;
-		  d->dns = NULL;
-		}
-	      return -1;
-	    }
+	  setError(IO_LookupError, d->resLocal.errorCode());
+	  return d->resLocal.errorCode();
 	}
     }
 
   // if we are here, there were no errors
-  if (n)
+  if (d->resRemote.isRunning() || d->resLocal.isRunning())
     d->status = lookupInProgress; // only if there actually is a running lookup
   else
     {
       d->status = lookupDone;
-      emit lookupFinished(n);
+      emit lookupFinished(d->resRemote.results().count() + 
+			  d->resLocal.results().count());
     }
   return 0;
 }
@@ -1103,20 +824,8 @@ void KExtendedSocket::cancelAsyncLookup()
     return;			// what's to cancel?
 
   d->status = nothing;
-  if (d->dns)
-    {
-      delete d->dns;
-      d->dns = 0;
-    }
-
-  if (d->dnsLocal)
-    {
-      delete d->dnsLocal;
-      d->dnsLocal = 0;
-    }
-
-  local_freeaddrinfo(d->resolution);
-  local_freeaddrinfo(d->bindres);
+  d->resLocal.cancel(false);
+  d->resRemote.cancel(false);
 }
 
 int KExtendedSocket::listen(int N)
@@ -1127,19 +836,16 @@ int KExtendedSocket::listen(int N)
   if (d->status < lookupDone)
     if (lookup() != 0)
       return -2;		// error!
-  if (!d->resolution) return -2;
-
-  addrinfo *p;
-
+  if (d->resRemote.errorCode())
+    return -2;
+  
   // doing the loop:
-  for (p = d->resolution->data; p; p = p->ai_next)
+  QResolverResults::const_iterator it;
+  QResolverResults res = d->resRemote.results();
+  for (it = res.begin(); it != res.end(); ++it)
     {
-      // check for family restriction
-      if (!valid_family(p, d->flags))
-	continue;
-
-      //kdDebug(170) << "Trying to listen on " << pretty_sock(p) << endl;
-      sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+      kdDebug(170) << "Trying to listen on " << (*it).address().toString() << endl;
+      sockfd = ::socket((*it).family(), (*it).socketType(), (*it).protocol());
       if (sockfd == -1)
 	{
 	  // socket failed creating
@@ -1151,7 +857,7 @@ int KExtendedSocket::listen(int N)
 	setAddressReusable(sockfd, true);
       setIPv6Only(d->ipv6only);
       cleanError();
-      if (KSocks::self()->bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+      if (KSocks::self()->bind(sockfd, (*it).address().address(), (*it).length()) == -1)
 	{
 	  kdDebug(170) << "Failed to bind: " << perror << endl;
 	  ::close(sockfd);
@@ -1268,9 +974,7 @@ int KExtendedSocket::connect()
   if (d->status < lookupDone)
     if (lookup() != 0)
       return -2;
-  if (!d->resolution) return -2;
 
-  addrinfo *p, *q;
   timeval end, now;
   // Ok, things are a little tricky here
   // Let me explain
@@ -1293,37 +997,35 @@ int KExtendedSocket::connect()
 //		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
     }
 
-  if (d->bindres)
-    q = d->bindres->data;
-  else
-    q = NULL;
-  for (p = d->resolution->data; p; p = p->ai_next)
+  QResolverResults remote = d->resRemote.results(),
+    local = d->resLocal.results();
+  QResolverResults::const_iterator it, it2;
+  kdDebug(170) << "Starting connect to " << host() << '|' << port() 
+               << ": have " << local.count() << " local entries and "
+               << remote.count() << " remote" << endl;
+  for (it = remote.begin(), it2 = local.begin(); it != remote.end(); ++it)
     {
-      // check for family restriction
-      if (!valid_family(p, d->flags))
-	continue;
-
-//      kdDebug(170) << "Trying to connect to " << pretty_sock(p) << endl;
-      if (q != NULL)
+      kdDebug(170) << "Trying to connect to " << (*it).address().toString() << endl;
+      if (it2 != local.end())
 	{
 //	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
-	  if (q->ai_family != p->ai_family)
-	    // differing families, scan bindres for a matching family
-	    for (q = d->bindres->data; q; q = q->ai_next)
-	      if (q->ai_family == p->ai_family)
+	  if ((*it).family() != (*it2).family())
+	    // differing families, scan local for a matching family
+	    for (it2 = local.begin(); it2 != local.end(); ++it2)
+	      if ((*it).family() == (*it2).family())
 		break;
 
-	  if (q == NULL || q->ai_family != p->ai_family)
+	  if ((*it).family() != (*it2).family())
 	    {
 	      // no matching families for this
 	      kdDebug(170) << "No matching family for bind socket\n";
-	      q = d->bindres->data;
+	      it2 = local.begin();
 	      continue;
 	    }
 
-	  kdDebug(170) << "Binding on " << pretty_sock(q) << " before connect" << endl;
+	  kdDebug(170) << "Binding on " << (*it2).address().toString() << " before connect" << endl;
 	  errno = 0;
-	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	  sockfd = ::socket((*it).family(), (*it).socketType(), (*it).protocol());
 	  setError(IO_ConnectError, errno);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
@@ -1331,7 +1033,7 @@ int KExtendedSocket::connect()
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
 	  cleanError();
-	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
+	  if (KSocks::self()->bind(sockfd, (*it2).address(), (*it2).length()))
 	    {
 	      kdDebug(170) << "Bind failed: " << perror << endl;
 	      ::close(sockfd);
@@ -1342,7 +1044,7 @@ int KExtendedSocket::connect()
       else
 	{
 	  // no need to bind, just create
-	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	  sockfd = ::socket((*it).family(), (*it).socketType(), (*it).protocol());
 	  if (sockfd == -1)
 	    {
 	      setError(IO_ConnectError, errno);
@@ -1365,7 +1067,7 @@ int KExtendedSocket::connect()
 	  setBlockingMode(false);
 
 	  // now try and connect
-	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+	  if (KSocks::self()->connect(sockfd, (*it).address(), (*it).length()) == -1)
 	    {
 	      // this could be EWOULDBLOCK
 	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
@@ -1392,8 +1094,8 @@ int KExtendedSocket::connect()
 		{
 		  ::close(sockfd);
 		  sockfd = -1;
-		  kdDebug(170) << "Time out while trying to connect to " <<
-		    pretty_sock(p) << endl;
+//		  kdDebug(170) << "Time out while trying to connect to " <<
+//		    (*it).address().toString() << endl;
 		  d->status = lookupDone;
 		  setError(IO_TimeOutError, 0);
 		  return -3;	// time out
@@ -1451,9 +1153,10 @@ int KExtendedSocket::connect()
       else
 	{
 	  // without timeouts
-	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+	  if (KSocks::self()->connect(sockfd, (*it).address(), (*it).length()) == -1)
 	    {
-	      kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
+	      kdDebug(170) << "Socket " << sockfd << " to " << (*it).address().toString() 
+			   << " did not connect: " << perror << endl;
 	      setError(IO_ConnectError, errno);
 	      ::close(sockfd);
 	      sockfd = -1;
@@ -1611,11 +1314,8 @@ void KExtendedSocket::release()
   sockfd = -1;
   d->status = done;
 
-  // also do some garbage collecting
-  local_freeaddrinfo(d->resolution);
-  local_freeaddrinfo(d->bindres);
-
-  d->host = d->service = d->localhost = d->localservice = (const char *)0;
+  d->resRemote.cancel(false);
+  d->resLocal.cancel(false);
 
   if (d->local != NULL)
     delete d->local;
@@ -1876,38 +1576,6 @@ int KExtendedSocket::putch(int ch)
   return writeBlock((char*)&c, sizeof(c));
 }
 
-int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo &hint,
-			      kde_addrinfo** res)
-{
-  int err;
-
-  QCString _host;
-  QCString _serv;
-  if (!host.isNull())
-    _host = KIDNA::toAsciiCString(host);
-  if (!serv.isNull())
-    _serv = serv.latin1();
-  // Please read the comments before kde_getaddrinfo in netsupp.cpp
-  // for the reason we're using it
-  err = kde_getaddrinfo(_host, _serv, &hint, res);
-
-#ifdef HAVE_RES_INIT
-  if (err == EAI_NONAME || err == EAI_NODATA || err == EAI_AGAIN)
-    {
-      // A loookup error occurred and nothing was resolved
-      // However, since the user could have just dialed up to the ISP
-      // and new nameservers were written to /etc/resolv.conf, we have
-      // to re-parse that
-      res_init();
-
-      // Now try looking up again
-      err = kde_getaddrinfo(_host, _serv, &hint, res);
-    }
-#endif
-
-  return err;
-}
-
 // sets the emission of the readyRead signal
 void KExtendedSocket::enableRead(bool enable)
 {
@@ -2083,7 +1751,9 @@ void KExtendedSocket::connectionEvent()
 {
   if (d->status != connecting)
     return;			// move along. There's nothing to see here
-  if (d->resolution == 0 || d->resolution->data == 0)
+
+  QResolverResults remote = d->resRemote.results();
+  if (remote.count() == 0)
     {
       // We have a problem! Abort?
       kdError(170) << "KExtendedSocket::connectionEvent() called but no data available!\n";
@@ -2132,33 +1802,27 @@ void KExtendedSocket::connectionEvent()
 
   // ok, we have to try something here
   // and sockfd == -1
-  addrinfo *p, *q = NULL;
-  if (d->current == 0)
-    p = d->current = d->resolution->data;
-  else
-    p = d->current->ai_next;
-  if (d->bindres)
-    q = d->bindres->data;
-  for ( ; p; p = p->ai_next)
+  QResolverResults local = d->resLocal.results();
+  unsigned localidx = 0;
+  for ( ; d->current < remote.count(); d->current++)
     {
       // same code as in connect()
-      if (q != NULL)
+      if (local.count() != 0)
 	{
-	  if (q->ai_family != d->current->ai_family)
-	    // differing families, scan bindres for a matching family
-	    for (q = d->bindres->data; q; q = q->ai_next)
-	      if (q->ai_family == p->ai_family)
-		break;
+	  // scan bindres for a local resuls family
+	  for (localidx = 0; localidx < local.count(); localidx++)
+	    if (remote[d->current].family() == local[localidx].family())
+	      break;
 
-	  if (q == NULL || q->ai_family != p->ai_family)
+	  if (remote[d->current].family() != local[localidx].family())
 	    {
 	      // no matching families for this
-	      q = d->bindres->data;
 	      continue;
 	    }
 
 	  errno = 0;
-	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	  sockfd = ::socket(remote[d->current].family(), remote[d->current].socketType(),
+			    remote[d->current].protocol());
 	  setError(IO_ConnectError, errno);
 	  errcode = errno;
 	  if (sockfd == -1)
@@ -2167,7 +1831,8 @@ void KExtendedSocket::connectionEvent()
 	    setAddressReusable(sockfd, true);
 	  setIPv6Only(d->ipv6only);
 	  cleanError();
-	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
+	  if (KSocks::self()->bind(sockfd, local[localidx].address(), 
+				   local[localidx].length()) == -1)
 	    {
 	      ::close(sockfd);
 	      sockfd = -1;
@@ -2177,7 +1842,8 @@ void KExtendedSocket::connectionEvent()
       else
 	{
 	  // no need to bind, just create
-	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	  sockfd = ::socket(remote[d->current].family(), remote[d->current].socketType(),
+			    remote[d->current].protocol());
 	  if (sockfd == -1)
 	    {
 	      setError(IO_ConnectError, errno);
@@ -2192,7 +1858,8 @@ void KExtendedSocket::connectionEvent()
 
       if (KSocks::self()->hasWorkingAsyncConnect())
         setBlockingMode(false);
-      if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+      if (KSocks::self()->connect(sockfd, remote[d->current].address(), 
+				  remote[d->current].length()) == -1)
 	{
 	  if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 	    {
@@ -2211,8 +1878,6 @@ void KExtendedSocket::connectionEvent()
 	  QObject::connect(d->qsnOut, SIGNAL(activated(int)), this, SLOT(socketActivityWrite()));
 
 	  // ok, let the Qt event loop do the selecting for us
-	  // just make sure we know where to go on in the next iteration
-	  d->current = p;
 	  return;
 	}
 
@@ -2242,29 +1907,13 @@ void KExtendedSocket::dnsResultsReady()
     return;
 
   // valid state. Are results fully ready?
-  if ((d->dns != NULL && d->dns->isWorking()) ||
-      (d->dnsLocal != NULL && d->dnsLocal->isWorking()))
+  if (d->resRemote.isRunning() || d->resLocal.isRunning())
     // no, still waiting for answer in one of the lookups
     return;
 
   // ok, we have all results
   // count how many results we have
-  int n = 0;
-  addrinfo *p;
-
-  if (d->dns)
-    {
-      d->resolution = d->dns->results();
-      for (p = d->resolution->data; p; p = p->ai_next)
-	n++;
-    }
-
-  if (d->dnsLocal)
-    {
-      d->bindres = d->dnsLocal->results();
-      for (p = d->bindres->data; p; p = p->ai_next)
-	n++;
-    }
+  int n = d->resRemote.results().count() + d->resLocal.results().count();
 
   if (n)
     {
@@ -2274,7 +1923,7 @@ void KExtendedSocket::dnsResultsReady()
   else
     {
       d->status = nothing;
-      setError(IO_LookupError, EAI_NODATA);
+      setError(IO_LookupError, QResolver::NoName);
     }
 
   emit lookupFinished(n);
@@ -2312,43 +1961,61 @@ int KExtendedSocket::resolve(KSocketAddress *sock, QString &host, QString &port,
 }
 
 QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
-					    int flags, int *error)
+					    int userflags, int *error)
 {
-  int err;
-  addrinfo hint, *p;
-  kde_addrinfo *res;
+  int socktype, familyMask, flags;
+  unsigned i;
   QPtrList<KAddressInfo> l;
 
-  memset(&hint, 0, sizeof(hint));
-  if (!process_flags(flags, hint))
-    {
-      if (error)
-	*error = EAI_BADFLAGS;
-      return l;
-    }
+  /* check socket type flags */
+  if (!process_flags(userflags, socktype, familyMask, flags))
+    return l;
 
 //  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
-  err = doLookup(host, port, hint, &res);
-  if (err)
+  QResolverResults res = QResolver::resolve(host, port, flags, familyMask);
+  if (res.errorCode())
     {
       if (error)
-	*error = err;
+	*error = res.errorCode();
       return l;
     }
 
-  for (p = res->data; p; p = p->ai_next)
-    if (valid_family(p, flags))
-      {
-	KAddressInfo *ai = new KAddressInfo(p);
+  for (i = 0; i < res.count(); i++)
+    {
+      KAddressInfo *ai = new KAddressInfo();
 
-//	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
-	l.append(ai);
-      }
+      // I should have known that using addrinfo was going to come
+      // and bite me back some day...
+      ai->ai = (addrinfo *) malloc(sizeof(addrinfo));
+      memset(ai->ai, 0, sizeof(addrinfo));
+
+      ai->ai->ai_family = res[i].family();
+      ai->ai->ai_socktype = res[i].socketType();
+      ai->ai->ai_protocol = res[i].protocol();
+      QString canon = res[i].canonicalName();
+      if (!canon.isEmpty())
+	{
+	  ai->ai->ai_canonname = (char *) malloc(canon.length()+1);
+	  strcpy(ai->ai->ai_canonname, canon.ascii()); // ASCII here is intentional
+	}
+      if ((ai->ai->ai_addrlen = res[i].length()))
+	{
+	  ai->ai->ai_addr = (struct sockaddr *) malloc(res[i].length());
+	  memcpy(ai->ai->ai_addr, res[i].address().address(), res[i].length());
+	}
+      else
+	{
+	  ai->ai->ai_addr = 0;
+	}
+
+      ai->addr = KSocketAddress::newAddress(ai->ai->ai_addr, ai->ai->ai_addrlen);
+
+      l.append(ai);
+    }
 
   if ( error )
       *error = 0;               // all is fine!
 
-  kde_freeaddrinfo(res);	// this one we know where it came from
   return l;
 }
 
@@ -2465,6 +2132,7 @@ QSocketNotifier *KExtendedSocket::writeNotifier() { return d->qsnOut; }
  * class KAddressInfo
  */
 
+#if 0
 KAddressInfo::KAddressInfo(addrinfo *p)
 {
    ai = (addrinfo *) malloc(sizeof(addrinfo));
@@ -2488,7 +2156,7 @@ KAddressInfo::KAddressInfo(addrinfo *p)
 
    addr = KSocketAddress::newAddress(ai->ai_addr, ai->ai_addrlen);
 }
-
+#endif
 KAddressInfo::~KAddressInfo()
 {
   if (ai && ai->ai_canonname)
@@ -2531,4 +2199,3 @@ void KExtendedSocket::virtual_hook( int id, void* data )
 { KBufferedIO::virtual_hook( id, data ); }
 
 #include "kextsock.moc"
-#include "kextsocklookup.moc"

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2001,2002 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2001-2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,59 +18,5 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef KEXTSOCKLOOKUP_H
-#define KEXTSOCKLOOKUP_H
-
-#include <qdns.h>
-#include "kidna.h"
-#include "netsupp.h"
-
-/**
- * @internal
- * What is this class for?
- *
- * Instead of writing the whole lookup code in
- * KExtendedSocket, I preferred writing a separate
- * class to do the dirty work.
- *
- * @author Thiago Macieira <thiagom@mail.com>
- * @short internal lookup class used by KExtendedSocket
- */
-class KExtendedSocketLookup: public QObject
-{
-  Q_OBJECT
-public:
-  QDns dnsIpv4, dnsIpv6;
-  int workingCount;		// number of QDns at work
-  const QString& servname;
-  addrinfo hint;
-
-  KExtendedSocketLookup(const QString& hostname, const QString& servname, const addrinfo& hint) :
-    dnsIpv4(KIDNA::toAscii(hostname), QDns::A), dnsIpv6(KIDNA::toAscii(hostname), QDns::Aaaa), workingCount(2),
-    servname(servname), hint(hint)
-  {
-    connect(&dnsIpv4, SIGNAL(resultsReady()), this, SLOT(slotResultsReady()));
-    connect(&dnsIpv6, SIGNAL(resultsReady()), this, SLOT(slotResultsReady()));
-  }
-
-  inline bool isWorking() const
-  { return workingCount; }
-
-  kde_addrinfo *results();
-  static void freeresults(kde_addrinfo* res);
-
-public slots:
-  void slotResultsReady()
-  {
-    if (--workingCount == 0)
-      emit resultsReady();
-  }
-
-signals:
-  void resultsReady();
-
-public:
-  friend class KExtendedSocket;
-};
-
-#endif
+// This file is no longer used
+// remove it when merging
