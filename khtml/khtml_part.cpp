@@ -485,7 +485,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
   connect( this, SIGNAL( completed( bool ) ),
-           this, SLOT( updateActions( bool ) ) );
+           this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
@@ -2204,11 +2204,6 @@ void KHTMLPart::slotSetEncoding()
 }
 
 void KHTMLPart::updateActions()
-{
-    updateActions( false );
-}
-
-void KHTMLPart::updateActions( bool )
 {
   bool frames = d->m_frames.count() > 0;
   d->m_paViewFrame->setEnabled( frames );
