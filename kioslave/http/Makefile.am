@@ -1,4 +1,5 @@
-## Makefile.am of kdebase/kioslave/http
+# $Id$
+# Makefile.am of kdebase/kioslave/http
 
 INCLUDES=	$(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)

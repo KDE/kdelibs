@@ -1,3 +1,7 @@
+/*
+ * $Id$
+ */
+
 #include <sys/types.h>
 
 #ifdef DO_MD5
