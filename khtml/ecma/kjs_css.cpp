@@ -130,6 +130,10 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
   DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
   DOM::DOMString p = jsNameToProp(propertyName);
   bool asNumber = false;
+  // pixelTop returns "CSS Top" as number value in unit pixels
+  // posTop returns "CSS top" as number value in unit pixels _if_ its a
+  // positioned element. if it is not a positioned element, return 0
+  // from MSIE documentation ### IMPLEMENT THAT (Dirk)
   {
     QString prop = p.string();
     if(prop.startsWith( "pixel-") || prop.startsWith( "pos-" ) ) {
