@@ -4,7 +4,25 @@
 #
 # 2000 by Matthias Kiefer <matthias.kiefer@gmx.de>
 
-open(FILE,"<tips") || die "unable to open tips file";
+sub printText
+{
+	my $text = $_[0];
+	
+	if ( $text cmp "" )
+	{
+
+	# replace \ with \\
+	$text =~ s/\\/\\\\/g;
+
+	# replace " with \"
+	$text =~ s/"/\\"/g;
+			
+	print "\"$text\\n\"\n";
+	}
+}
+
+open(FILE,"<","tips") or die "unable to open tips file";
+binmode(FILE,":utf8") if $^V ge v5.8.0;
 
 $inTip=0;
 
@@ -13,30 +31,27 @@ while(<FILE>)
 	chomp;
 
 	# tip starts with <html>
-	if(/^\s*<html>/i)
+	if(/^\s*<html>(.*)/io)
 	{
 		$inTip=1;
-		print "\ni18n(\n";
+		print "//i18n file tips.cpp line $.\n";
+		print "i18n(\n";
+		printText($1);
 		next;
 	}	
 
 	if($inTip!=0)
 	{
 		# tip ends with </html>
-		if(/^\s*<\/html>/i)
+		if(/^(.*)\s*<\/html>/io)
 		{
-			print ");\n";
+			printText($1);
+			print ");\n\n";
 			$inTip=0;
 		}
 		else
 		{
-			# replace \ with \\
-			s/\\/\\\\/g;
-
-			# replace " with \"
-			s/"/\\"/g;
-			
-			print "\"$_\\n\"\n";
+			printText($_);
 		}
 	}   
 }
