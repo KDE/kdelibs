@@ -18,8 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef _OPERATIONS_H_
-#define _OPERATIONS_H_
+#ifndef _KJS_OPERATIONS_H_
+#define _KJS_OPERATIONS_H_
 
 #include "object.h"
 

@@ -75,17 +75,6 @@ namespace KJS {
     Type type() const { return ReferenceType; }
   };
 
-  class Error : public KJSO {
-  public:
-    Error(ErrorCode e, Node *n);
-    Error(ErrorCode e, KJSO *o);
-    Type type() const { return ErrorType; }
-    ErrorCode number() const { return errNo; }
-  private:
-    ErrorCode errNo;
-    int line;
-  };
-
   class ParamList {
   public:
     ParamList(int s) : size(s){ param = new UString[s]; }

@@ -83,7 +83,7 @@ KJSO *BooleanProtoFunc::execute(const List &)
 
   // no generic function. "this" has to be a Boolean object
   if ((!thisVal->isA(ObjectType)) || (thisObj->getClass() != BooleanClass)) {
-    result = newError(ErrInvalidThis, this);
+    result = newError(TypeError);
     return newCompletion(ReturnValue, result);
   }
 

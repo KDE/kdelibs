@@ -22,6 +22,7 @@
 #define _NODES_H_
 
 #include "ustring.h"
+#include "object.h"
 
 namespace KJS {
 
@@ -69,6 +70,7 @@ namespace KJS {
     static ProgramNode *progNode() { return prog; }
     static void deleteAllNodes();
   protected:
+    KJSO *throwError(ErrorType e, const char *msg);
     static ProgramNode *prog;
   private:
     // disallow assignment and copy-construction

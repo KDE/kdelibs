@@ -31,7 +31,7 @@ namespace KJS {
   class Context;
   class Global;
   class ProgramNode;
-  class Error;
+  class KJSO;
 };
 
 /**
@@ -42,6 +42,9 @@ namespace KJS {
  */
 class KJScript {
   friend KJScriptLock;
+  friend KJS::KJSO;
+  friend KJS::Context;
+  friend KJS::Lexer;
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete
@@ -78,30 +81,30 @@ public:
    * @ref KJScript::evaluate.
    */
   void clear();
+  int errorType() const { return errType; }
+  const char *errorMsg() const { return errMsg; }
 private:
   /**
    * Initialize global object and context. For internal use only.
    */
   void init();
+  void setGlobal(KJS::Global *g) { current()->glob = g; }
+  void setCurrent(KJScript *c) { curr = c; }
 public:
   static KJScript *current() { return curr; }
-  void setCurrent(KJScript *c) { curr = c; }
-
-  static KJS::Error *error() { return current()->err; }
-  static void setError(KJS::Error *e) { current()->err = e; }
 
   static KJS::Global *global() { return current()->glob; }
-  static void setGlobal(KJS::Global *g) { current()->glob = g; }
-
-  friend KJS::Context;
-  friend KJS::Lexer;
 private:
   bool initialized;
   static KJScript *curr;
   KJS::Lexer *lex;
-  KJS::Error *err;
   KJS::Context *con;
   KJS::Global *glob;
+  int errType;
+  const char *errMsg;
+  // for future extensions
+  class KJScriptInternal;
+  KJScriptInternal *internal;
 };
 
 // callback functions for KJSProxy

@@ -74,6 +74,11 @@ void Node::deleteAllNodes()
   assert(nodeCount == 0);
 }
 
+KJSO *Node::throwError(ErrorType e, const char *msg)
+{
+  return KJSO::newError(e, msg, lineNo());
+}
+
 KJSO *NullNode::evaluate()
 {
   return KJSO::newNull();
@@ -162,10 +167,10 @@ KJSO *NewExprNode::evaluate()
     argList = args->evaluate();
 
   if (!v->isObject()) {
-    return KJSO::newError(ErrExprNoObject, this);
+    return throwError(TypeError, "Expression is no object.");
   }
   if (!v->implementsConstruct()) {
-    return KJSO::newError(ErrNoConstruct, this);
+    return throwError(TypeError, "Expression is no constructor.");
   }
   Constructor *constr = dynamic_cast<Constructor*>((KJSO*)v);
   assert(constr);
@@ -178,9 +183,6 @@ KJSO *NewExprNode::evaluate()
     tmp2 = &nullList;
 
   KJSO *res = constr->construct(*tmp2);
-
-  if (!res->isObject())
-    return KJSO::newError(ErrResNoObject, this);
 
   return res;
 }
@@ -195,11 +197,11 @@ KJSO *FunctionCallNode::evaluate()
   Ptr v = e->getValue();
 
   if (!v->isObject()) {
-    return KJSO::newError(ErrFuncNoObject, this);
+    return throwError(TypeError, "Expression is no object.");
   }
 
   if (!v->implementsCall()) {
-    return KJSO::newError(ErrFuncNoCall, this);
+    return throwError(TypeError, "Expression does not allow calls.");
   }
 
   Ptr o;
@@ -323,7 +325,7 @@ KJSO *ConditionalNode::evaluate()
 KJSO *AssignNode::evaluate()
 {
   Ptr l, e, v;
-  ErrorCode err;
+  ErrorType err;
   switch (oper)
     {
     case OpEqual:
@@ -331,10 +333,10 @@ KJSO *AssignNode::evaluate()
       e = expr->evaluate();
       v = e->getValue();
       err = l->putValue(v);
-      if (err == ErrOK)
+      if (err == NoError)
 	return v.ref();
       else
-	return KJSO::newError(err, this);
+	return throwError(err, "Invalid reference.");
       break;
     default:
       assert(!"AssignNode: unhandled switch case");
@@ -988,19 +990,19 @@ void ProgramNode::deleteStatements()
 // ECMA 14
 KJSO *SourceElementsNode::evaluate()
 {
-  if (KJScript::error())
-    return KJSO::newCompletion(ReturnValue, KJScript::error());
+  if (KJSO::error())
+    return KJSO::newCompletion(ReturnValue, KJSO::error());
 
   if (!elements)
     return element->evaluate();
 
   Ptr res1 = elements->evaluate();
-  if (KJScript::error())
-    return KJSO::newCompletion(ReturnValue, KJScript::error());
+  if (KJSO::error())
+    return KJSO::newCompletion(ReturnValue, KJSO::error());
 
   Ptr res2 = element->evaluate();
-  if (KJScript::error())
-    return KJSO::newCompletion(ReturnValue, KJScript::error());
+  if (KJSO::error())
+    return KJSO::newCompletion(ReturnValue, KJSO::error());
 
   if (res2->isA(CompletionType))
     return res2.ref();

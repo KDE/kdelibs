@@ -31,7 +31,7 @@ KJSO *StringObject::get(const UString &p)
     return KJSO::get(p);
 }
 
-// ECMA 15.8.1
+// ECMA 15.5.1
 KJSO* StringObject::execute(const List &args)
 {
   Ptr v, s;
@@ -46,7 +46,7 @@ KJSO* StringObject::execute(const List &args)
   return newCompletion(Normal, s);
 }
 
-// ECMA 15.8.2
+// ECMA 15.5.2
 Object* StringObject::construct(const List &args)
 {
   Ptr s;
@@ -78,7 +78,7 @@ KJSO *StringObjectFunc::execute(const List &args)
   return newCompletion(Normal, zeroRef(newString(s)));
 }
 
-// ECMA 15.8.4
+// ECMA 15.5.4
 StringPrototype::StringPrototype(Object *proto)
   : Object(StringClass, zeroRef(newString("")), proto)
 {
@@ -117,7 +117,7 @@ StringProtoFunc::StringProtoFunc(int i)
   setPrototype(KJScript::global()->funcProto);
 }
 
-// ECMA 15.8.4.2 - 15.8.4.20
+// ECMA 15.5.4.2 - 15.5.4.20
 KJSO *StringProtoFunc::execute(const List &args)
 {
   Ptr result;
@@ -128,7 +128,7 @@ KJSO *StringProtoFunc::execute(const List &args)
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
     if ((!thisVal->isA(ObjectType)) || (thisObj->getClass() != StringClass)) {
-      result = newError(ErrInvalidThis, this);
+      result = newError(TypeError);
       return newCompletion(ReturnValue, result);
     }
   }

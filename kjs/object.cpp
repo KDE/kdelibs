@@ -27,6 +27,7 @@
 #include "object.h"
 #include "types.h"
 #include "operations.h"
+#include "error_object.h"
 
 namespace KJS {
 
@@ -79,6 +80,8 @@ KJSO *KJS::zeroRef(KJSO *obj)
   obj->refCount = 0;
   return obj;
 }
+
+KJSO *KJSO::currentErr = 0L;
 
 KJSO::KJSO()
 {
@@ -175,14 +178,17 @@ KJSO *KJSO::newReference(KJSO *b, const UString &s)
   return new Reference(b, s);
 }
 
-KJSO *KJSO::newError(ErrorCode e, Node *n)
+KJSO *KJSO::newError(ErrorType e, const char * /*m*/, int /*ln*/)
 {
-  return new Error(e, n);
-}
+  //  Ptr s = newString(m);
 
-KJSO *KJSO::newError(ErrorCode e, KJSO *o)
-{
-  return new Error(e, o);
+  ErrorObject *err = new ErrorObject(KJScript::global()->errorProto, e);
+
+  if (!error()) {
+    setError(err);
+  }
+
+  return err;
 }
 
 bool KJSO::implementsCall() const
@@ -230,7 +236,7 @@ void KJSO::setConstructor(KJSO *c)
 KJSO *KJSO::getBase()
 {
   if (!isA(ReferenceType))
-    return newError(ErrBaseNoRef, this);
+    return newError(ReferenceError);
 
   return value.base->ref();
 }
@@ -247,7 +253,7 @@ UString KJSO::getPropertyName()
   return strVal;
 }
 
-// ECMA 8.7.3
+// ECMA 8.7.1
 KJSO *KJSO::getValue()
 {
   if (!isA(ReferenceType)) {
@@ -255,16 +261,16 @@ KJSO *KJSO::getValue()
   }
   Ptr o = getBase();
   if (o->isA(NullType))
-    return newError(ErrBaseIsNull, this);
+    return newError(ReferenceError);
 
   return o->get(getPropertyName());
 }
 
-// ECMA 8.7.4
-ErrorCode KJSO::putValue(KJSO *v)
+// ECMA 8.7.2
+ErrorType KJSO::putValue(KJSO *v)
 {
   if (!isA(ReferenceType))
-    return ErrNoReference;
+    return ReferenceError;
 
   Ptr o = getBase();
   if (o->isA(NullType)) {
@@ -277,7 +283,7 @@ ErrorCode KJSO::putValue(KJSO *v)
       o->put(getPropertyName(), v);
   }
 
-  return ErrOK;
+  return NoError;
 }
 
 void KJSO::setPrototype(Object *p)
@@ -479,7 +485,13 @@ KJSO* KJSO::defaultValue(Type hint)
       return s->ref();
   }
 
-  return newError(ErrNoDefault, this);
+  return newError(TypeError);
+}
+
+void KJSO::setError(ErrorObject *e)
+{
+  if (e)
+    currentErr = e->ref();
 }
 
 Object::Object(Class c, KJSO *v, Object *p)
@@ -512,19 +524,19 @@ Object* Object::create(Class c, KJSO *val, Object *p)
       prot = global->stringProto;
       break;
     case BooleanClass:
-      prot = global->boolProto;
+      prot = global->booleanProto;
       break;
     case NumberClass:
-      prot = global->numProto;
+      prot = global->numberProto;
       break;
     case DateClass:
       prot = global->dateProto;
       break;
     case RegExpClass:
-      prot = global->regProto;
+      prot = global->regexpProto;
       break;
     case ErrorClass:
-      prot = global->errProto;
+      prot = global->errorProto;
       break;
     default:
       prot = 0L;

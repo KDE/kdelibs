@@ -52,31 +52,6 @@ Reference::~Reference()
   value.base->deref();
 }
 
-Error::Error(ErrorCode e, Node *n)
-  : errNo(e)
-{
-  line = n ? n->lineNo() : -1;
-
-  if (!KJScript::error()) {
-    ref();
-    KJScript::setError(this);
-  }
-
-  fprintf(stderr, "Runtime error %d at line %d\n", (int) e, line);
-}
-
-// can we make any use of the object reference ?
-Error::Error(ErrorCode e, KJSO *)
-  : errNo(e)
-{
-  if (!KJScript::error()) {
-    ref();
-    KJScript::setError(this);
-  }
-
-  fprintf(stderr, "Runtime error %d\n", (int) e);
-}
-
 List::List()
 {
   hook = new ListNode(0L, 0L, 0L);

@@ -33,6 +33,9 @@
 #include "string_object.h"
 #include "number_object.h"
 #include "math_object.h"
+#include "date_object.h"
+#include "regexp_object.h"
+#include "error_object.h"
 
 extern int kjsyyparse();
 
@@ -53,26 +56,38 @@ Global::Global()
   funcProto = new FunctionPrototype();
   arrayProto = new ArrayPrototype(objProto);
   stringProto = new StringPrototype(objProto);
-  boolProto = new BooleanPrototype(objProto);
-  numProto = new NumberPrototype(objProto);
+  booleanProto = new BooleanPrototype(objProto);
+  numberProto = new NumberPrototype(objProto);
+  dateProto = new DatePrototype(objProto);
+  regexpProto = new RegExpPrototype(objProto);
+  errorProto = new ErrorPrototype(objProto);
 
   Ptr objectObj = new ObjectObject(objProto);
   Ptr arrayObj = new ArrayObject(funcProto);
   Ptr boolObj = new BooleanObject(funcProto);
   Ptr stringObj = new StringObject(funcProto);
   Ptr numObj = new NumberObject(funcProto);
+  Ptr dateObj = new DateObject(dateProto);
+  Ptr regObj = new RegExpObject(regexpProto);
+  Ptr errObj = new ErrorObject(errorProto);
 
   put("Object", objectObj, DontEnum);
   put("Array", arrayObj, DontEnum);
   put("Boolean", boolObj, DontEnum);
   put("String", stringObj, DontEnum);
   put("Number", numObj, DontEnum);
+  put("Date", dateObj, DontEnum);
+  put("RegExp", regObj, DontEnum);
+  put("Error", errObj, DontEnum);
 
   objProto->setConstructor(objectObj);
   arrayProto->setConstructor(arrayObj);
-  boolProto->setConstructor(boolObj);
+  booleanProto->setConstructor(boolObj);
   stringProto->setConstructor(stringObj);
-  numProto->setConstructor(numObj);
+  numberProto->setConstructor(numObj);
+  dateProto->setConstructor(dateObj);
+  regexpProto->setConstructor(regObj);
+  errorProto->setConstructor(errObj);
 
 #if 0
   objProto->deref();
@@ -104,14 +119,14 @@ KJSO *GlobalFunc::execute(const List &args)
       Lexer::curr()->setCode(x->stringVal().data(), x->stringVal().size());
       if (kjsyyparse()) {
 	KJS::Node::deleteAllNodes();
-	return newCompletion(Normal, newError(ErrParser)); /* TODO: zeroRef */
+	return newCompletion(Normal, newError(SyntaxError)); /* TODO: zeroRef */
       }
 
       res = KJS::Node::progNode()->evaluate();
       /* TODO: analyse completion value */
       res.release();
-      if (KJScript::error())
-	KJScript::error()->deref();
+      if (error())
+	error()->deref();
 
       //      if (KJS::Node::progNode())
       //	KJS::Node::progNode()->deleteStatements();

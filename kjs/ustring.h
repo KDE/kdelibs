@@ -18,8 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef _KJSSTRING_H_
-#define _KJSSTRING_H_
+#ifndef _KJS_STRING_H_
+#define _KJS_STRING_H_
 
 /**
  * @internal

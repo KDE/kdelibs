@@ -23,6 +23,7 @@
 
 #include "kjs.h"
 #include "types.h"
+#include "error_object.h"
 #include "nodes.h"
 #include "lexer.h"
 
@@ -98,13 +99,19 @@ bool KJScript::evaluate(const QChar *code, unsigned int length)
     return false;
   }
 
-  setError(0L);
+  // leak ?
+  KJSO::setError(0L);
 
   Ptr res = KJS::Node::progNode()->evaluate();
   res.release();
 
-  if (error())
-    error()->deref();
+  if (KJSO::error()) {
+    /* TODO */
+    errType = 99;
+    errMsg = "Error";
+    KJSO::error()->deref();
+    KJSO::setError(0L);
+  }
 
   if (KJS::Node::progNode())
     KJS::Node::progNode()->deleteStatements();

@@ -18,8 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef _FUNCTION_H_
-#define _FUNCTION_H_
+#ifndef _KJS_FUNCTION_H_
+#define _KJS_FUNCTION_H_
 
 #include <assert.h>
 

@@ -18,8 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef _OBJECT_H_
-#define _OBJECT_H_
+#ifndef _KJS_OBJECT_H_
+#define _KJS_OBJECT_H_
 
 #include <assert.h>
 
@@ -50,8 +50,7 @@ namespace KJS {
 	      DeclaredFunctionType,
 	      AnonymousFunctionType,
 	      ConstructorType,
-	      ActivationType,
-	      ErrorType
+	      ActivationType
   };
 
   /**
@@ -78,27 +77,21 @@ namespace KJS {
 
   enum Compl { Normal, Break, Continue, ReturnValue, Throw };
 
-  enum ErrorCode { ErrOK,
-		   ErrParser,
-		   ErrUndefToObject,
-		   ErrNullToObject,
-		   ErrFuncNoObject,
-		   ErrFuncNoCall,
-		   ErrBaseIsNull,
-		   ErrNoReference,
-		   ErrBaseNoRef,
-		   ErrExprNoObject,
-		   ErrNoConstruct,
-		   ErrResNoObject,
-		   ErrNoDefault,
-		   ErrInvalidThis
-  };
+  enum ErrorType { NoError = 0,
+		   GeneralError,
+		   EvalError,
+		   RangeError,
+		   ReferenceError,
+		   SyntaxError,
+		   TypeError,
+		   URIError };
 
   extern const double NaN;
   extern const double Inf;
 
   // forward declarations
   class Object;
+  class ErrorObject;
   class Property;
   class List;
   class Node;
@@ -153,8 +146,7 @@ namespace KJS {
     static KJSO *newCompletion(Compl c, KJSO *v = 0L,
 			       const UString &t = UString::null);
     static KJSO *newReference(KJSO *b, const UString &s);
-    static KJSO *newError(ErrorCode e, Node *n);
-    static KJSO *newError(ErrorCode e, KJSO *o = 0L);
+    static KJSO *newError(ErrorType e, const char *m = 0L, int ln = -1);
 
     // Properties
     void setPrototype(Object *p);
@@ -177,7 +169,7 @@ namespace KJS {
     KJSO *getBase();
     UString getPropertyName();
     KJSO *getValue();
-    ErrorCode putValue(KJSO *v);
+    ErrorType putValue(KJSO *v);
 
     // internal value
     bool boolVal() { assert(isA(BooleanType)); return value.b; }
@@ -201,6 +193,8 @@ namespace KJS {
     void deref() { assert(refCount > 0); if(!--refCount) delete this; }
     friend KJSO *zeroRef(KJSO *obj);
 
+    static KJSO *error() { return currentErr; }
+    static void setError(ErrorObject *e);
   protected:
     /**
      * @internal
@@ -228,6 +222,11 @@ namespace KJS {
     int refCount;
     Object *pprototype;
     Property *prop;
+    static KJSO *currentErr;
+    
+    // for future extensions
+    class KJSOInternal;
+    KJSOInternal *internal;
   }; // end of KJSO
 
   /**
@@ -355,11 +354,20 @@ namespace KJS {
     Object *funcProto;
     Object *arrayProto;
     Object *stringProto;
-    Object *boolProto;
-    Object *numProto;
+    Object *booleanProto;
+    Object *numberProto;
     Object *dateProto;
-    Object *regProto;
-    Object *errProto;
+    Object *regexpProto;
+    Object *errorProto;
+    Object *evalErrorProto;
+    Object *rangeErrorProto;
+    Object *refErrorProto;
+    Object *syntaxErrorProto;
+    Object *typeErrorProto;
+    Object *uriErrorProto;
+  private:
+    class GlobalInternal;
+    GlobalInternal *internal;
   };
 
 }; // namespace
