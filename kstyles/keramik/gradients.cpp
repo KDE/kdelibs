@@ -79,7 +79,7 @@ namespace
 			mShare *= mShare;
 			
 			int diff = factor - 100;
-			int hd  = (int)mShare*diff;
+			int hd  = (int)(mShare*diff);
 			int delta  =  (int)((diff - hd)*7.55);
 			
 			QColor wrk = in.light(100+hd);
