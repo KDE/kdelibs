@@ -48,8 +48,9 @@ public:
 	void shutdown();
 };
 
+class AudioSubSystemPrivate;
+
 class AudioSubSystem {
-	// unused, added just in case
 	class AudioSubSystemPrivate *d;
 
 	std::string _error;
@@ -70,6 +71,7 @@ class AudioSubSystem {
 
 	friend class AudioSubSystemStart;
 	AudioSubSystem();
+	~AudioSubSystem();
 
 	void close();
 
@@ -139,7 +141,7 @@ public:
 	/*
 	 * returns true as long as the audio subsystem is opened and active (that
 	 * is, between successful opening, with attaching producer, and the first
-	 * detachConsumer/detachProducer
+	 * detachConsumer/detachProducer)
 	 */
 	bool running();
 };

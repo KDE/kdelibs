@@ -67,6 +67,14 @@ void AudioSubSystemStart::shutdown()
 	delete _instance;
 }
 
+//--- AudioSubSystemPrivate data
+
+struct Arts::AudioSubSystemPrivate
+{
+	int requestedFragmentCount;
+	int requestedFragmentSize;
+};
+
 //--- AudioSubSystem implementation
 
 AudioSubSystem *AudioSubSystem::the()
@@ -79,15 +87,24 @@ const char *AudioSubSystem::error()
 	return _error.c_str();
 }
 
-AudioSubSystem::AudioSubSystem() :_fragmentCount(7), _fragmentSize(1024),
-                                  _samplingRate(44100), _channels(2),
+AudioSubSystem::AudioSubSystem() :_samplingRate(44100), _channels(2),
 								  _fullDuplex(false)
 {
+	d = new AudioSubSystemPrivate;
+
+	fragmentCount(7);
+	fragmentSize(1024);
+
 	_running = false;
 	usageCount = 0;
 	consumer = 0;
 	producer = 0;
 	fragment_buffer = 0;
+}
+
+AudioSubSystem::~AudioSubSystem()
+{
+	delete d;
 }
 
 bool AudioSubSystem::attachProducer(ASProducer *producer)
@@ -126,7 +143,7 @@ void AudioSubSystem::detachConsumer()
 
 void AudioSubSystem::fragmentCount(int fragmentCount)
 {
-	_fragmentCount = fragmentCount;
+	d->requestedFragmentCount = _fragmentCount = fragmentCount;
 }
 
 int AudioSubSystem::fragmentCount()
@@ -136,7 +153,7 @@ int AudioSubSystem::fragmentCount()
 
 void AudioSubSystem::fragmentSize(int fragmentSize)
 {
-	_fragmentSize = fragmentSize;
+	d->requestedFragmentSize = _fragmentSize = fragmentSize;
 }
 
 int AudioSubSystem::fragmentSize()
@@ -314,13 +331,18 @@ int AudioSubSystem::open()
 		return -1;
 	} 
 
-	// lower 16 bits are the fragment size (as 2^S)
-	// higher 16 bits are the number of fragments
-	int frag_arg = 0;
+	/*
+	 * set the fragment settings to what the user requested
+	 */
+	
+	_fragmentSize = d->requestedFragmentSize;
+	_fragmentCount = d->requestedFragmentCount;
 
-	// allocate global buffer to do I/O
-	assert(fragment_buffer == 0);
-	fragment_buffer = new char[_fragmentSize];
+	/*
+	 * lower 16 bits are the fragment size (as 2^S)
+	 * higher 16 bits are the number of fragments
+	 */
+	int frag_arg = 0;
 
 	int size = _fragmentSize;
 	while(size > 1) { size /= 2; frag_arg++; }
@@ -345,8 +367,19 @@ int AudioSubSystem::open()
 		close();
 		return -1;
 	}
-	fragmentSize(info.fragsize);
-	fragmentCount(info.fragstotal);
+
+	// update fragment settings with what we got
+	_fragmentSize = info.fragsize;
+	_fragmentCount = info.fragstotal;
+
+	artsdebug("buffering: %d fragments with %d bytes "
+		"(audio latency is %1.1f ms)\n", _fragmentCount, _fragmentSize,
+		(float)(_fragmentSize*_fragmentCount) /
+		(float)(2.0 * _samplingRate * _channels)*1000.0);
+
+	// allocate global buffer to do I/O
+	assert(fragment_buffer == 0);
+	fragment_buffer = new char[_fragmentSize];
 
 	/*
 	 * Workaround for broken kernel drivers: usually filling up the audio
