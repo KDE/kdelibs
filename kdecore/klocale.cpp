@@ -1622,21 +1622,12 @@ void KLocale::initEncoding(KConfig *config)
 {
   const int mibDefault = 4; // ISO 8859-1
 
-  int encodingMib;
-
-  KConfigGroupSaver saver(config, "Locale");
-
-  if (config->hasKey("EncodingMib"))
-    encodingMib = config->readNumEntry("EncodingMib");
-  else
-    encodingMib = QTextCodec::codecForLocale()->mibEnum();
-
-  setEncoding( encodingMib );
+  // This all made more sense when we still had the EncodingEnum config key.
+  setEncoding( QTextCodec::codecForLocale()->mibEnum() );
 
   if ( !d->codecForEncoding )
     {
-      kdWarning(173) << "encodingMib " << encodingMib
-		     << " is not known. using ISO 8859-1 instead." << endl;
+      kdWarning(173) << " Defaulting to ISO 8859-1 encoding." << endl;
       setEncoding(mibDefault);
     }
 
