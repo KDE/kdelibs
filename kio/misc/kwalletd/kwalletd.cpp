@@ -91,6 +91,7 @@ return rc;
 int KWalletD::open(const QString& wallet) {
 DCOPClient *dc = callingDcopClient();
 int rc = -1;
+bool brandNew = false;
 
 	if (dc) {
 		for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
@@ -111,6 +112,7 @@ int rc = -1;
 			if (KWallet::Backend::exists(wallet)) {
 				b = new KWallet::Backend(wallet);
 				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'.  Please enter the password for this wallet below if you wish to open it, or cancel to deny access.").arg(dc->senderId()).arg(wallet), false);
+				brandNew = true;
 			} else {
 				b = new KWallet::Backend(wallet);
 				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'.  Please choose a password for this wallet, or cancel to deny the application's request.").arg(dc->senderId()).arg(wallet), false);
@@ -131,6 +133,16 @@ int rc = -1;
 			_handles[dc->senderId()].append(rc);
 			b->ref();
 			delete kpd;
+			QByteArray data;
+			QDataStream ds(data, IO_WriteOnly);
+			ds << wallet;
+			if (brandNew) {
+				emitDCOPSignal("walletCreated(const QString&)", data);
+			}
+			emitDCOPSignal("walletOpened(const QString&)", data);
+			if (_wallets.count() == 1) {
+				KApplication::startServiceByDesktopName("kwalletmanager");
+			}
 		} else if (!_handles[dc->senderId()].contains(rc)) {
 			_handles[dc->senderId()].append(rc);
 		 	_wallets.find(rc)->ref();
@@ -147,6 +159,10 @@ int KWalletD::deleteWallet(const QString& wallet) {
 	if (QFile::exists(path)) {
 		close(wallet, true);
 		QFile::remove(path);
+		QByteArray data;
+		QDataStream ds(data, IO_WriteOnly);
+		ds << wallet;
+		emitDCOPSignal("walletDeleted(const QString&)", data);
 		return 0;
 	}
 
@@ -487,14 +503,13 @@ return 0L;
 
 
 void KWalletD::doCloseSignals(int handle, const QString& wallet) {
-QByteArray data;
-QDataStream ds(data, IO_WriteOnly);
-
+	QByteArray data;
+	QDataStream ds(data, IO_WriteOnly);
 	ds << handle;
 	emitDCOPSignal("walletClosed(int)", data);
 
-QByteArray data2;
-QDataStream ds2(data2, IO_WriteOnly);
+	QByteArray data2;
+	QDataStream ds2(data2, IO_WriteOnly);
 	ds2 << wallet;
 	emitDCOPSignal("walletClosed(const QString&)", data2);
 
