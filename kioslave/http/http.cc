@@ -5380,23 +5380,23 @@ QString HTTPProtocol::createNegotiateAuth()
 QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
-  QString auth;
-  QCString user, passwd, strauth;
+  QString auth, user, passwd;
+  QCString strauth;
   QByteArray buf;
 
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: NTLM ";
-    user = m_proxyURL.user().latin1();
-    passwd = m_proxyURL.pass().latin1();
+    user = m_proxyURL.user();
+    passwd = m_proxyURL.pass();
     strauth = m_strProxyAuthorization.latin1();
     len = m_strProxyAuthorization.length();
   }
   else
   {
     auth = "Authorization: NTLM ";
-    user = m_state.user.latin1();
-    passwd = m_state.passwd.latin1();
+    user = m_state.user;
+    passwd = m_state.passwd;
     strauth = m_strAuthorization.latin1();
     len = m_strAuthorization.length();
   }
