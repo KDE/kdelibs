@@ -1357,7 +1357,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     XClassHint hint;
     hint.res_name = strdup(instanceName());
-    hint.res_class = "toplevel";
+    hint.res_class = const_cast<char*>("toplevel");
     XSetClassHint(display, leader, &hint);
 
     XWMHints * hints = XAllocWMHints();
