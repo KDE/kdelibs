@@ -126,6 +126,7 @@ protected slots:
   void slotRMBActionRemove();
   void slotRMBActionOpen();
   //void slotRMBActionEdit();
+  void slotRMBActionEditAt();
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();

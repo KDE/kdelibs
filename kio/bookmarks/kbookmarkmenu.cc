@@ -193,8 +193,9 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
 
   if (bookmark.isGroup()) {
     contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove()) );
-    contextMenu->insertItem( i18n( "Open Folder in Tabs" ), this, SLOT(slotRMBActionOpen()) );
-    // contextMenu->insertItem( i18n( "Edit Folder" ), this, SLOT(slotRMBActionEdit()) );
+    contextMenu->insertItem( i18n( "Open Folder as Tabset" ), this, SLOT(slotRMBActionOpen()) );
+    // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionEdit()) );
+    contextMenu->insertItem( i18n( "Open in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt()) );
   } 
   else if (bookmark.isSeparator()) 
   {
@@ -205,6 +206,18 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
     contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove()) );
     contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen()) );
   }
+}
+
+void KBookmarkMenu::slotRMBActionEditAt()
+{
+  QString address = contextMenuItemAddress();
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << address << endl;
+  if (address.isNull())
+    return;
+  KBookmark bookmark = m_pManager->findByAddress( address );
+  Q_ASSERT(!bookmark.isNull());
+
+  emit m_pManager->slotEditBookmarksAtAddress( address );
 }
 
 void KBookmarkMenu::slotRMBActionRemove()
