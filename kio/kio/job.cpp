@@ -2002,12 +2002,13 @@ void ListJob::slotFinished()
     // Support for listing archives as directories
     if ( m_error == KIO::ERR_IS_FILE && m_url.isLocalFile() ) {
         KMimeType::Ptr ptr = KMimeType::findByURL( m_url, 0, true, true );
-        if ( ptr && ptr->is("inode/directory") ) {
+        if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
             if ( !proto.isEmpty() ) {
                 m_redirectionURL = m_url;
                 m_redirectionURL.setProtocol( proto );
                 m_error = 0;
+		emit redirection(this,m_redirectionURL);
             }
         }
     }
