@@ -143,7 +143,8 @@ class PhoneNumber
 
   private:
     void init();
-  
+    void validateNumber( const QString& );
+
     QString mId;
   
     int mType;

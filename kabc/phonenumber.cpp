@@ -32,9 +32,11 @@ PhoneNumber::PhoneNumber() :
 }
 
 PhoneNumber::PhoneNumber( const QString &number, int type ) :
-  mType( type ), mNumber( number )
+  mType( type )
 {
   init();
+
+  validateNumber( number );
 }
 
 PhoneNumber::~PhoneNumber()
@@ -46,11 +48,20 @@ void PhoneNumber::init()
   mId = KApplication::randomString( 8 );
 }
 
+void PhoneNumber::validateNumber( const QString &number )
+{
+  mNumber = number;
+
+  // remove line breaks
+  mNumber = mNumber.replace( '\n', "" );
+  mNumber = mNumber.replace( '\r', "" );
+}
+
 bool PhoneNumber::operator==( const PhoneNumber &p ) const
 {
   if ( mNumber != p.mNumber ) return false;
   if ( mType != p.mType ) return false;
-  
+
   return true;
 }
 
@@ -71,7 +82,7 @@ QString PhoneNumber::id() const
 
 void PhoneNumber::setNumber( const QString &number )
 {
-  mNumber = number;
+  validateNumber( number );
 }
 
 QString PhoneNumber::number() const
