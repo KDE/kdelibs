@@ -1133,7 +1133,7 @@ void KHTMLView::print(bool quick)
     if(!root) return;
 
     // this only works on Unix - we assume 72dpi
-    KPrinter *printer = new KPrinter(QPrinter::PrinterResolution);
+    KPrinter *printer = new KPrinter(true, QPrinter::PrinterResolution);
     printer->addDialogPage(new KHTMLPrintSettings());
     if(quick || printer->setup(this)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
