@@ -1046,7 +1046,8 @@ void KJanusWidget::IconListItem::paint( QPainter *painter )
   QFontMetrics fm = painter->fontMetrics();
   //int wt = fm.boundingRect(text()).width();
   int wp = mPixmap.width();
-  int ht = fm.lineSpacing();
+  int hf = text().contains( '\n' ) + 1;
+  int ht = hf * fm.lineSpacing();
   int hp = mPixmap.height();
 
   painter->drawPixmap( (mMinimumWidth-wp)/2, 5, mPixmap );
@@ -1064,7 +1065,8 @@ int KJanusWidget::IconListItem::height( const QListBox *lb ) const
   }
   else
   {
-    return( mPixmap.height() + lb->fontMetrics().lineSpacing()+10 );
+    int hf = text().contains( '\n' ) + 1;
+    return( mPixmap.height() + lb->fontMetrics().lineSpacing() * hf + 10 );
   }
 }
 
