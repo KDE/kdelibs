@@ -5,6 +5,7 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
+ *                     2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -708,7 +709,7 @@ void KHTMLView::layout()
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
                  QScrollView::setVScrollBarMode(AlwaysOff);
                  QScrollView::setHScrollBarMode(AlwaysOff);
-                 body->renderer()->setLayouted(false);
+                 body->renderer()->setNeedsLayout(true);
 //                  if (d->tooltip) {
 //                      delete d->tooltip;
 //                      d->tooltip = 0;
@@ -722,8 +723,7 @@ void KHTMLView::layout()
         _width = visibleWidth();
         //QTime qt;
         //qt.start();
-        root->setMinMaxKnown(false);
-        root->setLayouted(false);
+        root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
 
         emit finishedLayout();
@@ -2140,8 +2140,7 @@ void KHTMLView::print(bool quick)
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
-        root->setMinMaxKnown( false );
-        root->setLayouted( false );
+        root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
         khtml::RenderWidget::flushWidgetResizes(); // make sure widgets have their final size
 
@@ -2728,7 +2727,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
 
-	if ( root && !root->layouted() ) {
+	if ( root && root->needsLayout() ) {
 	    killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
 	    scheduleRelayout();

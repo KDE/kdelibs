@@ -90,7 +90,7 @@ void RenderApplet::layout()
 {
     //kdDebug(6100) << "RenderApplet::layout" << endl;
 
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     calcWidth();
@@ -115,7 +115,7 @@ void RenderApplet::layout()
         tmp->showApplet();
     }
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderApplet::processArguments(const QMap<QString, QString> &args)

@@ -61,12 +61,11 @@
 #include <qfileinfo.h>
 #include <qtimer.h>
 
-#include "decoder.h"
+#include "misc/decoder.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"
 #include "dom/html_document.h"
-#include "html_document.h"
-#include "htmltokenizer.h"
+#include "html/htmltokenizer.h"
 #include "khtml_part.h"
 #include "khtmlpart_p.h"
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -196,9 +197,10 @@ void RenderWidget::setQWidget(QWidget *widget)
 
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
-            // if we're already layouted, apply the calculated space to the
-            // widget immediately
-            if (layouted()) {
+            // if we've already received a layout, apply the calculated space to the
+            // widget immediately, but we have to have really been full constructed (with a non-null
+            // style pointer).
+            if (!needsLayout() && style()) {
                 // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
                 resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                               m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
@@ -215,13 +217,13 @@ void RenderWidget::setQWidget(QWidget *widget)
 
 void RenderWidget::layout( )
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
     if ( m_widget )
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderWidget::updateFromElement()

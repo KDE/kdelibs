@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -993,12 +993,8 @@ void DocumentImpl::recalcStyle( StyleChange change )
             n->recalcStyle( change );
     //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 
-    // ### should be done by the rendering tree itself,
-    // this way is rather crude and CPU intensive
-    if ( changed() ) {
-	renderer()->setLayouted( false );
-	renderer()->setMinMaxKnown( false );
-    }
+    if (changed() && m_view)
+	m_view->layout();
 
 bail_out:
     setChanged( false );
@@ -1053,8 +1049,8 @@ void DocumentImpl::updateLayout()
     updateRendering();
 
     // Only do a layout if changes have occurred that make it necessary.
-    if (m_view && renderer() && !renderer()->layouted())
-        m_view->layout();
+    if (m_view && renderer() && renderer()->needsLayout())
+	m_view->layout();
 
     m_ignorePendingStylesheets = oldIgnore;
 }
@@ -1823,10 +1819,8 @@ void DocumentImpl::updateStyleSelector()
 
     m_styleSelectorDirty = true;
 #endif
-    if ( renderer() ) {
-        renderer()->setLayouted( false );
-        renderer()->setMinMaxKnown( false );
-    }
+    if ( renderer() )
+        renderer()->setNeedsLayoutAndMinMaxRecalc();
 }
 
 void DocumentImpl::recalcStyleSelector()

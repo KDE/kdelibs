@@ -4,7 +4,7 @@
  * Copyright (C) 2001-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2001 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -106,6 +106,12 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             //kdDebug( 6040 ) << "adding cell" << endl;
             if ( !isTableRow() )
                 needsTable = true;
+            // I'm not 100% sure this is the best way to fix this, but without this
+            // change we recurse infinitely when trying to render the CSS2 test page:
+            // http://www.bath.ac.uk/%7Epy8ieh/internet/eviltests/htmlbodyheadrendering2.html.
+            if ( isTableCell() && !firstChild() && !newChild->isTableCell() )
+                needsTable = false;
+
             break;
         case NONE:
             // RenderHtml and some others can have display:none
@@ -136,18 +142,20 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 	// just add it...
 	insertChildNode(newChild, beforeChild);
     }
-    newChild->setLayouted( false );
-    newChild->setMinMaxKnown( false );
+//    newChild->setNeedsLayoutAndMinMaxRecalc();
 }
 
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
 
+    // So that we'll get the appropriate dirty bit set (either that a normal flow child got yanked or
+    // that a positioned child got yanked).  We also repaint, so that the area exposed when the child
+    // disappears gets repainted properly.
     if ( document()->renderer() ) {
+        oldChild->setNeedsLayoutAndMinMaxRecalc();
+        oldChild->repaint();
 
-        oldChild->setLayouted( false );
-        oldChild->setMinMaxKnown( false );
         // Keep our layer hierarchy updated.
         oldChild->removeLayers(enclosingLayer());
 
@@ -186,8 +194,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
 
-    setLayouted( false );
-    setMinMaxKnown( false );
+//    setNeedsLayoutAndMinMaxRecalc();
 
     return oldChild;
 }
@@ -332,8 +339,9 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
     RenderLayer* layer = enclosingLayer();
     newChild->addLayers(layer, findNextLayer(layer, newChild));
 
-    newChild->setLayouted( false );
-    newChild->setMinMaxKnown( false );
+    newChild->setNeedsLayoutAndMinMaxRecalc(); // Goes up the containing block hierarchy.
+    if (!normalChildNeedsLayout())
+        setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -362,23 +370,23 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     RenderLayer* layer = enclosingLayer();
     child->addLayers(layer, findNextLayer(layer, child));
 
-    child->setLayouted( false );
-    child->setMinMaxKnown( false );
+    child->setNeedsLayoutAndMinMaxRecalc();
+    if (!normalChildNeedsLayout())
+        setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
 }
 
 
 void RenderContainer::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
     while( child ) {
-	if( !child->layouted() )
-	    child->layout();
-	child = child->nextSibling();
+        child->layoutIfNeeded();
+        child = child->nextSibling();
     }
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderContainer::removeLeftoverAnonymousBoxes()

@@ -83,7 +83,7 @@ void RenderFormElement::updateFromElement()
 
 void RenderFormElement::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     // minimum height
@@ -97,7 +97,7 @@ void RenderFormElement::layout()
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
     if ( !style()->width().isPercent() )
-        setLayouted();
+        setNeedsLayout(false);
 }
 
 // -------------------------------------------------------------------------
@@ -257,10 +257,8 @@ void RenderSubmitButton::updateFromElement()
     QString oldText = static_cast<QPushButton*>(m_widget)->text();
     QString newText = rawText();
     static_cast<QPushButton*>(m_widget)->setText(newText);
-    if ( oldText != newText ) {
-        setMinMaxKnown(false);
-	setLayouted(false);
-    }
+    if ( oldText != newText )
+        setNeedsLayoutAndMinMaxRecalc();
     RenderFormElement::updateFromElement();
 }
 
@@ -586,9 +584,9 @@ RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
     RenderObject* legend = findLegend();
     if (legend) {
         if (relayoutChildren)
-            legend->setLayouted( false );
-        if ( !legend->layouted() )
-            legend->layout();
+            legend->setNeedsLayout(true);
+        legend->layoutIfNeeded();
+
         int xPos = borderLeft() + paddingLeft() + legend->marginLeft();
         if (style()->direction() == RTL)
             xPos = m_width - paddingRight() - borderRight() - legend->width() - legend->marginRight();
@@ -977,8 +975,7 @@ void RenderSelect::updateFromElement()
             KComboBox *that = static_cast<KComboBox*>(m_widget);
             that->setFont( that->font() );
         }
-        setMinMaxKnown(false);
-        setLayouted(false);
+        setNeedsLayoutAndMinMaxRecalc();
         m_optionsChanged = false;
     }
 
@@ -1002,10 +999,8 @@ void RenderSelect::calcMinMaxWidth()
 
     // ### ugly HACK FIXME!!!
     setMinMaxKnown();
-    if ( !layouted() )
-        layout();
-    setLayouted( false );
-    setMinMaxKnown( false );
+    layoutIfNeeded();
+    setNeedsLayoutAndMinMaxRecalc();
     // ### end FIXME
 
     RenderFormElement::calcMinMaxWidth();
@@ -1013,7 +1008,7 @@ void RenderSelect::calcMinMaxWidth()
 
 void RenderSelect::layout( )
 {
-    KHTMLAssert(!layouted());
+    KHTMLAssert(needsLayout());
     KHTMLAssert(minMaxKnown());
 
     // ### maintain selection properly between type/size changes, and work
@@ -1055,7 +1050,7 @@ void RenderSelect::layout( )
     }
 
     /// uuh, ignore the following line..
-    setLayouted( false );
+    setNeedsLayout(true);
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
@@ -1549,7 +1544,7 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
     scrollbarsStyled = false;
-    
+
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
 
@@ -1597,7 +1592,7 @@ void RenderTextArea::calcMinMaxWidth()
 void RenderTextArea::setStyle(RenderStyle* _style)
 {
     bool unsubmittedFormChange = element()->m_unsubmittedFormChange;
-    
+
     RenderFormElement::setStyle(_style);
 
     widget()->blockSignals(true);
@@ -1606,13 +1601,13 @@ void RenderTextArea::setStyle(RenderStyle* _style)
     widget()->blockSignals(false);
 
     scrollbarsStyled = false;
-    
+
     element()->m_unsubmittedFormChange = unsubmittedFormChange;
 }
 
 void RenderTextArea::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
 
     RenderFormElement::layout();
 
@@ -1651,38 +1646,38 @@ void RenderTextArea::close( )
     RenderFormElement::close();
 }
 
-static QString expandLF(const QString& s) 
-{ 
-    // LF -> CRLF 
-    unsigned crs = s.contains( '\n' ); 
+static QString expandLF(const QString& s)
+{
+    // LF -> CRLF
+    unsigned crs = s.contains( '\n' );
     if (crs == 0)
 	return s;
-    unsigned len = s.length(); 
- 
+    unsigned len = s.length();
+
     QString r;
-    r.reserve(len + crs + 1); 
-    unsigned pos2 = 0; 
-    for(unsigned pos = 0; pos < len; pos++) 
-    { 
-       QChar c = s.at(pos); 
-       switch(c.unicode()) 
-       { 
-         case '\n': 
-           r[pos2++] = '\r'; 
-           r[pos2++] = '\n'; 
-           break; 
- 
-         case '\r': 
-           break; 
- 
-         default: 
-           r[pos2++]= c; 
-           break; 
-       } 
-    } 
+    r.reserve(len + crs + 1);
+    unsigned pos2 = 0;
+    for(unsigned pos = 0; pos < len; pos++)
+    {
+       QChar c = s.at(pos);
+       switch(c.unicode())
+       {
+         case '\n':
+           r[pos2++] = '\r';
+           r[pos2++] = '\n';
+           break;
+
+         case '\r':
+           break;
+
+         default:
+           r[pos2++]= c;
+           break;
+       }
+    }
     r.squeeze();
-    return r; 
-} 
+    return r;
+}
 
 QString RenderTextArea::text()
 {

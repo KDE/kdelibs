@@ -1,3 +1,6 @@
+2004-10-14  Allan Sandfeld Jensen <kde@carewolf.com>
+        * rendering/*.*: WebCore merge/port of layouted->needsLayout
+
 2004-10-11  David Faure  <faure@kde.org>
 
         * xml/dom_nodeimpl.cpp (dispatchGenericEvent): Fixed stopPropagation
@@ -12,13 +15,13 @@
 
 2004-10-08  David Faure  <faure@kde.org>
 
-        * ecma/kjs_html.cpp (KJS::HTMLCollection::tryGet): 
+        * ecma/kjs_html.cpp (KJS::HTMLCollection::tryGet):
         return Undefined instead of Null for out-of-range indices.
 
 2004-10-07  Germain Garand  <germain@ebooksfrance.org>
 
-        * rendering/render_block.cpp 
-        (updateFirstLetter): move update of first-letter from addChildToFlow to 
+        * rendering/render_block.cpp
+        (updateFirstLetter): move update of first-letter from addChildToFlow to
         setStyle/close. Better drilling logic. Use RenderTextFragment to
         correctly handle text-transform on first-letter(#76078).
         (addChildToFlow): ditto. fix display: block on pseudo-elements (#90917)

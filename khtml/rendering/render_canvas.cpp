@@ -124,8 +124,10 @@ void RenderCanvas::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
+    setChildNeedsLayout(true);
+    setMinMaxKnown(false);
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
-        c->setLayouted(false);
+        c->setChildNeedsLayout(true);
 
 #ifdef SPEED_DEBUG
     QTime qt;
@@ -201,7 +203,8 @@ void RenderCanvas::layout()
 #endif
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
-    setLayouted();
+
+    setNeedsLayout(false);
 }
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
@@ -287,7 +290,7 @@ void RenderCanvas::repaint(bool immediate)
         if (immediate) {
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
-            if (!layouted()) {
+            if (needsLayout()) {
                 m_view->scheduleRelayout();
                 return;
             }

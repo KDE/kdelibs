@@ -68,8 +68,6 @@ bool RenderInline::isInlineContinuation() const
 
 void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
 {
-    setLayouted( false );
-
     // Make sure we don't append things after :after-generated content if we have it.
     if (!beforeChild && lastChild() && lastChild()->style()->styleType() == RenderStyle::AFTER)
         beforeChild = lastChild();
@@ -107,8 +105,7 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
 
     RenderBox::addChild(newChild,beforeChild);
 
-    newChild->setLayouted( false );
-    newChild->setMinMaxKnown( false );
+    newChild->setNeedsLayoutAndMinMaxRecalc();
 }
 
 RenderInline* RenderInline::cloneInline(RenderFlow* src)
@@ -134,8 +131,7 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
         RenderObject* tmp = o;
         o = tmp->nextSibling();
         clone->appendChildNode(removeChildNode(tmp));
-        tmp->setLayouted(false);
-        tmp->setMinMaxKnown(false);
+        tmp->setNeedsLayoutAndMinMaxRecalc();
     }
 
     // Hook |clone| up as the continuation of the middle block.
@@ -166,8 +162,7 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
             RenderObject* tmp = o;
             o = tmp->nextSibling();
             clone->appendChildNode(curr->removeChildNode(tmp));
-            tmp->setLayouted(false);
-            tmp->setMinMaxKnown(false);
+            tmp->setNeedsLayoutAndMinMaxRecalc();
         }
 
         // Keep walking up the chain.
@@ -221,8 +216,7 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
             RenderObject* no = o;
             o = no->nextSibling();
             pre->appendChildNode(block->removeChildNode(no));
-            no->setLayouted(false);
-            no->setMinMaxKnown(false);
+            no->setNeedsLayoutAndMinMaxRecalc();
         }
     }
 
@@ -242,16 +236,15 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     // XXXdwh is any of this even necessary? I don't think it is.
     pre->close();
     pre->setPos(0, -500000);
-    pre->setLayouted(false);
+    pre->setNeedsLayout(true);
     newBlockBox->close();
     newBlockBox->setPos(0, -500000);
-    newBlockBox->setLayouted(false);
+    newBlockBox->setNeedsLayout(true);
     post->close();
     post->setPos(0, -500000);
-    post->setLayouted(false);
+    post->setNeedsLayout(true);
 
-    block->setLayouted(false);
-    block->setMinMaxKnown(false);
+    block->setNeedsLayoutAndMinMaxRecalc();
 }
 
 void RenderInline::paint(PaintInfo& i,
@@ -340,7 +333,7 @@ inline static bool appendIfNew(QValueVector<QPoint> &pointArray, const QPoint &p
     if (!pointArray.isEmpty() && pointArray.back() == pnt) return false;
     pointArray.append(pnt);
     return true;
-} 
+}
 
 /**
  * Does spike-reduction on the given point-array's stack-top.
@@ -379,7 +372,7 @@ inline static bool reduceSpike(QValueVector<QPoint> &pointArray)
     QPoint p2 = *--it;
 
     bool elide = false;
-  
+
     if (p0.x() == p1.x() && p1.x() == p2.x()
         && (p1.y() < p0.y() && p0.y() < p2.y()
             || p2.y() < p0.y() && p0.y() < p1.y()
@@ -444,7 +437,7 @@ inline static bool reduceSegmentSeparator(QValueVector<QPoint> &pointArray)
     QPoint p1 = *--it;
     QPoint p2 = *--it;
 //     kdDebug(6040) << "checking p2: " << p2 << " p1: " << p1 << " p0: " << p0 << endl;
-  
+
     if (p0.x() == p1.x() && p1.x() == p2.x()
         && (p2.y() < p1.y() && p1.y() < p0.y()
             || p0.y() < p1.y() && p1.y() < p2.y())
@@ -502,7 +495,7 @@ static void collectHorizontalBoxCoordinates(InlineBox *box,
     }
     // Insert starting point of box
     appendPoint(pointArray, newPnt);
-          
+
     newPnt.rx() += bottom ? -box->width() : box->width();
 
     if (box->isInlineFlowBox()) {
@@ -518,7 +511,7 @@ static void collectHorizontalBoxCoordinates(InlineBox *box,
               l2 = limit;
             collectHorizontalBoxCoordinates(b, pointArray, bottom, l2);
         }
-        
+
         // Add intersection point if flow box contained any children
         if (flowBox->firstChild()) {
             QPoint lastPnt = pointArray.back();
@@ -530,7 +523,7 @@ static void collectHorizontalBoxCoordinates(InlineBox *box,
 
     // Insert ending point of box
     appendPoint(pointArray, newPnt);
-          
+
 //     kdDebug(6000) << "collectHorizontalBoxCoordinates: " << "ende" << endl;
 }
 
@@ -568,7 +561,7 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
 
         bool isLast = lineBoxesDisjoint(curr, left);
         if (isLast) last = curr;
-        
+
         if (root != line && !isLast)
             while (root->parent()) root = root->parent();
         QPoint newPnt(curr->xPos() + !left*curr->width(),
@@ -599,7 +592,7 @@ static QPoint *linkEndToBegin(QValueVector<QPoint> &pointArray)
 {
     uint index = 0;
     Q_ASSERT(pointArray.size() >= 3);
-  
+
     // if first and last points match, ignore the last one.
     bool linkup = false; QPoint linkupPnt;
     if (pointArray.front() == pointArray.back()) {
@@ -607,7 +600,7 @@ static QPoint *linkEndToBegin(QValueVector<QPoint> &pointArray)
         pointArray.pop_back();
         linkup = true;
     }
-    
+
     const QPoint *it = pointArray.begin() + index;
     QPoint pfirst = *it;
     QPoint pnext = *++it;
@@ -634,7 +627,7 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
     // disjoint.
     for (InlineRunBox *curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
         QValueVector<QPoint> path;
-    
+
         // collect topmost outline
         collectHorizontalBoxCoordinates(curr, path, false);
         // collect right outline
@@ -643,9 +636,9 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
         collectHorizontalBoxCoordinates(curr, path, true);
         // collect left outline
         collectVerticalBoxCoordinates(curr, path, true);
-    
+
         const QPoint *begin = linkEndToBegin(path);
-        
+
         // paint the outline
         paintOutlinePath(p, _tx, _ty, begin, path.end(), BSLeft, -1, BSTop);
     }
@@ -724,7 +717,7 @@ static void paintOutlineSegment(RenderObject *o, QPainter *p, int tx, int ty,
     EBorderStyle os = o->style()->outlineStyle();
     QColor oc = o->style()->outlineColor();
     int offset = 0;// o->style()->outlineOffset(); ### to be assessed and ported
-  
+
     int x1 = tx + p1.x() - offset;
     int y1 = ty + p1.y() - offset;
     int x2 = tx + p2.x() + offset;
@@ -786,17 +779,17 @@ void RenderInline::paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *b
     int ow = style()->outlineWidth();
     if (ow == 0 || m_isContinuation) // Continuations get painted by the original inline.
         return;
-  
+
     QPoint last = *begin;
     BorderSide lastBS = bs;
     Q_ASSERT(begin != end);
     ++begin;
 
 //     kdDebug(6040) << "last: " << last << endl;
-    
+
     bs = newBorderSide(bs, direction, last, *begin);
 //     kdDebug(6040) << "newBorderSide: " << lastBS << " " << direction << "d " << last << " - " << *begin << " => " << bs << endl;
-    
+
     for (const QPoint *it = begin; it != end; it++) {
         QPoint cur = *it;
 //         kdDebug(6040) << "cur: " << cur << endl;
