@@ -290,19 +290,31 @@ KMimeType::~KMimeType()
 
 QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadApplicationIcon( icon( QString::null, false ), _size, _path );
+  QPixmap pix = KGlobal::iconLoader()->loadApplicationIcon( icon( QString::null, false ), _size, _path );
+  if(pix.isNull())
+    pix = KGlobal::iconLoader()->loadIcon("unknown");
+
+  return pix;
 }
 
 QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadApplicationIcon( icon( _url, _url.isLocalFile() ), _size, _path );
+  QPixmap pix = KGlobal::iconLoader()->loadApplicationIcon( icon( _url, _url.isLocalFile() ), _size, _path );
+  if(pix.isNull())
+    pix = KGlobal::iconLoader()->loadIcon("unknown");
+
+  return pix;
 }
 
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
                                  KIconLoader::Size _size, QString * _path )
 {
-  return KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
+  QPixmap pix = KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
     pixmap( _url, _size, _path );
+  if(pix.isNull())
+    pix = KGlobal::iconLoader()->loadIcon("unknown");
+  
+  return pix; 
 }
   
 /*******************************************************
@@ -337,7 +349,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
   QString empty_icon = cfg.readEntry( "EmptyIcon" );
-
+  
   if ( !empty_icon.isEmpty() )
   {
     bool isempty = false;
@@ -349,20 +361,20 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
       ep=readdir( dp );
       ep=readdir( dp );      // ignore '.' and '..' dirent
       if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
-	isempty = true;
+        isempty = true;
       // if third file is .directory and no fourth file -> empty directory
       if (!isempty && !strcmp(ep->d_name, ".directory"))
         isempty = (readdir(dp) == 0L);
       closedir( dp );
     }
-
+    
     if ( isempty )
       return empty_icon;
   }
-
+  
   if ( icon.isEmpty() )
     return KMimeType::icon( _url, _is_local );
-
+  
   return icon;
 }
 
@@ -416,12 +428,12 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
-
+  
   KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
   QString type = cfg.readEntry( "Type" );
-
+  
   if ( type == "FSDevice" )
   {
     QString unmount_icon = cfg.readEntry( "UnmountIcon" );
@@ -431,13 +443,13 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
       QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
       // Is the device not mounted ?
       if ( mp.isNull() )
-	return unmount_icon;
+        return unmount_icon;
     }
   }
-
+  
   if ( icon.isEmpty() )
     return KMimeType::icon( _url, _is_local );
-
+  
   return icon;
 }
 
