@@ -1927,7 +1927,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    QString command = config.readEntry("EmailClient");
 
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
-       || command.right(6) == "/kmail")
+       || command.endsWith("/kmail"))
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
@@ -1965,7 +1965,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
          QStringList::ConstIterator urlend = attachURLs.end();
          if ( urlit != urlend )
          {
-             (*it).replace(QRegExp("%A"), (*urlit));
+             (*it).replace("%A", (*urlit));
              ++urlit;
              QStringList::Iterator nextit = it; nextit++;
              for ( ; urlit != urlend ; ++urlit )
@@ -1974,7 +1974,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
                  it = cmdTokens.insert( nextit, (*urlit) );
              }
          } else
-             (*it).replace(QRegExp("%A"), QString::null);
+             (*it).replace("%A", QString::null);
      }
      lastToken = (*it);
    }
