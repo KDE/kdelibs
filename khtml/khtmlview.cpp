@@ -906,6 +906,12 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     // Qt autorepeat press is filtered out if the release was filtered out.
     // Moreover, first Qt (non-autorepeat) keypress should generate DOM keydown followed
     // by DOM keypress.
+    //
+    //  Qt:      Press      | Release(autorepeat) Press(autorepeat) etc. |   Release
+    //  DOM:   Down + Press |       Press             (nothing)          |     Up
+    //
+    // Additional problem: during autorepeat, the keypress has the text, NOT the keyrelease!
+
     if( _ke->type() == QEvent::KeyPress )
     {
         if( _ke->isAutoRepeat())
