@@ -1,3 +1,11 @@
+kdelibs (4:2.2.0-0beta1-6) unstable; urgency=low
+ 
+  * synce with upstream
+  * Update debhelper templates for alpha build bits
+  * Update/Clean/Fix various dependency issues
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Jul 2001 00:53:00 -0700
+
 kdelibs (4:2.2.0-0beta1-5) unstable; urgency=low
  
   * synce with upstream

@@ -9,7 +9,7 @@ Standards-Version: 3.5.5
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1), kdevelop (<= 1:1.4.0-3.4)
+Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1)
 Depends: ${shlibs:Depends}, python-base
 Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
@@ -25,7 +25,6 @@ Replaces: kdelibs3 (<< 4:2.2.0-0beta1-2)
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Suggests: cupsomatic-ppd
-Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
 Description: KDE print system (CUPS support)
  This package contains the KDE printer bits which use CUPS. 
 
@@ -36,7 +35,7 @@ Replaces: libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
 Enhances: kdebase
-Conflicts: suidmanager (<< 0.50), libarts-alsa, kdelibs3 (<< 4:2.1-final-0)
+Conflicts: suidmanager (<< 0.50), libarts-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -134,7 +133,7 @@ Section: devel
 Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
 Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0-3), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs3-cups (= ${Source-Version})
-Conflicts: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
+Conflicts: kdelibs2g-dev, kdelibs3-dev
 Suggests: kdelibs3-doc, kdoc, libasound1-dev, automake, autoconf, libtool
 Description: KDE core libraries (development files)
  KDE core libraries.
