@@ -1628,9 +1628,9 @@ void CopyJob::startNextJob()
         if ( m_mode == Move && !m_srcListCopy.isEmpty() )
             allDirNotify.FilesRemoved( m_srcListCopy );
 
-        emitResult();
         if (m_reportTimer!=0)
            m_reportTimer->stop();
+        emitResult();
     }
 }
 
