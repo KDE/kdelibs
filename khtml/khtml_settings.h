@@ -70,10 +70,10 @@ public:
     virtual ~KHTMLSettings();
 
     // Behaviour settings
-    bool changeCursor();
-    bool underlineLink();
-    bool hoverLink();
-    KAnimationAdvice showAnimations();
+    bool changeCursor() const;
+    bool underlineLink() const;
+    bool hoverLink() const;
+    KAnimationAdvice showAnimations() const;
 
     // Font settings
     QString stdFontName() const;
@@ -96,12 +96,12 @@ public:
     const QString &encoding() const;
 
     // Color settings
-    const QColor& textColor();
-    const QColor& linkColor();
-    const QColor& vLinkColor();
+    const QColor& textColor() const;
+    const QColor& linkColor() const;
+    const QColor& vLinkColor() const;
 
     // Autoload images
-    bool autoLoadImages();
+    bool autoLoadImages() const;
 
     // Java and JavaScript
     bool isJavaEnabled( const QString& hostname = QString::null );

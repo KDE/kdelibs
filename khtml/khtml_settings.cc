@@ -140,17 +140,17 @@ KHTMLSettings::~KHTMLSettings()
   delete d;
 }
 
-bool KHTMLSettings::changeCursor()
+bool KHTMLSettings::changeCursor() const
 {
   return d->m_bChangeCursor;
 }
 
-bool KHTMLSettings::underlineLink()
+bool KHTMLSettings::underlineLink() const
 {
   return d->m_underlineLink;
 }
 
-bool KHTMLSettings::hoverLink()
+bool KHTMLSettings::hoverLink() const
 {
   return d->m_hoverLink;
 }
@@ -256,7 +256,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
 
-  if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) 
+  if( reset || config->hasGroup( "Java/JavaScript Settings" ) )
   {
     config->setGroup( "Java/JavaScript Settings" );
 
@@ -283,7 +283,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       check_old_java = false;
       QStringList domainList = config->readListEntry( "JavaDomainSettings" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) 
+                it != domainList.end(); ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -299,7 +299,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       check_old_ecma = false;
       QStringList domainList = config->readListEntry( "ECMADomainSettings" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) 
+                it != domainList.end(); ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -310,11 +310,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     if( reset || config->hasKey( "JavaScriptDomainAdvice" )
-             && ( check_old_java || check_old_ecma ) ) 
+             && ( check_old_java || check_old_ecma ) )
     {
       QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) 
+                it != domainList.end(); ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -590,27 +590,27 @@ const QString &KHTMLSettings::encoding() const
   return d->m_encoding;
 }
 
-const QColor& KHTMLSettings::textColor()
+const QColor& KHTMLSettings::textColor() const
 {
   return d->m_textColor;
 }
 
-const QColor& KHTMLSettings::linkColor()
+const QColor& KHTMLSettings::linkColor() const
 {
   return d->m_linkColor;
 }
 
-const QColor& KHTMLSettings::vLinkColor()
+const QColor& KHTMLSettings::vLinkColor() const
 {
   return d->m_vLinkColor;
 }
 
-bool KHTMLSettings::autoLoadImages()
+bool KHTMLSettings::autoLoadImages() const
 {
   return d->m_bAutoLoadImages;
 }
 
-KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations()
+KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations() const
 {
   return d->m_showAnimations;
 }
