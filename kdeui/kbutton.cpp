@@ -82,10 +82,10 @@ void KButton::slotPressed()
 
 void KButton::slotReleased()
 {
-	if ( isToggleButton() )
-		raised =0;
+	if ( isToggleButton() && isOn() )
+		raised = -1;
 	else
-		raised = 1;
+		raised = 0;
 
 	repaint();
 }

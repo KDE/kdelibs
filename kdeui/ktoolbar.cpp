@@ -51,12 +51,14 @@ KToolBarFrame::KToolBarFrame (int ID, QWidget *parent,
                               const char *name) : QFrame (parent, name)
  {
    id = ID;
+   right = false;
  }
 
 KToolBarCombo::KToolBarCombo(bool rw, int ID,
                              QWidget *parent, const char *name) : KCombo (rw, parent, name)
 { 
   id = ID;
+  right = false;
 }
 
 KToolBarLined::KToolBarLined(const char *text, int ID,
@@ -66,6 +68,7 @@ KToolBarLined::KToolBarLined(const char *text, int ID,
   id = ID;
   setText (text);
   autoSized = false;
+  right = false;
 }
 
 void KToolBarLined::enable (bool enable)
@@ -97,6 +100,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int ID,
 	   this, SLOT( ButtonClicked() ) );
   connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
   connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
+  right = false;
 }
 
 void KToolBarButton::leaveEvent(QEvent *e)
@@ -209,6 +213,7 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
   resize(6,6);
   hide();
   id = -1;
+  right = false;
 }
     else
 void KToolBarButton::enable( bool enabled )
@@ -237,6 +242,11 @@ void KToolBarButton::ButtonToggled()
   emit toggled(id);
 }
 
+//--------------------------------------------------------------------------------------
+/*
+ *  KToolBar
+ */
+	    context->popup( mapToGlobal( m->pos() ), 0 );
 KToolBar::KToolBar(QWidget *parent, const char *name)
   : QFrame( parent, name )
 {
@@ -512,7 +522,7 @@ void KToolBar::resizeEvent( QResizeEvent *e )
 
 void KToolBar::paintEvent(QPaintEvent *)
 {
-  int offset=3;
+  //  int offset=3;
   
   //MD Lots of rewrite
   int stipple_height;
