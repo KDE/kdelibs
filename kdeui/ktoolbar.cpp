@@ -1372,6 +1372,7 @@ void KToolBar::rebuildLayout()
 	if ( stretchableWidget )
 	    bl->setStretchFactor( stretchableWidget, 10 );
     }
+    bl->activate();
 }
 
 void KToolBar::childEvent( QChildEvent *e )
