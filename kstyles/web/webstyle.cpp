@@ -968,7 +968,7 @@ WebStyle::drawKToolBarButton
  bool sunken,
  bool raised,
  bool enabled,
- bool /* popup */,
+ bool popup,
  KToolButtonType type,
  const QString & btext,
  const QPixmap * pixmap,
@@ -1168,6 +1168,14 @@ WebStyle::drawKToolBarButton
       break;
   }
 
+  if (popup)
+  {
+    p->setPen(g.dark());
+    for (int px = 0; px < 5; ++px)
+      for (int py = 0; py < 5 - px; ++py)
+        p->drawPoint(w - 6 - px, h - 6 - py);
+  }
+      
   p->restore();
 }
 
