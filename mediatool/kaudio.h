@@ -28,6 +28,45 @@
 #include <qobject.h>
 #include <qtimer.h>
 
+
+/**
+  * The KAudio class is a very easy means to playback digital audio
+  * data. A standard procedure looks like this example:
+  *
+  * // Class definition
+  * class DemoClient : public KTopLevelWidget
+  * {
+  *  Q_OBJECT
+  * 
+  * public:
+  *   DemoClient();
+  *   KAudio   KAServer;
+  *
+  * public slots:
+  *   void playOK();
+  *   // [...]
+  * }
+  *
+  * // Program
+  * // ************* Initialization ******************************
+  * DemoClient *myClient = new DemoClient();
+  * if (myClient->KAServer.serverStatus()) {
+  *   cerr << "Failed contacting audio server\n";
+  *   exit (1);
+  * }
+  *
+  *
+  * // ************* If you want to recieve Qt signals ***********
+  * KAServer.setSignals(true);
+  * QObject::connect(&KAServer, SIGNAL(playFinished()), this, SLOT(playOK()));
+  *
+  *
+  * // ************* Playback ************************************
+  * KAServer.play("/my/sounds/is/here.wav");
+  *
+  * See democlient.cpp in the kdebase sources for a full program
+  * showing more possibilities of the KAudio class
+  */
 class KAudio : public QObject
 {
   Q_OBJECT
