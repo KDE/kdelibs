@@ -19,7 +19,7 @@
 
 INCLUDES = $(all_includes)
 
-CXXFLAGS += @NOREPO@
+CXXFLAGS := $(CXXFLAGS) @NOREPO@
 
 SUBDIRS = qk
 
