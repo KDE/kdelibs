@@ -293,6 +293,7 @@ void DCOPClient::processPostedMessagesInternal()
 	if ( d->currentKey && msg->key != d->currentKey )
 	    continue;
 	d->messages.removeRef( msg );
+        d->opcode = msg->opcode;
 	DCOPProcessInternal( d, msg->opcode, msg->key, msg->data, FALSE );
 	delete msg;
     }
