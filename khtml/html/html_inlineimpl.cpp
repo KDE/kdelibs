@@ -121,9 +121,28 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 }
             }
         }
-        if ( !evt->defaultPrevented() )
+        if ( !evt->defaultPrevented() ) {
+            int state = 0;
+
+            if ( e->ctrlKey() )
+                state |= Qt::ControlButton;
+            if ( e->shiftKey() )
+                state |= Qt::ShiftButton;
+            if ( e->altKey() )
+                state |= Qt::AltButton;
+
+            int button = 0;
+           
+            if ( e->button() == 0 )
+                button = Qt::LeftButton;
+            else if ( e->button() == 1 )
+                button = Qt::MidButton;
+            else if ( e->button() == 2 )
+                button = Qt::RightButton;
+
             ownerDocument()->view()->part()->
-                urlSelected( url, e->button(), 0, utarget );
+                urlSelected( url, button, state, utarget );
+        }
     }
 }
 
