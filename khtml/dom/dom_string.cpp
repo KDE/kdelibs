@@ -87,7 +87,8 @@ DOMString &DOMString::operator += (const DOMString &str)
     {
 	// ### FIXME!!!
 	impl = str.impl;
-	impl->ref();
+	if (impl)
+	     impl->ref();
 	return *this;
     }
     if(str.impl)
