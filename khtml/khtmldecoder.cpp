@@ -102,7 +102,8 @@ QString KHTMLDecoder::decode(const char *data)
 			//ptr += 5;
 			const char * end = ptr;
 			while(*end != '>' && *end != '\0') end++;
-			if ( *end == '\0' ) break;			QCString str( ptr, (end-ptr));
+			if ( *end == '\0' ) break;
+			QCString str( ptr, (end-ptr));
 			str = str.lower();
 			int pos = 0;
 			if( (pos = str.find("http-equiv", pos)) == -1) break;
