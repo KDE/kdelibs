@@ -131,7 +131,7 @@ public:
 // inheritance hierarchy
 class Synth_AMAN_PLAY_impl :virtual public Synth_AMAN_PLAY_skel,
 							virtual public AudioManagerAssignable,
-							virtual StdSynthModule
+							virtual public StdSynthModule
 {
 protected:
 	Synth_BUS_UPLINK uplink;
@@ -178,7 +178,7 @@ public:
 // inheritance hierarchy
 class Synth_AMAN_RECORD_impl :virtual public Synth_AMAN_RECORD_skel,
 							virtual public AudioManagerAssignable,
-							virtual StdSynthModule
+							virtual public StdSynthModule
 {
 protected:
 	Synth_BUS_UPLINK downlink;

@@ -198,7 +198,7 @@ void BusManager::removeServer(BusClient *server)
 }
 
 class Synth_BUS_UPLINK_impl :public Synth_BUS_UPLINK_skel,
-										StdSynthModule, BusClient
+										public StdSynthModule, public BusClient
 {
 	BusManager *bm;
 	bool running, active, relink;
@@ -297,7 +297,7 @@ void Synth_BUS_UPLINK_impl::configureBus(const vector<Synth_MULTI_ADD>&)
 REGISTER_IMPLEMENTATION(Synth_BUS_UPLINK_impl);
 
 class Synth_BUS_DOWNLINK_impl :public Synth_BUS_DOWNLINK_skel,
-										StdSynthModule, BusClient
+										public StdSynthModule, public BusClient
 {
 	bool running, active, relink;
 	BusManager *bm;

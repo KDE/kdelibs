@@ -975,7 +975,7 @@ void StdFlowSystem::schedule(unsigned long samples)
 
 // hacked initialization of Dispatcher::the()->flowSystem ;)
 
-static class SetFlowSystem : StartupClass {
+static class SetFlowSystem : public StartupClass {
 	FlowSystem_impl *fs;
 public:
 	void startup()

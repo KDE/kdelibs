@@ -150,7 +150,7 @@ CachedWav::~CachedWav()
 		delete[] buffer;
 }
 
-class Synth_PLAY_WAV_impl : public Synth_PLAY_WAV_skel, StdSynthModule {
+class Synth_PLAY_WAV_impl : public Synth_PLAY_WAV_skel, public StdSynthModule {
 protected:
 	double flpos;
 
