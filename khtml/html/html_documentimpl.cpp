@@ -411,12 +411,9 @@ void HTMLDocumentImpl::detach()
         DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
         if(script.length()) {
             //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-            m_view->part()->executeScript( script.string() );
+            m_view->part()->executeScript( Node(this), script.string() );
         }
     }
-
-
-
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
@@ -606,7 +603,7 @@ void HTMLDocumentImpl::slotFinishedParsing()
         DOMString script = body()->getAttribute(ATTR_ONLOAD);
         if(script.length()) {
             kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-            m_view->part()->executeScript( script.string() );
+            m_view->part()->executeScript( Node(this), script.string() );
         }
     }
     emit finishedParsing();
