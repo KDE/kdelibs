@@ -28,97 +28,117 @@
 #warning KIntegerLine is obsolete and will disappear. Use KIntLineEdit instead.
 #include "krestrictedline.h"
 
-/** Enum for the possible types of Editlines
-    */
+/**
+ *  Enum for the possible types of Editlines
+ */
 enum KEditLineType{
   KEditTypeOct =  8,
   KEditTypeDec = 10,
   KEditTypeHex = 16
 };
 
-/** IntegerEditline: Editline for Integers. Only octal, decimal or
-    hexadecimal characters are valid input characters for this sort 
-    of edit lines. 
-    A few special keys are supported by this class:
-    <ul>
-    <li>The up-arrow increments the contents by 1, 
-    <li>the down-arrow decrements the contents by 1,
-    <li>Page-Up increments by 8, 10 or 16 (depending on the EditLineType),
-    <li>Page-Down decrements by 8, 10 or 16 (depending on the EditLinetype)
-    </ul>
-
-    @author Michael Wiedmann <mw@miwie.in-berlin.de>
-    @version 0.0.1
-  */
+/**
+ *  IntegerEditline: Editline for Integers. Only octal, decimal or
+ *  hexadecimal characters are valid input characters for this sort 
+ *  of edit lines. 
+ *  A few special keys are supported by this class:
+ *  <ul>
+ *  <li>The up-arrow increments the contents by 1, 
+ *  <li>the down-arrow decrements the contents by 1,
+ *  <li>Page-Up increments by 8, 10 or 16 (depending on the EditLineType),
+ *  <li>Page-Down decrements by 8, 10 or 16 (depending on the EditLinetype)
+ *  </ul>
+ *
+ *  @author Michael Wiedmann <mw@miwie.in-berlin.de>
+ *  @version 0.0.1
+ */
 class KIntegerLine : public KRestrictedLine
 {
   Q_OBJECT
   
 public:
-  /**@name methods */
-  //@{
-  /** Default - empty - constructor
-	*/
+  /**
+   *  Default - empty - constructor
+   */
   KIntegerLine();
     
-  /** Contructor: This constructor takes three - optional - arguments.
-	  The first two parameters are simply passed to KRestrictedLine.
-	  @param parent   pointer to the parent widget
-	  @param name     pointer to the name of this widget
-	  @param t        type of this integer line (defaults to KEditTypeDec)
-  */
-  KIntegerLine( QWidget *parent=0, 
-				const char *name=0, 
-				KEditLineType t=KEditTypeDec);
+  /**
+   *  Contructor: This constructor takes three - optional - arguments.
+   *  The first two parameters are simply passed to KRestrictedLine.
+   *  @param parent   pointer to the parent widget
+   *  @param name     pointer to the name of this widget
+   *  @param t        type of this integer line (defaults to KEditTypeDec)
+   */
+  KIntegerLine( QWidget *parent=0, const char *name=0, KEditLineType t=KEditTypeDec);
 
-  /// Destructor
+  /**
+   *  Destructor
+   */
   ~KIntegerLine();
 
-  /// Get the type of this Line
+  /**
+   *  Get the type of this Line
+   */
   KEditLineType getType();
 
-  /// Get the current value in the lined
+  /**
+   * Get the current value in the lined
+   */
   int value( void );
   
-  /// Set the current value in the lined
+  /**
+   *  Get the current value in the lined
+   */
   void setValue( int value );
-  //@}
 
 signals:
-  // emitted whenever the value changes
+  /**
+   *  emitted whenever the value changes
+   */
   void valueChanged( int );
 
 protected:
-  /** Key press event handler. 
-	  Handles the following special keys:
-	  <UL>
-	  <LI>Key_Up:    Increments contents of line by 1
-	  <LI>Key_Prior: Increments contents of line by 8, 10 or 16
-	  <LI>Key_Down:  Decrements contents of line by 1
-	  <LI>Key_Next:  Decrements contents of line by 8, 10 or 16
-	  </UL>
-  */
+  /**
+   *  Key press event handler. 
+   *  Handles the following special keys:
+   *  <UL>
+   *  <LI>Key_Up:    Increments contents of line by 1
+   *  <LI>Key_Prior: Increments contents of line by 8, 10 or 16
+   *  <LI>Key_Down:  Decrements contents of line by 1
+   *  <LI>Key_Next:  Decrements contents of line by 8, 10 or 16
+   *  </UL>
+   */
   void	keyPressEvent( QKeyEvent *e );
 
 private slots:
   void internalValueChanged();
 
 private:
-  /// type of this line
+  /**
+   *  type of this line
+   */
   KEditLineType lineType;
 
-  /// get value based on radix of this line
+  /**
+   * get value based on radix of this line
+   */
   int getValue(QString &s);
     
-  /// put value based on radix of this line
+  /**
+   *  put value based on radix of this line
+   */
   void putValue(QString &s, int val);  
 
-  /// increment value based on radix of this line
+  /**
+   *  increment value based on radix of this line
+   */ 
   void incValue(QString &s, int val);
 
-  /// decrement value based on radix of this line
+  /**
+   *  decrement value based on radix of this line
+   */
   void decValue(QString &s, int val);
 };
 
-#endif // 
+#endif 
 
