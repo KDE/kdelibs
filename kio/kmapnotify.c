@@ -14,6 +14,7 @@
  * it out myself.
  *
  * (C) 2000 Rik Hemsley <rik@kde.org>
+ * (C) 2000 Simon Hausmann <hausmann@kde.org>
  */
 
 #include <sys/types.h>
@@ -72,7 +73,7 @@ KDE_InterceptXMapRequest()
   /* Helper functions ****************************************************/
 
     char *
-  writeLong(char * buf, long i)
+  writeInt(char * buf, int i)
   {
     char * p = (char *)(&i);
     buf[3] = *p++;
@@ -87,9 +88,10 @@ KDE_InterceptXMapRequest()
   writeText(char * buf, const char * text)
   {
     char * pos = buf;
-    pos = writeLong(buf, strlen(text));
-    memcpy(pos, text, strlen(text));
-    return pos + strlen(text);
+    int l = strlen( text ) + 1; // we need the \0! (Simon)
+    pos = writeInt(buf, l);
+    memcpy(pos, text, l);
+    return pos + l;
   }
 
   /* Vars *****************************************************************/
@@ -119,21 +121,21 @@ KDE_InterceptXMapRequest()
 
   const char * receiver     = "kicker";
   const char * object       = "AppStarting";
-  const char * function     = "clientMapped(long int)";
+  const char * function     = "clientMapped(int)";
 
   char  * pos               = 0L;
   char  * vendor            = 0L;
   char  * release           = 0L;
-  char  * appId             = 0L;
   char  * newline           = 0L;
   void  * libX11Handle      = 0L;
   char  * homeDir           = 0L;
   char  * dcopServer        = 0L;
-  char  * streamed          = 0L;
+  char  * header            = 0L;
+  unsigned int headerLen    = 0;
   char  * data              = 0L;
+  unsigned int dataLen      = 0;
 
-  int     setupstat         = 0; 
-  int     streamedSize      = 0;
+  int     setupstat         = 0;
   int     majorOpcode       = 0;
   int     fd                = 0;
   int     majorVersion      = 0;
@@ -146,10 +148,7 @@ KDE_InterceptXMapRequest()
   IcePointer  context;
   IcePointer  somethingToPassToProtoSetup;
 
-  struct DCOPMsg   pMsg;
-  struct DCOPMsg * pMsgPtr = &pMsg;
-
-  CARD32  time;
+  struct DCOPMsg * pMsgPtr = 0;
 
 /*  extern int _IceLastMajorOpcode; */
 
@@ -160,11 +159,11 @@ KDE_InterceptXMapRequest()
   const char * DCOPAuthNames[] = { "MIT-MAGIC-COOKIE-1" };
 
   IcePoAuthProc DCOPClientAuthProcs[] = { _IcePoMagicCookie1Proc };
-  
+
   /* Init *****************************************************************/
 
   putenv("LD_PRELOAD=");
-  
+
   /* Find symbols *********************************************************/
 
   libX11Handle = dlopen("libX11.so", RTLD_GLOBAL | RTLD_NOW);
@@ -184,7 +183,7 @@ KDE_InterceptXMapRequest()
     fprintf(stderr, "KDE: Could not find symbol XMapWindow in libX11\n");
     exit(1);
   }
- 
+
   KDE_RealXMapRaised =
     (KDE_XMapRequestSignature)dlsym(libX11Handle, "XMapRaised");
 
@@ -192,12 +191,9 @@ KDE_InterceptXMapRequest()
     fprintf(stderr, "KDE: Could not find symbol XMapRaised in libX11\n");
     exit(1);
   }
-  
+
   /* Do some DCOP *********************************************************/
-  
-  /* DISABLED */
-  return;
-  
+
   /* Find home dir ********************************************************/
 
   homeDir = getenv("HOME");
@@ -206,7 +202,7 @@ KDE_InterceptXMapRequest()
     fprintf(stderr, "KDE: Could not find home directory !\n");
     return;
   }
-  
+
   /* ICE setup ************************************************************/
 
   majorOpcode =
@@ -272,7 +268,7 @@ KDE_InterceptXMapRequest()
         sizeof(errBuf),
         errBuf
       );
- 
+
     free(dcopServer);
 
   } else {
@@ -287,14 +283,14 @@ KDE_InterceptXMapRequest()
         errBuf
       );
   }
-  
+
   if (iceConn == 0L) {
     fprintf(stderr, "IceOpenConnection failed\n");
     return;
   }
 
   IceSetShutdownNegotiation(iceConn, False);
-  
+
   /* Setup protocol ******************************************************/
 
   setupstat =
@@ -321,61 +317,82 @@ KDE_InterceptXMapRequest()
     return;
   }
 
-  /* Register with DCOP **************************************************/
-
-/*  fprintf(stderr, "Registering with DCOP\n"); */
-
-  appId = (char *)malloc(64);
-  sprintf(appId, "%s-%d", "anonymous", getpid());
-
-  /* now do equivalent of:
-   * call("DCOPServer", "", "registerAs(QCString)", data, replyType,replyData)
-   * and check result.
-   */
-
-/*  fprintf(stderr, "Registered with DCOP\n"); */
-
   /* Send data to DCOP ***************************************************/
 
+  /*
+   * First let ICE initialize the ICE Message Header and give us a pointer
+   * to it (ICE manages that buffer internally)
+   */
   IceGetHeader(
     iceConn,
     majorOpcode,
-    1 /* DCOPSend */,
+    2 /* DCOPSend */,
     sizeof(struct DCOPMsg),
     struct DCOPMsg,
     pMsgPtr
   );
 
   data = (char *)malloc(128);
-  streamed = (char *)malloc(1024);
+  header = (char *)malloc(1024);
 
-  writeLong(data, (long)getpid());
+  /* marshall the arguments for the function call. here's it's just the pid */
+  pos = writeInt(data, (int)getpid());
 
-  pos = streamed;
+  /* calculate the data length */
+  dataLen = pos - data;
 
-  pos = writeText(pos, appId);
+  /* marshall the arguments for the DCOP message header (callerApp, destApp,
+   * destObj, destFunc.
+   * The last argument is actually part of the data part of the call, but
+   * we add it to the header. It's the size of the marshalled argument data.
+   * In Qt it would look like
+   * QDataStream str( ... )
+   * str << callerApp << destApp << destObj << destFun << argumentQByteArrayDataStuff;
+   * (where as str is the complete data stream sent do the dcopserver, excluding
+   *  the ICE header)
+   * As the QByteArray is marshalled as [size][data] and as we (below) send the
+   * data in two chunks, first the dcop msg header and the the data, we just
+   * put the [size] field as last field into the dcop msg header ;-)
+   */
+  pos = header;
+
+  pos = writeText(pos, "kmapnotify");
   pos = writeText(pos, receiver);
   pos = writeText(pos, object);
   pos = writeText(pos, function);
-  pos = writeLong(pos, strlen(data));
+  pos = writeInt(pos, dataLen );
 
-  streamedSize = pos - streamed;
+  headerLen = pos - header;
 
-  pMsg.time = time = 0;
-  pMsg.length += streamedSize + strlen(data);
+  pMsgPtr->time = 0;
+  /* the length field tells the dcopserver how much bytes the dcop message
+   * takes up. We add that size to the already by IceGetHeader initialized
+   * length value, as it seems that under some circumstances (depending on the
+   * DCOPMsg structure size) the length field is aligned/padded. 
+   */
+  pMsgPtr->length += headerLen + dataLen;
 
-  IceSendData(iceConn, streamedSize, streamed);
-  IceSendData(iceConn, strlen(data), data);
-  
-  free(appId);
+  /* first let's send the dcop message header 
+   * IceSendData automatically takes care of first sending the Ice Message
+   * Header (outbufptr > outbuf -> flush the connection buffer)
+   */
+  IceSendData(iceConn, headerLen, header);
+  /* and now the function argument data */
+  IceSendData(iceConn, dataLen, data);
+
+  /* send it all ;-) */
+  IceFlush( iceConn );
+
   free(data);
-  free(streamed);
+  free(header);
 
   if (IceConnectionStatus(iceConn) != IceConnectAccepted) {
     fprintf(stderr, "IceConnectionStatus != IceConnectAccepted\n");
     return;
   }
-  
+
+  IceCloseConnection( iceConn );
+
   /* Done ***************************************************************/
 }
 
