@@ -26,6 +26,7 @@
 
 extern int yylex();
 int yyerror (const char *);
+bool automatic();
 
 using namespace KJS;
 
@@ -53,6 +54,8 @@ using namespace KJS;
   CaseBlockNode       *cblk;
   ClauseListNode      *clist;
   CaseClauseNode      *ccl;
+  ElementNode         *elm;
+  ElisionNode         *eli;
   Operator            op;
 }
 
@@ -61,8 +64,6 @@ using namespace KJS;
 /* expect a shift/reduce conflict from the "dangling else" problem
    when using bison the warning can be supressed */
 // %expect 1
-
-%token LF
 
 /* literals */
 %token NULLTOKEN TRUETOKEN FALSETOKEN
@@ -101,8 +102,12 @@ using namespace KJS;
 %token <cstr> IDENT
 %token <rxp>  REGEXP
 
+/* automatically inserted semicolon */
+%token AUTO
+
 /* non-terminal types */
 %type <node>  Literal PrimaryExpr Expr MemberExpr NewExpr CallExpr
+%type <node>  ArrayLiteral
 %type <node>  LeftHandSideExpr PostfixExpr UnaryExpr
 %type <node>  MultiplicativeExpr AdditiveExpr
 %type <node>  ShiftExpr RelationalExpr EqualityExpr
@@ -135,6 +140,8 @@ using namespace KJS;
 %type <cblk>  CaseBlock
 %type <ccl>   CaseClause DefaultClause
 %type <clist> CaseClauses  CaseClausesOpt 
+%type <eli>   Elision ElisionOpt
+%type <elm>   ElementList
 
 %%
 
@@ -153,7 +160,30 @@ PrimaryExpr:
   | IDENT                          { $$ = new ResolveNode($1);
                                      delete $1; }
   | Literal
+  | ArrayLiteral
   | '(' Expr ')'                   { $$ = new GroupNode($2); }
+;
+
+ArrayLiteral:
+    '[' ElisionOpt ']'                 { $$ = new ArrayNode($2); }
+  | '[' ElementList ']'                { $$ = new ArrayNode($2, 0L); }
+  | '[' ElementList ',' ElisionOpt ']' { $$ = new ArrayNode($2, $4); }
+;
+
+ElementList:
+    ElisionOpt AssignmentExpr      { $$ = new ElementNode($1, $2); }
+  | ElementList ',' ElisionOpt AssignmentExpr
+                                   { $$ = $1->append($3, $4); }
+;
+
+ElisionOpt:
+    /* nothing */                  { $$ = 0L; }
+  | Elision
+;
+
+Elision:
+    ','                            { $$ = new ElisionNode(0L); }
+  | Elision ','                    { $$ = new ElisionNode($1); }
 ;
 
 MemberExpr:
@@ -203,7 +233,9 @@ UnaryExpr:
   | VOID UnaryExpr                 { $$ = new VoidNode($2); }
   | TYPEOF UnaryExpr               { $$ = new TypeOfNode($2); }
   | PLUSPLUS UnaryExpr             { $$ = new PrefixNode(OpPlusPlus, $2); }
+  | AUTO PLUSPLUS UnaryExpr        { $$ = new PrefixNode(OpPlusPlus, $3); }
   | MINUSMINUS UnaryExpr           { $$ = new PrefixNode(OpMinusMinus, $2); }
+  | AUTO MINUSMINUS UnaryExpr      { $$ = new PrefixNode(OpMinusMinus, $3); }
   | '+' UnaryExpr                  { $$ = new UnaryPlusNode($2); }
   | '-' UnaryExpr                  { $$ = new NegateNode($2); }
   | '~' UnaryExpr                  { $$ = new BitwiseNotNode($2); }
@@ -341,6 +373,10 @@ StatementList:
 
 VariableStatement:
     VAR VariableDeclarationList ';' { $$ = new VarStatementNode($2); }
+  | VAR VariableDeclarationList error { if (automatic())
+                                          $$ = new VarStatementNode($2);
+                                        else
+					  YYABORT; }
 ;
 
 VariableDeclarationList:
@@ -364,6 +400,10 @@ EmptyStatement:
 
 ExprStatement:
     Expr ';'                       { $$ = new ExprStatementNode($1); }
+  | Expr error                     { if (automatic())
+                                       $$ = new ExprStatementNode($1);
+                                     else
+				       YYABORT; }
 ;
 
 IfStatement: /* shift/reduce conflict due to dangling else */
@@ -404,7 +444,7 @@ BreakStatement:
   | BREAK IDENT ';'                { $$ = new BreakNode($2); delete $2; }
 ;
 
-ReturnStatement:       /* TODO: no LineTerminator here */
+ReturnStatement:
     RETURN ';'                     { $$ = new ReturnNode(0L); }
   | RETURN Expr ';'                { $$ = new ReturnNode($2); }
 ;
@@ -448,7 +488,8 @@ LabelledStatement:
 ;
 
 ThrowStatement:
-    THROW Expr ';'                 { $$ = new ThrowNode($2); }
+    THROW ';'                      { $$ = new ThrowNode(0L); }
+  | THROW Expr ';'                 { $$ = new ThrowNode($2); }
 ;
 
 TryStatement:
@@ -495,9 +536,20 @@ SourceElement:
 
 %%
 
-int yyerror (const char *s)  /* Called by yyparse on error */
+int yyerror (const char *)  /* Called by yyparse on error */
 {
-  fprintf(stderr, "ERROR: %s at line %d\n",
-	  s, KJScript::lexer()->lineNo());
+//  fprintf(stderr, "ERROR: %s at line %d\n",
+//	  s, KJScript::lexer()->lineNo());
   return 1;
+}
+
+/* may we automatically insert a semicolon ? */
+bool automatic()
+{
+  if (yychar == '}')
+    return true;
+  else if (KJScript::lexer()->prevTerminator())
+    return true;
+
+  return false;
 }

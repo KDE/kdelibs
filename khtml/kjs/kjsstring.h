@@ -47,10 +47,10 @@ namespace KJS {
     CString &operator=(const CString &);
     CString &operator+=(const CString &);
 
-    int length() const;
+    int size() const;
     void resize(unsigned int l);
 
-    const char * ascii() const;
+    const char *c_str() const;
   private:
     char *data;
   };
@@ -79,9 +79,9 @@ namespace KJS {
     UString &operator=(const char *c);
     UString &operator=(const UString &);
 
-    const UnicodeChar* unicode() const;
+    const UnicodeChar* data() const { return s; }
     bool is8Bit() const;
-    int length() const;
+    int size() const { return l; }
     UnicodeChar operator[](unsigned int pos) const;
 
     double toDouble() const;

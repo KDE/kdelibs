@@ -55,14 +55,14 @@ CString::CString(const char *c)
 
 CString::CString(const CString &b)
 {
-  data = new char[b.length()+1];
-  strcpy(data, b.ascii());
+  data = new char[b.size()+1];
+  strcpy(data, b.c_str());
 }
 
 CString::CString(const CString *b)
 {
-  data = new char[b->length()+1];
-  strcpy(data, b->ascii());
+  data = new char[b->size()+1];
+  strcpy(data, b->c_str());
 }
 
 CString::CString(int i)
@@ -82,13 +82,13 @@ CString &CString::append(const CString &t)
 {
   char *n;
   if (data) {
-    n = new char[strlen(data)+t.length()+1];
+    n = new char[strlen(data)+t.size()+1];
     strcpy(n, data);
   } else {
-    n = new char[t.length()+1];
+    n = new char[t.size()+1];
     n[0] = '\0';
   }
-  strcat(n, t.ascii());
+  strcat(n, t.c_str());
 
   delete [] data;
   data = n;
@@ -110,18 +110,18 @@ CString &CString::operator=(const CString &str)
 {
   if (data)
     delete [] data;
-  data = new char[str.length()+1];
-  strcpy(data, str.ascii());
+  data = new char[str.size()+1];
+  strcpy(data, str.c_str());
 
   return *this;
 }
 
 CString &CString::operator+=(const CString &str)
 {
-  return append(str.ascii());
+  return append(str.c_str());
 }
 
-int CString::length() const
+int CString::size() const
 {
   return strlen(data);
 }
@@ -135,7 +135,7 @@ void CString::resize(unsigned int l)
   data = tmp;
 }
 
-const char * CString::ascii() const
+const char * CString::c_str() const
 {
   return data;
 }
@@ -149,7 +149,7 @@ CString KJS::int2String(int i)
 
 bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 {
-  return (strcmp(c1.ascii(), c2.ascii()) == 0);
+  return (strcmp(c1.c_str(), c2.c_str()) == 0);
 }
 
 UString::UString() : s(0L), l(0)
@@ -181,16 +181,16 @@ UString::UString(const UnicodeChar *c, int length)
 
 UString::UString(const UString &b)
 {
-  l = b.length();
+  l = b.size();
   s = new UnicodeChar[l];
-  memcpy(s, b.unicode(), l * sizeof(UnicodeChar));
+  memcpy(s, b.data(), l * sizeof(UnicodeChar));
 }
 
 UString::UString(const UString *b)
 {
-  l = b->length();
+  l = b->size();
   s = new UnicodeChar[l];
-  memcpy(s, b->unicode(), l * sizeof(UnicodeChar));
+  memcpy(s, b->data(), l * sizeof(UnicodeChar));
 }
 
 UString::~UString()
@@ -200,10 +200,10 @@ UString::~UString()
 
 void UString::append(const UString &t)
 {
-  UnicodeChar *n = new UnicodeChar[l+t.length()];
+  UnicodeChar *n = new UnicodeChar[l+t.size()];
   memcpy(n, s, l * sizeof(UnicodeChar));
-  memcpy(n+l, t.unicode(), t.length() * sizeof(UnicodeChar));
-  l += t.length();
+  memcpy(n+l, t.data(), t.size() * sizeof(UnicodeChar));
+  l += t.size();
 
   delete [] s;
   s = n;
@@ -239,21 +239,11 @@ UString &UString::operator=(const UString &str)
   if (s)
     delete [] s;
 
-  l = str.length();
+  l = str.size();
   s = new UnicodeChar[l];
-  memcpy(s, str.unicode(), l * sizeof(UnicodeChar));
+  memcpy(s, str.data(), l * sizeof(UnicodeChar));
 
   return *this;
-}
-
-int UString::length() const
-{
-  return l;
-}
-
-const UnicodeChar* UString::unicode() const
-{
-  return s;
 }
 
 bool UString::is8Bit() const
@@ -282,7 +272,7 @@ double UString::toDouble() const
     return NaN;
 
   CString str = cstring();
-  const char *c = str.ascii();
+  const char *c = str.c_str();
 
   // skip leading white space
   while (isspace(*c))
@@ -382,11 +372,11 @@ UString UString::substr(int pos, int len) const
 
 bool KJS::operator==(const UString& s1, const UString& s2)
 {
-  if (s1.length() != s2.length())
+  if (s1.size() != s2.size())
     return false;
 
-  return (memcmp(s1.unicode(), s2.unicode(),
-		 s1.length() * sizeof(UnicodeChar)) == 0);
+  return (memcmp(s1.data(), s2.data(),
+		 s1.size() * sizeof(UnicodeChar)) == 0);
 }
 
 UString KJS::operator+(const UString& s1, const UString& s2)

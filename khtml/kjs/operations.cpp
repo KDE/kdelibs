@@ -59,7 +59,7 @@ KJSO *KJS::toBoolean(KJSO *obj)
 	(obj->dVal() == NaN));
       break;
     case String:
-      b = (obj->sVal().length() > 0);
+      b = (obj->sVal().size() > 0);
       break;
     case Object:
       b = true;

@@ -83,7 +83,7 @@ private:
 
 class StringNode : public Node {
 public:
-  StringNode(const UString &v) { value = v; }
+  StringNode(const UString *v) { value = *v; }
   KJSO *evaluate();
 private:
   UString value;

@@ -75,7 +75,7 @@ KJScript::~KJScript()
 
 bool KJScript::evaluate(const char *code)
 {
-  return evaluate(UString(code).unicode(), strlen(code));
+  return evaluate(UString(code).data(), strlen(code));
 }
 
 bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)

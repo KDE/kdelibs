@@ -132,7 +132,7 @@ void KJSO::putArrayElement(const CString &p, KJSO *v)
 
   // array index ?
   unsigned int idx;
-  if (!sscanf(p.ascii(), "%u", &idx))
+  if (!sscanf(p.c_str(), "%u", &idx))
     return;
   
   // do we need to update/create the length property ?

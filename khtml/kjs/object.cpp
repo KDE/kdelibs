@@ -426,7 +426,7 @@ void KJSO::dump(int level)
     while (pr) {
       for (int i = 0; i < level; i++)
 	cout << "  ";
-      cout << pr->name.ascii() << endl;
+      cout << pr->name.c_str() << endl;
       if (pr->object->prop && !(pr->name == "callee")) {
 	pr->object->dump(level+1);
       }

@@ -1047,7 +1047,7 @@ KJSO *DebugNode::evaluate()
   Ptr v = e->getValue();
   Ptr s = toString(v);
 
-  cout << "---> " << s->sVal().cstring().ascii() << endl;
+  cout << "---> " << s->sVal().cstring().c_str() << endl;
 
   return new KJSCompletion(Normal);
 }

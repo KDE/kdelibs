@@ -26,6 +26,8 @@
 
 namespace KJS {
 
+  class KJSLexerPrivate;
+
   class KJSLexer {
   public:
     KJSLexer(const UString &c);
@@ -55,7 +57,6 @@ namespace KJS {
 		 Decimal,
 		 String,
 		 Eof,
-		 Eol,
 		 InString,
 		 InEscapeSequence,
 		 InHexEscape,
@@ -72,8 +73,9 @@ namespace KJS {
     unsigned int size8, size16;
     unsigned int pos8, pos16;
     bool terminator;
+    bool restrKeyword;
+    int stackToken;
 
-  private:
     State state;
     void setDone(State s);
     unsigned int pos;
@@ -113,6 +115,9 @@ namespace KJS {
     };
 
     static struct keyword keytable[];
+
+    // for future extensions
+    KJSLexerPrivate *priv;
   };
 
 }; // namespace

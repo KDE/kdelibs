@@ -138,7 +138,7 @@ KJSO *StringProtoFunc::execute(KJSContext *context)
   double d, d2;
   Ptr v = thisObj->internalValue();
   Ptr s = toString(v);
-  int len = (int) s->sVal().length();
+  int len = (int) s->sVal().size();
   Ptr a0 = context->activation->get("0");
   Ptr a1 = context->activation->get("1");
 
@@ -152,10 +152,8 @@ KJSO *StringProtoFunc::execute(KJSContext *context)
     pos = (int) n->dVal();
     if (pos < 0 || pos >= len)
       u = "";
-    else {
-      UnicodeChar c = s->sVal()[pos];
-      u  = UString(&c, 1);
-    }
+    else
+      u = s->sVal().substr(pos, 1);
     result = new KJSString(u);
     break;
   case CharCodeAt:

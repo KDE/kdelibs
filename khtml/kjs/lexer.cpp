@@ -45,7 +45,7 @@ int kjsyylex()
 KJSLexer::KJSLexer(const UString &c)
   : yylineno(0),
     size8(128), size16(128),
-    pos8(0), pos16(0), pos(0),
+    pos8(0), pos16(0), stackToken(0), pos(0),
     code(c)
 {
   // allocate space for read buffers
@@ -87,6 +87,14 @@ int KJSLexer::lex()
   done = false;
   terminator = false;
 
+  // did we push a token on the stack previously ?
+  // (after an automatic semicolon insertion)
+  if (stackToken) {
+    setDone(Other);
+    token = stackToken;
+    stackToken = 0;
+  }
+
   while (!done) {
     switch (state) {
     case Start:
@@ -103,6 +111,11 @@ int KJSLexer::lex()
       } else if (isLineTerminator()) {
 	yylineno++;
 	terminator = true;
+	if (restrKeyword) {
+	  fprintf(stderr, "restricted keyword\n");
+	  token = ';';
+	  setDone(Other);
+	}
       } else if (current == '"' || current == '\'') {
 	state = InString;
 	stringType = current;
@@ -298,8 +311,7 @@ int KJSLexer::lex()
 #ifdef KJS_DEBUG_LEX
   fprintf(stderr, "line: %d ", lineNo());
   fprintf(stderr, "yytext (%x): ", buffer8[0]);
-  if (state != Eol)
-    fprintf(stderr, "%s ", buffer8);
+  fprintf(stderr, "%s ", buffer8);
 #endif
 
   int i;
@@ -344,11 +356,11 @@ int KJSLexer::lex()
   }
 #endif
 
+  restrKeyword = false;
+
   switch (state) {
   case Eof:
     return 0;
-  case Eol:
-    return LF;
   case Other:
     return token;
   case Identifier:
@@ -356,6 +368,9 @@ int KJSLexer::lex()
       kjsyylval.cstr = new CString(buffer8);
       return IDENT;
     }
+    if (token == CONTINUE || token == BREAK ||
+	token == RETURN || token == THROW)
+      restrKeyword = true;
     return token;
   case String:
     kjsyylval.ustr = new UString(buffer16, pos16); return STRING;
@@ -439,10 +454,20 @@ int KJSLexer::matchPunctuator(unsigned short c1, unsigned short c2,
     return NE;
   } else if (c1 == '+' && c2 == '+') {
     shift(2);
-    return PLUSPLUS;
+    if (terminator) {
+      // automatic semicolon insertion
+      stackToken = PLUSPLUS;
+      return AUTO;
+    } else
+      return PLUSPLUS;
   } else if (c1 == '-' && c2 == '-') {
     shift(2);
-    return MINUSMINUS;
+    if (terminator) {
+      // automatic semicolon insertion
+      stackToken = MINUSMINUS;
+      return AUTO;
+    } else
+      return MINUSMINUS;
   } else if (c1 == '=' && c2 == '=') {
     shift(2);
     return EQEQ;

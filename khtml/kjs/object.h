@@ -382,7 +382,7 @@ public:
   int count() const { return size; }
   void insert(int i, const CString &s) { if (i<size) param[i] = s; }
   const char *at(int i) { if (i<size)
-                            return param[i].ascii();
+                            return param[i].c_str();
                           else
 			    return 0L; }
 private:
