@@ -79,7 +79,7 @@ protected slots:
 
  private:
   DockMainWindowPrivate *d;
-  virtual void createGUI(const QString &s, bool b) { KTMainWindow::createGUI(s, b; }
+  virtual void createGUI(const QString &s, bool b) { KTMainWindow::createGUI(s, b); }
   };
 
 };
