@@ -1623,6 +1623,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
+    if ( style()->direction() == LTR ) {
     for ( ; startcol < totalCols; startcol++ ) {
 	if ( _tx + columnPos[startcol+1] > _x )
 	    break;
@@ -1630,6 +1631,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     for ( ; endcol > 0; endcol-- ) {
 	if ( _tx + columnPos[endcol-1] < _x + _w )
 	    break;
+    }
     }
 
     // draw the cells
