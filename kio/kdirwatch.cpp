@@ -244,6 +244,9 @@ void KDirWatch::addDir( const QString& _path )
       act.sa_sigaction = dnotify_handler;
       sigemptyset(&act.sa_mask);
       act.sa_flags = SA_SIGINFO;
+#ifdef SA_RESTART
+      act.sa_flags |= SA_RESTART;
+#endif
       sigaction(SIGRTMIN, &act, NULL);
       d->sighandler_installed = true;
     }
