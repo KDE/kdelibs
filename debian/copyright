@@ -3,14 +3,23 @@ Tue, 16 Apr 2002 22:00:00 -0500.
 
 It was downloaded via cvs from cvs.kde.org
 
-Upstream Author(s): Kalle Dalheimer <kalle@kde.org>
+Upstream Authors: Kalle Dalheimer <kalle@kde.org>
 			many others...
 
 Copyright:
 
+All programs are either under the BSD, GPL or LGPL licenses. On Debian
+systems, the complete text of the BSD, GPL and LGPL licenses can be found
+in the /usr/share/common-licenses/BSD, /usr/share/common-licenses/GPL and
+/usr/share/common-licenses/LGPL files.
+
+When in doubt, check the individual file, they should all have license
+headings and other identifying marks.
+
+
 libartskde, interfaces, kabc, kate, kcert, kconf_update, kdecore, kded, kdefx,
 kdeprint, kdesu, kdeui, kdewidgets, khtml, kimgio, kinit, kio, kioslave, kjs,
-kparts, ksmartcard, kspell, kstyles, libkmid, libkscreensaver, 
+kparts, ksmartcard, kspell, kstyles, libkmid, libkscreensaver
 ------------------------------------------------------------------------------
 LGPL
 

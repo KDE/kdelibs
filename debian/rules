@@ -23,11 +23,6 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-# GCC 3.2 defines
-export CC  = gcc-3.2
-export CXX = g++-3.2
-export CPP = cpp-3.2
-
 ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
   # Uncomment the following 2 lines to enable i686 optimziation
   # You may want to tweak the settings to your likings
