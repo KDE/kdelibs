@@ -320,7 +320,7 @@ QVariant KService::property( const QString& _name ) const
   else if ( _name == "DesktopEntryName")
     return QVariant( m_strDesktopEntryName );
   else if ( _name == "MapNotify" )
-    return QVariant( m_mapNotify );
+    return QVariant( m_mapNotify, 0 ); // use the special bool constructor of QVariant
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
