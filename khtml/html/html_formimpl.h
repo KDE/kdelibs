@@ -61,7 +61,13 @@ public:
     void submit (  );
     void reset (  );
 
-    QString formData( );
+    QByteArray formData( );
+
+    DOMString enctype() const { return _enctype; }
+    void setEnctype( const DOMString & );
+
+    DOMString boundary() const { return _boundary; }
+    void setBoundary( const DOMString & );
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -78,7 +84,10 @@ public:
 protected:
     DOMString url;
     DOMString target;
+    DOMString _enctype;
+    DOMString _boundary;
     bool post;
+    bool multipart;
     KHTMLView *view;
     QList<khtml::RenderFormElement> formElements;
 };

@@ -518,7 +518,7 @@ protected:
   /**
    * @internal
    */
-  virtual void submitForm( const char *action, const QString &url, const QCString &formData, const QString &target );
+  virtual void submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &target, const QString& contentType = QString::null, const QString& boundary = QString::null );
 
   /**
    * @internal

@@ -131,6 +131,7 @@ public:
     m_linkCursor = KCursor::handCursor();
     m_loadedImages = 0;
     m_totalImageCount = 0;
+    m_userHeaders = QString::null;
   }
   ~KHTMLPartPrivate()
   {
@@ -215,6 +216,8 @@ public:
 
   unsigned long m_loadedImages;
   unsigned long m_totalImageCount;
+
+  QString m_userHeaders;
 };
 
 namespace khtml {
@@ -361,7 +364,7 @@ bool KHTMLPart::openURL( const KURL &url )
     return false;
 
   if ( args.postData.size() > 0 && url.protocol() == http_protocol )
-      d->m_job = KIO::http_post( url, args.postData, false );
+      d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
   else
       d->m_job = KIO::get( url, args.reload, false );
 
@@ -1628,7 +1631,7 @@ KParts::PartManager *KHTMLPart::partManager()
   return d->m_manager;
 }
 
-void KHTMLPart::submitForm( const char *action, const QString &url, const QCString &formData, const QString &_target )
+void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
   QString target = _target;
   if ( target.isEmpty() )
@@ -1659,12 +1662,15 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QCStri
   }
   else
   {
-    QByteArray pdata( formData.length() );
-    memcpy( pdata.data(), formData.data(), formData.length() );
-
     KParts::URLArgs args;
-    args.postData = pdata;
+    args.postData = formData.copy();
     args.frameName = target;
+
+    // construct some user headers if necessary
+    if (contentType.isNull())
+      d->m_userHeaders = "Content-type: application/x-www-form-urlencoded\r\n";
+    else
+      d->m_userHeaders = "Content-type: " + contentType + "; boundary=" + boundary + "\r\n"; 
 
     emit d->m_extension->openURLRequest( u, args );
   }

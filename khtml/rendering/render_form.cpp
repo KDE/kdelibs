@@ -31,6 +31,7 @@
 #include <klocale.h>
 #include <klistbox.h>
 #include <kfiledialog.h>
+#include <netaccess.h>
 
 #include <qpushbutton.h>
 #include <qradiobutton.h>
@@ -68,12 +69,11 @@ RenderFormElement::~RenderFormElement()
      if(m_form) m_form->removeFormElement(this);
 }
 
-QString RenderFormElement::encodeString( QString e )
+QCString RenderFormElement::encodeString( QString e )
 {
     static const char *safe = "$-._!*(),"; /* RFC 1738 */
     unsigned pos = 0;
     QString encoded;
-    //char buffer[5];
 
     while ( pos < e.length() )
     {
@@ -108,7 +108,7 @@ QString RenderFormElement::encodeString( QString e )
         pos++;
     }
 
-    return encoded;
+    return encoded.latin1();
 }
 
 QString RenderFormElement::decodeString( QString e )
@@ -218,15 +218,18 @@ RenderHiddenButton::RenderHiddenButton(QScrollView *view,
 {
 }
 
-QString RenderHiddenButton::encoding()
+QCString RenderHiddenButton::encoding()
 {
-    QString encoding;
-    if (!m_name.isEmpty() )
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
+    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
     {
 	encoding = encodeString( m_name.string() );
 	encoding += '=';
 	encoding += encodeString( m_value.string() );
     }
+    else
+	encoding = m_value.string().latin1();
     return encoding;
 }
 
@@ -240,14 +243,20 @@ RenderCheckBox::RenderCheckBox(QScrollView *view, HTMLFormElementImpl *form)
     setQWidget(b);
 }
 
-QString RenderCheckBox::encoding()
+QCString RenderCheckBox::encoding()
 {
-    QString encoding;
-    if ( static_cast<QCheckBox *>(m_widget)->isChecked() && !m_name.isEmpty() )
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
+    if ( static_cast<QCheckBox *>(m_widget)->isChecked() )
     {
-	encoding = encodeString( m_name.string() );
-	encoding += '=';
-	encoding += m_value.isEmpty() ? QString::fromLatin1("on") : encodeString( m_value.string() );
+      if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+      {
+          encoding = encodeString( m_name.string() );
+          encoding += '=';
+          encoding += ( m_value.isEmpty() ? QCString("on") : encodeString( m_value.string() ) );
+      }
+      else
+	        encoding = ( m_value.isEmpty() ? QCString("on") : QCString(m_value.string().latin1()) );
     }
     return encoding;
 }
@@ -287,15 +296,22 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
-QString RenderRadioButton::encoding()
+QCString RenderRadioButton::encoding()
 {
-    QString encoding;
-    if ( static_cast<QRadioButton *>(m_widget)->isChecked() && !m_name.isEmpty())
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
+    if ( static_cast<QRadioButton *>(m_widget)->isChecked() )
     {
-	encoding = encodeString( m_name.string() );
-	encoding += '=';
-	encoding += encodeString( m_value.string() );
+        if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+        {
+            encoding = encodeString( m_name.string() );
+            encoding += '=';
+            encoding += encodeString( m_value.string() );
+        }
+        else
+            encoding = m_value.string().latin1();
     }
+
     return encoding;
 }
 
@@ -351,15 +367,24 @@ void RenderSubmitButton::slotClicked()
     m_form->submit();
 }
 
-QString RenderSubmitButton::encoding()
+QCString RenderSubmitButton::encoding()
 {
-    QString encoding;
-    if ( m_clicked && !m_name.isEmpty())
+    QCString encoding;
+
+    if (m_name.isEmpty()) return encoding;
+
+    if (m_clicked)
     {
-	encoding = encodeString( m_name.string() );
-	encoding += '=';
-	encoding += encodeString( QString(m_value.unicode(), m_value.length()) );
+        if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+        {
+            encoding = encodeString( m_name.string() );
+            encoding += '=';
+            encoding += encodeString( m_value.string() );
+        }
+        else
+            encoding = m_value.string().latin1();
     }
+
     m_clicked = false;
     return encoding;
 }
@@ -454,7 +479,6 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
 			       int maxLen, int size, bool passwd)
     : RenderFormElement(view, form)
 {
-    kdDebug( 6030 ) << "RenderLineEdit::RenderLineEdit" << endl;
     QLineEdit *edit = new QLineEdit(view);
     connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
 
@@ -477,14 +501,20 @@ void RenderLineEdit::setValue(const DOMString &value)
 	static_cast<QLineEdit *>(m_widget)->setText(m_value.string());
 }
 
-QString RenderLineEdit::encoding()
+QCString RenderLineEdit::encoding()
 {
-    QString encoding;
-    if(!m_name.isEmpty()) {
+    m_value = static_cast<QLineEdit *>(m_widget)->text();
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
+    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+    {
         encoding = encodeString( m_name.string() );
         encoding += '=';
-        encoding += encodeString( static_cast<QLineEdit *>(m_widget)->text() );
+        encoding += encodeString( m_value.string() );
     }
+    else
+        encoding = m_value.string().latin1();
+
     return encoding;
 }
 
@@ -569,8 +599,6 @@ RenderFileButton::RenderFileButton(QScrollView *view,
 
     m_size = size;
     setQWidget(w);
-
-    m_clicked = false;
 }
 
 RenderFileButton::~RenderFileButton()
@@ -579,7 +607,6 @@ RenderFileButton::~RenderFileButton()
 
 void RenderFileButton::slotClicked()
 {
-    m_clicked = true;
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
     setValue( DOMString(file_name) );
 }
@@ -618,12 +645,11 @@ QString RenderFileButton::state()
 
 void RenderFileButton::restoreState(const QString &state)
 {
-    m_edit->setText(state.left(state.length()-1));
+    setValue( DOMString( state.left(state.length()-1) ) );
 }
 
 void RenderFileButton::reset()
 {
-    m_clicked = false;
     setValue( DOMString(QString::null) );
 }
 
@@ -641,18 +667,40 @@ void RenderFileButton::setValue(const DOMString &value)
         m_edit->setText(QString::null);
 }
 
-QString RenderFileButton::encoding()
+QCString RenderFileButton::encoding()
 {
-    QString _encoding;
-    if ( m_clicked && !m_name.isEmpty())
-    {
-        _encoding = encodeString( m_name.string() );
-        _encoding += '=';
-        _encoding += encodeString( m_edit->text() );
-    }
-    m_clicked = false;
+    m_value = m_edit->text();
 
-    return _encoding;
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
+    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+    {
+        encoding = encodeString( m_name.string() );
+        encoding +=  '=';
+        encoding += encodeString( m_edit->text() );
+    }
+    else
+    {
+        QString local;
+        if ( !KIO::NetAccess::download(KURL(m_value.string()), local) );
+        {
+            QFile file(local);
+            if (file.open(IO_ReadOnly))
+            {
+                uint size = file.size();
+                char *buf = new char[ size ];
+                file.readBlock( buf, size );
+                file.close();
+
+                encoding.duplicate(buf, size);
+
+                delete[] buf;
+            }
+            KIO::NetAccess::removeTempFile( local );
+        }
+    }
+
+    return encoding;
 }
 
 // -------------------------------------------------------------------------
@@ -818,14 +866,18 @@ void RenderSelect::reset()
     }
 }
 
-QString RenderSelect::encoding()
+QCString RenderSelect::encoding()
 {
-    QString encoding;
+    QCString encoding;
 
     if(m_name.isEmpty() || m_gform->disabled()) return encoding;
 
-    QString prefix = encodeString( m_name.string() );
-    prefix += '=';
+    QCString prefix;
+    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+    {
+        prefix = encodeString( m_name.string() );
+        prefix += '=';
+    }
     if(m_multiple || m_size > 1) {
 
         KListBox* w = static_cast<KListBox*>(m_widget);
@@ -1032,15 +1084,19 @@ void RenderTextArea::reset()
     static_cast<QMultiLineEdit*>(m_widget)->setText(m_value.string());
 }
 
-QString RenderTextArea::encoding()
+QCString RenderTextArea::encoding()
 {
-    QString encoding;
+    QCString encoding;
+    if (m_name.isEmpty()) return encoding;
 
-    if(!m_name.isEmpty()) {
+    if ( m_form->enctype() == "application/x-www-form-urlencoded" )
+    {
         encoding = encodeString( m_name.string() );
         encoding += '=';
         encoding += encodeString( static_cast<TextAreaWidget *>(m_widget)->text() );
     }
+    else
+        encoding += static_cast<TextAreaWidget *>(m_widget)->text().latin1();
 
     return encoding;
 }

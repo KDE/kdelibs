@@ -35,6 +35,8 @@
 #include "rendering/render_form.h"
 
 #include <kdebug.h>
+#include <kmimetype.h>
+#include <netaccess.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -45,6 +47,9 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     post = false;
+    multipart = false;
+    _enctype = "application/x-www-form-urlencoded";
+    _boundary = "----------0xKhTmLbOuNdArY";
     formElements.setAutoDelete(false);
 }
 
@@ -65,51 +70,131 @@ long HTMLFormElementImpl::length() const
 }
 
 
-QString HTMLFormElementImpl::formData()
+QByteArray HTMLFormElementImpl::formData()
 {
-    kdDebug( 6030 ) << "form: saveSate()" << endl;
+    kdDebug( 6030 ) << "form: formData()" << endl;
 
-    QString form_data;
+    // This entire function is a big hack now... but it seems to be
+    // necessary.  The core problem is that in multipart forms, it's
+    // possible (likely) that binary formats will be included as a
+    // part of the form.  Unfortunately, this means that we cannot
+    // store the result in QString as that will hit the first NULL
+    // character and screw everything up.  QCString works better as
+    // it's just a glorified QByteArray anyway.  However, it also
+    // doesn't like NULL characters.
+    //
+    // So, to actually include binary data inside a normal string, we
+    // need to do a bunch of ugly memcpy's.... it does work, though.
+    // - Kurt Granroth
+
+    QByteArray form_data(0);
     bool first = true;
+    QCString enc_string; // used for non-multipart data
 
     RenderFormElement *current = formElements.first();
-    while(current)
+    for( ; current; current = formElements.next() )
     {
-	kdDebug( 6030 ) << "getting data from " << current << endl;
+	kdDebug( 6030 ) << "getting data from " << current << " name = " << current->name().string() << " type = " << current->type() << endl;
 
-        if(current->type() == RenderFormElement::HiddenButton || current->isEnabled()) {
-            QString enc = current->encoding();
-            if(enc.length())
+        if( current->type() == RenderFormElement::HiddenButton || current->isEnabled() ) {
+            QCString enc(current->encoding());
+            kdDebug( 6030 ) << "current encoding = " << current->encoding().data() << endl;
+
+            if (!multipart)
             {
+                if(!enc.length())
+                    continue;
+
                 if(!first)
-                    form_data += '&';
-                form_data += enc;
+                    enc_string += '&';
+
+                enc_string += enc.data();
+
                 first = false;
             }
+            else
+            {
+                // if there is no name to this part, we skip it
+                if ( current->name() == 0 )
+                    continue;
+
+                // hack to see if the enc data is really a cstring
+                int enc_size;
+                QCString hack(enc);
+                if (hack.length() == (hack.size() - 1))
+                    enc_size = hack.length();
+                else
+                    enc_size = hack.size();
+                int old_size = form_data.size();
+
+
+                QCString str("--" + _boundary.string() + "\r\n");
+                str += "Content-Disposition: form-data; ";
+                str += "name=\"" + current->name().string() + "\"";
+
+                // if the current type is FILE, then we also need to
+                // include the filename *and* the file type
+                if (current->type() == RenderFormElement::File)
+                {
+                    str += "; filename=\"" + current->value().string() + "\"\r\n";
+                    str += "Content-Type: ";
+                    KMimeType::Ptr ptr = KMimeType::findByURL(KURL(current->value().string()), 0, false);
+                    str += ptr->name();
+                }
+                str += "\r\n\r\n";
+
+                // this is where it gets ugly.. we have to memcpy the
+                // text part to the form.. then memcpy the (possibly
+                // binary) data.  yuck!
+                form_data.resize( old_size + str.size() + enc_size + 1);
+                memcpy(form_data.data() + old_size, str.data(), str.length());
+                memcpy(form_data.data() + old_size + str.length(), enc, enc_size);
+                form_data[form_data.size()-2] = '\r';
+                form_data[form_data.size()-1] = '\n';
+            }
         }
-	
-	current = formElements.next();
     }
+    if (multipart)
+        enc_string = "--" + _boundary.string() + "--\r\n";
+
+    int old_size = form_data.size();
+    form_data.resize( form_data.size() + enc_string.length() );
+    memcpy(form_data.data() + old_size, enc_string.data(), enc_string.length());
+
+    kdDebug( 6030 ) << "End encoding size = " << form_data.size() << endl;
+
     return form_data;
 }
 
+void HTMLFormElementImpl::setEnctype( const DOMString& type )
+{
+    _enctype = type;
+    if ( strcasecmp( type, "multipart/form-data" ) == 0 )
+        multipart = true;
+}
 
+void HTMLFormElementImpl::setBoundary( const DOMString& bound )
+{
+    _boundary = bound;
+}
 
 void HTMLFormElementImpl::submit(  )
 {
     kdDebug( 6030 ) << "submit pressed!" << endl;
     if(!view) return;
 
-    QString form_data = formData();
+    QByteArray form_data = formData();
 
-    kdDebug( 6030 ) << "formdata = " << form_data << "\npost = " << post << endl;
+    kdDebug( 6030 ) << "formdata = " << form_data.data() << endl << "post = " << post << endl << "multipart = " << multipart << endl;
     if(post)
     {
-        view->part()->submitForm( "post", url.string(), form_data.latin1(),
-                                  target.string() );
+        view->part()->submitForm( "post", url.string(), form_data,
+                                  target.string(),
+                                  enctype().string(),
+                                  boundary().string() );
     }
     else
-        view->part()->submitForm( "get", url.string(), form_data.latin1(),
+        view->part()->submitForm( "get", url.string(), form_data,
                                   target.string() );
 }
 
@@ -140,6 +225,8 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
 	    post = true;
 	break;
     case ATTR_ENCTYPE:
+        setEnctype( attr->value() );
+	break;
     case ATTR_ACCEPT_CHARSET:
     case ATTR_ACCEPT:
 	// ignore these for the moment...

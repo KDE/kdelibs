@@ -87,7 +87,7 @@ public:
      * override in derived classes to get the encoded name=value pair
      * for submitting
      */
-    virtual QString encoding() = 0;
+    virtual QCString encoding() = 0;
 
     /*
      * state() and restoreState() are complimentary functions.
@@ -112,7 +112,7 @@ public:
     virtual bool isInline() const { return true; }
 
 protected:
-    QString encodeString( QString e );
+    QCString encodeString( QString e );
     QString decodeString( QString e );
 
     DOMString m_name;
@@ -150,7 +150,7 @@ public:
     virtual const char *renderName() const { return "RenderHiddenButton"; }
     virtual Type type() { return HiddenButton; }
 
-    virtual QString encoding();
+    virtual QCString encoding();
     virtual void reset() { };
 };
 
@@ -166,7 +166,7 @@ public:
     virtual const char *renderName() const { return "RenderCheckBox"; }
     virtual Type type() { return CheckBox; }
 
-    virtual QString encoding();
+    virtual QCString encoding();
     virtual void reset();
     virtual void setChecked(bool);
 
@@ -188,7 +188,7 @@ public:
 
     virtual void reset();
     virtual void setChecked(bool);
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -211,7 +211,7 @@ public:
 
     virtual Type type() { return SubmitButton; }
 
-    virtual QString encoding();
+    virtual QCString encoding();
     virtual void setValue(const DOMString &value);
 
     virtual void reset();
@@ -287,7 +287,7 @@ public:
                    bool passwd = false);
 
     virtual Type type() { return LineEdit; }
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual void layout(bool);
 
@@ -326,7 +326,7 @@ public:
 	BUTTON
     };
 
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual void reset();
     virtual void print(QPainter *, int, int, int, int, int, int);
@@ -371,7 +371,7 @@ public:
 
     virtual void layout( bool deep = false );
 
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual Type type() { return File; }
 
@@ -435,7 +435,7 @@ public:
     virtual Type type() { return Select; }
 
     virtual void reset();
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -462,7 +462,7 @@ public:
     virtual Type type() { return MultiLineEdit; }
 
     virtual void reset();
-    virtual QString encoding();
+    virtual QCString encoding();
 
     virtual QString state();
     virtual void restoreState(const QString &);
