@@ -1825,9 +1825,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // No need to show this for a new page until an error is triggered
   if (!parentPart()) {
     removeJSErrorExtension();
+    setSuppressedPopupIndicator( false );
   }
-
-  setSuppressedPopupIndicator( false );
 
   // ###
   //stopParser();
@@ -7056,7 +7055,12 @@ void KHTMLPart::setDebugScript( bool enable )
 
 void KHTMLPart::setSuppressedPopupIndicator( bool enable )
 {
-    if ( enable && !d->m_statusBarPopupLabel && !parentPart() ) {
+    if ( parentPart() ) {
+        parentPart()->setSuppressedPopupIndicator( enable );
+        return;
+    }
+
+    if ( enable && !d->m_statusBarPopupLabel ) {
         d->m_statusBarPopupLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
         d->m_statusBarPopupLabel->setFixedHeight( instance()->iconLoader()->currentSize( KIcon::Small) );
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
