@@ -312,6 +312,13 @@ KInstance* KUniqueApplication::initHack( bool configUnique )
 
 void KUniqueApplication::newInstanceNoFork()
 {
+  if (dcopClient()->isSuspended())
+  {
+    // Try again later.
+    QTimer::singleShot( 100, this, SLOT(newInstanceNoFork()) );
+    return;
+  }
+  
   newInstance();
   // What to do with the return value ?
 }
