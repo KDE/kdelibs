@@ -140,7 +140,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 
     QColor c = style->backgroundColor();
     CachedImage *i = style->backgroundImage();
-     if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
+    if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
          pt->fillRect(_tx, _ty, width, height, c);
 
     if(i) {
@@ -148,7 +148,6 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         // ### use paddingX/Y
         pt->drawTiledPixmap(_tx, _ty, width, height, i->tiled_pixmap(c));
     }
-
 
     if(style->hasBorder())
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
