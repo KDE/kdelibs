@@ -9,7 +9,8 @@ libkwalletbackend_la_SOURCES = blockcipher.cc		\
 			       blowfish.cc		\
 			       cbc.cc			\
 			       hashbase.cc		\
-			       sha1.cc
+			       sha1.cc			\
+			       kwalletbackend.cc
 
 
 libkwalletbackend_la_METASOURCES = AUTO
