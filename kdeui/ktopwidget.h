@@ -7,6 +7,7 @@
 #include <ktoolbar.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
+#include <kconfig.h>
 
          /**
           * A Widget that provides toolbars, a status line and a frame.
@@ -16,7 +17,7 @@
           * Normaly, you will inherit from KTopLevelWidget (further: KTW). You have
           * follow some simple rules. First, @ref updateRects is the function that
           * calculates the layout of all elements (toolbars, statusbar, main widget, etc).
-          * It is called from @ref resizeEvent, and signals that indicate changing position
+          * It is called from @ref resizeEvent, and signals that indicate chang[5~ing position
           * of toolbars and menubar are connected to it. If you reimplement
           * resizeEvent you have to call this function. KTW now handles fixed-size main views
           * propperly. Just setFixedSize on your main widget.
@@ -86,33 +87,6 @@ public:
      */
     void setStatusBar( KStatusBar *statusbar );
 
-    /**
-     * This function saves window properties: geometry, state and position of
-     * toolbars, menubar and statusbar to application's config file. If parametar
-     * 'global' is TRUE, properties will be saved under group name [WindowProperties].
-     * If 'globals' is FALSE, group name will be the window-title. You must set window-title
-     * (with setCaption) in that case, otherwise function use global group. Toolbar properties
-     * are saved in the order they are in the internal list of toolbars.
-     * Properties of elements that do not exist will be not saved (Surprise!). You
-     * call to this function in your destructor - normaly before you delete toolbars
-     * and menubar. You may add other entrys to this group.
-     */
-    bool saveProperties (bool global = TRUE);
-
-    /**
-     * This function reads properties for KTW. If you want to load
-     * specific properties, be sure to set window caption first. If parametar 'global'
-     * is FALSE, first the group-name equal to the window-title is searched for, and if
-     * it does not exist, group [WindowProperties] is searched for. If parametar 'global' is
-     * TRUE only group [WindowProperties] is used.
-     * You must create and set statusbar (@ref setStatusBar ), create and add all toolbars
-     * (@ref addToolBar ) and create and set menubar (@ref setMenu ) before you call
-     * this function. All elements will be handled according to configuration, and
-     * window will be resized and moved. Window will be not shown. Function returns TRUE
-     * on success and FALSE on failure. If no window-title is set (with setCaption) and
-     * function was called with FALSE, it will fail.
-     */
-    bool readProperties (bool global = FALSE);
     
     /**
      *Enable or disable the status bar.
@@ -187,6 +161,39 @@ public:
      */
     int view_right;
 
+
+
+  /* Try to restore the toplevel widget as defined number (1..X)
+   * If the session did not contain that high number, the configuration
+   * is not changed and False returned.
+   * 
+   * That means clients could simply do the following:
+   *
+   * if (kapp->isRestored()){
+   *   int n = 1;
+   *   while (KTopLevelWidget::canBeRestored(n)){
+   *     the_childTLW = new childTLW;
+   *     the_childTLW->restore(n);
+   *     n++;
+   *   }
+   * } else {
+   * // create default application as usual
+   * }
+   *
+   * Note that "show()" is called implicit in restore.
+   *
+   * With this you can easily restore all toplevel windows of your
+   * application.  (Matthias)
+   */
+  static bool canBeRestored(int number);
+
+  /* try to restore the specified number. Returns "False" if this
+   * fails, otherwise returns "True" and shows the window
+   */
+  bool restore(int number);
+
+
+
 protected:
     /**
      * Default implementation calls @ref updateRects if main widget is resizable. If
@@ -202,6 +209,22 @@ protected:
      * Default implementation just calls repaint (FALSE);
      */
     void focusOutEvent ( QFocusEvent *);
+
+
+  /* save and read your instance specific properties.
+   * You MUST NOT change the group of the kconfig object,
+   * since KTW uses one group for each window.
+   * Please overload these function in childclasses. 
+   *
+   * Note that any interaction or X calls are forbidden
+   * in these functions!
+   *
+   * (Matthias)
+   */ 
+  virtual void saveProperties(KConfig*){};
+  virtual void readProperties(KConfig*){};
+
+
     
 protected slots:
     /**
@@ -214,6 +237,14 @@ protected slots:
      * You normally do not need to do this.
      */
     virtual void updateRects();
+
+ private slots:
+ /**
+   * React on the request of the session manager (Matthias)
+   */
+    void saveYourself(); 
+
+
 
 private:
 
@@ -253,6 +284,12 @@ private:
      * Stores the width of the view frame
      */
     int borderwidth;
+
+
+  // Matthias
+  void savePropertiesInternal (KConfig*, int);
+  bool readPropertiesInternal (KConfig*, int);
+
 };
 
 #endif

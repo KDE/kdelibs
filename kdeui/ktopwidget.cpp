@@ -28,16 +28,21 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     kmainwidgetframe ->setLineWidth(0);
     kmainwidgetframe ->hide();
 
-	// If the application does not yet have a main widget, make it this one
-	if( !kapp->mainWidget() )
-	  kapp->setMainWidget( this );
+	// If the application does not yet have a top widget, make it this one
+    if( !kapp->topWidget() ){
+      kapp->setTopWidget( this );
+      // Enable session management (Matthias)
+      kapp->enableSessionManagement();
+    }
+    connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
 
-	// see if there already is a member list
-	if( !memberList )
-	  memberList = new QList<KTopLevelWidget>;
 
-	// enter the widget in the list of all KTWs
-	memberList->append( this );
+    // see if there already is a member list
+    if( !memberList )
+      memberList = new QList<KTopLevelWidget>;
+    
+    // enter the widget in the list of all KTWs
+    memberList->append( this );
 }
 
 KTopLevelWidget::~KTopLevelWidget()
@@ -77,17 +82,17 @@ KTopLevelWidget::~KTopLevelWidget()
 	// remove this widget from the member list
 	memberList->remove( this );
 
-	// if this was the mainWidget, find a new one to be it
-	if( kapp->mainWidget() == this )
+	// if this was the topWidget, find a new one to be it
+	if( kapp->topWidget() == this )
 	  {
 		KTopLevelWidget* pTemp = NULL;
 		if( ( pTemp = memberList->getFirst() ) )
-		  kapp->setMainWidget( pTemp );
+		  kapp->setTopWidget( pTemp );
 		// if there is no mainWidget left: bad luck
 		else
 		  {
 //			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
-			kapp->setMainWidget( NULL );
+			kapp->setTopWidget( NULL );
 
 			// but since it is the last one, it can at least deallocate
 			// the member list...
@@ -487,33 +492,38 @@ void KTopLevelWidget::updateRects()
     }
 }
 
-bool KTopLevelWidget::saveProperties (bool global)
+
+void KTopLevelWidget::saveYourself(){
+  // Do session management (Matthias)
+  QListIterator<KTopLevelWidget> it(*memberList);
+  int n = 0;
+  KConfig* config = KApplication::getKApplication()->getSessionConfig();
+  config->setGroup("Number");
+  config->writeEntry("NumberOfWindows", memberList->count());
+  for (it.toFirst(); it.current(); ++it){
+    n++;
+    it.current()->savePropertiesInternal(config, n); 
+  }
+  config->sync();
+}
+
+
+//Matthias
+void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
 {
     QString entry;
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
                // in order they are in toolbar list
     
-    KConfig *config = KApplication::getKApplication()->getConfig();
+    QString s;
+    s.setNum(number);
+    s.prepend("WindowProperties");
+    config->setGroup(s);
 
-    if (global == TRUE)
-        config->setGroup("WindowProperties");
-    else
-    {
-        if (caption() == 0)
-            return FALSE;
-        config->setGroup(caption());
-    }
 
-    entry.setNum(x());
-    entryList.append(entry.data());
-    entry.setNum(y());
-    entryList.append(entry.data());
-    entry.setNum(width());
-    entryList.append(entry.data());
-    entry.setNum(height());
-    entryList.append(entry.data());
-    config->writeEntry("KTWGeometry", entryList, ';');
+    //use KWM for window properties (Matthias)
+    config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
     entryList.clear();
     
     if (kstatusbar)
@@ -595,11 +605,13 @@ bool KTopLevelWidget::saveProperties (bool global)
         n++;
     }
 
-    config->sync();
-    return TRUE;
+    s.setNum(number);
+    config->setGroup(s);
+    saveProperties(config);
 }
 
-bool KTopLevelWidget::readProperties (bool global)
+//Matthias
+bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
 {
     // All comments by sven
     int xx, yy, ww, hh;
@@ -609,72 +621,27 @@ bool KTopLevelWidget::readProperties (bool global)
     int n = 1; // Tolbar counter. toolbars are counted from 1,
                // in order they are in toolbar list
     int i = 0; // Number of entries in list
+    QString s;
+    s.setNum(number);
+    s.prepend("WindowProperties");
+    config->setGroup(s);
+    if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
+      {
+	return FALSE;
+      }
+
+    // Use KWM for window properties  (Matthias)
+    QString geom = config->readEntry ("KTWGeometry");
+    if (!geom.isEmpty()){
+      setGeometry(KWM::setProperties(winId(), geom));
+    }
     
-    KConfig *config = KApplication::getKApplication()->getConfig();
-
-    // How do I check if there is group I want?
-    
-    if (global == FALSE) // i.e. if first specific ("file:/usr/local.." than global
-    {
-	  //        if (caption() == 0)
-            //return FALSE;
-        config->setGroup(caption());
-        if (config->hasKey("KTWGeometry") == FALSE) // no speciffic, try global
-        {
-            config->setGroup("WindowProperties");
-            if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
-                return FALSE;
-        }
-    }
-    else // try global only
-    {
-        config->setGroup("WindowProperties");
-        if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
-            return FALSE;
-    }
-
-    // Group should hopefully be set now.
-    // Why isn't there bool KConfig::hasGroup(groupname) ?
-
-    i = config->readListEntry ("KTWGeometry", entryList, ';');
-    if (i < 4)
-    {
-        //debug ("KTW readProperties: less than 4 numbers in geometry");
-        return FALSE; // Or crash, whatever you wish.
-    }
-    entry = entryList.first();
-    xx = entry.toInt();
-    entry = entryList.next();
-    yy = entry.toInt();
-    entry = entryList.next();
-    ww = entry.toInt();
-    entry = entryList.next();
-    hh = entry.toInt();
-
-    // check for some stupidities
-
-    if ((ww <= 0) || (hh <=0) || (xx<0) || (yy<0))
-    {
-        //debug ("KTW readProperties: geometry sux");
-        return FALSE; // if you still live
-    }
-
-    setGeometry (xx, yy, ww, hh); // possibly 0,-128, 49000, -3 (my favourite)
-
-    entryList.clear();
-
     if (kstatusbar)
     {
         entry = config->readEntry("StatusBar");
         if (entry == "Enabled")
             enableStatusBar(KStatusBar::Show);
-        else if (entry == "Disabled")
-            enableStatusBar(KStatusBar::Hide);
-        else
-        {
-            //debug ("KTWreadProps: bad statusbar status!");
-            return FALSE;
-        }
+        else enableStatusBar(KStatusBar::Hide);
     }
 
     if (kmenubar)
@@ -685,18 +652,13 @@ bool KTopLevelWidget::readProperties (bool global)
             //debug ("KTWreadProps: bad number of kmenubar args");
             return FALSE;
         }
-
+	bool showmenubar = False;  //Matthias
         entry = entryList.first();
         if (entry=="Enabled")
-            kmenubar->show();
-        else if (entry=="Disabled")
-            kmenubar->hide();
-        else
-        {
-            //debug ("KTWRP: bad menubar status");
-            return FALSE;
-        }
-
+	  showmenubar = True; //Matthias
+        else 
+	  kmenubar->hide();
+	
         entry = entryList.next();
         if (entry == "Top")
             kmenubar->setMenuBarPos(KMenuBar::Top);
@@ -713,19 +675,11 @@ bool KTopLevelWidget::readProperties (bool global)
             ww=entry.toInt();
             entry=entryList.next();
             hh=entry.toInt();
-            if ((ww <= 0) || (hh <=0) || (xx<0) || (yy<0))
-            {
-                //debug ("KTWRP: menubar geometry sux");
-                return FALSE; // if you still live
-            }
             kmenubar->setGeometry (xx, yy, ww, hh);
         }
-        else
-        {
-            //debug ("KTWRP: bad menubar position");
-            return FALSE;
-        }
         entryList.clear();
+	if (showmenubar) //Matthias
+	  kmenubar->show();
     }
     KToolBar *toolbar;
     QString toolKey;
@@ -744,16 +698,12 @@ bool KTopLevelWidget::readProperties (bool global)
             return FALSE;
         }
         
+	bool showtoolbar = False;  //Matthias
         entry = entryList.first();
         if (entry=="Enabled")
-            toolbar->enable(KToolBar::Show);
-        else if (entry=="Disabled")
-            toolbar->enable(KToolBar::Hide);
-        else
-        {
-            //debug ("KTWRP: bad toolbar status");
-            return FALSE;
-        }
+	  showtoolbar = True; //Matthias
+        else 
+	  toolbar->enable(KToolBar::Hide);
 
         entry = entryList.next();
         if (entry == "Top")
@@ -775,23 +725,19 @@ bool KTopLevelWidget::readProperties (bool global)
             ww=entry.toInt();
             entry=entryList.next();
             hh=entry.toInt();
-            if ((ww <= 0) || (hh <=0) || (xx<0) || (yy<0))
-            {
-                //debug ("KTWRP: toolbar geometry sux");
-                return FALSE; // if you still live
-            }
             toolbar->setGeometry (xx, yy, ww, hh);
             toolbar->updateRects(TRUE);
         }
-        else
-        {
-            //debug ("KTWRP: bad toolbar position");
-            return FALSE;
-        }
+	if (showtoolbar)
+	  toolbar->enable(KToolBar::Show); //Matthias
         n++; // next toolbar
         entryList.clear();
     }
-    return TRUE;
+
+    s.setNum(number);
+    config->setGroup(s);
+    readProperties(config);
+    return True;
 }
 
 void KTopLevelWidget::setFrameBorderWidth(int size){
@@ -799,6 +745,32 @@ void KTopLevelWidget::setFrameBorderWidth(int size){
   borderwidth = size;
 
 }
+
+//Matthias
+bool KTopLevelWidget::canBeRestored(int number){
+  if (!kapp->isRestored())
+    return False;
+  KConfig *config = kapp->getSessionConfig();
+  if (!config)
+    return False;
+  config->setGroup("Number");
+  int n = config->readNumEntry("NumberOfWindows", 0);
+  return (number >= 1 && number <= n);
+}
+
+
+//Matthias
+bool KTopLevelWidget::restore(int number){
+  if (!canBeRestored(number))
+    return False;
+  KConfig *config = kapp->getSessionConfig();
+  if (readPropertiesInternal(config, number)){
+    show();
+    return True;
+  }
+  return False;
+}
+
 
 void KTopLevelWidget::resizeEvent( QResizeEvent *ev )
 {
