@@ -25,7 +25,11 @@
 		<Directory>kde-unknown.directory</Directory>
 		<OnlyUnallocated/>
 		<Include>
-			<All/>
+			<!-- Don't list non-KDE core applications -->
+			<Not><And>
+			<Category>Core</Category>
+			<Not><Category>KDE</Category></Not>
+			</And></Not>
 		</Include>
 	</Menu>
 	<Menu>
@@ -308,7 +312,10 @@
 		</Menu>
 	</Menu>
 	<Include>
-		<Category>X-KDE-MenuRoot</Category>
+		<And>
+		<Category>KDE</Category>
+		<Category>Core</Category>
+		</And>
 	</Include>
 	<DefaultMergeDirs/>
 	<MergeFile>applications-kmenuedit.menu</MergeFile>
