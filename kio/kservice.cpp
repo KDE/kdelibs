@@ -322,8 +322,8 @@ public:
 
    QStringList groupList() const { return QStringList(); }
 
-   bool hasKey(const QCString &, const QString &pKey) const { /*qDebug("hasKey(const QString &)");*/ return (pKey == key);}
-   bool hasKey(const QCString &, const char *) const { /*qDebug("hasKey(const char *)");*/ return true;}
+   bool hasKey(const QString &pKey) const { /*qDebug("hasKey(const QString &)");*/ return (pKey == key);}
+   bool hasKey(const char *) const { /*qDebug("hasKey(const char *)");*/ return true;}
 
    QMap<QString,QString> entryMap(const QString &) const
       { return QMap<QString,QString>(); }
