@@ -86,6 +86,12 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             breakAt = i;
         if ( i == len - 2 && x + ww + fm.charWidth( str, i+1 ) > w ) // don't leave the last char alone
             breakAt = lastBreak == -1 ? i - 1 : lastBreak;
+        if (c == '\n') // Forced break here
+        {
+            breakAt = i;
+            lastBreak = -1;
+        }   
+               
         if ( breakAt != -1 )
         {
             //kdDebug() << "KWordWrap::formatText breaking after " << breakAt << endl;
