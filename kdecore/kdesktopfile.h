@@ -122,6 +122,12 @@ public:
    */
   bool hasDeviceType();
 
+  /**
+   * if the TryExec field contains a binary which is found on the
+   * system, return true, otherwise return false.
+   */
+  bool tryExec();
+
 private:
 
   // copy-construction and assignment are not allowed

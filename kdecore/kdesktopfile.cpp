@@ -21,6 +21,9 @@
 
 // $Id$
 
+#include <stdlib.h>
+#include <unistd.h>
+
 #include "kconfigbackend.h"
 
 #include "kdesktopfile.h"
@@ -108,4 +111,32 @@ bool KDesktopFile::hasMimeTypeType()
 bool KDesktopFile::hasDeviceType()
 {
   return readEntry("Type") == "FSDev" || readEntry("Type") == "FSDevice";
+}
+
+bool KDesktopFile::tryExec()
+{
+  // if there is no TryExec field, just return OK.
+  QString te(readEntry("TryExec"));
+  if (te.isNull())
+    return true;
+
+  if (!te.isEmpty()) {
+    if (te[0] == '/') {
+      if (::access(te.utf8(), R_OK & X_OK))
+	return false;
+      else
+	return true;
+    } else {
+      QStringList dirs = QStringList::split(":", ::getenv("PATH"));
+      QStringList::Iterator it(dirs.begin());
+      for (; it != dirs.end(); ++it) {
+	QString fName = *it + te;
+	if (::access(fName.utf8(), R_OK & X_OK) == 0)
+	  return true;
+      }
+      // didn't match at all
+      return false;
+    }
+  }
+  return true;
 }
