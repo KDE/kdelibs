@@ -248,7 +248,7 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
     return 0; // Error creating function
 
   DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(handlerFunc.imp());
-  declFunc->setName(name);
+  declFunc->setName(Identifier(name));
   return KJS::Window::retrieveWindow(m_part)->getJSEventListener(handlerFunc,true);
 }
 
