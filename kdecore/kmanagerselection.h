@@ -40,13 +40,11 @@ class KSelectionOwner
     public:
         KSelectionOwner( Atom selection, int screen_P = -1 );
         KSelectionOwner( const char* selection, int screen_P = -1 );
+	virtual ~KSelectionOwner();
         bool claim( bool force, bool force_kill = true );
-        void release(); // call explicitly before destroying
+        void release();
         // internal
-        bool filterSelectionClear( XSelectionClearEvent& ev_P );
-        bool filterDestroyNotify( XDestroyWindowEvent& ev_P );
-        bool filterSelectionNotify( XSelectionEvent& ev_P );
-        bool filterSelectionRequest( XSelectionRequestEvent& ev_P );
+	void filterEvent( XEvent* ev_P );
     signals:
         void lostOwnership();
     protected:
@@ -55,6 +53,7 @@ class KSelectionOwner
         virtual void getAtoms();
         void setData( long extra1, long extra2 );
     private:
+        void filter_selection_request( XSelectionRequestEvent& ev_P );
         bool handle_selection( Atom target_P, Atom property_P, Window requestor_P );
         const Atom selection;
         const int screen;
@@ -77,7 +76,7 @@ class KSelectionWatcher
         KSelectionWatcher( const char* selection_P, int screen_P = -1 );
         Window owner();
         // internal
-        bool filterEvent( XEvent& ev_P );
+        void filterEvent( XEvent* ev_P );
     signals:
         void newOwner( Window owner );
         void lostOwner();

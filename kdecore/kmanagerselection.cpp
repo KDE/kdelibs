@@ -65,7 +65,12 @@ KSelectionOwner::KSelectionOwner( const char* selection_P, int screen_P )
         extra1( 0 ), extra2( 0 )
     {
     }
-    
+
+KSelectionOwner::~KSelectionOwner()
+    {
+    release();
+    }
+        
 bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     {
     if( manager_atom == None )
@@ -150,7 +155,7 @@ void KSelectionOwner::release()
     {
     if( timestamp == CurrentTime )
         return;
-    XSetSelectionOwner( qt_xdisplay(), selection, None, timestamp );
+    XDestroyWindow( qt_xdisplay(), window ); // also makes the selection not owned
 //    kdDebug() << "Releasing selection" << endl;
     timestamp = CurrentTime;
     }
@@ -161,43 +166,50 @@ void KSelectionOwner::setData( long extra1_P, long extra2_P )
     extra2 = extra2_P;
     }
     
-bool KSelectionOwner::filterSelectionClear( XSelectionClearEvent& ev_P )
+void KSelectionOwner::filterEvent( XEvent* ev_P )
     {
-    if( timestamp == CurrentTime || ev_P.selection != selection )
-        return false;
-    timestamp = CurrentTime;
-//    kdDebug() << "Lost selection" << endl;
-    emit lostOwnership();
-    XSelectInput( qt_xdisplay(), window, 0 );
-    XDestroyWindow( qt_xdisplay(), window );
-    return true;
+    switch( ev_P->type )
+	{
+	case SelectionClear:
+	    {
+	    if( timestamp == CurrentTime || ev_P->xselectionclear.selection != selection )
+	        return;
+	    timestamp = CurrentTime;
+//	    kdDebug() << "Lost selection" << endl;
+	    emit lostOwnership();
+	    XSelectInput( qt_xdisplay(), window, 0 );
+	    XDestroyWindow( qt_xdisplay(), window );
+	  return;
+	    }
+	case DestroyNotify:
+	    {
+	    if( timestamp == CurrentTime || ev_P->xdestroywindow.window != window )
+	        return;
+	    timestamp = CurrentTime;
+//	    kdDebug() << "Lost selection (destroyed)" << endl;
+	    emit lostOwnership();
+	  return;
+	    }
+	case SelectionNotify:
+	    {
+	    if( timestamp == CurrentTime || ev_P->xselection.selection != selection )
+	        return;
+	    // ignore?
+	  return;
+	    }
+	case SelectionRequest:
+	    filter_selection_request( ev_P->xselectionrequest );
+	  return;
+	}
     }
 
-bool KSelectionOwner::filterDestroyNotify( XDestroyWindowEvent& ev_P )
-    {
-    if( timestamp == CurrentTime || ev_P.window != window )
-        return false;
-    timestamp = CurrentTime;
-//    kdDebug() << "Lost selection (destroyed)" << endl;
-    emit lostOwnership();
-    return true;
-    }
-
-bool KSelectionOwner::filterSelectionNotify( XSelectionEvent& ev_P )
+void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
     {
     if( timestamp == CurrentTime || ev_P.selection != selection )
-        return false;
-    // ignore?
-    return true;
-    }
-
-bool KSelectionOwner::filterSelectionRequest( XSelectionRequestEvent& ev_P )
-    {
-    if( timestamp == CurrentTime || ev_P.selection != selection )
-        return false;
+        return;
     if( ev_P.time != CurrentTime
         && ev_P.time - timestamp > 1U << 31 )
-        return false; // too old or too new request
+        return; // too old or too new request
 //    kdDebug() << "Got selection request" << endl;
     bool handled = false;
     if( ev_P.target == xa_multiple )
@@ -251,7 +263,6 @@ bool KSelectionOwner::filterSelectionRequest( XSelectionRequestEvent& ev_P )
     ev.xselection.target = ev_P.target;
     ev.xselection.property = handled ? ev_P.property : None;
     XSendEvent( qt_xdisplay(), ev_P.requestor, False, 0, &ev );
-    return true;
     }
 
 bool KSelectionOwner::handle_selection( Atom target_P, Atom property_P, Window requestor_P )
@@ -371,36 +382,37 @@ Window KSelectionWatcher::owner()
     return selection_owner;
     }
     
-bool KSelectionWatcher::filterEvent( XEvent& ev_P )
+// void return value in order to allow more watchers in one process
+void KSelectionWatcher::filterEvent( XEvent* ev_P )
     {
-    if( ev_P.type == ClientMessage )
+    if( ev_P->type == ClientMessage )
         {
 //        kdDebug() << "got ClientMessage" << endl;
-        if( ev_P.xclient.message_type != manager_atom
-            || ev_P.xclient.data.l[ 1 ] != static_cast< long >( selection ))
-            return false;
+        if( ev_P->xclient.message_type != manager_atom
+            || ev_P->xclient.data.l[ 1 ] != static_cast< long >( selection ))
+            return;
 //        kdDebug() << "handling message" << endl;
-        if( ev_P.xclient.data.l[ 2 ] == static_cast< long >( selection_owner ))
+        if( ev_P->xclient.data.l[ 2 ] == static_cast< long >( selection_owner ))
             {
 //            kdDebug() << "already known" << endl;
-            return true; // we know this already
+            return; // we know this already
             }
-        if( static_cast< long >( owner()) == ev_P.xclient.data.l[ 2 ] )
+        if( static_cast< long >( owner()) == ev_P->xclient.data.l[ 2 ] )
             {
 //            kdDebug() << "new owner: " << selection_owner << endl;
             emit newOwner( selection_owner );
             }
-        return true;
+        return;
         }
-    if( ev_P.type == DestroyNotify )
+    if( ev_P->type == DestroyNotify )
         {
-        if( selection_owner == None || ev_P.xdestroywindow.window != selection_owner )
-            return false;
+        if( selection_owner == None || ev_P->xdestroywindow.window != selection_owner )
+            return;
         selection_owner = None;
         emit lostOwner();
-        return true;
+        return;
         }
-    return false;
+    return;
     }
 
 Atom KSelectionWatcher::manager_atom = None;

@@ -161,7 +161,7 @@ bool KXMessages::x11Event( XEvent* ev_P )
         emit gotMessage( QString::fromUtf8( incoming_messages[ ev_P->xclient.window ] ));
         incoming_messages.remove( ev_P->xclient.window );
         }
-    return false;
+    return false; // lets other KXMessages instances get the event too
     }
 
 #undef None
