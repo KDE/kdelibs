@@ -143,20 +143,8 @@ void HTMLLIElementImpl::attach()
 
     HTMLElementImpl::attach();
 
-    if ( m_render && m_render->style()->display() == LIST_ITEM ) {
-	// If we are first, and the OL has a start attr.
-	if (parentNode() && parentNode()->id() == ID_OL) {
-	    HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(parentNode());
-
-	    if(ol->firstChild() && ol->firstChild() == this &&  m_render)
-		static_cast<RenderListItem*>(m_render)->setValue(ol->start());
-	}
-
-	// If we had a value attr.
-	if (isValued && m_render)
-	    static_cast<RenderListItem*>(m_render)->setValue(requestedValue);
-    }
-
+    if ( m_render && isValued  && m_render->style()->display() == LIST_ITEM )
+        static_cast<RenderListItem*>(m_render)->setValue(requestedValue);
 }
 
 

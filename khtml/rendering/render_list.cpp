@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2002 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000-2002 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,12 +23,11 @@
  * $Id$
  */
 
-#include "render_list.h"
+#include "rendering/render_list.h"
 #include "rendering/render_root.h"
-
-#include <qpainter.h>
-
+#include "html/html_listimpl.h"
 #include "misc/helper.h"
+#include "misc/htmltags.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -173,6 +173,8 @@ void RenderListItem::calcListValue()
             RenderListItem *item = static_cast<RenderListItem *>(o);
             m_marker->m_value = item->value() + 1;
         }
+        else if (parent()->element() && parent()->element()->id() == ID_OL)
+            m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(parent()->element())->start();
         else
             m_marker->m_value = 1;
     }
@@ -188,7 +190,7 @@ void RenderListItem::layout( )
     RenderFlow::layout();
 
     m_height = kMax ( m_height, int ( lineHeight( true ) ) );
-    if (m_marker) 
+    if (m_marker)
         m_height = kMax( m_height, m_marker->height() );
 }
 

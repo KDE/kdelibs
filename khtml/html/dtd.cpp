@@ -672,7 +672,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_UL:
         // OL: LI +
         if(childID == ID_LI) return true;
-        return false;
+        return check_array(childID, tag_list_1);
     case ID_DIR:
     case ID_MENU:
         // (DIR|MENU): LI + - _3
