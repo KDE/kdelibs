@@ -101,7 +101,6 @@ void RenderRoot::calcMinMaxWidth()
 
 void RenderRoot::layout()
 {
-    //kdDebug(6040) << "RenderRoot::layout()" << endl;
     if (m_printingMode)
        m_minWidth = m_width;
 
@@ -146,8 +145,8 @@ void RenderRoot::layout()
     // ### The layoutSpecialObjects call below can unfortunately reset some layouted flags if we have fixed positioned
     // objects. This is a hack to still get everything working (all layouted flags set). It does some additional work, but fortunately
     // fixed positioned objects are rare.
-    if ( firstChild() && !firstChild()->layouted() )
-	RenderFlow::layout();
+    if ( !layouted() && firstChild() && !firstChild()->layouted() )
+        firstChild()->layout();
 
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
