@@ -1098,7 +1098,6 @@ bool HTTPProtocol::http_open()
     header+="; Supports SSL/HTTPS";
 #endif
     header += "\r\n";
-    header += "User-Agent: " + agent + "\r\n";
   }
 
   QString referrer = metaData("referrer");
