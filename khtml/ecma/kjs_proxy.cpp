@@ -75,7 +75,10 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len,
 		const DOM::Node &n)
   {
-    return script->evaluate(getDOMNode(n), c, len);
+    if(n.isNull())
+      return script->evaluate(KJS::Global::current().prototype(), c, len);
+    else
+      return script->evaluate(getDOMNode(n), c, len);
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
