@@ -72,15 +72,13 @@ public:
     KDirOperatorPrivate() {
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
-	dirHighlighting = false;
-        restorePreview = KFile::Simple;
+        dirHighlighting = false;
     }
 
     ~KDirOperatorPrivate() {
         delete progressDelayTimer;
     }
 
-    int restorePreview; // the view that is restored when preview is toggled
     bool dirHighlighting;
     QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
@@ -243,29 +241,23 @@ void KDirOperator::slotToggleHidden( bool show )
         m_fileView->listingCompleted();
 }
 
-void KDirOperator::slotSingleView()
-{
-    KFile::FileView view = static_cast<KFile::FileView>(
-        m_viewKind & ~(KFile::PreviewContents |
-                     KFile::PreviewInfo |
-                     KFile::SeparateDirs ));
-
-    setView( view );
-}
-
 void KDirOperator::slotSeparateDirs()
 {
-    KFile::FileView view = static_cast<KFile::FileView>(
-        (m_viewKind & ~(KFile::PreviewContents |
-                      KFile::PreviewInfo)
-         | KFile::SeparateDirs ));
-
-    setView( view );
+    if (separateDirsAction->isChecked())
+    {
+        KFile::FileView view = static_cast<KFile::FileView>( m_viewKind | KFile::SeparateDirs );
+        setView( view );
+    }
+    else
+    {
+        KFile::FileView view = static_cast<KFile::FileView>( m_viewKind & ~KFile::SeparateDirs );
+        setView( view );
+    }
 }
 
 void KDirOperator::slotDefaultPreview()
 {
-    m_viewKind = (m_viewKind | KFile::PreviewContents) & ~KFile::SeparateDirs;
+    m_viewKind = m_viewKind | KFile::PreviewContents;
     if ( !myPreview ) {
         myPreview = new KImageFilePreview( this );
         (static_cast<KToggleAction*>( myActionCollection->action("preview") ))->setChecked(true);
@@ -745,50 +737,58 @@ bool KDirOperator::checkPreviewInternal() const
 
     return false;
 }
+
 KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
     KFileView* new_view = 0L;
     bool separateDirs = KFile::isSeparateDirs( view );
-    bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                   (view & KFile::PreviewContents) == KFile::PreviewContents );
-
-    if( separateDirs ) {
-        KCombiView *combi = new KCombiView( parent, "combi view" );
-        combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+    bool preview = ( KFile::isPreviewInfo(view) || KFile::isPreviewContents( view ) );
+    
+    if( separateDirs || preview ) {
+        KCombiView *combi = 0L;
+        
+        if (separateDirs)
+        {
+            combi = new KCombiView( parent, "combi view" );
+            combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+        }
+        
         KFileView* v = 0L;
         if ( (view & KFile::Simple) == KFile::Simple )
             v = createView( combi, KFile::Simple );
         else
             v = createView( combi, KFile::Detail );
-        combi->setRight( v );
-        new_view = combi;
+        
+        if (combi)
+        {
+            combi->setRight( v );
+        }
+        
+        if (preview)
+        {
+            KFilePreview* pView = new KFilePreview( combi ? combi : v, parent, "preview" );
+            pView->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+            new_view = pView;
+        }
+        else
+        {
+            new_view = combi;
+        }
     }
     else if( (view & KFile::Detail) == KFile::Detail && !preview ) {
         new_view = new KFileDetailView( parent, "detail view");
     }
-    else if ((view & KFile::Simple) == KFile::Simple && !preview ) {
+    else /* if ((view & KFile::Simple) == KFile::Simple && !preview ) */ {
         new_view = new KFileIconView( parent, "simple view");
         new_view->setViewName( i18n("Short View") );
     }
-    else { // preview
-        KFileView* v = 0L; // will get reparented by KFilePreview
-        if ( (view & KFile::Simple ) == KFile::Simple )
-            v = createView( 0L, KFile::Simple );
-        else
-            v = createView( 0L, KFile::Detail );
-
-        KFilePreview* pView = new KFilePreview( v, parent, "preview" );
-        pView->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-        new_view = pView;
-    }
-
+    
     return new_view;
 }
 
 void KDirOperator::setView( KFile::FileView view )
 {
     bool separateDirs = KFile::isSeparateDirs( view );
-    bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                   (view & KFile::PreviewContents) == KFile::PreviewContents );
+    bool preview=( KFile::isPreviewInfo(view) || KFile::isPreviewContents( view ) );
 
     if (view == KFile::Default) {
         if ( KFile::isDetailView( (KFile::FileView) defaultView ) )
@@ -804,12 +804,11 @@ void KDirOperator::setView( KFile::FileView view )
 
         if ( preview ) { // instantiates KImageFilePreview and calls setView()
             m_viewKind = view;
-            d->restorePreview = m_viewKind;
             slotDefaultPreview();
             return;
         }
         else if ( !separateDirs )
-            (static_cast<KRadioAction*>( myActionCollection->action("single") ))->setChecked(true);
+            separateDirsAction->setChecked(true);
 
     }
 
@@ -834,7 +833,6 @@ void KDirOperator::setView( KFile::FileView view )
         dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
     }
 
-    d->restorePreview = m_viewKind;
     setView( new_view );
 }
 
@@ -1141,25 +1139,17 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
                                           myActionCollection, "show hidden" );
-    KRadioAction *singleAction = new KRadioAction( i18n("Single View"), 0,
-                                                   this,
-                                                   SLOT( slotSingleView() ),
-                                                   myActionCollection, "single" );
-    separateDirsAction = new KRadioAction( i18n("Separate Directories"), 0,
+    separateDirsAction = new KToggleAction( i18n("Separate Directories"), 0,
                                             this,
                                             SLOT(slotSeparateDirs()),
                                             myActionCollection, "separate dirs" );
-    KToggleAction *previewAction = new KToggleAction(i18n("Preview"),
+    KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"),
                                                      "thumbnail", 0,
                                                      myActionCollection,
                                                      "preview" );
     connect( previewAction, SIGNAL( toggled( bool )),
              SLOT( togglePreview( bool )));
 
-
-    QString combiView = QString::fromLatin1("combiview");
-    singleAction->setExclusiveGroup( combiView );
-    separateDirsAction->setExclusiveGroup( combiView );
 
     QString viewGroup = QString::fromLatin1("view");
     shortAction->setExclusiveGroup( viewGroup );
@@ -1190,9 +1180,11 @@ void KDirOperator::setupMenu()
 //     viewActionMenu->insert( shortAction );
 //     viewActionMenu->insert( detailedAction );
 //     viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( showHiddenAction );
+    viewActionMenu->insert( myActionCollection->action( "short view" ) );
+    viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
     viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( myActionCollection->action( "single" ));
+    viewActionMenu->insert( showHiddenAction );
+//    viewActionMenu->insert( myActionCollection->action( "single" ));
     viewActionMenu->insert( separateDirsAction );
     // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
     // when you add/remove actions here!
@@ -1511,8 +1503,7 @@ void KDirOperator::togglePreview( bool on )
     if ( on )
         slotDefaultPreview();
     else
-        setView( (KFile::FileView) (d->restorePreview &
-                                    ~(KFile::PreviewContents|KFile::PreviewInfo)) );
+        setView( (KFile::FileView) (m_viewKind & ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
 
 void KDirOperator::slotRefreshItems( const KFileItemList& items )

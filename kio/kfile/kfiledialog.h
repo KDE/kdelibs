@@ -643,6 +643,12 @@ public:
      */
     KActionCollection *actionCollection() const;
 
+    /**
+     * @returns the index of the path combobox so when inserting widgets into 
+     * the dialog (e.g. subclasses) they can do so without hardcoding in an index
+     */
+    int pathComboIndex();
+    
 signals:
     /**
       * Emitted when the user selects a file. It is only emitted in single-

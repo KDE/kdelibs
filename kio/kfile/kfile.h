@@ -113,6 +113,10 @@ public:
 	return (view & PreviewContents) == PreviewContents;
     }
 
+    static bool isPreviewInfo( const FileView& view ) {
+        return (view & PreviewInfo) == PreviewContents;
+    }
+
 };
 
 #endif // KFILE_H

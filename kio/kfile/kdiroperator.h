@@ -772,7 +772,6 @@ private slots:
     void slotSimpleView();
     void slotToggleHidden( bool );
 
-    void slotSingleView();
     void slotSeparateDirs();
     void slotDefaultPreview();
     void togglePreview( bool );

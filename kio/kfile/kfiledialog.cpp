@@ -150,6 +150,9 @@ struct KFileDialogPrivate
     QString fileClass;
 
     KFileBookmarkHandler *bookmarkHandler;
+    
+    // the ID of the path drop down so subclasses can place their custom widgets properly
+    int m_pathComboIndex;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -303,7 +306,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "forward" )->plug( toolbar );
     coll->action( "home" )->plug( toolbar );
     coll->action( "reload" )->plug( toolbar );
-
+    coll->action( "mkdir" )->plug( toolbar );
+    
     d->bookmarkHandler = new KFileBookmarkHandler( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
                           (int)HOTLIST_BUTTON, true,
@@ -318,35 +322,34 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                           (int)CONFIGURE_BUTTON, true,
                           i18n("Configure this dialog"));
     */
-
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
-    KActionMenu *menu = new KActionMenu( i18n("Extras"), "misc", this, "extra menu" );
-    menu->insert( coll->action( "mkdir" ));
-    menu->insert( coll->action( "delete" ));
-    menu->insert( coll->action( "separator" ));
+    KActionMenu *menu = new KActionMenu( i18n("Extras"), "configure", this, "extra menu" );
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
-    menu->insert( coll->action( "view menu" ));
-    menu->insert( showSidebarAction );
+    menu->insert( coll->action( "short view" ));
+    menu->insert( coll->action( "detailed view" ));
     menu->insert( coll->action( "separator" ));
-    menu->insert( coll->action( "properties" ));
+    coll->action( "show hidden" )->setShortcut(Key_F8);
+    menu->insert( coll->action( "show hidden" ));
+    menu->insert( showSidebarAction );
+    coll->action( "preview" )->setShortcut(Key_F10);
+    menu->insert( coll->action( "preview" ));
+    coll->action( "separate dirs" )->setShortcut(Key_F11);
+    menu->insert( coll->action( "separate dirs" ));
+    
     menu->setDelayed( false );
     connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
              ops, SLOT( updateSelectionDependentActions() ));
     menu->plug( toolbar );
 
-    coll->action( "short view" )->plug( toolbar );
-    coll->action( "detailed view" )->plug( toolbar );
-    coll->action( "preview")->plug( toolbar );
-
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
 
-    toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
+    d->m_pathComboIndex = toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setIconText(KToolBar::IconOnly);
@@ -1703,6 +1706,11 @@ void KFileDialog::toggleSpeedbar( bool show )
         d->urlBar->show();
     else
         d->urlBar->hide();
+}
+
+int KFileDialog::pathComboIndex()
+{
+    return d->m_pathComboIndex;
 }
 
 void KFileDialog::virtual_hook( int id, void* data )
