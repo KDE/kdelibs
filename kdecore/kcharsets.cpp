@@ -254,6 +254,7 @@ static struct Builtin
     { "x-cp-1257", "cp 1257" },
     { "tis620", "iso 8859-11" },
     { "tis-620", "iso 8859-11" },
+    { "thai-tis620", "iso 8859-11" },
     { "windows-874", "iso 8859-11" },
     { "windows874", "iso 8859-11" },
     { "x-windows-874", "iso 8859-11" },
