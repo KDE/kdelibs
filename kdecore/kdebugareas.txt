@@ -53,6 +53,7 @@ Area codes for KDebug system
 	4101-4200 kciv
 	4201-4250 krot
 	4251-4260 khidaq
+	4300-4349 kdvi
 
 30001-65534 koffice
 	30001-31000 kxcl
