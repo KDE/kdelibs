@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.21  1998/10/20 18:58:11  ettrich
+ * ugly hack to get rid of X11 includes, small fix
+ *
  * Revision 1.20  1998/09/01 20:21:10  kulow
  * I renamed all old qt header files to the new versions. I think, this looks
  * nicer (and gives the change in configure a sense :)
@@ -160,18 +163,8 @@
 
 
 
-
-/* Resources */
-
-/*
- * _XSERVER64 must ONLY be defined when compiling X server sources on
- * systems where unsigned long is not 32 bits, must NOT be used in
- * client or library code.
- */
-#ifndef _XSERVER64
-typedef unsigned long XID;
-typedef unsigned long Atom;
-#else
+// we need Window and Atom but do not want to include X.h since it
+// #defines way too many constants 
 #include <X11/Xmd.h>
 typedef CARD32 XID;
 typedef CARD32 Atom;
