@@ -884,6 +884,7 @@ QStringList KLocale::languageList() const
 
 KLocale::KLocale( const QString & ) : _inited(true), lang(0)
 {
+    _datefmtshort = QString::fromLatin1("%m/%d/%y");
 }
 
 KLocale::~KLocale()
