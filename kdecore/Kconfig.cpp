@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.17  1997/08/04 18:18:24  ettrich
+ * Matthias: modified my tiny modifikation to do a deep rollback. Makes more sense.
+ *
  * Revision 1.16  1997/08/04 17:51:29  ettrich
  * Matthias: again: sync() => no longer dirty entries
  *
@@ -671,41 +674,39 @@ void KConfig::sync()
   if( pData->bDirty ) {
     // find out the file to write to (most specific writable file)
 
-  // try app-specific file first
-    if( pData->pAppStream )
-      {
+    // try app-specific file first
+    if( pData->pAppStream 
 	// is it writable?
-	if( pData->pAppStream->device()->isWritable() )
-	  {
-	    writeConfigFile( *(QFile *)pData->pAppStream->device() );
-	    pData->pAppStream->device()->close();
-	    pData->pAppStream->device()->open( IO_ReadWrite );
-	  }
-
-	return; // we only write here, no need to go further
-      }
-
-    // try other files
-    for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
+	&& pData->pAppStream->device()->isWritable() )
       {
-	QString aFileName = aConfigFileName[i];
-	// replace a leading tilde with the home directory
-	// is there a more portable way to find out the home directory?
-	char* pHome = getenv( "HOME" );
-	if( (aFileName[0] == '~') && pHome )
-	  aFileName.replace( 0, 1, pHome );
-	  
-	QFile aConfigFile( aFileName );
-	QFileInfo aInfo( aConfigFile );
-	if( ( aInfo.exists() && aInfo.isWritable() ) ||
-	    ( !aInfo.exists() && 
-	      QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
-	  {
-	    aConfigFile.open( IO_ReadWrite );
-	    writeConfigFile( aConfigFile );
-	    break;
-	  }
+	writeConfigFile( *(QFile *)pData->pAppStream->device() );
+	pData->pAppStream->device()->close();
+	pData->pAppStream->device()->open( IO_ReadWrite );
       }
+    
+    else {
+      // try other files
+      for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
+	{
+	  QString aFileName = aConfigFileName[i];
+	  // replace a leading tilde with the home directory
+	  // is there a more portable way to find out the home directory?
+	  char* pHome = getenv( "HOME" );
+	  if( (aFileName[0] == '~') && pHome )
+	    aFileName.replace( 0, 1, pHome );
+	  
+	  QFile aConfigFile( aFileName );
+	  QFileInfo aInfo( aConfigFile );
+	  if( ( aInfo.exists() && aInfo.isWritable() ) ||
+	      ( !aInfo.exists() && 
+		QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
+	    {
+	      aConfigFile.open( IO_ReadWrite );
+	      writeConfigFile( aConfigFile );
+	      break;
+	    }
+	}
+    }
   }
 
   // re-parse all config files
