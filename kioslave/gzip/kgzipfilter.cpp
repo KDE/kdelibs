@@ -44,12 +44,7 @@ public:
     }
 };
 
-extern "C" {
-    void *init_kgzipfilter()
-    {
-        return new KGzipFilterFactory;
-    }
-}
+K_EXPORT_COMPONENT_FACTORY( kgzipfilter, KGzipFilterFactory );
 
 // Not really necessary anymore, now that this is a dynamically-loaded lib.
 class KGzipFilter::KGzipFilterPrivate
