@@ -1235,8 +1235,8 @@ int main( int argc, char **argv )
         if ( setUserTexts )
           cpp << userTextsFunctions( e );
 
-        cpp << "  addItem( " << itemVar( e ) << ", \""
-            << paramString(e->paramName(), e, i) << "\" );" << endl;
+        cpp << "  addItem( " << itemVar( e ) << ", QString::fromLatin1( \""
+            << paramString(e->paramName(), e, i) << "\" ) );" << endl;
       }
     }
   }
