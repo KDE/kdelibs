@@ -2503,7 +2503,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         FontDef fontDef = style->htmlFont().fontDef;
         int oldSize;
-        float size = 0;
+        int size = 0;
 
 	float toPix = paintDeviceMetrics->logicalDpiY()/72.;
 	if (toPix  < 96./72.) toPix = 96./72.;
@@ -2528,20 +2528,20 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #endif
             switch(primitiveValue->getIdent())
             {
-            case CSS_VAL_XX_SMALL: size = fontSizes[0]; break;
-            case CSS_VAL_X_SMALL:  size = fontSizes[1]; break;
-            case CSS_VAL_SMALL:    size = fontSizes[2]; break;
-            case CSS_VAL_MEDIUM:   size = fontSizes[3]; break;
-            case CSS_VAL_LARGE:    size = fontSizes[4]; break;
-            case CSS_VAL_X_LARGE:  size = fontSizes[5]; break;
-            case CSS_VAL_XX_LARGE: size = fontSizes[6]; break;
+            case CSS_VAL_XX_SMALL: size = int( fontSizes[0] ); break;
+            case CSS_VAL_X_SMALL:  size = int( fontSizes[1] ); break;
+            case CSS_VAL_SMALL:    size = int( fontSizes[2] ); break;
+            case CSS_VAL_MEDIUM:   size = int( fontSizes[3] ); break;
+            case CSS_VAL_LARGE:    size = int( fontSizes[4] ); break;
+            case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
+            case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
             case CSS_VAL__KONQ_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
-                size = oldSize * 1.2;
+                size = ( oldSize * 5 ) / 4;
                 break;
             case CSS_VAL_SMALLER:
-                size = oldSize / 1.2;
+                size = ( oldSize * 4 ) / 5;
                 break;
             default:
                 return;
@@ -2550,25 +2550,27 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-                size = primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics);
                 if (!khtml::printpainter && element && element->getDocument()->view())
-                    size *= element->getDocument()->view()->part()->zoomFactor() / 100.0;
+                    size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
+                                element->getDocument()->view()->part()->zoomFactor() ) / 100;
+		else
+                    size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) );
             }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+                size = int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                         * parentStyle->font().pixelSize()) / 100;
             else
                 return;
         }
 
-        if(size <= 0) return;
+        if(size < 1) return;
 
         // we never want to get smaller than the minimum font size to keep fonts readable
         if(size < minFontSize ) size = minFontSize;
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
-	fontDef.size = int(size);
+	fontDef.size = size;
         if (style->setFontDef( fontDef ))
 	fontDirty = true;
         return;
