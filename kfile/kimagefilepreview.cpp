@@ -30,7 +30,7 @@
 
 /**** KImageFilePreview ****/
 
-KImageFilePreview::KImageFilePreview( KFileDialog *parent )
+KImageFilePreview::KImageFilePreview( QWidget *parent )
     : KPreviewWidgetBase( parent ),
       m_job( 0L )
 {
@@ -97,7 +97,7 @@ void KImageFilePreview::showPreview( const KURL &url, bool force )
             m_job =  createJob( url, w, h );
             connect( m_job, SIGNAL( result( KIO::Job * )),
                      this, SLOT( slotResult( KIO::Job * )));
-            connect( m_job, SIGNAL( gotPreview( const KFileItem*, 
+            connect( m_job, SIGNAL( gotPreview( const KFileItem*,
                                                 const QPixmap& )),
                      SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
 
@@ -130,7 +130,7 @@ KIO::PreviewJob * KImageFilePreview::createJob( const KURL& url, int w, int h )
 {
     KURL::List urls;
     urls.append( url );
-    return KIO::filePreview( urls, w, h, 0, 0, true, false );   
+    return KIO::filePreview( urls, w, h, 0, 0, true, false );
 }
 
 void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
@@ -142,7 +142,7 @@ void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
 void KImageFilePreview::slotFailed( const KFileItem* item )
 {
     if ( item->url() == currentURL ) // should always be the case
-        imageLabel->setPixmap( SmallIcon( "file_broken", KIcon::SizeLarge, 
+        imageLabel->setPixmap( SmallIcon( "file_broken", KIcon::SizeLarge,
                                           KIcon::DisabledState ));
 }
 

@@ -73,6 +73,10 @@ class KDirOperator : public QWidget
      */
     const QString& nameFilter() const { return dir->nameFilter(); }
 
+    void setMimeFilter( const QStringList& mimetypes );
+
+    void clearFilter();
+
     /**
      * local URLs (i.e. directories) always have file: prepended.
      */
@@ -192,9 +196,12 @@ class KDirOperator : public QWidget
      * @li detailed view : shows a detailed fileview (dates, permissions ,...)
      * @li show hidden : shows hidden files
      * @li separate dirs : shows directories in a separate pane
+     * @li preview  : shows a preview next to the fileview
+     * @li single : hides the separate view for directories or the preview
      *
      * The short and detailed view are in an exclusive group. The sort-by
-     * actions are in an exclusive group as well.
+     * actions are in an exclusive group as well. Also the "separate dirs",
+     * "preview" and "single" actions are in an exclusive group.
      *
      * You can e.g. use
      * <pre>actionCollection()->action( "up" )->plug( someToolBar );</pre>
@@ -280,6 +287,7 @@ protected:
     void updateViewActions();
     void setupMenu();
     void prepareCompletionObjects();
+    bool checkPreviewSupport();
 
 private:
     /**
@@ -401,7 +409,11 @@ private slots:
     void slotDetailedView();
     void slotSimpleView();
     void slotToggleHidden( bool );
-    void slotToggleMixDirsAndFiles();
+
+    void slotSingleView();
+    void slotSeparateDirs();
+    void slotDefaultPreview();
+
     void slotSortByName();
     void slotSortBySize();
     void slotSortByDate();

@@ -33,7 +33,7 @@ class KImageFilePreview : public KPreviewWidgetBase
 	Q_OBJECT
 
 	public:
-		KImageFilePreview(KFileDialog *parent);
+		KImageFilePreview(QWidget *parent);
 		~KImageFilePreview();
 
 		virtual QSize sizeHint() const;
@@ -50,7 +50,7 @@ class KImageFilePreview : public KPreviewWidgetBase
 
 	protected:
 		virtual void resizeEvent(QResizeEvent *e);
-		virtual KIO::PreviewJob * createJob( const KURL& url, 
+		virtual KIO::PreviewJob * createJob( const KURL& url,
                                                      int w, int h );
 
 	private slots:

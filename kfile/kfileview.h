@@ -337,6 +337,7 @@ public:
      */
     bool updateNumbers(const KFileViewItem *i);
 
+    // ### make virtual and override in kfilepreview and kcombiview
     /**
      * @returns the view-specific action-collection. Every view should
      * add its actions here (if it has any) to make them available to

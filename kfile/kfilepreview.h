@@ -92,7 +92,7 @@ protected slots:
 private:
     void init( KFileView *view );
 
-    bool deleted, previewMode;
+    bool deleted, previewMode; // ### remove
     KFileView *left;
     QWidget *preview;
     QString viewname;

@@ -6,6 +6,7 @@ const int kfile_area = 250;
 #define DefaultViewStyle QString::fromLatin1("SimpleView")
 #define DefaultPannerPosition 40
 #define DefaultMixDirsAndFiles false
+#define DefaultShowPreview true
 #define DefaultShowStatusLine false
 #define DefaultShowHidden false
 #define DefaultCaseInsensitive false

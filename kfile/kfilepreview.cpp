@@ -23,7 +23,7 @@
 #include <kfilepreview.moc>
 
 KFilePreview::KFilePreview(KFileView *view, QWidget *parent, const char *name)
-  : QSplitter(parent, name), KFileView()
+    : QSplitter(parent, name), KFileView()
 {
     if ( view )
         init( view );
@@ -38,6 +38,15 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     init( new KFileIconView((QSplitter*)this, "left") );
 }
 
+KFilePreview::~KFilePreview()
+{
+    if ( preview && preview->parentWidget() == this ) {
+        preview->reparent(0L, 0, QPoint(0, 0), false);
+    }
+    // don't delete the preview, we can reuse it
+    // (it will get deleted by ~KDirOperator)
+}
+
 void KFilePreview::init( KFileView *view )
 {
     left = 0L;
@@ -50,16 +59,7 @@ void KFilePreview::init( KFileView *view )
     l->move(10, 5);
     preview->setMinimumWidth(l->sizeHint().width()+20);
     setResizeMode(preview, QSplitter::KeepSize);
-    deleted=false;
-    previewMode=false;
     setViewName( i18n("Preview") );
-}
-
-KFilePreview::~KFilePreview() {
-    if(!deleted && preview) {
-        delete preview;
-        preview=0L;
-    }
 }
 
 void KFilePreview::setFileView( KFileView *view )
@@ -80,60 +80,65 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 
     if(w!=0L) {
-        previewMode=true;
         connect(this, SIGNAL(showPreview(const KURL &)),
                 w, SLOT(showPreview(const KURL &)));
     }
     else {
-        previewMode=false;
         preview->hide();
         return;
     }
 
-    if(preview) {
-        deleted=true;
-        delete preview;
+    delete preview;
+
+    preview = const_cast<QWidget*>(w);
+    if ( preview ) {
+        preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
+        preview->resize(preview->sizeHint());
+        preview->show();
     }
-    preview=const_cast<QWidget*>(w);
-    preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
-    preview->resize(preview->sizeHint());
-    preview->show();
 }
 
-void KFilePreview::insertItem(KFileViewItem *item) {
+void KFilePreview::insertItem(KFileViewItem *item)
+{
     left->insertItem(item);
 }
 
-void KFilePreview::clearView() {
+void KFilePreview::clearView()
+{
     left->clearView();
     if(preview)
         emit showPreview( KURL() );
 }
 
-void KFilePreview::updateView(bool b) {
+void KFilePreview::updateView(bool b)
+{
     left->updateView(b);
     if(preview)
         preview->repaint(b);
 }
 
-void KFilePreview::updateView(const KFileViewItem *i) {
+void KFilePreview::updateView(const KFileViewItem *i)
+{
     left->updateView(i);
 }
 
-void KFilePreview::removeItem(const KFileViewItem *i) {
+void KFilePreview::removeItem(const KFileViewItem *i)
+{
     left->removeItem(i);
     KFileView::removeItem( i );
 }
 
 // huh, I don't think we need this....
-void KFilePreview::clear() {
+void KFilePreview::clear()
+{
     KFileView::clear();
     left->KFileView::clear();
     if(preview)
         preview->erase();
 }
 
-void KFilePreview::clearSelection() {
+void KFilePreview::clearSelection()
+{
     left->clearSelection();
 }
 
@@ -164,7 +169,6 @@ void KFilePreview::highlightFile(const KFileViewItem* item) {
         else
             emit showPreview( KURL() );
     }
-        
 
     sig->highlightFile(item);
     // the preview widget appears and takes some space of the left view,

@@ -387,9 +387,9 @@ void KFileDialog::setFilter(const QString& filter)
         return;
     }
 
+    ops->clearFilter();
     filterWidget->setFilter(filter);
-    ops->fileReader()->clearMimeFilter();
-    ops->fileReader()->setNameFilter(filterWidget->currentFilter());
+    ops->setNameFilter(filterWidget->currentFilter());
 }
 
 QString KFileDialog::currentFilter() const
@@ -419,36 +419,15 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
 
     QStringList types = mimeTypes;
     types.append( QString::fromLatin1( "inode/directory" ));
-    ops->fileReader()->setNameFilter( QString::null );
-    ops->fileReader()->setMimeFilter( types );
-
-    // check if we can enable the preview automatically
-    KConfig *kc = KGlobal::config();
-    KConfigGroupSaver cs( kc, ConfigGroup );
-    if ( kc->readBoolEntry( "Show Default Preview" ), true ) {
-        QStringList previewMimes = KIO::PreviewJob::supportedMimeTypes();
-        QStringList::Iterator it = previewMimes.begin();
-        QRegExp r;
-        r.setWildcard( true ); // the "mimetype" can be "image/*"
-
-        for ( ; it != previewMimes.end(); ++it ) {
-            r.setPattern( *it );
-            QStringList result = mimeTypes.grep( r );
-            if ( !result.isEmpty() ) { // matches! -> we want previews
-                KImageFilePreview *preview = new KImageFilePreview( this );
-                setPreviewWidget( preview );
-                return;
-            }
-        }
-    }
+    ops->clearFilter();
+    ops->setMimeFilter( types );
 }
 
 void KFileDialog::clearFilter()
 {
     d->mimetypes.clear();
     filterWidget->setFilter( QString::null );
-    ops->fileReader()->clearMimeFilter();
-    ops->fileReader()->setNameFilter( QString::null );
+    ops->clearFilter();
 }
 
 QString KFileDialog::currentMimeFilter() const
@@ -863,16 +842,15 @@ void KFileDialog::initGUI()
 void KFileDialog::slotFilterChanged()
 {
     QString filter = filterWidget->currentFilter();
+    ops->clearFilter();
 
     if ( filter.contains( '/' ) ) {
-        ops->fileReader()->setNameFilter( QString::null );
-        ops->fileReader()->setMimeFilter( filter +
-                                      QString::fromLatin1(" inode/directory"));
+        QStringList types;
+        types << "inode/directory" << filter;
+        ops->setMimeFilter( types );
     }
-    else {
-        ops->fileReader()->clearMimeFilter();
-        ops->fileReader()->setNameFilter( filter );
-    }
+    else
+        ops->setNameFilter( filter );
 
     ops->rereadDir();
     emit filterChanged( filter );

@@ -44,6 +44,8 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
+#include <kio/previewjob.h>
+#include <kservicetypefactory.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -54,6 +56,7 @@
 #include "kfilereader.h"
 #include "kfileview.h"
 #include "kfileviewitem.h"
+#include "kimagefilepreview.h"
 
 
 template class QStack<KURL>;
@@ -148,6 +151,7 @@ KDirOperator::~KDirOperator()
 {
     resetCursor();
     delete fileView;
+    delete myPreview;
     delete dir;
     delete d;
 }
@@ -191,20 +195,24 @@ void KDirOperator::activatedMenu( const KFileViewItem * )
     // when the view changed the sorting.
     slotViewSortingChanged();
 
-    bool enableDelete = fileView && fileView->selectedItems() && 
+    bool enableDelete = fileView && fileView->selectedItems() &&
                         !fileView->selectedItems()->isEmpty();
     myActionCollection->action( "delete" )->setEnabled( enableDelete );
-    
+
     actionMenu->popup( QCursor::pos() );
 }
 
-void KDirOperator::setPreviewWidget(const QWidget *w) {
-
+void KDirOperator::setPreviewWidget(const QWidget *w)
+{
     if(w != 0L)
-        viewKind = (viewKind | KFile::PreviewContents & ~KFile::SeparateDirs);
+        viewKind = (viewKind | KFile::PreviewContents) & ~KFile::SeparateDirs;
     else
         viewKind = (viewKind & ~KFile::PreviewContents);
+
+    delete myPreview;
     myPreview = w;
+
+    myActionCollection->action( "preview" )->setEnabled( w != 0L );
     setView( static_cast<KFile::FileView>(viewKind) );
 }
 
@@ -220,13 +228,13 @@ int KDirOperator::numFiles() const
 
 void KDirOperator::slotDetailedView()
 {
-    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::Simple | KFile::Detail );
+    KFile::FileView view = static_cast<KFile::FileView>( (viewKind & ~KFile::Simple) | KFile::Detail );
     setView( view );
 }
 
 void KDirOperator::slotSimpleView()
 {
-    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::Detail | KFile::Simple );
+    KFile::FileView view = static_cast<KFile::FileView>( (viewKind & ~KFile::Detail) | KFile::Simple );
     setView( view );
 }
 
@@ -236,11 +244,35 @@ void KDirOperator::slotToggleHidden( bool show )
     rereadDir();
 }
 
-void KDirOperator::slotToggleMixDirsAndFiles()
+void KDirOperator::slotSingleView()
 {
-    int flag = KFile::isSeparateDirs( (KFile::FileView) viewKind ) ? 0 : KFile::SeparateDirs;
-    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::SeparateDirs | flag );
+    KFile::FileView view = static_cast<KFile::FileView>(
+        viewKind & ~(KFile::PreviewContents |
+                     KFile::PreviewInfo |
+                     KFile::SeparateDirs ));
+
     setView( view );
+}
+
+void KDirOperator::slotSeparateDirs()
+{
+    KFile::FileView view = static_cast<KFile::FileView>(
+        (viewKind & ~(KFile::PreviewContents |
+                      KFile::PreviewInfo)
+         | KFile::SeparateDirs ));
+
+    setView( view );
+}
+
+void KDirOperator::slotDefaultPreview()
+{
+    viewKind = (viewKind | KFile::PreviewContents) & ~KFile::SeparateDirs;
+    if ( !myPreview ) {
+        myPreview = new KImageFilePreview( this );
+        (static_cast<KRadioAction*>( myActionCollection->action("preview") ))->setChecked(true);
+    }
+
+    setView( static_cast<KFile::FileView>(viewKind) );
 }
 
 void KDirOperator::slotSortByName()
@@ -407,7 +439,7 @@ void KDirOperator::deleteSelected()
 {
     if ( !fileView )
         return;
-    
+
     const KFileViewItemList *list = fileView->selectedItems();
     if ( list )
         del( *list );
@@ -647,9 +679,95 @@ void KDirOperator::home()
     setURL(QDir::homeDirPath(), true);
 }
 
+void KDirOperator::clearFilter()
+{
+    dir->setNameFilter( QString::null );
+    dir->clearMimeFilter();
+    checkPreviewSupport();
+}
+
 void KDirOperator::setNameFilter(const QString& filter)
 {
     dir->setNameFilter(filter);
+    checkPreviewSupport();
+}
+
+void KDirOperator::setMimeFilter( const QStringList& mimetypes )
+{
+    dir->setMimeFilter( mimetypes );
+    checkPreviewSupport();
+}
+
+bool KDirOperator::checkPreviewSupport()
+{
+    KRadioAction *previewAction = static_cast<KRadioAction*>( myActionCollection->action( "preview" ));
+    if ( !previewAction )
+        return false;
+
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver cs( kc, ConfigGroup );
+    if ( !kc->readBoolEntry( "Show Default Preview", true ) ) {
+        previewAction->setEnabled( false );
+        previewAction->setChecked( false );
+        return false;
+    }
+
+    bool enable = false;
+    QStringList supported = KIO::PreviewJob::supportedMimeTypes();
+    QStringList mimeTypes = dir->mimeFilters();
+    QStringList nameFilter = QStringList::split( " ", dir->nameFilter() );
+
+    if ( mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty() )
+        enable = true;
+    else {
+        QRegExp r;
+        r.setWildcard( true ); // the "mimetype" can be "image/*"
+
+        if ( !mimeTypes.isEmpty() ) {
+            QStringList::Iterator it = supported.begin();
+
+            for ( ; it != supported.end(); ++it ) {
+                r.setPattern( *it );
+
+                QStringList result = mimeTypes.grep( r );
+                if ( !result.isEmpty() ) { // matches! -> we want previews
+                    enable = true;
+                    break;
+                }
+            }
+        }
+
+        if ( !nameFilter.isEmpty() ) {
+            // find the mimetypes of all the filter-patterns and
+            KServiceTypeFactory *fac = KServiceTypeFactory::self();
+            QStringList::Iterator it1 = nameFilter.begin();
+            for ( ; it1 != nameFilter.end(); ++it1 ) {
+                if ( (*it1) == "*" ) {
+                    continue;
+                }
+
+                KMimeType *mt = fac->findFromPattern( *it1 );
+                if ( !mt )
+                    continue;
+                QString mime = mt->name();
+                delete mt;
+
+                // the "mimetypes" we get from the PreviewJob can be "image/*"
+                // so we need to check in wildcard mode
+                QStringList::Iterator it2 = supported.begin();
+                for ( ; it2 != supported.end(); ++it2 ) {
+                    r.setPattern( *it2 );
+                    if ( r.match( mime ) != -1 ) {
+                        previewAction->setEnabled( true );
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    previewAction->setEnabled( enable );
+    return enable;
 }
 
 bool KDirOperator::isRoot() const
@@ -660,6 +778,8 @@ bool KDirOperator::isRoot() const
 void KDirOperator::setView( KFile::FileView view )
 {
     bool separateDirs = KFile::isSeparateDirs( view );
+    bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
+                   (view & KFile::PreviewContents) == KFile::PreviewContents );
 
     if (view == KFile::Default) {
         if ( KFile::isDetailView( (KFile::FileView) defaultView ) )
@@ -668,16 +788,21 @@ void KDirOperator::setView( KFile::FileView view )
             view = KFile::Simple;
 
         separateDirs = KFile::isSeparateDirs( (KFile::FileView) defaultView );
+        preview=( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
+                  (defaultView & KFile::PreviewContents) == KFile::PreviewContents );
+        if ( preview ) { // instantiates KImageFilePreview and calls setView()
+            slotDefaultPreview();
+            return;
+        }
+        else if ( !separateDirs )
+            (static_cast<KRadioAction*>( myActionCollection->action("single") ))->setChecked(true);
+            
     }
 
-    bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                   (view & KFile::PreviewContents) == KFile::PreviewContents );
-
-    // we only have a dual combi view, not a triple one. So in Directory and
-    // preview mode, we don't allow separating dirs & files
-    if ( (mode() & KFile::Directory) == KFile::Directory || preview ) {
+    // if we don't have any files, we can't separate dirs from files :)
+    if ( (mode() & KFile::File) == 0 && mode() & KFile::Files == 0 ) {
         separateDirs = false;
-	separateDirsAction->setEnabled( false );
+ 	separateDirsAction->setEnabled( false );
     }
 
     viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
@@ -702,8 +827,9 @@ void KDirOperator::setView( KFile::FileView view )
             new_view = new KFileIconView( this, "simple view");
             new_view->setViewName( i18n("Short View") );
         }
-        else if ( (view & KFile::Detail) == KFile::Detail && !preview )
+        else if ( (view & KFile::Detail) == KFile::Detail && !preview ) {
             new_view = new KFileDetailView( this,"detail view" );
+        }
 
         else { // preview
 	    KFileView *v; // will get reparented by KFilePreview
@@ -714,6 +840,14 @@ void KDirOperator::setView( KFile::FileView view )
 	
             KFilePreview *tmp = new KFilePreview( v, this, "preview" );
            tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+
+           // we keep the preview-_widget_ around, but not the KFilePreview.
+           // So in order to reuse the widget, we have to prevent it from
+           // being deleted by ~KFilePreview().
+           if ( myPreview && myPreview->parent() ) {
+               myPreview->parent()->removeChild( (QWidget*) myPreview );
+           }
+
             tmp->setPreviewWidget(myPreview, url());
             new_view=tmp;
         }
@@ -806,8 +940,9 @@ void KDirOperator::setMode(KFile::Mode m)
 
 void KDirOperator::setView(KFileView *view)
 {
-    if ( view == fileView )
+    if ( view == fileView ) {
         return;
+    }
 
     setFocusProxy(view->widget());
     view->setSorting( mySorting );
@@ -958,7 +1093,7 @@ void KDirOperator::setupActions()
                                  this, SLOT( mkdir() ), this, "mkdir");
     KAction * deleteAction = new KAction( i18n( "Delete" ), "editdelete",
                                           Key_Delete, this,
-                                          SLOT( deleteSelected() ), 
+                                          SLOT( deleteSelected() ),
                                           this, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
@@ -1006,10 +1141,23 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
                                           this, "show hidden" );
-    separateDirsAction = new KToggleAction( i18n("Separate Directories"), 0,
+    KRadioAction *singleAction = new KRadioAction( i18n("Single view"), 0,
+                                                   this,
+                                                   SLOT( slotSingleView() ),
+                                                   this, "single" );
+    separateDirsAction = new KRadioAction( i18n("Separate Directories"), 0,
                                             this,
-                                            SLOT(slotToggleMixDirsAndFiles()),
+                                            SLOT(slotSeparateDirs()),
                                             this, "separate dirs" );
+    KRadioAction *previewAction = new KRadioAction(i18n("Preview"), 0,
+                                                   this,
+                                                   SLOT(slotDefaultPreview()),
+                                                   this, "preview" );
+
+    QString combiView = QString::fromLatin1("combiview");
+    singleAction->setExclusiveGroup( combiView );
+    separateDirsAction->setExclusiveGroup( combiView );
+    previewAction->setExclusiveGroup( combiView );
 
     QString viewGroup = QString::fromLatin1("view");
     shortAction->setExclusiveGroup( viewGroup );
@@ -1044,6 +1192,8 @@ void KDirOperator::setupActions()
     myActionCollection->insert( shortAction );
     myActionCollection->insert( detailedAction );
     myActionCollection->insert( showHiddenAction );
+    myActionCollection->insert( singleAction );
+    myActionCollection->insert( previewAction );
     myActionCollection->insert( separateDirsAction );
 }
 
@@ -1063,7 +1213,10 @@ void KDirOperator::setupMenu()
     viewActionMenu->insert( detailedAction );
     viewActionMenu->insert( actionSeparator );
     viewActionMenu->insert( showHiddenAction );
+    viewActionMenu->insert( actionSeparator );
+    viewActionMenu->insert( myActionCollection->action( "single" ));
     viewActionMenu->insert( separateDirsAction );
+    viewActionMenu->insert( myActionCollection->action( "preview" ));
     // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
     // when you add/remove actions here!
 
@@ -1133,6 +1286,9 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     if ( kc->readBoolEntry( QString::fromLatin1("Separate Directories"),
                              DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
+    else if ( kc->readBoolEntry( QString::fromLatin1("Show Preview"), DefaultShowPreview ))
+        defaultView |= KFile::PreviewContents;
+
     if ( kc->readBoolEntry( QString::fromLatin1("Sort case insensitively"),
                             DefaultCaseInsensitive ) )
         sorting |= QDir::IgnoreCase;
@@ -1193,10 +1349,22 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
     kc->writeEntry( QString::fromLatin1("Sort directories first"),
                     dirsFirstAction->isChecked() );
 
-    // don't save the separate dirs mode in combiview or directory mode
-    if ( separateDirsAction->isEnabled() )
-	kc->writeEntry( QString::fromLatin1("Separate Directories"),
-			separateDirsAction->isChecked() );
+    // don't save the separate dirs or preview when an application specific
+    // preview is in use.
+    bool appSpecificPreview = false;
+    if ( myPreview ) {
+        QWidget *preview = const_cast<QWidget*>( myPreview ); // grmbl
+        KImageFilePreview *tmp = dynamic_cast<KImageFilePreview*>( preview );
+        appSpecificPreview = (tmp == 0L);
+    }
+    
+    if ( !appSpecificPreview ) {
+        if ( separateDirsAction->isEnabled() )
+            kc->writeEntry( QString::fromLatin1("Separate Directories"),
+                            separateDirsAction->isChecked() );
+        kc->writeEntry( QString::fromLatin1("Show Preview"),
+          ((KRadioAction*)myActionCollection->action("preview"))->isChecked());
+    }
 
     kc->writeEntry( QString::fromLatin1("Show hidden files"),
                     showHiddenAction->isChecked() );
@@ -1238,7 +1406,7 @@ void KDirOperator::slotStarted()
 	return;
 
     dir->job()->disconnect( this );
-    
+
     progress->setValue( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );
@@ -1289,7 +1457,7 @@ void KDirOperator::clearHistory()
 
 void KDirOperator::slotViewActionAdded( KAction *action )
 {
-    if ( viewActionMenu->popupMenu()->count() == 5 ) // need to add a separator
+    if ( viewActionMenu->popupMenu()->count() == 8 ) // need to add a separator
 	viewActionMenu->insert( d->viewActionSeparator );
 	
     viewActionMenu->remove( action );
@@ -1299,7 +1467,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
 {
     viewActionMenu->remove( action );
 
-    if ( viewActionMenu->popupMenu()->count() == 6 ) // remove the separator
+    if ( viewActionMenu->popupMenu()->count() == 9 ) // remove the separator
 	viewActionMenu->remove( d->viewActionSeparator );
 }
 

@@ -33,35 +33,33 @@
  * @author Frerich Raabe <raabe@kde.org>
  */
 
-#include "kfiledialog.h"
-
 #include <qwidget.h>
 
-class KFileDialog;
 class KURL;
 
 class KPreviewWidgetBase : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 	
-	public:
-		/**
-		 * Constructor. Construct the user interface of your preview widget here
-		 * and pass the KFileDialog this preview widget is going to be used in as
-		 * the parent.
-		 *
-		 * @param parent The KFileDialog this preview widget is going to be used in
-		 */
-		KPreviewWidgetBase(KFileDialog *parent, const char *name=0) : QWidget(parent,name) {}
+public:
+    /**
+     * Constructor. Construct the user interface of your preview widget here
+     * and pass the KFileDialog this preview widget is going to be used in as
+     * the parent.
+     *
+     * @param parent The KFileDialog this preview widget is going to be used in
+     */
+    KPreviewWidgetBase(QWidget *parent, const char *name=0) 
+        : QWidget(parent,name) {}
 
-	public slots:
-		/**
-		 * This slot is called everytime the user selects another file in the
-		 * file dialog. Implement the stuff necessary to reflect the change here.
-		 *
-		 * @param url The URL of the currently selected file.
-		 */
-		virtual void showPreview(const KURL &url) = 0;
+public slots:
+    /**
+     * This slot is called everytime the user selects another file in the
+     * file dialog. Implement the stuff necessary to reflect the change here.
+     *
+     * @param url The URL of the currently selected file.
+     */
+    virtual void showPreview(const KURL &url) = 0;
 };
 
 #endif

@@ -120,6 +120,9 @@ public:
 	return (view & SeparateDirs) == SeparateDirs;
     }
 
+    static bool isPreviewContents( const FileView& view ) {
+	return (view & PreviewContents) == PreviewContents;
+    }
 
 };
 
