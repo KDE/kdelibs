@@ -128,7 +128,7 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
                       QCString &replyType, QByteArray &/*replyData*/)
 {
   if (fun == "databaseChanged()") {
-    debug("got a databaseChanged signal !");
+    //kdDebug(7011) << "got a databaseChanged signal !" << endl;
     // kded tells us the database file changed
     // Close the database and forget all about what we knew
     // The next call to any public method will recreate
