@@ -63,7 +63,7 @@ class KURLPrivate;
  * If you have the URL of a local file or directory and need the absolute path,
  * you would use path().
  * \code
- *    KURL url( "file:///bar/%23foo%23" ); 
+ *    KURL url( "file:///bar/%23foo%23" );
  *    ...
  *    if ( url.isLocalFile() )
  *       QString path = url.path();       // -> "/bar/#foo#"
@@ -83,7 +83,7 @@ class KURLPrivate;
  * \code
  *    QString dirUrl = "file:///bar/";
  *    QString fileName = "#foo#";
- *    QString invalidURL = dirUrl + fileName;   // -> "file:///bar/#foo#" won't behave like you would expect. 
+ *    QString invalidURL = dirUrl + fileName;   // -> "file:///bar/#foo#" won't behave like you would expect.
  * \endcode
  * Instead you should use addPath():
  * Right:
@@ -737,17 +737,36 @@ public:
   QString prettyURL( int _trailing = 0) const;
 
   /**
-   * Returns the URL as string, escaped for HTML.
+   * Returns the URL as string in human-friendly format.
    * Example:
    * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
    * \endcode
+   * @param _trailing -1 to strip a trailing '/' from the path, +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged.
+   * @param _flags if StripFileProtocol, file:// will be stripped. The use of this
+   * method is now discouraged, better use pathOrURL().
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
    */
   QString prettyURL( int _trailing, AdjustementFlags _flags) const;
   // ### BIC: Merge the two above + spell it as "Adjustment"
-  
+  // Or remove completely, and let people use pathOrURL() instead
+
+  /**
+   * Return the URL as a string, which will be either the URL (as prettyURL
+   * would return) or, when the URL is a local file without query or ref,
+   * the path.
+   * Use this method, together with its opposite, fromPathOrURL(),
+   * to display and even let the user edit URLs.
+   *
+   * @param text the string representation of the URL to convert
+   * @return the new KURL
+   * @since 3.4
+   */
+  QString pathOrURL() const;
+
   /**
    * Returns the URL as string, escaped for HTML.
    * @return A human readable URL, with no non-necessary encodings/escaped

@@ -715,27 +715,30 @@ int main(int argc, char *argv[])
   uloc = KURL("file:///home/dfaure/konqtests/Mat%C3%A9riel", 106);
   check("UTF8 path", uloc.path(), "/home/dfaure/konqtests/Matériel");
 
-  // From URL to prettyURL+StripFileProtocol and back (like in konq's locationbar)
-  uloc = KURL("file:///home/dfaure/konqtests/Matériel#ref");
-  check("url",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel#ref");
-  check("ref",uloc.ref(),"ref");
-  check("pretty",uloc.prettyURL(),"file:///home/dfaure/konqtests/Matériel#ref"); // escaping the letter would be correct too
-  check("pretty + strip",uloc.prettyURL(0, KURL::StripFileProtocol),"/home/dfaure/konqtests/Matériel#ref"); // escaping the letter would be correct too
-  uloc = KURL( uloc.prettyURL(0, KURL::StripFileProtocol) );
-  check("url",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel#ref");
-  check("ref",uloc.ref(),"ref");
-
   // fromPathOrURL tests
   uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%E9riel" );
   check("fromPathOrURL path", uloc.path(), "/home/dfaure/konqtests/Mat%E9riel");
   uloc = KURL::fromPathOrURL( "http://www.kde.org" );
-  check("fromPathOrURL url", uloc.url(), "http://www.kde.org");
+  check("pathOrURL url", uloc.pathOrURL(), uloc.url() );
   uloc = KURL::fromPathOrURL( "www.kde.org" );
-  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
+  check("fromPathOrURL malformed", uloc.isValid()?"valid":"malformed", "malformed");
   uloc = KURL::fromPathOrURL( "index.html" );
-  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
+  check("fromPathOrURL malformed", uloc.isValid()?"valid":"malformed", "malformed");
   uloc = KURL::fromPathOrURL( "" );
-  check("fromPathOrURL url", uloc.isValid()?"valid":"malformed", "malformed");
+  check("fromPathOrURL malformed", uloc.isValid()?"valid":"malformed", "malformed");
+
+  // pathOrURL tests
+  uloc = KURL::fromPathOrURL( "/home/dfaure/konqtests/Mat%E9riel" );
+  check("pathOrURL path", uloc.pathOrURL(), uloc.path() );
+  uloc = "http://www.kde.org";
+  check("pathOrURL url", uloc.url(), "http://www.kde.org");
+  uloc = "file:///home/dfaure/konq%20tests/Mat%E9riel#ref";
+  check("pathOrURL local file with ref", uloc.pathOrURL(), "file:///home/dfaure/konq tests/Matériel#ref" );
+  uloc = "file:///home/dfaure/konq%20tests/Mat%E9riel?query";
+  check("pathOrURL local file with query", uloc.pathOrURL(), "file:///home/dfaure/konq tests/Matériel?query" );
+  uloc = KURL::fromPathOrURL( "/home/dfaure/file#with#hash" );
+  check("pathOrURL local path with #", uloc.pathOrURL(), "/home/dfaure/file#with#hash" );
+
 
 #if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );

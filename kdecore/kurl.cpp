@@ -1575,14 +1575,23 @@ QString KURL::prettyURL( int _trailing ) const
 
 QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 {
-	QString u = prettyURL(_trailing);
-	if (_flags & StripFileProtocol && u.startsWith("file://")) {
-		u.remove(0, 7);
+  QString u = prettyURL(_trailing);
+  if (_flags & StripFileProtocol && u.startsWith("file://")) {
+    u.remove(0, 7);
 #ifdef Q_WS_WIN
-		return QDir::convertSeparators(u);
+    return QDir::convertSeparators(u);
 #endif
-	}
-	return u;
+  }
+  return u;
+}
+
+QString KURL::pathOrURL() const
+{
+  if ( isLocalFile() && m_strRef_encoded.isNull() && m_strQuery_encoded.isNull() ) {
+    return path();
+  } else {
+    return prettyURL();
+  }
 }
 
 QString KURL::htmlURL() const
@@ -2206,7 +2215,7 @@ KURL KURL::fromPathOrURL( const QString& text )
         return KURL();
 
     KURL url;
-		if (!QDir::isRelativePath(text))
+    if (!QDir::isRelativePath(text))
         url.setPath( text );
     else
         url = text;
