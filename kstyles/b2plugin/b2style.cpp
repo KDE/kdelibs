@@ -1223,6 +1223,39 @@ void B2Style::drawSplitter(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x+1, y2-1, x2-1, y2-1);
     p->fillRect(x+3, y+3, w-5, h-5, g.brush(QColorGroup::Background));
 }
+
+void B2Style::drawPanel(QPainter *p, int x, int y, int w, int h,
+                        const QColorGroup &g, bool sunken,
+                        int lineWidth, const QBrush *fill)
+{
+    if(lineWidth != 2 || !sunken)
+        KStyle::drawPanel(p, x, y, w, h, g, sunken, lineWidth, fill);
+    else{
+        QPen oldPen = p->pen();
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        p->setPen(g.light());
+        p->drawLine(x, y2, x2, y2);
+        p->drawLine(x2, y, x2, y2);
+        p->setPen(g.mid());
+        p->drawLine(x, y, x2, y);
+        p->drawLine(x, y, x, y2);
+
+        p->setPen(g.midlight());
+        p->drawLine(x+1, y2-1, x2-1, y2-1);
+        p->drawLine(x2-1, y+1, x2-1, y2-1);
+        p->setPen(g.dark());
+        p->drawLine(x+1, y+1, x2-1, y+1);
+        p->drawLine(x+1, y+1, x+1, y2-1);
+        p->setPen(oldPen);
+        if(fill){
+            // I believe here we are only supposed to fill if there is a
+            // specified fill brush...
+            p->fillRect(x+2, y+2, w-4, h-4, *fill);
+        }
+    }
+}
+
                 
 #include "b2style.moc"
 

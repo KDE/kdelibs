@@ -151,7 +151,9 @@ public:
     void drawSplitter(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, Orientation orient);
     int splitterWidth() const {return(6);}
-    
+    void drawPanel(QPainter *p, int x, int y, int w, int h,
+                   const QColorGroup &g, bool sunken, int lineWidth,
+                   const QBrush *fill);
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
