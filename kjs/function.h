@@ -44,6 +44,7 @@ namespace KJS {
    */
   class FunctionImp : public ObjectImp {
     friend class Function;
+    friend class ActivationImp;
   public:
     FunctionImp();
     FunctionImp(const UString &n);
@@ -65,6 +66,9 @@ namespace KJS {
     Parameter *param;
   private:
     void processParameters(const List *);
+    void pushArgs(const KJSO &);
+    void popArgs();
+    List *argStack;
   };
 
   /**

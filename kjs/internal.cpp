@@ -240,6 +240,7 @@ Context::Context(CodeType type, Context *callingContext,
 		 FunctionImp *func, const List *args, Imp *thisV)
 {
   Global glob(Global::current());
+  codeType = type;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
@@ -301,6 +302,8 @@ Context::Context(CodeType type, Context *callingContext,
 
 Context::~Context()
 {
+  if (codeType == FunctionCode || codeType == AnonymousCode || codeType == HostCode)
+    static_cast<ActivationImp*>(activation.imp())->cleanup();
   delete scopeChain;
 }
 
@@ -427,8 +430,18 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
   put("arguments", aobj, DontDelete);
   /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
      I can't see this described in the spec but it's possible in browsers. */
-  if (!f->name().isNull())
+  func = 0;
+  if (!f->name().isNull()) {
     f->put("arguments", aobj);
+    f->pushArgs(aobj);
+    func = f;
+  }
+}
+
+void ActivationImp::cleanup()
+{
+  if (func)
+    func->popArgs();
 }
 
 ExecutionStack::ExecutionStack()

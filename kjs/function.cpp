@@ -54,11 +54,15 @@ namespace KJS {
 FunctionImp::FunctionImp()
   : ObjectImp(/*TODO*/BooleanClass), param(0L)
 {
+  argStack = 0;
+  put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionImp::FunctionImp(const UString &n)
   : ObjectImp(/*TODO*/BooleanClass), ident(n), param(0L)
 {
+  argStack = 0;
+  put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionImp::~FunctionImp()
@@ -135,6 +139,26 @@ void FunctionImp::processParameters(const List *args)
 #endif
 }
 
+void FunctionImp::pushArgs(const KJSO &args)
+{
+  if (!argStack)
+    argStack = new List();
+  argStack->append(args);
+  put("arguments",args,ReadOnly|DontDelete|DontEnum);
+}
+
+void FunctionImp::popArgs()
+{
+  argStack->removeLast();
+  if (argStack->isEmpty()) {
+    delete argStack;
+    argStack = 0;
+    put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
+  }
+  else
+    put("arguments",argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
+}
+
 // ECMA 13.2.1
 KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 {
@@ -177,7 +201,6 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraSco
   for (i = 0; i < numScopes; i++)
     ctx->popScope();
 
-  put("arguments", Null());
   delete ctx;
   curr->setContext(save);
 

@@ -111,11 +111,25 @@ Object FunctionObject::construct(const List &args)
   }
 
   fimp->setLength(params);
-  fimp->setPrototypeProperty(Global::current().functionPrototype());
+  fimp->setPrototype(Global::current().functionPrototype());
+  List consArgs;
+  KJSO objCons = Global::current().get("Object");
+  KJSO prototype = static_cast<ConstructorImp*>(objCons.imp())->construct(consArgs);
+  prototype.setConstructor(fimp);
+  fimp->setPrototypeProperty(prototype);
+  fimp->put("arguments",Null());
   return ret;
 }
 
 FunctionPrototype::FunctionPrototype(const Object &p)
-    : ObjectImp(FunctionClass, Null(), p)
+    : FunctionImp()
 {
+  setPrototype(p);
 }
+
+// ECMA 15.3.4 invoking Function.prototype() returns undefined
+Completion FunctionPrototype::execute(const List &/*args*/)
+{
+  return Completion(ReturnValue, Undefined());
+}
+

@@ -25,9 +25,11 @@
 
 namespace KJS {
 
-  class FunctionPrototype : public ObjectImp {
+  class FunctionPrototype : public FunctionImp {
   public:
     FunctionPrototype(const Object &p);
+    Completion execute(const List &);
+    virtual CodeType codeType() const { return HostCode; }
   };
 
   class FunctionObject : public ConstructorImp {

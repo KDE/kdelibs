@@ -149,8 +149,8 @@ GlobalImp::GlobalImp()
     extraData(0L)
 {
   // constructor properties. prototypes as Global's member variables first.
-  Object objProto(new ObjectPrototype());
-  Object funcProto(new FunctionPrototype(objProto));
+  Object objProto = new ObjectPrototype();
+  Object funcProto = new FunctionPrototype(objProto);
   Object arrayProto(new ArrayPrototype(objProto));
   Object stringProto(new StringPrototype(objProto));
   Object booleanProto(new BooleanPrototype(objProto));

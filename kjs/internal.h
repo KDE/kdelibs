@@ -236,6 +236,7 @@ namespace KJS {
     KJSO activation;
     KJSO variable;
     List *scopeChain;
+    CodeType codeType;
   };
 
   class DeclaredFunctionImp : public ConstructorImp {
@@ -262,8 +263,11 @@ namespace KJS {
   class ActivationImp : public Imp {
   public:
     ActivationImp(FunctionImp *f, const List *args);
+    void cleanup();
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
+  private:
+    FunctionImp *func;
   };
 
   class ExecutionStack {
