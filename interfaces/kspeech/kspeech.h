@@ -213,10 +213,11 @@
      startText(jobNum);
    @endverbatim
  *
- * 4.  Add libktts to your Makefile.am.
+ * 4.  Add kspeech_DIR and kspeech.stub to your Makefile.am.  Example:
  *
    @verbatim
-     mypart_la_LIBADD = libktts
+     kspeech_DIR = $(kde_includes)
+     libmypart_la_SOURCES = kspeech.stub
    @endverbatim 
  *
  * @section signals Signals Emitted by KTTSD
@@ -315,10 +316,13 @@
      }
    @endverbatim
  *
- * 5.  Add libktts to your Makefile.am LIBADD variable:
+ * 5.  Add kspeechsink_DIR and kspeechsink.skel to your Makefile.am.  Example for an app
+ *     both sending and receiving.
  *
    @verbatim
-     libmypart_la_LIBADD = libktts
+     kspeech_DIR = $(kde_includes)
+     kspeechsink_DIR = $(kde_includes)
+     libmypart_la_SOURCES = kspeech.stub kspeechsink.skel
    @endverbatim
  *
  * @section talkers Talkers, Talker Codes, and Plugins
