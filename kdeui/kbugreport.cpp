@@ -333,8 +333,6 @@ QString KBugReport::text()
 
 bool KBugReport::sendBugReport()
 {
-  bool needHeaders = true;
-
   QString recipient ( m_aboutData ?
     m_aboutData->bugAddress() :
     QString::fromLatin1("submit@bugs.kde.org") );
