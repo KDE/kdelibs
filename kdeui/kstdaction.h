@@ -183,6 +183,8 @@ public:
 
     /**
      * Open a recently used document.
+     * @param slot The SLOT to invoke when a URL is selected.
+     * Its signature is of the form slotURLSelected( const KURL & ).
      */
     static KRecentFilesAction *openRecent(const QObject *recvr = 0,
                                           const char *slot = 0,

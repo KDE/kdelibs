@@ -1035,8 +1035,7 @@ private:
  *  This class is an action to handle a recent files submenu.
  *  The best way to create the action is to use KStdAction::openRecent.
  *  Then you simply need to call @ref loadEntries on startup, @ref saveEntries
- *  on shutdown, @ref addURL when your application opens a file,
- *  and connect to @ref urlSelected to open a recent file.
+ *  on shutdown, @ref addURL when your application opens a file.
  *
  *  @author Michael Koch
  *  @short Recent files action
@@ -1061,7 +1060,8 @@ public:
    *  @param text The text that will be displayed.
    *  @param accel The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke to execute this action.
+   *  @param slot The SLOT to invoke when a URL is selected.
+   *  Its signature is of the form slotURLSelected( const KURL & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -1100,7 +1100,8 @@ public:
    *  @param pix The icons that go with this action.
    *  @param accel The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke to execute this action.
+   *  @param slot The SLOT to invoke when a URL is selected.
+   *  Its signature is of the form slotURLSelected( const KURL & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -1115,7 +1116,8 @@ public:
    *  @param pix The dynamically loaded icon that goes with this action.
    *  @param accel The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke to execute this action.
+   *  @param slot The SLOT to invoke when a URL is selected.
+   *  Its signature is of the form slotURLSelected( const KURL & ).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
