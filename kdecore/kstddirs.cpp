@@ -16,6 +16,7 @@
 #include<qstring.h>
 #include<qstrlist.h>
 
+#warning Hard codes /opt/kde
 #define KDEDIR "/opt/kde"
 #define KDEDIR_LEN 6
 
