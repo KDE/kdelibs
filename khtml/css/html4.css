@@ -424,18 +424,6 @@ DEL  {
 	text-decoration: line-through; 
 }
 
-
-/*
-SUB { 
-	vertical-align: sub;
-	font-size: smaller;
-}
-SUP { 
-	vertical-align: super;
-	font-size: smaller;
-}
-*/
-/* ### hack... should get removed once we support the two lines above */
 SUB { 
 	vertical-align: sub;
 	font-size: smaller; 
