@@ -22,6 +22,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include "klibloader.h"
+#include <kconfig.h>
 
 
 #include <unistd.h>
@@ -192,7 +193,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
-   // FIXME: read in kcmsocks config file and append those libs to _libNames.
+   cfg = new KConfig("ksocksrc", false, false);
 
 
    // Load the proper libsocks and KSocksTable
@@ -201,18 +202,43 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
    _hasSocks = false;
    _useSocks = false;
 
+   if (!(cfg->readBoolEntry("Enable SOCKS", false))) return;
+
+   int _meth = cfg->readNumEntry("SOCKS Method", 1);
+         /****       Current methods
+          *   1) Autodetect (read: any)     2) NEC
+          *   3) Dante                      4) Custom
+          */
+
+   if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
+      _socksLib = ll->library(cfg->readEntry("Custom Lib", "").latin1());
+      if (_socksLib && _socksLib->symbol("Rconnect")) {  // Dante compatible?
+         _st = new KDanteSocksTable;       
+         _useSocks = true;
+         _hasSocks = true;
+      } else if (_socksLib && _socksLib->symbol("connect")) { // NEC compatible?
+         _st = new KNECSocksTable;       
+         _useSocks = true;
+         _hasSocks = true;
+      } else if (_socksLib) {
+         ll->unloadLibrary(_socksLib->name().latin1());
+         _socksLib = NULL;
+      }
+   } else              // leave this here   "else for {}"
    for (QStringList::Iterator it  = _libNames.begin();
                               it != _libNames.end();
                               ++it) {
       _socksLib = ll->library((*it).latin1());
       if (_socksLib) {
-         if (_socksLib->symbol("S5LogShowThreadIDS") != NULL) {     // NEC SOCKS
+         if ((_meth == 1 || _meth == 2) &&
+             _socksLib->symbol("S5LogShowThreadIDS") != NULL) {  // NEC SOCKS
             kdDebug() << "Found NEC SOCKS" << endl;
             _st = new KNECSocksTable;
             _useSocks = true;
             _hasSocks = true;
             break;
-         } else if (_socksLib->symbol("sockaddr2ruleaddress") != NULL) { //Dante
+         } else if ((_meth == 1 || _meth == 3) && 
+                    _socksLib->symbol("sockaddr2ruleaddress") != NULL) { //Dante
             kdDebug() << "Found Dante SOCKS" << endl;
             _st = new KDanteSocksTable;
             _useSocks = true;
@@ -293,6 +319,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
 
 KSocks::~KSocks() {
   stopSocks();
+  delete cfg;
 }
 
 

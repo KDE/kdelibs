@@ -25,7 +25,7 @@
 class KSocksTable;
 class KSocksPrivate;
 class KLibrary;
-
+class KConfig;
 
 
 
@@ -96,6 +96,7 @@ private:
 
    KSocksTable *_st;
    KSocksPrivate *d;
+   KConfig *cfg;
 };
 
 
