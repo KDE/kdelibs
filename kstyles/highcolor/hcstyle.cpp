@@ -947,18 +947,20 @@ void HCStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     static QBitmap lightBmp(13, 13, radiooff_light_bits, true);
     static QBitmap grayBmp(13, 13, radiooff_gray_bits, true);
     static QBitmap dgrayBmp(13, 13, radiooff_dgray_bits, true);
-    static QBitmap blueBmp(13, 13, radioon_blue_bits, true);
-    static QBitmap lblueBmp(13, 13, radioon_lblue_bits, true);
-    static QBitmap dblueBmp(13, 13, radioon_dblue_bits, true);
 
     p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
     kColorBitmaps(p, g, x, y, &lightBmp, &grayBmp,
                   NULL, &dgrayBmp);
 
     if(on || down){
-        kColorBitmaps(p, radioOnGrp, x, y, &lblueBmp, &blueBmp,
-                      NULL, &dblueBmp);
+        p->setPen(Qt::black);
+        p->drawLine(5, 4, 7, 4);
+        p->drawLine(4, 5, 4, 7);
+        p->drawLine(5, 8, 7, 8);
+        p->drawLine(8, 5, 8, 7);
+        p->fillRect(5, 5, 3, 3, Qt::black);
     }
+
 }
 
 void HCStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
@@ -1009,7 +1011,7 @@ void HCStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 
     if(state != QButton::Off){
         if(state == QButton::On){
-            p->setPen(g.highlight());
+            p->setPen(Qt::black);
             p->drawPixmap(3, 3, xBmp);
         }
         else{
