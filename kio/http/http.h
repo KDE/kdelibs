@@ -304,7 +304,6 @@ protected:
 
   bool m_bEOF;
   int m_sock;
-  FILE* m_fsocket;
   HTTP_REV m_HTTPrev;
   HTTP_PROTO m_proto;
 

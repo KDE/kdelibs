@@ -179,7 +179,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_protocol = protocol;
   kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
   m_maxCacheAge = 0;
-  m_fsocket = 0L;
   m_sock = 0;
   m_fcache = 0;
   m_bKeepAlive = false;
@@ -324,10 +323,6 @@ int HTTPProtocol::openStream() {
   }
 #endif
   setMetaData("ssl_in_use", "FALSE");
-  m_fsocket = fdopen( m_sock, "r+" );
-  if( !m_fsocket ) {
-    return false;
-  }
   return true;
 }
 
@@ -379,9 +374,11 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     return ret;
   }
 #endif
-  // ret=fread(b, 1, nbytes, m_fsocket);
-  ret = KSocks::self()->read(fileno(m_fsocket), b, nbytes);
-  m_bEOF = feof(m_fsocket);
+  do {
+     ret = KSocks::self()->read(m_sock, b, nbytes);
+     if (ret == 0) m_bEOF = true;
+  }
+  while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
   return ret;
 }
 
@@ -2134,9 +2131,6 @@ void HTTPProtocol::http_closeConnection()
 {
   kdDebug(7113) << "http_closeConnection: closing (" << getpid() << ")" << endl;
   m_bKeepAlive = false; // Just in case.
-  if ( m_fsocket )
-    fclose( m_fsocket );
-  m_fsocket = 0;
   if ( m_sock )
     ::close( m_sock );
   m_sock = 0;
