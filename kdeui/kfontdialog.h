@@ -51,7 +51,8 @@ class KIntNumInput;
 class KFontChooser : public QWidget
 {
   Q_OBJECT
-
+  Q_PROPERTY( QColor font READ font WRITE setFont )
+  
 public:
   /**
    *  @li @p FamilyList - Identifies the family (leftmost) list.
