@@ -415,10 +415,7 @@ bool BrowserRun::isTextExecutable( const QString &serviceType )
 
 bool BrowserRun::isExecutable( const QString &serviceType )
 {
-    return ( serviceType == "application/x-desktop" ||
-             serviceType == "application/x-executable" ||
-             serviceType == "application/x-msdos-program" ||
-             serviceType == "application/x-shellscript" );
+    return KRun::isExecutable( serviceType );
 }
 
 bool BrowserRun::hideErrorDialog() const

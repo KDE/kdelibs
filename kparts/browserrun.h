@@ -91,6 +91,7 @@ namespace KParts {
 
         static bool allowExecution( const QString &serviceType, const KURL &url );
 
+        /** BIC: Obsoleted by KRun::isExecutable( const QString &serviceType ); */
         static bool isExecutable( const QString &serviceType );
         static bool isTextExecutable( const QString &serviceType );
 
