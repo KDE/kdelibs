@@ -993,7 +993,7 @@ void KHTMLPart::slotSaveBackground()
     KURL destURL( dlg->selectedURL());
     if ( !destURL.isMalformed() )
     {
-      KIO::Job *job = KIO::copy( m_url, destURL );
+      KIO::Job *job = KIO::file_copy( backgroundURL, destURL );
       // TODO connect job result, to display errors
     }
   }
