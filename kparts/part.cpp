@@ -74,23 +74,23 @@ void Part::embed( QWidget * parentWidget )
 
 QWidget *Part::widget()
 {
-  return m_widget; 
+  return m_widget;
 }
 
 KInstance *Part::instance()
 {
-  return m_instance; 
-} 
+  return m_instance;
+}
 
 void Part::setManager( PartManager *manager )
 {
-  m_manager = manager; 
+  m_manager = manager;
 }
 
 PartManager *Part::manager()
 {
-  return m_manager; 
-} 
+  return m_manager;
+}
 
 QDomDocument Part::document() const
 {
@@ -344,7 +344,7 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 ReadWritePart::ReadWritePart( QObject *parent, const char *name )
  : ReadOnlyPart( parent, name ), m_bModified( false ), m_bClosing( false )
 {
-  setReadWrite( false );
+  m_bReadWrite = true;
 }
 
 ReadWritePart::~ReadWritePart()
