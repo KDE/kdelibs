@@ -63,6 +63,9 @@ extern void qt_set_locale_codec( QTextCodec *codec );
 
 // ### HPB: Merge with the constructor below in KDE 3
 KLocale::KLocale( const QString & catalogue )
+  // #### HPB: Why is this needed??
+  : m_codec( 0 ),
+    d(new KLocalePrivate)
 {
   KLocale( catalogue, true );
 }
