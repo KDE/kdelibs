@@ -358,6 +358,14 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
+    bool clipped = false;
+    // overflow: hidden
+    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
+        calcClip(p, _tx, _ty);
+	clipped = true;
+    }
+
+
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
@@ -383,6 +391,13 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
     if ( specialObjects )
 	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
+
+
+    // overflow: hidden
+    // restore clip region
+    if ( clipped ) {
+	p->restore();
+    }
 
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty, "blue");
@@ -1078,6 +1093,14 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 
     tx += m_x;
     ty += m_y;
+
+    bool clipped = false;
+    // overflow: hidden
+    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
+        calcClip(p, tx, ty);
+	clipped = true;
+    }
+
     // check which rows and cols are visible and only print these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
@@ -1119,6 +1142,13 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 	    cell->print( p, x, y, w, h, tx, ty);
 	}
     }
+
+    // overflow: hidden
+    // restore clip region
+    if ( clipped ) {
+	p->restore();
+    }
+
 }
 
 

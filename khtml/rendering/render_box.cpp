@@ -280,40 +280,41 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 void RenderBox::calcClip(QPainter* p, int tx, int ty)
 {
     int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
-    int clipx = tx+bl;
-    int clipy = ty+bt;
     int clipw = m_width-bl-br;
-    int cliph = m_height-bt-bb;
 
-    if (!style()->clipLeft().isVariable())
-    {
-        int c=style()->clipLeft().width(m_width-bl-br);
-        clipx+=c;
-        clipw-=c;
-    }
-    if (!style()->clipRight().isVariable())
-    {
-	int w = style()->clipRight().width(m_width-bl-br);
-	if ( style()->jsClipMode() )
-	    clipw = w + tx + bl;
+    int clipleft = 0;
+    int clipright = 0;
+    int cliptop = 0;
+    int clipbottom = 0;
+
+    bool rtl = (style()->direction() == RTL);
+
+    if (!style()->clipLeft().isVariable()) {
+        int c = style()->clipLeft().width(m_width-bl-br);
+	if ( rtl )
+	    clipleft = clipw - c;
 	else
-	    clipw -= m_width - bl - br - w;
+	    clipleft = c;
+    }
+    if (!style()->clipRight().isVariable()) {
+	int w = style()->clipRight().width(m_width-bl-br);
+	if ( rtl ) {
+	    clipright = clipw - w;
+	} else {
+	    clipright = w;
+	}
     }
     if (!style()->clipTop().isVariable())
-    {
-        int c=style()->clipTop().width(m_height-bt-bb);
-        clipy+=c;
-        cliph-=c;
-    }
+        cliptop = style()->clipTop().width(m_height-bt-bb);
     if (!style()->clipBottom().isVariable())
-    {
-	int h = style()->clipBottom().width(m_height-bt-bb);
-	if ( style()->jsClipMode() )
-	    cliph = h + ty + bt;
-	else
-            cliph -= m_height - bt - bb - h;
-    }
-    //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
+	clipbottom = style()->clipBottom().width(m_height-bt-bb);
+
+    int clipx = tx+bl + clipleft;
+    int clipy = ty+bt + cliptop;
+    clipw = clipright-clipleft;
+    int cliph = clipbottom-cliptop;
+
+//     kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
 
     QRect cr(clipx,clipy,clipw,cliph);
     cr = p->xForm(cr);
