@@ -147,35 +147,24 @@ QString KHttpCookie::cookieStr(void)
 
 //
 // Returns whether this cookie should be send to this location.
-bool KHttpCookie::match(const QStringList &domains, const QString &fqdn,
-                    const QString &path)
+bool KHttpCookie::match(const QStringList &domains, const QString &path)
 {
-    if (!mDomain.isEmpty())
+    // Cookie domain match check
+    if (!domains.contains(mDomain))
     {
-        // Cookie has a domain set
-        if (!domains.contains(mDomain))
-        {
-            if (mDomain[0] == '.')
-               return false; 
+        if (mDomain[0] == '.')
+            return false;
+
 	    // Maybe the domain needs an extra dot.
-            QString domain = "."+mDomain;
-            if (!domains.contains(domain))
-                return false; // Domain of cookie does not match with host of URL
-        }
-    }
-    else
-    {
-        // Cookie has no domain set
-        if (fqdn != mHost)
-            return false; // Host of cookie does not match with host of URL
+        QString domain = "." + mDomain;
+        if (!domains.contains(domain))
+            return false;   // Domain of cookie does not match with host of URL
     }
 
-    if (!mPath.isEmpty())
-    {
-        // Cookie has a path set
-        if (path.find(mPath) != 0)
-            return false; // Path of URL does not start with cookie-path
-    }
+    // Cookie path match check
+    if( !path.startsWith(mPath) )
+        return false; // Path of URL does not start with cookie-path
+
     return true;
 }
 
@@ -241,20 +230,18 @@ QString KCookieJar::findCookies(const QString &_url)
     }
 
     extractDomains(fqdn, domains);
-
     for(QStringList::ConstIterator it = domains.begin();
         it != domains.end();
         ++it)
     {
-       QString domain = *it;
-       KHttpCookieList *cookieList = cookieDomains[domain];
+       KHttpCookieList *cookieList = cookieDomains[(*it)];  // Why not simply use the deref'ed string directly ?
 
        if (!cookieList)
           continue; // No cookies for this domain
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
-          if (!cookie->match( domains, fqdn, path))
+          if (!cookie->match( domains, path))
              continue;
 
           // Use first cookie to determine protocol version
@@ -422,6 +409,17 @@ bool KCookieJar::parseURL(const QString &_url,
        return false;
 
     _fqdn = kurl.host().lower();
+
+    // Home Insurance policy:  You might not really need it
+    // but you (or rather I) feel better knowing I have it
+    // just in case it is needed...  This is what the code
+    // below does.  It makes sure we will not be spoofed
+    // under no circumstance :))  Won't break anything...
+    if(_fqdn.find('/') > -1 || _fqdn.find('%') > -1)
+    {
+        return false;  // deny everything!!
+    }
+
     _path = kurl.path();
     if (_path.isEmpty())
        _path = "/";
@@ -456,14 +454,12 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
        _domains.append(domain);
        partList.remove(partList.begin()); // Remove part
     }
-    // If we have no domains, use the fqdn only.
-    // Do not forget to append a preceeding ".".  Otherwise,
-    // there will be an incorrect mis-match when checking for
-    // cookies under some circumstances.  For example, a cookie
-    // set by "linuxtoday.com" won't be avaliable to "www.linuxtoday.com"
-    // and vise-versa.
     if (_domains.isEmpty())
-       _domains.append( "." + _fqdn);
+        // Only URLs that would get in here are of type
+        // "host.foo" or "host.co.fo" so simply append
+        // a '.' on top to make sure they are stored under
+        // the proper cookie domain.
+       _domains.append( "." + _fqdn );
     return true;
 }
 
@@ -501,8 +497,8 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value);
 
-	        if (Name.isEmpty())
-	            continue;
+            if (Name.isEmpty())
+                continue;
 
             // Host = FQDN
             // Default domain = ""
@@ -515,7 +511,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             lastCookie->nextCookie = cookieChain;
             cookieChain = lastCookie;
         }
-        else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2: ", 13) == 0))
+        else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
         {
             // What the fuck is this?
             // Does anyone invent his own headers these days?
@@ -584,11 +580,25 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             if( dir != "/" )
             {
                 int last_slash = dir.findRev('/');
-                if( last_slash != 0 )
+                if( last_slash > 0 )
                     dir.truncate( last_slash );
+                else
+                    dir = '/';  // Use root directory...
             }
             lastCookie->mPath = dir;
-            kdDebug(7104) << "Set-Cookie did not specify path.  Setting path to: " << dir << endl;
+            kdDebug(7104) << "No \"Path=\" entry found in Set-Cookie.  Setting path to: " << dir << endl;
+        }
+        // Need to do the same thing for the domain.  Again this is
+        // according to both RFC 2109 and Netscape's spec.  Why do it
+        // here and not in ::cookieAdvice?  Because KCookieServer invokes
+        // ::match(...) method when it has pending cookies.
+        if( lastCookie && lastCookie->mDomain.isEmpty() )
+        {
+            QString domain;
+            stripDomain( fqdn, domain );
+            if( !domain.isEmpty() )
+                lastCookie->mDomain = domain;
+            kdDebug(7104) << "No \"Domain=\" entry found in Set-Cookie.  Setting domain to: " << domain << endl;
         }
 
         if (*cookieStr == '\0')
@@ -676,8 +686,18 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
        // Cookie specifies a domain. Check whether it is valid.
        bool valid = false;
 
+       // Hmmm this means we accept "Domain=" entries
+       // that do not start with a "dot".  But hey if
+       // the cookie's domain entry matches the hostname
+       // we have no problems.  We will just fix up what
+       // it will be stored under!!  Incidentally, only
+       // IP-based addresses get entries in the list that
+       // do not begin without a "dot"!!
        if (cookiePtr->domain() == cookiePtr->host())
+       {
+          cookiePtr->fixDomain( domains[0] );
           valid = true;
+       }
        
        if (!valid)
        {
@@ -716,14 +736,11 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
               cookiePtr->host().latin1(), cookiePtr->domain().latin1());
         return KCookieReject;
     }
-
-    QString domain; // We file the cookie under this domain.
-    if (cookiePtr->domain().isEmpty() || 
-        (cookiePtr->host() == cookiePtr->domain()))
-       domain = domains[0];
-    else
-       domain = cookiePtr->domain();
-
+    // No need to test for empty since and domain
+    // and host name match since those things have
+    // already been taken care of either at the
+    // beginning of this method or in ::makeCookies...
+    QString domain = cookiePtr->domain();
     KHttpCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;
 

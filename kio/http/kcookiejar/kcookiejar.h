@@ -83,8 +83,7 @@ public:
     int     protocolVersion(void) { return mProtocolVersion; }
 
     bool    isExpired(time_t currentDate);
-    bool    match(const QStringList &domainList, const QString &fqdn,
-                  const QString &path);
+    bool    match(const QStringList &domainList, const QString &path);
 
     KHttpCookiePtr next() { return nextCookie; }
 };
