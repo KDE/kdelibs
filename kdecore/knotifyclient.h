@@ -119,8 +119,9 @@ namespace KNotifyClient
 	/**
 	 * Allows to easily emit standard events.
 	 * @param event The event you want to raise.
+	 * @param text The text explaining the event you raise.
 	 */
-	bool event( StandardEvent event );
+	bool event( StandardEvent event, const QString& text=QString::null );
 
 	/**
 	 * Will fire an event that's not registered.

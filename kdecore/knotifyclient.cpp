@@ -49,7 +49,7 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
 }
 
-bool KNotifyClient::event( StandardEvent type )
+bool KNotifyClient::event( StandardEvent type, const QString& text )
 {
     QString message;
     switch ( type ) {
@@ -70,8 +70,8 @@ bool KNotifyClient::event( StandardEvent type )
 	message = QString::fromLatin1("notifcation");
 	break;
     }
-    
-    return sendNotifyEvent( message, QString::null, Default, Default, 
+
+    return sendNotifyEvent( message, text, Default, Default,
 			    QString::null, QString::null);
 }
 
