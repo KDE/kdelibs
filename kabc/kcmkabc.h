@@ -24,7 +24,7 @@
 #define KCMKABC_H
 
 class KAboutData;
-class KRES::ResourcesConfigPage;
+namespace KRES { class ResourcesConfigPage; }
 
 class KCMkabc : public KCModule
 {
