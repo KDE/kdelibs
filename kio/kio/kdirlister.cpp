@@ -1562,7 +1562,6 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     {
       //kdDebug(7004) << "slotUpdateResult: new file: " << name << endl;
 
-      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
       item->mark();
       dir->lstItems->append( item );
 
