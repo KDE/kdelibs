@@ -465,6 +465,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
 
   d->m_paLoadImages = 0;
+  d->m_bMousePressed = false;
 
   autoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
 
