@@ -37,6 +37,7 @@
 #include "kio/tcpslavebase.h"
 
 class DCOPClient;
+class QDomElement;
 
 namespace KIO {
     class AuthInfo;
@@ -58,8 +59,10 @@ public:
   /** Current protocol mode used **/
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
 
-  /** HTTP method **/
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE};
+  /** HTTP / DAV method **/
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
+                    DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL, DAV_COPY,
+                    DAV_MOVE, DAV_LOCK, DAV_UNLOCK };
 
   /** State of the current Connection **/
   typedef struct
@@ -71,6 +74,17 @@ public:
     bool  doProxy;
     QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
+
+  /** DAV-specific request elements for the current connection **/
+  typedef struct
+  {
+    QString desturl;
+    bool overwrite;
+    int depth;
+    int numLocks;
+    QStringList lockURLs;
+    QStringList lockTokens;
+  } DAVRequest;
 
   /** The request for the current connection **/
   typedef struct
@@ -94,6 +108,7 @@ public:
     bool disablePassDlg;
     QString userAgent;
     QString id;
+    DAVRequest davData;
   } HTTPRequest;
 
   typedef struct
@@ -122,14 +137,28 @@ public:
   virtual void put( const KURL& url, int _mode, bool _overwrite,
                     bool _resume );
 
+//----------------- Re-implemented methods for WebDAV -----------
+  virtual void listDir( const KURL& url );
+  virtual void mkdir( const KURL& url, int permissions );
+
+  virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
+  virtual void copy ( const KURL& src, const KURL& dest, int permissions, bool overwrite );
+  virtual void del( const KURL& url, bool isfile );
+
+  void davLock( const KURL& url );
+  void davUnlock( const KURL& url );
+//---------------------------- End WebDAV -----------------------
+
   /**
    * Special commands supported by this slave :
    * 1 - HTTP POST
    * 2 - Cache has been updated
    * 3 - SSL Certificate Cache has been updated
    * 4 - HTTP multi get
+   * 5 - DAV LOCK
+   * 6 - DAV UNLOCK
    */
-  virtual void special( const QByteArray &data);
+  virtual void special( const QByteArray &data );
 
   virtual void mimetype( const KURL& url);
 
@@ -194,7 +223,27 @@ protected:
 
   bool readHeader();
   bool sendBody();
-  bool readBody();
+  // where dataInternal == true, the content is to be made available
+  // to an internal function.
+  bool readBody( bool dataInternal = false );
+
+  /**
+   * Performs a WebDAV stat or list
+   */
+  void davStatList( const KURL& url, bool stat = true );
+  void davParsePropstat( const QDomElement& propstat, KIO::UDSEntry& entry );
+
+  /**
+   * Parses a date & time string
+   */
+  long parseDateTime( const QString& input, const QString& type );
+  QDateTime parseDateISO8601( const QString& input, int& offset );
+
+  /**
+   * Extracts locks from metadata
+   * Returns the appropriate If: header
+   */
+  QString processLocks();
 
   /**
    * Send a cookie to the cookiejar
@@ -258,7 +307,9 @@ protected:
   /**
    * Performs a GET HTTP request.
    */
-  void retrieveContent();
+  // where dataInternal == true, the content is to be made available
+  // to an internal function.
+  void retrieveContent( bool dataInternal = false );
 
   /**
    * Performs a HEAD HTTP request.
@@ -331,6 +382,11 @@ protected:
   char *m_lineBufUnget;
   char *m_linePtrUnget;
   size_t m_lineCountUnget;
+
+//--- WebDAV
+  // Data structure to hold data which will be passed to an internal func.
+  QString m_intData;
+//----------
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
@@ -408,7 +464,6 @@ protected:
   int m_remoteConnTimeout;
   int m_remoteRespTimeout;
 
-	int m_pid;
-
+  int m_pid;
 };
 #endif

@@ -27,7 +27,7 @@ kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 noinst_HEADERS = http.h
 
 kdelnkdir = $(kde_servicesdir)
-kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol
+kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol webdav.protocol
 
 dummy.cpp:
 	echo > dummy.cpp
