@@ -2051,7 +2051,7 @@ Value Konqueror::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  return /*Function*/( new KonquerorFunc(this, p.qstring().latin1() ) );
+  return Value( new KonquerorFunc(this, p.qstring().latin1() ) );
 }
 
 Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
