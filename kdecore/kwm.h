@@ -219,6 +219,11 @@ public:
    * property with noFocus, for example kpager:
    *    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
    *
+   * Last not least, you can tell the window manager to keep the window
+   * always on top of other windows by combing a decoration with the 
+   * KWM::staysOnTop flag, for example
+   *    KWM::setDecoration(winId(), KWM::normalDecoration | KWM::staysOnTop);
+   *
    * Note: X11R6 does not offer a standard property or protocoll for
    * this purpose. So kwm uses a KDE specific property which may have
    * no effect with other window managers.
@@ -226,7 +231,7 @@ public:
   static void setDecoration(Window w, long value);
 
   enum {noDecoration = 0, normalDecoration = 1, tinyDecoration = 2,
-	noFocus = 256, standaloneMenuBar = 512, desktopIcon = 1024};
+	noFocus = 256, standaloneMenuBar = 512, desktopIcon = 1024 , staysOnTop = 2048};
 
   /**
    * Invokes the logout process (session management, logout dialog, ...)
