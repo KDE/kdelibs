@@ -278,32 +278,32 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	xsetenv("DISPLAY", params[P_DISPLAY].value);
 	if (params[P_DISPLAY_AUTH].value[0]) 
 	{
-           int fd, fd2;
-           strcpy(fname, "/tmp/kdesu.XXXXXXXXXX");
+           int	fd2;
+	   // save umask and set to 077, so we create those files only
+	   // readable for root. (if someone else could read them, we
+	   // are in deep shit).
+	   int	oldumask = umask(077);
 
-           fd = mkstemp(fname);
-           if (fd == -1 || (fout = fdopen(fd, "w")) == NULL)
-	    {
-		perror("kdesu_stub: mkstemp/fdopen()");
-		exit(1);
-	    }
-	    fprintf(fout, "add %s %s\n", params[P_DISPLAY].value,
-		    params[P_DISPLAY_AUTH].value);
-	    fclose(fout);
-            strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
-            fd2 = mkstemp(xauthority);
-            if (fd2 == -1)
-            {
+           strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
+	   fd2 = mkstemp(xauthority);
+	   umask(oldumask);
+
+           if (fd2 == -1) {
                 perror("kdesu_stub: mkstemp()");
                 exit(1);
-            }
-            else
+           } else
                 close(fd2);
-            xsetenv("XAUTHORITY", xauthority);
-            sprintf(command, "xauth source %s >/dev/null 2>&1", fname);
-	    if (system(command))
-		printf("kdesu_stub: failed to add X authentication");
-	    unlink(fname);
+           xsetenv("XAUTHORITY", xauthority);
+
+	   fout = popen("xauth >/dev/null 2>&1","w");
+           if (fout == NULL)
+	   {
+		perror("kdesu_stub: popen(xauth)");
+		exit(1);
+	   }
+	   fprintf(fout, "add %s %s\n", params[P_DISPLAY].value,
+		    params[P_DISPLAY_AUTH].value);
+	   pclose(fout);
 	}
     }
 
@@ -318,12 +318,21 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	if (host[0]) 
 	{
             int fd, fd2;
-            strcpy(fname, "/tmp/kdesu.XXXXXXXXXX");
-    
-            fd = mkstemp(fname);
-            if (fd == -1 || (fout = fdopen(fd, "w")) == NULL)
-	    {
-		perror("kdesu_stub: mkstemp/fdopen()");
+	    int	oldumask = umask(077);
+
+            strcpy(iceauthority, "/tmp/iceauth.XXXXXXXXXX");
+            fd2 = mkstemp(iceauthority);
+	    umask(oldumask);
+            if (fd2 == -1) {
+                perror("kdesu_stub: mkstemp()");
+                exit(1);
+            } else
+                close(fd2);
+	    xsetenv("ICEAUTHORITY", iceauthority);
+
+	    fout = popen("iceauth >/dev/null 2>&1", "w");
+	    if (!fout) {
+		perror("kdesu_stub: popen iceauth");
 		exit(1);
 	    }
 	    for (i=0; host[i]; i++)
@@ -331,21 +340,7 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	    auth = xstrsep(params[P_DCOP_AUTH].value);
 	    for (i=0; host[i]; i++)
 		fprintf(fout, "add DCOP \"\" %s %s\n", host[i], auth[i]);
-	    fclose(fout);
-            strcpy(iceauthority, "/tmp/iceauth.XXXXXXXXXX");
-            fd2 = mkstemp(iceauthority);
-            if (fd2 == -1)
-            {
-                perror("kdesu_stub: mkstemp()");
-                exit(1);
-            }
-            else
-                close(fd2);
-	    xsetenv("ICEAUTHORITY", iceauthority);
-	    sprintf(command, "iceauth source %s >/dev/null 2>&1", fname);
-	    if (system(command))
-		printf("kdesu_stub: failed to add DCOP authentication\n");
-	    unlink(fname);
+	    pclose(fout);
 	}
     }
 
