@@ -745,7 +745,7 @@ void KKeyChooser::toChange( QListViewItem *item )
 
         d->bChange->setKey( (*it).aConfigKeyCode );
         item->setText( 1, keyStrCfg );
-	d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? "None" : keyStrDef) );
+	d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
 
 	// Select the appropriate radio button.
 	int index = ((*it).aConfigKeyCode == 0) ? NoKey
