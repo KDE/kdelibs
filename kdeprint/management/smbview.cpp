@@ -19,6 +19,9 @@
 
 #include "smbview.h"
 
+#include <config.h>
+#include <stdlib.h>
+
 #include <kprocess.h>
 #include <qheader.h>
 #include <qapplication.h>
@@ -117,20 +120,36 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 {
 	if (on && item->childCount() == 0)
 	{
+		QCString oldpw = getenv("PASSWD");
+		QCString olduser = getenv("USER");
+		QCString pw = m_password.local8Bit();
+		setenv("PASSWD", pw, 1);
+		QCString user = m_login.local8Bit();
+		setenv("USER", user, 1);
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
-			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | awk '{print $1}' | xargs -iserv_name smbclient -L serv_name -W %2 %3").arg(item->text(0)).arg(item->text(0)).arg(smbPasswordString(m_login,m_password));
+			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | awk '{print $1}' | xargs -iserv_name ").arg(KShellProcess::quote(item->text(0)));
+			cmd += QString("smbclient -L serv_name -N -W %1").arg(KShellProcess::quote(item->text(0)));
 			m_proc->setExecutable(cmd);
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			m_current = item;
-			QString	cmd = QString("smbclient -L %1 -W %2 %3").arg(item->text(0)).arg(item->parent()->text(0)).arg(smbPasswordString(m_login,m_password));
+			QString	cmd = QString("smbclient -L %1 ").arg(KShellProcess::quote(item->text(0)));
+			cmd += QString("-N -W %1").arg(KShellProcess::quote(item->parent()->text(0)));
 			m_proc->setExecutable(cmd);
 			startProcess(ShareListing);
 		}
+		if (oldpw.isNull())
+		   unsetenv("PASSWD");
+		else
+		   setenv("PASSWD", oldpw, 1);
+		if (olduser.isNull())
+		   unsetenv("USER");
+		else
+		   setenv("USER", olduser, 1);
 	}
 	QListView::setOpen(item,on);
 }
