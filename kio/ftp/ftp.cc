@@ -216,12 +216,15 @@ char Ftp::readresp()
 
 void Ftp::closeConnection()
 {
-  kdDebug(7102) << "Ftp::closeConnection() " << endl;
+  kdDebug(7102) << "Ftp::closeConnection() m_bLoggedOn=" << m_bLoggedOn << " m_bFtpStarted=" << m_bFtpStarted << endl;
   if ( m_bLoggedOn || m_bFtpStarted )
   {
+    ASSERT( m_bFtpStarted ); // can't see how it could be false is loggedon is true
     if( sControl != 0 )
     {
-      (void) ftpSendCmd( "quit", '2' );
+      kdDebug(7102) << "Ftp::closeConnection() sending quit" << endl;
+      if ( !ftpSendCmd( "quit", '2' ) )
+        kdWarning(7102) << "Ftp::closeConnection() 'quit' failed with err=" << rspbuf[0] << rspbuf[1] << rspbuf[2] << endl;
       free( nControl );
       if (ksControl != NULL)
 	delete ksControl;
@@ -953,6 +956,7 @@ void Ftp::closeSockets()
 
 bool Ftp::ftpCloseCommand()
 {
+  kdDebug(7102) << "Ftp::ftpCloseCommand" << endl;
   // first close data sockets (if opened), then read response that
   // we got for whatever was used in ftpOpenCommand ( should be 226 )
   closeSockets();
@@ -1217,6 +1221,7 @@ void Ftp::stat( const KURL &url)
   QString listarg; // = tempurl.directory(false /*keep trailing slash*/);
   QString parentDir;
   QString filename = tempurl.fileName();
+  ASSERT(!filename.isEmpty());
   QString search = filename;
   bool isDir = false;
 
@@ -1276,7 +1281,7 @@ void Ftp::stat( const KURL &url)
 
   kdDebug(7102) << "Starting of list was ok" << endl;
 
-  assert( !search.isEmpty() && search != QString::fromLatin1("/") );
+  ASSERT( !search.isEmpty() && search != QString::fromLatin1("/") );
 
   FtpEntry *e;
   bool bFound = false;
@@ -1288,10 +1293,12 @@ void Ftp::stat( const KURL &url)
     if ( !bFound )
     {
         if ( ( search == e->name || filename == e->name ) ) {
-            bFound = true;
-            UDSEntry entry;
-            createUDSEntry( filename, e, entry, isDir );
-            statEntry( entry );
+            if ( !filename.isEmpty() ) {
+              bFound = true;
+              UDSEntry entry;
+              createUDSEntry( filename, e, entry, isDir );
+              statEntry( entry );
+            }
         } else if ( isDir && ( e->name == listarg || e->name+'/' == listarg ) ) {
             // Damn, the dir we're trying to list is in fact a symlink
             // Follow it and try again
@@ -1401,13 +1408,17 @@ void Ftp::listDir( const KURL &url )
   while( ( e = ftpReadDir() ) )
   {
     kdDebug(7102) << e->name << endl;
-    //if ( S_ISDIR( (mode_t)e->type ) )
-    //   kdDebug(7102) << "is a dir" << endl;
-    //if ( !e->link.isEmpty() )
-    //   kdDebug(7102) << "is a link to " << e->link << endl;
-    entry.clear();
-    createUDSEntry( e->name, e, entry, false );
-    listEntry( entry, false );
+    ASSERT( !e->name.isEmpty() );
+    if ( !e->name.isEmpty() )
+    {
+      //if ( S_ISDIR( (mode_t)e->type ) )
+      //   kdDebug(7102) << "is a dir" << endl;
+      //if ( !e->link.isEmpty() )
+      //   kdDebug(7102) << "is a link to " << e->link << endl;
+      entry.clear();
+      createUDSEntry( e->name, e, entry, false );
+      listEntry( entry, false );
+    }
   }
   listEntry( entry, true ); // ready
 
@@ -1747,8 +1758,10 @@ void Ftp::get( const KURL & url )
     }
   }
 
+  kdDebug(7102) << "Get: done, sending empty QByteArray" << endl;
   data( QByteArray() );
 
+  kdDebug(7102) << "Get: calling ftpCloseCommand()" << endl;
   (void) ftpCloseCommand();
   // proceed even on error
 
@@ -1757,6 +1770,7 @@ void Ftp::get( const KURL & url )
   if ( t - t_start >= 1 )
     speed( ( processed_size - offset ) / ( t - t_start ) );
 
+  kdDebug(7102) << "Get: emitting finished()" << endl;
   finished();
 }
 
