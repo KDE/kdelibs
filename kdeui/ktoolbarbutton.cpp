@@ -201,7 +201,7 @@ void KToolBarButton::modeChange()
   if (!d->m_defaultIconName.isNull())
     setDefaultIcon(d->m_defaultIconName);
 
-  // we'll start with the size of our pixmap 
+  // we'll start with the size of our pixmap
   int pix_width  = activePixmap.width();
   int pix_height = activePixmap.height();
 
@@ -226,7 +226,7 @@ void KToolBarButton::modeChange()
   {
     QToolTip::add(this, textLabel());
   }
-  
+
   switch (d->m_iconText)
   {
   case KToolBar::IconOnly:
@@ -623,6 +623,8 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setPen(palette().disabled().dark());
       else if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
+      else
+	_painter->setPen( colorGroup().buttonText() );
       _painter->drawText(textRect, textFlags, textLabel());
   }
 
