@@ -129,7 +129,7 @@ kmailservice_SOURCES = kmailservice.cpp
 kmailservice_LDADD = $(LIB_KDECORE)
 kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kmailprotocol_DATA = kmailservice.protocol rlogin.protocol
+kmailprotocol_DATA = kmailservice.protocol 
 kmailprotocoldir = $(kde_servicesdir)
 
 update_DATA = kioslave.upd useragent.pl proxytype.pl
