@@ -397,7 +397,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			}
 			else {
 				Keramik::GradientPainter::renderGradient( p,
-					QRect(0, 0, r.width(), r.height()),
+					QRect(r.x(), 0, r.width(), r.height()),
 					Keramik::ColorUtil::lighten(cg.button(), 115), flags & Style_Horizontal, false );
 
                                 p->setPen(cg.button().light(70));
@@ -1854,7 +1854,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 1;
 
 		case PM_MenuButtonIndicator:
-			return 8;
+			return 13;
 
 		case PM_TabBarTabVSpace:
 			return 14;
