@@ -1,6 +1,7 @@
-/* This file is part of the KDE libraries
+/*  -*- C++ -*-
+    This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
-              (C) 1998 Mirko Sucker (mirko.sucker@hamburg.netsurf.de)
+              (C) 1998, 1999 Mirko Sucker (mirko@kde.org)
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -17,331 +18,410 @@
     Boston, MA 02111-1307, USA.
 */
 
-/////////////////// KDatePicker widget class //////////////////////
-//
-// Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998 Mirko Sucker
-// Original header from Tim:
-// This version of the class is the first release.  Please
-// send comments/suggestions/bug reports to <tdgilman@best.com>
-//
-// Written using Qt (http://www.troll.no) for the
-// KDE project (http://www.kde.org)
-//
-//
-// Use this class to make a date picker widget
-// When a date is selected by the user, it emits a signal: 
-//    dateSelected(QDate)
-//
-// Required header for use:
-//    kdatepik.h
-//
-// Required files for compilation:
-//
-//    kdatepik.h kdatepik.cpp kdatetbl.h kdatetbl.cpp
-// ------------------------------------------------------------
-
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qfont.h>
-#include <qdatetime.h>
-
 #include "kdatepik.h"
-#include "kdatepik.h"
-
-#include "kdatetbl.h"
-
-// Mirko, Feb 25 1998:
-extern "C" {
-#include "arrow_left.xbm"
-#include "arrow_right.xbm"
-  // highstick: added May 13 1998
-#include "arrow_up.xbm"
-#include "arrow_down.xbm"
-  // ^^^^^^^^^^^^^^^^^^^
-	   }
-#include <qbitmap.h>
 #include <kglobal.h>
+#include <kapp.h>
 #include <klocale.h>
+#include <kiconloader.h>
+#include <qframe.h>
+#include <qpainter.h>
+#include <qtoolbutton.h>
+#include <qtableview.h>
+#include <qdialog.h>
+#include <qtoolbutton.h>
+#include <qfont.h>
+#include <qlineedit.h>
+#include <qvalidator.h>
+#include "kdatetbl.h"
+#include "kdatepik.moc"
 
-// Mirko, March 17 1998:
-const int KDatePicker::PreferredButtonSize=22;
-const int KDatePicker::MinimumFrameAroundButtons=2;
-const int KDatePicker::NoOfMonth=12;
+// unfortunatly, some compilers break on creating static C++ objects,
+// so the strings are created dynamically
+QString *KDatePicker::Month[12];
+int KDatePicker::KDatePickers;
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   : QFrame(parent,name),
-    fontsize(10)
+    fontsize(10),
+    yearForward(new QToolButton(this)),
+    yearBackward(new QToolButton(this)),
+    monthForward(new QToolButton(this)),
+    monthBackward(new QToolButton(this)),
+    selectMonth(new QToolButton(this)),
+    selectYear(new QToolButton(this)),
+    line(new QLineEdit(this)),
+    val(new KDateValidator(this)),
+    table(new KDateTable(this))
 {
-  // Mirko: added Feb 25 1998
-  QBitmap left // a left arrow, 32 Bytes
-    (arrow_left_width, arrow_left_height, 
-     (const unsigned char*)arrow_left_bits, true);
-  QBitmap right // a right arrow, 32 Bytes
-    (arrow_right_width, arrow_right_height, 
-     (const unsigned char*)arrow_right_bits, true);
-  // highstick: added May 13 1998
-  QBitmap up
-    (arrow_up_width, arrow_up_height,
-     (const unsigned char*)arrow_up_bits, true);
-  QBitmap down
-    (arrow_down_width, arrow_down_height,
-     (const unsigned char*)arrow_down_bits, true);
-  // Mirko: added March 17 1998
-  /* I added the names literally to force that they are
-   * included into the translation templates.
-   * I did not make it static to allow different languages,
-   * altough I do not know if this is possible inside the
-   * same process with locale.
-   */
-  Month[0]=i18n("January"); Month[1]=i18n("February"); 
-  Month[2]=i18n("March"); Month[3]=i18n("April"); 
-  Month[4]=i18n("May"); Month[5]=i18n("June");
-  Month[6]=i18n("July"); Month[7]=i18n("August"); 
-  Month[8]=i18n("September"); Month[9]=i18n("October"); 
-  Month[10]=i18n("November"); Month[11]=i18n("December");
-  // ^^^^^^^^^^^^^^^^^^^^^^^^
-  initMetaObject();
-   
-  QDate dNow = QDate::currentDate();
-  QString sNow;
-  sNow = i18n("Today: %1/%2/%3").arg(dNow.month()).
-	       arg(dNow.day()).arg(dNow.year());
-   
-  m_header = new QLabel(this);
-  updateHeader(dt);
-   
-  m_tbl = new KDateTable(this, dt);
-  m_footer = new QLabel(sNow, this);
-  // Mirko: changed Feb 25 1998
-  m_back = new QPushButton(this);
-  m_back->setPixmap(left);
-  m_forward = new QPushButton(this);
-  m_forward->setPixmap(right);
-  // highstick: added May 13 1998
-  m_up = new QPushButton(this);
-  m_up->setPixmap(up);
-  m_down = new QPushButton(this);
-  m_down->setPixmap(down);
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-  switch(style()) {
-  case WindowsStyle:
-  case MotifStyle:
-    setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-    break;
-  default:
-    setFrameStyle(QFrame::Panel | QFrame::Plain);
-    setLineWidth(1);
-  }
-
-  sizeElements();
-
-  connect(m_forward, SIGNAL(clicked()), m_tbl, SLOT(goForward()));
-  connect(m_back, SIGNAL(clicked()), m_tbl, SLOT(goBackward()));   
-  connect(m_tbl, SIGNAL(monthChanged(QDate)), SLOT(updateHeader(QDate)));
-  connect(m_tbl, SIGNAL(dateSelected(QDate)), SIGNAL(dateSelected(QDate)));
-  // highstick: added May 13 1998
-  connect(m_down, SIGNAL(clicked()), m_tbl, SLOT(goDown()));
-  connect(m_up, SIGNAL(clicked()), m_tbl, SLOT(goUp()));   
-  connect(m_tbl, SIGNAL(yearChanged(QDate)), SLOT(updateHeader(QDate)));
-  connect(m_tbl, SIGNAL(dateSelected(QDate)), SIGNAL(dateSelected(QDate)));
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-  m_header->setAlignment(AlignCenter);
-  m_footer->setAlignment(AlignCenter);
-   
-  m_footer->setBackgroundColor(white);
-   
-  QColorGroup old_cg = m_header->colorGroup();
-  QColorGroup new_cg(old_cg.foreground(), 
-		     darkBlue,   // blue background
-		     old_cg.light(), old_cg.dark(), old_cg.mid(),
-		     white,      // white text
-		     old_cg.base());
-  m_header->setPalette(QPalette(new_cg,new_cg,new_cg));
-  
-  QFont f = KGlobal::generalFont();
-  f.setBold(true);
-  m_footer->setFont(f);
-  f = KGlobal::generalFont();
-  f.setPointSize(f.pointSize()+2);
-  m_header->setFont(f);   
-}
-
-
-void KDatePicker::resizeEvent(QResizeEvent *)
-{
-  sizeElements();
-}
-
-void KDatePicker::sizeElements()
-{
-  QRect rec = contentsRect();
-   
-  // table height
-  int th = rec.height()/10;
-   
-  m_header->setGeometry(rec.x(),
-			rec.y(),
-			rec.width(),
-			2*th);
-  m_footer->setGeometry(rec.x(),
-			rec.bottom()-(th-1),
-			rec.width(),
-			th);
-  m_tbl->setGeometry(rec.x(),
-		     rec.y()+2*th,
-		     rec.width(),
-		     rec.height()-3*th);
-  /* Mirko: changed Feb 25 1998
-   * - assumes that both bitmaps have equal height
-   *   buttons are set to a max height and width of 22, 
-   *   that is the height of the arrow 
-   *   plus 3 pixels in x and y direction
-   */
-  int buttonSize;
-  int spacing;
-  const int roomLeft=2*th-2*MinimumFrameAroundButtons;
-  if(roomLeft>PreferredButtonSize)
+  int count;
+  QString month[12]= {
+    i18n("January"), i18n("February"), i18n("March"), i18n("April"),
+    i18n("May"), i18n("June"), i18n("July"), i18n("August"), 
+    i18n("September"), i18n("October"), i18n("November"), i18n("December")
+  };
+  // ----- initialize month names:
+  if(KDatePickers==0) // first instance
     {
-      spacing=(2*th-PreferredButtonSize)/2;
-      buttonSize=PreferredButtonSize;
-    } else { // the widget is smaller -> ugly buttons
-      spacing=2; 
-      /* This way the buttons might get very small,
-       * but it is the task of the programmer to 
-       * take care of the size hint.
-       */
-      buttonSize=2*th-2*MinimumFrameAroundButtons;
-    }
-  m_back->setGeometry(rec.x()+2*spacing+buttonSize,
-		      rec.y()+spacing,
-		      buttonSize,
-		      buttonSize);
-  m_forward->setGeometry(rec.right()-2*spacing-2*buttonSize,
-			 rec.y()+spacing,
-			 buttonSize,
-			 buttonSize);
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  // highstick: added May 13 1998
-  m_up->setGeometry(rec.x() + spacing,
-		    rec.y() + spacing,
-		    buttonSize,
-		    buttonSize);
-  m_down->setGeometry(rec.right() - spacing - buttonSize,
-		      rec.y() + spacing,
-		      buttonSize,
-		      buttonSize);
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-}
-
-void KDatePicker::updateHeader(QDate dt)
-{
-  QString sHeader;
-  QString month;
-  if(dt.month()>0 && dt.month()<13)
-    {
-      month=Month[dt.month()-1];
-    } else {
-      month=i18n("(invalid)");
-    }
-  QString tmp;
-  tmp.setNum(dt.year());
-  sHeader = month + " " + tmp;
-  m_header->setText(sHeader);
-}
-
-/* Mirko: Implementation of sizeHint and setDate methods.
- * March 17 1998
- */
-
-QSize KDatePicker::sizeHint() const 
-{
-  int count, temp, x, y;
-  QSize table, header, footer;
-  CHECK_PTR(m_tbl); CHECK_PTR(m_footer);
-  // ----- find recommended size for month table:
-  table=m_tbl->sizeHint();
-  // ----- find recommended size for headline:
-  header=m_header->sizeHint();
-  header.setWidth(0);
-  for(count=0; count<NoOfMonth; count++)
-    { // find the width of the widest month name
-      temp=m_header->fontMetrics().width(Month[count]);
-      if(temp>header.width())
-	{ //  ^^^ this depends on the font set!
-	  header.setWidth(temp);
+      debug("KDatePicker::KDatePicker: first instance.");
+      for(count=0; count<12; ++count)
+	{
+	  Month[count]=new QString(month[count]);
 	}
     }
-  header.setWidth(header.width()
-		  +m_header->fontMetrics().width(" 2984 ")+10
-		  +6*MinimumFrameAroundButtons
-		  +4*PreferredButtonSize);
-  // ----- find recommended size for bottom label:
-  // let us assume that the footer label is smaller than 
-  // header label
-  footer=m_footer->sizeHint();
-  // ----- construct size hint from values:
-  x=table.width(); 
-  if(x<header.width())
-    { // footer skipped
-      x=header.width();
-    }
-  y=header.height()+table.height()+footer.height();
-  debug("KDatePicker::sizeHint: "
-	"recommending %ix%i pixels.\n", x, y);
+  ++KDatePickers;
   // -----
-  return QSize(x, y);
+  setFontSize(10);
+  line->setValidator(val);
+  yearForward->setPixmap(BarIcon("2rightarrow"));
+  yearBackward->setPixmap(BarIcon("2leftarrow"));
+  monthForward->setPixmap(BarIcon("1rightarrow"));
+  monthBackward->setPixmap(BarIcon("1leftarrow"));
+  setDate(dt); // set button texts
+  connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
+  connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
+  connect(monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
+  connect(monthBackward, SIGNAL(clicked()), SLOT(monthBackwardClicked()));
+  connect(yearForward, SIGNAL(clicked()), SLOT(yearForwardClicked()));
+  connect(yearBackward, SIGNAL(clicked()), SLOT(yearBackwardClicked()));
+  connect(selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()));
+  connect(selectYear, SIGNAL(clicked()), SLOT(selectYearClicked()));
+  connect(line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
 }
 
-void KDatePicker::setDate(QDate date)
+KDatePicker::~KDatePicker()
+{
+  int count;
+  // -----
+  if(KDatePickers==1)
+    {
+      debug("KDatePicker::~KDatePicker: last instance, cleaning up.");
+      for(count=0; count<12; ++count)
+	{
+	  delete Month[count];
+	}
+    }
+  --KDatePickers;
+}
+
+void
+KDatePicker::resizeEvent(QResizeEvent*)
+{
+  int cx, cy; // counters for storing size hint values
+  QWidget *buttons[]={
+    yearBackward,
+    monthBackward,
+    selectMonth,
+    selectYear,
+    monthForward,
+    yearForward };
+  const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
+  QSize sizes[NoOfButtons];
+  int buttonHeight=0;
+  int count;
+  int w;
+  int x=0;
+  // ----- calculate button row height:
+  for(count=0; count<NoOfButtons; ++count)
+    {
+      sizes[count]=buttons[count]->sizeHint();
+      buttonHeight=QMAX(buttonHeight, sizes[count].height());
+    }
+  cy=buttonHeight;
+  // ----- calculate size of the month button:
+  w=0;
+  for(count=0; count<NoOfButtons; ++count)
+    {
+      if(buttons[count]!=selectMonth)
+	{
+	  w+=sizes[count].width();
+	} else {
+	  x=count;
+	}
+    }
+  cx=w+sizes[count].width(); // sum of all recommended button widths
+  sizes[x].setWidth(width()-w); // stretch the month button
+  // ----- place the buttons:
+  x=0;
+  for(count=0; count<NoOfButtons; ++count)
+    {  
+      w=sizes[count].width();
+      buttons[count]->setGeometry(x, 0, w, buttonHeight);
+      x+=w;
+    }
+  // ----- place the line edit for direct input:
+  sizes[0]=line->sizeHint();
+  line->setGeometry(0, height()-sizes[0].height(), width(), sizes[0].height());
+  // ----- adjust the table:
+  table->setGeometry(0, buttonHeight, width(), height()-buttonHeight-sizes[0].height());
+}
+
+void 
+KDatePicker::dateChangedSlot(QDate date)
+{
+  debug("KDatePicker::dateChangedSlot: date changed (%i/%i/%i).",
+	date.year(), date.month(), date.day());
+  emit(dateChanged(date));
+}
+
+void 
+KDatePicker::tableClickedSlot()
+{
+  debug("KDatePicker::tableClickedSlot: table clicked.");
+  emit(dateSelected(table->getDate()));
+  emit(tableClicked());
+}
+
+const QDate& 
+KDatePicker::getDate()
+{
+  return table->getDate();
+}
+
+bool
+KDatePicker::setDate(const QDate& date)
 {
   if(date.isValid())
     {
-      m_tbl->setDate(date);
-      updateHeader(date);
+      QString temp;
+      // -----
+      table->setDate(date);
+      selectMonth->setText(*Month[date.month()-1]);
+      temp.setNum(date.year());
+      selectYear->setText(temp);
+      return true;
     } else {
-      debug("KDatePicker::setDate: "
-	    "date is invalid, not set.\n");
+      debug("KDatePicker::setDate: refusing to set invalid date.");
+      return false;
     }
 }
 
-// end of new methods from March 17 1998
-
-/* Mirko: Aug 19 1998 */
-void KDatePicker::setFontSize(int size)
+void
+KDatePicker::monthForwardClicked()
 {
-  if(size>0)
+  QDate temp=table->getDate();
+  int day=temp.day();
+  // -----
+  if(temp.month()==12)
     {
-      fontsize=size;
-      m_tbl->setFontSize(size);
-      setHeadlineSize(size+2);
-      repaint();
+      temp.setYMD(temp.year()+1, 1, 1);
+    } else {
+      temp.setYMD(temp.year(), temp.month()+1, 1);
     }
-}
-
-int KDatePicker::fontSize()
-{
-  return fontsize;
-}
-
-void KDatePicker::setHeadlineSize(int size)
-{
-  QFont font=m_header->font();
-  if(size>0)
+  if(temp.daysInMonth()<day)
     {
-      font.setPointSize(size);
-      m_header->setFont(font);
-      m_header->repaint();
+      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
+    } else {
+      temp.setYMD(temp.year(), temp.month(), day);
+    }
+  // assert(temp.isValid());
+  setDate(temp);
+}
+
+void
+KDatePicker::monthBackwardClicked()
+{
+  QDate temp=table->getDate();
+  int day=temp.day();
+  // -----
+  if(temp.month()==1)
+    {
+      temp.setYMD(temp.year()-1, 12, 1);
+    } else {
+      temp.setYMD(temp.year(), temp.month()-1, 1);
+    }
+  if(temp.daysInMonth()<day)
+    {
+      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
+    } else {
+      temp.setYMD(temp.year(), temp.month(), day);
+    }
+  // assert(temp.isValid());
+  setDate(temp);
+}
+
+void
+KDatePicker::yearForwardClicked()
+{
+  QDate temp=table->getDate();
+  int day=temp.day();
+  // -----
+  temp.setYMD(temp.year()+1, temp.month(), 1);
+  if(temp.daysInMonth()<day)
+    {
+      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
+    } else {
+      temp.setYMD(temp.year(), temp.month(), day);
+    }
+  // assert(temp.isValid());
+  setDate(temp);
+}
+
+void
+KDatePicker::yearBackwardClicked()
+{
+  QDate temp=table->getDate();
+  int day=temp.day();
+  // -----
+  temp.setYMD(temp.year()-1, temp.month(), 1);
+  if(temp.daysInMonth()<day)
+    {
+      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
+    } else {
+      temp.setYMD(temp.year(), temp.month(), day);
+    }
+  // assert(temp.isValid());
+  setDate(temp);
+}
+
+void
+KDatePicker::selectMonthClicked()
+{
+  int month;
+  QPopupFrame popup;
+  KDateInternalMonthPicker picker(fontsize, &popup);
+  // -----
+  picker.resize(picker.sizeHint());
+  popup.setMainWidget(&picker);
+  connect(&picker, SIGNAL(closeMe(int)), &popup, SLOT(close(int)));
+  if(popup.exec(selectMonth->mapToGlobal(QPoint(0, selectMonth->height()))))
+    {
+      QDate date;
+      int day;
+      // -----
+      month=picker.getResult();
+      date=table->getDate();
+      day=date.day();
+      // ----- construct a valid date in this month:
+      date.setYMD(date.year(), month, 1);
+      date.setYMD(date.year(), month, QMIN(day, date.daysInMonth()));
+      // ----- set this month
+      setDate(date);
+    } else {
+      kapp->beep();
     }
 }
 
-int KDatePicker::headlineSize()
+void
+KDatePicker::selectYearClicked()
 {
-  return m_header->fontInfo().pointSize();
+  int year;
+  QPopupFrame popup;
+  KDateInternalYearSelector picker(fontsize, &popup);
+  // -----
+  picker.resize(picker.sizeHint());
+  popup.setMainWidget(&picker);
+  connect(&picker, SIGNAL(closeMe(int)), &popup, SLOT(close(int)));
+  if(popup.exec(selectYear->mapToGlobal(QPoint(0, selectMonth->height()))))
+    {
+      QDate date;
+      int day;
+      // -----
+      year=picker.getYear();
+      date=table->getDate();
+      day=date.day();
+      // ----- construct a valid date in this month:
+      date.setYMD(year, date.month(), 1);
+      date.setYMD(year, date.month(), QMIN(day, date.daysInMonth()));
+      // ----- set this month
+      setDate(date);
+    } else {
+      kapp->beep();
+    }
 }
 
-// end of new methods from Aug 19 1998
+void
+KDatePicker::setEnabled(bool enable)
+{
+  QWidget *widgets[]= {
+    yearForward, yearBackward, monthForward, monthBackward, 
+    selectMonth, selectYear, 
+    line, table };
+  const int Size=sizeof(widgets)/sizeof(widgets[0]);
+  int count;
+  // -----
+  for(count=0; count<Size; ++count)
+    {
+      widgets[count]->setEnabled(enable);
+    }
+}
 
-/**********************************************************/
-#include "kdatepik.moc"
+void
+KDatePicker::lineEnterPressed()
+{ 
+  QDate temp;
+  // -----
+  if(val->date(line->text(), temp)==QValidator::Acceptable)
+    {
+      debug("KDatePicker::lineEnterPressed: valid date entered.");
+      emit(dateEntered(temp));
+    } else {
+      kapp->beep();
+      debug("KDatePicker::lineEnterPressed: invalid date entered.");
+    }
+}
+
+QSize 
+KDatePicker::sizeHint() const
+{
+  QSize tableSize=table->sizeHint();
+  QWidget *buttons[]={
+    yearBackward,
+    monthBackward,
+    selectMonth,
+    selectYear,
+    monthForward,
+    yearForward };
+  const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
+  QSize sizes[NoOfButtons];  
+  int cx=0, cy=0, count;
+  // ----- store the size hints:
+  for(count=0; count<NoOfButtons; ++count)
+    {
+      sizes[count]=buttons[count]->sizeHint();
+      if(buttons[count]==selectMonth)
+	{
+	  cx+=maxMonthRect.width();
+	} else {
+	  cx+=sizes[count].width();
+	}
+      cy=QMAX(sizes[count].height(), cy);
+    }
+  // ----- calculate width hint:
+  cx=QMAX(cx, tableSize.width()); // line edit ignored
+  // ----- calculate height hint:
+  cy+=tableSize.height()+line->sizeHint().height();
+  return QSize(cx, cy);
+}
+
+void
+KDatePicker::setFontSize(int s)
+{
+  QWidget *buttons[]= {
+    // yearBackward,
+    // monthBackward,
+    selectMonth,
+    selectYear,
+    // monthForward,
+    // yearForward 
+  };
+  const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
+  int count;
+  QFont font;
+  QRect r;
+  // -----
+  fontsize=s;
+  for(count=0; count<NoOfButtons; ++count)
+    {
+      font=buttons[count]->font();
+      font.setPointSize(s);
+      buttons[count]->setFont(font);
+    }
+  QFontMetrics metrics(selectMonth->fontMetrics());
+  for(count=0; count<12; ++count)
+    { // maxMonthRect is used by sizeHint()
+      r=metrics.boundingRect(*Month[count]);
+      maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));
+      maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
+    }
+  table->setFontSize(s);
+}

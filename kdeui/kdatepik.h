@@ -1,7 +1,7 @@
 /*  -*- C++ -*-
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
-              (C) 1998 Mirko Sucker (mirko.sucker@unibw-hamburg.de)
+              (C) 1998, 1999 Mirko Sucker (mirko@kde.org)
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -17,13 +17,11 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-#ifndef _KDATEPIK_H
-#define _KDATEPIK_H
 
 /////////////////// KDatePicker widget class //////////////////////
 //
 // Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998 Mirko Sucker
+//           (C) 1998, 1999 Mirko Sucker
 // I also documented protected members as this is a library 
 // reference.
 // Original header from Tim:
@@ -46,89 +44,112 @@
 //    kdatepik.h kdatepik.cpp kdatetbl.h kdatetbl.cpp
 
 
-#include <qframe.h>
+#ifndef KDATEPICKER_H
+#define KDATEPICKER_H
 #include <qdatetime.h>
-#include <qsize.h>
+#include <qrect.h>
+#include <qframe.h>
+// #include "kdatetbl.h"
 
+class QLineEdit;
+class QToolButton;
+class KDateValidator;
 class KDateTable;
-class QLabel;
-class QPushButton;
-class QDate;
 
-/** Use this class to make a date picker widget.
-  *
-  * When a date is selected by the user, it emits a signal: 
-  *    dateSelected(QDate)
-  *
-  * @short A widget for selecting dates.
-  * @author Mirko Sucker (mirko.sucker@unibw-hamburg.de)
-  * @version $Id$
-  */
-
-class KDatePicker : public QFrame {
+/** KDatePicker is a widget for selecting dates. Differently from the
+    previous versions, it now emits two types of signals, either
+    dateSelected() or dateEntered() (see documentation for both
+    signals). 
+    A line edit has been added in the newer versions to allow the user 
+    to select a date directly by entering numbers like 19990101
+    or 990101. */
+class KDatePicker: public QFrame {
   Q_OBJECT
 public:
   /** The usual constructor, the given date will be displayed 
-    * initially.
-    */
+   * initially.
+   */
   KDatePicker(QWidget *parent=0, 
 	      QDate=QDate::currentDate(), 
 	      const char *name=0);
-  // Mirko, Mar 17 1998:
-  /** Returns a recommended size for the widget.
-    * The recommended size is calculated so that the widget "looks good", 
-    * that means everything fits in it and there is some additional space
-    * between the rows. Also the buttons and every (!) month name 
-    * fit in the headline.
-    */
-  QSize sizeHint() const;
-  // Mirko, Aug 21 1998:
-  /** Set the size of the contents of the datepicker widget using 
-    * setFontSize.
-    * The days are displayed with the font size, the headline gets a size
-    * of fontsize + 2 by default. The default is 12pt.
-    * Important: this changes the headline size, so adjust it later!
-    */
-  void setFontSize(int size);
-  int fontSize(); // return it
-  /** Set the font size of the headline, independent from the rest of the widget.
-    * The default size is fontsize + 2.
-    */
-  void setHeadlineSize(int size);
-  int headlineSize();
-  // ^^^^^^^^^^^^^^^^^^^
-private:
-  KDateTable *m_tbl;
-  QLabel *m_header;
-  QLabel *m_footer;
-  QPushButton *m_back;
-  QPushButton *m_forward;
-  // highstick: added May 13 1998
-  QPushButton *m_up;
-  QPushButton *m_down;
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  /** The destructor. */
+  virtual ~KDatePicker();
+  /** The size hint for KDatePickers. The size hint recommends the
+      minimum size of the widget so that all elements may be placed
+      without clipping. This sometimes looks ugly, so when using the
+      size hint, try adding 28 to each of the reported numbers of
+      pixels. */
+  QSize sizeHint() const; 
+  /** Set the date. Returns false and does not change anything 
+      if the date given is invalid. */
+  bool setDate(const QDate&);
+  /** Get the date. */
+  const QDate& getDate();
+  /** Enable or disable the widget. */
+  void setEnabled(bool);
+  /** Set the font size of the widgets elements. */
+  void setFontSize(int);
+  /// the month names
+  static QString *Month[12];
 protected:
-  void resizeEvent(QResizeEvent *);
-  void sizeElements();
-  /// The size that lets the button look best.
-  static const int PreferredButtonSize;
-  /// The minimum space between the button and the border.
-  static const int MinimumFrameAroundButtons;
-  /// The number of month in a year, usually 12 I suppose :-).
-  static const int NoOfMonth;
-  /// The names of the 12 month translated to the user language.
-  QString Month[12];
+  /// the resize event
+  void resizeEvent(QResizeEvent*);
+  /// the font size for the widget
   int fontsize;
+  /// the year forward button
+  QToolButton *yearForward;
+  /// the year backward button
+  QToolButton *yearBackward;
+  /// the month forward button
+  QToolButton *monthForward;
+  /// the month backward button
+  QToolButton *monthBackward;
+  /// the button for selecting the month directly
+  QToolButton *selectMonth;
+  /// the button for selecting the year directly
+  QToolButton *selectYear;
+  /// the line edit to enter the date directly
+  QLineEdit *line;
+  /// the validator for the line edit:
+  KDateValidator *val;
+  /// the date table 
+  KDateTable *table;
+  /// the size calculated during resize events
+  QSize sizehint;
+  /// KDatePicker reference counter
+  static int KDatePickers;
+  /// the widest month string in pixels:
+  QSize maxMonthRect;
+protected slots:
+  void dateChangedSlot(QDate);
+  void tableClickedSlot();
+  void monthForwardClicked();
+  void monthBackwardClicked();
+  void yearForwardClicked();
+  void yearBackwardClicked();
+  void selectMonthClicked();
+  void selectYearClicked();
+  void lineEnterPressed();
 signals:
-  /** This signal is emmitted when the user picked a date.
-    */
+  /** This signal is emitted each time the selected date is changed. 
+      Usually, this does not mean that the date has been entered,
+      since the date also changes, for example, when another month is
+      selected. 
+      @see dateSelected  */
+  void dateChanged(QDate);
+  /** This signal is emitted each time a day has been selected by
+      clicking on the table (hitting a day in the current month). It
+      has the same meaning as dateSelected() in older versions of
+      KDatePicker. */
   void dateSelected(QDate);
-private slots:
-public slots:
-  void updateHeader(QDate dt);
-  // Mirko, Mar 17 1998:
-  void setDate(QDate);
-  // ^^^^^^^^^^^^^^^^^^^
+  /** This signal is emitted when enter is pressed and a VALID date
+      has been entered before into the line edit. Connect to both
+      dateEntered() and dateSelected() to receive all events where the 
+      user really enters a date. */
+  void dateEntered(QDate);
+  /** This signal is emitted when the day has been selected by
+      clicking on it in the table. */
+  void tableClicked();
 };
 
-#endif // _KDATEPIK_H
+#endif //  KDATEPICKER_H
