@@ -18,6 +18,8 @@
  *
  */
 
+#include <qlabel.h>
+#include <kapp.h>
 #include <kwizard.h>
 
 int main(int argc, char **argv)
@@ -42,14 +44,14 @@ int main(int argc, char **argv)
     msg.sprintf("This is page %d out of 10", i);
     QLabel *l = new QLabel(wiz);
     l->setAlignment(Qt::AlignCenter);
-    l->setText(msg.data());
+    l->setText(msg);
     l->setMinimumSize(300, 200);
     QString title;
     title.setNum(i);
     title += ". page";
     KWizardPage *p = new KWizardPage;
     p->w = l;
-    p->title = title.copy();
+    p->title = title;
     p->enabled = true;
     wiz->addPage(p);
   }

@@ -18,6 +18,8 @@
  *
  */
 
+#include <qlabel.h>
+#include <kapp.h>
 #include <knotebook.h>
 
 int main(int argc, char **argv)
