@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -568,13 +568,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
             break;
         case ID_HEAD:
             // we can get here only if the element is not allowed in head.
-            // This means the body starts here...
-            popBlock(ID_HEAD);
-            e = new HTMLBodyElementImpl(document);
-            inBody = true;
-            document->createSelector();
-            insertNode(e);
-            handled = true;
+	    if (id == ID_HTML)
+		throw exception;
+	    else {
+		// This means the body starts here...
+		popBlock(ID_HEAD);
+		e = new HTMLBodyElementImpl(document);
+		inBody = true;
+		document->createSelector();
+		insertNode(e);
+		handled = true;
+	    }
             break;
         case ID_BODY:
 
@@ -688,6 +692,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
             popBlock(ID_ADDRESS);
             handled = true;
             break;
+	case ID_COLGROUP:
+	    popBlock(ID_COLGROUP);
+	    handled = true;
+	    break;
         default:
             if(current->isDocumentNode())
             {
