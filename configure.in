@@ -200,6 +200,7 @@ AC_OUTPUT(Makefile \
 	kdecore/qk/Makefile \
 	kdecore/tests/Makefile \
 	kdeui/Makefile \
+	kdeui/tests/Makefile \
 	kimgio/Makefile \
 	khtml/Makefile \
 	khtml/java/Makefile \
