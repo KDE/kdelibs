@@ -704,6 +704,7 @@ void CachedImage::movieStatus(int status)
             c->notifyFinished(this);
     }
 
+#if 0
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
 #ifdef CACHE_DEBUG
@@ -713,6 +714,7 @@ void CachedImage::movieStatus(int status)
 #endif
             do_notify(pixmap(), valid_rect());
     }
+#endif
 }
 
 void CachedImage::movieResize(const QSize& /*s*/)
