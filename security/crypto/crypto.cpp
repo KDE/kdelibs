@@ -415,6 +415,7 @@ QString whatstr;
   oInfo = new QVButtonGroup(i18n("Path to your OpenSSL shared libraries"), tabOSSL);
   vbox->addWidget(oInfo);
   oPath = new KURLRequester(oInfo);
+  oPath->setMode(KFile::Directory);
   vbox->addWidget(oPath);
   oTest = new QPushButton(i18n("&Test..."), oInfo);
   vbox->addWidget(oTest);
