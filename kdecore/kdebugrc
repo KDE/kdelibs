@@ -10,6 +10,10 @@ InfoOutput=4
 [250]
 InfoOutput=4
 
+# KIconloader debug info off
+[264]
+InfoOutput=4
+
 # KSpell debug info off
 [750]
 InfoOutput=4
