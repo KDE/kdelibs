@@ -453,9 +453,7 @@ int TCPSlaveBase::startTLS()
         return -2;
     }
 
-    if (hasMetaData("ssl_send_session_id")) {
-        setMetaData("ssl_session_id", d->kssl->session()->toString());
-    }
+    setMetaData("ssl_session_id", d->kssl->session()->toString());
 
     d->usingTLS = true;
     setMetaData("ssl_in_use", "TRUE");
@@ -1236,10 +1234,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         return false;
     }
 
-    if (hasMetaData("ssl_send_session_id")) {
-        setMetaData("ssl_session_id", d->kssl->session()->toString());
-    }
-
+    setMetaData("ssl_session_id", d->kssl->session()->toString());
     setMetaData("ssl_in_use", "TRUE");
 
     if (!d->kssl->reusingSession()) {
