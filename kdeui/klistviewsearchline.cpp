@@ -193,27 +193,27 @@ void KListViewSearchLine::listViewDeleted()
 
 void KListViewSearchLine::checkItem(QListViewItem *item)
 {
-    if(!item)
-        return;
-
-    if(itemMatches(item, d->search)) {
-        if(d->keepParentsVisible) {
-            QValueList<QListViewItem *>::Iterator it = d->parents.begin();
-            for(; it != d->parents.end(); ++it)
-                (*it)->setVisible(true);
+    while(item)
+    {
+        if(itemMatches(item, d->search)) {
+            if(d->keepParentsVisible) {
+                QValueList<QListViewItem *>::Iterator it = d->parents.begin();
+                for(; it != d->parents.end(); ++it)
+                    (*it)->setVisible(true);
+            }
+            item->setVisible(true);
         }
-        item->setVisible(true);
-    }
-    else
-        item->setVisible(false);
+        else
+            item->setVisible(false);
+    
+        if(item->firstChild()) {
+            d->parents.append(item);
+            checkItem(item->firstChild());
+            d->parents.remove(d->parents.fromLast());
+        }
 
-    if(item->firstChild()) {
-        d->parents.append(item);
-        checkItem(item->firstChild());
-        d->parents.remove(d->parents.fromLast());
+        item = item->nextSibling();
     }
-
-    checkItem(item->nextSibling());
 }
 
 #include "klistviewsearchline.moc"
