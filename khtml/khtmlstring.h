@@ -39,6 +39,8 @@ namespace khtml
 class DOMStringIt
 {
 public:
+    DOMStringIt()
+	{ s = 0, l = 0; }
     DOMStringIt(QChar *str, uint len)
 	{ s = str, l = len; }
     DOMStringIt(const QString &str)
@@ -57,6 +59,8 @@ public:
 	return *(s+i);
     }
     uint length() const { return l; }
+
+    const QChar *current() { return s; }
 
 protected:
     const QChar *s;

@@ -1,21 +1,23 @@
 /* This file is part of the KDE project
-   Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; see the file COPYING.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-*/
+ *
+ * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+ *                     1999 Lars Knoll <knoll@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
 #include "khtml.moc"
 
@@ -121,7 +123,7 @@ void KHTMLWidget::init()
   _javaEnabled = false;
   _jScriptEnabled = false;
   _followLinks = true;
-  jscript = 0;
+  _jscript = 0;
 
     if ( lstViews == 0L )
 	lstViews = new QList<KHTMLWidget>;
@@ -157,8 +159,8 @@ void KHTMLWidget::clear()
     document = 0;
     if(decoder) delete decoder;
     decoder = 0;
-    delete jscript;
-    jscript = 0;
+    delete _jscript;
+    _jscript = 0;
     if ( _settings ) delete _settings;
     _settings = 0;
 
@@ -222,8 +224,8 @@ bool KHTMLWidget::jScriptEnabled() const
 void KHTMLWidget::executeScript(const QString &c)
 {
     if(!_jScriptEnabled) return;
-    if(!jscript) jscript = new KJSWorld(this);
-    jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
+    if(!_jscript) _jscript = new KJSWorld(this);
+    _jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
 }
 
 
@@ -337,9 +339,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     resizeContents(0, 0);
     setBackgroundMode(PaletteBackground);
     viewport()->repaint(true);
-
-    // ###
-    //emit documentStarted();
 
     m_bParsing = true;
 }
@@ -1466,10 +1465,10 @@ void KHTMLWidget::saveState( QDataStream &stream )
     if(m_strURL.isEmpty() && !m_strWorkingURL.isEmpty())
 	stream << m_strWorkingURL;
     else
-	stream << m_strURL; 
+	stream << m_strURL;
     stream << (int)contentsX() << (int)contentsY();
 
-    if(!m_bComplete || !document || !document->body()) 
+    if(!m_bComplete || !document || !document->body())
     {
 	printf("-------- saving page ---------\n");
 	stream << INFO_NONE;
@@ -1557,7 +1556,6 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    w->restoreState(stream);
 	}
 
-	// same url? If no, we need to restore the frameset
 	openURL(u, false, 0, 0);
     }
 
@@ -1587,4 +1585,11 @@ const QString &KHTMLWidget::baseUrl()
 void KHTMLWidget::setBaseUrl(const QString &base)
 {
   _baseURL = base;
+}
+
+KJSWorld *KHTMLWidget::jScript()
+{
+    if(!_jScriptEnabled) return 0;
+    if(!_jscript) _jscript = new KJSWorld(this);
+    return _jscript;
 }

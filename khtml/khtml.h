@@ -60,7 +60,7 @@ class KJSWorld;
 
 /**
  * This class is meant for displaying html pages. It provides (will provide)
- * full HTML4 support, support for embedding Java applets, and will at some 
+ * full HTML4 support, support for embedding Java applets, and will at some
  * point (hopefully before KDE-2.0 provide support for cascading style sheets
  * (CSS) and JavaScript.
  *
@@ -74,18 +74,18 @@ class KJSWorld;
  * w->show();
  * </code>
  *
- * By default the Widget behaves as a full browser, so clicking on some link 
+ * By default the Widget behaves as a full browser, so clicking on some link
  * on the page you just opened will lead yu to that page. This is inconvenient,
- * if you want to use the widget to display for example formatted emails, but 
- * don't want the widget to open the site in this window in case someone 
- * clicks on an embedded link. In this case just use 
+ * if you want to use the widget to display for example formatted emails, but
+ * don't want the widget to open the site in this window in case someone
+ * clicks on an embedded link. In this case just use
  * @see #setFollowsLinks(false). You will then get a Signal @see #urlClicked()
  * instead of KHTMLWidget following the links directly.
  *
  * By default Java and JavaScript support is disabled. You can enable it by
  * using the @see #setEnableJava() and @see #setEnableJScript() methods.
- * 
- * Some apps want to write their HTML code directly into the widget instead of 
+ *
+ * Some apps want to write their HTML code directly into the widget instead of
  * it opening an url. You can also do that in the following way:
  *
  * <code>
@@ -97,9 +97,9 @@ class KJSWorld;
  * w->end();
  * </code>
  *
- * You can do as many calls to write as you want. But there are two write() 
+ * You can do as many calls to write as you want. But there are two write()
  * methods, one accepting a QString one accepting a char * argument. These
- * should not get mixed, since the method usnig the char * argument does an 
+ * should not get mixed, since the method usnig the char * argument does an
  * additional decoding step to convert the written data to Unicode.
  *
  * If you derive from KHTMLWidget you must overload the method @ref #createFrame
@@ -133,17 +133,17 @@ public:
 
     /**
      * Tell the widget to display the HTML page referred to by _url.
-     * 
+     *
      * @param xoffset, yoffset Show the page at the specified offset after
-     *        loading it. 
+     *        loading it.
      * @param _post_data used internally for HTML post request
      */
-    virtual void openURL( const QString &_url, bool _reload = false, 
+    virtual void openURL( const QString &_url, bool _reload = false,
 		 int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
 
     /**
-     * should the widget follow links automatically, if you click on them? 
-     * Default is true. 
+     * should the widget follow links automatically, if you click on them?
+     * Default is true.
      */
     void setFollowsLinks( bool follow );
     /** does the widget follow links automatically?
@@ -151,7 +151,7 @@ public:
     bool followsLinks();
 
     /**
-     * should images be loaded automatically? Default is true. 
+     * should images be loaded automatically? Default is true.
      * (not implemented at the moment)
      */
     void enableImages( bool enable );
@@ -217,10 +217,10 @@ public:
      *  if it exists and is a child of this widget, otherwise return 0.
      */
     KHTMLWidget *getFrame( QString _name);
-    
+
     /**
-     * Clears the widget and prepares it for new content. 
-     * If you want @see #url() to return 
+     * Clears the widget and prepares it for new content.
+     * If you want @see #url() to return
      * for example "file:/tmp/test.html", you can use the following code:
      * <PRE>
      * view->begin( QString("file:/tmp/test.html" );
@@ -333,7 +333,7 @@ public:
 
     /**
      * @return the base URL of this document
-     * 
+     *
      * The base url is ususally set by an <base url=...> tag in the document head.
      */
     const QString &baseUrl();
@@ -345,7 +345,7 @@ public:
 
     /**
      * @return the base target of this document
-     * The base target is ususally set by an <base target=...> 
+     * The base target is ususally set by an <base target=...>
      * tag in the document head.
      */
     const QString &baseTarget() { return _baseTarget; }
@@ -523,6 +523,11 @@ public:
     DOM::HTMLDocument htmlDocument() const { return document; }
 
     /**
+     * @return the JavaScript engine, or 0 if JScript is disabled.
+     */
+    KJSWorld *jScript();
+     
+    /**
      * Return the job id of the KIOJob responsible for loading the current
      * document (or 0 if none)
      * @see m_jobId
@@ -553,7 +558,7 @@ public slots:
     /**
      * stops loading the current document
      */
-    virtual void slotStop(); 
+    virtual void slotStop();
     /**
      * reload the current document. Will not reload frames contained in this
      * document in case it is a frameset.
@@ -576,7 +581,7 @@ signals:
      */
     void error( int _err, const char* _text );
     /**
-     * Emitted if a link is pressed which has an invalid target, 
+     * Emitted if a link is pressed which has an invalid target,
      * or the target <tt>_blank</tt>.
      */
     void newWindow( const QString &_url );
@@ -869,7 +874,7 @@ private:
     bool _javaEnabled;
     bool _jScriptEnabled;
 
-    KJSWorld *jscript;
+    KJSWorld *_jscript;
 
     int _marginWidth;
     int _marginHeight;

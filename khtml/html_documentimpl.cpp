@@ -126,7 +126,7 @@ void HTMLDocumentImpl::open(  )
     printf("HTMLDocumentImpl::open()\n");
     clear();
     parser = new KHTMLParser(view, this);
-    tokenizer = new HTMLTokenizer(parser);
+    tokenizer = new HTMLTokenizer(parser, view);
     tokenizer->begin();
 }
 

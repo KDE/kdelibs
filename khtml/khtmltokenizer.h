@@ -51,6 +51,7 @@ class HTMLTokenizer;
 #include "khtmlparser.h"
 
 class KHTMLParser;
+class KHTMLWidget;
 
 int getTagID(const char *tagStr, int len);
 int getAttrID(const char *tagStr, int len);
@@ -63,7 +64,7 @@ int getAttrID(const char *tagStr, int len);
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer(KHTMLParser *);
+    HTMLTokenizer(KHTMLParser *, KHTMLWidget * = 0);
     ~HTMLTokenizer();
 
     void begin();
@@ -109,24 +110,24 @@ protected:
         SingleQuote,
         DoubleQuote
     } HTMLQuote;
-        
+
     HTMLQuote tquote;
-    
-    typedef enum 
-    { 
-	NonePending = 0, 
-	SpacePending, 
-	LFPending, 
-	TabPending 
+
+    typedef enum
+    {
+	NonePending = 0,
+	SpacePending,
+	LFPending,
+	TabPending
     } HTMLPendingType;
 
     // To avoid multiple spaces
     HTMLPendingType pending;
 
-    typedef enum 
-    { 
-	NoneDiscard = 0, 
-	SpaceDiscard, 
+    typedef enum
+    {
+	NoneDiscard = 0,
+	SpaceDiscard,
 	LFDiscard,
 	AllDiscard  // discard all spaces, LF's etc until next non white char
     } HTMLDiscardType;
@@ -154,7 +155,7 @@ protected:
     } HTMLTagParse;
 
     // Flag to say, we are just parsing a tag, meaning, we are in the middle
-    // of <tag... 
+    // of <tag...
     HTMLTagParse tag;
 
     // Flag to say that we are just parsing an attribute
@@ -162,13 +163,13 @@ protected:
 
     // Are we in a <title> ... </title> block
     bool title;
-    
+
     // Are we in a <pre> ... </pre> block
     bool pre;
-    
+
     // if 'pre == true' we track in which column we are
     int prePos;
-    
+
     // Are we in a <script> ... </script> block
     bool script;
 
@@ -183,7 +184,7 @@ protected:
 
     // Are we in plain textmode ?
     bool plaintext;
-    
+
     // Are we in a &... character entity description?
     bool charEntity;
 
@@ -199,19 +200,24 @@ protected:
     int scriptCodeSize;
     // Maximal size that can be stored in @ref #scriptCode
     int scriptCodeMaxSize;
-    
+
     // Stores characters if we are scanning for a string like "</script>"
     QChar searchBuffer[ 10 ];
-    // Counts where we are in the string we are scanning for 
+    // Counts where we are in the string we are scanning for
     int searchCount;
     // The string we are searching for
     const QChar *searchFor;
-    
+
     QChar entityBuffer[10];
     uint entityPos;
 
+    QString _src;
+    HTMLStringIt src;
+    
     KCharsets *charsets;
     KHTMLParser *parser;
+
+    KHTMLWidget *view;
 };
 
 //-----------------------------------------------------------------------------

@@ -35,12 +35,15 @@
 
 #include "khtmltokenizer.h"
 #include "khtmltoken.h"
+#include "khtml.h"
 #include "dtd.h"
 
 #include <stdio.h>
 
 #include "khtmltags.c"
 #include "khtmlattrs.c"
+
+#include "kjs.h"
 
 static const QChar commentStart [] = { '<','!','-','-' };
 static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
@@ -67,8 +70,9 @@ int getAttrID(const char *tagStr, int len)
 
 // ----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer(KHTMLParser *p)
+HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLWidget *_view)
 {
+    view = _view;
     buffer = 0;
     scriptCode = 0;
     charsets = KGlobal::charsets();
@@ -235,7 +239,8 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	    if (script)
 	    {
 	        /* Parse scriptCode containing <script> info */
-	        /* Not implemented */
+	        KJSWorld *jscript = view->jScript();
+		if(jscript) jscript->evaluate((KJS::UnicodeChar*)scriptCode, scriptCodeSize);
 	    }
 	    else if (style)
 	    {
@@ -958,24 +963,32 @@ void HTMLTokenizer::setPlainText()
     }
 }
 
-void HTMLTokenizer::write( const QString &_src )
+void HTMLTokenizer::write( const QString &str )
 {
-    // If this pointer is not 0L then we allocated some memory to store HTML
-    // code in. This may happen while parsing the <script> tag, since the output
-    // of the java code is treated as HTML code. This means we have to modify
-    // the HTML code on the fly by inserting new HTML stuff.
-    // If this pointer is not null, one has to free the memory before leaving
-    // this function.
+    // we have to make this function reentrant. This is needed, because some
+    // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
     printf("Tokenizer::write(\"%s\")\n", _src.ascii());
 #endif
 
-    QChar *srcPtr = 0L;
-
-    if ( _src.isEmpty() || buffer == 0L )
+    if ( str.isEmpty() || buffer == 0L )
 	return;
 
-    HTMLStringIt src = HTMLStringIt(_src);
+    if(!_src.isEmpty())
+    {
+	// reentrant...
+	// we just insert the code at the tokenizers current position. Parsing will continue once
+	// we return from the script stuff
+	QString newStr = str;
+	newStr += QString(src.current(), src.length());
+
+	_src = newStr;
+	src = HTMLStringIt(_src);
+	return;
+    }	
+
+    _src = str;
+    src = HTMLStringIt(_src);
     if(!currToken) currToken = new Token;
 
     if (plaintext)
@@ -1142,8 +1155,7 @@ void HTMLTokenizer::write( const QString &_src )
 	}
     }
 
-    if ( srcPtr )
-	delete [] srcPtr;
+    _src = QString();
 }
 
 void HTMLTokenizer::end()
