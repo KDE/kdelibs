@@ -558,6 +558,7 @@ protected:
         bool _hasActive : 1;
         bool _clipSpecified : 1;
         EUnicodeBidi _unicodeBidi : 2;
+        int _unused : 1;
     } noninherited_flags;
 
 // non-inherited attributes
@@ -618,6 +619,7 @@ protected:
 	noninherited_flags._hasActive = false;
 	noninherited_flags._clipSpecified = false;
 	noninherited_flags._unicodeBidi = UBNormal;
+        noninherited_flags._unused = 0;
     }
 
 public:
