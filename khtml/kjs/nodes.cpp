@@ -46,7 +46,7 @@ Node::Node()
 
   // create a list of allocated objects. Makes
   // deleting (even after a parse error) quite easy
-  this->nextNode = firstNode;
+  nextNode = firstNode;
   firstNode = this;
 }
 
@@ -250,13 +250,36 @@ KJSO *EqualNode::evaluate()
 // ECMA 11.10
 KJSO *BitOperNode::evaluate()
 {
-  /* TODO */
+  Ptr e1 = expr1->evaluate();
+  Ptr v1 = e1->getValue();
+  Ptr e2 = expr2->evaluate();
+  Ptr v2 = e2->getValue();
+  int i1 = toInt32(v1);
+  int i2 = toInt32(v2);
+  int result;
+  if (oper == OpBitAnd)
+    result = i1 & i2;
+  else if (oper == OpBitXOr)
+    result = i1 ^ i2;
+  else
+    result = i1 | i2;
+
+  return new KJSNumber(result);
 }
 
 // ECMA 11.11
 KJSO *BinaryLogicalNode::evaluate()
 {
-  /* TODO */
+  Ptr e1 = expr1->evaluate();
+  Ptr v1 = e1->getValue();
+  Ptr b1 = toBoolean(v1);
+  if ((!b1->bVal() && oper == OpAnd) || (b1->bVal() && oper == OpOr))
+    return v1->ref();
+
+  Ptr e2 = expr2->evaluate();
+  Ptr v2 = e2->getValue();
+
+  return v2->ref();
 }
 
 // ECMA 11.12
@@ -315,7 +338,13 @@ KJSO *PostfixNode::evaluate()
 // ECMA 11.4.1
 KJSO *DeleteNode::evaluate()
 {
-  /* TODO */
+  Ptr e = expr->evaluate();
+  Ptr b = e->getBase();
+  CString n = e->getPropertyName(); /* TODO: runtime err if no ref */
+  if (!b->isA(Object))
+    return new KJSBoolean(true);
+  /* TODO [delete] */
+  return new KJSBoolean(!b->hasProperty(n));
 }
 
 // ECMA 11.4.2
@@ -451,21 +480,19 @@ KJSO *ShiftNode::evaluate()
   Ptr v1 = t1->getValue();
   Ptr t2 = term2->evaluate();
   Ptr v2 = t2->getValue();
-  Ptr int1 = (oper == OpURShift) ? toUInt32(v1) : toInt32(v1);
-  Ptr int2 = toUInt32(v2);
-  long i1 = static_cast<long>(int1->dVal());
-  long i2 = static_cast<long>(int2->dVal());
+  unsigned int i2 = toUInt32(v2);
+  i2 &= 0x1f;
 
   long result;
   switch (oper) {
   case OpLShift:
-    result = i1 << i2;
+    result = toInt32(v1) << i2;
     break;
   case OpRShift:
-    result = i1 >> i2;
+    result = toInt32(v1) >> i2;
     break;
   case OpURShift:
-    result = i1 >> i2; /* TODO: unsigned shift */
+    result = toUInt32(v1) >> i2; /* TODO: unsigned shift */
     break;
   default:
     assert(!"ShiftNode: unhandled switch case");
@@ -714,7 +741,13 @@ KJSO *ReturnNode::evaluate()
 // ECMA 12.10
 KJSO *WithNode::evaluate()
 {
- /* TODO */
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr o = toObject(v);
+  /* TODO: prepend scope */
+  Ptr res = stat->evaluate();
+  /* TODO: remove scope */
+  return res->ref();
 }
 
 // ECMA 13

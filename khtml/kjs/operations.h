@@ -31,9 +31,9 @@ KJSO *toBoolean(KJSO *obj);
 KJSO *toNumber(KJSO *obj);
 double round(KJSO *obj);
 KJSO *toInteger(KJSO *obj);
-KJSO *toInt32(KJSO *obj);
-KJSO *toUInt32(KJSO *obj);
-KJSO *toUInt16(KJSO *obj);
+int toInt32(KJSO *obj);
+unsigned int toUInt32(KJSO *obj);
+unsigned short toUInt16(KJSO *obj);
 KJSO *toString(KJSO *obj);
 KJSO *toObject(KJSO *obj);
 

@@ -451,11 +451,11 @@ private:
 
 class WithNode : public StatementNode {
 public:
-  WithNode(const Node *e, const StatementNode *s) : expr(e), stat(s) {}
+  WithNode(Node *e, StatementNode *s) : expr(e), stat(s) {}
   KJSO *evaluate();
 private:
-  const Node *expr;
-  const StatementNode *stat;
+  Node *expr;
+  StatementNode *stat;
 };
 
 class ParameterNode : public Node {

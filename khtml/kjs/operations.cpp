@@ -127,7 +127,7 @@ KJSO *KJS::toInteger(KJSO *obj)
 }
 
 // ECMA 9.5
-KJSO *KJS::toInt32(KJSO *obj)
+int KJS::toInt32(KJSO *obj)
 {
   double d = round(obj);
   double d32 = fmod(d, D32);
@@ -135,25 +135,25 @@ KJSO *KJS::toInt32(KJSO *obj)
   if (d32 >= D16)
     d32 -= D32;
 
-  return new KJSNumber(d32);
+  return static_cast<int>(d32);
 }
 
 // ECMA 9.6
-KJSO *KJS::toUInt32(KJSO *obj)
+unsigned int KJS::toUInt32(KJSO *obj)
 {
   double d = round(obj);
   double d32 = fmod(d, D32);
 
-  return new KJSNumber(d32);
+  return static_cast<unsigned int>(d32);
 }
 
 // ECMA 9.7
-KJSO *KJS::toUInt16(KJSO *obj)
+unsigned short KJS::toUInt16(KJSO *obj)
 {
   double d = round(obj);
   double d16 = fmod(d, D16);
 
-  return new KJSNumber(d16);
+  return static_cast<unsigned short>(d16);
 }
 
 // ECMA 9.8
