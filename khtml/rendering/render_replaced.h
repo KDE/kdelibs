@@ -43,6 +43,9 @@ public:
     short calcReplacedWidth(bool* ieHack=0) const;
     int   calcReplacedHeight() const;
 
+    virtual int lineHeight() const;
+    virtual short baselinePosition() const;
+
     virtual void calcMinMaxWidth();
 
     virtual void print( QPainter *, int x, int y, int w, int h,
