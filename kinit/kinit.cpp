@@ -997,6 +997,13 @@ static void handle_launcher_request(int sock = -1)
          startup_id_str = arg_n;
          arg_n += strlen( startup_id_str ) + 1;
      }
+     
+     if ((request_header.arg_length > (arg_n - request_data)) &&
+         (request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW ))
+     {
+         // Optional cwd
+         cwd = arg_n; arg_n += strlen(cwd) + 1;
+     }
 
      if ((arg_n - request_data) != request_header.arg_length)
      {

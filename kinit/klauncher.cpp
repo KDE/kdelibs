@@ -741,6 +741,8 @@ KLauncher::requestStart(KLaunchRequest *request)
    bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
    if( startup_notify )
        length += request->startup_id.length() + 1;
+   if (!request->cwd.isEmpty())
+       length += request->cwd.length() + 1;
        
    requestData.resize( length );
 
@@ -772,8 +774,13 @@ KLauncher::requestStart(KLaunchRequest *request)
    p += sizeof(long);
    if( startup_notify )
    {
-       strcpy(p, request->startup_id.data());
-       p += strlen( p ) + 1;
+      strcpy(p, request->startup_id.data());
+      p += strlen( p ) + 1;
+   }
+   if (!request->cwd.isEmpty())
+   {
+      strcpy(p, request->cwd.data());
+      p += strlen( p ) + 1;
    }
    request_header.cmd = startup_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC_NEW;
    request_header.arg_length = length;
@@ -1130,6 +1137,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   {
      request->arg_list.append((*it).local8Bit());
   }
+  request->cwd = QFile::encodeName(service->path());
 }
 
 ///// IO-Slave functions
