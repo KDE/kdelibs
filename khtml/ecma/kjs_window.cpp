@@ -624,8 +624,12 @@ KJSO Location::get(const UString &p) const
   KURL url = part->url();
   QString str;
 
-  if (p == "hash")
-    str = url.ref();
+  if (p == "hash"){
+      if (!url.hasPath())
+         str = url.ref()+"/";
+      else
+          str = url.ref();
+  }
   else if (p == "host") {
     str = url.host();
     if (url.port())
@@ -685,12 +689,16 @@ void Location::put(const UString &p, const KJSO &v)
 
 KJSO Location::toPrimitive(Type) const
 {
-  return toString();
+    return toString();
 }
 
 String Location::toString() const
 {
-  return String(part->url().prettyURL()+"/");
+
+ if (!part->url().hasPath())
+        return String(part->url().prettyURL()+"/");
+    else
+        return String(part->url().prettyURL());
 }
 
 LocationFunc::LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
