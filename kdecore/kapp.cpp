@@ -1433,7 +1433,7 @@ startServiceInternal( const QCString &function,
 
    QDataStream stream2(replyData, IO_ReadOnly);
    serviceResult result;
-   stream2 >> result.result >> result.dcopName >> result.error;
+   stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
    if (dcopService)
       *dcopService = result.dcopName;
    if (error)
