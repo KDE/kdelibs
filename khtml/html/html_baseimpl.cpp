@@ -101,6 +101,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_TEXT:
 	addCSSProperty(CSS_PROP_COLOR, attr->value());
+	document->setTextColor( attr->value() );
 	break;
     case ATTR_LINK:
     {

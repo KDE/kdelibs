@@ -59,7 +59,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
     if ( doc->parseMode() != DocumentImpl::Strict ) {
 	addCSSProperty( CSS_PROP_FONT_SIZE, "medium" );
-	addCSSProperty( CSS_PROP_COLOR, "#000000" );
+	addCSSProperty( CSS_PROP_COLOR, doc->textColor() );
 	addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_default" );
     } 
 }

@@ -195,6 +195,9 @@ public:
     void determineParseMode( const QString &str );
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
+
+    void setTextColor( DOMString color ) { m_textColor = color; }
+    DOMString textColor() const { return m_textColor; }
     
 signals:
     virtual void finishedParsing();
@@ -223,6 +226,8 @@ protected:
     QPaintDevice *m_paintDevice;
     QPaintDeviceMetrics *m_paintDeviceMetrics;
     ParseMode pMode;
+
+    DOMString m_textColor; 
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

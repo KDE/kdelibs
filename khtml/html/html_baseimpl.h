@@ -58,6 +58,7 @@ public:
     void attach(KHTMLView *w);
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
+
 protected:
     CSSStyleSheetImpl *m_styleSheet;
     DOMString bgImage;

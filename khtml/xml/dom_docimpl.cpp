@@ -97,6 +97,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_paintDevice = 0;
     m_paintDeviceMetrics = 0;
     pMode = Strict;
+    m_textColor = "#000000";
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -115,6 +116,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_paintDeviceMetrics = 0;
     setPaintDevice( m_view );
     pMode = Strict;
+    m_textColor = "#000000";
 }
 
 DocumentImpl::~DocumentImpl()
