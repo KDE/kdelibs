@@ -110,8 +110,8 @@ interface PlayObject : PlayObject_private {
 	 */
     void pause();
 	/**
-	 * stop playing the media. Normally this function would called stop, 
-	 * but the name is reserved for the start/stop mechanism of the 
+	 * stop playing the media. Normally this function would called stop,
+	 * but the name is reserved for the start/stop mechanism of the
 	 * aRts objects.
 	 */
     void halt();
@@ -180,6 +180,17 @@ interface StreamPlayObject : PlayObject {
 	 * prepares the playobject for the stream
 	 */
 	boolean streamMedia(InputStream instream);
+};
+
+/**
+ * Playobject with adjustable speed
+ */
+interface PitchablePlayObject {
+	/**
+	 * speed relative to "original"/intended one
+	 * (1.0=normal, 2.0=double ;-), 1.05=5% faster)
+	 */
+	attribute float speed;
 };
 
 /**
