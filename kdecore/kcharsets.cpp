@@ -432,7 +432,8 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 
 bool KCharsets::isAvailable(const QString &charset)
 {
-    return isAvailable(nameToID(charset));
+    QFont::CharSet cs = nameToID(charset);
+    return cs == QFont::AnyCharSet ? false : isAvailable(nameToID(charset));
 }
 
 bool KCharsets::isAvailable(QFont::CharSet charset)
@@ -503,7 +504,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::ISO_8859_15:
         return "iso8859-15";
     case QFont::KOI8R:
-        return "koi8-*";
+        return "koi8-r";
     case QFont::Set_Ko:
         return "ksc5601.1987-0";
     case QFont::Set_Ja:
