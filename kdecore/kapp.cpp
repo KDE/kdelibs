@@ -1056,10 +1056,9 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 void KApplication::kdisplaySetPalette()
 {
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
-    KConfigBase* config;
-    config  = KGlobal::config();
+    KConfigBase* config = KGlobal::config();
+    KConfigGroupSaver saver( config, "General" );
 
-    config->setGroup( "General" );
     QColor buttonFallback = config->readColorEntry( "background", &lightGray );
     QColor button = config->readColorEntry( "buttonBackground", &buttonFallback );
     QColor buttonTextFallback = config->readColorEntry( "foreground", &black );
