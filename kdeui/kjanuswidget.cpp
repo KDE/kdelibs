@@ -1100,7 +1100,6 @@ void KJanusWidget::removePage( QWidget *page )
   }
 }
 
-#if 0
 QString KJanusWidget::pageTitle(int index) const
 {
   if (!d || !d->mIntToTitle.contains(index))
@@ -1116,6 +1115,5 @@ QWidget *KJanusWidget::pageWidget(int index) const
   else
     return d->mIntToPage[index];
 }
-#endif
 
 #include "kjanuswidget.moc"

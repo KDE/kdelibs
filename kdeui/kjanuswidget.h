@@ -468,7 +468,7 @@ class KJanusWidget : public QWidget
      * @see @ref #pageIndex()
      * @since 3.2
      */
-    /*virtual*/ QString pageTitle(int index);
+    /*virtual*/ QString pageTitle(int index) const;
     /**
      * Returns the page widget associated with a page index or null if there is
      * no such page.
@@ -476,7 +476,7 @@ class KJanusWidget : public QWidget
      * @see @ref #pageIndex()
      * @since 3.2
      */
-    /*virtual*/ QWidget *pageWidget(int index);
+    /*virtual*/ QWidget *pageWidget(int index) const;
 
   signals:
     void aboutToShowPage(QWidget *page);
