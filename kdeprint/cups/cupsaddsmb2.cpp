@@ -344,11 +344,13 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 	dlg.m_dest = dest;
 	dlg.m_datadir = datadir;
 	dlg.m_text->setText(
-			i18n("You are about to export the <b>%1</b> driver to Windows clients "
-				 "through Samba. This operation requires the <a href=\"http://www.adobe.com\">"
-				 "Adobe PostScript Driver</a>, <a href=\"http://www.samba.org\">Samba</a> "
-				 "version 2.2 and a running SMB service on the target server. Click <b>Export</b> "
-				 "to start the operation.").arg(dest));
+			i18n( "You are about to prepare the <b>%1</b> driver to be "
+			      "shared out to Windows clients through Samba. This operation "
+				  "requires the <a href=\"http://www.adobe.com/products/printerdrivers/main.html\">Adobe PostScript Driver</a>, a recent version of "
+				  "Samba 2.2.x and a running SMB service on the target server. "
+				  "Click <b>Export</b> to start the operation. Read the <a href=\"man:/cupsaddsmb\">cupsaddsmb</a> "
+				  "manual page in Konqueror or type <tt>man cupsaddsmb</tt> in a "
+				  "console window to learn more about this functionality." ).arg( dest ) );
 	dlg.exec();
 	return dlg.m_status;
 }
