@@ -241,7 +241,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     if (!ct.isEmpty()) {
       langlist.insert(it, ln + '_' + ct);
       if (!chrset.isEmpty())
-	langlist.insert(it, ln + '_' + ct + '.' + chrset);
+        langlist.insert(it, ln + '_' + ct + '.' + chrset);
     }
   }
 
@@ -258,12 +258,23 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
     QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo").arg(lang);
     if (!locate("locale", path.arg(catalogue)).isNull() &&
-	!locate("locale", path.arg(SYSTEM_MESSAGES)).isNull())
+        !locate("locale", path.arg(SYSTEM_MESSAGES)).isNull())
       break;
   }
 
-  langs = langlist.join(QString::fromLatin1(":"));
+  // Remove duplicate entries in reverse so that we
+  // can keep user's language preference order intact. (DA)
+  for( QStringList::Iterator it = langlist.fromLast();
+         it != langlist.begin();
+         --it )
+  {
+    kdDebug() << "Current Language: " << *it << endl;
+    if ( langlist.contains(*it) > 1 )
+        it = langlist.remove( it );
+  }
 
+  langs = langlist.join(QString::fromLatin1(":"));
+  kdDebug() << "Languages: " << langs << endl;
   setEncodingLang(lang);
   //kdDebug() << "KLocale::initLanguage setEncodingLang " << lang << endl;
 
