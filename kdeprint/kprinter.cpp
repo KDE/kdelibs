@@ -151,9 +151,9 @@ void KPrinter::saveSettings()
 	conf->writeEntry("PrintCommand",option("kde-printcommand"));
 }
 
-bool KPrinter::setup(QWidget *parent, const QString& caption)
+bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
-	bool	state = KPrintDialog::printerSetup(this, parent, caption);
+	bool	state = KPrintDialog::printerSetup(this, parent, caption, forceExpand);
 	return state;
 }
 

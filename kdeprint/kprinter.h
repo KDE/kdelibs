@@ -461,9 +461,10 @@ public:
 	 * Sets up the KPrinter object using the print dialog, returns true if the user clicked OK.
 	 * @param parent the parent widget to use for the print dialog
 	 * @param caption the caption to use in the print dialog
+	 * @param forceExpand force the expansion of the dialog (the show/hide button will be hidden)
 	 * @returns boolean value corresponding to the button clicked by the user
 	 */
-	bool setup(QWidget *parent = 0, const QString& caption = QString::null);
+	bool setup(QWidget *parent = 0, const QString& caption = QString::null, bool forceExpand = false);
 	/**
 	 * See @ref QPrinter::margins().
 	 */
