@@ -24,8 +24,14 @@
 #ifndef _khtml_loader_h
 #define _khtml_loader_h
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "loader_client.h"
+#ifdef HAVE_LIBJPEG
 #include "loader_jpeg.h"
+#endif
 
 #include <qlist.h>
 #include <qobject.h>
@@ -322,7 +328,9 @@ namespace khtml
 	
 	QList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
+#ifdef HAVE_LIBJPEG        
         KJPEGFormatType m_jpegloader;
+#endif        
     };
 
 

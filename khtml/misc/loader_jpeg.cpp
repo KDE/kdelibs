@@ -22,6 +22,11 @@
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBJPEG
 #include "loader_jpeg.h"
 
 #include <stdio.h> 
@@ -417,6 +422,11 @@ const char* KJPEGFormatType::formatName() const
     return "JPEG";
 }
 
+#else
+#ifdef __GNUC__
+#warning You don't seem to have libJPEG. jpeg support in khtml won't work
+#endif
+#endif // HAVE_LIBJPEG
 
 // -----------------------------------------------------------------------------
 
