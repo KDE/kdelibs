@@ -109,7 +109,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                     len++;
                 break;
             case DOC_APPLETS:   // all OBJECT and APPLET elements
-                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET || e->id() == ID_EMBED)
                     len++;
                 break;
             case DOC_LINKS:     // all A _and_ AREA elements with a value for href
@@ -194,7 +194,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                     len++;
                 break;
             case DOC_APPLETS:   // all OBJECT and APPLET elements
-                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET || e->id() == ID_EMBED)
                     len++;
                 break;
             case DOC_LINKS:     // all A _and_ AREA elements with a value for href
@@ -319,7 +319,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                     check = true;
                 break;
             case DOC_APPLETS:   // all OBJECT and APPLET elements
-                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET || e->id() == ID_EMBED)
                     check = true;
                 break;
             case DOC_LINKS:     // all A _and_ AREA elements with a value for href
@@ -335,10 +335,12 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 break;
             case DOC_ALL:
                 // all['foo'] accepts all elements with id='foo' and
-                // images, forms and applets with name='foo'.
+                // images, forms and applets/objects/embeds with name='foo'.
                 if ( attr_id == ATTR_ID ||
                      (attr_id == ATTR_NAME &&
-                      ( e->id() == ID_IMG || e->id() == ID_FORM || e->id() == ID_APPLET ) ) )
+                      ( e->id() == ID_IMG || e->id() == ID_FORM ||
+                        e->id() == ID_APPLET || e->id() == ID_OBJECT ||
+                        e->id() == ID_EMBED) ) )
                     check = true;
                 break;
             case NODE_CHILDREN:
