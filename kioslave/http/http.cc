@@ -1,5 +1,3 @@
-
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -614,7 +612,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
       }
     } else { 
       // apparently we don't want a proxy.  let's just connect directly
-      struct sockaddr_in server_name;
+      ksockaddr_in server_name;
 
       if(!KSocket::initSockaddr(&server_name, _url.host(), port)) {
         error( ERR_UNKNOWN_HOST, _url.host() );

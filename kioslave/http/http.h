@@ -34,6 +34,7 @@
 #include <kio_interface.h>
 #include <kio_base.h>
 #include <kurl.h>
+#include <ksock.h>
 
 
 // Default ports.. you might want to change this if you're trying to dodge
@@ -240,7 +241,7 @@ protected: // Members
   QString m_strProxyHost;
   QString m_strProxyUser;
   QString m_strProxyPass;
-  struct sockaddr_in m_proxySockaddr;
+  ksockaddr_in m_proxySockaddr;
 
   // Authentication
   QString m_strRealm, 
