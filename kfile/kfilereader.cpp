@@ -326,11 +326,11 @@ void KFileReader::slotIOFinished( KIO::Job * job )
     kdDebug(kfile_area) << "slotIOFinished" << endl;
     myJob= 0;
     myNewEntries.clear();
+    myDirtyFlag = false;
     if (job->error())
 	emit error( job->error(), job->errorText() );
     else
 	emit contents(myNewEntries, true);
-
 }
 
 // called when KDirWatch tells us that our directory contents have changed
