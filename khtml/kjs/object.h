@@ -245,7 +245,7 @@ class KJSObject : public KJSO {
 public:
   KJSObject() {}
   Type type() const { return Object; }
-  virtual SubType subType() const = 0;
+    //virtual SubType subType() const = 0;
 };
 
 class KJSScope : public KJSO {
