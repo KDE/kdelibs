@@ -43,11 +43,15 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisPageSelectionLabel = i18n(  " <qt><b>Page Selection</b> "
+	QString whatsThisPageSelectionLabel = i18n(  " <qt><p><b>Page Selection</b></p> "
 						" <p>Here you can control if you print a certain selection only out of all"
-						" the pages from the complete document.</qt>" );
+						" the pages from the complete document."
+						" </p>"
+						" </qt>" );
 	QString whatsThisAllPagesLabel = i18n(  " <qt><b>All Pages:</b> Select \"All\" to print the complete document."
-						" Since this is the default, it is pre-selected.</qt>" );
+						" Since this is the default, it is pre-selected."
+						" </p>"
+						" </qt>" );
 	QString whatsThisCurrentPagesLabel = i18n(  " <qt><b>Current Page:</b> Select <em>\"Current\"</em> if you want "
 						" to print the page currently visible in your KDE application.</p>"
 						" <p><b>Note:</b> this field is disabled if you print from"
@@ -57,7 +61,16 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 						" complete document pages"
 						" to be printed. The format is <em>\"n,m,o-p,q,r,s-t, u\"</em>.</p>"
 						" <p><b>Example:</b> <em>\"4,6,10-13,17,20,23-25\"</em> will print"
-						" the pages 4, 6, 10, 11, 12, 13, 17, 20, 23, 24, 25 of your document.</p></qt>" );
+						" the pages 4, 6, 10, 11, 12, 13, 17, 20, 23, 24, 25 of your document.</p>"
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o page-ranges=...     # example: \"4,6,10-13,17,20,23-25\" "
+						" </pre>"
+						" </p> "
+						"</qt>" );
 	QString whatsThisPageSetLabel = i18n(  " <qt><b>Page Set:</b>"
 						" <p>Choose <em>\"All Pages\"</em>, <em>\"Even Pages\"</em> or"
 						" <em>\"Odd Pages\"</em>"
@@ -66,24 +79,66 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 						" <p><b>Note:</b> If you combine a selection of a <em>\"Page Range\"</em> with a"
 						" <em>\"Page Set\"</em> of <em>\"Odd\"</em> or <em>\"Even\"</em>, you will only get the"
 						" odd or even pages from the originally selected page range. This is useful if you"
+						" odd or even pages from the originally selected page range. This is useful if you"
 						" want to print a page range in duplex on a simplex-only printer. In this case you"
 						" can feed the paper to the printer twice; in the first pass, select \"Odd\" or"
 						" \"Even\" (depending on your printer model), in second pass select the other"
 						" option. You may need to <em>\"Reverse\"</em> the output in one of the passes (depending"
 						" on your printer model).</p> "
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter </p>"
+						" <pre>"
+						"    -o page-set=...        # example: \"odd\" or \"even\" "
+						" </pre>"
+						" </p> "
 						" </qt>" );
 	QString whatsThisCopiesLabel = i18n(  " <qt><b>Output Settings:</b>"
 						" Here you can determine the number of copies, the output order and the collate"
-						" mode for the pages of your printjob.</qt>" );
+						" mode for the pages of your printjob. (Note, that the maximum number of copies "
+						" allowed to print may be restricted by your print subsystem.)</p>"
+						" <p>The 'Copies' setting defaults to 1- "
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"     -o copies=...            # examples: \"5\" or \"42\" "
+						" <br> "
+						"    -o outputorder=...       # example:  \"reverse\""
+						" <br> "
+						"    -o Collate=...           # example:  \"true\" or \"false\" "
+						" </pre>"
+						" </p> "
+						".</qt>" );
 	QString whatsThisNumberOfCopiesLabel = i18n(  " <qt><b>Number of Copies:</b> Determine the number of requested copies here."
 						" You can increase or decrease"
 						" the number of printed copies by clicking on the up and down arrows. You can also type the figure"
-						" directly into the box.</qt>" );
+						" directly into the box. "
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"     -o copies=...            # examples: \"5\" or \"42\" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 	QString whatsThisCollateLabel = i18n(  " <qt><b>Collate Copies</b>"
 						" <p>If the <em>\"Collate\"</em> checkbox is enabled (default), the output order for"
 						" multiple copies of a multi-page document will be \"1-2-3-..., 1-2-3-..., 1-2-3-...\".</p>"
 						" <p>If the <em>\"Collate\"</em> checkbox is disabled, the output order for"
-						" multiple copies of a multi-page document will be \"1-1-1-..., 2-2-2-..., 3-3-3-...\".</p></qt>" );
+						" multiple copies of a multi-page document will be \"1-1-1-..., 2-2-2-..., 3-3-3-...\".</p>"
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o Collate=...           # example:  \"true\" or \"false\" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 	QString whatsThisReverseLabel = i18n(  " <qt><b>Reverse Order</b>"
 						" <p> If the <em>\"Reverse\"</em> checkbox is enabled, the output order for"
 						" multiple copies of a multi-page document will be \"...-3-2-1, ...-3-2-1, ...-3-2-1\", if you"
@@ -91,8 +146,17 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 						" (the usual usecase).</p>"
 						" <p>If the <em>\"Reverse\"</em> checkbox is enabled, the output order for"
 						" multiple copies of a multi-page document will be \"...-3-3-3, ...-2-2-2, ...-1-1-1\", if you"
-						" have <em>dis</em>abled the <em>\"Collate\"</em> checkbox at the same time."
-						"</p></qt>" );
+						" have <em>dis</em>abled the <em>\"Collate\"</em> checkbox at the same time. </p>"
+						" <br> "
+						" <hr> "
+						" <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+						" <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+						" <pre>"
+						"    -o outputorder=...       # example:  \"reverse\""
+						" "
+						" </pre>"
+						" </p> "
+						" </qt>" );
 	m_printer = prt;
 	m_useplugin = true;
 
