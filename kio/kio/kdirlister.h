@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
-                 2001, 2002 Michael Brade <brade@kde.org>
+                 2001, 2002, 2004 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -64,6 +64,7 @@ class KDirLister : public QObject
   Q_PROPERTY( bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled )
   Q_PROPERTY( QString nameFilter READ nameFilter WRITE setNameFilter )
   Q_PROPERTY( QStringList mimeFilter READ mimeFilters WRITE setMimeFilter RESET clearMimeFilter )
+
 public:
   /**
    * Create a directory lister.
@@ -88,16 +89,17 @@ public:
    * with KFileItems, up until the signal completed() is emitted
    * (and isFinished() returns true).
    *
-   * @param _url          the directory URL.
-   * @param _keep         if true the previous directories aren't forgotten
-   *                      (they are still watched by kdirwatch and their items
-   *                      are kept for this KDirLister). This is useful for e.g.
-   *                      a treeview.
-   * @param _reload       indicates wether to use the cache (false) or to reread the
-   *                      directory from the disk.
-   *                      Use only when opening a dir not yet listed by this lister
-   *                      without using the cache. Otherwise use updateDirectory.
-   * @return true if successful, false otherwise (e.g. invalid @p _url)
+   * @param _url     the directory URL.
+   * @param _keep    if true the previous directories aren't forgotten
+   *                 (they are still watched by kdirwatch and their items
+   *                 are kept for this KDirLister). This is useful for e.g.
+   *                 a treeview.
+   * @param _reload  indicates wether to use the cache (false) or to reread the
+   *                 directory from the disk.
+   *                 Use only when opening a dir not yet listed by this lister
+   *                 without using the cache. Otherwise use updateDirectory.
+   * @return true    if successful, 
+   *         false   otherwise (e.g. invalid @p _url)
    */
   virtual bool openURL( const KURL& _url, bool _keep = false, bool _reload = false );
 
@@ -153,7 +155,7 @@ public:
    *               top-level
    * @see autoErrorHandlingEnabled()
    */
-  void setAutoErrorHandlingEnabled( bool enable, QWidget* parent );
+  void setAutoErrorHandlingEnabled( bool enable, QWidget *parent );
 
   /**
    * Checks whether hidden files (files beginning with a dot) will be
@@ -190,15 +192,25 @@ public:
   virtual void setDirOnlyMode( bool dirsOnly );
 
   /**
-   * Returns the URL that is listed by this KDirLister.
-   * It might be different from the one given with openURL().
-   * if there was a redirection. If you called openURL() with
-   * @p _keep == true, this is the first url opened (in e.g. a treeview this is
-   * the root).
+   * Returns the top level URL that is listed by this KDirLister.
+   * It might be different from the one given with openURL() if there was a 
+   * redirection. If you called openURL() with @p _keep == true this is the
+   * first url opened (e.g. in a treeview this is the root).
    *
    * @return the url used by this instance to list the files.
    */
   const KURL& url() const;
+
+  /**
+   * Returns all URLs that are listed by this KDirLister. This is only
+   * useful if you called openURL() with @p _keep == true, as it happens in a
+   * treeview, for example. (Note that the base url is included in the list
+   * as well, of course.)
+   * 
+   * @return the list of all listed URLs
+   * @since 3.3
+   */
+  const KURL::List& directories() const;
 
   /**
    * Actually emit the changes made with setShowingDotFiles, setDirOnlyMode,
@@ -229,16 +241,16 @@ public:
    * Returns the file item of the URL.
    * @return the file item for url() itself (".")
    */
-  KFileItem* rootItem() const;
+  KFileItem *rootItem() const;
 
   /**
    * Find an item by its URL.
    * @param _url the item URL
    * @return the pointer to the KFileItem
    */
-  virtual KFileItem* findByURL( const KURL& _url ) const;
+  virtual KFileItem *findByURL( const KURL& _url ) const;
 #ifndef KDE_NO_COMPAT
-  KFileItem* find( const KURL& _url ) const;
+  KFileItem *find( const KURL& _url ) const;
 #endif
 
   /**
@@ -246,7 +258,7 @@ public:
    * @param name the item name
    * @return the pointer to the KFileItem
    */
-  virtual KFileItem* findByName( const QString& name ) const;
+  virtual KFileItem *findByName( const QString& name ) const;
 
   /**
    * Set a name filter to only list items matching this name, e.g. "*.cpp".
@@ -334,7 +346,7 @@ public:
    * @param window the window to associate with, 0 to disassociate
    * @since 3.1
    */
-  void setMainWindow(QWidget *window);
+  void setMainWindow( QWidget *window );
 
   /**
    * Returns the main window associated with this object.
@@ -363,11 +375,10 @@ public:
    * signal is emitted.
    *
    * @param which specifies whether the returned list will contain all entries
-   *              or only the ones that passed the nameFilter(),
-   * mimeFilter(), etc.
-   *              Note that the latter causes iteration over all the items,
-   *              filtering them. If this is too slow for you, use the
-   * newItems() signal, sending out filtered items in chunks.
+   *              or only the ones that passed the nameFilter(), mimeFilter(),
+   *              etc. Note that the latter causes iteration over all the 
+   *              items, filtering them. If this is too slow for you, use the
+   *              newItems() signal, sending out filtered items in chunks.
    * @return the items listed for the current url().
    * @since 3.1
    */
@@ -390,7 +401,7 @@ public:
    *              Note that the latter causes iteration over all the items,
    *              filtering them. If this is too slow for you, use the
    * newItems() signal, sending out filtered items in chunks.
-   * @return the items listed for the current url().
+   * @return the items listed for @p dir.
    * @since 3.1
    */
   KFileItemList itemsForDir( const KURL& dir,
@@ -588,10 +599,10 @@ protected:
   virtual bool validURL( const KURL& ) const;
 
   /** Reimplement to customize error handling */
-  virtual void handleError( KIO::Job* );
+  virtual void handleError( KIO::Job * );
 
 protected:
-  virtual void virtual_hook( int id, void* data );
+  virtual void virtual_hook( int id, void *data );
 
 private slots:
   void slotInfoMessage( KIO::Job *, const QString& );
@@ -601,8 +612,8 @@ private slots:
   void slotSpeed( KIO::Job *, unsigned long );
 
 private:
-  void jobDone( KIO::ListJob *);
-  void jobStarted( KIO::ListJob *);
+  void jobDone( KIO::ListJob * );
+  void jobStarted( KIO::ListJob * );
   uint numJobs();
 
 private:

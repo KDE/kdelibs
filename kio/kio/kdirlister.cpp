@@ -452,7 +452,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
 
       // this job is a running update
       KIO::ListJob *job = jobForUrl(urlStr);
-      if (job)
+      if ( job )
       {
         lister->jobDone(job);
         killJob( job );
@@ -483,7 +483,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         else
           item->complete = false;
       }
-      else {
+      else 
+      {
         delete item;
         item = 0;
       }
@@ -509,17 +510,19 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
 
   QPtrList<KDirLister> *listers = urlsCurrentlyListed[urlStr];
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
+
   // restart the job for _dir if it is running already
   bool killed = false;
-  KIO::ListJob *job = jobForUrl(urlStr);
-  if (job)
+  KIO::ListJob *job = jobForUrl( urlStr );
+  if ( job )
   {
      killed = true;
      killJob( job );
-     if (listers)
+     if ( listers )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
            kdl->jobDone(job);
-     if (holders)
+
+     if ( holders )
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
            kdl->jobDone(job);
   }
@@ -528,35 +531,35 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   // we don't need to emit canceled signals since we only replaced the job,
   // the listing is continuing.
 
-  Q_ASSERT( !listers || ( listers && killed ) );
+  Q_ASSERT( !listers || (listers && killed) );
 
   job = KIO::listDir( _dir, false /* no default GUI */ );
   jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
-  connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
-           this, SLOT( slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           this, SLOT( slotUpdateResult( KIO::Job * ) ) );
+  connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
+           this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
+  connect( job, SIGNAL(result( KIO::Job * )),
+           this, SLOT(slotUpdateResult( KIO::Job * )) );
 
   kdDebug(7004) << k_funcinfo << "update started in " << _dir << endl;
 
-  if (listers)
+  if ( listers )
      for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-        kdl->jobStarted(job);
+        kdl->jobStarted( job );
 
-  if (holders)
+  if ( holders )
   {
      if ( killed )
      {
         bool first = true;
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
         {
-           kdl->jobStarted(job);
+           kdl->jobStarted( job );
            kdl->d->complete = false;
-           if (first && kdl->d->window)
+           if ( first && kdl->d->window )
            {
               first = false;
-              job->setWindow(kdl->d->window);
+              job->setWindow( kdl->d->window );
            }
            emit kdl->started( _dir );
         }
@@ -564,7 +567,7 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
      else
      {
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-           kdl->jobStarted(job);
+           kdl->jobStarted( job );
      }
   }
 }
@@ -590,7 +593,7 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     return true;
 }
 
-KFileItemList* KDirListerCache::itemsForDir( const KURL &_dir ) const
+KFileItemList *KDirListerCache::itemsForDir( const KURL &_dir ) const
 {
   QString urlStr = _dir.url(-1);
   DirItem *item = itemsInUse[ urlStr ];
@@ -599,7 +602,7 @@ KFileItemList* KDirListerCache::itemsForDir( const KURL &_dir ) const
   return item ? item->lstItems : 0;
 }
 
-KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString& _name ) const
+KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString& _name ) const
 {
   Q_ASSERT( lister );
 
@@ -615,7 +618,7 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
   return 0L;
 }
 
-KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
+KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
 {
   KURL _url = _u;
   _url.adjustPath(-1);
@@ -627,7 +630,7 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
   if ( lister && !lister->d->lstDirs.contains( parentDir ) )
       return 0L;
 
-  KFileItemList* itemList = itemsForDir( parentDir );
+  KFileItemList *itemList = itemsForDir( parentDir );
   if ( itemList )
   {
     KFileItemListIterator kit( *itemList );
@@ -651,13 +654,13 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
   for ( ; it != fileList.end() ; ++it )
   {
     // emit the deleteItem signal if this file was shown in any view
-    KFileItem* fileitem = 0L;
+    KFileItem *fileitem = 0L;
     KURL parentDir( *it );
     parentDir.setPath( parentDir.directory() );
-    KFileItemList* lstItems = itemsForDir( parentDir );
+    KFileItemList *lstItems = itemsForDir( parentDir );
     if ( lstItems )
     {
-      KFileItem* fit = lstItems->first();
+      KFileItem *fit = lstItems->first();
       for ( ; fit; fit = lstItems->next() )
         if ( fit->url() == *it ) {
           fileitem = fit;
@@ -699,7 +702,7 @@ void KDirListerCache::FilesChanged( const KURL::List &fileList )
     if ( ( *it ).isLocalFile() )
     {
       kdDebug(7004) << "KDirListerCache::FilesChanged " << *it << endl;
-      KFileItem* fileitem = findByURL( 0, *it );
+      KFileItem *fileitem = findByURL( 0, *it );
       if ( fileitem )
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
@@ -1057,13 +1060,14 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
   while ( itu.current() )
   {
     goNext = true;
-    DirItem* dir = itu.current();
+    DirItem *dir = itu.current();
     KURL oldDirUrl ( itu.currentKey() );
     //kdDebug(7004) << "itemInUse: " << oldDirUrl.prettyURL() << endl;
     // Check if this dir is oldUrl, or a subfolder of it
     if ( oldUrl.isParentOf( oldDirUrl ) )
     {
-      QString relPath = oldDirUrl.path().mid( oldUrl.path().length() ); // ### should use KURL::cleanpath like isParentOf does
+      // TODO should use KURL::cleanpath like isParentOf does
+      QString relPath = oldDirUrl.path().mid( oldUrl.path().length() );
 
       KURL newDirUrl( newUrl ); // take new base
       if ( !relPath.isEmpty() )
@@ -1132,9 +1136,8 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
   if ( holders )
   {
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-    {
        kdl->jobDone(job);
-    }
+
     urlsCurrentlyHeld.insert( urlStr, holders );
   }
 
@@ -1144,9 +1147,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
 
     // Tell the world about the new url
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-    {
       emit kdl->started( url );
-    }
   }
 
   if (holders)
@@ -1155,10 +1156,10 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
     {
       *kdl->d->lstDirs.find( oldUrl ) = url;
+
       if ( kdl->d->lstDirs.count() == 1 )
-      {
         emit kdl->redirection( url );
-      }
+
       emit kdl->redirection( oldUrl, url );
     }
   }
@@ -1659,6 +1660,11 @@ const KURL& KDirLister::url() const
 {
   return d->url;
 }
+  
+const KURL::List& KDirLister::directories() const
+{
+  return d->lstDirs;
+}
 
 void KDirLister::emitChanges()
 {
@@ -1759,23 +1765,23 @@ bool KDirLister::isFinished() const
   return d->complete;
 }
 
-KFileItem* KDirLister::rootItem() const
+KFileItem *KDirLister::rootItem() const
 {
   return d->rootFileItem;
 }
 
-KFileItem* KDirLister::findByURL( const KURL& _url ) const
+KFileItem *KDirLister::findByURL( const KURL& _url ) const
 {
   return s_pCache->findByURL( this, _url );
 }
 
-KFileItem* KDirLister::findByName( const QString& _name ) const
+KFileItem *KDirLister::findByName( const QString& _name ) const
 {
   return s_pCache->findByName( this, _name );
 }
 
 #ifndef KDE_NO_COMPAT
-KFileItem* KDirLister::find( const KURL& _url ) const
+KFileItem *KDirLister::find( const KURL& _url ) const
 {
   return findByURL( _url );
 }
@@ -1991,11 +1997,15 @@ void KDirLister::addRefreshItem( const KFileItem *item )
       d->lstRefreshItems = new KFileItemList;
 
     d->lstRefreshItems->append( item );
-  } else {
+  } 
+  else 
+  {
     if ( !d->lstRemoveItems )
       d->lstRemoveItems = new KFileItemList;
 
-      d->lstRemoveItems->append( item );//notify the user that the mimetype of a file changed, which doesn't match a filter or does match an exclude  filter
+    // notify the user that the mimetype of a file changed that doesn't match
+    // a filter or does match an exclude filter
+    d->lstRemoveItems->append( item );  
   }
 }
 
@@ -2058,7 +2068,7 @@ void KDirLister::slotInfoMessage( KIO::Job *, const QString& message )
 
 void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
 {
-  d->jobData[static_cast<KIO::ListJob*>(job)].percent = pcnt;
+  d->jobData[static_cast<KIO::ListJob *>(job)].percent = pcnt;
 
   int result = 0;
 
@@ -2081,7 +2091,7 @@ void KDirLister::slotPercent( KIO::Job *job, unsigned long pcnt )
 
 void KDirLister::slotTotalSize( KIO::Job *job, KIO::filesize_t size )
 {
-  d->jobData[static_cast<KIO::ListJob*>(job)].totalSize = size;
+  d->jobData[static_cast<KIO::ListJob *>(job)].totalSize = size;
 
   KIO::filesize_t result = 0;
   QMap< KIO::ListJob *, KDirListerPrivate::JobData >::Iterator dataIt = d->jobData.begin();
@@ -2096,7 +2106,7 @@ void KDirLister::slotTotalSize( KIO::Job *job, KIO::filesize_t size )
 
 void KDirLister::slotProcessedSize( KIO::Job *job, KIO::filesize_t size )
 {
-  d->jobData[static_cast<KIO::ListJob*>(job)].processedSize = size;
+  d->jobData[static_cast<KIO::ListJob *>(job)].processedSize = size;
 
   KIO::filesize_t result = 0;
   QMap< KIO::ListJob *, KDirListerPrivate::JobData >::Iterator dataIt = d->jobData.begin();
@@ -2111,7 +2121,7 @@ void KDirLister::slotProcessedSize( KIO::Job *job, KIO::filesize_t size )
 
 void KDirLister::slotSpeed( KIO::Job *job, unsigned long spd )
 {
-  d->jobData[static_cast<KIO::ListJob*>(job)].speed = spd;
+  d->jobData[static_cast<KIO::ListJob *>(job)].speed = spd;
 
   int result = 0;
   QMap< KIO::ListJob *, KDirListerPrivate::JobData >::Iterator dataIt = d->jobData.begin();
@@ -2190,7 +2200,7 @@ KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
 
 // to keep BC changes
 
-void KDirLister::virtual_hook( int, void* )
+void KDirLister::virtual_hook( int, void * )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kdirlister.moc"

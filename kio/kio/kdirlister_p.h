@@ -91,13 +91,13 @@ public:
     KIO::filesize_t processedSize, totalSize;
   };
 
-  QMap< KIO::ListJob*, JobData > jobData;
+  QMap<KIO::ListJob *, JobData> jobData;
 
   // file item for the root itself (".")
   KFileItem *rootFileItem;
 
-  KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems,
-    *lstRemoveItems;
+  KFileItemList *lstNewItems, *lstRefreshItems;
+  KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
 
   int changes;
 
@@ -129,7 +129,7 @@ public:
   KDirListerCache( int maxCount = 10 );
   ~KDirListerCache();
 
-  void listDir( KDirLister* lister, const KURL &_url, bool _keep, bool _reload );
+  void listDir( KDirLister *lister, const KURL &_url, bool _keep, bool _reload );
 
   // stop all running jobs for lister
   void stop( KDirLister *lister );
@@ -143,11 +143,11 @@ public:
 
   void updateDirectory( const KURL &_dir );
 
-  KFileItemList* itemsForDir( const KURL &_dir ) const;
+  KFileItemList *itemsForDir( const KURL &_dir ) const;
 
-  KFileItem* findByName( const KDirLister *lister, const QString &_name ) const;
+  KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
-  KFileItem* findByURL( const KDirLister *lister, const KURL &_url ) const;
+  KFileItem *findByURL( const KDirLister *lister, const KURL &_url ) const;
 
   /**
    * Notify that files have been added in @p directory
@@ -175,7 +175,7 @@ public:
   virtual void FilesChanged( const KURL::List &fileList );
   virtual void FileRenamed( const KURL &src, const KURL &dst );
 
-  static KDirListerCache* self();
+  static KDirListerCache *self();
 
 private slots:
   void slotFileDirty( const QString &_file );
@@ -212,7 +212,7 @@ private:
   void removeDirFromCache( const KURL& dir );
   // helper for renameDir
   void emitRedirections( const KURL &oldUrl, const KURL &url );
-  void emitRefreshItem( KFileItem* fileitem );
+  void emitRefreshItem( KFileItem *fileitem );
 #ifndef NDEBUG
   void printDebug();
 #endif
@@ -279,12 +279,12 @@ private:
     // KFileItem representing the root of this directory.
     // Remember that this is optional. FTP sites don't return '.' in
     // the list, so they give no root item
-    KFileItem* rootItem;
-    KFileItemList* lstItems;
+    KFileItem *rootItem;
+    KFileItemList *lstItems;
   };
 
   static const unsigned short MAX_JOBS_PER_LISTER;
-  QMap< KIO::ListJob *, KIO::UDSEntryList > jobs;
+  QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
 
   // an item is a complete directory
   QDict<DirItem> itemsInUse;
@@ -308,7 +308,7 @@ private:
   // running timers for the delayed update
   QDict<QTimer> pendingUpdates;
 
-  static KDirListerCache* s_pSelf;
+  static KDirListerCache *s_pSelf;
 };
 
 const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
