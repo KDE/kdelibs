@@ -671,21 +671,18 @@ DCOPServer::~DCOPServer()
 /*!
   Called from our IceIoErrorHandler
  */
-void DCOPServer::ioError( IceConn iceConn )
+void DCOPServer::ioError( IceConn /* iceConn */ )
 {
-    IceSetShutdownNegotiation (iceConn, False);
-    IceCloseConnection( iceConn );
 }
 
 
 void DCOPServer::processData( int /*socket*/ )
 {
-
     IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
-	if ( !busy.contains( iceConn ) )
-	    (void) IceCloseConnection( iceConn );
+	IceSetShutdownNegotiation (iceConn, False);
+	(void) IceCloseConnection( iceConn );
     }
 }
 
@@ -695,19 +692,18 @@ void DCOPServer::newClient( int /*socket*/ )
     IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
     IceSetShutdownNegotiation( iceConn, False );
 
-    busy.append( iceConn );
     IceConnectStatus cstatus;
     while ((cstatus = IceConnectionStatus (iceConn))==IceConnectPending) {
-	qApp->processOneEvent();
+	(void) IceProcessMessages( iceConn, 0, 0 );
     }
+
     if (cstatus != IceConnectAccepted) {
 	if (cstatus == IceConnectIOError)
 	    qWarning ("IO error opening ICE Connection!\n");
 	else
 	    qWarning ("ICE Connection rejected!\n");
-	IceCloseConnection (iceConn);
+	(void) IceCloseConnection (iceConn);
     }
-    busy.remove( iceConn );
 }
 
 void* DCOPServer::watchConnection( IceConn iceConn )
@@ -892,23 +888,9 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
     return FALSE;
 }
 
-#if defined(X_POSIX_C_SOURCE)
-#define _POSIX_C_SOURCE X_POSIX_C_SOURCE
-#include <setjmp.h>
-#undef _POSIX_C_SOURCE
-#elif defined(X_NOT_POSIX) || defined(_POSIX_SOURCE)
-#include <setjmp.h>
-#else
-#define _POSIX_SOURCE
-#include <setjmp.h>
-#undef _POSIX_SOURCE
-#endif
-jmp_buf JumpHere;
-
 void IoErrorHandler ( IceConn iceConn)
 {
     the_server->ioError( iceConn );
-    longjmp (JumpHere, 1);
 }
 
 const char* const ABOUT =
@@ -996,7 +978,6 @@ int main( int argc, char* argv[] )
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer; // this sets the_server
 
-    setjmp (JumpHere);
     int ret = a.exec();
     delete server;
     return ret;
