@@ -85,12 +85,17 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             breakAt = i;
         if ( i == len - 2 && x + ww + fm.charWidth( str, i+1 ) > w ) // don't leave the last char alone
             breakAt = lastBreak == -1 ? i - 1 : lastBreak;
-        if (c == '\n') // Forced break here
+        if ( c == '\n' ) // Forced break here
         {
-            breakAt = i;
+            if ( breakAt == -1 && lastBreak != -1) // only break if not already breaking
+            {
+                breakAt = i - 1;
             lastBreak = -1;
         }   
-               
+            // remove the line feed from the string
+            kw->m_text.remove(i, 1);
+            len--;
+        }
         if ( breakAt != -1 )
         {
             //kdDebug() << "KWordWrap::formatText breaking after " << breakAt << endl;
