@@ -44,8 +44,6 @@ public:
 	{ s = str, l = len; lines = 0; }
     DOMStringIt(const QString &str)
 	{ s = str.unicode(); l = str.length(); lines = 0; }
-    DOMStringIt(const DOMString &str)
-	{ s = str.unicode(); l = str.length(); lines = 0; }
 
     DOMStringIt *operator++()
     {
