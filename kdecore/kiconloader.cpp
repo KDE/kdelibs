@@ -38,49 +38,36 @@
 
 void KIconLoader::initPath()
 {
-    KStandardDirs* dirs = library->dirs();
-    
-    dirs->addResourceType("toolbar",
-			  KStandardDirs::kde_default("data") +
-			  appname + "/pics/");
-    
-    dirs->addResourceType("icon",
-			  KStandardDirs::kde_default("data") +
-			  appname + "/pics/");
-    
-    dirs->addResourceType("toolbar",
-			  KStandardDirs::kde_default("data") +
-			  appname + "/toolbar/");
+    iconType = "toolbar";
+
+    if (appname.isNull() && library) {
+	appname = library->instanceName();
+    }
+
+    if (appname.isNull()) { // may still be the case 
+
+	KStandardDirs* dirs = library->dirs();
+	
+	dirs->addResourceType("toolbar",
+			      KStandardDirs::kde_default("data") +
+			      appname + "/pics/");
+	
+	dirs->addResourceType("toolbar",
+			      KStandardDirs::kde_default("data") +
+			      appname + "/toolbar/");
+    }
 }
 
-KIconLoader::KIconLoader( KConfig *conf, const QString &app_name ) :
-    config(conf), appname(app_name)
+KIconLoader::KIconLoader( const QString &app_name ) :
+    appname(app_name)
 {
     library = KGlobal::instance();
-    iconType = "toolbar";
     initPath();
 }
 
-KIconLoader::KIconLoader( const KInstance* _library)
+KIconLoader::KIconLoader( const KInstance* _library )
     : library(_library)
 {
-    config = library->config();
-    appname = library->instanceName();
-    iconType = "toolbar";
-    initPath();
-}
-
-KIconLoader::KIconLoader() : config(0)
-{
-    KApplication *app = KApplication::kApplication();
-    if (app) {
-	config = KGlobal::config();
-	config->setGroup("KDE Setup");
-	appname = KApplication::kApplication()->name();
-    }
-    library = KGlobal::instance();
-    iconType = "toolbar";
-    
     initPath();
 }
 
@@ -239,15 +226,10 @@ QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
     return pix;
 }
 
-void KIconLoader::addPath( QString path )
-{
-    library->dirs()->addResourceDir("toolbar", path);
-}
-
 QPixmap BarIcon(const QString& pixmap , const KInstance* library )
 {
     return library->iconLoader()->loadIcon(pixmap, false);
 }
 
-#include "kiconloader.moc"
+
 
