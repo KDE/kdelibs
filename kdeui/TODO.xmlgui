@@ -1,3 +1,27 @@
+Bug with toolbars: a->saveState(); delete a; b->saveState(); delete b;
+will store wrong positions (index, offset and newline).
+When removing an xmlgui-client involves destroying toolbars, we need to save the
+whole set of toolbar positions of the mainwindow, into the xmlgui-client.
+
+Data structure:
+struct KToolBarPos {
+   short int index;
+   short int offset;
+   bool newLine;
+};
+typedef QValueVector<KToolBarPos> KToolBarPosList;
+
+API:
+KToolBarPosList KMainWindow::toolBarPositionList() const;
+
+The remaining problem is to know when to call it:
+* when we know in advance that we'll be able to remove toolbars?
+* when removing the first toolbar (of a given client); then we need
+to differenciate between first and following toolbars
+* always, if fast enough? With tons of plugins that might not be a good idea.
+
+========== More long term
+
 Problems:
 * No ui_standards.rc merging for parts
 * Confusing tag names (MergeLocal vs DefineGroup) for similar features
