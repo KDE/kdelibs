@@ -358,14 +358,13 @@ void KClipboard::setURLList( QStringList& _urls )
 {
   open( IO_WriteOnly | IO_Truncate, "url/url" );
   
-  const char* s;
   QStringList::Iterator iterator = _urls.begin();
   for( ; iterator != _urls.end(); iterator++ )
   {
-    if ( (*iterator) == _urls.getLast() )
-      writeBlock( s, strlen( s ) );
+    if ( (*iterator) == _urls.last() )
+      writeBlock( *iterator, (*iterator).length() );
     else
-      writeBlock( s, strlen( s ) + 1 );
+      writeBlock( *iterator, (*iterator).length() + 1 );
   }
 
   close();
