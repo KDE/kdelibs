@@ -75,7 +75,7 @@ void yyerror( const char *s )
 
 /*1*/
 main
-	: includes
+	: includes rest
 	  {
 	  }
 	;
@@ -85,7 +85,13 @@ includes
           {
 		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
 	  }
-	| T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
+        |
+          {
+          }
+        ;
+
+rest
+	: T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
 	  {
 		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
 	  }
