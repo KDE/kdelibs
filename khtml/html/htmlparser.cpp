@@ -363,7 +363,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
     NodeImpl *newNode = current->addChild(n);
     if ( newNode ) {
 #ifdef PARSER_DEBUG
-	kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
+        kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
         // don't push elements without end tag on the stack
         if(tagPriority[id] != 0)
@@ -379,9 +379,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         else
             n->attach(HTMLWidget);
 
-        if(tagPriority[id] == 0 && n->renderer())
+        if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
-	return true;
+            if (n->id() == ID_EMBED) n->renderer()->close();
+        }
+        return true;
     } else {
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
@@ -423,7 +425,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if ( head ) {
 
                 DOM::NodeImpl *newNode = head->addChild(n);
-		if ( newNode ) {
+                if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
                     n->attach(HTMLWidget);
@@ -446,7 +448,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // we have another <BODY> element.... apply attributes to existing one
                 NamedNodeMapImpl *map = n->attributes();
                 unsigned long attrNo;
-		int exceptioncode;
+                int exceptioncode;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)), exceptioncode);
                 document->body()->applyChanges(true,false);
@@ -498,32 +500,32 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             {
                 NodeImpl *parent = node->parentNode();
                 //kdDebug( 6035 ) << "trying to add form to " << parent->id() <<", " << parent->nodeName().string() <<  endl;
-		int exceptioncode = 0;
-		parent->insertBefore(n, node, exceptioncode );
-		if ( exceptioncode ) {
+                int exceptioncode = 0;
+                parent->insertBefore(n, node, exceptioncode );
+                if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
 #endif
                     return false;
                 }
-		if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
-		    pushBlock(id, tagPriority[id]);
-		    current = n;
-		}
-		n->attach(HTMLWidget);
-		if(tagPriority[id] == 0 && n->renderer())
-		    n->renderer()->close();
+                if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
+                    pushBlock(id, tagPriority[id]);
+                    current = n;
+                }
+                n->attach(HTMLWidget);
+                if(tagPriority[id] == 0 && n->renderer())
+                    n->renderer()->close();
                 return true;
             }
             break;
         }
-	    case ID_DD:
-	    case ID_DT:
+            case ID_DD:
+            case ID_DT:
             e = new HTMLDListElementImpl(document);
             insertNode(e);
-	    insertNode(n);
-	    return true;
-	    break;
+            insertNode(n);
+            return true;
+            break;
         case ID_AREA:
         {
             if(map)
@@ -574,15 +576,15 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     handled = true;
                 }
                 break;
-                case ID_FRAME:
-                    if( haveFrameSet ) break;
-                    e = new HTMLFrameSetElementImpl(document);
-                    inBody = true;
-                    haveFrameSet = true;
-                    insertNode(e);
-                    handled = true;
-                    break;
-                default:
+            case ID_FRAME:
+                if( haveFrameSet ) break;
+                e = new HTMLFrameSetElementImpl(document);
+                inBody = true;
+                haveFrameSet = true;
+                insertNode(e);
+                handled = true;
+                break;
+            default:
                 e = new HTMLBodyElementImpl(document);
                 inBody = true;
                 insertNode(e);
@@ -698,10 +700,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 insertNode(e);
                 handled = true;
                 break;
-	    case ID_DT:
-		popBlock(ID_DT);
-		handled = true;
-		break;
+            case ID_DT:
+                popBlock(ID_DT);
+                handled = true;
+                break;
         case ID_SELECT:
             if( n->isInline() )
                 return false;
@@ -890,10 +892,10 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_LI:
     {
         popBlock(ID_LI);
-	HTMLElementImpl *e = new HTMLLIElementImpl(document);
+        HTMLElementImpl *e = new HTMLLIElementImpl(document);
         n = e;
-	if( current->id() != ID_UL && current->id() != ID_OL )
-		e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside") );
+        if( current->id() != ID_UL && current->id() != ID_OL )
+                e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside") );
         break;
     }
 // formatting elements (block)
@@ -981,13 +983,13 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLTableColElementImpl(document, t->id);
         break;
     case ID_TR:
-	popBlock(ID_TR);
+        popBlock(ID_TR);
         n = new HTMLTableRowElementImpl(document);
         break;
     case ID_TD:
     case ID_TH:
-	popBlock(ID_TH);
-	popBlock(ID_TD);
+        popBlock(ID_TH);
+        popBlock(ID_TD);
         n = new HTMLTableCellElementImpl(document, t->id);
         break;
     case ID_THEAD:

@@ -155,9 +155,9 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
       args.insert( "height", QString::number(height) );
 
       if(!view->part()->baseURL().isEmpty())
-	args.insert( "baseURL", view->part()->baseURL().url() );
+        args.insert( "baseURL", view->part()->baseURL().url() );
       else
-	args.insert( "baseURL", view->part()->url().url() );
+        args.insert( "baseURL", view->part()->url().url() );
 
       f = new RenderApplet(view, args, this);
   }
@@ -273,6 +273,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
+    kdDebug() << "****************** HTMLEmbedElementImpl::attach **************" << endl;
    m_style = document->styleSelector()->styleForElement( this );
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
