@@ -74,7 +74,7 @@ class HTMLDocument;
  * DOM Level 2 and newer provide means for creating documents directly,
  * which was not possible with DOM Level 1.
  */
-class DOMImplementation
+class KHTML_EXPORT DOMImplementation
 {
    friend class Document;
 public:
@@ -242,7 +242,7 @@ protected:
  * context they were created.
  *
  */
-class Document : public Node
+class KHTML_EXPORT Document : public Node
 {
     friend class ::KHTMLView;
     friend class ::KHTMLPart;
@@ -956,7 +956,7 @@ class DocumentFragmentImpl;
  * \c insertBefore() and \c appendChild() .
  *
  */
-class DocumentFragment : public Node
+class KHTML_EXPORT DocumentFragment : public Node
 {
     friend class Document;
     friend class HTMLElementImpl;
@@ -993,7 +993,7 @@ class DOMString;
  * nodes.
  *
  */
-class DocumentType : public Node
+class KHTML_EXPORT DocumentType : public Node
 {
     friend class Document;
     friend class DOMImplementation;
