@@ -166,7 +166,9 @@ KService::init( KDesktopFile *config )
       QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
       for( ; pit != pd.end(); ++pit )
       {
-	m_mapProps.insert( pit.key(), config->readPropertyEntry( pit.key(), pit.data() ) );
+        QVariant v = config->readPropertyEntry( pit.key(), pit.data() );
+        if ( v.isValid() )
+          m_mapProps.insert( pit.key(), v );
       }
     }
   }
