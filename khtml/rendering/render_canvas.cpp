@@ -153,15 +153,18 @@ void RenderCanvas::layout()
 
     RenderBlock::layout();
 
+    int docW = docWidth();
+    int docH = docHeight();
+
     if (!m_printingMode) {
-        m_view->resizeContents(docWidth(), docHeight());
+        m_view->resizeContents(docW, docH);
         // be optimistic and say that we never need a vertical
         // scroll bar. fixes ugly cyclic recalculation chains
         // with QScrollView.
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
                                        0);
         setWidth( m_viewportWidth = s.width() );
-        setHeight(  m_viewportHeight = s.height() );
+        setHeight( m_viewportHeight = s.height() );
     }
 
     // ### we could maybe do the call below better and only pass true if the docsize changed.
@@ -170,6 +173,9 @@ void RenderCanvas::layout()
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
+
+    layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
+
 
     setLayouted();
 }
