@@ -27,13 +27,11 @@
  *
  * This library provides a full-featured HTML parser and widget. It is
  * used for rendering in all KDE applications which allow HTML viewing,
- * including the Konqueror browser/file manager and the KDE Help
+ * including the Konqueror browser/file manager, KMail, and the KDE Help
  * system.
  *
- * This library provides (will provide)
- * full HTML4 support, support for embedding Java applets, and will at some
- * point provide support for cascading style sheets
- * (CSS) and JavaScript.
+ * This library provides support for HTML4/XHTML, embedded Java applets, 
+ * cascading style sheets (CSS2), and JavaScript.
  *
  * If you want to add to your application a widget that only needs simple text
  * browsing, you can also use the @ref KTextBrowser widget in kdeui.
