@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>
+#include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -157,6 +158,19 @@ bool KApplicationTree::isDirSel()
 
 // ----------------------------------------------------------------------
 
+static QPixmap appIcon(const QString &iconName)
+{
+    QPixmap normal = KGlobal::iconLoader()->loadIcon(iconName, KIcon::Small, 0, KIcon::DefaultState, 0L, true);
+    // make sure they are not larger than 20x20
+    if (normal.width() > 20 || normal.height() > 20) 
+    {
+       QImage tmp = normal.convertToImage();
+       tmp = tmp.smoothScale(20, 20);
+       normal.convertFromImage(tmp);
+    }
+    return normal;
+}
+
 void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
 {
    KServiceGroup::Ptr root = KServiceGroup::group(relPath);
@@ -203,7 +217,7 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
          continue;
       }
 
-      QPixmap pixmap = SmallIcon( icon );
+      QPixmap pixmap = appIcon( icon );
 
       if (item)
          newItem = new KAppTreeListItem( item, text, pixmap, false, isDir,
