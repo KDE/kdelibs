@@ -493,11 +493,11 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 prevFlow=0;
         }
 
-        child->setPos(child->xPos(), m_height);
+        int chPos = xPos + child->marginLeft();
+        child->setPos(chPos, m_height);
 	if ( !child->layouted() )
 	    child->layout();
 
-        int chPos = xPos + child->marginLeft();
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
