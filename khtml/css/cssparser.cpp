@@ -191,7 +191,7 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
             return(curP);
         else if (*curP == '{')
         {
-	    if(endAtBlock) 
+	    if(endAtBlock)
 		return curP;
             curP = parseToChar(curP + 1, endP, '}', false);
             if (!curP)
@@ -244,7 +244,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	QString media(startP, curP - startP);
 	// ### check if at the beginning of the stylesheet (no style rule
 	//     before the import rule)
-	kdDebug( 6080 ) << "at rule: url = " << url.string() 
+	kdDebug( 6080 ) << "at rule: url = " << url.string()
 			<< " media = " << media << endl;
 	// ignore block following @import rule
 	if( *curP == '{' ) {
@@ -295,7 +295,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
     CSSSelector *cs = new CSSSelector();
     QString selecString( curP, endP - curP );
 
-//kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
+    kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 
     if (*curP == '#')
     {
@@ -351,6 +351,10 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
             {
                 tag = QString( startP, curP - startP );
 		curP++;
+		if ( curP >= endP ) {
+		    delete cs;
+		    return 0;
+		}
 		//kdDebug( 6080 ) << "tag = " << tag << endl;
 		const QChar *equal = parseToChar(curP, endP, '=', false);
 		QString attr;
@@ -383,6 +387,10 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
 		if(equal)
 		{
 		    equal++;
+		    if(equal >= endP ) {
+			delete cs;
+			return 0;
+		    }
 		    if(*equal == '\'')
 		    {
 			equal++;
@@ -430,7 +438,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
 CSSSelector *
 StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 {
-    //kdDebug( 6080 ) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
+    kdDebug( 6080 ) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     CSSSelector *selecStack=0;
 
@@ -492,7 +500,7 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 QList<CSSSelector> *
 StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 {
-    //kdDebug( 6080 ) << "selector is \'" << QString(curP, endP-curP) << "\'" << endl;
+    kdDebug( 6080 ) << "selector is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     QList<CSSSelector> *slist  = 0;
     const QChar *startP;
