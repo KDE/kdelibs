@@ -55,7 +55,7 @@ KURL::KURL( const QString &_url )
 {
   reset();
   m_strProtocol = "file";
-  m_iPort = -1;
+  m_iPort = 0;
   parse( _url );
 }
 
@@ -108,7 +108,7 @@ void KURL::reset()
   m_strQuery_encoded = "";
   m_strRef_encoded = "";
   m_bIsMalformed = false;
-  m_iPort = -1;
+  m_iPort = 0;
 }
 
 void KURL::parse( const QString& _url )
@@ -563,10 +563,10 @@ QString KURL::url( int _trailing ) const
       u += "@";
     }
     u += m_strHost;
-    if ( m_iPort != -1 )
+    if ( m_iPort != 0 )
     {
       char buffer[ 100 ];
-      sprintf( buffer, ":%i", m_iPort );
+      sprintf( buffer, ":%u", m_iPort );
       u += buffer;
     }
   }

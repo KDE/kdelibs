@@ -19,6 +19,9 @@
 
 /*
  * $Log$
+ * Revision 1.31  1999/05/07 16:45:21  kulow
+ * adding more explicit calls to ascii()
+ *
  * Revision 1.30  1999/04/19 15:49:47  kulow
  * cleaning up yet some more header files (fixheaders is your friend).
  * Adding copy constructor to KPixmap to avoid casting while assingment.
@@ -303,7 +306,7 @@ unsigned long KSocket::getAddr()
   return ntohl(name.sin_addr.s_addr);
 }
 
-bool KSocket::initSockaddr (struct sockaddr_in *server_name, const char *hostname, unsigned int port)
+bool KSocket::initSockaddr (struct sockaddr_in *server_name, const char *hostname, unsigned short int port)
 {
   struct hostent *hostinfo;
   server_name->sin_family = AF_INET;
@@ -346,7 +349,7 @@ KServerSocket::KServerSocket( const char *_path ) :
   connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
 }
 
-KServerSocket::KServerSocket( int _port ) :
+KServerSocket::KServerSocket( unsigned short int _port ) :
   sock( -1 )
 {
   domain = PF_INET;
@@ -450,7 +453,7 @@ bool KServerSocket::init( unsigned short int _port )
   return true;
 }
 
-unsigned short KServerSocket::getPort()
+unsigned short int KServerSocket::getPort()
 {
   if ( domain != PF_INET )
     return false;

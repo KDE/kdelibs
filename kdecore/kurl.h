@@ -70,8 +70,8 @@ public:
   void setHost( const QString& _txt ) { m_strHost = _txt; }
   bool hasHost() const { return !m_strHost.isEmpty(); }
 
-  int port() const { return m_iPort; }
-  void setPort( int _p ) { m_iPort = _p; }
+  unsigned short int port() const { return m_iPort; }
+  void setPort( unsigned short int _p ) { m_iPort = _p; }
   
   /**
    * @return the current decoded path. This does NOT include the query.
@@ -349,7 +349,7 @@ private:
   QString m_strQuery_encoded;
   
   bool m_bIsMalformed;
-  int m_iPort;
+  unsigned short int m_iPort;
 };
 
 /**

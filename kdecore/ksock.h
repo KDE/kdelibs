@@ -95,7 +95,7 @@ public:
     /**
       *  A small wrapper around gethostbyname and such
       */
-    static bool initSockaddr(struct sockaddr_in *server_name, const char *hostname, unsigned int port);
+    static bool initSockaddr(struct sockaddr_in *server_name, const char *hostname, unsigned short int port);
     
     /** 
      * Returns a file descriptor for this socket.
@@ -208,7 +208,7 @@ public:
      * Constructor.
      * @param _port	the port number to monitor for incoming connections.
      */
-    KServerSocket( int _port );
+    KServerSocket( unsigned short int _port );
 
     /**
      * Creates a UNIX domain server socket.
@@ -228,7 +228,7 @@ public:
     /** 
      * Returns the port number which is being monitored.
      */
-    unsigned short getPort();
+    unsigned short int getPort();
 
     /** 
      * The address.
