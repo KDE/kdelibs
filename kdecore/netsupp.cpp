@@ -224,7 +224,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 {
   struct kde_addrinfo* res;
   struct addrinfo* p;
-  int err;
+  int err = EAI_SERVICE;
 
   // allocate memory for results
   res = (kde_addrinfo*)malloc(sizeof(*res));
@@ -291,7 +291,6 @@ int kde_getaddrinfo(const char *name, const char *service,
   // If we got here, then it means that the user might be expecting Unix
   // sockets. The user wants a local socket, with a non-null service and
   // has told us that they accept PF_UNIX sockets
-
   // Check whether the system implementation returned Unix
   if (err == 0)
     for (p = res->data; p; p = p->ai_next)
