@@ -1,7 +1,9 @@
 [Misc]
 Name=B3/KDE
+Name[af]=b3/kde
 Name[mk]=Б3/KDE
 Comment=B3/Modification of B2
+Comment[af]=b3/verandering van b2
 Comment[az]=B3/B2-nin Təkmilləşdirilmiş halı
 Comment[br]=Kemm B3 eus B2
 Comment[bs]=B3/Preinaka B2
