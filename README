@@ -77,7 +77,7 @@ Common Mistakes
 ---------------
 
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.00.
+to get a copy of Qt, version 2.10 or newer.
 
 Debugging
 ---------
