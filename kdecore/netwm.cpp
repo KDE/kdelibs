@@ -1033,9 +1033,9 @@ void NETRootInfo::setSupported() {
 	    atoms[pnum++] = net_wm_state_hidden;
         if (p->properties[ STATES ] & FullScreen)
 	    atoms[pnum++] = net_wm_state_fullscreen;
-        if (p->properties[ STATES ] & Above)
+        if (p->properties[ STATES ] & KeepAbove)
 	    atoms[pnum++] = net_wm_state_above;
-        if (p->properties[ STATES ] & Below)
+        if (p->properties[ STATES ] & KeepBelow)
 	    atoms[pnum++] = net_wm_state_below;
 
         if (p->properties[ STATES ] & StaysOnTop)
@@ -1200,9 +1200,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == net_wm_state_fullscreen )
         p->properties[ STATES ] |= FullScreen;
     else if( atom == net_wm_state_above )
-        p->properties[ STATES ] |= Above;
+        p->properties[ STATES ] |= KeepAbove;
     else if( atom == net_wm_state_below )
-        p->properties[ STATES ] |= Below;
+        p->properties[ STATES ] |= KeepBelow;
 
     else if( atom == net_wm_state_stays_on_top )
         p->properties[ STATES ] |= StaysOnTop;
@@ -2352,18 +2352,18 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
 	
-        if ((mask & Above) &&
-	    ((p->state & Above) != (state & Above))) {
-            e.xclient.data.l[0] = (state & Above) ? 1 : 0;
+        if ((mask & KeepAbove) &&
+	    ((p->state & KeepAbove) != (state & KeepAbove))) {
+            e.xclient.data.l[0] = (state & KeepAbove) ? 1 : 0;
             e.xclient.data.l[1] = net_wm_state_above;
             e.xclient.data.l[2] = 0l;
 
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
 	
-        if ((mask & Below) &&
-	    ((p->state & Below) != (state & Below))) {
-            e.xclient.data.l[0] = (state & Below) ? 1 : 0;
+        if ((mask & KeepBelow) &&
+	    ((p->state & KeepBelow) != (state & KeepBelow))) {
+            e.xclient.data.l[0] = (state & KeepBelow) ? 1 : 0;
             e.xclient.data.l[1] = net_wm_state_below;
             e.xclient.data.l[2] = 0l;
 
@@ -2393,8 +2393,8 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	if (p->state & FullScreen) data[count++] = net_wm_state_fullscreen;
 
 	// policy
-	if (p->state & Above) data[count++] = net_wm_state_above;
-	if (p->state & Below) data[count++] = net_wm_state_below;
+	if (p->state & KeepAbove) data[count++] = net_wm_state_above;
+	if (p->state & KeepBelow) data[count++] = net_wm_state_below;
 	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
 	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
 	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
@@ -2728,9 +2728,9 @@ unsigned long NETWinInfo::event(XEvent *event) {
                 else if ((Atom) event->xclient.data.l[i] == net_wm_state_fullscreen)
 		    mask |= FullScreen;
                 else if ((Atom) event->xclient.data.l[i] == net_wm_state_above)
-		    mask |= Above;
+		    mask |= KeepAbove;
                 else if ((Atom) event->xclient.data.l[i] == net_wm_state_below)
-		    mask |= Below;
+		    mask |= KeepBelow;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
 		    mask |= StaysOnTop;
 	    }
@@ -2925,9 +2925,9 @@ void NETWinInfo::update(unsigned long dirty) {
 		    else if ((Atom) states[count] == net_wm_state_fullscreen)
 			p->state |= FullScreen;
 		    else if ((Atom) states[count] == net_wm_state_above)
-			p->state |= Above;
+			p->state |= KeepAbove;
 		    else if ((Atom) states[count] == net_wm_state_below)
-			p->state |= Below;
+			p->state |= KeepBelow;
 		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
 			p->state |= StaysOnTop;
 		}

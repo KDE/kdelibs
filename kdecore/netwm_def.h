@@ -25,11 +25,6 @@
 #ifndef   __netwm_def_h
 #define   __netwm_def_h
 
-// @#$@%! Xlib
-#undef Above
-#undef Below
-
-
 /**
   Simple point class for @ref NET classes.
 
@@ -298,13 +293,13 @@ public:
 
        @li FullScreen indicates that a window should fill the entire screen and have no window decorations.
 
-       @li Above indicates that a window should on top of most windows (but below fullscreen windows).
+       @li KeepAbove indicates that a window should on top of most windows (but below fullscreen windows).
 
-       @li Below indicates that a window should be below most windows (but above any desktop windows).
+       @li KeepBelow indicates that a window should be below most windows (but above any desktop windows).
 
-       @li StaysOnTop is an obsolete name for Above.
+       @li StaysOnTop is an obsolete name for KeepAbove.
        
-       Note that Above (StaysOnTop) and Below are meant as user preference and applications
+       Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and applications
        should avoid setting these states themselves.
     **/
 
@@ -316,12 +311,12 @@ public:
 	Max = MaxVert | MaxHoriz,
 	Shaded       = 1<<4,
 	SkipTaskbar  = 1<<5,
-	Above        = 1<<6,	///< @since 3.2
-	StaysOnTop = Above,	// NOT STANDARD
+	KeepAbove    = 1<<6,	///< @since 3.2
+	StaysOnTop   = KeepAbove,	// NOT STANDARD
 	SkipPager    = 1<<7,
 	Hidden       = 1<<8,	///< @since 3.2
 	FullScreen   = 1<<9,	///< @since 3.2
-	Below        = 1<<10	///< @since 3.2
+	KeepBelow    = 1<<10	///< @since 3.2
     };
 
     /**
