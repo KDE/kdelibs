@@ -1,4 +1,5 @@
 #include "kio_rename_dlg.h"
+#include "kio_manager.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -18,7 +19,12 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   src = _src;
   dest = _dest;
 
-  K2URL d( dest.c_str() );
+  string prel = dest;
+
+  if ( ProtocolManager::self()->getMarkPartial() )
+    prel += ".part";
+
+  K2URL d( prel.c_str() );
   QFileInfo info;
   info.setFile( d.path() );
   offset = info.size();
