@@ -124,7 +124,7 @@ OtherCertItem::OtherCertItem( QListView *view, QString& sub, bool perm, int poli
     m_module = module;
 KSSLX509Map cert(sub);
     setText(0, cert.getValue("O"));
-    setText(1, cert.getValue("CN"));
+    setText(1, cert.getValue("CN").replace(QRegExp("\n"), ", "));
 
     if (_exp.date().year() > 3000 || _exp.date().year() < 1900)
        _exp.setDate(QDate(3000,1,1));
@@ -147,8 +147,7 @@ YourCertItem::YourCertItem( QListView *view, QString pkcs, QString pass, QString
 {
     m_module = module;
 KSSLX509Map cert(name);
-    QString tmp = cert.getValue("CN");
-    tmp.replace(QRegExp("\n.*"), QString::null);
+    QString tmp = cert.getValue("CN").replace(QRegExp("\n"), ", ");
     setText(0, tmp);
     setText(1, cert.getValue("Email"));
     _pkcs = pkcs;
@@ -177,10 +176,10 @@ KSSLX509Map mcert(name);
 QString tmp;
     setText(0, mcert.getValue("O"));
     tmp = mcert.getValue("OU");
-    tmp.replace(QRegExp("\n.*"), QString::null);
+    tmp.replace(QRegExp("\n"), ", ");
     setText(1, tmp);
     tmp = mcert.getValue("CN");
-    tmp.replace(QRegExp("\n.*"), QString::null);
+    tmp.replace(QRegExp("\n"), ", ");
     setText(2, tmp);
     _name = name;
     _cert = cert;
