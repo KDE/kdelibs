@@ -45,7 +45,7 @@
  *	   changing this.
  */
 
-void _I_default_handler(char *exprn, char *file, int line) {
+void _I_default_handler(const char *exprn, const char *file, int line) {
      fprintf(stderr, "%s:%d: %s failed; dumping core\n", file, line, exprn);
      fflush(stderr);
      abort();

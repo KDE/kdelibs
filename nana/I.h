@@ -84,7 +84,7 @@ extern "C" {
  */
 
 #ifndef I_DEFAULT_HANDLER /* define default handler */
-void _I_default_handler(char *expr, char *file, int line);
+void _I_default_handler(const char *expr, const char *file, int line);
 
 #define I_DEFAULT_HANDLER(expr,file,line,param) \
   _I_default_handler(expr,__FILE__,__LINE__)
