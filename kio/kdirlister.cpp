@@ -919,11 +919,14 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
   }
   // Tricky. If an update is running at the same time, it might have
   // listed those files before, and emit outdated info (reverting this method's work)
-  // So we need to abort any running update, and relaunch it.
+  // So we need to abort any running update, and relaunch it. (David)
   //
   // even more tricky: we need to relaunch even if there is a new listjob
   // running, not just an update. (Michael)
-  if ( !m_bComplete )
+  //
+  // And _even_ more tricky: if the changed item isn't in our list yet, then skip
+  // this code (otherwise we abort but don't update anything!) (David)
+  if ( !m_bComplete && !dirs.isEmpty() )
   {
       stop();
       KURL::List::ConstIterator it = dirs.begin();
