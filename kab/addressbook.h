@@ -529,6 +529,11 @@ protected slots:
   // void homeURLClicked(const char*); /**< \internal */
   // void addressSelected(int); /**< \internal */
   // ----------------------------------------------------------------------------
+public slots:
+  /** This slot is called when an external object changed the database through
+      the kabapi. */
+  void externalChange(); 
+  // ----------------------------------------------------------------------------
 signals:
   void changed(); /**< The entries have changed, update the selector. */
   // void browse(const char*); /**< The user clicked on the homepage URL. */

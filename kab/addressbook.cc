@@ -1974,3 +1974,7 @@ QString AddressBook::phoneType(AddressBook::Telephone phone)
     }
 }
 
+void AddressBook::externalChange()
+{
+  updateMirrorMap();
+}
