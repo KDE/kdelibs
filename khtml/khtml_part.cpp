@@ -217,11 +217,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
 
-  QString foo1 = i18n("Show Images");
-  QString foo2 = i18n("Show Animated Images");
-  QString foo3 = i18n("Stop Animated Images");
-
-
   d->m_paSetEncoding = new KActionMenu( i18n( "Set &Encoding" ), "charset", actionCollection(), "setEncoding" );
   d->m_paSetEncoding->setDelayed( false );
 
