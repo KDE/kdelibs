@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.26.4.3  1999/05/29 18:41:25  denis
+   File from 1.1.1 release restored.
+   The old one was corrupted.
+
    Revision 1.26.4.2  1999/03/09 15:22:50  dfaure
    Moved path-list initialisation to a private initPath().
    Merged with Antonio's getIconPath(...) new method. (fixed missing .detach())
@@ -81,19 +85,40 @@
 
 void KIconLoader::initPath()
 {
+  // DF ---- Large icons --------------
+  // set the key depending on the current application
+  QString key = "KDE";
+  if (strcmp( kapp->name(), "kpanel" ) == 0)
+    key = "kpanel";
+  if (strcmp( kapp->name(), "kfm" ) == 0)
+    key = "kfm";
+  KConfig config; // read .kderc
+  config.setGroup("KDE");
+  QString setting = config.readEntry( key + "IconStyle", "Normal" );
+  //debug("App is %s - setting is %s", kapp->name(), setting.data());
+  // DF
+  
   // order is important! -- Bernd
   // higher priority at the end
 
   addPath( KApplication::kde_toolbardir() );
   addPath( KApplication::kde_icondir() );
+  if (setting == "Large")
+    addPath( KApplication::kde_icondir() + "/large" );
 
   addPath( KApplication::localkdedir() + "/share/toolbar" ); 
   addPath( KApplication::localkdedir() + "/share/icons" ); 
+  if (setting == "Large")
+    addPath( KApplication::localkdedir() + "/share/icons/large" );
 
   addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
   addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
   addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  if (setting == "Large")
+    addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics/large" );
   addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  if (setting == "Large")
+    addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics/large" ); 
 }
 
 KIconLoader::KIconLoader( KConfig *conf, 
