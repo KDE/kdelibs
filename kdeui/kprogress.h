@@ -47,14 +47,17 @@
  * @author Martynas Kunigelis
  * @version $Id$
  */
-class KProgress : public QFrame, public QRangeControl {
-	Q_OBJECT
+class KProgress : public QFrame, public QRangeControl
+{
+  Q_OBJECT
+  Q_ENUMS( BarStyle )
+  Q_PROPERTY( BarStyle barStyle READ barStyle WRITE setBarStyle )
+  Q_PROPERTY( QColor barColor READ barColor WRITE setBarColor )
+  Q_PROPERTY( QPixmap barPixmap READ barPixmap WRITE setBarPixmap )
+  Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
+  Q_PROPERTY( bool textEnabled READ textEnabled WRITE setTextEnabled )
+  
 public:
-  /** 
-  * Possible values for orientation.
-  */
-  enum Orientation { Horizontal, Vertical };
-
   /** 
   * Possible values for bar style.
   *
@@ -179,7 +182,13 @@ signals:
 	void percentageChanged(int);
 	
 protected:
+	/** 
+	 * Reimplemented from QRangeControl for internal reasons.
+	 */
 	void valueChange();
+	/** 
+	 * Reimplemented from QRangeControl for internal reasons.
+	 */
 	void rangeChange();
 	virtual void styleChange( QStyle& );
 	void paletteChange( const QPalette & );

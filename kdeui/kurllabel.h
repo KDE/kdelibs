@@ -30,14 +30,6 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 
-enum TextAlignment
-{
-    Bottom,
-    Left,
-    Top,
-    Right
-};
-
 /**
  * A label class that supports displaying an active hyperlink.
  *
@@ -73,7 +65,22 @@ enum TextAlignment
 class KURLLabel : public QLabel
 {
     Q_OBJECT
+    Q_ENUMS( TextAlignment )
+    Q_PROPERTY( TextAlignment textAlignment READ textAlignment WRITE setTextAlignment )
+    Q_PROPERTY( QString url READ url WRITE setURL )
+    Q_PROPERTY( QString text READ text WRITE setText )
+    Q_PROPERTY( QPixmap pixmap READ pixmap WRITE setPixmap )
+    
 public:
+
+    enum TextAlignment
+    {
+      Bottom,
+      Left,
+      Top,
+      Right
+    };
+
     /**
      * Constructor.
      *
@@ -114,6 +121,11 @@ public:
      */
     const QPixmap* pixmap() const;
 
+    /**
+     * Retrieve the current text alignment.
+     */
+    TextAlignment textAlignment() const;
+    
     /**
      * Retrieve the recommended size for this label.
      */
@@ -222,7 +234,7 @@ public slots:
     void setSelectedColor(const QColor& selcolor);
 
     /**
-     * This is an overloaded versionfor convenience.
+     * This is an overloaded version for convenience.
      *
      * @see setSelectedColor()
      */

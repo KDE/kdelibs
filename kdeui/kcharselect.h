@@ -128,6 +128,10 @@ private:
 class KCharSelect : public QVBox
 {
     Q_OBJECT
+    Q_PROPERTY( QString fontFamily READ font WRITE setFont )
+    Q_PROPERTY( int tableNum READ tableNum WRITE setTableNum )
+    Q_PROPERTY( bool fontComboEnabled READ isFontComboEnabled WRITE enableFontCombo )
+    Q_PROPERTY( bool tableSpinBoxEnabled READ isTableSpinBoxEnabled WRITE enableTableSpinBox )
 
 public:
     /** 
@@ -158,19 +162,19 @@ public:
     virtual void setTableNum( int tableNum );
 
     /**
-     * Returns the currently selected chafacter.
+     * Returns the currently selected character.
      */
-    virtual QChar chr() { return charTable->chr(); }
+    virtual QChar chr() const { return charTable->chr(); }
 
     /**
      * Returns the currently displayed font.
      */
-    virtual QString font() { return fontCombo->currentText(); }
+    virtual QString font() const { return fontCombo->currentText(); }
 
     /**
      * Returns the currently displayed table
      */
-    virtual int tableNum() { return tableSpinBox->value(); }
+    virtual int tableNum() const { return tableSpinBox->value(); }
 
     /**
      * If @p e is set to TRUE, the combobox which allows the user to
@@ -193,7 +197,7 @@ public:
      *
      * @see enableFontCombo()
      */
-    virtual bool isFontComboEnabled() { return fontCombo->isEnabled(); }
+    virtual bool isFontComboEnabled() const { return fontCombo->isEnabled(); }
 
     /**
      * Returns wether the table spinbox on the top is enabled or
@@ -201,7 +205,7 @@ public:
      *
      * @see enableTableSpinBox()
      */
-    virtual bool isTableSpinBoxEnabled() { return tableSpinBox->isEnabled(); }
+    virtual bool isTableSpinBoxEnabled() const { return tableSpinBox->isEnabled(); }
 
 protected:
     virtual void fillFontCombo();

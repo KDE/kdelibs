@@ -40,6 +40,7 @@
 class KRestrictedLine : public KLineEdit
 {
   Q_OBJECT
+  Q_PROPERTY( QString validChars READ validChars WRITE setValidChars )
   
 public:
 
@@ -59,7 +60,10 @@ public:
    * All characters in the string valid are treated as 
    * acceptable characters.
    */
-  void	setValidChars(const QString& valid);
+  void setValidChars(const QString& valid);
+  /**
+   * @return the string of acceptable characters.
+   */
   QString validChars() const;
   
 signals:

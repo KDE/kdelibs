@@ -66,6 +66,11 @@ const QPixmap* KURLLabel::pixmap() const
 	return &m_pixmap;
 }
 
+KURLLabel::TextAlignment KURLLabel::textAlignment() const
+{
+    return m_textAlign;
+}
+
 void KURLLabel::setURL(const QString& url)
 {
 	/* save the input */
