@@ -24,8 +24,6 @@
 
 using namespace KIO;
 
-KioslaveTest *kmain;
-
 KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   : KTMainWindow("")
 {
@@ -161,10 +159,6 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setView( main_widget );
-
-  kmain = this;
-
-  show();
 }
 
 
@@ -470,8 +464,11 @@ int main(int argc, char **argv) {
   args->clear(); // Free up memory
 
   KioslaveTest test( src, dest, op, pr );
+  test.show();
+  // Bug in KTMW / Qt / layouts ?
+  test.resize( test.sizeHint() );
 
-  app.setMainWidget(kmain);
+  app.setMainWidget(&test);
   app.exec();
 }
 
