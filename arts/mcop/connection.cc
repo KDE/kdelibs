@@ -22,22 +22,44 @@
 
 #include "connection.h"
 #include "dispatcher.h"
+#include "debug.h"
 #include <stdio.h>
+#include <queue>
+#include <algorithm>
 
 using namespace Arts;
+using namespace std;
 
-Connection::Connection() :_refCnt(1)
+namespace Arts {
+class ConnectionPrivate {
+public:
+	struct Data {
+		Data(unsigned char *data, long len) : data(data), len(len) { }
+		Data(const Data& d) : data(d.data), len(d.len) { }
+		unsigned char *data;
+		long len;
+	};
+
+	queue<Data> incoming;
+};
+};
+
+Connection::Connection() :d(new ConnectionPrivate), _refCnt(1)
 {
 	_connState = unknown;
 }
 
 Connection::~Connection()
 {
+	assert(d->incoming.empty());
 	assert(_refCnt == 0);
+
+	delete d;
 }
 
 void Connection::_copy()
 {
+	assert(_refCnt > 0);
 	_refCnt++;
 }
 
@@ -56,7 +78,7 @@ void Connection::initReceive()
 	remaining = 12;
 }
 
-void Connection::receive(unsigned char *data, long len)
+void Connection::receive(unsigned char *newdata, long newlen)
 {
 	/*
 	 * protect against being freed while receive is running, as there are a
@@ -64,84 +86,86 @@ void Connection::receive(unsigned char *data, long len)
 	 */
 	_copy();
 
-	if(len > remaining)
+	d->incoming.push(ConnectionPrivate::Data(newdata,newlen));
+
+	do
 	{
-		unsigned char *data2 = data+remaining;
-		long len2 = len-remaining;
-		receive(data,remaining);
+		ConnectionPrivate::Data &data = d->incoming.front();
 
-		/* This could be optimized to a non recursive thing (fixme?) */
-		receive(data2,len2);
+		// get a buffer for the incoming message
+		if(!rcbuf) rcbuf = new Buffer;
 
-		_release();	// closes _copy() from start
-		return;
-	}
-	// get a buffer for the incoming message:
-	if(!rcbuf) rcbuf = new Buffer;
+		// put a suitable amount of input data into the receive buffer
+		long len = min(remaining, data.len);
 
-	remaining -= len;
-	rcbuf->write(data,len);
+		remaining -= len;
+		rcbuf->write(data.data,len);
 
-#ifdef DEBUG_IO
-	arts_debug("read %ld bytes",len);
-#endif
+		data.len -= len;
+		data.data += len;
 
-	if(remaining == 0)
-	{
-		if(receiveHeader)
+		if(data.len == 0)
+			d->incoming.pop();
+
+		// look if it was enough to do something useful with it
+		if(remaining == 0)
 		{
-			long mcopMagic;
-
-			mcopMagic = rcbuf->readLong();
-			remaining = rcbuf->readLong() - 12;
-			messageType = rcbuf->readLong();
-
-			if(_connState != Connection::established
-			&& (remaining >= 4096 || remaining < 0))
+			if(receiveHeader)
 			{
-				/*
-				 * don't accept large amounts of data on unauthenticated
-				 * connections
-				 */
-				remaining = 0;
-			}
+				long mcopMagic;
 
-			if(mcopMagic == MCOP_MAGIC)
-			{
-				// do we need to receive more data (message body?)
-				if(remaining)
+				mcopMagic = rcbuf->readLong();
+				remaining = rcbuf->readLong() - 12;
+				messageType = rcbuf->readLong();
+
+				if(_connState != Connection::established
+				&& (remaining >= 4096 || remaining < 0))
 				{
-					receiveHeader = false;
+					/*
+					 * don't accept large amounts of data on unauthenticated
+					 * connections
+					 */
+					remaining = 0;
+				}
+
+				if(mcopMagic == MCOP_MAGIC)
+				{
+					// do we need to receive more data (message body?)
+					if(remaining)
+					{
+						receiveHeader = false;
+					}
+					else
+					{
+						Buffer *received = rcbuf;
+						initReceive();
+						Dispatcher::the()->handle(this,received,messageType);
+					}
 				}
 				else
 				{
-					Buffer *received = rcbuf;
 					initReceive();
-					Dispatcher::the()->handle(this,received,messageType);
+					Dispatcher::the()->handleCorrupt(this);
 				}
 			}
 			else
 			{
+				Buffer *received = rcbuf;
+
+				/*
+				 * it's important to prepare to receive new messages *before*
+				 * calling Dispatcher::the()->handle(...), as handle may
+				 * get into an I/O situation (e.g. when doing an invocation
+				 * itself), and we may receive more messages while handle is
+				 * running
+				 */
 				initReceive();
-				Dispatcher::the()->handleCorrupt(this);
+
+				// rcbuf is consumed by the dispatcher
+				Dispatcher::the()->handle(this,received,messageType);
 			}
 		}
-		else
-		{
-			Buffer *received = rcbuf;
+	} while(!d->incoming.empty());
 
-			/*
-			 * it's important to prepare to receive new messages *before*
-			 * calling Dispatcher::the()->handle(...), as handle may
-			 * get into an I/O situation (e.g. when doing an invocation
-			 * itself), and we may receive more messages while handle is
-			 * running
-			 */
-			initReceive();
-
-			// rcbuf is consumed by the dispatcher
-			Dispatcher::the()->handle(this,received,messageType);
-		}
-	}
-	_release();	// closes _copy() from start
+	_release();
 }
