@@ -48,13 +48,15 @@ extern "C" int res_init();
 #include <qsocketnotifier.h>
 #include <qdns.h>
 #include <qguardedptr.h>
-#include <qresolver.h>
-#include <qsocketaddress.h>
+
+#include "kresolver.h"
 
 #include "kdebug.h"
 #include "kextsock.h"
 #include "ksockaddr.h"
 #include "ksocks.h"
+
+using namespace KNetwork;
 
 //
 // Internal class definitions
@@ -69,12 +71,12 @@ public:
 
   timeval timeout;		// connection/acception timeout
 
-  QResolver resRemote;		// the resolved addresses
-  QResolver resLocal;		// binding resolution
+  KResolver resRemote;		// the resolved addresses
+  KResolver resLocal;		// binding resolution
   unsigned current;		// used by the asynchronous connection
 
-  KSocketAddress *local;	// local socket address
-  KSocketAddress *peer;		// peer socket address
+  ::KSocketAddress *local;	// local socket address
+  ::KSocketAddress *peer;	// peer socket address
 
   QSocketNotifier *qsnIn, *qsnOut;
   int inMaxSize, outMaxSize;
@@ -91,7 +93,7 @@ public:
   }
 };
 
-// translate KExtendedSocket flags into QResolver ones
+// translate KExtendedSocket flags into KResolver ones
 static bool process_flags(int flags, int& socktype, int& familyMask, int& outflags)
 {
   switch (flags & (KExtendedSocket::streamSocket | KExtendedSocket::datagramSocket | KExtendedSocket::rawSocket))
@@ -123,33 +125,33 @@ static bool process_flags(int flags, int& socktype, int& familyMask, int& outfla
     {
       familyMask = 0;
       if ((flags & KExtendedSocket::unixSocket) == KExtendedSocket::unixSocket)
-	familyMask |= QResolver::UnixFamily;
+	familyMask |= KResolver::UnixFamily;
 
       switch ((flags & (KExtendedSocket::ipv6Socket|KExtendedSocket::ipv4Socket)))
 	{
 	case KExtendedSocket::ipv4Socket:
-	  familyMask |= QResolver::IPv4Family;
+	  familyMask |= KResolver::IPv4Family;
 	  break;
 	case KExtendedSocket::ipv6Socket:
-	  familyMask |= QResolver::IPv6Family;
+	  familyMask |= KResolver::IPv6Family;
 	  break;
 	case KExtendedSocket::inetSocket:
-	  familyMask |= QResolver::InternetFamily;
+	  familyMask |= KResolver::InternetFamily;
 	  break;
 	}
 
       // those are all the families we know about
     }
   else
-    familyMask = QResolver::KnownFamily;
+    familyMask = KResolver::KnownFamily;
 
   /* check other flags */
-  outflags = (flags & KExtendedSocket::passiveSocket ? QResolver::Passive : 0) |
-    (flags & KExtendedSocket::canonName ? QResolver::CanonName : 0) |
-    (flags & KExtendedSocket::noResolve ? QResolver::NoResolve : 0);
+  outflags = (flags & KExtendedSocket::passiveSocket ? KResolver::Passive : 0) |
+    (flags & KExtendedSocket::canonName ? KResolver::CanonName : 0) |
+    (flags & KExtendedSocket::noResolve ? KResolver::NoResolve : 0);
 
   if (getenv("KDE_NO_IPV6"))
-    familyMask &= ~QResolver::IPv6Family;
+    familyMask &= ~KResolver::IPv6Family;
 
   return true;
 }
@@ -714,7 +716,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
  * if we have done this already, we return it. Otherwise, we'll have
  * to find the socket name
  */
-const KSocketAddress *KExtendedSocket::localAddress()
+const ::KSocketAddress *KExtendedSocket::localAddress()
 {
   if (d->local != NULL)
     return d->local;
@@ -729,7 +731,7 @@ const KSocketAddress *KExtendedSocket::localAddress()
  * passiveSocket and that we require to be connected already. Also note that
  * the behavior on connectionless sockets is not defined here.
  */
-const KSocketAddress* KExtendedSocket::peerAddress()
+const ::KSocketAddress* KExtendedSocket::peerAddress()
 {
   if (d->peer != NULL)
     return d->peer;
@@ -780,7 +782,7 @@ int KExtendedSocket::startAsyncLookup()
       d->resRemote.setFlags(flags);
       d->resRemote.setFamily(familyMask);
       d->resRemote.setSocketType(socktype);
-      QObject::connect(&d->resRemote, SIGNAL(finished(QResolverResults)), 
+      QObject::connect(&d->resRemote, SIGNAL(finished(KResolverResults)), 
 		       this, SLOT(dnsResultsReady()));
 
       if (!d->resRemote.start())
@@ -793,11 +795,11 @@ int KExtendedSocket::startAsyncLookup()
   if ((d->flags & passiveSocket) == 0 && !d->resLocal.isRunning())
     {
       /* keep flags, but make this passive */
-      flags |= QResolver::Passive;
+      flags |= KResolver::Passive;
       d->resLocal.setFlags(flags);
       d->resLocal.setFamily(familyMask);
       d->resLocal.setSocketType(socktype);
-      QObject::connect(&d->resLocal, SIGNAL(finished(QResolverResults)), 
+      QObject::connect(&d->resLocal, SIGNAL(finished(KResolverResults)), 
 		       this, SLOT(dnsResultsReady()));
 
       if (!d->resLocal.start())
@@ -842,8 +844,8 @@ int KExtendedSocket::listen(int N)
     return -2;
   
   // doing the loop:
-  QResolverResults::const_iterator it;
-  QResolverResults res = d->resRemote.results();
+  KResolverResults::const_iterator it;
+  KResolverResults res = d->resRemote.results();
   for (it = res.begin(); it != res.end(); ++it)
     {
       kdDebug(170) << "Trying to listen on " << (*it).address().toString() << endl;
@@ -1003,9 +1005,9 @@ int KExtendedSocket::connect()
 //		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
     }
 
-  QResolverResults remote = d->resRemote.results(),
+  KResolverResults remote = d->resRemote.results(),
     local = d->resLocal.results();
-  QResolverResults::const_iterator it, it2;
+  KResolverResults::const_iterator it, it2;
   kdDebug(170) << "Starting connect to " << host() << '|' << port() 
                << ": have " << local.count() << " local entries and "
                << remote.count() << " remote" << endl;
@@ -1760,7 +1762,7 @@ void KExtendedSocket::connectionEvent()
   if (d->status != connecting)
     return;			// move along. There's nothing to see here
 
-  QResolverResults remote = d->resRemote.results();
+  KResolverResults remote = d->resRemote.results();
   if (remote.count() == 0)
     {
       // We have a problem! Abort?
@@ -1810,7 +1812,7 @@ void KExtendedSocket::connectionEvent()
 
   // ok, we have to try something here
   // and sockfd == -1
-  QResolverResults local = d->resLocal.results();
+  KResolverResults local = d->resLocal.results();
   unsigned localidx = 0;
   for ( ; d->current < remote.count(); d->current++)
     {
@@ -1933,7 +1935,7 @@ void KExtendedSocket::dnsResultsReady()
   else
     {
       d->status = nothing;
-      setError(IO_LookupError, QResolver::NoName);
+      setError(IO_LookupError, KResolver::NoName);
     }
 
   emit lookupFinished(n);
@@ -1964,7 +1966,7 @@ int KExtendedSocket::resolve(sockaddr *sock, ksocklen_t len, QString &host,
   return err;
 }
 
-int KExtendedSocket::resolve(KSocketAddress *sock, QString &host, QString &port,
+int KExtendedSocket::resolve(::KSocketAddress *sock, QString &host, QString &port,
 			     int flags)
 {
   return resolve(sock->data, sock->datasize, host, port, flags);
@@ -1982,7 +1984,7 @@ QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QStrin
     return l;
 
 //  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
-  QResolverResults res = QResolver::resolve(host, port, flags, familyMask);
+  KResolverResults res = KResolver::resolve(host, port, flags, familyMask);
   if (res.errorCode())
     {
       if (error)
@@ -2018,7 +2020,7 @@ QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QStrin
 	  ai->ai->ai_addr = 0;
 	}
 
-      ai->addr = KSocketAddress::newAddress(ai->ai->ai_addr, ai->ai->ai_addrlen);
+      ai->addr = ::KSocketAddress::newAddress(ai->ai->ai_addr, ai->ai->ai_addrlen);
 
       l.append(ai);
     }
@@ -2029,9 +2031,9 @@ QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QStrin
   return l;
 }
 
-KSocketAddress *KExtendedSocket::localAddress(int fd)
+::KSocketAddress *KExtendedSocket::localAddress(int fd)
 {
-  KSocketAddress *local;
+  ::KSocketAddress *local;
   struct sockaddr static_sa, *sa = &static_sa;
   ksocklen_t len = sizeof(static_sa);
 
@@ -2066,20 +2068,20 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
 	  return NULL;
 	}
 
-      local = KSocketAddress::newAddress(sa, len);
+      local = ::KSocketAddress::newAddress(sa, len);
       free(sa);
     }
   else
-    local = KSocketAddress::newAddress(sa, len);
+    local = ::KSocketAddress::newAddress(sa, len);
 
   return local;
 }
 
 /* This is exactly the same code as localAddress, except
  * we call getpeername here */
-KSocketAddress *KExtendedSocket::peerAddress(int fd)
+::KSocketAddress *KExtendedSocket::peerAddress(int fd)
 {
-  KSocketAddress *peer;
+  ::KSocketAddress *peer;
   struct sockaddr static_sa, *sa = &static_sa;
   ksocklen_t len = sizeof(static_sa);
 
@@ -2114,11 +2116,11 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
 	  return NULL;
 	}
 
-      peer = KSocketAddress::newAddress(sa, len);
+      peer = ::KSocketAddress::newAddress(sa, len);
       free(sa);
     }
   else
-    peer = KSocketAddress::newAddress(sa, len);
+    peer = ::KSocketAddress::newAddress(sa, len);
 
   return peer;
 }
@@ -2164,7 +2166,7 @@ KAddressInfo::KAddressInfo(addrinfo *p)
       ai->ai_addrlen = 0;
    }
 
-   addr = KSocketAddress::newAddress(ai->ai_addr, ai->ai_addrlen);
+   addr = ::KSocketAddress::newAddress(ai->ai_addr, ai->ai_addrlen);
 }
 #endif
 KAddressInfo::~KAddressInfo()

@@ -229,7 +229,7 @@ class KInetSocketAddressPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an Internet socket address
  */
-class KInetSocketAddress: public KSocketAddress
+class KInetSocketAddress: public ::KSocketAddress
 {
   Q_OBJECT
 public:
@@ -560,7 +560,7 @@ private:
   KInetSocketAddressPrivate* d;
 };
 
-extern const KInetSocketAddress addressAny, addressLoopback;
+extern const ::KInetSocketAddress addressAny, addressLoopback;
 
 /*
  * External definition KUnixSocketAddress
@@ -580,7 +580,7 @@ class KUnixSocketAddressPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short a Unix socket address
  */
-class KUnixSocketAddress: public KSocketAddress
+class KUnixSocketAddress: public ::KSocketAddress
 {
   Q_OBJECT
 public:

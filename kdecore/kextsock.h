@@ -434,7 +434,7 @@ public:
    * @return the local socket address, can be 0 if the connection has not been established
    *         yet
    */
-  const KSocketAddress *localAddress();
+  const ::KSocketAddress *localAddress();
 
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
@@ -442,7 +442,7 @@ public:
    * @return the peer address, can be 0 if the connection has not been established yet
    *         or the socket is passive
    */
-  const KSocketAddress *peerAddress();
+  const ::KSocketAddress *peerAddress();
 
   /**
    * Returns the file descriptor
@@ -897,7 +897,7 @@ public:
    * @param flags	the same flags as getnameinfo()
    * @returns 0 on success, nonzero otherwise.
    */
-  static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
+  static int resolve(::KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 
   /** @deprecated
    * This function is now deprecated. Please use @ref QResolver::resolve.
@@ -927,7 +927,7 @@ public:
    * @param fd		the file descriptor
    * @return the local socket address or 0 if an error occurred. Delete after use.
    */
-  static KSocketAddress *localAddress(int fd);
+  static ::KSocketAddress *localAddress(int fd);
 
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
@@ -936,7 +936,7 @@ public:
    * @param fd		the file descriptor
    * @return the peer socket address or 0 if an error occurred. Delete after use.
    */
-  static KSocketAddress *peerAddress(int fd);
+  static ::KSocketAddress *peerAddress(int fd);
 
   /**
    * Returns the representing text of this error code
@@ -976,7 +976,7 @@ class KAddressInfo
 {
 private:
   addrinfo *ai;
-  KSocketAddress *addr;
+  ::KSocketAddress *addr;
 
   inline KAddressInfo() : ai(0), addr(0)
   { }
@@ -992,7 +992,7 @@ public:
    * Returns the KAddressInfo's KSocketAddress.
    * Only valid as long as the KAddressInfo exists.
    */
-  inline operator const KSocketAddress*() const
+  inline operator const ::KSocketAddress*() const
   { return addr; }
 
   /**
@@ -1013,7 +1013,7 @@ public:
    * Only valid as long as the KAddressInfo exists.
    * @return the KAddressInfo's KSocketAddress.
    */
-  inline const KSocketAddress* address() const
+  inline const ::KSocketAddress* address() const
   { return addr; }
 
   /**

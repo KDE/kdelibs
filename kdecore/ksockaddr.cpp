@@ -39,7 +39,7 @@
 #include "ksockaddr.h"
 //#include "kextsock.h"
 
-#ifndef HAVE_SOCKADDR_IN6
+#ifndef HAVE_STRUCT_SOCKADDR_IN6
 // The system doesn't have sockaddr_in6
 // But we can tell netsupp.h to define it for us, according to the RFC
 #define CLOBBER_IN6
@@ -255,7 +255,7 @@ public:
     sin6.sin6_family = AF_INET6;
     sin6.sin6_port = 0;
     sin6.sin6_flowinfo = 0;
-# ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+# ifdef HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID
     sin6.sin6_scope_id = 0;
 # endif
 # ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
@@ -497,7 +497,7 @@ bool KInetSocketAddress::setFlowinfo(Q_UINT32 flowinfo)
 
 bool KInetSocketAddress::setScopeId(int scopeid)
 {
-#if defined(AF_INET6) && defined(HAVE_SOCKADDR_IN6_SCOPE_ID)
+#if defined(AF_INET6) && defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
   if (d->sockfamily == AF_INET6)
     {
       d->sin6.sin6_scope_id = scopeid;
@@ -658,7 +658,7 @@ bool KInetSocketAddress::areEqualInet6(const KSocketAddress &s1, const KSocketAd
    else
      return (sin1->sin6_port == sin2->sin6_port) && 
             (sin1->sin6_flowinfo == sin2->sin6_flowinfo) && 
-#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+#ifdef HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID
             (sin1->sin6_scope_id == sin2->sin6_scope_id) && 
 #endif
             (memcmp(&sin1->sin6_addr, &sin2->sin6_addr, sizeof(struct in6_addr))  == 0);
@@ -681,7 +681,7 @@ void KInetSocketAddress::fromV4()
 
   // Clear flowinfo and scopeid
   d->sin6.sin6_flowinfo = 0;
-# ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+# ifdef HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID
   d->sin6.sin6_scope_id = 0;
 # endif
 #endif

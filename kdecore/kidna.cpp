@@ -21,12 +21,14 @@
 
 #include "kidna.h"
 
-#include <qresolver.h>
+#include "kresolver.h"
 #include <kdebug.h>
+
+using namespace KNetwork;
 
 QCString KIDNA::toAsciiCString(const QString &idna)
 {
-  return QResolver::domainToAscii(idna);
+  return KResolver::domainToAscii(idna);
 }
 
 QString KIDNA::toAscii(const QString &idna)
@@ -36,5 +38,5 @@ QString KIDNA::toAscii(const QString &idna)
 
 QString KIDNA::toUnicode(const QString &idna)
 {
-  return QResolver::domainToUnicode(idna);
+  return KResolver::domainToUnicode(idna);
 }

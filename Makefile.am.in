@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-COMPILE_FIRST = dcop libltdl libqt-addon kdefx kdecore kdeui kdesu kjs kwallet kio
+COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kwallet kio
 COMPILE_BEFORE_doc = kdoctools
 COMPILE_AFTER_kparts = kspell2 kmdi kdeprint kinit kate interfaces kcert khtml
 COMPILE_AFTER_kdeprint = kate khtml
@@ -29,7 +29,6 @@ COMPILE_BEFORE_kmdi = kutils
 COMPILE_BEFORE_kspell2 = kutils
 COMPILE_BEFORE_kdewidgets = kdeui kabc khtml
 COMPILE_BEFORE_interfaces = arts
-COMPILE_BEFORE_kdecore = libqt-addon
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/libltdl/ltdl.m4
 
