@@ -178,7 +178,6 @@ inline CoverWidget::CoverWidget (QWidget * parent)
 {
     m_appletwidget = new KJavaAppletWidget (this);
     setFocusProxy (m_appletwidget);
-    hide ();
 }
 
 inline KJavaAppletWidget * CoverWidget::appletWidget () const {
