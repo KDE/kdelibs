@@ -744,6 +744,7 @@ public:
   /**
    * The same as equals(), just with a less obvious name.
    * Compares this url with @p u.
+   * @param u the URL to compare this one with.
    * @param ignore_trailing set to true to ignore trailing '/' characters.
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
@@ -754,6 +755,7 @@ public:
 
   /**
    * Compares this url with @p u.
+   * @param u the URL to compare this one with.
    * @param ignore_trailing set to true to ignore trailing '/' characters.
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
@@ -883,6 +885,8 @@ public:
    * URL is returned.
    * Note that if @p base_url represents a directory, it should contain
    * a trailing slash.
+   * @param base_url the URL to derive from
+   * @param url new URL
    * @param encoding_hint MIB of original encoding of @p str .
    * @see QTextCodec::mibEnum()
    * @see adjustPath()
@@ -945,6 +949,8 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
  * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
  *
+ * @param _url1 A reference URL
+ * @param _url2 A URL that will be compared with the reference URL
  * @param _ignore_trailing Described in KURL::cmp
  * @param _ignore_ref If true, disables comparison of HTML-style references.
  */

@@ -357,8 +357,7 @@ private:
 
 class KMD5Private;
 /**
- * Provides an easy to use C++ implementation of RSA's
- * MD5 algorithm.
+ * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
  *
  * The default constructor is designed to provide much the same
  * functionality as the most commonly used C-implementation, while
@@ -375,7 +374,7 @@ class KMD5Private;
  * 64 byte boundary to calculate its value. After this operation it
  * is not possible to resume consuming data.
  *
- * \b Usage:\n
+ * \b Usage:
  *
  * A common usage of this class:
  *
@@ -399,7 +398,6 @@ class KMD5Private;
  * cout << "Hex Digest output: " << context.hexDigest().data() << endl;
  * \endcode
  *
- * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
  * @author Dirk Mueller <mueller@kde.org>, Dawit Alemayehu <adawit@kde.org>
  */
 
