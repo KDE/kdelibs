@@ -15,3 +15,4 @@ if test -n "$ACL_H" && test -n "$ACL_FUNC"; then
 fi
 AC_SUBST(KFILE_ACL_MODULE)
 
+>>>>>>>><<<<<<<<< DAVID PLEASE FIX THIS, IT'S NOW NOT WILLING TO INSTALL
