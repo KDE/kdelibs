@@ -545,35 +545,35 @@ void RenderFlow::positionNewFloats()
         RenderObject *o = f->node;
         int _height = o->height() + o->marginTop() + o->marginBottom();
 
+        int ro = rightOffset(); // Constant part of right offset.
+        int lo = leftOffset(); // Constat part of left offset.
+        int fwidth = f->width; // The width we look for.
+kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo << endl;
+        if (ro - lo < fwidth)
+            fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
         {
-            int fx = leftOffset(y);
-            if (contentWidth() >= f->width)
+            int fx = lo+leftRelOffset(y);
+            while (ro+rightRelOffset(y)-fx < fwidth)
             {
-                while (rightOffset(y)-fx < f->width)
-                {
-                    y++;
-                    fx = leftOffset(y);
-                }
+                y++;
+                fx = lo+leftRelOffset(y);
             }
             f->left = fx;
-//          kdDebug( 6040 ) << "positioning left aligned float at (" << //                 fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
+            kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
             o->setXPos(fx + o->marginLeft());
             o->setYPos(y + o->marginTop());
         }
         else
         {
-            int fx = rightOffset(y);
-            if (contentWidth() >= f->width)
+            int fx = ro+rightOffset(y);
+            while (fx - lo-leftOffset(y) < fwidth)
             {
-                while (fx - leftOffset(y) < f->width)
-                {
-                    y++;
-                    fx = rightOffset(y);
-                }
+                y++;
+                fx = ro+rightOffset(y);
             }
             f->left = fx - f->width;
-//          kdDebug( 6040 ) << "positioning right aligned float at (" << //                fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
+            kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setXPos(fx - o->marginRight() - o->width());
             o->setYPos(y + o->marginTop());
         }
@@ -664,8 +664,8 @@ void RenderFlow::newLine()
 }
 
 
-short
-RenderFlow::leftOffset(int y) const
+int
+RenderFlow::leftOffset() const
 {
     int left = 0;
 
@@ -681,6 +681,13 @@ RenderFlow::leftOffset(int y) const
     if(m_style->hasPadding())
         left += paddingLeft();
 
+    return left;
+}
+
+int
+RenderFlow::leftRelOffset(int y) const
+{
+    int left = 0;
     if(!specialObjects) return left;
 
     SpecialObject* r;
@@ -698,7 +705,7 @@ RenderFlow::leftOffset(int y) const
 }
 
 int
-RenderFlow::rightOffset(int y) const
+RenderFlow::rightOffset() const
 {
     int right = m_width;
 
@@ -713,6 +720,13 @@ RenderFlow::rightOffset(int y) const
         right -= borderRight();
     if(m_style->hasPadding())
         right -= paddingRight();
+    return right;
+}
+
+int
+RenderFlow::rightRelOffset(int y) const
+{
+    int right = 0;
 
     if (!specialObjects) return right;
 
@@ -1030,10 +1044,17 @@ void RenderFlow::calcMinMaxWidth()
     else
     {
         while(child != 0)
-        {
+        {                    
             if(!child->minMaxKnown())
                 child->calcMinMaxWidth();
 
+            // positioned children don't affect the minmaxwidth
+            if (child->isPositioned())
+            {
+                child = child->nextSibling();   
+                continue;
+            }                                
+            
             int margin=0;
             //  auto margins don't affect minwidth
 

@@ -81,14 +81,17 @@ public:
 
     virtual short baselineOffset() const;
 
-    // from BiDiParagraph
     virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition() const;
 
-    inline int rightOffset(int y) const;
-    // overrides BiDiParagraph
-    virtual short leftOffset(int y) const;
+    int rightOffset() const;
+    int rightRelOffset(int y) const;
+    int rightOffset(int y) const { return rightOffset() + rightRelOffset(y); }
+
+    int leftOffset() const;
+    int leftRelOffset(int y) const;
+    int leftOffset(int y) const { return leftOffset() + leftRelOffset(y); }
 
 protected:
 
