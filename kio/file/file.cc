@@ -518,6 +518,16 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	
 	    if (S_ISLNK(buff.st_mode)) {
 
+		char buffer2[ 1000 ];
+		int n = readlink( path, buffer2, 1000 );
+		if ( n != -1 ) {
+		    buffer2[ n ] = 0;
+                }
+
+		atom.m_uds = KIO::UDS_LINK_DEST;
+		atom.m_str = buffer2;
+		entry.append( atom );
+
 		// A link poiting to nowhere ?
 		if ( ::stat( path, &buff ) == -1 ) {
 		    // It is a link pointing to nowhere
@@ -534,16 +544,6 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 		
 		    goto notype;
 
-		} else {
-		    char buffer2[ 1000 ];
-		    int n = readlink( path, buffer2, 1000 );
-		    if ( n != -1 ) {
-			buffer2[ n ] = 0;
-		    }
-
-		    atom.m_uds = KIO::UDS_LINK_DEST;
-		    atom.m_str = buffer2;
-		    entry.append( atom );
 		}
 	    }
 	}
