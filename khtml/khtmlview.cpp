@@ -1027,8 +1027,6 @@ void KHTMLView::print()
         // the whole thing.
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
-        // We print the bottom 'overlap' units again at the top of the next page.
-        int overlap = 30;
         p->setClipRect(0,0, pageWidth, pageHeight);
         if(root->docWidth() > metrics.width()) {
             double scale = ((double) metrics.width())/((double) root->docWidth());
@@ -1037,19 +1035,20 @@ void KHTMLView::print()
 #endif
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
-            overlap = (int) (overlap/scale);
         }
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+            root->setTruncatedAt(top+pageHeight);
 
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
-            p->translate(0,-(pageHeight-overlap));
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
-            top += (pageHeight-overlap);
+
+            p->translate(0, top - root->truncatedAt());
+            top = root->truncatedAt();
         }
 
         p->end();
