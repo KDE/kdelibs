@@ -129,6 +129,7 @@
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
+<!ENTITY Flash  "<trademark>Flash</trademark>">
 <!ENTITY flashkard "<application>FlashKard</application>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
 <!ENTITY gcc	"<command>gcc</command>">
@@ -343,6 +344,8 @@
 <!ENTITY quanta	"<application>Quanta</application>">
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
+<!ENTITY RealAudio "<trademark class="registered">RealAudio</trademark>">
+<!ENTITY RealVideo "<trademark class="registered">RealVideo</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY reslisa	"<application>ResLisa</application>">
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
