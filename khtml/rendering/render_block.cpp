@@ -702,20 +702,27 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             child->containingBlock()->insertPositionedObject(child);
             RenderStyle* s = child->style();
 
-            if ( child->isBox() &&
-                 ( ( s->left().isVariable() && s->right().isVariable() ) ||
-                 s->left().isStatic() || s->right().isStatic() ) ) {
+            if ( child->isBox() && child->hasStaticX()) {
                 if (style()->direction() == LTR)
                     static_cast<RenderBox*>( child )->setStaticX(xPos);
                 else
                     static_cast<RenderBox*>( child )->setStaticX(borderRight()+paddingRight());
             }
-            if ( child->isBox() &&
-                 ( ( s->top().isVariable() && s->bottom().isVariable() ) ||
-                 s->top().isStatic() ) ) {
-                int yPosEstimate = m_height;
-                if (prevFlow)
-                    yPosEstimate += prevFlow->collapsedMarginBottom();
+            if ( child->isBox() && child->hasStaticY()) {
+                int marginOffset = 0;
+                bool shouldSynthesizeCollapse = (!topMarginContributor || !canCollapseTopWithChildren);
+                if (shouldSynthesizeCollapse) {
+                    int collapsedTopPos = prevPosMargin;
+                    int collapsedTopNeg = prevNegMargin;
+                    bool posMargin = child->marginTop() >= 0;
+                    if (posMargin && child->marginTop() > collapsedTopPos)
+                        collapsedTopPos = child->marginTop();
+                    else if (!posMargin && child->marginTop() > collapsedTopNeg)
+                        collapsedTopNeg = child->marginTop();
+                    marginOffset += (collapsedTopPos - collapsedTopNeg) - child->marginTop();
+                }
+
+                int yPosEstimate = m_height + marginOffset;
                 static_cast<RenderBox*>( child )->setStaticY( yPosEstimate );
             }
             child = child->nextSibling();

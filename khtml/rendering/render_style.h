@@ -641,6 +641,7 @@ protected:
         union {
             struct {
                 EDisplay _display : 5;
+                EDisplay _originalDisplay: 5;
                 EBackgroundRepeat _bg_repeat : 2;
                 bool _bg_attachment : 1;
                 EOverflow _overflow : 4 ;
@@ -660,7 +661,7 @@ protected:
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 28;
+                unsigned int unused : 23;
             } f;
             Q_UINT64 _niflags;
         };
@@ -710,7 +711,7 @@ protected:
 	inherited_flags.f._user_input = UI_NONE;
         inherited_flags.f.unused = 0;
 
-        noninherited_flags.f._display = initialDisplay();
+        noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
 	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
 	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
 	noninherited_flags.f._overflow = initialOverflow();
@@ -763,6 +764,7 @@ public:
 // attribute getter methods
 
     EDisplay 	display() const { return noninherited_flags.f._display; }
+    EDisplay    originalDisplay() const { return noninherited_flags.f._originalDisplay; }
 
     Length  	left() const {  return surround->offset.left; }
     Length  	right() const {  return surround->offset.right; }
@@ -902,6 +904,7 @@ public:
 // attribute setter methods
 
     void setDisplay(EDisplay v) {  noninherited_flags.f._display = v; }
+    void setOriginalDisplay(EDisplay v) {  noninherited_flags.f._originalDisplay = v; }
     void setPosition(EPosition v) {  noninherited_flags.f._position = v; }
     void setFloating(EFloat v) {  noninherited_flags.f._floating = v; }
 
@@ -1061,6 +1064,18 @@ public:
 
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
     Diff diff( const RenderStyle *other ) const;
+
+    bool isDisplayReplacedType() {
+        return display() == INLINE_BLOCK ||/* display() == INLINE_BOX ||*/ display() == INLINE_TABLE;
+    }
+    bool isDisplayInlineType() {
+        return display() == INLINE || isDisplayReplacedType();
+    }
+    bool isOriginalDisplayInlineType() {
+        return originalDisplay() == INLINE || originalDisplay() == INLINE_BLOCK ||
+               /*originalDisplay() == INLINE_BOX ||*/ originalDisplay() == INLINE_TABLE;
+    }
+
 
 #ifdef ENABLE_DUMP
     QString createDiff( const RenderStyle &parent ) const;

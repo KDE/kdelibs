@@ -576,6 +576,8 @@ public:
     virtual bool hasFloats() const { return false; }
     virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
+    
+    bool usesLineWidth() const;
 
     // positioning of inline children (bidi)
     virtual void position(InlineBox*, int, int, bool) {}

@@ -1,3 +1,28 @@
+2004-10-19  Germain Garand  <germain@ebooksfrance.org>
+
+        finish merge of static position for positioned objects
+
+        * css/cssstyleselector.cpp (adjustRenderStyle): remember our original display
+        * rendering/bidi.cpp (appendRun): include positioned objects with static X/Y, 
+        now that we use those.
+        (findNextLineBreak): adjust static position
+
+        * rendering/render_block.cpp (layoutBlockChildren): ditto.
+
+        * rendering/render_box.cpp (containingBlockWidth): use usesLineWidth
+        (position): activate static position logic
+        (calcAbsoluteHorizontal): replace static position calculation
+        (calcAbsoluteVertical): ditto.
+
+        * rendering/render_object.cpp (removeChild): fix typo
+        (usesLineWidth): merge usesLineWidth from WebCore
+
+        * rendering/render_style.h (NonInheritedFlags::): originalDisplay member
+        (setBitDefaults): initialize the above
+        (originalDisplay/setOriginalDisplay): accessors
+        (isDisplayReplacedType/isDisplayInlineType/isOriginalDisplayInlineType):
+        helpers
+
 2004-10-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/render_table.cpp: Merge layout fixes from Webcore

@@ -344,6 +344,8 @@ inline QChar::Direction BidiIterator::direction() const
 
 // -------------------------------------------------------------------------------------------------
 
+static inline bool isHidden(RenderObject* o) { return  o->isFloating() || (o->isPositioned() && !o->hasStaticX() && !o->hasStaticY()); }
+
 static void appendRun()
 {
     if ( emptyRun ) return;
@@ -357,7 +359,7 @@ static void appendRun()
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj && obj != eor.obj ) {
-        if(!obj->isHidden()) {
+        if(!isHidden(obj)) {
 #if BIDI_DEBUG > 1
             kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
 #endif
@@ -366,7 +368,7 @@ static void appendRun()
         obj = Bidinext( sor.par, obj );
         start = 0;
     }
-    if( obj && !obj->isHidden()) {
+    if( obj && !isHidden(obj)) {
 #if BIDI_DEBUG > 1
         kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
 #endif
@@ -1317,7 +1319,21 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                 width = lineWidth(m_height);
             }
         } else if(o->isPositioned()) {
-            // ignore
+            // If our original display wasn't an inline type, then we can
+            // determine our static x position now.
+            bool isInlineType = o->style()->isOriginalDisplayInlineType();
+            if (o->hasStaticX() && !isInlineType) {
+                static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
+                              borderLeft()+paddingLeft() :
+                              borderRight()+paddingRight());
+            }
+
+            // If our original display was an INLINE type, then we can
+            // determine our static y position now.
+            bool needToSetStaticY = o->hasStaticY();
+                if (o->hasStaticY() && isInlineType) {
+                    static_cast<RenderBox*>(o)->setStaticY(m_height);
+            }
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->stringLength();

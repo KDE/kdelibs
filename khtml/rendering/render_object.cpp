@@ -248,7 +248,7 @@ RenderObject* RenderObject::removeChildNode(RenderObject* )
 
 void RenderObject::removeChild(RenderObject *o )
 {
-    setNeedsLayout(false);
+    setNeedsLayout(true);
     removeChildNode( o );
 }
 
@@ -1838,6 +1838,16 @@ void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);
+}
+
+bool RenderObject::usesLineWidth() const
+{
+    // 1. All auto-width objects that avoid floats should always use lineWidth
+    // 2. For objects with a specified width, we match WinIE's behavior:
+    // (a) tables use contentWidth
+    // (b) <hr>s use lineWidth
+    // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
+    return (style()->flowAroundFloats() && (style()->width().isVariable() ||/* isHR() ||*/ (style()->htmlHacks() && !isTable())));
 }
 
 #undef RED_LUMINOSITY

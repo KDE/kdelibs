@@ -544,10 +544,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
 void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e)
 {
-#ifdef APPLE_CHANGES
      // Cache our original display.
      style->setOriginalDisplay(style->display());
-#endif
 
     if (style->display() != NONE) {
         // If we have a <td> that specifies a float property, in quirks mode we just drop the float
