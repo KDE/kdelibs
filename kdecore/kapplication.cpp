@@ -1975,7 +1975,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
 
     QColor kde31Button;
     if ( QPixmap::defaultDepth() > 8 )
-      kde31Button.setRgb( 238, 234, 222 );
+      kde31Button.setRgb( 221, 223, 228 );
     else
       kde31Button.setRgb( 220, 220, 220 );
 
