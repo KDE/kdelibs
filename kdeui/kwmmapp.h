@@ -121,6 +121,23 @@ signals:
     */
   void commandRecieved(QString);
 
+  
+  /**
+    * This is not integrated into windowChange since reading
+    * icons is somewhat expensive via the KWM class.
+    */ 
+  void windowIconChanged(Window);
+
+  /**
+    * The specified desktop got a new name
+    */
+  void desktopNameChange(int, QString);
+  
+  /**
+    * The number of desktops changed
+    */
+  void desktopNumberChange(int);
+
 private:
   QWidget* module;
 

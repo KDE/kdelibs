@@ -7,13 +7,19 @@
 
 #include "kwmmapp.moc"
 
+int KWMModuleXErrorHandler(Display *, XErrorEvent *){
+  return 0; // ignore Xerrors
+};
+
 KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
   :KApplication(argc, argv){
+    XSetErrorHandler(KWMModuleXErrorHandler);
     module = new QWidget;
 }
 
 KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[], const QString& rAppName)
   :KApplication(argc, argv, rAppName){
+    XSetErrorHandler(KWMModuleXErrorHandler);
     module = new QWidget;
 }
 
@@ -32,6 +38,9 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom module_win_raise;
   static Atom module_win_lower;
   static Atom module_win_activate;
+  static Atom module_win_icon_change;
+  static Atom module_desktop_name_change;
+  static Atom module_desktop_number_change;
   static Atom kwm_command;
 
   Atom a;
@@ -49,6 +58,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 				"KWM_MODULE_INIT", False);
       module_desktop_change = XInternAtom(qt_xdisplay(), 
 					  "KWM_MODULE_DESKTOP_CHANGE", False);
+      module_desktop_name_change = XInternAtom(qt_xdisplay(), "KWM_MODULE_DESKTOP_NAME_CHANGE", False);
+      module_desktop_number_change = XInternAtom(qt_xdisplay(), "KWM_MODULE_DESKTOP_NUMBER_CHANGE", False);
       
       module_win_add = XInternAtom(qt_xdisplay(), 
 				   "KWM_MODULE_WIN_ADD", False);
@@ -61,6 +72,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       module_win_lower = XInternAtom(qt_xdisplay(), "KWM_MODULE_WIN_LOWER", False);
       module_win_activate = XInternAtom(qt_xdisplay(), 
 					"KWM_MODULE_WIN_ACTIVATE", False);
+      module_win_icon_change = XInternAtom(qt_xdisplay(), 
+					   "KWM_MODULE_WIN_ICON_CHANGE", False);
       kwm_command = XInternAtom(qt_xdisplay(), 
 				"KWM_COMMAND", False);
     }
@@ -75,6 +88,14 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     if (a == module_desktop_change){
       int d = (int) w;
       emit desktopChange(d);
+    }
+    if (a == module_desktop_name_change){
+      int d = (int) w;
+      emit desktopNameChange(d, KWM::getDesktopName(d));
+    }
+    if (a == module_desktop_number_change){
+      int d = (int) w;
+      emit desktopNumberChange(d);
     }
     if (a == module_win_add){
       wp = new Window;
@@ -117,6 +138,9 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     if (a == module_win_activate){
       emit windowActivate(w);
+    }
+    if (a == module_win_icon_change){
+      emit windowIconChanged(w);
     }
     if (a == kwm_command){
       QString com = ev->xclient.data.b;
