@@ -56,7 +56,7 @@ void KJavaAppletServer::freeJavaServer()
 void KJavaAppletServer::setupJava( KJavaProcess *p ) 
 {
     KConfig config ( "konquerorrc", true );
-    config.setGroup( "HTML Settings" );
+    config.setGroup( "Java/JavaScript Settings" );
     
     if( config.readBoolEntry( "JavaAutoDetect", true) ) 
         p->setJVMPath( "java" );
