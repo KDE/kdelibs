@@ -96,10 +96,6 @@ int QActionSeparator::plug( QWidget* widget, int index )
 
 	int id = menu->insertSeparator( index );
 	
-/////////
-#warning remove this hack when insertSeparator is fixed in Qt
-	id = menu->count();
-/////////
 	addContainer( menu, id );
 	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 	
