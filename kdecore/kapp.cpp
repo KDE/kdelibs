@@ -709,8 +709,6 @@ static int my_system (const char *command) {
       setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
       setgid( getgid() );
       const char* shell = "/bin/sh";
-      if (getenv("SHELL"))
-         shell = getenv("SHELL");
       execl(shell, shell, "-c", command, 0L);
       ::exit(127);
    }
