@@ -57,7 +57,7 @@ QStringList KCompletion::items() const
 {
     QStringList list;
     extractStringsFromNode( myTreeRoot, QString::null, &list, true );
-    
+
     return list;
 }
 
@@ -426,7 +426,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 
 
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
-					  const QString& beginning, 
+					  const QString& beginning,
 					  QStringList *matches,
 					  bool getAllItems ) const
 {
@@ -465,7 +465,9 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 
 void KCompletion::doBeep()
 {
-    if ( myBeep && myCompletionMode == KGlobal::CompletionShell )
+    if ( myBeep && 
+	 (myCompletionMode == KGlobal::CompletionShell || 
+	  myCompletionMode == KGlobal::CompletionMan) )
         kapp->beep();
 }
 

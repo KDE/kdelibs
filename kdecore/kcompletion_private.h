@@ -95,7 +95,8 @@ private:
  * A KCompFork stores one node in the tree, an index describing the current
  * index of its children-list and a string representing the string from the
  * root of the tree to (and including) that node.
- *
+ 
+ * @short A fork in the KCompletionTree
  * @internal
  */
 
