@@ -195,6 +195,8 @@ public:
 
     virtual void attach(KHTMLView *w);
 
+    virtual void mouseEventHandler( int button, MouseEventType type, bool inside);
+
 protected:
     DOMString _value;
     QString currValue;
@@ -276,7 +278,6 @@ public:
     typeEnum inputType() { return _type; }
     virtual void reset();
 
-    // for images
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
                              int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset );

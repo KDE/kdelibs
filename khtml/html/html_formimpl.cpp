@@ -31,8 +31,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "html_documentimpl.h"
-#include <khtml_settings.h>
-
+#include "khtml_settings.h"
 #include "htmlhashes.h"
 
 #include "css/cssstyleselector.h"
@@ -563,7 +562,7 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     _clicked = false;
-    _type = SUBMIT;
+    _type = BUTTON;
     dirty = true;
 }
 
@@ -612,20 +611,17 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
+void HTMLButtonElementImpl::mouseEventHandler( int button, MouseEventType type, bool inside)
+{
+    if (_type != BUTTON && (type == MouseClick) || (type == MouseRelease)) {
+        _clicked = true;
+        if(_form) _form->prepareSubmit();
+    }
+}
+
 void HTMLButtonElementImpl::attach(KHTMLView *_view)
 {
-    m_style = document->styleSelector()->styleForElement(this);
-    view = _view;
-
-    khtml::RenderObject * r = _parent ? _parent->renderer() : 0;
-    if(r)
-    {
-        m_render = new RenderHtml4Button(view, this);
-        m_render->setStyle(m_style);
-
-        r->addChild(m_render, _next ? _next->renderer() : 0);
-    }
-    NodeBaseImpl::attach(_view);
+    HTMLElementImpl::attach(_view);
 }
 
 // -------------------------------------------------------------------------
