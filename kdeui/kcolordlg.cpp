@@ -379,9 +379,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
 		Ok, true )
 {
-    
-  setHelp( "kcolordialog.html", QString::null, QString::null );
-  setResizeMode( ResizeFixed ); // Comment if resizeable
+  setHelp( "kcolordialog.html", QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
 
   QPushButton *button;
@@ -646,6 +644,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
   palette->setValues( h, s );
   valuePal->setValue( v );
+
+  disableResize();
 }
 
 

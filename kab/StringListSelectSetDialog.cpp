@@ -20,7 +20,7 @@ StringListSelectSetDialog::StringListSelectSetDialog
   lbStrings->setMultiSelection(true);
   setMainWidget(lbStrings);
   enableButtonApply(false);
-  initializeGeometry();
+  //initializeGeometry();
   resize(minimumSize());
   // ############################################################################
 }
@@ -45,7 +45,7 @@ void StringListSelectSetDialog::initializeGeometry()
       size.setWidth(lbStrings->fontMetrics().width("This is a long string."));
     }
   lbStrings->setMinimumSize(size);
-  KDialogBase::initializeGeometry();
+  //KDialogBase::initializeGeometry();
   // ############################################################################
 }
 

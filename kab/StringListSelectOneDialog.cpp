@@ -32,7 +32,7 @@ StringListSelectOneDialog::StringListSelectOneDialog(QWidget* parent,
   enableButtonApply(false);
   // showButtonApply(false);
   // -----
-  initializeGeometry();
+  //initializeGeometry();
   resize(minimumSize());
   // ############################################################################
 }
@@ -84,7 +84,7 @@ void StringListSelectOneDialog::initializeGeometry()
   cy=QMAX(comboStrings->sizeHint().height(), labelHeadline->sizeHint().height());
   cy=cy<<1;
   widget->setMinimumSize(cx, cy);
-  KDialogBase::initializeGeometry();
+  //KDialogBase::initializeGeometry();
   // ############################################################################
 }
 

@@ -1487,15 +1487,15 @@ void KAboutDialog::show( void )
 {
   adjust();
   if( mContainerBase != 0 ) { mContainerBase->show(); }
-  KDialogBase::show();
+  QDialog::show();
 }
 
 
-void KAboutDialog::show( QWidget *centerParent )
+void KAboutDialog::show( QWidget */*centerParent*/ )
 {
   adjust();
   if( mContainerBase != 0 ) { mContainerBase->show(); }
-  KDialogBase::show( centerParent );
+  QDialog::show();
 }
 
 
@@ -1503,7 +1503,7 @@ void KAboutDialog::adjust()
 {
   if( about == 0 ) { return; }
   about->adjust();
-  initializeGeometry();
+  //initializeGeometry();
   resize(minimumSize());
 }
 

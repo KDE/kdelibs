@@ -559,7 +559,7 @@ void StringListSAndRSetDialog::fixSize(bool state)
   if(state!=sizeIsFixed)
     {
       sizeIsFixed=state;
-      initializeGeometry();
+      //initializeGeometry();
       if(state==true)
 	{
 	  setFixedSize(minimumSize());
