@@ -496,9 +496,19 @@ QString KCharsets::languageForEncoding( const QString &encoding )
 
 QString KCharsets::encodingForName( const QString &descriptiveName )
 {
-    int left = descriptiveName.find( "( " );
-    return descriptiveName.mid( left + 2, descriptiveName.find( " )" )
-      - left - 2 );
+    const int left = descriptiveName.find( '(' );
+    
+    if (left<0) // No parenthesis, so assume it is a normal encoding name
+	return descriptiveName;
+    
+    QString name(descriptiveName.mid(left+1));
+    
+    const int right = name.find( ')' );
+    
+    if (right<0) 
+        return name;
+	
+    return name.left(right);
 }
 
 QStringList KCharsets::descriptiveEncodingNames()
@@ -507,7 +517,7 @@ QStringList KCharsets::descriptiveEncodingNames()
   QStringList::Iterator it;
   for( it = encodings.begin(); it != encodings.end(); ++it ) {
       QString lang = KGlobal::charsets()->languageForEncoding( *it );
-      *it = lang + " ( " + *it + " )";
+      *it = i18n("Descriptive Encoding Name", "%1 ( %2 )") .arg(lang) .arg(*it);
   }
   encodings.sort();
   return encodings;
