@@ -8,9 +8,17 @@ int idl_line_no;
 
 int main( int argc, char** argv )
 {
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage : kidl input_file\n");
+        return -1;
+    }
     QFile file( argv[1] );
     if ( !file.open( IO_ReadOnly ) )
-	ASSERT( 0 );
+    {
+        fprintf(stderr, "Can't open input file\n");
+        return -1;
+    }
     
     QByteArray arr = file.readAll();
     int len = arr.size();
@@ -20,4 +28,5 @@ int main( int argc, char** argv )
     kidlParse( arr.data() );
 		     
     file.close();
+    return 0;
 }
