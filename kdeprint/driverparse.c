@@ -4,10 +4,12 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <dlfcn.h>
 
 char	**files = NULL;
 int	nfiles = 0, maxfiles = 0;
 int	nhandlers = 0, maxhandlers = 0;
+int	nlibs = 0, maxlibs = 0;
 typedef struct
 {
 	void (*init)(const char*);
@@ -16,6 +18,7 @@ typedef struct
 	int		namelen;
 } handler;
 handler	**handlers = NULL;
+void	**libs = NULL;
 
 void initHandlers(void)
 {
@@ -49,6 +52,34 @@ void registerHandler(const char *name, void(*initf)(const char*), int(*parsef)(c
 		handlers = (handler**)realloc(handlers, sizeof(handler*) * maxhandlers);
 	}
 	handlers[nhandlers++] = h;
+}
+
+void addLib(const char *filename)
+{
+	void	*handle = dlopen(filename, RTLD_LAZY);
+	if (handle)
+	{
+		void(*f)(void);
+		if (nlibs == maxlibs)
+		{
+			maxlibs += 5;
+			libs = (void**)realloc(libs, sizeof(void*) * maxlibs);
+		}
+		libs[nlibs++] = handle;
+		f = dlsym(handle, "initialize");
+		if (f)
+		{
+			(*f)();
+		}
+	}
+}
+
+void freeLibs(void)
+{
+	int	i;
+	for (i=0; i<maxlibs; i++)
+		dlclose(libs[i]);
+	free(libs);
 }
 
 void initFiles(void)
@@ -241,9 +272,16 @@ int execute(int argc, char *argv[])
 		d = strchr(c, ':');
 		if (d != NULL)
 			*d = 0;
-		for (i=0; i<nhandlers; i++)
+		if (strncmp(c, "module:", 7) == 0)
 		{
-			(*(handlers[i]->init))(c);
+			addLib(c+7);
+		}
+		else
+		{
+			for (i=0; i<nhandlers; i++)
+			{
+				(*(handlers[i]->init))(c);
+			}
 		}
 		if (d != NULL)
 			c = d+1;
@@ -269,6 +307,7 @@ int execute(int argc, char *argv[])
 	/* free everything */
 	freeFiles();
 	freeHandlers();
+	freeLibs();
 	if (dbFile != stdout)
 		fclose(dbFile);
 

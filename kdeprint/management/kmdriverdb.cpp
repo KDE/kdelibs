@@ -74,7 +74,7 @@ void KMDriverDB::init(QWidget *parent)
 	bool	createflag(false);
 
 	for (QStringList::ConstIterator it=dbDirs.begin(); it!=dbDirs.end() && !createflag; ++it)
-		if (!m_creator->checkDriverDB(*it, dbfi.lastModified()))
+		if (!(*it).startsWith("module:") && !m_creator->checkDriverDB(*it, dbfi.lastModified()))
 			createflag = true;
 
 	if (createflag)
