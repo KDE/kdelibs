@@ -25,7 +25,7 @@ SUBDIRS = nana qk dcop libltdl kdecore kdeui kformula mimetypes \
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
 $(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
-	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;
+	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in
 
 $(top_srcdir)/subdirs:
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common subdirs 
@@ -53,3 +53,4 @@ cvs-local:
 	autoheader && \
 	automake --gnits --add-missing && \
 	autoconf
+

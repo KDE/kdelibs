@@ -1,5 +1,5 @@
-## libltdl.m4 - Configure ltdl for the target system. -*-Shell-script-*-
-## Copyright (C) 1999 Free Software Foundation, Inc.
+## ltdl.m4 - Configure ltdl for the target system. -*-Shell-script-*-
+## Copyright (C) 1999-2000 Free Software Foundation, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -24,6 +24,20 @@
 
 AC_DEFUN(AC_LIB_LTDL,
 [AC_PREREQ(2.13)dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_C_CONST])dnl
+AC_REQUIRE([AC_C_INLINE])dnl
+
+dnl AC_LIB_LTDL must perform all the checks necessary for compilation
+dnl of the ltdl objects -- including compiler checks (above) and header
+dnl checks (below).
+AC_REQUIRE([AC_HEADER_STDC])dnl
+
+AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h dld.h)
+AC_CHECK_HEADERS(string.h strings.h, break)
+AC_CHECK_FUNCS(strchr index, break)
+AC_CHECK_FUNCS(strrchr rindex, break)
+
 AC_REQUIRE([AC_LTDL_ENABLE_INSTALL])dnl
 AC_REQUIRE([AC_LTDL_SHLIBEXT])dnl
 AC_REQUIRE([AC_LTDL_SHLIBPATH])dnl
@@ -120,11 +134,19 @@ fi
 
 AC_DEFUN(AC_LTDL_DLLIB,
 [LIBADD_DL=
-AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
-[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
-AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
-[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
-AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
+AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
+   [Define if you have the libdl library or equivalent. ]) LIBADD_DL="-ldl"],
+[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
+   [Define if you have the libdl library or equivalent.])])])
+AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1,
+   [Define if you have the shl_load function.])],
+[AC_CHECK_LIB(dld, shl_load,
+  [AC_DEFINE(HAVE_SHL_LOAD, 1,
+     [Define if you have the shl_load function.])
+   LIBADD_DL="$LIBADD_DL -ldld"])
+])
+AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1,
+  [Define if you have the GNU dld library.])dnl
 test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
 AC_SUBST(LIBADD_DL)
 

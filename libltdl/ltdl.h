@@ -1,5 +1,5 @@
 /* ltdl.h -- generic dlopen functions
-   Copyright (C) 1998-1999 Free Software Foundation, Inc.
+   Copyright (C) 1998-2000 Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -28,6 +28,18 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #ifndef _LTDL_H_
 #define _LTDL_H_ 1
 
+/* Canonicalise Windows and Cygwin recognition macros.  */
+#ifdef __CYGWIN32__
+#  ifndef __CYGWIN__
+#    define __CYGWIN__ __CYGWIN32__
+#  endif
+#endif
+#ifdef _WIN32
+#  ifndef WIN32
+#    define WIN32 _WIN32
+#  endif
+#endif
+
 /* __BEGIN_DECLS should be used at the beginning of your declarations,
    so that C++ compilers don't mangle their names.  Use __END_DECLS at
    the end of C declarations. */
@@ -54,6 +66,34 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 # define lt_ptr_t	char*
 #endif
 
+#ifdef WIN32
+#  ifndef __CYGWIN__
+/* LTDL_DIRSEP_CHAR is accepted *in addition* to '/' as a directory
+   separator when it is set. */
+#    define LTDL_DIRSEP_CHAR	'\\'
+#    define LTDL_PATHSEP_CHAR	';'
+#  endif
+#endif
+#ifndef LTDL_PATHSEP_CHAR
+#  define LTDL_PATHSEP_CHAR	':'
+#endif
+
+/* DLL building support on win32 hosts;  mostly to workaround their
+   ridiculous implementation of data symbol exporting. */
+#ifndef LTDL_SCOPE
+#  ifdef _WIN32
+#    ifdef DLL_EXPORT		/* defined by libtool (if required) */
+#      define LTDL_SCOPE	__declspec(dllexport)
+#    endif
+#    ifdef LIBLTDL_DLL_IMPORT	/* define if linking with this dll */
+#      define LTDL_SCOPE	extern __declspec(dllimport)
+#    endif
+#  endif
+#  ifndef LTDL_SCOPE		/* static linking or !_WIN32 */
+#    define LTDL_SCOPE	extern
+#  endif
+#endif
+
 #include <stdlib.h>
 
 #ifdef _LTDL_COMPILE_
@@ -66,6 +106,12 @@ typedef struct {
 	const char *name;
 	lt_ptr_t address;
 } lt_dlsymlist;
+
+typedef	struct {
+	char	*filename;	/* file name */
+	char	*name;		/* module name */
+	int	ref_count;	/* reference count */
+} lt_dlinfo;
 
 __BEGIN_DECLS
 extern int lt_dlinit LTDL_PARAMS((void));
@@ -80,12 +126,15 @@ extern const char *lt_dlerror LTDL_PARAMS((void));
 extern int lt_dladdsearchdir LTDL_PARAMS((const char *search_dir));
 extern int lt_dlsetsearchpath LTDL_PARAMS((const char *search_path));
 extern const char *lt_dlgetsearchpath LTDL_PARAMS((void));
+extern int lt_dlsetdata LTDL_PARAMS((lt_dlhandle handle, lt_ptr_t data));
+extern lt_ptr_t lt_dlgetdata LTDL_PARAMS((lt_dlhandle handle));
+extern const lt_dlinfo *lt_dlgetinfo LTDL_PARAMS((lt_dlhandle handle));
 
-extern const lt_dlsymlist lt_preloaded_symbols[];
+LTDL_SCOPE const lt_dlsymlist lt_preloaded_symbols[];
 #define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)
 
-extern lt_ptr_t (*lt_dlmalloc)LTDL_PARAMS((size_t size));
-extern void (*lt_dlfree)LTDL_PARAMS((lt_ptr_t ptr));
+LTDL_SCOPE lt_ptr_t (*lt_dlmalloc)LTDL_PARAMS((size_t size));
+LTDL_SCOPE void (*lt_dlfree)LTDL_PARAMS((lt_ptr_t ptr));
 
 __END_DECLS
 
