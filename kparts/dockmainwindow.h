@@ -68,7 +68,7 @@ protected slots:
    * @ref KPartManager::activePartChanged() signal
    * @param part The active part (set to 0L if no part).
    */
-  virtual void createGUI( KParts::Part * part );
+  void createGUI( KParts::Part * part );
 
   /**
    * Called when the active part wants to change the statusbar message
@@ -79,7 +79,6 @@ protected slots:
 
  private:
   DockMainWindowPrivate *d;
-  virtual void createGUI(const QString &s, bool b) { KTMainWindow::createGUI(s, b); }
   };
 
 };
