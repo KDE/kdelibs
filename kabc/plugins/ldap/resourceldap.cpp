@@ -30,20 +30,6 @@
 
 using namespace KABC;
 
-class LDAPFactory : public KRES::PluginFactory
-{
-  public:
-    KRES::Resource *resource( const KConfig *config )
-    {
-      return new ResourceLDAP( config );
-    }
-
-    KRES::ConfigWidget *configWidget( QWidget *parent )
-    {
-      return new ResourceLDAPConfig( parent, "ResourceLDAPConfig" );
-    }
-};
-
 extern "C"
 {
   void *init_kabc_ldap()
