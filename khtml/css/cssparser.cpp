@@ -22,7 +22,7 @@
  * $Id$
  */
 
-//#define CSS_DEBUG
+#define CSS_DEBUG
 //#define CSS_AURAL
 //#define CSS_DEBUG_BCKGR
 
@@ -1106,6 +1106,11 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_EMPTY_CELLS:          // show | hide | inherit
     case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
     {
+        const struct css_value *cssval = findValue(val, value.length());
+        if (cssval)
+        {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+        }        
     	// ### To be done
         break;
     }
