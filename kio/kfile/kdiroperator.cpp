@@ -749,6 +749,42 @@ bool KDirOperator::checkPreviewInternal() const
 
     return false;
 }
+KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
+	KFileView* new_view = 0L;
+	bool separateDirs = KFile::isSeparateDirs( view );
+	bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
+                   (view & KFile::PreviewContents) == KFile::PreviewContents );
+	if( separateDirs ) {
+        	KCombiView *combi = new KCombiView( parent, "combi view" );
+        	combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+			KFileView* v = 0L;
+	        if ( (view & KFile::Simple) == KFile::Simple )
+	            v = createView( combi, KFile::Simple );
+	        else
+	            v = createView( combi, KFile::Detail );
+			combi->setRight( v );
+			new_view = combi;
+	}
+	else if( (view & KFile::Detail) == KFile::Detail && !preview ) {
+		new_view = new KFileDetailView( parent, "detail view");
+	}
+	else if ((view & KFile::Simple) == KFile::Simple && !preview ) {
+		new_view = new KFileIconView( parent, "simple view");
+		new_view->setViewName( i18n("Short View") );
+	}
+	else { // preview
+		KFileView* v = 0L; // will get reparented by KFilePreview
+		if ( (view & KFile::Simple ) == KFile::Simple )
+			v = createView( 0L, KFile::Simple );
+		else
+			v = createView( 0L, KFile::Detail );
+
+		KFilePreview* pView = new KFilePreview( v, parent, "preview" );
+		pView->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+		new_view = pView;
+	}
+	return new_view;
+}
 
 void KDirOperator::setView( KFile::FileView view )
 {
@@ -781,57 +817,22 @@ void KDirOperator::setView( KFile::FileView view )
     // if we don't have any files, we can't separate dirs from files :)
     if ( (mode() & KFile::File) == 0 && mode() & KFile::Files == 0 ) {
         separateDirs = false;
- 	separateDirsAction->setEnabled( false );
+ 		separateDirsAction->setEnabled( false );
     }
 
     viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
 
-    KFileView *new_view = 0L;
+    KFileView *new_view = createView( this, view );
+	if( preview ) {
+		// we keep the preview-_widget_ around, but not the KFilePreview.
+		// So in order to reuse the widget, we have to prevent it from
+		// being deleted by ~KFilePreview().
+		if ( myPreview && myPreview->parent() ) {
+			myPreview->parent()->removeChild( (QWidget*) myPreview );
+		}
 
-    if (separateDirs) {
-        KCombiView *combi = new KCombiView( this, "combi view" );
-        combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-        new_view = combi;
-
-        if ( (view & KFile::Simple) == KFile::Simple ) {
-            KFileIconView *view = new KFileIconView( combi, "simple view" );
-            view->setViewName( i18n("Short View") );
-            combi->setRight( view );
-        }
-        else
-            combi->setRight(new KFileDetailView( combi, "detail view" ));
-
-    } else {
-        if ( (view & KFile::Simple) == KFile::Simple && !preview ) {
-            new_view = new KFileIconView( this, "simple view");
-            new_view->setViewName( i18n("Short View") );
-        }
-        else if ( (view & KFile::Detail) == KFile::Detail && !preview ) {
-            new_view = new KFileDetailView( this,"detail view" );
-        }
-
-        else { // preview
-	    KFileView *v; // will get reparented by KFilePreview
-	    if ( (view & KFile::Simple ) == KFile::Simple )
-	        v = new KFileIconView( 0L, "simple view" );
-	    else
-	        v = new KFileDetailView( 0L, "detail view" );
-	
-            KFilePreview *tmp = new KFilePreview( v, this, "preview" );
-           tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-
-           // we keep the preview-_widget_ around, but not the KFilePreview.
-           // So in order to reuse the widget, we have to prevent it from
-           // being deleted by ~KFilePreview().
-           if ( myPreview && myPreview->parent() ) {
-               myPreview->parent()->removeChild( (QWidget*) myPreview );
-           }
-
-            tmp->setPreviewWidget(myPreview, url());
-            new_view=tmp;
-        }
-    }
-
+		dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
+	}
     setView( new_view );
 }
 

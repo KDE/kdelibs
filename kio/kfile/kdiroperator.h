@@ -469,6 +469,21 @@ class KDirOperator : public QWidget
 
 protected:
     /**
+     * A view factory for creating predefined fileviews. Called internally by @ref #setView
+	 * , but you can also call it directly. Reimplement this if you depend on self defined fileviews.
+	 * @param parent is the  @ref QWidget to be set as parent
+	 * @param view is the predefined view to be set, note: this can be several ones OR:ed together.
+	 * @returns the created @ref KFileView
+     * @see KFileView
+     * @see KCombiView
+     * @see KFileDetailView
+     * @see KFileIconView
+     * @see KFilePreview
+     * @see KFile::FileView
+     * @see #setView
+     */
+     virtual KFileView* createView( QWidget* parent, KFile::FileView view );
+     /**
      * Sets a custom KFileReader to list directories.
      */
     void setDirLister( KDirLister *lister );
