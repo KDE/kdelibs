@@ -26,7 +26,14 @@ void printKeyValues(KFileMetaInfo& info)
     QStringList l = info.preferredKeys();
     kdDebug() << "found " << l.size() << " keys\n";
     
+    QString s;
     QStringList::Iterator it;
+    for (it = l.begin(); it!=l.end(); ++it)
+    {
+        s +=" - " + *it;
+    }
+    kdDebug() << "keys: " << s << endl;
+    
     for (it = l.begin(); it!=l.end(); ++it)
     {
         KFileMetaInfoItem item = info.item(*it);
@@ -245,13 +252,11 @@ int main( int argc, char **argv )
     ov = args->getOption("removeitem");
     if (ov && !group.isNull())
     {
-        info[group][item].remove();
-//            kdDebug() << "removeitem success\n";
-//        else
-//            kdDebug() << "removeitem failed\n";
+        if (info[group].removeItem(ov))
+            kdDebug() << "removeitem success\n";
+        else
+            kdDebug() << "removeitem failed\n";
     }
-    
-    
     
     kdDebug() << "is it valid?\n";
 
