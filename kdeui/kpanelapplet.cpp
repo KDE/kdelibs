@@ -66,6 +66,8 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
 
 KPanelApplet::~KPanelApplet()
 {
+  d->watchedForFocus.clear();
+  needsFocus(false);
   delete d;
 }
 
@@ -173,7 +175,7 @@ bool KPanelApplet::eventFilter(QObject *o, QEvent * e)
     if (d->watchedForFocus.find(o) != -1)
     {
         if (e->type() == QEvent::MouseButtonRelease ||
-                e->type() == QEvent::FocusIn)
+            e->type() == QEvent::FocusIn)
         {
             needsFocus(true);
         }
