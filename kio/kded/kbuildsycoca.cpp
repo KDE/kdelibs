@@ -36,6 +36,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
+#include <unistd.h>
 
 KBuildSycoca::KBuildSycoca() : KSycoca( true )
 {
@@ -88,7 +89,7 @@ void KBuildSycoca::build()
 
 void KBuildSycoca::recreate()
 {
-  debug("KBuildSycoca::recreate()");
+  kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
   // It is very important to build the servicetype one first
   // Both a registered in KSycoca, no need to keep the pointers
@@ -114,7 +115,7 @@ void KBuildSycoca::dirDeleted(const QString& /*path*/)
 
 void KBuildSycoca::update(const QString& path)
 {
-  debug(QString("KBuildSycoca::update( %1 ) - starting timer").arg( path ));
+  kdebug(KDEBUG_INFO, 7020, QString("KBuildSycoca::update( %1 ) - starting timer").arg( path ));
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
@@ -123,7 +124,7 @@ void KBuildSycoca::update(const QString& path)
 
 void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory )
 {
-  //kdebug(KDEBUG_INFO, 7011, QString("reading %1").arg(_path));
+  //kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
 
   QDir d( _path );                               // set QDir ...
   if ( !d.exists() )                            // exists&isdir?
@@ -188,7 +189,7 @@ void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
 {
    if (!serviceFactory || !servicetypeFactory)
    {
-     kdebug(KDEBUG_WARN, 7011, "Don't have the two mandatory factories. No servicetype index.");
+     kdebug(KDEBUG_WARN, 7020, "Don't have the two mandatory factories. No servicetype index.");
      return;
    }
    // For each entry in servicetypeFactory
@@ -209,7 +210,7 @@ void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
          {
             (*str) << (Q_INT32) it.current()->offset();
             (*str) << (Q_INT32) itserv.current()->offset();
-            //kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
+            //kdebug(KDEBUG_INFO, 7020, QString("<< %1 %2")
             //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
          }
       }
@@ -223,7 +224,7 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
 {
    if (!servicetypeFactory)
    {
-     kdebug(KDEBUG_WARN, 7011, "No service type factory. Can't save mimetype patterns index.");
+     kdebug(KDEBUG_WARN, 7020, "No service type factory. Can't save mimetype patterns index.");
      entrySize = 0;
      otherIndexOffset = 0;
      return;
@@ -270,7 +271,7 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
-     //kdebug(KDEBUG_INFO, 7011, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
+     //kdebug(KDEBUG_INFO, 7020, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
      (*str) << paddedPattern;
      (*str) << dict[(*it)]->offset();
      // Check size remains constant
@@ -282,7 +283,7 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     //kdebug(KDEBUG_INFO, 7011, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
+     //kdebug(KDEBUG_INFO, 7020, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
      (*str) << (*it);
      (*str) << dict[(*it)]->offset();
    }
@@ -353,22 +354,36 @@ void KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
-   kdebug(KDEBUG_INFO, 7011, QString("offerListOffset : %1").
+   kdebug(KDEBUG_INFO, 7020, QString("offerListOffset : %1").
           arg(offerListOffset,8,16));
    (*str) << offerListOffset;
-   kdebug(KDEBUG_INFO, 7011, QString("mimeTypesPatternsOffset : %1").
+   kdebug(KDEBUG_INFO, 7020, QString("mimeTypesPatternsOffset : %1").
           arg(mimeTypesPatternsOffset,8,16));
    (*str) << mimeTypesPatternsOffset;;
-   kdebug(KDEBUG_INFO, 7011, QString("otherIndexOffset : %1").
+   kdebug(KDEBUG_INFO, 7020, QString("otherIndexOffset : %1").
           arg(otherIndexOffset,8,16));
    (*str) << otherIndexOffset;;
    (*str) << entrySize;
 
-   kdebug(KDEBUG_INFO, 7011, QString("endOfData : %1").
+   kdebug(KDEBUG_INFO, 7020, QString("endOfData : %1").
           arg(endOfData,8,16));
 
    // Jump to end of database
    str->device()->at(endOfData);
+
+   // Close database file
+   assert( str );
+   QIODevice *device = str->device();
+   assert( device );
+   device->close();
+
+   // Make public the database we just built
+   QString from = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";
+   QString to = KGlobal::dirs()->saveLocation("config") + "ksycoca";
+   if ( unlink( to.ascii() ) != 0 )
+     kdebug(KDEBUG_ERROR, 7020, "Can't unlink %s", to.ascii());
+   if ( rename( from.ascii(), to.ascii() ) != 0 )
+     kdebug(KDEBUG_ERROR, 7020, "Can't rename %s to %s", from.ascii(), to.ascii());
 }
 
 #include "kbuildsycoca.moc"
