@@ -189,7 +189,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
    // the higher the offset or important number, the later the rules get applied.
 
     pseudoState = PseudoUnknown;
-    
+
     if(defaultStyle) defaultStyle->collect(propsToApply, e, 0x00100000); // no important rules here
     // important rules from user styles are higher than important rules from author styles.
     // for non important rules the order is reversed
@@ -221,7 +221,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 	if ( ordprop->pseudoId != RenderStyle::NOPSEUDO )
 	    pseudoProps->append( ordprop );
     }
-        
+
     for(int i = 0; i < (int)pseudoProps->count(); i++) {
 	CSSOrderedProperty* ordprop = pseudoProps->at(i);
 	RenderStyle *pseudoStyle;
@@ -235,7 +235,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     delete pseudoProps;
     delete propsToApply;
-    
+
     return style;
 }
 
@@ -419,7 +419,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    dynamicPseudo=RenderStyle::HOVER;
 	    return true;
 	}
-	return false; 
+	return false;
     }
     // ### add the rest of the checks...
     return true;
@@ -545,12 +545,12 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         }
 
         append(prop, thisOffset);
-    }    
+    }
 }
 
 void CSSOrderedPropertyList::append(DOM::CSSProperty *prop, int priority)
 {
-    QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, priority, dynamicPseudo));    
+    QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, priority, dynamicPseudo));
 }
 
 // -------------------------------------------------------------------------------------
@@ -878,7 +878,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
             if(!e->parentNode()) return;
             f.setItalic(e->parentNode()->style()->font().italic());
-            //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
             style->setFont(f);
             return;
         }
@@ -1154,7 +1153,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	l = Length(computeLength(primitiveValue, style), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
-      else 
+      else
 	return;
       style->setBackgroundXPosition(l);
       break;
@@ -1168,7 +1167,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	l = Length(computeLength(primitiveValue, style), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
-      else 
+      else
 	return;
       style->setBackgroundYPosition(l);
       break;
@@ -1663,6 +1662,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         QFontDatabase db;
         int oldSize;
         float size = 0;
+        int minFontSize = QMAX(e->ownerDocument()->view()->part()->settings()->minFontSize(), 6);
+
         QValueList<int> standardSizes = e->ownerDocument()->view()->part()->fontSizes();
         if(e->parentNode())
         {
@@ -1725,9 +1726,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(size <= 0) return;
 
         // we never want to get smaller than 7 points to keep fonts readable
-        int min = e->ownerDocument()->view()->part()->settings()->minFontSize();
-        //kdDebug(0) << "minFontSize = " << min << endl;
-        if(size < min ) size = min;
+        if(size < minFontSize ) size = minFontSize;
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
@@ -1762,7 +1761,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 size = bestSize;
         }
 	//qDebug(" -->>> using %f point font", size);
-        f.setPointSize(size);
+        f.setPointSize(QMAX(size, minFontSize));
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         return;
@@ -1853,7 +1852,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             case CSS_VAL_JUSTIFY:
                 align = JUSTIFY; break;
             case CSS_VAL_KONQ_CENTER:
-	align = KONQ_CENTER; break;
+                align = KONQ_CENTER; break;
             default:
                 return;
             }
