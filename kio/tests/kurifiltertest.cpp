@@ -167,12 +167,21 @@ int main(int argc, char **argv)
     filter( "ftp://ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "ftp://username@ftp.kde.org:500", "ftp://username@ftp.kde.org:500", KURIFilterData::NET_PROTOCOL );
 
-    // ShortURI tests
+    // ShortURI/LocalDomain filter tests. NOTE: any of these tests can fail
+    // if you have specified your own patterns in kshorturifilterrc. For 
+    // examples, see $KDEDIR/share/config/kshorturifilterrc .
     filter( "linuxtoday.com", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "LINUXTODAY.COM", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "kde.org", "http://kde.org", KURIFilterData::NET_PROTOCOL );
-    filter( "ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
+    filter( "ftp.kde.org", "http://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "cr.yp.to", "http://cr.yp.to", KURIFilterData::NET_PROTOCOL );
+    filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
+    
+    // Exotic IPv4 address formats. Really exercises the shorturi filter.
+    filter( "127.1", "http://127.1", KURIFilterData::NET_PROTOCOL );
+    filter( "127.0.1", "http://127.0.1", KURIFilterData::NET_PROTOCOL );
+        
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
@@ -180,9 +189,28 @@ int main(int argc, char **argv)
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
-    // IKWS test
+    
+    // Should not be filtered at all. All valid protocols of this form will be ignored.
+    filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
+    
+    /* 
+     Automatic searching tests. NOTE: If the Default search engine is set to 'None',
+     this stuff will fail as the status returned will then be KURIFilterData::UNKNOWN.
+    */
+    filter( "gg:", 0 , KURIFilterData::NET_PROTOCOL );
+    filter( "KDE", 0 , KURIFilterData::NET_PROTOCOL );
+    filter( "FTP", 0 , KURIFilterData::NET_PROTOCOL );
+
+    // If your default search engine is set to 'Google', you can uncomment the test below.
+   
+/*    
+    filter( "gg:", "http://www.google.com/search?q=gg%3A&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "KDE", "http://www.google.com/search?q=KDE&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( "FTP", "http://www.google.com/search?q=FTP&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( "FTP", "http://www.google.com/search?q=FTP&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );    
+*/    
+    // Should be handled by the local domain filter unless the user circumvents is
+    // by adding their own pattern match....
+    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
     
     // Typing 'ls' in konq's location bar should go to google for ls too. Unless
     // Default search engine is set to 'None' in the Web Shortcuts dialog.
@@ -260,17 +288,6 @@ int main(int argc, char **argv)
     // It says a _PATH_ must be used!
     // kshorturifilter had code for this, but it broke, since it couldn't check that the resulting URL existed. Disabled.
     //filter( "../../index.html", "http://www.kde.org/index.html", KURIFilterData::NET_PROTOCOL, "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
-    
-    // Invalid URL tests. Should not be filtered at all.
-    filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
-    
-    // NOTE: If the Default search engine is set to 'None', this will fail.
-    filter( "gg:", "gg:", KURIFilterData::NET_PROTOCOL );
-    
-    // User defined entries...
-    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
-    
     kdDebug() << "All tests done. Go home..." << endl;
-    
     return 0;
 }
