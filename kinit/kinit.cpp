@@ -312,7 +312,7 @@ static void init_startup_info( KStartupInfoId& id, const char* bin,
     int desktop = get_current_desktop( X11_startup_notify_display );
     data.setDesktop( desktop );
     data.setBin( bin );
-    KStartupInfo::sendStartupX( X11_startup_notify_display, id, data );
+    KStartupInfo::sendChangeX( X11_startup_notify_display, id, data );
     XFlush( X11_startup_notify_display );
 }
 
