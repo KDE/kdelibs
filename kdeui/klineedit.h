@@ -192,6 +192,28 @@ public:
     * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
+    
+    /**
+     * By default, KComboBox recognizes Key_Return and Key_Enter and emits
+     * the @ref returnPressed() signals, but it also lets the event passr,
+     * for example causing a dialog's default-button to be called.
+     *
+     * Call this method with @p grab = true to make KComboBox stop these
+     * events. The signals will still be emitted of course.
+     *
+     * Only affects read-writable comboboxes.
+     *
+     * @see #trapReturnKey
+     */
+    void setTrapReturnKey( bool grab );
+
+    /**
+     * @returns true if keyevents of Key_Return or Key_Enter will be stopped
+     * or if they will be propagated.
+     *
+     * @see #setTrapReturnKey
+     */
+    bool trapReturnKey() const;   
 
 signals:
 
@@ -277,9 +299,33 @@ protected:
     * See @ref QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
+    
+    /**
+    * Re-implemented for internal reasons.  API not affected.    
+    *
+    * @reimplemented
+    */
+    virtual bool eventFilter( QObject *, QEvent * );    
 
 private:
 
+    // Constants that represent the ID's of the popup menu.
+    // TODO: See if we can replace this mess with KActionMenu
+    // in the future though this is working lovely.
+    enum MenuID {
+        Default=0,
+        Cut,
+        Copy,
+        Paste,
+        Clear,
+        Unselect,
+        SelectAll,
+        NoCompletion,
+        AutoCompletion,
+        ShellCompletion,
+        SemiAutoCompletion	
+    };
+    
     // Indicates whether the context
     // menu is enabled or disabled
     bool m_bEnableMenu;

@@ -357,7 +357,24 @@ protected:
     */
     virtual bool eventFilter( QObject *, QEvent * );
 
-private :
+private:
+
+    // Constants that represent the ID's of the popup menu.
+    // TODO: See if we can replace this mess with KActionMenu
+    // in the future though this is working lovely.
+    enum MenuID {
+        Default=0,
+        Cut,
+        Copy,
+        Paste,
+        Clear,
+        Unselect,
+        SelectAll,
+        NoCompletion,
+        AutoCompletion,
+        ShellCompletion,
+        SemiAutoCompletion	
+    };
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
@@ -469,6 +486,25 @@ public:
      * @see #addToHistory
      */
     bool removeFromHistory( const QString& item );
+    
+    /**
+     * @reimplemented QComboBox::setInsertionPolicy()     
+     *
+     * This function by design has a hard-coded insertion policy
+     * which cannot be modified.  It is set to QComboBox::NoInsertion
+     */
+    virtual void setInsertionPolicy( Policy ) {} // Do not allow change of insertion mode!!
+    
+    /**
+     * @reimplemented QComboBox::insertionPolicy()
+     *        
+     * This function always returns QComboBox::NoInsertion
+     * since this function has a hard-coded insertion policy
+     * by design.
+     *
+     * @return QComboBox::NoInsertion
+     */  
+    Policy insertionPolicy() const { return QComboBox::NoInsertion; }
 
 public slots:
     /**

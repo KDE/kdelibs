@@ -28,6 +28,9 @@
 #include "kcombobox.moc"
 
 
+
+
+
 KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
@@ -241,9 +244,9 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 	   if( KStdAccel::isEqual( e, key ) && fireSignals )
            {
 	      // Emit completion if the completion mode is completionShell or
-	      // CompletionMan and there is a completion object present the
-	      // current text is not the same as the previous the cursor is
-	      // at the end of the string.
+	      // CompletionMan, there is a completion object present, the
+	      // current text is not the same as the previous and the cursor
+	      // is at the end of the string.
 	      if( mode == KGlobalSettings::CompletionMan ||
 		 (mode == KGlobalSettings::CompletionShell &&
 		  m_pEdit->cursorPosition() == (int) currentText().length() ) )
@@ -292,42 +295,70 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             if( !m_bEnableMenu )
                 return true;
 
-            QPopupMenu *popup = new QPopupMenu( this );
-            insertDefaultMenuItems( popup );
+            QPopupMenu *popup = new QPopupMenu( this );            
+            popup->insertItem( i18n( "Cut" ), Cut );
+            popup->insertItem( i18n( "Copy" ), Copy );
+            popup->insertItem( i18n( "Clear" ), Clear );
+            popup->insertItem( i18n( "Paste" ), Paste );
+            // Create and insert the completion sub-menu iff
+            // a completion object is present.
+            if( compObj() )
+            {
+                QPopupMenu* subMenu = new QPopupMenu( popup );
+                KGlobalSettings::Completion mode = completionMode();
+                subMenu->insertItem( i18n("None"), NoCompletion );
+                subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
+                subMenu->insertItem( i18n("Manual"), ShellCompletion );
+                subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
+                subMenu->insertItem( i18n("Automatic"), AutoCompletion );
+                subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
+                subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
+                subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
+                if( mode != KGlobalSettings::completionMode() )
+                {
+                    subMenu->insertSeparator();
+                    subMenu->insertItem( i18n("Default"), Default );
+                }
+                popup->insertSeparator();                
+                popup->insertItem( i18n("Completion"), subMenu );
+            }
+            popup->insertSeparator();
+            popup->insertItem( i18n( "Unselect" ), Unselect );
+            popup->insertItem( i18n( "Select All" ), SelectAll );
+            
             bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
             bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
-            popup->setItemEnabled( KCompletionBase::Cut, flag && m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( KCompletionBase::Copy, flag && m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( KCompletionBase::Paste, flag &&
-                                   (bool)QApplication::clipboard()->text().length() );
-            popup->setItemEnabled( KCompletionBase::Clear, flag && ( currentText().length() > 0) );
-            popup->setItemEnabled( KCompletionBase::Unselect, m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( KCompletionBase::SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
-
+            popup->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
+            popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
+            popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
+            popup->setItemEnabled( SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
+            
             int result = popup->exec( e->globalPos() );
             delete popup;
 
-            if( result == KCompletionBase::Cut )
+            if( result == Cut )
                 m_pEdit->cut();
-            else if( result == KCompletionBase::Copy )
+            else if( result == Copy )
                 m_pEdit->copy();
-            else if( result == KCompletionBase::Paste )
+            else if( result == Paste )
                 m_pEdit->paste();
-            else if( result == KCompletionBase::Clear )
+            else if( result == Clear )
                 m_pEdit->clear();
-            else if( result == KCompletionBase::Unselect )
+            else if( result == Unselect )
                 m_pEdit->deselect();
-            else if( result == KCompletionBase::SelectAll )
+            else if( result == SelectAll )
                 m_pEdit->selectAll();
-            else if( result == KCompletionBase::Default )
+            else if( result == Default )
                 setCompletionMode( KGlobalSettings::completionMode() );
-            else if( result == KCompletionBase::NoCompletion )
+            else if( result == NoCompletion )
                 setCompletionMode( KGlobalSettings::CompletionNone );
-            else if( result == KCompletionBase::AutoCompletion )
+            else if( result == AutoCompletion )
                 setCompletionMode( KGlobalSettings::CompletionAuto );
-            else if( result == KCompletionBase::SemiAutoCompletion )
+            else if( result == SemiAutoCompletion )
                 setCompletionMode( KGlobalSettings::CompletionMan );
-            else if( result == KCompletionBase::ShellCompletion )
+            else if( result == ShellCompletion )
                 setCompletionMode( KGlobalSettings::CompletionShell );
 
             return true;
