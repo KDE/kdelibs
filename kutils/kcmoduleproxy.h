@@ -213,6 +213,12 @@ public:
 	 */
 	QCString dcopName() const;
 
+	/**
+	 * Overloaded to provide a hint that includes the widgets.
+	 * change to virtual in KDE4 
+	 */
+	QSize sizeHint() const;
+
 public slots:
 	
 	/**
