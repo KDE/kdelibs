@@ -701,6 +701,7 @@ static const KCmdLineOptions kde_options[] =
    { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
    { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
    { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
+   { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager"), 0},
    { 0, 0, 0 }
 };
 
@@ -752,6 +753,25 @@ void KApplication::parseCommandLine( )
 
         KCrash::setApplicationName(QString(args->appName()));
     }
+    
+    if ( args->isSet( "waitforwm" ) ) {
+	Atom a = XInternAtom( qt_xdisplay(), "_NET_SUPPORTED", FALSE  );
+	Atom type;
+	(void) desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
+	int format;
+	unsigned long length, after;
+	unsigned char *data;
+	while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), a, 0, 1, FALSE, AnyPropertyType, &type, &format,
+				    &length, &after, &data ) != Success || !length ) {
+	    if ( data )
+		XFree( data );
+	    XEvent event;
+	    XWindowEvent( qt_xdisplay(), qt_xrootwin(), PropertyChangeMask, &event );
+	}
+	if ( data )
+	    XFree( data );
+    }
+    
 
     delete args; // Throw away
 }
