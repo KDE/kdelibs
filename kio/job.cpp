@@ -1280,6 +1280,8 @@ void CopyJob::startNextJob()
     m_totalSize=0;
     m_processedSize=0;
     m_fileProcessedSize=0;
+    m_processedFiles=0;
+    m_processedDirs=0;
 
     files.clear();
     dirs.clear();
@@ -1494,6 +1496,8 @@ void CopyJob::slotResultCreatingDirs( Job * job )
         dirs.remove( it );
     }
 
+    m_processedDirs++;
+    emit processedDirs( this, m_processedDirs );
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     createNextDir();
@@ -1597,6 +1601,8 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             assert( 0 );
     }
     state = STATE_CREATING_DIRS;
+    m_processedDirs++;
+    emit processedDirs( this, m_processedDirs );
     createNextDir();
 }
 
@@ -1704,7 +1710,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         // remove from list, to move on to next file
         files.remove( it );
     }
-
+    m_processedFiles++;
+    emit processedFiles( this, m_processedFiles );
     kdDebug(7007) << files.count() << " files remaining" << endl;
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
@@ -1802,6 +1809,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             assert( 0 );
     }
     state = STATE_COPYING_FILES;
+    m_processedFiles++;
+    emit processedFiles( this, m_processedFiles );
     copyNextFile();
 }
 
@@ -1811,6 +1820,7 @@ void CopyJob::copyNextFile()
 
     // clear processed size for last file and add it to overall processed size
     m_processedSize += m_fileProcessedSize;
+    kdDebug() << "processedsize now " << m_processedSize << endl;
     m_fileProcessedSize = 0;
 
     // Take the first file in the list
@@ -1885,6 +1895,8 @@ void CopyJob::copyNextFile()
                             config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
                         config.sync();
                         files.remove( it );
+                        m_processedFiles++;
+                        emit processedFiles( this, m_processedFiles );
                         copyNextFile();
                         return;
                     }
@@ -1974,14 +1986,16 @@ void CopyJob::deleteNextDir()
 
 void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
+  kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
 
-  kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
   {
     m_totalSize = m_processedSize + m_fileProcessedSize;
+    kdDebug(7007) << "Adjusting m_totalSize to " << (unsigned int) m_totalSize << endl;
     emit totalSize( this, m_totalSize ); // safety
   }
+  kdDebug(7007) << "emit processedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
@@ -2202,6 +2216,9 @@ void DeleteJob::startNextJob()
     m_totalSize=0;
     m_processedSize=0;
     m_fileProcessedSize=0;
+    m_processedFiles=0;
+    m_processedDirs=0;
+
     //kdDebug(7007) << "startNextJob" << endl;
     files.clear();
     symlinks.clear();
@@ -2248,6 +2265,8 @@ void DeleteJob::deleteNextFile()
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
             emit deleting( this, *it );
+            connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                     this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
         } else
         {
             // Normal deletion
@@ -2257,8 +2276,6 @@ void DeleteJob::deleteNextFile()
         if ( isLink ) symlinks.remove(it);
                  else files.remove(it);
         addSubjob(job);
-        connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     } else
     {
         state = STATE_DELETING_DIRS;
@@ -2373,6 +2390,8 @@ void DeleteJob::slotResult( Job *job )
                     KIO_ARGS << int(3) << url.path();
                     newjob = KIO::special(KURL("file:/"), packedArgs, false);
                     addSubjob(newjob);
+                    connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                             this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
                 }
                 else
                 {
@@ -2380,8 +2399,6 @@ void DeleteJob::slotResult( Job *job )
                    newjob = KIO::file_delete(url, false/*no GUI*/);
                    addSubjob( newjob );
                 }
-                connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                         this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
             }
         }
         break;
@@ -2393,12 +2410,13 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
-            kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
+            kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count()+symlinks.count() << " dirs: " << dirs.count() << endl;
 
             // emit all signals for total numbers
             emit totalSize( this, m_totalSize );
-            emit totalFiles( this, files.count() );
+            emit totalFiles( this, files.count()+symlinks.count() );
             emit totalDirs( this, dirs.count() );
+            m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
 
             state = STATE_DELETING_FILES;
             deleteNextFile();
@@ -2411,6 +2429,10 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
+            m_processedFiles++;
+            emit processedFiles( this, m_processedFiles );
+            if (!m_shred)
+               emitPercent( m_processedFiles, m_totalFilesDirs );
             deleteNextFile();
             break;
         case STATE_DELETING_DIRS:
@@ -2421,6 +2443,10 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
+            m_processedDirs++;
+            emit processedDirs( this, m_processedDirs );
+            if (!m_shred)
+               emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             deleteNextDir();
             break;
         default:

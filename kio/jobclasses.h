@@ -683,6 +683,8 @@ namespace KIO {
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
+        int m_processedFiles;
+        int m_processedDirs;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
@@ -738,6 +740,9 @@ namespace KIO {
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
+        int m_processedFiles;
+        int m_processedDirs;
+        int m_totalFilesDirs;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
