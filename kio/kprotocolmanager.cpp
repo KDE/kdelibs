@@ -48,7 +48,7 @@
 
 // DEFUALT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
-QString("Mozilla/5.0 (compatible; Konqueror/%1; %2)").arg(KDE_VERSION_STRING).arg(X)
+QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(X)
 
 
 KConfig *KProtocolManager::_config = 0;
