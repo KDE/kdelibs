@@ -22,7 +22,7 @@
 #ifndef _MCOPIDL_NAMESPACE_H__
 #define _MCOPIDL_NAMESPACE_H__
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <list>
 

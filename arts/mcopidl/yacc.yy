@@ -20,9 +20,9 @@
     */
 
 %{
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include "core.h"
 #include "namespace.h"

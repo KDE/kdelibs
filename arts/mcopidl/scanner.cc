@@ -670,9 +670,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define YY_NO_UNPUT
 #define YY_NEVER_INTERACTIVE 1
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 #include "core.h"
 
 using namespace std;

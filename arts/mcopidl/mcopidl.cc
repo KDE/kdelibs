@@ -23,13 +23,13 @@
 
     */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <unistd.h>
 #include <vector>
 #include <list>
 #include <stack>
-#include <ctype.h>
+#include <cctype>
 #include "core.h"
 #include "namespace.h"
 #include <iostream>

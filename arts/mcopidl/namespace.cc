@@ -20,13 +20,13 @@
 
     */
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <list>
 #include <string>
 #include <map>
 #include "namespace.h"
-#include <assert.h>
+#include <cassert>
 
 using namespace std;
 
