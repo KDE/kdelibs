@@ -2839,14 +2839,19 @@ void QIconView::selectAll( bool select )
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     QIconViewItem *i = d->currentItem;
+    bool changed = FALSE;
     for ( ; item; item = item->next ) {
-	if ( select != item->isSelected() )
+	if ( select != item->isSelected() ) {
 	    item->setSelected( select, TRUE );
+	    changed = TRUE;
+	}
     }
     if ( i )
 	setCurrentItem( i );
     blockSignals( b );
-    emitSelectionChanged();
+    if ( changed ) {
+	emitSelectionChanged();
+    }
 }
 
 /*!
@@ -4002,13 +4007,12 @@ void QIconView::selectByRubber( QRect oldRubber )
     int maxx = 0, maxy = 0;
     int selected = 0;
     bool changed = FALSE;
-
     bool block = signalsBlocked();
+
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     for ( ; item; item = item->next ) {
-	if ( item->intersects( oldRubber ) &&
-	     !item->intersects( d->rubber->normalize() ) ) {
+	if ( !item->intersects( d->rubber->normalize() ) ) {
 	    if ( !changed )
 		changed = item->isSelected();
 	    item->setSelected( FALSE );
