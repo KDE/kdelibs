@@ -153,7 +153,7 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 {
     QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
 
-    if ( checkSpellingEnabled() ) {
+    if ( checkSpellingEnabled() && !isReadOnly() ) {
 
         menu->insertSeparator();
         int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling..." ),
@@ -209,7 +209,7 @@ void KTextEdit::focusInEvent( QFocusEvent *e )
 {
     if ( d->checkSpellingEnabled && !d->highlighter )
         d->highlighter = new KDictSpellingHighlighter( this );
-    
+
     QTextEdit::focusInEvent( e );
 }
 
