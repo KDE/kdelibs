@@ -51,7 +51,7 @@ extern "C" {
 // Function pointer table
 static int     (*F_SOCKSinit)   (char *);
 static int     (*F_connect)     (int, const struct sockaddr *, socklen_t);
-static ssize_t (*F_read)        (int, void *, ssize_t);
+static ssize_t (*F_read)        (int, void *, size_t);
 static ssize_t (*F_write)       (int, const void *, size_t);
 static int     (*F_recvfrom)    (int, void *, size_t, int, struct sockaddr *, 
                                  socklen_t *);
@@ -189,6 +189,10 @@ KSocks *KSocks::self() {
 
 
 KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
+   _libPaths << ""
+             << "/usr/lib/"
+             << "/usr/local/lib/"
+             << "/opt/socks5/lib/";
    _libNames << "libsocks.so"                  // Dante
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
@@ -225,10 +229,13 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
          _socksLib = NULL;
       }
    } else              // leave this here   "else for {}"
+   for (QStringList::Iterator pit  = _libPaths.begin();
+                              !_hasSocks && pit != _libPaths.end();
+                              ++pit)
    for (QStringList::Iterator it  = _libNames.begin();
                               it != _libNames.end();
                               ++it) {
-      _socksLib = ll->library((*it).latin1());
+      _socksLib = ll->library((*pit + *it).latin1());
       if (_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
              _socksLib->symbol("S5LogShowThreadIDS") != NULL) {  // NEC SOCKS
@@ -373,7 +380,7 @@ int KSocks::connect (int sockfd, const struct sockaddr *serv_addr,
 }
 
 
-ssize_t KSocks::read (int fd, void *buf, ssize_t count) {
+ssize_t KSocks::read (int fd, void *buf, size_t count) {
   if (_useSocks && F_read)
     return (*F_read)(fd, buf, count);
   else return ::read(fd, buf, count);

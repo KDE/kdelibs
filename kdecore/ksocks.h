@@ -63,7 +63,7 @@ public:
     **/
     int     connect     (int sockfd, const struct sockaddr *serv_addr, 
                                 socklen_t addrlen);
-    ssize_t read        (int fd, void *buf, ssize_t count);
+    ssize_t read        (int fd, void *buf, size_t count);
     ssize_t write       (int fd, const void *buf, size_t count);
     int     recvfrom    (int s, void *buf, size_t len, int flags, 
                                 struct sockaddr *from, socklen_t *fromlen);
@@ -90,6 +90,7 @@ private:
 
    static KSocks *_me;
    QStringList _libNames;
+   QStringList _libPaths;
    bool _useSocks, _hasSocks;
    KLibrary* _socksLib;
 
