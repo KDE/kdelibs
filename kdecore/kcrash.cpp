@@ -122,6 +122,14 @@ KCrash::defaultCrashHandler (int sig)
     crashRecursionCounter++; // 
   }
   
+        // Close dcop connections
+  DCOPClient::emergencyClose();
+  // Close all remaining file descriptors
+  struct rlimit rlp;
+  getrlimit(RLIMIT_NOFILE, &rlp);
+  for (int i = 0; i < (int)rlp.rlim_cur; i++)
+    close(i);
+
   if (crashRecursionCounter < 3)
   {
     if (appName) 
@@ -220,14 +228,7 @@ KCrash::defaultCrashHandler (int sig)
       }
       else
       {
-        // Close dcop connections
-        DCOPClient::emergencyClose();
-        // Close all remaining file descriptors
-        struct rlimit rlp;
-        getrlimit(RLIMIT_NOFILE, &rlp);
-        for (int i = 0; i < (int)rlp.rlim_cur; i++)
-           close(i);
-           
+          
         alarm(0); // Seems we made it....
 
         // wait for child to exit
