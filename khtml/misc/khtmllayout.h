@@ -98,7 +98,7 @@ namespace khtml
         LengthType type() const { return l.type; }
         union {
           struct {
-            int value : 29;
+            signed int value : 29;
             LengthType type : 3;
           } l;
           Q_UINT32 _length;

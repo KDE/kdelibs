@@ -245,8 +245,8 @@ public:
     QMemArray<RowStruct> grid;
     QMemArray<int> rowPos;
 
+    signed short cRow : 16;
     ushort cCol : 15;
-    short cRow : 16;
     bool needCellRecalc : 1;
 
     void recalcCells();
@@ -363,9 +363,9 @@ protected:
     short _col;
     ushort rSpan;
     ushort cSpan;
-    int _topExtra : 31;
+    signed int _topExtra : 31;
     bool nWrap : 1;
-    int _bottomExtra : 31;
+    signed int _bottomExtra : 31;
     bool m_widthChanged : 1;
 };
 
