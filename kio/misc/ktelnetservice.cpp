@@ -22,6 +22,7 @@
 // $Id$
 
 #include <kapplication.h>
+#include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -42,7 +43,7 @@ int main(int argc, char **argv)
 	KApplication app;
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
+	
 	if (args->count() != 1)
 		return 1;
 
@@ -59,6 +60,14 @@ int main(int argc, char **argv)
             kdError() << "Invalid protocol " << url.protocol() << endl;
             return 2;
         }
+        
+        if (!app.authorize("shell_access"))
+        {
+            KMessageBox::sorry(0, 
+            	i18n("You do not have permission to access the %1 protocol.").arg(url.protocol()));
+            return 3;
+        }
+        
 	if (!url.user().isEmpty())
 	{
 		cmd << "-l";
