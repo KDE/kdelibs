@@ -522,3 +522,510 @@ else
 fi
 ])
 
+
+dnl This is a merge of some macros out of the gettext aclocal.m4
+dnl since we don't need anything, I took the things we need
+AC_DEFUN(AM_KDE_WITH_NLS,
+  [AC_MSG_CHECKING([whether NLS is requested])
+    dnl Default is enabled NLS
+    AC_ARG_ENABLE(nls,
+      [  --disable-nls           do not use Native Language Support],
+      USE_NLS=$enableval, USE_NLS=yes)
+    AC_MSG_RESULT($USE_NLS)
+    AC_SUBST(USE_NLS)
+
+    dnl If we use NLS figure out what method
+    if test "$USE_NLS" = "yes"; then
+      AC_DEFINE(ENABLE_NLS)
+
+      AM_PATH_PROG_WITH_TEST_KDE(MSGFMT, msgfmt,
+	[test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"], msgfmt)
+      AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
+      AM_PATH_PROG_WITH_TEST_KDE(XGETTEXT, xgettext,
+	[test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"], :)
+      AC_SUBST(MSGFMT)
+
+      dnl Test whether we really found GNU xgettext.
+      if test "$XGETTEXT" != ":"; then
+	dnl If it is no GNU xgettext we define it as : so that the
+	dnl Makefiles still can work.
+	if $XGETTEXT --omit-header /dev/null 2> /dev/null; then
+	  : ;
+	else
+	  AC_MSG_RESULT(
+	    [found xgettext programs is not GNU xgettext; ignore it])
+	  XGETTEXT=":"
+	fi
+      fi
+
+    fi
+
+  ])
+
+# Search path for a program which passes the given test.
+# Ulrich Drepper <drepper@cygnus.com>, 1996.
+
+# serial 1
+# Stephan Kulow: I appended a _KDE against name conflicts
+
+dnl AM_PATH_PROG_WITH_TEST_KDE(VARIABLE, PROG-TO-CHECK-FOR,
+dnl   TEST-PERFORMED-ON-FOUND_PROGRAM [, VALUE-IF-NOT-FOUND [, PATH]])
+AC_DEFUN(AM_PATH_PROG_WITH_TEST_KDE,
+[# Extract the first word of "$2", so it can be a program name with args.
+set dummy $2; ac_word=[$]2
+AC_MSG_CHECKING([for $ac_word])
+AC_CACHE_VAL(ac_cv_path_$1,
+[case "[$]$1" in
+  /*)
+  ac_cv_path_$1="[$]$1" # Let the user override the test with a path.
+  ;;
+  *)
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+  for ac_dir in ifelse([$5], , $PATH, [$5]); do
+    test -z "$ac_dir" && ac_dir=.
+    if test -f $ac_dir/$ac_word; then
+      if [$3]; then
+	ac_cv_path_$1="$ac_dir/$ac_word"
+	break
+      fi
+    fi
+  done
+  IFS="$ac_save_ifs"
+dnl If no 4th arg is given, leave the cache variable unset,
+dnl so AC_PATH_PROGS will keep looking.
+ifelse([$4], , , [  test -z "[$]ac_cv_path_$1" && ac_cv_path_$1="$4"
+])dnl
+  ;;
+esac])dnl
+$1="$ac_cv_path_$1"
+if test -n "[$]$1"; then
+  AC_MSG_RESULT([$]$1)
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST($1)dnl
+])
+
+
+# Check whether LC_MESSAGES is available in <locale.h>.
+# Ulrich Drepper <drepper@cygnus.com>, 1995.
+ 
+# serial 1
+ 
+AC_DEFUN(AM_LC_MESSAGES,
+  [if test $ac_cv_header_locale_h = yes; then
+    AC_CACHE_CHECK([for LC_MESSAGES], am_cv_val_LC_MESSAGES,
+      [AC_TRY_LINK([#include <locale.h>], [return LC_MESSAGES],
+       am_cv_val_LC_MESSAGES=yes, am_cv_val_LC_MESSAGES=no)])
+    if test $am_cv_val_LC_MESSAGES = yes; then
+      AC_DEFINE(HAVE_LC_MESSAGES)
+    fi
+  fi])
+ 
+dnl From Jim Meyering.
+dnl FIXME: migrate into libit.
+
+AC_DEFUN(AM_FUNC_OBSTACK,
+[AC_CACHE_CHECK([for obstacks], am_cv_func_obstack,
+ [AC_TRY_LINK([#include "obstack.h"],
+	      [struct obstack *mem;obstack_free(mem,(char *) 0)],
+	      am_cv_func_obstack=yes,
+	      am_cv_func_obstack=no)])
+ if test $am_cv_func_obstack = yes; then
+   AC_DEFINE(HAVE_OBSTACK)
+ else
+   LIBOBJS="$LIBOBJS obstack.o"
+ fi
+])
+
+dnl From Jim Meyering.  Use this if you use the GNU error.[ch].
+dnl FIXME: Migrate into libit
+
+AC_DEFUN(AM_FUNC_ERROR_AT_LINE,
+[AC_CACHE_CHECK([for error_at_line], am_cv_lib_error_at_line,
+ [AC_TRY_LINK([],[error_at_line(0, 0, "", 0, "");],
+              am_cv_lib_error_at_line=yes,
+	      am_cv_lib_error_at_line=no)])
+ if test $am_cv_lib_error_at_line = no; then
+   LIBOBJS="$LIBOBJS error.o"
+ fi
+ AC_SUBST(LIBOBJS)dnl
+])
+
+# Macro to add for using GNU gettext.
+# Ulrich Drepper <drepper@cygnus.com>, 1995.
+
+# serial 1
+# Stephan Kulow: I put a KDE in it to avoid name conflicts
+
+AC_DEFUN(AM_KDE_GNU_GETTEXT,
+  [AC_REQUIRE([AC_PROG_MAKE_SET])dnl
+   AC_REQUIRE([AC_PROG_CC])dnl
+   AC_REQUIRE([AC_ISC_POSIX])dnl
+   AC_REQUIRE([AC_PROG_RANLIB])dnl
+   AC_REQUIRE([AC_HEADER_STDC])dnl
+   AC_REQUIRE([AC_C_CONST])dnl
+   AC_REQUIRE([AC_C_INLINE])dnl
+   AC_REQUIRE([AC_TYPE_OFF_T])dnl
+   AC_REQUIRE([AC_TYPE_SIZE_T])dnl
+   AC_REQUIRE([AC_FUNC_ALLOCA])dnl
+   AC_REQUIRE([AC_FUNC_MMAP])dnl
+   AC_REQUIRE([AM_KDE_WITH_NLS])dnl
+   AC_CHECK_HEADERS([argz.h limits.h locale.h nl_types.h malloc.h string.h \
+unistd.h values.h alloca.h])
+   AC_CHECK_FUNCS([getcwd munmap putenv setenv setlocale strchr strcasecmp \
+__argz_count __argz_stringify __argz_next])
+
+   if test "${ac_cv_func_stpcpy+set}" != "set"; then
+     AC_CHECK_FUNCS(stpcpy)
+   fi
+   if test "${ac_cv_func_stpcpy}" = "yes"; then
+     AC_DEFINE(HAVE_STPCPY)
+   fi
+
+   AM_LC_MESSAGES
+
+   if test "x$CATOBJEXT" != "x"; then
+     if test "x$ALL_LINGUAS" = "x"; then
+       LINGUAS=
+     else
+       AC_MSG_CHECKING(for catalogs to be installed)
+       NEW_LINGUAS=
+       for lang in ${LINGUAS=$ALL_LINGUAS}; do
+         case "$ALL_LINGUAS" in
+          *$lang*) NEW_LINGUAS="$NEW_LINGUAS $lang" ;;
+         esac
+       done
+       LINGUAS=$NEW_LINGUAS
+       AC_MSG_RESULT($LINGUAS)
+     fi
+
+     dnl Construct list of names of catalog files to be constructed.
+     if test -n "$LINGUAS"; then
+       for lang in $LINGUAS; do CATALOGS="$CATALOGS $lang$CATOBJEXT"; done
+     fi
+   fi
+
+  ])
+
+AC_DEFUN(AC_HAVE_XPM,
+ [AC_REQUIRE_CPP()dnl
+
+ test -z "$XPM_LDFLAGS" && XPM_LDFLAGS=
+ test -z "$XPM_INCLUDE" && XPM_INCLUDE=
+
+ AC_ARG_WITH(xpm, [  --without-xpm           disable color pixmap XPM tests],
+	xpm_test=$withval, xpm_test="yes")
+ if test "x$xpm_test" = xno; then
+   ac_cv_have_xpm=no
+ else
+   AC_MSG_CHECKING(for XPM)
+   AC_CACHE_VAL(ac_cv_have_xpm,
+   [
+    AC_LANG_C
+    ac_save_ldflags=$LDFLAGS
+    ac_save_cflags=$CFLAGS
+    LDFLAGS="$LDFLAGS $XPM_LDFLAGS $X_LDFLAGS $QT_LDFLAGS -lXpm -lX11 -lXext"
+    CFLAGS="$CFLAGS $X_INCLUDES"
+    test ! -z "$XPM_INCLUDE" && CFLAGS="-I$XPM_INCLUDE $CFLAGS"
+    AC_TRY_LINK([#include <X11/xpm.h>],[],
+	ac_cv_have_xpm="yes",ac_cv_have_xpm="no")
+    LDFLAGS=$ac_save_ldflags
+    CFLAGS=$ac_save_cflags
+   ])dnl
+ 
+  if test "$ac_cv_have_xpm" = no; then
+    AC_MSG_RESULT(no)
+    XPM_LDFLAGS=""
+    XPMINC=""
+    $2
+  else
+    AC_DEFINE(HAVE_XPM)
+    if test "$XPM_LDFLAGS" = ""; then
+       XPMLIB="-lXpm"
+    else
+       XPMLIB="-L$XPM_LDFLAGS -lXpm"
+    fi
+    if test "$XPM_INCLUDE" = ""; then
+       XPMINC=""
+    else
+       XPMINC="-I$XPM_INCLUDE"
+    fi
+    AC_MSG_RESULT(yes)
+    $1
+  fi
+ fi
+ AC_SUBST(XPMINC)
+ AC_SUBST(XPMLIB)
+]) 
+
+AC_DEFUN(AC_HAVE_GL,
+ [AC_REQUIRE_CPP()dnl
+
+ test -z "$GL_LDFLAGS" && GL_LDFLAGS=
+ test -z "$GL_INCLUDE" && GL_INCLUDE=
+
+ AC_ARG_WITH(gl, [  --without-gl            disable 3D GL modes],
+	gl_test=$withval, gl_test="yes")
+ if test "x$gl_test" = xno; then
+   ac_cv_have_gl=no
+ else
+   AC_MSG_CHECKING(for GL)
+   AC_CACHE_VAL(ac_cv_have_gl,
+   [
+    AC_LANG_C
+    ac_save_ldflags=$LDFLAGS
+    ac_save_cflags=$CFLAGS
+    LDFLAGS="$LDFLAGS $GL_LDFLAGS $X_LDFLAGS $QT_LDFLAGS -lMesaGL -lMesaGLU-lX11 -lXext"
+    CFLAGS="$CFLAGS $X_INCLUDES"
+    test ! -z "$GL_INCLUDE" && CFLAGS="-I$GL_INCLUDE $CFLAGS"
+    AC_TRY_LINK([],[],
+	ac_cv_have_gl="yes",ac_cv_have_gl="no")
+    LDFLAGS=$ac_save_ldflags
+    CFLAGS=$ac_save_cflags
+   ])dnl
+ 
+  if test "$ac_cv_have_gl" = no; then
+    AC_MSG_RESULT(no)
+    GL_LDFLAGS=""
+    GLINC=""
+    $2
+  else
+    AC_DEFINE(HAVE_GL)
+    if test "$GL_LDFLAGS" = ""; then
+       GLLIB="-lGl"
+    else
+       GLLIB="-L$GL_LDFLAGS -lMesaGL -lMesaGLU"
+    fi
+    if test "$GL_INCLUDE" = ""; then
+       GLINC=""
+    else
+       GLINC="-I$GL_INCLUDE"
+    fi
+    AC_MSG_RESULT(yes)
+    $1
+  fi
+ fi
+ AC_SUBST(GLINC)
+ AC_SUBST(GLLIB)
+]) 
+
+ dnl PAM pam
+ 
+ dnl Should test for PAM (Pluggable Authentication Modules)
+ AC_DEFUN(AC_PATH_PAM_DIRECT,
+ [test -z "$pam_direct_test_library" && pam_direct_test_library=pam
+ test -z "$pam_direct_test_library" && pam_direct_test_library=pam_misc
+ test -z "$pam_direct_test_library" && pam_direct_test_library=dl
+ test -z "$pam_direct_test_function" && pam_direct_test_function=pam_start
+ test -z "$pam_direct_test_include" && pam_direct_test_include=security/pam_appl.h
+ test -z "$pam_direct_test_include" && pam_direct_test_include=security/pam_misc.h
+ 
+   for ac_dir in               \
+                               \
+     /usr/local/include        \
+     /usr/include              \
+     /usr/unsupported/include  \
+     /opt/include              \
+     /usr/pam/include          \
+     /usr/local/pam/include    \
+     /usr/lib/pam/include      \
+ 			      \
+     $extra_include            \
+     ; \
+   do
+     if test -r "$ac_dir/$pam_direct_test_include"; then
+       no_pam= ac_pam_includes=$ac_dir
+       break
+     fi
+   done
+ 
+ # Check for the libraries.
+ # See if we find them without any special options.
+ # Do not add to $LIBS permanently.
+ ac_save_LIBS="$LIBS"
+ LIBS="-l$pam_direct_test_library $LIBS"
+ # First see if replacing the include by lib works.
+ for ac_dir in `echo "$ac_pam_includes" | sed s/include/lib/` \
+                           \
+     /lib                  \
+     /usr/lib              \
+     /usr/local/lib        \
+     /usr/unsupported/lib  \
+     /lib/security         \
+     /usr/security/lib     \
+     $extra_lib            \
+     ; \
+ do
+   for ac_extension in a so sl; do
+     if test -r $ac_dir/lib${pam_direct_test_library}.$ac_extension; then
+       no_pam= ac_pam_libraries=$ac_dir
+       break 2
+     fi
+   done
+ done
+ LIBS="$ac_save_LIBS"
+])
+
+AC_DEFUN(AC_PATH_PAM,
+ [AC_REQUIRE_CPP()dnl
+ 
+ pam_includes=NONE
+ pam_libraries=NONE
+ 
+ AC_MSG_CHECKING(for PAM)
+ AC_ARG_WITH(pam, [  --without-pam           disable Pluggable Authentication Modules])
+ if test "x$with_pam" = xno; then
+   no_pam=yes
+ else
+   if test "x$pam_includes" != xNONE && test "x$pam_libraries" != xNONE; then
+     no_pam=
+   else
+ AC_CACHE_VAL(ac_cv_path_pam,
+ [# One or both of these vars are not set, and there is no cached value.
+ no_pam=yes
+ AC_PATH_PAM_DIRECT
+ 
+ if test "$no_pam" = yes; then
+   ac_cv_path_pam="no_pam=yes"
+ else
+   ac_cv_path_pam="no_pam= ac_pam_includes=$ac_pam_includes ac_pam_libraries=$ac_pam_libraries"
+ fi])dnl
+   fi
+   eval "$ac_cv_path_pam"
+ fi # with_pam != no
+ 
+ if test "$no_pam" = yes; then
+   AC_MSG_RESULT(no)
+ else
+   AC_DEFINE(HAVE_PAM)
+   PAMLIBS="-lpam -lpam_misc -ldl"
+   test "x$pam_includes" = xNONE && pam_includes=$ac_pam_includes
+   test "x$pam_libraries" = xNONE && pam_libraries=$ac_pam_libraries
+   ac_cv_path_pam="no_pam= ac_pam_includes=$pam_includes ac_pam_libraries=$pam_libraries"
+   AC_MSG_RESULT([libraries $pam_libraries, headers $pam_includes])
+ fi
+ 
+ if test "x$pam_libraries" != x && test "x$pam_libraries" != xNONE ; then
+ 	PAMLDFLAGS=":$pam_libraries"
+   PAMLIBPATHS="-L$pam_libraries"
+ fi
+ if test "x$pam_includes" != x && test "x$pam_includes" != xNONE ; then
+   PAMINC="-I$pam_includes"
+ fi
+ 
+ AC_SUBST(PAMINC)
+ AC_SUBST(PAMLIBS)
+ AC_SUBST(PAMLIBPATHS)
+
+]) 
+
+
+# serial 9 AM_PROG_LIBTOOL
+AC_DEFUN(AM_PROG_LIBTOOL,
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_RANLIB])
+AC_REQUIRE([AM_PROG_LD])
+AC_REQUIRE([AC_PROG_LN_S])
+
+# Always use our own libtool.
+LIBTOOL='$(top_builddir)/libtool'
+AC_SUBST(LIBTOOL)
+
+dnl Allow the --disable-shared flag to stop us from building shared libs.
+AC_ARG_ENABLE(shared,
+[  --enable-shared         build shared libraries [default=yes]],
+test "$enableval" = no && libtool_shared=" --disable-shared",
+libtool_shared=)
+
+dnl Allow the --disable-static flag to stop us from building static libs.
+AC_ARG_ENABLE(static,
+[  --enable-static         build static libraries [default=yes]],
+test "$enableval" = no && libtool_static=" --disable-static",
+libtool_static=)
+
+libtool_flags="$libtool_shared$libtool_static"
+test "$silent" = yes && libtool_flags="$libtool_flags --silent"
+test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
+test "$ac_cv_prog_gnu_ld" = yes && libtool_flags="$libtool_flags --with-gnu-ld"
+
+# Some flags need to be propagated to the compiler or linker for good
+# libtool support.
+[case "$host" in
+*-*-irix6*)
+  for f in '-32' '-64' '-cckr' '-n32' '-mips1' '-mips2' '-mips3' '-mips4'; do
+    if echo " $CC $CFLAGS " | egrep -e "[ 	]$f[	 ]" > /dev/null; then
+      LD="${LD-ld} $f"
+    fi
+  done
+  ;;
+
+*-*-sco3.2v5*)
+  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
+  CFLAGS="$CFLAGS -belf"
+  ;;
+esac]
+
+# Actually configure libtool.  ac_aux_dir is where install-sh is found.
+CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" \
+LD="$LD" RANLIB="$RANLIB" LN_S="$LN_S" \
+${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
+$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
+|| AC_MSG_ERROR([libtool configure failed])
+])
+
+# AM_PROG_LD - find the path to the GNU or non-GNU linker
+AC_DEFUN(AM_PROG_LD,
+[AC_ARG_WITH(gnu-ld,
+[  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]],
+test "$withval" = no || with_gnu_ld=yes, with_gnu_ld=no)
+if test "$with_gnu_ld" = yes; then
+  AC_MSG_CHECKING([for GNU ld])
+else
+  AC_MSG_CHECKING([for non-GNU ld])
+fi
+AC_CACHE_VAL(ac_cv_path_LD,
+[case "$LD" in
+  /*)
+  ac_cv_path_LD="$LD" # Let the user override the test with a path.
+  ;;
+  *)
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+  for ac_dir in $PATH; do
+    test -z "$ac_dir" && ac_dir=.
+    if test -f "$ac_dir/ld"; then
+      ac_cv_path_LD="$ac_dir/ld"
+      # Check to see if the program is GNU ld.  I'd rather use --version,
+      # but apparently some GNU ld's only accept -v.
+      # Break only if it was the GNU/non-GNU ld that we prefer.
+      if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU ld|with BFD)' > /dev/null; then
+	test "$with_gnu_ld" = yes && break
+      else
+        test "$with_gnu_ld" != yes && break
+      fi
+    fi
+  done
+  IFS="$ac_save_ifs"
+  ;;
+esac])
+LD="$ac_cv_path_LD"
+if test -n "$LD"; then
+  AC_MSG_RESULT($LD)
+else
+  AC_MSG_RESULT(no)
+fi
+test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
+AC_SUBST(LD)
+AM_PROG_LD_GNU
+])
+
+AC_DEFUN(AM_PROG_LD_GNU,
+[AC_CACHE_CHECK([whether we are using GNU ld], ac_cv_prog_gnu_ld,
+[# I'd rather use --version here, but apparently some GNU ld's only accept -v.
+if $LD -v 2>&1 </dev/null | egrep '(GNU ld|with BFD)' > /dev/null; then
+  ac_cv_prog_gnu_ld=yes
+else
+  ac_cv_prog_gnu_ld=no
+fi])
+])
