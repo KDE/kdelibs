@@ -39,80 +39,15 @@
 <![ %kde.rdbhier2; [
 
 <![ %kde.compulsory.id; [
-<!-- This is needed because it is read before %chapter.module 
-     is declared in the docbook dtd.  So, any modifications of 
-     %chapter.module (like IGNOREs) must happen before this point! 
-     (I made an effort to place it as late as possible.) -->
-
-<!ENTITY % chapter.module "INCLUDE">
-<![ %chapter.module; [
-<!ENTITY % local.chapter.attrib "">
-<!ENTITY % chapter.role.attrib "%role.attrib;">
 
 <!ENTITY % chapter.attlist "IGNORE">
-<!ENTITY % kde.chapter.attlist "INCLUDE">
-<!-- This is copied from the DocBook DTD with only one modification -->
-<![ %kde.chapter.attlist; [
-<!ATTLIST Chapter
-		%label.attrib;
-		%status.attrib;
-		%idreq.common.attrib;  -- ID is required for KDE --
-		%chapter.role.attrib;
-		%local.chapter.attrib;
->
-<!-- End of kde.chapter.attlist -->]]>
-<!-- End of chapter.module	-->]]>
-
-<!ENTITY % section.content.module "INCLUDE">
-<![ %section.content.module; [
-<!ENTITY % section.module "INCLUDE">
-<![ %section.module; [
-<!ENTITY % local.section.attrib "">
-<!ENTITY % section.role.attrib "%role.attrib;">
-
-<!ENTITY % section.attlist "IGNORE">
-<!ENTITY % kde.section.attlist "INCLUDE">
-<![ %kde.section.attlist; [
-<!-- One change: required ID -->
-<!ATTLIST Section
-		%label.attrib;
-		%status.attrib;
-		%idreq.common.attrib; -- ID is required for KDE --
-		%section.role.attrib;
-		%local.section.attrib;
->
-<!--end of section.attlist-->]]>
-<!--end of section.module-->]]>
-<!--end of section.content.module-->]]>
-
-<!ENTITY % sect1.module "INCLUDE">
-<![ %sect1.module; [
-<!ENTITY % local.sect1.attrib "">
-<!ENTITY % sect1.role.attrib "%role.attrib;">
-
 <!ENTITY % sect1.attlist "IGNORE">
-<!ENTITY % kde.sect1.attlist "INCLUDE">
-<![ %kde.sect1.attlist; [
-<!-- One change: ID required -->
-<!ATTLIST Sect1
-		Renderas	(Sect2
-				|Sect3
-				|Sect4
-				|Sect5)		#IMPLIED
-		%label.attrib;
-		%status.attrib;
-		%idreq.common.attrib; -- ID is required for KDE --
-		%sect1.role.attrib;
-		%local.sect1.attrib;
->
-<!--end of sect1.attlist-->]]>
-<!--end of sect1.module-->]]>
-
 <!-- Sect2-5 have no compulsory ID (they don't seem to be used to create 
      chunks.) -->
+<!ENTITY % section.attlist "IGNORE">
 
 <!-- Compulsory ID for qandaset and qandadiv must be declared 
-     in kde-rdbpool.elements -->
+     via kde-rdbpool.elements -->
 
 <!-- End of compulsory id -->]]>
 

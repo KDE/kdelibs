@@ -71,12 +71,6 @@
 <!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
 %edbsyn; -->
 
-<!-- Make ID compulsory for qandasets and qandadivs; cannot be done
-     in redeclaration files; new declaration is in next
-     "Modifications" section -->
-<!ENTITY % qandset.attlist "IGNORE">
-<!ENTITY % qandadiv.attlist "IGNORE">
-
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
@@ -93,19 +87,8 @@
 <!-- ONLY to supply declarations that were switched off in the 
      first "Modifications" section -->
 
-<!-- here could the original declaration come, eg %DocBookDTD;
-     (it's a nice way of doing this; other customisations should
-     be redone following this `architecture': the result might be
-     much simpler) -->
-<!ATTLIST QandASet 
-                DefaultLabel (qanda|number|none) #IMPLIED 
-                %idreq.common.attrib; 	-- changed --
-                %qandset.role.attrib; 
-                %local.qandset.attrib;>
-<!ATTLIST QandADiv
-		%idreq.common.attrib;   -- changed --
-		%qandadiv.role.attrib;
-		%local.qandadiv.attrib;>
+<!ENTITY % kde.modifications SYSTEM "kde-modifications.elements">
+%kde.modifications;
 
 
 <!-- ============================================================= -->
