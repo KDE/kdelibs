@@ -1,0 +1,23 @@
+README
+
+kinit_wrapper is a program that starts programs via kinit.
+
+E.g. You can make a symbolic link from $KDEDIR/bin/konsole to 
+$KDEDIR/bin/kinit_wrapper. Typing 'konsole' on the command line 
+will then start 'libkonsole.la' through kinit instead.
+
+
+TODO
+====
+
+* CWD (Current Working Directory) is not passed to kinit.
+* There is no portable way to read out the complete environment and
+  pass it to kinit.
+* stdout/stderr of the started application goes to the console where
+  kinit was started.
+
+
+HOW TO PROCEED
+==============
+
+Implement the LAUCNHER_EXT_EXEC command (See klauncher_cmds.h)

@@ -72,12 +72,19 @@ struct {
  */
 static void close_fds()
 {
-   close(d.deadpipe[0]);
-   close(d.deadpipe[1]);
+   if (d.deadpipe[0] != -1)
+      close(d.deadpipe[0]);
+   d.deadpipe[0] = -1;
+
+   if (d.deadpipe[1] != -1) 
+      close(d.deadpipe[1]);
+   d.deadpipe[1] = -1;
+
    if (d.launcher_pid)
    {
       close(d.launcher[0]);
       close(d.launcher[1]);
+      d.launcher_pid = 0;
    }
    if (d.wrapper)
    {
@@ -448,23 +455,32 @@ static void kill_launcher()
    return;
 }
 
-static void handle_launcher_request()
+static void handle_launcher_request(int sock = -1)
 {
+   bool launcher = false;
+   if (sock < 0)
+   {
+       sock = d.launcher[0];
+       launcher = true;
+   }
+
    klauncher_header request_header;
    char *request_data;
-   int result = read_socket(d.launcher[0], (char *) &request_header, sizeof(request_header));
+   int result = read_socket(sock, (char *) &request_header, sizeof(request_header));
    if (result != 0)
    {
-      kill_launcher();
+      if (launcher)
+         kill_launcher();
       return;
    }
    
    request_data = (char *) malloc(request_header.arg_length);
 
-   result = read_socket(d.launcher[0], request_data, request_header.arg_length);
+   result = read_socket(sock, request_data, request_header.arg_length);
    if (result != 0)
    {
-      kill_launcher();
+      if (launcher)
+         kill_launcher();
       free(request_data);
       return;
    }
@@ -483,7 +499,11 @@ static void handle_launcher_request()
 
       printf("KInit: args = %d arg_length = %ld\n", argc, request_header.arg_length);
 
-      printf("KInit: Got EXEC '%s' from klauncher \n", name);
+      if (launcher)
+         printf("KInit: Got EXEC '%s' from klauncher\n", name);
+      else
+         printf("KInit: Got EXEC '%s' from socket\n", name);
+
       {
          int i = 1;
          char *arg_n;
@@ -508,14 +528,14 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
          response_header.cmd = LAUNCHER_OK;
          response_header.arg_length = sizeof(response_data);
          response_data = pid;
-         write(d.launcher[0], &response_header, sizeof(response_header));
-         write(d.launcher[0], &response_data, response_header.arg_length);
+         write(sock, &response_header, sizeof(response_header));
+         write(sock, &response_data, response_header.arg_length);
       }
       else
       {
          response_header.cmd = LAUNCHER_ERROR;
          response_header.arg_length = 0;
-         write(d.launcher[0], &response_header, sizeof(response_header));
+         write(sock, &response_header, sizeof(response_header));
       }
    }   
    else if (request_header.cmd == LAUNCHER_SETENV)
@@ -525,7 +545,10 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
       env_name = request_data;
       env_value = env_name + strlen(env_name) + 1;
 
-      printf("Got SETENV '%s=%s' from klauncher \n", env_name, env_value);
+      if (launcher)
+         printf("Got SETENV '%s=%s' from klauncher\n", env_name, env_value);
+      else
+         printf("Got SETENV '%s=%s' from socket\n", env_name, env_value);
 
       if ( request_header.arg_length != 
           (int) (strlen(env_name) + strlen(env_value) + 2))
@@ -606,8 +629,8 @@ static void handle_requests()
             if (fork() == 0)
             { 
                 close_fds(); 
-                /* launchFromSocket(sock);*/
-                exit(255); /* Should not come here. */
+                handle_launcher_request(sock);
+                exit(255); /* Terminate process. */
             }
             close(sock);
          }
