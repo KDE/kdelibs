@@ -88,8 +88,8 @@ class KURL;
  *
  * A read-only KLineEdit will have the same background color as a 
  * disabled KLineEdit, but its foreground color will be the one used 
- * for read-write KLineEdits. This differs from QLineEdit's implementation
- * and is done to give visual distinction between the three different modes, 
+ * for the read-write mode. This differs from QLineEdit's implementation
+ * and is done to give visual distinction between the three different modes: 
  * disabled, read-only, and read-write.
  *
  * \b Usage \n

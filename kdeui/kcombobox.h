@@ -76,9 +76,9 @@ class KURL;
  * first letter of entries in the combobox.
  *
  * A read-only KComboBox will have the same background color as a 
- * disabled KComboBox, but its foreground color will be the one used 
- * for read-write KComboBoxs. This differs from QComboBox's implementation
- * and is done to give visual distinction between the three different modes, 
+ * disabled KComboBox, but its foreground color will be the one used for
+ * the read-write mode. This differs from QComboBox's implementation
+ * and is done to give visual distinction between the three different modes: 
  * disabled, read-only, and read-write.
  * 
  * \b Usage \n
