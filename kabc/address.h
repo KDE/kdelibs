@@ -328,7 +328,7 @@ class Address
     QString mCountry;
     QString mLabel;
 
-    static QMap<QString, QString> mISOMap;
+    static QMap<QString, QString> *mISOMap;
 };
 
 QDataStream &operator<<( QDataStream &, const Address & );
