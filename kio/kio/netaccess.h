@@ -449,7 +449,7 @@ private:
     /**
      * Private constructor
      */
-    NetAccess() {}
+    NetAccess() : m_metaData(0), d(0) {}
 
     /**
      * Private destructor
@@ -503,7 +503,7 @@ private:
     bool bJobOK;
 
 private:
-    class NetAccessPrivate* d;
+    class NetAccessPrivate* d; // not really needed, the ctor is private already.
 };
 
 }
