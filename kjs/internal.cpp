@@ -434,12 +434,12 @@ const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 // ECMA 10.1.6
 ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
-  ArgumentsObject *aobj = new ArgumentsObject(f, args);    
+  ArgumentsObject *aobj = new ArgumentsObject(f, args);
   put("arguments", aobj, DontDelete);
   /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
      I can't see this described in the spec but it's possible in browsers. */
   if (!f->name().isNull())
-    f->put("arguments", aobj);      
+    f->put("arguments", aobj);
 }
 
 ExecutionStack::ExecutionStack()
@@ -576,6 +576,7 @@ void KJScriptImp::init()
 
 void KJScriptImp::clear()
 {
+  KJScriptImp *old = curr;
   if (initialized) {
     KJScriptImp::curr = this;
 
@@ -605,6 +606,8 @@ void KJScriptImp::clear()
 
     initialized = false;
   }
+  if (old != this)
+      KJScriptImp::curr = old;
 }
 
 bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
