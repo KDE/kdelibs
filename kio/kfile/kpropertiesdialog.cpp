@@ -1816,7 +1816,7 @@ void KExecPropsPlugin::slotBrowseExec()
         return;
 
     if ( !f.isLocalFile()) {
-        KMessageBox::sorry(d->m_frame, i18n("Sorry, but only executables of the local file systems are supported."));
+        KMessageBox::sorry(d->m_frame, i18n("Only executables on local file systems are supported."));
         return;
     }
 

@@ -621,7 +621,7 @@ void KFileDialog::slotOk()
     }
 
     if ( selectedURL.isMalformed() ) {
-       KMessageBox::sorry( d->mainWidget, i18n("Sorry,\n%1\ndoesn't look like a valid URL\nto me.").arg(d->url.url()), i18n("Invalid URL") );
+       KMessageBox::sorry( d->mainWidget, i18n("%1\ndoes not appear to be a valid URL.\n").arg(d->url.url()), i18n("Invalid URL") );
        return;
     }
 
