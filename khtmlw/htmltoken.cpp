@@ -380,7 +380,10 @@ void HTMLTokenizer::write( const char *str )
 	    // make the tag lower case
 	    char *ptr = buffer+2;
 	    while ( *ptr && *ptr != ' ' )
-		*ptr++ = tolower( *ptr );
+	    {
+		*ptr = tolower( *ptr );
+		ptr++;
+	    }
 
 	    appendToken( buffer, dest-buffer );
 	    dest = buffer;
