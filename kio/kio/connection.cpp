@@ -53,6 +53,7 @@ Connection::Connection()
     receiver = 0;
     member = 0;
     m_suspended = false;
+    tasks.setAutoDelete(true);
 }
 
 Connection::~Connection()
@@ -84,6 +85,7 @@ void Connection::close()
        fclose(f_out);
     f_out = 0;
     fd_in = -1;
+    tasks.clear();
 }
 
 void Connection::send(int cmd, const QByteArray& data)
