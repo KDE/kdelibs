@@ -2,7 +2,7 @@
 Type=MimeType
 Encoding=UTF-8
 MimeType=application/x-kivio
-Icon=document
+Icon=kivio_flw
 Patterns=*.flw;
 X-KDE-AutoEmbed=false
 Comment=Kivio Document
@@ -50,7 +50,7 @@ Comment[se]=Kivio-dokumeanta
 Comment[sk]=Kivio dokument
 Comment[sl]=Dokument za Kivio
 Comment[sr]=Kivio-ов документ
-Comment[ss]=Lidokhumente le Kivio
+Comment[ss]=Lidokhumente le Kivio 
 Comment[sv]=Kivio-dokument
 Comment[ta]=Kivio ¬Å½õ
 Comment[tg]=Ҳуҷҷати Kivio

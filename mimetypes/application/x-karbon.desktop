@@ -1,7 +1,9 @@
 [Desktop Entry]
 MimeType=application/x-karbon
 Type=MimeType
-Icon=karbon
+Icon=karbon_karbon
+Patterns=*.karbon;
+X-KDE-AutoEmbed=false
 Comment=Karbon14 Document
 Comment[af]=Karbon14 Dokument
 Comment[ar]=مستند Karbon14
@@ -49,7 +51,7 @@ Comment[se]=Karbon14-dokumeanta
 Comment[sk]=Dokument darbon14
 Comment[sl]=Dokument za Karbon14
 Comment[sr]=Karbon14 документ
-Comment[ss]=Lidokhumente le Karbon14
+Comment[ss]=Lidokhumente le Karbon14 
 Comment[sv]=Karbon14-dokument
 Comment[ta]=Karbon14 ¬Å½õ
 Comment[tg]=Ҳуҷҷати Karbon14
@@ -64,5 +66,3 @@ Comment[xx]=xxKarbon14 Documentxx
 Comment[zh_CN]=Karbon14 文档
 Comment[zh_TW]=Karbon14 文件
 Comment[zu]=Uhlu lwamafayela lwe-Karbon14
-Patterns=*.karbon;
-X-KDE-AutoEmbed=false

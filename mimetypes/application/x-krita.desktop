@@ -2,7 +2,7 @@
 Type=MimeType
 Encoding=UTF-8
 MimeType=application/x-krita
-Icon=image
+Icon=krita_kra
 Patterns=*.kra;
 X-KDE-AutoEmbed=false
 Comment=Krita Document
@@ -50,7 +50,7 @@ Comment[se]=Krita-dokumeanta
 Comment[sk]=Krita dokument
 Comment[sl]=Dokument za Krita
 Comment[sr]=Krita-ин документ
-Comment[ss]=Lidokhumente le Krita
+Comment[ss]=Lidokhumente le Krita 
 Comment[sv]=Krita-dokument
 Comment[ta]=Krita ¬Å½õ
 Comment[tg]=Ҳуҷҷати Krita

@@ -2,7 +2,7 @@
 Type=MimeType
 Encoding=UTF-8
 MimeType=application/x-kchart
-Icon=document
+Icon=kchart_chrt
 Patterns=*.chrt;
 Comment=KChart Document
 Comment[af]=Kchart Dokument
