@@ -160,11 +160,6 @@ KFind::Result KReplace::replace()
                     // highlight it.
                     emit highlight(m_text, m_index, m_matchedLength);
 
-                    if ( m_dialogClosed ) {
-                        delete m_dialog; // hide it again
-                        m_dialog = 0L;
-                    }
-
                     m_lastResult = Match;
                     return Match;
                 }
@@ -243,13 +238,21 @@ void KReplace::slotSkip()
         m_index--;
     else
         m_index++;
-    emit findNext();
+    if ( m_dialogClosed ) {
+        delete m_dialog; // hide it again
+        m_dialog = 0L;
+    } else
+        emit findNext();
 }
 
 void KReplace::slotReplace()
 {
     doReplace();
-    emit findNext();
+    if ( m_dialogClosed ) {
+        delete m_dialog; // hide it again
+        m_dialog = 0L;
+    } else
+        emit findNext();
 }
 
 void KReplace::doReplace()
