@@ -8,26 +8,33 @@
 #ifndef __dcopc_h__
 #define __dcopc_h__
 
-#define DCOP_OK 0
-#define DCOP_ERROR_SERVER_NOT_FOUND 1
-#define DCOP_ERROR_CANNOT_REGISTER_WITH_ICE 2
-#define DCOP_ERROR_CANNOT_CONTACT_SERVER 3
-#define DCOP_ERROR_SERVER_REFUSED_CONNECTION 4
-#define DCOP_ERROR_SERVER_REFUSED_DATA 5
+#undef Bool
+#undef True
+#undef False
+#define Bool int
+#define True 1
+#define False 0
 
 typedef void (*dcop_callback_t)(
-  const char * app_name,
   const char * object_id,
   const char * function,
   const char * data,
   unsigned int data_length
 );
+  
+  Bool
+dcop_attach();
 
-char * dcop_write_int(char * buf, int);
+  char *
+dcop_register(const char * app_name, Bool add_pid);
 
-char * dcop_write_string(char * buf, const char *);
+  Bool
+dcop_detach();
+  
+  Bool
+dcop_register_callback(const char * object_id, dcop_callback_t callback);
 
-  int
+  Bool
 dcop_send_signal(
   const char * receiving_app,
   const char * object,
@@ -37,10 +44,16 @@ dcop_send_signal(
 );
 
   Bool
-dcop_register(
+dcop_call(
   const char * app_name,
-  const char * object_id,
-  dcop_callback_t callback
+  const char * remote_app_name,
+  const char * remote_object_id,
+  const char * remote_function,
+  const char * data,
+  int data_length,
+  char ** reply_type,
+  char ** reply_data,
+  int * reply_data_length
 );
 
 #endif /* __dcopc_h__ */
