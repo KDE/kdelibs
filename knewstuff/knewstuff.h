@@ -53,7 +53,7 @@ KAction* standardAction(const QString& what,
  *
  * By calling upload() the upload process is started which means the user has to
  * select a provider from the list fetched from the master server and to put in
- * infomration about the entry to be uploaded. Then the file to be uploaded is
+ * information about the entry to be uploaded. Then the file to be uploaded is
  * fetched from the application by calling createUploadFile() and transfered to
  * the upload destination specified in the provider list.
  *
