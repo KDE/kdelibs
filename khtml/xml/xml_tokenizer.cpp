@@ -385,9 +385,9 @@ void XMLTokenizer::finish()
 
         // Close the renderers so that they update their display correctly
         // ### this should not be necessary, but requires changes in the rendering code...
-        h1->renderer()->close();
-        pre->renderer()->close();
-        body->renderer()->close();
+        h1->closeRenderer();
+        pre->closeRenderer();
+        body->closeRenderer();
 
         m_doc->document()->recalcStyle( NodeImpl::Inherit );
         m_doc->document()->updateRendering();

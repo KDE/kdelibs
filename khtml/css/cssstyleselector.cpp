@@ -240,6 +240,7 @@ void CSSStyleSelector::clear()
     delete defaultQuirksStyle;
     delete defaultPrintStyle;
     delete defaultSheet;
+    delete styleNotYetAvailable;
     defaultStyle = 0;
     defaultQuirksStyle = 0;
     defaultPrintStyle = 0;
