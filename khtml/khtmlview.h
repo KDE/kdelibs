@@ -45,6 +45,7 @@ namespace khtml {
 }
 
 class KHTMLPart;
+class KHTMLViewPrivate;
 
 class KHTMLView : public QScrollView
 {
@@ -150,6 +151,7 @@ public:
 
 protected:
     void paintElement( khtml::RenderObject *o, int x, int y );
+    void paintSelection();
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );
@@ -210,8 +212,7 @@ private:
 
     static QPixmap* paintBuffer;
 
-    DOM::Range *selection;
-
+    KHTMLViewPrivate *d;
 };
 
 #endif

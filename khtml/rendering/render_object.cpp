@@ -298,7 +298,7 @@ bool RenderObject::isSpecial() const
 void RenderObject::printTree(int indent) const
 {
     for (int i=0; i<indent; i++) printf(" ");	
-    printf("%s: %x il=%d fl=%d rp=%d laytd=%d\n",
+    printf("%s: %p il=%d fl=%d rp=%d laytd=%d\n",
 	renderName(),this,isInline(),isFloating(),isReplaced(),layouted());
     RenderObject *child = firstChild();
     while( child != 0 )
@@ -307,3 +307,57 @@ void RenderObject::printTree(int indent) const
 	child = child->nextSibling();
     }
 }
+
+void RenderObject::printSelection( QPainter *p, int startPos, RenderObject *end, int endPos )
+{
+    int tx = 0;
+    int ty = 0;
+    absolutePosition(tx, ty);
+
+    RenderObject *o = firstChild();
+    while( startPos && o ) {
+	o = o->nextSibling();
+	startPos--;
+    }
+
+    while(o) {
+	if(o->printSelection(p, tx, ty, end, endPos)) return;
+	RenderObject *next;
+	next = o->nextSibling();
+	while(!next) {
+	    o = o->parent();
+	    if(!o) return;
+	    next = o->nextSibling();
+	}
+	if(!next) return;
+	o = next;
+    }
+}
+
+bool RenderObject::printSelection( QPainter *p, int tx, int ty, RenderObject *end, int endPos )
+{
+    if(this != end) {
+	RenderObject *o = firstChild();
+	if(o) {
+	    tx += xPos();
+	    ty += yPos();
+	    while(o) {
+		if(o->printSelection(p, tx, ty, end, endPos)) return true;
+		o = o->nextSibling();
+	    }
+	}
+	return false;
+    }
+    RenderObject *o = firstChild();
+    if(o) {
+	tx += xPos();
+	ty += yPos();
+	while(o && endPos) {
+	    if(o->printSelection(p, tx, ty, end, endPos)) return true;
+	    o = o->nextSibling();
+	    endPos--;
+	}
+    }
+    return true;
+}
+

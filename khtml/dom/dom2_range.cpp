@@ -127,7 +127,7 @@ Node Range::getCommonAncestorContainer() /*const*/
         for(parentEnd = endContainer;
             (!parentEnd.isNull() ) && (parentStart != parentEnd);
             parentEnd = parentEnd.parentNode() );
-    
+
     if(parentStart == parentEnd)
         commonAncestorContainer = parentStart;
     else
@@ -676,7 +676,7 @@ void Range::insertNode( const Node &newNode )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
-    
+
     startContainer.insertBefore( newNode, startContainer.childNodes().item( startOffset ) );
 }
 
@@ -723,12 +723,12 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
      */
     Node _clone;
     DocumentFragment _endFragment;
-    
+
     if(startContainer == endContainer)
     {
         if(startOffset == endOffset)            // we have a collapsed range
             return DocumentFragment();
-        
+
         // TODO: we need to delete the text Node if a whole text is selected!!
         if( startContainer.nodeType() == Node::TEXT_NODE )    // we have a text node.. special :)
         {
@@ -746,17 +746,17 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         {
             Node _tempCurrent = startContainer.firstChild();
             unsigned int i;
-            
+
             for(i=0; i < startOffset; i++)    // get the node given by the offset
                 _tempCurrent = _tempCurrent.nextSibling();
-            
+
             /* now copy (or move) all the nodes in the range into the document fragment */
             unsigned int range = endOffset - startOffset;
             Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
             for(i=0; i<range && !_tempCurrent.isNull(); i++)   // check of isNull in case of strange errors
             {
                 _nextCurrent = _tempCurrent.nextSibling();
-                
+
                 if(contentExtract)
                 {
                     _endFragment.appendChild(_tempCurrent);
@@ -766,26 +766,26 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
                     _clone = _tempCurrent.cloneNode(true);
                     _endFragment.appendChild(_clone);
                 }
-                
+
                 _tempCurrent = _nextCurrent;
             }
         }
         return _endFragment;
     }// END COMMON CONTAINER HERE!!!
-    
-    
+
+
     /* Ok here we go for the harder part, first a general desription:
      * First we copy all the border nodes (the have to be copied as long
      * as they are partially selected) from the startContainer to the CmnAContainer. Then we do
      * the same for the endContainer. After this we add all fully selected
      * nodes that are between these two!
      */
-    
+
     Node _cmnRoot = getCommonAncestorContainer();
     Node _tempCurrent = startContainer;
     Node _tempPartial;
     // we still have Node _clone!!
-    
+
     // Special case text is first:
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
@@ -804,22 +804,22 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         unsigned int i;
         for(i=0; i < startOffset; i++)
             _tempCurrent = _tempCurrent.nextSibling();
-        
+
         if(contentExtract)
             _clone = _tempCurrent.cloneNode(true);
         else
             _clone = _tempCurrent;   // is this enough? Don't we have to delete the node from the original tree??
     }
-    
+
     Node _tempParent;                       // we use this to traverse upwords trough the tree
     Node _cloneParent;                      // this one is used to copy the current parent
     Node _fragmentRoot;                     // this is eventually becomming the root of the DocumentFragment
-    
-    
+
+
     while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
     {                                    // we are in luck, all these node must be cloned because they are partially selected
         _tempParent = _tempCurrent.parentNode();
-        
+
         if(_tempParent == _cmnRoot)
         {
             _cloneParent = _endFragment;
@@ -834,10 +834,10 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
                 // TODO: this means we should collapse after I think... :))
             }
         }
-        
+
         // we must not forget to grab with us the rest of this nodes siblings
         Node _nextCurrent;
-        
+
         _tempCurrent = _tempCurrent.nextSibling();
         _cloneParent.appendChild( _tempCurrent );
         while( !_tempCurrent.isNull() )
@@ -860,12 +860,12 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         _tempCurrent = _tempParent;
         _clone = _cloneParent;
     }
-    
+
     //****** we should now be FINISHED with startContainer **********
     _tempCurrent = endContainer;
     Node _tempEnd;
     // we still have Node _clone!!
-    
+
     // Special case text is first:
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
@@ -894,14 +894,14 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         else
             _clone = _tempCurrent.cloneNode(true);
     }
-    
-    
-    
-    
+
+
+
+
     while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
     {                                  // we are in luck, all these node must be cloned because they are partially selected
         _tempParent = _tempCurrent.parentNode();
-        
+
         if(_tempParent == _cmnRoot)
         {
             _cloneParent = _endFragment;
@@ -916,15 +916,15 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
                 // TODO: this means we should collapse before I think... :))
             }
         }
-        
+
         // we must not forget to grab with us the rest of this nodes siblings
         Node _nextCurrent;
         Node _stopNode = _tempCurrent;
         _tempCurrent = _tempParent.firstChild();
-        
-        
+
+
         _cloneParent.appendChild(_clone);
-        
+
         while( _tempCurrent != _stopNode && !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.nextSibling();
@@ -946,22 +946,22 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
         _clone = _cloneParent;
     }
     // now we should copy all the shit in between!!
-    
+
     Node _clonePrevious = _endFragment.lastChild();
     _tempCurrent = _tempEnd.previousSibling();
     Node _nextCurrent;
-    
+
     while( (_nextCurrent != _fragmentRoot) && (!_tempCurrent.isNull()) )
     {
         _nextCurrent = _tempCurrent.previousSibling();
-        
+
         if(contentExtract)
             _clone = _tempCurrent.cloneNode(true);
         else
             _clone = _tempCurrent;
 
         _endFragment.insertBefore(_clone, _clonePrevious);
-        
+
         _tempCurrent = _nextCurrent;
         _clonePrevious = _tempCurrent;
     }

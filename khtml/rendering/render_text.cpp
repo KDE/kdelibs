@@ -45,6 +45,28 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     p->drawText(x + _tx, y + _ty, s.string());
 }
 
+void TextSlave::printSelection(QPainter *p, int tx, int ty, int endPos)
+{
+    int _len = len;
+    int _width = m_width;
+    if(endPos > 0 && endPos < len) {
+	_len = endPos;
+    }
+    QConstString s(m_text , _len);
+
+    if(_len != len)
+	_width = p->fontMetrics().width(s.string());
+
+    ty += m_baseline;
+
+    QColor c("#001000");
+    p->fillRect(tx, ty, _width, m_height, c);
+
+    //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
+    p->drawText(x + tx, y + ty, s.string());
+
+
+}
 // no blink at the moment...
 void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
 {
@@ -454,3 +476,23 @@ unsigned int RenderText::width( int from, int len) const
     return w;
 }
 
+bool RenderText::printSelection( QPainter *p, int tx, int ty, RenderObject *end, int endPos )
+{
+    if(this != end) endPos = -1;
+
+    tx += xPos();
+    ty += yPos();
+
+    TextSlave *s = m_first;
+    p->setFont( m_style->font() );
+    p->setPen( "#000000" );
+    while(s && endPos)
+    {
+	s->printSelection(p, tx, ty, endPos);
+	s=s->next();
+	endPos -= s->len;
+    }
+
+    if(this == end) return true;
+    return false;
+}

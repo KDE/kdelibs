@@ -669,7 +669,7 @@ void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
     d->m_userSheetUrl = DOMString();
     d->m_userSheet = DOMString();
-    khtml::PartStyleSheetLoader *l = new khtml::PartStyleSheetLoader(d, url.url());
+    new khtml::PartStyleSheetLoader(d, url.url());
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)

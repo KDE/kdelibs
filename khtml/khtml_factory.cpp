@@ -50,7 +50,7 @@ KHTMLFactory::~KHTMLFactory()
     delete s_about;
 }
 
-KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *className, const QStringList &args )
+KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *, const QStringList & )
 {
   KHTMLPart *part = new KHTMLPart( parentWidget, widgetName, parent, name );
   emit objectCreated( part ) ;

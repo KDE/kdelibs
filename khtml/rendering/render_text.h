@@ -60,6 +60,7 @@ public:
     bool checkPoint(int _x, int _y, int _tx, int _ty);
     bool checkVerticalPoint(int _y, int _ty, int _h)
 { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
+    void printSelection(QPainter *p, int tx, int ty, int endPos);
 
 
     void setNext(TextSlave *_n) { n = _n; }
@@ -136,6 +137,8 @@ public:
 
     TextSlave *first() { return m_first; }
     TextSlave *last() { return m_last; }
+
+    virtual bool printSelection( QPainter *p, int _tx, int _ty, RenderObject *end, int endPos );
 
 protected:
     short m_minWidth;

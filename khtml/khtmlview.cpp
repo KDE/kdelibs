@@ -21,70 +21,28 @@
  */
 
 #include "khtmlview.moc"
+#include "khtml_part.h"
 
 #include "misc/loader.h"
-
-#include <qstack.h>
-#include <qdragobject.h>
-
-#include <ltdl.h>
-#include <kapp.h>
-#include <kmimetype.h>
-
-#include <kio/job.h>
-
-#include <assert.h>
-#include <stdio.h>
-
-#include <kurl.h>
-#include <kapp.h>
-#include <kdebug.h>
-#include <kcharsets.h>
-
-#include <kmessagebox.h>
-#include <klocale.h>
-#include <kimgio.h>
-#include <kstddirs.h>
-
-#include <X11/Xlib.h>
-
-#include "khtmlview.h"
-#include "khtmldata.h"
-#include "htmlhashes.h"
-
-#include "decoder.h"
-#include "html_documentimpl.h"
-
-#include "html_elementimpl.h"
-
-#include "html_miscimpl.h"
-#include "html_inlineimpl.h"
-#include "dom_elementimpl.h"
-#include "dom_textimpl.h"
-
+#include "html/html_documentimpl.h"
 #include "dom/dom2_range.h"
-
-#include "kjs.h"
-
 #include "rendering/render_object.h"
-#include <qdatetime.h>
+#include "misc/htmlhashes.h"
+
+#include <qdragobject.h>
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qpainter.h>
-#include <qcolor.h>
 #include <qpalette.h>
 #include <qevent.h>
-#include <qfont.h>
-#include <qfontinfo.h>
-#include <qlist.h>
-#include <qpoint.h>
-#include <qrect.h>
-#include <qregexp.h>
-#include <qscrollview.h>
-#include <qtimer.h>
-#include <qwidget.h>
+#include <qdatetime.h>
 
-#include "khtml_part.h"
+#include <kapp.h>
+#include <kmimetype.h>
+#include <kimgio.h>
+
+#include <stdio.h>
+
 
 #define SCROLLBARWIDTH 16
 
@@ -97,6 +55,23 @@ QList<KHTMLView> *KHTMLView::lstViews = 0L;
 using namespace DOM;
 
 QPixmap* KHTMLView::paintBuffer = 0L;
+
+class KHTMLViewPrivate {
+public:
+    KHTMLViewPrivate()
+    {
+	selectionStart = 0;
+	selectionEnd = 0;
+	startOffset = 0;
+	endOffset = 0;
+	startBeforeEnd = true;
+    }
+    NodeImpl *selectionStart;
+    int startOffset;
+    NodeImpl *selectionEnd;
+    int endOffset;
+    bool startBeforeEnd;
+};
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
@@ -118,6 +93,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     init();
 
     viewport()->show();
+
+    d = new KHTMLViewPrivate;
 }
 
 KHTMLView::~KHTMLView()
@@ -131,6 +108,7 @@ KHTMLView::~KHTMLView()
       paintBuffer = 0;
   }
 
+  delete d;
 }
 
 void KHTMLView::init()
@@ -150,8 +128,6 @@ void KHTMLView::init()
 
   resizeContents(clipper()->width(), clipper()->height());
 
-  selection = 0;
-
   khtml::Cache::init();
 }
 
@@ -164,8 +140,10 @@ void KHTMLView::clear()
     setVScrollBarMode(Auto);
     setHScrollBarMode(Auto);
 
-    if(selection) delete selection;
-    selection = 0;
+    d->selectionStart = 0;
+    d->selectionEnd = 0;
+    d->startOffset = 0;
+    d->endOffset = 0;
 }
 
 /*
@@ -258,13 +236,28 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	py += PAINT_BUFFER_HEIGHT;
     }
 
-    // ### print selection
-
-    //if(selection) {
-    //}
+    if(d->selectionStart) {
+	paintSelection();
+    }
 
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
+
+void KHTMLView::paintSelection()
+{
+    if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) return;
+
+    QPainter* p = new QPainter;
+    p->begin(this);
+    if(d->startBeforeEnd)
+	d->selectionStart->renderer()->printSelection(p, d->startOffset,
+						      d->selectionEnd->renderer(), d->endOffset);
+    else
+	d->selectionEnd->renderer()->printSelection(p, d->endOffset,
+						    d->selectionStart->renderer(), d->startOffset);
+    delete p;
+}
+
 
 void KHTMLView::layout(bool force)
 {
@@ -372,18 +365,15 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     {
     	pressed = TRUE;
 	if(_mouse->button() == LeftButton) {
-	    if(selection) delete selection;
-	    selection = 0;
     	    if(innerNode) {
-		selection = new Range;
-		try {
-		    selection->setStart(innerNode, offset);
-		    selection->setEnd(innerNode, offset);
-		}
-		catch(...)
-		{
-		    printf("selection: catched range exception\n");
-		}
+		d->selectionStart = innerNode;
+		d->startOffset = offset;
+		d->selectionEnd = innerNode;
+		d->endOffset = offset;
+		printf("setting start of selection to %p/%d\n", innerNode, offset);
+	    } else {
+		d->selectionStart = 0;
+		d->selectionEnd = 0;
 	    }
 	    // ### emit some signal
 	}
@@ -475,12 +465,25 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     // selection stuff
     if( pressed ) {
-	try {
-	    selection->setEnd(innerNode, offset);
-	}
-	catch(...)
-	{
-	    printf("selection: catched range exception\n");
+	d->selectionEnd = innerNode;
+	d->endOffset = offset;
+	printf("setting end of selection to %p/%d\n", innerNode, offset);
+
+	// we have to get to know if end is before start or not...
+	NodeImpl *n = d->selectionStart;
+	d->startBeforeEnd = false;
+	while(n) {
+	    if(n == d->selectionEnd) {
+		d->startBeforeEnd = true;
+		break;
+	    }
+	    NodeImpl *next = n->firstChild();
+	    if(!next) n = n->nextSibling();
+	    while(n && !next) {
+		n = n->parentNode();
+		next = n->nextSibling();
+	    }
+	    n = next;
 	}
     }
 }
@@ -529,15 +532,35 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), pressedTarget );
    }
 
-    try {
-	selection->setEnd(innerNode, offset);
-    }
-    catch(...)
-    {
-	printf("selection: catched range exception\n");
-    }
+    printf("final range of selection to %p/%d --> %p/%d\n", d->selectionStart, d->startOffset,
+	   innerNode, offset);
+    d->selectionEnd = innerNode;
+    d->endOffset = offset;
 
     // ### delete selection in case start and end position are at the same point
+    if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) {
+	d->selectionStart = 0;
+	d->selectionEnd = 0;
+	d->startOffset = 0;
+	d->endOffset = 0;
+    } else {
+	// we have to get to know if end is before start or not...
+	NodeImpl *n = d->selectionStart;
+	d->startBeforeEnd = false;
+	while(n) {
+	    if(n == d->selectionEnd) {
+		d->startBeforeEnd = true;
+		break;
+	    }
+	    NodeImpl *next = n->firstChild();
+	    if(!next) n = n->nextSibling();
+	    while(n && !next) {
+		n = n->parentNode();
+		next = n->nextSibling();
+	    }
+	    n = next;
+	}
+    }
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
