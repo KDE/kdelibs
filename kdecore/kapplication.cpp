@@ -1462,10 +1462,7 @@ void KApplication::applyGUIStyle()
         setStyle("SGI");
     }
     else {
-        qDebug( "trying to open styleStr..: %s", styleStr.latin1() );
-
         QStyle* sp = QStyleFactory::create( styleStr );
-        qDebug( "got %p", (void *)sp );
         if ( sp )
             setStyle(sp);
     }
