@@ -122,7 +122,7 @@ public:
     virtual bool containsSpecial() { return specialObjects!=0; }
     virtual bool hasOverhangingFloats() { return floatBottom() > m_height; }
 
-    void addOverHangingFloats( RenderFlow *flow, int offset, bool child = false );
+    void addOverHangingFloats( RenderFlow *flow, int xoffset, int yoffset, bool child = false );
 
     // implementation of the following functions is in bidi.cpp
     void appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,

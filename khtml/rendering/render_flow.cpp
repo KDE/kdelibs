@@ -203,6 +203,8 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 #ifdef BOX_DEBUG
     if(isAnonymousBox())
 	outlineBox(p, _tx, _ty, "green");
+    if(isFloating())
+	outlineBox(p, _tx, _ty, "yellow");
     else
 	outlineBox(p, _tx, _ty);
 #endif
@@ -216,7 +218,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     for ( ; (r = it.current()); ++it ) {
 	if (r->node->containingBlock()==this) {
 	    RenderObject *o = r->node;
-	    //kdDebug(0) << renderName() << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+	    //kdDebug(0) << renderName() << "printing positioned at " << tx + o->xPos() << "/" << ty + o->yPos()<< endl;
 	    o->print(p, x, y, w, h, tx , ty);
 	}
     }
@@ -372,6 +374,7 @@ void RenderFlow::layoutBlockChildren()
 	    m_height += prevMargin;
 	    insertFloat( child );
 	    positionNewFloats();
+	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl; 
 	    m_height -= prevMargin;
 	    child = child->nextSibling();
 	    continue;
@@ -424,7 +427,7 @@ void RenderFlow::layoutBlockChildren()
 
 	if ( child->hasOverhangingFloats() ) {
 	    // need to add the float to our special objects
-	    addOverHangingFloats( static_cast<RenderFlow *>(child), -child->yPos(), true );
+	    addOverHangingFloats( static_cast<RenderFlow *>(child), -child->xPos(), -child->yPos(), true );
 	}
 
         child = child->nextSibling();
@@ -442,40 +445,23 @@ void RenderFlow::layoutBlockChildren()
 bool RenderFlow::checkClear(RenderObject *child)
 {
     //kdDebug( 6040 ) << "checkClear oldheight=" << m_height << endl;
-    RenderObject *o = child->previousSibling();
-    while(o && !o->isFlow())
-        o = o->previousSibling();
-    if(!o) o = this;
-
-    RenderFlow *prev = static_cast<RenderFlow *>(o);
-
+    int bottom = 0;
     switch(child->style()->clear())
     {
     case CNONE:
         return false;
     case CLEFT:
-    {
-        int bottom = prev->leftBottom() + prev->yPos();
-        if(m_height < bottom)
-            m_height = bottom; //###  + lastFloat()->marginBotton()?
+        bottom = leftBottom();
         break;
-    }
     case CRIGHT:
-    {
-        int bottom = prev->rightBottom() + prev->yPos();
-        if(m_height < bottom)
-            m_height = bottom; //###  + lastFloat()->marginBotton()?
+        bottom = rightBottom();
         break;
-    }
     case CBOTH:
-    {
-        int bottom = prev->floatBottom() + prev->yPos();
-        if(m_height < bottom)
-            m_height = bottom; //###  + lastFloat()->marginBotton()?
-        break;
+        bottom = floatBottom();
+	break;
     }
-    }
-    //kdDebug( 6040 ) << "    newHeight = " << m_height << endl;
+    if(m_height < bottom)
+	m_height = bottom;
     return true;
 }
 
@@ -602,8 +588,10 @@ void RenderFlow::positionNewFloats()
             fwidth = ro - lo; // Never look for more than what will be available.
         if (o->style()->floating() == FLEFT)
         {
-	        int heightRemainingLeft = 1;
-	        int heightRemainingRight = 1;
+	    if ( o->style()->clear() & CLEFT )
+		y = QMAX( leftBottom(), y );
+	    int heightRemainingLeft = 1;
+	    int heightRemainingRight = 1;
             int fx = leftRelOffset(y,lo, &heightRemainingLeft);
             while (rightRelOffset(y,ro, &heightRemainingRight)-fx < fwidth)
             {
@@ -612,11 +600,13 @@ void RenderFlow::positionNewFloats()
             }
             if (fx<0) fx=0;
             f->left = fx;
-            //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
+            //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx << endl;
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
         }
         else
         {
+	    if ( o->style()->clear() & CRIGHT )
+		y = QMAX( rightBottom(), y );
 	    int heightRemainingLeft = 1;
 	    int heightRemainingRight = 1;
             int fx = rightRelOffset(y,ro, &heightRemainingRight);
@@ -909,7 +899,7 @@ RenderFlow::clearFloats()
     int offset = m_y;
 
     if ( parentHasFloats ) {
-	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), offset, false );
+	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), 0, offset, false );
     }
     
     if(prev ) {
@@ -930,10 +920,10 @@ RenderFlow::clearFloats()
         return; //html tables and lists flow as blocks
 
     if(flow->floatBottom() > offset)
-	addOverHangingFloats( flow, offset );
+	addOverHangingFloats( flow, 0, offset );
 }
 
-void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child )
+void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, bool child )
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << (void *)this << ": adding overhanging floats offset=" << offset << " child=" << child << endl;
@@ -966,11 +956,11 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child 
 		special->count = specialObjects->count();
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
-		special->left = r->left - marginLeft();
+		special->left = r->left - xoff;
 		if (flow != parent())
 		    special->left += flow->marginLeft();
-		if ( child )
-		    special->left += marginLeft();
+		if ( !child )
+		    special->left -= marginLeft();
 		special->width = r->width;
 		special->node = r->node;
 		special->type = r->type;
