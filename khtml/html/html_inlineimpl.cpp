@@ -295,25 +295,27 @@ void HTMLFontElementImpl::parseAttribute(Attribute *attr)
 	    {
         	switch (num)
 		{
+		    // size = 3 is the normal size according to html specs
 		    case 1:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-small", false);
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
 			break;
 		    case 2:
-		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
-		    	break;
-		    case 3:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
 		    	break;
-		    case 4:
+		    case 3:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
 		    	break;
-		    case 5:
+		    case 4:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
 		    	break;
-		    case 6:
+		    case 5:
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
 		    	break;
+		    case 6:
+		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    	break;
 		    case 7:
+			// ###
 		    	addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
 		    	break;
 		    default:		    	
