@@ -352,7 +352,6 @@ void KLocale::initFormat(KConfig *config)
   if (_positiveSign.isNull())
     _positiveSign = numentry.readEntry(QString::fromLatin1("PositiveSign"));
 
-  config->readEntry(QString::fromLatin1("NegativeSign"));
   _negativeSign = config->readEntry(QString::fromLatin1("NegativeSign"));
   if (_negativeSign.isNull())
     _negativeSign = numentry.readEntry(QString::fromLatin1("NegativeSign"), QString::fromLatin1("-"));
