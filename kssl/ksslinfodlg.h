@@ -27,9 +27,10 @@
 #include "ksslx509map.h"
 #include "ksslcertificate.h"
 #include "kssl.h"
+#include <qscrollview.h>
 
-class QScrollView;
 class QWidget;
+class KSSLCertBox;
 
 class KSSLInfoDlg : public KDialog {
 
@@ -47,7 +48,7 @@ public:
              const QString& goodFrom, const QString& goodUntil);
 
   void setup( KSSL & ssl, const QString & ip, const QString & url );
-  static QScrollView *certInfoWidget(QWidget *parent, const QString &certName, bool doMail = false);
+  static KSSLCertBox *certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher=0);
 
 private:
   QScrollView *buildCertInfo(const QString &certName);
@@ -61,6 +62,15 @@ private slots:
   void urlClicked(const QString &url);
   void mailClicked(const QString &url);
 
+};
+
+
+class KSSLCertBox : public QScrollView {
+public:
+   KSSLCertBox(QWidget *parent=0, const char *name=0, WFlags f=0);
+   void setValues(QString certName, QWidget *mailCatcher=0);
+private:
+   QFrame *_frame;
 };
 
 #endif

@@ -200,61 +200,75 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
 
-QScrollView *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certName, bool doMail) {
-    KSSLX509Map cert(certName);
-    QString tmp;
-    QScrollView *result = new QScrollView(parent);
-    result->viewport()->setBackgroundMode(QWidget::PaletteButton);
-    QFrame *frame = new QFrame(result);
-    QGridLayout *grid = new QGridLayout(frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
-    grid->setAutoAdd(true);
-    QLabel *label;
-    if (!(tmp = cert.getValue("O")).isEmpty()) {
-        label = new QLabel(i18n("Organization:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("OU")).isEmpty()) {
-        label = new QLabel(i18n("Organizational Unit:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("L")).isEmpty()) {
-        label = new QLabel(i18n("Locality:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        label = new QLabel(i18n("State:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("C")).isEmpty()) {
-        label = new QLabel(i18n("Country:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("CN")).isEmpty()) {
-        label = new QLabel(i18n("Common Name:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, frame);
-    }
-    if (!(tmp = cert.getValue("Email")).isEmpty()) {
-        label = new QLabel(i18n("EMail:"), frame);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        if (doMail) {
-           KURLLabel *mail = new KURLLabel(tmp, tmp, frame);
-           connect(mail, SIGNAL(leftClickedURL(const QString &)), parent, SLOT(mailClicked(const QString &)));
-        } else {
-           new QLabel(tmp, frame);
-        }
-    }
-    result->addChild(frame);
+KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher) {
+    KSSLCertBox *result = new KSSLCertBox(parent);
+    result->setValues(certName, mailCatcher);
     return result;
 }
 
+
+KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f) 
+:            QScrollView(parent, name, f)
+{
+    viewport()->setBackgroundMode(QWidget::PaletteButton);
+    _frame = NULL;
+}
+
+
+void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
+    KSSLX509Map cert(certName);
+    QString tmp;
+    if (_frame) delete _frame;
+    _frame = new QFrame(this);
+    QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
+    grid->setAutoAdd(true);
+    QLabel *label;
+    if (!(tmp = cert.getValue("O")).isEmpty()) {
+        label = new QLabel(i18n("Organization:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("OU")).isEmpty()) {
+        label = new QLabel(i18n("Organizational Unit:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("L")).isEmpty()) {
+        label = new QLabel(i18n("Locality:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("ST")).isEmpty()) {
+        label = new QLabel(i18n("State:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("C")).isEmpty()) {
+        label = new QLabel(i18n("Country:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("CN")).isEmpty()) {
+        label = new QLabel(i18n("Common Name:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        new QLabel(tmp, _frame);
+    }
+    if (!(tmp = cert.getValue("Email")).isEmpty()) {
+        label = new QLabel(i18n("EMail:"), _frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        if (mailCatcher) {
+           KURLLabel *mail = new KURLLabel(tmp, tmp, _frame);
+           connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
+        } else {
+           new QLabel(tmp, _frame);
+        }
+    }
+    addChild(_frame);
+}
+
+
 QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
-return KSSLInfoDlg::certInfoWidget(this, certName, true);
+return KSSLInfoDlg::certInfoWidget(this, certName, this);
 }
 
 void KSSLInfoDlg::urlClicked(const QString &url) {
