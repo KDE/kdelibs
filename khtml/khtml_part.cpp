@@ -2743,7 +2743,7 @@ bool KHTMLPart::findTextNext()
           // checks whether the node has a <A> parent
           if ( options & FindLinksOnly )
           {
-            NodeImpl *parent = obj->element();
+            DOM::NodeImpl *parent = obj->element();
             while ( parent )
             {
               if ( parent->nodeType() == Node::ELEMENT_NODE && parent->id() == ID_A )
@@ -2904,6 +2904,29 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   d->m_selectionEnd = (*prev).node;
   d->m_endOffset = index + length - (*prev).index;
   d->m_startBeforeEnd = true;
+
+  // if the selection is limited to a single link, that link gets focus
+  if(d->m_selectionStart == d->m_selectionEnd)
+  {
+    bool isLink = false;
+
+    // checks whether the node has a <A> parent
+    DOM::NodeImpl *parent = d->m_selectionStart.handle();
+    while ( parent )
+    {
+      if ( parent->nodeType() == Node::ELEMENT_NODE && parent->id() == ID_A )
+      {
+        isLink = true;
+        break;
+      }
+      parent = parent->parentNode();
+    }
+
+    if(isLink == true)
+    {
+      d->m_doc->setFocusNode( parent );
+    }
+  }
 
 #if 0
   kdDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<

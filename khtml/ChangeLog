@@ -1,3 +1,16 @@
+2004-03-21  Arend van Beelen jr. <arend@auton.nl>
+	* khtml_part.cpp/.h: if text in a link is highlighted, the link now receives
+	focus.
+
+	* khtmlview.cpp: made type-ahead find more aggressive by grabbing the keyboard
+	when active, this way it temporarily overrules single-letter shortcuts as seen
+	in KMail. Note it immediately releases the keyboard when it looses focus.
+
+2004-03-20  Arend van Beelen jr. <arend@auton.nl>
+	* khtml_part.cpp/.h: finished new searching API.
+
+	* khtmlview.cpp/.h: implemented type-ahead find (#51259).
+
 2004-03-21  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_formimpl.cpp (encoding): fix submission of forms

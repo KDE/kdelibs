@@ -1147,6 +1147,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		m_part->findTextBegin();
 		d->typeAheadActivated = true;
 		d->timer.start(3000, true);
+		grabKeyboard();
 		_ke->accept();
 		return;
 	}
@@ -1308,6 +1309,7 @@ void KHTMLView::findTimeout()
 {
 	d->typeAheadActivated = false;
 	d->findString = "";
+	releaseKeyboard();
 	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
 }
 
@@ -2368,6 +2370,13 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
     if(m_part) m_part->stopAutoScroll();
+
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    if(d->typeAheadActivated)
+    {
+        findTimeout();
+    }
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 
 #ifndef KHTML_NO_CARET
     if (d->m_caretViewContext) {
