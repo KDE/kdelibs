@@ -6,6 +6,8 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * The context in which applets live.
@@ -14,10 +16,24 @@ public class KJASAppletContext implements AppletContext
 {
     private Hashtable stubs;
     private Hashtable images;
+    private Hashtable streams;
 
     private String myID;
     private KJASAppletClassLoader loader;
     private boolean active;
+
+    // we need a mapping JS referenced Java objects
+    // for now, remember only the last one
+    private Object get_member_obj = null;
+
+    private final static int JError    = 0;
+    private final static int JBoolean  = 1;
+    private final static int JFunction = 2;
+    private final static int JNumber   = 3;
+    private final static int JObject   = 4;
+    private final static int JString   = 5;
+    private final static int JVoid     = 6;
+
     /**
      * Create a KJASAppletContext
      */
@@ -25,6 +41,7 @@ public class KJASAppletContext implements AppletContext
     {
         stubs  = new Hashtable();
         images = new Hashtable();
+        streams = new Hashtable();
         myID   = _contextID;
         active = true;
     }
@@ -274,6 +291,138 @@ public class KJASAppletContext implements AppletContext
         {
             Main.protocol.sendShowStatusCmd( myID, message );
         }
+    }
+    public String evaluateJavaScript(String script) {
+        if( active && (script != null) ) {
+            Main.liveconnect_thread = Thread.currentThread();
+            Main.protocol.sendEvaluateJavaScriptCmd(myID, script);
+            try {
+                Thread.currentThread().sleep(30000);
+            } catch (InterruptedException ex) {}
+            String retval = Main.liveconnect_returnval;
+            Main.liveconnect_returnval = null;
+            return retval; 
+        }
+        return null;
+    }
+    private int findMember(Class c, Object obj, String name, StringBuffer value)
+    {
+        if (c == null)
+            return JError;
+        try {
+            try {
+                Field field = c.getField(name);
+                Object fo = field.get(obj);
+                value.insert(0, fo.toString());
+                String type = field.getType().getName();
+                if (type.equals("boolean") || type.equals("java.lang.Boolean"))
+                    return JBoolean;
+                if (type.equals("int") || type.equals("long") || 
+                    type.equals("float") || type.equals("double") ||
+                    fo instanceof java.lang.Number)
+                    return JNumber;
+                if (type.equals("java.lang.String"))
+                    return JString;
+                get_member_obj = fo;
+                return JObject;
+            } catch (Exception ex) {
+                Method [] m = c.getDeclaredMethods();
+                for (int i = 0; i < m.length; i++)
+                    if (m[i].getName().equals(name)) {
+                        return JFunction;
+                    }
+                return findMember(c.getSuperclass(), obj, name, value);
+            }
+        } catch (Exception e) {
+            Main.debug("findMember throwed exception: " + e.toString());
+        }
+        return JError;
+    }
+    public int getMember(String appletID, String name, StringBuffer value)
+    {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if(stub == null) {
+            Main.debug( "could not get value of applet: " + appletID );
+            return 0;
+        }
+        Main.debug("getMember: " + name);
+        Object obj;
+        int basename = name.lastIndexOf('.');
+        if (basename > -1) {
+            obj = get_member_obj;
+            name = name.substring(basename + 1);
+            Main.debug("getMember basename: " + name);
+        } else {
+            obj = stub.getApplet();
+        }
+        return findMember(obj.getClass(), obj, name, value);
+    }
+    private Method findMethod(Class c, String name, Class [] argcls) {
+        if (c == null)
+            return null;
+        try {
+            Method m = c.getDeclaredMethod(name, argcls);
+            return m;
+        } catch (Exception e) {
+            return findMethod(c.getSuperclass(), name, argcls);
+        }
+    }
+    public int callMember(String appletID, String name, StringBuffer value, java.util.List args)
+    {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if(stub == null) {
+            Main.debug( "could not get value of applet: " + appletID );
+            return JError;
+        }
+        try {
+            Main.debug("callMember: " + name);
+            Object obj;
+            int basename = name.lastIndexOf('.');
+            if (basename > -1) {
+                obj = get_member_obj;
+                name = name.substring(basename + 1);
+                Main.debug("callMember basename: " + name);
+            } else {
+                obj = stub.getApplet();
+            }
+	    Class c = obj.getClass();
+            String type;
+            Class [] argcls = new Class[args.size()];
+            for (int i = 0; i < args.size(); i++)
+                argcls[i] = name.getClass(); // String for now
+            Method m = findMethod(c, name, argcls);
+            Object [] argobj = new Object[args.size()];
+            for (int i = 0; i < args.size(); i++)
+                argobj[i] = args.get(i); //for now
+            type = m.getReturnType().getName();
+            Object retval =  m.invoke(obj, argobj);
+            if (retval == null)
+                return JVoid; // void
+            value.insert(0, retval.toString());
+            Main.debug( "Call value of object: " + value + " " + type );
+            if (type.equals("boolean") || type.equals("java.lang.Boolean"))
+                return JBoolean;
+            if (type.equals("int") || type.equals("java.lang.Integer"))
+                return JNumber;
+            return JString;
+        } catch (Exception e) {
+            Main.debug("callMember throwed exception: " + e.toString());
+            e.printStackTrace();
+        }
+        return JError;
+    }
+
+    public void setStream(String key, InputStream stream) throws IOException {
+        Main.debug("setStream, key = " + key);
+        streams.put(key, stream);
+    }
+    public InputStream getStream(String key){
+        Main.debug("getStream, key = " + key);
+        return (InputStream) streams.get(key);
+    }
+    public Iterator getStreamKeys() {
+        Main.debug("getStreamKeys");
+        return streams.keySet().iterator();
     }
 
 }

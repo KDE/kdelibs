@@ -14,6 +14,7 @@ class KJavaAppletContextPrivate
 friend class KJavaAppletContext;
 private:
     QMap< int, QGuardedPtr<KJavaApplet> > applets;
+    DCOPObject *browser;
 };
 
 
@@ -22,10 +23,11 @@ int KJavaAppletContext::contextCount = 0;
 
 /*  Class Implementation
  */
-KJavaAppletContext::KJavaAppletContext()
+KJavaAppletContext::KJavaAppletContext(DCOPObject *object)
     : QObject()
 {
     d = new KJavaAppletContextPrivate;
+    d->browser = object;
     server = KJavaAppletServer::allocateJavaServer();
 
     id = contextCount;
@@ -144,6 +146,18 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             tmp->resizeAppletWidget( width, height );
         }
     }
+}
+
+bool KJavaAppletContext::getMember(KJavaApplet * applet, const QString & name, JType & type, QString & value) {
+    return server->getMember(id, applet->appletId(), name, type, value);
+}
+
+bool KJavaAppletContext::callMember(KJavaApplet * applet, const QString & name, const QStringList & args, JType & type, QString & value) {
+    return server->callMember(id, applet->appletId(), name, args, type, value);
+}
+
+DCOPObject * KJavaAppletContext::getBrowserObject() {
+    return d->browser;
 }
 
 #include <kjavaappletcontext.moc>

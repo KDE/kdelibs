@@ -42,13 +42,17 @@
 class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
+class DCOPObject;
+
+typedef 
+enum { JError=0, JBoolean, JFunction, JNumber, JObject, JString, JVoid } JType;
 
 class KJavaAppletContext : public QObject
 {
 Q_OBJECT
 
 public:
-    KJavaAppletContext();
+    KJavaAppletContext(DCOPObject *obj=NULL);
     ~KJavaAppletContext();
 
     /**
@@ -92,6 +96,10 @@ public:
      */
     void processCmd( QString cmd, QStringList args );
 
+    bool getMember(KJavaApplet *, const QString &, JType &, QString &);
+    bool callMember(KJavaApplet *, const QString &, const QStringList &, JType &, QString &);
+
+    DCOPObject * getBrowserObject();
 signals:
     /**
      * Signals the KHMTL Part to show this as the status message.

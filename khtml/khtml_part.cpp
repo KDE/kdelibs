@@ -248,11 +248,8 @@ KHTMLPart::~KHTMLPart()
   stopAutoScroll();
   d->m_redirectionTimer.stop();
 
-  if ( d->m_job )
-    d->m_job->kill();
-
-  if ( d->m_doc && d->m_doc->docLoader() )
-    khtml::Cache::loader()->cancelRequests( d->m_doc->docLoader() );
+  if (!d->m_bComplete)
+    closeURL();
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
@@ -693,7 +690,7 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
 {
 #ifndef Q_WS_QWS
   if ( !d->m_javaContext ) {
-      d->m_javaContext = new KJavaAppletContext();
+      d->m_javaContext = new KJavaAppletContext(d->m_dcopobject);
       connect( d->m_javaContext, SIGNAL(showStatus(const QString&)),
                this, SIGNAL(setStatusBarText(const QString&)) );
       connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),
@@ -826,7 +823,6 @@ bool KHTMLPart::autoloadImages() const
 
 void KHTMLPart::clear()
 {
-    kdDebug( 6090 ) << "KHTMLPart::clear() this = " << this << endl;
   if ( d->m_bCleared )
     return;
   d->m_bCleared = true;
@@ -862,10 +858,7 @@ void KHTMLPart::clear()
 
 
   if ( d->m_doc )
-  {
-    kdDebug( 6090 ) << "KHTMLPart::clear(): detaching the document " << d->m_doc << endl;
     d->m_doc->detach();
-  }
 
   // Moving past doc so that onUnload works.
   if ( d->m_jscript )
@@ -877,14 +870,10 @@ void KHTMLPart::clear()
   // do not dereference the document before the jscript and view are cleared, as some destructors
   // might still try to access the document.
   if ( d->m_doc )
-  {
-    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document " << d->m_doc << endl;
     d->m_doc->deref();
-  }
   d->m_doc = 0;
 
   delete d->m_decoder;
-
   d->m_decoder = 0;
 
   {
@@ -3399,7 +3388,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
        d->m_restored = true;
        openURL( u );
        d->m_restored = false;
-    }       
+    }
     else
     {
        restoreURL( u );
@@ -4202,7 +4191,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
     }
 
     if (tokenizer)
-      tokenizer->setOnHold(false);
+       tokenizer->setOnHold(false);
     return (response==KMessageBox::Continue);
   }
   return true;

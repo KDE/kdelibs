@@ -33,13 +33,7 @@
 #include <kmimetype.h>
 #include <klocale.h>
 
-extern "C"
-{
-    void *init_libkhtmlimage()
-    {
-        return new KHTMLImageFactory();
-    }
-};
+K_EXPORT_COMPONENT_FACTORY( khtmlimagepart, KHTMLImageFactory );
 
 KInstance *KHTMLImageFactory::s_instance = 0;
 

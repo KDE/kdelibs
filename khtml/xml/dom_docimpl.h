@@ -27,6 +27,7 @@
 
 #include "xml/dom_elementimpl.h"
 #include "xml/dom2_traversalimpl.h"
+#include "misc/shared.h"
 
 #include <qstringlist.h>
 #include <qptrlist.h>
@@ -77,7 +78,7 @@ namespace DOM {
     class TextImpl;
     class TreeWalkerImpl;
 
-class DOMImplementationImpl : public DomShared
+class DOMImplementationImpl : public khtml::Shared<DOMImplementationImpl>
 {
 public:
     DOMImplementationImpl();
@@ -266,7 +267,7 @@ public:
     // internal
     NodeImpl *findElement( Id id );
 
-     bool prepareMouseEvent( int x, int y, MouseEvent *ev );
+    bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );

@@ -26,6 +26,7 @@
 #define _DOM_EventsImpl_h_
 
 #include "dom/dom2_events.h"
+#include "misc/shared.h"
 #include "xml/dom2_viewsimpl.h"
 #include <qdatetime.h>
 #include <qevent.h>
@@ -40,7 +41,7 @@ class NodeImpl;
 
 // ### support user-defined events
 
-class EventImpl : public DomShared
+class EventImpl : public khtml::Shared<EventImpl>
 {
 public:
     enum EventId {

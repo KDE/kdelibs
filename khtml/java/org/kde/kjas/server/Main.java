@@ -21,6 +21,8 @@ public class Main
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
+    public  static String                    liveconnect_returnval = null;
+    public  static Thread                    liveconnect_thread = null;
     private static boolean                   good_jdk = true;
 
     /**************************************************************************
@@ -46,7 +48,6 @@ public class Main
         protocol_stdout = System.out;
         console         = new KJASConsole();
         protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
-
         Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
         String version = System.getProperty("java.version").substring( 0, 3 );
         Main.debug( "JVM numerical version = " + version );
