@@ -3,6 +3,7 @@ Type=PCX
 Header=^\012
 Name=PCX Image File
 Name[es]=Archivo de imagen PCX
+Name[hu]=PCX kép
 Name[sv]=PCX-bildfil
 Read=true
 Write=true
