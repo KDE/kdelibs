@@ -14,3 +14,6 @@
 	- default paper size
 	- default margins
 	- preview program
+
+- avoid special characters and spaces in printer name, or at least
+  warn the user and propose to strip all these chars.

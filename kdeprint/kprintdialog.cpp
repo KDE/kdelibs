@@ -50,6 +50,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kfiledialog.h>
+#include <kdebug.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
 
@@ -184,24 +185,39 @@ void KPrintDialog::setFlags(int f)
 
 void KPrintDialog::setDialogPages(QList<KPrintDialogPage> *pages)
 {
-	if (!pages || pages->count() == 0) return;
-	m_pages.clear();
-	if (pages->count() == 1)
+	if (!pages) return;
+	if (pages->count() + m_pages.count() == 1)
 	{
-		KPrintDialogPage	*page = pages->take(0);
-		m_pages.append(page);
-		page->reparent(m_dummy,QPoint(0,0));
+		// only one page, reparent the page to m_dummy and remove any
+		// QTabWidget child if any.
+		if (pages->count() > 0)
+			m_pages.append(pages->take(0));
+		m_pages.first()->reparent(m_dummy, QPoint(0,0));
+		m_pages.first()->show();
+		delete m_dummy->child("TabWidget", "QTabWidget");
 	}
 	else
 	{
-		QTabWidget	*tabs = new QTabWidget(m_dummy);
-		tabs->setMargin(10);
+		// more than one page.
+		QTabWidget	*tabs = static_cast<QTabWidget*>(m_dummy->child("TabWidget", "QTabWidget"));
+		if (!tabs)
+		{
+			// QTabWidget doesn't exist. Create it and reparent all
+			// already existing pages.
+			tabs = new QTabWidget(m_dummy, "TabWidget");
+			tabs->setMargin(10);
+			for (m_pages.first(); m_pages.current(); m_pages.next())
+			{
+				tabs->addTab(m_pages.current(), m_pages.current()->title());
+			}
+		}
 		while (pages->count() > 0)
 		{
 			KPrintDialogPage	*page = pages->take(0);
 			m_pages.append(page);
-			tabs->addTab(page,page->title());
+			tabs->addTab(page, page->title());
 		}
+		tabs->show();
 	}
 }
 
@@ -444,6 +460,24 @@ void KPrintDialog::slotWizard()
 
 void KPrintDialog::reload()
 {
+	// remove printer dependent pages (usually from plugin)
+	QTabWidget	*tabs = static_cast<QTabWidget*>(m_dummy->child("TabWidget", "QTabWidget"));
+	for (int i=0; i<m_pages.count(); i++)
+		if (m_pages.at(i)->onlyRealPrinters())
+		{
+			KPrintDialogPage	*page = m_pages.take(i--);
+			if (tabs)
+				tabs->removePage(page);
+			delete page;
+		}
+	// reload printer dependent pages from plugin
+	QList<KPrintDialogPage>	pages;
+	pages.setAutoDelete(false);
+	KMFactory::self()->uiManager()->setupPrintDialogPages(&pages);
+	// add those pages to the dialog
+	setDialogPages(&pages);
+	m_dummy->show();
+	// other initializations
 	setFlags(KMFactory::self()->uiManager()->dialogFlags());
 	initialize(m_printer);
 }

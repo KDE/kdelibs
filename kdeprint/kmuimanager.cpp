@@ -100,12 +100,13 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 	// dialog flags
 	dlg->setFlags(dialogFlags());
 
+	// add standard dialog pages
+	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
+		m_printdialogpages.prepend(new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
+
 	// add plugins pages
 	setupPrintDialogPages(&m_printdialogpages);
 
-	// dialog pages
-	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
-		m_printdialogpages.insert(0,new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
 	dlg->setDialogPages(&m_printdialogpages);
 }
 

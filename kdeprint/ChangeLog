@@ -26,3 +26,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * kprinter.cpp: implementation of setPrintProgram() as:
   	setOption("kde-isspecial", "1");
 	setOption("kde-special-command", cmd);
+
+28/08/2001 Michael Goffioul <goffioul@imec.be>
+  * implementation of KPrintAction, which provides a quick access to
+    a class of printers (special, regular or both). An application just
+    needs to create a KPrintAction anc connect to print(KPrinter*).
