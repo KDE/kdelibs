@@ -1158,7 +1158,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		    indx = toupper( str[1] ) - 'A';
 		
 		if ( indx >= 0 && indx < 26 )
-		    parseFuncArray[indx]( _clue, str );
+		    (this->*(parseFuncArray[indx]))( _clue, str );
 		
 		// perhaps we have the frame read complete. So skip the rest
 		if ( bFramesComplete )
