@@ -1,8 +1,10 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,9 +40,8 @@ using namespace khtml;
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)
     : NodeImpl(doc)
 {
-    str = _text;
-    if(str)
-        str->ref();
+    str = _text ? _text : new DOMStringImpl(0, 0);
+    str->ref();
 }
 
 CharacterDataImpl::~CharacterDataImpl()
@@ -172,6 +173,11 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
 DOMString CharacterDataImpl::nodeValue() const
 {
     return str;
+}
+
+bool CharacterDataImpl::containsOnlyWhitespace() const
+{
+    return str->containsOnlyWhitespace();
 }
 
 void CharacterDataImpl::setNodeValue( const DOMString &_nodeValue, int &exceptioncode )

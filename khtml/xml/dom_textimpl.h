@@ -1,8 +1,10 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) Apple Computer, Inc
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef _DOM_CharacterDataImpl_h_
 #define _DOM_CharacterDataImpl_h_
@@ -30,6 +31,8 @@
 namespace DOM {
 
     class DocumentImpl;
+    class CharacterData;
+    class Text;
 
 class CharacterDataImpl : public NodeImpl
 {
@@ -49,6 +52,8 @@ public:
     virtual void insertData ( const unsigned long offset, const DOMString &arg, int &exceptioncode );
     virtual void deleteData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
     virtual void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode );
+
+    virtual bool containsOnlyWhitespace() const;
 
     // DOM methods overridden from  parent classes
 

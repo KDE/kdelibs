@@ -109,6 +109,7 @@ public:
     virtual bool isDocumentNode() const { return false; }
     virtual bool isXMLElementNode() const { return false; }
     virtual bool isGenericFormElement() const { return false; }
+    virtual bool containsOnlyWhitespace() const { return false; }
 
     // helper functions not being part of the DOM
     // Attention: they assume that the caller did the consistency checking!
