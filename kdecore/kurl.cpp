@@ -18,30 +18,24 @@
 */
 
 #include "kurl.h"
+#include <kprotocolmanager.h>
 
 #include <stdio.h>
 #include <assert.h>
+#include <ctype.h>
+#include <stdlib.h>
+
 #include <qdir.h>
 
 // Reference: RFC 1738 Uniform Resource Locators
 
-bool kurl_parse( KURL *_url, const char *_txt );
-
 KURL::KURL()
-{
+{ 
   reset();
-  m_bIsMalformed = true;
+  m_bIsMalformed = TRUE;
 }
 
-KURL::KURL( const char *_url )
-{
-  reset();
-  m_strProtocol = "file";
-  m_iPort = -1;
-  parse( _url );
-}
-
-KURL::KURL( QString &_url )
+KURL::KURL( const QString &_url )
 {
   reset();
   m_strProtocol = "file";
@@ -62,7 +56,7 @@ KURL::KURL( const KURL& _u )
   m_iPort = _u.m_iPort;
 }
 
-KURL::KURL( const KURL& _u, const char *_rel_url )
+KURL::KURL( const KURL& _u, const QString& _rel_url )
 {
   if ( _rel_url[0] == '/' )
   {
@@ -72,7 +66,9 @@ KURL::KURL( const KURL& _u, const char *_rel_url )
   else if ( _rel_url[0] == '#' )
   {
     *this = _u;
-    setRef( _rel_url + 1 );
+    QString tmp = _rel_url + 1;
+    decode( tmp );
+    setHTMLRef( tmp );
   }
   else if ( strstr( _rel_url, ":/" ) != 0 )
   {
@@ -84,6 +80,7 @@ KURL::KURL( const KURL& _u, const char *_rel_url )
     QString tmp = _rel_url;
     decode( tmp );
     setFileName( tmp.data() );
+    setHTMLRef( QString::null );
   }
 }
 
@@ -96,27 +93,192 @@ void KURL::reset()
   m_strPath = "";
   m_strQuery_encoded = "";
   m_strRef_encoded = "";
-  m_bIsMalformed = false;
+  m_bIsMalformed = FALSE;
   m_iPort = -1;
 }
 
-void KURL::parse( const char *_url )
+void KURL::parse( const QString& _url )
 {
-  m_bIsMalformed = !kurl_parse( this, _url );
+  if ( _url.isEmpty() )
+  {
+    m_bIsMalformed = TRUE;
+    return;
+  }
+
+  m_bIsMalformed = FALSE;
+
+  QString port;
+  int start;
+  uint len = _url.length();
+  QChar* buf = new QChar[ len + 1 ];
+  QChar* orig = buf;
+  memcpy( buf, _url.unicode(), len * sizeof( QChar ) );
+  
+  uint pos = 0;
+  // Node 1: Accept alpha or slash
+  QChar x = buf[pos++];
+  if ( x == '/' )
+    goto Node9;
+  if ( !isalpha( (char)x ) )
+    goto NodeErr;
+  // Node 2: Accept any amount of alphas
+  // Proceed with :// :/ or :
+  while( isalpha( buf[pos] ) && pos < len ) pos++;
+  if ( pos == len )
+    goto NodeErr;
+  if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
+  {
+    m_strProtocol = QString( orig, pos );
+    pos += 3;
+  }
+  else if (buf[pos] == ':' && buf[pos+1] == '/' )
+  {
+    m_strProtocol = QString( orig, pos );
+    pos++;
+    start = pos;
+    goto Node9;
+  }
+  else if ( buf[pos] == ':' )
+  {
+    pos++;
+    goto Node11;
+  }
+  else
+    goto NodeErr;
+  //Node 3: We need at least one character here
+  if ( pos == len )
+    goto NodeErr;
+  start = pos++;
+  // Node 4: Accept any amount of characters.
+  // Terminate or / or @
+  while( buf[pos] != ':' && buf[pos] != '@' && buf[pos] != '/' && pos < len ) pos++;
+  if ( pos == len )
+  {
+    m_strHost = QString( buf + start, pos - start );
+    goto NodeOk;
+  }
+  x = buf[pos];
+  if ( x == '@' )
+  {
+    m_strUser = QString( buf + start, pos - start );
+    pos++;
+    goto Node7;
+  }
+  /* else if ( x == ':' )
+  {
+    m_strHost = QString( buf + start, pos - start );
+    pos++;
+    goto Node8a;
+    } */
+  else if ( x == '/' )
+  {
+    m_strHost = QString( buf + start, pos - start );
+    start = pos++;
+    goto Node9;
+  }
+  else if ( x != ':' )
+    goto NodeErr;
+  m_strUser = QString( buf + start, pos - start );
+  pos++;
+  // Node 5: We need at least one character
+  if ( pos == len )
+    goto NodeErr;
+  start = pos++;
+  // Node 6: Read everything until @
+  while( buf[pos] != '@' && pos < len ) pos++;
+  if ( pos == len )
+  {
+    // Ok the : was used to separate host and port
+    m_strHost = m_strUser;
+    m_strUser = "";
+    QString tmp( buf + start, pos - start );
+    m_iPort = atoi( tmp.ascii() );
+    goto NodeOk;
+  }
+  m_strPass = QString( buf + start, pos - start );
+  pos++;
+  // Node 7: We need at least one character
+ Node7:
+  if ( pos == len )
+    goto NodeErr;
+  start = pos++;
+  // Node 8: Read everything until / : or terminate
+  while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
+  if ( pos == len )
+  {
+    m_strHost = QString( buf + start, pos - start );
+    goto NodeOk;
+  }
+  x = buf[pos];
+  m_strHost = QString( buf + start, pos - start );
+  if ( x == '/' )
+  {
+    start = pos++;
+    goto Node9;
+  }
+  else if ( x != ':' )
+    goto NodeErr;
+  pos++;
+  // Node 8a: Accept at least one digit
+  if ( pos == len )
+    goto NodeErr;
+  start = pos;
+  if ( !isdigit( buf[pos++] ) )
+    goto NodeErr;
+  // Node 8b: Accept any amount of digits
+  while( isdigit( buf[pos] ) && pos < len ) pos++;
+  port = QString( buf + start, pos - start );
+  m_iPort = atoi( port.ascii() );
+  if ( pos == len )
+    goto NodeOk;
+  start = pos++;
+  // Node 9: Accept any character and # or terminate
+ Node9:
+  while( buf[pos] != '#' && pos < len ) pos++;
+  if ( pos == len )
+  {
+    QString tmp( buf + start, len - start );
+    setEncodedPathAndQuery( tmp );
+    // setEncodedPathAndQuery( QString( buf + start, pos - start ) );
+    goto NodeOk;
+  }
+  else if ( buf[pos] != '#' )
+    goto NodeErr;
+  setEncodedPathAndQuery( QString( buf + start, pos - start ) );
+  pos++;
+  // Node 10: Accept all the rest
+  m_strRef_encoded = QString( buf + pos, len - pos );
+  goto NodeOk;
+  // Node 11 We need at least one character
+ Node11:
+  start = pos;
+  if ( pos++ == len )
+    goto NodeErr;
+  // Node 12: Accept the res
+  setEncodedPathAndQuery( QString( buf + start, len - start ) );
+  goto NodeOk;
+ NodeOk:
+  delete []orig;
+  //debug("Prot=%s\nUser=%s\nPass=%s\nHost=%s\nPath=%s\nQuery=%s\nRef=%s\nPort=%i\n",
+  //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
+  //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
+  //m_strRef_encoded.ascii(), m_iPort );
+  if ( !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
+  {
+    debug("Unknown protocol %s", m_strProtocol.data() );
+    m_bIsMalformed = TRUE;  
+  }
+  return;
+ NodeErr:
+  debug("Error in parsing\n");
+  delete []orig;
+  m_bIsMalformed = TRUE;  
 }
 
-KURL& KURL::operator=( const char* _url )
+KURL& KURL::operator=( const QString& _url )
 {
   reset();  
   parse( _url );
-
-  return *this;
-}
-
-KURL& KURL::operator=( QString& _url )
-{
-  reset();
-  parse( _url.data() );
 
   return *this;
 }
@@ -139,7 +301,7 @@ KURL& KURL::operator=( const KURL& _u )
 bool KURL::operator==( const KURL& _u ) const
 {
   if ( isMalformed() || _u.isMalformed() )
-    return false;
+    return FALSE;
   
   if ( m_strProtocol == _u.m_strProtocol &&
        m_strUser == _u.m_strUser &&
@@ -150,12 +312,12 @@ bool KURL::operator==( const KURL& _u ) const
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_bIsMalformed == _u.m_bIsMalformed &&
        m_iPort == _u.m_iPort )
-    return true;
+    return TRUE;
   
-  return false;
+  return FALSE;
 }
 
-bool KURL::operator==( const char* _u ) const
+bool KURL::operator==( const QString& _u ) const
 {
   KURL u( _u );
   return ( *this == u );
@@ -168,7 +330,7 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
     QString path1 = path(1);
     QString path2 = _u.path(1);
     if ( path1 != path2 )
-      return false;
+      return FALSE;
 
     if ( m_strProtocol == _u.m_strProtocol &&
 	 m_strUser == _u.m_strUser &&
@@ -178,44 +340,50 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
 	 m_strRef_encoded == _u.m_strRef_encoded &&
 	 m_bIsMalformed == _u.m_bIsMalformed &&
 	 m_iPort == _u.m_iPort )
-      return true;
+      return TRUE;
 
-    return false;
+    return FALSE;
   }
   
   return ( *this == _u );
 }
 
-void KURL::setFileName( const char *_txt )
+void KURL::setFileName( const QString& _txt )
 {
   // TODO: clean path at the end
-  while( *_txt == '/' ) _txt++;
-
+  int i = 0;
+  while( _txt[i] == '/' ) ++i;
+  QString tmp;
+  if ( i )
+    tmp = _txt.mid( i );
+  else
+    tmp = _txt;
+  
   if ( m_strPath.isEmpty() )
   {
     m_strPath = "/";
-    m_strPath += _txt;
+    m_strPath += tmp;
     return;
   }    
   
   if ( m_strPath.right(1) == "/")
   {
-    m_strPath += _txt;
+    m_strPath += tmp;
     return;
   }
   
-  int i = m_strPath.findRev( '/' );
+  i = m_strPath.findRev( '/' );
   // If ( i == -1 ) => The first character is not a '/' ???
   // This looks strange ...
   if ( i == -1 )
   {
     m_strPath = "/";
-    m_strPath += _txt;
+    m_strPath += tmp;
     return;
   }
   
   m_strPath.truncate( i+1 ); // keep the "/"
-  m_strPath += _txt;
+  m_strPath += tmp;
 }
 
 QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path )
@@ -234,18 +402,17 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path )
   return tmp;
 }
 
-void KURL::setEncodedPathAndQuery( const char *_txt )
+void KURL::setEncodedPathAndQuery( const QString& _txt )
 {
-  QString tmp = _txt;
-  int pos = tmp.find( '?' );
+  int pos = _txt.find( '?' );
   if ( pos == -1 )
   {
-    m_strPath = tmp;
+    m_strPath = _txt;
     m_strQuery_encoded = "";
   }
   else
   { 
-    m_strPath = tmp.left( pos );
+    m_strPath = _txt.left( pos );
     m_strQuery_encoded = _txt + pos + 1;
   }
 
@@ -282,29 +449,12 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-  if ( m_strProtocol != "file" )
-    return false;
-  
-  if ( m_strRef_encoded.isEmpty() )
-    return true;
-  
-  KURL u( m_strRef_encoded.data() );
-  if ( u.isMalformed() )
-    return true;
-  
-  return false;
+  return ( m_strProtocol == "file" );
 }
 
 bool KURL::hasSubURL() const
 {
-  if ( m_strRef_encoded.isEmpty() )
-    return false;
-  
-  KURL u( m_strRef_encoded.data() );
-  if ( u.isMalformed() )
-    return false;
-
-  return true;
+  return ( KProtocolManager::self().isFilterProtocol( m_strProtocol ) && !m_strRef_encoded.isEmpty() );
 }
 
 QString KURL::url() const
@@ -363,43 +513,79 @@ QString KURL::url( int _trailing ) const
   return u;
 }
 
-bool KURL::split( const char *_url, QList<KURL>& lst )
+KURL::List KURL::split( const KURL& _url )
 {
-  lst.setAutoDelete(true);
-  QString tmp;
+  return split( _url.url() );
+}
+
+KURL::List KURL::split( const QString& _url )
+{
+  KURL::List lst;
+  QString tmp = _url;
   
   do
   {
-    KURL * u = new KURL ( _url );
-    if ( u->isMalformed() )
-      return false;
+    KURL u( tmp );
+    if ( u.isMalformed() )
+      return KURL::List();
     
-    if ( u->hasSubURL() )
+    // Continue with recursion ?
+    if ( u.hasSubURL() )
     {
-      tmp = u->ref();
-      _url = tmp.data();
-      u->setRef( "" );
+      debug("Has SUB URL %s", u.ref().ascii() );
+      tmp = u.ref();
+      u.setRef( "" );
       lst.append( u );
     }
+    // A HTML style reference finally ?
+    else if ( u.hasRef() )
+    {
+      tmp = u.ref();
+      u.setRef( "" );
+      lst.append( u );
+      // Append the HTML style reference to the
+      // first URL.
+      lst.begin()->setRef( tmp );
+      return lst;
+    }
+    // No more references and suburls
     else
     {
       lst.append( u );
-      return true;
+      return lst;
     }
   } while( 1 );
+
+  // Never reached
+  return lst;
 }
 
-void KURL::join( KURLList & lst, QString& _dest )
+QString KURL::join( const KURL::List & lst )
 {
-  _dest = "";
-  KURL * it;
-  for( it = lst.first() ; it ; it = lst.next() )
+  QString dest = "";
+  QString ref;
+  
+  KURL::List::ConstIterator it;
+  for( it = lst.begin() ; it != lst.end(); ++it )
   {
+    if ( it == lst.begin() )
+      ref = it->ref();
+    else 
+      ASSERT( !it->hasRef() );
+    
     QString tmp = it->url();
-    _dest += tmp;
-    if ( it != lst.getLast() )
-      _dest += "#";
+    dest += tmp;
+    if ( it != lst.last() )
+      dest += "#";
   }
+
+  if ( !ref.isEmpty() )
+  {
+    dest += "#";    
+    dest += ref;
+  }
+  
+  return dest;
 }
 
 QString KURL::filename( bool _strip_trailing_slash )
@@ -433,9 +619,9 @@ QString KURL::filename( bool _strip_trailing_slash )
   return fname;
 }
 
-void KURL::addPath( const char *_txt )
+void KURL::addPath( const QString& _txt )
 {
-  if ( *_txt == 0 )
+  if ( _txt.isEmpty() )
     return;
   
   int len = m_strPath.length();
@@ -444,11 +630,14 @@ void KURL::addPath( const char *_txt )
     m_strPath += "/";
     
   // No double '/' characters
+  int i = 0;
   if ( len != 0 && m_strPath[ len - 1 ] == '/' )
-    while( *_txt == '/' )
-      _txt++;
+  {    
+    while( _txt[i] == '/' )
+      ++i;
+  }
   
-  m_strPath += _txt;
+  m_strPath += _txt.mid( i );
 }
 
 QString KURL::directory( bool _strip_trailing_slash_from_result, bool _ignore_trailing_slash_in_path )
@@ -558,124 +747,195 @@ void KURL::decode( QString& _url )
 }
 
 // implemented by David, faure@kde.org
+// Modified by Torben, weis@kde.org
 bool KURL::cd( const QString& _dir, bool zapRef )
 {
-    if ( _dir.isNull() )
-        return false;
+  if ( _dir.isEmpty() )
+    return FALSE;
  
-    if ( _dir[0] == '/' ) //absolute path
-    {
-        m_strPath = _dir;
-        if ( zapRef )
-          setRef( QString::null );
-    }
-    else if (( _dir[0] == '~' ) && ( m_strProtocol == "file" )) //absolute path
-    {
-        m_strPath = QDir::homeDirPath().copy();
-        m_strPath += "/";
-        m_strPath += _dir + 1;
-        if ( zapRef )
-          setRef( QString::null );
-    }
-    else //relative path - we have to handle nested URLs
-    {
-      // split URL
-      KURLList lst;
-      assert( KURL::split( url(), lst ) );
-      KURL * lastUrl = lst.getLast();
-      // get directory of last nested URL
-      QString lastPath = lastUrl->path(1); // append '/' if necessary
-      debug("lastPath = %s",lastPath.data());
-      // append relative dir
-      // but if _dir == ".." and lastPath == "/" we need to remove the last part
-      if ( ( (_dir == "..") || (_dir == "../") ) &&
-           ( (lastPath == "/") || (lastPath.isEmpty()) ) )
-      {
-        lst.removeLast();
-        // HACK? also remove any gzip part : if doing cd("..") on
-        // file:/home/dfaure/myfile.tgz#gzip:/decompress#tar:/
-        // we want file:/home/dfaure/myfile.tgz
-        while ( !strcmp( lst.getLast()->protocol(), "gzip" ) )
-        {
-          lst.removeLast();
-        }
-        lastUrl = lst.getLast();
-        // remove filename, if any (myfile.tgz in the example above)
-        lastUrl->setPath(lastUrl->directory(false, false)); // keep trailing slash
-      }
-      else
-      {
-        lastPath += _dir;
-        lastPath = QDir::cleanDirPath( lastPath );
-        lastUrl->setPath( lastPath );
-      }
-      if ( zapRef )
-        lastUrl->setRef( QString::null );
-      // join the nested URLs and parse the result
-      QString _url;
-      KURL::join( lst, _url );
-      reset();
-      parse ( _url );
-    }
+  // absolute path ?
+  if ( _dir[0] == '/' ) 
+  {
+    m_strPath = _dir;
+    if ( zapRef )
+      setHTMLRef( QString::null );
+    return TRUE;
+  }
 
-    return true;
-}
-
-bool urlcmp( KURLList& _url1, KURLList& _url2 )
-{
-  unsigned int size = _url1.count();
-  if ( _url2.count() != size )
-    return false;
+  // Users home directory on the local disk ?
+  if ( ( _dir[0] == '~' ) && ( m_strProtocol == "file" ))
+  {
+    m_strPath = QDir::homeDirPath().copy();
+    m_strPath += "/";
+    m_strPath += _dir + 1;
+    if ( zapRef )
+      setHTMLRef( QString::null );
+    return TRUE;
+  }
   
-  KURL* it1 = _url1.first();
-  KURL* it2 = _url2.first();
-  for( ; it1 && it2 ; it1 = _url1.next(), it2 = _url2.next() )
-    if ( it1->url() != it2->url() )
-      return false;
+  // relative path
+  // we always work on the past of the first url.
+  // Sub URLs are not touched.
+
+  // append '/' if necessary
+  QString p = path(1);
+
+  p += _dir;
+  p = QDir::cleanDirPath( p );
+  setPath( p );
+
+  if ( zapRef )
+    setHTMLRef( QString::null );
+
+  return TRUE;
+}
+
+KURL KURL::upURL( bool _zapRef ) const
+{
+  QString old = m_strPath;
   
-  return true;
+  KURL u( *this );
+  u.cd("..");
+
+  // Did we change the directory ? => job done
+  if ( u.path() != old )
+  {
+    if ( _zapRef )
+      u.setHTMLRef( QString::null );
+    
+    return u;
+  }
+  
+  // So we have to strip protocols.
+  // Example: tar:/#gzip:/decompress#file:/home/weis/test.tgz will be changed
+  // to file:/home/weis/
+  KURL::List lst = split( u );
+  
+  QString ref = lst.begin()->ref();
+  
+  // Remove first protocol
+  lst.remove( lst.begin() );
+  
+  // Remove all stream protocols
+  while( lst.begin() != lst.end() )
+  {    
+    if ( KProtocolManager::self().inputType( lst.begin()->protocol() ) == KProtocolManager::T_STREAM )
+      lst.remove( lst.begin() );
+    else
+      break;
+  }
+  
+  // No source protocol at all ?
+  if ( lst.begin() == lst.end() )
+    return KURL();
+  
+  // Remove the filename. Example: We start with
+  // tar:/#gzip:/decompress#file:/home/x.tgz
+  // and end with file:/home/x.tgz until now. Yet we
+  // just strip the filename at the end of the leftmost
+  // url.
+  lst.begin()->setPath( lst.begin()->directory( FALSE ) );
+  
+  if ( !_zapRef )
+    lst.begin()->setRef( ref );
+  
+  return join( lst );
 }
 
-bool urlcmp( const char *_url1, const char *_url2 )
+QString KURL::htmlRef() const
 {
-  KURLList list1;
-  KURLList list2;
-
-  bool res1 = KURL::split( _url1, list1 );
-  bool res2 = KURL::split( _url2, list2 );
-
-  if ( !res1 || !res2 )
-    return false;
-
-  return urlcmp( list1, list2 );
+  if ( !hasSubURL() )
+  {
+    QString tmp = ref();
+    decode( tmp );
+    return tmp;
+  }
+  
+  List lst = split( *this );
+  QString tmp = lst.begin()->ref();
+  decode( tmp );
+  
+  return tmp;
 }
 
-bool urlcmp( const char *_url1, const char *_url2, bool _ignore_trailing, bool _ignore_ref )
+void KURL::setHTMLRef( const QString& _ref )
 {
-  KURLList list1;
-  KURLList list2;
+  if ( !hasSubURL() )
+  {
+    m_strRef_encoded = _ref;
+    encode( m_strRef_encoded );
+    return;
+  }
+  
+  List lst = split( *this );
+  QString tmp = _ref;
+  encode( tmp );
+  lst.begin()->setRef( tmp );
+  
+  *this = join( lst );
+}
 
-  bool res1 = KURL::split( _url1, list1 );
-  bool res2 = KURL::split( _url2, list2 );
+bool KURL::hasHTMLRef() const
+{
+  if ( !hasSubURL() )
+  {
+    return hasRef();
+  }
+  
+  List lst = split( *this );
+  return lst.begin()->hasRef();
+}
 
-  if ( !res1 || !res2 )
-    return false;
+bool urlcmp( const QString& _url1, const QString& _url2 )
+{
+  // Both empty ?
+  if ( _url1.isEmpty() && _url2.isEmpty() )
+    return TRUE;
+  // Only one empty ?
+  if ( _url1.isEmpty() || _url2.isEmpty() )
+    return FALSE;
+
+  KURL::List list1 = KURL::split( _url1 );
+  KURL::List list2 = KURL::split( _url2 );
+
+  // Malformed ?
+  if ( list1.isEmpty() || list2.isEmpty() )
+    return FALSE;
+
+  return ( list1 == list2 );
+}
+
+bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref )
+{
+  // Both empty ?
+  if ( _url1.isEmpty() && _url2.isEmpty() )
+    return TRUE;
+  // Only one empty ?
+  if ( _url1.isEmpty() || _url2.isEmpty() )
+    return FALSE;
+
+  KURL::List list1 = KURL::split( _url1 );
+  KURL::List list2 = KURL::split( _url2 );
+
+  // Malformed ?
+  if ( list1.isEmpty() || list2.isEmpty() )
+    return FALSE;
 
   unsigned int size = list1.count();
   if ( list2.count() != size )
-    return false;
+    return FALSE;
 
   if ( _ignore_ref )
   {    
-    list1.getLast()->setRef("");
-    list2.getLast()->setRef("");
+    list1.begin()->setRef("");
+    list2.begin()->setRef("");
   }
   
-  KURL* it1 = list1.first();
-  KURL* it2 = list2.first();
-  for( ; it1 && it2 ; it1 = list1.next(), it2 = list2.next() )
-    if ( !it1->cmp( *it2, _ignore_ref ) )
-      return false;
+  KURL::List::Iterator it1 = list1.begin();
+  KURL::List::Iterator it2 = list2.begin();
+  for( ; it1 != list1.end() ; ++it1, ++it2 )
+    if ( !it1->cmp( *it2, _ignore_trailing ) )
+      return FALSE;
 
-  return true;
+  return TRUE;
 }
