@@ -636,6 +636,30 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    if(!n->isInline())
 		popBlock(ID_P);
 	    break;
+	case ID_H1:
+	    if(!n->isInline())
+		popBlock(ID_H1);
+	    break;
+	case ID_H2:
+	    if(!n->isInline())
+		popBlock(ID_H2);
+	    break;
+	case ID_H3:
+	    if(!n->isInline())
+		popBlock(ID_H3);
+	    break;
+	case ID_H4:
+	    if(!n->isInline())
+		popBlock(ID_H4);
+	    break;
+	case ID_H5:
+	    if(!n->isInline())
+		popBlock(ID_H5);
+	    break;
+	case ID_H6:
+	    if(!n->isInline())
+		popBlock(ID_H6);
+	    break;
 	default:
 	    if(current->isDocumentNode())
 	    {
@@ -980,7 +1004,7 @@ void KHTMLParser::processCloseTag(Token *t)
 	// this one is to get the right style on the body element
 	break;
     case ID_HEAD+ID_CLOSE_TAG:
-	//inBody = true;
+	inBody = true;
 	document->createSelector();
 	break;
     default:
