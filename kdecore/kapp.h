@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 220
-#define KDE_VERSION_STRING "2.2beta1"
+#define KDE_VERSION_STRING "2.2"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 2
 #define KDE_VERSION_RELEASE 0
@@ -851,6 +851,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.226  2001/07/20 22:25:10  waba
+// Add KDE 3.0 todo items.
+//
 // Revision 1.225  2001/07/17 01:00:56  waba
 // * Single "start kdeinit" function.
 // * Show busy cursor to make the wait more pleasant :-]
