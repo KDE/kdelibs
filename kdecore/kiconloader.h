@@ -68,9 +68,6 @@ class KIconLoader
 {
 public:
 
-    /** Provided for source compatibility. Do not use. */
-    enum Size { Small=16, Medium=32, Large=48, Default=0 };
-
     /**
      * Construct the iconloader.
      * @param appname Add the data directories of this application to the
