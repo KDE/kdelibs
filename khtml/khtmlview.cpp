@@ -535,7 +535,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 	return false;
     if (focusWidget()==viewport())
 	return QWidget::focusNextPrevChild( next );
-	
+
     kdDebug(6000)<<"KHTMLView("<<name()<<"): QScrollview set new FocusWidget to:"<<focusWidget()->name()<<endl;
     return true;
 }
@@ -688,6 +688,7 @@ void KHTMLView::print()
 
     QPrinter *printer = new QPrinter;
     if(printer->setup(this)) {
+        QApplication::setOverrideCursor( waitCursor );
         // set up QPrinter
         printer->setFullPage(false);
         printer->setCreator("KDE 2.0 HTML Library");
@@ -696,7 +697,7 @@ void KHTMLView::print()
         QPainter *p = new QPainter;
         p->begin( printer );
 	khtml::setPrintPainter( p );
-	
+
         m_part->xmlDocImpl()->setPaintDevice( printer );
 
         QPaintDeviceMetrics metrics( printer );
@@ -764,6 +765,7 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();
+        QApplication::restoreOverrideCursor();
     }
     delete printer;
 }
