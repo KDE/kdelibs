@@ -591,6 +591,21 @@ NodeImpl *NodeImpl::childNode(unsigned long /*index*/)
     return 0;
 }
 
+NodeImpl *NodeImpl::traverseNextNode() {
+    if (firstChild())
+	return firstChild();
+    else if (nextSibling())
+	return nextSibling();
+    else {
+	NodeImpl *n = this;
+	while (n && !n->nextSibling())
+	    n = n->parentNode();
+	if (n)
+	    return n->nextSibling();
+    }
+    return 0;
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentPtr *doc) : NodeImpl(doc)
@@ -659,6 +674,20 @@ unsigned long NodeWParentImpl::nodeIndex() const
         _tempNode = _tempNode->previousSibling();
     return count;
 }
+
+bool NodeWParentImpl::isReadOnly()
+{
+    // Entity & Entity Reference nodes and their descendants are read-only
+    NodeImpl *n = this;
+    while (n) {
+	if (n->nodeType() == Node::ENTITY_NODE ||
+	    n->nodeType() == Node::ENTITY_REFERENCE_NODE)
+	    return true;
+	n = n->parentNode();
+    }
+    return NodeImpl::isReadOnly();
+}
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc) : NodeWParentImpl(doc)

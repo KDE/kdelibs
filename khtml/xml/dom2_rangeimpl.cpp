@@ -265,7 +265,18 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *source
     if (exceptioncode)
         return 0;
 
-    if (thisCont->ownerDocument() != sourceCont->ownerDocument()) { // ### what about if in separate DocumentFragments?
+    if (thisCont->ownerDocument() != sourceCont->ownerDocument()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return 0;
+    }
+
+    NodeImpl *thisTop = thisCont;
+    NodeImpl *sourceTop = sourceCont;
+    while (thisTop->parentNode())
+	thisTop = thisTop->parentNode();
+    while (sourceTop->parentNode())
+	sourceTop = sourceTop->parentNode();
+    if (thisTop != sourceTop) { // in different DocumentFragments
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -381,6 +392,10 @@ void RangeImpl::deleteContents( int &exceptioncode ) {
         return;
     }
 
+    checkDeleteExtract(exceptioncode);
+    if (exceptioncode)
+	return;
+
     processContents(DELETE_CONTENTS,exceptioncode);
 }
 
@@ -444,8 +459,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             unsigned long i;
             for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
                 n = n->nextSibling();
-            NodeImpl *next = n->nextSibling();
             while (n && i < m_endOffset) { // delete until m_endOffset
+		NodeImpl *next = n->nextSibling();
                 if (action == EXTRACT_CONTENTS)
                     fragment->appendChild(n,exceptioncode); // will remove n from it's parent
                 else if (action == CLONE_CONTENTS)
@@ -453,7 +468,6 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 else
                     m_startContainer->removeChild(n,exceptioncode);
                 n = next;
-                next = next->nextSibling();
                 i++;
             }
         }
@@ -682,6 +696,10 @@ DocumentFragmentImpl *RangeImpl::extractContents( int &exceptioncode )
         return 0;
     }
 
+    checkDeleteExtract(exceptioncode);
+    if (exceptioncode)
+	return 0;
+
     return processContents(EXTRACT_CONTENTS,exceptioncode);
 }
 
@@ -705,7 +723,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
     // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
     // the Range is read-only.
     NodeImpl *n = m_startContainer;
-    while (n && !n->readOnly())
+    while (n && !n->isReadOnly())
         n = n->parentNode();
     if (n) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
@@ -713,7 +731,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
     }
 
     n = m_endContainer;
-    while (n && !n->readOnly())
+    while (n && !n->isReadOnly())
         n = n->parentNode();
     if (n) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
@@ -859,49 +877,18 @@ bool RangeImpl::isDetached() const
     return m_detached;
 }
 
-void RangeImpl::checkCommon(int &exceptioncode) const
-{
-    if( m_detached )
-        exceptioncode = DOMException::INVALID_STATE_ERR;
-}
-
-void RangeImpl::checkNode( const NodeImpl *n, int &exceptioncode ) const
-{
-    checkCommon(exceptioncode);
-    if (exceptioncode)
-        return;
-
-    if( !n ) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return;
-    }
-
-    const NodeImpl *_tempNode = n;
-    while( _tempNode )
-    {
-        if( _tempNode->nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode->nodeType() == Node::ENTITY_NODE ||
-            _tempNode->nodeType() == Node::NOTATION_NODE ||
-            _tempNode->nodeType() == Node::DOCUMENT_TYPE_NODE ) {
-            exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
-            return;
-        }
-
-        _tempNode = _tempNode->parentNode();
-    }
-}
-
 void RangeImpl::checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) const
 {
-    checkNode( n, exceptioncode );
-    if (exceptioncode)
-        return;
-
     if( offset < 0 ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
     }
 
     switch (n->nodeType()) {
+	case Node::ENTITY_NODE:
+	case Node::NOTATION_NODE:
+	case Node::DOCUMENT_TYPE_NODE:
+            exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+	    break;
         case Node::TEXT_NODE:
         case Node::COMMENT_NODE:
         case Node::CDATA_SECTION_NODE:
@@ -920,11 +907,20 @@ void RangeImpl::checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) c
     }
 }
 
-void RangeImpl::checkNodeBA( const NodeImpl *n, int &exceptioncode ) const
+void RangeImpl::checkNodeBA( NodeImpl *n, int &exceptioncode ) const
 {
-    checkNode( n, exceptioncode );
-    if (exceptioncode)
+    // INVALID_NODE_TYPE_ERR: Raised if the root container of refNode is not an
+    // Attr, Document or DocumentFragment node or if refNode is a Document,
+    // DocumentFragment, Attr, Entity, or Notation node.
+    NodeImpl *root = n;
+    while (root->parentNode())
+	root = root->parentNode();
+    if (!(root->nodeType() == Node::ATTRIBUTE_NODE ||
+          root->nodeType() == Node::DOCUMENT_NODE ||
+          root->nodeType() == Node::DOCUMENT_FRAGMENT_NODE)) {
+        exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
         return;
+    }
 
     if( n->nodeType() == Node::DOCUMENT_NODE ||
         n->nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
@@ -1123,7 +1119,7 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
     }
 
     NodeImpl *n = m_startContainer;
-    while (n && !n->readOnly())
+    while (n && !n->isReadOnly())
         n = n->parentNode();
     if (n) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
@@ -1131,7 +1127,7 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
     }
 
     n = m_endContainer;
-    while (n && !n->readOnly())
+    while (n && !n->isReadOnly())
         n = n->parentNode();
     if (n) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
@@ -1249,3 +1245,79 @@ void RangeImpl::setEndContainer(NodeImpl *_endContainer)
     if (m_endContainer)
         m_endContainer->ref();
 }
+
+void RangeImpl::checkDeleteExtract(int &exceptioncode) {
+
+    NodeImpl *start;
+    if (m_startContainer->nodeType() != Node::TEXT_NODE &&
+	m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+	m_startContainer->nodeType() != Node::COMMENT_NODE &&
+	m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+	
+	start = m_startContainer->childNode(m_startOffset);
+	if (!start) {
+	    if (m_startContainer->lastChild())
+		start = m_startContainer->lastChild()->traverseNextNode();
+	    else
+		start = m_startContainer->traverseNextNode();
+	}
+    }
+    else
+	start = m_startContainer;
+
+    NodeImpl *end;
+    if (m_endContainer->nodeType() != Node::TEXT_NODE &&
+	m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+	m_endContainer->nodeType() != Node::COMMENT_NODE &&
+	m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+	
+	end = m_endContainer->childNode(m_endOffset);
+	if (!end) {
+	    if (m_endContainer->lastChild())
+		end = m_endContainer->lastChild()->traverseNextNode();
+	    else
+		end = m_endContainer->traverseNextNode();
+	}
+    }
+    else
+	end = m_endContainer;
+
+    NodeImpl *n;
+    for (n = start; n != end; n = n->traverseNextNode()) {
+	if (n->isReadOnly()) {
+	    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	    return;
+	}
+	if (n->nodeType() == Node::DOCUMENT_TYPE_NODE) { // ### is this for only directly under the DF, or anywhere?
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return;
+	}
+    }
+
+    if (containedByReadOnly()) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+}
+
+
+bool RangeImpl::containedByReadOnly() {
+    NodeImpl *n;
+    for (n = m_startContainer; n; n = n->parentNode()) {
+	if (n->isReadOnly())
+	    return true;
+    }
+    for (n = m_endContainer; n; n = n->parentNode()) {
+	if (n->isReadOnly())
+	    return true;
+    }
+    return false;
+}
+
+
+
+
+
+
+
+

@@ -275,10 +275,11 @@ public:
      * Perform the default action for an event e.g. submitting a form
      */
     virtual void defaultEventHandler(EventImpl *evt);
-    bool readOnly() { return false; }
+    virtual bool isReadOnly() { return false; }
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
+    NodeImpl *traverseNextNode();
 
     DocumentPtr *docPtr() const { return document; }
 
@@ -330,6 +331,7 @@ public:
     virtual void setPreviousSibling(NodeImpl *);
     virtual void setNextSibling(NodeImpl *);
     virtual unsigned long nodeIndex() const;
+    virtual bool isReadOnly();
 
 protected:
     NodeImpl *_parent;

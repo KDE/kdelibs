@@ -93,12 +93,12 @@ protected:
     bool m_detached;
 
 private:
-    void checkNode( const NodeImpl *n, int &exceptioncode ) const;
     void checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) const;
-    void checkNodeBA( const NodeImpl *n, int &exceptioncode ) const;
-    void checkCommon(int &exceptioncode) const;
+    void checkNodeBA( NodeImpl *n, int &exceptioncode ) const;
     void setStartContainer(NodeImpl *_startContainer);
     void setEndContainer(NodeImpl *_endContainer);
+    void checkDeleteExtract(int &exceptioncode);
+    bool containedByReadOnly();
 };
 
 }; // namespace

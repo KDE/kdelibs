@@ -33,6 +33,9 @@
 #include <dom_string.h>
 #include <dom_exception.h>
 #include <html_misc.h>
+#include <css_stylesheet.h>
+#include <dom2_events.h>
+#include <dom2_range.h>
 
 #include "kjs_binding.h"
 #include "kjs_dom.h"
@@ -47,6 +50,8 @@ using namespace KJS;
  * The catch all (...) clauses below shouldn't be necessary.
  * But they helped to view for example www.faz.net in an stable manner.
  * Those unknown exceptions should be treated as severe bugs and be fixed.
+ *
+ * these may be CSS exceptions - need to check - pmk
  */
 
 KJSO DOMObject::get(const UString &p) const
@@ -107,11 +112,28 @@ Completion DOMFunction::execute(const List &args)
   try {
     completion = tryExecute(args);
   }
+  // pity there's no way to distinguish between these in JS code
   catch (DOM::DOMException e) {
     KJSO v = Error::create(GeneralError);
     v.put("code", Number(e.code));
     completion = Completion(Throw, v);
-  } catch (...) {
+  }
+  catch (DOM::RangeException e) {
+    KJSO v = Error::create(GeneralError);
+    v.put("code", Number(e.code));
+    completion = Completion(Throw, v);
+  }
+  catch (DOM::CSSException e) {
+    KJSO v = Error::create(GeneralError);
+    v.put("code", Number(e.code));
+    completion = Completion(Throw, v);
+  }
+  catch (DOM::EventException e) {
+    KJSO v = Error::create(GeneralError);
+    v.put("code", Number(e.code));
+    completion = Completion(Throw, v);
+  }
+  catch (...) {
     kdError(6070) << "Unknown exception in DOMFunction::execute()" << endl;
     KJSO v = Error::create(GeneralError, "Unknown exception");
     completion = Completion(Throw, v);
