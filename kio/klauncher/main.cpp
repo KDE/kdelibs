@@ -42,12 +42,12 @@ start_launcher(int socket)
    QCString cname = KApplication::launcher();
    char *name = cname.data();
    // Started via kdeinit.
-   KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.", 
+   KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.",
                        "v0.1");
    KLauncher::addCmdLineOptions();
 
    // WABA: Make sure not to enable session management.
-   putenv("SESSION_MANAGER=");
+   putenv(strdup("SESSION_MANAGER="));
 
    KLauncher launcher(socket);
 
@@ -56,7 +56,7 @@ start_launcher(int socket)
    signal( SIGTERM, sig_handler);
    signal( SIGSEGV, sig_handler);
 
-#ifdef __USE_GNU 
+#ifdef __USE_GNU
 #warning Temporary hack to get KLocale initialised
 #endif
    (void)launcher.config();

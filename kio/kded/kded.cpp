@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
      KLocale::setMainCatalogue("kdelibs");
 
      // WABA: Make sure not to enable session management.
-     putenv("SESSION_MANAGER=");
+     putenv(strdup("SESSION_MANAGER="));
 
      KInstance *instance = new KInstance(&aboutData);
      (void) instance->config(); // Enable translations.
