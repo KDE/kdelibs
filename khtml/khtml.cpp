@@ -41,6 +41,9 @@
 #include "khtmlio.h"
 #include "html_elementimpl.h"
 
+#include "html_miscimpl.h"
+#include "html_inlineimpl.h"
+
 #include "kjs.h"
 
 #define SCROLLBARWIDTH 16
@@ -1237,9 +1240,27 @@ KHTMLWidget::setUnderlineLinks( bool ul )
 }
 
 bool
-KHTMLWidget::gotoAnchor( const QString &/*_name*/ )
+KHTMLWidget::gotoAnchor( const QString &_name )
 {
-    // ### FIXME
+    printf("gotoAnchor(%s)\n", _name.latin1());
+    HTMLCollectionImpl *anchors =
+	new HTMLCollectionImpl(document, HTMLCollectionImpl::DOC_ANCHORS);
+    anchors->ref();
+    NodeImpl *n = anchors->namedItem(_name);
+
+    if(!n) return false;
+
+    printf("found anchor %p!\n", n);
+
+    int x = 0, y = 0;
+    HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(n);
+    a->getAnchorPosition(x, y);
+    printf("going to %d/%d\n", x, y);
+    ensureVisible(x, y);
+
+    anchors->deref();
+
+    return true;
 }
 
 void KHTMLWidget::findTextBegin()
