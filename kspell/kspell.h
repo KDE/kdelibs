@@ -482,7 +482,7 @@ protected:
   int dlgresult;
   int trystart;
   int maxtrystart;
-  unsigned int lastpos;
+  int lastpos;
   unsigned int totalpos;
   unsigned int lastline;
   unsigned int posinline;
