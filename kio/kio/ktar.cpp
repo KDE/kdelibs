@@ -49,8 +49,8 @@ public:
     int tarEnd;
     KTempFile* tmpFile;
     QString mimetype;
-    
-    void fillTempFile(const QString & filename);    
+
+    void fillTempFile(const QString & filename);
     void writeBackTempFile( const QString & filename );
 };
 
@@ -61,23 +61,27 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
     d = new KTarPrivate;
     d->tmpFile = 0L;
     d->mimetype = _mimetype;
-    QString mimetype( _mimetype );        
+    QString mimetype( _mimetype );
     bool forced = true;
-    if ( mimetype.isEmpty() )
+    if ( mimetype.isEmpty() ) // Find out mimetype manually
     {
-	if ( QFile::exists( filename ) )
+        if ( QFile::exists( filename ) )
             mimetype = KMimeType::findByFileContent( filename )->name();
-	else
-	    mimetype = KMimeType::findByPath( filename, 0, true )->name();
-        kdDebug(7041) << "KTar::KTar mimetype=" << mimetype << endl;
+        else
+            mimetype = KMimeType::findByPath( filename, 0, true )->name();
+        kdDebug(7041) << "KTar::KTar mimetype = " << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
         if ( mimetype == "application/x-tgz" || mimetype == "application/x-targz" || // the latter is deprecated but might still be around
              mimetype == "application/x-webarchive" )
+        {
             // that's a gzipped tar file, so ask for gzip filter
             mimetype = "application/x-gzip";
+        }
         else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
+        {
             mimetype = "application/x-bzip2";
+        }
         else
         {
             // Something else. Check if it's not really gzip though (e.g. for KOffice docs)
@@ -101,7 +105,8 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             file.close();
         }
         forced = false;
-    }
+        d->mimetype = mimetype;
+    } // END mimetype.isEmpty()
 
     prepareDevice( filename, mimetype, forced );
 }
@@ -115,22 +120,22 @@ void KTar::prepareDevice( const QString & filename,
   {
     // The compression filters are very slow with random access.
     // So instead of applying the filter to the device,
-    // the file is completly extracted instead, 
+    // the file is completly extracted instead,
     // and we work on the extracted tar file.
     // This improves the extraction speed by the tar ioslave dramatically,
     // if the archive file contains many files.
-    // This is because the tar ioslave extracts one file after the other and normally 
+    // This is because the tar ioslave extracts one file after the other and normally
     // has to walk through the decompression filter each time.
     // Which is in fact nearly as slow as a complete decompression for each file.
     d->tmpFile = new KTempFile("ktar-",".tar");
     kdDebug( 7041 ) << "KTar::prepareDevice creating TempFile: " << d->tmpFile->name() << endl;
     d->tmpFile->setAutoDelete(true);
-    
+
     // KTempFile opens the file automatically,
     // the device must be closed, however, for KArchive.setDevice()
     QFile* file = d->tmpFile->file();
     file->close();
-    setDevice(file);  
+    setDevice(file);
   }
 }
 
@@ -145,12 +150,12 @@ KTar::~KTar()
     // mjarrett: Closes to prevent ~KArchive from aborting w/o device
     if( isOpened() )
         close();
-        
-    if (d->tmpFile) 
+
+    if (d->tmpFile)
         delete d->tmpFile; // will delete the device
     else if ( !m_filename.isEmpty() )
         delete device(); // we created it ourselves
-    
+
 
     delete d;
 }
@@ -259,24 +264,26 @@ Q_LONG KTar::readHeader(char *buffer,QString &name,QString &symlink) {
   return 0x200;
 }
 
-/* 
- * If we have created a temporary file, we have 
+/*
+ * If we have created a temporary file, we have
  * to decompress the original file now and write
- * the contents to the temporary file.        
+ * the contents to the temporary file.
  */
 void KTar::KTarPrivate::fillTempFile( const QString & filename) {
     if ( ! tmpFile )
         return;
-        
-    kdDebug( 7041 ) << "KTar::openArchive: filling tmpFile ... " << endl;
-    
+
+    kdDebug( 7041 ) <<
+        "KTar::openArchive: filling tmpFile of mimetype '" << mimetype <<
+        "' ... " << endl;
+
     bool forced = false;
     if( "application/x-gzip" == mimetype
     || "application/x-bzip2" == mimetype)
         forced = true;
 
     QIODevice *filterDev = KFilterDev::deviceForFile( filename, mimetype, forced );
-    
+
     if( filterDev ) {
         QFile* file = tmpFile->file();
         file->close();
@@ -287,16 +294,18 @@ void KTar::KTarPrivate::fillTempFile( const QString & filename) {
         Q_LONG len;
         while ( ! filterDev->atEnd()) {
             len = filterDev->readBlock(buffer.data(),buffer.size());
-            file->writeBlock(buffer.data(),len);             
+            file->writeBlock(buffer.data(),len);
         }
         filterDev->close();
         delete filterDev;
-        
+
         file->close();
         file->open( IO_ReadOnly );
-    }      
-    
-    kdDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished. " << endl;
+    }
+    else
+        kdDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
+
+    kdDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished." << endl;
 }
 
 bool KTar::openArchive( int mode )
@@ -305,8 +314,8 @@ bool KTar::openArchive( int mode )
     if ( !(mode & IO_ReadOnly) )
         return true;
 
-    d->fillTempFile( m_filename );        
-    
+    d->fillTempFile( m_filename );
+
     // We'll use the permission and user/group of d->rootDir
     // for any directory we emulate (see findOrCreate)
     //struct stat buf;
@@ -461,15 +470,15 @@ bool KTar::openArchive( int mode )
 void KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     if ( ! tmpFile )
         return;
-        
+
     kdDebug(7041) << "Write temporary file to compressed file" << endl;
     kdDebug(7041) << filename << " " << mimetype << endl;
-    
+
     bool forced = false;
     if( "application/x-gzip" == mimetype
         || "application/x-bzip2" == mimetype)
         forced = true;
-        
+
 
     QIODevice *dev = KFilterDev::deviceForFile( filename, mimetype, forced );
     if( dev ) {
@@ -481,26 +490,26 @@ void KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
         Q_LONG len;
         while ( ! file->atEnd()) {
             len = file->readBlock(buffer.data(),buffer.size());
-            dev->writeBlock(buffer.data(),len);             
+            dev->writeBlock(buffer.data(),len);
         }
         file->close();
         dev->close();
         delete dev;
-    }      
-    
+    }
+
     kdDebug(7041) << "Write temporary file to compressed file done." << endl;
 }
 
 bool KTar::closeArchive()
 {
     d->dirList.clear();
-    
-    // If we are in write mode and had created 
+
+    // If we are in write mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() == IO_WriteOnly) 
+    if( mode() == IO_WriteOnly)
         d->writeBackTempFile( m_filename );
-        
+
     return true;
 }
 
@@ -694,7 +703,7 @@ void KTar::writeLonglink(char *buffer, const QCString &name, char typeflag,
     // not even needed to reclear the buffer, tar doesn't do it
     namelen -= chunksize;
     offset += 0x200;
-  }/*wend*/	
+  }/*wend*/
 }
 
 bool KTar::prepareWriting(const QString& name, const QString& user,
@@ -807,7 +816,7 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
     QCString encodedDirname = QFile::encodeName(dirName);
     QCString uname = user.local8Bit();
     QCString gname = group.local8Bit();
-    
+
     // If more than 100 chars, we need to use the LongLink trick
     if ( dirName.length() > 99 )
         writeLonglink(buffer,encodedDirname,'L',uname,gname);
