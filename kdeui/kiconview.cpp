@@ -376,6 +376,12 @@ void KIconView::takeItem( QIconViewItem * item )
     QIconView::takeItem( item );
 }
 
+void KIconView::cancelPendingHeldSignal()
+{
+    d->dragHoldTimer.stop();
+    d->dragHoldItem = 0L;
+}
+
 void KIconView::wheelEvent( QWheelEvent *e )
 {
     if (horizontalScrollBar() && (arrangement() == QIconView::TopToBottom)) {

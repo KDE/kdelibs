@@ -175,6 +175,14 @@ protected:
   virtual void contentsDropEvent( QDropEvent* e );
   virtual void wheelEvent( QWheelEvent *e );
 
+  /**
+   * This method allows to handle correctly cases where a subclass
+   * needs the held() signal to not be triggered without calling
+   * a KIconView::contentsDrag*Event() method (which have side effects
+   * because they forward to QIconView).
+   */
+  void cancelPendingHeldSignal();
+  
 private slots:
   void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
   void slotDragHoldTimeout();
