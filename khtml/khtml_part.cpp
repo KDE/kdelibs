@@ -3918,31 +3918,36 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
   if ( offers.isEmpty() )
     return 0L;
 
-  KService::Ptr service = *offers.begin();
+  KTrader::OfferList::Iterator it = offers.begin();
+  for (  ; it != offers.end() ; ++it )
+  {
+    KService::Ptr service = (*it);
 
-  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
+    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
+    if ( factory ) {
+      KParts::ReadOnlyPart *res = 0L;
 
-  if ( !factory )
-    return 0L;
+      const char *className = "KParts::ReadOnlyPart";
+      if ( service->serviceTypes().contains( "Browser/View" ) )
+        className = "Browser/View";
 
-  KParts::ReadOnlyPart *res = 0L;
+      if ( factory->inherits( "KParts::Factory" ) )
+        res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className, params ));
+      else
+        res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, className ));
 
-  const char *className = "KParts::ReadOnlyPart";
-  if ( service->serviceTypes().contains( "Browser/View" ) )
-    className = "Browser/View";
-
-  if ( factory->inherits( "KParts::Factory" ) )
-    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className, params ));
-  else
-  res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, className ));
-
-  if ( !res )
-    return res;
-
-  serviceTypes = service->serviceTypes();
-  serviceName = service->name();
-
-  return res;
+      if ( res ) {
+        serviceTypes = service->serviceTypes();
+        serviceName = service->name();
+        return res;
+      }
+    } else {
+      // TODO KMessageBox::error and i18n, like in KonqFactory::createView?
+      kdWarning() << QString("There was an error loading the module %1.\nThe diagnostics is:\n%2")
+                      .arg(service->name()).arg(KLibLoader::self()->lastErrorMessage()) << endl;
+    }
+  }
+  return 0;
 }
 
 KParts::PartManager *KHTMLPart::partManager()
