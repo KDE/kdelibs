@@ -44,17 +44,18 @@ VCard::List VCardParser::parseVCards( const QString& text )
   VCard::List vCardList;
   QString currentLine;
 
-  QStringList lines = QStringList::split( sep, text );
-  QStringList::Iterator it;
+  const QStringList lines = QStringList::split( sep, text );
+  QStringList::ConstIterator it;
 
   bool inVCard = false;
-  for ( it = lines.begin(); it != lines.end(); ++it ) {
+  QStringList::ConstIterator linesEnd( lines.end() );
+  for ( it = lines.begin(); it != linesEnd; ++it ) {
 
     if ( (*it).isEmpty() ) // empty line
       continue;
 
     if ( (*it)[ 0 ] == ' ' || (*it)[ 0 ] == '\t' ) { // folded line => append to previous
-      currentLine += (*it).remove( 0, 1 );
+      currentLine += QString( *it ).remove( 0, 1 );
       continue;
     } else {
       if ( inVCard && !currentLine.isEmpty() ) { // now parse the line
@@ -94,7 +95,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
                 pair.prepend( "type" );
               }
             }
-            //This is pretty much a faster pair[1].contains( ',' )...
+            // This is pretty much a faster pair[1].contains( ',' )...
             if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
               const QStringList args = QStringList::split( ',', pair[ 1 ] );
               QStringList::ConstIterator argIt;
@@ -161,10 +162,10 @@ QString VCardParser::createVCards( const VCard::List& list )
   QStringList values;
   QStringList::ConstIterator identIt;
   QStringList::Iterator paramIt;
-  QStringList::Iterator valueIt;
+  QStringList::ConstIterator valueIt;
 
   VCardLine::List lines;
-  VCardLine::List::Iterator lineIt;
+  VCardLine::List::ConstIterator lineIt;
   VCard::List::ConstIterator cardIt;
 
   bool hasEncoding;
@@ -172,15 +173,16 @@ QString VCardParser::createVCards( const VCard::List& list )
   text.reserve( list.size() * 300 ); // reserve memory to be more efficient
 
   // iterate over the cards
-  for ( cardIt = list.begin(); cardIt != list.end(); ++cardIt ) {
+  VCard::List::ConstIterator listEnd( list.end() );
+  for ( cardIt = list.begin(); cardIt != listEnd; ++cardIt ) {
     text.append( "BEGIN:VCARD\r\n" );
 
     idents = (*cardIt).identifiers();
-    for ( identIt = idents.begin(); identIt != idents.end(); ++identIt ) {
+    for ( identIt = idents.constBegin(); identIt != idents.constEnd(); ++identIt ) {
       lines = (*cardIt).lines( (*identIt) );
 
       // iterate over the lines
-      for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
+      for ( lineIt = lines.constBegin(); lineIt != lines.constEnd(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
           if ( (*lineIt).hasGroup() )
             textLine = (*lineIt).group() + "." + (*lineIt).identifier();
@@ -197,7 +199,7 @@ QString VCardParser::createVCards( const VCard::List& list )
               }
 
               values = (*lineIt).parameters( *paramIt );
-              for ( valueIt = values.begin(); valueIt != values.end(); ++valueIt ) {
+              for ( valueIt = values.constBegin(); valueIt != values.constEnd(); ++valueIt ) {
                 textLine.append( ";" + (*paramIt).upper() );
                 if ( !(*valueIt).isEmpty() )
                   textLine.append( "=" + (*valueIt) );

@@ -61,18 +61,20 @@ VCardTool::~VCardTool()
 {
 }
 
+// TODO: make list a const&
 QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 {
   VCard::List vCardList;
 
-  Addressee::List::Iterator addrIt;
-  for ( addrIt = list.begin(); addrIt != list.end(); ++addrIt ) {
+  Addressee::List::ConstIterator addrIt;
+  Addressee::List::ConstIterator listEnd( list.constEnd() );
+  for ( addrIt = list.constBegin(); addrIt != listEnd; ++addrIt ) {
     VCard card;
     QStringList::ConstIterator strIt;
 
     // ADR + LABEL
-    Address::List addresses = (*addrIt).addresses();
-    for ( Address::List::Iterator it = addresses.begin(); it != addresses.end(); ++it ) {
+    const Address::List addresses = (*addrIt).addresses();
+    for ( Address::List::ConstIterator it = addresses.begin(); it != addresses.end(); ++it ) {
       QStringList address;
 
       bool isEmpty = ( (*it).postOfficeBox().isEmpty() &&
@@ -104,8 +106,8 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       }
 
       bool hasLabel = !(*it).label().isEmpty();
-      QMap<QString, int>::Iterator typeIt;
-      for ( typeIt = mAddressTypeMap.begin(); typeIt != mAddressTypeMap.end(); ++typeIt ) {
+      QMap<QString, int>::ConstIterator typeIt;
+      for ( typeIt = mAddressTypeMap.constBegin(); typeIt != mAddressTypeMap.constEnd(); ++typeIt ) {
         if ( typeIt.data() & (*it).type() ) {
           adrLine.addParameter( "TYPE", typeIt.key() );
           if ( hasLabel )
@@ -147,7 +149,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     }
 
     // EMAIL
-    QStringList emails = (*addrIt).emails();
+    const QStringList emails = (*addrIt).emails();
     bool pref = true;
     for ( strIt = emails.begin(); strIt != emails.end(); ++strIt ) {
       VCardLine line( "EMAIL", *strIt );
@@ -179,7 +181,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     }
 
     // KEY
-    Key::List keys = (*addrIt).keys();
+    const Key::List keys = (*addrIt).keys();
     Key::List::ConstIterator keyIt;
     for ( keyIt = keys.begin(); keyIt != keys.end(); ++keyIt )
       card.addLine( createKey( *keyIt ) );
@@ -264,13 +266,13 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     card.addLine( createSound( (*addrIt).sound() ) );
 
     // TEL
-    PhoneNumber::List phoneNumbers = (*addrIt).phoneNumbers();
+    const PhoneNumber::List phoneNumbers = (*addrIt).phoneNumbers();
     PhoneNumber::List::ConstIterator phoneIt;
     for ( phoneIt = phoneNumbers.begin(); phoneIt != phoneNumbers.end(); ++phoneIt ) {
       VCardLine line( "TEL", (*phoneIt).number() );
 
-      QMap<QString, int>::Iterator typeIt;
-      for ( typeIt = mPhoneTypeMap.begin(); typeIt != mPhoneTypeMap.end(); ++typeIt ) {
+      QMap<QString, int>::ConstIterator typeIt;
+      for ( typeIt = mPhoneTypeMap.constBegin(); typeIt != mPhoneTypeMap.constEnd(); ++typeIt ) {
         if ( typeIt.data() & (*phoneIt).type() )
           line.addParameter( "TYPE", typeIt.key() );
       }
@@ -315,7 +317,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       card.addLine( VCardLine( "VERSION", "3.0" ) );
 
     // X-
-    QStringList customs = (*addrIt).customs();
+    const QStringList customs = (*addrIt).customs();
     for ( strIt = customs.begin(); strIt != customs.end(); ++strIt ) {
       QString identifier = "X-" + (*strIt).left( (*strIt).find( ":" ) );
       QString value = (*strIt).mid( (*strIt).find( ":" ) + 1 );
@@ -343,15 +345,19 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
   QString identifier;
 
   Addressee::List addrList;
-  VCard::List vCardList = VCardParser::parseVCards( vcard );
-  VCard::List::Iterator cardIt;
-  for ( cardIt = vCardList.begin(); cardIt != vCardList.end(); ++cardIt ) {
+  const VCard::List vCardList = VCardParser::parseVCards( vcard );
+
+  VCard::List::ConstIterator cardIt;
+  VCard::List::ConstIterator listEnd( vCardList.end() );
+  for ( cardIt = vCardList.begin(); cardIt != listEnd; ++cardIt ) {
     Addressee addr;
-    QStringList idents = (*cardIt).identifiers();
+
+    const QStringList idents = (*cardIt).identifiers();
     QStringList::ConstIterator identIt;
-    for ( identIt = idents.begin(); identIt != idents.end(); ++identIt ) {
-      VCardLine::List lines = (*cardIt).lines( (*identIt) );
-      VCardLine::List::Iterator lineIt;
+    QStringList::ConstIterator identEnd( idents.end() );
+    for ( identIt = idents.begin(); identIt != identEnd; ++identIt ) {
+      const VCardLine::List lines = (*cardIt).lines( (*identIt) );
+      VCardLine::List::ConstIterator lineIt;
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
@@ -359,7 +365,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // ADR
         if ( identifier == "adr" ) {
           Address address;
-          QStringList addrParts = splitString( semicolonSep, (*lineIt).value().asString() );
+          const QStringList addrParts = splitString( semicolonSep, (*lineIt).value().asString() );
           if ( addrParts.count() > 0 )
             address.setPostOfficeBox( addrParts[ 0 ] );
           if ( addrParts.count() > 1 )
@@ -377,8 +383,8 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           int type = 0;
 
-          QStringList types = (*lineIt).parameters( "type" );
-          for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+          const QStringList types = (*lineIt).parameters( "type" );
+          for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
             type += mAddressTypeMap[ (*it).lower() ];
 
           address.setType( type );
@@ -395,7 +401,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // CATEGORIES
         else if ( identifier == "categories" ) {
-          QStringList categories = splitString( commaSep, (*lineIt).value().asString() );
+          const QStringList categories = splitString( commaSep, (*lineIt).value().asString() );
           addr.setCategories( categories );
         }
 
@@ -405,7 +411,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // EMAIL
         else if ( identifier == "email" ) {
-          QStringList types = (*lineIt).parameters( "type" );
+          const QStringList types = (*lineIt).parameters( "type" );
           addr.insertEmail( (*lineIt).value().asString(), types.findIndex( "PREF" ) != -1 );
         }
 
@@ -417,7 +423,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         else if ( identifier == "geo" ) {
           Geo geo;
 
-          QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
+          const QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
           geo.setLatitude( geoParts[ 0 ].toFloat() );
           geo.setLongitude( geoParts[ 1 ].toFloat() );
 
@@ -432,8 +438,8 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         else if ( identifier == "label" ) {
           int type = 0;
 
-          QStringList types = (*lineIt).parameters( "type" );
-          for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+          const QStringList types = (*lineIt).parameters( "type" );
+          for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
             type += mAddressTypeMap[ (*it).lower() ];
 
           bool available = false;
@@ -465,7 +471,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // N
         else if ( identifier == "n" ) {
-          QStringList nameParts = splitString( semicolonSep, (*lineIt).value().asString() );
+          const QStringList nameParts = splitString( semicolonSep, (*lineIt).value().asString() );
           if ( nameParts.count() > 0 )
             addr.setFamilyName( nameParts[ 0 ] );
           if ( nameParts.count() > 1 )
@@ -525,8 +531,8 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           int type = 0;
 
-          QStringList types = (*lineIt).parameters( "type" );
-          for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
+          const QStringList types = (*lineIt).parameters( "type" );
+          for ( QStringList::ConstIterator it = types.begin(); it != types.end(); ++it )
             type += mPhoneTypeMap[(*it).upper()];
 
           phone.setType( type );
@@ -541,7 +547,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // TZ
         else if ( identifier == "tz" ) {
           TimeZone tz;
-          QString date = (*lineIt).value().asString();
+          const QString date = (*lineIt).value().asString();
 
           int hours = date.mid( 1, 2).toInt();
           int minutes = date.mid( 4, 2 ).toInt();
@@ -562,7 +568,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // X-
         else if ( identifier.startsWith( "x-" ) ) {
-          QString key = (*lineIt).identifier().mid( 2 );
+          const QString key = (*lineIt).identifier().mid( 2 );
           int dash = key.find( "-" );
           addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().asString() );
         }
@@ -621,7 +627,7 @@ Picture VCardTool::parsePicture( const VCardLine &line )
 {
   Picture pic;
 
-  QStringList params = line.parameterList();
+  const QStringList params = line.parameterList();
   if ( params.findIndex( "encoding" ) != -1 ) {
     QImage img;
     img.loadFromData( line.value().asByteArray() );
@@ -663,7 +669,7 @@ Sound VCardTool::parseSound( const VCardLine &line )
 {
   Sound snd;
 
-  QStringList params = line.parameterList();
+  const QStringList params = line.parameterList();
   if ( params.findIndex( "encoding" ) != -1 )
     snd.setData( line.value().asByteArray() );
   else if ( params.findIndex( "value" ) != -1 ) {
@@ -701,7 +707,7 @@ Key VCardTool::parseKey( const VCardLine &line )
 {
   Key key;
 
-  QStringList params = line.parameterList();
+  const QStringList params = line.parameterList();
   if ( params.findIndex( "encoding" ) != -1 )
     key.setBinaryData( line.value().asByteArray() );
   else
@@ -777,7 +783,7 @@ Agent VCardTool::parseAgent( const VCardLine &line )
 {
   Agent agent;
 
-  QStringList params = line.parameterList();
+  const QStringList params = line.parameterList();
   if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).lower() == "uri" )
       agent.setUrl( line.value().asString() );
@@ -789,7 +795,7 @@ Agent VCardTool::parseAgent( const VCardLine &line )
     str.replace( "\\:", ":" );
     str.replace( "\\,", "," );
 
-    Addressee::List list = parseVCards( str );
+    const Addressee::List list = parseVCards( str );
     if ( list.count() > 0 ) {
       Addressee *addr = new Addressee;
       *addr = list[ 0 ];

@@ -57,6 +57,7 @@ VCardLine::VCardLine( const VCardLine& line )
 VCardLine::~VCardLine()
 {
   delete d;
+  d = 0;
 }
 
 VCardLine& VCardLine::operator=( const VCardLine& line )

@@ -89,7 +89,7 @@ void VCard::setVersion( Version version )
   line.setIdentifier( "VERSION" );
   if ( version == v2_1 )
     line.setIdentifier( "2.1" );
-  if ( version == v3_0 )
+  else if ( version == v3_0 )
     line.setIdentifier( "3.0" );
 
   mLineMap[ "VERSION" ].append( line );
