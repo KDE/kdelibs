@@ -1,4 +1,9 @@
-/*
+/* This file is part of the KDE project
+ * Copyright (C) The GNU Project Team,
+ *               Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
+
+ * Original taken from the GNU Project <netinet/in.h> file.
+
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
  *		interface as the means of communication with the user level.
@@ -6,9 +11,6 @@
  *		Definitions of the Internet Protocol.
  *
  * Version:	@(#)in.h	1.0.1	04/21/93
- *
- * Authors:	Original taken from the GNU Project <netinet/in.h> file.
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License

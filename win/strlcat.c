@@ -1,4 +1,4 @@
-/*
+/* This file is part of the KDE project
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
  * All rights reserved.
  *

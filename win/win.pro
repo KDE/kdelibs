@@ -44,7 +44,8 @@ win32_utils2.cpp \
 kde_file_win.c \
 mmap.c \
 getenv.c \
-bootstrap.cpp \
-mkdir.c
+bootstrap.cpp
+
+#mkdir.c
 
 

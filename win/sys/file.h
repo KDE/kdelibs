@@ -1,15 +1,20 @@
-/* This is file FILE.H */
-/*
-** Copyright (C) 1991 DJ Delorie, 24 Kirsten Ave, Rochester NH 03867-2954
-**
-** This file is distributed under the terms listed in the document
-** "copying.dj", available from DJ Delorie at the address above.
-** A copy of "copying.dj" should accompany this file; if not, a copy
-** should be available from where this file was obtained.  This file
-** may not be distributed without a verbatim copy of "copying.dj".
-**
-** This file is distributed WITHOUT ANY WARRANTY; without even the implied
-** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+/* This file is part of the KDE project
+   Copyright (C) 2003 Jaroslaw Staniek <js@iidea.pl>
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this program; see the file COPYING.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef _FILE_H_

@@ -1,7 +1,7 @@
 /* This file is part of the KDE project
+   Copyright (C) 2000 Werner Almesberger
 
    libc/sys/linux/sys/dirent.h - Directory entry as returned by readdir
-   Written 2000 by Werner Almesberger
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
