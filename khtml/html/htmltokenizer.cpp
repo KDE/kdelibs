@@ -920,7 +920,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #ifdef TOKEN_DEBUG
                     kdDebug( 6036 ) << "bad HTML in parseTag: Value" << endl;
 #endif
-                    ++src;
                     tquote = NoQuote;
                 }
                 // if discard==NoneDiscard at this point, it means
