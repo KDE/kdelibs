@@ -872,9 +872,9 @@ QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomEl
   {
     QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ).utf8());
 
-    QString text = i18n(element.namedItem( "text" ).toElement().text().latin1());
+    QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
     if (text.isEmpty())  // try with capital T
-      text = i18n(element.namedItem( "Text" ).toElement().text().latin1());
+      text = i18n(element.namedItem( "Text" ).toElement().text().utf8());
     if (text.isEmpty())  // still no luck
       text = i18n("No text!");
 
