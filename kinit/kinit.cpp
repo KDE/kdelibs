@@ -100,6 +100,7 @@ static Display *X11_startup_notify_display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
+static char sock_file_old[MAX_SOCK_FILE];
 
 //#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
@@ -120,6 +121,7 @@ static struct {
   int deadpipe[2]; /* pipe used to detect dead children */
   int initpipe[2];
   int wrapper; /* socket for wrapper communication */
+  int wrapper_old; /* old socket for wrapper communication */
   char result;
   int exit_status;
   pid_t fork;
@@ -185,6 +187,11 @@ static void close_fds()
    {
       close(d.wrapper);
       d.wrapper = 0;
+   }
+   if (d.wrapper_old)
+   {
+      close(d.wrapper_old);
+      d.wrapper_old = 0;
    }
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
@@ -748,6 +755,7 @@ static void init_signals()
 static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
+  struct sockaddr_un sa_old;
   socklen_t socklen;
   long options;
   const char *home_dir = getenv("HOME");
@@ -825,6 +833,7 @@ static void init_kdeinit_socket()
 
   /** Delete any stale socket file (and symlink) **/
   unlink(sock_file);
+  unlink(sock_file_old);
 
   /** create socket **/
   d.wrapper = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -884,6 +893,70 @@ static void init_kdeinit_socket()
      unlink(sock_file);
      close(d.wrapper);
      exit(255);
+  }
+
+  /** create compatibility socket **/
+  d.wrapper_old = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (d.wrapper_old < 0)
+  {
+     // perror("kdeinit: Aborting. socket() failed: ");
+     return;
+  }
+
+  options = fcntl(d.wrapper_old, F_GETFL);
+  if (options == -1)
+  {
+     // perror("kdeinit: Aborting. Can't make socket non-blocking: ");
+     close(d.wrapper_old);
+     d.wrapper_old = 0;
+     return;
+  }
+
+  if (fcntl(d.wrapper_old, F_SETFL, options | O_NONBLOCK) == -1)
+  {
+     // perror("kdeinit: Aborting. Can't make socket non-blocking: ");
+     close(d.wrapper_old);
+     d.wrapper_old = 0;
+     return;
+  }
+
+  max_tries = 10;
+  while (1) {
+      /** bind it **/
+      socklen = sizeof(sa_old);
+      memset(&sa_old, 0, socklen);
+      sa_old.sun_family = AF_UNIX;
+      strcpy(sa_old.sun_path, sock_file_old);
+      if(bind(d.wrapper_old, (struct sockaddr *)&sa_old, socklen) != 0)
+      {
+          if (max_tries == 0) {
+	      // perror("kdeinit: Aborting. bind() failed: ");
+	      fprintf(stderr, "Could not bind to socket '%s'\n", sock_file_old);
+	      close(d.wrapper_old);
+	      d.wrapper_old = 0;
+	      return;
+	  }
+	  max_tries--;
+      } else
+          break;
+  }
+
+  /** set permissions **/
+  if (chmod(sock_file_old, 0600) != 0)
+  {
+     fprintf(stderr, "Wrong permissions of socket '%s'\n", sock_file);
+     unlink(sock_file_old);
+     close(d.wrapper_old);
+     d.wrapper_old = 0;
+     return;
+  }
+
+  if(listen(d.wrapper_old, SOMAXCONN) < 0)
+  {
+     // perror("kdeinit: Aborting. listen() failed: ");
+     unlink(sock_file_old);
+     close(d.wrapper_old);
+     d.wrapper_old = 0;
   }
 }
 
@@ -1176,6 +1249,8 @@ static void handle_launcher_request(int sock = -1)
 static void handle_requests(pid_t waitForPid)
 {
    int max_sock = d.wrapper;
+   if (d.wrapper_old > max_sock)
+      max_sock = d.wrapper_old;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
       max_sock = d.launcher[0];
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
@@ -1233,6 +1308,10 @@ static void handle_requests(pid_t waitForPid)
          FD_SET(d.launcher[0], &rd_set);
       }
       FD_SET(d.wrapper, &rd_set);
+      if (d.wrapper_old)
+      {
+         FD_SET(d.wrapper_old, &rd_set);
+      }
       FD_SET(d.deadpipe[0], &rd_set);
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
@@ -1247,6 +1326,22 @@ static void handle_requests(pid_t waitForPid)
          struct sockaddr_un client;
          socklen_t sClient = sizeof(client);
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
+         if (sock >= 0)
+         {
+            if (fork() == 0)
+            {
+                close_fds();
+                handle_launcher_request(sock);
+                exit(255); /* Terminate process. */
+            }
+            close(sock);
+         }
+      }
+      if ((result > 0) && (FD_ISSET(d.wrapper_old, &rd_set)))
+      {
+         struct sockaddr_un client;
+         socklen_t sClient = sizeof(client);
+         int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
             if (fork() == 0)
@@ -1349,6 +1444,16 @@ static void kdeinit_library_path()
      fprintf(stderr, "         '%s'\n", socketName.data());
      exit(255);
    }
+   strcpy(sock_file_old, socketName.data());
+
+   display.replace(":","_");
+   socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit_%1").arg(display), s_instance));
+   if (socketName.length() >= MAX_SOCK_FILE)
+   {
+     fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");
+     fprintf(stderr, "         '%s'\n", socketName.data());
+     exit(255);
+   }
    strcpy(sock_file, socketName.data());
 }
 
@@ -1363,6 +1468,11 @@ int kdeinit_xio_errhandler( Display *disp )
     {
       /** Delete any stale socket file **/
       unlink(sock_file);
+    }
+    if (sock_file_old[0])
+    {
+      /** Delete any stale socket file **/
+      unlink(sock_file_old);
     }
 
     // Don't kill our children in suicide mode, they may still be in use
@@ -1568,6 +1678,7 @@ int main(int argc, char **argv, char **envp)
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
    d.wrapper = 0;
+   d.wrapper_old = 0;
    d.debug_wait = false;
    d.launcher_ok = false;
    d.lt_dlopen_flag = lt_dlopen_flag;

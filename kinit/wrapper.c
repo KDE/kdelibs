@@ -47,6 +47,7 @@ static char *getDisplay()
    char *result;
    char *screen;
    char *colon;
+   char *i;
 /*
  don't test for a value from qglobal.h but instead distinguish
  Qt/X11 from Qt/Embedded by the fact that Qt/E apps have -DQWS
@@ -72,6 +73,8 @@ static char *getDisplay()
    colon = strrchr(result, ':');
    if (screen && (screen > colon))
       *screen = '\0';
+   while((i = strchr(result, ':')))
+     *i = '_';
    return result;
 }
 
@@ -178,12 +181,12 @@ static int openSocket()
      return -1;
   }
 
-  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit-")+2 > MAX_SOCK_FILE)
+  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit_")+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Warning: Socket name will be too long.\n");
      return -1;
   }
-  strcat(sock_file, "/kdeinit-");
+  strcat(sock_file, "/kdeinit_");
   strcat(sock_file, display);
   free(display);
 
