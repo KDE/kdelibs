@@ -39,7 +39,7 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   KService::Ptr sptr = KService::serviceByStorageId(desktopFile);
   if ( !sptr )
   {
-    kdWarning() << i18n("Could not find the service '%1'").arg( desktopFile ) << endl;
+    kdWarning() << QString("Could not find the service '%1'").arg( desktopFile ) << endl;
     return;
   }
   init( sptr );
