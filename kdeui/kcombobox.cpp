@@ -521,7 +521,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
 	
 	if ( !items.isEmpty() ) {
 	    d->completionBox->insertStringList( items );
-	    d->completionBox->popup( this );
+	    d->completionBox->popup();
 	    setFocus(); // let the user keep on typing
 	}
 	else
@@ -696,7 +696,8 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 		}
 		
 		myIterateIndex = -1;
-		setEditText( myText );
+		if ( currentText() != myText )
+		    setEditText( myText );
 	    }
 	}
 	else

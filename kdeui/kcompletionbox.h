@@ -61,6 +61,8 @@ public:
      */
     ~KCompletionBox();
 
+    virtual QSize sizeHint() const;
+
 public slots:
     /**
      * @returns a list of all items currently in the box.
@@ -68,15 +70,17 @@ public slots:
     QStringList items() const;
 
     /**
-     * Adjusts the size of the box to fit the width of @p relativeWidget
-     * and pops it up at the most appropriate place, relative to
-     * @p relativeWidget. Depending on the screensize and the position of
-     * relativeWidget, this may be a different place, however the default is
-     * to pop it up and the lower left corner of relativeWidget.
+     * Adjusts the size of the box to fit the width of the parent given in the
+     * constructor and pops it up at the most appropriate place, relative to
+     * the parent.
+     *
+     * Depending on the screensize and the position of the parent, this may
+     * be a different place, however the default is to pop it up and the 
+     * lower left corner of the parent.
      *
      * Make sure to hide() the box when appropriate.
      */
-    virtual void popup( QWidget *relativeWidget );
+    virtual void popup();
 
 signals:
     /**

@@ -84,10 +84,12 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 	}
 	return KListBox::eventFilter( o, e );
     }
-    
+
     switch( type ) {
     case QEvent::Show:
 	qApp->installEventFilter( this );
+	move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+	resize( sizeHint() );
 	break;
     case QEvent::Hide:
 	qApp->removeEventFilter( this );
@@ -114,23 +116,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 }
 
 
-void KCompletionBox::popup( QWidget *relativeWidget )
+void KCompletionBox::popup()
 {
     if ( count() == 0 ) {
 	hide();
 	return;
     }
 
-    QSize s = sizeHint();
-    int ih = itemHeight();
-    int h = QMIN( 10 * ih, (int) count() * ih ) +1;
-    h = QMAX( h, minimumSizeHint().height() );
-    
-    resize( QMAX(s.width(), relativeWidget->width()), h );
-    move( relativeWidget->mapToGlobal( QPoint(0, relativeWidget->height())) );
-
     ensureCurrentVisible();
-    
+
     raise();
     show();
     releaseKeyboard();
@@ -141,6 +135,16 @@ void KCompletionBox::revertFocus()
     m_parent->setActiveWindow();
     m_parent->setFocus();
     setSelected( 0, false );
+}
+
+QSize KCompletionBox::sizeHint() const
+{
+    int ih = itemHeight();
+    int h = QMIN( 10 * ih, (int) count() * ih ) +1;
+    h = QMAX( h, KListBox::minimumSizeHint().height() );
+
+    int w = QMAX( KListBox::sizeHint().width(), m_parent->width() );
+    return QSize( w, h );
 }
 
 #include "kcompletionbox.moc"
