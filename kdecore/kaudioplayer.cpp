@@ -30,7 +30,8 @@ public:
 	KAudioPlayerPrivate(QString filename) : filename(filename) { };
 };
 
-KAudioPlayer::KAudioPlayer(QString filename)
+KAudioPlayer::KAudioPlayer( const QString& filename,
+			QObject* parent, const char* name ) : QObject(parent,name)
 {
 	d = new KAudioPlayerPrivate(filename);
 }
