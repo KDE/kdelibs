@@ -401,9 +401,7 @@ public:
      */
     static void queuedMessageBox( QWidget *parent,
                     int type, const QString &text,
-                    const QString &caption = QString::null,
-                    const QString &buttonYes = QString::null,
-                    const QString &buttonNo = QString::null );
+                    const QString &caption = QString::null );
 
 };
 

@@ -442,9 +442,9 @@ int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, con
     return KMessageBox::Cancel;
 }
 
-void KMessageBox::queuedMessageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+void KMessageBox::queuedMessageBox( QWidget *parent, int type, const QString &text, const QString &caption )
 {
    KMessageBox_queue = true;
-   (void) messageBox(parent, type, text, caption, buttonYes, buttonNo);
+   (void) messageBox(parent, type, text, caption);
    KMessageBox_queue = false;
 }
