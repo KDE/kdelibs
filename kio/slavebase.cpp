@@ -290,6 +290,8 @@ void SlaveBase::errorPage()
 
 void SlaveBase::mimeType( const QString &_type)
 {
+  if (!mOutgoingMetaData.isEmpty())
+     sendMetaData();
   int cmd;
   do
   {
