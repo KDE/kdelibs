@@ -841,7 +841,7 @@ bool HTTPProtocol::http_open()
 
   if ( config()->readBoolEntry("SendUserAgent", true) )
   {
-    QString agent = config()->readEntry("UserAgent");
+    QString agent = metaData("UserAgent");
 
     if( agent.isEmpty() )
       agent = KProtocolManager::defaultUserAgent(
@@ -3457,15 +3457,13 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
     passwd = m_state.passwd.latin1();
   }
 
-  if ( !user.isEmpty() )
-  {
-    if( !passwd.isEmpty() )
-      user += ':' + passwd;
-    auth += KCodecs::base64Encode(user);
-  }
-  else
-    auth = QString::null;
+  if ( user.isEmpty() )
+    user = "";
+  if ( passwd.isEmpty() )
+    passwd = "";
 
+  user += ':' + passwd;
+  auth += KCodecs::base64Encode( user );
   return auth;
 }
 
