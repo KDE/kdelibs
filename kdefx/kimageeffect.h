@@ -97,7 +97,7 @@ public:
 
     /**
      * Blends a color into the destination image, using an opacity
-     * value for blending one into another. Very fast direct pixel 
+     * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
      * @author Karol Szwed (gallium@kde.org)
@@ -111,7 +111,7 @@ public:
 
     /**
      * Blend the src image into the destination image, using an opacity
-     * value for blending one into another. Very fast direct pixel 
+     * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
      * @author Karol Szwed (gallium@kde.org)
@@ -135,6 +135,7 @@ public:
      * @param eff lets you choose what kind of blending you like
      * @param anti_dir blend in the opposite direction (makes no much sense
      *                  with concentric blending effects)
+     * @param image must be 32bpp
      */
     static QImage& blend(QImage &image, float initial_intensity,
                       const QColor &bgnd, GradientType eff,

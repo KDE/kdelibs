@@ -141,7 +141,11 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 			  const QColor &bgnd, GradientType eff,
 			  bool anti_dir, int ncols)
 {
+
     QImage image = pixmap.convertToImage();
+    if (image.depth() <=8)
+        image = image.convertDepth(32); //Sloww..
+
     KImageEffect::blend(image, initial_intensity, bgnd,
                   (KImageEffect::GradientType) eff, anti_dir);
 
