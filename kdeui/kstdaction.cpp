@@ -789,7 +789,7 @@ KAction *KStdAction::saveOptions(const QObject *recvr, const char *slot,
 KAction *KStdAction::keyBindings(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("Configure &Key Bindings..."), 0, recvr, slot,
+    return new KAction(i18n("Configure &Key Bindings..."), "key_bindings", 0, recvr, slot,
                        parent, name ? name : stdName(KeyBindings));
 }
 
@@ -807,7 +807,7 @@ KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
 KAction *KStdAction::configureToolbars(const QObject *recvr, const char *slot,
                                        QObject *parent, const char *name )
 {
-    return new KAction(i18n("Configure Tool&bars..."), 0, recvr,
+    return new KAction(i18n("Configure Tool&bars..."), "style", 0, recvr,
                        slot, parent, name ? name : stdName(ConfigureToolbars));
 }
 
