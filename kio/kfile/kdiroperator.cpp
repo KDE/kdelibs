@@ -833,7 +833,7 @@ void KDirOperator::setView( KFile::FileView view )
 
         dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
     }
-    
+
     d->restorePreview = m_viewKind;
     setView( new_view );
 }
@@ -1122,8 +1122,8 @@ void KDirOperator::setupActions()
                                                      "thumbnail", 0,
                                                      myActionCollection,
                                                      "preview" );
-    connect( previewAction, SIGNAL(activated()),
-             SLOT( togglePreview()));
+    connect( previewAction, SIGNAL( toggled( bool )),
+             SLOT( togglePreview( bool )));
 
 
     QString combiView = QString::fromLatin1("combiview");
@@ -1473,12 +1473,12 @@ bool KDirOperator::isReadable( const KURL& url )
     return readable;
 }
 
-void KDirOperator::togglePreview()
+void KDirOperator::togglePreview( bool on )
 {
-    if ( ((KToggleAction*)myActionCollection->action("preview"))->isChecked())
+    if ( on )
         slotDefaultPreview();
     else
-        setView( (KFile::FileView) (d->restorePreview & 
+        setView( (KFile::FileView) (d->restorePreview &
                                     ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
 
