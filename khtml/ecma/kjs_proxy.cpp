@@ -36,20 +36,24 @@
 
 using namespace KJS;
 
-  // initialize HTML module
-  KJSProxy *kjs_html_init(KHTMLPart *khtml)
-  {
-    KJScript *script = kjs_create(khtml);
+extern "C" {
+  KJSProxy *kjs_html_init(KHTMLPart *khtml);
+}
 
-    // this is somewhat ugly. But the only way I found to control the
-    // dlopen'ed interpreter (*no* linking!) were callback functions.
-    KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
-				   &kjs_event, &kjs_mask,
-				   &kjs_special, &kjs_destroy);
-    proxy->khtml = khtml;
+// initialize HTML module
+KJSProxy *kjs_html_init(KHTMLPart *khtml)
+{
+  KJScript *script = kjs_create(khtml);
 
-    return proxy;
-  }
+  // proxy class operating via callback functions
+  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
+				 &kjs_event, &kjs_mask,
+	  			 &kjs_special, &kjs_destroy);
+  proxy->khtml = khtml;
+
+  return proxy;
+}
+
   // init the interpreter
   KJScript* kjs_create(KHTMLPart *khtml)
   {
