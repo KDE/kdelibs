@@ -415,6 +415,8 @@ int KAction::plug( QWidget *w, int index )
       bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), d->m_enabled, d->m_plainText,
                          index, instance );
+      
+      bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
     }
 
     QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
