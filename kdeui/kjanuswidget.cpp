@@ -540,14 +540,16 @@ bool KJanusWidget::slotShowPage()
     if( node == 0 ) { return( false ); }
 
     QWidget *stackItem = mTreeListToPageStack[node];
-    return showPage(stackItem);
+    // Make sure to call through the virtual function showPage(int)
+    return showPage(pageIndex(stackItem)); 
   }
   else if( mFace == IconList )
   {
     QListBoxItem *node = mIconList->item( mIconList->currentItem() );
     if( node == 0 ) { return( false ); }
     QWidget *stackItem = mIconListToPageStack[node];
-    return showPage(stackItem);
+    // Make sure to call through the virtual function showPage(int)
+    return showPage(pageIndex(stackItem)); 
   }
 
   return( false );
