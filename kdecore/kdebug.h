@@ -108,16 +108,12 @@ class kdbgstream {
 	return *this;
     }
     kdbgstream &operator<<(const QCString& string) {
-      *this << string.data();
-      return *this;
+        *this << string.data();
+        return *this;
     }
     kdbgstream& operator<<(const void * p) {
-    form("%p", p);
-    return *this;
-    }
-    kdbgstream& operator<<(void * p) { // ### remove for KDE3
-	form("%p", p);
-	return *this;
+        form("%p", p);
+        return *this;
     }
     kdbgstream& operator<<(KDBGFUNC f) {
 	if (!print) return *this;
@@ -172,8 +168,10 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
 
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
+QString kdBacktrace();
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
+inline QString kndBacktrace() { return QString::null; }
 
 kdbgstream kdWarning(int area = 0);
 kdbgstream kdWarning(bool cond, int area = 0);
@@ -184,6 +182,7 @@ kdbgstream kdFatal(bool cond, int area = 0);
 
 #ifdef NDEBUG
 #define kdDebug kndDebug
+#define kdBacktrace kndBacktrace
 #endif
 
 #endif
