@@ -68,7 +68,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 template class QList<KHttpCookie>;
 template class QDict<KHttpCookieList>;
 
-static QString adviceToStr(KCookieAdvice _advice)
+QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
     switch( _advice )
     {
@@ -79,7 +79,7 @@ static QString adviceToStr(KCookieAdvice _advice)
     }
 }
 
-static KCookieAdvice strToAdvice(const QString &_str)
+KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
 {
     if (_str.isEmpty())
         return KCookieDunno;

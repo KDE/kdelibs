@@ -286,6 +286,9 @@ public:
      */
     static bool extractDomains(const QString &_fqdn,
                                QStringList &_domainList);
+                               
+    static QString adviceToStr(KCookieAdvice _advice);
+    static KCookieAdvice strToAdvice(const QString &_str);                               
 
     // Save this in the config file...
     int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies

@@ -291,6 +291,44 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
         replyType = "void";
         return true;
     }
+    else if (fun == "setDomainAdvice(QString,QString)")
+    {
+        QString url, advice;
+        QDataStream stream(data, IO_ReadOnly);
+        stream >> url >> advice;
+
+        QString fqdn;
+        QString dummy;
+        if (KCookieJar::parseURL(url, fqdn, dummy))
+        {
+           QStringList domains;
+           KCookieJar::extractDomains(fqdn, domains);
+           mCookieJar->setDomainAdvice(domains[0], 
+                                       KCookieJar::strToAdvice(advice));
+        }
+        replyType = "void";
+        return true;
+    }
+    else if (fun == "getDomainAdvice(QString)")
+    {
+        QString url;
+        QDataStream stream(data, IO_ReadOnly);
+        stream >> url;
+
+        KCookieAdvice advice = KCookieDunno;
+        QString fqdn;
+        QString dummy;
+        if (KCookieJar::parseURL(url, fqdn, dummy))
+        {
+           QStringList domains;
+           KCookieJar::extractDomains(fqdn, domains);
+           advice = mCookieJar->getDomainAdvice(domains[0]);
+        }
+        QDataStream stream2(replyData, IO_WriteOnly);
+        stream2 << KCookieJar::adviceToStr(advice); 
+        replyType = "QString";
+        return true;
+    }
     else if (fun == "reloadPolicy" )
     {
         mCookieJar->loadConfig( kapp->config(), true );
