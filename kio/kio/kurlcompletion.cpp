@@ -144,6 +144,7 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 	else
 	{
 		KURL base = KURL::fromPathOrURL( cwd );
+		base.adjustPath(+1);
 		m_kurl = new KURL( base, url_copy );
 	}
 
@@ -328,9 +329,8 @@ bool KURLCompletion::DirLister::listBatch()
 		// A trick from KIO that helps performance by a little bit:
 		// chdir to the directroy so we won't have to deal with full paths
 		// with stat()
-		char path_buffer[PATH_MAX];
-		::getcwd(path_buffer, PATH_MAX - 1);
-		::chdir( QFile::encodeName( m_dir_list[m_current] ) );
+		QString path = QDir::currentDirPath();
+		QDir::setCurrent( m_dir_list[m_current] );
 
 		struct dirent *ep;
 		int cnt = 0;
@@ -389,7 +389,7 @@ bool KURLCompletion::DirLister::listBatch()
 		}
 
 		// chdir to the original directory
-		::chdir( path_buffer );
+		QDir::setCurrent( path );
 
 		if ( time_out ) {
 			return false; // not done
@@ -1329,7 +1329,10 @@ void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) cons
 
 QString KURLCompletion::replacedPath( const QString& text )
 {
-	MyURL url( text, d->cwd );
+	if ( text.isEmpty() )
+		return text;
+    
+	MyURL url( text, QString::null ); // no need to replace something of our current cwd
 	if ( !url.kurl()->isLocalFile() )
 		return text;
 
