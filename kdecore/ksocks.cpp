@@ -429,7 +429,7 @@ int KSocks::connect (int sockfd, const sockaddr *serv_addr,
                                                    ksocklen_t addrlen) {
   if (_useSocks && F_connect)
     return (*F_connect)(sockfd, serv_addr, addrlen);
-  else return ::connect(sockfd, serv_addr, (socklen_t)addrlen);
+  else return ::connect(sockfd, (sockaddr*) serv_addr, (socklen_t)addrlen);
 }
 
 
@@ -453,7 +453,7 @@ int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
     return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
   else {
     socklen_t casted_len = (socklen_t) *fromlen;
-    int rc = ::recvfrom(s, buf, len, flags, from, &casted_len);
+    int rc = ::recvfrom(s, (char*) buf, len, flags, from, &casted_len);
     *fromlen = casted_len;
     return rc;
   }
@@ -464,21 +464,21 @@ int KSocks::sendto (int s, const void *msg, unsigned long int len, int flags,
                              const sockaddr *to, ksocklen_t tolen) {
   if (_useSocks && F_sendto)
     return (*F_sendto)(s, msg, len, flags, to, tolen);
-  else return ::sendto(s, msg, len, flags, to, (socklen_t)tolen);
+  else return ::sendto(s, (char*) msg, len, flags, to, (socklen_t)tolen);
 }
 
 
 int KSocks::recv (int s, void *buf, unsigned long int len, int flags) {
   if (_useSocks && F_recv)
     return (*F_recv)(s, buf, len, flags);
-  else return ::recv(s, buf, len, flags);
+  else return ::recv(s, (char*) buf, len, flags);
 }
 
 
 int KSocks::send (int s, const void *msg, unsigned long int len, int flags) {
   if (_useSocks && F_send)
     return (*F_send)(s, msg, len, flags);
-  else return ::send(s, msg, len, flags);
+  else return ::send(s, (char*) msg, len, flags);
 }
 
 
