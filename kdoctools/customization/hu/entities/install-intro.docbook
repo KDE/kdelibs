@@ -1,7 +1,7 @@
 <!-- requires that packagename is defined in the documentation prologue -->
-<para>&kappname; is part of the &kde; project <ulink
-url="&kde-http;">&kde-http;</ulink>.</para>
+<para>A program a &kde; projekt (<ulink
+url="&kde-http;">&kde-http;</ulink>) része,</para>
 
-<para>&kappname; can be found in the &package; package on <ulink
-url="&kde-ftp;">&kde-ftp;</ulink>, the main &FTP; site of the &kde;
-project.</para>
+<para>a(z) &package; csomagban található, mely letölthető erről a címről: <ulink
+url="&kde-ftp;">&kde-ftp;</ulink>, a &kde; projekt központi &FTP;-kiszolgálójáról.
+</para>
