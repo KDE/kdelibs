@@ -72,7 +72,7 @@ struct KSycocaPrivate {
 // Read-only constructor
 KSycoca::KSycoca()
   : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
-    m_sycoca_size(0), m_sycoca_mmap(0)
+    m_sycoca_size(0), m_sycoca_mmap(0), m_timeStamp(0)
 {
    d = new KSycocaPrivate;
    // Register app as able to receive DCOP messages
