@@ -2,7 +2,7 @@
 
    Copyright (c) 2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
    Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
-   Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (c) 2000,2001,2002,2003,2004 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -41,6 +41,7 @@ public:
     bool tabHandling;
     bool down_workaround;
     bool upwardBox;
+    bool emitSelected;
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
@@ -51,6 +52,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     d->tabHandling     = true;
     d->down_workaround = false;
     d->upwardBox       = false;
+    d->emitSelected    = true;
 
     setColumnMode( 1 );
     setLineWidth( 1 );
@@ -132,17 +134,14 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         ev->accept();
                         return true;
                     case Key_Up:
-
                         // If there is no selected item and we've popped up above
                         // our parent, select the first item when they press up.
-
-			if ( selectedItem() ||
+                        if ( selectedItem() ||
                              mapToGlobal( QPoint( 0, 0 ) ).y() >
                              d->m_parent->mapToGlobal( QPoint( 0, 0 ) ).y() )
                             up();
                         else
                             down();
-
                         ev->accept();
                         return true;
                     case Key_Prior:
@@ -234,6 +233,14 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         QMouseEvent *ev = static_cast<QMouseEvent *>( e );
         if ( !rect().contains( ev->pos() )) // this widget
             hide();
+
+        if ( !d->emitSelected )
+        {
+          emit highlighted( currentText() );
+          hide();
+          ev->accept();  // Consume the mouse click event...
+          return true;
+        }
     }
 
     return KListBox::eventFilter( o, e );
@@ -537,6 +544,16 @@ void KCompletionBox::slotItemClicked( QListBoxItem *item )
         hide();
         emit activated( item->text() );
     }
+}
+
+void KCompletionBox::setActivateOnSelect(bool state)
+{
+    d->emitSelected = state;
+}
+
+bool KCompletionBox::activateOnSelect() const
+{
+    return d->emitSelected;
 }
 
 void KCompletionBox::virtual_hook( int id, void* data )

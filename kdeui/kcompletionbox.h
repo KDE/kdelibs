@@ -2,6 +2,7 @@
 
    Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
                  2000 Stefan Schimanski <1Stein@gmx.de>
+                 2000,2001,2002,2003,2004 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -44,6 +45,7 @@ class KDEUI_EXPORT KCompletionBox : public KListBox
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
     Q_PROPERTY(QString cancelledText READ cancelledText WRITE setCancelledText)
+    Q_PROPERTY( bool activateOnSelect READ activateOnSelect WRITE setActivateOnSelect )
 
 public:
     /**
@@ -60,6 +62,13 @@ public:
     ~KCompletionBox();
 
     virtual QSize sizeHint() const;
+
+    /**
+     * @returns true if selecting an item results in the emition of the @ref selected signal.
+     *
+     * @since 3.4.1
+     */
+    bool activateOnSelect() const;
 
 public slots:
     /**
@@ -129,6 +138,16 @@ public slots:
      * @returns the text set via setCancelledText() or QString::null.
      */
     QString cancelledText() const;
+
+    /**
+     * Set whether or not the selected signal should be emitted when an
+     * item is selected. By default the @ref selevted signal is emitted.
+     *
+     * @param state false if the signal should not be emitted.
+     * @since 3.4.1
+     */
+    void setActivateOnSelect(bool state);
+
 
     /**
      * Moves the selection one line down or select the first item if nothing is selected yet.
