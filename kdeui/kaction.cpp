@@ -427,27 +427,17 @@ int KAction::plug( QWidget *w, int index )
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
 
-    if (!inherits("KToggleAction")) {
-        if ( !d->m_pixmap.isNull() ) {
-            id = menu->insertItem( d->m_pixmap, this, SLOT( slotActivated() ),
-                                   d->m_accel, -1, index );
-        } else {
-            if ( d->m_bIconSet )
-                id = menu->insertItem( iconSet(), d->m_text, this,//dsweet
-                                       SLOT( slotActivated() ), d->m_accel,
-                                       -1, index );
-            else
-                id = menu->insertItem( d->m_text, this,
-                                       SLOT( slotActivated() ),  //dsweet
-                                       d->m_accel, -1, index );
-        }
-    } else {
-        // toggle actions do not have a pixmap or icon in the menu
-        // Lotzi B.
-        id = menu->insertItem( d->m_text, this,
-                               SLOT( slotActivated() ),
+    if ( !d->m_pixmap.isNull() )
+        id = menu->insertItem( d->m_pixmap, this, SLOT( slotActivated() ),
                                d->m_accel, -1, index );
-    }
+    else if ( d->m_bIconSet )
+        id = menu->insertItem( iconSet(), d->m_text, this,//dsweet
+                               SLOT( slotActivated() ), d->m_accel,
+                               -1, index );
+    else
+        id = menu->insertItem( d->m_text, this,
+                               SLOT( slotActivated() ),  //dsweet
+                               d->m_accel, -1, index );
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
