@@ -2452,9 +2452,11 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
-        if ( m_render && m_initialized )
-            m_value = static_cast<RenderTextArea*>( m_render )->text();
-        else {
+        if ( m_render && m_initialized ) {
+            RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+            m_value = renderArea->text();
+            onChange();
+        } else {
             m_value = defaultValue().string();
             m_initialized = true;
         }
