@@ -397,7 +397,7 @@ typedef struct config_rec {
 	QString magicfile;        /* where magic be found      */
 	struct magic *magic,    /* head of magic config list */
 	*last;
-};
+} config_rec;
 
 
 #if (MIME_MAGIC_DEBUG_TABLE > 1)
