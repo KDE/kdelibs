@@ -378,11 +378,13 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     case CSSPrimitiveValue::CSS_PC:
         b = (unitflags & FLength);
         break;
+    case CSSPrimitiveValue::CSS_MS:
+    case CSSPrimitiveValue::CSS_S:
+        b = (unitflags & FTime);
+        break;
     case CSSPrimitiveValue::CSS_DEG:
     case CSSPrimitiveValue::CSS_RAD:
     case CSSPrimitiveValue::CSS_GRAD:
-    case CSSPrimitiveValue::CSS_MS:
-    case CSSPrimitiveValue::CSS_S:
     case CSSPrimitiveValue::CSS_HZ:
     case CSSPrimitiveValue::CSS_KHZ:
     case CSSPrimitiveValue::CSS_DIMENSION:
