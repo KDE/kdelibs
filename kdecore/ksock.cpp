@@ -47,7 +47,11 @@ extern "C" {
 extern "C" {
 #include <errno.h>
 #include <fcntl.h>
+
+#ifdef HAVE_GETADDRINFO
 #include <netdb.h>
+#endif
+
 // defines MAXDNAME under Solaris
 #include <arpa/nameser.h>
 #include <resolv.h>
@@ -348,9 +352,10 @@ bool KServerSocket::bindAndListen()
   if (d == NULL || d->ks == NULL)
     return false;
 
-  if (d->ks->listen(SOMAXCONN ) < 0)
+  int ret = d->ks->listen( SOMAXCONN );
+  if (ret < 0)
     {
-        kdWarning() << "Error listening on socket\n";
+        kdWarning() << "Error listening on socket: " << ret << "\n";
 	delete d->ks;
 	d->ks = NULL;
 	sock = -1;

@@ -31,7 +31,11 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
+
+#ifdef HAVE_GETADDRINFO
 #include <netdb.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -604,6 +608,7 @@ int KExtendedSocket::listen(int N)
   if (sockfd == -1)
     {
       setError(IO_ListenError, errno);
+      kdDebug(170) << "Listen error - sockfd is -1 " << endl;
       return -1;
     }
 
@@ -981,51 +986,8 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
 
   // FIXME! What is the encoding?
   err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(),
-		    serv.isNull() ? NULL : (const char*)serv.utf8(),
-		    &hint, res);
-  if (	(err) && 
-	( (host[0] == QChar('/')) || (serv[0] == QChar('/')) ) ) {
-#ifdef __FreeBSD__
-	const char *buf;
-	struct addrinfo *p;
-	struct sockaddr_un *_sun;
-	int len;
-
-	p = static_cast<struct addrinfo*>(malloc(sizeof(struct addrinfo)));
-	memset(p, 0, sizeof(struct addrinfo));
-	*res = p;
-
-	if (host != QString::null)
-		buf = host.latin1();
-	else
-		buf = serv.latin1();
-
-	_sun = static_cast<sockaddr_un *>(malloc(sizeof(struct sockaddr_un)));
-	memset(_sun, 0, sizeof(struct sockaddr_un));
-
-	len = strlen(buf) + offsetof(struct sockaddr_un, sun_path) + 1;
-	if (*buf != '/')
-		len += 5;                   // strlen("/tmp/");
-
-	_sun->sun_family = AF_UNIX;
-# ifdef HAVE_SOCKADDR_SA_LEN
-	_sun->sun_len = len;
-# endif
-	memset(_sun->sun_path, 0, 104);
-	memcpy(_sun->sun_path, buf, QMIN(strlen(buf), 104));
-
-	// Set the addrinfo
-	p->ai_flags = 0;
-	p->ai_family = AF_UNIX;
-	p->ai_socktype = SOCK_STREAM;
-	p->ai_protocol = 0;
-	p->ai_addrlen = len;
-	p->ai_canonname = strdup(buf);
-	p->ai_addr = reinterpret_cast<sockaddr *>(_sun);
-	p->ai_next = 0;
-	err = 0;
-#endif
-  }
+                   serv.isNull() ? NULL : (const char*)serv.utf8(),
+                   &hint, res);
   return err;
 }
 
