@@ -682,6 +682,7 @@ QString KEdFind::getText() const
 void KEdFind::setText(QString string)
 {
   value->setText(string);
+  value->selectAll();
 }
 
 void KEdFind::setCaseSensitive( bool b )
