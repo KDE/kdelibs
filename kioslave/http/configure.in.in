@@ -16,8 +16,11 @@ if test "x$with_gssapi" = "xCHECK" ; then
   ])
 
   if test -n "$KRB5_CONFIG"; then
+    kde_save_cflags="$CFLAGS"
+    unset CFLAGS
     GSSAPI_INCS="`$KRB5_CONFIG --cflags gssapi`"
     GSSAPI_LIBS="`$KRB5_CONFIG --libs gssapi`"
+    CFLAGS="$kde_save_cflags"
     if test "$USE_RPATH" = yes; then
       for args in $GSSAPI_LIBS; do
         case $args in
