@@ -324,6 +324,8 @@ void KMultiPart::setPart( const QString& mimeType )
 
     m_isHTMLPart = ( mimeType == "text/html" );
     // Load the part's plugins too.
+    // ###### This is a hack. The bug is that KHTMLPart doesn't load its plugins
+    // if className != "Browser/View".
     loadPlugins( this, m_part, m_part->instance() );
     // Get the part's GUI to appear
     guiFactory->addClient( this );
@@ -366,7 +368,7 @@ void KMultiPart::sendData( const QCString& line )
         KHTMLPart* htmlPart = static_cast<KHTMLPart *>( static_cast<KParts::ReadOnlyPart *>( m_part ) );
         htmlPart->write(  line.data(), line.size() );
     }
-    else
+    else if ( m_tempFile )
         m_tempFile->file()->writeBlock( line.data(), line.size() );
 }
 
@@ -377,9 +379,8 @@ void KMultiPart::endOfData()
     {
         KHTMLPart* htmlPart = static_cast<KHTMLPart *>( static_cast<KParts::ReadOnlyPart *>( m_part ) );
         htmlPart->end();
-    } else
+    } else if ( m_tempFile )
     {
-        Q_ASSERT( m_tempFile );
 	m_tempFile->close();
         kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
         KURL url;
