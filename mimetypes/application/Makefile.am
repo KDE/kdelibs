@@ -20,7 +20,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
 	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
 	pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
-	pgp-keys.desktop \
+	pgp-keys.desktop evil.desktop \
 	x-mswrite.desktop illustrator.desktop x-abiword.desktop \
 	x-gnumeric.desktop x-graphite.desktop x-karbon.desktop x-kchart.desktop \
 	x-kformula.desktop x-kivio.desktop x-kontour.desktop \
