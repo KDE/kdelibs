@@ -841,7 +841,7 @@ QStringList KLocale::languageList() const
 
 #else /* ENABLE_NLS */
 
-KLocale::KLocale( const QString & = QString::null ) : _inited(true), lang(0)
+KLocale::KLocale( const QString & ) : _inited(true), lang(0)
 {
 }
 
@@ -958,11 +958,11 @@ QStringList KLocale::languageList() const {
 void KLocale::insertCatalogue( const QString& ) {
 }
 
-#endif /* ENABLE_NLS */
-
 void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
 {
 }
+
+#endif /* ENABLE_NLS */
 
 QString KLocale::getAlias(long key) const
 {
