@@ -107,6 +107,11 @@ class ResourceDir : public Resource
     QString mPath;
     QString mFormatName;
     QString mLockUniqueName;
+
+    bool mAsynchronous;
+
+    class ResourceDirPrivate;
+    ResourceDirPrivate *d;
 };
 
 }

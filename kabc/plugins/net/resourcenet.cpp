@@ -148,7 +148,7 @@ bool ResourceNet::asyncLoad()
   dest.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( mUrl, dest, -1, true, false );
+  KIO::Job * job = KIO::file_copy( mUrl, dest, -1, true, false, false );
   connect( job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( downloadFinished( KIO::Job* ) ) );
 
@@ -186,7 +186,7 @@ bool ResourceNet::asyncSave( Ticket* )
   src.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, mUrl, -1, true, false );
+  KIO::Job * job = KIO::file_copy( src, mUrl, -1, true, false, false );
   connect( job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 

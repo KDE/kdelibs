@@ -104,6 +104,9 @@ class ResourceNet : public Resource
     QString mTempFile;
     KTempFile *mLocalTempFile;
     bool mUseLocalTempFile;
+
+    class ResourceNetPrivate;
+    ResourceNetPrivate *d;
 };
 
 }

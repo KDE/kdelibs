@@ -58,7 +58,7 @@ extern "C"
 
 
 ResourceDir::ResourceDir( const KConfig *config )
-  : Resource( config )
+  : Resource( config ), mAsynchronous( false )
 {
   if ( config ) {
     init( config->readPathEntry( "FilePath" ), config->readEntry( "FileFormat" ) );
@@ -68,7 +68,7 @@ ResourceDir::ResourceDir( const KConfig *config )
 }
 
 ResourceDir::ResourceDir( const QString &path, const QString &format )
-  : Resource( 0 )
+  : Resource( 0 ), mAsynchronous( false )
 {
   init( path, format );
 }
@@ -155,6 +155,8 @@ bool ResourceDir::load()
 {
   kdDebug(5700) << "ResourceDir::load(): '" << mPath << "'" << endl;
 
+  mAsynchronous = false;
+
   QDir dir( mPath );
   QStringList files = dir.entryList( QDir::Files );
 
@@ -180,6 +182,8 @@ bool ResourceDir::load()
 
 bool ResourceDir::asyncLoad()
 {
+  mAsynchronous = true;
+
   bool ok = load();
   if ( !ok )
     emit loadingError( this, i18n( "Loading resource '%1' failed!" )
@@ -336,8 +340,13 @@ void ResourceDir::pathChanged()
   if ( !addressBook() )
     return;
 
-  load();
-  addressBook()->emitAddressBookChanged();
+  clear();
+  if ( mAsynchronous )
+    asyncLoad();
+  else {
+    load();
+    addressBook()->emitAddressBookChanged();
+  }
 }
 
 void ResourceDir::removeAddressee( const Addressee& addr )

@@ -219,6 +219,9 @@ class Resource : public KRES::Resource
 
   private:
     AddressBook *mAddressBook;
+
+    class ResourcePrivate;
+    ResourcePrivate *d;
 };
 
 }

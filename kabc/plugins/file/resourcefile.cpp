@@ -45,7 +45,8 @@
 using namespace KABC;
 
 ResourceFile::ResourceFile( const KConfig *config )
-  : Resource( config ), mFormat( 0 )
+  : Resource( config ), mFormat( 0 ), mLocalTempFile( 0 ),
+    mAsynchronous( false )
 {
   QString fileName, formatName;
 
@@ -62,7 +63,8 @@ ResourceFile::ResourceFile( const KConfig *config )
 
 ResourceFile::ResourceFile( const QString &fileName,
                             const QString &formatName )
-  : Resource( 0 )
+  : Resource( 0 ), mFormat( 0 ), mLocalTempFile( 0 ),
+    mAsynchronous( false )
 {
   init( fileName, formatName );
 }
@@ -155,6 +157,8 @@ bool ResourceFile::load()
 {
   kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
+  mAsynchronous = false;
+
   QFile file( mFileName );
   if ( !file.open( IO_ReadOnly ) ) {
     addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mFileName ) );
@@ -166,6 +170,8 @@ bool ResourceFile::load()
 
 bool ResourceFile::asyncLoad()
 {
+  mAsynchronous = true;
+
   if ( mLocalTempFile ) {
     kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
     mLocalTempFile->setAutoDelete( true );
@@ -180,7 +186,7 @@ bool ResourceFile::asyncLoad()
   src.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false );
+  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false, false );
   connect( job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( downloadFinished( KIO::Job* ) ) );
 
@@ -227,7 +233,7 @@ bool ResourceFile::asyncSave( Ticket* )
   dest.setPath( mFileName );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false );
+  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false, false );
   connect( job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
@@ -339,7 +345,13 @@ void ResourceFile::fileChanged()
   if ( !addressBook() )
     return;
 
-  addressBook()->emitAddressBookChanged();
+  clear();
+  if ( mAsynchronous )
+    asyncLoad();
+  else {
+    load();
+    addressBook()->emitAddressBookChanged();
+  }
 }
 
 void ResourceFile::removeAddressee( const Addressee &addr )

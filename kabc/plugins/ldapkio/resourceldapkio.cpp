@@ -218,8 +218,6 @@ void ResourceLDAPKIO::result( KIO::Job *job )
 
   QByteArray &data = mJobMap[ job ];
 
-  qDebug( "%s", data.data() );
-
   AddresseeList addrList;
   bool ok = LDIFConverter::LDIFToAddressee( data, addrList );
 

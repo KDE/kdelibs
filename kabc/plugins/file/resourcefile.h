@@ -164,6 +164,11 @@ class ResourceFile : public Resource
 
     QString mTempFile;
     KTempFile *mLocalTempFile;
+
+    bool mAsynchronous;
+
+    class ResourceFilePrivate;
+    ResourceFilePrivate *d;
 };
 
 }

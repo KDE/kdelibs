@@ -96,6 +96,9 @@ class ResourceLDAP : public Resource
     QMap<QString, QString> mAttributes;
 
     LDAP *mLdap;
+
+    class ResourceLDAPPrivate;
+    ResourceLDAPPrivate *d;
 };
 
 }

@@ -106,6 +106,9 @@ class ResourceLDAPKIO : public Resource
     bool mErrorOccured;
     QString mErrorMsg;
     QMap<KIO::Job*, QByteArray> mJobMap;
+
+    class ResourceLDAPKIOPrivate;
+    ResourceLDAPKIOPrivate *d;
 };
 
 }
