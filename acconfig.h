@@ -115,20 +115,35 @@ const bool true = 1;
 #endif
 
 /* this is needed for Solaris and others */
+#ifndef HAVE_USLEEP
+#ifndef HAVE_USLEEP_DEFINED
+#define HAVE_USLEEP_DEFINED
+#ifdef __cplusplus
+extern "C"
+#endif
+void usleep(unsigned int usec);
+#endif  
+#endif  
+
+
 #ifndef HAVE_GETDOMAINNAME
-#define HAVE_GETDOMAINNAME
+#ifndef HAVE_GETDOMAINNAME_DEFINED
+#define HAVE_GETDOMAINNAME_DEFINED
 #ifdef __cplusplus
 extern "C"
 #endif
 int getdomainname (char *Name, int Namelen);
 #endif  
+#endif  
 
 #ifndef HAVE_GETHOSTNAME
-#define HAVE_GETHOSTNAME
+#ifndef HAVE_GETHOSTNAME_DEFINED
+#define HAVE_GETHOSTNAME_DEFINED
 #ifdef __cplusplus  
 extern "C" 
 #endif
 int gethostname (char *Name, int Namelen);
+#endif  
 #endif  
 
 /*
@@ -161,9 +176,11 @@ int gethostname (char *Name, int Namelen);
 #endif
 
 #ifndef HAVE_RANDOM
-#define HAVE_RANDOM
+#ifndef HAVE_RANDOM_DEFINED
+#define HAVE_RANDOM_DEFINED
 long int random(void); // defined in fakes.cpp
 void srandom(unsigned int seed);
+#endif 
 #endif 
 
 #ifndef HAVE_S_ISSOCK
