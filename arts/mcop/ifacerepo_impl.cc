@@ -39,6 +39,15 @@ InterfaceRepo_impl::InterfaceRepo_impl()
 	tiMap["long"] = tiLong;
 }
 
+InterfaceRepo_impl::~InterfaceRepo_impl()
+{
+	while(!unloadModuleList.empty())
+	{
+		removeModule(unloadModuleList.front());
+		unloadModuleList.pop_front();
+	}
+}
+
 long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 {
 	long moduleID = nextModuleID++;
@@ -179,9 +188,9 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 							while((c = fgetc(extfile)) >= 0) b.writeByte(c);
 							fclose(extfile);
 
-							insertModule(ModuleDef(b));
+							long id = insertModule(ModuleDef(b));
 							def = queryInterfaceLocal(name);
-							//removeModule(id);
+							unloadModuleList.push_back(id);
 						}
 					}
 				}

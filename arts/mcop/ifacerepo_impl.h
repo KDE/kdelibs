@@ -71,6 +71,7 @@ class InterfaceRepo_impl : virtual public InterfaceRepoV2_skel {
 	std::list<TypeEntry *> types;
 	std::list<InterfaceEntry *> interfaces;
 	std::map<std::string, TypeIdentification> tiMap;
+	std::list<long> unloadModuleList;
 
 	long nextModuleID;
 
@@ -78,6 +79,7 @@ class InterfaceRepo_impl : virtual public InterfaceRepoV2_skel {
 public:
 
 	InterfaceRepo_impl();
+	~InterfaceRepo_impl();
 
 	long insertModule(const ModuleDef& newModule);
 	void removeModule(long moduleID);
