@@ -131,7 +131,10 @@ void KStatusBar::changeItem( const QString& text, int id )
       clear();
     }
     l->setText(text);
-    reformat();
+    if(l->minimumWidth () != l->maximumWidth ())
+    {
+      reformat();
+    }
   }
   else
     kdDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
