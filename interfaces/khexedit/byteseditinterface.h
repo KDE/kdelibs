@@ -21,7 +21,7 @@
 // kde specific
 #include <kparts/componentfactory.h>
 
-class QWidget;
+#include <qwidget.h>
 
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related
