@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  2000/03/21 03:44:44  rogozin
+ *
+ * New Java support has been merged.
+ *
  * Revision 1.3  2000/03/08 01:04:56  rogozin
  *
  * Java console implemented
@@ -116,27 +120,15 @@ public KJASProtocolHandler( InputStream commands,
    public void createContext( String args )
       throws IllegalArgumentException
    {
-      try {
-         String idStr = args.trim();
-         int id = Integer.parseInt( idStr );
-         runner.createContext( id );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "createContext() " + e.toString() );
-      }
+       String idStr = args.trim();
+       runner.createContext( idStr );
    }
 
    public void destroyContext( String args )
       throws IllegalArgumentException
    {
-      try {
-         String idStr = args.trim();
-         int id = Integer.parseInt( idStr );
-         runner.destroyContext( id );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "destroyContext() " + e.toString() );
-      }
+       String idStr = args.trim();
+       runner.destroyContext( idStr );
    }
 
    public void createApplet( String args )
@@ -160,16 +152,11 @@ public KJASProtocolHandler( InputStream commands,
          String widthStr = tok.nextToken();
          String heightStr = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
          int width = Integer.parseInt( widthStr );
          int height = Integer.parseInt( heightStr );
 
-         runner.createApplet( contextId, appletId, name, className, baseURL, 
+         runner.createApplet( contextIdStr, appletIdStr, name, className, baseURL, 
                               codeBase, archive, new Dimension(width, height) );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "createContext() " + e.toString() );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "createApplet(): Wrong number of args" );
@@ -186,12 +173,7 @@ public KJASProtocolHandler( InputStream commands,
          String contextIdStr = tok.nextToken();
          String appletIdStr = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
-         runner.destroyApplet( contextId, appletId );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "destroyApplet() " + e.toString() );
+         runner.destroyApplet( contextIdStr, appletIdStr );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "destroyApplet(): Wrong number of args" );
@@ -209,12 +191,7 @@ public KJASProtocolHandler( InputStream commands,
          String appletIdStr = tok.nextToken();
          String title = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
-         runner.showApplet( contextId, appletId, title );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "showApplet() " + e.toString() );
+         runner.showApplet( contextIdStr, appletIdStr, title );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "showApplet(): Wrong number of args" );
@@ -231,12 +208,7 @@ public KJASProtocolHandler( InputStream commands,
          String contextIdStr = tok.nextToken();
          String appletIdStr = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
-         runner.startApplet( contextId, appletId );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "startApplet() " + e.toString() );
+         runner.startApplet( contextIdStr, appletIdStr );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "startApplet(): Wrong number of args" );
@@ -253,12 +225,7 @@ public KJASProtocolHandler( InputStream commands,
          String contextIdStr = tok.nextToken();
          String appletIdStr = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
-         runner.stopApplet( contextId, appletId );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "stopApplet() " + e.toString() );
+         runner.stopApplet( contextIdStr, appletIdStr );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "stopApplet(): Wrong number of args" );
@@ -277,12 +244,7 @@ public KJASProtocolHandler( InputStream commands,
          String name = tok.nextToken();
          String value = tok.nextToken();
 
-         int contextId = Integer.parseInt( contextIdStr );
-         int appletId = Integer.parseInt( appletIdStr );
-         runner.setParameter( contextId, appletId, name, value );
-      }
-      catch ( NumberFormatException e ) {
-         throw new IllegalArgumentException( "stopApplet() " + e.toString() );
+         runner.setParameter( contextIdStr, appletIdStr, name, value );
       }
       catch ( NoSuchElementException nsee ) {
          throw new IllegalArgumentException( "stopApplet(): Wrong number of args" );

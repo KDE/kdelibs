@@ -7,6 +7,10 @@ package org.kde.kjas.server;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:08  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -14,8 +18,8 @@ package org.kde.kjas.server;
  */
 public interface KJASAppletRunnerListener
 {
-   public void showStatus( int contextId, String message );
+   public void showStatus( String contextId, String message );
 
-   public void showDocument( int contextId, String url );
-   public void showDocumentInFrame( int contextId, String url, String target );
+   public void showDocument( String contextId, String url );
+   public void showDocumentInFrame( String contextId, String url, String target );
 }

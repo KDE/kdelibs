@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  2000/01/29 04:22:28  rogozin
+ * Preliminary support for archive tag.
+ * Fix size problem.
+ *
  * Revision 1.2  2000/01/27 23:41:57  rogozin
  * All applet parameters are passed to KJAS now
  * Next step - make use of them.
@@ -25,12 +29,12 @@ import java.awt.*;
  */
 public class KJASAppletRunner
 {
-   Vector contexts;
+   Hashtable contexts;
    KJASAppletRunnerListener listener;
 
    public KJASAppletRunner()
    {
-      contexts = new Vector();
+      contexts = new Hashtable();
    }
 
    public void setAppletRunnerListener( KJASAppletRunnerListener listener )
@@ -43,31 +47,31 @@ public class KJASAppletRunner
    // embedding application.
    //
 
-   public void createContext( int contextId )
+   public void createContext( String contextId )
       throws IllegalArgumentException
    {
-      if ( contextId < contexts.size() )
+      if ( contexts.get( contextId ) != null )
          throw new IllegalArgumentException( "Invalid contextId passed to createContext() "
                                              + contextId );
 
       KJASAppletContext context = new KJASAppletContext();
-      contexts.addElement( context );
+      contexts.put( contextId, context );
    }
 
-   public void destroyContext( int contextId )
+   public void destroyContext( String contextId )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( contexts == null )
          throw new IllegalArgumentException( "Invalid contextId passed to destroyContext() "
                                              + contextId );
-
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
+      
       context.destroy();
-      contexts.setElementAt( null, contextId );
+      contexts.remove( contextId );
    }
 
-   public void createApplet( int contextId,
-                             int appletId,
+   public void createApplet( String contextId,
+                             String appletId,
                              String name,
                              String className,
                              String docBase,
@@ -76,13 +80,13 @@ public class KJASAppletRunner
                              Dimension size)
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
-         throw new IllegalArgumentException( "Invalid contextId passed to createApplet() "
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null )
+	 throw new IllegalArgumentException( "Invalid contextId passed to createApplet() "
                                              + contextId );
 
       try {
-         KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
-         URL docBaseURL = new URL( docBase );
+	 URL docBaseURL = new URL( docBase );
          URL codeBaseURL;
          if(codeBase != null) {
              if(!codeBase.endsWith("/"))
@@ -92,7 +96,8 @@ public class KJASAppletRunner
          else
              codeBaseURL = new URL( docBase );
          
-         context.createApplet( className, codeBaseURL, docBaseURL, 
+         context.createApplet( appletId, className, 
+			       codeBaseURL, docBaseURL, 
                                jars, name, size );
       }
       catch ( MalformedURLException mue )
@@ -101,38 +106,38 @@ public class KJASAppletRunner
          }
    }
 
-   public void destroyApplet( int contextId, int appletId )
+   public void destroyApplet( String contextId, String appletId )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null )
          throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                              + contextId );
 
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
       Applet app = context.getAppletStub( appletId ).getApplet();
       context.destroyApplet( app );
    }
 
-   public void showApplet( int contextId, int appletId, String title )
+   public void showApplet( String contextId, String appletId, String title )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null )
          throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                              + contextId );
 
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
       Applet app = context.getAppletStub( appletId ).getApplet();
       context.show( app, title );
    }
 
-   public void startApplet( int contextId, int appletId )
+   public void startApplet( String contextId, String appletId )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null )
          throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                              + contextId );
 
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
       final Applet app = context.getAppletStub( appletId ).getApplet();
 
       Thread t = new Thread( new Runnable() {
@@ -144,28 +149,28 @@ public class KJASAppletRunner
       t.start();
    }
 
-   public void stopApplet( int contextId, int appletId )
+   public void stopApplet( String contextId, String appletId )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null )
          throw new IllegalArgumentException( "Invalid contextId passed to stopApplet() "
                                              + contextId );
 
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
       Applet app = context.getAppletStub( appletId ).getApplet();
 
       app.stop();
    }
 
-   public void setParameter( int contextId, int appletId,
+   public void setParameter( String contextId, String appletId,
                              String name, String value )
       throws IllegalArgumentException
    {
-      if ( contextId >= contexts.size() )
+      KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
+      if ( context == null)
          throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                              + contextId );
 
-      KJASAppletContext context = (KJASAppletContext) contexts.elementAt( contextId );
       KJASAppletStub stub = context.getAppletStub( appletId );
 
       stub.setParameter( name, value );

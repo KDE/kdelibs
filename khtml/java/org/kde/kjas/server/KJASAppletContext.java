@@ -12,6 +12,11 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.7  2000/03/23 03:20:38  rogozin
+ *
+ * Fix resize issues for jdk 1.1.8.
+ * This is was quite a hack.
+ *
  * Revision 1.6  2000/03/22 05:19:38  rogozin
  *
  * Window geometry is now handled correctly.
@@ -44,7 +49,7 @@ public class KJASAppletContext implements AppletContext
    //* All the applets in this context
    Hashtable applets;
 
-   Vector stubList;
+   Hashtable stubList;
 
    /**
     * Create a KJASAppletContext. This is shared by all applets (though perhaps
@@ -52,19 +57,21 @@ public class KJASAppletContext implements AppletContext
     */
     public KJASAppletContext() {
        applets = new Hashtable();
-       stubList = new Vector();
+       stubList = new Hashtable();
     };
 
-   KJASAppletStub getAppletStub( int appletId )
+   KJASAppletStub getAppletStub( String appletId )
    {
-      if ( appletId >= stubList.size() )
+      KJASAppletStub stb = (KJASAppletStub) stubList.get( appletId );
+      if ( stb == null )
          throw new IllegalArgumentException( "Invalid appletId passed to getAppletStub() "
                                              + appletId );
 
-      return (KJASAppletStub) stubList.elementAt( appletId );
+      return stb;
    }
 
-   public KJASAppletStub createApplet( String className, URL codeBase,
+   public KJASAppletStub createApplet( String appletId,
+				       String className, URL codeBase,
                                        URL docBase, String jars, 
                                        String name, Dimension size ) {
       Applet app;
@@ -82,7 +89,7 @@ public class KJASAppletContext implements AppletContext
          KJASAppletStub stub = new KJASAppletStub( this, app, codeBase, docBase, name );
 
          applets.put( name, app );
-         stubList.addElement( stub );
+         stubList.put( appletId, stub );
 
          return stub;
       }
@@ -100,7 +107,7 @@ public class KJASAppletContext implements AppletContext
          app.stop();
       }
       applets.clear();
-      stubList.removeAllElements();
+      stubList.clear();
    }
 
    public void destroyApplet( Applet app )
