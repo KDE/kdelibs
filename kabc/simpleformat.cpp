@@ -20,128 +20,74 @@
 
 #include <qfile.h>
 
-#include <klocale.h>
 #include <ksimpleconfig.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 
 #include "addressbook.h"
-#include "addressee.h"
 
 #include "simpleformat.h"
 
 using namespace KABC;
 
-bool SimpleFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
+bool SimpleFormat::load( AddressBook *addressBook, const QString &fileName )
 {
-  kdDebug(5700) << "SimpleFormat::load()" << endl;
+  kdDebug(5700) << "SimpleFormat::load(): " << fileName << endl;
 
-  KSimpleConfig cfg( file->name() );
+  KSimpleConfig cfg( fileName );
   
   QStringList uids = cfg.groupList();
-
   QStringList::ConstIterator it;
   for( it = uids.begin(); it != uids.end(); ++it ) {
-    if ( (*it) == "<default>" )
-      continue;
-
+    if ( (*it) == "<default>" ) continue;
     cfg.setGroup( *it );
-
-    Addressee addr;
-    addr.setResource( resource );
-    addr.setUid( *it );
-    addr.setName( cfg.readEntry( "name" ) );
-    addr.setFormattedName( cfg.readEntry( "formattedName" ) );
-
-    // emails
-    {
-      QStringList emails = cfg.readListEntry( "emails" );
-      QStringList::ConstIterator it;
-      bool preferred = true;
-      for( it = emails.begin(); it != emails.end(); ++it ) {
-        addr.insertEmail( (*it), preferred );
-        preferred = false;
-      }
+    Addressee a;
+    a.setUid( *it );
+    a.setName( cfg.readEntry( "name" ) );
+    a.setFormattedName( cfg.readEntry( "formattedName" ) );
+    a.insertEmail( cfg.readEntry( "email" ) );
+#if 0
+    QStringList phoneNumbers = cfg.readListEntry( "phonenumbers" );
+    QStringList::ConstIterator it2;
+    for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
+      PhoneNumber n;
+      n.setNumber( cfg.readEntry( "phonenumber" + (*it2) ) );
+      n.setType( PhoneNumber::Type((*it2).toInt()));
+      a.insertPhoneNumber( n );
     }
-
-    // phonenumbers
-    {
-      QStringList phoneNumbers = cfg.readListEntry( "phonenumbers" );
-      QStringList::ConstIterator it;
-      for( it = phoneNumbers.begin(); it != phoneNumbers.end(); ++it ) {
-        PhoneNumber n;
-        n.setNumber( cfg.readEntry( "phonenumber" + (*it) ) );
-        n.setType((*it).toInt());
-        addr.insertPhoneNumber( n );
-      }
-    }
-
-    addressBook->insertAddressee( addr );
-    addr.setChanged( false );
+#endif
+    addressBook->insertAddressee( a );
   }
 
   return true;
 }
 
-bool SimpleFormat::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool SimpleFormat::save( AddressBook *addressBook, const QString &fileName )
 {
   kdDebug(5700) << "SimpleFormat::save(): " << fileName << endl;
 
-  QFile::remove( locateLocal("config", fileName) );
+  QFile::remove( fileName );
 
   KSimpleConfig cfg( fileName );
 
   AddressBook::Iterator it;
   for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
-    if ( (*it).resource() != resource && (*it).resource() != 0 )
-	continue;
-
-    // mark addressee as saved
-    (*it).setChanged( false );
-
     cfg.setGroup( (*it).uid() );
-
     cfg.writeEntry( "name", (*it).name() );
     cfg.writeEntry( "formattedName", (*it).formattedName() );
+    cfg.writeEntry( "email", (*it).preferredEmail() );
 
-    // emails
-    {
-      cfg.writeEntry( "emails", (*it).emails() );
+#if 0
+    QStringList phoneNumberList;
+    PhoneNumber::List phoneNumbers = (*it).phoneNumbers();
+    PhoneNumber::List::ConstIterator it2;
+    for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
+      cfg.writeEntry( "phonenumber" + QString::number( int((*it2).type()) ),
+                      (*it2).number() );
+      phoneNumberList.append( QString::number( int((*it2).type()) ) );
     }
-
-    // phonenumbers
-    {
-      QStringList phoneNumberList;
-      PhoneNumber::List phoneNumbers = (*it).phoneNumbers();
-      PhoneNumber::List::ConstIterator it;
-      for( it = phoneNumbers.begin(); it != phoneNumbers.end(); ++it ) {
-        cfg.writeEntry( "phonenumber" + QString::number( int((*it).type()) ),
-                      (*it).number() );
-        phoneNumberList.append( QString::number( int((*it).type()) ) );
-      }
-      cfg.writeEntry( "phonenumbers", phoneNumberList );
-    }
+    cfg.writeEntry( "phonenumbers", phoneNumberList );
+#endif
   }
 
   return true;
-}
-
-void SimpleFormat::removeAddressee( const Addressee& )
-{
-    // FIXME: Implement when splitting simple file into single files
-}
-
-QString SimpleFormat::typeInfo() const
-{
-    return i18n( "simple" );
-}
-
-bool SimpleFormat::checkFormat( const QString &fileName ) const
-{
-    KSimpleConfig cfg( fileName );
-
-    if ( cfg.hasGroup( "General" ) )
-	return true;
-    else
-	return false;
 }

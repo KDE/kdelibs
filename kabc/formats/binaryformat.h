@@ -20,7 +20,7 @@
 #ifndef KABC_BINARYFORMAT_H
 #define KABC_BINARYFORMAT_H
 
-#include "kabcformat.h"
+#include "formatplugin.h"
 
 namespace KABC {
 
@@ -30,7 +30,7 @@ class Addressee;
 /*
   @short binary file format for addressbook entries.
 */
-class BinaryFormat : public Format
+class BinaryFormat : public FormatPlugin
 {
 public:
   bool load( Addressee &, QFile *file );

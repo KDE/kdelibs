@@ -24,12 +24,13 @@
 #include <qmap.h>
 
 #include <kdialog.h>
-#include <klistbox.h>
 
-#include "addressbook.h"
-#include "resource.h"
+class KListBox;
 
 namespace KABC {
+
+class AddressBook;
+class Resource;
 
 /**
  * Dialog for selecting a resource.

@@ -44,13 +44,13 @@ ResourceDir::ResourceDir( AddressBook *addressBook, const KConfig *config )
   QString type = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();
-  Format *format = factory->format( type );
+  FormatPlugin *format = factory->format( type );
 
   init( path, format );
 }
 
 ResourceDir::ResourceDir( AddressBook *addressBook, const QString &path,
-                            Format *format ) :
+                          FormatPlugin *format ) :
   Resource( addressBook )
 {
   init( path, format );
@@ -62,7 +62,7 @@ ResourceDir::~ResourceDir()
 }
 
 
-void ResourceDir::init( const QString &path, Format *format )
+void ResourceDir::init( const QString &path, FormatPlugin *format )
 {
   if ( !format ) {
     FormatFactory *factory = FormatFactory::self();

@@ -20,9 +20,13 @@
 
 #include <klocale.h>
 #include <kbuttonbox.h>
+#include <klistbox.h>
 
 #include <qgroupbox.h>
 #include <qlayout.h>
+
+#include "resource.h"
+#include "addressbook.h"
 
 #include "resourceselectdialog.h"
 

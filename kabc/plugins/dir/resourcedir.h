@@ -12,7 +12,7 @@ class QTimer;
 
 namespace KABC {
 
-class Format;
+class FormatPlugin;
 
 /**
   @internal
@@ -23,7 +23,7 @@ class ResourceDir : public QObject, public Resource
 
 public:
   ResourceDir( AddressBook *, const KConfig * );
-  ResourceDir( AddressBook *, const QString &filename, Format *format=0 );
+  ResourceDir( AddressBook *, const QString &filename, FormatPlugin *format=0 );
   ~ResourceDir();
 
   bool open();
@@ -63,9 +63,9 @@ protected:
   void unlock( const QString &path );
 
 private:
-  void init( const QString &path, Format *format );
+  void init( const QString &path, FormatPlugin *format );
 
-  Format *mFormat;
+  FormatPlugin *mFormat;
 
   KDirWatch mDirWatch;
 

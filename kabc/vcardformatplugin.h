@@ -18,42 +18,39 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "vcardformatimpl.h"
+#ifndef KABC_VCARDFORMATPLUGIN_H
+#define KABC_VCARDFORMATPLUGIN_H
 
-#include "vcardformat.h"
+#include "formatplugin.h"
 
-using namespace KABC;
+namespace KABC {
 
-VCardFormat::VCardFormat()
+class AddressBook;
+class Addressee;
+class VCardFormatImpl;
+
+/**
+  @short Interface of vCard backend for address book.
+ 
+  This class implements the file format interface of address book entries for
+  the vCard format.
+*/
+class VCardFormatPlugin : public FormatPlugin
 {
-  mImpl = new VCardFormatImpl;
-}
+  public:
+    VCardFormatPlugin();
+    virtual ~VCardFormatPlugin();
 
-VCardFormat::~VCardFormat()
-{
-  delete mImpl;
-}
+    bool load( Addressee &, QFile *file );
+    bool loadAll( AddressBook *, Resource *, QFile *file );
+    void save( const Addressee &, QFile *file );
+    void saveAll( AddressBook *, Resource *, QFile *file );
 
-bool VCardFormat::load( AddressBook *addressBook, const QString &fileName )
-{
-  QFile f( fileName );
-  if ( !f.open( IO_ReadOnly ) ) return false;
-  
-  bool result = mImpl->loadAll( addressBook, 0, &f );
-  
-  f.close();
-  
-  return result;
-}
+    bool checkFormat( QFile *file ) const;
 
-bool VCardFormat::save( AddressBook *addressBook, const QString &fileName )
-{
-  QFile f( fileName );
-  if ( !f.open( IO_WriteOnly ) ) return false;
-  
-  mImpl->saveAll( addressBook, 0, &f );
-  
-  f.close();
-  
-  return true;
+  private:
+    VCardFormatImpl *mImpl;
+};
+
 }
+#endif

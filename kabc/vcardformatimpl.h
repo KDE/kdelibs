@@ -22,10 +22,10 @@
 #define KABC_VCARDFORMATIMPL_H
 
 #include <qstring.h>
+#include <qfile.h>
 
 #include "address.h"
 #include "addressee.h"
-#include "kabcformat.h"
 
 #include <VCard.h>
 

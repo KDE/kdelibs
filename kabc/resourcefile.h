@@ -32,7 +32,7 @@ class QTimer;
 
 namespace KABC {
 
-class Format;
+class FormatPlugin;
 class ResourceConfigWidget;
 
 /**
@@ -59,7 +59,8 @@ public:
    * @param filename The name of the file, the addressees should be read from.
    * @param format   The pointer to a format handler.
    */
-  ResourceFile( AddressBook *ab, const QString &filename, Format *format = 0 );
+  ResourceFile( AddressBook *ab, const QString &filename,
+                FormatPlugin *format = 0 );
 
   /**
    * Destructor.
@@ -125,10 +126,10 @@ protected:
   void unlock( const QString &fileName );
 
 private:
-  void init( const QString &filename, Format *format );
+  void init( const QString &filename, FormatPlugin *format );
 
   QString mFileName;
-  Format *mFormat;
+  FormatPlugin *mFormat;
 
   QString mLockUniqueName;
     

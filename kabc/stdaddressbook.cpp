@@ -27,7 +27,7 @@
 
 #include "resourcefactory.h"
 #include "resourcefile.h"
-#include "vcardformat.h"
+#include "vcardformatplugin.h"
 
 using namespace KABC;
 
@@ -118,7 +118,8 @@ void StdAddressBook::init( bool onlyFastResources )
   if ( list.count() == 0 ) {  // default resource
     kdDebug(5700) << "StdAddressBook(): using default resource" << endl;
 
-    Resource *resource = new ResourceFile( this, fileName(), new VCardFormat );
+    Resource *resource = new ResourceFile( this, fileName(),
+                                           new VCardFormatPlugin );
     resource->setReadOnly( false );
     resource->setFastResource( true );
 

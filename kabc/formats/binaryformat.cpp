@@ -38,7 +38,8 @@ using namespace KABC;
 
 extern "C"
 {
-  Format *format() {
+  FormatPlugin *format()
+  {
     return new BinaryFormat;
   }
 }

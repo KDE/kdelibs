@@ -19,13 +19,15 @@
 */
 #ifndef KABC_SIMPLEFORMAT_H
 #define KABC_SIMPLEFORMAT_H
+// $Id$
+
+#include <qstring.h>
 
 #include "format.h"
 
 namespace KABC {
 
 class AddressBook;
-class Addressee;
 
 /*
   @short Simple KConfig based fileformat for address book entries.
@@ -34,12 +36,10 @@ class Addressee;
   KSimpleConfig. It is not complete, i.e. it stores only a few data elements
   of the address book entries. Don't use it or finish it before using it.
 */
-class SimpleFormat : public Format
-{
-public:
-  bool load( AddressBook *, Resource *, QFile *file );
-  bool save( Addressee *, QFile *file );
-  bool checkFormat( QFile *file ) const;
+class SimpleFormat : public Format {
+  public:
+    bool load( AddressBook *, const QString &fileName );
+    bool save( AddressBook *, const QString &fileName );
 };
 
 }

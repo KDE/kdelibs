@@ -17,40 +17,36 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef KABC_VCARDFORMAT_H
 #define KABC_VCARDFORMAT_H
 
-#include "kabcformat.h"
+#include <qstring.h>
+
+#include "format.h"
 
 namespace KABC {
 
 class AddressBook;
-class Addressee;
 class VCardFormatImpl;
 
 /**
   @short Interface of vCard backend for address book.
- 
+
   This class implements the file format interface of address book entries for
   the vCard format.
 */
-class VCardFormat : public Format
-{
+class VCardFormat : public Format {
   public:
     VCardFormat();
     virtual ~VCardFormat();
-
-    bool load( Addressee &, QFile *file );
-    bool loadAll( AddressBook *, Resource *, QFile *file );
-    void save( const Addressee &, QFile *file );
-    void saveAll( AddressBook *, Resource *, QFile *file );
-
-    bool checkFormat( QFile *file ) const;
+  
+    bool load( AddressBook *, const QString &fileName );
+    bool save( AddressBook *, const QString &fileName );
 
   private:
     VCardFormatImpl *mImpl;
 };
 
 }
+
 #endif

@@ -27,11 +27,12 @@
 #include <kconfig.h>
 #include <klibloader.h>
 
-#include "kabcformat.h"
+#include "formatplugin.h"
 
 namespace KABC {
 
-struct FormatInfo {
+struct FormatInfo
+{
   QString library;
   QString nameLabel;
   QString descriptionLabel;
@@ -48,7 +49,7 @@ struct FormatInfo {
  * QStringList list = factory->formats();
  * QStringList::Iterator it;
  * for ( it = list.begin(); it != list.end(); ++it ) {
- *   KABC::Format *format = factory->format( (*it) );
+ *   KABC::FormatPlugin *format = factory->format( (*it) );
  *   // do something with format
  * }
  * </pre>
@@ -68,7 +69,7 @@ public:
    *
    * @param type   The type of the format, returned by @ref formats()
    */
-  Format *format( const QString &type );
+  FormatPlugin *format( const QString &type );
 
   /**
    * Returns a list of all available format types.

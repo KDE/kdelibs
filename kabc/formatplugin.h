@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KABC_FORMAT_H
-#define KABC_FORMAT_H
+#ifndef KABC_FORMATPLUGIN_H
+#define KABC_FORMATPLUGIN_H
 
 #include <qfile.h>
 
@@ -39,7 +39,7 @@ class Addressee;
  *
  * @internal
  */
-class Format : public Plugin
+class FormatPlugin : public Plugin
 {
 public:
 

@@ -31,13 +31,13 @@ ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
   QString type = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();
-  Format *format = factory->format( type );
+  FormatPlugin *format = factory->format( type );
 
   init( fileName, format );
 }
 
 ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
-                            Format *format ) :
+                            FormatPlugin *format ) :
   Resource( addressBook )
 {
   init( filename, format );
@@ -48,7 +48,7 @@ ResourceFile::~ResourceFile()
   delete mFormat;
 }
 
-void ResourceFile::init( const QString &filename, Format *format )
+void ResourceFile::init( const QString &filename, FormatPlugin *format )
 {
   if ( !format ) {
     FormatFactory *factory = FormatFactory::self();

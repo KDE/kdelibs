@@ -18,42 +18,49 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "vcardformatplugin.h"
 #include "vcardformatimpl.h"
-
-#include "vcardformat.h"
 
 using namespace KABC;
 
-VCardFormat::VCardFormat()
+VCardFormatPlugin::VCardFormatPlugin()
 {
   mImpl = new VCardFormatImpl;
 }
 
-VCardFormat::~VCardFormat()
+VCardFormatPlugin::~VCardFormatPlugin()
 {
   delete mImpl;
 }
 
-bool VCardFormat::load( AddressBook *addressBook, const QString &fileName )
+bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
 {
-  QFile f( fileName );
-  if ( !f.open( IO_ReadOnly ) ) return false;
-  
-  bool result = mImpl->loadAll( addressBook, 0, &f );
-  
-  f.close();
-  
-  return result;
+  return mImpl->load( addressee, file );
 }
 
-bool VCardFormat::save( AddressBook *addressBook, const QString &fileName )
+bool VCardFormatPlugin::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-  QFile f( fileName );
-  if ( !f.open( IO_WriteOnly ) ) return false;
-  
-  mImpl->saveAll( addressBook, 0, &f );
-  
-  f.close();
-  
-  return true;
+  return mImpl->loadAll( addressBook, resource, file );
+}
+
+void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
+{
+  return mImpl->save( addressee, file );
+}
+
+void VCardFormatPlugin::saveAll( AddressBook *addressBook, Resource *resource, QFile *file )
+{
+  return mImpl->saveAll( addressBook, resource, file );
+}
+
+bool VCardFormatPlugin::checkFormat( QFile *file ) const
+{
+  QString line;
+
+  file->readLine( line, 1024 );
+  line = line.stripWhiteSpace();
+  if ( line == "BEGIN:VCARD" )
+    return true;
+  else
+    return false;
 }

@@ -25,7 +25,7 @@
 
 #include <qfile.h>
 
-#include "vcardformat.h"
+#include "vcardformatplugin.h"
 
 #include "formatfactory.h"
 
@@ -105,15 +105,15 @@ FormatInfo *FormatFactory::info( const QString &type )
     return mFormatList[ type ];
 }
 
-Format *FormatFactory::format( const QString& type )
+FormatPlugin *FormatFactory::format( const QString& type )
 {
-  Format *format = 0;
+  FormatPlugin *format = 0;
 
   if ( type.isEmpty() )
     return 0;
 
   if ( type == "vcard" ) {
-	  format = new VCardFormat;
+    format = new VCardFormatPlugin;
     format->setType( type );
     format->setNameLabel( i18n( "vCard" ) );
     format->setDescriptionLabel( i18n( "vCard Format" ) );
@@ -132,7 +132,7 @@ Format *FormatFactory::format( const QString& type )
   void *format_func = library->symbol( "format" );
 
   if ( format_func ) {
-    format = ((Format* (*)())format_func)();
+    format = ((FormatPlugin* (*)())format_func)();
     format->setType( type );
     format->setNameLabel( fi->nameLabel );
     format->setDescriptionLabel( fi->descriptionLabel );
