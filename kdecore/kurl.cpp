@@ -105,6 +105,20 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
   return result;
 }
 
+static QString encodeHost( const QString& segment, bool encode_slash, int encoding_hint )
+{
+  // Hostnames are encoded differently
+  // we use the IDNA transformation instead
+
+  // Note: when merging qt-addon, use QResolver::domainToAscii here
+#ifndef KDE_QT_ONLY
+  encode_slash = encoding_hint = 0; // to keep the compiler happy
+  return KIDNA::toAscii(segment);
+#else
+  return encode(segment, encode_slash, encoding_hint);
+#endif
+}
+
 static int hex2int( unsigned int _char )
 {
   if ( _char >= 'A' && _char <='F')
@@ -1211,7 +1225,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     if (IPv6)
        u += '[' + m_strHost + ']';
     else
-       u += encode(m_strHost, true, encoding_hint);
+       u += encodeHost(m_strHost, true, encoding_hint);
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );
@@ -1260,11 +1274,7 @@ QString KURL::prettyURL( int _trailing ) const
     }
     else
     {
-#ifndef KDE_QT_ONLY
-       u += lazy_encode(KIDNA::toUnicode(m_strHost));
-#else
        u += lazy_encode(m_strHost);
-#endif
     }
     if ( m_iPort != 0 ) {
       QString buffer;
@@ -1643,9 +1653,9 @@ void
 KURL::setHost( const QString& _txt )
 {
 #ifndef KDE_QT_ONLY
-   m_strHost = KIDNA::toAscii(_txt).lower();
+   m_strHost = KIDNA::toUnicode(_txt);
    if (m_strHost.isEmpty())
-      m_strHost = _txt.lower(); // No idn support?
+      m_strHost = _txt.lower(); // Probably an invalid hostname, but...
 #else
    m_strHost = _txt.lower();
 #endif
@@ -1895,16 +1905,6 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
      m_strQuery_encoded += '&';
   m_strQuery_encoded += item + value;
 }
-
-QString KURL::prettyHost() const 
-{ 
-#ifndef KDE_QT_ONLY
-   return KIDNA::toUnicode(m_strHost);
-#else
-   return m_strHost;
-#endif
-}
-
 
 // static
 KURL KURL::fromPathOrURL( const QString& text )
