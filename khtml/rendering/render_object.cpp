@@ -557,19 +557,11 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             switch(s) {
             case BSBottom:
             case BSTop:
-                p->drawRect(x1+1,y1,x2-x1-2,y2-y1);
-                if ( ( x2-x1 ) & 1 ) {
-                    p->setPen( QPen( c, 0 ) );
-                    p->drawPoint( x2-1, y2-1 );
-                }
+                p->drawRect(x1,y1,x2-x1,y2-y1);
                 break;
             case BSRight:
             case BSLeft:
-                p->drawRect(x1,y1+1,x2-x1,y2-y1-2);
-                if ( ( y2-y1 ) & 1 ) {
-                    p->setPen( QPen( c, 0 ) );
-                    p->drawPoint( x2-1, y2-1 );
-                }
+                p->drawRect(x1,y1,x2-x1,y2-y1);
             }
 
             break;
@@ -579,7 +571,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         /* nobreak; */
     case DASHED:
         if(style == DASHED)
-            p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
+            p->setPen(QPen(c, width == 1 ? 0 : width, width == 1 ? Qt::DotLine : Qt::DashLine));
 
         if (width > 0)
             switch(s) {
@@ -701,13 +693,17 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         break;
     }
     case INSET:
-        if(s == BSTop || s == BSLeft)
-            c = c.dark();
-
-        /* nobreak; */
     case OUTSET:
-        if(style == OUTSET && (s == BSBottom || s == BSRight))
+        // ### QColor::light/::dark are horribly slow. Cache this somewhere.
+        if ( (style == OUTSET && (s == BSBottom || s == BSRight)) ||
+             (style == INSET && ( s == BSTop || s == BSLeft ) ) )
             c = c.dark();
+        else {
+             int h, s, v;
+             c.getHsv( h, s, v );
+             c.setHsv( h, s, kMax( 100, v ) );
+             c = c.light();
+        }
         /* nobreak; */
     case SOLID:
         p->setPen(Qt::NoPen);
