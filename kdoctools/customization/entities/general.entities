@@ -127,7 +127,9 @@
 <!ENTITY artsshell "<application>artsshell</application>">
 <!ENTITY artswrapper "<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
+<!ENTITY atlantik "<application>Atlantik</application>">
 <!ENTITY brahms "<application>Brahms</application>">
+<!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
@@ -161,12 +163,15 @@
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
 <!ENTITY kalarmd "<application>KAlarmd</application>">
+<!ENTITY kamera "<application>Kamera</application>">
 <!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
 <!ENTITY kate	"<application>Kate</application>">
 <!ENTITY katomic	"<application>KAtomic</application>">
+<!ENTITY kbabel	"<application>KBabel</application>">
+<!ENTITY kbabeldict	"<application>KBabelDict</application>">
 <!ENTITY kbackgammon 	"<application>KBackgammon</application>">
 <!ENTITY kbattleship 	"<application>KBattleship</application>">
 <!ENTITY kbiff	"<application>KBiff</application>">
@@ -212,6 +217,7 @@
 <!ENTITY kiconedit "<application>KIconEdit</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
+<!ENTITY kiten	"<application>Kiten</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
@@ -237,6 +243,7 @@
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodo	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
+<!ENTITY kolf	"<application>Kolf</application>">
 <!ENTITY kompare	"<application>Kompare</application>">
 <!ENTITY koncd	"<application>KOnCD</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
@@ -257,8 +264,10 @@
 <!ENTITY kpm	"<application>Kpm</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
+<!ENTITY kpovmodeler "<application>KPovModeler</application>">
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
+<!ENTITY kreatecd	"<application>KreateCD</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY krita	"<application>Krita</application>">
@@ -269,6 +278,7 @@
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
 <!ENTITY ksgmltools	"<application>ksgmltools</application>">
 <!ENTITY kshisen	"<application>KShisen</application>">
+<!ENTITY ksim	"<application>KSim</application>">
 <!ENTITY ksirc	"<application>KSirc</application>">
 <!ENTITY ksirtet	"<application>KSirtet</application>">
 <!ENTITY ksmiletris	"<application>KSmiletris</application>">
@@ -288,6 +298,7 @@
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY kthesaurus "<application>KThesaurus</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
+<!ENTITY ktimer	"<application>KTimer</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
 <!ENTITY ktouch "<application>KTouch</application>">
 <!ENTITY ktron	"<application>KTron</application>">
@@ -313,6 +324,7 @@
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
+<!ENTITY megami	"<application>Megami</application>">
 <!ENTITY Microsoft	'<trademark
  class="registered">Microsoft</trademark>'>
 <!ENTITY MIDI	"<acronym>MIDI</acronym>">
@@ -351,6 +363,7 @@
 <!ENTITY Visor	"<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
+<!ENTITY Wordperfect '<trademark class="registered"><application>WordPerfect</application></trademark>'>
 <!ENTITY X-Server "<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
 <!ENTITY X-Window '<trademark class="registered">X Window
