@@ -121,12 +121,12 @@ public slots:
 protected:
    /**
     * virtual method that allocates a @ref KFileTreeViewItem for the branch
-    * for new items. 
+    * for new items.
     */ 
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
 						  KFileItem *fileItem );
 
-   virtual KFileTreeViewItem *createBranchRoot( KFileTreeView *parent, const KURL& url );
+   //virtual KFileTreeViewItem *createBranchRoot( KFileTreeView *parent, const KURL& url );
    
 signals:
    /**
