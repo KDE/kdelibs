@@ -73,11 +73,12 @@ class KApplication : public QApplication
 
   Q_OBJECT
 public:
+  enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
 
   /**
-	* Constructor. Parses command-line arguments.
-	*
-	*/
+   * Constructor. Parses command-line arguments.
+   *
+   */
   KApplication( int& argc, char** argv,
 		const QString& rAppName = QString::null);
 
@@ -230,6 +231,20 @@ public:
   QString getCaption() const;
 
   /**
+   * Builds a caption that contains the application name along with the 
+   * userCaption using a standard layout. To make a compliant caption
+   * for your window, simply do: setCaption(kapp->makeStdCaption(yourCaption));
+   *
+   * @param userCaption is the caption string you want to display in the 
+   * window caption area. Do not include the application name!
+   * @param withAppName indicates that the method shall include or ignore
+   * the application name when making the caption string. You are not
+   * compliant if you set this to false.
+   */
+  QString makeStdCaption( const QString &userCaption, 
+			  bool withAppName=true ) const;
+
+  /**
    * Get a file name in order to make a temporary copy of your document.
    *
    * @param pFilename The full path to the current file of your
@@ -311,6 +326,7 @@ private:
   QColor activeTextColor_;
   int contrast_;
     GUIStyle applicationStyle_; // ###### pointless, to be removed
+  int captionLayout;
 
 public:
 
@@ -438,6 +454,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.101  1999/09/20 13:11:26  ettrich
+//    ported to new session management
+//    usable private data class (use pAppData)
+//
 // Revision 1.100  1999/08/06 18:58:45  gehrmab
 //
 // * KApplication::argc()

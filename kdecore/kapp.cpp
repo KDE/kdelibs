@@ -223,6 +223,8 @@ void KApplication::init()
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
   }
+
+  captionLayout = CaptionAppLast;
 }
 
 KConfig* KApplication::getSessionConfig() {
@@ -728,6 +730,39 @@ QString KApplication::getCaption() const
   else
 	return name();
 }
+
+
+//
+// 1999-09-20: Espen Sand
+// An attempt to simplify consistent captions. 
+//
+QString KApplication::makeStdCaption( const QString &userCaption, 
+				      bool withAppName ) const
+{
+  if( userCaption.isNull() == true )
+  {
+    return( getCaption() );
+  }
+ 
+  if( withAppName == true )
+  {
+    if( captionLayout == CaptionAppLast )
+    {
+      return( QString("%1 - %2").arg(userCaption).arg(getCaption()));
+    }
+    else if( captionLayout == CaptionAppFirst )
+    {
+      return( QString("%1: %2").arg(getCaption()).arg(userCaption) );
+    }
+  }
+  
+  return( userCaption );
+}
+
+
+
+
+
 
 void KApplication::readSettings(bool reparse)
 {
