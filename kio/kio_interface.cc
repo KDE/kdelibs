@@ -137,7 +137,7 @@ bool ConnectionSignals::move( QStringList& _source, const char *_dest )
   
   QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
-    if ( source( (*it) ) )
+    if ( !source( (*it) ) )
       return false;
   
   m_pConnection->send( CMD_MMOVE, _dest, l + 1 );
@@ -168,7 +168,7 @@ bool ConnectionSignals::del( QStringList& _source )
 
   QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
-    if ( source( (*it) ) )
+    if ( !source( (*it) ) )
       return false;
   
   m_pConnection->send( CMD_MDEL, "", 0 );
