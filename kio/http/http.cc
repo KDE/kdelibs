@@ -1307,6 +1307,7 @@ bool HTTPProtocol::sendBody()
      buffer = bufferList.take(0);
 
      sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
+     delete buffer;
      if (!sendOk)
      {
        kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
