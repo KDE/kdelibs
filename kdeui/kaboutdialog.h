@@ -300,7 +300,7 @@ protected:
  * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
- * until yoiu need some cool features that are unsupported and you have
+ * until you need some cool features that are unsupported and you have
  * contacted me to add them.
  *
  * The dialog can be created using two different constructors. The
