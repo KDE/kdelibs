@@ -599,7 +599,7 @@ int KHTMLZoomFactorAction::plug( QWidget *w, int index )
     if ( containerId == -1 || !w->inherits( "KToolBar" ) )
         return containerId;
 
-    KToolBarButton *button = static_cast<KToolBar *>( w )->getButton( menuId( containerId ) );
+    KToolBarButton *button = static_cast<KToolBar *>( w )->getButton( itemId( containerId ) );
     if ( !button )
         return containerId;
 
