@@ -146,7 +146,8 @@ const List Object::scope() const
 
 void Object::setScope(const List &s)
 {
-  static_cast<ObjectImp*>(rep)->setScope(s);
+  if ( isValid())
+    static_cast<ObjectImp*>(rep)->setScope(s);
 }
 
 List Object::propList(ExecState *exec, bool recursive)
