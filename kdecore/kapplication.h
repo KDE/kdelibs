@@ -689,6 +689,21 @@ public:
    */
   bool authorizeKAction(const char *action);
 
+  /**
+   * Returns whether a certain URL related action is authorized.
+   *
+   * @param action The name of the action. Known actions are
+   * list - May be listed (e.g. in file selection dialog)
+   * link - May be linked to
+   * open - May open
+   * redirect - May be redirected to
+   * @param baseURL The url where the action originates from
+   * @param destURL The object of the action
+   * @return true when the action is authorized, false otherwise.
+   */
+  bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
+                   
+
   // Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,
          LockModifier = 1<<1,
@@ -786,7 +801,7 @@ private:
 
   void dcopAutoRegistration();
   void dcopClientPostInit();
-
+  void initUrlActionRestrictions();
 public:
   /**
    * @internal

@@ -191,6 +191,7 @@ public:
   ~KApplicationPrivate()
   {}
 
+
   bool actionRestrictions : 1;
   /**
    * This counter indicates when to exit the application.
@@ -205,6 +206,124 @@ public:
   QString geometry_arg;
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
+
+  class URLActionRule
+  {
+  public:
+#define checkEndWildCard(s, b) \
+        if (s.isEmpty()) b = true; \
+        else if (s[s.length()-1] == '*') \
+        { b = true; s.truncate(s.length()-1); } \
+        else b = false;
+#define checkStartWildCard(s, b) \
+        if (s.isEmpty()) b = true; \
+        else if (s[0] == '*') \
+        { b = true; s = s.mid(1); } \
+        else b = false;
+
+     URLActionRule(const QString &act, 
+                   const QString &bProt, const QString &bHost, const QString &bPath,
+                   const QString &dProt, const QString &dHost, const QString &dPath,
+                   bool perm)
+                   : action(act), 
+                     baseProt(bProt), baseHost(bHost), basePath(bPath),
+                     destProt(dProt), destHost(dHost), destPath(dPath),
+                     permission(perm) 
+                   { 
+                      checkEndWildCard(baseProt, baseProtWildCard);
+                      checkStartWildCard(baseHost, baseHostWildCard);
+                      checkEndWildCard(basePath, basePathWildCard);
+                      checkEndWildCard(destProt, destProtWildCard);
+                      checkStartWildCard(destHost, destHostWildCard);
+                      checkEndWildCard(destPath, destPathWildCard);
+                   }
+
+     bool baseMatch(const KURL &url)
+     {
+        if (baseProtWildCard)
+        {
+           if (!baseProt.isEmpty() && !url.protocol().startsWith(baseProt))
+              return false;
+        }
+        else
+        {
+           if (url.protocol() != baseProt)
+              return false;
+        }
+        if (baseHostWildCard)
+        {
+           if (!baseHost.isEmpty() && !url.host().endsWith(baseHost))
+              return false;
+        }
+        else
+        {
+           if (url.host() != baseHost)
+              return false;
+        }
+        if (basePathWildCard)
+        {
+           if (!basePath.isEmpty() && !url.path().startsWith(basePath))
+              return false;
+        }
+        else
+        {
+           if (url.path() != basePath)
+              return false;
+        }
+        return true;
+     }
+
+     bool destMatch(const KURL &url)
+     {
+        if (destProtWildCard)
+        {
+           if (!destProt.isEmpty() && !url.protocol().startsWith(destProt))
+              return false;
+        }
+        else
+        {
+           if (url.protocol() != destProt)
+              return false;
+        }
+        if (destHostWildCard)
+        {
+           if (!destHost.isEmpty() && !url.host().endsWith(destHost))
+              return false;
+        }
+        else
+        {
+           if (url.host() != destHost)
+              return false;
+        }
+        if (destPathWildCard)
+        {
+           if (!destPath.isEmpty() && !url.path().startsWith(destPath))
+              return false;
+        }
+        else
+        {
+           if (url.path() != destPath)
+              return false;
+        }
+        return true;
+     } 
+
+     QString action;
+     QString baseProt;
+     QString baseHost;
+     QString basePath;
+     QString destProt;
+     QString destHost;
+     QString destPath;
+     bool baseProtWildCard : 1;
+     bool baseHostWildCard : 1;
+     bool basePathWildCard : 1;
+     bool destProtWildCard : 1;
+     bool destHostWildCard : 1;
+     bool destPathWildCard : 1;
+     bool permission;
+  };
+  QPtrList<URLActionRule> urlActionRestrictions;
 
 #if QT_VERSION < 0x030100
     QString sessionKey;
@@ -2208,6 +2327,49 @@ bool KApplication::authorizeKAction(const char *action)
 
    return authorize(action_prefix + action);
 }
+
+void KApplication::initUrlActionRestrictions()
+{  
+  d->urlActionRestrictions.setAutoDelete(true);
+  d->urlActionRestrictions.clear();
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("open", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
+// TEST:
+//  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+//  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, false));
+//  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+//  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath()+"*", true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("link", QString::null, QString::null, QString::null, "http*", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("link", QString::null, QString::null, QString::null, "ftp*", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("link", QString::null, QString::null, QString::null, "news", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("link", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
+}
+
+bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
+{
+  bool result = false;
+  if (d->urlActionRestrictions.isEmpty())
+     initUrlActionRestrictions();
+  for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first(); 
+      rule; rule = d->urlActionRestrictions.next())
+  {
+     if ((action == rule->action) && 
+         rule->baseMatch(baseURL) && 
+         rule->destMatch(destURL))
+     {
+        result = rule->permission;
+//qWarning("APPLIED: %s %s %s %s %s %s %s %s", rule->action.latin1(), rule->baseProt.latin1(), rule->baseHost.latin1(), rule->basePath.latin1(), rule->destProt.latin1(), rule->destHost.latin1(), rule->destPath.latin1(), rule->permission ? "true" : "false");
+     }
+  }
+  return result;
+}
+
 
 uint KApplication::keyboardModifiers()
 {
