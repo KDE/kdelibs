@@ -1030,6 +1030,15 @@ QString i18n(const char* text) {
   return QString::fromUtf8(text);
 }
 
+QString i18n(const char* index, const char *text) {
+#ifdef ENABLE_NLS
+  register KLocale *instance = KGlobal::locale();
+  if (instance)
+     return instance->translate(index, text);
+#endif
+  return QString::fromUtf8(text);
+}
+
 void KLocale::initInstance() {
   if (KGlobal::_locale)
      return;
