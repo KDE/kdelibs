@@ -53,8 +53,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_listing = config.readListEntry( "listing" );
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
-  m_mimetypesExcludedFromFastMode = config.readListEntry( "mimetypesExcludedFromFastMode" );
-  m_patternsExcludedFromFastMode = config.readListEntry( "patternsExcludedFromFastMode" );
+  m_determineMimetypeFromExtension = config.readBoolEntry( "determineMimetypeFromExtension", true );
   m_icon = config.readEntry( "Icon", "mime_empty" );
 
   QString tmp = config.readEntry( "input" );
@@ -74,7 +73,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
     m_outputType = KProtocolInfo::T_NONE;
 }
 
-KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) : 
+KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
 	KSycocaEntry( _str, offset)
 {
    load( _str );
@@ -92,10 +91,9 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving;
+          i_supportsMoving, i_determineMimetypeFromExtension;
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
-        >> m_mimetypesExcludedFromFastMode 
-        >> m_patternsExcludedFromFastMode
+        >> i_determineMimetypeFromExtension 
         >> m_icon
         >> i_inputType >> i_outputType
         >> i_isSourceProtocol >> i_isHelperProtocol
@@ -114,6 +112,7 @@ KProtocolInfo::load( QDataStream& _str)
    m_supportsDeleting = (i_supportsDeleting != 0);
    m_supportsLinking = (i_supportsLinking != 0);
    m_supportsMoving = (i_supportsMoving != 0);
+   m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
 }
 
 void
@@ -126,7 +125,7 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving;
+          i_supportsMoving, i_determineMimetypeFromExtension;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -139,11 +138,11 @@ KProtocolInfo::save( QDataStream& _str)
    i_supportsDeleting = m_supportsDeleting ? 1 : 0;
    i_supportsLinking = m_supportsLinking ? 1 : 0;
    i_supportsMoving = m_supportsMoving ? 1 : 0;
+   i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
 
 
    _str << m_name << m_exec << m_listing << m_defaultMimetype
-        << m_mimetypesExcludedFromFastMode 
-        << m_patternsExcludedFromFastMode
+        << i_determineMimetypeFromExtension 
         << m_icon
         << i_inputType << i_outputType
         << i_isSourceProtocol << i_isHelperProtocol
@@ -325,35 +324,15 @@ QString KProtocolInfo::defaultMimetype( const QString& _protocol )
   return prot->m_defaultMimetype;
 }
 
-bool KProtocolInfo::mimetypeFastMode( const QString& _protocol, const QString & _mimetype )
+bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _protocol );
   if ( !prot )
   {
     kdError(127) << "Protocol " << _protocol << " not found" << endl;
-    return false;
+    return true;
   }
-
-  // return true if the exclude-list doesn't contain this mimetype
-  return !(prot->m_mimetypesExcludedFromFastMode.contains(_mimetype));
-}
-
-bool KProtocolInfo::patternFastMode( const QString& _protocol, const QString & _filename )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-  {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
-    return false;
-  }
-
-  // return true if the exclude-list doesn't contain this mimetype
-  const QStringList & pat = prot->m_patternsExcludedFromFastMode;
-  for ( QStringList::ConstIterator pit = pat.begin(); pit != pat.end(); ++pit )
-    if ( KStringHandler::matchFilename( _filename, *pit ) )
-      return false; // in the list -> EXCLUDED
-
-  return true; // not in the list -> ok
+  return prot->m_determineMimetypeFromExtension;
 }
 
 QString KProtocolInfo::exec( const QString& _protocol )

@@ -33,7 +33,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 26
+#define KSYCOCA_VERSION 27
 
 /**
  * @internal

@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
-   
+
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -47,23 +47,23 @@ public:
    * Read a protocol description file
    */
   KProtocolInfo( const QString & path);
-  
+
   /**
    * @internal construct a KProtocolInfo from a stream
-   */ 
+   */
   KProtocolInfo( QDataStream& _str, int offset);
 
   virtual ~KProtocolInfo();
 
   virtual QString name() const { return m_name; }
 
-  virtual bool isValid() const { return true; } 
+  virtual bool isValid() const { return true; }
 
   /**
    * @internal
    * Load the protocol info from a stream.
    */
-  virtual void load(QDataStream& ); 
+  virtual void load(QDataStream& );
 
   /**
    * @internal
@@ -103,36 +103,14 @@ public:
   /**
    * @returns the name of the icon, associated with the specified protocol
    */
-  static QString icon( const QString& protocol );    
-    
+  static QString icon( const QString& protocol );
+
   /**
    * @returns default mimetype for this protocol
    */
   static QString defaultMimetype( const QString& protocol );
 
-  /**
-   * Determining the mimetype of a URL can be done by simply looking at
-   * the extension (that's the fast mode). However, when
-   * the extension is unknown, a KIO::mimetype job will be necessary
-   * (i.e. downloading the beginning of the file or asking the server for
-   * the mimetype).
-   *
-   * @returns true if we can trust the mimetype @p mimetype for
-   * the protocol @p protocol. A HTTP URL ending with
-   * .pl or .asp may not return that actual type, but anything else.
-   * This information is used by KRun to know whether it should trust
-   * or not the result of KMimeType::findByURL.
-   * Defaults to true.
-   */
-  static bool mimetypeFastMode( const QString& protocol, const QString& mimetype );
-
-  /**
-   * Same as @ref mimetypeFastMode but using patterns to match the filename.
-   * Used to avoid conflicts with existing mimetypes.
-   * Example: *.stm is both audio/x-mod and shtml, over HTTP.
-   * Using mimetypeFastMode is preferred in other cases, though.
-   */
-  static bool patternFastMode( const QString& protocol, const QString& filename );
+  static bool determineMimetypeFromExtension( const QString &protocol );
 
   /**
    * @returns list of all known protocols
@@ -156,8 +134,7 @@ protected:
   bool m_supportsLinking;
   bool m_supportsMoving;
   QString m_defaultMimetype;
-  QStringList m_mimetypesExcludedFromFastMode;
-  QStringList m_patternsExcludedFromFastMode;
+  bool m_determineMimetypeFromExtension;
   QString m_icon;
 };
 
