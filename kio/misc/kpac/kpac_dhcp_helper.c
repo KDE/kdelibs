@@ -112,6 +112,8 @@ uint32_t send_request(int sock)
 	struct dhcp_msg request;
 	uint8_t *offs = request.options;
 
+	hostname[0] = '\0';
+	hostname[255] = '\0';
 	if (gethostname(hostname, 255) == -1 ||
 		strlen(hostname) == 0 ||
 		(hent = gethostbyname(hostname)) == NULL)

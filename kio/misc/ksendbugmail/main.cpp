@@ -107,8 +107,10 @@ int main(int argc, char **argv) {
         p = getpwuid(getuid());
         fromaddr = QString::fromLatin1(p->pw_name);
         fromaddr += "@";
-        char buffer[200];
-        gethostname(buffer, 200);
+        char buffer[256];
+	buffer[0] = '\0';
+        if(!gethostname(buffer, sizeof(buffer)))
+	    buffer[sizeof(buffer)-1] = '\0';
         fromaddr += buffer;
     }
     kdDebug() << "fromaddr \"" << fromaddr << "\"" << endl;
