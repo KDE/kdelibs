@@ -585,7 +585,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             int ll = kMin(src.length(), 9-cBufferPos);
             while(ll--) {
                 QChar csrc(src[0].lower());
-                cc = src[0].cell();
+                cc = csrc.cell();
 
                 if(csrc.row() || !((cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'f'))) {
                     Entity = SearchSemicolon;
