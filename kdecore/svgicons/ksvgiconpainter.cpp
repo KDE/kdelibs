@@ -592,6 +592,9 @@ public:
 				double t;
 				double th_half;
 
+				double _th0 = th0 + i * th_arc / n_segs;
+				double _th1 = th0 + (i + 1) * th_arc / n_segs;
+
 				sin_th = sin(angle * (M_PI / 180.0));
 				cos_th = cos(angle * (M_PI / 180.0));
 
@@ -601,14 +604,14 @@ public:
 				a10 = sin_th * r1;
 				a11 = cos_th * r2;
 
-				th_half = 0.5 * (th1 - th0);
+				th_half = 0.5 * (_th1 - _th0);
 				t = (8.0 / 3.0) * sin(th_half * 0.5) * sin(th_half * 0.5) / sin(th_half);
-				x1 = xc + cos(th0) - t * sin(th0);
-				y1 = yc + sin(th0) + t * cos(th0);
-				x3 = xc + cos(th1);
-				y3 = yc + sin(th1);
-				x2 = x3 + t * sin(th1);
-				y2 = y3 - t * cos(th1);
+				x1 = xc + cos(_th0) - t * sin(_th0);
+				y1 = yc + sin(_th0) + t * cos(_th0);
+				x3 = xc + cos(_th1);
+				y3 = yc + sin(_th1);
+				x2 = x3 + t * sin(_th1);
+				y2 = y3 - t * cos(_th1);
 
 				ensureSpace(vec, index);
 
