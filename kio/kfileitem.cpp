@@ -425,9 +425,14 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::acceptsDrops()
 {
-  // Any directory : yes
+  // A directory ?
   if ( S_ISDIR( mode() ) )
-    return true;
+  {
+    if ( m_bIsLocalURL ) // local -> check if we can enter it
+       return (access( QFile::encodeName(m_url.path()), X_OK ) == 0);
+    else
+       return true; // assume ok for remote urls
+  }
 
   // But only local .desktop files and executables
   if ( !m_bIsLocalURL )
