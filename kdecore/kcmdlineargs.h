@@ -369,7 +369,7 @@ public:
    * Used by @ref url
    * Made public for apps that don't use KCmdLineArgs
    */
-  KURL makeURL( const char * urlArg );
+  static KURL makeURL( const char * urlArg );
 
   /**
    *  Clear all options and arguments.
