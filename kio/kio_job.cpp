@@ -1144,7 +1144,7 @@ void KIOSlavePool::slotSlaveDied(KProcess *proc) {
    kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool" );
 
    Entry *entry = m_allSlaves.first();
-   for(entry = m_allSlaves.next(); entry; entry = m_allSlaves.next())
+   for(; entry; entry = m_allSlaves.next())
    {
       assert(entry->m_pSlave);
 
