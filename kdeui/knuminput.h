@@ -702,7 +702,7 @@ private:
  *  (e.g. hexadecimal).
  *
  *  The class provides an easy interface to use other
- *  numeric systems then the decimal.
+ *  numeric systems than the decimal.
  *
  *  @short A @ref QSpinBox with support for arbitrary base numbers.
  */
