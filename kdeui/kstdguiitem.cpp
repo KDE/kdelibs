@@ -89,12 +89,12 @@ KGuiItem KStdGuiItem::yes()
 
 KGuiItem KStdGuiItem::no()
 {
-  return KGuiItem( i18n( "&No" ), "no", i18n( "No" ) );
+  return KGuiItem( i18n( "&No" ), "", i18n( "No" ) );
 }
 
 KGuiItem KStdGuiItem::discard()
 {
-  return KGuiItem( i18n( "&Discard" ), "discard", i18n( "Discard changes" ),
+  return KGuiItem( i18n( "&Discard" ), "", i18n( "Discard changes" ),
                    i18n( "Pressing this button will discard all recent "
                          "changes made in this dialog" ) );
 }
@@ -146,7 +146,7 @@ KGuiItem KStdGuiItem::close()
 
 KGuiItem KStdGuiItem::defaults()
 {
-  return KGuiItem( i18n( "&Defaults" ), "defaults",
+  return KGuiItem( i18n( "&Defaults" ), "",
                    i18n( "Reset all items to their default values" ) );
 }
 
