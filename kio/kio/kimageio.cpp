@@ -69,8 +69,15 @@ void
 KImageIOFormat::load( QDataStream& _str)
 {
    Q_INT8 iRead, iWrite;
-   _str >> mType >> mHeader >> mFlags >> iRead >> iWrite
-        >> mSuffices >> mMimetype >> mLib >> mPattern >> rPaths;
+   KSycocaEntry::read(_str, mType);
+   KSycocaEntry::read(_str, mHeader);
+   KSycocaEntry::read(_str, mFlags);
+   _str >> iRead >> iWrite;
+   KSycocaEntry::read(_str, mSuffices);
+   KSycocaEntry::read(_str, mMimetype);
+   KSycocaEntry::read(_str, mLib);
+   KSycocaEntry::read(_str, mPattern);
+   KSycocaEntry::read(_str, rPaths);
    bRead = (iRead != 0);
    bWrite = (iWrite != 0);
 }
@@ -158,7 +165,9 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
   if (m_str)
   {
      // read from database
-     (*m_str) >> mReadPattern >> mWritePattern >> rPath;
+     KSycocaEntry::read(*m_str, mReadPattern);
+     KSycocaEntry::read(*m_str, mWritePattern);
+     KSycocaEntry::read(*m_str, rPath);
      if (!formatList)
      {
         kiioflsd.setObject( formatList, new KImageIOFormatList());
