@@ -198,7 +198,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 					}
 					else
 					{
-						char *p2 = strchr( p, ' ' );
+						const char *p2 = strchr( p, ' ' );
 						if ( p2 == 0L )
 							p2 = strchr( p, '>');
 						else
