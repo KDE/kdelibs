@@ -21,23 +21,32 @@
 #include "kcharselect.h"
 #include "kcharselect.moc"
 
+#include <qbrush.h>
+#include <qcolor.h>
 #include <qevent.h>
 #include <qfont.h>
-#include <qpen.h>
-#include <qbrush.h>
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qlabel.h>
+#include <qfontdatabase.h>
 #include <qhbox.h>
 #include <qkeycode.h>
-#include <qfontdatabase.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qpainter.h>
+#include <qpen.h>
+#include <qregexp.h>
 #include <qstyle.h>
 #include <qtooltip.h>
+#include <qvalidator.h>
 
-#include <klocale.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kapplication.h>
+#include <klocale.h>
+
+class KCharSelect::KCharSelectPrivate
+{
+public:
+    QLineEdit *unicodeLine;
+};
 
 QFontDatabase * KCharSelect::fontDataBase = 0;
 
@@ -339,7 +348,9 @@ void KCharSelectTable::setToolTips()
 	{
 	    QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
 	    QToolTip::remove(this,r);
-	    QToolTip::add(this, r, i18n("Character code","UTF code: %1").arg(QString::number(vTableNum * 256 + numCols()*i + j)));
+	    QString s;
+	    s.sprintf("%04X", vTableNum * 256 + numCols()*i + j);
+	    QToolTip::add(this, r, i18n("Character code","UTF code: %1").arg(s));
 	}
     }
 }
@@ -352,6 +363,7 @@ void KCharSelectTable::setToolTips()
 KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
     : QVBox( parent, name )
 {
+    d = new KCharSelectPrivate;
     setSpacing( KDialog::spacingHint() );
     QHBox *bar = new QHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
@@ -377,6 +389,22 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
+    QLabel *lUnicode = new QLabel( i18n( "&UTF code:" ), bar );
+    lUnicode->resize( lUnicode->sizeHint() );
+    lUnicode->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+    lUnicode->setMaximumWidth( lUnicode->sizeHint().width() );
+
+    QRegExp rx( "[a-fA-F0-9]{1,4}" );
+    QValidator* validator = new QRegExpValidator( rx, this );
+
+    d->unicodeLine = new QLineEdit( bar );
+    d->unicodeLine->setValidator(validator);
+    lUnicode->setBuddy(d->unicodeLine);
+    d->unicodeLine->resize( d->unicodeLine->sizeHint() );
+    slotUpdateUnicode(_chr);
+
+    connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
+
     charTable = new KCharSelectTable( this, name, _font.isEmpty() ? QVBox::font().family() : _font, _chr, _tableNum );
     QSize sz( charTable->contentsWidth()  +  4 ,
               charTable->contentsHeight() +  4 );
@@ -389,6 +417,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     setFont( _font.isEmpty() ? QVBox::font().family() : _font );
     setTableNum( _tableNum );
 
+    connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
     connect( charTable, SIGNAL( highlighted( const QChar & ) ), this, SLOT( charHighlighted( const QChar & ) ) );
     connect( charTable, SIGNAL( highlighted() ), this, SLOT( charHighlighted() ) );
     connect( charTable, SIGNAL( activated( const QChar & ) ), this, SLOT( charActivated( const QChar & ) ) );
@@ -430,6 +459,7 @@ void KCharSelect::setFont( const QString &_font )
 void KCharSelect::setChar( const QChar &_chr )
 {
     charTable->setChar( _chr );
+    slotUpdateUnicode( _chr );
 }
 
 //==================================================================
@@ -461,6 +491,34 @@ void KCharSelect::fontSelected( const QString &_font )
 void KCharSelect::tableChanged( int _value )
 {
     charTable->setTableNum( _value );
+}
+
+//==================================================================
+void KCharSelect::slotUnicodeEntered( )
+{
+    QString s = d->unicodeLine->text();
+    if (s.isEmpty())
+        return;
+    
+    bool ok;
+    int uc = s.toInt(&ok, 16);
+    if (!ok)
+        return;
+    
+    int table = uc / 256;
+    charTable->setTableNum( table );
+    tableSpinBox->setValue(table);
+    QChar ch(uc);
+    charTable->setChar( ch );
+    charActivated( ch );
+}
+
+void KCharSelect::slotUpdateUnicode( const QChar &c )
+{
+    int uc = c.unicode();
+    QString s;
+    s.sprintf("%04X", uc);
+    d->unicodeLine->setText(s);
 }
 
 void KCharSelectTable::virtual_hook( int, void*)

@@ -236,6 +236,8 @@ protected slots:
     void charTableUp() { if ( tableNum() < 255 ) setTableNum( tableNum() + 1 ); }
     void charTableDown() { if ( tableNum() > 0 ) setTableNum( tableNum() - 1 ); }
     void slotDoubleClicked() { emit doubleClicked(); }
+    void slotUnicodeEntered();
+    void slotUpdateUnicode( const QChar &c );
 signals:
     void highlighted( const QChar &c );
     void highlighted();
@@ -251,6 +253,7 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    class KCharSelectPrivate;
     KCharSelectPrivate *d;
 };
 
