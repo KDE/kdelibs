@@ -187,13 +187,13 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( ! fileName.isNull() && _url.path().right(1) != "/" )
     {
       // Try to find it out by looking at the filename
-      KMimeType * mime = KServiceTypeFactory::self()->findFromPattern( fileName );
+      KMimeType::Ptr mime = KServiceTypeFactory::self()->findFromPattern( fileName );
       if ( mime && !_is_local_file )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
         if ( KProtocolInfo::mimetypeFastMode( _url.protocol(), mime->name() ) &&
              KProtocolInfo::patternFastMode( _url.protocol(), fileName ) )
-          return KMimeType::Ptr( mime );
+          return mime;
       }
 
       // Another filename binding, hardcoded, is .desktop:
