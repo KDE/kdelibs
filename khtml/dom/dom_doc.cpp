@@ -31,6 +31,7 @@
 #include "dom_text.h"
 #include "dom_xml.h"
 #include "dom2_range.h"
+#include <stdio.h>               // for printf
 using namespace DOM;
 
 
@@ -177,6 +178,14 @@ bool Document::isHTMLDocument()
 Range Document::createRange()
 {
     return Range( *this );
+}
+
+Range Document::createRange(const Node &sc, const long so, const Node &ec, const long eo)
+{
+    Range r;
+    r.setStart( sc, so );
+    r.setEnd( ec, eo );
+    return r;
 }
 
 // ----------------------------------------------------------------------------

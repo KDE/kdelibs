@@ -283,6 +283,7 @@ public:
      * not part of the DOM
      */
     Range createRange();
+    Range createRange(const Node &sc, const long so, const Node &ec, const long eo);
     
 protected:
     Document( DocumentImpl *i);
