@@ -1102,7 +1102,7 @@ void HTMLInputElementImpl::attach()
         /* nobreak */
     case ISINDEX:
     case FILE:
-        addCSSProperty(CSS_PROP_COLOR, "text");
+        addCSSProperty(CSS_PROP_COLOR, "\\2d konq-text");
         break;
     case SUBMIT:
     case RESET:
@@ -1698,7 +1698,7 @@ void HTMLSelectElementImpl::attach()
     assert(parentNode());
     assert(!renderer());
 
-    addCSSProperty(CSS_PROP_COLOR, "text");
+    addCSSProperty(CSS_PROP_COLOR, "\\2d konq-text");
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -2119,7 +2119,7 @@ void HTMLTextAreaElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    addCSSProperty(CSS_PROP_COLOR, "text");
+    addCSSProperty(CSS_PROP_COLOR, "\\2d konq-text");
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();

@@ -20,13 +20,9 @@ w               [ \t\r\n\f]*
 nl              \n|\r\n|\r|\f
 range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|{h})))))
 
-%x COMMENT
-
 %%
-"/*"                            {BEGIN(COMMENT);}
-<COMMENT>"*/"                   {BEGIN(0);}
-<COMMENT>\n                     {/* ignore */}
-<COMMENT>.                      {/* ignore */}
+
+\/\*[^*]*\*+([^/*][^*]*\*+)*\/  /* ignore comments */
 
 [ \t\r\n\f]+            {yyTok = S; return yyTok;}
 

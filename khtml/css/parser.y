@@ -767,6 +767,7 @@ unary_term:
   | KHERZ maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_KHZ; }
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
+  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit == CSSPrimitiveValue::CSS_DIMENSION }
     ;
 
 
@@ -814,7 +815,7 @@ invalid_rule:
 	kdDebug( 6080 ) << "skipped invalid rule" << endl;
 #endif
     }
-/* 
+/*
   Seems like the two rules below are trying too much and violating
   http://www.hixie.ch/tests/evil/mixed/csserrorhandling.html
 

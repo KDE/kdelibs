@@ -34,6 +34,7 @@ namespace DOM {
     class DocumentImpl;
     class CSSValueImpl;
     class CSSValueListImpl;
+    class CSSPrimitiveValueImpl;
     class CSSStyleDeclarationImpl;
     class CSSProperty;
     class CSSRuleListImpl;
@@ -118,6 +119,7 @@ namespace DOM {
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
 	CSSValueListImpl *parseFontFamily();
+	CSSPrimitiveValueImpl *parseColor();
 
 	int yyparse( void );
     public:
