@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
                   2000-2002 Stephan Kulow (coolo@kde.org)
+                  2002 Holger Freyther (freyther@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,7 +23,19 @@
 #define _KDEBUG_H_
 
 #include <qstring.h>
+
 class QWidget;
+class QDateTime;
+class QDate;
+class QTime;
+class QPoint;
+class QSize;
+class QRect;
+class QRegion;
+class KURL;
+class QStringList;
+class QColor;
+class QBrush;
 
 class kdbgstream;
 class kndbgstream;
@@ -40,7 +53,7 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 class kdbgstreamprivate;
 /**
  * kdbgstream is a text stream that allows you to print debug messages.
- * Using the overloaded "<<" operator you can send messages. Usually 
+ * Using the overloaded "<<" operator you can send messages. Usually
  * you do not create the kdbgstream yourself, but use @ref kdDebug()
  * @ref kdWarning(), @ref kdError() or @ref kdFatal to obtain one.
  *
@@ -222,12 +235,92 @@ class kdbgstream {
      * @return this stream
      */
     kdbgstream &form(const char *format, ...);
+
     /** Operator to print out basic information about a QWidget.
      *  Output of class names only works if the class is moc'ified.
      * @param widget the widget to print
      * @return this stream
      */
     kdbgstream& operator << (QWidget* widget);
+
+    /**
+     * Prints the given value.
+     * @param dateTime the datetime to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QDateTime& dateTime );
+
+    /**
+     * Prints the given value.
+     * @param date the date to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QDate& date );
+
+    /**
+     * Prints the given value.
+     * @param time the time to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QTime& time );
+
+    /**
+     * Prints the given value.
+     * @param point the point to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QPoint& point );
+
+    /**
+     * Prints the given value.
+     * @param size the QSize to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QSize& size );
+
+    /**
+     * Prints the given value.
+     * @param rect the QRect to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QRect& rect);
+
+    /**
+     * Prints the given value.
+     * @param region the QRegion to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QRegion& region);
+
+    /**
+     * Prints the given value.
+     * @param url the url to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const KURL& url );
+
+    /**
+     * Prints the given value.
+     * @param list the stringlist to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QStringList& list);
+
+    /**
+     * Prints the given value.
+     * @param color the color to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QColor& color);
+
+    /**
+     * Prints the given value.
+     * @param brush the brush to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QBrush& brush );
+
+
  private:
     QString output;
     unsigned int area, level;
@@ -236,7 +329,7 @@ class kdbgstream {
 };
 
 /**
- * Prints an "\n". 
+ * Prints an "\n".
  * @param s the debug stream to write to
  * @return the debug stream (@p s)
  */
@@ -348,6 +441,18 @@ class kndbgstream {
      * @return this stream
      */
     kndbgstream &form(const char *, ...) { return *this; }
+
+    kndbgstream& operator<<( const QDateTime& ) { return *this; }
+    kndbgstream& operator<<( const QDate&     ) { return *this; }
+    kndbgstream& operator<<( const QTime&     ) { return *this; }
+    kndbgstream& operator<<( const QPoint & )  { return *this; }
+    kndbgstream& operator<<( const QSize & )  { return *this; }
+    kndbgstream& operator<<( const QRect & )  { return *this; }
+    kndbgstream& operator<<( const QRegion & ) { return *this; }
+    kndbgstream& operator<<( const KURL & )  { return *this; }
+    kndbgstream& operator<<( const QStringList & ) { return *this; }
+    kndbgstream& operator<<( const QColor & ) { return *this; }
+    kndbgstream& operator<<( const QBrush & ) { return *this; }
 };
 
 /**

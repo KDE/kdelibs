@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+                  2002 Holger Freyther (freyther@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,12 +35,22 @@
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstandarddirs.h"
+
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
 #include <qintdict.h>
 #include <qstring.h>
 #include <qtextstream.h>
+#include <qdatetime.h>
+#include <qpoint.h>
+#include <qrect.h>
+#include <qregion.h>
+#include <qstringlist.h>
+#include <qbrush.h>
+#include <qsize.h>
+
+#include <kurl.h>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -155,9 +166,9 @@ enum DebugLevels {
 
 
 struct kDebugPrivate {
-  kDebugPrivate() : 
+  kDebugPrivate() :
   	oldarea(0), config(0) { }
-  	
+
   ~kDebugPrivate() { delete config; }
 
   QString aAreaName;
@@ -410,6 +421,84 @@ kdbgstream& kdbgstream::operator << (QWidget* widget)
       flush();
     }
   return *this;
+}
+/*
+ * either use 'output' directly and do the flush if needed
+ * or use the QString operator which calls the char* operator
+ *
+ */
+kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
+    *this << time.toString();
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QDate& date) {
+    *this << date.toString();
+
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QTime& time ) {
+    *this << time.toString();
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
+    *this << "(" << p.x() << ", " << p.y() << ")";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QSize& s ) {
+    *this << "[" << s.width() << "x" << s.height() << "]";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QRect& r ) {
+    *this << "[" << r.left() << ", " << r.top() << " - " << r.right() << ", " << r.bottom() << "]";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
+    *this<< "[ ";
+
+    QMemArray<QRect>rs=reg.rects();
+    for (uint i=0;i<rs.size();++i)
+        *this << QString("[%1, %2 - %3, %4] ").arg(rs[i].left()).arg(rs[i].top()).arg(rs[i].right()).arg(rs[i].bottom() ) ;
+
+    *this <<"]";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const KURL& u ) {
+    *this << u.prettyURL();
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
+    *this << "(";
+    *this << l.join(",");
+    *this << ")";
+
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QColor& c ) {
+    if ( c.isValid() )
+        *this <<c.name();
+    else
+        *this << "(invalid/default)";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QBrush& b) {
+    static const char* const s_brushStyles[] = {
+        "NoBrush", "SolidPattern", "Dense1Pattern", "Dense2Pattern", "Dense3Pattern",
+        "Dense4Pattern", "Dense5Pattern", "Dense6Pattern", "Dense7Pattern",
+        "HorPattern", "VerPattern", "CrossPattern", "BDiagPattern", "FDiagPattern",
+        "DiagCrossPattern" };
+
+    *this <<"[ style: ";
+    *this <<s_brushStyles[ b.style() ];
+    *this <<" color: ";
+    // can't use operator<<(str, b.color()) because that terminates a kdbgstream (flushes)
+    if ( b.color().isValid() )
+        *this <<b.color().name() ;
+    else
+        *this <<"(invalid/default)";
+    if ( b.pixmap() )
+        *this <<" has a pixmap";
+    *this <<" ]";
+    return *this;
 }
 
 QString kdBacktrace(int levels)
