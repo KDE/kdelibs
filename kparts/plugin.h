@@ -35,14 +35,14 @@ namespace KParts
  * or to a @ref Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts,
- * with one small difference: The document tag, named kpartplugin
- * should have an additional attribute, named "library", and contain
- * the name of the library implementing the plugin.
+ * with one small difference: The document tag should have an additional 
+ * attribute, named "library", and contain the name of the library implementing
+ * the plugin.
  *
  * If you want this plugin to be used by a part, you need to
  * install the rc file under the directory
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
- * where instancename is the name of the part's instance.  
+ * where instancename is the name of the part's instance.
  **/
 class Plugin : public QObject, public KXMLGUIClient
 {
@@ -73,7 +73,7 @@ public:
      * Returns a list of plugin objects loaded for @p parent. This
      * functions basically calls the @ref queryList method of @ref
      * QObject to retrieve the list of child objects inheritting @ref
-     * KParts::Plugin .  
+     * KParts::Plugin .
      **/
     static QValueList<KXMLGUIClient *> pluginClients( QObject *parent );
 
