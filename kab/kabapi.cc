@@ -88,7 +88,7 @@ int KabAPI::exec()
 AddressBook::ErrorCode KabAPI::init()
 {
   // ############################################################################  
-  book=new AddressBook(this, "KABAPI::book", true);
+  book=new AddressBook(0, "KABAPI::book", true);  //change parent from "this" to "0" //dsweet
   if(book->getState()==AddressBook::NoError)
     {
       connect(book, SIGNAL(setStatus(const QString&)),
