@@ -349,6 +349,7 @@ class KDialogBase : public KDialog
      * @param user1 User button1 text item.
      * @param user2 User button2 text item.
      * @param user3 User button3 text item.
+     * @since: 3.2
      */
 
     KDialogBase( KDialogBase::DialogType dialogFace, WFlags f,
