@@ -31,14 +31,12 @@
 
 #include "kcalendarsystemhijri.h"
 
-
 #define GREGORIAN_CROSSOVER 2299161
-
 
 /* radians per degree (pi/180) */
 static const double RadPerDeg = 0.01745329251994329577;
 
-/* Synodic Period (mean time between 2 successive 
+/* Synodic Period (mean time between 2 successive
  * new moon: 29d, 12 hr, 44min, 3sec
  */
 static const double SynPeriod = 29.53058868;
@@ -76,7 +74,7 @@ typedef struct {
  * This function returns the Julian date/time of the Nth new moon since
  * January 1900.  The synodic month is passed as parameter.
  *
- * Adapted from "Astronomical  Formulae for Calculators" by 
+ * Adapted from "Astronomical  Formulae for Calculators" by
  * Jean Meeus, Third Edition, Willmann-Bell, 1985.
  */
 static double newMoon(long n)
@@ -91,17 +89,17 @@ static double newMoon(long n)
   jd =  jd1900
     + SynPeriod * k
     - 0.0001178 * t2
-    - 0.000000155 * t3 
+    - 0.000000155 * t3
     + 0.00033 * sin(RadPerDeg * (166.56 + 132.87 * t - 0.009173 * t2));
 
   // Sun's mean anomaly in radian
   sa =  RadPerDeg * (359.2242
-    + 29.10535608 * k 
+    + 29.10535608 * k
     - 0.0000333 * t2
     - 0.00000347 * t3);
 
   // Moon's mean anomaly
-    ma =  RadPerDeg * (306.0253 
+    ma =  RadPerDeg * (306.0253
     + 385.81691806 * k
     + 0.0107306 * t2
     + 0.00001236 * t3);
@@ -176,8 +174,6 @@ static double getJulianDay(long day, long month, long year)
   return (double) intgr;
 }
 
-
-
 /*
  * compute general hijri date structure from gregorian date
  */
@@ -217,7 +213,7 @@ static SDATE * gregorianToHijri(long day, long month, long year)
 
   // Round up the day
   day = (long)(((long)julday) - newjd + 0.5);
-  month =  (syndiff % 12) + 1; 
+  month =  (syndiff % 12) + 1;
 
   // currently not supported
   //dayOfYear = (sal_Int32)(month * SynPeriod + day);
@@ -235,17 +231,16 @@ static SDATE * gregorianToHijri(long day, long month, long year)
   h.day = day;
   h.mon = month;
   h.year = year;
-  
+
   return(&h);
 }
 
-
 /**
- * @internal 
- * This algorithm is taken from "Numerical Recipes in C", 2nd ed, pp 14-15. 
- * This algorithm only valid for non-negative gregorian year                
+ * @internal
+ * This algorithm is taken from "Numerical Recipes in C", 2nd ed, pp 14-15.
+ * This algorithm only valid for non-negative gregorian year
  */
-static void getGregorianDay(long lJulianDay, long *pnDay, 
+static void getGregorianDay(long lJulianDay, long *pnDay,
    long *pnMonth, long *pnYear)
 {
   /* working variables */
@@ -263,7 +258,7 @@ static void getGregorianDay(long lJulianDay, long *pnDay,
     /* no adjustment needed */
     lFactorA = lJulianDay;
   }
-      
+
   lFactorB = lFactorA + 1524;
   lFactorC = (long) (6680.0 + ((float) (lFactorB - 2439870) - 122.1) / 365.25);
   lFactorD = (long) (365 * lFactorC + (0.25 * lFactorC));
@@ -298,7 +293,7 @@ static SDATE *hijriToGregorian(long *day, long *month, long *year)
   // CFM unused double dayfraction;
   double jday;
   // CFM unused long dayint;
-  
+
   if ( *year < 0 ) (*year)++;
 
   // Number of month from reference point
@@ -315,7 +310,7 @@ static SDATE *hijriToGregorian(long *day, long *month, long *year)
 
   // Use algorithm from "Numerical Recipes in C"
   getGregorianDay((long)jday, day, month, year);
-    
+
   // Julian -> Gregorian only works for non-negative year
   if ( *year <= 0 )
   {
@@ -323,11 +318,11 @@ static SDATE *hijriToGregorian(long *day, long *month, long *year)
     *month = -1;
     *year = -1;
   }
-    
+
   h.day = (int)*day;
   h.mon = (int)*month;
   h.year = (int)*year;
-  
+
   return(&h);
 }
 
@@ -346,7 +341,6 @@ KCalendarSystemHijri::KCalendarSystemHijri(const KLocale * locale)
 KCalendarSystemHijri::~KCalendarSystemHijri()
 {
 }
-
 
 int KCalendarSystemHijri::year(const QDate& date) const
 {
@@ -564,7 +558,7 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
 
   if ( d < 1 || d > hndays(m, y) )
     return false;
-    
+
   SDATE * gd = hijriToGregorian( (long *)&d, (long *)&m, (long *)&y );
 
   return date.setYMD(gd->year, gd->mon, gd->day);
@@ -629,7 +623,7 @@ int KCalendarSystemHijri::dayOfYear(const QDate & date) const
   setYMD(first, year(date), 1, 1);
 
   return first.daysTo(date) + 1;
-  
+
   return 100;
 }
 
@@ -644,24 +638,21 @@ static int islamicLeapYear(int year)
     return 0;
 }
 
-
 int KCalendarSystemHijri::daysInMonth(const QDate& date) const
-{ 
+{
   SDATE *sd = toHijri(date);
- 
+
   return hndays(sd->mon, sd->year);
 }
 
 int KCalendarSystemHijri::hndays(int month, int year) const
 {
-  if (((month % 2) == 1) || ((month == 12) 
+  if (((month % 2) == 1) || ((month == 12)
     && islamicLeapYear(year)))
     return 30;
   else
-    return 29;  
+    return 29;
 }
-
-
 
 // Min valid year that may be converted to QDate
 int KCalendarSystemHijri::minValidYear() const
@@ -679,7 +670,7 @@ int KCalendarSystemHijri::maxValidYear() const
   QDate date(8000, 1, 1);
 
   SDATE *sd = toHijri(date);
-  
+
   return sd->year;
 }
 
@@ -732,7 +723,6 @@ QDate KCalendarSystemHijri::addMonths( const QDate & date, int nmonths ) const
   y += m / 12;
   m %= 12;
   ++m;
-
 
   setYMD( result, y, m, day(date) );
 
