@@ -695,11 +695,22 @@ void KToolBarButton::showMenu()
   // calculate that position carefully!!
   d->m_isRaised = true;
   repaint (false);
-  QPoint p ( mapToGlobal( QPoint( 0, 0 ) ) );
-  if ( p.y() + height() + d->m_popup->sizeHint().height() > KApplication::desktop()->height() )
-      p.setY( p.y() - d->m_popup->sizeHint().height() );
+
+  QPoint p;
+  // Calculate position from the toolbar button, only if the button is in the toolbar !
+  // If we are in the overflow menu, use the mouse position (as Qt does)
+  bool bInToolbar = QRect( 0, 0, d->m_parent->width(), d->m_parent->height() ).intersects( QRect( pos(), size() ) );
+  if (bInToolbar)
+  {
+    p = mapToGlobal( QPoint( 0, 0 ) );
+    if ( p.y() + height() + d->m_popup->sizeHint().height() > KApplication::desktop()->height() )
+        p.setY( p.y() - d->m_popup->sizeHint().height() );
+    else
+        p.setY( p.y() + height( ));
+  }
   else
-      p.setY( p.y() + height( ));
+    p = QCursor::pos();
+
   if ( d->m_isToggle )
       setToggle( true ); // Turns the button into a ToggleButton ...
   d->m_popup->popup(p);
