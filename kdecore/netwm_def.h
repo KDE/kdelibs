@@ -205,16 +205,22 @@ public:
 
        @li Dialog indicates that this is a dialog window. If _NET_WM_WINDOW_TYPE is
        not set, then windows with WM_TRANSIENT_FOR set must be taken as this type.
+       
+       @li Override indicates that this window wants to have no Window Manager decorations.
+       This is for windows that would normally use either override_redirect or Motif
+       hints to give no decorations.
     **/
 
     enum WindowType {
-	Unknown = -1,
-	Normal  = 0,
-	Desktop = 1,
-	Dock    = 2,
-	Toolbar = 3,
-	Menu    = 4,
-	Dialog  = 5
+	Unknown  = -1,
+	Normal   = 0,
+	Desktop  = 1,
+	Dock     = 2,
+	Tool     = 3,
+       	Menu     = 4,
+	Dialog   = 5,
+	Override = 6,
+	Toolbar = Tool // This will go away soon, COMPAT
     };
 
     /**
