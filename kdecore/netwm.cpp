@@ -1528,6 +1528,8 @@ void NETRootInfo::update(unsigned long dirty) {
 
 		for (s = 0, n = 0, index = 0; n < nitems_ret; n++) {
 		    if (d[n] == '\0') {
+			if (p->desktop_names[index])
+			    delete [] p->desktop_names[index];
 			p->desktop_names[index++] = nstrndup((d + s), n - s + 1);
 			s = n + 1;
 		    }
