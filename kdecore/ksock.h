@@ -133,7 +133,7 @@ public:
     /**
      * Return address.
      */
-    unsigned long addr();
+    unsigned long ipv4_addr();
     
 signals:
     /** 
@@ -250,7 +250,7 @@ public:
     /** 
      * The address.
      */
-    unsigned long addr();
+    unsigned long ipv4_addr();
 
 public slots: 
     /** 

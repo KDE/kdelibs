@@ -24,55 +24,45 @@
 #include <config.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
+// on Linux/libc5, this includes linux/socket.h where SOMAXCONN is defined
+#include <sys/socket.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/un.h>
+
+#include <netinet/in.h>
+
+#include <arpa/inet.h>
+
 #include "ksock.h"
 
-#include <qapplication.h>
-
-#include <stdio.h>
 #include <errno.h>
-#ifdef STDC_HEADERS
+#include <fcntl.h>
+#include <netdb.h>
+#include <resolv.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
-#ifdef HAVE_UNISTD_H
+#include <signal.h>
 #include <unistd.h>
-#endif
+
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
+
 #if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
+#include <time.h>
 #endif
-#ifdef HAVE_SYS_SOCKET_H
-// on Linux/libc5, this includes linux/socket.h where SOMAXCONN is defined
-#include <sys/socket.h>
-#endif
+
 // Play it safe, use a reasonable default, if SOMAXCONN was nowhere defined.
 #ifndef SOMAXCONN
 #warning Your header files do not seem to support SOMAXCONN
 #define SOMAXCONN 5
 #endif
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <fcntl.h>
-#include <signal.h>
+#include <qapplication.h>
 #include <qsocketnotifier.h>
 
 #ifndef UNIX_PATH_MAX
@@ -81,10 +71,20 @@
 
 #ifdef INET6
 #define get_sin_addr(x) x.sin6_addr
+#define get_sin_port(x) x.sin6_port
 #define get_sin_family(x) x.sin6_family
+
+#define get_sin_paddr(x) x->sin6_addr
+#define get_sin_pport(x) x->sin6_port
+#define get_sin_pfamily(x) x->sin6_family
 #else
 #define get_sin_addr(x) x.sin_addr
+#define get_sin_port(x) x.sin_port
 #define get_sin_family(x) x.sin_family
+
+#define get_sin_paddr(x) x->sin_addr
+#define get_sin_pport(x) x->sin_port
+#define get_sin_pfamily(x) x->sin_family
 #endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
@@ -174,16 +174,17 @@ bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
     return false;
   
   struct hostent *hostinfo;
-  hostinfo = gethostbyname( hostname.ascii() );
-  
+  memset(&server_name, 0, sizeof(server_name));
+
+//  hostinfo = gethostbyname( hostname.ascii() );
+hostinfo = gethostbyname2(hostname.ascii(), AF_INET6);  
   if ( !hostinfo ) {
 	  warning("Unknown host %s.\n", hostname.ascii());
 	  return false;	
     }
-  get_sin_family(server_name) = hostinfo->h_addrtype;
-  server_name.sin_port = htons( port );
+  get_sin_family(server_name) = domain;
+  get_sin_port(server_name) = htons(port);
   memcpy(&get_sin_addr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
-  
   return true;
 }
 
@@ -290,14 +291,19 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
   return false;
 }
 
-unsigned long KSocket::addr()
+unsigned long KSocket::ipv4_addr()
 {
   if ( domain != PF_INET )
     return 0;
   
-  ksockaddr_in name; ksize_t len = sizeof(name);
+  sockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
-  return ntohl(name.sin_addr.s_addr);
+  if (name.sin_family == AF_INET) // It's IPv4
+    return ntohl(name.sin_addr.s_addr);
+  else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
+    return 0;
+  else // We dunno what it is
+    return 0;
 }
 
 bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
@@ -310,8 +316,8 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   } else
 #endif
   {
-    server_name->sin_family = domain;
-    server_name->sin_port = htons( port );
+    get_sin_pfamily(server_name) = domain;
+    get_sin_pport(server_name) = htons( port );
   }
 
   hostinfo = gethostbyname( hostname );
@@ -326,8 +332,8 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   } else
 #endif
   {
-    server_name->sin_family = hostinfo->h_addrtype;
-    memcpy(&server_name->sin_addr, hostinfo->h_addr_list[0], hostinfo->h_length);
+    get_sin_pfamily(server_name) = hostinfo->h_addrtype;
+    memcpy(&get_sin_paddr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
   }
 
   return true;
@@ -430,30 +436,53 @@ bool KServerSocket::init( const char *_path )
 
 bool KServerSocket::init( unsigned short int _port )
 {
-  if ( domain != PF_INET )
+  if ( 
+#ifdef INET6
+      ( domain != PF_INET6 ) &&
+#endif
+      ( domain != PF_INET  ) )
     return false;
-  
-  sock = ::socket( PF_INET, SOCK_STREAM, 0 );
+ 
+  sock = ::socket( domain, SOCK_STREAM, 0 );
   if (sock < 0)
   {
     warning( "Could not create socket\n");
     return false;
   }
 
-  ksockaddr_in name;
+  if (domain == AF_INET) {
+
+    sockaddr_in name;
     
-  name.sin_family = AF_INET;
-  name.sin_port = htons( _port );
-  name.sin_addr.s_addr = htonl(INADDR_ANY);
+    name.sin_family = domain;
+    name.sin_port = htons( _port );
+    name.sin_addr.s_addr = htonl(INADDR_ANY);
     
-  if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
-    {
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
 	  warning("Could not bind to socket\n");
 	  ::close( sock );
 	  sock = -1;
 	  return false;
     }
-    
+  }
+#ifdef INET6
+  else if (domain == AF_INET6) {
+    sockaddr_in6 name;
+
+    name.sin6_family = domain;
+    name.sin6_flowinfo = 0;
+    name.sin6_port = htons(_port);
+    memcpy(&name.sin6_addr, &in6addr_any, sizeof(in6addr_any));
+
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
+	  warning("Could not bind to socket\n");
+	  ::close( sock );
+	  sock = -1;
+	  return false;
+    }
+  }
+#endif
+
   if ( listen( sock, SOMAXCONN ) < 0 )
     {
 	  warning("Error listening on socket\n");
@@ -472,17 +501,22 @@ unsigned short int KServerSocket::port()
 
   ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
-  return ntohs(name.sin_port);
+  return ntohs(get_sin_port(name));
 }
 
-unsigned long KServerSocket::addr()
+unsigned long KServerSocket::ipv4_addr()
 {
   if ( domain != PF_INET )
-    return false;
-
-  ksockaddr_in name; ksize_t len = sizeof(name);
+    return 0;
+  
+  sockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
-  return ntohl(name.sin_addr.s_addr);
+  if (name.sin_family == AF_INET) // It's IPv4
+    return ntohl(name.sin_addr.s_addr);
+  else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
+    return 0;
+  else // We dunno what it is
+    return 0;
 }
 
 void KServerSocket::slotAccept( int )
