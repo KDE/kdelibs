@@ -59,31 +59,31 @@
 #include "xml/dom2_rangeimpl.h"
 #endif
 
-#include <kcursor.h>
-#include <kiconloader.h>
-#include <knotifyclient.h>
-#include <ksimpleconfig.h>
-#include <kstringhandler.h>
-#include <kstandarddirs.h>
-#include <kprinter.h>
-#include <klocale.h>
-#include <kstdaccel.h>
-
-#include <qtooltip.h>
-#include <qpainter.h>
-#include <qlabel.h>
-#include <qpaintdevicemetrics.h>
-#include <qstylesheet.h>
 #include <kapplication.h>
-
-#include <kimageio.h>
+#include <kcursor.h>
 #include <kdebug.h>
-#include <kurldrag.h>
-#include <qobjectlist.h>
-#include <qtimer.h>
 #include <kdialogbase.h>
+#include <kiconloader.h>
+#include <kimageio.h>
+#include <klocale.h>
+#include <knotifyclient.h>
+#include <kprinter.h>
+#include <ksimpleconfig.h>
+#include <kstandarddirs.h>
+#include <kstdaccel.h>
+#include <kstringhandler.h>
+#include <kurldrag.h>
+
+#include <qbitmap.h>
+#include <qlabel.h>
+#include <qobjectlist.h>
+#include <qpaintdevicemetrics.h>
+#include <qpainter.h>
 #include <qptrdict.h>
+#include <qtooltip.h>
 #include <qstring.h>
+#include <qstylesheet.h>
+#include <qtimer.h>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -165,6 +165,7 @@ public:
         emitCompletedAfterRepaint = CSNone;
 	cursor_icon_widget = NULL;
         m_mouseScrollTimer = 0;
+        m_mouseScrollIndicator = 0;
     }
     ~KHTMLViewPrivate()
     {
@@ -183,6 +184,8 @@ public:
 	delete m_editorContext;
 #endif // KHTML_NO_CARET
         delete cursor_icon_widget;
+        delete m_mouseScrollTimer;
+        delete m_mouseScrollIndicator;
     }
     void reset()
     {
@@ -373,12 +376,11 @@ public:
     
     QWidget* cursor_icon_widget;
         
-    // autoscrolling with MMB
-    int m_mouseScroll_lastX;
-    int m_mouseScroll_lastY;
-    int m_mouseScroll_byX;
-    int m_mouseScroll_byY;
+    // scrolling activated by MMB
+    int m_mouseScroll_byX : 4;
+    int m_mouseScroll_byY : 4;
     QTimer *m_mouseScrollTimer;
+    QWidget *m_mouseScrollIndicator;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -844,7 +846,6 @@ void KHTMLView::closeEvent( QCloseEvent* ev )
 
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
-    if (d->m_mouseScrollTimer != 0) return;
     if (!m_part->xmlDocImpl()) return;
     if (d->possibleTripleClick)
     {
@@ -862,6 +863,84 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
     //kdDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
+
+    if ( (_mouse->button() == MidButton) && !m_part->d->m_bOpenMiddleClick && !d->m_mouseScrollTimer && mev.url.isNull()) {
+        QPoint point = mapFromGlobal( _mouse->globalPos() );
+
+        d->m_mouseScroll_byX = 0;
+        d->m_mouseScroll_byY = 0;
+
+        d->m_mouseScrollTimer = new QTimer( this );
+        connect( d->m_mouseScrollTimer, SIGNAL(timeout()), this, SLOT(slotMouseScrollTimer()) );
+
+        if ( !d->m_mouseScrollIndicator ) {
+            QPixmap pixmap, icon;
+            pixmap.resize( 48, 48 );
+            pixmap.fill( QColor( qRgba( 127, 127, 127, 127 ) ) );
+
+            QPainter p( &pixmap );
+            icon = KGlobal::iconLoader()->loadIcon( "1uparrow", KIcon::Small );
+            p.drawPixmap( 16, 0, icon );
+            icon = KGlobal::iconLoader()->loadIcon( "1leftarrow", KIcon::Small );
+            p.drawPixmap( 0, 16, icon );
+            icon = KGlobal::iconLoader()->loadIcon( "1downarrow", KIcon::Small );
+            p.drawPixmap( 16, 32,icon  );
+            icon = KGlobal::iconLoader()->loadIcon( "1rightarrow", KIcon::Small );
+            p.drawPixmap( 32, 16, icon );
+            p.drawEllipse( 23, 23, 2, 2 );
+
+            d->m_mouseScrollIndicator = new QWidget( this, 0 );
+            d->m_mouseScrollIndicator->setFixedSize( 48, 48 );
+            d->m_mouseScrollIndicator->setPaletteBackgroundPixmap( pixmap );
+        }
+        d->m_mouseScrollIndicator->move( point.x()-24, point.y()-24 );
+
+        bool hasHorBar = visibleWidth() < contentsWidth();
+        bool hasVerBar = visibleHeight() < contentsHeight();
+
+        KConfig *config = KGlobal::config();
+        KConfigGroupSaver saver( config, "HTML Settings" );
+        if ( config->readBoolEntry( "ShowMouseScrollIndicator", true ) ) {
+            d->m_mouseScrollIndicator->show();
+            d->m_mouseScrollIndicator->unsetCursor();
+
+            QBitmap mask = d->m_mouseScrollIndicator->paletteBackgroundPixmap()->createHeuristicMask( true );
+
+	    if ( hasHorBar && !hasVerBar ) {
+                QBitmap bm( 16, 16, true );
+                bitBlt( &mask, 16,  0, &bm, 0, 0, -1, -1 );
+                bitBlt( &mask, 16, 32, &bm, 0, 0, -1, -1 );
+                d->m_mouseScrollIndicator->setCursor( KCursor::SizeHorCursor );
+            }
+            else if ( !hasHorBar && hasVerBar ) {
+                QBitmap bm( 16, 16, true );
+                bitBlt( &mask,  0, 16, &bm, 0, 0, -1, -1 );
+                bitBlt( &mask, 32, 16, &bm, 0, 0, -1, -1 );
+                d->m_mouseScrollIndicator->setCursor( KCursor::SizeVerCursor );
+            }
+            else
+                d->m_mouseScrollIndicator->setCursor( KCursor::SizeAllCursor );
+
+            d->m_mouseScrollIndicator->setMask( mask );
+        }
+	else {
+	    if ( hasHorBar && !hasVerBar )
+	        viewport()->setCursor( KCursor::SizeHorCursor );
+	    else if ( !hasHorBar && hasVerBar )
+	        viewport()->setCursor( KCursor::SizeVerCursor );
+	    else
+	        viewport()->setCursor( KCursor::SizeAllCursor );
+	}	
+
+        return;
+    }
+    else if ( d->m_mouseScrollTimer ) {
+        delete d->m_mouseScrollTimer;
+        d->m_mouseScrollTimer = 0;
+
+        if ( d->m_mouseScrollIndicator )
+            d->m_mouseScrollIndicator->hide();
+    }
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
@@ -948,39 +1027,36 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
-    if (d->m_mouseScrollTimer != 0) {
-        int deltaX = _mouse->globalX() - d->m_mouseScroll_lastX;
-        int deltaY = _mouse->globalY() - d->m_mouseScroll_lastY;
+    if ( d->m_mouseScrollTimer ) {
+        QPoint point = mapFromGlobal( _mouse->globalPos() );
+        
+        int deltaX = point.x() - d->m_mouseScrollIndicator->x() - 24;
+        int deltaY = point.y() - d->m_mouseScrollIndicator->y() - 24;
     
-        if (deltaX > 0) d->m_mouseScroll_byX = 1; // Direction
-        else if (deltaX < 0) d->m_mouseScroll_byX = -1; // Direction
+        (deltaX > 0) ? d->m_mouseScroll_byX = 1 : d->m_mouseScroll_byX = -1;
+        (deltaY > 0) ? d->m_mouseScroll_byY = 1 : d->m_mouseScroll_byY = -1;
     
-        if (deltaY > 0) d->m_mouseScroll_byY = 1; // Direction
-        else if (deltaY < 0) d->m_mouseScroll_byY = -1; // Direction
+        int adX = abs( deltaX );
+        int adY = abs( deltaY );
     
-        int adX, adY;
-        adX = abs(deltaX);
-        adY = abs(deltaY);
-    
-        if (adX > 100) d->m_mouseScroll_byX *= 6;
-        else if (adX > 80) d->m_mouseScroll_byX *= 4;
-        else if (adX > 40) d->m_mouseScroll_byX *= 2;
-        else if (adX > 20) d->m_mouseScroll_byX *= 1;
+        if (adX > 100) d->m_mouseScroll_byX *= 7;
+        else if (adX > 75) d->m_mouseScroll_byX *= 4;
+        else if (adX > 50) d->m_mouseScroll_byX *= 2;
+        else if (adX > 25) d->m_mouseScroll_byX *= 1;
         else d->m_mouseScroll_byX = 0; 
     
-        if (adY > 100) d->m_mouseScroll_byY *= 6;
-        else if (adY > 80) d->m_mouseScroll_byY *= 4;
-        else if (adY > 40) d->m_mouseScroll_byY *= 2;
-        else if (adY > 20) d->m_mouseScroll_byY *= 1;
+        if (adY > 100) d->m_mouseScroll_byY *= 7;
+        else if (adY > 75) d->m_mouseScroll_byY *= 4;
+        else if (adY > 50) d->m_mouseScroll_byY *= 2;
+        else if (adY > 25) d->m_mouseScroll_byY *= 1;
         else d->m_mouseScroll_byY = 0; 
     
         if (d->m_mouseScroll_byX == 0 && d->m_mouseScroll_byY == 0) {
             d->m_mouseScrollTimer->stop();
         }
         else if (!d->m_mouseScrollTimer->isActive()) {
-            d->m_mouseScrollTimer->changeInterval(10);
+            d->m_mouseScrollTimer->changeInterval( 20 );
         }
-        return;
     }
 
     if(!m_part->xmlDocImpl()) return;
@@ -1129,43 +1205,9 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    if (d->m_mouseScrollTimer != 0) {
-        delete d->m_mouseScrollTimer;
-        d->m_mouseScrollTimer = 0;
-
-        viewport()->unsetCursor();
-        viewport()->setCursor( KCursor::ArrowCursor );
-
-        d->clickCount = 0;
-        khtml::MouseReleaseEvent event( _mouse, d->clickX, d->clickY, DOM::DOMString(), DOM::DOMString(), DOM::Node() );
-        QApplication::sendEvent( m_part, &event );
-        return;
-    }
-
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    if ( (_mouse->button() == MidButton) && !(m_part->d->m_bOpenMiddleClick) && (d->m_mouseScrollTimer == 0) && (mev.url.isNull())) {
-        d->m_mouseScroll_lastX = _mouse->globalX();
-        d->m_mouseScroll_lastY = _mouse->globalY();
-        d->m_mouseScroll_byX = 0;
-        d->m_mouseScroll_byY = 0;
-  
-        d->m_mouseScrollTimer = new QTimer(this);
-        connect(d->m_mouseScrollTimer, SIGNAL(timeout()), this, SLOT(slotMouseScrollTimer()));
-        
-        viewport()->unsetCursor();
-        bool hasHorBar = visibleWidth() < contentsWidth();
-        bool hasVerBar = visibleHeight() < contentsHeight();
-        if ( hasHorBar && !hasVerBar )
-            viewport()->setCursor( KCursor::SizeHorCursor );
-        else if ( !hasHorBar && hasVerBar )
-            viewport()->setCursor( KCursor::SizeVerCursor );
-        else
-            viewport()->setCursor( KCursor::SizeAllCursor );
-        return;
-    }
- 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
