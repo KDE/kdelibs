@@ -39,11 +39,6 @@ int main(int argc, char *argv[])
 
  printf("Welcome to the KProcess Demo Application!\n");
 
- if (strcmp("1.2",qVersion()))
-   printf("Qt Version %s\n", qVersion());
- else
-   printf("Qt 1.2 -- QSocketNotifier Workaround enabled!\n");
-
  //
  // The kghostview demo -- Starts a kghostview instance blocking. -- After
  // kghostview has exited, kghostview is restarted non-blocking. When the process exits, 
