@@ -159,6 +159,10 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 
 void KConfig::reparseConfiguration()
 {
+  // Don't lose pending changes
+  if (!isReadOnly() && backEnd && bDirty)
+    backEnd->sync();
+
   aEntryMap.clear();
 
   // add the "default group" marker to the map
