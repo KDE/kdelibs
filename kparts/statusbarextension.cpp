@@ -29,6 +29,7 @@
 #include <kparts/event.h>
 
 #include <kdebug.h>
+#include <qobjectlist.h>
 
 using namespace KParts;
 
@@ -85,6 +86,22 @@ StatusBarExtension::~StatusBarExtension()
 {
 }
 
+
+StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
+{
+    if ( !obj || !obj->children() )
+        return 0L;
+
+    // we try to do it on our own, in hope that we are faster than
+    // queryList, which looks kind of big :-)
+    const QObjectList *children = obj->children();
+    QObjectListIt it( *children );
+    for (; it.current(); ++it )
+        if ( it.current()->inherits( "KParts::StatusBarExtension" ) )
+            return static_cast<KParts::StatusBarExtension *>( it.current() );
+
+    return 0L;
+}
 
 bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 {
