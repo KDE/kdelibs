@@ -14,7 +14,7 @@
 1300	kfm (kioslave)
 
 1400	khelpcenter (kdebase)
-1401	khelpcenterclient (kdebase)
+1401	khcclient (kdebase)
 1501	khexedit (kdeutils)
 1601    ark (kdeutils)
 1901	kfind (kdebase)
