@@ -15,6 +15,10 @@ import java.util.zip.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.7  2000/03/22 05:19:38  rogozin
+ *
+ * Window geometry is now handled correctly.
+ *
  * Revision 1.6  2000/02/13 23:05:36  rich
  * Fixed the problem with the lake testcase
  *
@@ -136,7 +140,7 @@ public class KJASAppletClassLoader
    /**
     *  General class load function
     */
-   Class findClass(String name) 
+   public Class findClass(String name)
    {
       Class c;
       
@@ -194,16 +198,18 @@ public class KJASAppletClassLoader
     */ 
    Class findURLClass( String name )
    {
-      String cname = name;
-
-      if(Main.debug)
-         System.out.println( "findURLClass: name=" + name );
-      
-      if ( !cname.endsWith( ".class" ) )
-         cname = cname + ".class";
+      // name - class name used for class initialization
+      // cname - converted name used for class retrival vie URL
+ 
       if ( name.endsWith( ".class" ) )
 	  name = name.substring( 0, name.indexOf( ".class" ) );
-      
+      String cname = name.replace('.','/') + ".class";
+
+      if(Main.debug) {
+         System.out.println( "findURLClass: name =" + name );
+         System.out.println( "findURLClass: cname=" + cname );
+      }
+
       InputStream in = null;
       
       try {
