@@ -787,7 +787,7 @@ void KRun::init()
   else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( m_strURL ) ) {
     kdDebug(7010) << "Helper protocol" << endl;
 
-    bool ok;
+    bool ok = false;
     KURL::List urls;
     urls.append( m_strURL );
     if (exec.isEmpty())
