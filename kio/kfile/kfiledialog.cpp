@@ -330,7 +330,15 @@ void KFileDialog::slotOk()
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
             if ( !items || items->isEmpty() )
+            {
+                QString msg;
+                if ( d->operationMode == Saving )
+                    msg = i18n("Please specify the filename to save to.");
+                else
+                    msg = i18n("Please select the file to open.");
+                KMessageBox::information(this, msg);
                 return;
+            }
 
             // weird case: the location edit is empty, but there are
             // highlighted files
