@@ -627,7 +627,7 @@ KAction *KStdAction::zoomOut(const QObject *recvr, const char *slot,
 KAction *KStdAction::zoom(const QObject *recvr, const char *slot,
                                                   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Zoom..."), "viewzoom", 0,
+    return new KAction(i18n("&Zoom..."), "viewmag", 0,
                        recvr, slot, parent, name ? name :
                        stdName(Zoom));
 }
