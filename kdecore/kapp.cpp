@@ -749,11 +749,11 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			    
 			  return true;
 			}
-			if(str == "Motif")
-			  applyGUIStyle(MotifStyle);
-			else
-			  if(str == "Windows 95")
-				applyGUIStyle(WindowsStyle);
+		}
+
+	  // stuff for reconfiguring
+	  if ( cme->message_type == KDEChangeStyle )
+		{
 		  QString str;
 		  
 		  getConfig()->setGroup("GUI Style");
@@ -769,7 +769,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
  
 	  if ( cme->message_type == KDEChangePalette )
 		{
-			  
+		  readSettings();
 		  kdisplaySetPalette();
 		  
 		  return True;
@@ -882,6 +882,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		  // Notify the last DropZone that the pointer has left the drop zone.
 		  if ( lastEnteredDropZone != 0L )
 			lastEnteredDropZone->leave();
+		  lastEnteredDropZone = 0L;
+		}
 
 	  return TRUE;
     }
@@ -1165,13 +1167,15 @@ void KApplication::kdisplaySetPalette()
 	emit kdisplayPaletteChanged();
 	emit appearanceChanged();
 
+  }
 }
 
 void KApplication::kdisplaySetFont()
 {   
   QApplication::setFont( generalFont, TRUE );
   // setFont() works every time for me !
-  QApplication::setStyle( applicationStyle );
+
+  emit kdisplayFontChanged();    
   emit appearanceChanged();
  
   resizeAll();
@@ -1181,15 +1185,16 @@ void KApplication::kdisplaySetFont()
 void KApplication::kdisplaySetStyle()
 {   
   // QApplication::setStyle( applicationStyle );
-  QApplication::setStyle( applicationStyle );
+  applyGUIStyle( applicationStyle );
+
+  emit kdisplayStyleChanged();
   emit appearanceChanged();
   resizeAll();
 }	
 
 
-  // 	setStyle() works pretty well but may not change the style of combo
-  //	boxes.
-
+{   
+  //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
   applyGUIStyle(applicationStyle);
