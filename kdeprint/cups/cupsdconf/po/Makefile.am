@@ -1,3 +1,0 @@
-PACKAGE = cupsdconf
-
-POFILES = AUTO

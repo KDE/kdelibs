@@ -31,18 +31,10 @@ noinst_HEADERS = cupsdconf.h cupsdoption.h cupsdpage.h cupsdserverdirpage.h cups
 	  cupslocationgeneral.h cupslocationaccess.h cupsdcomment.h mydialogbase.h cupsdserverencryptpage.h \
 	  cupsddialog.h
 
-# make messages.po. Move this one to ../po/ and "make merge" in po
-# the -x is for skipping messages already translated in kdelibs
-#messages:
-#	LIST=`find . -name \*.h -o -name \*.hh -o -name \*.H -o -name \*.hxx -o -name \*.hpp -o -name \*.cpp -o -name \*.cc -o -name \*.cxx -o -name \*.ecpp -o -name \*.C`; \
-#	if test -n "$$LIST"; then \
-#	 $(XGETTEXT) -C -ki18n -x $(top_srcdir)/kde.pot $$LIST -o ../po/cupsdconf.pot; \
-#	fi
-
 # Data
 cupsdconfdata_DATA = kde_logo.png cups_logo.png cupsd.conf.template
 cupsdconfdatadir   = $(kde_datadir)/kdeprint
 
 # Translations
 messages:
-	$(XGETTEXT) -C -ki18n -x $(top_srcdir)/kde.pot $(libcupsdconf_la_SOURCES) main.cpp -o po/cupsdconf.pot
+	$(XGETTEXT) $(libcupsdconf_la_SOURCES) main.cpp -o $(podir)/cupsdconf.pot
