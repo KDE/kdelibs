@@ -606,16 +606,13 @@ void RenderBox::calcHeight()
 	Length tm = style()->marginTop();
 	Length bm = style()->marginBottom();
 	Length ch = containingBlock()->style()->height();
+        
+        // margins are calculated with respect to the _width_ of 
+        // the containing block (8.3)
+        int cw = containingBlockWidth();
 	
-	if (!tm.isPercent() || ch.isFixed())
-	    m_marginTop = tm.minWidth(ch.value);		
-	else
-	    m_marginTop = 0;
-	
-	if (!bm.isPercent() || ch.isFixed())
-	    m_marginBottom = bm.minWidth(ch.value);		
-	else
-	    m_marginBottom = 0;
+	m_marginTop = tm.minWidth(cw);	
+	m_marginBottom = bm.minWidth(cw);
 
         // for tables, calculate margins only
         if (isTable())

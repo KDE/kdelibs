@@ -400,7 +400,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    }
 	    else if(selectionState() == SelectionEnd)
 		startPos = 0;
-	    kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
+//	    kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
 	}
 	
 	while(s && endPos)
@@ -592,7 +592,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     // ### margins and RTL
     if(from == 0 && m_parent->isInline())
-	x += paddingLeft() + borderLeft();
+	x += paddingLeft() + borderLeft() + marginLeft();
 
     //#ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
@@ -626,9 +626,9 @@ unsigned int RenderText::width( int from, int len) const
     if(m_parent->isInline())
     {
 	if(from == 0)
-	    w += borderLeft() + paddingLeft();
+	    w += borderLeft() + paddingLeft() + marginLeft();
 	if(from + len == int(str->l))
-	    w += borderRight() + paddingRight();
+	    w += borderRight() + paddingRight() +marginRight();;
     }
 
     //kdDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;
