@@ -2,6 +2,7 @@ INCLUDES = -I$(top_builddir)/kdedb $(all_includes)
 
 METASOURCES = AUTO
 
+KDE_ICON=AUTO
 
 lib_LTLIBRARIES = libkdbui.la
 

@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini-connect_xpm[] = {
+"16 14 5 1",
+" 	c None",
+".	c black",
+"X	c gray50",
+"o	c red",
+"O	c yellow",
+"                ",
+"          .     ",
+"       X .X     ",
+"      XooX  .   ",
+"     Xoooo .X   ",
+"    XooooooX    ",
+"    XooooooX    ",
+"    XoooooX.    ",
+"    XooooX.     ",
+"   XOXXXX.      ",
+"  XOXX...       ",
+" XOXX           ",
+"  XX            ",
+"  X             "};

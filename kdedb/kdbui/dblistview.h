@@ -92,7 +92,7 @@ class DBListView: public QListView {
 
  signals:
 
-    void databaseSelected(Database *);
+    void databaseSelected(KDB::Database *);
 
     void nonDatabaseSelected();
 
