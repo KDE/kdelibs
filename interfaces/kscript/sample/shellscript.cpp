@@ -44,6 +44,11 @@ void ShellScript::setScript( const QString &scriptFile  )
 	*m_script << scriptFile;
 }
 
+void ShellScript::setScript( const QString &, const QString & )
+{
+    // ### what is this?
+}
+
 void ShellScript::run(QObject *context, const QVariant &arg)
 {
 	 m_script->start();

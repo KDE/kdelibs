@@ -1,4 +1,4 @@
-SUBDIRS = sample
+SUBDIRS = . sample
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) -I $(srcdir) -I$(srcdir)/.. $(all_includes)
 
@@ -9,7 +9,8 @@ lib_LTLIBRARIES = libkscript.la
 #libkscriptloader_la_LIBADD = $(top_builddir)/kparts/libkparts.la
 
 libkscript_la_SOURCES = scriptmanager.cpp
-libkscript_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+libkscript_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
+libkscript_la_LIBADD = $(LIB_KSYCOCA)
 
 kscriptinclude_HEADERS = scriptinterface.h scriptclientinterface.h scriptmanager.h
 kscriptincludedir = $(includedir)
