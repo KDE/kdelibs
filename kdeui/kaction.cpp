@@ -305,8 +305,7 @@ void KToggleAction::setChecked( bool c )
 
     checked = c;
 
-    if ( checked )
-	emit activated();
+    emit activated();
     emit toggled( isChecked() );
 }
 
@@ -317,8 +316,6 @@ void KToggleAction::slotActivated()
 
     locked = TRUE;
     setChecked( !isChecked() );
-    if ( !isChecked() )
-	emit activated();
     locked = FALSE;
 }
 
