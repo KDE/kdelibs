@@ -39,47 +39,41 @@ class KURL;
  *
  * @sect Detail
  *
- * This widget inherits from @ref QComboBox and implements
- * the following additional functionalities:  a completion
- * object that provides both automatic and manual text
- * completion as well as text rotation features, configurable
- * key-bindings to activate these features, and a popup-menu
- * item that can be used to allow the user to set text completion
- * modes on the fly based on their preference.
+ * This widget inherits from @ref QComboBox and implements the following
+ * additional functionalities:  a completion object that provides both automatic
+ * and manual text completion as well as text rotation features, configurable
+ * key-bindings to activate these features, and a popup-menu item that can be
+ * used to allow the user to change the text completion mode on the fly.
  *
- * To support these new features KComboBox also emits a few
- * more additional signals as well.  The main ones are the
- * @ref completion( const QString& ) and @ref textRotation( KeyBindgingType )
- * signals.  The completion signal is intended to be connected to a slot
- * that will assist the user in filling out the remaining text while
- * the rotation signals is intended to be used to traverse through all
- * possible matches whenever text completion results in multiple matches.
- * The @ref returnPressed() and @ref returnPressed( const QString& )
- * signal is emitted when the user presses the Enter/Return key.
+ * To support these new features KComboBox emits a few additional signals 
+ * such as @ref completion( const QString& ) and @ref textRotation( KeyBindgingType ).
+ * The completion signal can be connected to a slot that will assist the user in 
+ * filling out the remaining text while the rotation signal can be used to traverse
+ * through all possible matches whenever text completion results in multiple matches.
+ * Additionally, a @ref returnPressed() and a @ref returnPressed( const QString& )
+ * signals are emitted when the user presses the Enter/Return key.
  *
- * This widget by default creates a completion object when you invoke
- * the @ref completionObject( bool ) member function for the first time
- * or use @ref setCompletionObject( KCompletion*, bool ) to assign your
- * own completion object.  Additionally, to make this widget more functional,
- * KComboBox will by default handle the text rotation and completion
- * events internally whenever a completion object is created through either
- * one of the methods mentioned above.  If you do not need this functionality,
- * simply use @ref KCompletionBase::setHandleSignals( bool ) or alternatively
- * set the boolean parameter in the above methods to FALSE.
+ * KCombobox by default creates a completion object when you invoke the 
+ * @ref completionObject( bool ) member function for the first time or 
+ * explicitly use @ref setCompletionObject( KCompletion*, bool ) to assign your
+ * own completion object.  Additionally, to make this widget more functional, 
+ * KComboBox will by default handle text rotation and completion events
+ * internally whenever a completion object is created through either one of the 
+ * methods mentioned above.  If you do not need this functionality, simply use
+ * @ref KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
+ * parameter in the @p setCompletionObject call to FALSE.
  *
- * The default key-bindings for completion and rotation is determined
- * from the global settings in @ref KStdAccel.  These values, however,
- * can be overriden locally by invoking @ref KCompletionBase::setKeyBinding().
- * The values can easily be reverted back to the default setting, by simply
- * calling @ref useGlobalSettings(). An alternate method would be to default
- * individual key-bindings by usning @ref setKeyBinding() with the default
- * second argument.
+ * The default key-bindings for completion and rotation is determined from the
+ * global settings in @ref KStdAccel. These values, however, can be overriden
+ * locally by invoking @ref KCompletionBase::setKeyBinding(). The values can
+ * easily be reverted back to the default setting, by simply calling 
+ * @ref useGlobalSettings(). An alternate method would be to default individual
+ * key-bindings by usning @ref setKeyBinding() with the default second argument.
  *
- * Note that if this widget is not editable ( i.e. select-only ), then only
- * one completion mode, @p CompletionAuto, will work.  All the other modes are
- * simply ignored.  The @p CompletionAuto mode in this case allows you to
- * automatically select an item from the list by trying to match the pressed
- * keycode with the first letter of the enteries in the combo box.
+ * In non-editable (select-only) mode only one completion mode, @p CompletionAuto, 
+ * is available. All the other modes are simply ignored. Moreover, the CompletionAuto
+ * mode, unlike in the read-write mode, works by matching any typed key with the
+ * first letter of entries in the combobox.
  *
  * @sect Useage
  *
@@ -499,20 +493,16 @@ private:
      * Initializes the variables upon construction.
      */
     void init();
-    /**
-     * Temporary functions to delete words back and foward until
-     * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
-     */
-    void deleteWordBack();
-    void deleteWordForward();
-
+    
+    // BC: No longer needed...
     bool m_bEnableMenu;
 
-    // indicating if we should stop return-key events from propagating
+    // Flag to determine whether return-key events should be propagated...
     bool m_trapReturnKey;
 
 protected:
     virtual void virtual_hook( int id, void* data );
+
 private:
     class KComboBoxPrivate;
     KComboBoxPrivate *d;

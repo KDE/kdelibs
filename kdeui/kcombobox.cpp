@@ -67,7 +67,8 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 {
     init();
 
-    if ( rw ) {
+    if ( rw ) 
+    {
         KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
         setLineEdit( edit );
     }
@@ -84,11 +85,6 @@ void KComboBox::init()
 
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
-
-    // Initialize enable popup menu to false.
-    // Below it will be enabled if the widget
-    // is editable.
-    m_bEnableMenu = false;
 
     m_trapReturnKey = false;
 
@@ -108,7 +104,8 @@ bool KComboBox::contains( const QString& _text ) const
     if ( _text.isEmpty() )
         return false;
 
-    for (int i = 0; i < count(); i++ ) {
+    for (int i = 0; i < count(); i++ ) 
+    {
         if ( text(i) == _text )
             return true;
     }
@@ -135,10 +132,7 @@ void KComboBox::setAutoCompletion( bool autocomplete )
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
     if( d->klineEdit )
-    {
         d->klineEdit->setContextMenuEnabled( showMenu );
-        m_bEnableMenu = showMenu;
-    }
 }
 
 
@@ -177,9 +171,8 @@ void KComboBox::makeCompletion( const QString& text )
             return;
 
         int index = listBox()->index( listBox()->findItem( text ) );
-        if( index >= 0 ) {
+        if( index >= 0 )
             setCurrentItem( index );
-        }
     }
 }
 
@@ -221,8 +214,10 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
 
     // wheel-scrolling changes the current item
-    if ( type == QEvent::Wheel ) {
-        if ( !listBox() || listBox()->isHidden() ) {
+    if ( type == QEvent::Wheel ) 
+    {
+        if ( !listBox() || listBox()->isHidden() ) 
+        {
             QWheelEvent *e = static_cast<QWheelEvent*>( ev );
             static const int WHEEL_DELTA = 120;
             int skipItems = e->delta() / WHEEL_DELTA;
@@ -337,30 +332,19 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     }
 }
 
-// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
-void KComboBox::deleteWordForward()
-{
-    lineEdit()->cursorWordForward(TRUE);
-    if ( lineEdit()->hasSelectedText() )
-        lineEdit()->del();
-}
-
-void KComboBox::deleteWordBack()
-{
-    lineEdit()->cursorWordBackward(TRUE);
-    if ( lineEdit()->hasSelectedText() )
-        lineEdit()->del();
-}
-
 void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
 {
     int sel = -1;
+    
     for (int i = 0; i < count(); ++i)
+    {
         if (text(i) == item)
         {
             sel = i;
             break;
         }
+    }
+    
     if (sel == -1 && insert)
     {
         insertItem(item, index);
