@@ -34,7 +34,7 @@ class KStaticDeleterList;
 
 /**
  * Access to the KDE global objects.
- * KGlobal provides you with pointers of many central 
+ * KGlobal provides you with pointers of many central
  * objects that exist only once in the process. It is also
  * responsible for managing instances of @ref KStaticDeleterBase.
  *
@@ -194,6 +194,12 @@ inline T kAbs (const T& a) { return a < 0 ? -a : a; }
 #else
 #define KDE_NO_EXPORT
 #define KDE_EXPORT
+#endif
+
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2)
+# define KDE_DEPRECATED __attribute__((deprecated));
+#else
+# define KDE_DEPRECATED
 #endif
 
 /**
