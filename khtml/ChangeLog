@@ -1,3 +1,8 @@
+2004-10-07  David Faure  <faure@kde.org>
+
+        * xml/dom_nodeimpl.cpp (dispatchWindowEvent): Emit load event for frames
+        from there, to avoid bubbling (safari merge)
+
 2004-10-05  David Faure  <faure@kde.org>
 
         * html/html_baseimpl.cpp (parseAttribute): 

@@ -53,8 +53,6 @@ public:
     virtual bool isHTMLDocument() const { return true; }
 
     DOMString referrer() const;
-    DOMString domain() const;
-    void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
     DOMString cookie() const;
     void setCookie( const DOMString &);
@@ -87,8 +85,6 @@ protected slots:
      * Repaints, so that all links get the proper color
      */
     void slotHistoryChanged();
-private:
-    mutable DOMString m_domain;
 };
 
 } //namespace

@@ -432,6 +432,9 @@ public:
     // Returns 0 if this is the top level document.
     ElementImpl *ownerElement() const;
 
+    DOMString domain() const;
+    void setDomain( const DOMString &newDomain ); // not part of the DOM
+
     bool isURLAllowed(const QString& url) const;
 
     DOMString toString() const;
@@ -520,6 +523,8 @@ protected:
     int m_decoderMibEnum;
 
     khtml::RenderArena* m_renderArena;
+private:
+    mutable DOMString m_domain;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
