@@ -94,6 +94,8 @@ public:
 
     void ensureItemVisible( const KFileItem * );
 
+    virtual KActionCollection * actionCollection() const;
+    
 protected:
     KFileIconView *left;
     KFileView *right;

@@ -297,8 +297,14 @@ KFileView *KCombiView::focusView( KFileView *preferred ) const
     return (preferred && w == preferred->widget()) ? preferred : other;
 }
 
+KActionCollection * KCombiView::actionCollection() const
+{
+    return focusView( right )->actionCollection();
+}
+
 void KCombiView::virtual_hook( int id, void* data )
 { KFileView::virtual_hook( id, data ); }
+
 
 #include "kcombiview.moc"
 
