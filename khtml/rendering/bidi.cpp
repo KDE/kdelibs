@@ -361,7 +361,7 @@ static void addRun(BidiRun* bidiRun)
         if (text->text()) {
             for (int i = bidiRun->start; i < bidiRun->stop; i++) {
                 const QChar c = text->text()[i];
-                if (c == ' ' || c == '\n')
+                if (c.category() == QChar::Separator_Space || c == '\n')
                     numSpaces++;
             }
         }
@@ -727,7 +727,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
                 int spaces = 0;
                 for ( int i = r->start; i < r->stop; i++ ) {
                     const QChar c = static_cast<RenderText *>(r->obj)->text()[i];
-                    if (c == ' ' || c == '\n')
+                    if (c.category() == QChar::Separator_Space || c == '\n')
                         spaces++;
                 }
 
@@ -1612,7 +1612,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 // item, then this is all moot. -dwh
                 RenderObject* next = Bidinext( start.par, o, bidi );
                 if (!m_pre && next && next->isText() && static_cast<RenderText*>(next)->stringLength() > 0 &&
-                      (static_cast<RenderText*>(next)->text()[0].unicode() == ' ' ||
+                     (static_cast<RenderText*>(next)->text()[0].category() == QChar::Separator_Space ||
                       static_cast<RenderText*>(next)->text()[0] == '\n')) {
                     currentCharacterIsSpace = true;
                     ignoringSpaces = true;
