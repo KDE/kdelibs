@@ -246,9 +246,24 @@ QString KProtocolManager::proxyForURL( const KURL &url )
       case WPADProxy:
           if (!url.host().isEmpty())
           {
-            QString p = url.protocol();
-            if ( p.startsWith( "http" ) || p == "ftp" || p == "gopher" )
-              DCOPRef( "kded", "proxyscout" ).call( "proxyForURL", url ).get( proxy );
+            KURL u (url);
+            QString p = u.protocol().lower();
+
+            // webdav is a KDE specific protocol. Look up proxy
+            // information using HTTP instead...
+            if ( p == "webdav" )
+            {
+              p = "http";
+              u.setProtocol( p );
+            }
+            else if ( p == "webdavs" )
+            {
+              p = "https";
+              u.setProtocol( p );
+            }
+
+            if ( p.startsWith("http") || p == "ftp" || p == "gopher" )
+              DCOPRef( "kded", "proxyscout" ).call( "proxyForURL", u ).get( proxy );
           }
           break;
       case EnvVarProxy:
@@ -267,7 +282,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-    DCOPRef( "kded", "proxyscout" ).send( "blackListProxy", proxy );
+  DCOPRef( "kded", "proxyscout" ).send( "blackListProxy", proxy );
 }
 
 /*
