@@ -26,7 +26,6 @@
 // ---------------------------------------------------------------------------
 
 #include "kquickhelp.h"
-#include "kquickhelp.h"
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <stdio.h>
@@ -96,7 +95,7 @@ const int TOK_ENDLINK = 25;
 
 QPopupMenu *KQuickHelp::menu = 0;
 KQuickHelp *KQuickHelp::instance = 0;
-QList<KQuickTip> KQuickHelp::tips;
+QList<KQuickTip> *KQuickHelp::tips;
 KQuickHelpWindow *KQuickHelp::window = 0;
 
 
@@ -198,6 +197,7 @@ const QString& KQuickHelp::add(QWidget *w, const QString& s) {
   if(w != 0) {
     // make sure we have  a class instance running
     if(instance == 0) {
+      tips = new QList<KQuickTip>;
       instance = new KQuickHelp();
       window = new KQuickHelpWindow();
       menu = new QPopupMenu;
@@ -206,13 +206,13 @@ const QString& KQuickHelp::add(QWidget *w, const QString& s) {
 	      instance, SLOT(getKQuickHelp(int)));
       connect(window, SIGNAL(hyperlink(QString)),
 	      instance, SLOT(hyperlinkRequested(QString)));
-      tips.setAutoDelete(true);
+      tips->setAutoDelete(true);
     }
 
     KQuickTip *qt = new KQuickTip;
     qt->widget = w;
     qt->txt = s;
-    tips.append(qt);
+    tips->append(qt);
     connect(w, SIGNAL(destroyed()),
 	    instance, SLOT(widgetDestroyed()));
 
@@ -265,9 +265,9 @@ void KQuickHelp::hyperlinkRequested(QString link) {
 
 
 void KQuickHelp::remove(QWidget *w) {
-  for(unsigned i = 0; i < tips.count(); i++)
-    if(tips.at(i)->widget == w) {
-      tips.remove(i);
+  for(unsigned i = 0; i < tips->count(); i++)
+    if(tips->at(i)->widget == w) {
+      tips->remove(i);
       return;
     }      
 }
@@ -280,10 +280,10 @@ void KQuickHelp::widgetDestroyed() {
 
 bool KQuickHelp::eventFilter(QObject *o, QEvent *e) {
   if(e->type() == QEvent::MouseButtonPress && ((QMouseEvent *)e)->button() == RightButton) {
-    for(unsigned i = 0; i < tips.count(); i++) {
-      if(tips.at(i)->widget == (QWidget *)o) {
-	current = tips.at(i)->widget;
-	currentText = tips.at(i)->txt;
+    for(unsigned i = 0; i < tips->count(); i++) {
+      if(tips->at(i)->widget == (QWidget *)o) {
+	current = tips->at(i)->widget;
+	currentText = tips->at(i)->txt;
 	currentPos = QCursor::pos();
 	menu->popup(currentPos);
 	return true;

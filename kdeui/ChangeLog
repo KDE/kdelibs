@@ -1,3 +1,8 @@
+1999-03-04  Harri Porten  <porten@kde.org>
+
+	* kquickhelp.*: changed 'tips' to be a pointer instead of an object.
+	This fixes the segfaults on HP/UX and probably the ones on NetBSD.
+
 1998-11-09  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kmenubar.h: Fix up some of the comments so they're gramatically
