@@ -484,7 +484,8 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     // we have the subject part of the selector
     subject = true;
 
-    // hack. We can't allow :hover, as it would trigger a complete relayout with every mouse event.
+    // hack. We can't allow :hover, as it would trigger a complete
+    // relayout with every mouse event.
     bool single = false;
     if ( sel->tag == -1 )
 	single = true;
@@ -496,7 +497,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     CSSSelector::Relation relation = sel->relation;
     while((sel = sel->tagHistory))
     {
-	single = false;
+        if (strictParsing || sel->tag != -1) single = false;
         if(!n->isElementNode()) return;
         switch(relation)
         {
