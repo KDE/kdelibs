@@ -199,8 +199,8 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     setAccel( accel );
 
     d->m_iconName=pix;
-    d->m_bIconSetNotYetLoaded=true;
-    d->m_bIconSet=true;
+    d->m_bIconSetNotYetLoaded=!(pix == "unknown");
+    d->m_bIconSet=!(pix == "unknown");
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
@@ -241,9 +241,9 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     setText( text );
 
     d->m_iconName=pix;
-    d->m_bIconSetNotYetLoaded=true;
-    d->m_bIconSet=true;
-
+    d->m_bIconSetNotYetLoaded=!(pix == "unknown");
+    d->m_bIconSet=!(pix == "unknown");
+    
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
 }
