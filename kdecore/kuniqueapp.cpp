@@ -157,7 +157,7 @@ KUniqueApplication::start()
                srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
            if (!srv.isEmpty())
            {
-              kunique_app_my_system(QFile::encodeName(srv));
+              kunique_app_my_system(QFile::encodeName(srv)+" --suicide");
               regName = dc->registerAs(appName, false);
            }
            if (regName.isEmpty())
