@@ -110,8 +110,6 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
 
-    QRect rect( 0, 0, cWidth, cHeight );
-
     if ( pix.isNull() )
     {
 	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
@@ -143,14 +141,21 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                             << " pw: " << image->pixmap_size().width()
                             << " ph: " << image->pixmap_size().height() << endl;
 
-	    if (resizeCache.isNull())
+            QRect scaledrect(image->valid_rect());
+	    if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
 	    {
 		QWMatrix matrix;
 		matrix.scale( (float)(cWidth)/pix.width(),
 			(float)(cHeight)/pix.height() );
 		resizeCache = pix.xForm( matrix );
+                scaledrect = matrix.map(scaledrect);
+                if(image->valid_rect().size() != image->pixmap_size())
+                    // not yet completely loaded, the rectangle mapping
+                    // might be a big bogus, so try to be sure
+                    scaledrect.setBottom(QMAX(scaledrect.bottom()-2, 0));
 	    }
-	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, rect );
+            qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
+	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
 	
 	}
 	else
