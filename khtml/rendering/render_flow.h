@@ -93,6 +93,8 @@ public:
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
+    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
+
 protected:
 
     virtual void newLine();

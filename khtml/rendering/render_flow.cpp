@@ -204,12 +204,14 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         printOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
-    if(isAnonymousBox())
-	outlineBox(p, _tx, _ty, "green");
-    if(isFloating())
+    if (isVisible()) {
+        if(isAnonymousBox())
+            outlineBox(p, _tx, _ty, "green");
+        if(isFloating())
 	outlineBox(p, _tx, _ty, "yellow");
-    else
-	outlineBox(p, _tx, _ty);
+        else
+            outlineBox(p, _tx, _ty);
+    }
 #endif
 
 }
@@ -230,9 +232,9 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
 
 void RenderFlow::layout()
 {
-    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
-    //QTime t;
-    //t.start();
+//    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
+//     QTime t;
+//     t.start();
 
      assert(!isInline());
 
@@ -240,11 +242,13 @@ void RenderFlow::layout()
 
     calcWidth();
 
-//    kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
-//            << m_width << ","<< layouted() << "," << isAnonymousBox() << endl;
+//     kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
+//                     << m_width << ","<< layouted() << "," << isAnonymousBox() << ","
+//                     << containsPositioned() << "," << isPositioned() << endl;
+
 
     if ( !containsSpecial() && oldWidth == m_width && layouted() && !isAnonymousBox()
-            && !containsPositioned() && !isPositioned()) return;
+         && !containsPositioned() && !isPositioned()) return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
@@ -277,9 +281,8 @@ void RenderFlow::layout()
 //    int lp = 0;
 //     if ( firstChild() && isTableCell() && ( lp = lowestPosition() ) > m_height ) {
 // 	m_height = lp;
-    if ( lastChild() && lastChild()->hasOverhangingFloats() && isTableCell() ) {
-       m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
-
+    if ( isTableCell() && lastChild() && lastChild()->hasOverhangingFloats() ) {
+        m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
 	m_height += borderBottom() + paddingBottom();
     }
     if( hasOverhangingFloats() && (isFloating() || isTableCell()) ) {
@@ -302,11 +305,10 @@ void RenderFlow::layoutSpecialObjects()
 {
     if(specialObjects) {
 	//kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
-
         SpecialObject* r;
         QListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
-            //kdDebug(6040) << "have a positioned object" << endl;
+            //kdDebug(6040) << "   have a positioned object" << endl;
             if (r->type == SpecialObject::Positioned)
                 r->node->layout();
         }
@@ -364,18 +366,18 @@ void RenderFlow::layoutBlockChildren()
 	child->setLayouted(false);
 
 
-    //QTime t;
-    //t.start();
+//     QTime t;
+//     t.start();
 
     while( child != 0 )
     {
-        //kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
-        //kdDebug( 6040 ) << t.elapsed() << endl;
+//         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+//         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
 
         if (child->isPositioned())
         {
-            child->layout();
+            // child->layout();
             static_cast<RenderFlow*>(child->containingBlock())->insertPositioned(child);
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl;
             child = child->nextSibling();
@@ -1160,6 +1162,9 @@ void RenderFlow::calcMinMaxWidth()
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
+    if ( style()->noLineBreak() )
+        m_minWidth = m_maxWidth;
+
     if (style()->width().isFixed())
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
@@ -1501,6 +1506,22 @@ void RenderFlow::specialHandler(RenderObject *o)
         static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
 
 }
+
+// ### uuuhhh.. nasty. Go away! Now! (Dirk)
+bool RenderFlow::containsPoint(int _x, int _y, int _tx, int _ty)
+{
+    if (isFloating() || isPositioned())
+        return RenderBox::containsPoint(_x, _y, _tx, _ty);
+
+    if (!RenderBox::containsPoint(_x,_y,_tx,_ty))
+       return false;
+
+    if (isRelPositioned())
+        relativePositionOffset(_x, _y);
+
+    return ((_x >= _tx+leftOffset(_y-_ty)) && (_x <= _tx+rightOffset(_y-_ty)));
+}
+// ###
 
 void RenderFlow::printTree(int indent) const
 {
