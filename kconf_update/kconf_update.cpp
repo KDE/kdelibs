@@ -388,6 +388,18 @@ bool KonfUpdate::updateFile(const QString &filename)
 
 void KonfUpdate::gotId(const QString &_id)
 {
+   if (!id.isEmpty() && !skip)
+   {
+       config->setGroup(currentFilename);
+       QStringList ids = config->readListEntry("done");
+       if (!ids.contains(id))
+       {
+          ids.append(id);
+          config->writeEntry("done", ids);
+          config->sync();
+       }
+   }
+
    // Flush pending changes
    gotFile(QString::null);
 
@@ -395,13 +407,7 @@ void KonfUpdate::gotId(const QString &_id)
    QStringList ids = config->readListEntry("done");
    if (!_id.isEmpty())
    {
-       if (!ids.contains(_id))
-       {
-          ids.append(_id);
-          config->writeEntry("done", ids);
-          config->sync();
-       }
-       else
+       if (ids.contains(_id))
        {
           //qDebug("Id '%s' was already in done-list", _id.latin1());
           if (!m_bUseConfigInfo)
@@ -412,7 +418,10 @@ void KonfUpdate::gotId(const QString &_id)
        }
        skip = false;
        id = _id;
-       log() << currentFilename << ": Found new update '" << _id << "'" << endl;
+       if (m_bUseConfigInfo)
+          log() << currentFilename << ": Checking update '" << _id << "'" << endl;
+       else
+          log() << currentFilename << ": Found new update '" << _id << "'" << endl;
    }
 }
 
