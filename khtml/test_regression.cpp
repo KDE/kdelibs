@@ -869,11 +869,13 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 	return true;
 
     if (passed) {
-	printf("PASS: ");
-        if ( m_known_failure )
+        if ( m_known_failure ) {
+            printf("PASS (unexpected!): ");
             m_passes_fail++;
-        else
+        } else {
+            printf("PASS: ");
             m_passes_work++;
+        }
     }
     else {
         if ( m_known_failure ) {
