@@ -315,6 +315,7 @@ KZip::KZip( const QString& filename )
     : KArchive( 0L )
 {
     //kdDebug(7040) << "KZip(filename) reached." << endl;
+    Q_ASSERT( !filename.isEmpty() );
     m_filename = filename;
     d = new KZipPrivate;
     // unusual: this ctor leaves the device set to 0.
