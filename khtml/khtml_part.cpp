@@ -1778,8 +1778,8 @@ QString KHTMLPart::encoding() const
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
-  if ( d->m_doc && d->m_doc->docLoader )
-    (void) new khtml::PartStyleSheetLoader(this, url.url(), d->m_doc->docLoader);
+  if ( d->m_doc && d->m_doc->docLoader() )
+    (void) new khtml::PartStyleSheetLoader(this, url.url(), d->m_doc->docLoader());
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
