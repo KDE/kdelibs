@@ -1268,6 +1268,10 @@ namespace KIO {
         void startDataPump();
         void connectSubjob( SimpleJob * job );
 
+    private:
+        void startBestCopyMethod();
+
+    protected:
         KURL m_src;
         KURL m_dest;
         int m_permissions;

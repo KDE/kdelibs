@@ -1490,53 +1490,57 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
 
 void FileCopyJob::slotStart()
 {
-    if ((m_src.protocol() == m_dest.protocol()) &&
-        (m_src.host() == m_dest.host()) &&
-        (m_src.port() == m_dest.port()) &&
-        (m_src.user() == m_dest.user()) &&
-        (m_src.pass() == m_dest.pass()) &&
-        !m_src.hasSubURL() && !m_dest.hasSubURL())
-    {
-       if (m_move)
-       {
-          startRenameJob(m_src);
-       }
-       else
-       {
-          startCopyJob();
-       }
-    }
-    else
-    {
-       if (!m_move &&
-           (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
-          )
-       {
-          startCopyJob(m_dest);
-       }
-       else if (!m_move &&
-           (m_dest.isLocalFile() && KProtocolInfo::canCopyToFile(m_src))
-          )
-       {
-          startCopyJob(m_src);
-       }
-       else if (m_move &&
-           (m_src.isLocalFile() && KProtocolInfo::canRenameFromFile(m_dest))
-          )
-       {
-          startRenameJob(m_dest);
-       }
-       else if (m_move &&
-           (m_dest.isLocalFile() && KProtocolInfo::canRenameFromFile(m_src))
-          )
-       {
-          startRenameJob(m_src);
-       }
-       else
-       {
-          startDataPump();
-       }
-    }
+   if ( m_move )
+   {
+      // The if() below must be the same as the one in startBestCopyMethod
+      if ((m_src.protocol() == m_dest.protocol()) &&
+          (m_src.host() == m_dest.host()) &&
+          (m_src.port() == m_dest.port()) &&
+          (m_src.user() == m_dest.user()) &&
+          (m_src.pass() == m_dest.pass()) &&
+          !m_src.hasSubURL() && !m_dest.hasSubURL())
+      {
+         startRenameJob(m_src);
+         return;
+      }
+      else if (m_src.isLocalFile() && KProtocolInfo::canRenameFromFile(m_dest))
+      {
+         startRenameJob(m_dest);
+         return;
+      }
+      else if (m_dest.isLocalFile() && KProtocolInfo::canRenameToFile(m_src))
+      {
+         startRenameJob(m_src);
+         return;
+      }
+      // No fast-move available, use copy + del.
+   }
+   startBestCopyMethod();
+}
+
+void FileCopyJob::startBestCopyMethod()
+{
+   if ((m_src.protocol() == m_dest.protocol()) &&
+       (m_src.host() == m_dest.host()) &&
+       (m_src.port() == m_dest.port()) &&
+       (m_src.user() == m_dest.user()) &&
+       (m_src.pass() == m_dest.pass()) &&
+       !m_src.hasSubURL() && !m_dest.hasSubURL())
+   {
+      startCopyJob();
+   }
+   if (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
+   {
+      startCopyJob(m_dest);
+   }
+   else if (m_dest.isLocalFile() && KProtocolInfo::canCopyToFile(m_src))
+   {
+      startCopyJob(m_src);
+   }
+   else
+   {
+      startDataPump();
+   }
 }
 
 FileCopyJob::~FileCopyJob()
@@ -1771,7 +1775,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       if ((job == m_moveJob) && (job->error() == ERR_UNSUPPORTED_ACTION))
       {
          m_moveJob = 0;
-         startCopyJob();
+         startBestCopyMethod();
          removeSubjob(job);
          return;
       }
