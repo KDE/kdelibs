@@ -134,7 +134,29 @@ protected:
     virtual bool itemMatches(const QListViewItem *item, const QString &s) const;
 
 protected slots:
+    /**
+     * When keys are pressed a new search string is created and a timer is
+     * activated.  The most recent search is activated when this timer runs out
+     * if another key has not yet been pressed.
+     *
+     * This method makes @param search the most recent search and starts the
+     * timer.
+     *
+     * Together with activateSearch() this makes it such that searches are not
+     * started until there is a short break in the users typing.
+     *
+     * @see activateSearch()
+     */
     void queueSearch(const QString &search);
+
+    /**
+     * When the timer started with queueSearch() expires this slot is called.
+     * If there has been another timer started then this slot does nothing.
+     * However if there are no other pending searches this starts the list view
+     * search.
+     *
+     * @see queueSearch()
+     */
     void activateSearch();
 
 private:
