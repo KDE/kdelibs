@@ -168,12 +168,16 @@ public:
      * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
      */
     void processedSize( KIO::filesize_t _bytes );
+
+private:
     /**
      * Call this in @ref get and @ref copy, to give the current transfer
-     * speed. Usually worked out as processed_size / ( t - t_start )
+     * speed, but only if it can't be calculated out of the size you 
+     * passed to processedSize (in most cases you don't want to call it)
      */
     void speed( unsigned long _bytes_per_second );
-
+  
+public:
     /**
      * Call this to signal a redirection
      * The job will take care of going to that url.
