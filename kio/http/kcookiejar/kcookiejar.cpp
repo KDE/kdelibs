@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // We assume cookies do not contain any spaces (Netscape spec.)
 // According to RFC2109 this is allowed though.
-// 
+//
 
 #include <config.h>
 #include <sys/types.h>
@@ -47,8 +47,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
 
 #include <qstring.h>
 #include <qstrlist.h>
@@ -461,11 +461,14 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
         // Normalize the numerical hostname.  We return
         // false if the given hostname cannot be normalized
         // i.e it is not a true numerical representation.
+/*
         struct in_addr in;
         if( !inet_aton( _fqdn.latin1(), &in ) )
             return false;
 
        _domains.append( inet_ntoa( in ) );
+*/
+       _domain.append( fqdn );
        return true;
     }
 
