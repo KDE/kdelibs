@@ -150,13 +150,18 @@ public class KJASAppletClassLoader
         if( !archives_loaded ) {
             for( int i = 0; i < archives.size(); ++i ) {
                 String jar = (String)archives.elementAt( i );
-                String jarUrlString = "jar:" + codeBaseURL.toString() + jar + "!/";
                 try {
-                    addURL(new URL(jarUrlString));
-                    Main.debug("added URL " + jarUrlString + " to KJASAppletClassLoader");
-                } catch (MalformedURLException e) {
-                    Main.kjas_err("Could not construct jar URL: " + jarUrlString, e);
-                }
+                    URL httpURL = new URL(codeBaseURL, jar);
+                    String jarUrlString = "jar:" + httpURL.toString() + "!/";
+                    try {
+                        addURL(new URL(jarUrlString));
+                        Main.debug("added URL " + jarUrlString + " to KJASAppletClassLoader");
+                    } catch (MalformedURLException e) {
+                        Main.kjas_err("Could not construct jar URL: " + jarUrlString, e);
+                    }
+                 } catch (MalformedURLException e) {
+                    Main.kjas_err("Could not construct http URL for: " + codeBaseURL + " + " + jar, e);
+                 }
             }
             archives_loaded = true;
         }
