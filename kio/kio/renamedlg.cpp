@@ -111,7 +111,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     if ( ! (_mode & M_NORENAME ) ) {
         d->b1 = new QPushButton( i18n( "&Rename" ), this );
         d->b1->setEnabled(false);
-        d->b8 = new QPushButton( i18n( "&Propose" ), this );
+        d->b8 = new QPushButton( i18n( "Suggest New &Name" ), this );
         connect(d->b8, SIGNAL(clicked()), this, SLOT(b8Pressed()));
         connect(d->b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
     }

@@ -201,6 +201,8 @@ Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
   if present.
 * action/bookmarks also disables action/bookmark_add and action/bookmark_edit
+* action/help is not yet implemented
+
 
 Applications may use additional actions that they defined themselves.
 You can get a list of the actions used by a certain applications by using the
