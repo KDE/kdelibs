@@ -54,6 +54,8 @@ public:
   AlsaOutPrivate(int _client, int _port, const char *cname,const char *pname)
     {
       handle=0L;
+      src=tgt=0L;
+      queue=0;
       tPCN=1;
       tgtclient=_client;
       tgtport=_port;
@@ -103,19 +105,14 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
 
   volumepercentage=100;
 #ifdef HAVE_LIBASOUND
-  printf("%d %d %d %s\n",device, di->tgtclient, di->tgtport, di->tgtname);
+  printf("%d %d %d (%s)\n",device, di->tgtclient, di->tgtport, di->tgtname);
 #endif
 
-  map=new MidiMapper(NULL);
-
-  if (map==NULL) { printfdebug("ERROR : alsaOut : Map is NULL\n"); return; };
   _ok=1;
 };
 
 AlsaOut::~AlsaOut()
 {
-//  printf("::~AlsaOut %d\n",device);
-  delete map;
   closeDev();
   delete di;
 }
@@ -152,12 +149,15 @@ void AlsaOut::closeDev (void)
   if (!ok()) return;
 
 #ifdef HAVE_LIBASOUND
-//  if (di->src) printf("di->src ok\n");
-//  printf("port: %d\n",di->src->port);
-//  snd_seq_delete_simple_port(di->handle,di->src->port);
-//  printf("snd_seq_delete_simple_port passed\n");
-  snd_seq_free_queue(di->handle, di->queue);
-  snd_seq_close(di->handle);
+  if (di->handle)
+  {
+    if (di->src) snd_seq_delete_simple_port(di->handle,di->src->port);
+    if (di->queue) 
+    {
+      snd_seq_free_queue(di->handle, di->queue);
+      snd_seq_close(di->handle);
+    }
+  }
 
 #endif
 }

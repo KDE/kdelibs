@@ -200,7 +200,7 @@ class MidiMapper
      * Returns the path and name of the file which the object loaded the
      * mapper from.
      */
-    char *filename(void);
+    const char *filename(void);
 
 };
 

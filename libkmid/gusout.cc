@@ -126,7 +126,6 @@ GUSOut::GUSOut(int d,int total)
 
 GUSOut::~GUSOut()
 {
-  delete map;
   closeDev();
   if (delete_GUS_patches_directory)
   {

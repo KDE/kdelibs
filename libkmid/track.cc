@@ -61,9 +61,9 @@ MidiTrack::MidiTrack(FILE *file,int tpcn,int Id)
   };
   size=readLong(file);
 #ifdef TRACKDEBUG
-  printfdebug("Track %d : Size %ld\n",id,size);
+  printf("Track %d : Size %ld\n",id,size);
 #endif
-  data=(uchar *)malloc(size);
+  data=new uchar[size];
   if (data==NULL)
   {
     perror("track: Not enough memory ?");
@@ -87,7 +87,7 @@ MidiTrack::MidiTrack(FILE *file,int tpcn,int Id)
 
 MidiTrack::~MidiTrack()
 {
-  free(data);
+  delete data;
   endoftrack=1;
   currentpos=0;
   size=0;

@@ -55,7 +55,7 @@ MidiMapper::MidiMapper(const char *name)
 
 MidiMapper::~MidiMapper()
 {
-  if (_filename!=NULL) delete _filename;
+  delete _filename;
   deallocateMaps();
 }
 
@@ -412,9 +412,9 @@ void MidiMapper::readChannelmap(FILE *fh)
 
 }
 
-char *MidiMapper::filename(void)
+const char *MidiMapper::filename(void)
 {
-  return (_filename!=NULL)? _filename : (char *)"";
+  return (_filename)? _filename : "";
 }
 
 uchar MidiMapper::key(uchar chn,uchar pgm, uchar note)

@@ -56,7 +56,6 @@ SynthOut::SynthOut(int d)
 
 SynthOut::~SynthOut()
 {
-  delete map;
   closeDev();
 }
 

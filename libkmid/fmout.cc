@@ -61,7 +61,6 @@ FMOut::FMOut( int d, int total )
 
 FMOut::~FMOut()
 {
-  delete map;
   closeDev();
   if (deleteFMPatchesDirectory)
   {

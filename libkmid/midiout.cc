@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <sys/param.h>
 #include "midispec.h"
+#include "alsaout.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -149,7 +150,6 @@ void MidiOut::closeDev (void)
   if (!ok()) return;
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
-//if (seqfd>=0) close(seqfd);
   seqfd=-1;
 }
 
@@ -316,7 +316,7 @@ void MidiOut::channelMute(uchar chn, int a)
 void MidiOut::seqbuf_dump (void)
 {
 #ifdef HAVE_OSS_SUPPORT
-  if (_seqbufptr)
+  if (_seqbufptr && seqfd!=-1 && seqfd!=0) 
     if (write (seqfd, _seqbuf, _seqbufptr) == -1)
     {
       printfdebug("Error writing to /dev/sequencer in MidiOut::seq_buf_dump\n");
@@ -393,9 +393,9 @@ void MidiOut::tmrContinue(void)
   SEQ_DUMPBUF();
 }
 
-char *MidiOut::midiMapFilename(void)
+const char *MidiOut::midiMapFilename(void)
 {
-  return (map!=NULL) ? map->filename() : (char *)"";
+  return (map!=NULL) ? map->filename() : "";
 }
 
 const char * MidiOut::deviceName(void) const
@@ -407,6 +407,7 @@ const char * MidiOut::deviceName(void) const
     case (KMID_FM) : return "FM";
     case (KMID_GUS) : return "GUS";
     case (KMID_AWE) : return "AWE";
+    case (KMID_ALSA) : return reinterpret_cast<const AlsaOut *>(this)->deviceName();
   }
   return "Unknown";
 }

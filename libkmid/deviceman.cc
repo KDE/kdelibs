@@ -142,7 +142,7 @@ DeviceManager::~DeviceManager(void)
   {
     for (int i=0;i<n_midi;i++)
       delete device[i];
-    delete[] device;
+    delete device;
     device=0L;
   }
 }
@@ -388,12 +388,10 @@ void DeviceManager::closeDev(void)
 {
   if (alsa)
   {
-   printf("DM::closeDev\n");
    if (device) 
      for (int i=0;i<n_total;i++) 
        if (device[i]) device[i]->closeDev();
 
-   printf("DM::closeDev2\n");
    return;
   }
 
@@ -612,7 +610,7 @@ const char *DeviceManager::name(int i)
 
   if (alsa)
   {
-    if (i<n_midi) return device[i]->deviceName();
+    if (i<n_midi) return device[i]->deviceName(); 
   }
   else
   {
@@ -665,11 +663,12 @@ void DeviceManager::setDefaultDevice(int i)
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 }
 
-char *DeviceManager::midiMapFilename(void)
+const char *DeviceManager::midiMapFilename(void)
 {
-  if (device==0L) return (char *)"";
+  if (device==0L) return "";
+  if (default_dev>=n_total) return "";
   return (device[default_dev]!=NULL) ?
-    device[default_dev]->midiMapFilename() : (char *)"";
+    device[default_dev]->midiMapFilename() : "";
 }
 
 void DeviceManager::setMidiMap(MidiMapper *map)

@@ -271,7 +271,7 @@ class MidiOut
    * Returns the path to the file where the current used @ref MidiMapper object
    * reads the configuration from, or an empty string if there's no MidiMapper.
    */
-  char *midiMapFilename ();
+  const char *midiMapFilename ();
 
 };
 

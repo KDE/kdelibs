@@ -445,7 +445,7 @@ class DeviceManager
      *
      * @see #setMidiMap()
      */
-    char *midiMapFilename(void);
+    const char *midiMapFilename(void);
 
     /**
      * Sets a @ref MidiMapper object to use. This object should already have
