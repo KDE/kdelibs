@@ -79,6 +79,6 @@ protected:
     ushort _id;
 };
 
-}; //namespace
+} //namespace
 
 #endif

@@ -337,7 +337,7 @@ protected:
     KHTMLView *view;
 };
 
-}; // namespace
+} // namespace
 
 #endif // HTMLTOKENIZER
 

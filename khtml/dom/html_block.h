@@ -325,6 +325,6 @@ public:
     void setWidth( long );
 };
 
-}; //namespace
+} //namespace
 
 #endif

@@ -24,16 +24,13 @@
 #define __khtml_run_h__
 
 #include <kparts/browserrun.h>
-#include <kurl.h>
-#include <kservice.h>
-#include <kparts/browserextension.h>
 
 class KHTMLPart;
 
 namespace khtml
 {
   struct ChildFrame;
-};
+}
 
 class KHTMLRun : public KParts::BrowserRun
 {

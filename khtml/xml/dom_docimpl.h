@@ -493,5 +493,5 @@ protected:
     DOMString m_subset;
 };
 
-}; //namespace
+} //namespace
 #endif

@@ -130,6 +130,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

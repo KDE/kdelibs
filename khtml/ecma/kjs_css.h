@@ -296,6 +296,6 @@ namespace KJS {
 
   Value getDOMCounter(ExecState *exec, const DOM::Counter& c);
 
-}; // namespace
+} // namespace
 
 #endif

@@ -149,5 +149,5 @@ protected:
 
 
 
-}; //namespace
+} //namespace
 #endif

@@ -54,5 +54,5 @@ protected:
     bool scrollbarsStyled;
 };
 
-}; // end namespace
+} // end namespace
 #endif

@@ -105,7 +105,7 @@ namespace khtml
        };
     };
 
-};
+}
 
 #if __GNUC__ -  0 < 3 // stupid stl_relops.h
 inline bool operator!=(khtml::LengthType __x, khtml::LengthType __y) {

@@ -43,7 +43,7 @@ namespace DOM {
     class Range;
     class NodeImpl;
     class CSSProperty;
-};
+}
 
 namespace KJS {
     class WindowFunc;
@@ -58,7 +58,7 @@ namespace khtml {
     class RenderWidget;
     class CSSStyleSelector;
     void applyRule(DOM::CSSProperty *prop);
-};
+}
 
 class KHTMLPart;
 class KHTMLViewPrivate;

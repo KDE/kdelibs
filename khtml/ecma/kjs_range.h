@@ -66,6 +66,6 @@ namespace KJS {
    */
   DOM::Range toRange(const Value&);
 
-}; // namespace
+} // namespace
 
 #endif

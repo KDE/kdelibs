@@ -295,6 +295,6 @@ namespace KJS {
     enum { SplitText };
   };
 
-}; // namespace
+} // namespace
 
 #endif

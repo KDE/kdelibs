@@ -288,6 +288,6 @@ protected:
     uint len;
 };
 
-}; //namespace
+} //namespace
 
 #endif

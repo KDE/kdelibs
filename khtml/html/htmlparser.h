@@ -55,7 +55,7 @@ namespace DOM {
     class HTMLMapElementImpl;
     class HTMLHeadElementImpl;
     class DocumentFragmentImpl;
-};
+}
 
 namespace khtml {
 
@@ -174,7 +174,7 @@ protected:
 #endif
 };
 
-}; // namespace khtml
+} // namespace khtml
 
 #endif // HTMLPARSER_H
 

@@ -55,6 +55,6 @@ private:
         QScrollView* m_view;
 };
 
-}; // namespace khtml
+} // namespace khtml
 
 #endif

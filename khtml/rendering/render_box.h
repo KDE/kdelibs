@@ -139,6 +139,6 @@ protected:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

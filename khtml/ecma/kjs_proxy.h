@@ -33,7 +33,7 @@ namespace DOM {
   class Node;
   class EventListener;
   class Event;
-};
+}
 
 namespace KJS {
   class List;

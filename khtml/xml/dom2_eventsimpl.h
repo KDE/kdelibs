@@ -399,5 +399,5 @@ private:
     RegisteredEventListener & operator=( const RegisteredEventListener & );
 };
 
-}; //namespace
+} //namespace
 #endif

@@ -727,6 +727,6 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif

@@ -207,6 +207,6 @@ protected:
     HTMLFormCollection(NodeImpl *base);
 };
 
-}; //namespace
+} //namespace
 
 #endif

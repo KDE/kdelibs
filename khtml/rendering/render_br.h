@@ -58,5 +58,5 @@ public:
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
 };
 
-};
+}
 #endif

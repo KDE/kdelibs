@@ -171,6 +171,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

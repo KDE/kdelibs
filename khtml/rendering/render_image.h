@@ -93,6 +93,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

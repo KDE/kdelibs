@@ -152,6 +152,6 @@ private:
   static const char *s_strDrawContentsEvent;
 };
 
-};
+}
 
 #endif

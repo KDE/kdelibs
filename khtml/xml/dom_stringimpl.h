@@ -92,5 +92,5 @@ public:
     QChar *s;
 };
 
-};
+}
 #endif

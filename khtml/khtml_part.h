@@ -58,7 +58,7 @@ namespace DOM
   class Node;
   class HTMLEventListener;
   class EventListener;
-};
+}
 
 namespace khtml
 {
@@ -76,20 +76,20 @@ namespace khtml
   class RenderWidget;
   class CSSStyleSelector;
   class HTMLTokenizer;
-};
+}
 
 namespace KJS {
     class Window;
     class WindowFunc;
     class JSEventListener;
     class DOMDocument;
-};
+}
 
 namespace KParts
 {
   class PartManager;
   class LiveConnectExtension;
-};
+}
 
 /**
  * This class is khtml's main class. It features an almost complete

@@ -625,6 +625,6 @@ public:
     void setValueType( const DOMString & );
 };
 
-};
+}
 
 #endif

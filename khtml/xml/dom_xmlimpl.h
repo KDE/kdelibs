@@ -31,7 +31,7 @@
 
 namespace khtml {
 class CachedCSSStyleSheet;
-};
+}
 
 namespace DOM {
 
@@ -172,6 +172,6 @@ protected:
     QString m_attrString;
 };
 
-}; //namespace
+} //namespace
 
 #endif

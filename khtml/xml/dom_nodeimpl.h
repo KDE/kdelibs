@@ -45,7 +45,7 @@ class QTextStream;
 namespace khtml {
     class RenderStyle;
     class RenderObject;
-};
+}
 
 namespace DOM {
 
@@ -591,5 +591,5 @@ protected:
 };
 #endif
 
-}; //namespace
+} //namespace
 #endif

@@ -37,7 +37,7 @@
 
 namespace DOM {
     class DOMString;
-};
+}
 
 namespace khtml {
 
@@ -400,6 +400,6 @@ protected:
     short _span;
 };
 
-};
+}
 #endif
 

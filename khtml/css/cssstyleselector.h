@@ -292,5 +292,5 @@ namespace khtml
 		      Source regular, Source important );
     };
 
-};
+}
 #endif

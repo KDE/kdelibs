@@ -156,5 +156,5 @@ public:
     QString m_value;
 };
 
-};
+}
 #endif

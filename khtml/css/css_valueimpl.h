@@ -34,7 +34,7 @@
 namespace khtml {
     class RenderStyle;
     class CachedImage;
-};
+}
 
 namespace DOM {
 
@@ -324,6 +324,6 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif

@@ -90,6 +90,6 @@ private:
     mutable DOMString m_domain;
 };
 
-}; //namespace
+} //namespace
 
 #endif

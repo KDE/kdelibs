@@ -56,7 +56,7 @@ namespace DOM {
     class NodeImpl;
     class ElementImpl;
     class EventImpl;
-};
+}
 
 namespace khtml {
     class RenderFlow;
@@ -495,5 +495,5 @@ enum VerticalPositionHint {
     PositionUndefined = 0x3fff
 };
 
-}; //namespace
+} //namespace
 #endif
