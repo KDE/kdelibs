@@ -100,6 +100,9 @@ debug code in your KDE libs.  If you have the space and can stand code that's
 somewhat slower, this is worth it.  The extra information really
 helps debugging and thus bugfixing.
 
+On the other hand, --disable-debug removes all debug messages, leading
+to a faster and cleaner desktop.
+
 Upgrading
 ---------
 
