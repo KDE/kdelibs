@@ -37,53 +37,52 @@
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
+ * @sect Detail
+ *
  * This widget inherits from @ref QLineEdit and implements the following
- * additional functionalities: A completion object that provides both
+ * additional functionalities: q completion object that provides both
  * automatic and manual text completion as well as multiple match iteration
  * features, configurable key-bindings to activate these features and a
  * popup-menu item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * @sect Detail
- *
  * To support these new features @ref KLineEdit also emits a few more
- * additional signals.  These are: @ref completion(), 
- * @ref previousMatch(), @ref nextMatch() and @ref returnPressed().  The
- * completion signal can be connected to a slot that will assist the
- * user in filling out the remaining text.  The two iteration signals
- * are intended to be used to iterate through the list of all possible
- * matches whenever there is more than one match for the given text.
- * The @p returnPressed signal is the same as @ref QLineEdit's except it
- * provides the current text in the widget as its argument whenever
+ * additional signals.  These are: @ref completion( const QString& ),
+ * textRotation( KeyBindingType ), and @ref returnPressed( const QString& ).
+ * The completion signal can be connected to a slot that will assist the
+ * user in filling out the remaining text.  The text rotation signal is
+ * intended to be used to iterate through the list of all possible matches
+ * whenever there is more than one match for the entered text.  The
+ * @p returnPressed( const QString& ) signals are the same as QLineEdit's
+ * except it provides the current text in the widget as its argument whenever
  * appropriate.
  *
  * This widget by default creates a completion object when you invoke
- * the @ref completionObject() member function for the first time or
- * use @ref setCompletionObject() to assign your own completion
- * object.  Additionally, to make this widget more functional,
- * @ref KLineEdit will automatically handle the iteration and completion
- * signals internally when a completion object is created through
- * either one of the methods mentioned above.  If you do not need
- * these feature, simply use @ref KCompletionBase::setHandleSignals or
- * alternatively the boolean parameter in @p setCompletionObject, to
- * turn them off.
+ * the @ref completionObject( bool ) member function for the first time or
+ * use @ref setCompletionObject( KCompletion*, bool ) to assign your own
+ * completion object.  Additionally, to make this widget more functional,
+ * @ref KLineEdit will by default handle the text rotation and completion
+ * events internally when a completion object is created through either one
+ * of the methods mentioned above.  If you do not need this functionality,
+ * simply use @ref KCompletionBase::setHandleSignals( bool ) or set the
+ * boolean parameter in the above functions to FALSE.
  *
- * The default key-binding for completion and rotation is determined
+ * The default key-bindings for completion and rotation is determined
  * from the global settings in @ref KStdAccel.  These values, however,
- * can be set locally to override the global settings through the @ref
- * setKeyBinding member function.  To default the values back, simply
- * invoke @ref useGlobalSettings.  You can also default individual
- * key-binding by simply calling the @ref setKeyBinding() member function
- * with the default the second argument.
+ * can be overriden locally by invoking @ref KCompletionBase::setKeyBinding().
+ * The values can easily be reverted back to the default setting, by simply
+ * calling @ref useGlobalSettings(). An alternate method would be to default
+ * individual key-bindings by usning @ref setKeyBinding() with the default
+ * second argument.
  *
- * NOTE: If the @p EchoMode for this widget is set to something other
- * than @p QLineEdit::Normal, the completion mode will always be
- * defaulted to @ref KGlobal::CompletionNone.  This is done
- * purposefully to guard against protected entries such as passwords
- * being cached in @ref KCompletion's list. Hence, if the @p EchoMode is not
- * @ref QLineEdit::Normal, the completion mode is automatically disabled.
+ * NOTE that if the @p EchoMode for this widget is set to something other
+ * than @p QLineEdit::Normal, the completion mode will always be defaulted
+ * to @ref KGlobal::CompletionNone.  This is done purposefully to guard
+ * against protected entries such as passwords being cached in @ref KCompletion's
+ * list. Hence, if the @p EchoMode is not @ref QLineEdit::Normal, the completion
+ * mode is automatically disabled.
  *
- * @sect Examples:
+ * @sect Examples
  *
  * To enable the basic completion feature :
  *
