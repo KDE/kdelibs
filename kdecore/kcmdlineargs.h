@@ -281,6 +281,11 @@ public:
   static QString cwd();
 
   /**
+   * Get the appname according to argv[0]
+   **/
+  static const char *appName();
+
+  /**
    * Print the usage help to @ds stdout and exit.
    *
    * @param complete If true, print all available options.

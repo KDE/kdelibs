@@ -163,6 +163,12 @@ QString KCmdLineArgs::cwd()
    return QFile::decodeName(QCString(mCwd));
 }
 
+const char * KCmdLineArgs::appName()
+{
+   if (!argc) return 0;
+   return argv[0];
+}
+
 void
 KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *name,
 				 const char *id, const char *afterId)
