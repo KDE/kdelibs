@@ -107,10 +107,16 @@ public:
      * group leader. In that case, the KMainWindow becomes sort of a
      * secondary window.
      *
-     * @param name The object name. For session management to work
-     * properly, all main windows in the application have to have a
+     * @param name The object name. For session management and window management to work
+     * properly, all main windows in the application should have a
      * different name. When passing 0 (the default), KMainWindow will create
-     * such a name for you. So simply never pass anything else ;-)
+     * a unique name, but it's recommended to explicitly pass a window name that will
+     * also describe the type of the window. If there can be several windows of the same
+     * type, append '#' (hash) to the name, and KMainWindow will append numbers to make
+     * the names unique. For example, for a mail client which has one main window showing
+     * the mails and folders, and which can also have one or more windows for composing
+     * mails, the name for the folders window should be e.g. "mainwindow" and
+     * for the composer windows "composer#".
      *
      * @param f Specify the widget flags. The default is
      * WType_TopLevel and WDestructiveClose.  TopLevel indicates that a
