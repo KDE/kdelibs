@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1998/06/15 12:49:31  kulow
+// applied patch to replace .kde with localkdedir()
+//
 // Revision 1.13  1998/05/26 14:14:56  kalle
 // Two bugfixes in KConfig:
 //
@@ -357,7 +360,7 @@ void KConfig::sync()
   // write-sync is only necessary if there are dirty entries
   if( data()->bDirty ) 
 	{
-	  bool bEntriesLeft = false;
+	  bool bEntriesLeft = true;
 	  bool bLocalGood = false;
 
 	  // find out the file to write to (most specific writable file)
