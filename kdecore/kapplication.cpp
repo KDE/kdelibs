@@ -121,12 +121,10 @@
 #include <KDE-ICE/ICElib.h>
 
 #ifdef Q_WS_X11
-#ifndef KDE_USE_FINAL
 // defined by X11 headers
 const int XKeyPress = KeyPress;
 const int XKeyRelease = KeyRelease;
 #undef KeyPress
-#endif
 #endif
 
 #ifdef Q_WS_X11

@@ -145,6 +145,9 @@ class KAccelAction
 
  private:
 	class KAccelActionPrivate* d;
+    static int g_bUseFourModifierKeys;
+
+
 	friend class KAccelActions;
 	friend class KAccelBase;
 };

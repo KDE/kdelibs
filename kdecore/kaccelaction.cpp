@@ -623,34 +623,32 @@ void KAccelAction::decConnections()
 	{ if( d->m_nConnections > 0 ) d->m_nConnections--; }
 
 // Indicate whether to default to the 3- or 4- modifier keyboard schemes
-#ifndef KDE_USE_FINAL // We get this from kkeysquence.cpp in --enable-final
-static int g_bUseFourModifierKeys = -1;
-#endif
+static int KAccelAction::g_bUseFourModifierKeys = -1;
 
 bool KAccelAction::useFourModifierKeys()
 {
-	if( g_bUseFourModifierKeys == -1 ) {
+	if( KAccelAction::g_bUseFourModifierKeys == -1 ) {
 		// Read in whether to use 4 modifier keys
 		KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
 		bool b = KGlobal::config()->readBoolEntry( "Use Four Modifier Keys",  false );
-		g_bUseFourModifierKeys = b && KKeyNative::keyboardHasMetaKey();
+		KAccelAction::g_bUseFourModifierKeys = b && KKeyNative::keyboardHasMetaKey();
 	}
-	return g_bUseFourModifierKeys == 1;
+	return KAccelAction::g_bUseFourModifierKeys == 1;
 }
 
 void KAccelAction::useFourModifierKeys( bool b )
 {
-	if( g_bUseFourModifierKeys != (int)b ) {
-		g_bUseFourModifierKeys = b && KKeyNative::keyboardHasMetaKey();
+	if( KAccelAction::g_bUseFourModifierKeys != (int)b ) {
+		KAccelAction::g_bUseFourModifierKeys = b && KKeyNative::keyboardHasMetaKey();
 		// If we're 'turning off' the meta key or, if we're turning it on,
 		//  the keyboard must actually have a meta key.
 		if( b && !KKeyNative::keyboardHasMetaKey() )
 			kdDebug(125) << "Tried to use four modifier keys on a keyboard layout without a Meta key.\n";
 	}
 	KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
-	KGlobal::config()->writeEntry( "Use Four Modifier Keys", g_bUseFourModifierKeys, true, true);
+	KGlobal::config()->writeEntry( "Use Four Modifier Keys", KAccelAction::g_bUseFourModifierKeys, true, true);
 
-	kdDebug(125) << "bUseFourModifierKeys = " << g_bUseFourModifierKeys << endl;
+	kdDebug(125) << "bUseFourModifierKeys = " << KAccelAction::g_bUseFourModifierKeys << endl;
 }
 
 //---------------------------------------------------------------------

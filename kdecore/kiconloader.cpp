@@ -23,12 +23,7 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <qiconset.h>
-// kiconloader.h defines Status to int - qmovie.h uses enum Status
-#define Status__save Status
-#undef Status
 #include <qmovie.h>
-#define Status Status__save
-#undef Status__save
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

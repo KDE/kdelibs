@@ -26,6 +26,7 @@ class QKeyEvent;
 
 class KKey
 {
+    static int g_bUseFourModifierKeys;
 protected:
 	uint	m_keyCombQt;
 public:

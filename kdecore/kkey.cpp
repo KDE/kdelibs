@@ -44,9 +44,7 @@ QString KKey::toString()		{ return KKey::keyToString( m_keyCombQt ); }
 // Indicate whether to default to the 3- or 4- modifier keyboard schemes
 // This variable should also be moved into a class along with the
 // X11-related key functions below.
-#ifndef KDE_USE_FINAL // We get this from kkeysequence.cpp in --enable-final
-static int g_bUseFourModifierKeys = -1;
-#endif
+static int KKey::g_bUseFourModifierKeys = -1;
 
 bool KKey::useFourModifierKeys()
 {
