@@ -154,7 +154,8 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
 
 //
 // Returns whether this cookie should be send to this location.
-bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const QString &path)
+bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
+                        const QString &path)
 {
     // Cookie domain match check
     if (mDomain.isEmpty())
@@ -165,11 +166,14 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const Q
     }
     else if (!domains.contains(mDomain))
     {
+        if (mDomain[0] == '.')
+            return false;
+
         // Maybe the domain needs an extra dot.
         QString domain = "." + mDomain;
         if ( !domains.contains( domain ) )
-            if ( fqdn != mDomain )
-                return false;
+          if ( fqdn != mDomain )
+            return false;
     }
 
     // Cookie path match check
@@ -426,16 +430,18 @@ bool KCookieJar::parseURL(const QString &_url,
 void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains)
 {
-    // Allow checking under the hostname itself!
-    _domains.append( _fqdn );
-
     // Use fqdn only if the fqdn consists of numbers.
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
+    {
+       _domains.append( _fqdn );
        return;
+    }
 
     QStringList partList = QStringList::split('.', _fqdn, false);
+
     if (partList.count())
         partList.remove(partList.begin()); // Remove hostname
+
     while(partList.count())
     {
        if (partList.count() == 1)
@@ -449,19 +455,21 @@ void KCookieJar::extractDomains(const QString &_fqdn,
              break; // This is a TLD.
        }
        QString domain = partList.join(".");
-       _domains.append(domain);
-       domain.insert( 0, '.' );
+       _domains.append("." + domain);
        _domains.append(domain);
        partList.remove(partList.begin()); // Remove part
     }
 
-    // Only URLs that should reach this point are of type
-    // "host.foo" or "host.co.fo" so simply append a '.'
-    // on top to make sure they are stored under the proper
-    // cookie domain.
+    // Only URLs that would get in here are of type
+    // "host.foo" or "host.co.fo" so simply append
+    // a '.' on top to make sure they are stored under
+    // the proper cookie domain.
     if (_domains.isEmpty())
        _domains.append( "." + _fqdn );
 
+    // Always add the FQDN at the end of the list for
+    // hostname == cookie-domainname checks!
+    _domains.append( _fqdn );
 }
 
 //
@@ -654,9 +662,40 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
 //
 void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 {
-    QString domain = stripDomain(cookiePtr); // We file the cookie under this domain.
-    KHttpCookieList *cookieList = cookieDomains[domain];
+    QString domain;
+    QStringList domains;
+    KHttpCookieList *cookieList = 0L;
 
+    // We always need to do this to make sure that the
+    // that cookies of type hostname == cookie-domainname
+    // are properly removed and/or updated as necessary!
+    extractDomains( cookiePtr->host(), domains );
+    for ( QStringList::ConstIterator it = domains.begin();
+          (it != domains.end() && !cookieList);
+          ++it )
+    {
+        KHttpCookieList *list= cookieDomains[(*it)];
+        if ( !list ) continue;
+
+        for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
+        {
+            if ( cookiePtr->name() == cookie->name() &&
+                 cookie->match(cookiePtr->host(),domains,cookiePtr->path()) )
+            {
+                KHttpCookiePtr old_cookie = cookie;
+                cookie = list->next();
+                list->removeRef( old_cookie );
+                break;
+            }
+            else
+            {
+                cookie = list->next();
+            }
+        }
+    }
+
+    domain = stripDomain( cookiePtr );
+    cookieList = cookieDomains[ domain ];
     if (!cookieList)
     {
         // Make a new cookie list
@@ -666,32 +705,11 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         // known to us should be added with KCookieDunno.
         // KCookieDunno means that we use the global policy.
         cookieList->setAdvice( KCookieDunno );
+
         cookieDomains.insert( domain, cookieList);
+
         // Update the list of domains
         domainList.append(domain);
-    }
-
-    // Look for matching existing cookies
-    // They are removed
-    bool hasDomain = !cookiePtr->domain().isEmpty();
-    for ( KHttpCookiePtr cookie=cookieList->first(); cookie != 0; )
-    {
-        // The name and path must match.
-        // Also, either the domain name, or the host name must match.
-        if ((cookie->name() == cookiePtr->name()) &&
-            ((hasDomain && (cookie->domain() == cookiePtr->domain())) ||
-             (cookie->host() == cookiePtr->host())) &&
-            (cookie->path() == cookiePtr->path()))
-        {
-            KHttpCookiePtr old_cookie = cookie;
-            cookie = cookieList->next();
-            cookieList->removeRef( old_cookie );            
-            cookiesChanged = true;
-        }
-        else
-        {
-            cookie = cookieList->next();
-        }
     }
 
     // Add the cookie to the cookie list
@@ -716,31 +734,27 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
     QStringList domains;
     extractDomains(cookiePtr->host(), domains);
+    bool isEmptyDomain = cookiePtr->domain().isEmpty();
 
-    QString domain = cookiePtr->domain();
-    if ( !domain.isEmpty() )
+    if (!isEmptyDomain )
     {
        // Cookie specifies a domain. Check whether it is valid.
        bool valid = false;
 
-       if (domains.contains(domain))
-          valid = true;
-
+       // This checks whether the cookie is valid based on
+       // what ::extractDomains returns
        if (!valid)
        {
-          // Maybe the domain doesn't start with a "."
-          QString _domain = "."+cookiePtr->domain();
-          if (domains.contains(_domain))
+          if (domains.contains(cookiePtr->domain()))
              valid = true;
        }
 
        if (!valid)
        {
-          // Maybe domain == hostname...
-          if ( domain == cookiePtr->host())
-          {
+          // Maybe the domain doesn't start with a "."
+          QString domain = "."+cookiePtr->domain();
+          if (domains.contains(domain))
              valid = true;
-          }
        }
 
        if (!valid)
@@ -751,10 +765,14 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           return KCookieReject;
        }
     }
-    else
-    {
+
+    // For empty domain use the FQDN to find a
+    // matching advice for the pending cookie.
+    QString domain;
+    if ( isEmptyDomain )
        domain = domains[0];
-    }
+    else
+       domain = cookiePtr->domain();
 
     KHttpCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;
@@ -861,17 +879,25 @@ void KCookieJar::setGlobalAdvice(KCookieAdvice _advice)
 //
 // Get a list of all domains known to the cookie jar.
 //
-const QStringList *KCookieJar::getDomainList()
+const QStringList& KCookieJar::getDomainList()
 {
-    return &domainList;
+    return domainList;
 }
 
 //
 // Get a list of all cookies in the cookie jar originating from _domain.
 //
-const KHttpCookieList *KCookieJar::getCookieList(const QString &_domain)
+const KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
+                                                 const QString & _fqdn )
 {
-    return cookieDomains[_domain];
+    QString domain;
+
+    if (_domain.isEmpty())
+        stripDomain( _fqdn, domain );
+    else
+        domain = _domain;
+
+    return cookieDomains[domain];
 }
 
 //
@@ -957,7 +983,7 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, int winId,
 void KCookieJar::eatAllCookies()
 {
     for ( QStringList::Iterator it=domainList.begin();
-    	  it != domainList.end();)
+          it != domainList.end();)
     {
         QString domain = *it++;
         eatCookiesForDomain(domain); // This might remove domain from domainList!
@@ -1090,54 +1116,45 @@ bool KCookieJar::loadCookies(const QString &_filename)
 
     if (!err)
     {
-    	while(fgets(buffer, READ_BUFFER_SIZE, fStream) != 0)
-    	{
+        while(fgets(buffer, READ_BUFFER_SIZE, fStream) != 0)
+        {
             char *line = buffer;
-    	    // Skip lines which begin with '#' or '['
-    	    if ((line[0] == '#') || (line[0] == '['))
-    	    	continue;
+            // Skip lines which begin with '#' or '['
+            if ((line[0] == '#') || (line[0] == '['))
+                continue;
 
-	    const char *host( parseField(line) );
-	    const char *domain( parseField(line) );
-	    const char *path( parseField(line) );
-	    const char *expStr( parseField(line) );
-	    if (!expStr) continue;
-	    int expDate  = (time_t) strtoul(expStr, 0, 10);
-	    const char *verStr( parseField(line) );
-	    if (!verStr) continue;
-	    int protVer  = (time_t) strtoul(verStr, 0, 10);
-	    const char *name( parseField(line) );
+            const char *host( parseField(line) );
+            const char *domain( parseField(line) );
+            const char *path( parseField(line) );
+            const char *expStr( parseField(line) );
+            if (!expStr) continue;
+            int expDate  = (time_t) strtoul(expStr, 0, 10);
+            const char *verStr( parseField(line) );
+            if (!verStr) continue;
+            int protVer  = (time_t) strtoul(verStr, 0, 10);
+            const char *name( parseField(line) );
             bool keepQuotes = false;
             if (protVer >= 100)
             {
-               protVer -= 100;
-               keepQuotes = true;
+                protVer -= 100;
+                keepQuotes = true;
             }
-	    const char *value( parseField(line, keepQuotes) );
-	    bool secure = atoi( parseField(line) );
+            const char *value( parseField(line, keepQuotes) );
+            bool secure = atoi( parseField(line) );
 
+            // Parse error
+            if (!value) continue;
 
-	    // Parse error
-	    if (!value) continue;
+            // Expired or parse error
+            if ((expDate == 0) || (expDate < curTime))
+                continue;
 
-	    // Expired or parse error
-	    if ((expDate == 0) || (expDate < curTime))
-	    	continue;
-
-#if 0
-            // Domain must be either hostname or domain of hostname
-	    if ( strlen(domain) && (strcmp(host,domain) != 0))
-	    {
-                QString checkDomain;
-                stripDomain( host, checkDomain);
-                if (checkDomain != domain)
-                    continue;
-            }
-#endif	    
-	    KHttpCookie *cookie = new KHttpCookie(host, domain, path,
-	    	name, value, expDate, protVer, secure);
-	    addCookie(cookie);
-    	}
+            KHttpCookie *cookie = new KHttpCookie(host, domain, path, name,
+                                                  value, expDate, protVer,
+                                                  secure);
+            if ( cookieAdvice( cookie ) )
+                addCookie(cookie);
+        }
     }
     delete [] buffer;
     cookiesChanged = false;
