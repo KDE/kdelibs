@@ -136,3 +136,7 @@ that we would like to make for the next binary incompatible release.
 
 - Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
   amount of bool-usage in the CTORs (see KDialogBase, for instance)
+
+- Get rid of KXMLClient::conserveMemory() and the conserveMemory argument in createGUI. It created
+  too many problems in the past. Not worth the trouble.
+
