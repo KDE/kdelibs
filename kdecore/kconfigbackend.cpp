@@ -186,7 +186,7 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
-  if (checkAccess(mLocalFileName, W_OK)) 
+  if (!pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK)) 
      mConfigState = KConfigBase::ReadWrite;
   else
      mConfigState = KConfigBase::ReadOnly;
@@ -269,7 +269,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       eof = s + data.size();
    }
 
-   bool groupOptionImmutable = false;
+   bool fileOptionImmutable = (mConfigState == KConfigBase::ReadOnly);
+   bool groupOptionImmutable = fileOptionImmutable;
    bool groupSkip = false;
 
    int line = 0;
@@ -302,6 +303,14 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          }
          // group found; get the group name by taking everything in
          // between the brackets
+         if ((e-startLine == 3) &&
+             (startLine[1] == '$') &&
+             (startLine[2] == 'i'))
+         {
+            fileOptionImmutable = true;
+            continue;
+         }
+              
          aCurrentGroup = QCString(startLine + 1, e - startLine);
          //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
@@ -309,7 +318,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          if (aCurrentGroup == "KDE Desktop Entry")
             aCurrentGroup = "Desktop Entry";
 
-         groupOptionImmutable = false;
+         groupOptionImmutable = fileOptionImmutable;
 
          e++;
          if ((e+2 < eof) && (*e++ == '[') && (*e++ == '$')) // Option follows
@@ -452,6 +461,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          pConfig->putData(aEntryKey, aEntry, false);
       }
    }
+   if (fileOptionImmutable)
+      mConfigState = KConfigBase::ReadOnly;
+   
 #ifdef HAVE_MMAP
    if (map)
       munmap(( char* )map, rFile.size());

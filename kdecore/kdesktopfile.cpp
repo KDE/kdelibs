@@ -41,7 +41,7 @@ KDesktopFile::KDesktopFile(const QString &fileName, bool bReadOnly,
   // based on the resource type specified, _only_ if the filename
   // is not an absolute path.
   backEnd->changeFileName(fileName, resType, false);
-  parseConfigFiles();
+  reparseConfiguration();
   setDesktopGroup();
 }
 

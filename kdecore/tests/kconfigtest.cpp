@@ -213,10 +213,15 @@ int main( int argc, char **argv )
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
 
+if (argc == 2)
+{
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("Hello");  
   sc.writeEntry( "Bua", "Brumm" );
+  
+  qWarning("Bua = %s", sc.readEntry("Bua").latin1());
+  
   sc.writeEntry( "Test", QString::fromLocal8Bit("Hello הצü"));
   sc.writeEntry( "Test2", "");
   sc.writeEntry( "stringEntry1", STRINGENTRY1 );
@@ -235,6 +240,7 @@ int main( int argc, char **argv )
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 13 ) );
   sc.writeEntry( "pointEntry", QPoint( 4351, 1235 ) );
   sc.sync(); 
+}
 
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("Hello");  

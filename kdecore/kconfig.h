@@ -184,7 +184,8 @@ private:
   KConfig& operator= ( const KConfig& rConfig );
 
 private:
-  bool bGroupImmutable; // Current group is immutable.
+  bool bGroupImmutable : 1; // Current group is immutable.
+  bool bFileImmutable  : 1; // Current file is immutable.
   KConfigPrivate *d;
 };
 

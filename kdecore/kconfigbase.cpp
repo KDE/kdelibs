@@ -1530,7 +1530,10 @@ void KConfigBase::parseConfigFiles()
     setLocale();
   }
   if (backEnd)
+  {
      backEnd->parseConfigFiles();
+     bReadOnly = (backEnd->getConfigState() == ReadOnly);
+  }
 }
 
 void KConfigBase::sync()
