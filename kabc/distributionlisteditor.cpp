@@ -129,11 +129,11 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   nameLayout->addWidget( mNameCombo );
   connect( mNameCombo, SIGNAL( activated( int ) ), SLOT( updateEntryView() ) );
 
-  QPushButton *newButton = new QPushButton( i18n("New Argl List"), this );
+  newButton = new QPushButton( i18n("New Argl List"), this );
   nameLayout->addWidget( newButton );
   connect( newButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
-  QPushButton *removeButton = new QPushButton( i18n("Remove List"), this );
+  removeButton = new QPushButton( i18n("Remove List"), this );
   nameLayout->addWidget( removeButton );
   connect( removeButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
@@ -165,6 +165,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
 
   updateAddresseeView();
   updateNameCombo();
+  removeButton->setEnabled(!mManager->listNames().isEmpty());
 }
 
 DistributionListEditor::~DistributionListEditor()
@@ -187,7 +188,7 @@ void DistributionListEditor::newList()
   new DistributionList( mManager, name );
 
   mNameCombo->insertItem( name );
-
+  removeButton->setEnabled(true);
   updateEntryView();
 }
 
@@ -195,7 +196,7 @@ void DistributionListEditor::removeList()
 {
   delete mManager->list( mNameCombo->currentText() );
   mNameCombo->removeItem( mNameCombo->currentItem() );
-
+  removeButton->setEnabled(!mManager->listNames().isEmpty());
   updateEntryView();
 }
 
@@ -216,7 +217,6 @@ void DistributionListEditor::addEntry()
   }
 
   list->insertEntry( addresseeItem->addressee() );
-
   updateEntryView();
 }
 

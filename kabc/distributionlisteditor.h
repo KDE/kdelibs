@@ -73,6 +73,7 @@ class DistributionListEditor : public QWidget
 
     AddressBook *mAddressBook;
     DistributionListManager *mManager;
+    QPushButton *newButton, *removeButton;
 };
 
 }
