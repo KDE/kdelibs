@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="3">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="4">
 <Menu name="popupmenu">
  <Action name="reloadframe" group="reload" />
  <Action name="printFrame" />
@@ -11,6 +11,7 @@
  <Action name="copylinklocation" />
  <Action name="copyimagelocation" />
  <Separator weakSeparator="1" />
+ <Action name="viewDocumentSource" />
  <Action name="viewFrameSource" />
  <Action name="setEncoding" />
 </Menu>
