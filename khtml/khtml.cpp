@@ -1221,25 +1221,18 @@ void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
     mapList.clear();
 
     // Delete all HTMLObjects on the page
-    if (clue)
-	delete clue;
+    delete clue;
+    clue = 0;
     
-    if (background)
-        delete background;
+    delete background;
     background = 0;
 
-
     // Free their storage
-    if ( allocator )
-    {
-	delete allocator;
-	allocator = 0;
-    }
+    delete allocator;
+    allocator = 0;
 
     // Delete the tokenizer including all tokens and strings.                              
-    if ( ht )
-	delete ht;
-
+    delete ht;
     // Lets start again
     ht = new HTMLTokenizer( );
     ht->begin( );
@@ -1307,9 +1300,7 @@ void KHTMLWidget::parse()
     colorContext = QColor::enterAllocContext();
 */
     
-    if ( settings )
-    	delete settings;
-
+    delete settings;
     settings = new HTMLSettings( *defaultSettings);
 
     allocator = new HTMLAllocator( 128*1024 ); // Allocate in chunks of 128K
@@ -1882,25 +1873,30 @@ KHTMLView* KHTMLWidget::getSelectedFrame()
       
 KHTMLWidget::~KHTMLWidget()
 {
-    if ( parser )
-    	delete parser;
+    delete parser;
+    parser = 0;
 
     if ( painter )
     {
 	painter->end();
-	delete painter;
+	delete painter; 
+        painter = 0;
     }
-    if (clue)
-	delete clue;
 
-    if (background)
-        delete background;
+    delete clue; 
+    clue = 0;
 
-    if (ht)
-	delete ht;
-    if (allocator)
-	delete allocator;
-    
+    delete background; 
+    background = 0;
+
+    delete ht; 
+    ht = 0;
+
+    // the following lines are added
+    mapPendingFiles.clear();
+    framesetList.clear();
+    formList.clear();
+    mapList.clear();
 
 /*
     if ( colorContext )
@@ -1909,12 +1905,14 @@ KHTMLWidget::~KHTMLWidget()
 	QColor::destroyAllocContext( colorContext );
     }
 */
-    delete defaultSettings;
+    delete defaultSettings; 
+    defaultSettings = 0;
 
-    if ( jsEnvironment )
-	delete jsEnvironment;            
+    delete jsEnvironment; 
+    jsEnvironment = 0;
 
-    delete cache;
+    delete cache; 
+    cache = 0;
 }
 
 void
