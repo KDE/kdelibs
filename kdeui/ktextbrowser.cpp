@@ -20,7 +20,7 @@
 /*
 ****************************************************************************
 *
-* $Log
+* $Log:
 *
 ****************************************************************************
 */
@@ -63,4 +63,29 @@ void KTextBrowser::viewportMouseReleaseEvent( QMouseEvent * )
   }
 }
 
+
+void KTextBrowser::keyPressEvent(QKeyEvent *e)
+{
+  if( e->key() == Key_Escape )
+  {
+    e->ignore();
+  }
+  else
+  {
+    QTextBrowser::keyPressEvent(e);
+  }
+}
+
+
+
+
+
 #include "ktextbrowser.moc"
+
+
+
+
+
+
+
+

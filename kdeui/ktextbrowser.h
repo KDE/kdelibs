@@ -55,6 +55,11 @@ class KTextBrowser : public QTextBrowser
      */
     virtual void viewportMouseReleaseEvent( QMouseEvent *e );  
 
+    /**
+     * Makes sure Key_Escape is ignored
+     */
+    virtual void keyPressEvent(QKeyEvent *e);
+
   protected slots:
     /**
      * Stores the current reference. This reference in used in 
