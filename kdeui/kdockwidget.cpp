@@ -382,9 +382,12 @@ KDockWidget::~KDockWidget()
   delete d; // destroy private data
 }
 
-void KDockWidget::setLatestKDockContainer(KDockContainer* container)
+void KDockWidget::setLatestKDockContainer(QWidget* container)
 {
-	d->container=(QWidget*)(container);
+	if (container)
+	{
+		d->container=container;
+	}
 }
 
 KDockContainer *KDockWidget::latestKDockContainer()
@@ -626,10 +629,12 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
 		  if (cont)
 		  {
+			if (latestKDockContainer() && (latestKDockContainer()!=cont)) latestKDockContainer()->removeWidget(this);
 			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
 			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
 						tabPageLabel(), tabIndex );
+			setLatestKDockContainer(contWid);
 //			setDockTabName( parentTab );
 			if( !toolTipStr.isEmpty())
 			cont->setToolTip( this, toolTipStr);
@@ -780,6 +785,7 @@ QWidget *KDockWidget::parentDockContainer() const
 void KDockWidget::setForcedFixedWidth(int w)
 {
 	d->forcedWidth=w;
+//	setFixedWidth(w);
 	if (parent()->inherits("KDockSplitter"))
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedWidth(this,w);
 }

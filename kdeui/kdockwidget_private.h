@@ -70,7 +70,8 @@ public:
   void setHighResolution(bool b=true);
   bool highResolution() const;
 
-  void setForcedFixedWidth(KDockWidget *dw,int width);
+  void setForcedFixedWidth(KDockWidget *dw,int w);
+  void setForcedFixedHeight(KDockWidget *dw,int h);
   void restoreFromForcedFixedSize(KDockWidget *dw);
 
 
@@ -85,9 +86,10 @@ private:
   Orientation orientation;
   bool initialised;
   QFrame* divider;
-  int xpos;
+  int xpos, savedXPos;
   bool mOpaqueResize, mKeepSize, mHighResolution;
   int fixedWidth0,fixedWidth1;
+  int fixedHeight0,fixedHeight1;
 };
 
 /**

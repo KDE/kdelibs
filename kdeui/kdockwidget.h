@@ -656,7 +656,7 @@ protected:
    */
   void updateHeader();
 
-  void setLatestKDockContainer(KDockContainer*);
+  void setLatestKDockContainer(QWidget *);
   KDockContainer *latestKDockContainer();
   
 signals:
