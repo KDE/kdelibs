@@ -49,8 +49,6 @@
 
 #define PAINT_BUFFER_HEIGHT 150
 
-//#define FIXED_POSITIONING
-
 template class QList<KHTMLView>;
 
 QList<KHTMLView> *KHTMLView::lstViews = 0L;
@@ -64,12 +62,12 @@ class KHTMLViewPrivate {
 public:
     KHTMLViewPrivate()
     {
-	underMouse = 0;
-	linkPressed = false;
-	useSlowRepaints = false;
-	currentNode = 0;
- 	originalNode= 0;
- 	tabIndex=0;
+        underMouse = 0;
+        linkPressed = false;
+        useSlowRepaints = false;
+        currentNode = 0;
+        originalNode= 0;
+        tabIndex=0;
 
     }
     NodeImpl *underMouse;
@@ -140,7 +138,7 @@ KHTMLView::~KHTMLView()
 void KHTMLView::init()
 {
     if ( lstViews == 0L )
-	lstViews = new QList<KHTMLView>;
+        lstViews = new QList<KHTMLView>;
     lstViews->setAutoDelete( FALSE );
     lstViews->append( this );
 
@@ -166,13 +164,11 @@ void KHTMLView::clear()
     setHScrollBarMode(Auto);
 
     if(d->useSlowRepaints) {
-	delete paintBuffer;
-	paintBuffer = 0;
-#ifdef FIXED_POSITIONING
-	setStaticBackground(false);
-#endif
+        delete paintBuffer;
+        paintBuffer = 0;
+        setStaticBackground(false);
     }
-	
+
     delete d;
     d = new KHTMLViewPrivate();
     connect(&d->resizeTimer, SIGNAL(timeout()), this, SLOT(triggerResize()));
@@ -185,11 +181,11 @@ void KHTMLView::resizeEvent ( QResizeEvent * event )
 
 #if 0
     if(!m_part->parentPart()) {
-	   kdDebug( 0 ) << "top level resizeEvent" << endl;
-	   // ### this doesn't work for some strange reason
-	   d->resizeTimer.start(100, true);
+           kdDebug( 0 ) << "top level resizeEvent" << endl;
+           // ### this doesn't work for some strange reason
+           d->resizeTimer.start(100, true);
     } else
-	layout();
+        layout();
 #else
     layout();
 #endif
@@ -207,44 +203,42 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
    NodeImpl *body = 0;
 
     if( m_part->docImpl() )
-	body = m_part->docImpl()->body();
+        body = m_part->docImpl()->body();
 
     if(!body)
-	return;
+        return;
 
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     int pbHeight;
     if(paintBuffer)
-	pbHeight = paintBuffer->height();
+        pbHeight = paintBuffer->height();
     else {
-	paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
-	pbHeight = PAINT_BUFFER_HEIGHT;
+        paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
+        pbHeight = PAINT_BUFFER_HEIGHT;
     }
 
     if(d->useSlowRepaints) {
-	//kdDebug(0) << "using slow repaints" << endl;
-	// used in case some element defines a fixed background or we have fixed positioning
-	// #### flickers terribly, but that will need some support in Qt to work.
-#ifndef FIXED_POSITIONING
-	ex = contentsX();
-	ey = contentsY();
-	ew = visibleWidth();
-	eh = visibleHeight();
-	int tx, ty;
-	contentsToViewport(ex, ey, tx, ty);
-	p->setClipping(false);
-	//p->setClipRect(tx, ty, ew, eh);
-#endif
-	if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
-	    pbHeight = visibleHeight();
-	    paintBuffer->resize( visibleWidth(), pbHeight );
-	}
+        //kdDebug(0) << "using slow repaints" << endl;
+        // used in case some element defines a fixed background or we have fixed positioning
+        // #### flickers terribly, but that will need some support in Qt to work.
+        ex = contentsX();
+        ey = contentsY();
+        ew = visibleWidth();
+        eh = visibleHeight();
+        int tx, ty;
+        contentsToViewport(ex, ey, tx, ty);
+        p->setClipping(false);
+        //p->setClipRect(tx, ty, ew, eh);
+        if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
+            pbHeight = visibleHeight();
+            paintBuffer->resize( visibleWidth(), pbHeight );
+        }
     } else {
-	if ( paintBuffer->width() < visibleWidth() ) {
-	    paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
-	    pbHeight = PAINT_BUFFER_HEIGHT;
-	}
+        if ( paintBuffer->width() < visibleWidth() ) {
+            paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
+            pbHeight = PAINT_BUFFER_HEIGHT;
+        }
     }
 
         QTime qt;
@@ -254,24 +248,24 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     //kdDebug(0) << "pbHeight = " << pbHeight << endl;
     while (py < eh) {
-	QPainter* tp = new QPainter;
-	tp->begin( paintBuffer );
-	tp->translate(-ex,-ey-py);
-	
-	int ph = eh-py < pbHeight ? eh-py : pbHeight;
+        QPainter* tp = new QPainter;
+        tp->begin( paintBuffer );
+        tp->translate(-ex,-ey-py);
 
-	// ### fix this for frames...
+        int ph = eh-py < pbHeight ? eh-py : pbHeight;
 
-	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
-	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
-	tp->end();
+        // ### fix this for frames...
 
-	delete tp;
+        tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+        m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
+        tp->end();
 
-	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
-	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
-		
-	py += pbHeight;
+        delete tp;
+
+        //kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
+        p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
+
+        py += pbHeight;
     }
 //    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
@@ -282,45 +276,45 @@ void KHTMLView::layout(bool force)
 
 
     if( m_part->docImpl() ) {
-	DOM::HTMLDocumentImpl *document = m_part->docImpl();
+        DOM::HTMLDocumentImpl *document = m_part->docImpl();
 
-	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+        khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 
-	NodeImpl *body = document->body();
-	if(body && body->id() == ID_FRAMESET) {
-	    setVScrollBarMode(AlwaysOff);
-	    setHScrollBarMode(AlwaysOff);
-	    _width = visibleWidth();
+        NodeImpl *body = document->body();
+        if(body && body->id() == ID_FRAMESET) {
+            setVScrollBarMode(AlwaysOff);
+            setHScrollBarMode(AlwaysOff);
+            _width = visibleWidth();
 
-	    root->layout();
-	    return;
-	}
-
-
-	int w = visibleWidth();
-	_height = visibleHeight();
-
-	if (w != _width || force) {
-	    //kdDebug( 6000 ) << "layouting document" << endl;
-
-	    _width = w;
-
-	    //	    QTime qt;
-	    //	    qt.start();
-
-	    root->layout();
+            root->layout();
+            return;
+        }
 
 
-	    //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
-	    viewport()->repaint(false);
-	    //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
-	
-	} else {
-	   root->layout();
+        int w = visibleWidth();
+        _height = visibleHeight();
 
-	}
+        if (w != _width || force) {
+            //kdDebug( 6000 ) << "layouting document" << endl;
+
+            _width = w;
+
+            //      QTime qt;
+            //      qt.start();
+
+            root->layout();
+
+
+            //      kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+            viewport()->repaint(false);
+            //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
+
+        } else {
+           root->layout();
+
+        }
     } else {
-	_width = visibleWidth();
+        _width = visibleWidth();
     }
 }
 
@@ -329,7 +323,7 @@ void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
     int yOff = contentsY();
     if(yOff > yPos + o->height() ||
        yOff + visibleHeight() < yPos)
-	return;
+        return;
 
     QWidget *vp = viewport();
     QPainter p(vp);
@@ -338,7 +332,7 @@ void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
     p.translate( -xOff, -yOff );
 
     o->printObject( &p , xOff, yOff, visibleWidth(), visibleHeight(),
-		    xPos , yPos );
+                    xPos , yPos );
 }
 
 //
@@ -361,8 +355,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     /* ### use PartManager (Simon)
        if ( _isFrame && !_isSelected )
        {
-	kdDebug( 6000 ) << "activating frame!" << endl;
-	topView()->setFrameSelected(this);
+        kdDebug( 6000 ) << "activating frame!" << endl;
+        topView()->setFrameSelected(this);
     }*/
 
     DOMString url;
@@ -415,50 +409,50 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     QCursor c = KCursor::arrowCursor();
     if ( innerNode ) {
-	switch( innerNode->style()->cursor() ) {
-	case CURSOR_AUTO:
-	    if ( url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
-		c = m_part->urlCursor();
-	    break;
-	case CURSOR_CROSS:
-	    c = KCursor::crossCursor();
-	    break;
-	case CURSOR_POINTER:
-	    c = m_part->urlCursor();
-	    break;
-	case CURSOR_MOVE:
-	    c = KCursor::sizeAllCursor();
-	    break;
-	case CURSOR_E_RESIZE:
-	case CURSOR_W_RESIZE:
-	    c = KCursor::sizeHorCursor();
-	    break;
-	case CURSOR_N_RESIZE:
-	case CURSOR_S_RESIZE:
-	    c = KCursor::sizeVerCursor();
-	    break;
-	case CURSOR_NE_RESIZE:
-	case CURSOR_SW_RESIZE:
-	    c = KCursor::sizeBDiagCursor();
-	    break;
-	case CURSOR_NW_RESIZE:
-	case CURSOR_SE_RESIZE:
-	    c = KCursor::sizeFDiagCursor();
-	    break;
-	case CURSOR_TEXT:
-	    c = KCursor::ibeamCursor();
-	    break;
-	case CURSOR_WAIT:
-	    c = KCursor::waitCursor();
-	    break;
-	case CURSOR_HELP:
-	case CURSOR_DEFAULT:
-	    break;
-	}
+        switch( innerNode->style()->cursor() ) {
+        case CURSOR_AUTO:
+            if ( url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
+                c = m_part->urlCursor();
+            break;
+        case CURSOR_CROSS:
+            c = KCursor::crossCursor();
+            break;
+        case CURSOR_POINTER:
+            c = m_part->urlCursor();
+            break;
+        case CURSOR_MOVE:
+            c = KCursor::sizeAllCursor();
+            break;
+        case CURSOR_E_RESIZE:
+        case CURSOR_W_RESIZE:
+            c = KCursor::sizeHorCursor();
+            break;
+        case CURSOR_N_RESIZE:
+        case CURSOR_S_RESIZE:
+            c = KCursor::sizeVerCursor();
+            break;
+        case CURSOR_NE_RESIZE:
+        case CURSOR_SW_RESIZE:
+            c = KCursor::sizeBDiagCursor();
+            break;
+        case CURSOR_NW_RESIZE:
+        case CURSOR_SE_RESIZE:
+            c = KCursor::sizeFDiagCursor();
+            break;
+        case CURSOR_TEXT:
+            c = KCursor::ibeamCursor();
+            break;
+        case CURSOR_WAIT:
+            c = KCursor::waitCursor();
+            break;
+        case CURSOR_HELP:
+        case CURSOR_DEFAULT:
+            break;
+        }
     }
     setCursor( c );
 
-    
+
     khtml::MouseMoveEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
 }
@@ -490,30 +484,30 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     {
     case Key_Down:
     case Key_J:
-	scrollBy( 0, 10 );
-	break;
+        scrollBy( 0, 10 );
+        break;
 
     case Key_Next:
     case Key_Space:
-	scrollBy( 0, clipper()->height() - offs );
-	break;
+        scrollBy( 0, clipper()->height() - offs );
+        break;
 
     case Key_Up:
     case Key_K:
-	scrollBy( 0, -10 );
-	break;
+        scrollBy( 0, -10 );
+        break;
 
     case Key_Prior:
-	scrollBy( 0, -clipper()->height() + offs );
-	break;
+        scrollBy( 0, -clipper()->height() + offs );
+        break;
     case Key_Right:
     case Key_L:
-	scrollBy( 10, 0 );
-	break;
+        scrollBy( 10, 0 );
+        break;
     case Key_Left:
     case Key_H:
-	scrollBy( -10, 0 );
-	break;
+        scrollBy( -10, 0 );
+        break;
     case Key_N:
         gotoNextLink();
         break;
@@ -523,9 +517,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     case Key_Enter:
     case Key_Return:
         if (!d->linkPressed)
-	  toggleActLink(false);
-	else
-	  toggleActLink(true);
+          toggleActLink(false);
+        else
+          toggleActLink(true);
         break;
     case Key_Home:
         setContentsPos( 0, 0 );
@@ -534,7 +528,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         setContentsPos( 0, contentsHeight() - height() );
         break;
     default:
-	QScrollView::keyPressEvent( _ke );
+        QScrollView::keyPressEvent( _ke );
     }
 }
 
@@ -543,8 +537,8 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     switch(_ke->key())
     {
     case Key_Enter:
-	toggleActLink(true);
-	return;
+        toggleActLink(true);
+        return;
       break;
     }
     //    if(m_part->keyReleaseHook(_ke)) return;
@@ -568,7 +562,7 @@ void KHTMLView::doAutoScroll()
     if ( (pos.y() < 0) || (pos.y() > visibleHeight()) ||
          (pos.x() < 0) || (pos.x() > visibleWidth()) )
     {
-	ensureVisible( xm, ym, 0, 5 );
+        ensureVisible( xm, ym, 0, 5 );
     }
 }
 
@@ -618,77 +612,77 @@ bool KHTMLView::gotoNextLink()
 
     if (d->tabIndex!=-1)
       {
-	d->tabIndex++;
-	if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-	  {
-	    d->tabIndex=-1;
-	    n=0;
-	  }
+        d->tabIndex++;
+        if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
+          {
+            d->tabIndex=-1;
+            n=0;
+          }
       }
 
     //kdDebug( 6000 ) << "gotoNextLink: current tabindex: "<< d->tabIndex << "\n";
 
     if(!n) n = m_part->docImpl()->body();
     while(n) {
-	// find next Node
-	if(n->firstChild())
-	    n = n->firstChild();
-	else if (n->nextSibling())
-	    n = n->nextSibling();
-	else {
-	  NodeImpl *next = n->parentNode();
-	  bool wrap=true;
-	  while(next)
-	    {
-	      n=next;
-	      if (n->nextSibling())
-		{
-		  n=n->nextSibling();
-		  next=0;
-		  wrap=false;
-		}
-	      else
-		{
-		  next=n->parentNode();
-		}
-	    }
-	  if (wrap)
-	    {
-	      //	kdDebug(6000)<<"wrapped around document border.\n";
-	      if (d->tabIndex==-1)
-		d->tabIndex++;
-	      else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
-		  return false;
-	    }
-	}
-	//kdDebug( 6000 ) << "gotoPrevLink: in-between tabindex: "<< d->tabIndex << "\n";
+        // find next Node
+        if(n->firstChild())
+            n = n->firstChild();
+        else if (n->nextSibling())
+            n = n->nextSibling();
+        else {
+          NodeImpl *next = n->parentNode();
+          bool wrap=true;
+          while(next)
+            {
+              n=next;
+              if (n->nextSibling())
+                {
+                  n=n->nextSibling();
+                  next=0;
+                  wrap=false;
+                }
+              else
+                {
+                  next=n->parentNode();
+                }
+            }
+          if (wrap)
+            {
+              //        kdDebug(6000)<<"wrapped around document border.\n";
+              if (d->tabIndex==-1)
+                d->tabIndex++;
+              else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
+                  return false;
+            }
+        }
+        //kdDebug( 6000 ) << "gotoPrevLink: in-between tabindex: "<< d->tabIndex << "\n";
 
-	if(n->id() == ID_A && ((static_cast<HTMLElementImpl *>(n))->getAttribute(ATTR_HREF).length()))
-	  {
-	    //here, additional constraints for the previous link are checked.
-	    HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
-	    if ((a->tabIndex()==d->tabIndex))
-	      {
-		d->currentNode = n;
-		//kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
+        if(n->id() == ID_A && ((static_cast<HTMLElementImpl *>(n))->getAttribute(ATTR_HREF).length()))
+          {
+            //here, additional constraints for the previous link are checked.
+            HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
+            if ((a->tabIndex()==d->tabIndex))
+              {
+                d->currentNode = n;
+                //kdDebug( 6000 ) << "gotoNextLink: new tabindex: "<< d->tabIndex << "\n";
 
-		return gotoLink();
-	      }
-	    else if (!begin)
-	      {
-		begin=n;
-	      }
-	    else if (begin==n)
-	      {
-		if (d->tabIndex<=m_part->docImpl()->findHighestTabIndex())
-		  d->tabIndex++;
-		if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-		  {
-		    //kdDebug(6000) << "\n gotoNextLink: last tabindex "<<d->tabIndex<<" reached. now processing non-tabindex-elements\n";
-		    d->tabIndex=-1;
-		  }
-	      }
-	}
+                return gotoLink();
+              }
+            else if (!begin)
+              {
+                begin=n;
+              }
+            else if (begin==n)
+              {
+                if (d->tabIndex<=m_part->docImpl()->findHighestTabIndex())
+                  d->tabIndex++;
+                if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
+                  {
+                    //kdDebug(6000) << "\n gotoNextLink: last tabindex "<<d->tabIndex<<" reached. now processing non-tabindex-elements\n";
+                    d->tabIndex=-1;
+                  }
+              }
+        }
     }
     return false;
 }
@@ -699,8 +693,8 @@ bool KHTMLView::gotoPrevLink()
 
     if (!(m_part->docImpl()))
       {
-	//kdDebug(6000)<<"gotoPrevLink: No Document!!\n";
-	return false;
+        //kdDebug(6000)<<"gotoPrevLink: No Document!!\n";
+        return false;
       }
 
     //kdDebug( 6000 ) << "gotoPrevLink: old tabindex: "<< d->tabIndex << "\n";
@@ -711,12 +705,12 @@ bool KHTMLView::gotoPrevLink()
 
     if(d->tabIndex!=-1)
       {
-	d->tabIndex--;
-	if (d->tabIndex==-1)
-	  {
-	    n=0;
-	    //kdDebug(6000)<< "tabindex wrapped backwards\n";
-	  }
+        d->tabIndex--;
+        if (d->tabIndex==-1)
+          {
+            n=0;
+            //kdDebug(6000)<< "tabindex wrapped backwards\n";
+          }
       }
 
     //    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
@@ -725,68 +719,68 @@ bool KHTMLView::gotoPrevLink()
     if(!n) n = m_part->docImpl()->body();
 
     while(n) {
-	// find next Node
-	if(n->lastChild())
-	    n = n->lastChild();
-	else if (n->previousSibling())
-	    n = n->previousSibling();
-	else {
-	    NodeImpl *prev = n->parentNode();
-	    bool wrap=true;
-	    while(prev) {
-		n=prev;
-		if (n->previousSibling())
-		  {
-		    n=n->previousSibling();
-		    prev=0;
-		    wrap=false;
-		  }
-		else
-		  prev=n->parentNode();
-	    }
-	    if (wrap)
-	      {
-		//		kdDebug(6000)<<"wrapped from "<< d->tabIndex <<endl;
-		if (d->tabIndex==-1)
-		  {
-		    d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-		    //		    kdDebug"to "<< d->tabIndex<<endl;
-		    if (d->tabIndex!=-1)
-		      begin=0L;
-		  }
-	      }
-	}
-	// ### add handling of form elements here!
-	if((n->id() == ID_A)&&((static_cast<HTMLElementImpl *>(n)->getAttribute(ATTR_HREF).length()))) {
-	    //here, additional constraints for the previous link are checked.
-	    HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
-	    if (a->tabIndex()==d->tabIndex)
-	      {
-		d->currentNode = n;
-		//kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
+        // find next Node
+        if(n->lastChild())
+            n = n->lastChild();
+        else if (n->previousSibling())
+            n = n->previousSibling();
+        else {
+            NodeImpl *prev = n->parentNode();
+            bool wrap=true;
+            while(prev) {
+                n=prev;
+                if (n->previousSibling())
+                  {
+                    n=n->previousSibling();
+                    prev=0;
+                    wrap=false;
+                  }
+                else
+                  prev=n->parentNode();
+            }
+            if (wrap)
+              {
+                //              kdDebug(6000)<<"wrapped from "<< d->tabIndex <<endl;
+                if (d->tabIndex==-1)
+                  {
+                    d->tabIndex=m_part->docImpl()->findHighestTabIndex();
+                    //              kdDebug"to "<< d->tabIndex<<endl;
+                    if (d->tabIndex!=-1)
+                      begin=0L;
+                  }
+              }
+        }
+        // ### add handling of form elements here!
+        if((n->id() == ID_A)&&((static_cast<HTMLElementImpl *>(n)->getAttribute(ATTR_HREF).length()))) {
+            //here, additional constraints for the previous link are checked.
+            HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
+            if (a->tabIndex()==d->tabIndex)
+              {
+                d->currentNode = n;
+                //kdDebug( 6000 ) << "gotoPrevLink: new tabindex: "<< d->tabIndex << "\n";
 
-		return gotoLink();
-	      }
-	}
-	if (!begin)
-	  {
-	    begin=n;
-	    //	  kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
-	  }
-	else if (begin==n)
-	  {
-	    if (d->tabIndex>=0)
-	      {
-		d->tabIndex--;
-	      }
-	    else
-	      {
-		d->tabIndex=m_part->docImpl()->findHighestTabIndex();
-		//	kdDebug(6000)<<"end of non-tabindex-link-mode. restarting search\n";
-		if (d->tabIndex==-1)
-		  return false;
-	      }
-	  }
+                return gotoLink();
+              }
+        }
+        if (!begin)
+          {
+            begin=n;
+            //    kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
+          }
+        else if (begin==n)
+          {
+            if (d->tabIndex>=0)
+              {
+                d->tabIndex--;
+              }
+            else
+              {
+                d->tabIndex=m_part->docImpl()->findHighestTabIndex();
+                //      kdDebug(6000)<<"end of non-tabindex-link-mode. restarting search\n";
+                if (d->tabIndex==-1)
+                  return false;
+              }
+          }
     }
     return false;
 }
@@ -799,64 +793,64 @@ void KHTMLView::print()
 
     QPrinter *printer = new QPrinter;
     if(printer->setup(this)) {
-	// set up QPrinter
-	printer->setFullPage(true);
-	printer->setCreator("KDE 2.0 HTML Library");
-	//printer->setDocName(m_part->url());
-	
-	QPainter *p = new QPainter;
-	p->begin( printer );
-	
-	QPaintDeviceMetrics metrics( printer );
-	
-	// this is a simple approximation... we layout the document
-	// according to the width of the page, then just cut
-	// pages without caring about the content. We should do better
-	// in the future, but for the moment this is better than no
-	// printing support
-	kdDebug(6000) << "printing: physical page width = " << metrics.width()
-		      << " height = " << metrics.height() << endl;
-	root->setPrintingMode(true);
-	root->setWidth(metrics.width());
+        // set up QPrinter
+        printer->setFullPage(true);
+        printer->setCreator("KDE 2.0 HTML Library");
+        //printer->setDocName(m_part->url());
 
-    	QValueList<int> oldSizes = m_part->fontSizes();
+        QPainter *p = new QPainter;
+        p->begin( printer );
 
-	const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24,
-				       28, 34, 40, 48, 56, 68, 82, 100, 0 };
-	QValueList<int> fontSizes;
-	for ( int i = 0; printFontSizes[i] != 0; i++ )
-	    fontSizes << printFontSizes[ i ];
-	m_part->setFontSizes(fontSizes);
-	m_part->docImpl()->applyChanges();
+        QPaintDeviceMetrics metrics( printer );
 
-	// ok. now print the pages.
-	kdDebug(6000) << "printing: html page width = " << root->width()
-		      << " height = " << root->height() << endl;
-	// if the width is too large to fit on the paper we just scale
-	// the whole thing.
-	int pageHeight = metrics.height();
-	int pageWidth = metrics.width();
-	if(root->width() > metrics.width()) {
-	    double scale = ((double) metrics.width())/((double) root->width());
-	    p->scale(scale, scale);
-	    pageHeight = (int) (pageHeight/scale);
-	    pageWidth = (int) (pageWidth/scale);
-	}	
-	int top = 0;
-	while(top < root->height()) {
-	    if(top > 0) printer->newPage();
-	    root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
-	    p->translate(0,-pageHeight);
-	    top += pageHeight;
-	}
+        // this is a simple approximation... we layout the document
+        // according to the width of the page, then just cut
+        // pages without caring about the content. We should do better
+        // in the future, but for the moment this is better than no
+        // printing support
+        kdDebug(6000) << "printing: physical page width = " << metrics.width()
+                      << " height = " << metrics.height() << endl;
+        root->setPrintingMode(true);
+        root->setWidth(metrics.width());
 
-	p->end();
-	delete p;
+        QValueList<int> oldSizes = m_part->fontSizes();
 
-	// and now reset the layout to the usual one...
-	root->setPrintingMode(false);
-	m_part->setFontSizes(oldSizes);
-	m_part->docImpl()->applyChanges();
+        const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24,
+                                       28, 34, 40, 48, 56, 68, 82, 100, 0 };
+        QValueList<int> fontSizes;
+        for ( int i = 0; printFontSizes[i] != 0; i++ )
+            fontSizes << printFontSizes[ i ];
+        m_part->setFontSizes(fontSizes);
+        m_part->docImpl()->applyChanges();
+
+        // ok. now print the pages.
+        kdDebug(6000) << "printing: html page width = " << root->width()
+                      << " height = " << root->height() << endl;
+        // if the width is too large to fit on the paper we just scale
+        // the whole thing.
+        int pageHeight = metrics.height();
+        int pageWidth = metrics.width();
+        if(root->width() > metrics.width()) {
+            double scale = ((double) metrics.width())/((double) root->width());
+            p->scale(scale, scale);
+            pageHeight = (int) (pageHeight/scale);
+            pageWidth = (int) (pageWidth/scale);
+        }
+        int top = 0;
+        while(top < root->height()) {
+            if(top > 0) printer->newPage();
+            root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
+            p->translate(0,-pageHeight);
+            top += pageHeight;
+        }
+
+        p->end();
+        delete p;
+
+        // and now reset the layout to the usual one...
+        root->setPrintingMode(false);
+        m_part->setFontSizes(oldSizes);
+        m_part->docImpl()->applyChanges();
     }
     delete printer;
 }
@@ -868,27 +862,27 @@ void KHTMLView::toggleActLink(bool actState)
       //retrieve url
       HTMLAnchorElementImpl *n = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
       if (!actState) // inactive->active
-	{
-	  int x,y;
-	  d->currentNode->setKeyboardFocus(DOM::ActivationActive);
-	  d->originalNode=d->currentNode;
-	  d->linkPressed=true;
-	  n->getAnchorPosition(x,y);
-	  ensureVisible(x,y);
-	}
+        {
+          int x,y;
+          d->currentNode->setKeyboardFocus(DOM::ActivationActive);
+          d->originalNode=d->currentNode;
+          d->linkPressed=true;
+          n->getAnchorPosition(x,y);
+          ensureVisible(x,y);
+        }
       else //active->inactive
-	{
-	  n->setKeyboardFocus(DOM::ActivationOff);
-	  d->linkPressed=false;
-	  if (d->currentNode==d->originalNode)
-	    {
-	      d->currentNode=0;
-	      m_part->urlSelected( n->areaHref().string(),
-				   LeftButton, 0,
-				   n->targetRef().string() );
-	    }
-	  d->originalNode=0;
-	}
+        {
+          n->setKeyboardFocus(DOM::ActivationOff);
+          d->linkPressed=false;
+          if (d->currentNode==d->originalNode)
+            {
+              d->currentNode=0;
+              m_part->urlSelected( n->areaHref().string(),
+                                   LeftButton, 0,
+                                   n->targetRef().string() );
+            }
+          d->originalNode=0;
+        }
      }
 }
 
@@ -897,8 +891,6 @@ void KHTMLView::useSlowRepaints()
 {
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
-#ifdef FIXED_POSITIONING
     setStaticBackground(true);
-#endif
 }
 
