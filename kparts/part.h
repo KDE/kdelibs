@@ -32,6 +32,7 @@ class QWidget;
 class KAction;
 class KActionCollection;
 class QEvent;
+struct QUnknownInterface;
 
 namespace KIO {
   class Job;
@@ -66,6 +67,8 @@ public:
    *  Destructor.
    */
   virtual ~PartBase();
+
+  virtual QUnknownInterface *qcomInterface();
 
   /**
    *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
@@ -181,7 +184,7 @@ public:
     /**
      *  Returns whether the part is selectable or not.
      */
-    virtual bool isSelectable() const;
+    bool isSelectable() const;
 
 signals:
     /**
@@ -312,7 +315,7 @@ public:
    *
    *  @return The current used URL.
    */
-  virtual const KURL & url() const { return m_url; }
+  KURL url() const { return m_url; }
 
   /**
    * Called when closing the current url (e.g. document), for instance
@@ -441,7 +444,7 @@ public:
   /**
    * @return true if the part is in read-write mode
    */
-  virtual bool isReadWrite() const { return m_bReadWrite; }
+  bool isReadWrite() const { return m_bReadWrite; }
 
   /**
    * Changes the behaviour of this part to readonly or readwrite.
@@ -452,7 +455,7 @@ public:
   /**
    * @return true if the document has been modified.
    */
-  virtual bool isModified() const { return m_bModified; }
+  bool isModified() const { return m_bModified; }
 
   /**
    * Called when closing the current url (e.g. document), for instance

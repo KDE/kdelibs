@@ -87,6 +87,11 @@ PartBase::~PartBase()
   delete d;
 }
 
+QUnknownInterface *PartBase::qcomInterface()
+{
+    return 0;
+}
+
 void PartBase::setPartObject( QObject *obj )
 {
   m_obj = obj;

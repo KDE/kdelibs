@@ -66,18 +66,12 @@ public:
      *
      * @returns the newly created part.
      *
-     * Never reimplement this function. Instead, reimplement @ref
-     * createPartObject().
-     *
      * createPart() automatically emits a signal @ref objectCreated to tell
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.
-     *
-     * This function is virtual for compatibility reasons only.
-     *
      */
-    virtual Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
+     Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
 
 protected:
 
@@ -103,7 +97,7 @@ protected:
      *
      * @returns the newly created part.
      */
-    virtual Part *createPartObject( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
+    virtual Part *createPartObject( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
     
     /**
      * Reimplemented from KLibFactory. Calls @ref createPart()
