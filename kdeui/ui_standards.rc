@@ -167,6 +167,7 @@
     <Action name="help_whats_this"/>
     <Separator/>
     <MergeLocal/>
+    <Action name="help_show_tip"/>
     <Separator/>
     <Action name="help_report_bug"/>
     <Separator/>
