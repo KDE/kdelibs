@@ -140,6 +140,13 @@ KAccel::KAccel( QWidget* pParent, const char* psName )
 	d = new KAccelPrivate( this );
 }
 
+KAccel::KAccel( QWidget* watch, QObject* parent, const char* psName )
+: QAccel( watch, parent, (psName) ? psName : "KAccel-QAccel" )
+{
+	kdDebug(125) << "KAccel(): this = " << this << endl;
+	d = new KAccelPrivate( this );
+}
+
 KAccel::~KAccel()
 {
 	kdDebug(125) << "~KAccel(): this = " << this << endl;

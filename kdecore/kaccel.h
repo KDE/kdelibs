@@ -89,6 +89,7 @@ class KAccel : public QAccel
 	Q_OBJECT
  public:
 	KAccel( QWidget* pParent, const char* psName = 0 );
+	KAccel( QWidget* watch, QObject* parent, const char* psName = 0 );
 	virtual ~KAccel();
 
 	KAccelActions& actions();
