@@ -1822,6 +1822,12 @@ void HTTPProtocol::configAuth( const char *p, bool b )
     // WWW-Authentification: Basic\r\n
     return;
   }
+  else if (strncasecmp (p, "Negotiate", 9) == 0)
+  {
+    // Another strange thing from IIS. Found on http://www.lottorush.com.
+    kdWarning(7103) << "Unsupported Authorization type requested : Negotiate" << endl;
+    return;
+  }
   else
   {
     kdWarning(7103) << "Invalid Authorization type requested" << endl;
