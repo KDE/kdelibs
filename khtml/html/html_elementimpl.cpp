@@ -184,7 +184,7 @@ void HTMLElementImpl::addCSSProperty(int id, int value)
     setChanged();
 }
 
-void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
+void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly)
 {
     if(!m_styleDecls) createDecl();
 
@@ -197,7 +197,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 
         for ( ;l < v->l; l++ ) {
             char cc = v->s[l].latin1();
-            if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' && cc != '.') )
+            if ( cc > '9' || ( cc < '0' && (numOnly || (cc != '*' && cc != '%' && cc != '.') ) ) )
                 break;
         }
         if ( l != v->l ) {
