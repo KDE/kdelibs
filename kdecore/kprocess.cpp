@@ -570,7 +570,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// forking failed
 
 	runs = FALSE;
-	free(arglist);
+	//	free(arglist);
 	return FALSE;
 
   } else {
@@ -587,7 +587,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	  processHasExited(status);
 	}
   }
-  free(arglist);    
+  //  free(arglist);    
   return TRUE;
 }
 
