@@ -1014,12 +1014,8 @@ int KToolBar::count()
 
 void KToolBar::saveState()
 {
-    // only bother if our state really did change
-//     if (!d->m_stateChanged)
-// 	return;
-
-  // get all of the stuff to save
-    QString position;
+    QString position, index, offset, newLine;
+    // get all of the stuff to save
     switch ( barPos() ) {
     case KToolBar::Flat:
 	position = "Flat";
@@ -1040,7 +1036,17 @@ void KToolBar::saveState()
     default:
 	position = "Top";
 	break;
-	}
+    }
+    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+	QMainWindow::ToolBarDock dock;
+	int index_;
+	bool nl;
+	int offset_;
+	( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
+	index = QString::number( index_ );
+	offset = QString::number( offset_ );
+	newLine = nl ? "TRUE" : "FALSE";
+    }
 
     QString icontext;
     switch (d->m_iconText) {
@@ -1064,7 +1070,7 @@ void KToolBar::saveState()
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
 	QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
 
-	    // go down one level to get to the right tags
+	// go down one level to get to the right tags
 	elem = elem.firstChild().toElement();
 
 	// get a name we can use for this toolbar
@@ -1085,8 +1091,14 @@ void KToolBar::saveState()
 		current.setAttribute( "noMerge", "1" );
 		current.setAttribute( "position", position );
 		current.setAttribute( "iconText", icontext );
+		if ( !index.isEmpty() )
+		    current.setAttribute( "index", index );
+		if ( !offset.isEmpty() )
+		    current.setAttribute( "offset", offset );
+		if ( !newLine.isEmpty() )
+		    current.setAttribute( "newline", newLine );
 		modified = true;
-
+		
 		break;
 	    }
 	}
@@ -1095,7 +1107,7 @@ void KToolBar::saveState()
 	if ( !modified )
 	    return;
 
-	    // now we load in the (non-merged) local file
+	// now we load in the (non-merged) local file
 	QString local_xml(KXMLGUIFactory::readConfigFile(d->m_xmlguiClient->xmlFile(), true, d->m_xmlguiClient->instance()));
 	QDomDocument local;
 	local.setContent(local_xml);
@@ -1137,7 +1149,13 @@ void KToolBar::saveState()
 
     config->writeEntry("Position", position);
     config->writeEntry("IconText", icontext);
-
+    if ( !index.isEmpty() )
+	config->writeEntry( "Index", index );
+    if ( !offset.isEmpty() )
+	config->writeEntry( "Offset", offset );
+    if ( !newLine.isEmpty() )
+	config->writeEntry( "NewLine", newLine );
+    
     config->sync();
 }
 
@@ -1344,7 +1362,7 @@ void KToolBar::rebuildLayout()
 	bl->addStretch();
 	bl->addWidget( rightAligned );
     }
-    
+
     if ( fullSize() ) {
 	if ( !stretchableWidget && widgets.last() &&
 	     !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
@@ -1478,6 +1496,9 @@ void KToolBar::slotReadConfig()
     static QString attrIconStyle = QString::fromLatin1("KDEIconStyle");
     static QString attrSize      = QString::fromLatin1("IconSize");
     static QString attrPosition  = QString::fromLatin1("Position");
+    static QString attrIndex  = QString::fromLatin1("Index");
+    static QString attrOffset  = QString::fromLatin1("Offset");
+    static QString attrNewLine  = QString::fromLatin1("NewLine");
 
     // we actually do this in two steps.  first, we read in the global
     // styles [Toolbar style].  then, if the toolbar is NOT
@@ -1487,7 +1508,8 @@ void KToolBar::slotReadConfig()
     QString icontext;
     int iconsize;
     QString position;
-
+    QString index( "0" ), offset( "-1" ), nl( "false" );
+    
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
     { // start block for KConfigGroupSaver
@@ -1509,7 +1531,10 @@ void KToolBar::slotReadConfig()
 	iconsize = 0;
 
 	position = config->readEntry(attrPosition, "Top");
-
+	index = config->readEntry(attrIndex, index );
+	offset = config->readEntry(attrOffset, offset );
+	nl = config->readEntry(attrNewLine, nl );
+		
 	// okay, that's done.  now we look for a toolbar specific entry
 	grpToolbar = name() + QString::fromLatin1(" Toolbar style");
 	if (config->hasGroup(grpToolbar)) {
@@ -1527,6 +1552,10 @@ void KToolBar::slotReadConfig()
 
 	    // finally, get the position
 	    position = config->readEntry(attrPosition, position);
+	    position = config->readEntry(attrPosition, "Top");
+	    index = config->readEntry(attrIndex, index );
+	    offset = config->readEntry(attrOffset, offset );
+	    nl = config->readEntry(attrNewLine, nl );
 	}
 
 	// revert back to the old group
@@ -1574,6 +1603,9 @@ void KToolBar::slotReadConfig()
 
     // ...and now the position stuff
     BarPosition pos(Top);
+    int offs = offset.toInt();
+    int idx = index.toInt();
+    bool newLine = nl.lower() == "true" ? TRUE : FALSE;
     if ( position == "Top" )
 	pos = Top;
     else if ( position == "Bottom" )
@@ -1586,6 +1618,9 @@ void KToolBar::slotReadConfig()
 	pos = Floating;
     else if ( position == "Flat" )
 	pos = Flat;
+
+    if ( mw )
+	mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, idx, newLine, offs );
     setBarPos( pos );
 
     if (doUpdate)

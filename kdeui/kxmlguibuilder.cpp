@@ -30,39 +30,40 @@
 class KXMLGUIBuilderPrivate
 {
 public:
-  KXMLGUIBuilderPrivate()
-  {
-  }
-  ~KXMLGUIBuilderPrivate()
-  {
+    KXMLGUIBuilderPrivate() {
+    }
+  ~KXMLGUIBuilderPrivate() {
   }
 
-  QWidget *m_widget;
+    QWidget *m_widget;
 
-  QString tagMainWindow;
-  QString tagMenuBar;
-  QString tagMenu;
-  QString tagToolBar;
-  QString tagStatusBar;
+    QString tagMainWindow;
+    QString tagMenuBar;
+    QString tagMenu;
+    QString tagToolBar;
+    QString tagStatusBar;
 
-  QString tagSeparator;
-  QString tagTearOffHandle;
+    QString tagSeparator;
+    QString tagTearOffHandle;
 
-  QString attrName;
-  QString attrLineSeparator;
+    QString attrName;
+    QString attrLineSeparator;
 
-  QString attrText1;
-  QString attrText2;
+    QString attrText1;
+    QString attrText2;
 
-  QString attrIcon;
+    QString attrIcon;
 
-  QString attrFullWidth;
-  QString attrPosition;
-  QString attrIconText;
-  QString attrIconSize;
+    QString attrFullWidth;
+    QString attrPosition;
+    QString attrIndex;
+    QString attrOffset;
+    QString attrNewLine;
+    QString attrIconText;
+    QString attrIconSize;
 
-  KInstance *m_instance;
-  KXMLGUIClient *m_client;
+    KInstance *m_instance;
+    KXMLGUIClient *m_client;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
@@ -90,6 +91,9 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->attrPosition = QString::fromLatin1( "position" );
   d->attrIconText = QString::fromLatin1( "iconText" );
   d->attrIconSize = QString::fromLatin1( "iconSize" );
+  d->attrIndex = QString::fromLatin1( "index" );
+  d->attrOffset = QString::fromLatin1( "offset" );
+  d->attrNewLine = QString::fromLatin1( "newline" );
 
   d->m_instance = 0;
   d->m_client = 0;
@@ -208,28 +212,45 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QCString attrPosition = element.attribute( d->attrPosition ).lower().latin1();
     QCString attrIconText = element.attribute( d->attrIconText ).lower().latin1();
     QString attrIconSize = element.attribute( d->attrIconSize ).lower();
+    QString attrIndex = element.attribute( d->attrIndex ).lower();
+    QString attrOffset = element.attribute( d->attrOffset ).lower();
+    QString attrNewLine = element.attribute( d->attrNewLine ).lower();
 
     if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
       bar->setFullSize( true );
     else
       bar->setFullSize( false );
 
-    if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 )
-    {
-      if ( attrPosition == "top" )
-        bar->setBarPos( KToolBar::Top );
-      else if ( attrPosition == "left" )
-        bar->setBarPos( KToolBar::Left );
-      else if ( attrPosition == "right" )
-        bar->setBarPos( KToolBar::Right );
-      else if ( attrPosition == "bottom" )
-        bar->setBarPos( KToolBar::Bottom );
-      else if ( attrPosition == "floating" )
-        bar->setBarPos( KToolBar::Floating );
-      else if ( attrPosition == "flat" )
-        bar->setBarPos( KToolBar::Flat );
+    QMainWindow::ToolBarDock dock;
+    int index = 0, offset = -1;
+    bool nl = FALSE;
+    
+    if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 ) {
+	if ( attrPosition == "top" )
+	    dock = QMainWindow::Top;
+	else if ( attrPosition == "left" )
+	    dock = QMainWindow::Left;
+	else if ( attrPosition == "right" )
+	    dock = QMainWindow::Right;
+	else if ( attrPosition == "bottom" )
+	    dock = QMainWindow::Bottom;
+	else if ( attrPosition == "floating" )
+	    dock = QMainWindow::TornOff;
+	else if ( attrPosition == "flat" )
+	    dock = QMainWindow::Minimized;
     }
 
+    if ( !attrIndex.isEmpty() && containerStateBuffer.size() == 0 )
+	index = attrIndex.toInt();
+    if ( !attrOffset.isEmpty() && containerStateBuffer.size() == 0 )
+	offset = attrOffset.toInt();
+    if ( !attrNewLine.isEmpty() && containerStateBuffer.size() == 0 )
+	nl = attrNewLine == "true" ? TRUE : FALSE;
+    
+    if ( d->m_widget->inherits( "QMainWindow") ) 
+	( (QMainWindow*)d->m_widget )->moveToolBar( bar, dock, index, nl, offset );
+    bar->setBarPos( (KToolBar::BarPosition)dock );
+    
     if ( !attrIconText.isEmpty() && containerStateBuffer.size() == 0 )
     {
       if ( attrIconText == "icontextright" )
