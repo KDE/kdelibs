@@ -251,7 +251,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
     lay->addSpacing(10);
     QString text = i18n("To submit a bug report, click on the button below.\n"
-                        "This will open a web browser window on http://bugs.kde.org where you'll find a form to fill in.\n"
+                        "This will open a web browser window on http://bugs.kde.org where you will find a form to fill in.\n"
                         "The information displayed above will be transferred to that server.");
     QLabel * label = new QLabel( text, parent, "label");
     lay->addWidget( label );
