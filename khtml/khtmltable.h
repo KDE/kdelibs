@@ -74,6 +74,9 @@ public:
     void setBGColor( const QColor &c )
 	    {	bg = c; }
 
+    virtual void setMaxWidth( int );
+    virtual void calcSize( HTMLClue *parent = 0L );
+
     int getPercent()
         {   return percent; }
 

@@ -41,7 +41,7 @@
 #include <qimage.h>
 #include <qdrawutil.h>
 
-//#define CLUE_DEBUG
+#define CLUE_DEBUG
 //#define DEBUG_ALIGN
 
 //-----------------------------------------------------------------------------
@@ -376,6 +376,8 @@ void HTMLClue::setMaxWidth( int _max_width)
         if (max_width < min_width)
 	    max_width = min_width;
     }
+    // @@WABA: max_width should be set to percent*_max_width / 100
+    // Taking into account min_width
 }
 
 void HTMLClue::setMaxAscent( int _a )
@@ -646,6 +648,7 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 {
     int lmargin = parent ? parent->getLeftMargin( getYPos() ) : 0;
 
+#if 0
     // If we have already called calcSize for the children, then just
     // continue from the last object done in previous call.
     if ( curr )
@@ -663,6 +666,7 @@ void HTMLClueV::calcSize( HTMLClue *parent )
         removeAlignedByParent( curr );
     }
     else
+#endif
     {
         ascent = descent = 0;
         curr = head;
@@ -1549,6 +1553,15 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
     ascent = 0;
     descent = 0;
     width = 0;
+
+    // @@WABA: Perhaps width should always be equal to max_width
+    // At least if we align the data to right or center, 
+    // we assume the actual width is max_width
+    if (halign != Left)
+    {
+        width = max_width;
+    }
+    
     lmargin = parent->getLeftMargin( getYPos() );
     if ( indent > lmargin )
 	lmargin = indent;
@@ -1755,21 +1768,23 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    ascent += a + d;
 	    y += a + d;
 
-	    if ( w > width )
-		width = w;
-
 	    if ( halign == HCenter )
 	    {
+	        // Centered
 		extra = ( rmargin - w ) / 2;
 		if ( extra < 0 )
 		    extra = 0;
 	    }
 	    else if ( halign == Right )
 	    {
+	    	// Right aligned
 	        extra = rmargin - w;
 		if ( extra < 0 )
 		    extra = 0;
 	    }
+
+	    if ( w > width )
+		width = w;
 
 	    while ( line != obj )
 	    {

@@ -104,6 +104,24 @@ void HTMLTableCell::print( QPainter *_painter, HTMLChain *_chain, int _x,
 
     HTMLClue::print( _painter, _chain, _x, _y, _width, _height, _tx, _ty );
 }
+
+void HTMLTableCell::setMaxWidth( int _max_width)
+{
+    // HTMLTableCells don't do their own width-calculation.
+    // It is done by HTMLTable instead.
+    // We just do whatever the HTMLTable wants.
+    max_width = _max_width;
+}
+                                                        
+void HTMLTableCell::calcSize( HTMLClue *parent )
+{
+    HTMLClueV::calcSize(parent);
+
+    // HTMLTableCells don't do their own width-calculation.
+    // It is done by HTMLTable instead.
+    // We just do whatever the HTMLTable wants.
+    width = max_width;
+}
 //-----------------------------------------------------------------------------
 
 HTMLTable::HTMLTable( int _percent, int _width,
@@ -945,8 +963,8 @@ void HTMLTable::calcColInfo( int pass )
 	    }
 	    else if ( cellPercent == 0 )
 	    {
-		pref_size = cell->getWidth() + padding + padding + 
-		            spacing + borderExtra;
+	    	// Fixed size, preffered width == min width
+		pref_size = min_size;
 		col_type = Fixed;
 	    }
 	    else
@@ -1067,10 +1085,11 @@ void HTMLTable::calcColInfo( int pass )
 		if (currMinSize < colInfo[index].minSize)
 		{
 		    currMinSize = colInfo[index].minSize - currMinSize;
-		    if ( (!isFixed) ||
-		         (nonFixedCount == 0) || 
+printf("MinSize: IsFixed %d nonFixedCount %d\n", isFixed, nonFixedCount);
+		    if ( (nonFixedCount == 0) || 
 		         (nonFixedCount == col_span) )
 		    {
+printf("Colspan = %d Spread %d pixels about all columns\n", col_span, currMinSize);		    	
 		    	// Spread extra width across all columns equally
                         for (int k = col_span; k; k--)
                         {
@@ -1092,6 +1111,7 @@ void HTMLTable::calcColInfo( int pass )
             	    }
 		    else
 		    {
+printf("Colspan = %d Spread %d pixels about all non-fixed columns\n", col_span, currMinSize);		    	
 		    	// Spread extra width across all non-fixed columns 
                         for (int k = col_span; k; k--)
                         {
