@@ -148,7 +148,7 @@ void KFileDetailView::insertItem( KFileViewItem *i )
 						     i->name(), i->pixmap(), i,
 						     myLastItem );
 
-    item->setText( 1, QString::number( i->size() ) );
+    item->setText( 1, KGlobal::locale()->formatNumber( i->size(), 0 ) );
     item->setText( 2, i->access() );
     item->setText( 3, i->date() );
     item->setText( 4, i->user() );
