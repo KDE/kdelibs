@@ -248,21 +248,39 @@ QString KShell::joinArgs( const QStringList &args )
 {
     if (args.isEmpty())
         return QString::null; // well, QString::empty, in fact. qt sucks ;)
-    QString q( "'" ), ret( q );
+    QChar q( '\'' );
+    QString ret( q );
 #if 0 // this could pay off if join() would be cleverer and the strings were long
     QStringList rst( args );
     for (QStringList::Iterator it = rst.begin(); it != rst.end(); ++it)
-        (*it).replace( '\'', "'\\''" );
+        (*it).replace( q, "'\\''" );
     ret += rst.join( "' '" );
 #else
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (it != args.begin())
             ret += "' '";
         QString trsts( *it );
-        trsts.replace( '\'', "'\\''" );
+        trsts.replace( q, "'\\''" );
         ret += trsts;
     }
 #endif
+    ret += q;
+    return ret;
+}
+
+QString KShell::joinArgs( const char * const *args, int nargs )
+{
+    if (!args || !*args || !nargs)
+        return QString::null; // well, QString::empty, in fact. qt sucks ;)
+    QChar q( '\'' );
+    QString ret( q );
+    for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
+        if (argp != args)
+            ret += "' '";
+        QString trsts( QFile::decodeName( *argp ) );
+        trsts.replace( q, "'\\''" );
+        ret += trsts;
+    }
     ret += q;
     return ret;
 }

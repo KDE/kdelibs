@@ -90,7 +90,7 @@ namespace KShell {
     /**
      * Quotes and joins @p args together according to POSIX shell rules.
      *
-     * @param args a list of words to quote and join
+     * @param args a list of strings to quote and join
      * @return a command suitable for shell execution
      */
     QString joinArgs( const QStringList &args );
@@ -102,10 +102,21 @@ namespace KShell {
      * is, that control characters (ASCII less than 32) are escaped into
      * human-readable strings.
      *
-     * @param args a list of words to quote and join
+     * @param args a list of strings to quote and join
      * @return a command suitable for shell execution
      */
     QString joinArgsDQ( const QStringList &args );
+
+    /**
+     * Quotes and joins @p argv together according to POSIX shell rules.
+     *
+     * @param argv an array of c strings to quote and join.
+     *  The strings are expected to be in local-8-bit encoding.
+     * @param argc maximal number of strings in @argv. if not supplied,
+     *  @p argv must be null-terminated.
+     * @return a command suitable for shell execution
+     */
+    QString joinArgs( const char * const *argv, int argc = -1 );
 
     /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
