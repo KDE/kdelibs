@@ -139,6 +139,10 @@ void FileProtocol::get( const KURL& url )
 	error( KIO::ERR_IS_DIRECTORY, url.path() );
 	return;
     }
+    if ( S_ISFIFO( buff.st_mode ) || S_ISSOCK ( buff.st_mode ) ) {
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+	return;
+    }
 
     int fd = open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
@@ -386,6 +390,10 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
     if ( S_ISDIR( buff_src.st_mode ) ) {
 	error( KIO::ERR_IS_DIRECTORY, src.path() );
+	return;
+    }
+    if ( S_ISFIFO( buff_src.st_mode ) || S_ISSOCK ( buff_src.st_mode ) ) {
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src.path() );
 	return;
     }
 
