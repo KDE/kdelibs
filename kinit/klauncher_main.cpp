@@ -73,7 +73,7 @@ extern "C" int kdemain( int argc, char**argv )
       QCString dcopName = testDCOP.registerAs(cname, false);
       if (dcopName.isEmpty())
       {
-         kdFatal() << "DCOP communication problem!" << endl;
+         kdWarning() << "DCOP communication problem!" << endl;
          return 1;
       }
       if (dcopName != cname)
