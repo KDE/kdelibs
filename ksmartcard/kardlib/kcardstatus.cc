@@ -80,7 +80,7 @@ unsigned long rc;
 	_state.dwCurrentState = _state.dwEventState;
 
 #if 0
-	kdDebug() << "kardsvc: update() -- " << _state.szReader << " "
+	kdDebug(912) << "kardsvc: update() -- " << _state.szReader << " "
 		  << "state changed: " << (_state.dwEventState & SCARD_STATE_CHANGED)
 		  << " timed out: " << (rc == SCARD_E_TIMEOUT)
 		  << " present: " << (_state.dwEventState & SCARD_STATE_PRESENT)

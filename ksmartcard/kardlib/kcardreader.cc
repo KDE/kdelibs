@@ -188,8 +188,8 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 
 
 	response.duplicate(res, resSize);
-	kdDebug()<<"main command " << KPCSC::decodeCommand(command) << endl;
-	kdDebug()<<"main  resp " << KPCSC::decodeCommand(response) << endl;
+	kdDebug(912) << "main command " << KPCSC::decodeCommand(command) << endl;
+	kdDebug(912) << "main  resp " << KPCSC::decodeCommand(response) << endl;
 
 	if (rc != SCARD_S_SUCCESS) {
 		response.resize(0);
