@@ -24,6 +24,7 @@
 #include "kjs_window.h"
 #include "kjs_events.h"
 #include <khtml_part.h>
+#include <kdebug.h>
 
 using namespace KJS;
 
@@ -110,7 +111,14 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   if (success && !comp.value().isNull())
     return ValueToVariant( m_script->globalExec(), comp.value());
   else
+  {
+    if ( comp.complType() == Throw )
+    {
+        UString msg = comp.value().toString(m_script->globalExec()).value();
+        kdWarning(6070) << "Script throwed exception: " << msg.qstring() << endl;
+    }
     return QVariant();
+  }
 }
 
 void KJSProxyImpl::clear() {
