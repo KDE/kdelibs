@@ -20,6 +20,14 @@
 <!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
 <!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
  khelpcenter -->
+<!ENTITY kicon	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>K-Symbol von &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon>-Symbol"><!-- kicon -->
+<!ENTITY kmenu  "<guimenu>K</guimenu>-Men&uuml;"> <!-- kmenu -->
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
 <!ENTITY kwm    "<application>kwm</application>">
