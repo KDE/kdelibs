@@ -30,6 +30,8 @@ using namespace khtml;
 
 #include <kglobal.h>
 
+#include <assert.h>
+
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
@@ -37,7 +39,8 @@ const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 4
 
 Settings::Settings()
 {
-    memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
+    resetFontSizes();
+    
     standardFamilies = new QString[6];
 
     charset	  = KGlobal::generalFont().charSet();
@@ -50,25 +53,34 @@ Settings::~Settings()
     delete [] standardFamilies;
 }
 
-void Settings::setFontSizes(const int *newFontSizes, int numFontSizes)
+void Settings::setFontSizes(const QValueList<int> &_newFontSizes )
 {
-    if(numFontSizes > MAXFONTSIZES) numFontSizes = MAXFONTSIZES;
-    memcpy( m_fontSizes, newFontSizes, sizeof(int)*numFontSizes );
+    QValueList<int> newFontSizes = _newFontSizes;
+    while ( newFontSizes.count() > m_fontSizes.count() )
+      newFontSizes.remove( newFontSizes.fromLast() );
+    
+    QValueList<int>::ConstIterator it = newFontSizes.begin();
+    QValueList<int>::ConstIterator end = newFontSizes.end();
+    int i = 0;
+    for (; it != end; it++ )
+      m_fontSizes[ i++ ] = *it;
 }
 
-const int *Settings::fontSizes() const
+QValueList<int> Settings::fontSizes() const
 {
     return m_fontSizes;
 }
 
 void Settings::resetFontSizes(void)
 {
-    memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
+    m_fontSizes.clear(); 
+    for ( int i = 0; i < MAXFONTSIZES; i++ )
+      m_fontSizes << defaultFontSizes[ i ];
 }
 
 Settings::Settings( const Settings &s )
 {
-    memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
+    m_fontSizes = s.m_fontSizes;
     standardFamilies = new QString[5];
 
     for(int i = 0; i < 5; i++)
@@ -79,7 +91,7 @@ Settings::Settings( const Settings &s )
 
 const Settings &Settings::operator=( const Settings &s )
 {
-    memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
+    m_fontSizes = s.m_fontSizes;
 
     for(int i = 0; i < 5; i++)
 	standardFamilies[i] = s.standardFamilies[i];

@@ -1268,7 +1268,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	QFontDatabase db;
 	int oldSize;
 	float size = 0;
-	const int *standardSizes = e->ownerDocument()->view()->part()->fontSizes();
+	QValueList<int> standardSizes = e->ownerDocument()->view()->part()->fontSizes();
 	if(e->parentNode())
 	{
 	    QFontInfo fi(e->parentNode()->style()->font());

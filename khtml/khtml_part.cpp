@@ -704,12 +704,12 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   return true;
 }
 
-void KHTMLPart::setFontSizes( const int *newFontSizes, int numFontSizes )
+void KHTMLPart::setFontSizes( const QValueList<int> &newFontSizes )
 {
-  d->m_settings->setFontSizes( newFontSizes, numFontSizes );
+  d->m_settings->setFontSizes( newFontSizes );
 }
 
-const int *KHTMLPart::fontSizes() const
+QValueList<int> KHTMLPart::fontSizes() const
 {
   return d->m_settings->fontSizes();
 }
@@ -1057,15 +1057,15 @@ void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const K
   }
 
   KParts::URLArgs args( _args );
-  
+
   if ( child->m_run )
     delete (KHTMLRun *)child->m_run;
 
   if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), true, true ) )
     args.serviceType = child->m_serviceType;
-  
+
   child->m_args = args;
-  
+
   if ( args.serviceType.isEmpty() )
     child->m_run = new KHTMLRun( this, child, url );
   else

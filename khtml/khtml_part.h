@@ -261,7 +261,7 @@ public:
    *
    * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.
    */
-  void setFontSizes(const int *newFontSizes, int numFontSizes = 7);
+  void setFontSizes(const QValueList<int> &newFontSizes );
 
   /**
    * Gets point sizes to be associated with the HTML-sizes used in
@@ -271,7 +271,7 @@ public:
    *
    * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.
    */
-  const int *fontSizes() const;
+  QValueList<int> fontSizes() const;
 
   /**
    * Resets the point sizes to be associated with the HTML-sizes used in
@@ -394,7 +394,7 @@ protected slots:
   virtual void slotSaveDocument();
   virtual void slotSaveFrame();
   virtual void slotSetEncoding();
-    
+
 private slots:
   void updateActions();
   void slotChildStarted( KIO::Job *job );

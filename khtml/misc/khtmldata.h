@@ -28,6 +28,7 @@
 #define __HTMLDATA_H__
 
 #include <qfont.h>
+#include <qvaluelist.h>
 class QString;
 
 #define MAXFONTSIZES 15
@@ -47,8 +48,8 @@ public:
 
     const Settings &operator=( const Settings & );
 
-    void setFontSizes(const int *newFontSizes, int numFontSizes = 7);
-    const int *fontSizes() const;
+    void setFontSizes(const QValueList<int> &newFontSizes );
+    QValueList<int> fontSizes() const;
     void resetFontSizes();
 
     void resetStandardFamilies();
@@ -60,7 +61,7 @@ public:
     const QString *families() const { return standardFamilies; }
 
 private:
-    int     m_fontSizes[MAXFONTSIZES];
+    QValueList<int>     m_fontSizes;
     QString *standardFamilies;
 
 };
