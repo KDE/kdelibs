@@ -714,6 +714,9 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
 	RenderLayer *l = pLayer.layer;
 	RenderObject *r = l->renderer();
 	int xOff = 0, yOff = 0;
+        if (!(l && r)) {
+            continue;
+        }
 	l->convertToLayerCoords(this, xOff, yOff);
 
 // 	qDebug("   testing %p x=%d y=%d, w=%d, h=%d", r, tx+xOff, ty+yOff, l->width(), l->height());
