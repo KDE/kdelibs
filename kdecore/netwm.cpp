@@ -476,7 +476,8 @@ Z &NETRArray<Z>::operator[](int index) {
 	// allocate space for the new data
 	// open table has amortized O(1) access time
 	// when N elements appended -- exa
-	Z *newdata = new Z[max(2 * sz, index+1)];
+        int newsize = max(2*sz,  index+1);
+	Z *newdata = new Z[newsize];
 
 	// move the old data into the new array
 	int i;
@@ -485,7 +486,7 @@ Z &NETRArray<Z>::operator[](int index) {
 	for (; i <= index; i++ )
 	    memset( (void*) &newdata[i], 0, sizeof(Z) );
 
-	sz = index + 1;
+	sz = newsize;
 
 	// delete old data and reassign
 	delete [] d;
