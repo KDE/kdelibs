@@ -154,25 +154,24 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
-
-    
-    // overflow: hidden
-    // save old clip region, set a new one
-    QRegion oldClip;
-    if (style()->overflow()==OHIDDEN)
-    {
-        if (p->hasClipping())
-            oldClip = p->clipRegion();
-
-        QRect cr(_tx,_ty,m_width,m_height);
-        cr = p->xForm(cr);
-        p->setClipRegion(QRegion(cr));
-    }    
+   
     
     // 1. print background, borders etc
     if(hasSpecialObjects() && !isInline() && isVisible())
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
+
+    // overflow: hidden    
+    // save old clip region, set a new one
+    QRegion oldClip;
+    if (style()->overflow()==OHIDDEN)
+    {
+        if (p->hasClipping())
+            oldClip = p->clipRegion();        
+        calcClip(p, _tx, _ty, oldClip);   
+    }
+    
+    
 
     // 2. print contents
     RenderObject *child = firstChild();
@@ -223,6 +222,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
 	}
     }
 }
+
 
 void RenderFlow::layout()
 {

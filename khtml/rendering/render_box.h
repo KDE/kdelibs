@@ -109,6 +109,8 @@ protected:
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);  
 
+    void calcClip(QPainter* p, int tx, int ty, const QRegion& old);    
+    
     // the actual height of the contents + borders + padding
     int m_height;
 

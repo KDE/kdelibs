@@ -308,6 +308,45 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 }
 
 
+void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
+{    
+    int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
+    int clipx = tx+bl;
+    int clipy = ty+bt;
+    int clipw = m_width-bl-br;
+    int cliph = m_height-bt-bb;
+
+    if (!style()->clipLeft().isVariable())
+    {
+        int c=style()->clipLeft().width(m_width-bl-br);
+        clipx+=c;
+        clipw-=c;  
+    }
+    if (!style()->clipRight().isVariable())
+    {
+        clipw-=style()->clipRight().width(m_width-bl-br);
+    }
+    if (!style()->clipTop().isVariable())
+    {
+        int c=style()->clipTop().width(m_height-bt-bb);
+        clipy+=c;
+        cliph-=c;              
+    } 
+    if (!style()->clipBottom().isVariable())
+    {
+        cliph-=style()->clipBottom().width(m_height-bt-bb);
+    }
+//    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
+            
+    QRect cr(clipx,clipy,clipw,cliph);
+    cr = p->xForm(cr);
+    QRegion creg(cr);
+    if (!old.isNull())
+        creg = old.intersect(creg);
+    p->setClipRegion(creg);
+    
+}
+
 void RenderBox::close()
 {
     setParsing(false);

@@ -54,8 +54,29 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);    
+        
+    // overflow: hidden    
+    // save old clip region, set a new one
+    QRegion oldClip;
+    if (style()->overflow()==OHIDDEN)
+    {
+        if (p->hasClipping())
+            oldClip = p->clipRegion();        
+        calcClip(p, _tx, _ty, oldClip);   
+    }    
+    
     printObject(p, _x, _y, _w, _h, _tx, _ty);
+    
+    // overflow: hidden
+    // restore clip region
+    if (style()->overflow()==OHIDDEN)
+    {
+        if (oldClip.isNull())
+            p->setClipping(false);
+        else
+            p->setClipRegion(oldClip);        
+    }     
 }
 
 short RenderReplaced::calcReplacedWidth(bool* ieHack) const
