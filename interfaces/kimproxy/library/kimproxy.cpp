@@ -26,7 +26,7 @@
 
 #include "kimproxy.h"
 
-KIMProxy::KIMProxy( DCOPClient* dc ) : QObject(), DCOPObject( "KIMProxyIface" )
+KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject()
 {
 	m_im_client_stub = 0L;
 	m_dc = dc;
