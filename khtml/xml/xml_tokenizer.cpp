@@ -392,6 +392,7 @@ XMLTokenizer::XMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     m_reader.setErrorHandler( &m_handler );
     m_reader.setDeclHandler( &m_handler );
     m_reader.setDTDHandler( &m_handler );
+    m_reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 }
 
 XMLTokenizer::~XMLTokenizer()
