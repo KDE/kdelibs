@@ -40,8 +40,10 @@ int gethostname (char *Name, int Namelen);
 
 /*
  * This is an ugly little hack incase someone uses the inline keyword,
- * which is quite specific to GNU's cc
+ * in a straight C file with AIX's xlc.
  */
-#ifndef __GNUC__
-#define inline
+#ifndef __AIX32
+#ifndef __cplusplus
+#define inline __inline
+#endif
 #endif
