@@ -130,6 +130,7 @@ bool KHTMLImage::openURL( const KURL &url )
     {
         emit started( 0 );
         emit completed();
+        QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
     }
 
     return true;
@@ -251,5 +252,8 @@ void KHTMLImageBrowserExtension::reparseConfiguration()
 }
 
 using namespace KParts;
+
+/* vim: et sw=4 ts=4
+ */
 
 #include "khtmlimage.moc"
