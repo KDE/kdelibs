@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
+    Copyright (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+    Copyright (C) 1997 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,6 +17,10 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+//$Id$
+//$Log$
+//
 //Revision 1.17  1999/03/06 18:03:34  ettrich
 //the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 //It has its own menu entry and reacts on simple LMP clicks.
@@ -37,7 +42,7 @@ class _menuBar : public QMenuBar
  * of KTopLevelWidget. It can be used without of KTopLevelWidget,
  * but then you should maintain items (toolbars, menubar, statusbar)
  * yourself. Interface is the same as QMenuBar, except that you can't
- * add pixmaps. Signals are not implemented.
+ * then you should maintain items (toolbars, menubar, statusbar)
  *
  * Interface is the same as QMenuBar, except that you can't
  * add pixmaps.
@@ -55,7 +60,8 @@ class KMenuBar : public QFrame
    enum menuPosition{Top, Bottom, Floating};
    /**
     * Positions of menubar.
-    * Constructor
+    */
+   enum menuPosition{Top, Bottom, Floating, Flat, FloatingSystem};
 
    /**
     * Constructor. For all details about inserting items see
@@ -67,7 +73,7 @@ class KMenuBar : public QFrame
     * Destructor. Embeds menubar back if floating. Delete menubar
     * in your destructor or closeEvent for 100% safety
     */
-    * menubar can be moved wit @ref setMenuBarPos.
+   ~KMenuBar();
 
    /**
     * Enable or disable moving. This only disables user moving
@@ -149,7 +155,7 @@ private:
      
    QPopupMenu *context;
    QMenuBar *menu;
-     * This signal is connected to KTopLevel::updateRects. It is
+   QFrame *frame;
 
 signals:
     /**
@@ -169,6 +175,8 @@ signals:
 
 private:
    QFrame *handle;
+   QPoint pointerOffset;
+   QPoint parentOffset;
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;

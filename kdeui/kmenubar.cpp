@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
+    Copyright (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+    Copyright (C) 1997 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -35,17 +36,15 @@
 #define CONTEXT_BOTTOM 2
 #define CONTEXT_FLOAT 3
 
-// uncomment this to have menubar raised:
-
-#define MENUBAR_IS_RAISED
+// $Id$
+// $Log$
 
 // Moving with KToolBoxManager
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
- {
-#ifndef MENUBAR_IS_RAISED
-   setFrameStyle(NoFrame);
-#endif
+{
+   // Menubar is raised in motif style
+   //setFrameStyle(NoFrame);
 	
    //MD (17-9-97)
    setLineWidth(1);
@@ -164,6 +163,9 @@ void KMenuBar::ContextCallback( int index )
   moving = TRUE;
   transparent = false;
 
+
+  resize( Parent->width(), menu->height());
+  enableFloating (TRUE);
   slotReadConfig();
 
   mgr =0;
@@ -182,14 +184,74 @@ KMenuBar::~KMenuBar()
     delete context;
 }
 
+void KMenuBar::mousePressEvent ( QMouseEvent *e )
 {
   QApplication::sendEvent(menu, e);
-  //later -sven
 }
 
-void KMenuBar::slotHotSpot (int)
+  
 {
-  //later -sven
+  int _highlight;
+  bool _transparent;
+
+  KConfig *config = kapp->getConfig();
+  config->setGroup(group);
+  QString group = config->group();
+  config->setGroup("Toolbar style");
+  _highlight =config->readNumEntry("Highlighting", 1);
+  _transparent = config->readBoolEntry("TransparentMoving", true);
+
+  if (_highlight != highlight)
+  }
+  //else if was and now is - nothing;
+  //else if was not and now is not - nothing;
+  config->setGroup(group);
+}
+
+void KMenuBar::slotHotSpot (int hs)
+{
+  if (mgr == 0)
+    return;
+  if (!transparent) // opaque
+  {
+    switch (hs)
+    {
+      case 0: //top
+        setMenuBarPos(Top);
+        break;
+      
+      case 1: //bottom
+        setMenuBarPos(Bottom);
+        break;
+
+      case -1: // left all
+        setMenuBarPos(Floating);
+        break;
+    }
+    if (position != Floating)
+    {
+      QPoint p(Parent->mapToGlobal(pos())); // OH GOOOOODDDD!!!!!
+      mgr->setGeometry(p.x(), p.y(), width(), height());
+    }
+    if (!isVisible())
+      show();
+  }
+  else // transparent
+  {
+    switch (hs)
+    {
+      case 0: //top
+        mgr->setGeometry(0);
+        movePosition=Top;
+        break;
+
+      case 1: //bottom
+        mgr->setGeometry(1);
+        movePosition=Bottom;
+        break;
+
+      case -1: // left all
+        mgr->setGeometry(mgr->mouseX(), mgr->mouseY(), width(), height());
         movePosition=Floating;
         break;
     }
@@ -221,58 +283,58 @@ void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
   QPoint p;
   if (mgr)
-    if (ev->type() == Event_MouseButtonPress){
-      pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
+    if (ev->type() == Event_MouseButtonPress)
+
+      //pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
       if ( moving && ((QMouseEvent*)ev)->button() != LeftButton)
-	context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
+        context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
       else
-	handle->grabMouse(sizeAllCursor);
-      return TRUE;
-    }
-    if (ev->type() == Event_MouseButtonRelease){
-      handle->releaseMouse();
-    }
-    if (ev->type() == Event_MouseMove){
-      if (!moving || mouseGrabber() != handle)
-	return TRUE;
-      if (position != Floating){
-	p = mapFromGlobal(QCursor::pos()) - pointerOffset;
-	if (p.x()*p.x()+p.y()*p.y()<169)
-	  return TRUE;
-	XUngrabPointer( qt_xdisplay(), CurrentTime );
- 	setMenuBarPos(Floating);
-	show();
-	QApplication::syncX();
-	while(XGrabPointer( qt_xdisplay(), handle->winId(), TRUE,
-			    ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask | EnterWindowMask | LeaveWindowMask,
-			    GrabModeAsync, GrabModeAsync,
-			    None, sizeAllCursor.handle(), 
-			    CurrentTime ) != GrabSuccess);
-	handle->grabMouse(sizeAllCursor);
-      }
-      move(QCursor::pos() - pointerOffset);    
-      p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
-      if (p.x()*p.x()+p.y()*p.y()<169){
-	releaseMouse();
-	setMenuBarPos(lastPosition);
-	QApplication::syncX();
-	while(XGrabPointer( qt_xdisplay(), handle->winId(), TRUE,
-			    ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask | EnterWindowMask | LeaveWindowMask,
-			    GrabModeAsync, GrabModeAsync,
-			    None, sizeAllCursor.handle(),
-			    CurrentTime ) != GrabSuccess);
-	handle->grabMouse(sizeAllCursor);
+      {
+        //Move now
+        QRect rr(Parent->geometry());
+        int ox = rr.x();
+        int oy = rr.y();
+        int ow = rr.width();
+        int oh = rr.height();
+            
+        int  fat = 25; //ness
+
+        mgr = new KToolBoxManager(this, transparent);
+
+        mgr->addHotSpot(ox, oy, ow, fat);           // top
+        mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
+
+        movePosition = position;
+        connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+        if (transparent)
+          mgr->doMove(true, false, true);
+        else
+        {
+          mgr->doMove(true, false, false);
+        }
+	}
+        if (transparent)
+        {
+          setMenuBarPos (movePosition);
+
+          if (movePosition == Floating)
+            move (mgr->x(), mgr->y());
+          if (!isVisible())
+            show();
+        }
+        delete mgr;
+        mgr=0;
+        debug ("KMenuBar: moving done");
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");
+    
     if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
       }
       QPainter paint(handle); 
 
 	  QBrush b;
-	  if (ev->type() == Event_Enter)
+	  if (ev->type() == Event_Enter && highlight) // highlight? - sven
                b = kapp->selectColor; // this is much more logical then
                                       // the hardwired value used before!!
 	  else
