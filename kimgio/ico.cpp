@@ -42,6 +42,7 @@ enum IcoType
 // ******** The following block is copied from Qt (qimage.cpp)
 // copyright (c) TrollTech AS
 extern bool qt_read_dib(QDataStream &, QImage &);
+extern bool qt_write_dib(QDataStream &, QImage);
 
 const int BMP_OLD  = 12;            // old Windows/OS2 BMP size
 const int BMP_WIN  = 40;            // new Windows BMP size
@@ -183,7 +184,7 @@ void kimgio_ico_read(QImageIO *io)
     dib << dibHeader;
     dib << (Q_UINT32)0;
     dib << (Q_UINT32)0xffffff;
-    memcpy(dibData.data() + 48, dibData.data() + maskPos, dibData.size() - maskPos);
+    memcpy(dibData.data() + BMP_WIN + 8, dibData.data() + maskPos, dibData.size() - maskPos);
     dib.device()->at(0);
     if (!qt_read_dib(dib, icon))
         return;
@@ -195,6 +196,57 @@ void kimgio_ico_read(QImageIO *io)
     p.setMask(mask);
         
     io->setImage(p.convertToImage());
+    io->setStatus(0);
+}
+
+void kimgio_ico_write(QImageIO *io)
+{
+    if (io->image().isNull())
+        return;
+
+    QByteArray dibData;
+    QDataStream dib(dibData, IO_WriteOnly);
+    dib.setByteOrder(QDataStream::LittleEndian);
+    if (!qt_write_dib(dib, io->image()))
+        return;
+
+    QImage mask;
+    if (io->image().hasAlphaBuffer())
+        mask = io->image().createAlphaMask();
+    else
+        mask = io->image().createHeuristicMask();
+    mask.invertPixels();
+
+    uint hdrPos = dib.device()->at();
+    if (!qt_write_dib(dib, mask))
+        return;
+    memmove(dibData.data() + hdrPos, dibData.data() + hdrPos + BMP_WIN + 8, dibData.size() - hdrPos - BMP_WIN - 8);
+    dibData.resize(dibData.size() - BMP_WIN - 8);
+        
+    QDataStream ico(io->ioDevice());
+    ico.setByteOrder(QDataStream::LittleEndian);
+    IcoHeader hdr;
+    hdr.reserved = 0;
+    hdr.type = Icon;
+    hdr.count = 1;
+    ico << hdr.reserved << hdr.type << hdr.count;
+    IconRec rec;
+    rec.width = io->image().width();
+    rec.height = io->image().height();
+    if (io->image().numColors() <= 16)
+        rec.colors = 16;
+    else if (io->image().depth() <= 8)
+        rec.colors = 256;
+    else
+        rec.colors = 0;
+    rec.hotspotX = 0;
+    rec.hotspotY = 0;
+    rec.dibSize = dibData.size();
+    ico << rec.width << rec.height << rec.colors
+        << rec.hotspotX << rec.hotspotY << rec.dibSize;
+    rec.dibOffset = ico.device()->at() + sizeof(rec.dibOffset);
+    ico << rec.dibOffset;
+    ico.writeRawBytes(dibData.data(), dibData.size());
     io->setStatus(0);
 }
 
