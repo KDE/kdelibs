@@ -23,6 +23,7 @@
 #include <qguardedptr.h>
 #include <kxmlguiclient.h>
 #include <kaction.h>
+#include "kmdidefines.h"
 
 class KMainWindow;
 class KToolBar;
@@ -45,6 +46,7 @@ private slots:
     void clientAdded( KXMLGUIClient *client );
     void setupActions();
     void changeViewMode(int id);
+    void mdiModeHasBeenChangedTo(KMdi::MdiMode);
 private:
     class KMDIGUIClientPrivate;
     KMDIGUIClientPrivate *d;
@@ -71,7 +73,6 @@ public:
 private:
         KDockWidget *m_dw;
         KMdiMainFrm *m_mdiMainFrm;
-
 protected slots:
         void slotToggled(bool);
         void anDWChanged();

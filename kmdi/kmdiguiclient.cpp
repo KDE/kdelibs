@@ -120,6 +120,9 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
     modes<<i18n("&Toplevel mode")<<i18n("C&hildframe mode")<<i18n("Ta&b Page mode")<<i18n("I&DEAL mode");
     m_mdiModeAction->setItems(modes);
     connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
+
+    connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
+	this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
 #if 0
    m_pWindowMenu->insertSeparator();
    m_pWindowMenu->insertItem(tr("&MDI Mode..."), m_pMdiModeMenu);
@@ -153,6 +156,7 @@ void KMDIGUIClient::changeViewMode(int id) {
 		default:
 			Q_ASSERT(0);
 	}
+
 }
 
 void KMDIGUIClient::setupActions()
@@ -207,4 +211,24 @@ void KMDIGUIClient::clientAdded( KXMLGUIClient *client )
 {
     if ( client == this )
         setupActions();
+}
+
+
+void KMDIGUIClient::mdiModeHasBeenChangedTo(KMdi::MdiMode mode) {
+	kdDebug()<<"KMDIGUIClient::mdiModeHasBennChangeTo"<<endl;
+	switch (mode) {
+		case KMdi::ToplevelMode:
+			m_mdiModeAction->setCurrentItem(0);
+			break;
+		case KMdi::ChildframeMode:
+			m_mdiModeAction->setCurrentItem(1);
+			break;
+		case KMdi::TabPageMode:
+			m_mdiModeAction->setCurrentItem(2);
+			break;
+		case KMdi::IDEAlMode:
+			m_mdiModeAction->setCurrentItem(3);
+			break;
+		default: Q_ASSERT(0);
+	}
 }

@@ -197,6 +197,7 @@ KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
 void KMdiMainFrm::setStandardMDIMenuEnabled() {
 	setMenuForSDIModeSysButtons(menuBar());
 	m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this);
+	mdiModeHasBeenChangedTo(m_mdiMode);
 }
 
 //============ ~KMdiMainFrm ============//
@@ -1223,6 +1224,9 @@ void KMdiMainFrm::switchToToplevelMode()
    m_pDockbaseAreaOfDocumentViews->setDockSite(KDockWidget::DockNone);
    m_mdiMode = KMdi::ToplevelMode;
    //qDebug("ToplevelMode on");
+
+   mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
+
 }
 
 void KMdiMainFrm::finishToplevelMode()
@@ -1330,6 +1334,7 @@ void KMdiMainFrm::switchToChildframeMode()
       //qDebug("TopLevelMode off");
       emit leftTopLevelMode();
    }
+   mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
 }
 
 void KMdiMainFrm::finishChildframeMode()
@@ -1451,6 +1456,7 @@ void KMdiMainFrm::switchToTabPageMode()
       m_pClose->show();
    }
    //qDebug("TabPageMode on");
+  mdiModeHasBeenChangedTo(KMdi::TabPageMode);
 }
 
 void KMdiMainFrm::finishTabPageMode()
@@ -1589,6 +1595,8 @@ void KMdiMainFrm::switchToIDEAlMode()
       m_pClose->show();
    }
    //qDebug("TabPageMode on");
+
+   mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
 }
 
 

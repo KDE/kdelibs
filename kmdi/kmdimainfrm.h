@@ -686,6 +686,8 @@ signals:
    void childViewIsDetachedNow(QWidget*);
 
    void collapseOverlapContainers();
+
+   void mdiModeHasBeenChangedTo(KMdi::MdiMode);
 };
 
 #endif //_KMDIMAINFRM_H_
