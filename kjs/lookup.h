@@ -337,6 +337,7 @@ namespace KJS {
        KJS::Value protect(this); \
        put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum); \
     } \
+    virtual bool implementsCall() const { return true; } \
     /** You need to implement that one */ \
     virtual KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args); \
   private: \
