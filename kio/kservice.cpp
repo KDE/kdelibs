@@ -296,17 +296,10 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_libraryMinor );
   else if ( _name == "LibraryDependencies" )
     return QVariant( m_lstLibraryDeps );
-  /*
-    // Now part of the properties
-  else if ( _name == "X-KDE-SubstituteUID" )
-    return QVariant( static_cast<int>(m_bSuid) );
-  else if ( _name == "X-KDE-Username" )
-    return QVariant( m_strUsername );
-  else if ( _name == "DocPath")
-    return QVariant( m_docPath );
-  else if ( _name == "X-KDE-HideFromPanel")
-    return QVariant( static_cast<int>(m_bHideFromPanel) );
-  */
+  else if ( _name == "DesktopEntryPath" )
+    return QVariant( entryPath() );
+  else if ( _name == "DesktopEntryName")
+    return QVariant( m_strDesktopEntryName );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -339,12 +332,8 @@ QStringList KService::propertyNames() const
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );
   res.append( "LibraryDependencies" );
-  /*
-  res.append( "X-KDE-SubstituteUID" );
-  res.append( "X-KDE-Username" );
-  res.append( "DocPath" );
-  res.append( "X-KDE-HideFromPanel" );
-  */
+  res.append( "DesktopEntryPath" );
+  res.append( "DesktopEntryName" );
 
   return res;
 }
