@@ -25,7 +25,7 @@
 #include <kconfig.h>
 #include <qstrlist.h>
 #include <kwm.h>
-//#include <qobjcoll.h>
+#include <qobjcoll.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
@@ -72,36 +72,35 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
 
 KTopLevelWidget::~KTopLevelWidget()
 {
-    // This doesn't work; dunno how to do it - Sven
-    /*
-    int n = 0;
+  
+  // Another try after Matthias' changes
+  int n=0;
+  toolbars.setAutoDelete(true);
+  //  Must use iterator since deleting of toolbar will cause her
+  //  to embed itself back and  call ktopwidget's updateRects
+  //  which will count toolbars with first()/next()
 
-    QObjectList  *toolbars = queryList( 0, "KToolBar", FALSE );
-    QObjectListIt tit( *toolbars );
-    while ( tit.current() )
+  QListIterator<KToolBar>  tit(toolbars);
+  while ( tit.current() )
+  {
+    if (tit.current())
     {
-        delete tit.current();
-        n++;
-        ++tit;
+      toolbars.removeRef(tit.current()); // wil point to next by itself
+      //delete (tit.current());
+      ++n;
+      //++tit;
     }
+  }
 
-    printf ("KTW destructor: deleted %d toolbar(s)\n", n);
-    n=0;
-    
-    QObjectList  *menubars = queryList( 0, "KMenuBar", FALSE );
-    QObjectListIt mit( *menubars );
-    while ( mit.current() )
-    {
-        delete mit.current();
-        n++;
-        ++mit;
-    }
+  printf ("KTW destructor: deleted %d toolbar(s)\n", n);
+  n=0;
 
-    printf ("KTW destructor: deleted %d menubar(s)\n", n);
+  if (kmenubar)
+  {
+    delete kmenubar;
+  }
 
-    delete menubars;
-    delete toolbars;
-    */
+  debug ("KTopLevelWidget destructor: finished");
 //    KDEBUG (KDEBUG_INFO, 151, "KTopLevelWidget destructor: finished");
 
 	// remove this widget from the member list
@@ -120,9 +119,12 @@ KTopLevelWidget::~KTopLevelWidget()
 	  //        exit the application in this case.
 	  //        (But emit a signal before)
 	  
-	  kapp->setTopWidget( 0 );
-	  kapp->quit();
-	}
+          kapp->setTopWidget( 0 );
+          debug ("KToplevelWidget destructor: postmortem: topwidget 0");
+          kapp->quit();
+          debug ("KToplevelWidget destructor: postmortem: quit");
+        }
+        debug ("KTopLevelWidget destructor: dead as a dodo");
 }
 
 
