@@ -18,10 +18,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-// Include our header without NDEBUG defined to avoid having the kDebugInfo
-// functions inlined to noops (which would then conflict with their definition
-// here).
-
 #include "kdebug.h"
 
 #ifdef NDEBUG

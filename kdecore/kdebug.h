@@ -376,7 +376,7 @@ kdbgstream &perror( kdbgstream &s);
  */
 class kndbgstream {
  public:
-  /// EMpty constructor.
+    /// Default constructor.
     kndbgstream() {}
     ~kndbgstream() {}
     /**
