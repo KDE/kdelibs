@@ -81,7 +81,7 @@ void KImageFilePreview::showPreview( const KURL &url, bool force )
 {
     if ( url != currentURL || force )
     {
-        imageLabel->setPixmap( QPixmap() );
+        imageLabel->clear();
         if ( m_job ) {
             m_job->kill();
             m_job = 0L;
@@ -142,7 +142,7 @@ void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
 void KImageFilePreview::slotFailed( const KFileItem* item )
 {
     if ( item->isDir() )
-        imageLabel->setPixmap( QPixmap() );
+        imageLabel->clear();
     else if ( item->url() == currentURL ) // should always be the case
         imageLabel->setPixmap( SmallIcon( "file_broken", KIcon::SizeLarge,
                                           KIcon::DisabledState ));
