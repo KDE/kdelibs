@@ -67,6 +67,10 @@ KSSL::KSSL(bool init) {
   d = new KSSLPrivate;
   m_bInit = false;
   m_bAutoReconfig = true;
+#ifdef HAVE_SSL
+  OpenSSL_add_ssl_algorithms();
+  OpenSSL_add_all_algorithms();
+#endif
   m_cfg = new KSSLSettings();
 
  if (init) initialize();
@@ -153,12 +157,12 @@ bool KSSL::initialize() {
   else
     d->m_meth = SSLv2_client_method();
 
+  /*
   if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug() << "Double method" << endl;
   else if (m_cfg->sslv2()) kdDebug() << "SSL2 method" << endl;
   else if (m_cfg->sslv3()) kdDebug() << "SSL3 method" << endl;
+  */
 
-  OpenSSL_add_ssl_algorithms();
-  OpenSSL_add_all_algorithms();
   d->m_ctx=SSL_CTX_new(d->m_meth);
   if (d->m_ctx == NULL) {
     return false;
