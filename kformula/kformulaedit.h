@@ -85,7 +85,6 @@ protected:
   int deleteAtCursor();
   int posAtPoint(QPoint p);
   int cursorDrawn;
-  int isSelecting;
   int textSelected;
   int selectStart;
   int selectStartOrig;

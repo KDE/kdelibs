@@ -67,7 +67,6 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   setCursor(ibeamCursor);
   cursorPos = 0;
   cacheState = ALL_DIRTY;
-  isSelecting = 0;
   textSelected = 0;
   undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
   redo.setAutoDelete(TRUE);
@@ -600,7 +599,11 @@ void KFormulaEdit::expandSelection()
   selectStart = selectStartOrig; //so that selection is "unexpanded"
                                  //when it shrinks
 
-  if(cursorPos == selectStart) return;
+  if(cursorPos == selectStart) {
+    textSelected = 0;
+    return;
+  }
+
   int dir; //which way the user is selecting
   int i;
 
@@ -664,9 +667,8 @@ void KFormulaEdit::mouseMoveEvent(QMouseEvent *e)
   int oldcpos = cursorPos;
   cursorPos = posAtPoint(e->pos());
   if(oldcpos != cursorPos) {
-    if(!isSelecting) { //if selection is just starting
+    if(!textSelected) { //if selection is just starting
       textSelected = 1;
-      isSelecting = 1;
       selectStartOrig = selectStart = oldcpos;
     }
     expandSelection();
@@ -679,11 +681,10 @@ void KFormulaEdit::mouseMoveEvent(QMouseEvent *e)
 //this concludes a drag.
 void KFormulaEdit::mouseReleaseEvent(QMouseEvent *)
 {
-  if(isSelecting && cursorPos == selectStart) {
+  if(textSelected && cursorPos == selectStart) {
     textSelected = 0;
   }
 
-  isSelecting = 0;
 }
 
 //---------------------------TOGGLE CURSOR------------------------
@@ -866,7 +867,20 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       }
 
       if(textSelected) {
-	expandSelection();
+	if(cursorPos <= selectStart) { //we expand the selection
+	  expandSelection();
+	}
+	else { //we shrink it
+	  int tmppos;
+
+	  for(tmppos = cursorPos; tmppos >= selectStart; tmppos--) {
+	    if(!isValidCursorPos(tmppos)) continue;
+	    cursorPos = tmppos;
+	    expandSelection();
+	    if(cursorPos < oldc) break;
+	  }
+	}
+
 	redraw();
 
       }
@@ -934,7 +948,20 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       }
 
       if(textSelected) {
-	expandSelection();
+	if(cursorPos >= selectStart) { //we expand the selection
+	  expandSelection();
+	}
+	else { //we shrink it
+	  int tmppos;
+
+	  for(tmppos = cursorPos; tmppos <= selectStart; tmppos++) {
+	    if(!isValidCursorPos(tmppos)) continue;
+	    cursorPos = tmppos;
+	    expandSelection();
+	    if(cursorPos > oldc) break;
+	  }
+	}
+
 	redraw();
 
       }
