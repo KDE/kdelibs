@@ -5,7 +5,6 @@
 
 #include <qobject.h>
 #include <kjavaprocess.h>
-
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
  *
@@ -14,6 +13,7 @@
  */
 
 class KJavaAppletContext;
+class KJavaAppletServerPrivate;
 
 class KJavaAppletServer : public QObject
 {
@@ -54,7 +54,7 @@ public:
                        const QString name, const QString clazzName,
                        const QString baseURL, const QString codeBase,
                        const QString jarFile, QSize size,
-                       const QMap< QString, QString >& params,
+                       const QMap<QString, QString>& params,
                        const QString windowTitle );
 
     void initApplet( int contextId, int appletId );
@@ -74,6 +74,9 @@ public:
      */
     void stopApplet( int contextId, int appletId );
 
+    void sendURLData( const QString& loaderID, const QString& url,
+                      const QByteArray& data );
+
     /**
      * Shut down the KJAS server.
      */
@@ -82,13 +85,13 @@ public:
     QString appletLabel();
 
 protected:
-    void setupJava( KJavaProcess *p );
+    void setupJava( KJavaProcess* p );
 
     KJavaProcess *process;
-    struct KJavaAppletServerPrivate *d;
+    KJavaAppletServerPrivate* d;
 
 protected slots:
-    void received( const QByteArray& qb );
+    void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
 
 };

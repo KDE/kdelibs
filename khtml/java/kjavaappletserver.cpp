@@ -1,12 +1,14 @@
-
 #include "kjavaappletserver.h"
 #include "kjavaappletcontext.h"
 #include "kjavaprocess.h"
+#include "kjavadownloader.h"
 
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kprotocolmanager.h>
+#include <kio/job.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
@@ -14,24 +16,26 @@
 
 #include <stdlib.h>
 
-#define CREATE_CONTEXT    (char)1
-#define DESTROY_CONTEXT   (char)2
-#define CREATE_APPLET     (char)3
-#define DESTROY_APPLET    (char)4
-#define START_APPLET      (char)5
-#define STOP_APPLET       (char)6
-#define INIT_APPLET       (char)7
-
-#define SHUTDOWN_SERVER   (char)9
-
-#define SHOW_DOCUMENT     (char)12
-#define SHOW_URLINFRAME   (char)13
-#define SHOW_STATUS       (char)14
-#define RESIZE_APPLET     (char)15
+#define KJAS_CREATE_CONTEXT    (char)1
+#define KJAS_DESTROY_CONTEXT   (char)2
+#define KJAS_CREATE_APPLET     (char)3
+#define KJAS_DESTROY_APPLET    (char)4
+#define KJAS_START_APPLET      (char)5
+#define KJAS_STOP_APPLET       (char)6
+#define KJAS_INIT_APPLET       (char)7
+#define KJAS_SHOW_DOCUMENT     (char)8
+#define KJAS_SHOW_URLINFRAME   (char)9
+#define KJAS_SHOW_STATUS       (char)10
+#define KJAS_RESIZE_APPLET     (char)11
+#define KJAS_GET_URLDATA       (char)12
+#define KJAS_URLDATA           (char)13
+#define KJAS_SHUTDOWN_SERVER   (char)14
 
 // For future expansion
-struct KJavaAppletServerPrivate
+class KJavaAppletServerPrivate
 {
+friend class KJavaAppletServer;
+private:
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
@@ -45,7 +49,7 @@ KJavaAppletServer::KJavaAppletServer()
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),
-             this,    SLOT(received(const QByteArray&)) );
+             this,    SLOT(slotJavaRequest(const QByteArray&)) );
 
     setupJava( process );
 
@@ -58,7 +62,6 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer::~KJavaAppletServer()
 {
-//    kdDebug(6100) << "KJavaAppletServer::~KJavaAppletServer" << endl;
     quit();
 
     delete process;
@@ -161,6 +164,17 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     p->setMainClass( "org.kde.kjas.server.Main" );
 
+    //check for http proxies...
+    if( KProtocolManager::useProxy() )
+    {
+        QString httpProxy = KProtocolManager::httpProxy();
+        kdDebug(6100) << "httpProxy is " << httpProxy << endl;
+
+        KURL url( httpProxy );
+        p->setSystemProperty( "http.proxyHost", url.host() );
+        p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
+    }
+
     // Prepare classpath
     QString kjava_classes = locate("data", "kjava/kjava-classes.zip");
     if( kjava_classes.isNull() ) // Should not happen
@@ -186,7 +200,7 @@ void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* contex
 
     QStringList args;
     args.append( QString::number( contextId ) );
-    process->send( CREATE_CONTEXT, args );
+    process->send( KJAS_CREATE_CONTEXT, args );
 }
 
 void KJavaAppletServer::destroyContext( int contextId )
@@ -196,7 +210,7 @@ void KJavaAppletServer::destroyContext( int contextId )
 
     QStringList args;
     args.append( QString::number( contextId ) );
-    process->send( DESTROY_CONTEXT, args );
+    process->send( KJAS_DESTROY_CONTEXT, args );
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
@@ -245,7 +259,7 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
         args.append( it.data() );
     }
 
-    process->send( CREATE_APPLET, args );
+    process->send( KJAS_CREATE_APPLET, args );
 }
 
 void KJavaAppletServer::initApplet( int contextId, int appletId )
@@ -254,7 +268,7 @@ void KJavaAppletServer::initApplet( int contextId, int appletId )
     args.append( QString::number( contextId ) );
     args.append( QString::number( appletId ) );
 
-    process->send( INIT_APPLET, args );
+    process->send( KJAS_INIT_APPLET, args );
 }
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )
@@ -263,7 +277,7 @@ void KJavaAppletServer::destroyApplet( int contextId, int appletId )
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
 
-    process->send( DESTROY_APPLET, args );
+    process->send( KJAS_DESTROY_APPLET, args );
 }
 
 void KJavaAppletServer::startApplet( int contextId, int appletId )
@@ -272,7 +286,7 @@ void KJavaAppletServer::startApplet( int contextId, int appletId )
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
 
-    process->send( START_APPLET, args );
+    process->send( KJAS_START_APPLET, args );
 }
 
 void KJavaAppletServer::stopApplet( int contextId, int appletId )
@@ -281,35 +295,32 @@ void KJavaAppletServer::stopApplet( int contextId, int appletId )
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
 
-    process->send( STOP_APPLET, args );
+    process->send( KJAS_STOP_APPLET, args );
+}
+
+void KJavaAppletServer::sendURLData( const QString& loaderID,
+                                     const QString& url,
+                                     const QByteArray& data )
+{
+    QStringList args;
+    args.append( loaderID );
+    args.append( url );
+
+    process->send( KJAS_URLDATA, args, data );
+
 }
 
 void KJavaAppletServer::quit()
 {
     QStringList args;
 
-    process->send( SHUTDOWN_SERVER, args );
+    process->send( KJAS_SHUTDOWN_SERVER, args );
 }
 
-void KJavaAppletServer::received( const QByteArray& qb )
+void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 {
     // qb should be one command only without the length string,
     // we parse out the command and it's meaning here...
-//    kdDebug(6100) << "begin KJavaAppletServer::received buffer of length = " << qb.count() << endl;
-    QString buff;
-    int qb_count = (int)qb.count();
-    for( int i = 0; i < qb_count; i++ )
-    {
-        if( qb[i] == 0 )
-            buff += "<SEP>";
-        else
-        if( qb[i] > 0 && qb[i] < 16 )
-            buff += "<CMD " + QString::number(qb[i]) + ">";
-        else
-            buff += qb[i];
-    }
-//    kdDebug(6100) << "buffer = >>" << buff << "<<" << endl;
-
     QString cmd;
     QStringList args;
     int index = 0;
@@ -327,7 +338,7 @@ void KJavaAppletServer::received( const QByteArray& qb )
     }
     ++index; //skip the sep
 
-    //parse out the args
+    //now parse out the arguments
     while( index < qb_size )
     {
         QString tmp;
@@ -343,40 +354,54 @@ void KJavaAppletServer::received( const QByteArray& qb )
     //instead of emitting signals
     switch( cmd_code )
     {
-        case SHOW_DOCUMENT:
+        case KJAS_SHOW_DOCUMENT:
             cmd = QString::fromLatin1( "showdocument" );
             break;
 
-        case SHOW_URLINFRAME:
+        case KJAS_SHOW_URLINFRAME:
             cmd = QString::fromLatin1( "showurlinframe" );
             break;
 
-        case SHOW_STATUS:
+        case KJAS_SHOW_STATUS:
             cmd = QString::fromLatin1( "showstatus" );
             break;
 
-        case RESIZE_APPLET:
+        case KJAS_RESIZE_APPLET:
             cmd = QString::fromLatin1( "resizeapplet" );
             break;
 
+        case KJAS_GET_URLDATA:
+            //here we need to get some data for a class loader and send it back...
+            kdDebug(6100) << "GetURLData from classloader: "<< args[0]
+                          << " for url: " << args[1] << endl;
+            break;
+
         default:
+            return;
             break;
     }
 
-    bool ok;
-    int contextID_num = contextID.toInt( &ok );
-
-    if( !ok )
+    if( cmd_code == KJAS_GET_URLDATA )
     {
-        kdError(6100) << "could not parse out contextID to call command on" << endl;
-        return;
+        new KJavaDownloader( args[0], args[1] );
     }
-
-    KJavaAppletContext* tmp = d->contexts[ contextID_num ];
-    if( tmp )
-        tmp->processCmd( cmd, args );
     else
-        kdError(6100) << "no context object for this id" << endl;
+    {
+        bool ok;
+        int contextID_num = contextID.toInt( &ok );
+
+        if( !ok )
+        {
+            kdError(6100) << "could not parse out contextID to call command on" << endl;
+            return;
+        }
+
+        KJavaAppletContext* tmp = d->contexts[ contextID_num ];
+        if( tmp )
+            tmp->processCmd( cmd, args );
+        else
+            kdError(6100) << "no context object for this id" << endl;
+    }
 }
 
 #include "kjavaappletserver.moc"

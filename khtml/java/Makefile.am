@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libkjava.la
 libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
-	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp javaembed.cpp
+	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp \
+	kjavadownloader.cpp javaembed.cpp
 
 noinst_HEADERS = javaembed.h
 	
