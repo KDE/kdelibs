@@ -100,7 +100,7 @@ public:
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index, int &exceptioncode );
     void deleteRule ( unsigned long index, int &exceptioncode );
 
-    virtual bool parseString( const DOMString &string );
+    virtual bool parseString( const DOMString &string, bool strict = true );
 
     bool isLoading();
     void setNonCSSHints();

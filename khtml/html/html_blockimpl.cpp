@@ -55,7 +55,8 @@ ushort HTMLBlockquoteElementImpl::id() const
 void HTMLBlockquoteElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------

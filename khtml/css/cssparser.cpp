@@ -1531,10 +1531,8 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
 	// ### according to the css specs only 0 is allowed without unit.
 	// there are however too many web pages out there using CSS without units
-	// cause ie and ns allow them. Better get a buggy in the CSS test suite than
-	// messing up lots of bages.
-	// CHECK_STRICT
-        if(allowedUnits & LENGTH ) // && value == 0)
+	// cause ie and ns allow them. We do so if the document is not using a strict dtd
+        if(allowedUnits & LENGTH  && (value == 0 || !strictParsing ))
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
 
         return 0;

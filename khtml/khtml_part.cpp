@@ -931,7 +931,8 @@ void KHTMLPart::clear()
   d->m_redirectURL = QString::null;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
-
+  d->m_bFirstData = true;
+  
   d->m_bMousePressed = false;
 
   d->m_selectionStart = DOM::Node();

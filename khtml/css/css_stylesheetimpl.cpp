@@ -228,8 +228,9 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
     b->deref();
 }
 
-bool CSSStyleSheetImpl::parseString(const DOMString &string)
+bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 {
+    strictParsing = strict;
     QString preprocessed = preprocess(string.string());
 
 #ifdef CSS_STYLESHEET_DEBUG

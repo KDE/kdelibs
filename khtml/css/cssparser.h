@@ -87,8 +87,8 @@ public:
     class StyleBaseImpl : public DomShared
     {
     public:
-	StyleBaseImpl() { m_parent = 0; }
-	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; }
+	StyleBaseImpl() { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
+	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
 	virtual ~StyleBaseImpl() {}
 
 	virtual bool deleteMe();
@@ -162,14 +162,14 @@ public:
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
 
-	virtual bool parseString(const DOMString &/*cssString*/) { return false; }
+	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 
 	virtual void checkLoaded();
 	
     protected:
 	StyleBaseImpl *m_parent;
-    private:
-        bool hasInlinedDecl;       
+	bool hasInlinedDecl : 1; 
+	bool strictParsing : 1;
     };
 
     // a style class which has a list of children (StyleSheets for example)

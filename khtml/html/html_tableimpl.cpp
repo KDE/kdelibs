@@ -383,7 +383,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLTableElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // --------------------------------------------------------------------------

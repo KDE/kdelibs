@@ -484,6 +484,7 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long /*w
 
 void DocumentImpl::applyChanges(bool,bool force)
 {
+    // ### move the following two lines to createSelector????
     if(m_styleSelector) delete m_styleSelector;
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
@@ -757,15 +758,17 @@ static bool isTransitional(const QString &spec, int start)
        (spec.find("FRAMESET", start, false ) != -1 ) ||
        (spec.find("LATIN1", start, false ) != -1 ) ||
        (spec.find("SYMBOLS", start, false ) != -1 ) ||
-       (spec.find("SPECIAL", start, false ) != -1 ) )
+       (spec.find("SPECIAL", start, false ) != -1 ) ) {
+	//kdDebug() << "isTransitional" << endl; 
 	return true;
+    }
     return false;
 }
 
 enum HTMLMode {
-    Html3,
-    Html4,
-    XHtml
+    Html3 = 0,
+    Html4 = 1,
+    XHtml = 2
 };
 
 void DocumentImpl::determineParseMode( const QString &str )
@@ -790,19 +793,20 @@ void DocumentImpl::determineParseMode( const QString &str )
     int stop = str.find('>', pos);
     if( start > -1 && stop > start ) {
 	QString spec = str.mid( start + 1, stop - start - 1 );
+	//kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl; 
 	start = 0;
 	int quote = -1;
 	if( doctype != -1 ) {
 	    while( (quote = spec.find( "\"", start )) != -1 ) {
 		int quote2 = spec.find( "\"", quote+1 );
-                if(quote2 < 0) quote2 = spec.length() - quote - 1;
+		if(quote2 < 0) quote2 = spec.length() - quote - 1;
 		QString val = spec.mid( quote+1, quote2 - quote-1 );
-
+		//kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl; 
 		// find system id
 		pos = val.find("http://www.w3.org/tr/", 0, false);
 		if ( pos != -1 ) {
 		    // loose or strict dtd?
-		    if(val.find("strict.dtd", pos, false))
+		    if ( val.find("strict.dtd", pos, false) != -1 )
 			systemId = Strict;
 		    else if (isTransitional(val, pos))
 			systemId = Transitional;
@@ -811,23 +815,23 @@ void DocumentImpl::determineParseMode( const QString &str )
 		// find public id
 		pos = val.find("//dtd", 0, false );
 		if ( pos != -1 ) {
-		    if( val.find( "xhtml", 6, false ) ) {
+		    if( val.find( "xhtml", pos+6, false ) != -1 ) {
 			htmlMode = XHtml;
 			if( isTransitional( val, pos ) )
 			    publicId = Transitional;
 			else
 			    publicId = Strict;
-		    } else if ( val.find( "15445:1999", 6 ) ) {
+		    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
 			htmlMode = Html4;
 			publicId = Strict;
 		    } else {
-			int tagPos = val.find( "html", 6, false );
+			int tagPos = val.find( "html", pos+6, false );
 			if( tagPos == -1 )
-			    tagPos = val.find( "hypertext markup", 6, false );
+			    tagPos = val.find( "hypertext markup", pos+6, false );
 			if ( tagPos != -1 ) {
 			    tagPos = val.find(QRegExp("[0-9]"), tagPos );
-			    int version = val.mid( tagPos ).toInt();
-
+			    int version = val.mid( tagPos, 1 ).toInt();
+			    //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl; 
 			    if( version > 3 ) {
 				htmlMode = Html4;
 				if( isTransitional( val, tagPos ) )
@@ -859,6 +863,14 @@ void DocumentImpl::determineParseMode( const QString &str )
 	if ( htmlMode == XHtml )
 	    pMode = Strict;
     }
+//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl; 
+//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl; 
+    if( pMode == Strict )
+	kdDebug() << " using strict parseMode" << endl;
+    else if (pMode == Compat )
+	kdDebug() << " using compatibility parseMode" << endl;
+    else
+	kdDebug() << " using transitional parseMode" << endl;
 }
 
 

@@ -28,6 +28,7 @@ using namespace DOM;
 #include "css/cssproperties.h"
 #include "rendering/render_list.h"
 #include "misc/htmlhashes.h"
+#include "xml/dom_docimpl.h"
 
 using namespace khtml;
 
@@ -56,7 +57,8 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLUListElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -74,7 +76,8 @@ ushort HTMLDirectoryElementImpl::id() const
 void HTMLDirectoryElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -92,7 +95,8 @@ ushort HTMLMenuElementImpl::id() const
 void HTMLMenuElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -133,7 +137,8 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLOListElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
+    if(document->parseMode() != DocumentImpl::Strict )
+	style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
