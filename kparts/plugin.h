@@ -3,7 +3,7 @@
 
 #include <qobject.h>
 #include <qaction.h>
-#include <kxmlgui.h>
+#include <kparts/xmlgui.h>
 
 class KInstance;
 
