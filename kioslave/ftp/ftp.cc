@@ -2194,8 +2194,12 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         return;
       }
     } else if ( !overwrite && !resume ) {
-      error( ERR_FILE_ALREADY_EXIST, dest_orig );
-      return;
+      resume = canResume (m_size);
+      if (!resume)
+      {
+        error( ERR_FILE_ALREADY_EXIST, dest_orig );
+        return;
+      }
     } else if ( bMarkPartial ) { // when using mark partial, append .part extension
       if ( !ftpRename( dest_orig, dest_part, true ) )
       {
@@ -2215,8 +2219,12 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         return;
       }
     } else if ( !overwrite && !resume ) {
-      error( ERR_FILE_ALREADY_EXIST, dest_orig );
-      return;
+      resume = canResume (m_size);
+      if (!resume)
+      {
+        error( ERR_FILE_ALREADY_EXIST, dest_orig );
+        return;
+      }
     } else if ( !bMarkPartial ) { // when using mark partial, remove .part extension
       if ( !ftpRename( dest_part, dest_orig, true ) )
       {
@@ -2257,6 +2265,9 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     if (result > 0)
     {
       ftpWrite( buffer.data(), buffer.size() );
+
+      offset += result;
+      processedSize (offset);
     }
   }
   while ( result > 0 );
