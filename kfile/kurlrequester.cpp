@@ -214,7 +214,7 @@ void KURLRequester::init()
     d->setCompletionObject( myCompletion );
 
     KAccel *accel = new KAccel( this );
-    accel->connectItem( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
+    accel->insertAction( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
     accel->readSettings();
 }
 

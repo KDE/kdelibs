@@ -31,8 +31,9 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
 	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
-	kstdaccel.h kwinmodule.h kwin.h krootprop.h kpixmap.h  \
-	kkey.h kkey_x11.h kaccel.h kglobalaccel.h kcatalogue.h \
+	kwinmodule.h kwin.h krootprop.h kpixmap.h  \
+	kkeysequence.h kkey_x11.h kaccelbase.h kshortcuts.h \
+	kaccel.h kglobalaccel.h kstdaccel.h kcatalogue.h \
 	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kde_dmalloc.h kallocator.h kcrash.h krfcdate.h \
@@ -51,19 +52,21 @@ libkdefakes_la_LDFLAGS = -version-info 4:0
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h kextsocklookup.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
-	kconfigbase.cpp \
-	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
-	kconfigbackend.cpp  \
-	kstandarddirs.cpp kuniqueapplication.cpp ksock.cpp\
+libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
+	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
+	kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
-	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kpixmap.cpp kckey.cpp kkey.cpp kkey_x11.cpp kaccel.cpp \
-	kglobalaccel.cpp kcrash.cpp kurl.cpp kregexp.cpp \
+	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
+	kpixmap.cpp \
+	kckey.cpp kkeysequence.cpp kkey_x11.cpp kkeysequence_emb.cpp \
+	kaccelbase.cpp kaccel.cpp kglobalaccel.cpp kglobalaccel_x11.cpp \
+	kstdaccel.cpp \
+	kcrash.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
+	kapplication.cpp kuniqueapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \

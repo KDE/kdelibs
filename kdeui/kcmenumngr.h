@@ -106,7 +106,7 @@ private:
     bool eventFilter( QObject *, QEvent * );
     QPtrDict<QPopupMenu> menus;
     bool showOnPress;
-    int menuKey;
+    QKeySequence menuKey;
     static KContextMenuManager* manager;
     friend class I_really_like_this_class; // avoid warning
 

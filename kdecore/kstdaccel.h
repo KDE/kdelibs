@@ -20,6 +20,8 @@
 #define KSTDACCEL_H
 
 #include <qstring.h>
+#include <kkeysequence.h>
+#include <kshortcuts.h>
 
 class QKeyEvent;
 
@@ -191,7 +193,9 @@ public:
   /**
    * Returns the keybinding for @p accel.
    */
+  // TODO: Replace all calls to key() with shortcuts() and remove key();
   static uint key(StdAccel accel);
+  static KShortcuts shorcuts(StdAccel accel);
   /**
    * Returns a string representation for @p accel.
    */
@@ -206,9 +210,15 @@ public:
    * Returns the hardcoded default keybinding for @p accel.
    * This does not take into account the user's configuration.
    */
-  static uint defaultKey(StdAccel accel);
-  static uint defaultKey3(StdAccel accel);
-  static uint defaultKey4(StdAccel accel);
+  // Remove these three: they should be replaced by
+  //  defaultShortcuts.
+  static KKeySequence defaultKey(StdAccel accel);
+  static KKeySequence defaultKey3(StdAccel accel);
+  static KKeySequence defaultKey4(StdAccel accel);
+
+  static KShortcuts defaultShortcuts(StdAccel accel);
+  static KShortcuts defaultShortcuts3(StdAccel accel);
+  static KShortcuts defaultShortcuts4(StdAccel accel);
 };
 
 #endif

@@ -19,20 +19,32 @@
 
 #include "kstdaccel.h"
 
+#include <kaccelbase.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kkey.h>
+#include <kkeysequence.h>
 
 uint KStdAccel::key(StdAccel id)
 {
     KConfigGroupSaver saver(KGlobal::config(), "Keys");
     QString a = action(id);
     if (!saver.config()->hasKey(a))
-       return defaultKey(id);
+       return defaultKey(id).keyQt();
 
     QString s = saver.config()->readEntry(a);
-    return KKey::stringToKeyQt(s);
+    return KKeySequences( s ).first().keyQt();
+}
+
+KShortcuts KStdAccel::shorcuts(StdAccel id)
+{
+    KConfigGroupSaver saver(KGlobal::config(), "Keys");
+    QString sActionName = action(id);
+    if (!saver.config()->hasKey(sActionName))
+       return defaultShortcuts(id);
+
+    QString sShortcuts = saver.config()->readEntry(sActionName);
+    return KShortcuts( sShortcuts );
 }
 
 bool KStdAccel::isEqual(QKeyEvent* ev, int skey)
@@ -113,15 +125,13 @@ QString KStdAccel::action(StdAccel id)
     return QString::null;
 }
 
-uint KStdAccel::defaultKey(StdAccel id)
+KKeySequence KStdAccel::defaultKey(StdAccel id)
 {
-    if( KKey::useFourModifierKeys() )
-        return defaultKey4( id );
-    else
-        return defaultKey3( id );
+    return (KKeySequence::useFourModifierKeys())
+        ? defaultKey4(id) : defaultKey3(id);
 }
 
-uint KStdAccel::defaultKey3(StdAccel id)
+KKeySequence KStdAccel::defaultKey3(StdAccel id)
 {
     switch (id) {
      case Open:                 return Qt::CTRL + Qt::Key_O;
@@ -136,7 +146,7 @@ uint KStdAccel::defaultKey3(StdAccel id)
      case DeleteWordBack:       return Qt::CTRL + Qt::Key_Backspace;
      case DeleteWordForward:    return Qt::CTRL + Qt::Key_Delete;
      case Undo:                 return Qt::CTRL + Qt::Key_Z;
-     case Redo:                 return Qt::SHIFT + Qt::CTRL + Qt::Key_Z;
+     case Redo:                 return Qt::CTRL + Qt::SHIFT + Qt::Key_Z;
      case Find:                 return Qt::CTRL + Qt::Key_F;
      case FindNext:             return Qt::Key_F3;
      case FindPrev:             return Qt::SHIFT + Qt::Key_F3;
@@ -165,18 +175,62 @@ uint KStdAccel::defaultKey3(StdAccel id)
      case Back:                 return Qt::ALT + Qt::Key_Left;
      case Forward:              return Qt::ALT + Qt::Key_Right;
      case ShowMenubar:          return Qt::CTRL + Qt::Key_M;
-     case NB_STD_ACCELS:        return 0;
+     case NB_STD_ACCELS:        return (uint) 0;
     }
 
-    return 0;
+    return (uint) 0;
 }
 
-uint KStdAccel::defaultKey4(StdAccel id)
+KKeySequence KStdAccel::defaultKey4(StdAccel id)
 {
     if( id == Close )
         return Qt::CTRL + Qt::Key_Escape;
     else
         return defaultKey3( id );
+}
+
+KShortcuts KStdAccel::defaultShortcuts(StdAccel id)
+{
+    return (KKeySequence::useFourModifierKeys())
+        ? defaultShortcuts4(id) : defaultShortcuts3(id);
+}
+
+KShortcuts KStdAccel::defaultShortcuts3(StdAccel id)
+{
+    KShortcuts cuts(defaultKey3(id));
+    KAccelShortcuts& acuts = cuts.base();
+    KAccelShortcut cut;
+
+    switch (id) {
+     case Cut:    cut.init(KKeySequence(Qt::CTRL + Qt::Key_Delete)); break;
+     case Copy:   cut.init(KKeySequence(Qt::CTRL + Qt::Key_Insert)); break;
+     case Paste:  cut.init(KKeySequence(Qt::SHIFT + Qt::Key_Insert)); break;
+     default: break;
+    }
+
+    if (cut.count() > 0)
+        acuts.push_back(cut);
+
+    return cuts;
+}
+
+KShortcuts KStdAccel::defaultShortcuts4(StdAccel id)
+{
+    KShortcuts cuts(defaultKey4(id));
+    KAccelShortcuts& acuts = cuts.base();
+    KAccelShortcut cut;
+
+    switch (id) {
+     case Cut:    cut.init(KKeySequence(Qt::CTRL + Qt::Key_Delete)); break;
+     case Copy:   cut.init(KKeySequence(Qt::CTRL + Qt::Key_Insert)); break;
+     case Paste:  cut.init(KKeySequence(Qt::SHIFT + Qt::Key_Insert)); break;
+     default: break;
+    }
+
+    if (cut.count() > 0)
+        acuts.push_back(cut);
+
+    return cuts;
 }
 
 QString KStdAccel::description(StdAccel id)

@@ -76,8 +76,8 @@ libkdeui_la_SOURCES = \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kwizard.cpp kcontainer.cpp \
-		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
-		klineeditdlg.cpp  \
+		kkeydialog.cpp kkeybutton.cpp kruler.cpp kcursor.cpp \
+		kaccelmenu.cpp klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \

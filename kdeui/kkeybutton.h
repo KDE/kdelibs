@@ -1,7 +1,8 @@
 #ifndef _KKEYBUTTON_H_
 #define _KKEYBUTTON_H_
 
-#include "qpushbutton.h"
+#include <qpushbutton.h>
+#include <kaccelbase.h>	// For class KAccelShortcut
 
 /**
  *  A push button that looks like a keyboard key.
@@ -22,10 +23,11 @@ public:
   /**
    * Destructs the key button widget.
    */
-  ~KKeyButton();
+  virtual ~KKeyButton();
 
-  void setKey( uint key );
-  uint getKey() const { return key; }
+  void setKey( KAccelShortcut cut );
+  //KKeySequence getKey() const { return m_key; }
+  KAccelShortcut getKey() const { return m_cut; }
   /**
    * Reimplemented for internal purposes.
    */
@@ -40,32 +42,33 @@ public:
   /**
    * @return whether the widget is in editing mode.
    */
-  bool isCapturing() const	{ return editing; }
+  bool isCapturing() const	{ return m_bEditing; }
 
 signals:
-  void capturedKey( uint key );
+  //void capturedKey( KKeySequence key );
+  void capturedKey( KAccelShortcut m_cut );
 
 public slots:
-  void captureKey();
+  void slotCaptureKey();
 
 protected:
 #ifdef Q_WS_X11
   virtual bool x11Event( XEvent *pEvent );
-  void keyPressEventX( XEvent *pEvent );
+  void x11EventKeyPress( XEvent *pEvent );
 #endif
 
 protected:
+  bool m_bEditing;
+  //KKeySequence m_key;
+  KAccelShortcut m_cut;
+
   /**
    * Reimplemented for internal reasons.
    */
   void drawButton( QPainter* _painter );
 
 private:
-  bool editing;
-  uint key;
-
-  //class KKeyButtonPrivate;
-  //KKeyButtonPrivate *d;
+  class KKeyButtonPrivate* d;
 };
 
 

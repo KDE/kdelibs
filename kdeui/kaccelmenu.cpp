@@ -21,6 +21,7 @@
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
+#include <kaccelbase.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 
@@ -40,7 +41,7 @@ KAccelMenu::KAccelMenu(KAccel *k, QWidget * parent, const char * name ):
 
 KAccelMenu::~KAccelMenu()
 {
-  keys->removeDeletedMenu(this);
+  keys->basePtr()->removeDeletedMenu(this);
 }
 
 static int get_seq_id()
@@ -49,7 +50,7 @@ static int get_seq_id()
     return seq_no++;
 }
 
-int KAccelMenu::insItem (const QPixmap & pixmap, const char* text,
+int KAccelMenu::insItem (const QPixmap & pixmap, const char * text,
 			 const char * action, const QObject * receiver,
 	      const char * member, const char * accel)
 {
@@ -57,14 +58,10 @@ int KAccelMenu::insItem (const QPixmap & pixmap, const char* text,
 
   int id = insertItem(pixmap, text, receiver, member, 0, get_seq_id());
 
-  if (accel)
-    keys->insertItem(txt,action, accel, id, this);
-  else
-    keys->insertItem(txt,action, (uint)0, id, this);
-
-  actions.insert(id,action);
-  keys->connectItem(action, receiver, member);
-  keys->changeMenuAccel(this,id,action);
+  KShortcuts cuts( accel );
+  keys->insertAction(action, txt, cuts, cuts, receiver, member, id, this);
+  actions.insert(id, action);
+  changeMenuAccel(id, action);
   return id;
 }
 
@@ -76,14 +73,10 @@ int KAccelMenu::insItem (const char* text, const char * action,
 
   int id = insertItem(text, receiver, member, 0, get_seq_id());
 
-  if (accel)
-    keys->insertItem(txt,action, accel, id, this);
-  else
-    keys->insertItem(txt,action, (uint)0, id, this);
-
-  actions.insert(id,action);
-  keys->connectItem(action, receiver, member);
-  keys->changeMenuAccel(this,id,action);
+  KShortcuts cuts( accel );
+  keys->insertAction(action, txt, cuts, cuts, receiver, member, id, this);
+  actions.insert(id, action);
+  changeMenuAccel(id, action);
   return id;
 }
 
@@ -91,10 +84,10 @@ int KAccelMenu::insItem (const QPixmap & pixmap, const char * text,
 			 const char * action, const QObject * receiver,
 	      const char * member, KStdAccel::StdAccel accel )
 {
-  keys->connectItem(accel, receiver, member);
   int id = insertItem(pixmap, text, receiver, member, 0, get_seq_id());
-  actions.insert(id,action);
-  keys->changeMenuAccel(this,id,accel);
+  keys->insertAction(accel, receiver, member, id, this);
+  actions.insert(id, action);
+  changeMenuAccel(id, KStdAccel::action(accel).latin1());
   return id;
 }
 
@@ -102,10 +95,10 @@ int KAccelMenu::insItem (const char * text, const char * action,
 				     const QObject * receiver,
 	      const char * member, KStdAccel::StdAccel accel )
 {
-  keys->connectItem(accel, receiver, member);
   int id = insertItem(text, receiver, member, 0, get_seq_id());
-  actions.insert(id,action);
-  keys->changeMenuAccel(this,id,accel);
+  keys->insertAction(accel, receiver, member, id, this);
+  actions.insert(id, action);
+  changeMenuAccel(id, KStdAccel::action(accel).latin1());
   return id;
 }
 
@@ -114,6 +107,32 @@ char *KAccelMenu::stripAnd(const char *str)
   QCString s = str;
   s.replace(QRegExp(QString::fromLatin1("&")), "");
   return strdup(s.data());
+}
+
+void KAccelMenu::changeMenuAccel (int id, const char * action)
+{
+  KAccelAction* pAction = keys->basePtr()->actionPtr( action );
+  QString s = text( id );
+  if (!pAction || s.isEmpty() )
+    return;
+
+  QString k = pAction->getShortcut(0).toString();
+  if (k.isEmpty())
+    return;
+
+  int i = s.find('\t');
+  if ( i >= 0 )
+    s.replace(i+1, s.length()-i, k);
+  else {
+    s += '\t';
+    s += k;
+  }
+
+  QPixmap *pp = pixmap(id);
+  if (pp && !pp->isNull())
+    changeItem(*pp, s, id);
+  else
+    changeItem(s, id);
 }
 
 void KAccelMenu::popMsg () {
@@ -127,15 +146,18 @@ void KAccelMenu::popMsg () {
     yp += itemHeight(i);
 
   if (actions[cid]) {
-    if (keys->configurable(actions[cid])) {
-      msg = i18n("Change shortcut for: ");
-      msg += keys->description(actions[cid]);
-      QWhatsThis::add(this, msg);
-      QWhatsThis::enterWhatsThisMode();
-      QWhatsThis::remove(this);
-    } else {
-      msg = i18n("Global Key: cannot change shortcut");
-      KMessageBox::sorry(this, msg);
+    KAccelAction* pAction = keys->basePtr()->actionPtr(actions[cid]);
+    if (pAction) {
+      if (pAction->m_bConfigurable) {
+        msg = i18n("Change shortcut for: ");
+        msg += pAction->m_sDesc;
+        QWhatsThis::add(this, msg);
+        QWhatsThis::enterWhatsThisMode();
+        QWhatsThis::remove(this);
+      } else {
+        msg = i18n("Global Key: cannot change shortcut");
+        KMessageBox::sorry(this, msg);
+      }
     }
   }
 }
@@ -182,24 +204,29 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 
     if ( /* !needQuote ||*/  quote || deleteKey) {
       if (actions[cid]) {
-	if (keys->configurable(actions[cid])) {
+	KAccelAction* pAction = keys->basePtr()->actionPtr(actions[cid]);
+	if (pAction && pAction->m_bConfigurable) {
 	  if (deleteKey && !quote) {
-	    keys->clearItem(actions[cid]);
-	    keys->changeMenuAccel(this,cid,actions[cid]);
+	    pAction->setShortcuts(KAccelShortcuts());
+	    changeMenuAccel(cid, actions[cid]);
 	  } else {
-	    QString oldact = keys->findKey(kcode);
-	    if (!oldact.isNull() && !keys->configurable(oldact)) {
-	      stmp = i18n("Key already used as global key: ");
-	      stmp += keys->description(oldact);
+	    KKeySequence key(kcode);
+	    KAccelAction* pActionOld = keys->basePtr()->actionPtr(key);
+	    if (pActionOld && !pActionOld->m_bConfigurable) {
+	      stmp = i18n("Key already in use by non-configurable action: \"%1\"").
+	               arg(pActionOld->m_sDesc);
 	      KMessageBox::sorry(this, stmp);
 	    } else {
-	      keys->clearItem(oldact);
-	      keys->updateItem(actions[cid],kcode);
-	      keys->changeMenuAccel(this,cid,actions[cid]);
+	      // FIXME: should only clear the one relevant shortcut and
+	      //  leave any others in tact.
+	      if (pActionOld)
+	        pActionOld->setShortcuts(KAccelShortcuts());
+	      pAction->setShortcuts(KAccelShortcuts(key));
+	      changeMenuAccel(cid, actions[cid]);
 	    }
 	  }
-	} else {
-	  stmp = i18n("Global key cannot be changed");
+	} else if (pAction) {
+	  stmp = i18n("This shortcut is not configurable.");
 	  KMessageBox::sorry(this, stmp);
 	}
       }

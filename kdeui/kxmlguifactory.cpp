@@ -32,9 +32,9 @@
 
 #include <kaction.h>
 #include <kdebug.h>
-#include <kaccel.h>
 #include <kinstance.h>
 #include <kglobal.h>
+#include <kkeysequence.h>
 #include <kstandarddirs.h>
 
 /*
@@ -516,7 +516,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
                 // readable accels please ;-)
                 if ( attr.name().lower() == attrAccel )
-                    propertyValue = QVariant( KAccel::stringToKey( attr.value() ) );
+                    propertyValue = QVariant( KKeySequence(attr.value()).keyQt() );
                 else if ( propertyType == QVariant::Int )
                     propertyValue = QVariant( attr.value().toInt() );
                 else if ( propertyType == QVariant::UInt )

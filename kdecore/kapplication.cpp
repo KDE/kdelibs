@@ -69,6 +69,7 @@
 #include <kmimesourcefactory.h>
 #include <kstdaccel.h>
 #include <kaccel.h>
+#include <kkeysequence.h>
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qptrdict.h>
@@ -176,7 +177,7 @@ static void kde_ice_ioerrorhandler( IceConn conn )
 class KCheckAccelerators : public QObject
 {
 public:
-    KCheckAccelerators( QObject* parent, int k )
+    KCheckAccelerators( QObject* parent, QKeySequence k )
 	: QObject( parent, "kapp_accel_filter" ), key( k ), block( false ) {
 	 strictMenuCheck = TRUE;
 	parent->installEventFilter( this );
@@ -409,7 +410,7 @@ public:
     bool strictMenuCheck;
 
 private:
-    int key;
+    QKeySequence key;
     bool block;
     QMap<QChar, AccelInfoList > menuAccels;
 
@@ -742,10 +743,13 @@ void KApplication::init(bool GUIenabled)
 
     KConfig* config = KGlobal::config();
     KConfigGroupSaver saver( config, "Development" );
-    QString sKey = config->readEntry("CheckAccelerators" );
-    if ( !sKey.isEmpty() && KAccel::stringToKey( sKey ) ) {
-	d->checkAccelerators = new KCheckAccelerators( this, KAccel::stringToKey( sKey ) );
-	d->checkAccelerators->strictMenuCheck = config->readBoolEntry("StrictMenuCheck", false );
+    QString sKey = config->readEntry( "CheckAccelerators" ).stripWhiteSpace();
+    if( !sKey.isEmpty() ) {
+      KKeySequences keys( sKey );
+      if( keys.size() > 0 ) {
+        d->checkAccelerators = new KCheckAccelerators( this, keys[0] );
+        d->checkAccelerators->strictMenuCheck = config->readBoolEntry( "StrictMenuCheck", false );
+      }
     }
   }
 

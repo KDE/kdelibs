@@ -25,43 +25,22 @@
 #ifndef _KKEY_X11_H
 #define _KKEY_X11_H
 
-#include "kkey.h"
+#include "kkeysequence.h"
 
 typedef union  _XEvent XEvent;
 
-class KKeyX11 : public KKey
+class KKeyX11 : public KKeySequence
 {
 public:
 	KKeyX11()                                  { m_keyCombQt = 0; }
-	KKeyX11( const KKeyX11& k )  : KKey( (KKey&)k ) {}
+	KKeyX11( const KKeyX11& k )  : KKeySequence( (KKeySequence&)k ) {}
 	KKeyX11( uint keyCombQt )                  { m_keyCombQt = keyCombQt; }
 	KKeyX11( const QKeyEvent * );
 	KKeyX11( const QString& );
-	KKeyX11( const XEvent * );
+	//KKeyX11( const XEvent * );
 
 	KKeyX11& operator =( KKeyX11 k )           { m_keyCombQt = k.m_keyCombQt; return *this; }
 	KKeyX11& operator =( uint keyCombQt )      { m_keyCombQt = keyCombQt; return *this; }
-
-	QString toString();
-
-	/**
-	 * Returns the key code corresponding to the string @p sKey or
-	 * zero if the string is not recognized.
-	 *
-	 * The string must be something like "Shift+A",
-	 * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
-	 * must consist of a key name plus a combination of
-	 * the modifiers Shift, Ctrl and Alt.
-	 *
-	 * N.B.: @p sKey must @em not be @ref i18n()'d!
-	 */
-	static uint stringToKey( const QString& sKey );
-
-        /**
-         * Returns a string corresponding to the key code @p keyCode,
-	 *  which is empty if @p keyCode is not recognized or zero.
-         */
-	static QString keyToString( int keyCode, bool i18_n = false );
 
 	// X11-Related Functions
 	// Naming Proceedure:
@@ -83,10 +62,9 @@ public:
 		MOD_KEYS
 	};
 
-	static void readModifierMapping();
-
-	static void keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-	static uint keyEventXToKeyQt( const XEvent *pEvent );
+	static KKeySequence keyEventXToKey( const XEvent* pEvent );
+	static void keyEventXToKeyX( const XEvent* pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static uint keyEventXToKeyQt( const XEvent* pEvent );
 	static int keySymXIndex( uint keySym );
 	static void keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX );
 	static uint keyCodeXToKeyQt( uchar keyCodeX, uint keyModX );
@@ -107,8 +85,6 @@ public:
 	static uint keyModXScrollLock();	// Normally Mod5Mask
 
 	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
-	// Returns true if X has the Meta key assigned to a modifier bit
-	static bool keyboardHasMetaKey();
 };
 
 #endif // !_KKEY_X11_H

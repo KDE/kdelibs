@@ -19,8 +19,9 @@
 #define KACCELMENU_H
 
 // Qt Headers
-#include <qintdict.h> 
+#include <qintdict.h>
 #include <kpopupmenu.h>
+#include <kstdaccel.h>
 
 class KAccelMenuPrivate;
 //////////////////////////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@ class KAccelMenuPrivate;
  * Simplify the use of @ref KAccel and @ref KKeyDialog with menus.
  *
  * It also provides for the changing of menu item shortcuts by
- * typing the key when the menu item is selected. 
+ * typing the key when the menu item is selected.
  *
  * The exact method of setting shortcuts is the subject of some debate,
  * currently the ' key will put up a message indicating the next key
@@ -53,7 +54,7 @@ class KAccelMenuPrivate;
  *
  * Calling the KKeyDialog:
  * <pre>
- * KKeyDialog::configureKeys( keys ); 
+ * KKeyDialog::configureKeys( keys );
  * </pre>
  *
  * On exit you need:
@@ -143,10 +144,12 @@ public:
 		const QObject * receiver,
 		const char * member, KStdAccel::StdAccel accel );
 
-  
+
 protected:
   // Strip the & characters from the menu tedt
   char *stripAnd(const char *str);
+  // Insert the key string in the menu entry.
+  void changeMenuAccel (int id, const char * action);
   // Handles key presses
   void keyPressEvent ( QKeyEvent * );
   // Popup information window

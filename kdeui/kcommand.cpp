@@ -20,6 +20,7 @@
 
 #include "kcommand.h"
 #include <kaction.h>
+#include <kstdaccel.h>
 #include <kstdaction.h>
 #include <kdebug.h>
 #include <klocale.h>

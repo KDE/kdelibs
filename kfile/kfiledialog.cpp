@@ -36,8 +36,9 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 
-#include <kapplication.h>
+#include <kaccel.h>
 #include <kaction.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kcompletionbox.h>
 #include <kconfig.h>

@@ -24,6 +24,10 @@
 
 #include "kkey_x11.h"
 
+#include <iostream.h>	// Remove me -ellis
+
+#include <qmap.h>
+#include <qstringlist.h>
 #include <kckey.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -32,30 +36,307 @@
 #define XK_XKB_KEYS
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/keysymdef.h>
 #include <ctype.h>
 #undef NONE
 
 //-------------------------------------------------------------------
+static void calcKeySym( KKeySequence& key );
+static int calcKeyQt( int keySymX, int keyModX );
 
-KKeyX11::KKeyX11( const XEvent *pEvent )	{ m_keyCombQt = KKeyX11::keyEventXToKeyQt( pEvent ); }
-KKeyX11::KKeyX11( const QKeyEvent *pEvent )	{ m_keyCombQt = KKeyX11::keyEventQtToKeyQt( pEvent ); }
-KKeyX11::KKeyX11( const QString& keyStr )
+static void Initialize();
+static void readModifierMapping();
+static void readKeyMappingSub( uchar keyCodeX, uint keySymX, uint keyModX );
+static void readKeyMapping();
+
+//-------------------------------------------------------------------
+
+#define SYS_REQ_CODE	92
+#define PRINT_CODE	111
+#define PAUSE_CODE	110
+#define BREAK_CODE	114
+
+const int _XMAX = 4;
+
+struct KKeySymX
 {
-*this = KKeyX11::stringToKey( keyStr );
+	uint keySymX;
+	QString sName;
+	int nCodes;
+	uchar rgCodes[_XMAX];
+	uint rgMods[_XMAX];
+
+	KKeySymX()
+	{
+		keySymX = 0;
+		nCodes = 0;
+		for( int i = 0; i < _XMAX; i++ ) {
+			rgCodes[i] = 0;
+			rgMods[i] = 0;
+		}
+	}
+};
+
+class KSymToInfoMap : public QMap<uint, KKeySymX>
+{
+ public:
+	void add( uint keySymX, QString sName, uchar keyCodeX, uint keyModX )
+	{
+		KKeySymX& info = operator[]( keySymX );
+		int iCode = info.nCodes;
+
+		if( iCode == _XMAX )
+			return;
+		info.keySymX = keySymX;
+		info.sName = sName.lower();
+		info.nCodes++;
+		info.rgCodes[iCode] = keyCodeX;
+		info.rgMods[iCode] = keyModX;
+	}
+
+	iterator search( QString sKeySym )
+	{
+		sKeySym = sKeySym.lower();
+		for( iterator it = begin(); it != end(); ++it ) {
+			if( (*it).sName == sKeySym )
+				return it;
+		}
+		return end();
+	}
+	const_iterator search( QString sKeySym, const_iterator it )
+	{
+		sKeySym = sKeySym.lower();
+		for( ; it != end(); ++it ) {
+			if( (*it).sName == sKeySym )
+				return it;
+		}
+		return end();
+	}
+};
+
+typedef QMap<QChar, QString> KCharToNameMap;
+KSymToInfoMap g_mapSymToInfo;
+KCharToNameMap g_mapCharToName;
+
+static bool g_bInitialized = false;
+
+//-------------------------------------------------------------------
+
+// Return value is Qt key code.
+// Some X11 key syms have no Qt equivalent
+//  (such as KF86XK_AudioMute = 0x1008FF12 in /usr/include/X11/XF86keysym.h)
+// If this
+// keyCode is the most specific you can get -- it is a specific physical
+//  key on the keyboard.
+// keySym
+//
+#define ToI18N( s ) \
+((bi18n) ? i18n("QAccel", s) : QString(s))
+QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
+{
+	if( m_origin == OriginUnset )
+		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+	// TODO: calculate X codes from Qt codes if they are not already set.
+	if( m_keyMod == -1 )
+		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+
+	QString sMods, sSym;
+	uint keyModX = m_keyModExplicit;
+	uint keySymX = m_keySymExplicit;
+
+	if( keyModX & KKeyX11::keyModXMeta() ) sMods += ToI18N("Meta") + "+";
+	if( keyModX & KKeyX11::keyModXAlt() )  sMods += ToI18N("Alt") + "+";
+	if( keyModX & ControlMask )   sMods += ToI18N("Ctrl") + "+";
+	if( keyModX & ShiftMask )     sMods += ToI18N("Shift") + "+";
+
+	if( g_mapSymToInfo.contains( keySymX ) ) {
+		const KKeySymX& sym = g_mapSymToInfo[keySymX];
+		sSym = sym.sName[0].upper() + sym.sName.mid( 1 );
+	} else {
+		sSym = XKeysymToString( keySymX );
+		if( sSym.isEmpty() )
+			return (bi18n) ? i18n("Unknown Key", "Unknown") : QString("Unknown");
+	}
+
+	return sMods + sSym;
 }
-QString KKeyX11::toString()		{ return KKeyX11::keyToString( m_keyCombQt ); }
+
+bool g_bCrash = false;
+KKeySequences KKeySequence::stringToKeys( QString sKey )
+{
+	kdDebug(125) << "stringToKeys( " << sKey << " )\n";
+	KKeySequences rgKeys;
+	KKeySequence key;
+
+	if( g_bCrash ) {
+		char* crash = 0;
+		*crash = 0;
+	}
+
+	if( !g_bInitialized )
+		Initialize();
+
+	key.m_origin = OriginNative;
+	sKey = sKey.lower().stripWhiteSpace();
+	if( sKey.startsWith( "default(" ) && sKey.endsWith( ")" ) )
+		sKey = sKey.mid( 8, sKey.length() - 9 );
+	QStringList rgs = QStringList::split( '+', sKey, true );
+
+	uint i;
+	// Check for modifier keys first.
+	key.m_keyModExplicit = 0;
+	for( i = 0; i < rgs.size(); i++ ) {
+		if( rgs[i] == "meta" )       key.m_keyModExplicit |= Mod4Mask;
+		else if( rgs[i] == "alt" )   key.m_keyModExplicit |= Mod1Mask;
+		else if( rgs[i] == "ctrl" )  key.m_keyModExplicit |= ControlMask;
+		else if( rgs[i] == "shift" ) key.m_keyModExplicit |= ShiftMask;
+		else break;
+	}
+	// If there are 1) one non-blank key left, or
+	//  2) two keys left, but they are both blank (in the case of "Ctrl++"),
+	if( (i == rgs.size() - 1 && !rgs[i].isEmpty())
+		|| (i == rgs.size() - 2 && rgs[i].isEmpty() && rgs[i+1].isEmpty()) )
+	{
+		QString sKeySym = rgs[i];
+		if( sKeySym.isEmpty() )
+			sKeySym = "plus";
+
+		// If this is a single character symbol (such as '!'),
+		//  get it's name to use in lookup (such as 'exclam').
+		if( sKeySym.length() == 1 && g_mapCharToName.contains( sKeySym[0] ) )
+			sKeySym = g_mapCharToName[sKeySym[0]];
+
+		KSymToInfoMap::const_iterator it = g_mapSymToInfo.search( sKeySym );
+		if( it != g_mapSymToInfo.end() ) {
+			do {
+				key.m_keySymExplicit = (*it).keySymX;
+				key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
+				for( int iCode = 0; iCode < (*it).nCodes; iCode++ ) {
+					key.m_keyCode = (*it).rgCodes[iCode];
+					key.m_keyMod = (*it).rgMods[iCode] | key.m_keyModExplicit;
+					calcKeySym( key );
+					if( key.m_keySym != key.m_keySymExplicit || key.m_keyMod != key.m_keyModExplicit )
+						key.m_keyCombQt = ::calcKeyQt( key.m_keySym, key.m_keyMod );
+					else
+						key.m_keyCombQt = key.m_keyCombQtExplicit;
+					rgKeys.push_back( key );
+				}
+				++it;
+				it = g_mapSymToInfo.search( sKeySym, it );
+			} while( it != g_mapSymToInfo.end() );
+		}
+		// Otherwise, key name may be valid, but we just don't have
+		//  it on our keyboard (such as 'agrave' on an EN layout).
+		else {
+			key.m_keySymExplicit = XStringToKeysym( sKeySym.latin1() );
+			key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
+			if( key.m_keySymExplicit )
+				rgKeys.push_back( key );
+		}
+	}
+
+	return rgKeys;
+}
+
+static void calcKeySym( KKeySequence& key )
+{
+	// Alt+Print = Sys_Req
+	if( key.m_keySymExplicit == XK_Print && key.m_keyMod & KKeyX11::keyModXAlt() && key.m_keyCode == PRINT_CODE ) {
+		key.m_keyCode = SYS_REQ_CODE;
+		key.m_keySym = XK_Sys_Req;
+	}
+	// Ctrl+Pause = Break
+	else if( key.m_keySymExplicit == XK_Pause && key.m_keyMod & ControlMask && key.m_keyCode == PAUSE_CODE ) {
+		key.m_keyCode = BREAK_CODE;
+		key.m_keySym = XK_Break;
+	}
+	// Otherwise get correct KeySym considering Shift & Mode_switch states.
+	else {
+		XKeyPressedEvent event;
+		char rgc[3];
+
+		event.type = KeyPress;
+		event.display = qt_xdisplay();
+		event.state = key.m_keyMod;
+		if( event.state & KKeyX11::keyModXModeSwitch() )
+			event.state = (event.state & ~KKeyX11::keyModXModeSwitch()) | 0x2000;
+		event.keycode = key.m_keyCode;
+
+		XLookupString( &event, rgc, sizeof(rgc)-1, (KeySym*) &key.m_keySym, 0 );
+	}
+}
+
+static int calcKeyQt( int keySymX, int keyModX )
+{
+	int keyCombQt = 0;
+
+	if( !keySymX )
+		return 0;
+
+	// Qt's own key definitions begin at 0x1000
+	if( keySymX < 0x1000 ) {
+		// For some reason, Qt wants 'a-z' converted to 'A-Z'
+		if( keySymX >= 'a' && keySymX <= 'z' )
+			keyCombQt = toupper( keySymX );
+		else
+			keyCombQt = keySymX;
+	} else {
+		if( g_mapSymToInfo.contains( keySymX ) ) {
+			const QString& sName = g_mapSymToInfo[keySymX].sName;
+			for( int i = 0; i < NB_KEYS; i++ ) {
+				if( qstricmp( sName.latin1(), KKEYS[i].name ) == 0 ) {
+					keyCombQt = KKEYS[i].code;
+					break;
+				}
+			}
+			if( !keyCombQt )
+				kdWarning(125) << "Unable to find Qt equivalent of X's '" << sName << "'" << endl;
+		} else
+			kdWarning(125) << "g_mapSymToInfo does not contain keySym 0x" << QString::number(keySymX, 16) << endl;
+	}
+
+	if( keyCombQt ) {
+		if( keyModX & KKeyX11::keyModXMeta() ) keyCombQt |= (Qt::ALT<<1);
+		if( keyModX & KKeyX11::keyModXAlt() )  keyCombQt |= Qt::ALT;
+		if( keyModX & ControlMask )            keyCombQt |= Qt::CTRL;
+		if( keyModX & ShiftMask )              keyCombQt |= Qt::SHIFT;
+	}
+
+	kdDebug(125) << "calcKeyQt( " << QString::number(keySymX, 16)
+		<< ", " << QString::number(keyModX, 16) << " ) = "
+		<< QString::number(keyCombQt, 16)
+		<< " = " << (QString) QKeySequence( keyCombQt ) << endl;
+
+	return keyCombQt;
+}
+
+void KKeySequence::calcKeyQt()
+{
+	if( m_origin == OriginNative ) {
+		m_keyCombQtExplicit = ::calcKeyQt( m_keySymExplicit, m_keyModExplicit );
+		m_keyCombQt = ::calcKeyQt( m_keySym, m_keyMod );
+	}
+}
+
+// Returns true if X has the Meta key assigned to a modifier bit
+bool KKeySequence::keyboardHasMetaKey()
+{
+	if( !g_bInitialized )
+		Initialize();
+	return KKeyX11::keyModXMeta() != 0;
+}
+
+//-------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 
 struct ModKeyXQt
 {
-	static bool	bInitialized;
 	const char	*keyName;
 	uint		keyModMaskQt;
 	uint		keyModMaskX;
 };
-bool ModKeyXQt::bInitialized = false;
 
 struct TransKey {
 	uint keySymQt;
@@ -85,7 +366,14 @@ static const TransKey g_aTransKeySyms[] = {
 	{ Qt::Key_ScrollLock,	XK_Scroll_Lock }
 };
 
-void KKeyX11::readModifierMapping()
+static void Initialize()
+{
+	readModifierMapping();
+	g_bInitialized = true;
+	readKeyMapping();
+}
+
+static void readModifierMapping()
 {
 	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
 
@@ -94,6 +382,7 @@ void KKeyX11::readModifierMapping()
 
 	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
 	for( int i = Mod2MapIndex; i < 8; i++ ) {
+		// TODO: Try to avoid X-Server calls -- get this from m_mapSymToInfo
 		uint keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i], 0 );
 		int j = -1;
 		switch( keySymX ) {
@@ -115,264 +404,111 @@ void KKeyX11::readModifierMapping()
 		kdDebug(125) << QString( "%1: keyModMaskX = 0x%2\n" ).arg(g_aModKeys[i].keyName).arg(g_aModKeys[i].keyModMaskX, 0, 16);
 
 	XFreeModifiermap(xmk);
-
-	ModKeyXQt::bInitialized = true;
 }
 
-QString KKeyX11::keyToString( int keyCombQt, bool bi18n )
+static void readKeyMappingSub( uchar keyCodeX, uint keySymX, uint keyModX )
 {
-	QString keyStr, keyModStr;
-	uint keySymQt = keyCombQt & 0xffff;
-	uint keyModQt = keyCombQt & ~0xffff;
+	QString sName = XKeysymToString( keySymX );
+	bool bInsert = true;
 
-	unsigned char keyCodeX;
-	uint keySymX;
-	uint keyModX;
-	keyQtToKeyX( keyCombQt, &keyCodeX, &keySymX, &keyModX );
-
-	// Letters should be displayed in upper-case.
-	// If this is a unicode value (Qt special keys begin at 0x1000)
-	if( keySymQt < 0x1000 )
-		keySymQt = QChar( keySymQt ).upper().unicode();
-
-	if( keySymQt ) {
-		// Make sure 'Backtab' print
-		if( keySymQt == Qt::Key_Backtab ) {
-			keySymQt = Qt::Key_Tab;
-			keyModQt |= Qt::SHIFT;
-		}
-		if( keyModQt ) {
-			// Should possibly remove SHIFT
-			// i.e., in en_US: 'Exclam' instead of 'Shift+1'
-			// But don't do it on the Tab key.
-			if( (keyModQt & Qt::SHIFT) && keySymQt != Qt::Key_Tab ) {
-				int	index = keySymXIndex( keySymX );
-				int	indexUnshifted = (index / 2) * 2; // 0 & 1 => 0, 2 & 3 => 2
-				uint	keySymX0 = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, indexUnshifted ),
-					keySymX1 = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, indexUnshifted+1 );
-				QString	s0 = XKeysymToString( keySymX0 ),
-					s1 = XKeysymToString( keySymX1 );
-
-				// If shifted value is not the same as unshifted,
-				//  then we shouldn't print Shift.
-				if( s0.lower() != s1.lower() ) {
-					keyModQt &= ~Qt::SHIFT;
-					keySymX = keySymX1;
-				}
-			}
-
-			// Search for modifier flags.
-			for( int i = MOD_KEYS-1; i >= 0; i-- ) {
-				if( keyModQt & g_aModKeys[i].keyModMaskQt ) {
-					keyModStr += (bi18n) ? i18n(g_aModKeys[i].keyName) : QString(g_aModKeys[i].keyName);
-					keyModStr += "+";
-				}
-			}
-		}
-
-		keyStr = (bi18n) ? i18n("Unknown Key", "Unknown") : QString("Unknown");
-		// Determine name of primary key.
-		// If printable, non-space unicode character,
-		//  then display it directly instead of by name
-		//  (e.g. '!' instead of 'Exclam')
-		// UNLESS we're not wanting internationalization.  Then all
-		//  keys should be printed with their ASCII-7 name.
-		if( bi18n && keySymQt < 0x1000 && QChar(keySymQt).isPrint() && !QChar(keySymQt).isSpace() )
-			keyStr = QChar(keySymQt);
-		else {
-			for( int i = 0; i < NB_KEYS; i++ ) {
-				if( keySymQt == (uint) KKEYS[i].code ) {
-				     if (bi18n)
-              				keyStr = i18n("QAccel", KKEYS[i].name);
-            			     else
-              				keyStr = KKEYS[i].name;
-			  	     break;
-				}
-			}
-		}
+	// If this is a unicode character,
+	if( keySymX < 0x3000 ) {
+		QChar c( keySymX );
+		// If the key has a special name (such as "exclam" for '!'),
+		if( !c.isNull() && sName != QString(c) )
+			g_mapCharToName[c] = sName;
+		// Don't insert upper-case letters into Sym->Info map.
+		if( c.isLetter() && c == c.upper() )
+			bInsert = false;
 	}
 
-	return !keyStr.isEmpty() ? (keyModStr + keyStr) : QString::null;
-}
-
-uint KKeyX11::stringToKey( const QString& key )
-{
-	QString keyStr = key;
-
-	if( key == "default" )  // old code used to write just "default"
-		return 0;                           //  which is not enough
-	if( key.startsWith( "default(" )) {
-		int pos = key.findRev( ')' );
-		if( pos >= 0 ) // this should be really done with regexp
-			keyStr = key.mid( 8, pos - 8 );
+	// Keycode 92 => XK_Sys_Req + Alt
+	// Keycode 111 => XK_Print
+	// Keycode 110 => XK_Pause
+	// Keycode 114 => XK_Break + Ctrl
+	if( keyCodeX == SYS_REQ_CODE ) {
+		if( keySymX == XK_Print )
+			bInsert = false;
+		else if( keySymX == XK_Sys_Req )
+			keyModX = KKeyX11::keyModXAlt();
+	} else if( keyCodeX == PRINT_CODE ) {
+		if( keySymX == XK_Sys_Req )
+			bInsert = false;
+	} else if( keyCodeX == PAUSE_CODE ) {
+		if( keySymX == XK_Break )
+			bInsert = false;
+	} else if( keyCodeX == BREAK_CODE ) {
+		if( keySymX == XK_Pause )
+			bInsert = false;
+		else if( keySymX == XK_Break )
+			keyModX = ControlMask;
 	}
 
-	kdDebug(125) << QString("stringToKey("+key+") = %1\n").arg(stringToKey( keyStr, 0, 0, 0 ), 0, 16);
+	if( bInsert )
+		g_mapSymToInfo.add( keySymX, sName, keyCodeX, keyModX );
 
-	return stringToKey( keyStr, 0, 0, 0 );
+	//cout << QString::number(keySymX, 16) << '\t';
+	//if( !qChar.isNull() && qChar.isPrint() && !qChar.isSpace() )
+	//	cout << qChar << " ";
+	//else
+	//	cout << "  ";
+	//cout << sName.leftJustify( 16, ' ' );
 }
 
-// Return value is Qt key code.
-uint KKeyX11::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX )
+static void readKeyMapping()
 {
-	uint	keySymX = 0;
-	unsigned char	keyCodeX = 0;
-	uint	keyModX = 0;
-	uint	keyCombQt = 0;
-	QString sKeySym;
-	QChar	c;
+	int keyCodeMin, keyCodeMax;
+	XDisplayKeycodes( qt_xdisplay(), &keyCodeMin, &keyCodeMax );
+	int nKeyCodes = keyCodeMax - keyCodeMin + 1;
 
-	// Initialize
-	if( pKeySymX )	*pKeySymX = 0;
-	if( pKeyCodeX )	*pKeyCodeX = 0;
-	if( pKeyModX )	*pKeyModX = 0;
-
-	if( keyStr.isNull() || keyStr.isEmpty() )
-		return 0;
-
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
-
-	int iOffset = 0, iOffsetToken;
-	do {
-		int i;
-
-		// Find next token.
-		iOffsetToken = keyStr.find( '+', iOffset );
-		// If no more '+'s are found, set to end of string.
-		if( iOffsetToken < 0 )
-			iOffsetToken = keyStr.length();
-		// Allow a '+' to be the keysym if it's the last character.
-		else if( iOffsetToken == iOffset && iOffset + 1 == (int)keyStr.length() )
-			iOffsetToken++;
-		sKeySym = keyStr.mid( iOffset, iOffsetToken - iOffset ).stripWhiteSpace();
-		iOffset = iOffsetToken + 1;
-
-		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
-		for( i = 0; i < MOD_KEYS; i++ ) {
-			if( g_aModKeys[i].keyModMaskQt && qstricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
-				// If there is no X mod flag defined for this modifier,
-				//  then all zeroes should be returned for the X-codes.
-				// Ex: If string="Meta+F1", but X hasn't assigned Meta, don't return 'F1'.
-				if( g_aModKeys[i].keyModMaskX == 0 ) {
-					if( sKeySym == "Meta" )
-						kdDebug(125) << "\t\tNo keyModMaskX for Meta" << endl;
-					pKeyCodeX = 0;
-					pKeySymX = 0;
-					pKeyModX = 0;
-				}
-				kdDebug(125) << "\t\tMeta has Qt " << QString::number(g_aModKeys[i].keyModMaskQt,16) << " and X " << QString::number(g_aModKeys[i].keyModMaskX,16) << endl;
-				keyCombQt |= g_aModKeys[i].keyModMaskQt;
-				keyModX |= g_aModKeys[i].keyModMaskX;
-				break;
-			}
-		}
-
-		// If this was not a modifier key,
-		//  search for 'normal' key.
-		if( i == MOD_KEYS ) {
-			// Abort if already found primary key.
-			if( !c.isNull() || keySymX ) {
-				c = QChar::null;
-				keySymX = keyModX = keyCombQt = 0;
-				break;
-			}
-			//if( keySymX ) { kdWarning(125) << "keystrToKey: Tried to set more than one key in key code." << endl; return 0; }
-
-			if( sKeySym.length() == 1 )
-				c = sKeySym[0];
-			else {
-				// Search for Qt keycode
-				for( i = 0; i < NB_KEYS; i++ ) {
-					if( qstricmp( sKeySym.ascii(), KKEYS[i].name ) == 0 ) {
-						keyCombQt |= KKEYS[i].code;
-						keyQtToKeyX( KKEYS[i].code, 0, &keySymX, 0 );
-						if( KKEYS[i].code < 0x1000 && QChar(KKEYS[i].code).isLetter() )
-							c = KKEYS[i].code;
-						break;
+	g_mapSymToInfo.clear();
+	int nSymsPerCode;
+	KeySym* rgKeySyms = XGetKeyboardMapping( qt_xdisplay(), keyCodeMin, nKeyCodes, &nSymsPerCode );
+	if( rgKeySyms ) {
+		for( int iKeyCode = 0; iKeyCode < nKeyCodes; iKeyCode++ ) {
+			if( rgKeySyms[iKeyCode * nSymsPerCode] ) {
+				//cout << "Keycode " << (keyCodeMin + iKeyCode) << ":\t";
+				for( int iSym = 0; iSym < nSymsPerCode; iSym++ ) {
+					int i = iKeyCode * nSymsPerCode + iSym;
+					uint keySymX = rgKeySyms[i];
+					uchar keyCodeX = keyCodeMin + iKeyCode;
+					if( keySymX ) {
+						uint keyModX = ((iSym % 2) == 1 ? ShiftMask : 0) | ((iSym >= 2) ? Mod3Mask : 0);
+						readKeyMappingSub( keyCodeX, keySymX, keyModX );
 					}
+					// else
+					//	cout << "\t  \t\t";
 				}
-
-				//if( i == NB_KEYS ) { kdWarning(125) << "keystrToKey: Unknown key name " << sKeySym << endl; return 0; }
-				if( i == NB_KEYS ) {
-					c = QChar::null;
-					keySymX = keyModX = keyCombQt = 0;
-					break;
-				}
+				//cout << endl;
 			}
 		}
-	} while( (uint)iOffsetToken < keyStr.length() );
-
-	if( !c.isNull() ) {
-		if( c.isLetter() && !(keyModX & ShiftMask) )
-			c = c.lower();
-		keySymX = c.unicode();
-		// For some reason, Qt always wants 'a-z' as 'A-Z'.
-		if( c >= 'a' && c <= 'z' )
-			c = c.upper();
-		keyCombQt |= c.unicode();
+		XFree( rgKeySyms );
 	}
 
-	if( keySymX ) {
-		// Find X key code (code of key sent from keyboard)
-		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
+	//for( KCharToNameMap::iterator it = g_mapCharToName.begin(); it != g_mapCharToName.end(); ++it )
+	//	kdDebug(125) << it.key() << '\t' << (*it) << endl;
 
-		// If 'Shift' has been explicitly give, i.e. 'Shift+1',
-		if( keyModX & ShiftMask ) {
-			int index = keySymXIndex( keySymX );
-			// But symbol given is unshifted, i.e. '1'
-			if( index == 0 || index == 2 ) {
-				keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index+1 );
-				keyCombQt = keySymXToKeyQt( keySymX, keyModX );
-			}
-		}
+	//for( KSymToInfoMap::iterator it = g_mapSymToInfo.begin(); it != g_mapSymToInfo.end(); ++it ) {
+	//	KKeySymX& sym = *it;
+	//	cerr << it.key() << '\t' << sym.sName.latin1();
+	//	for( int i = 0; i < sym.nCodes; i++ )
+	//		cerr << '\t' << QString::number(sym.rgCodes[i],16).local8Bit() << '/' << QString::number(sym.rgMods[i],16).local8Bit();
+	//	cerr << endl;
+	//}
+}
 
-		// If keySym requires Shift or ModeSwitch to activate,
-		//  then add the flags.
-		if( keySymX != XK_Sys_Req && keySymX != XK_Break )
-			keySymXMods( keySymX, &keyCombQt, &keyModX );
-	}
+KKeySequence KKeyX11::keyEventXToKey( const XEvent* pEvent )
+{
+	KKeySequence key;
+	key.m_origin = KKeySequence::OriginNative;
+	key.m_keyCode = pEvent->xkey.keycode;
+	// TODO: Do we need to check that state has ModeSwitch mask in right place?
+	key.m_keyMod = pEvent->xkey.state;
 
-	// Take care of complications:
-	//  The following keys will not have been correctly interpreted,
-	//   because their shifted values are not activated with the
-	//   Shift key, but rather something else.  They are also
-	//   defined twice under different keycodes.
-	//  keycode 111 & 92:  Print Sys_Req -> Sys_Req = Alt+Print
-	//  keycode 110 & 114: Pause Break   -> Break = Ctrl+Pause
-	if( (keyCodeX == 92 || keyCodeX == 111) &&
-	    XKeycodeToKeysym( qt_xdisplay(), 92, 0 ) == XK_Print &&
-	    XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
-	{
-		// If Alt is pressed, then we need keycode 92, keysym XK_Sys_Req
-		if( keyModX & keyModXAlt() ) {
-			keyCodeX = 92;
-			keySymX = XK_Sys_Req;
-		}
-		// Otherwise, keycode 111, keysym XK_Print
-		else {
-			keyCodeX = 111;
-			keySymX = XK_Print;
-		}
-	}
-	else if( (keyCodeX == 110 || keyCodeX == 114) &&
-	    XKeycodeToKeysym( qt_xdisplay(), 110, 0 ) == XK_Pause &&
-	    XKeycodeToKeysym( qt_xdisplay(), 114, 0 ) == XK_Pause )
-	{
-		if( keyModX & keyModXCtrl() ) {
-			keyCodeX = 114;
-			keySymX = XK_Break;
-		} else {
-			keyCodeX = 110;
-			keySymX = XK_Pause;
-		}
-	}
-
-	if( pKeySymX )	*pKeySymX = keySymX;
-	if( pKeyCodeX )	*pKeyCodeX = keyCodeX;
-	if( pKeyModX )	*pKeyModX = keyModX;
-
-	return keyCombQt;
+	calcKeySym( key );
+	key.m_keySymExplicit = key.m_keySym;
+	key.m_keyModExplicit = key.m_keyMod;
+	return key;
 }
 
 uint KKeyX11::keyCodeXToKeySymX( uchar keyCodeX, uint keyModX )
@@ -453,8 +589,8 @@ uint KKeyX11::keySymXToKeyQt( uint keySymX, uint keyModX )
 {
 	uint	keyCombQt = 0;
 
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 
 	// Qt's own key definitions begin at 0x1000
 	if( keySymX < 0x1000 ) {
@@ -512,8 +648,8 @@ void KKeyX11::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeyS
 
 	const char *psKeySym = 0;
 
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 
 	// Get code of just the primary key
 	keySymQt = keyCombQt & 0xffff;
@@ -616,15 +752,31 @@ void KKeyX11::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeyS
 		}
 	}
 
-	if( pKeySymX )	*pKeySymX = keySymX;
+	if( pKeySymX )  *pKeySymX = keySymX;
 	if( pKeyCodeX ) *pKeyCodeX = keyCodeX;
 	if( pKeyModX )  *pKeyModX = keyModX;
 }
 
 QString KKeyX11::keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n )
-	{ return keyToString( keyCodeXToKeyQt( keyCodeX, keyModX ), bi18n ); }
+{
+	KKeySequence key;
+	key.m_origin = OriginNative;
+	key.m_keyCode = keyCodeX;
+	key.m_keyMod = keyModX;
+	calcKeySym( key );
+
+	key.m_keySymExplicit = key.m_keySymExplicit;
+	key.m_keyModExplicit = keyModX;
+	return key.toString( bi18n ? I18N_Yes : I18N_No );
+}
 QString KKeyX11::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
-	{ return keyToString( keySymXToKeyQt( keySymX, keyModX ), bi18n ); }
+{
+	KKeySequence key;
+	key.m_origin = OriginNative;
+	key.m_keySymExplicit = keySymX;
+	key.m_keyModExplicit = keyModX;
+	return key.toString( bi18n ? I18N_Yes : I18N_No );
+}
 
 uint KKeyX11::keyModXShift()		{ return ShiftMask; }
 uint KKeyX11::keyModXLock()		{ return LockMask; }
@@ -632,46 +784,39 @@ uint KKeyX11::keyModXCtrl()		{ return ControlMask; }
 
 uint KKeyX11::keyModXAlt()
 {
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 	return g_aModKeys[ModAltIndex].keyModMaskX;
 }
 
 uint KKeyX11::keyModXNumLock()
 {
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 	return g_aModKeys[ModNumLockIndex].keyModMaskX;
 }
 
 uint KKeyX11::keyModXModeSwitch()
 {
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 	return g_aModKeys[ModModeSwitchIndex].keyModMaskX;
 }
 
 uint KKeyX11::keyModXMeta()
 {
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 	return g_aModKeys[ModMetaIndex].keyModMaskX;
 }
 
 uint KKeyX11::keyModXScrollLock()
 {
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
+	if( !g_bInitialized )
+		Initialize();
 	return g_aModKeys[ModScrollLockIndex].keyModMaskX;
 }
 
 uint KKeyX11::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
-
-bool KKeyX11::keyboardHasMetaKey()
-{
-	if( !ModKeyXQt::bInitialized )
-		KKeyX11::readModifierMapping();
-	return keyModXMeta() != 0;
-}
 
 #endif // Q_WS_X11

@@ -29,6 +29,7 @@
 #include <qapplication.h>
 #include <kxmlguifactory.h>
 
+#include <kaccel.h>
 #include <kdebug.h>
 
 #include <assert.h>
@@ -148,6 +149,7 @@ void MainWindow::slotSetStatusBarText( const QString & text )
 
 void MainWindow::createShellGUI( bool create )
 {
+    bool bAccelAutoUpdate = accel()->setAutoUpdate( false );
     if ( create )
     {
         if ( isHelpMenuEnabled() && !d->m_helpMenu )
@@ -188,6 +190,7 @@ void MainWindow::createShellGUI( bool create )
 
         guiFactory()->removeClient( this );
     }
+    accel()->setAutoUpdate( bAccelAutoUpdate );
 }
 
 #include "mainwindow.moc"

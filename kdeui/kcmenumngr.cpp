@@ -23,7 +23,7 @@
 #include "kcmenumngr.h"
 #include "kglobal.h"
 #include "kconfig.h"
-#include <kaccel.h>
+#include <kkeysequence.h>
 
 #undef KeyPress
 #undef None
@@ -36,7 +36,7 @@ KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
     : QObject( parent, name)
 {
     KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Keys") ) ;
-    menuKey = KAccel::stringToKey( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) );
+    menuKey = KKeySequence( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) );
     saver.config()->setGroup( QString::fromLatin1("ContextMenus") ) ;
     showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), TRUE );
 }

@@ -21,20 +21,36 @@
 #define __KKEYDIALOG_H__
 
 #include <qdict.h>
+#include <qlistview.h>
 #include <kdialogbase.h>
-#include <kaccel.h> // for KKeyEntryMap
+#include <kaccelbase.h> // for KAccelActions
 
 class QButtonGroup;
 class QCheckBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
+class KAccelBase;
 class KActionCollection;
-class KGlobalAccel;
-class KAccel;
 
 class KKeyDialogPrivate;
 class KKeyChooserPrivate;
+class KKeyChooserItemPrivate;
+
+class KKeyChooserItem : public QListViewItem
+{
+ public:
+	//KKeyChooserItem( QListView* parent, QListViewItem* after, KKeyChooserItemPrivate* pInfo );
+	//KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KKeyChooserItemPrivate* pInfo );
+	KKeyChooserItem( QListView* parent, QListViewItem* after, KAccelAction& action );
+	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
+
+	virtual QString text( int iCol ) const;
+	KAccelAction& action() const { return *m_pAction; }
+
+ protected:
+	KAccelAction* m_pAction;
+};
 
 /**
  * Configure dictionaries of key/action associations for KAccel and
@@ -68,32 +84,29 @@ public:
     //  usable as a shortcut.
     // bAllowMetaKey should be true only if this is not a shortcut
     //  for a specific application.
-    KKeyChooser( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder, QWidget* parent,
-		bool check_against_std_keys,
-		bool bAllowLetterShortcuts,
+    KKeyChooser( KAccelActions& actions, QWidget* parent,
+		bool check_against_std_keys = false,
+		bool bAllowLetterShortcuts = true,
 		bool bAllowMetaKey = false );
-    KKeyChooser( KKeyEntryMap *aKeyMap, QWidget* parent,
-		bool check_against_std_keys,
-		bool bAllowLetterShortcuts,
-		bool bAllowMetaKey = false );
-    KKeyChooser( KKeyEntryMap *aKeyDict, QWidget* parent = 0,
-                 bool check_against_std_keys = false );
     ~KKeyChooser();
 
+    void commitChanges();
+
 protected:
-    void init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
+    void init( KAccelActions& actions,
 		bool check_against_std_keys,
 		bool bAllowLetterShortcuts,
 		bool bAllowMetaKey );
+
+    void buildListView();
 
 signals:
     /**
      * Emitted when a key definition has been changed.
      **/
-    void keyChange();
+    //void keyChange();
 
 public slots:
-
     /**
      * Set all keys to their default values (bindings).
      **/
@@ -104,45 +117,47 @@ public slots:
     //  clicked.
     void setPreferFourModifierKeys( bool preferFourModifierKeys );
 
-   /**
-    * Set all list entries to their changed values.
-    * Use this if you changed the underlying map
-    **/
+    /**
+     * Rebuild list entries based on underlying map.
+     * Use this if you changed the underlying map.
+     **/
     void listSync();
 
 protected slots:
-
     void toChange( QListViewItem *item );
-    void changeKey();
-    void capturedKey( uint key );
+    //void changeKey();
+    void capturedKey( KAccelShortcut cut );
     void updateAction( QListViewItem *item );
     void defaultKey();
     void noKey();
     void keyMode( int _mode );
 
-    // These 5 functions are now empty, and should be deleted during the next cleanup
-    void shiftClicked();
-    void ctrlClicked();
-    void altClicked();
-    void editKey();
-    void editEnd();
 
+protected:
     void readGlobalKeys();
     void readStdKeys();
 
-protected:
-
     void fontChange( const QFont& _font );
-    void readKeysInternal( QDict< int >* dict, const QString& group );
+    //void readKeysInternal( QDict< int >* dict, const QString& group );
 
 protected:
 
-    bool isKeyPresent(int kcode, bool warnuser = true );
-    void setKey( int kCode );
-    QDict<int>* globalDict(); // for accessing d->globalDict ( kdebase/kcontrol/keys )
-    QDict<int>* stdDict(); // for accessing d->stdDict
+    bool isKeyPresent( KAccelShortcut cut, bool warnuser = true );
+    void _warning( KAccelShortcut cut, QString sAction, QString sTitle );
+    void setKey( KAccelShortcut cut );
+    //QDict<int>* globalDict(); // for accessing d->globalDict ( kdebase/kcontrol/keys )
+    //QDict<int>* stdDict(); // for accessing d->stdDict
 
     KKeyChooserPrivate *d; // this has to be private, not protected
+    bool m_bAllowMetaKey;
+    // If this is set, then shortcuts require a modifier:
+    //  so 'A' would not be valid, whereas 'Ctrl+A' would be.
+    // Note, however, that this only applies to printable characters.
+    //  'F1', 'Insert', etc., could still be used.
+    bool m_bAllowLetterShortcuts;
+    // When set, pressing the 'Default' button will select the aDefaultKeycode4,
+    //  otherwise aDefaultKeycode.
+    bool m_bPreferFourModifierKeys;
 };
 
 /**
@@ -192,26 +207,20 @@ class KKeyDialog : public KDialogBase
 
 public:
 
-  KKeyDialog( KKeyEntryMap* aKeyDict, QWidget *parent = 0,
+  KKeyDialog( KAccelActions& actions, QWidget *parent = 0,
 	      bool check_against_std_keys = false );
-  ~KKeyDialog();
+  virtual ~KKeyDialog();
+
+  void commitChanges();
 
   /**
    * Pops up a modal dialog for configuring key settings. The dialog is initialized
-   * from a @ref KAccel object, and the modifications are written to that object
+   * from a @ref KAccelBase object, and the modifications are written to that object
    * when the dialog is closed.
    * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
-  static int configureKeys( KAccel *keys, bool save_settings = true,
+  static int configureKeys( KAccelBase *keys, bool save_settings = true,
 			    QWidget *parent = 0  );
-  /**
-   * Pops up a modal dialog for configuring key settings. The dialog is initialized
-   * from a KGlobalAccel object, and the modifications are written to that object
-   * when the dialog is closed.
-   * @return Accept if the dialog was closed with OK, Reject otherwise.
-   **/
-  static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
-			    QWidget *parent = 0 );
   /**
    * Pops up a modal dialog for configuring key settings. The dialog is initialized
    * from an action collection (for XMLGUI based applications).
@@ -222,6 +231,7 @@ public:
 
 private:
 
+  KKeyChooser* m_pKeyChooser;
   QPushButton* bDefaults;
   QPushButton* bOk;
   QPushButton* bCancel;

@@ -25,6 +25,7 @@
 #include <kipc.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kkeysequence.h>
 #include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <kaccel.h>
@@ -130,12 +131,17 @@ bool KGlobalSettings::showContextMenusOnPress ()
     return cgs.config()->readBoolEntry("ShowOnPress", true);
 }
 
+// FIXME: should probably return KKeySequences.
 int KGlobalSettings::contextMenuKey ()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs (c, "Keys");
 
-    return KAccel::stringToKey (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
+    KKeySequences keys (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
+    if( keys.size() > 0 )
+    	return keys[0].keyQt();
+    else
+        return 0;
 }
 
 bool KGlobalSettings::honorGnome()
