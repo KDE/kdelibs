@@ -199,11 +199,10 @@ QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
 
 void HTMLDocumentImpl::slotHistoryChanged()
 {
-    if ( !m_render )
+    if ( true || !m_render ) // disabled for now
 	return;
-    
+
     recalcStyle();
-    m_render->updateSize();
     m_render->repaint();
 }
 
