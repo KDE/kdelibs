@@ -1813,12 +1813,23 @@ void KApplication::invokeHelp( const QString& anchor,
      url = QString("help:/%1/index.html").arg(appname);
 
    QString error;
-
-   if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+   if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-      kdWarning() << "Could not launch help:\n" << error << endl;
-      return;
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+       {
+           kdWarning() << "Could not launch help:\n" << error << endl;
+           return;
+       }
    }
+   else
+   {
+       QByteArray data;
+       QDataStream arg(data, IO_WriteOnly);
+       arg << url;
+       dcopClient()->send("khelpcenter", "KHelpCenterIface",
+                          "openURL(QString)", data);
+   }
+
 }
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
@@ -1839,11 +1850,21 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
      url = QString("help:/%1").arg(filename);
 
    QString error;
-
-   if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+   if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
    {
-      kdWarning() << "Could not launch help:\n" << error << endl;
-      return;
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
+       {
+           kdWarning() << "Could not launch help:\n" << error << endl;
+           return;
+       }
+   }
+   else
+   {
+       QByteArray data;
+       QDataStream arg(data, IO_WriteOnly);
+       arg << url;
+       dcopClient()->send("khelpcenter", "KHelpCenterIface",
+                          "openURL(QString)", data);
    }
 }
 
@@ -2393,7 +2414,7 @@ void KApplication::initUrlActionRestrictions()
 
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
-  
+
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, "KDE URL Restrictions" );
   int count = config->readNumEntry("rule_count");
