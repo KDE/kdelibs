@@ -33,7 +33,8 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 ************************************************************************
 ***********************************************************************/
 
-
+#ifndef KDOCKWIDGET_P_H
+#define KDOCKWIDGET_P_H
 
 // Add some describing comment !!
 
@@ -75,3 +76,4 @@ private:
   int m_nonOverlapSize;
 };
 
+#endif
