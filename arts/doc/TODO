@@ -4,6 +4,8 @@
 - resource management (i.e. locate resources like "samples" or "structures"
   in a similar uniform way KDE does with KStandardDirs)
 - dynamic implementation of classes/attributes
+- check why adding thousand non-running objects degrades scheduling
+  performance quite a lot
 - recursive scheduling again (with loops & cycles)
 - try to fix autoSuspend in conjunction with full duplex
 - obsoleting: use V2 implementations even if user requests a normal
@@ -16,6 +18,10 @@
   while doing this improve space and speed
 - implement a preferences system for the trader, to be able to choose one
   implementation over another if they both implement the same interface
+- try to clean up notification manager, code generation and _copy() _release()
+  style referencing across functions in notification and Dispatcher - the
+  alternatives seem to be even more automatic referencing magic, or freeing
+  objects only if the stack is empty (idle freeing)
 
 ## aRts SoundServer
 

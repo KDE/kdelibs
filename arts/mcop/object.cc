@@ -245,7 +245,9 @@ void Object_skel::_defaultNotify(const Notification& notification)
 
 void Object_skel::notify(const Notification& notification)
 {
+	_copy();
 	_defaultNotify(notification);
+	_release();
 }
 
 void Object_skel::_emit_changed(const char *attrib, const AnyConstRef& value)
