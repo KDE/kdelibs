@@ -17,6 +17,7 @@
 
 #include <dcopclient.h>
 #include <kdcopservicestarter.h> 
+#include <kdebug.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kiconloader.h>
@@ -61,18 +62,22 @@ bool KIMProxy::initialize()
 		KConfig *store = new KSimpleConfig( IM_CLIENT_PREFERENCES_FILE );
 		store->setGroup( IM_CLIENT_PREFERENCES_SECTION );
 		QString preferredApp = store->readEntry( IM_CLIENT_PREFERENCES_ENTRY );
+		kdDebug() << k_funcinfo << "found preferred app: " << preferredApp << endl;
 		if ( !preferredApp.isNull() )
 		{
 			// construct a preferences trader expression - Name == value
 			preferences = QString("[X-DCOP-ServiceName] == '%1'").arg( preferredApp );
 		}	
 		// FIXME: we never get any hits if searching using the obvious kinds of prefs expressions - maybe they do not fit 'an expression in the constraint language that must return a number' (ktrader.h)
-		int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, QString::null, &error, &dcopService );
-		//int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, preferences, &error, &dcopService );
+		//int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, QString::null, &error, &dcopService );
+		int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, preferences, &error, &dcopService );
 		
 		// set up our stub, connecting to the client
 		if ( result != 0 )
+		{
 			return false; // FIXME return error
+			KMessageBox::error( 0, QString( "Couldn't find an IM service.\nCheck you have one selected in KControl ->Component Chooser\ndebug error: %1, using query: %2" ).arg( error ).arg( preferences ) );
+		}
 		QCString dcopObjectId = "KIMIface";
 		m_im_client_stub = new KIMIface_stub( m_dc, dcopService, dcopObjectId );
 	}
@@ -85,7 +90,7 @@ QStringList KIMProxy::imAddresseeUids()
 	
 	if ( initialize() )
 	{
-		value = m_im_client_stub->imAddresseeUids();
+		value = m_im_client_stub->allContacts( );
 	}
 	return value;
 }
@@ -94,7 +99,7 @@ void KIMProxy::messageContactById( const QString& uid, const QString& message )
 {
 	if ( initialize() )
 	{
-		m_im_client_stub->messageContactById( uid, message );
+		m_im_client_stub->messageContact( uid, message );
 	}
 	return;
 }
@@ -103,7 +108,7 @@ void KIMProxy::chatContactById( const QString& uid )
 {
 	if ( initialize() )
 	{
-		m_im_client_stub->chatContactById( uid );
+		m_im_client_stub->chatWithContact( uid );
 	}
 	return;
 }
@@ -112,7 +117,7 @@ void KIMProxy::sendFileToId(const QString &metaContactId, const KURL &sourceURL,
 {
 	if ( initialize() )
 	{
-		m_im_client_stub->sendFileToId( metaContactId, sourceURL, altFileName, fileSize );
+		m_im_client_stub->sendFile( metaContactId, sourceURL, altFileName, fileSize );
 	}
 	return;
 }
@@ -123,7 +128,7 @@ int KIMProxy::statusNumeric( const QString& uid )
 	{
 		// get a QString from  m_kim_client_stub->onlineStatus( uid );
 		// and turn it into an OnlineStatus enum
-		return ( int )m_im_client_stub->onlineStatusNumeric( uid );
+		return m_im_client_stub->presenceStatus( uid );
 	}
 	return -1;
 }
@@ -134,7 +139,7 @@ QString KIMProxy::statusString( const QString& uid )
 	{
 		// get a QString from  m_kim_client_stub->onlineStatus( uid );
 		// and turn it into an OnlineStatus enum
-		return m_im_client_stub->onlineStatus( uid );
+		return m_im_client_stub->presenceString( uid );
 	}
 	return QString("NONE");
 }
@@ -143,7 +148,7 @@ QPixmap KIMProxy::statusIcon( const QString& uid )
 {
 	if ( initialize() )
 	{
-		return m_im_client_stub->statusIcon( uid );
+		return m_im_client_stub->icon( uid );
 	}
 	return QPixmap();
 }
