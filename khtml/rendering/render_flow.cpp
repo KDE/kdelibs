@@ -89,29 +89,9 @@ void RenderFlow::setStyle(RenderStyle *style)
     if (m_inline == true && m_childrenInline==false)
     	m_inline = false;
 
-    switch(m_style->textAlign())
-    {
-    case LEFT:
-	setAlignment(AlignLeft);
-	break;
-    case RIGHT:
-	setAlignment(AlignRight);
-	break;
-    case CENTER:
-	setAlignment(AlignCenter);
-	break;
-    case JUSTIFY:
-	setAlignment(AlignAuto);
-    }
-
-    setIgnoreNewline(false);
+    m_pre = false;
     if(m_style->whiteSpace() == PRE)
-	setIgnoreLeadingSpaces(false);
-    setVisualOrdering(m_style->visuallyOrdered());
-    if(m_style->direction() == LTR)
-	setBasicDirection(QChar::DirL);
-    else
-	setBasicDirection(QChar::DirR);
+	m_pre = true;
 	
     if (haveAnonymousBox())
     {
@@ -423,29 +403,6 @@ bool RenderFlow::checkClear(RenderObject *child)
     return true;
 }
 
-void RenderFlow::layoutInlineChildren()
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "layoutInlineChildren" << endl;
-#endif
-    int toAdd = 0;
-    m_height = 0;
-
-    if(m_style->hasBorder())
-    {
-	m_height = borderTop();
-	toAdd = borderBottom();
-    }
-    if(m_style->hasPadding())
-    {
-	m_height += paddingTop();
-	toAdd += paddingBottom();
-    }
-    if(m_first)
-	m_height = reorder(0, m_height);
-    m_height += toAdd;
-}
-
 void
 RenderFlow::insertPositioned(RenderObject *o)
 {
@@ -569,11 +526,8 @@ void RenderFlow::positionNewFloats()
 	f = lastFloat;
     }
 
-    int y;
-    if(m_childrenInline)
-        y = currentY();
-    else
-        y = m_height;
+    int y = m_height;
+
 
     // the float can not start above the y position of the last positioned float.
     if(lastFloat && lastFloat->startY > y)
@@ -651,10 +605,10 @@ void RenderFlow::newLine()
     default:
 	break;
     }
-    if(currentY() < newY)
+    if(m_height < newY)
     {
 //	kdDebug( 6040 ) << "adjusting y position" << endl;
-	setCurrentY(newY);
+	m_height = newY;
     }
     m_clearStatus = CNONE;
 }
@@ -1345,75 +1299,13 @@ void RenderFlow::makeChildrenNonInline()
     setLayouted(false);
 }
 
-BiDiObject *RenderFlow::first()
+void RenderFlow::specialHandler(RenderObject *o)
 {
-    if(!m_first) return 0;
-    RenderObject *o = m_first;
-
-    if(o->isText()) static_cast<RenderText *>(o)->deleteSlaves();
-    if(!o->isText() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
-	o = static_cast<RenderObject *>(next(o));
-
-    return o;
-}
-
-BiDiObject *RenderFlow::next(BiDiObject *c)
-{
-    if(!c) return 0;
-    RenderObject *current = static_cast<RenderObject *>(c);
-
-    while(current != 0)
-    {
-	//kdDebug( 6040 ) << "current = " << current << endl;
-	RenderObject *next = nextObject(current);
-
-	if(!next) return 0;
-
-	if(next->isText())
-	{
-	    static_cast<RenderText *>(next)->deleteSlaves();
-	    return next;
-	}
-	else if(next->isFloating() || next->isReplaced() || next->isPositioned())
-	{
-	    return next;
-	}
-	current = next;
-    }
-    return 0;
-}
-
-RenderObject *RenderFlow::nextObject(RenderObject *current)
-{
-    RenderObject *next = 0;
-    if(!current->isFloating() && !current->isReplaced() && !current->isPositioned())
-	next = current->firstChild();
-    if(next) return next;
-
-    while(current && current != static_cast<RenderObject *>(this))
-    {
-	next = current->nextSibling();
-	if(next) return next;
-	current = current->parent();
-    }
-    return 0;
-}
-
-void RenderFlow::specialHandler(BiDiObject *special)
-{
-    RenderObject *o = static_cast<RenderObject *>(special);
 //    kdDebug( 6040 ) << "specialHandler" << endl;
     if(o->isFloating())
-    {
-	o->layout(true);
 	insertFloat(o);
-    }
     else if(o->isPositioned())
-    {
 	static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
-    }	
-    else if(o->isReplaced())
-	o->layout(true);
 
 	
     if( !o->isPositioned() && !o->isFloating() &&
@@ -1440,4 +1332,5 @@ void RenderFlow::absolutePosition(int &xPos, int &yPos)
     else
 	xPos = yPos = -1;
 }
+
 

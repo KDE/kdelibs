@@ -34,8 +34,6 @@
 
 #include "render_style.h"
 
-#include "bidi.h"
-
 class QPainter;
 class QPixmap;
 class CSSStyle;
@@ -52,7 +50,7 @@ namespace khtml {
     class RenderTable;
     class CachedObject;
 
-class RenderObject : public DOM::DomShared, public BiDiObject, public CachedObjectClient
+class RenderObject : public DOM::DomShared, public CachedObjectClient
 {
 public:
 
@@ -240,11 +238,11 @@ public:
     virtual QSize contentSize() const;
     virtual short contentWidth() const { return 0; }
     virtual int contentHeight() const { return 0; }
-    
+
     // Intrinsic size of replaced element
     virtual short intrinsicWidth() const { return 0; }
     virtual int intrinsicHeight() const { return 0; }
-    
+
 
     // the offset of the contents relative to the box borders (basically border+padding)
     virtual QSize contentOffset() const;
@@ -319,14 +317,17 @@ public:
      */
     virtual void repaintContainingBlock();
 
-    // from BiDiObject
+    virtual unsigned int length() const { return 0; }
+
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
     /*
      * Special objects are objects that should be floated
      * but draw themselves (i.e. have content)
      */
-    virtual bool isSpecial() const;
-
+    bool isSpecial() const;
+    virtual int bidiHeight() const { return 0; }
+    virtual void position(int, int, int, int, int, bool) {}
+    
     enum SelectionState {
     	SelectionNone,
     	SelectionStart,
@@ -347,7 +348,7 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
-    virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/, 
+    virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     virtual QRect viewRect() const;
@@ -372,6 +373,11 @@ protected:
     CachedImage *m_bgImage;
 };
 
+
+    enum VerticalPositionHint {
+	PositionTop = -1,
+	PositionBottom = -2
+    };
 
 
 

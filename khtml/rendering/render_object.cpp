@@ -398,7 +398,7 @@ void RenderObject::repaintContainingBlock()
 // used for clear property & to layout replaced elements
 bool RenderObject::isSpecial() const
 {
-    return (!isInline() || isReplaced() || isBR() || isPositioned());
+    return (isFloating() || isPositioned());
 }
 
 void RenderObject::printTree(int indent) const

@@ -27,9 +27,9 @@
 #include <qsortedlist.h>
 
 #include "render_box.h"
+#include "bidi.h"
 
 namespace khtml {
-
 
 /**
  * all geometry managing stuff is only in the block elements.
@@ -43,7 +43,7 @@ namespace khtml {
  * not that BiDi is implemented at the moment, but we want to keep the
  * possibility.
  */
-class RenderFlow : public RenderBox, public BiDiParagraph
+class RenderFlow : public RenderBox
 {
 
 public:
@@ -81,9 +81,7 @@ public:
     virtual void setPos( int xPos, int yPos );
     virtual void setXPos( int xPos );
 	
-    virtual BiDiObject *first();
-    virtual BiDiObject *next(BiDiObject *current);
-    virtual void specialHandler(BiDiObject */*special*/);
+    virtual void specialHandler(RenderObject */*special*/);
 
     virtual short baselineOffset() const;
     virtual void absolutePosition(int &xPos, int &yPos);
@@ -118,7 +116,17 @@ protected:
     void clearFloats();
     virtual void calcMinMaxWidth();
 
+    // implementation of the following functions is in bidi.cpp
+    void appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const BidiIterator &eor,
+		   BidiContext *context, QChar::Direction dir);
+    BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
+    BidiIterator findNextLineBreak(const BidiIterator &start);
+
+public:
+    RenderObject *first();
+    RenderObject *next(RenderObject *current);
     RenderObject *nextObject(RenderObject *current);
+protected:
 
     struct SpecialObject {
 	SpecialObject() {
@@ -157,6 +165,7 @@ private:
     bool m_inline         : 1;
     bool m_childrenInline : 1;
     bool m_haveAnonymous  : 1;
+    bool m_pre            : 1;
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 

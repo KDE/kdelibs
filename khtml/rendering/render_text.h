@@ -92,7 +92,7 @@ public:
     virtual const char *renderName() const { return "RenderText"; }
 
     virtual void setStyle(RenderStyle *style);
-    
+
     virtual bool isText() const { return true; }
     virtual bool isInline() const { return true; }
     virtual bool isRendered() const { return true; }
@@ -111,7 +111,6 @@ public:
 
     bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
 
-    // from BiDiObject
     virtual unsigned int length() const { return str->l; }
     virtual const QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse);
