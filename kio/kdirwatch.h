@@ -42,7 +42,7 @@ class KDirWatch : public QObject
     
   public:
    /**
-    * Constructor. Does not begin with scanning until @ref #startScan
+    * Constructor. Does not begin with scanning until @ref startScan
     * is called. Default frequency is 1000 ms. The created list of
     * directories has deep copies.
     */
