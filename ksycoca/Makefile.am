@@ -1,15 +1,33 @@
+#    This file is part of the KDE libraries
+#    Copyright (C) 1997 Torben Weis (weis@kde.org)
+
+#    This library is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU Library General Public
+#    License as published by the Free Software Foundation; either
+#    version 2 of the License, or (at your option) any later version.
+
+#    This library is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    Library General Public License for more details.
+
+#    You should have received a copy of the GNU Library General Public License
+#    along with this library; see the file COPYING.LIB.  If not, write to
+#    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#    Boston, MA 02111-1307, USA.
 
 INCLUDES= $(all_includes)
 
 CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
 
 lib_LTLIBRARIES = libkio.la
-libkio_la_LDFLAGS = -version-info 1:0
+libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 bin_PROGRAMS = ksycocatest
-ksycocatest_LDADD = libksycoca.la
+ksycocatest_LDADD = libkio.la
 ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+ksycocatest_SOURCES = main.cpp
 
 libkio_la_SOURCES = \
 	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp \
@@ -23,9 +41,6 @@ libkio_la_SOURCES = \
 	kio_skip_dlg.cc kpixmapcache.cc krun.cc kservice.cc ktar.cc \
 	kuserpaths.cc kuserprofile.cc 
 
-ksycocatest_SOURCES = main.cpp
-
-ksycoca_METASOURCES = AUTO
 libkio_la_METASOURCES = AUTO
 
 include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h \
@@ -40,3 +55,8 @@ include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h \
         kio_error.h kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
         ktar.h
+
+magic_DATA = magic
+magicdir = $(kde_mimedir)
+
+EXTRA_DIST = $(magic_DATA)
