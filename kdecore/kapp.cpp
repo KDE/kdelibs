@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+//
+// Revision 1.75  1997/11/21 11:22:29  kulow
+// make a deep copy of kdedir before returning it. I still don't get it,
 // why this is necessary.
 //
 // Revision 1.74  1997/11/20 22:41:32  kalle
@@ -749,7 +752,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
   theKProcessController = 0L;
 
     if ( parameter != unknown ) { // remove arguments
-			      QString aCommand = aAppName;
+      
       for( int j = i;  j < argc-2; j++ )
         argv[j] = argv[j+2];
       
