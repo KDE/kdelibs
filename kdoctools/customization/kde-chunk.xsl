@@ -2,7 +2,7 @@
 		version="1.0">
 
 <xsl:import href="../docbook/xsl/html/autoidx.xsl"/>
-<xsl:import href="../docbook/xsl/html/chunk-common.xsl"/>
+<xsl:import href="../docbook/xsl/html/chunk.xsl"/>
 <xsl:include href="kde-navig.xsl"/>
 <xsl:include href="kde-ttlpg.xsl"/>
 <xsl:include href="kde-style.xsl"/>
