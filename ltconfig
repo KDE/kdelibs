@@ -1125,7 +1125,7 @@ amigaos*)
 
 freebsd2* | freebsd3*)
   version_type=sunos
-  library_names_spec='${libname}${release}.so.$versuffix $libname.so'
+  library_names_spec='${libname}${release}.so.$versuffix'
   finish_cmds='PATH="$PATH:/sbin" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
   ;;
