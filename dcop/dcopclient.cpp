@@ -1,6 +1,8 @@
 #include <dcopclient.moc>
 #include <dcopclient.h>
 
+#include <unistd.h>
+
 #define INT32 QINT32
 
 #include <X11/Xmd.h>
@@ -134,12 +136,16 @@ bool DCOPClient::attach()
   }
   
   // first, check if serverAddr was ever set.
-  if (d->serverAddr.isEmpty())
+  if (d->serverAddr.isEmpty()) {
     // here, we will check some environment variable and find the
     // DCOP server.  Now, we hardcode it.  CHANGE ME
-    d->serverAddr = "local/localhost:/tmp/.ICE-unix/5432";
+    char buff[1024];
+
+    gethostname(buff, 1023);
+    d->serverAddr = "local/" + QString(buff) + ":/tmp/.ICE-unix/5432";
     //    serverAddr = "tcp/faui06e:5000";
-  
+  }
+
   if ((d->iceConn = IceOpenConnection((char *) d->serverAddr.ascii(), 
 				      0, 0, d->majorOpcode, sizeof(errBuf),
 				      errBuf)) == 0L) {
