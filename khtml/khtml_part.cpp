@@ -5769,14 +5769,14 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
     if (!message.isEmpty())
     {
 	    response = KMessageBox::warningContinueCancel( 0,
-							   message.arg(linkURL.htmlUrl()),
+							   message.arg(linkURL.htmlURL()),
 							   i18n( "Security Warning" ),
 							   button);
     }
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>This untrusted page contains a link<BR><B>%1</B><BR>to your local file system.").arg(linkURL.htmlUrl()),
+				i18n( "<qt>This untrusted page contains a link<BR><B>%1</B><BR>to your local file system.").arg(linkURL.htmlURL()),
 				i18n( "Security Alert" ));
     }
 
