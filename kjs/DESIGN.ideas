@@ -1,4 +1,9 @@
-Proposal for a new object modell. Far from being complete.
+The hash value of a string could be calculated at creation time and be
+stored in the UString instance for later use by the lookup functions.
+
+==========================================================================
+
+Proposal for a new object model. Far from being complete.
 
   Object                            Type
 +---------+                    +-------------+
