@@ -54,7 +54,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtextstream.h>
 #ifdef DCOP_LOG
 #include <qdir.h>
-#endif DCOP_LOG
+#endif
 #include <qdatastream.h>
 #include <qptrstack.h>
 #include <qtimer.h>
