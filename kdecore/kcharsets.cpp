@@ -833,8 +833,10 @@ bool KCharsets::supportsScript( const QFont &f, QFont::CharSet charset )
 	    ch  = 0x0153; break;
 	case QFont::ISO_8859_5:
 	case QFont::KOI8U:
+#if QT_VERSION >= 224
 	case QFont::CP1251:
 	case QFont::PT154:
+#endif
 	    ch = 0x0454; break;
 	case QFont::KOI8R:
 	    ch = 0x0431; break;
