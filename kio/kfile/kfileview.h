@@ -347,7 +347,7 @@ public:
 
     /**
      * This method calculates a QString from the given parameters, that is
-     * suitable for sorting with e.g. QIconView or QListView. Their 
+     * suitable for sorting with e.g. QIconView or QListView. Their
      * Item-classes usually have a setKey( const QString& ) method or a virtual
      * method QString key() that is used for sorting.
      *
@@ -355,57 +355,25 @@ public:
      * @param isDir Tells whether the key is computed for an item representing
      *              a directory (directories are usually sorted before files)
      * @param sortSpec An ORed combination of QDir::SortSpec flags.
-     *                 Currently, the values IgnoreCase, Reversed and 
+     *                 Currently, the values IgnoreCase, Reversed and
      *                 DirsFirst are taken into account.
      */
     static QString sortingKey( const QString& value, bool isDir, int sortSpec);
 
     /**
-     * An overloaded method that takes not a QString, but a number as sort 
+     * An overloaded method that takes not a QString, but a number as sort
      * criterion. You can use this for file-sizes or dates/times for example.
-     * If you use a time_t, you need to cast that to KIO::filesize_t because 
+     * If you use a time_t, you need to cast that to KIO::filesize_t because
      * of ambiguity problems.
      */
     static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
 
 protected:
     /**
-     * compares two items in the current context (sortMode and others)
-     * returns -1, if i1 is before i2 and 1, if the other case is true
-     * in case, both are equal (in current context), the behaviour is
-     * undefined!
-     **/
-    // int compareItems(const KFileItem *fi1, const KFileItem *fi2) const;
-
-    /**
      * @internal
      * class to distribute the signals
      **/
     KFileViewSignaler *sig;
-
-    /**
-     * Call this if you changed the sort order and want to perform the actual
-     * sorting and show the new items.
-     */
-    /*
-    void resort() {
-	if ( count() > 1 ) {
-            const KFileItemList *selected = KFileView::selectedItems();
-            const KFileItem *current = KFileView::currentFileItem();
-
-	    KFileItem *item = myFirstItem;
-	    myFirstItem = 0L;
-	    insertSorted( item, count() );
-
-            // restore the old selection
-            KFileItemListIterator it( *selected );
-            for ( ; it.current(); ++it ) {
-                setSelected( it.current(), true );
-            }
-            setCurrentItem( current );
-	}
-    }
-    */
 
 private:
     static QDir::SortSpec defaultSortSpec;
