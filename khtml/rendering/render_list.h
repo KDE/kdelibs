@@ -67,7 +67,7 @@ protected:
     void updateMarkerLocation();
 
     RenderListMarker *m_marker;
-    long int predefVal : 30;
+    signed long predefVal : 30;
     bool m_insideList  : 1;
     bool m_deleteMarker: 1;
 };

@@ -1,3 +1,8 @@
+2003-11-07  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_list.h (class RenderListItem): another 
+	SunCC incompatibility fixed. Only applies to HEAD (*phew*).
+
 2003-11-05  Germain Garand  <germain@ebooksfrance.org>
 
         Refinement of namespace handling for Attributes,
