@@ -99,7 +99,7 @@ binary-arch:  build
 	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
 	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
 	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
-
+	cp debian/kdebuginfo debian/tmp/usr/bin
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
@@ -111,8 +111,10 @@ binary-arch:  build
 	dh_link
 	dh_compress 
 	dh_fixperms 
-	dh_suidregister 
-	dh_makeshlibs -V
+	chmod 755 debian/tmp/usr/bin/kdebuginfo
+	chmod 4755 debian/tmp/usr/bin/artswrapper
+	dh_suidregister usr/bin/artswrapper
+	dh_makeshlibs 
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol

@@ -1,8 +1,65 @@
-kdelibs (4:2.0-20001018-0) unstable; urgency=low
+kdelibs (4:2.1-20001114-1) unstable; urgency=low
  
+  * New cvs pull
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 14 Nov 2000 14:10:00 -0700
+
+kdelibs (4:2.0-final-5) unstable; urgency=low
+ 
+  * More upstream fixes
+  * More dependency work
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 12 Nov 2000 18:15:00 -0700
+
+kdelibs (4:2.0-final-4) unstable; urgency=low
+ 
+  * More upstream fixes
+  * Applying new i18n patch
+  * More dependency work
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 08 Nov 2000 17:30:00 -0700
+                                                                                
+kdelibs (4:2.0-final-3.1) unstable; urgency=low
+ 
+  * Applying i18n patch (Closes: #75830)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 05 Nov 2000 23:00:00 -0700
+
+kdelibs (4:2.0-final-3) unstable; urgency=low
+ 
+  * More upstream fixes
+  * Fixing (again) suid bit on artswrapper
+  * Changing bug reporting to point to bugs.debian.org - hopefully I don't 
+    totally hose the bug reporting pieces...
+  * Building against X4 libs
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 04 Nov 2000 01:30:00 -0700
+                                                                                
+kdelibs (4:2.0-final-2.2) unstable; urgency=low
+ 
+  * Fixing dependency I hosed 
+  * Fixing suid bit on artswrapper
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 03 Nov 2000 00:30:00 -0700
+                                                                                
+kdelibs (4:2.0-final-2.1) unstable; urgency=low
+ 
+  * kdelibs-doc once again contains it's kdoc output
+  * kstyles upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 02 Nov 2000 21:46:00 -0700
+
+kdelibs (4:2.0-final-2) unstable; urgency=low
+
   * more upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 02 Nov 2000 18:00:00 -0700
+
+kdelibs (4:2.0-final-0) unstable; urgency=low
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 18 Oct 2000 16:00:00 -0700
+  * KDE 2.0
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Oct 2000 00:00:00 -0700
                                                                                 
 kdelibs (4:2.0-20001016-0) unstable; urgency=low
 
