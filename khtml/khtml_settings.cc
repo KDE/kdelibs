@@ -185,8 +185,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
   if ( reset || config->hasKey( "UnderlineLinks" ) )
-    m_underlineLink = config->readBoolEntry( "UnderlineLinks", true ); //huh, can't find default define
-  //    m_underlineLink = config->readBoolEntry( "UnderlineLink", KDE_DEFAULT_UNDERLINELINKS );
+    m_underlineLink = config->readBoolEntry( "UnderlineLinks", true /*DEFAULT_UNDERLINELINKS*/ );
 
   // Colors
   if ( reset || config->hasGroup( "General" ) )
@@ -327,13 +326,17 @@ void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
 QString KHTMLSettings::settingsToCSS() const
 {
     // lets start with the link properties
-    QString str = "a[href] {\ncolor: ";    
+    QString str = "a[href] {\ncolor: ";
     str += m_linkColor.name();
     str += ";";
     if(m_underlineLink)
 	str += "\ntext-decoration: underline;";
-    if( m_underlineLink )
+
+    if( m_bChangeCursor )
+    {
 	str += "\ncursor: pointer;";
+        str += "\n}\ninput[type=image] { cursor: pointer;";
+    }
     str += "\n}\n";
     return str;
 }
