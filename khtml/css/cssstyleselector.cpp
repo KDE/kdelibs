@@ -39,10 +39,16 @@ using namespace DOM;
 #include "misc/khtmldata.h"
 
 #include "html/html_headimpl.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
 
 #include <kstddirs.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qfontdatabase.h>
+#include <qfontinfo.h>
+#include <qvaluelist.h>
+#include <qstring.h>
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
@@ -1206,76 +1212,103 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_SIZE:
     {
 	QFont f = style->font();
+	QFontDatabase db;
+	int oldSize;
+	float size = 0;
+	const int *standardSizes = e->ownerDocument()->HTMLWidget()->part()->fontSizes();
+	if(e->parentNode())
+	{
+	    QFontInfo fi(e->parentNode()->style()->font());
+	    oldSize = fi.pointSize();
+	}
+	else
+	    oldSize = standardSizes[3];
+	
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
-	    if(!e->parentNode()) return;
-	    f.setPointSize(e->parentNode()->style()->font().pointSize());
-	    style->setFont(f);
-	    return;
+	    size = oldSize;
 	}
-	if(!primitiveValue) return;
-	if(primitiveValue->getIdent())
+	else if(primitiveValue->getIdent())
 	{
-	    int sizeToUse = style->fontSize();
 	    switch(primitiveValue->getIdent())
 	    {
 	    case CSS_VAL_XX_SMALL:
-		sizeToUse = 0; break;
+		size = standardSizes[0]; break;
 	    case CSS_VAL_X_SMALL:
-		sizeToUse = 1; break;
+		size = standardSizes[1]; break;
 	    case CSS_VAL_SMALL:
-		sizeToUse = 2; break;
+		size = standardSizes[2]; break;
 	    case CSS_VAL_MEDIUM:
-		sizeToUse = 3; break;
+		size = standardSizes[3]; break;
 	    case CSS_VAL_LARGE:
-		sizeToUse = 4; break;
+		size = standardSizes[4]; break;
 	    case CSS_VAL_X_LARGE:
-		sizeToUse = 5; break;
+		size = standardSizes[5]; break;
 	    case CSS_VAL_XX_LARGE:
-		sizeToUse = 6; break;
+		size = standardSizes[6]; break;
 	    case CSS_VAL_LARGER:
-	    	if (sizeToUse<6)
-	    	    sizeToUse++;
-		// ### these should also move between HTMLFontSizes
+		// ### use the next bigger standardSize!!!
+		size = oldSize * 1.2;
 		break;
 	    case CSS_VAL_SMALLER:
-	    	if (sizeToUse>0)
-	    	    sizeToUse--;
+		size = oldSize / 1.2;
 		break;
 	    default:
 		return;
 	    }
-	    // ################### FIXME!!!!!
-#if 0	
-	    int fontSizes[7], fixedFontSizes[7];
-	    if(khtml::pSettings) khtml::pSettings->getFontSizes(fontSizes, fixedFontSizes);
-	    if(f.fixedPitch())
-		f.setPointSize(fixedFontSizes[sizeToUse]);
-	    else
-		f.setPointSize(fontSizes[sizeToUse]);
-#endif
-	    style->setFont(f);
-	    style->setFontSize(sizeToUse);
-	    return;
-	}
+
+     	}
 	else
 	{
 	    int type = primitiveValue->primitiveType();
 	    RenderStyle *parentStyle = style; // use the current style as fallback in case we have no parent
-	    int pointSize = 0;
 	    if(e->parentNode()) parentStyle = e->parentNode()->style();
 	    if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-		pointSize = computeLength(primitiveValue, parentStyle);
+		size = computeLength(primitiveValue, parentStyle);
 	    else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-		pointSize = (int)(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
+		size = (int)(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
 				  * parentStyle->font().pointSize() / 100.);
 	    else
 		return;
-	    if(pointSize > 0)
-		f.setPointSize(pointSize);
 	}
+
+	if(size <= 0) return;
+
+	// we never want to get smaller than 7 points to keep fonts readable
+	if(size < 7 ) size = 7;
+	
+	//printf("computed raw font size: %f\n", size);
+
+	// ok, now some magic to get a nice unscaled font
+	// ### all other font properties should be set before this one!!!!
+	// ####### make it use the charset needed!!!!
+	if( !db.isSmoothlyScalable(f.family(), db.styleString(f), "iso8859-1") )
+	{
+	    QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), "iso8859-1");
+	    // lets see if we find a nice looking font, which is not too far away
+	    // from the requested one.
+	
+	    QValueList<int>::Iterator it;
+	    float diff = 1; // ### 100% deviation
+	    int bestSize = 0;
+	    for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
+	    {
+		float newDiff = ((*it) - size)/size;
+		printf("smooth font size: %d diff=%f\n", *it, newDiff);
+		if(newDiff < 0) newDiff = -newDiff;
+		if(newDiff < diff)
+		{
+		    diff = newDiff;
+		    bestSize = *it;
+		}
+	    }
+	    printf("best smooth font size: %d diff=%f\n", bestSize, diff);
+	    if(diff < .15) // 15% deviation, otherwise we use a scaled font...
+		size = bestSize;
+	}	
+	f.setPointSize(size);
 	style->setFont(f);
-	break;
+	return;
     }
 	
 // angle

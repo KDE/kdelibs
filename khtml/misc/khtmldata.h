@@ -51,12 +51,11 @@ public:
 
     const Settings &operator=( const Settings & );
 
-    void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
-    void getFontSizes(const int *&fontSizes, const int *&fixedFontSizes) const;
+    void setFontSizes(const int *newFontSizes);
+    const int *fontSizes() const;
     void resetFontSizes(void);
 
-    int     fontSizes[MAXFONTSIZES];
-    int     fixedFontSizes[MAXFONTSIZES];
+    int     m_fontSizes[MAXFONTSIZES];
 
     QString fontBaseFace;
     QString fixedFontFace;

@@ -132,7 +132,7 @@ public:
    *
    * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
    */
-  void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes=0);
+  void setFontSizes(const int *newFontSizes);
 
   /**
    * Gets point sizes to be associated with the HTML-sizes used in
@@ -142,7 +142,7 @@ public:
    *
    * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
    */
-  void fontSizes(const int *&fontSizes, const int *&fixedFontSizes) const;
+  const int *fontSizes() const;
 
   /**
    * Resets the point sizes to be associated with the HTML-sizes used in

@@ -9,7 +9,7 @@
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging
 #define protected public
-#include "khtml.h"
+#include "khtmlview.h"
 #include "khtml_part.h"
 #undef protected
 #include "qpushbutton.h"

@@ -23,6 +23,7 @@
 #include "csshelper.h"
 
 #include <qfontmetrics.h>
+#include <qfontinfo.h>
 
 #include "rendering/render_style.h"
 #include "css_valueimpl.h"
@@ -40,11 +41,15 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
     case CSSPrimitiveValue::CSS_EMS:
     case CSSPrimitiveValue::CSS_EXS:
     {
-	QFontMetrics fm(style->font());
 	if(type == CSSPrimitiveValue::CSS_EMS)
-	    factor = fm.width('m');
+	{
+	    QFontInfo fi(style->font());
+	    factor = fi.pointSize();
+	    //printf("EM = %f\n", factor);
+	}
 	else
 	{
+	    QFontMetrics fm(style->font());
 	    QRect b = fm.boundingRect('x');
 	    factor = b.height();
 	}

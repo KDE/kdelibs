@@ -644,14 +644,14 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   return true;
 }
 
-void KHTMLPart::setFontSizes( const int *newFontSizes, const int *newFixedFontSizes )
+void KHTMLPart::setFontSizes( const int *newFontSizes )
 {
-  d->m_settings->setFontSizes( newFontSizes, newFixedFontSizes );
+  d->m_settings->setFontSizes( newFontSizes );
 }
 
-void KHTMLPart::fontSizes( const int *&fontSizes, const int *&fixedFontSizes ) const
+const int *KHTMLPart::fontSizes() const
 {
-  d->m_settings->getFontSizes( fontSizes, fixedFontSizes );
+  return d->m_settings->fontSizes();
 }
 
 void KHTMLPart::resetFontSizes()

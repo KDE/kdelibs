@@ -37,43 +37,35 @@ using namespace khtml;
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
-const int defaultFontSizes[MAXFONTSIZES] = { 6, 8, 10, 12, 14, 18, 24 };
+const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24 };
 
 Settings::Settings()
 {
-    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
-    memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
+    memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
     fontBaseFace  = KGlobal::generalFont().family();
     fixedFontFace = KGlobal::fixedFont().family();
 
     charset	  = QFont::Latin1;
 }
 
-void Settings::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
+void Settings::setFontSizes(const int *newFontSizes)
 {
-    memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
-    if (newFixedFontSizes)
-       memcpy( fixedFontSizes, newFixedFontSizes, sizeof(fixedFontSizes) );
-    else
-       memcpy( fixedFontSizes, newFontSizes, sizeof(fixedFontSizes) );
+    memcpy( m_fontSizes, newFontSizes, sizeof(m_fontSizes) );
 }
 
-void Settings::getFontSizes(const int *&_fontSizes, const int *&_fixedFontSizes) const
+const int *Settings::fontSizes() const
 {
-    _fontSizes = fontSizes;
-    _fixedFontSizes = fixedFontSizes;
+    return m_fontSizes;
 }
 
 void Settings::resetFontSizes(void)
 {
-    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
-    memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
+    memcpy( m_fontSizes, defaultFontSizes, sizeof(m_fontSizes) );
 }
 
 Settings::Settings( const Settings &s )
 {
-    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
-    memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
+    memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
 
     fontBaseFace  = s.fontBaseFace;
     fixedFontFace = s.fixedFontFace;
@@ -83,8 +75,7 @@ Settings::Settings( const Settings &s )
 
 const Settings &Settings::operator=( const Settings &s )
 {
-    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
-    memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
+    memcpy( m_fontSizes, s.m_fontSizes, sizeof(m_fontSizes) );
 
     fontBaseFace  = s.fontBaseFace;
     fixedFontFace = s.fixedFontFace;
