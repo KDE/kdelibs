@@ -1662,6 +1662,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
         case XKeyPress:
         case XKeyRelease:
         case MotionNotify:
+        case EnterNotify:
+        case LeaveNotify:
             return true;
         default:
             break;
