@@ -24,12 +24,12 @@
 int main( int argc, char *argv[] )
 {
 	QColor color;
-	KConfig aConfig;
-	aConfig.setGroup( "KColorDialog-test" );
 
 	QApplication::setColorMode( QApplication::CustomColors );
 	KApplication a( argc, argv, "KColorDialogText" );
-
+    KConfig aConfig;
+    aConfig.setGroup( "KColorDialog-test" );
+    
 	color = aConfig.readColorEntry( "Chosen" );
 	int nRet = KColorDialog::getColor( color );
 	aConfig.writeEntry( "Chosen", color );
