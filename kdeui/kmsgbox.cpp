@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1997/10/21 20:45:02  kulow
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
+ * Revision 1.6  1997/10/16 11:15:26  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
  *
@@ -32,6 +37,7 @@
  * public release 0.1
  *
  * Revision 1.3  1997/01/10 19:44:33  alex
+ * Revision 1.1.1.1  1997/01/10 13:05:21  alex
  * imported
 KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int type,
                  const char *b1text, const char *b2text, const char *b3text,
@@ -44,13 +50,7 @@ KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int 
 #include <kbuttonbox.h>
 
     
-		char* pKDEDIR = getenv( "KDEDIR" );
-		QString ipath;
-		if( pKDEDIR )
-			ipath = pKDEDIR;
-		else
-			ipath = "/usr/local";
-		ipath += "/share/";
+    	QString ipath = kapp->kdedir() + "/share/icons/";
 #include "kmsgbox.moc"
 
     if(!icons_initialized) {
