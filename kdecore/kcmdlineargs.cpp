@@ -731,7 +731,7 @@ KCmdLineArgs::usage(const char *id)
 
    args = argsList->first(); // Sets current to 1st.
 
-   bool showAll = (strcmp(id, "all") == 0);
+   bool showAll = id && (strcmp(id, "all") == 0);
 
    if (!showAll)
    {
