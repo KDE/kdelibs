@@ -27,6 +27,7 @@ class QComboBox;
 class QLineEdit;
 class QCheckBox;
 class QLabel;
+class QPushButton;
 
 class KXmlCommandSelector : public QWidget
 {
@@ -45,6 +46,7 @@ protected slots:
 	void slotEditCommand();
 	void slotBrowse();
 	void slotCommandSelected(int);
+	void slotHelpCommand();
 
 private:
 	QComboBox	*m_cmd;
@@ -52,6 +54,8 @@ private:
 	QCheckBox	*m_usefilter;
 	QStringList	m_cmdlist;
 	QLabel		*m_shortinfo;
+	QPushButton *m_helpbtn;
+	QString m_help;
 };
 
 #endif

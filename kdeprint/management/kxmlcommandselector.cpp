@@ -35,6 +35,21 @@
 #include <kfiledialog.h>
 #include <kseparator.h>
 #include <kguiitem.h>
+#include <kactivelabel.h>
+#include <kdatetbl.h>
+
+extern "C"
+{
+	QString select_command( QWidget* parent )
+	{
+		KDialogBase dlg( parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
+		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg );
+		dlg.setMainWidget( xmlSel );
+		if ( dlg.exec() )
+			return xmlSel->command();
+		return QString::null;
+	}
+}
 
 KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name)
 : QWidget(parent, name)
@@ -50,6 +65,10 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	QToolTip::add(m_add, i18n("New Command"));
 	QToolTip::add(m_edit, i18n("Edit Command"));
 	m_shortinfo = new QLabel(this);
+	m_helpbtn = new KPushButton( this );
+	m_helpbtn->setPixmap( SmallIcon( "help" ) );
+	connect( m_helpbtn, SIGNAL( clicked() ), SLOT( slotHelpCommand() ) );
+	QToolTip::add( m_helpbtn, i18n( "Information" ) );
 
 	m_line = 0;
 	m_usefilter = 0;
@@ -95,7 +114,10 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 		l2->addWidget(m_usefilter, 0, c++);
 	}
 	l2->addWidget(m_cmd, 0, c);
-	l2->addWidget(m_shortinfo, 1, c);
+	QHBoxLayout *l4 = new QHBoxLayout( 0, 0, 5 );
+	l2->addLayout( l4, 1, c );
+	l4->addWidget( m_helpbtn, 0 );
+	l4->addWidget( m_shortinfo, 1 );
 	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 0);
 	l2->addLayout(l3, 0, c+1);
 	l3->addWidget(m_add);
@@ -228,7 +250,21 @@ void KXmlCommandSelector::slotCommandSelected(int ID)
 			msg.append(i18n("not allowed"));
 		msg.append(")");
 		m_shortinfo->setText(msg);
+		m_help = xmlCmd->comment();
+		m_helpbtn->setEnabled( !m_help.isEmpty() );
 	}
+	delete xmlCmd;
+}
+
+void KXmlCommandSelector::slotHelpCommand()
+{
+	KPopupFrame *pop = new KPopupFrame( m_helpbtn );
+	KActiveLabel *lab = new KActiveLabel( m_help, pop );
+	lab->resize( lab->sizeHint() );
+	pop->setMainWidget( lab );
+	pop->exec( m_helpbtn->mapToGlobal( QPoint( m_helpbtn->width(), 0 ) ) );
+	pop->close( 0 );
+	delete pop;
 }
 
 #include "kxmlcommandselector.moc"
