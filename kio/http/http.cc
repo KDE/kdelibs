@@ -1585,7 +1585,7 @@ bool HTTPProtocol::readHeader()
 
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
-       (m_responseCode == 407 && Authentication == AUTH_None) )
+       (m_responseCode == 407 && ProxyAuthentication == AUTH_None) )
   {
     error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
     return false;
