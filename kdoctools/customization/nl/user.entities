@@ -86,6 +86,7 @@
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 <!ENTITY Esc     "<keycap>Escape</keycap>">
+<!ENTITY Enter   "<keycap>Enter</keycap>">
 <!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
