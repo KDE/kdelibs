@@ -41,7 +41,7 @@ void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) c
         data.m_pURI = uri;
         data.m_bChanged = true;
     }
-    data.m_bFiltered = true;
+    // data.m_bFiltered = true; deprecated!!!
 }
 
 KURIFilterData::KURIFilterData( const KURIFilterData& data )
@@ -50,7 +50,7 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_pURI = data.m_pURI;
     m_strErrMsg = data.m_strErrMsg;
     m_strIconName = data.m_strIconName;
-    m_bFiltered = data.m_bFiltered;
+    // m_bFiltered = data.m_bFiltered;  deprecated!!!
     m_bChanged = data.m_bChanged;
 
 }
@@ -61,7 +61,7 @@ void KURIFilterData::init( const KURL& url )
     m_pURI = url;
     m_strErrMsg = QString::null;
     m_strIconName = QString::null;
-    m_bFiltered = false;
+    m_bFiltered = true;  //deprecated!!! Always returns true!
     m_bChanged = true;
 }
 

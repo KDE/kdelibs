@@ -44,16 +44,16 @@ class KCModule;
 *   KURIFilterData d = text;
 *   bool filtered = KURIFilter::self()->filter( d );
 *   if( filtered )
-*     print ( "URI : %s\n"Filtered URI : %s\n URI Type : %i\n"Was Filtered : %i"
-*             text.latin1(), d.uri().url().latin1(), d.uriType(), d.hasBeenFiltered() );
+*     print ( "URI: %s\n"Filtered URI: %s\n URI Type: %i\n"Was Filtered: %i"
+*             text.latin1(), d.uri().url().latin1(), d.uriType(), filtered );
 * </pre>
 *
 * The above code should yield the following output:
 * <pre>
-*   URI : kde.org
-*   Filtered URI : http://kde.org
-*   URI Type : 0            <== means NET_PROTOCOL
-*   Was Filtered : 1        <== means the URL was successfully filtered
+*   URI: kde.org
+*   Filtered URI: http://kde.org
+*   URI Type: 0            <== means NET_PROTOCOL
+*   Was Filtered: 1        <== means the URL was successfully filtered
 * </pre>
 *
 * @short A message object for exchanging filtering URI info.
@@ -121,14 +121,11 @@ public:
     ~KURIFilterData() {};
 
     /**
-     * Returns true if the URI has been filtered.
+     * This method has been deprecated and will always return
+     * TRUE.  You should instead use the result from the
+     * @ref KURIFilter::filterURI() calls.
      *
-     * This function returns true whenever one of
-     * the URI filters plug-ins sucessfully filters
-     * the given URL.  Use this function to check whether
-     * a URL has been filtered or not.
-     *
-     * @return true if the URL has been filtered.
+     * @deprecated
      */
     bool hasBeenFiltered() const { return m_bFiltered; }
 
