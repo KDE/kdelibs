@@ -34,6 +34,7 @@ class KConfig;
 class KConfigBase;
 
 /**
+ * @internal
  * A KAccelAction prepresents an action that can be executed using 
  * an accelerator key. Each KAccelAction has a name, a label, a 
  * "What's this" string and a @ref KShortcut. The user can configure and 
