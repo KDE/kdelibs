@@ -556,32 +556,39 @@ bool HTTPProtocol::eof()
 
 bool HTTPProtocol::http_isConnected()
 {
-   if (!m_sock)
-     return false;
+    if (!m_sock)
+      return false;
 
-   fd_set rdfs;
-   FD_ZERO(&rdfs);
-   FD_SET(m_sock , &rdfs);
+    fd_set rdfs;
+    FD_ZERO(&rdfs);
+    FD_SET(m_sock , &rdfs);
 
-   struct timeval tv;
-   tv.tv_usec = 0;
-   tv.tv_sec = 0;
+    struct timeval tv;
+    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    int retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
+    // retval ==  0 ==> Connection Idle
+    // retval >=  1 ==> Connection Active
+    if ( retval >= 0 )
+    {
+      char buffer[100];
+      retval = recv(m_sock, buffer, 80, MSG_PEEK);
+      // retval == -1 ==> Connection errored iff errno != EAGAIN
+      // retval ==  0 ==> Connection clased
+      if ( retval == 0 || (retval == -1 && errno != EAGAIN))
+        return false;
+    }
+    else
+        return false;       // should really never happen, but just incase...
 
-   int retval = select(m_sock+1, &rdfs, NULL, NULL, &tv);
-   if (retval == -1)
-   {
-       // char buffer[100];
-       // retval = recv(m_sock, buffer, 80, MSG_PEEK);
-       return false;
-   }
-   return true;
+    return true;
 }
 
 void HTTPProtocol::http_checkConnection()
 {
-  // do we want to use a proxy?
-  // if so, we had first better make sure that our host isn't on the
-  // No Proxy list
+  // Do we want to use a proxy ?
+  // If so, we had first better make sure that
+  // our host isn't on the "No Proxy List".
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
     m_request.do_proxy = !revmatch( m_request.hostname.latin1(), m_strNoProxyFor.latin1() );
 
@@ -623,7 +630,7 @@ void HTTPProtocol::http_checkConnection()
         http_closeConnection();
   }
 
-  // let's update our current state
+  // Let's update our current state
   m_state.hostname = m_request.hostname;
   m_state.port = m_request.port;
   m_state.user = m_request.user;
