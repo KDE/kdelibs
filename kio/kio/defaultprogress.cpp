@@ -146,7 +146,7 @@ void DefaultProgress::init()
   d->openFile->setEnabled(false);
   d->openFile->hide();
 
-  d->openLocation = new KPushButton( i18n("Open &Location"), this );
+  d->openLocation = new KPushButton( i18n("Open &Destination"), this );
   connect( d->openLocation, SIGNAL( clicked() ), SLOT( slotOpenLocation() ) );
   hBox->addWidget( d->openLocation );
   d->openLocation->hide();
