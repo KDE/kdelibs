@@ -34,7 +34,7 @@ start_launcher(int socket)
    char *argv[2];
    argv[0] = appName.data();
    argv[1] = 0;
-   LaunchApp launcher(1, argv, appName, socket);
+   KLauncher launcher(1, argv, appName, socket);
    launcher.exec();
    return 0;
 }

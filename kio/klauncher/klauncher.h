@@ -26,6 +26,7 @@
 #include <kuniqueapp.h>
 #include <dcopclient.h>
 #include <qsocketnotifier.h>
+#include <kservice.h>
 
 class KLaunchRequest
 {
@@ -39,12 +40,19 @@ public:
    DCOPClientTransaction *transaction;
 };
 
-class LaunchApp : public KUniqueApplication
+struct serviceResult
+{
+  int result;        // 0 means success. > 0 means error (-1 means pending)
+  QCString dcopName; // Contains DCOP name on success
+  QString error;     // Contains error description on failure.
+};
+
+class KLauncher : public KUniqueApplication
 {
    Q_OBJECT
 
 public:
-   LaunchApp(int argc, char **argv, const QCString &appName, int _kinitSocket);
+   KLauncher(int argc, char **argv, const QCString &appName, int _kinitSocket);
 
 protected:
    bool process(const QCString &fun, const QByteArray &data,
@@ -55,6 +63,16 @@ protected:
    void requestStart(KLaunchRequest *request);
    void requestDone(KLaunchRequest *request);
 
+   bool start_service(const QString &serviceName, const QString &filename);
+
+   void createArgs( KLaunchRequest *request, const KService::Ptr service,
+                    const QString &url);
+
+   void replaceArg( QValueList<QCString> &args, const QCString &target, 
+                    const QCString &replace, const char *replacePrefix = 0);
+
+   void removeArg( QValueList<QCString> &args, const QCString &target);
+
 public slots:
    void slotKInitData(int);
    void slotAppRegistered(const QCString &appId);
@@ -63,5 +81,7 @@ protected:
    QList<KLaunchRequest> requestList;
    int kinitSocket;
    QSocketNotifier *kinitNotifier;
+   serviceResult DCOPresult;
+   KLaunchRequest *lastRequest;
 };
 #endif

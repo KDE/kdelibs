@@ -12,16 +12,15 @@ void exec_blind(QCString name, QValueList<QCString> argList);
  * It may be of the form "korganizer", "korganizer.desktop" or
  * "/opt/kde/share/applnk/Applications/korganizer.desktop".
  *
- * 'filename', if not empty, will be passed to the service as
+ * 'url', if not empty, will be passed to the service as
  * argument.
  *
  */
-serviceResult startService(QCString serviceName, QString filename)
-serviceResult startService(QCString serviceName, QString filename)
+serviceResult start_service(QString serviceName, QString url)
 
 struct serviceResult
 {
-  int errno;         // 0 means success.
+  int result;         // 0 means success. > 0 means error
   QCString dcopName; // Contains DCOP name on success
   QString error;     // Contains error description on failure.
 }
