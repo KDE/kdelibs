@@ -38,6 +38,8 @@ class KEditListBoxPrivate;
  */
 class KEditListBox : public QGroupBox
 {
+   Q_OBJECT
+
     class CustomEditor
     {
     public:
@@ -68,7 +70,6 @@ class KEditListBox : public QGroupBox
         KLineEdit *m_lineEdit;
     };
 
-   Q_OBJECT
    public:
 
       /**
