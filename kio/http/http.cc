@@ -94,23 +94,6 @@ int kdemain( int argc, char **argv )
      exit(-1);
   }
 
-  // Launch the cookiejar if not already running
-  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
-  if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-          !cookieConfig->hasGroup("Cookie Policy") )
-        cookieConfig->setGroup("Browser Settings/HTTP");
-  else
-        cookieConfig->setGroup("Cookie Policy");
-  if ( cookieConfig->readBoolEntry( "Cookies", true ) )
-  {
-     QString error;
-     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
-     {
-        // Error starting kcookiejar.
-        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
-     }
-  }
-  delete cookieConfig;
 
   HTTPProtocol slave(argv[1], argv[2], argv[3]);
   slave.dispatchLoop();
@@ -964,7 +947,7 @@ bool HTTPProtocol::http_open()
   else
   {
      m_cookieMode = CookiesAuto;
-     // if (m_bUseCookiejar)
+     if (m_bUseCookiejar)
         cookieStr = findCookies( m_request.url.url());
   }
 
@@ -1607,7 +1590,7 @@ bool HTTPProtocol::readHeader()
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
-     if ((m_cookieMode == CookiesAuto) ) //&& m_bUseCookiejar)
+     if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
      {
         // Give cookies to the cookiejar.
         addCookies( m_request.url.url(), cookieStr );
@@ -3177,6 +3160,25 @@ void HTTPProtocol::reparseConfiguration()
   m_strLanguages = languageList.join( ", " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
   m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+
+  // Launch the cookiejar if not already running
+  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
+  if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
+          !cookieConfig->hasGroup("Cookie Policy") )
+        cookieConfig->setGroup("Browser Settings/HTTP");
+  else
+        cookieConfig->setGroup("Cookie Policy");
+  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
+  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
+  {
+     QString error;
+     if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
+     {
+        // Error starting kcookiejar.
+        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
+     }
+  }
+  delete cookieConfig;
 }
 
 void HTTPProtocol::resetSessionSettings()
