@@ -260,6 +260,19 @@ AC_SUBST(LIBOSSAUDIO)
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsc-config)
 
+dnl Check if we are building as part of KDE. Arts can also be built as
+dnl a standalone snapshot in which case KDE may not be present and things
+dnl that depend on KDE should not be built.
+AC_MSG_CHECKING(if building standalone aRts snapshot without KDE)
+if test "$DCOPIDL" = ""; then
+	AC_MSG_RESULT(yes)
+	ARTS_BUILD_MESSAGE=""
+else
+	AC_MSG_RESULT(no)
+	ARTS_BUILD_MESSAGE="message"
+fi
+AC_SUBST(ARTS_BUILD_MESSAGE)
+
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsdsp)
 

@@ -103,6 +103,12 @@ namespace Arts {
 		static void warning(const char *fmt,...);	// print on stderr
 		static void info(const char *fmt,...);		// print on stdout
 		static void debug(const char *fmt,...);		// print on stdout
+
+/*
+ * This method sets the name of an external application to display messages
+ * graphically.
+ */
+		static void messageApp(const char *appName);
 	};
 };
 

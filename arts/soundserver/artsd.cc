@@ -68,6 +68,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	fprintf(stderr,"-s <seconds>        auto-suspend time in seconds\n");
+	fprintf(stderr,"-m <appName>        application to display messages\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
@@ -98,7 +99,8 @@ static int  					cfgBits			= 0;
 static int  					cfgFragmentCount= 0;
 static int  					cfgFragmentSize	= 0;
 static int  					cfgPort			= 0;
-static int  					cfgDebugLevel	= 1;
+static int  					cfgDebugLevel	= 2;
+static const char			   *cfgDebugApp		= 0;
 static bool  					cfgFullDuplex	= 0;
 static const char			   *cfgDeviceName   = 0;
 static const char              *cfgAudioIO      = 0;
@@ -109,7 +111,7 @@ static bool						cmdListAudioIO  = false;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:")) > 0)
 	{
 		switch(optch)
 		{
@@ -133,6 +135,8 @@ static void handleArgs(int argc, char **argv)
 			case 'd': cfgFullDuplex = true;
 				break;
 			case 'l': cfgDebugLevel = atoi(optarg);
+				break;
+			case 'm': cfgDebugApp = optarg;
 				break;
 			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
 				break;
@@ -213,6 +217,9 @@ int main(int argc, char **argv)
 
 	Debug::init("[artsd]", static_cast<Debug::Level>(cfgDebugLevel));
 
+	if (cfgDebugApp)
+		Debug::messageApp(cfgDebugApp);
+
 	if(cfgPort)			 TCPServer::setPort(cfgPort);
 
 	CPUUsage	cpuUsage;
@@ -234,8 +241,9 @@ int main(int argc, char **argv)
 
 	if(!AudioSubSystem::the()->check())
 	{
-		cerr << "Error while initializing the sound driver: " << endl;
-		cerr << AudioSubSystem::the()->error() << endl;
+		string msg = "Error while initializing the sound driver:\n";
+		msg += AudioSubSystem::the()->error();
+		arts_fatal(msg.c_str());
 		exit(1);
 	}
 

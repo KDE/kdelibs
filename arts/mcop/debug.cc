@@ -29,8 +29,42 @@
 static int arts_debug_level = Arts::Debug::lInfo;
 static bool arts_debug_abort = false;
 static const char *arts_debug_prefix = "";
+static char *messageAppName = 0;
 
 namespace Arts {
+
+/*
+ * Call the graphical application to display a message, if
+ * defined. Otherwise, send to standard error. Debug messages are
+ * always sent to standard error because they tend to be very verbose.
+ * Note that the external application is run in the background to
+ * avoid blocking the sound server.
+*/
+void display_message(Debug::Level level, const char *msg) {
+	char buff[1024];
+
+	/* default to text output if no message app is defined or if it is a debug message. */
+	if (messageAppName == 0 || !strcmp(messageAppName, "") || (level == Debug::lDebug))
+	{
+		fprintf(stderr, "%s\n", msg);
+		return;
+	}
+
+	switch (level) {
+	  case Debug::lFatal:
+		  sprintf(buff, "%s -e \"Sound server fatal error:\n\n%s\" &", messageAppName, msg);
+		  break;
+	  case Debug::lWarning:
+		  sprintf(buff, "%s -w \"Sound server warning message:\n\n%s\" &", messageAppName, msg);
+		  break;
+	  case Debug::lInfo:
+		  sprintf(buff, "%s -i \"Sound server informational message:\n\n%s\" &", messageAppName, msg);
+		  break;
+	  default:
+		  break; // avoid compile warning
+	}
+	system(buff);
+}
 
 static class DebugInitFromEnv {
 public:
@@ -68,14 +102,12 @@ void Arts::Debug::init(const char *prefix, Level level)
 
 void Arts::Debug::fatal(const char *fmt, ...)
 {
+	char buff[1024];
     va_list ap;
     va_start(ap, fmt);
-	fprintf(stderr,"\n");
-	fprintf(stderr,"%s ** Fatal error (exiting) ** ", arts_debug_prefix);
-    (void) vfprintf(stderr, fmt, ap);
-	fprintf(stderr,"\n");
-	fflush(stderr);
+	vsprintf(buff, fmt, ap);
     va_end(ap);
+	display_message(Debug::lFatal, buff);
 
 	if(arts_debug_abort) abort();
 	exit(1);
@@ -85,14 +117,12 @@ void Arts::Debug::warning(const char *fmt, ...)
 {
 	if(lWarning >= arts_debug_level)
 	{
-    	va_list ap;
-    	va_start(ap, fmt);
-		fprintf(stderr,"\n");
-		fprintf(stderr,"%s ** Warning ** ", arts_debug_prefix);
-    	(void) vfprintf(stderr, fmt, ap);
-		fprintf(stderr,"\n");
-		fflush(stderr);
-    	va_end(ap);
+		char buff[1024];
+		va_list ap;
+		va_start(ap, fmt);
+		vsprintf(buff, fmt, ap);
+		va_end(ap);
+		display_message(Debug::lWarning, buff);
 	}
 }
 
@@ -100,13 +130,12 @@ void Arts::Debug::info(const char *fmt, ...)
 {
 	if(lInfo >= arts_debug_level)
 	{
-    	va_list ap;
-    	va_start(ap, fmt);
-		fprintf(stderr,"%s ", arts_debug_prefix);
-    	(void) vfprintf(stderr, fmt, ap);
-		fprintf(stderr,"\n");
-		fflush(stderr);
-    	va_end(ap);
+		char buff[1024];
+		va_list ap;
+		va_start(ap, fmt);
+		vsprintf(buff, fmt, ap);
+		va_end(ap);
+		display_message(Debug::lInfo, buff);
 	}
 }
 
@@ -114,11 +143,17 @@ void Arts::Debug::debug(const char *fmt, ...)
 {
 	if(lDebug >= arts_debug_level)
 	{
-    	va_list ap;
-    	va_start(ap, fmt);
-    	(void) vfprintf(stderr, fmt, ap);
-		fprintf(stderr,"\n");
-		fflush(stderr);
-    	va_end(ap);
+		char buff[1024];
+		va_list ap;
+		va_start(ap, fmt);
+		vsprintf(buff, fmt, ap);
+		va_end(ap);
+		display_message(Debug::lDebug, buff);
 	}
+}
+
+void Arts::Debug::messageApp(const char *appName)
+{
+	messageAppName = (char*) realloc(messageAppName, strlen(appName)+1);
+	strcpy(messageAppName, appName);
 }
