@@ -1,3 +1,8 @@
+2003-12-20  Koos Vriezen  <koos.vriezen@xs4all.nl>
+
+        * html_objectimpl.cpp (attach): Check KImageIO::typeForMime first if RenderImage
+        supports the image format
+
 2003-12-11  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_image.cpp (updateFromElement): set the alt text before doing anything

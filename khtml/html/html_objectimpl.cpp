@@ -30,7 +30,9 @@
 #include <qvariant.h>
 #include <qmap.h>
 #include <qtimer.h>
+
 #include <kdebug.h>
+#include <kimageio.h>
 
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"
@@ -191,7 +193,8 @@ void HTMLObjectBaseElementImpl::attach() {
         _style->display() != NONE)
     {
         needWidgetUpdate = false;
-        bool imagelike = serviceType.startsWith("image/");
+        bool imagelike = serviceType.startsWith("image/") &&
+                         (KImageIO::typeForMime(serviceType) != QString::null);
         if (imagelike) {
             m_render = new (getDocument()->renderArena()) RenderImage(this);
             // make sure we don't attach the inner contents
