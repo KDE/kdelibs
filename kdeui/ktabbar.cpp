@@ -23,9 +23,11 @@
 #include <qstyle.h>
 #include <qtimer.h>
 #include <qpushbutton.h>
+#include <qtooltip.h>
 
 #include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <klocale.h>
 
 #include "ktabbar.h"
 #include "ktabwidget.h"
@@ -156,14 +158,14 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
 
     if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
         QTab *t = selectTab( e->pos() );
-        
+
         //BEGIN Workaround
         //Qt3.2.0 (and 3.2.1) emit wrong local coordinates
         //for MouseMove events when the pointer leaves a widget. Discard those
-        //to avoid enabling the wrong hover button        
+        //to avoid enabling the wrong hover button
 #ifdef __GNUC__
 #warning "Workaround for Qt 3.2.0, 3.2.1 bug"
-#endif        
+#endif
         if ( e->globalPos() != mapToGlobal( e->pos() ) )
             return;
         //END Workaround
@@ -198,8 +200,9 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 }
 
                 mHoverCloseButton = new QPushButton( this );
-                mHoverCloseButton->setIconSet( SmallIcon( "fileclose" ) );
+                mHoverCloseButton->setIconSet( KGlobal::iconLoader()->loadIcon("fileclose", KIcon::Toolbar, KIcon::SizeSmall, KIcon::ActiveState) );
                 mHoverCloseButton->setGeometry( rect );
+                QToolTip::add(mHoverCloseButton,i18n("Close this tab"));
                 mHoverCloseButton->setEnabled(false);
                 mHoverCloseButton->setFlat(true);
                 mHoverCloseButton->show();
