@@ -626,9 +626,9 @@ Completion WindowFunc::tryExecute(const List &args)
 	    else if (key == "top" || key == "screeny")
 	      winargs.y = val.toInt();
 	    else if (key == "height")
-	      winargs.height = val.toInt();
+	      winargs.height = val.toInt() + 4;
 	    else if (key == "width")
-	      winargs.width = val.toInt();
+	      winargs.width = val.toInt() + 4;
 	    else
 	      goto boolargs;
 	    continue;
