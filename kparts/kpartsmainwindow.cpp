@@ -70,7 +70,7 @@ XMLGUIFactory *MainWindow::guiFactory() const
   return m_factory;
 }
 
-QDomDocument MainWindow::document()
+QDomDocument MainWindow::document() const
 {
   return d->m_doc;
 }

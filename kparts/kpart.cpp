@@ -30,22 +30,16 @@ public:
   PartPrivate()
   {
     m_bPluginsDirty = true;
-    m_bDocDirty = true;
     m_pluginServants.setAutoDelete( true );
-    m_servant = 0L;
   }
   ~PartPrivate()
   {
-    if ( m_servant )
-      delete m_servant;
   }
 
   bool m_bPluginsDirty;
-  bool m_bDocDirty;
   QValueList<QDomDocument> m_plugins;
   QList<XMLGUIServant> m_pluginServants;
   QDomDocument m_doc;
-  XMLGUIServant *m_servant;
 };
 };
 
@@ -125,7 +119,7 @@ const QList<XMLGUIServant> *Part::pluginServants()
     QValueList<QDomDocument>::ConstIterator pEnd = pluginDocs.end();
     for (; pIt != pEnd; ++pIt )
     {
-      PartGUIServant *pluginServant = new PartGUIServant( this, *pIt );
+      PluginGUIServant *pluginServant = new PluginGUIServant( this, *pIt );
       d->m_pluginServants.append( pluginServant );
     }
 
@@ -138,20 +132,6 @@ const QList<XMLGUIServant> *Part::pluginServants()
 QDomDocument Part::document() const
 {
   return d->m_doc;
-}
-
-XMLGUIServant *Part::servant()
-{
-  if ( d->m_bDocDirty )
-  {
-    if ( d->m_servant )
-      delete d->m_servant;
-
-    d->m_servant = new PartGUIServant( this, document() );
-    d->m_bDocDirty = false;
-  }
-
-  return d->m_servant;
 }
 
 void Part::setWidget( QWidget *widget )
@@ -174,7 +154,6 @@ void Part::setXMLFile( QString file )
 void Part::setXML( const QString &document )
 {
   d->m_doc.setContent( document );
-  d->m_bDocDirty = true;
 }
 
 QAction* Part::action( const char* name )
@@ -320,7 +299,7 @@ void ReadOnlyPart::closeURL()
 
     d->m_jobId = 0;
   }
-  
+
   if ( m_bTemp )
   {
     unlink( m_file.ascii() );
@@ -330,14 +309,14 @@ void ReadOnlyPart::closeURL()
 
 void ReadOnlyPart::slotJobFinished( int /*_id*/ )
 {
-  d->m_jobId = 0; 
+  d->m_jobId = 0;
   openFile();
   emit completed();
 }
 
 void ReadOnlyPart::slotJobError( int, int, const char * text )
 {
-  d->m_jobId = 0; 
+  d->m_jobId = 0;
   emit canceled( QString(text) );
 }
 
@@ -388,25 +367,6 @@ void ReadWritePart::slotUploadFinished( int /*_id*/ )
 void ReadWritePart::slotUploadError( int, int, const char * text )
 {
   emit canceled( QString(text) );
-}
-
-//////////////////////////////////////////////////
-
-PartGUIServant::PartGUIServant( Part *part, const QDomDocument &document )
-  : QObject( part )
-{
-  m_part = part;
-  m_doc = document;
-}
-
-QAction *PartGUIServant::action( const QDomElement &element )
-{
-  return m_part->action( element );
-}
-
-QDomDocument PartGUIServant::document()
-{
-  return m_doc;
 }
 
 #include "kpart.moc"

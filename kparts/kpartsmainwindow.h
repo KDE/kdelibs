@@ -56,7 +56,7 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
 
   // KXMLGUIServant interface (internal)
   virtual QAction *action( const QDomElement &element );
-  virtual QDomDocument document();
+  virtual QDomDocument document() const;
 
   // KXMLGUIBuilder interface (internal)
   virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer );

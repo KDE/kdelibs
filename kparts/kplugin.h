@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qaction.h>
+#include <kxmlgui.h>
 
 namespace KParts
 {
@@ -27,6 +28,27 @@ public:
 
 private:
     QActionCollection m_collection;
+};
+
+/**
+ * @internal
+ * The @ref XMLGUIServant for a @ref Plugin, providing actions
+ * and XML for their layout to the merging engine.
+ */
+// ###### TODO : merge this with Plugin, no ?
+class PluginGUIServant : public QObject, public XMLGUIServant
+{
+  Q_OBJECT
+ public:
+  PluginGUIServant( Part *part, const QDomDocument &document );
+
+  virtual QAction *action( const QDomElement &element );
+
+  virtual QDomDocument document() const;
+
+ private:
+  Part *m_part;
+  QDomDocument m_doc;
 };
 
 };

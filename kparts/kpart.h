@@ -22,7 +22,7 @@ class PartPrivate;
 
 /**
  * A "part" is a GUI component, featuring a widget embeddedable
- * in any application but which also provides elements that will be merged in 
+ * in any application but which also provides elements that will be merged in
  * the "host" user interface (menubars, toolbars... )
  *
  * Those elements trigger actions, defined by the part (@see action).
@@ -33,7 +33,7 @@ class PartPrivate;
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
  */
-class Part : public QObject
+class Part : public QObject, public XMLGUIServant
 {
   Q_OBJECT
 public:
@@ -95,8 +95,9 @@ public:
 
     /**
      * @return a (cached) @ref XMLGUIServant for the part.
+     * Implementation note : it's the part itself.
      */
-    virtual XMLGUIServant *servant();
+    virtual XMLGUIServant *servant() { return this; }
 
     // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
@@ -108,7 +109,7 @@ public:
     /**
      * @return the parsed XML in a QDomDocument, set by @ref setXMLFile or @ref setXML
      */
-    QDomDocument document() const;
+    virtual QDomDocument document() const;
 
 protected:
     /**
@@ -252,26 +253,6 @@ protected slots:
 
 private:
   bool m_bModified;
-};
-
-/**
- * @internal
- * The @ref XMLGUIServant for a @ref Part, providing actions
- * and XML for their layout to the merging engine.
- */
-class PartGUIServant : public QObject, public XMLGUIServant
-{
-  Q_OBJECT
- public:
-  PartGUIServant( Part *part, const QDomDocument &document );
-
-  virtual QAction *action( const QDomElement &element );
-
-  virtual QDomDocument document();
-
- private:
-  Part *m_part;
-  QDomDocument m_doc;
 };
 
 };

@@ -82,7 +82,7 @@ class XMLGUIServant
 
   virtual QAction *action( const QDomElement &element ) = 0;
 
-  virtual QDomDocument document() = 0;
+  virtual QDomDocument document() const = 0;
 
   /**
    * default implementation, storing the given data in an internal map. Called from

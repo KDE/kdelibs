@@ -1,4 +1,5 @@
 #include "kplugin.h"
+#include "kpart.h"
 
 using namespace KParts;
 
@@ -19,6 +20,25 @@ QAction* Plugin::action( const char* name )
 QActionCollection* Plugin::actionCollection()
 {
     return &m_collection;
+}
+
+//////////////
+
+PluginGUIServant::PluginGUIServant( Part *part, const QDomDocument &document )
+  : QObject( part )
+{
+  m_part = part;
+  m_doc = document;
+}
+
+QAction *PluginGUIServant::action( const QDomElement &element )
+{
+  return m_part->action( element );
+}
+
+QDomDocument PluginGUIServant::document() const
+{
+  return m_doc;
 }
 
 #include "kplugin.moc"
