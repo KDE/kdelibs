@@ -454,7 +454,7 @@ KDateTable::setDate(const QDate& date_)
 
   calendar->setYMD(temp, calendar->year(date), calendar->month(date), 1);
   //temp.setYMD(date.year(), date.month(), 1);
-  kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
+  //kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
   firstday=temp.dayOfWeek();
   if(firstday==1) firstday=8;
   //numdays=date.daysInMonth();
