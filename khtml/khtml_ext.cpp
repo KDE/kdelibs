@@ -257,12 +257,6 @@ void KHTMLPartBrowserExtension::copy()
 
 void KHTMLPartBrowserExtension::searchProvider()
 {
-    if ( m_extensionProxy )
-    {
-        callExtensionProxyMethod( "searchProvider()" );
-        return;
-    }
-
     KURIFilterData data;
     QStringList list;
     data.setData( m_part->selectedText() );
@@ -282,12 +276,6 @@ void KHTMLPartBrowserExtension::searchProvider()
 
 void KHTMLPartBrowserExtension::openSelection()
 {
-    if ( m_extensionProxy )
-    {
-        callExtensionProxyMethod( "openSelection()" );
-        return;
-    }
-
     KParts::URLArgs args;
     args.frameName = "_blank";
 
