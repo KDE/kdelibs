@@ -620,6 +620,11 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
         }
     }
 
+    // in case of a dir, check if we have any known children, there's much to do in that case
+    // (stopping jobs, removing dirs from cache etc.)
+    deleteDir( *it );
+
+    // now remove the (dir)item itself
     if ( fileitem )
     {
       QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url()];
@@ -628,9 +633,6 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
           kdl->emitDeleteItem( fileitem );
       delete fileitem;
     }
-    // in case of a dir, check if we have any known children, there's much to do in that case
-    // (stopping jobs, removing dirs from cache etc.)
-    deleteDir( *it );
   }
 }
 
@@ -717,7 +719,7 @@ KDirListerCache* KDirListerCache::self()
 
 void KDirListerCache::slotFileDirty( const QString& _file )
 {
-  //kdDebug(7004) << k_funcinfo << _file << endl;
+  kdDebug(7004) << k_funcinfo << _file << endl;
 
   KURL u;
   u.setPath( _file );
@@ -1777,12 +1779,8 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
 
 bool KDirLister::doMimeExcludeFilter( const QString& mime, const QStringList& filters ) const
 {
-kdDebug(7004)<<"CHECK EXCLUDE 2"<<endl;
-
   if ( filters.isEmpty() )
     return true;
-
-kdDebug(7004)<<"CHECK EXCLUDE 2"<<endl;
 
   QStringList::ConstIterator it = filters.begin();
   for ( ; it != filters.end(); ++it )
