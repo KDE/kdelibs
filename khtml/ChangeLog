@@ -1,5 +1,10 @@
 2004-02-29  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_frames.cpp (partLoadingErrorNotify): don't trigger
+	slotPartLoadingErrorNotify twice.
+	
+	(slotPartLoadingErrorNotify): avoid KMessageBox deletion race.
+
 	* misc/loader_jpeg.cpp: fix incredibly rare lockup in jpeg decoder.
 
 2004-02-28  Germain Garand  <germain@ebooksfrance.org>

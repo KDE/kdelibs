@@ -749,6 +749,8 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
             kdDebug(6031) << "set to activex" << endl;
             if (part->requestObject( childFrame, url, args ))
                 return true; // success
+
+            return false;
         }
     }
     // Dissociate ourselves from the current event loop (to prevent crashes
@@ -787,6 +789,9 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     if ( embed )
 	serviceType = embed->serviceType;
 
+    // prepare for the local eventloop in KMessageBox
+    ref();
+
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
     KParts::BrowserExtension *ext = part->browserExtension();
     if( embed && !embed->pluginPage.isEmpty() && ext ) {
@@ -819,6 +824,8 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     if ( element() && (
          element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET))
         static_cast<HTMLObjectBaseElementImpl*>( element() )->renderAlternative();
+
+    deref();
 }
 
 void RenderPartObject::layout( )
