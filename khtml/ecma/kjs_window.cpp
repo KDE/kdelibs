@@ -379,7 +379,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Document:
       if (isSafeScript(exec))
       {
-        if (m_part->document().isNull()) {
+        if (m_part->document().isNull() || m_part->htmlDocument().body().isNull()) {
           kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
           m_part->begin();
           m_part->write("<HTML><BODY>");
@@ -966,7 +966,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
     part->xmlDocImpl()->updateRendering();
-    bool ok; 
+    bool ok;
     if (args.size() >= 2)
       str2 = KLineEditDlg::getText(i18n("Konqueror: Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
