@@ -246,20 +246,20 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (!d->serverAddr) {
       // here, we obtain the list of possible DCOP connections,
       // and attach to them.
-      QCString fName;
-      fName = ::getenv("DCOPSERVER");
-      if (fName.isNull()) {
-	fName = ::getenv("HOME");
+      QString dcopSrv;
+      dcopSrv = ::getenv("DCOPSERVER");
+      if (dcopSrv.isNull()) {
+	QString fName = ::getenv("HOME");
 	fName += "/.DCOPserver";
+        QFile f(fName);
+        if (!f.open(IO_ReadOnly)) {
+	  emit attachFailed("Could not read network connection list.");
+	  return false;
+        }
+        QTextStream t(&f);
+	dcopSrv = t.readLine();
       }
-      QFile f(fName);
-      if (!f.open(IO_ReadOnly)) {
-	emit attachFailed("Could not read network connection list.");
-	return false;
-      }
-      QTextStream t(&f);
-      d->serverAddr = qstrdup( t.readLine().latin1() );
-      f.close();
+      d->serverAddr = qstrdup( dcopSrv.latin1() );
     }
 
     if ((d->iceConn = IceOpenConnection((char*)d->serverAddr,

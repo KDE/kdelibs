@@ -558,8 +558,8 @@ CloseListeners ()
   if (fName.isNull()) {
     fName = ::getenv("HOME");
     fName += "/.DCOPserver";
+    unlink(fName.data());
   }
-  unlink(fName.data());
 
   FreeAuthenticationData(numTransports, authDataEntries);
   exit(0);
@@ -610,12 +610,8 @@ DCOPServer::DCOPServer()
       exit (1);
     } else {
       // publish available transports.
-      QCString fName;
-      fName = ::getenv("DCOPSERVER");
-      if (fName.isNull()) {
-	fName = ::getenv("HOME");
-	fName += "/.DCOPserver";
-      }
+      QCString fName = ::getenv("HOME");
+      fName += "/.DCOPserver";
       FILE *f;
       f = ::fopen(fName.data(), "w+");
       fprintf(f, IceComposeNetworkIdList(numTransports, listenObjs));
@@ -821,12 +817,8 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 int main( int argc, char* argv[] )
 {
   // check if we are already running
-  QCString fName;
-  fName = ::getenv("DCOPSERVER");
-  if (fName.isNull()) {
-    fName = ::getenv("HOME");
-    fName += "/.DCOPserver";
-  }
+  QCString fName = ::getenv("HOME");
+  fName += "/.DCOPserver";
   if (::access(fName.data(), R_OK) == 0) {
     QFile f(fName);
     f.open(IO_ReadOnly);
