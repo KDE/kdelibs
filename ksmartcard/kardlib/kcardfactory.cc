@@ -21,7 +21,7 @@
  
 #include "kcardfactory.h" 
 #include "kpcsc.h" 
-#include "kcardgsmimplementation.h" 
+#include "kcardgsm_impl.h" 
  
 #include <qfile.h> 
 #include <qvariant.h> 
