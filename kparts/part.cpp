@@ -539,6 +539,8 @@ bool ReadWritePart::save()
   d->m_saveOk = false;
   if( saveFile() )
     return saveToURL();
+  else
+    emit canceled(QString::null);    
   return false;
 }
 
