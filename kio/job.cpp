@@ -292,7 +292,7 @@ void SimpleJob::start(Slave *slave)
              SLOT( slotProcessedSize( unsigned long ) ) );
 
     connect( m_slave, SIGNAL( speed( unsigned long ) ),
-	     SLOT( slotSpeed( unsigned long ) ) );
+             SLOT( slotSpeed( unsigned long ) ) );
 
     if (!m_subUrl.isEmpty())
     {
@@ -646,7 +646,7 @@ void TransferJob::start(Slave *slave)
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
     connect( slave, SIGNAL( needSubURLData() ),
-	     SLOT( slotNeedSubURLData() ) );
+             SLOT( slotNeedSubURLData() ) );
 
     if (slave->suspended())
     {
@@ -1175,7 +1175,6 @@ void ListJob::start(Slave *slave)
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-    m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
     m_srcList(src), m_srcListCopy(src), m_bCurrentOperationIsLink(false),
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
@@ -1263,6 +1262,14 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void CopyJob::startNextJob()
 {
+    // Each source file starts a different copying operation
+    // Maybe this shouldn't be the case (for a better overall
+    // progress report), but while it's the case, initialise
+    // the stuff here:
+    m_totalSize=0;
+    m_processedSize=0;
+    m_fileProcessedSize=0;
+
     files.clear();
     dirs.clear();
     KURL::List::Iterator it = m_srcList.begin();
@@ -2112,8 +2119,7 @@ CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo
 //////////
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(showProgressInfo), m_totalSize(0), m_processedSize(0),
-      m_fileProcessedSize(0), m_srcList(src), m_srcListCopy(src), m_shred(shred)
+    : Job(showProgressInfo), m_srcList(src), m_srcListCopy(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
@@ -2178,6 +2184,13 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void DeleteJob::startNextJob()
 {
+    // Each source file starts a different copying operation
+    // Maybe this shouldn't be the case (for a better overall
+    // progress report), but while it's the case, initialise
+    // the stuff here:
+    m_totalSize=0;
+    m_processedSize=0;
+    m_fileProcessedSize=0;
     //kdDebug(7007) << "startNextJob" << endl;
     files.clear();
     symlinks.clear();
