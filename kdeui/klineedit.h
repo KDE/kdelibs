@@ -283,8 +283,8 @@ public:
     virtual void copy() const;
 
     /**
-     * Enable text squeezing in read-only line edits if text too long.
-     * This only works when the widget is in read-only mode.
+     * Enable text squeezing whenever the supplied text is too long.
+     * Only works for "read-only" mode.
      *
      * Note that once text squeezing is enabled, @ref QLineEdit::text
      * and @ref QLineEdit::displayText return the squeezed text. If
@@ -297,14 +297,15 @@ public:
     /**
      * Returns true if text squeezing is enabled.
      * This is only valid when the widget is in read-only mode.
+     *
      * @since 3.2
      */
     bool isSqueezedTextEnabled() const;
     
     /**
-     * Returns the original text if text squeezing is enabled and
-     * the widget is in read-only mode. Otherwise, it returns the 
-     * same thing as @ref QLineEdit::text(). 
+     * Returns the original text if text squeezing is enabled 
+     * If the widget is not in "read-only" mode, this function
+     * returns the same thing as @ref QLineEdit::text().
      * 
      * @since 3.2
      */
