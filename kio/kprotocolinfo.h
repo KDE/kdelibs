@@ -86,7 +86,7 @@ public:
   /**
    * @returns the list of fields this protocol returns when listing
    * The current possibilities are
-   * Name, Type, Size, Date, AccessDate, CreationDate, Access, Owner, Group, Link, URL, MimeType
+   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
    */
   static QStringList listing( const QString& protocol );
   static bool isSourceProtocol( const QString& protocol );
