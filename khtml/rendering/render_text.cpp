@@ -145,8 +145,8 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 
 FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, int & offset, short lineHeight)
 {
-    //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-    //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
+//     kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                   << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
     if ( _y < _ty + m_y )
@@ -160,12 +160,12 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     }
     if ( _x > _tx + m_x + m_width ) {
 	// to the right
-	return m_reversed ? SelectionPointBefore : SelectionPointAfter;
+	return m_reversed ? SelectionPointBeforeInLine : SelectionPointAfterInLine;
     }
 
     // The Y matches, check if we're on the left
     if ( _x < _tx + m_x ) {
-        return m_reversed ? SelectionPointAfter : SelectionPointBefore; 
+        return m_reversed ? SelectionPointAfterInLine : SelectionPointBeforeInLine;
     }
 
     int delta = _x - (_tx + m_x);
@@ -193,7 +193,7 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
 	    delta -= w;
 	}
     }
-    //kdDebug( 6040 ) << " Text  --> inside at position " << pos << endl;
+//     kdDebug( 6040 ) << " Text  --> inside at position " << pos << endl;
     offset = pos;
     return SelectionPointInside;
 }
@@ -371,6 +371,8 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 {
 //     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                   << " _tx=" << _tx << " _ty=" << _ty << endl;
+    TextSlave *lastPointAfterInline;
+    
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
@@ -378,32 +380,30 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         const Font *f = htmlFont( si==0 );
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, offset, m_lineHeight);
 
-        //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
+//         kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
         if ( result == SelectionPointInside ) // x,y is inside the textslave
         {
-            // ### only for visuallyOrdered !
             offset += s->m_text - str->s; // add the offset from the previous lines
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
-        } else if ( result == SelectionPointBefore )
-        {
+        } else if ( result == SelectionPointBefore ) {
             // x,y is before the textslave -> stop here
-            if ( si > 0 )
-            {
-                // ### only for visuallyOrdered !
-                offset = s->m_text - str->s - 1;
+            if ( si > 0 && lastPointAfterInline ) {
+                offset = lastPointAfterInline->m_text - str->s + lastPointAfterInline->m_len;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
                 node = element();
                 return SelectionPointInside;
-            } else
-            {
+            } else {
                 offset = 0;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
                 node = element();
                 return SelectionPointBefore;
             }
-        }
+        } else if ( result == SelectionPointAfterInLine ) {
+	    lastPointAfterInline = s;
+	}
+	
     }
 
     // set offset to max
@@ -513,16 +513,12 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         // Now calculate startPos and endPos, for printing selection.
         // We print selection while endPos > 0
         int endPos, startPos;
-        if (selectionState() != SelectionNone)
-        {
-            if (selectionState() == SelectionInside)
-            {
+        if (selectionState() != SelectionNone) {
+            if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
                 startPos = 0;
                 endPos = str->l;
-            }
-            else
-            {
+            } else {
                 selectionStartEnd(startPos, endPos);
                 if(selectionState() == SelectionStart)
                     endPos = str->l;
@@ -530,14 +526,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     startPos = 0;
             }
             //kdDebug(6040) << this << " Selection from " << startPos << " to " << endPos << endl;
-
-            // Eat the lines we don't print (startPos and endPos are from line 0!)
-            // Note that we do this even if si==0, because we may have \n as the first char,
-            // and this takes care of it too (David)
-	    int len = m_lines[si]->m_text - str->s;
-	    //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
-	    startPos -= len;
-	    endPos -= len;
         }
 
         TextSlave* s;
@@ -581,21 +569,14 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 s->printDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
-            if (selectionState() != SelectionNone && endPos > 0)
-            {
-                //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
-                s->printSelection(font, p, _style, tx, ty, startPos, endPos);
+            if (selectionState() != SelectionNone ) {
+		int offset = s->m_text - str->s;
+		int sPos = QMAX( startPos - offset, 0 );
+		int ePos = QMIN( endPos - offset, s->m_len );
+                //kdDebug(6040) << this << " printSelection with startPos=" << sPos << " endPos=" << ePos << endl;
+		if ( sPos < ePos )
+		    s->printSelection(font, p, _style, tx, ty, sPos, ePos);
 
-                int diff;
-                if(si < (int)m_lines.count()-1)
-                    // ### only for visuallyOrdered ! (we disabled endPos for RTL, so we can't go here in RTL mode)
-                    diff = m_lines[si+1]->m_text - s->m_text;
-                else
-                    diff = s->m_len;
-                //kdDebug(6040) << this << " RenderText::printSelection eating the line si=" << si << " length=" << diff << endl;
-                endPos -= diff;
-                startPos -= diff;
-                //kdDebug(6040) << this << " startPos now " << startPos << ", endPos now " << endPos << endl;
             }
             if(renderOutline) {
                 if(outlinebox_y == s->m_y) {

@@ -38,7 +38,11 @@ namespace khtml
     //enumerator for findSelectionNode
     enum FindSelectionResult { SelectionPointBefore,
 			       SelectionPointAfter,
-			       SelectionPointInside };
+			       SelectionPointInside,
+			       // the next two are only used inside one line in RenderText
+			       // to get BiDi contexts right.
+			       SelectionPointBeforeInLine,
+			       SelectionPointAfterInLine };
 };
 
 #endif
