@@ -106,27 +106,27 @@ enum { Horizontal = 0, Vertical };
      * Returns the current orientation of the container 
      * @see KContainerLayout#setOrientation
      */
-    const int orientation() const	{ return _orientation; }
+    int orientation() const	{ return _orientation; }
     /**
      * Returns the current homogeneous state of the container 
      * @see KContainerLayout#setHomogeneous
      */
-    const bool homogeneos() const	{ return _homogeneos; }
+    bool homogeneos() const	{ return _homogeneos; }
     /**
      * Returns the current spacing of the container
      * @see KContainerLayout#setSpacing
      */
-    const int spacing() const		{ return _spacing; }
+    int spacing() const		{ return _spacing; }
     /**
      * Returns the starting offset for this container 
      * @see _startOffset
      */
-    const int startOffset() const	{ return _startOffset; }
+    int startOffset() const	{ return _startOffset; }
     /**
      * Returns the ending offset for this container
      * @see _endOffset
      */
-    const int endOffset() const		{ return _endOffset; }
+    int endOffset() const	{ return _endOffset; }
     /**
      * Resizes the container to be as small as necessary to display
      * all widgets
@@ -167,9 +167,9 @@ protected:
 	    void setFill(bool b)		{ _fill = b; }
 	    void setPadding(int i)		{ _padding = i; }
 	    QWidget *widget()			{ return _widget; }
-	    const bool expand() const		{ return _expand; }
-	    const bool fill() const		{ return _fill; }
-	    const int padding() const		{ return _padding; }
+	    bool expand() const			{ return _expand; }
+	    bool fill() const			{ return _fill; }
+	    int padding() const			{ return _padding; }
     protected:
 	    QWidget *_widget;
 	    bool _expand;
@@ -223,7 +223,7 @@ protected:
     /**
      * Return TRUE if this is an horizontal container.
      */
-    const bool horizontal() const 	
+    bool horizontal() const 	
 	{ return (_orientation == KContainerLayout::Horizontal); }
     /**
      * Resizes the widget and repositions all widgets.
