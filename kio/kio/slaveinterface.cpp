@@ -304,7 +304,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_TOTAL_SIZE:
 	{
 	    KIO::filesize_t size = readFilesize_t(stream);
-	    kdDebug() << "totalSize " << endl;
 	    gettimeofday(&d->start_time, 0);
 	    d->last_time = 0;
 	    d->filesize = d->offset;
