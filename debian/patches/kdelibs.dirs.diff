@@ -1,0 +1,21 @@
+diff -Nru kdelibs.old/kdecore/kstandarddirs.cpp kdelibs.new/kdecore/kstandarddirs.cpp
+--- kdelibs.old/kdecore/kstandarddirs.cpp	Mon Apr 22 09:17:48 2002
++++ kdelibs.new/kdecore/kstandarddirs.cpp	Fri Jun 28 09:45:29 2002
+@@ -731,7 +731,7 @@
+     if (!strcmp(type, "data"))
+ 	return "share/apps/";
+     if (!strcmp(type, "html"))
+-	return "share/doc/HTML/";
++	return "share/doc/kde/HTML/";
+     if (!strcmp(type, "icon"))
+ 	return "share/icons/";
+     if (!strcmp(type, "config"))
+@@ -751,7 +751,7 @@
+     if (!strcmp(type, "mime"))
+ 	return "share/mimelnk/";
+     if (!strcmp(type, "cgi"))
+-	return "cgi-bin/";
++	return "lib/cgi-bin/";
+     if (!strcmp(type, "wallpaper"))
+ 	return "share/wallpapers/";
+     if (!strcmp(type, "templates"))
