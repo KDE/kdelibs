@@ -44,16 +44,12 @@ class KMdiChildView;
 class QPopupMenu;
 class QToolButton;
 
-#ifndef Q_WS_WIN //temporary fix for QKW
-# define KMDI_EXPORT
-#endif
-
 //==============================================================================
 /**
   * @short Internal class, only used on Win32.
   * This class provides a label widget that can process mouse click events.
   */
-class KMDI_EXPORT KMdiWin32IconButton : public QLabel
+class KMdiWin32IconButton : public QLabel
 {
    Q_OBJECT
 public:
@@ -72,7 +68,7 @@ signals:
  * @short a QCustomEvent for move
  * This special event will be useful, to inform view about child frame event.
  */
-class KMDI_EXPORT KMdiChildFrmMoveEvent : public QCustomEvent
+class KMdiChildFrmMoveEvent : public QCustomEvent
 {
 public:
    /**
@@ -86,7 +82,7 @@ public:
  * @short a QCustomEvent for begin of dragging
  * This special event will be useful, to inform view about child frame event.
  */
-class KMDI_EXPORT KMdiChildFrmDragBeginEvent : public QCustomEvent
+class KMdiChildFrmDragBeginEvent : public QCustomEvent
 {
   public:
      /**
@@ -100,7 +96,7 @@ class KMDI_EXPORT KMdiChildFrmDragBeginEvent : public QCustomEvent
  * @short a QCustomEvent for end of dragging
  * This special event will be useful, to inform view about child frame event.
  */
-class KMDI_EXPORT KMdiChildFrmDragEndEvent : public QCustomEvent
+class KMdiChildFrmDragEndEvent : public QCustomEvent
 {
   public:
      /**
@@ -114,7 +110,7 @@ class KMDI_EXPORT KMdiChildFrmDragEndEvent : public QCustomEvent
  * @short a QCustomEvent for begin of resizing
  * This special event will be useful, to inform view about child frame event.
  */
-class KMDI_EXPORT KMdiChildFrmResizeBeginEvent : public QCustomEvent
+class KMdiChildFrmResizeBeginEvent : public QCustomEvent
 {
   public:
      /**
@@ -128,7 +124,7 @@ class KMDI_EXPORT KMdiChildFrmResizeBeginEvent : public QCustomEvent
  * @short a QCustomEvent for end of resizing
  * This special event will be useful, to inform view about child frame event.
  */
-class KMDI_EXPORT KMdiChildFrmResizeEndEvent : public QCustomEvent
+class KMdiChildFrmResizeEndEvent : public QCustomEvent
 {
   public:
      /**
@@ -145,7 +141,7 @@ class KMdiChildFrmPrivate;
   * It's an MDI child frame widget. It contains a view widget and a frame caption. Usually you derive from its view.
   */
 //------------------------------------------------------------------------------
-class KMDI_EXPORT KMdiChildFrm : public QFrame
+class KMdiChildFrm : public QFrame
 {
   friend class KMdiChildArea;
   friend class KMdiChildFrmCaption;

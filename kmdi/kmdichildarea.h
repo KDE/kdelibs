@@ -33,10 +33,6 @@
 
 #include "kmdichildfrm.h"
 #include "kmdichildview.h"
-#ifndef Q_WS_WIN //temporary fix for QKW
-# define KMDI_EXPORT
-#endif
-
 
 class KMdiChildAreaPrivate;
 
@@ -53,7 +49,7 @@ class KMdiChildAreaPrivate;
   * and manages the frame widgets of attached MDI views.
   * All actions and stuff concerning only to childframes are handled here.
   */
-class KMDI_EXPORT KMdiChildArea : public QFrame
+class KMdiChildArea : public QFrame
 {
   friend class KMdiChildFrmCaption;
   friend class KMdiChildFrm;
