@@ -82,8 +82,10 @@ class KAccelPrivate;
  * pAccel->readSettings();
  *</pre>
  *
- * @short Configurable shortcut support.
+ * @short Configurable shortcut support for widgets.
  * @see KGlobalAccel
+ * @see KKeyChooser
+ * @see KKeyDialog
  * @version $Id$
  */
 
@@ -307,15 +309,13 @@ class KAccel : public QAccel
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 
 	/**
-	 * @internal
 	 * Emits the @ref keycodeChanged() signal.
 	 */
 	void emitKeycodeChanged();
 
  signals:
 	/**
-	 * @internal
-	 * Emitted by calling @ref emitKeycodeChanged().
+	 * Emitted when one of the key codes has changed.
 	 */
 	void keycodeChanged();
 

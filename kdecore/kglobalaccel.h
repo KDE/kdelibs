@@ -37,6 +37,9 @@ class KGlobalAccelPrivate;
 * currently active.
 *
 * @see KAccel
+* @see KKeyChooser
+* @see KKeyDialog
+* @short Configurable global shortcut support
 */
 class KGlobalAccel : public QObject
 {
