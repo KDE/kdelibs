@@ -122,7 +122,7 @@ void defaultCrashHandler (int signal)
 
   printf("would start dr. konqi here\n");
 
-	execl("drkonqi","--fclass=SEGFAULT","--messages=Application path\t/usr/bin/test\tOther data\ttestdata");
+	execlp("drkonqi","drkonqi","--fclass=SEGFAULT","--messages=Application path\t/usr/bin/test\tOther data\ttestdata", NULL);
 
 	}
 	
