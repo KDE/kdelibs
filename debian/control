@@ -10,7 +10,7 @@ Standards-Version: 3.5.6
 Package: kdelibs4
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdelibs3, kdebase-libs (<< 4:2.2.1-2)
+Replaces: kdelibs2g, kdelibs3, kdepim-libs (<< 3.0-0.alpha1-1), koffice-libs, kdebase-libs (<< 4:2.2.1-2)
 Depends: ${shlibs:Depends}, python, xbase-clients
 Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, kdelibs4-cups, aspell | ispell, libssl0.9.6
 Suggests: anti-aliasing-howto, gdb
@@ -136,7 +136,7 @@ Description: aRts Sound system (kde/midi binaries)
 Package: libkmid0-dev
 Architecture: any
 Section: devel
-Depends: libkmid0 (= ${Source-Version}) | libkmid0-alsa (= ${Source-Version}) , libkmid-bin (= ${Source-version}), kdelibs4-dev
+Depends: libkmid0 (= ${Source-Version}) | libkmid0-alsa (= ${Source-Version}) , libkmid-bin (= ${Source-Version}), kdelibs4-dev
 Description: aRts Sound system (midi development files)
  aRts sound system.
  .

@@ -19,7 +19,7 @@ else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
 
-tmp = $(shell pwd)/debian/kdelibs4
+tmp = $(shell pwd)/debian/build-tmp
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
 
 build: build-stamp alsa-stamp
@@ -106,8 +106,8 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
-	-rm -rf debian/kdelibs4 debian/alsa-tmp
-	-install -d debian/kdelibs4
+	-rm -rf debian/build-tmp debian/alsa-tmp
+	-install -d debian/build-tmp
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
 	make -C libkmid/ DESTDIR=$(alsa-tmp)/ install
@@ -118,7 +118,7 @@ binary-arch:  build install
 	dh_testdir
 	dh_testroot
 	dh_installdirs -a
-	-rm -f debian/kdelibs4/usr/share/doc/kde/HTML/default
+	-rm -f debian/build-tmp/usr/share/doc/kde/HTML/default
 	debianrc=debian/kdelibs4/etc/kde3/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde3" >> $$debianrc ;\
@@ -139,16 +139,18 @@ binary-arch:  build install
 	dh_installmenu -a
 	dh_installdebconf -a
 	# musical chairs
-	dh_movefiles -plibarts1 --sourcedir=debian/kdelibs4
-	dh_movefiles -plibarts-bin --sourcedir=debian/kdelibs4
-	dh_movefiles -plibkmid-bin --sourcedir=debian/kdelibs4
-	dh_movefiles -plibarts1-dev --sourcedir=debian/kdelibs4
-	dh_movefiles -plibkmid0 --sourcedir=debian/kdelibs4
-	dh_movefiles -plibkmid0-dev --sourcedir=debian/kdelibs4
-	dh_movefiles -pkdelibs4-dev --sourcedir=debian/kdelibs4
-	dh_movefiles -pkdelibs4-cups --sourcedir=debian/kdelibs4
+	dh_movefiles -plibarts1 --sourcedir=debian/build-tmp
+	dh_movefiles -plibarts-bin --sourcedir=debian/build-tmp
+	dh_movefiles -plibkmid-bin --sourcedir=debian/build-tmp
+	dh_movefiles -plibarts1-dev --sourcedir=debian/build-tmp
+	dh_movefiles -plibkmid0 --sourcedir=debian/build-tmp
+	dh_movefiles -plibkmid0-dev --sourcedir=debian/build-tmp
+	dh_movefiles -pkdelibs4-dev --sourcedir=debian/build-tmp
+	dh_movefiles -pkdelibs4-cups --sourcedir=debian/build-tmp
 	dh_movefiles -plibarts1-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid0-alsa --sourcedir=debian/alsa-tmp
+	dh_movefiles -pkdelibs4-common --sourcecdir=debian/build-tmp
+	dh_movefiles -pkdelibs4 --sourcedir=debian/build-tmp
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a
