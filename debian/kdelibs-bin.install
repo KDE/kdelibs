@@ -16,7 +16,6 @@ debian/tmp/usr/bin/kaddprinterwizard
 debian/tmp/usr/bin/kbuildsycoca
 debian/tmp/usr/bin/kconf_update
 debian/tmp/usr/bin/kcookiejar
-debian/tmp/usr/bin/kdb2html
 debian/tmp/usr/bin/kde-config
 debian/tmp/usr/bin/kde-menu
 debian/tmp/usr/bin/kded
