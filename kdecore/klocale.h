@@ -519,7 +519,7 @@ public:
 
   /**
    * Changes the current calendar system to the calendar specified.
-   * Currently is "gregorian" and "hijri" supported. If the calendar
+   * Currently "gregorian" and "hijri" are supported. If the calendar
    * system specified is not found, gregorian will be used.
    *
    * @param calendarType the name of the calendar type
@@ -604,7 +604,8 @@ public:
   /**
    * Converts a localized time string to a QTime.
    * This method will try to parse it with seconds, then without seconds.
-   * The bool pointed by ok will be false if the time entered was not valid.
+   * The bool pointed to by @p ok will be set to false if the time entered was 
+   * not valid.
    *
    * @param str the string we want to convert.
    * @param ok the boolean that is set to false if it's not a valid time.
