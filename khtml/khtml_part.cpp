@@ -1436,7 +1436,8 @@ void KHTMLPart::stopAnimations()
   // -stop background animations, too
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
   unsigned long i = 0;
-  for (; i <= 1; i++ )
+  unsigned long len = imgColl.length();
+  for (; i < len; i++ )
   {
     DOM::NodeImpl *node = imgColl.item( i );
     if ( node && node->id() == ID_IMG ) {
