@@ -182,7 +182,7 @@ protected:
     // has to be implemented as an attribute of the QDomElement.
 
 private:
-    bool hasExtraMetaData() const;
+    bool hasMetaData() const;
 };
 
 /**
