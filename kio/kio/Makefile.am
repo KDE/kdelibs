@@ -53,7 +53,8 @@ include_HEADERS = \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
-	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h
+	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h \
+	kmimetypechooser.h
 
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
@@ -75,7 +76,8 @@ libkiocore_la_SOURCES = authinfo.cpp \
 	observer.cpp uiserver.stub observer.skel \
 	kemailsettings.cpp  \
 	kprotocolinfo.cpp \
-	renamedlg.cpp skipdlg.cpp kremoteencoding.cpp
+	renamedlg.cpp skipdlg.cpp kremoteencoding.cpp \
+	kmimetypechooser.cpp
 
 uiserver_DIR = $(top_srcdir)/kio/misc
 
