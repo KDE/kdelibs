@@ -875,9 +875,11 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QMap<QString, bool> active_list;
 
   // see if our current action is in this toolbar
-  QDomElement it = elem.lastChild().toElement();
-  for( ; !it.isNull(); it = it.previousSibling().toElement() )
+  QDomNode n = elem.lastChild();
+  for( ; !n.isNull(); n = n.previousSibling() )
   {
+    QDomElement it = n.toElement();
+    if (it.isNull()) continue;
     if (it.tagName() == tagSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
