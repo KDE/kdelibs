@@ -188,7 +188,7 @@ protected slots:
    * @since 3.1
    * @deprecated in 3.2
    */
-  void selectWeekClicked() KDE_DEPRECATED;
+  void selectWeekClicked();
   /**
    * @since 3.1
    */
