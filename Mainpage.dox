@@ -30,10 +30,8 @@
 	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>\n
 	*   <i>Defines interfaces for common components so that new implementations
 	*   can be dropped in.</i>
-	* - <a href="kab/html/index.html"><b>kab</b></a>\n
-	*   <i>Access to the KDE address book.</i>
 	* - <a href="kabc/html/index.html"><b>kabc</b></a>\n
-	*   <i>A replacement for kab.</i>
+	*   <i>Access to the KDE address book.</i>
 	* - <a href="kutils/html/index.html"><b>kutils</b></a>\n
 	*   <i>High-level utils, like search/replace support.</i>
 	*
