@@ -54,6 +54,7 @@ protected slots:
 	void slotManufacturerSelected(const QString& name);
 	void slotPostscriptToggled(bool);
 	void slotOtherClicked();
+	void slotError(const QString&);
 
 private:
 	QListBox	*m_manu;
@@ -63,6 +64,7 @@ private:
 	QPushButton	*m_other;
 	QString		m_external;
 	QString		m_desc;
+	bool		m_valid;
 };
 
 inline QString KMDriverDbWidget::driverFile()

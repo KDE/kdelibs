@@ -10,9 +10,6 @@ BUGS
   ppdfile=/etc/foomatic/<queue_name>.ppd to the printcap entry (for
   use with gpr)
 
-- optimize PPD files parsing: don't parse the whole file, just
-  stop when you got everything.
-
 - kdeprintfax improvement related to Hylafax:
 	. -f %name doesn't make sense, it should be -f %email instead
 	. add -n to the default command
@@ -22,10 +19,6 @@ BUGS
 	  simply saying there's no fax number
 
 - Help buttons for "kprinter" and the wizard
-
-- CUPS: propagate changes of server properties to any applications,
-  the same for LPR (actually the "Settings" class should get
-  notify)
 
 
 WISHES

@@ -44,6 +44,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
 	m_external = QString::null;
+	m_valid = false;
 
 	// build widget
 	m_manu = new KListBox(this);
@@ -75,6 +76,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 
 	// build connections
 	connect(KMDriverDB::self(),SIGNAL(dbLoaded(bool)),SLOT(slotDbLoaded(bool)));
+	connect(KMDriverDB::self(), SIGNAL(error(const QString&)), SLOT(slotError(const QString&)));
 	connect(m_manu,SIGNAL(highlighted(const QString&)),SLOT(slotManufacturerSelected(const QString&)));
 	connect(m_raw,SIGNAL(toggled(bool)),m_manu,SLOT(setDisabled(bool)));
 	connect(m_raw,SIGNAL(toggled(bool)),m_model,SLOT(setDisabled(bool)));
@@ -148,17 +150,20 @@ bool KMDriverDbWidget::isRaw()
 
 void KMDriverDbWidget::init()
 {
-	QApplication::setOverrideCursor(waitCursor);
-	if (m_manu->count() == 0)
+	if (!m_valid)
 	{
+		QApplication::setOverrideCursor(waitCursor);
+		m_manu->clear();
+		m_model->clear();
 		m_manu->insertItem(i18n("Loading..."));
+		KMDriverDB::self()->init(this);
 	}
-	KMDriverDB::self()->init(this);
 }
 
 void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 {
 	QApplication::restoreOverrideCursor();
+	m_valid = true;
 	if (reloaded || m_manu->count() == 0 || (m_manu->count() == 1 && m_manu->text(0) == i18n("Loading...")))
 	{ // do something only if DB reloaded
 		m_manu->clear();
@@ -169,6 +174,14 @@ void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 		m_manu->sort();
 		m_manu->setCurrentItem(0);
 	}
+}
+
+void KMDriverDbWidget::slotError(const QString& msg)
+{
+	QApplication::restoreOverrideCursor();
+	m_valid = false;
+	m_manu->clear();
+	KMessageBox::error(this, "<qt>"+msg+"</qt>");
 }
 
 void KMDriverDbWidget::slotManufacturerSelected(const QString& name)

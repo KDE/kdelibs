@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +32,6 @@ KMWDriver::KMWDriver(QWidget *parent, const char *name)
 {
 	m_ID = KMWizard::Driver;
 	m_title = i18n("Printer model selection");
-	m_initialized = false;
 	m_nextpage = KMWizard::DriverTest;
 
 	m_widget = new KMDriverDbWidget(this);
@@ -43,11 +42,7 @@ KMWDriver::KMWDriver(QWidget *parent, const char *name)
 
 void KMWDriver::initPrinter(KMPrinter *p)
 {
-	if (!m_initialized)
-	{
-		m_widget->init();
-		m_initialized = true;
-	}
+	m_widget->init();
 	if (p)
 		m_widget->setDriver(p->manufacturer(),p->model());
 }

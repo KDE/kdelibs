@@ -71,6 +71,7 @@ int parsePpdFile(const char *filename, FILE *output_file)
 	gzFile	ppd_file;
 	char	line[4096], value[256];
 	char	*c1, *c2;
+	int	count = 0;
 
 	ppd_file = gzopen(filename,"r");
 	if (ppd_file == NULL)
@@ -103,12 +104,21 @@ int parsePpdFile(const char *filename, FILE *output_file)
 				strncpy(value,c1,c2-c1);
 			}
 		}
+		count++;
 		if (strncmp(line,"*Manufacturer:",14) == 0) fprintf(output_file,"MANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*ShortNickName:",15) == 0) fprintf(output_file,"MODEL=%s\n",value);
 		else if (strncmp(line,"*ModelName:",11) == 0) fprintf(output_file,"MODELNAME=%s\n",value);
 		else if (strncmp(line,"*NickName:",10) == 0) fprintf(output_file,"DESCRIPTION=%s\n",value);
 		else if (strncmp(line,"*pnpManufacturer:",17) == 0) fprintf(output_file,"PNPMANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*pnpModel:",10) == 0) fprintf(output_file,"PNPMODEL=%s\n",value);
+		else count--;
+		/* Either we got everything we needed, or we encountered an "OpenUI" directive
+		 * and it's reasonable to assume that there's no needed info further in the file,
+		 * just stop here */
+		if (count >= 6 || strncmp(line, "*OpenUI", 7) == 0)
+		{
+			break;
+		}
 	}
 	fprintf(output_file,"\n");
 

@@ -101,9 +101,13 @@ void KMDriverDB::slotDbCreated()
 	{
 		// OK, load DB and emit signal
 		loadDbFile();
+		emit dbLoaded(true);
 	}
+	else
+		// error while creating DB, notify the DB widget
+		emit error(KMManager::self()->errorMsg());
 	// be sure to emit this signal to notify the DB widget
-	emit dbLoaded(true);
+	//emit dbLoaded(true);
 }
 
 KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)

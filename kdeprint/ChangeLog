@@ -451,3 +451,12 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     in login.
   * general: added a check box in the config dialog to enable/disable
     font embedding into PS data (compatible with Qt settings).
+
+28/02/2002 Michael Goffioul <goffioul@imec.be>
+  * general: job viewer updated correctly on plugin reload -> additional
+    columns and "history" action state
+  * general: internal *Settings objects are synchonized on config changes
+    (CupsInfos and LprSettings)
+  * general: improved feedback to user when creating driver DB
+  * CUPS: speed optimization when creating driver DB (simple hack to avoid
+    to parse the entire PPD file each time => much better)

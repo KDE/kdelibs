@@ -132,9 +132,12 @@ void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
 	// save buffer
 	QString	str( QCString(buf, len) );
 
-	// get the number
+	// get the number, cut the string at the first '\n' otherwise
+	// the toInt() will return 0. If that occurs for the first number,
+	// then the number of steps will be also 0.
 	bool	ok;
-	int	n = str.toInt(&ok);
+	int	p = str.find('\n');
+	int	n = str.mid(0, p).toInt(&ok);
 
 	// process the number received
 	if (ok && m_dlg)
@@ -168,8 +171,13 @@ void KMDBCreator::slotProcessExited(KProcess*)
 	// set exit status
 	m_status = (m_proc.normalExit() && m_proc.exitStatus() == 0);
 	if (!m_status)
-		KMFactory::self()->manager()->setErrorMsg(i18n("Abnormal child process termination !"));
-	else
+	{
+		KMFactory::self()->manager()->setErrorMsg(i18n("Error while creating driver database: abnormal child process termination!"));
+		// remove the incomplete driver DB file so that, it will be
+		// reconstructed on next check
+		QFile::remove(m_proc.args()[2]);
+	}
+	//else
 		emit dbCreated();
 }
 
