@@ -141,10 +141,11 @@
 <!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
-<!ENTITY kaddressbook "<application>KAddressbook</application>">
+<!ENTITY kaddressbook "<application>KAddressBook</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
+<!ENTITY kate	"<application>Kate</application>">
 <!ENTITY katomic	"<application>KAtomic</application>">
 <!ENTITY kbackgammon 	"<application>KBackgammon</application>">
 <!ENTITY kbattleship 	"<application>KBattleship</application>">
@@ -153,7 +154,7 @@
 <!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
 <!ENTITY kchart "<application>KChart</application>">
-<!ENTITY kcontrol	"<application>KControl</application>">
+<!ENTITY kcontrol "<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
