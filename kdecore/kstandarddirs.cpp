@@ -169,9 +169,9 @@ static Q_UINT32 updateHash(const QString &file, Q_UINT32 hash)
 {
     QCString cFile = QFile::encodeName(file);
     struct stat buff;
-    if ((access(cFile, R_OK) == 0) && 
+    if ((access(cFile, R_OK) == 0) &&
         (stat( cFile, &buff ) == 0) &&
-        (S_ISREG( buff.st_mode ))) 
+        (S_ISREG( buff.st_mode )))
     {
        hash = hash + (Q_UINT32) buff.st_ctime;
     }
@@ -186,7 +186,7 @@ Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
     if (filename.at(0) == '/')
     {
         // absolute dirs are absolute dirs, right? :-/
-	return updateHash(filename, hash); 
+	return updateHash(filename, hash);
     }
 
     QStringList candidates = resourceDirs(type);
@@ -795,11 +795,11 @@ QString KStandardDirs::saveLocation(const char *type,
     struct stat st;
     if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
-	    kdDebug() << "save location " << fullPath << " doesn't exist" << endl;
+	    qWarning("save location %s doesn't exist", fullPath.latin1());
 	    return localkdedir()+suffix;
 	}
 	if(!makeDir(fullPath, 0700)) {
-	    kdDebug() << "failed to create " << fullPath << endl;
+            qWarning("failed to create %s", fullPath.latin1());
 	    return localkdedir()+suffix;
 	}
         dircache.remove(type);
@@ -923,7 +923,7 @@ void KStandardDirs::addKDEDefaults()
        else
        {
           localKdeDir =  QDir::homeDirPath() + "/.kde/";
-       } 
+       }
     }
     else
     {
@@ -939,10 +939,10 @@ void KStandardDirs::addKDEDefaults()
        {
           struct passwd *pw = getpwuid(0);
           localKdeDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.kde/";
-       } 
+       }
 
     }
-    
+
     fixHomeDir(localKdeDir);
     addPrefix(localKdeDir);
 
