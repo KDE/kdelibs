@@ -141,19 +141,10 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 			m_kurl->setProtocol( protocol );
 		}
 	}
-	else if ( protocol_regex.search( cwd ) == 0 &&
-            url_copy[0] != '/' && url_copy[0] != '~' )
+	else
 	{
-		// 'cwd' contains a protocol and url_copy is not absolute
-		// or a users home directory
-		QString protocol = cwd.left( protocol_regex.matchedLength() - 1 );
-		m_kurl = new KURL( protocol + ":" + url_copy );
-	}
-	else {
-		// Use 'file' as default protocol
-		m_kurl = new KURL();
-		m_kurl->setProtocol( QString::fromLatin1("file") );
-		m_kurl->setPath( url_copy );
+		KURL base = KURL::fromPathOrURL( cwd );
+		m_kurl = new KURL( base, url_copy );
 	}
 
 	// URL with file stripped
