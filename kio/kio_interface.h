@@ -224,7 +224,7 @@ typedef QValueList<KUDSAtom> KUDSEntry;
  *
  *****************/
 
-class KIOConnectionSignals : public KIO
+class KIOConnectionSignals
 {
 public:
   KIOConnectionSignals( KIOConnection *_conn );
@@ -242,10 +242,8 @@ public:
    * @param _mode may be -1. In this case no special permission mode is set.
    */
 
-  virtual bool put( const char *_url, int _mode,
-		    bool _overwrite, bool _resume, int _size );
+  virtual bool put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size );
   virtual bool mkdir( const char *_url, int _mode );
-
   virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( QStringList&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
@@ -299,7 +297,7 @@ protected:
   KIOConnection *m_pConnection;
 };
 
-class KIOConnectionSlots : public KIO
+class KIOConnectionSlots
 {
 public:
   KIOConnectionSlots( KIOConnection *_conn );
@@ -313,8 +311,7 @@ public:
 
   virtual void slotGet( const char * ) { };
   virtual void slotGetSize( const char * ) { };
-  virtual void slotPut( const char *, int ,
-			bool , bool , int ) { };
+  virtual void slotPut( const char *, int , bool , bool , int ) { };
   virtual void slotCopy( const char* , const char * ) { };
   virtual void slotCopy( QStringList&, const char * ) { };
   virtual void slotMove( const char *, const char * ) { };
@@ -324,7 +321,6 @@ public:
   virtual void slotListDir( const char * ) { };
   virtual void slotMkdir( const char *, int ) { };
   virtual void slotTestDir( const char * ) { };
-
   virtual void slotUnmount( const char * ) { };
   virtual void slotMount( bool, const char *, const char* , const char *) { };
 
@@ -345,39 +341,36 @@ public:
 
   ///////////
   // Infos
-  ///////////
+  //////////
 
-  virtual void slotTotalSize( unsigned long ) { }
-  virtual void slotTotalFiles( unsigned long ) { }
-  virtual void slotTotalDirs( unsigned long ) { }
-  virtual void slotProcessedSize( unsigned long ) { }
-  virtual void slotProcessedFiles( unsigned long ) { }
-  virtual void slotProcessedDirs( unsigned long ) { }
-  virtual void slotScanningDir( const char * ) { }
-  virtual void slotSpeed( unsigned long ) { }
-  virtual void slotCopyingFile( const char *, const char *) { }
-  virtual void slotMakingDir( const char * ) { }
+  virtual void slotTotalSize( unsigned long ) { };
+  virtual void slotTotalFiles( unsigned long ) { };
+  virtual void slotTotalDirs( unsigned long ) { };
+  virtual void slotProcessedSize( unsigned long ) { };
+  virtual void slotProcessedFiles( unsigned long ) { };
+  virtual void slotProcessedDirs( unsigned long ) { };
+  virtual void slotScanningDir( const char * ) { };
+  virtual void slotSpeed( unsigned long ) { };
+  virtual void slotCopyingFile( const char *, const char *) { };
+  virtual void slotMakingDir( const char * ) { };
   virtual void slotRedirection( const char * ) { };
   virtual void slotErrorPage() { };
   virtual void slotMimeType( const char * ) { };
   virtual void slotGettingFile( const char * ) { };
   virtual void slotDeletingFile( const char * ) { };
 
-  ///////////
+  /////////////////
   // Dispatching
-  //////////
+  ////////////////
 
   virtual bool dispatch();
   virtual void dispatchLoop();
 
 protected:
   virtual void source( const char ) { };
-
-
-  virtual void dispatch( KIOCommand _cmd, void *_p, int _len );
+  virtual void dispatch( KIO::KIOCommand _cmd, void *_p, int _len );
 
   KIOConnection *m_pConnection;
-
   QStringList m_lstSource;
 };
 
@@ -386,7 +379,7 @@ protected:
  *
  * The base class of all IOProtocols.
  */
-class KIOProtocol : public KIOConnectionSignals, public KIOConnectionSlots
+class KIOProtocol : public KIOConnectionSignals, public KIOConnectionSlots, public KIO
 {
 public:
   KIOProtocol( KIOConnection *_conn );
