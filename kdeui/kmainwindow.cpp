@@ -531,6 +531,8 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() ) {            // Yes, Quit app?
+                // don't call queryExit() twice
+                disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
                 kapp->deref();             // ...and quit aplication.
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....

@@ -585,6 +585,15 @@ protected:
      * @ref queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
+    
+    // KDE4 This seems to be flawed to me. Either the app has only one
+    // mainwindow, so queryClose() is enough, or if it can have more of them,
+    // then the windows should take care of themselves, and queryExit()
+    // would be useful only for the annoying 'really quit' dialog, which
+    // also doesn't make sense in apps with multiple mainwindows.
+    // And saving configuration in something called queryExit()? IMHO
+    // one can e.g. use KApplication::shutDown(), which if nothing else
+    // has at least better fitting name.
     /**
        Called before the very last window is closed, either by the
        user or indirectly by the session manager.
@@ -593,13 +602,11 @@ protected:
        function other than indicating severe errors. Better ask the
        user on @ref queryClose() (see below).
 
-       However, @ref queryExit() is useful to do some final cleanups. A
-       typical example would be to write configuration data back.
-
+       A typical usage of @ref queryExit() is to write configuration data back.
        Note that the application may continue to run after @ref queryExit()
-       (the user may have cancelled a shutdown). The purpose of
-       @ref queryExit() is purely to prepare the application (with possible
-       user interaction) so it can safely be closed later (without
+       (the user may have cancelled a shutdown), so you should not do any cleanups
+       here. The purpose of @ref queryExit() is purely to prepare the application
+       (with possible user interaction) so it can safely be closed later (without
        user interaction).
 
        If you need to do serious things on exit (like shutting a
