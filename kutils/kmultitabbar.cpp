@@ -542,7 +542,7 @@ void KMultiTabBarTab::setIcon(const QPixmap& icon)
 		        	rotateMatrix.rotate(90);
 			else
 				rotateMatrix.rotate(-90);
-			QPixmap pic=icon; //icon.xForm(rotateMatrix); TODO FIX THIS, THIS SHOWS WINDOW
+			QPixmap pic=icon.xForm(rotateMatrix); //TODO FIX THIS, THIS SHOWS WINDOW
 			d->pix=pic;
 		        setIconSet(pic);
 		} else setIconSet(icon);
