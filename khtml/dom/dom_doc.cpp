@@ -32,6 +32,8 @@
 #include "dom_xml.h"
 #include "dom2_range.h"
 #include "dom2_traversal.h"
+#include "dom2_events.h"
+#include "dom2_views.h"
 #include <kdebug.h>
 
 using namespace DOM;
@@ -291,6 +293,26 @@ TreeWalker Document::createTreeWalker(Node root, unsigned long whatToShow, NodeF
 {
     if (impl) return ((DocumentImpl *)impl)->createTreeWalker(root,whatToShow,filter,entityReferenceExpansion);
     return 0;
+}
+
+Event Document::createEvent(const DOMString &eventType)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    EventImpl *r = ((DocumentImpl *)impl)->createEvent(eventType,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+AbstractView Document::defaultView() const
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return ((DocumentImpl *)impl)->defaultView();
 }
 
 KHTMLView *Document::view() const

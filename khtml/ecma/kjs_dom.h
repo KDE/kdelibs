@@ -57,7 +57,8 @@ namespace KJS {
     DOMNodeFunc(DOM::Node n, int i) : node(n), id(i) { }
     Completion tryExecute(const List &);
     enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
-	   HasChildNodes, CloneNode };
+	   HasChildNodes, CloneNode, AddEventListener, RemoveEventListener,
+	   DispatchEvent };
   private:
     DOM::Node node;
     int id;
@@ -103,7 +104,7 @@ namespace KJS {
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
 	   CreateAttribute, CreateEntityReference, GetElementsByTagName,
 	   ImportNode, CreateElementNS, CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
-	   CreateRange, CreateNodeIterator, CreateTreeWalker };
+	   CreateRange, CreateNodeIterator, CreateTreeWalker, CreateEvent };
   private:
     DOM::Document doc;
     int id;

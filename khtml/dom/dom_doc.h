@@ -56,6 +56,8 @@ class TreeWalker;
 class NodeFilter;
 class DOMImplementationImpl;
 class DocumentTypeImpl;
+class Event;
+class AbstractView;
  
 /**
  * The <code> DOMImplementation </code> interface provides a number of
@@ -127,6 +129,7 @@ class Document : public Node
 {
     friend class ::KHTMLView;
     friend class ::KHTMLPart;
+    friend class AbstractView;
 public:
     Document();
     /**
@@ -434,6 +437,41 @@ public:
      */
     TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
                                 bool entityReferenceExpansion);
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentEvent interface
+     *
+     * The createEvent method is used in creating Events when it is either
+     * inconvenient or unnecessary for the user to create an Event themselves.
+     * In cases where the implementation provided Event is insufficient, users
+     * may supply their own Event implementations for use with the dispatchEvent method.
+     *
+     * @param eventType The eventType parameter specifies the type of Event
+     * interface to be created. If the Event interface specified is supported
+     * by the implementation this method will return a new Event of the
+     * interface type requested. If the Event is to be dispatched via the
+     * dispatchEvent method the appropriate event init method must be called
+     * after creation in order to initialize the Event's values. As an example,
+     * a user wishing to synthesize some kind of UIEvent would call createEvent
+     * with the parameter "UIEvents". The initUIEvent method could then be
+     * called on the newly created UIEvent to set the specific type of UIEvent
+     * to be dispatched and set its context information.
+     *
+     * @return The newly created EventExceptions
+     *
+     * @exception DOMException
+     * NOT_SUPPORTED_ERR: Raised if the implementation does not support the type of Event interface requested
+     */
+    Event createEvent(const DOMString &eventType);
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentView interface
+     *
+     * The default AbstractView for this Document, or null if none available.
+     */
+    AbstractView defaultView() const;
 
     /**
      * @return The KHTML view widget of this document.

@@ -29,6 +29,7 @@
 #include "dom2_traversalimpl.h"
 #include "dom_docimpl.h"
 
+
 using namespace DOM;
 
 NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,

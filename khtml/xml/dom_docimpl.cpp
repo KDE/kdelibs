@@ -31,6 +31,8 @@
 #include "dom_xmlimpl.h"
 #include "dom2_rangeimpl.h"
 #include "dom2_traversalimpl.h"
+#include "dom2_viewsimpl.h"
+#include "dom2_eventsimpl.h"
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
@@ -119,6 +121,8 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
     m_focusNode = 0;
+    m_defaultView = new AbstractViewImpl(this);
+    m_defaultView->ref();
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -143,6 +147,8 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
     m_focusNode = 0;
+    m_defaultView = new AbstractViewImpl(this);
+    m_defaultView->ref();
 }
 
 DocumentImpl::~DocumentImpl()
@@ -165,6 +171,7 @@ DocumentImpl::~DocumentImpl()
 	}
 	delete [] m_elementNames;
     }
+    m_defaultView->deref();
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -1351,6 +1358,24 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 	it.current()->notifyBeforeNodeRemoval(n);
 }
 
+AbstractViewImpl *DocumentImpl::defaultView() const
+{
+    return m_defaultView;
+}
+
+EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptioncode)
+{
+    if (eventType == "UIEvents")
+	return new UIEventImpl();
+    else if (eventType == "MouseEvents")
+	return new MouseEventImpl();
+    else if (eventType == "MutationEvents")
+	return new MutationEventImpl();
+    else {
+	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	return 0;	
+    }
+}
 
 // ----------------------------------------------------------------------------
 

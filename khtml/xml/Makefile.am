@@ -21,14 +21,16 @@ noinst_LTLIBRARIES = libkhtmlxml.la
 libkhtmlxml_la_SOURCES = \
 	dom_docimpl.cpp      dom_nodeimpl.cpp     dom_textimpl.cpp \
 	dom_elementimpl.cpp  dom_stringimpl.cpp   dom2_rangeimpl.cpp \
-	dom2_traversalimpl.cpp xml_tokenizer.cpp  dom_xmlimpl.cpp
+	dom2_traversalimpl.cpp xml_tokenizer.cpp  dom_xmlimpl.cpp \
+	dom2_eventsimpl.cpp  dom2_viewsimpl.cpp
 
 libkhtmlxml_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
 	dom_docimpl.h      dom_nodeimpl.h     dom_textimpl.h \
 	dom_elementimpl.h  dom_stringimpl.h   dom2_rangeimpl.h \
-	dom2_traversalimpl.h xml_tokenizer.h  dom_xmlimpl.h
+	dom2_traversalimpl.h xml_tokenizer.h  dom_xmlimpl.h \
+	dom2_eventsimpl.h  dom2_viewsimpl.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \

@@ -390,6 +390,45 @@ Node Node::cloneNode( bool deep )
     return r;
 }
 
+void Node::addEventListener(const DOMString &type,
+			  EventListener *listener,
+			  const bool useCapture)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    impl->addEventListener(type,listener,useCapture,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+}
+			
+void Node::removeEventListener(const DOMString &type,
+			     EventListener *listener,
+			     bool useCapture)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    impl->removeEventListener(type,listener,useCapture,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+}
+
+bool Node::dispatchEvent(const Event &evt)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    bool r = impl->dispatchEvent(evt,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
+}
+
+
 unsigned short Node::elementId() const
 {
     if (!impl)

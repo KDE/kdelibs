@@ -65,6 +65,8 @@ namespace DOM {
     class StyleSheetImpl;
     class StyleSheetListImpl;
     class CSSStyleSheetImpl;
+    class AbstractViewImpl;
+    class EventImpl;
 
 class DOMImplementationImpl : public DomShared
 {
@@ -240,6 +242,8 @@ public:
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);
+    AbstractViewImpl *defaultView() const;
+    EventImpl *createEvent(const DOMString &eventType, int &exceptioncode);
 
 
 signals:
@@ -287,6 +291,7 @@ protected:
 
     ElementImpl *m_focusNode;
     QList<NodeIteratorImpl> m_nodeIterators;
+    AbstractViewImpl *m_defaultView;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

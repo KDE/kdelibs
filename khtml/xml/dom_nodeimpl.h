@@ -50,6 +50,7 @@ class NodeListImpl;
 class NamedNodeMapImpl;
 class DocumentImpl;
 class CSSStyleDeclarationImpl;
+class RegisteredEventListener;
 
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementation, and derive all other
@@ -240,6 +241,17 @@ public:
     virtual DocumentImpl *getDocument()
 	{ return document; } // different from ownerDocument() in that it is never null
 
+    virtual void addEventListener(const DOMString &type,
+				  EventListener *listener,
+				  const bool useCapture,
+				  int &exceptioncode);
+    virtual void removeEventListener(const DOMString &type,
+			     EventListener *listener,
+			     bool useCapture,
+			     int &exceptioncode);
+    virtual bool dispatchEvent(const Event &evt,
+			       int &exceptioncode);
+	
 protected:
     DocumentImpl *document;
     khtml::RenderObject *m_render;
@@ -260,6 +272,8 @@ protected:
     // used in elementimpl. Defined here to save a few bytes in the data structures.
     bool has_tabindex  : 1;
     short tabindex : 16;
+
+    QList<RegisteredEventListener> *m_regdListeners;
 };
 
 // this class implements nodes, which can have a parent but no children:

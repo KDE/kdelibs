@@ -28,6 +28,7 @@
 
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
+#include "dom2_eventsimpl.h"
 
 #include <kdebug.h>
 
@@ -53,13 +54,16 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_changed( false ),
       m_specified( false ),
       m_focused( false ),
-      m_active( false )
+      m_active( false ),
+      m_regdListeners( 0 )
 {
 }
 
 NodeImpl::~NodeImpl()
 {
     setOwnerDocument(0);
+    if (m_regdListeners)
+	delete m_regdListeners;
 }
 
 DOMString NodeImpl::nodeValue() const
@@ -336,6 +340,62 @@ unsigned long NodeImpl::index() const
 {
     return 0;
 }
+
+void NodeImpl::addEventListener(const DOMString &type,
+				  EventListener *listener,
+				  const bool useCapture,
+				  int &exceptioncode)
+{
+    RegisteredEventListener *rl = new RegisteredEventListener(type,listener,useCapture);
+    if (!m_regdListeners) {
+	m_regdListeners = new QList<RegisteredEventListener>;
+    }
+
+    // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
+    removeEventListener(type,listener,useCapture,exceptioncode);
+
+    m_regdListeners->append(rl);
+    listener->ref();
+}
+
+void NodeImpl::removeEventListener(const DOMString &type,
+			     EventListener *listener,
+			     bool useCapture,
+			     int &/*exceptioncode*/)
+{
+    if (!m_regdListeners) // nothing to remove
+	return;
+
+    RegisteredEventListener rl(type,listener,useCapture);
+	
+    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    bool found = false;
+    for (; it.current() && !found; ++it)
+	if (*(it.current()) == rl) {
+	    m_regdListeners->removeRef(it.current());
+	    listener->deref();
+	    return;
+	}
+
+    return;
+}
+
+bool NodeImpl::dispatchEvent(const Event &evt,
+			     int &/*exceptioncode*/)
+{
+    if (!m_regdListeners)
+	return false;
+
+    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    bool found = false;
+    for (; it.current() && !found; ++it)
+	if (it.current()->type == evt.type())
+	    it.current()->listener->handleEvent(evt);
+
+    return false; // ### return whether or not preventDefault was called
+}
+
+
 
 //--------------------------------------------------------------------
 

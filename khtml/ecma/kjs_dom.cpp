@@ -34,6 +34,8 @@
 #include "kjs_css.h"
 #include "kjs_range.h"
 #include "kjs_traversal.h"
+#include "kjs_events.h"
+#include "kjs_views.h"
 #include "dom/dom_exception.h"
 
 using namespace KJS;
@@ -122,13 +124,19 @@ KJSO DOMNode::tryGet(const UString &p) const
   else if (p == "offsetParent")
     result = getDOMNode(node.parentNode()); // not necessarily correct
   else if (p == "clientWidth")
-      result = rend ? static_cast<KJSO>(Number(rend->contentWidth())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(rend->contentWidth())) : KJSO(Undefined());
   else if (p == "clientHeight")
-      result = rend ? static_cast<KJSO>(Number(rend->contentHeight())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(rend->contentHeight())) : KJSO(Undefined());
   else if (p == "scrollLeft")
-      result = rend ? static_cast<KJSO>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
   else if (p == "scrollTop")
-      result = rend ? static_cast<KJSO>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
+    result = rend ? static_cast<KJSO>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
+  else if (p == "addEventListener") // from the EventTarget interface
+    result = new DOMNodeFunc(node, DOMNodeFunc::AddEventListener);
+  else if (p == "removeEventListener") // from the EventTarget interface
+    result = new DOMNodeFunc(node, DOMNodeFunc::RemoveEventListener);
+  else if (p == "dispatchEvent") // from the EventTarget interface
+    result = new DOMNodeFunc(node, DOMNodeFunc::DispatchEvent);
   else
     result = Imp::get(p);
 
@@ -194,25 +202,43 @@ Completion DOMNodeFunc::tryExecute(const List &args)
 {
   KJSO result;
 
-  if (id == HasChildNodes)
-    result = Boolean(node.hasChildNodes());
-  else if (id == CloneNode) {
-    Boolean b = args[0].toBoolean();
-    result = getDOMNode(node.cloneNode(b.value()));
-  } else {
-    DOM::Node n1 = toNode(args[0]);
-    if (id == AppendChild) {
-      result = getDOMNode(node.appendChild(n1));
-    } else if (id == RemoveChild) {
-      result = getDOMNode(node.removeChild(n1));
-    } else {
-      DOM::Node n2 = toNode(args[1]);
-      if (id == InsertBefore)
-	result = getDOMNode(node.insertBefore(n1, n2));
-      else
-	result = getDOMNode(node.replaceChild(n1, n2));
-    }
+  switch (id) {
+    case HasChildNodes:
+      result = Boolean(node.hasChildNodes());
+      break;
+    case CloneNode:
+      result = getDOMNode(node.cloneNode(args[0].toBoolean().value()));
+      break;
+    case AddEventListener: {
+//        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
+        JSEventListener *listener = getJSEventListener(args[1]);
+        node.addEventListener(args[0].toString().value().string(),listener,args[2].toBoolean().value());
+        result = Undefined();
+      }
+      break;
+    case RemoveEventListener: {
+        JSEventListener *listener = getJSEventListener(args[1]);
+        node.removeEventListener(args[0].toString().value().string(),listener,args[2].toBoolean().value());
+        result = Undefined();
+      }
+      break;
+    case DispatchEvent:
+      result = Boolean(node.dispatchEvent(toEvent(args[0])));
+      break;
+    case AppendChild:
+      result = getDOMNode(node.appendChild(toNode(args[0])));
+      break;
+    case RemoveChild:
+      result = getDOMNode(node.removeChild(toNode(args[0])));
+      break;
+    case InsertBefore:
+      result = getDOMNode(node.insertBefore(toNode(args[0]), toNode(args[1])));
+      break;
+    case ReplaceChild:
+      result = getDOMNode(node.replaceChild(toNode(args[0]), toNode(args[1])));
+      break;
   }
+
   return Completion(ReturnValue, result);
 }
 
@@ -334,6 +360,10 @@ KJSO DOMDocument::tryGet(const UString &p) const
     return new DOMDocFunction(doc, DOMDocFunction::CreateNodeIterator);
   else if (p == "createTreeWalker")
     return new DOMDocFunction(doc, DOMDocFunction::CreateTreeWalker);
+  else if (p == "defaultView")
+    return getDOMAbstractView(doc.defaultView());
+  else if (p == "createEvent")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateEvent);
 
   return DOMNode::tryGet(p);
 }
@@ -409,6 +439,9 @@ Completion DOMDocFunction::tryExecute(const List &args)
   case CreateTreeWalker:
     result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber().value()),
              toNodeFilter(args[2]),args[3].toBoolean().value()));
+    break;
+  case CreateEvent:
+    result = getDOMEvent(doc.createEvent(s));
     break;
   default:
     result = Undefined();
