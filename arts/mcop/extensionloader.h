@@ -23,6 +23,9 @@
 
     */
 
+#ifndef EXTENSIONLOADER_H
+#define EXTENSIONLOADER_H
+
 #include <string>
 #include <list>
 #include <ltdl.h>
@@ -40,3 +43,4 @@ public:
 
 	void addStartupClass(class StartupClass *sc);
 };
+#endif /* EXTENSIONLOADER_H */
