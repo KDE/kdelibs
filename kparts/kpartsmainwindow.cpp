@@ -12,11 +12,13 @@
 #include <qobjectlist.h>
 
 #include <kaction.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kinstance.h>
+#include <kmenubar.h>
 #include <kstddirs.h>
-#include <kdebug.h>
+#include <ktoolbar.h>
 
 using namespace KParts;
 
@@ -27,7 +29,6 @@ class MainWindowPrivate
 public:
   MainWindowPrivate()
   {
-    m_toolBars.setAutoDelete( true );
     m_statusBar = 0;
     m_activePart = 0;
     m_bShellGUIActivated = false;
@@ -38,7 +39,6 @@ public:
 
   QDomDocument m_doc;
   KStatusBar *m_statusBar;
-  QList<KToolBar> m_toolBars;
   QGuardedPtr<Part> m_activePart;
   bool m_bShellGUIActivated;
 };
@@ -125,7 +125,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
    kDebugInfo( 1001, "parent.className() : %s", parent->className() );
 
   id = -1;
-  
+
   if ( element.tagName() == "MenuBar" )
   {
     KMenuBar *bar = menuBar();
@@ -159,12 +159,6 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
     KToolBar *bar = new KToolBar(this, element.attribute( "name" ), -1, honor);
-
-    // (David) Hmm, this list exists in KTMainWindow as well - but it's private...
-    // I've asked for an iterator on the toolbars, on kde-core-devel
-    // We would remove m_toolBars, and we would use the iterator in clearGUI(),
-    // to save the position of the (parts, or all?) toolbars
-    d->m_toolBars.append( bar );
 
     addToolBar( bar );
 
@@ -243,14 +237,14 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int
       ((KMenuBar *)parent)->removeItem( id );
     else if ( parent->inherits( "QPopupMenu" ) )
       ((QPopupMenu *)parent)->removeItem( id );
-    
+
     delete container;
   }
   else if ( container->inherits( "KToolBar" ) )
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
     stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
-    d->m_toolBars.removeRef( (KToolBar *)container ); //will also delete the tb as autodelete is on
+    delete (KToolBar *)container;
   }
   else if ( container->inherits( "KStatusBar" ) && d->m_statusBar )
   {
@@ -351,7 +345,7 @@ void KPartsMainWindow::clearGUI()
       setStatusBar( 0 );
     }
 
-  d->m_toolBars.clear();
+  toolbars.clear();
 }
 */
 

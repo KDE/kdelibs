@@ -5,15 +5,11 @@
 #include <qaction.h>
 
 #include <ktmainwindow.h>
-#include <ktoolbar.h>
-#include <kmenubar.h>
 
 #include "kxmlgui.h"
 #include "kpart.h"
 
-class QPopupMenu;
 class QString;
-class KStatusBar;
 
 namespace KParts
 {

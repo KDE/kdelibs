@@ -50,8 +50,8 @@ Shell::Shell()
 
   m_splitter->show();
 
-  m_manager->addPart( m_part1 );
-  m_manager->addPart( m_part2 ); // sets part 2 as the active part
+  m_manager->addPart( m_part1, true ); // sets part 1 as the active part
+  m_manager->addPart( m_part2, false );
   m_editorpart = 0;
 }
 
