@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
  */
 
-/* $Id$ */
 
 /* See RFC 2131 for details */
 

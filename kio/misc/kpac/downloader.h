@@ -17,7 +17,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
 
 #ifndef KPAC_DOWNLOADER_H
 #define KPAC_DOWNLOADER_H
