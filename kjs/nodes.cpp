@@ -724,7 +724,7 @@ Completion StatListNode::execute()
     return e;
 
   KJSO v = e.isValueCompletion() ? e.value() : l.value();
-  
+
   return Completion(e.complType(), v /* e.target */);
 }
 
@@ -812,8 +812,47 @@ Completion ForNode::execute()
 // ECMA 12.6.4
 Completion ForInNode::execute()
 {
-  /* TODO */
-  return Completion(Normal);
+  KJSO e, v, retval;
+  Completion c;
+  VarDeclNode *vd = 0;
+  const PropList *lst, *curr;
+
+  // This should be done in the constructor
+  if (!lexpr) { // for( var foo = bar in baz )
+    vd = new VarDeclNode(&ident, init);
+    vd->evaluate();
+
+    lexpr = new ResolveNode(&ident);
+  }
+
+  e = expr->evaluate();
+  v = e.getValue().toObject();
+  curr = lst = v.imp()->getPropList();
+
+  while (curr) {
+    if (!v.hasProperty(curr->name)) {
+      curr = curr->next;
+      continue;
+    }
+
+    e = lexpr->evaluate();
+    e.putValue(String(curr->name));
+
+    c = stat->execute();
+    if (c.isValueCompletion())
+      retval = c.value();
+    if (c.complType() == Break) /* TODO: consider target */
+      break;
+    if (c.complType() == ReturnValue) {
+      delete lst;
+      return c;
+    }
+
+    curr = curr->next;
+  }
+
+  delete lst;
+  return Completion(Normal, retval);
 }
 
 // ECMA 12.4
@@ -948,7 +987,7 @@ Completion SwitchNode::execute()
   KJSO v = e.getValue();
   Completion res = block->evalBlock(v);
 
-  return res;
+  return res.complType() != Break ? res : Completion(Normal, res.value());
 }
 
 // ECMA 12.11

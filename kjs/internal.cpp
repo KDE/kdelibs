@@ -504,3 +504,15 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
 
   return ((errType == 0) && retVal);
 }
+
+bool PropList::contains(const UString &name)
+{
+  PropList *p = this;
+  while (p) {
+    if(name == p->name)
+      return true;
+    p = p->next;
+  }
+  return false;
+}
+

@@ -581,6 +581,29 @@ Object Imp::toObject() const
   return Object(Error::create(TypeError).imp());
 }
 
+
+PropList* Imp::getPropList(PropList *first, PropList *last) const
+{
+  Property *pr = prop;
+  while(pr) {
+    if (!(pr->attribute & DontEnum) && !first->contains(pr->name)) {
+      if(last) {
+        last->next = new PropList();
+	last = last->next;
+      } else {
+        first = new PropList();
+	last = first;
+      }
+      last->name = pr->name;
+    }
+    pr = pr->next;
+  }
+  if (proto)
+    proto->getPropList(first, last);
+
+  return first;
+}
+
 KJSO Imp::get(const UString &p) const
 {
   Property *pr = prop;

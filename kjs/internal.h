@@ -255,6 +255,27 @@ namespace KJS {
     Imp *exVal;
     int recursion;
   };
+
+  /**
+   * @short Struct used to return the property names of an object
+   */
+  class PropList {
+  public:
+    PropList(UString nm = UString::null, PropList *nx = 0) :
+			  name(nm), next(nx) {};
+    ~PropList() {
+      if(next) delete next;
+    }
+    /**
+     * The property name
+     */
+    UString name;
+    /**
+     * The next property
+     */
+    PropList *next;
+    bool contains(const UString &name);
+  };
   
 }; // namespace
 

@@ -103,6 +103,7 @@ namespace KJS {
   class String;
   class Object;
   struct Property;
+  class PropList;
   class List;
 
   /**
@@ -236,7 +237,7 @@ namespace KJS {
      * @return Conversion to Object type.
      */
     Object toObject() const; // ECMA 9.9
-    
+
     // Properties
     /**
      * Set the internal [[prototype]] property of this object.
@@ -373,6 +374,7 @@ namespace KJS {
   class Imp {
     friend class KJSO;
     friend class Collector;
+    friend class ForInNode;
   public:
     Imp();
   public:
@@ -403,7 +405,7 @@ namespace KJS {
      * @return The TypeInfo struct describing this object.
      */
     virtual const TypeInfo* typeInfo() const { return &info; }
-    
+
     void setPrototype(const KJSO& p);
     void setConstructor(const KJSO& c);
 
@@ -423,6 +425,13 @@ namespace KJS {
     Imp& operator=(const Imp&);
     void putArrayElement(const UString &p, const KJSO& v);
 
+    /**
+     * Get the property names for this object. To be used by for .. in loops 
+     * @return The (pointer to the) first element of a PropList, to be deleted 
+     * by the caller, or 0 if there are no enumerable properties
+     */
+    PropList *getPropList(PropList *first = 0L, PropList *last = 0L) const;
+
     // reference counting mechanism
     inline Imp* ref() { refcount++; return this; }
     inline bool deref() { return (!--refcount); }
@@ -431,7 +440,7 @@ namespace KJS {
     Property *prop;
     Imp *proto;
     static const TypeInfo info;
-    
+
     // reserved for memory managment
     Imp *prev, *next;
     // for future extensions
