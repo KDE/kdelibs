@@ -125,6 +125,13 @@ public:
      */
     CSSRule parentRule() const;
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    CSSRuleImpl *handle() const;
+    bool isNull() const;
+
 protected:
     CSSRuleImpl *impl;
 };
@@ -142,10 +149,12 @@ class CSSCharsetRule : public CSSRule
 public:
     CSSCharsetRule();
     CSSCharsetRule(const CSSCharsetRule &other);
+    CSSCharsetRule(const CSSRule &other);
     CSSCharsetRule(CSSCharsetRuleImpl *impl);
 public:
 
     CSSCharsetRule & operator = (const CSSCharsetRule &other);
+    CSSCharsetRule & operator = (const CSSRule &other);
 
     ~CSSCharsetRule();
 
@@ -184,10 +193,12 @@ class CSSFontFaceRule : public CSSRule
 public:
     CSSFontFaceRule();
     CSSFontFaceRule(const CSSFontFaceRule &other);
+    CSSFontFaceRule(const CSSRule &other);
     CSSFontFaceRule(CSSFontFaceRuleImpl *impl);
 public:
 
     CSSFontFaceRule & operator = (const CSSFontFaceRule &other);
+    CSSFontFaceRule & operator = (const CSSRule &other);
 
     ~CSSFontFaceRule();
 
@@ -212,10 +223,12 @@ class CSSImportRule : public CSSRule
 public:
     CSSImportRule();
     CSSImportRule(const CSSImportRule &other);
+    CSSImportRule(const CSSRule &other);
     CSSImportRule(CSSImportRuleImpl *impl);
 public:
 
     CSSImportRule & operator = (const CSSImportRule &other);
+    CSSImportRule & operator = (const CSSRule &other);
 
     ~CSSImportRule();
 
@@ -257,10 +270,12 @@ class CSSMediaRule : public CSSRule
 public:
     CSSMediaRule();
     CSSMediaRule(const CSSMediaRule &other);
+    CSSMediaRule(const CSSRule &other);
     CSSMediaRule(CSSMediaRuleImpl *impl);
 public:
 
     CSSMediaRule & operator = (const CSSMediaRule &other);
+    CSSMediaRule & operator = (const CSSRule &other);
 
     ~CSSMediaRule();
 
@@ -347,10 +362,12 @@ class CSSPageRule : public CSSRule
 public:
     CSSPageRule();
     CSSPageRule(const CSSPageRule &other);
+    CSSPageRule(const CSSRule &other);
     CSSPageRule(CSSPageRuleImpl *impl);
 public:
 
     CSSPageRule & operator = (const CSSPageRule &other);
+    CSSPageRule & operator = (const CSSRule &other);
 
     ~CSSPageRule();
 
@@ -394,10 +411,12 @@ class CSSStyleRule : public CSSRule
 public:
     CSSStyleRule();
     CSSStyleRule(const CSSStyleRule &other);
+    CSSStyleRule(const CSSRule &other);
     CSSStyleRule(CSSStyleRuleImpl *impl);
 public:
 
     CSSStyleRule & operator = (const CSSStyleRule &other);
+    CSSStyleRule & operator = (const CSSRule &other);
 
     ~CSSStyleRule();
 
@@ -442,10 +461,12 @@ class CSSUnknownRule : public CSSRule
 public:
     CSSUnknownRule();
     CSSUnknownRule(const CSSUnknownRule &other);
+    CSSUnknownRule(const CSSRule &other);
     CSSUnknownRule(CSSUnknownRuleImpl *impl);
 public:
 
     CSSUnknownRule & operator = (const CSSUnknownRule &other);
+    CSSUnknownRule & operator = (const CSSRule &other);
 
     ~CSSUnknownRule();
 };
@@ -492,6 +513,13 @@ public:
      *
      */
     CSSRule item ( unsigned long index );
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    CSSRuleListImpl *handle() const;
+    bool isNull() const;
 
 protected:
     // we just need a pointer to an implementation here.

@@ -59,6 +59,7 @@ class DOMImplementationImpl;
 class DocumentTypeImpl;
 class Event;
 class AbstractView;
+class CSSStyleDeclaration;
  
 /**
  * The <code> DOMImplementation </code> interface provides a number of
@@ -98,6 +99,24 @@ public:
      *
      */
     bool hasFeature ( const DOMString &feature, const DOMString &version );
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DOMImplementationCSS interface
+     *
+     * Creates a new CSSStyleSheet.
+     *
+     * @param title The advisory title. See also the Style Sheet Interfaces
+     * section.
+     *
+     * media The comma-separated list of media associated with the new style
+     * sheet. See also the Style Sheet Interfaces section.
+     *
+     * @return A new CSS style sheet.
+     *
+     * @exception SYNTAX_ERR: Raised if the specified media string value has a syntax error and is unparsable.
+     */
+    CSSStyleSheet createCSSStyleSheet(const DOMString &title, const DOMString &media);
 
     /**
      * @internal
@@ -492,15 +511,19 @@ public:
     KHTMLView *view() const;
 
     /**
-     * @internal
-     * not part of the DOM
+     * Introduced in DOM Level 2
+     * This method is from the DocumentCSS interface
+     *
+     * This method is used to retrieve the override style declaration for a
+     * specified element and a specified pseudo-element.
+     *
+     * @param elt The element whose style is to be modified. This parameter cannot be null.
+     *
+     * @param pseudoElt The pseudo-element or null if none.
+     *
+     * @return The override style declaration.
      */
-/*    Range createRange(const Node &sc, const long so, const Node &ec, const long eo);
-    NodeIterator createNodeIterator();
-    NodeIterator createNodeIterator(long _whatToShow, NodeFilter *filter = 0);
-    TreeWalker createTreeWalker();
-    TreeWalker createTreeWalker(long _whatToShow, NodeFilter *filter = 0);*/
-
+    CSSStyleDeclaration getOverrideStyle(const Element &elt, const DOMString &pseudoElt);
 
 protected:
     Document( DocumentImpl *i);

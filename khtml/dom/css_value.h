@@ -282,8 +282,25 @@ public:
     /**
      * A code defining the type of the value as defined above.
      *
+     * This method is deprecated. You should use @ref cssValueType instead.
+     *
      */
-    unsigned short valueType() const;
+    unsigned short valueType() const; // BCI: deprecated (method name incorrect according to specs)
+
+    /**
+     * A code defining the type of the value as defined above.
+     *
+     */
+    unsigned short cssValueType() const;
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    bool isCSSValueList() const;
+    bool isCSSPrimitiveValue() const;
+    CSSValueImpl *handle() const;
+    bool isNull() const;
 
 protected:
     CSSValueImpl *impl;
@@ -303,10 +320,12 @@ class CSSValueList : public CSSValue
 public:
     CSSValueList();
     CSSValueList(const CSSValueList &other);
+    CSSValueList(const CSSValue &other);
     CSSValueList(CSSValueListImpl *impl);
 public:
 
     CSSValueList & operator = (const CSSValueList &other);
+    CSSValueList & operator = (const CSSValue &other);
 
     ~CSSValueList();
 
@@ -358,10 +377,12 @@ class CSSPrimitiveValue : public CSSValue
 public:
     CSSPrimitiveValue();
     CSSPrimitiveValue(const CSSPrimitiveValue &other);
+    CSSPrimitiveValue(const CSSValue &other);
     CSSPrimitiveValue(CSSPrimitiveValueImpl *impl);
 public:
 
     CSSPrimitiveValue & operator = (const CSSPrimitiveValue &other);
+    CSSPrimitiveValue & operator = (const CSSValue &other);
 
     ~CSSPrimitiveValue();
     /**
@@ -641,6 +662,13 @@ public:
      */
     CSSPrimitiveValue left() const;
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    RectImpl *handle() const;
+    bool isNull() const;
+
 protected:
     RectImpl *impl;
 };
@@ -683,6 +711,13 @@ public:
      *
      */
     DOM::DOMString separator() const;
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    CounterImpl *handle() const;
+    bool isNull() const;
 
 protected:
     CounterImpl *impl;

@@ -366,7 +366,7 @@ public:
 
     /**
      * Introduced in DOM Level 2
-     * This method is from the DocumentRange interface
+     * This method is from the CSSStyleDeclaration interface
      *
      * The style attribute
      */

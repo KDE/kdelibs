@@ -28,12 +28,14 @@
 #include "dom_nodeimpl.h"
 #include "dom_exception.h"
 #include "dom_element.h"
+#include "dom_elementimpl.h"
 #include "dom_text.h"
 #include "dom_xml.h"
 #include "dom2_range.h"
 #include "dom2_traversal.h"
 #include "dom2_events.h"
 #include "dom2_views.h"
+#include "css_value.h"
 #include <kdebug.h>
 
 using namespace DOM;
@@ -75,6 +77,13 @@ bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &v
     if (impl) return impl->hasFeature(feature,version);
     return false;
 }
+
+CSSStyleSheet DOMImplementation::createCSSStyleSheet(const DOMString &title, const DOMString &media)
+{
+    if (impl) return impl->createCSSStyleSheet(title.implementation(),media.implementation());
+    return 0;
+}
+
 
 DOMImplementationImpl *DOMImplementation::handle() const
 {
@@ -327,6 +336,18 @@ StyleSheetList Document::styleSheets() const
 KHTMLView *Document::view() const
 {
     return ((DocumentImpl*)impl)->view();
+}
+
+CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMString &pseudoElt)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    CSSStyleDeclarationImpl *r = ((DocumentImpl *)impl)->getOverrideStyle(static_cast<ElementImpl*>(elt.handle()),pseudoElt.implementation());
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 // ----------------------------------------------------------------------------

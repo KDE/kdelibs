@@ -35,6 +35,8 @@
 #include "dom_doc.h"
 #include "dom2_traversal.h"
 #include "dom2_traversalimpl.h"
+#include "dom_element.h"
+#include "dom_elementimpl.h"
 
 using namespace DOM;
 
@@ -80,6 +82,15 @@ Document AbstractView::document() const
 	
     return impl->document();
 }
+
+CSSStyleDeclaration AbstractView::getComputedStyle(const Element &elt, const DOMString &pseudoElt)
+{
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+	
+    return impl->getComputedStyle(static_cast<ElementImpl*>(elt.handle()),pseudoElt.implementation());
+}
+
 
 AbstractViewImpl *AbstractView::handle() const
 {

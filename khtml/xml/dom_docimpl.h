@@ -75,6 +75,7 @@ public:
     ~DOMImplementationImpl();
 
     bool hasFeature ( const DOMString &feature, const DOMString &version );
+    CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media);
 };
 
 
@@ -260,6 +261,8 @@ public:
 
     bool hasListenerType(ListenerType listenerType) { return (m_listenerTypes & listenerType); }
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
+
+    CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
 
 signals:
     virtual void finishedParsing();

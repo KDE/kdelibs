@@ -39,6 +39,7 @@ namespace DOM {
 class CSSRuleImpl;
 class CSSValueImpl;
 class NodeImpl;
+class CounterImpl;
 
 
 class CSSStyleDeclarationImpl : public StyleBaseImpl
@@ -96,6 +97,7 @@ public:
     virtual ~CSSValueImpl();
 
     virtual unsigned short valueType() const = 0;
+    virtual unsigned short cssValueType() { return valueType(); }
 
     virtual DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
@@ -163,7 +165,7 @@ public:
     float getFloatValue ( unsigned short unitType);
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue (  );
-    Counter *getCounterValue (  );
+    CounterImpl *getCounterValue (  );
     Rect *getRectValue (  );
     RGBColor *getRGBColorValue (  );
 
@@ -181,10 +183,22 @@ protected:
 	int ident;
 	float num;
 	DOM::DOMStringImpl *string;
-	Counter *counter;
+	CounterImpl *counter;
 	Rect *rect;
 	RGBColor *rgbcolor;
     } m_value;
+};
+
+class CounterImpl : public DomShared {
+public:
+    CounterImpl() { m_identifier = 0; m_listStyle = 0; m_separator = 0; }
+    DOMString identifier() const { return m_identifier; }
+    DOMString listStyle() const { return m_listStyle; }
+    DOMString separator() const { return m_separator; }
+
+    DOMString m_identifier;
+    DOMString m_listStyle;
+    DOMString m_separator;
 };
 
 class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient

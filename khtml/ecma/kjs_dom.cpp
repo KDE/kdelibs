@@ -378,6 +378,8 @@ KJSO DOMDocument::tryGet(const UString &p) const
     return getDOMAbstractView(doc.defaultView());
   else if (p == "createEvent")
     return new DOMDocFunction(doc, DOMDocFunction::CreateEvent);
+  else if (p == "getOverrideStyle")
+    return new DOMDocFunction(doc, DOMDocFunction::GetOverrideStyle);
 
   return DOMNode::tryGet(p);
 }
@@ -457,6 +459,14 @@ Completion DOMDocFunction::tryExecute(const List &args)
   case CreateEvent:
     result = getDOMEvent(doc.createEvent(s));
     break;
+  case GetOverrideStyle: {
+      DOM::Node arg0 = toNode(args[0]);
+      if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
+        result = Undefined(); // throw exception?
+      else
+        result = getDOMCSSStyleDeclaration(doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString().value().string()));
+    }
+    break;
   default:
     result = Undefined();
     break;
@@ -493,7 +503,6 @@ KJSO DOMElement::tryGet(const UString &p) const
   else if (p == "normalize") // this is moved to Node in DOM2
     return new DOMElementFunction(element, DOMElementFunction::Normalize);
   else if (p == "style")
-//    result = KJSO(new Style(node));
     return getDOMCSSStyleDeclaration(element.style());
 //    return new DOMCSSStyleDeclaration(element.style()));
 /*  else if (p == "getAttributeNS") // new for DOM2 - not yet in khtml
@@ -587,6 +596,8 @@ KJSO DOMDOMImplementation::tryGet(const UString &p) const
 //    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateDocumentType);
 //  else if (p == "createDocument") // new for DOM2 - not yet in khtml
 //    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateDocument);
+  else if (p == "createCSSStyleSheet")
+    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateCSSStyleSheet);
   else
     return HostImp::get(p);
 }
@@ -606,6 +617,9 @@ Completion DOMDOMImplementationFunction::tryExecute(const List &args)
       break;
 /*    case CreateDocumentType: // new for DOM2 - not yet in khtml
     case CreateDocument: // new for DOM2 - not yet in khtml*/
+    case CreateCSSStyleSheet:
+      result = getDOMStyleSheet(implementation.createCSSStyleSheet(args[0].toString().value().string(),args[1].toString().value().string()));
+      break;
     default:
       result = Undefined();
   }

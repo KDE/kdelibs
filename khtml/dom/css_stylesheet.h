@@ -156,6 +156,7 @@ public:
     /**
      * @internal
      */
+    bool isCSSStyleSheet() const;
     StyleSheetImpl *handle() const { return impl; }
     bool isNull() const;
 protected:
@@ -206,6 +207,7 @@ class CSSStyleSheet : public StyleSheet
 public:
     CSSStyleSheet();
     CSSStyleSheet(const CSSStyleSheet &other);
+    CSSStyleSheet(const StyleSheet &other);
     CSSStyleSheet(CSSStyleSheetImpl *impl);
 public:
 

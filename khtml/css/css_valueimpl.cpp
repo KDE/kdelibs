@@ -413,7 +413,9 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveV
 
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Counter &c)
 {
-    m_value.counter = new Counter(c);
+    m_value.counter = c.handle();
+    if (m_value.counter)
+	m_value.counter->ref();
     m_type = CSSPrimitiveValue::CSS_COUNTER;
 }
 
@@ -449,7 +451,7 @@ void CSSPrimitiveValueImpl::cleanup()
     else if(m_type < CSSPrimitiveValue::CSS_COUNTER)
 	if(m_value.string) m_value.string->deref();
     else if(m_type == CSSPrimitiveValue::CSS_COUNTER)
-	delete m_value.counter;
+	m_value.counter->deref();
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
 	delete m_value.rect;
     m_type = 0;
@@ -510,7 +512,7 @@ DOMStringImpl *CSSPrimitiveValueImpl::getStringValue(  )
     return m_value.string;
 }
 
-Counter *CSSPrimitiveValueImpl::getCounterValue(  )
+CounterImpl *CSSPrimitiveValueImpl::getCounterValue(  )
 {
     if(m_type != CSSPrimitiveValue::CSS_COUNTER) return 0;
     return m_value.counter;

@@ -26,9 +26,11 @@
 
 namespace DOM {
 
-
 class Document;
 class AbstractViewImpl;
+class CSSStyleDeclaration;
+class Element;
+class DOMString;
 
 /**
  * Introduced in DOM Level 2
@@ -53,6 +55,23 @@ public:
      * The source DocumentView of which this is an AbstractView.
      */
     Document document() const;
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the ViewCSS interface
+     *
+     * This method is used to get the computed style as it is defined in
+     * [CSS2].
+     *
+     * @param elt The element whose style is to be computed. This parameter
+     * cannot be null.
+     *
+     * @param pseudoElt The pseudo-element or null if none.
+     *
+     * @return The computed style. The CSSStyleDeclaration is read-only and
+     * contains only absolute values.
+     */
+    CSSStyleDeclaration getComputedStyle(const Element &elt, const DOMString &pseudoElt);
 
     /**
      * @internal

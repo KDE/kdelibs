@@ -39,6 +39,17 @@ namespace KJS {
     DOM::AbstractView abstractView;
   };
 
+  class DOMAbstractViewFunc : public DOMFunction {
+    friend class DOMNode;
+  public:
+    DOMAbstractViewFunc(DOM::AbstractView av, int i) : abstractView(av), id(i) { }
+    Completion tryExecute(const List &);
+    enum { GetComputedStyle };
+  private:
+    DOM::AbstractView abstractView;
+    int id;
+  };
+
   KJSO getDOMAbstractView(DOM::AbstractView av);
 
   /**

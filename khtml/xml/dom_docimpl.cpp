@@ -99,6 +99,11 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         return false;
 }
 
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/)
+{
+    return 0; // ###
+}
+
 // ------------------------------------------------------------------------
 
 DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
@@ -1427,6 +1432,11 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
         exceptioncode = DOMException::NOT_SUPPORTED_ERR;
         return 0;
     }
+}
+
+CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DOMStringImpl */*pseudoElt*/)
+{
+    return 0; // ###
 }
 
 // ----------------------------------------------------------------------------

@@ -37,5 +37,8 @@ AbstractViewImpl::~AbstractViewImpl()
 {
 }
 
-
+CSSStyleDeclarationImpl *AbstractViewImpl::getComputedStyle(ElementImpl */*elt*/, DOMStringImpl */*pseudoElt*/)
+{
+    return 0; // ###
+}
 

@@ -18,6 +18,7 @@
  */
 
 #include "kjs_views.h"
+#include "kjs_css.h"
 #include <qptrdict.h>
 #include <dom2_events.h>
 
@@ -39,10 +40,30 @@ KJSO DOMAbstractView::tryGet(const UString &p) const
 {
   if (p == "document")
     return getDOMNode(abstractView.document());
+  else if (p == "getComputedStyle")
+    return new DOMAbstractViewFunc(abstractView,DOMAbstractViewFunc::GetComputedStyle);
   else
     return DOMObject::tryGet(p);
 }
 
+Completion DOMAbstractViewFunc::tryExecute(const List &args)
+{
+  KJSO result;
+
+  switch (id) {
+    case GetComputedStyle: {
+        DOM::Node arg0 = toNode(args[0]);
+        if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
+          result = Undefined(); // throw exception?
+        else
+          result = getDOMCSSStyleDeclaration(abstractView.getComputedStyle(static_cast<DOM::Element>(arg0),
+									   args[1].toString().value().string()));
+      }
+      break;
+  }
+
+  return Completion(ReturnValue, result);
+}
 
 KJSO KJS::getDOMAbstractView(DOM::AbstractView av)
 {

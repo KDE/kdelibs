@@ -164,14 +164,14 @@ CSSValue::~CSSValue()
 
 DOMString CSSValue::cssText() const
 {
-    return 0;
-    //if(!impl) return 0;
-    //return ((ElementImpl *)impl)->getAttribute("cssText");
+    if(!impl) return 0;
+    return ((CSSValueImpl *)impl)->cssText();
 }
 
 void CSSValue::setCssText( const DOMString &/*value*/ )
 {
-    //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
+    if(!impl) return;
+    ((CSSValueImpl *)impl)->cssText();
 }
 
 unsigned short CSSValue::valueType() const
@@ -180,10 +180,35 @@ unsigned short CSSValue::valueType() const
     return ((CSSValueImpl *)impl)->valueType();
 }
 
-// ----------------------------------------------------------
+unsigned short CSSValue::cssValueType() const
+{
+    if(!impl) return 0;
+    return ((CSSValueImpl *)impl)->cssValueType();
+}
 
-// ### perhaps just use impl instead of vimpl (not sure why it
-// is here)
+bool CSSValue::isCSSValueList() const
+{
+    if(!impl) return false;
+    return ((CSSValueImpl *)impl)->isValueList();
+}
+
+bool CSSValue::isCSSPrimitiveValue() const
+{
+    if(!impl) return false;
+    return ((CSSValueImpl *)impl)->isPrimitiveValue();
+}
+
+CSSValueImpl *CSSValue::handle() const
+{
+    return impl;
+}
+
+bool CSSValue::isNull() const
+{
+    return (impl == 0);
+}
+
+// ----------------------------------------------------------
 
 CSSValueList::CSSValueList() : CSSValue()
 {
@@ -193,14 +218,33 @@ CSSValueList::CSSValueList(const CSSValueList &other) : CSSValue(other)
 {
 }
 
+CSSValueList::CSSValueList(const CSSValue &other)
+{
+   impl = 0;
+   operator=(other);
+}
+
 CSSValueList::CSSValueList(CSSValueListImpl *impl) : CSSValue(impl)
 {
 }
 
-CSSValueList &CSSValueList::operator = (const CSSValueList &/*other*/)
+CSSValueList &CSSValueList::operator = (const CSSValueList &other)
 {
-    // TODO
-    //CSSValue::operator = (other);
+    if (impl) impl->deref();
+    impl = other.handle();
+    if (impl) impl->ref();
+    return *this;
+}
+
+CSSValueList &CSSValueList::operator = (const CSSValue &other)
+{
+    if (impl) impl->deref();
+    if (!other.isNull() && !other.isCSSValueList()) {
+	impl = 0;
+	return *this;
+    }
+    impl = other.handle();
+    if (impl) impl->ref();
     return *this;
 }
 
@@ -210,15 +254,14 @@ CSSValueList::~CSSValueList()
 
 unsigned long CSSValueList::length() const
 {
-    if(!vimpl) return 0;
-    return ((CSSValueListImpl *)vimpl)->length();
+    if(!impl) return 0;
+    return ((CSSValueListImpl *)impl)->length();
 }
 
-CSSValue CSSValueList::item( unsigned long /*index*/ )
+CSSValue CSSValueList::item( unsigned long index )
 {
-    //if(!vimpl) return 0;
-    //return ((CSSValueListImpl *)vimpl)->item( index );
-    return 0;
+    if(!impl) return 0;
+    return ((CSSValueListImpl *)impl)->item( index );
 }
 
 // ----------------------------------------------------------
@@ -229,15 +272,38 @@ CSSPrimitiveValue::CSSPrimitiveValue() : CSSValue()
 
 CSSPrimitiveValue::CSSPrimitiveValue(const CSSPrimitiveValue &other) : CSSValue(other)
 {
+    if (impl) impl->deref();
+    impl = other.handle();
+    if (impl) impl->ref();
+}
+
+CSSPrimitiveValue::CSSPrimitiveValue(const CSSValue &other) : CSSValue(other)
+{
+    impl = 0;
+    operator=(other);
 }
 
 CSSPrimitiveValue::CSSPrimitiveValue(CSSPrimitiveValueImpl *impl) : CSSValue(impl)
 {
 }
 
-CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSPrimitiveValue &/*other*/)
+CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSPrimitiveValue &other)
 {
-    //CSSValue::operator = (other);
+    if (impl) impl->deref();
+    impl = other.handle();
+    if (impl) impl->ref();
+    return *this;
+}
+
+CSSPrimitiveValue &CSSPrimitiveValue::operator = (const CSSValue &other)
+{
+    if (impl) impl->deref();
+    if (!other.isNull() && !other.isCSSPrimitiveValue()) {
+	impl = 0;
+	return *this;
+    }
+    impl = other.handle();
+    if (impl) impl->ref();
     return *this;
 }
 
@@ -290,6 +356,7 @@ Counter CSSPrimitiveValue::getCounterValue(  )
 {
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getCounterValue(  );
+    // ###
   return Counter();
 }
 
@@ -297,14 +364,16 @@ Rect CSSPrimitiveValue::getRectValue(  )
 {
     //if(!impl) return 0;
     //return ((CSSPrimitiveValueImpl *)impl)->getRectValue(  );
+    // ###
   return Rect();
 }
 
 RGBColor CSSPrimitiveValue::getRGBColorValue(  )
 {
-    //if(!impl) return 0;
+    //if(!impl) return RGBColor();
     //return ((CSSPrimitiveValueImpl *)impl)->getRGBColorValue(  );
-  return RGBColor();
+    // ###
+    return RGBColor();
 }
 
 // -------------------------------------------------------------------
@@ -330,17 +399,30 @@ Counter::~Counter()
 
 DOMString Counter::identifier() const
 {
-  return DOMString();
+  if (!impl) return 0;
+  return impl->identifier();
 }
 
 DOMString Counter::listStyle() const
 {
-  return DOMString();
+  if (!impl) return 0;
+  return impl->listStyle();
 }
 
 DOMString Counter::separator() const
 {
-  return DOMString();
+  if (!impl) return 0;
+  return impl->separator();
+}
+
+CounterImpl *Counter::handle() const
+{
+    return impl;
+}
+
+bool Counter::isNull() const
+{
+    return (impl == 0);
 }
 
 // --------------------------------------------------------------------
@@ -425,11 +507,14 @@ CSSPrimitiveValue Rect::left() const
   return CSSPrimitiveValue();
 }
 
+RectImpl *Rect::handle() const
+{
+    return impl;
+}
 
-
-
-
-
-
+bool Rect::isNull() const
+{
+    return (impl == 0);
+}
 
 

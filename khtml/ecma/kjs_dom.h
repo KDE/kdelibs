@@ -105,7 +105,7 @@ namespace KJS {
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
 	   CreateAttribute, CreateEntityReference, GetElementsByTagName,
 	   ImportNode, CreateElementNS, CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
-	   CreateRange, CreateNodeIterator, CreateTreeWalker, CreateEvent };
+	   CreateRange, CreateNodeIterator, CreateTreeWalker, CreateEvent, GetOverrideStyle };
   private:
     DOM::Document doc;
     int id;
@@ -160,7 +160,7 @@ namespace KJS {
   public:
     DOMDOMImplementationFunction(DOM::DOMImplementation impl, int i);
     Completion tryExecute(const List &);
-    enum { HasFeature, CreateDocumentType, CreateDocument };
+    enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet };
   private:
     DOM::DOMImplementation implementation;
     int id;

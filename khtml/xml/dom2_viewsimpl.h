@@ -26,6 +26,7 @@
 
 #include "dom/dom_misc.h"
 #include "dom_docimpl.h"
+#include "css/css_valueimpl.h"
 
 namespace DOM {
 
@@ -37,6 +38,7 @@ public:
     AbstractViewImpl(DocumentImpl *_document);
     ~AbstractViewImpl();
     DocumentImpl *document() const { return m_document; }
+    CSSStyleDeclarationImpl *getComputedStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
 protected:
     DocumentImpl *m_document;
 };

@@ -116,6 +116,12 @@ MediaList StyleSheet::media() const
     return ((StyleSheetImpl *)impl)->media();
 }
 
+bool StyleSheet::isCSSStyleSheet() const
+{
+    if(!impl) return false;
+    return ((StyleSheetImpl *)impl)->isCSSStyleSheet();
+}
+
 bool StyleSheet::isNull() const
 {
     return (impl == 0);
@@ -129,6 +135,14 @@ CSSStyleSheet::CSSStyleSheet() : StyleSheet()
 
 CSSStyleSheet::CSSStyleSheet(const CSSStyleSheet &other) : StyleSheet(other)
 {
+}
+
+CSSStyleSheet::CSSStyleSheet(const StyleSheet &other)
+{
+    if (!other.isCSSStyleSheet())
+	impl = 0;
+    else
+	operator=(other);
 }
 
 CSSStyleSheet::CSSStyleSheet(CSSStyleSheetImpl *impl) : StyleSheet(impl)
