@@ -6,6 +6,7 @@ reading=true
 Icon=www
 Class=:internet
 Description=A kioslave for data URIs (rfc2397)
+Description[fr]=Un module d'entrée / sortie pour les URI de données (rfc2397)
 Description[nl]=Een kioslave voor data-URI-adressen (rfc2397)
 Description[pt]=Um 'kioslave' para URIs data (rfc2397)
 Description[pt_BR]=Um 'kioslave' para URIs data (rfc2397)
