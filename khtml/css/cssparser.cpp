@@ -417,6 +417,9 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
 #endif
                     cs->match = CSSSelector::Set;
                     endVal = closebracket + 1;
+                    // ### fixme we ignore everything after [..]
+                    if( endVal == endP )
+                        endVal = 0;
                 }
                 else
                 {
@@ -1594,7 +1597,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		value = khtml::parseURL(value);
             	parsedValue = new CSSImageValueImpl(value, this);
 #ifdef CSS_DEBUG
-		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
+		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseURL().string() << endl;
 #endif
 	      }
 	    }
