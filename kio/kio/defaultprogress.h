@@ -138,7 +138,7 @@ protected:
   unsigned long m_iProcessedDirs;
   unsigned long m_iProcessedFiles;
 
-  enum ModeType { Copy, Move, Delete, Create };
+  enum ModeType { Copy, Move, Delete, Create, Done };
   ModeType mode;
 
 protected:

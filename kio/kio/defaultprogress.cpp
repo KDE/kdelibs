@@ -241,6 +241,9 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
   case Create:
     tmp.append(i18n(" (Creating)"));
     break;
+  case Done:
+    tmp.append(i18n(" (Done)"));
+    break;
   }
 
   setCaption( tmp );
@@ -420,6 +423,7 @@ void DefaultProgress::setDestVisible( bool visible )
 
 void DefaultProgress::slotClean() {
   if (d->keepOpenChecked) {
+    mode = Done;
     slotPercent(0, 100);
     d->cancelClose->setGuiItem( KStdGuiItem::close() );
     d->openFile->setEnabled(true);
