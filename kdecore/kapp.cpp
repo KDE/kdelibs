@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.35  1997/09/29 19:34:07  kalle
+// support for -icon and -miniicon
+//
 // Revision 1.34  1997/09/29 18:57:35  kalle
 // BINARY INCOMPATIBLE!!!!!!!!!!!!!!!!!!!!!!
 // Support for session management
@@ -259,7 +262,7 @@
 // Revision 1.59  1997/10/16 11:14:27  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
-	aAppName = aArgv0.remove( 0, nSlashPos );
+//
 // Revision 1.57  1997/10/14 13:31:57  kulow
 // removed one more default value from the implementation
 //
