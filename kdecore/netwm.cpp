@@ -2370,7 +2370,10 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	} else if (event->xclient.message_type == net_wm_desktop) {
 	    dirty = WMDesktop;
 
-	    changeDesktop(event->xclient.data.l[0] + 1);
+	    if( event->xclient.data.l[0] == onAllDesktops )
+		changeDesktop( onAllDesktops );
+	    else
+    		changeDesktop(event->xclient.data.l[0] + 1);
 	}
     }
 
