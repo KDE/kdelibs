@@ -79,10 +79,10 @@ QString EmailSelectDialog::getEmail( const QStringList &emails, const QString &c
   return result;
 }
 
-class EntryItem : public QListViewItem
+class EditEntryItem : public QListViewItem
 {
   public:
-    EntryItem( QListView *parent, const Addressee &addressee,
+    EditEntryItem( QListView *parent, const Addressee &addressee,
                const QString &email=QString::null ) :
       QListViewItem( parent ),
       mAddressee( addressee ),
@@ -182,7 +182,7 @@ DistributionListEditor::~DistributionListEditor()
 
 void DistributionListEditor::slotSelectionEntryViewChanged()
 {
-    EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+    EditEntryItem *entryItem =dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
     bool state=entryItem;
 
     changeEmailButton->setEnabled(state);
@@ -240,8 +240,8 @@ void DistributionListEditor::removeEntry()
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) return;
 
-  EntryItem *entryItem =
-      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  EditEntryItem *entryItem =
+      dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
   if ( !entryItem ) return;
 
   list->removeEntry( entryItem->addressee(), entryItem->email() );
@@ -253,8 +253,8 @@ void DistributionListEditor::changeEmail()
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) return;
 
-  EntryItem *entryItem =
-      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  EditEntryItem *entryItem =
+      dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
   if ( !entryItem ) return;
 
   QString email = EmailSelectDialog::getEmail( entryItem->addressee().emails(),
@@ -274,9 +274,9 @@ void DistributionListEditor::updateEntryView()
   DistributionList::Entry::List entries = list->entries();
   DistributionList::Entry::List::ConstIterator it;
   for( it = entries.begin(); it != entries.end(); ++it ) {
-    new EntryItem( mEntryView, (*it).addressee, (*it).email );
+    new EditEntryItem( mEntryView, (*it).addressee, (*it).email );
   }
-   EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+   EditEntryItem *entryItem =dynamic_cast<EditEntryItem *>( mEntryView->selectedItem() );
    bool state=entryItem;
 
    changeEmailButton->setEnabled(state);
