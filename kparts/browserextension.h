@@ -600,6 +600,49 @@ private:
   BrowserHostExtensionPrivate *d;
 };
 
+/**
+ * An extension class for LiveConnect, i.e. a call from JavaScript
+ * from a HTML page which embeds this part.
+ * A part can have an object hierarchie by using objid as a reference 
+ * to an object.
+ */
+class LiveConnectExtension : public QObject
+{
+  Q_OBJECT
+public:
+  typedef enum { 
+      TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString 
+  } Type;
+  typedef QValueList<QPair<Type, QString> > ArgList;
+
+  LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name = 0L );
+
+  virtual ~LiveConnectExtension() {}
+  /**
+   * get a field value from objid, return true on success
+   */
+  virtual bool get( const unsigned long objid, const QString & field, Type & type, unsigned long & retobjid, QString & value );
+  /**
+   * put a field value in objid, return true on success
+   */
+  virtual bool put( const unsigned long objid, const QString & field, const QString & value );
+  /**
+   * calls a function of objid, return true on success
+   */
+  virtual bool call( const unsigned long objid, const QString & func, const QStringList & args, Type & type, unsigned long & retobjid, QString & value );
+  /**
+   * notifies the part that there is no reference anymore to objid
+   */
+  virtual void unregister( const unsigned long objid );
+
+  static LiveConnectExtension *childObject( QObject *obj );
+signals:
+  /**
+   * notify a event from the part of object objid
+   */
+  virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
+};
+
 };
 
 #endif

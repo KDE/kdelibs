@@ -574,5 +574,36 @@ void BrowserExtension::virtual_hook( int, void* )
 void BrowserHostExtension::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name ) : QObject( parent, name) {}
+
+bool LiveConnectExtension::get( const unsigned long, const QString &, Type &, unsigned long &, QString & ) {
+    return false;
+}
+
+bool LiveConnectExtension::put( const unsigned long, const QString &, const QString & ) {
+      return false;
+}
+
+bool LiveConnectExtension::call( const unsigned long, const QString &, const QStringList &, Type &, unsigned long &, QString & ) { 
+      return false; 
+}
+
+void LiveConnectExtension::unregister( const unsigned long ) {}
+
+LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
+{
+    if ( !obj || !obj->children() )
+        return 0L;
+
+    // we try to do it on our own, in hope that we are faster than
+    // queryList, which looks kind of big :-)
+    const QObjectList *children = obj->children();
+    QObjectListIt it( *children );
+    for (; it.current(); ++it )
+        if ( it.current()->inherits( "KParts::LiveConnectExtension" ) )
+            return static_cast<KParts::LiveConnectExtension *>( it.current() );
+
+    return 0L;
+}
 
 #include "browserextension.moc"
