@@ -2,8 +2,6 @@ INCLUDES = -I$(top_builddir)/kdedb -I$(top_srcdir)/kio $(all_includes)
 
 METASOURCES = AUTO
 
-KDE_ICON=AUTO
-
 lib_LTLIBRARIES = libkdbui.la
 
 libkdbui_la_SOURCES = plugininfodlg.cpp\
