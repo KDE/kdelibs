@@ -190,21 +190,21 @@ class Wallet : public QObject, public DCOPObject {
 		virtual bool hasFolder(const QString& f);
 
 		/**
-		 *  Set the current working folder to @f.  The folder must
+		 *  Set the current working folder to @p f.  The folder must
 		 *  exist, or this call will fail.  Create a folder with
-		 *  @ref createFolder().
+		 *  createFolder().
 		 *  @return Returns true if the folder was successfully set.
 		 */
 		virtual bool setFolder(const QString& f);
 
 		/**
-		 *  Remove the folder @f and all its entries from the wallet.
+		 *  Remove the folder @p f and all its entries from the wallet.
 		 *  @return Returns true if the folder was successfully removed.
 		 */
 		virtual bool removeFolder(const QString& f);
 
 		/**
-		 *  Created the folder @f.
+		 *  Created the folder @p f.
 		 *  @return Returns true if the folder was successfully created.
 		 */
 		virtual bool createFolder(const QString& f);
@@ -303,7 +303,7 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  Determine if the current folder has they entry @p key.
 		 *  @param key The key to search for.
-		 *  @return Returns true if the folder contains @key.
+		 *  @return Returns true if the folder contains @p key.
 		 */
 		virtual bool hasEntry(const QString& key);
 
