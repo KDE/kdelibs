@@ -1657,7 +1657,7 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     if ( !group.isEmpty() )
         kc->setGroup( group );
 
-    QWidget *desk = kapp->desktop();
+    QWidget *desk = QApplication::desktop();
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
     kc->writeEntry( DialogWidth.arg( desk->width() ), width() );
     kc->writeEntry( DialogHeight.arg( desk->height() ), height() );
