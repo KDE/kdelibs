@@ -283,7 +283,11 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
 
 	QFontMetrics fm( widget->font() );
 
-	QSize size( c * fm.width('a'), r * (fm.height()+1) );
+	// this is a bit better if using proportional fonts and
+	// small inputs fields
+	QSize size( c * fm.width('a') + 4, r * (fm.height()+1) );
+	if( c < 5 )
+	    size.setWidth( c * fm.width('M') + 4 );
 
 	widget->resize( size );
 
@@ -599,7 +603,12 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	    ((QLineEdit *)widget)->setMaxLength( ml );
 
 	QFontMetrics m = widget->fontMetrics();
-	QSize size( s * m.maxWidth() + 2, m.height() + 6);
+	// this is a bit better if using proportional fonts and
+	// small inputs fields
+	QSize size( s * m.width('a') + 4, m.height() + 6);
+	if(s<5)
+	    size.setWidth( s * m.width('M') + 4);
+	
 	widget->resize( size );
 
 	descent = 5;
