@@ -1,3 +1,8 @@
+2003-12-05  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_box.cpp (paintRootBoxDecorations): use the full canvas's height
+        when painting the root's background (#55065)
+
 2003-12-03  Stephan Kulow  <coolo@kde.org>
 
 	* css/html4.css: define default text-alignments for input fields to avoid
