@@ -110,7 +110,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "tis620.2533-1",
     "gbk-0",
     "gb2312.1980-0",
-    "cns11643.1986-*",
+    "cns11643.1986-",
     "big5-0",
     "tscii-0",
     "utf8",
@@ -217,14 +217,15 @@ void KCharsetsPrivate::getAvailableCharsets()
 
     QStringList f = db->families( false );
 
-    for ( QStringList::Iterator it = f.begin(); it != f.end(); ++it ) {
+    for ( QStringList::ConstIterator it = f.begin(); it != f.end(); ++it ) {
 	QStringList chSets = db->charSets(*it, false);
 	QCString family = (*it).latin1(); // can only be latin1
         QCString shortFamily; // family without foundry, if "family" contains the foundry
-	if ( family.contains('-') )
-	    shortFamily = family.right( family.length() - family.find('-' ) - 1);
+        int dashPos = family.find( '-' );
+	if ( dashPos != -1 )
+	    shortFamily = family.right( family.length() - dashPos - 1);
 	//kdDebug() << "KCharsetsPrivate full-family='" << *it << "' family='" << family << "'  charsets: " << chSets.join(",") << endl;
-	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
+	for ( QStringList::ConstIterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
 	    //kdDebug() << "    " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
 	    QFont::CharSet qcs = kc->xNameToID( cs );
@@ -371,7 +372,7 @@ QStringList KCharsets::availableEncodingNames()
     QMap<QString, QString> map = d->conf->entryMap("charsetsForEncoding");
     d->conf->setGroup("charsetsForEncoding");
 
-    QMap<QString, QString>::Iterator it;
+    QMap<QString, QString>::ConstIterator it;
     for( it = map.begin(); it != map.end(); ++it ) {
         //kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
 
@@ -379,7 +380,7 @@ QStringList KCharsets::availableEncodingNames()
         QStringList charsets = d->conf->readListEntry(it.key());
 
         // iterate thorugh the list and find the first charset that is available
-        for ( QStringList::Iterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
+        for ( QStringList::ConstIterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
             //kdDebug(0) << "checking for " << *sit << endl;
             if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
                 //kdDebug(0) << *sit << " available" << endl;
@@ -645,15 +646,12 @@ QFont::CharSet KCharsets::nameToID(QString name) const
         i++;
     }
 
-    i = 0;
-    while(i < CHARSETS_COUNT)
-    {
-        if( name == xNames[i] )
-        {
+    i = CHARSETS_COUNT-1;
+    while( i-- ) {
+        if( name.find( xNames[i] ) == 0 ) {
             d->nameToIDMap.replace(name, charsetsIds[i]);
             return charsetsIds[i];
-        }
-        i++;
+	}
     }
     d->nameToIDMap.replace(name, QFont::AnyCharSet);
     return QFont::AnyCharSet;
@@ -687,9 +685,8 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     // try longest names first, then shorter ones
     // to avoid that iso-8859-10 matches iso-8859-1
     int i = CHARSETS_COUNT-1; // avoid the "" entry
-    while( i-- )
-    {
-	if( !QRegExp( xNames[i] ).match(name) ) {
+    while( i-- ) {
+        if( name.find( xNames[i] ) == 0 ) {
 	    return charsetsIds[i];
 	}
     }
