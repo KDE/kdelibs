@@ -74,7 +74,6 @@ public:
 	void streamInit() {
 		as = AudioSubSystem::the();
 
-		//cout << "Synth_PLAY: streamInit() called." << endl;
 		channels = as->channels();
 		maxsamples = 0;
 		outblock = 0;
@@ -109,9 +108,7 @@ public:
 	}
 
 	void streamEnd() {
-		cout << "Synth_PLAY: streamEnd() called." << endl;
-
-		artsdebug("SynthGenericPlay: closing audio fd\n");
+		artsdebug("Synth_PLAY: closing audio fd\n");
 		if(audiofd >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();

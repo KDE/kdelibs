@@ -953,7 +953,8 @@ void StdFlowSystem::schedule(unsigned long samples)
 				if(died > 10000)
 				{
 					free(done);
-					//return false;
+					artsdebug("scheduler confusion: circle?\n");
+					return;
 				}
 			}
 		}
