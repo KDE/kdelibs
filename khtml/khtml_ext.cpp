@@ -18,6 +18,7 @@
 #include <ktoolbar.h>
 #include <ktempfile.h>
 #include <ksavefile.h>
+#include <kstringhandler.h>
 
 #include <dom/dom_element.h>
 #include <misc/htmltags.h>
@@ -258,6 +259,7 @@ public:
   KAction *m_paSaveImageAs;
   KAction *m_paCopyLinkLocation;
   KAction *m_paCopyImageLocation;
+  KAction *m_paViewImage;
   KAction *m_paReloadFrame;
   KAction *m_paViewFrameSource;
 };
@@ -308,6 +310,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                                       actionCollection(), "saveimageas" );
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                                             actionCollection(), "copyimagelocation" );
+    QString name = KStringHandler::csqueeze(d->m_imageURL.fileName(), 25);
+    d->m_paViewImage = new KAction( i18n( "View Image (%1)" ).arg(name), 0, this, SLOT( slotViewImage() ),
+                                            actionCollection(), "viewimage" );
   }
 
   setXML( doc );
@@ -342,6 +347,11 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
   QApplication::clipboard()->setText( d->m_imageURL.url() );
+}
+
+void KHTMLPopupGUIClient::slotViewImage()
+{
+  d->m_khtml->browserExtension()->createNewWindow(d->m_imageURL.url());
 }
 
 void KHTMLPopupGUIClient::slotReloadFrame()
