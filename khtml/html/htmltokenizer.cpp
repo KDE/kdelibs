@@ -667,8 +667,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                         EntityChar = e->code;
                 }
             }
-            else
-                break;
+            break;
         }
         case SearchSemicolon:
 #ifdef TOKEN_DEBUG
@@ -676,12 +675,12 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 #endif
             fixUpChar(EntityChar);
 
+            if (*src == ';')
+                    ++src;
+
             if ( !EntityChar.isNull() ) {
                 checkBuffer();
                 // Just insert it
-                if (*src == ';')
-                    ++src;
-
                 src.push( EntityChar );
             } else {
 #ifdef TOKEN_DEBUG
@@ -1561,7 +1560,7 @@ void HTMLTokenizer::processToken()
         for (unsigned long i = 0; i < l; ++i) {
             NodeImpl::Id tid = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
-            kdDebug( 6036 ) << "    " << tid << " " << parser->doc()->getDocument()->attrNames()->getName(tid).string()
+            kdDebug( 6036 ) << "    " << tid << " " << parser->doc()->getDocument()->getName(NodeImpl::AttributeId, tid).string()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }
