@@ -312,8 +312,8 @@ HTMLElementImpl *HTMLDocumentImpl::findSelectableElement(NodeImpl *start, bool f
 		    }
 		}
 	    }
-	    if (start->isElementNode() && ((HTMLElementImpl *)start)->isSelectable())
-		return (HTMLElementImpl *)start;
+	    if (start->isElementNode() && static_cast<HTMLElementImpl *>(start)->isSelectable())
+		return static_cast<HTMLElementImpl*>(start);
 	}
     else
 	while (1)
@@ -338,8 +338,8 @@ HTMLElementImpl *HTMLDocumentImpl::findSelectableElement(NodeImpl *start, bool f
 		    }
 		}
 	    }
-	    if (start->isElementNode() && ((HTMLElementImpl *)start)->isSelectable())
-		return (HTMLElementImpl *)start;
+	    if (start->isElementNode() && static_cast<HTMLElementImpl*>(start)->isSelectable())
+		return static_cast<HTMLElementImpl*>(start);
 	}
     kdFatal(6000) << "some error in findElement\n";
 }
@@ -386,7 +386,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     if(!m_styleSelector) createSelector();
     m_render = new RenderRoot(w);
     recalcStyle();
-    
+
     NodeBaseImpl::attach(w);
 }
 
@@ -463,7 +463,7 @@ void HTMLDocumentImpl::recalcStyle()
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
     f.setPointSize(size);
-    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl; 
+    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl;
     KGlobal::charsets()->setQFont(f, settings->charset());
     m_style->setFont(f);
 

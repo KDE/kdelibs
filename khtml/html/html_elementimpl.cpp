@@ -347,9 +347,9 @@ bool HTMLElementImpl::isSelectable()
       }
       if (!renderer()->isReplaced())
 	  return true;
-      if (!((RenderWidget *)renderer())->isWidget())
+      if (!static_cast<RenderWidget*>(renderer())->isWidget())
 	  return true;
-      return ((RenderWidget *)renderer())->m_widget->isEnabled();
+      return static_cast<RenderWidget*>(renderer())->m_widget->isEnabled();
     default:
       return false;
     };
