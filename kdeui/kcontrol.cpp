@@ -42,7 +42,8 @@ void KControlDialog::done(int result)
 }
 
 KControlApplication::KControlApplication(int &argc, char **argv, const QCString &name)
-  : KApplication(argc, argv, name)
+  : KApplication(argc, argv, name, 
+	!(argc == 2 && strcmp("-init", argv[1]) == 0))
 {
   dialog = 0;
   pages = 0;
