@@ -105,7 +105,7 @@
  -->
 
 <!ENTITY AIX	"<trademark>AIX</trademark>">
-<!ENTITY aktion	"<application>AKtion</application>">
+<!ENTITY aktion	"<application>aKtion</application>">
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
@@ -310,7 +310,7 @@
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY X-Server "<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
-<!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
+<!ENTITY X-Window '<trademark class="registered">X Window System</trademark>'>
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
@@ -324,3 +324,4 @@
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kworldwatch  "<application>KWorldClock</application>">
+<!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
