@@ -437,15 +437,11 @@ int TCPSlaveBase::startTLS()
     if (hasMetaData("ssl_session_id")) {
         KSSLSession *s = KSSLSession::fromString(metaData("ssl_session_id"));
         if (s) {
-            if (!d->kssl->setSession(s))
-                certificatePrompt();
+            d->kssl->setSession(s);
             delete s;
-        } else {
-            certificatePrompt();
         }
-    } else {
-        certificatePrompt();
     }
+    certificatePrompt();
 
     int rc = d->kssl->connect(m_iSock);
     if (rc < 0) {
@@ -1246,15 +1242,11 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     if (hasMetaData("ssl_session_id")) {
         KSSLSession *s = KSSLSession::fromString(metaData("ssl_session_id"));
         if (s) {
-            if (!d->kssl->setSession(s))
-                certificatePrompt();
+            d->kssl->setSession(s);
             delete s;
-        } else {
-            certificatePrompt();
-        }
-    } else {
-        certificatePrompt();
+	}    
     }
+    certificatePrompt();
 
     if ( !d->realHost.isEmpty() )
     {
