@@ -3,37 +3,32 @@ package org.kde.kjas.server;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import javax.swing.*;
 
 public class KJASConsole
-    extends JFrame
+    extends Frame
 {
-    private JTextArea txt;
-    private JScrollPane scroll;
+    private TextArea txt;
 
     public KJASConsole()
     {
         super("Java Console");
 
-        txt = new JTextArea();
+        txt = new TextArea();
         txt.setEditable(false);
 
-        scroll = new JScrollPane( txt );
+        Panel main = new Panel(new BorderLayout());
+        Panel btns = new Panel(new BorderLayout());
 
-        JPanel main = new JPanel(new BorderLayout());
-        JPanel btns = new JPanel(new BorderLayout());
-
-        JButton clear = new JButton("Clear");
-        JButton close = new JButton("Close");
+        Button clear = new Button("Clear");
+        Button close = new Button("Close");
         
         btns.add(clear, "West");
         btns.add(close, "East");
 
-        main.add(scroll, "Center");
+        main.add(txt, "Center");
         main.add(btns, "South");
         
-        getContentPane().add( main );
-        
+        add( main );
 
         clear.addActionListener
         (
@@ -78,9 +73,9 @@ public class KJASConsole
 class KJASConsoleStream
     extends OutputStream
 {
-    JTextArea txt;
+    TextArea txt;
 
-    public KJASConsoleStream( JTextArea _txt )
+    public KJASConsoleStream( TextArea _txt )
     {
         txt = _txt;
     }
@@ -98,7 +93,7 @@ class KJASConsoleStream
             String msg = new String( bytes, offset, length );
             synchronized( txt )
             {
-                //get the caret position
+                //get the caret position, and then get the new position
                 int old_pos = txt.getCaretPosition();
                 txt.append(msg);
                 txt.setCaretPosition( old_pos + length );
