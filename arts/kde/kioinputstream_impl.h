@@ -54,8 +54,6 @@ private slots:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
 
-	void slotTest();
-
 private:
 	KURL m_url;
 	KIO::TransferJob *m_job;

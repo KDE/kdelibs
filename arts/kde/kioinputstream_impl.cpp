@@ -33,16 +33,10 @@ KIOInputStream_impl::KIOInputStream_impl()
 {
 	m_job = 0;
 	m_finished = false;
-	QTimer::singleShot(0, this, SLOT(slotTest()));
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
 {
-}
-
-void KIOInputStream_impl::slotTest()
-{
-    kdDebug() << "SLOT WORKING!" << endl;
 }
 
 void KIOInputStream_impl::streamStart()
@@ -78,13 +72,9 @@ bool KIOInputStream_impl::openURL(const std::string& url)
 
 void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 {
-	kdDebug() << "DATA!" << endl;
 	DataPacket<mcopbyte> *packet = outdata.allocPacket(data.size());
-	kdDebug() << "1" << endl;
 	memcpy(packet->contents, data.data(), packet->size);
-	kdDebug() << "2" << endl;
 	m_sendqueue.push(packet);
-	kdDebug() << "3" << endl;
 	processQueue();
 }
 
@@ -118,18 +108,12 @@ void KIOInputStream_impl::processQueue()
 {
 	// TODO:
 	// Respect PACKET_SIZE!
-	kdDebug() << "p1" << endl;
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
-		kdDebug() << "L1" << endl;
 		DataPacket<mcopbyte> *packet = m_sendqueue.front();
-		kdDebug() << "L2" << endl;
 		packet->send();
-		kdDebug() << "L3" << endl;
 		m_sendqueue.pop();
-		kdDebug() << "L4" << endl;
 	}
-	kdDebug() << "p2" << endl;	
 }
 
 REGISTER_IMPLEMENTATION(KIOInputStream_impl);
