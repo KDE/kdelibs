@@ -23,7 +23,7 @@
 
 */
 
-// #define NETWMDEBUG
+//#define NETWMDEBUG
 
 #include <qwidget.h>
 #ifdef Q_WS_X11 //FIXME
@@ -283,7 +283,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_ABOVE",
 	    "_NET_WM_STATE_BELOW",
 	    "_NET_WM_STATE_DEMANDS_ATTENTION",
-            
+
             "_NET_WM_ACTION_MOVE",
             "_NET_WM_ACTION_RESIZE",
             "_NET_WM_ACTION_MINIMIZE",
@@ -365,7 +365,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_above,
 	    &net_wm_state_below,
 	    &net_wm_state_demands_attention,
-            
+
             &net_wm_action_move,
             &net_wm_action_resize,
             &net_wm_action_minimize,
@@ -388,6 +388,8 @@ static void create_atoms(Display *d) {
 	    &xa_wm_state,
 	    &wm_protocols
 	    };
+
+    assert( !netwm_atoms_created );
 
     int i = netAtomCount;
     while (i--)
@@ -1193,7 +1195,7 @@ void NETRootInfo::setSupported() {
 
     if (p->properties[ PROTOCOLS2 ] & WM2StartupId)
 	atoms[pnum++] = net_startup_id;
-        
+
     if (p->properties[ PROTOCOLS2 ] & WM2AllowedActions) {
         atoms[pnum++] = net_wm_allowed_actions;
 
@@ -1402,7 +1404,7 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == net_wm_allowed_actions )
         p->properties[ PROTOCOLS2 ] |= WM2AllowedActions;
 
-        // Actions        
+        // Actions
     else if( atom == net_wm_action_move )
         p->properties[ ACTIONS ] |= ActionMove;
     else if( atom == net_wm_action_resize )
@@ -1675,7 +1677,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
     unsigned long& dirty = props[ PROTOCOLS ];
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
-    
+
     Q_UNUSED( dirty2 ); // for now
 
     // the window manager will be interested in client messages... no other
@@ -1878,10 +1880,10 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 
     if( do_update )
         update( props );
-        
+
 #ifdef   NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx, 0x%lx\n",
-	    dirty, dirty2);
+     fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx, 0x%lx\n",
+ 	    dirty, dirty2);
 #endif
 
     if( properties_size > PROPERTIES_SIZE )
@@ -2892,9 +2894,14 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
 #ifdef NETWMDEBUG
 	fprintf(stderr, "NETWinInfo::setState: setting state property (%d)\n", count);
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < count; i++) {
+            char* data_ret = XGetAtomName(p->display, (Atom) data[i]);
 	    fprintf(stderr, "NETWinInfo::setState:   state %ld '%s'\n",
-		    data[i], XGetAtomName(p->display, (Atom) data[i]));
+		    data[i], data_ret);
+            if ( data_ret )
+                XFree( data_ret );
+        }
+
 #endif
 
 	XChangeProperty(p->display, p->window, net_wm_state, XA_ATOM, 32,
@@ -3130,9 +3137,13 @@ void NETWinInfo::setAllowedActions( unsigned long actions ) {
 
 #ifdef NETWMDEBUG
     fprintf(stderr, "NETWinInfo::setAllowedActions: setting property (%d)\n", count);
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; i++) {
+        char* data_ret = XGetAtomName(p->display, (Atom) data[i]);
         fprintf(stderr, "NETWinInfo::setAllowedActions:   action %ld '%s'\n",
-	    data[i], XGetAtomName(p->display, (Atom) data[i]));
+	    data[i], data_ret);
+        if ( data_ret )
+            XFree(data_ret);
+    }
 #endif
 
     XChangeProperty(p->display, p->window, net_wm_allowed_actions, XA_ATOM, 32,
@@ -3264,9 +3275,11 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 
 	    for (i = 1; i < 3; i++) {
 #ifdef NETWMDEBUG
+                char* debug_txt = XGetAtomName(p->display, (Atom) event->xclient.data.l[i]);
 		fprintf(stderr, "NETWinInfo::event:  message %ld '%s'\n",
-			event->xclient.data.l[i],
-			XGetAtomName(p->display, (Atom) event->xclient.data.l[i]));
+			event->xclient.data.l[i], debug_txt );
+                if ( debug_txt )
+                    XFree( debug_txt );
 #endif
 
 		if ((Atom) event->xclient.data.l[i] == net_wm_state_modal)
@@ -3421,7 +3434,7 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 
     if( do_update )
         update( props );
-        
+
     if( properties_size > PROPERTIES_SIZE )
         properties_size = PROPERTIES_SIZE;
     for( int i = 0;
@@ -3452,7 +3465,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
     // we *always* want to update WM_STATE if set in dirty_props
     if( dirty_props[ PROTOCOLS ] & XAWMState )
         props[ PROTOCOLS ] |= XAWMState;
-    
+
     if (dirty & XAWMState) {
         p->mapping_state = Withdrawn;
 	if (XGetWindowProperty(p->display, p->window, xa_wm_state, 0l, 1l,
@@ -3501,10 +3514,12 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 
 		for (count = 0; count < nitems_ret; count++) {
 #ifdef NETWMDEBUG
+                    char* data_ret = XGetAtomName(p->display, (Atom) states[count]);
 		    fprintf(stderr,
 			    "NETWinInfo::update:   adding window state %ld '%s'\n",
-			    states[count],
-			    XGetAtomName(p->display, (Atom) states[count]));
+			    states[count], data_ret );
+                    if ( data_ret )
+                        XFree( data_ret );
 #endif
 
 		    if ((Atom) states[count] == net_wm_state_modal)
@@ -3650,10 +3665,12 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		while (count < nitems_ret) {
 		    // remember all window types we know
 #ifdef NETWMDEBUG
+                    char* debug_type = XGetAtomName(p->display, (Atom) types[count]);
 		    fprintf(stderr,
 			    "NETWinInfo::update:   examining window type %ld %s\n",
-			    types[count],
-			    XGetAtomName(p->display, (Atom) types[count]));
+			    types[count], debug_type );
+                    if ( debug_type )
+                        XFree( debug_type );
 #endif
 
 		    if ((Atom) types[count] == net_wm_window_type_normal)
@@ -3792,7 +3809,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		XFree(data_ret);
 	}
     }
-    
+
     if( dirty2 & WM2AllowedActions ) {
         p->allowed_actions = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_allowed_actions, 0l, 2048l,
@@ -3814,7 +3831,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		    fprintf(stderr,
 			    "NETWinInfo::update:   adding allowed action %ld '%s'\n",
 			    actions[count],
-			    XGetAtomName(p->display, (Atom) states[count]));
+			    XGetAtomName(p->display, (Atom) actions[count]));
 #endif
 
 		    if ((Atom) actions[count] == net_wm_action_move)
