@@ -169,7 +169,7 @@ public:
 
   /**
    * Retrieves the client's GUI builder or 0L if no client specific
-   * uilder has been assigned via @ref #setClientBuilder()
+   * builder has been assigned via @ref #setClientBuilder()
    */
   KXMLGUIBuilder *clientBuilder() const;
 
@@ -199,7 +199,7 @@ public:
   };
 
   StateChange getActionsToChangeForState(const QString& state);
-  
+
 protected:
   /**
    * Sets the instance (@ref KInstance) for this part.
