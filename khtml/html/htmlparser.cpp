@@ -48,6 +48,7 @@
 #include "htmlhashes.h"
 #include "htmltoken.h"
 #include "khtmlview.h"
+#include "khtml_part.h"
 #include "cssproperties.h"
 
 #include "rendering/render_object.h"
@@ -981,7 +982,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
 	return 0;
     case ID_NOSCRIPT:
-	discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
+        if(HTMLWidget->part()->jScriptEnabled())
+            discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
 	return 0;
 	// Waldo's plaintext stuff
     case ID_PLAIN:
