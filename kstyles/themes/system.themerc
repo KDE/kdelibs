@@ -1,22 +1,18 @@
 #KDE Config File
 [PushButton]
-Border=0
-Background=170,170,170
-Gradient=Vertical
-GradientHigh=125,125,125
-GradientLow=233,233,233
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,233
+GradientLow=171,171,171
 XShift=1
 YShift=1
-Round=true
 
 [PushButtonDown]
-Border=0
 Background=171,171,171
 Foreground=255,255,255
 Gradient=Diagonal
 GradientHigh=171,171,191
 GradientLow=233,233,253
-Round=true
 
 [HScrollGroove]
 Pixmap=graytexture.png
@@ -56,14 +52,12 @@ GradientHigh=233,233,233
 GradientLow=171,171,171
 
 [ComboBox]
-Border=0
 Background=219,219,219
 Gradient=Diagonal
 GradientHigh=233,233,233
 GradientLow=171,171,171
 
 [ComboBoxDown]
-Border=0
 Background=219,219,219
 Gradient=Diagonal
 GradientHigh=233,233,253
@@ -193,7 +187,7 @@ CopyWidget=HScrollDecoDown
 Pixmap=red_checkmark.png
 
 [Background]
-Pixmap=minigray.png
+Pixmap=graytexture.png
 
 [ArrowUp]
 Pixmap=sysarrow_up.png
