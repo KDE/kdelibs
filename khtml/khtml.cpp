@@ -1463,7 +1463,10 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
 
 void KHTMLWidget::saveState( QDataStream &stream )
 {
-    stream << url(); // need this to reconstruct the correct URL to show in the locationbar
+    if(m_strURL.isEmpty() && !m_strWorkingURL.isEmpty())
+	stream << m_strWorkingURL;
+    else
+	stream << m_strURL; 
     stream << (int)contentsX() << (int)contentsY();
 
     if(!m_bComplete || !document || !document->body()) 
