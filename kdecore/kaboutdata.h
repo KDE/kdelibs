@@ -116,7 +116,8 @@ class KAboutData
       License_GPL  = 1,
       License_LGPL = 2,
       License_BSD  = 3,
-      License_Artistic = 4
+      License_Artistic = 4,
+      License_QPL = 5
     };
 
   public:
