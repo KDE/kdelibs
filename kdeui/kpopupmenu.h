@@ -26,7 +26,7 @@
 /**
  * Title widget for use in @ref KPopupMenu.
  *
- * You usually don't have to create this manually since 
+ * You usually don't have to create this manually since
  * @ref KPopupMenu::insertTitle will do it for you, but it is allowed if
  * you wish to customize it's look.
  *
@@ -140,12 +140,15 @@ public:
      */
     void setTitle(const QString &title);
 
+protected slots:
+    void kdisplayFontChanged();
+
 private:
     // For backwards compatibility
     QString lastTitle;
 
     class KPopupMenuPrivate;
     KPopupMenuPrivate *d;
-};         
+};
 
 #endif

@@ -44,7 +44,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     grHigh = bgColor.light(150);
     grLow = bgColor.dark(150);
     fgColor = config->readColorEntry(QString::fromLatin1("TextColor"), &colorGroup().highlightedText());
-    
+
     tmpStr = config->readEntry(QString::fromLatin1("Pixmap"));
     if(!tmpStr.isEmpty())
         fill.load(KGlobal::dirs()->findResource("wallpaper", tmpStr));
@@ -52,7 +52,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
         useGradient = false;
         return;
     }
-    
+
     tmpStr = config->readEntry(QString::fromLatin1("Gradient"));
     if(tmpStr.isEmpty() && QPixmap::defaultDepth() >= 15)
         tmpStr = QString::fromLatin1("Diagonal");
@@ -60,7 +60,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
         useGradient = false;
         return;
     }
-    
+
     if(tmpStr == QString::fromLatin1("Horizontal"))
         grType = KPixmapEffect::HorizontalGradient;
     else if(tmpStr == QString::fromLatin1("Vertical"))
@@ -174,7 +174,16 @@ QSize KPopupTitle::sizeHint() const
 }
 
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
-    : QPopupMenu(parent, name) {}
+    : QPopupMenu(parent, name) {
+
+    connect( kapp, SIGNAL(kdisplayFontChanged()), this, SLOT(kdisplayFontChanged()));
+    kdisplayFontChanged();
+}
+
+void KPopupMenu::kdisplayFontChanged()
+{
+    setFont(KGlobalSettings::menuFont());
+}
 
 int KPopupMenu::insertTitle(const QString &text, int id, int index)
 {
@@ -247,7 +256,7 @@ QPixmap KPopupMenu::titlePixmap(int id)
     QPixmap tmp;
     return(tmp);
 }
-    
+
 
 // Obselete
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
