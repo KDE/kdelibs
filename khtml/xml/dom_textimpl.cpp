@@ -293,9 +293,22 @@ const DOMString TextImpl::nodeName() const
 {
   return "#text";
 }
+
 DOMString TextImpl::nodeValue() const
 {
     return str;
+}
+
+void TextImpl::setNodeValue( const DOMString & newstr, int &exceptioncode )
+{
+  exceptioncode = 0;
+
+  if (DOMString(str) != newstr) {
+      if (str) str->deref();
+      str = newstr.implementation();
+      if (str) str->ref();
+      setChanged(true);
+  }
 }
 
 
@@ -330,8 +343,11 @@ void TextImpl::detach()
 
 void TextImpl::applyChanges(bool,bool force)
 {
-    if (force || changed())
+    if (force || changed()) {
         recalcStyle();
+        if (m_render && m_render->isText())
+            static_cast<RenderText*>(m_render)->setText(str);
+    }
     setChanged(false);
 }
 

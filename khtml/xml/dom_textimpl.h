@@ -97,6 +97,8 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual DOMString nodeValue() const;
+    virtual void setNodeValue( const DOMString &, int &exceptioncode );
+
     virtual unsigned short nodeType() const;
     virtual bool isTextNode() const { return true; }
 
