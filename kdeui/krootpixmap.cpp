@@ -66,6 +66,7 @@ void KRootPixmap::init()
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
+    m_pWidget->installEventFilter(this);
 }
 
 KRootPixmap::~KRootPixmap()
@@ -189,6 +190,7 @@ void KRootPixmap::repaint(bool force)
 	(m_pWidget->height() < m_Rect.height())
        )
     {
+        m_Rect = QRect(p1, p2);
  	updateBackground( m_pPixmap );
 	return;
     }

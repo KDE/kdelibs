@@ -97,11 +97,11 @@ bool KSharedPixmap::isAvailable(const QString & name) const
 
 bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
 {
+    d->rect = rect;
     if (d->selection != None)
 	// already active
 	return false;
 
-    d->rect = rect;
     QPixmap::resize(0, 0); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
