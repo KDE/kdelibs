@@ -70,7 +70,7 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
    * emergencySaveFunction to be called
    */
   if (_emergencySaveFunction && !_crashHandler)
-    setCrashHandler();
+    _crashHandler = defaultCrashHandler;
 }
 
 
