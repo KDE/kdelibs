@@ -138,6 +138,8 @@ class KWalletD : public KDEDModule {
 		void emitFolderUpdated(const QString&, const QString&);
 		// Internal - close this wallet.
 		int closeWallet(KWallet::Backend *w, int handle, bool force);
+		// Implicitly allow access for this application
+		bool implicitAllow(const QString& wallet, const QCString& app);
 
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
@@ -147,6 +149,7 @@ class KWalletD : public KDEDModule {
 
 		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt;
 		int _idleTime;
+		QMap<QString,QStringList> _implicitAllowMap;
 };
 
 

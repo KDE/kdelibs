@@ -181,7 +181,7 @@ int KWalletD::open(const QString& wallet) {
 		} else {
 			int response = KMessageBox::Yes;
 			
-			if (_openPrompt && !_handles[dc->senderId()].contains(rc)) {
+			if (_openPrompt && !_handles[dc->senderId()].contains(rc) && !implicitAllow(wallet, dc->senderId())) {
 				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'. Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
 			}
 
@@ -777,6 +777,14 @@ void KWalletD::reconfigure() {
 	_openPrompt = cfg.readBoolEntry("Prompt on Open", true);
 	_idleTime = cfg.readNumEntry("Idle Timeout", 10);
 
+	_implicitAllowMap.clear();
+	cfg.setGroup("Auto Allow");
+	QStringList entries = cfg.entryMap("Auto Allow").keys();
+	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
+		_implicitAllowMap[*i] = cfg.readListEntry(*i);
+	}
+
+
 	if (!_enabled) { // close all wallets
 		while (!_wallets.isEmpty()) { 
 			QIntDictIterator<KWallet::Backend> it(_wallets);
@@ -825,6 +833,11 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 	bool rc = b->entryDoesNotExist(folder, key);
 	delete b;
 	return rc;
+}
+
+
+bool KWalletD::implicitAllow(const QString& wallet, const QCString& app) {
+	return _implicitAllowMap[wallet].contains(QString::fromLocal8Bit(app));
 }
 
 
