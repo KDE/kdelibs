@@ -27,6 +27,9 @@
 #include <qbitmap.h>
 #include <qimage.h>
 #include <qwhatsthis.h>
+#include <qcstring.h>
+#include <qdatastream.h>
+#include <dcopclient.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
@@ -391,5 +394,20 @@ void KWin::deIconifyWindow( WId win, bool animation )
     if ( !animation )
 	sendClientMessageToRoot( win, kde_wm_change_state, NormalState, 1 );
     XMapWindow( qt_xdisplay(), win );
+}
+
+void KWin::appStarted()
+{
+  QByteArray params;
+  QDataStream d(params, IO_WriteOnly);
+
+  char * KDE_APP_START_PID = getenv("KDE_APP_START_PID");
+
+  if (NULL != KDE_APP_START_PID)
+    d << pid_t(QString::fromUtf8(KDE_APP_START_PID).toLong());
+  else
+    d << getpid();
+
+  kapp->dcopClient()->send("kicker", "TaskbarApplet", "clientMapped(pid_t)", params);
 }
 
