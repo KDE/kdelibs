@@ -6,12 +6,12 @@
 #include <kstaticdeleter.h>
 
 Test4 *Test4::mSelf = 0;
-static KStaticDeleter<Test4> staticDeleter;
+static KStaticDeleter<Test4> staticTest4Deleter;
 
 Test4 *Test4::self()
 {
   if ( !mSelf ) {
-    staticDeleter.setObject( mSelf, new Test4() );
+    staticTest4Deleter.setObject( mSelf, new Test4() );
     mSelf->readConfig();
   }
 
@@ -19,62 +19,62 @@ Test4 *Test4::self()
 }
 
 Test4::Test4(  )
-  : KConfigSkeleton( "test4rc" )
+  : KConfigSkeleton( QString::fromLatin1( "test4rc" ) )
 {
   mSelf = this;
-  setCurrentGroup( "Foo" );
+  setCurrentGroup( QString::fromLatin1( "Foo" ) );
 
 QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   KConfigSkeleton::ItemColor  *itemColor;
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #0", mColor[0], defaultColor[0] );
-  addItem( itemColor, "Color0" );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #1", mColor[1], defaultColor[1] );
-  addItem( itemColor, "Color1" );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #2", mColor[2], defaultColor[2] );
-  addItem( itemColor, "Color2" );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), "color #3", mColor[3], defaultColor[3] );
-  addItem( itemColor, "Color3" );
+  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #0" ), mColor[0], defaultColor[0] );
+  addItem( itemColor, QString::fromLatin1( "Color0" ) );
+  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #1" ), mColor[1], defaultColor[1] );
+  addItem( itemColor, QString::fromLatin1( "Color1" ) );
+  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #2" ), mColor[2], defaultColor[2] );
+  addItem( itemColor, QString::fromLatin1( "Color2" ) );
+  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #3" ), mColor[3], defaultColor[3] );
+  addItem( itemColor, QString::fromLatin1( "Color3" ) );
   QValueList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = "Encrypt";
+    choice.name = QString::fromLatin1( "Encrypt" );
     valuesMouseAction.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = "Decrypt";
+    choice.name = QString::fromLatin1( "Decrypt" );
     valuesMouseAction.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = "CrashNBurn";
+    choice.name = QString::fromLatin1( "CrashNBurn" );
     valuesMouseAction.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
-    choice.name = "PumpNDump";
+    choice.name = QString::fromLatin1( "PumpNDump" );
     valuesMouseAction.append( choice );
   }
   KConfigSkeleton::ItemEnum  *itemMouseAction;
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "right_mouse_action", mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
-  addItem( itemMouseAction, "MouseActionright" );
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "mid_mouse_action", mMouseAction[1], valuesMouseAction, EnumMouseAction::Encrypt );
-  addItem( itemMouseAction, "MouseActionmid" );
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "left_mouse_action", mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
-  addItem( itemMouseAction, "MouseActionleft" );
+  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "right_mouse_action" ), mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
+  addItem( itemMouseAction, QString::fromLatin1( "MouseActionright" ) );
+  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "mid_mouse_action" ), mMouseAction[1], valuesMouseAction, EnumMouseAction::Encrypt );
+  addItem( itemMouseAction, QString::fromLatin1( "MouseActionmid" ) );
+  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "left_mouse_action" ), mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
+  addItem( itemMouseAction, QString::fromLatin1( "MouseActionleft" ) );
   KConfigSkeleton::ItemString  *itemFooBar;
-  itemFooBar = new KConfigSkeleton::ItemString( currentGroup(), "foo bar", mFooBar );
-  addItem( itemFooBar, "FooBar" );
+  itemFooBar = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "foo bar" ), mFooBar );
+  addItem( itemFooBar, QString::fromLatin1( "FooBar" ) );
   KConfigSkeleton::ItemInt  *itemAge;
-  itemAge = new KConfigSkeleton::ItemInt( currentGroup(), "Age", mAge, 35 );
+  itemAge = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Age" ), mAge, 35 );
   itemAge->setMinValue(8);
   itemAge->setMaxValue(88);
-  addItem( itemAge );
+  addItem( itemAge, QString::fromLatin1( "Age" ) );
 }
 
 Test4::~Test4()
 {
   if ( mSelf == this )
-    staticDeleter.setObject( mSelf, 0, false );
+    staticTest4Deleter.setObject( mSelf, 0, false );
 }
 
