@@ -1056,14 +1056,14 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     KConfigGroupSaver saver(config, configGroup);
 
-    if(!config->hasDefault("Position") && position == d->PositionDefault )
+    if(config->hasDefault("Position") && position == d->PositionDefault )
       config->revertToDefault("Position");
     else
       config->writeEntry("Position", position);
 
     //kdDebug(220) << name() << "                icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
 
-    if(!config->hasDefault("IconText") && icontext == d->IconTextDefault )
+    if(config->hasDefault("IconText") && icontext == d->IconTextDefault )
     {
       //kdDebug(220) << name() << "                reverting icontext to default" << endl;
       config->revertToDefault("IconText");
@@ -1074,12 +1074,12 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
       config->writeEntry("IconText", icontext);
     }
 
-    if(!config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault )
+    if(config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault )
       config->revertToDefault("IconSize");
     else
       config->writeEntry("IconSize", iconSize());
 
-    if(!config->hasDefault("Hidden") && isHidden() == d->HiddenDefault )
+    if(config->hasDefault("Hidden") && isHidden() == d->HiddenDefault )
       config->revertToDefault("Hidden");
     else
       config->writeEntry("Hidden", isHidden());
@@ -1096,12 +1096,12 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     //kdDebug(220) << name() << "                writing index " << index << endl;
     config->writeEntry("Index", index);
 
-    if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
+    if(config->hasDefault("Offset") && offset() == d->OffsetDefault )
       config->revertToDefault("Offset");
     else
       config->writeEntry("Offset", offset());
 
-    if(!config->hasDefault("NewLine") && newLine() == d->NewLineDefault )
+    if(config->hasDefault("NewLine") && newLine() == d->NewLineDefault )
       config->revertToDefault("NewLine");
     else
       config->writeEntry("NewLine", newLine());
