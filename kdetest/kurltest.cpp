@@ -73,6 +73,19 @@ int main(int argc, char *argv[])
   check("KURL::upURL()", u2.url(), "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   u2 = u2.upURL();
   check("KURL::upURL()", u2.url(), "file:/home/dfaure/");
+  // setFileName
+  u2.setFileName( "myfile.txt" );
+  check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myfile.txt");
+  u2.setFileName( "myotherfile.txt" );
+  check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myotherfile.txt");
+  // more tricky, renaming a directory (kpropsdlg.cc, line ~ 238)
+      QString tmpurl = "file:/home/dfaure/myolddir/";
+      if ( tmpurl.at(tmpurl.length() - 1) == '/') 
+	  // It's a directory, so strip the trailing slash first
+	  tmpurl.truncate( tmpurl.length() - 1);
+      KURL newUrl = tmpurl;
+      newUrl.setFileName( "mynewdir" );
+  check("KURL::setFileName() special", newUrl.url(), "file:/home/dfaure/mynewdir");
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
