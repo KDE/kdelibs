@@ -478,7 +478,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = on || down;
 
 			QString name = "pushbutton";
-			if ( w < 25 || h < 25 ) name += "-small";
+			if ( w < 36 || h < 28 ) name += "-small";
 			if ( sunken ) name += ( "-pressed" );
 
 			p->fillRect( r, cg.background() );
@@ -1561,9 +1561,10 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 		// ------------------------------------------------------------------
 		case CT_PushButton:
 		{
+			const QPushButton* btn = static_cast< const QPushButton* >( widget );
 			int w = contentSize.width() + 2 * pixelMetric( PM_ButtonMargin, widget );
 			int h = contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget );
-			if ( w < 25 || h < 25 ) return QSize( w, h );
+			if ( btn->text().isEmpty() ) return QSize( w, h );
 			return QSize( w + 31, h + 5 );
 		}
 
