@@ -74,7 +74,10 @@ protected:
     virtual bool rewriteURL(const KURL &url, KURL &newURL)=0;
   
 private:
+    KURL m_processedURL;
+    
     bool internalRewriteURL(const KURL &url, KURL &newURL);
+    void prepareUDSEntry(KIO::UDSEntry &entry, bool listing=false);
     
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);

@@ -19,6 +19,7 @@
 
 #include <kdebug.h>
 #include <kio/job.h>
+#include <kmimetype.h>
 
 #include <qapplication.h>
 #include <qeventloop.h>
@@ -41,14 +42,75 @@ ForwardingSlaveBase::~ForwardingSlaveBase()
 
 bool ForwardingSlaveBase::internalRewriteURL(const KURL &url, KURL &newURL)
 {
+    bool result = true;
+
     if ( url.protocol().ascii()==mProtocol )
     {
-        return rewriteURL(url, newURL);
+        result = rewriteURL(url, newURL);
     }
     else
     {
         newURL = url;
-        return true;
+    }
+
+    m_processedURL = newURL;
+    return result;
+}
+
+void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
+{
+    bool mimetype_found = false;
+    bool name_found = false;
+    bool url_found = false;
+    QString name;
+    KURL url;
+    
+    KIO::UDSEntry::iterator it = entry.begin();
+    KIO::UDSEntry::iterator end = entry.end();
+
+    for(; it!=end; ++it)
+    {
+        KURL new_url = m_processedURL;
+
+        switch( (*it).m_uds )
+        {
+        case KIO::UDS_NAME:
+            name_found = true;
+            name = (*it).m_str;
+	    break;
+        case KIO::UDS_URL:
+            url_found = true;
+            url = (*it).m_str;
+	    if (listing)
+            {
+                new_url.addPath(url.fileName());
+            }
+            (*it).m_str = new_url.url();
+            break;
+        case KIO::UDS_MIME_TYPE:
+            mimetype_found = true;
+            break;
+        }
+    }
+
+    if (!mimetype_found)
+    {
+        KURL new_url = m_processedURL;
+        if (name_found && listing)
+        {
+            new_url.addPath(name);
+        }
+	else if (url_found && listing)
+	{
+            new_url.addPath( url.fileName() );
+	}
+
+        KMimeType::Ptr mime = KMimeType::findByURL(new_url);
+        KIO::UDSAtom atom;
+        atom.m_uds = KIO::UDS_MIME_TYPE;
+        atom.m_long = 0;
+        atom.m_str = mime->name();
+        entry.append(atom);
     }
 }
 
@@ -277,7 +339,9 @@ void ForwardingSlaveBase::slotResult(KIO::Job *job)
         KIO::StatJob *stat_job = dynamic_cast<KIO::StatJob *>(job);
         if ( stat_job!=0L )
         {
-            statEntry( stat_job->statResult() );
+            KIO::UDSEntry entry = stat_job->statResult();
+	    prepareUDSEntry(entry);
+            statEntry( entry );
         }
         finished();
     }
@@ -313,7 +377,17 @@ void ForwardingSlaveBase::slotRedirection(KIO::Job* /*job*/, const KURL &url)
 void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
                                       const KIO::UDSEntryList &entries)
 {
-    listEntries( entries );
+    KIO::UDSEntryList final_entries = entries;
+
+    KIO::UDSEntryList::iterator it = final_entries.begin();
+    KIO::UDSEntryList::iterator end = final_entries.end();
+
+    for(; it!=end; ++it)
+    {
+        prepareUDSEntry(*it, true);
+    }
+    
+    listEntries( final_entries );
 }
 
 void ForwardingSlaveBase::slotData(KIO::Job* /*job*/, const QByteArray &d)
