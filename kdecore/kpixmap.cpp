@@ -438,95 +438,101 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	}
 }
 
+static QColor* kpixmap_iconPalette = 0;
+
 bool KPixmap::checkColorTable( const QImage &image ) 
 {
-	QColor *iconPalette = new QColor[40];
-	int i = 0;
+    int i = 0;
+
+    if (kpixmap_iconPalette == 0) {
+	kpixmap_iconPalette = new QColor[40];
 	
-	int ncols = image.numColors();
-
 	// Standard palette
-    iconPalette[i++] = red;
-    iconPalette[i++] = green;
-    iconPalette[i++] = blue;
-    iconPalette[i++] = cyan;
-    iconPalette[i++] = magenta;
-    iconPalette[i++] = yellow;
-    iconPalette[i++] = darkRed;
-    iconPalette[i++] = darkGreen;
-    iconPalette[i++] = darkBlue;
-    iconPalette[i++] = darkCyan;
-    iconPalette[i++] = darkMagenta;
-    iconPalette[i++] = darkYellow;
-    iconPalette[i++] = white;
-    iconPalette[i++] = lightGray;
-    iconPalette[i++] = gray;
-    iconPalette[i++] = darkGray;
-    iconPalette[i++] = black;
-
+	kpixmap_iconPalette[i++] = red;
+	kpixmap_iconPalette[i++] = green;
+	kpixmap_iconPalette[i++] = blue;
+	kpixmap_iconPalette[i++] = cyan;
+	kpixmap_iconPalette[i++] = magenta;
+	kpixmap_iconPalette[i++] = yellow;
+	kpixmap_iconPalette[i++] = darkRed;
+	kpixmap_iconPalette[i++] = darkGreen;
+	kpixmap_iconPalette[i++] = darkBlue;
+	kpixmap_iconPalette[i++] = darkCyan;
+	kpixmap_iconPalette[i++] = darkMagenta;
+	kpixmap_iconPalette[i++] = darkYellow;
+	kpixmap_iconPalette[i++] = white;
+	kpixmap_iconPalette[i++] = lightGray;
+	kpixmap_iconPalette[i++] = gray;
+	kpixmap_iconPalette[i++] = darkGray;
+	kpixmap_iconPalette[i++] = black;
+	
 	// Pastels
-	iconPalette[i++] = QColor( 255, 192, 192 );
-	iconPalette[i++] = QColor( 192, 255, 192 );
-	iconPalette[i++] = QColor( 192, 192, 255 );
-	iconPalette[i++] = QColor( 255, 255, 192 );
-	iconPalette[i++] = QColor( 255, 192, 255 );
-	iconPalette[i++] = QColor( 192, 255, 255 );
+	kpixmap_iconPalette[i++] = QColor( 255, 192, 192 );
+	kpixmap_iconPalette[i++] = QColor( 192, 255, 192 );
+	kpixmap_iconPalette[i++] = QColor( 192, 192, 255 );
+	kpixmap_iconPalette[i++] = QColor( 255, 255, 192 );
+	kpixmap_iconPalette[i++] = QColor( 255, 192, 255 );
+	kpixmap_iconPalette[i++] = QColor( 192, 255, 255 );
 
 	// Reds
-	iconPalette[i++] = QColor( 64,   0,   0 );
-	iconPalette[i++] = QColor( 192,  0,   0 );
+	kpixmap_iconPalette[i++] = QColor( 64,   0,   0 );
+	kpixmap_iconPalette[i++] = QColor( 192,  0,   0 );
 
 	// Oranges
-	iconPalette[i++] = QColor( 255, 128,   0 );
-	iconPalette[i++] = QColor( 192,  88,   0 );
-	iconPalette[i++] = QColor( 255, 168,  88 );
-	iconPalette[i++] = QColor( 255, 220, 168 );
+	kpixmap_iconPalette[i++] = QColor( 255, 128,   0 );
+	kpixmap_iconPalette[i++] = QColor( 192,  88,   0 );
+	kpixmap_iconPalette[i++] = QColor( 255, 168,  88 );
+	kpixmap_iconPalette[i++] = QColor( 255, 220, 168 );
 
 	// Blues
-	iconPalette[i++] = QColor(   0,   0, 192 );
+	kpixmap_iconPalette[i++] = QColor(   0,   0, 192 );
 
 	// Turquoise
-	iconPalette[i++] = QColor(   0,  64,  64 );
-	iconPalette[i++] = QColor(   0, 192, 192 );
+	kpixmap_iconPalette[i++] = QColor(   0,  64,  64 );
+	kpixmap_iconPalette[i++] = QColor(   0, 192, 192 );
 
 	// Yellows
-	iconPalette[i++] = QColor(  64,  64,   0 );
-	iconPalette[i++] = QColor( 192, 192,   0 );
+	kpixmap_iconPalette[i++] = QColor(  64,  64,   0 );
+	kpixmap_iconPalette[i++] = QColor( 192, 192,   0 );
 
 	// Greens
-	iconPalette[i++] = QColor(   0,  64,   0 );
-	iconPalette[i++] = QColor(   0, 192,   0 );
+	kpixmap_iconPalette[i++] = QColor(   0,  64,   0 );
+	kpixmap_iconPalette[i++] = QColor(   0, 192,   0 );
 
 	// Purples
-	iconPalette[i++] = QColor( 192,   0, 192 );
+	kpixmap_iconPalette[i++] = QColor( 192,   0, 192 );
 
 	// Greys
-	iconPalette[i++] = QColor(  88,  88,  88 );
-	iconPalette[i++] = QColor(  48,  48,  48 );
-	iconPalette[i++] = QColor( 220, 220, 220 );
-
-	int j;
-	QRgb* ctable = image.colorTable();
+	kpixmap_iconPalette[i++] = QColor(  88,  88,  88 );
+	kpixmap_iconPalette[i++] = QColor(  48,  48,  48 );
+	kpixmap_iconPalette[i++] = QColor( 220, 220, 220 );
 	
-	// Allow one failure which could be transparent background
-	int failures = 0;
-	
-	for ( i=0; i<ncols; i++ ) {
-		for ( j=0; j<40; j++ ) {
-			if ( iconPalette[j].red() == qRed( ctable[i] ) &&
-				 iconPalette[j].green() == qGreen( ctable[i] ) &&
-				 iconPalette[j].blue() == qBlue( ctable[i] ) ) {
-				break;
-			}
-		}
+    }
+    
+    QRgb* ctable = image.colorTable();
 
-		if ( j == 40 ) {
-			failures ++;			
-		}
+    int ncols = image.numColors();
+    int j;
+    
+    // Allow one failure which could be transparent background
+    int failures = 0;
+    
+    for ( i=0; i<ncols; i++ ) {
+	for ( j=0; j<40; j++ ) {
+	    if ( kpixmap_iconPalette[j].red() == qRed( ctable[i] ) &&
+		 kpixmap_iconPalette[j].green() == qGreen( ctable[i] ) &&
+		 kpixmap_iconPalette[j].blue() == qBlue( ctable[i] ) ) {
+		break;
+	    }
 	}
 	
-	if( failures > 1 )
-		return FALSE;
-	else
-		return TRUE;
+	if ( j == 40 ) {
+	    failures ++;			
+	}
+    }
+    
+    if( failures > 1 )
+	return FALSE;
+    else
+	return TRUE;
 }
