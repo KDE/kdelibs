@@ -1,5 +1,6 @@
 Source: kdelibs
 Build-Depends: automake, libtool, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000906-0), libpng2-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev | xlibs, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libgl-dev, libssl095a-dev
+Build-Conflicts: kdelibs3, kdelibs3-nossl
 Section: non-US/main
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -10,6 +11,7 @@ Architecture: any
 Section: non-US/main
 Replaces: kdelibs3-cvs, kdelibs3-nossl
 Depends: ${shlibs:Depends}, libssl095a
+Conflicts: kdelibs3-nossl
 Provides: kdelibs3-nossl
 Description: KDE core libraries (runtime files)
  KDE core libraries.
@@ -30,7 +32,7 @@ Architecture: any
 Section: non-US/main
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlib6g-dev | xlibs, libgl-dev
-Conflicts: kdelibs0-dev, kdelibs2g-dev
+Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc
 Provides: kdelibs-dev, kdelibs3-nossl-dev
 Description: KDE core libraries (development files)
