@@ -27,6 +27,8 @@
 #include "config.h"
 #endif
 
+#include "kstyle.h"
+
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qcleanuphandler.h>
@@ -48,7 +50,6 @@
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 #include <kimageeffect.h>
-#include "kstyle.h"
 
 #ifdef Q_WS_X11
 # include <X11/Xlib.h>

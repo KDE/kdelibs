@@ -34,6 +34,8 @@
 
 #include <qcommonstyle.h>
 
+#include <kdelibs_export.h>
+
 class KPixmap;
 
 class KStylePrivate;
