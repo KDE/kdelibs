@@ -57,7 +57,7 @@ static char *getDisplay()
 #endif
    if (!display || !*display)
    {
-      display = ":0";
+      display = ":0"; /* ### or "NODISPLAY"? */
    }
    result = malloc(strlen(display)+1);
    strcpy(result, display);

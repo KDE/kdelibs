@@ -188,14 +188,8 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
    QCString disp = getenv("QWS_DISPLAY");
 #endif
    if (disp.isEmpty())
-   {
-#ifdef Q_WS_X11
-      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
-#elif defined(Q_WS_QWS)
-      fprintf(stderr, "Aborting. $QWS_DISPLAY is not set.\n");
-#endif
-      exit(1);
-   }
+      disp = "NODISPLAY";
+
    int i;
    if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
        disp.truncate(i);

@@ -642,7 +642,7 @@ dcop_connect()
   display = getenv("DISPLAY");
   
   if (NULL == display)
-    return False;
+    display = "NODISPLAY";
 
   strcpy(displayName, display);
   if((i = strrchr(displayName, '.')) > strrchr(displayName, ':') && i)
