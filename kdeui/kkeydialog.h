@@ -126,7 +126,7 @@ protected:
  * associations for KAccel and KGlobalAccel. It uses the KKeyChooser widget
  * and offers buttons to set all keys to defaults and invoke on-line help.
  *
- * Two static methods are supplied which provide the most convienient interface
+ * Three static methods are supplied which provide the most convienient interface
  * to the dialog. For example you could use KAccel and KKeyDialog like this
  *
  * <pre>
@@ -152,6 +152,12 @@ protected:
  *	      ...
  * }
  * </pre>
+ *
+ * For XML-UI applications, this is much simpler. All you need to do is
+ * <pre>
+ * KKeyDialog::configureKeys(actionCollection(), xmlFile());
+ * </pre>
+ *
  * @short Dialog for configuration of @ref KAccel and @ref KGlobalAccel.
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
@@ -167,17 +173,17 @@ public:
   ~KKeyDialog();
 
   /**
-   * Configure key settings.
+   * Configure key settings, from a KAccel object.
    **/
   static int configureKeys( KAccel *keys, bool save_settings = true,
 			    QWidget *parent = 0  );
   /**
-   * Configure key settings.
+   * Configure key settings, from a KGlobalAccel object.
    **/
   static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
 			    QWidget *parent = 0 );
   /**
-   * Configure key settings.
+   * Configure key settings, from an action collection (for XMLGUI based applications).
    **/
   static int configureKeys( KActionCollection *coll, const QString& xmlfile,
                             bool save_settings = true, QWidget *parent = 0 );
