@@ -38,7 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa \
+	--includedir=/usr/include/kde --with-ssl --without-alsa \
 	--disable-cups
 
 	$(MAKE)
@@ -53,7 +53,7 @@ alsa-stamp:
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+	./configure $(configkde) --with-alsa --with-ssl --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
@@ -149,8 +149,6 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs4-cups --sourcedir=debian/kdelibs4
 	dh_movefiles -plibarts1-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid0-alsa --sourcedir=debian/alsa-tmp
-	# ssl cleanup
-	-rm -rf debian/kdelibs4/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a
