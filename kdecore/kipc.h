@@ -80,4 +80,4 @@ public:
      */
     static long getSimpleProperty(Window w, Atom a);
 };
-#endif __KIPC_h_Included__
+#endif
