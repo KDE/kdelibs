@@ -2,9 +2,9 @@ INCLUDES = $(all_includes)
 
 METASOURCES = AUTO
 
-lib_LTLIBRARIES = libkderesources.la
+lib_LTLIBRARIES = libkresources.la
 
-libkderesources_la_SOURCES = resource.cpp \
+libkresources_la_SOURCES = resource.cpp \
   factory.cpp \
   manageriface.skel \
   manageriface.stub \
@@ -14,8 +14,8 @@ libkderesources_la_SOURCES = resource.cpp \
   selectdialog.cpp \
   configpage.cpp
 
-libkderesources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
-libkderesources_la_LIBADD = $(LIB_KDEUI)
+libkresources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
+libkresources_la_LIBADD = $(LIB_KDEUI)
 
 kresincludedir = $(includedir)/kresources
 kresinclude_HEADERS = resource.h \
