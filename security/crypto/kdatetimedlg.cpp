@@ -4,7 +4,7 @@
  * Copyright (c) 2001 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation; either version 2.1 of the License, or
  *  (at your option) any later version.
  *
@@ -28,11 +28,11 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdatepicker.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <knuminput.h>
+#include <kstdguiitem.h>
 
-
-KDateTimeDlg::KDateTimeDlg(QWidget *parent, const char *name) 
+KDateTimeDlg::KDateTimeDlg(QWidget *parent, const char *name)
                              : KDialog(parent, name, true) {
 QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
 
@@ -56,11 +56,11 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    _secs->setRange(0, 59, 1, false);
    grid->addWidget(_secs, 7, 5);
 
-   _ok = new QPushButton(i18n("&OK"), this);
+   _ok = new KPushButton(KStdGuiItem::ok(), this);
    grid->addWidget(_ok, 8, 4);
    connect(_ok, SIGNAL(clicked()), SLOT(accept()));
 
-   _cancel = new QPushButton(i18n("&Cancel"), this);
+   _cancel = new KPushButton(KStdGuiItem::cancel(), this);
    grid->addWidget(_cancel, 8, 5);
    connect(_cancel, SIGNAL(clicked()), SLOT(reject()));
 

@@ -4,7 +4,7 @@
  * Copyright (c) 2001 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation; either version 2.1 of the License, or
  *  (at your option) any later version.
  *
@@ -25,7 +25,7 @@
 
 class KDatePicker;
 class KIntNumInput;
-class QPushButton;
+class KPushButton;
 class QDate;
 class QTime;
 class QDateTime;
@@ -50,7 +50,7 @@ public:
 protected slots:
 
 private:
-   QPushButton *_ok, *_cancel;
+   KPushButton *_ok, *_cancel;
    KDatePicker *_date;
    KIntNumInput *_hours, *_mins, *_secs;
 
