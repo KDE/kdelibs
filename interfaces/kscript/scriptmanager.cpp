@@ -28,6 +28,8 @@ KScriptManager::KScriptManager(QObject *parent, const char *name) :
 }
 KScriptManager::~KScriptManager()
 {
+    m_scripts.setAutoDelete(true);
+    m_scriptCache.setAutoDelete(true);
 
 }
 bool KScriptManager::addScript( const QString &scriptDesktopFile)
