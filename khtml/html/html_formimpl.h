@@ -533,6 +533,7 @@ protected:
     int m_cols;
     WrapMethod m_wrap;
     QString m_value;
+    bool m_dirtyvalue;
 };
 
 // -------------------------------------------------------------------------

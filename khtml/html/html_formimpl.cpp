@@ -993,8 +993,6 @@ void HTMLInputElementImpl::attach()
 
         if (m_render)
         {
-	    if (m_render->isFormElement())
-		static_cast<RenderFormElement*>(m_render)->ref();
             m_render->setStyle(m_style);
 #ifdef FORMS_DEBUG
             kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
@@ -1548,7 +1546,6 @@ void HTMLSelectElementImpl::attach()
     if(r)
     {
         RenderSelect *f = new RenderSelect(view, this);
-        f->ref();
         if (f)
         {
             m_render = f;
@@ -1854,7 +1851,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc)
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
-    m_value = QString::null;
+    m_dirtyvalue = true;
 }
 
 
@@ -1865,7 +1862,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
-    m_value = QString::null;
+    m_dirtyvalue = true;
 }
 
 ushort HTMLTextAreaElementImpl::id() const
@@ -1952,7 +1949,6 @@ void HTMLTextAreaElementImpl::attach()
     if(r)
     {
         RenderTextArea *f = new RenderTextArea(view, this);
-        f->ref();
         if (f)
         {
             m_render = f;
@@ -1983,14 +1979,20 @@ void HTMLTextAreaElementImpl::reset()
 
 DOMString HTMLTextAreaElementImpl::value()
 {
-    if (m_value.isNull())
-        m_value = defaultValue().string();
+    if ( !m_render || m_value.isNull() ) return defaultValue().string();
+
+    if ( m_dirtyvalue ) {
+        m_value = static_cast<RenderTextArea*>( m_render )->text();
+        m_dirtyvalue = false;
+    }
+
     return m_value;
 }
 
 void HTMLTextAreaElementImpl::setValue(DOMString _value)
 {
     m_value = _value.string();
+    m_dirtyvalue = false;
     setChanged(true);
 }
 
