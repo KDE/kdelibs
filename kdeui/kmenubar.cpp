@@ -84,6 +84,16 @@ KMenuBar::~KMenuBar()
   delete d; d = 0;
 }
 
+void KMenuBar::setTopLevelMenu(bool top_level)
+{
+  d->m_macMode = top_level;
+}
+
+bool KMenuBar::isTopLevelMenu() const
+{
+  return d->m_macMode;
+}
+
 void KMenuBar::slotReadConfig()
 {
   static QString grpKDE = QString::fromLatin1("KDE");

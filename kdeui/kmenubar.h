@@ -47,6 +47,32 @@ public:
     KMenuBar (QWidget *parent=0, const char *name=0);
     ~KMenuBar ();
 
+    /**
+     * This controls whether or not this menubar will be a top-level
+     * bar similar to the way Macintosh handles menubars.  This
+     * overrides any global config settings.
+     *
+     * Keep in mind that it is probably a really bad idea to use this
+     * unless you really know what you're doing.  A feature like a
+     * top-level menubar is one that should really be shared by all
+     * applications.  If your app is the only one with a top-level
+     * bar, then things might look very... odd.
+     *
+     * This is included only for those people that @bf do know that
+     * they need to use it.
+     *
+     * @param top_level If set to true, then this menubar will be a
+     *                  top-level menu
+     */
+    void setTopLevelMenu(bool top_level = true);
+
+    /**
+     * Is our menubar a top-level (Macintosh style) menubar?
+     *
+     * @return True if it is top-level.
+     */
+    bool isTopLevelMenu() const;
+
 protected slots:
     void slotReadConfig();
 
