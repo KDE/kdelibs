@@ -120,9 +120,10 @@ public:
 
 private:
   class Item;
+public:
   typedef QPtrList<Item> ItemList;
 
-
+private:
   static void traverseChildren(QWidget *widget, Item *item);
 
   static void manageWidget(QWidget *widget, Item *item);
