@@ -468,6 +468,7 @@ void KFileDialog::slotOk()
 		if ( info.isDir() ) {
 		    locationEdit->insertItem( d->url.path(+1), 1 );
 		    d->filenames = QString::null;
+		    d->urlList.clear();
 		    d->urlList.append( d->url );
 		    accept();
 		}
