@@ -8,7 +8,7 @@ JPEG	<read>
 XV	<read> <write>
 EPS	<read>
 NETPBM	<incomplete>
-PNG	<read>
+PNG	<read> <write, only with newer libraries>
 TIFF	<read>
 
 To use these formats, you must 
