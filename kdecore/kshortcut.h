@@ -75,6 +75,7 @@ class KKey
 
 	/** @internal */
 	uint sym() const;
+	/** @internal */
 	uint modFlags() const;
 
  // Comparison Methods
@@ -115,7 +116,6 @@ class KKey
 	uint m_mod;
 
  private:
-	class KKeyPrivate* d;
 	friend class KKeyNative;
 };
 
