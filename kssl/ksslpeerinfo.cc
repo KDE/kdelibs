@@ -67,13 +67,13 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   int err;
   QString cn = certinfo.getValue("CN");
-  QString host, port;
-
-  if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
-     host = d->host->nodeName();
 
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
+     QString host, port;
+
+     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
+        host = d->host->nodeName();
 #if QT_VERSION < 300
      if (cnre.match(host) >= 0) return true;
 #else
