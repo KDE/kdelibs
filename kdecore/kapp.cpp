@@ -20,6 +20,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// applied patch by Kalle to make invokeHTMLHelp use the locale setting.
+//
+// Revision 1.86  1998/01/25 20:35:48  kulow
 // corrected order of signal and action (a party for the four-eyes-strategy ;)
 //
 // Revision 1.85  1998/01/25 20:09:43  kulow
@@ -511,6 +514,12 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 													 "kdebug.dbg" ) );
 		  pDialog->setFatalShow( pConfig->readEntry( "FatalShow", "" ) );
 		  pDialog->setAbortFatal( pConfig->readNumEntry( "AbortFatal", 0 ) );
+								
+		  /* Show dialog */
+		  int nRet = pDialog->exec();
+
+		  if( nRet == QDialog::Accepted )
+			{
 			  /* User pressed OK, retrieve values */
 			  pConfig->writeEntry( "InfoOutput", pDialog->infoOutput() );
 			  pConfig->writeEntry( "InfoFilename", pDialog->infoFile() );
