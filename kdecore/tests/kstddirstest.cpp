@@ -1,9 +1,11 @@
 #include <kapp.h>
+#include <kinstance.h>
 #include <kstddirs.h>
 #include <kconfig.h>
 
 int main(int, char **)
 {
+  (void) new KInstance("whatever");
   KStandardDirs t;
   t.addKDEDefaults();	
   KConfig config; // to add custom entries - a bit tricky :/
