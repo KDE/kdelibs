@@ -10,23 +10,20 @@
 <bookinfo>
 <title>The &kspell; Handbook</title>
 <authorgroup>
-<author>
-<firstname>David</firstname>
-<surname>Sweet</surname>
-<affiliation>
-<address><email>dsweet@chaos.umd.edu</email></address>
-</affiliation>
-</author>
+<author>&David.Sweet; &David.Sweet.mail;</author>
 
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 
 </authorgroup>
-<date>2002-02-24</date>
+
+<date>2003-02-24</date>
 <releaseinfo>1.00.00</releaseinfo>
 <abstract>
-<para>&kspell; is the spelling checker used by KDE applications such as &kate;,
-&kmail;, and &kword;. It is a GUI frontend to <application>International ISpell</application>
-and <application>ASpell</application>.</para>
+<para>&kspell; is the spelling checker used by &kde; applications such
+as &kate;, &kmail;, and &kword;. It is a <acronym>GUI</acronym>
+frontend to <application>International ISpell</application> and
+<application>ASpell</application>.</para>
+
 </abstract>
 <keywordset>
 <keyword>spell</keyword>
@@ -43,10 +40,12 @@ and <application>ASpell</application>.</para>
 <chapter id="misspelled-word-dialog">
 <title>Misspelled Word Dialog</title>
 
-<!-- This one might need a paragraph of its own) -->
-<para>(If you do not have <application>Ispell</application> installed you can obtain it
-from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International ISpell home page</ulink>.
-ASpell is available from the <ulink url="http://aspell.sourceforge.net/">ASpell home page</ulink>.)
+<!-- This one might need a paragraph of its own) --> 
+<para>(If you do not have <application>Ispell</application> installed
+you can obtain it from the <ulink
+url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International
+ISpell home page</ulink>.  ASpell is available from the <ulink
+url="http://aspell.sourceforge.net/">ASpell home page</ulink>.)
 </para>
 
 <sect1 id="general-use">
@@ -152,7 +151,7 @@ read the International <application>ISpell</application> man page.</para>
 Home Page</ulink>. In particular, you will find information about programming the &kspell; C++ class.</para>
 
 <para>You may email the author/maintainer with questions and/or comments at
-<email>dsweet@kde.org</email>.</para>
+&David.Sweet.mail;.</para>
 
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
 
