@@ -202,6 +202,9 @@ public:
    * and the code returned true itself or @p false otherwise.
    */
   bool executeScript( const QString &script );
+  /**
+   * Same as above except the Node parameter specifying the 'this' value.
+   */
   bool executeScript( const DOM::Node &n, const QString &script );
 
   void setDNDEnabled( bool b );
