@@ -1,4 +1,3 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common Unix Print System)
-Comment[fr]=CUPS (Common Unix Print System)

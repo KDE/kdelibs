@@ -1,6 +1,7 @@
 [Misc]
 Name=HighColor Default
 Name[az]=yüksək Rəng Əsası
+Name[br]=Livioù uhel dre ziouer
 Name[bs]=HighColor uobičajeno
 Name[ca]=HighColor per omissió
 Name[cs]=Mnohobarevné implicitní
@@ -41,6 +42,7 @@ Name[uk]=Типовий (64K кольорів)
 Name[zh_CN.GB2312]=默认的高色彩
 Comment=Highcolor version of the default style
 Comment[az]=Əsas tərzin yüksək rəng versiyası
+Comment[br]=Stumm livioù uhel ar c'hiz dre ziouer
 Comment[bs]=Highcolor inačica uobičajenog stila
 Comment[ca]=Versió Highcolor de l'estil per omissió
 Comment[cs]=Mnohobarevný implicitní styl

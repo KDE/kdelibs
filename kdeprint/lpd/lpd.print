@@ -1,4 +1,3 @@
 [KDE Print Entry]
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
-Comment[fr]=LPR (Système d'impression standard BSD)

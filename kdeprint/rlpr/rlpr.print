@@ -1,4 +1,3 @@
 [KDE Print Entry]
 PrintSystem=rlpr
 Comment=RLPR environment (Remote LPD servers)
-Comment[fr]=Environnement RLPR (Serveurs LPD distants)
