@@ -299,7 +299,15 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    if (w->part()->pluginsEnabled() && parentNode()->renderer()) {
+    bool loadplugin = w->part()->pluginsEnabled();
+    KURL u = getDocument()->completeURL(url);
+    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
+        if (part->url() == u) {
+            loadplugin = false;
+            break;
+        }
+
+    if (loadplugin && parentNode()->renderer()) {
         needWidgetUpdate = false;
         m_render = new RenderPartObject(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
