@@ -74,6 +74,7 @@ bool KNewStuffSecure::install(const QString &fileName)
       else
       {
          m_tarName.prepend(m_tempDir->name());
+         connect(Security::ref(), SIGNAL(validityResult(int)), this, SLOT(slotValidated(int)));
          Security::ref()->checkValidity(m_tarName);
       }
   } else
@@ -158,7 +159,6 @@ void KNewStuffSecure::slotValidated(int result)
 
 void KNewStuffSecure::downloadResource()
 {
-  connect(Security::ref(), SIGNAL(validityResult(int)), this, SLOT(slotValidated(int)));
   KConfig *cfg = KGlobal::config();
   m_installedResources = cfg->entryMap("KNewStuffStatus");
   engine()->ignoreInstallResult(true);
