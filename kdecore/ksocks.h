@@ -86,6 +86,12 @@ public:
     */
    void die();
 
+   /*
+    *  Set this before the first call to KSocks::self() and it will fail
+    *  to initialize SOCKS.
+    */
+   static void disable();
+
 private:
    KSocks();
    ~KSocks();
@@ -93,6 +99,7 @@ private:
    void stopSocks();
 
    static KSocks *_me;
+   static bool _disabled;
    QStringList _libNames;
    QStringList _libPaths;
    bool _useSocks, _hasSocks;

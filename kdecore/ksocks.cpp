@@ -181,6 +181,9 @@ KDanteSocksTable::~KDanteSocksTable() {
 
 
 KSocks *KSocks::_me = NULL;
+bool KSocks::_disabled = false;
+
+void KSocks::disable() { _disabled = true; }
 
 KSocks *KSocks::self() {
   if (!_me) {
@@ -191,12 +194,18 @@ KSocks *KSocks::self() {
 
 
 KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
+
+   if (!_disabled) {
+      _hasSocks = _useSocks = false;
+      return;
+   }
+
    _libPaths << ""
              << "/usr/lib/"
              << "/usr/local/lib/"
              << "/usr/local/socks5/lib/"
              << "/opt/socks5/lib/";
-   _libNames << "libdsocks.so"                 // Dante
+   _libNames << "libsocks.so"                  // Dante
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
