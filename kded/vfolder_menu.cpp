@@ -998,8 +998,10 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
       {
          QString name = *it;
 kdDebug(7021) << "KDE Legacy: Found menu " << name << endl;
-         if (name.endsWith("/.directory"))
-            name = name.left(name.length()-11);
+         if (!name.endsWith("/.directory"))
+            continue; // Probably ".directory", skip it.
+            
+         name = name.left(name.length()-11);
       
          SubMenu *newMenu = new SubMenu;
          newMenu->directoryFile = locate("apps", *it);
